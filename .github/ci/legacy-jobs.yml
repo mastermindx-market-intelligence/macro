@@ -8670,6 +8670,13 @@ jobs:
     #   2. nasdaq archetype_groups clobber: build_subsector_membership._write() now
     #      re-injects archetype_groups from the existing file when the new payload lacks it;
     #      4 tests covering preserve/no-clobber/no-file/malformed-file paths.
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/company_theme_exposure/contracts.py"
+      - "engine/company_theme_exposure/health.py"
+      - "engine/company_theme_exposure/views.py"
+      - "scripts/build_company_theme_exposure.py"
+      - "tests/test_gmi_cte_generation_bridge.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8688,7 +8695,7 @@ jobs:
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
-        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py -q
+        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py -q
 
   sa-w4-improvement-lanes:
     if: ${{ false }}
