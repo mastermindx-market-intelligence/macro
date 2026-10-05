@@ -2495,6 +2495,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -9434,6 +9435,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
@@ -10074,6 +10076,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -12167,6 +12170,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
       - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
@@ -12548,6 +12552,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
@@ -16344,6 +16349,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
