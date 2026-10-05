@@ -683,7 +683,7 @@ def _visit_discovery_snapshot(
             baseline_state = "blocked_unscoped_coverage_exception"
         elif company_exception:
             baseline_state = "blocked_company_coverage_exception"
-        elif not owner_clock_order_valid:
+        elif not health_clock_order_valid:
             baseline_state = "blocked_owner_clock_order_invalid"
         elif source_status == "stale":
             baseline_state = "unavailable_source_stale"
@@ -691,6 +691,8 @@ def _visit_discovery_snapshot(
             baseline_state = "unavailable_source_health"
         elif last_success_day is None:
             baseline_state = "unavailable_last_success_clock"
+        elif not owner_clock_order_valid:
+            baseline_state = "blocked_owner_clock_order_invalid"
         elif coverage_day is None or coverage_day > baseline_start:
             baseline_state = "insufficient_observed_history"
         else:
@@ -717,7 +719,7 @@ def _visit_discovery_snapshot(
             first_seen_state = "unknown_exception_ledger_unreadable"
         elif has_unscoped_open:
             first_seen_state = "unknown_unscoped_coverage_exception"
-        elif not owner_clock_order_valid:
+        elif not health_clock_order_valid:
             first_seen_state = "unknown_owner_clock_order_invalid"
         elif source_status != "ok":
             first_seen_state = "unknown_source_health"
@@ -725,6 +727,8 @@ def _visit_discovery_snapshot(
             first_seen_state = "unknown_coverage_start"
         elif last_success_day is None:
             first_seen_state = "unknown_last_success_clock"
+        elif not owner_clock_order_valid:
+            first_seen_state = "unknown_owner_clock_order_invalid"
         elif observation_clock_incomplete:
             first_seen_state = "observation_clock_unavailable"
         elif first_observed_day is None:
