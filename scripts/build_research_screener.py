@@ -153,8 +153,16 @@ def bake_html(root: Path, payload: dict[str, Any]) -> str:
     _ensure_yaml_importable()
     from lib.pages import dbase_prefix, inject_text
 
+    from scripts.inject_wh_banner import inject_text as inject_wh_banner_text
+
     site = root / "site"
-    html = stamp_page_html(site, render_html(root, payload))
+    # The full nightly injects the shared White House ticker after page generation,
+    # but the research-screener CI contract compares this producer directly with
+    # the committed page. Reuse the canonical idempotent injector here, before
+    # asset stamping, so wh_banner.js receives the same content hash as every
+    # other local asset. This is one banner plane, not a duplicate implementation.
+    html = inject_wh_banner_text(render_html(root, payload), "")
+    html = stamp_page_html(site, html)
     return inject_text(html, dbase_prefix(site / HTML_NAME))
 
 
