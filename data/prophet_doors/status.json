@@ -1,5 +1,5 @@
 {
-  "appended": 4,
+  "appended": 0,
   "asof": "2026-10-02",
   "candidates": {
     "R": 0,
@@ -8,40 +8,26 @@
   },
   "deduped": {
     "R": 0,
-    "T": 5,
+    "T": 9,
     "W": 5
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-10-02",
-      "consulted": true,
-      "n_keys": 27,
-      "n_themes": 18,
-      "ok": true,
-      "reason": null,
-      "source": "site/basketdata/foresight_cascade.json"
+      "consulted": false
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": true,
-      "null_reasons": {
-        "ohlcv_absent": 9
-      },
+      "consulted": false,
+      "null_reasons": {},
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {
-        "Industrial Automation": {
-          "theme_thrust_frac": 0.2857,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        }
-      },
+      "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 28,
-      "tickers_read": 37
+      "tickers_ok": 0,
+      "tickers_read": 0
     },
     "keys": [
       "relay_count_3d",
@@ -59,21 +45,10 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": true,
-      "high_lookback": 63,
-      "members_indexed": 122,
-      "n_covered": 81,
-      "reason": null,
-      "window_sessions": 21
+      "consulted": false
     },
     "turnover": {
-      "consulted": true,
-      "last_session": "2026-10-02",
-      "n_tickers": 1547,
-      "ok": true,
-      "reason": null,
-      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
-      "window_max": 60
+      "consulted": false
     }
   },
   "feature_source_w": {
@@ -102,12 +77,7 @@
   },
   "flag_tickers": {
     "R": [],
-    "T": [
-      "CGNX",
-      "GXO",
-      "RRX",
-      "ST"
-    ],
+    "T": [],
     "W": []
   },
   "n_universe": 1493,
@@ -116,8 +86,8 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-03 22:11:16",
-  "runtime_s": 99.0,
+  "run_utc": "2026-10-04 10:34:14",
+  "runtime_s": 91.0,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
@@ -168,7 +138,7 @@
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 19.1,
+    "runtime_s": 18.4,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 61,

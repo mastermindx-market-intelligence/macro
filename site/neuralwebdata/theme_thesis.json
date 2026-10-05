@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-10-03",
-  "generated_at": "2026-10-03T20:25:04Z",
+  "as_of": "2026-10-04",
+  "generated_at": "2026-10-04T09:47:26Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -28,10 +28,10 @@
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-03",
+      "as_of": "2026-10-04",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:12b0cc3640d809d6efa040a24a85c137adbb07323c4278b3c3900e2723f9454d",
-      "prev_content_hash": "sha256:65dee43096350265030cfa9193d82e49fa7738bbe5795fdd800ba0ffd45c9757",
+      "content_hash": "sha256:ffa3c49e6fbbd0f2bbef5a51c51a79875b58cbcaa814ad0a5eba73029e89dc8b",
+      "prev_content_hash": "sha256:12b0cc3640d809d6efa040a24a85c137adbb07323c4278b3c3900e2723f9454d",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -106,7 +106,7 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-10-02",
+                "as_of": "2026-10-04",
                 "value": 0.497,
                 "condition_met": false
               }
@@ -117,16 +117,11 @@
         {
           "id": "ai_semi_f2",
           "rule_en": "If foresight moves from RE-RATING to GLUT-RISK, or to WATCH while the independently observed bottleneck band turns LOOSE, supply caught up or demand was pulled forward and the above-cycle narrative is broken.\n",
-          "state": "ARMED",
+          "state": "DATA_MISSING",
           "fired": false,
-          "reason_code": "WATCH_WITHOUT_INDEPENDENT_DETERIORATION",
-          "detail": "WATCH means scarcity was not confirmed; no separately evidenced deterioration was present",
+          "reason_code": "PRIOR_DISTINCT_OBSERVATION_MISSING",
+          "detail": "no predecessor to the current stage run was found",
           "evidence": {
-            "prior_as_of": "2026-08-04",
-            "prior_stage": "RE-RATING",
-            "current_stage": "WATCH",
-            "deterioration_field": "bottleneck_band",
-            "deterioration_value": "NEUTRAL",
             "corrections_superseded": 0
           }
         },
@@ -147,18 +142,18 @@
       ],
       "falsifier_summary": {
         "n_fired": 0,
-        "n_armed": 3,
-        "n_data_missing": 0,
+        "n_armed": 2,
+        "n_data_missing": 1,
         "n_qualitative": 1,
         "any_fired": false
       }
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-03",
+      "as_of": "2026-10-04",
       "thesis_id": "memory_storage.v1",
-      "content_hash": "sha256:57e246321842f172769ee0848516491e08479cb690d671cecc60511fa6f9fb0c",
-      "prev_content_hash": "sha256:9b839152c812fe754a19d95c8d582792d416cf7a11414918cbe2670276fbb48a",
+      "content_hash": "sha256:5f36c0285ca91cc32334c14db703f23f098e8d1362c375c61488badeee042994",
+      "prev_content_hash": "sha256:57e246321842f172769ee0848516491e08479cb690d671cecc60511fa6f9fb0c",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -224,12 +219,12 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-10-02",
+                "as_of": "2026-10-04",
                 "value": 0.755,
                 "condition_met": false
               }
             ],
-            "corrections_superseded": 0
+            "corrections_superseded": 1
           }
         },
         {
@@ -431,10 +426,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-23",
+      "as_of": "2026-10-04",
       "thesis_id": "cybersecurity.v1",
-      "content_hash": "sha256:d0f3c0f8b1d817f29dea3b4c56bcfc4fee54605ba90ad70e8916023d3cebe383",
-      "prev_content_hash": "sha256:3142a7d7d19ef355a40ae0c8a522dcedecc8382e3d32a9f2bc51912003ed42ab",
+      "content_hash": "sha256:8221cb815a91ab40644bb81b604625b6e0aa72abd71ce75aa8affab0a11c956d",
+      "prev_content_hash": "sha256:d0f3c0f8b1d817f29dea3b4c56bcfc4fee54605ba90ad70e8916023d3cebe383",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -488,7 +483,7 @@
           "rule_en": "If revision_breadth for cybersecurity falls below 0.1, software IT budget compression is overriding the platform cycle tailwind.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.542"
+          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.551"
         },
         {
           "id": "cyber_f2",
@@ -935,10 +930,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-11",
+      "as_of": "2026-10-04",
       "thesis_id": "defense_aerospace.v1",
-      "content_hash": "sha256:d1038d8df11be3b4fd4eaa4cab53a1c34b85db2577e0e070bfb6d7415a18e140",
-      "prev_content_hash": "sha256:9202e45007c0eb8f0cf229edca9a0ec4fcca05a18785718a0cf445dfedd199a3",
+      "content_hash": "sha256:933e689dabf5c46fe2066c1c2144ef850b05b7dd0f4fe0fc690bf279bc07b017",
+      "prev_content_hash": "sha256:d1038d8df11be3b4fd4eaa4cab53a1c34b85db2577e0e070bfb6d7415a18e140",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -996,7 +991,7 @@
           "rule_en": "If revision_breadth for defense_aerospace falls below 0.0, budget headwinds or program cancellations are spreading through earnings revisions.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.364"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.341"
         },
         {
           "id": "def_f2",
@@ -1346,10 +1341,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-03",
+      "as_of": "2026-10-04",
       "thesis_id": "copper_steel_electrify.v1",
-      "content_hash": "sha256:f0a479ae828a0704e865d011f752e5adeb813ed30083ac8c9425e036a6d0af2c",
-      "prev_content_hash": "sha256:8f4fbb5f6f7b757a258f3d8aceefe1564ff9963d6f1170a8f7395fc5da7b1114",
+      "content_hash": "sha256:e348bfa3c0cfe9b0fb747368aa6eb4f188bf554f71d0c56dc7c1339396d5a1ef",
+      "prev_content_hash": "sha256:f0a479ae828a0704e865d011f752e5adeb813ed30083ac8c9425e036a6d0af2c",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1403,7 +1398,7 @@
           "rule_en": "If revision_breadth for copper_steel_electrify falls below 0.0, earnings upgrades from the electrification story are reversing — macro headwinds may be overwhelming structural demand.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.673"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.64"
         },
         {
           "id": "cu_f2",
@@ -1423,10 +1418,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-16",
+      "as_of": "2026-10-04",
       "thesis_id": "ag_fertilizer.v1",
-      "content_hash": "sha256:15587c0fe8cf26f1f45a752b5ae60ae0eab0f22757cd7a4d5bd3dcab18737c26",
-      "prev_content_hash": "sha256:b8849607cf911c3fee313ed16db0ad1659eccd511a4c18bc9939b884bdc30130",
+      "content_hash": "sha256:5ea260513c5a221b83c19cd18985ce811f40c97148bac3239f66daa4ca5a3be5",
+      "prev_content_hash": "sha256:15587c0fe8cf26f1f45a752b5ae60ae0eab0f22757cd7a4d5bd3dcab18737c26",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1480,7 +1475,7 @@
           "rule_en": "If revision_breadth for ag_fertilizer falls negative, crop commodity prices are declining faster than fertilizer input cost savings — farmer economics are deteriorating.\n",
           "state": "FIRED",
           "fired": true,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.447"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.466"
         },
         {
           "id": "ag_f2",
@@ -1578,7 +1573,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-03T20:25:04Z",
-  "inputs_hash": "sha256:311b454954751cf34517a5f23da04b0e6eacf5edead97fcf2188662d2328d032",
+  "produced_at": "2026-10-04T09:47:26Z",
+  "inputs_hash": "sha256:ea1f0ed29c219d9d7142f087700efb153a7540c7e5dbdc8ed07746f819226d13",
   "tier": "display"
 }
