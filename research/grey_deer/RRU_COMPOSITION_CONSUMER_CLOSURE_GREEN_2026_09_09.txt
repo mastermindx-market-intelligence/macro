@@ -1,0 +1,12 @@
+test_actual_sleeve_consumer_withholds_unreviewed_sizing (__main__.ConsumerClosure.test_actual_sleeve_consumer_withholds_unreviewed_sizing) ... ok
+test_incomparable_recovery_preserves_independent_catalysts (__main__.ConsumerClosure.test_incomparable_recovery_preserves_independent_catalysts) ... ok
+test_legacy_us_projection_still_preserves_existing_fields (__main__.ConsumerClosure.test_legacy_us_projection_still_preserves_existing_fields) ... ok
+test_raw_forecast_is_not_current_under_unreviewed_calibration (__main__.ConsumerClosure.test_raw_forecast_is_not_current_under_unreviewed_calibration) ... ok
+test_raw_sizing_is_not_current_under_unreviewed_calibration (__main__.ConsumerClosure.test_raw_sizing_is_not_current_under_unreviewed_calibration) ... ok
+test_raw_trajectory_does_not_publish_unreviewed_forecast_odds (__main__.ConsumerClosure.test_raw_trajectory_does_not_publish_unreviewed_forecast_odds) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.071s
+
+OK
+{"tests": 6, "failures": 0, "errors": 0, "source_unchanged": true, "synthetic_only": true, "candidate_not_installed": true}

@@ -1,0 +1,36 @@
+test_au_all_null (__main__.ReferenceWindowTests.test_au_all_null) ... ok
+test_au_member (__main__.ReferenceWindowTests.test_au_member) ... ok
+test_au_outside (__main__.ReferenceWindowTests.test_au_outside) ... ok
+test_ca_all_null (__main__.ReferenceWindowTests.test_ca_all_null) ... ok
+test_ca_member (__main__.ReferenceWindowTests.test_ca_member) ... ok
+test_ca_outside (__main__.ReferenceWindowTests.test_ca_outside) ... ok
+test_cn_all_null (__main__.ReferenceWindowTests.test_cn_all_null) ... ok
+test_cn_member (__main__.ReferenceWindowTests.test_cn_member) ... ok
+test_cn_outside (__main__.ReferenceWindowTests.test_cn_outside) ... ok
+test_ez_all_null (__main__.ReferenceWindowTests.test_ez_all_null) ... ok
+test_ez_member (__main__.ReferenceWindowTests.test_ez_member) ... ok
+test_ez_outside (__main__.ReferenceWindowTests.test_ez_outside) ... ok
+test_gb_all_null (__main__.ReferenceWindowTests.test_gb_all_null) ... ok
+test_gb_member (__main__.ReferenceWindowTests.test_gb_member) ... ok
+test_gb_outside (__main__.ReferenceWindowTests.test_gb_outside) ... ok
+test_hk_all_null (__main__.ReferenceWindowTests.test_hk_all_null) ... ok
+test_hk_member (__main__.ReferenceWindowTests.test_hk_member) ... ok
+test_hk_outside (__main__.ReferenceWindowTests.test_hk_outside) ... ok
+test_in_all_null (__main__.ReferenceWindowTests.test_in_all_null) ... ok
+test_in_member (__main__.ReferenceWindowTests.test_in_member) ... ok
+test_in_outside (__main__.ReferenceWindowTests.test_in_outside) ... ok
+test_jp_all_null (__main__.ReferenceWindowTests.test_jp_all_null) ... ok
+test_jp_member (__main__.ReferenceWindowTests.test_jp_member) ... ok
+test_jp_outside (__main__.ReferenceWindowTests.test_jp_outside) ... ok
+test_kr_all_null (__main__.ReferenceWindowTests.test_kr_all_null) ... ok
+test_kr_member (__main__.ReferenceWindowTests.test_kr_member) ... ok
+test_kr_outside (__main__.ReferenceWindowTests.test_kr_outside) ... ok
+test_tw_all_null (__main__.ReferenceWindowTests.test_tw_all_null) ... ok
+test_tw_member (__main__.ReferenceWindowTests.test_tw_member) ... ok
+test_tw_outside (__main__.ReferenceWindowTests.test_tw_outside) ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 2.092s
+
+OK
+{"tests": 30, "failures": 0, "errors": 0, "source_unchanged": true, "synthetic_only": true, "cases": [{"market": "au", "case": "all_null", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 534, "reference_incomplete": 1}, {"market": "au", "case": "member", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 1}, {"market": "au", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 0}, {"market": "ca", "case": "all_null", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 534, "reference_incomplete": 1}, {"market": "ca", "case": "member", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 1}, {"market": "ca", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 0}, {"market": "cn", "case": "all_null", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 534, "reference_incomplete": 1}, {"market": "cn", "case": "member", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 1}, {"market": "cn", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 0}, {"market": "ez", "case": "all_null", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 534, "reference_incomplete": 1}, {"market": "ez", "case": "member", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 1}, {"market": "ez", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 0}, {"market": "gb", "case": "all_null", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 534, "reference_incomplete": 1}, {"market": "gb", "case": "member", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 1}, {"market": "gb", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 0}, {"market": "hk", "case": "all_null", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 534, "reference_incomplete": 1}, {"market": "hk", "case": "member", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 1}, {"market": "hk", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 0}, {"market": "in", "case": "all_null", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 534, "reference_incomplete": 1}, {"market": "in", "case": "member", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 1}, {"market": "in", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 0}, {"market": "jp", "case": "all_null", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 534, "reference_incomplete": 1}, {"market": "jp", "case": "member", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 1}, {"market": "jp", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 0}, {"market": "kr", "case": "all_null", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 534, "reference_incomplete": 1}, {"market": "kr", "case": "member", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 1}, {"market": "kr", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 0}, {"market": "tw", "case": "all_null", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 534, "reference_incomplete": 1}, {"market": "tw", "case": "member", "comparison_comparable": false, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 1}, {"market": "tw", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": 533, "reference_incomplete": 0}]}

@@ -1,0 +1,6 @@
+...................................................
+----------------------------------------------------------------------
+Ran 51 tests in 3.561s
+
+OK
+{"tests": 51, "failures": 0, "errors": 0, "source_unchanged": true, "synthetic_only": true, "full_template": true, "production": false, "template_sources": {"templates/international_macro.html.j2": "47734489b3c395677d80fcb57d323a22f722e59018afde8753207788b980db29", "templates/_risk_radar_card.html.j2": "86b138e8b65e1ef15a211149129a59809e9da9db1a111dedbb57f4222cf03c14", "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee", "templates/_risk_radar_card.css.j2": "07b56d52a6e426352ad9ca9cc9b117d50cb50bfd2c7d8de052aaaa4dad9bb2f2", "templates/_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482", "templates/_navlinks.html.j2": "10ef03e1d39149ee0e94072bcdeebae3cdbdfa92c0e620efdf54b69a1109f7b8"}}

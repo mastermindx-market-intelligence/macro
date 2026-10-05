@@ -1,0 +1,31 @@
+...........................................................................................
+----------------------------------------------------------------------
+Ran 91 tests in 8.791s
+
+OK
+{"tests": 91, "failures": 0, "errors": 0, "source_unchanged": true, "candidate": true, "synthetic_inputs": true}
+test_all_input_gap_is_not_lost_by_dropping_unscored_dates (__main__.CompositionEdges.test_all_input_gap_is_not_lost_by_dropping_unscored_dates) ... ok
+test_comparison_recovers_after_its_window_clears (__main__.CompositionEdges.test_comparison_recovers_after_its_window_clears) ... FAIL
+test_invalid_profile_is_not_a_calm_default (__main__.CompositionEdges.test_invalid_profile_is_not_a_calm_default) ... risk_radar_intl(?) failed: 'NoneType' object has no attribute 'disclaimer'
+ok
+test_old_score_date_is_retained_as_history_not_current (__main__.CompositionEdges.test_old_score_date_is_retained_as_history_not_current) ... ok
+test_partial_card_has_no_calm_checkmark (__main__.CompositionEdges.test_partial_card_has_no_calm_checkmark) ... ok
+test_profile_group_keys_and_weights_are_well_formed (__main__.CompositionEdges.test_profile_group_keys_and_weights_are_well_formed) ... ok
+test_projection_does_not_change_source_authority_or_input (__main__.CompositionEdges.test_projection_does_not_change_source_authority_or_input) ... ok
+test_snapshot_exception_remains_explicitly_unavailable (__main__.CompositionEdges.test_snapshot_exception_remains_explicitly_unavailable) ... risk_radar_intl(cn) failed: synthetic unavailable source
+ok
+
+======================================================================
+FAIL: test_comparison_recovers_after_its_window_clears (__main__.CompositionEdges.test_comparison_recovers_after_its_window_clears)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_COMPOSITION_EDGE_TESTS_2026_09_08.py", line 48, in test_comparison_recovers_after_its_window_clears
+    self.assertTrue(q['comparison_comparable'])
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.227s
+
+FAILED (failures=1)
+{"tests": 8, "failures": 1, "errors": 0, "synthetic_only": true}

@@ -1,0 +1,10 @@
+def _legacy_graded_cohort(rows):
+    """One legacy-only evidence selection; never rewrites or promotes issued rows.
+
+    Explicit composition, even null or malformed, is not the pre-migration schema.
+    Selecting legacy rows does not certify their data quality or authorize a new
+    construction to inherit this cohort's resulting grant.
+    """
+    graded = [row for row in rows if row.get("graded")]
+    legacy = [row for row in graded if "composition" not in row]
+    return legacy, len(graded) - len(legacy)
