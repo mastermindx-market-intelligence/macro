@@ -29,11 +29,12 @@ METHOD — a synthesis of the two house templates:
     by the same `n_days >= max(6, horizon)` validity bar the governor uses so we never act
     on a degenerate (lag >= n_days) long-run variance.
 
-CONTROL (mirrors the activist gate's passive-13G leg): a pre-event PLACEBO — the same
-tickers entered one quarter (63 bdays) BEFORE the filing. It measures each name's NORMAL
-SPY-relative drift absent the event; the event must beat it. This catches the trap that
-many special-situation names (distressed delistings, busted deals) are already drifting —
-an "edge" that is just the stock's own trend, not the event, fails here.
+CONTROL: a historical within-name contrast — the same tickers anchored one quarter
+(63 business days) BEFORE the filing. The original anchor and complete requested horizon
+are retained, but the window must end strictly BEFORE the focal calendar date. Holidays
+and missing quotes may otherwise stretch the observation-count window across the event.
+Unqualified windows are withheld, not shortened or re-anchored, and remain in coverage
+counts. A qualified prior window is not proof of news-free or causal absent-event drift.
 
 VERDICT: scored iff SOME horizon is valid (n_events >= floor AND n_days >= needed),
 right-signed (mean_abn > 0 and HAC-t > 0), significant (|HAC-t| >= 2.0), AND beats the
@@ -116,9 +117,16 @@ def event_panel() -> pd.DataFrame:
     return first[["tk", "d", "category"]].reset_index(drop=True)
 
 
-def _fwd_abn(closes: pd.DataFrame, spy: pd.Series, tk: str, d: pd.Timestamp, h: int):
-    """SPY-relative forward return over h trading days, entry = first close STRICTLY AFTER
-    `d` (leak-free: excludes the filing-day close). Returns (entry_day, abn) or None."""
+def _fwd_abn(
+    closes: pd.DataFrame, spy: pd.Series, tk: str, d: pd.Timestamp, h: int,
+    *, end_before: pd.Timestamp | None = None,
+):
+    """Return (entry_day, abn), or None when the full window is unqualified.
+
+    Entry is the first close strictly after d. For a prior contrast, end_before
+    excludes the entire focal calendar date, even if it contains a time of day.
+    The original anchor and full h-observation horizon are never moved to fit.
+    """
     if tk not in closes.columns or spy is None:
         return None
     s = closes[tk].dropna()
@@ -130,6 +138,14 @@ def _fwd_abn(closes: pd.DataFrame, spy: pd.Series, tk: str, d: pd.Timestamp, h: 
     if loc + h >= len(s):
         return None
     e1 = s.index[loc + h]
+    if end_before is not None:
+        try:
+            cutoff = pd.Timestamp(end_before)
+            if pd.isna(cutoff) or not e1 < cutoff.normalize():
+                return None
+        except (TypeError, ValueError):
+            # An unknown/incomparable calendar boundary must never admit a control.
+            return None
     try:
         r = s.loc[e1] / s.loc[e0] - 1.0
         sp0, sp1 = spy.asof(e0), spy.asof(e1)
@@ -142,18 +158,42 @@ def _fwd_abn(closes: pd.DataFrame, spy: pd.Series, tk: str, d: pd.Timestamp, h: 
 
 
 def _study(events: pd.DataFrame, closes: pd.DataFrame, spy: pd.Series, shift_bdays: int = 0) -> dict:
-    """Per-horizon daily-calendar-time abnormal-return study. shift_bdays > 0 walks the entry
-    back that many business days for the pre-event placebo baseline."""
+    """Per-horizon daily-calendar-time study with full requested-row coverage.
+
+    Positive shift_bdays preserves the historical anchor and adds a strict focal
+    date end fence. Missing prices, censored windows and overlaps stay withheld;
+    the shared None result does not diagnose which of those causes applies.
+    """
+    if isinstance(shift_bdays, bool) or not isinstance(shift_bdays, (int, np.integer)) or shift_bdays < 0:
+        raise ValueError("shift_bdays must be a nonnegative integer")
     out: dict = {}
     for h in _HORIZONS:
         recs = []
-        for ev in events.itertuples(index=False):
+        withheld = []
+        for row_number, ev in enumerate(events.itertuples(index=False)):
             d = ev.d - pd.tseries.offsets.BDay(shift_bdays) if shift_bdays else ev.d
-            a = _fwd_abn(closes, spy, ev.tk, d, h)
+            a = _fwd_abn(
+                closes, spy, ev.tk, d, h,
+                end_before=ev.d if shift_bdays else None,
+            )
             if a is not None:
                 recs.append(a)
+            else:
+                withheld.append({
+                    "row_number": row_number,
+                    "ticker": str(ev.tk),
+                    "focal_date": pd.Timestamp(ev.d).isoformat(),
+                    "horizon": h,
+                    "reason": "WINDOW_OR_PRICE_UNQUALIFIED",
+                })
+        coverage = {
+            "n": len(recs),
+            "n_requested": len(events),
+            "n_withheld": len(withheld),
+            "withheld": withheld,
+        }
         if len(recs) < 10:
-            out[h] = {"n": len(recs)}
+            out[h] = coverage
             continue
         edf = pd.DataFrame(recs, columns=["e0", "abn"])
         edf["day"] = edf["e0"].dt.normalize()
@@ -163,7 +203,7 @@ def _study(events: pd.DataFrame, closes: pd.DataFrame, spy: pd.Series, shift_bda
         daily = edf.groupby("day")["abn"].mean().sort_index()
         nw = V.newey_west_tstat(daily.values, lags=h)
         rec = {
-            "n": int(len(edf)),
+            **coverage,
             "n_days": int(len(daily)),
             "mean_abn": round(float(edf["abn"].mean()), 4),
             "median_abn": round(float(edf["abn"].median()), 4),
@@ -241,6 +281,7 @@ def main() -> None:
             "DE-ESCALATE to 0.20 (context tier) — mirror activist_13d in #3216"),
         "event": ev,
         "placebo_pre_event": pl,
+        "prior_window_policy": "fixed_anchor_full_horizon_end_strictly_before_focal_date",
         "min_events": _MIN_EVENTS,
         "t_bar": _T_BAR,
         "note": ("post-filing special-situation drift is right-signed, significant and beats the "
@@ -268,8 +309,9 @@ def main() -> None:
         f"- **Weight ruling: {gate['channel_weight_recommendation']}**", "",
         "## Post-filing SPY-relative abnormal returns (vs pre-event placebo)", "",
         "_Entry is STRICTLY AFTER the filing date, so the announcement pop is already gone — this is "
-        "post-filing DRIFT, not the event jump. The placebo enters the same names one quarter earlier "
-        "to net out each name's normal drift._", "",
+        "post-filing DRIFT, not the event jump. The prior contrast keeps the original one-quarter "
+        "anchor and full horizon, but withholds windows ending on or after the focal calendar date. "
+        "A qualified window is not necessarily news-free, independent or free of anticipation._", "",
         "| Horizon | n | n_days | mean_abn | median | hit | HAC-t | p | valid | placebo mean | placebo HAC-t |",
         "|--:|--:|--:|--:|--:|--:|--:|--:|:--:|--:|--:|",
     ]
@@ -280,6 +322,20 @@ def main() -> None:
             f"{a.get('median_abn','—')} | {a.get('hit_rate','—')} | {a.get('hac_t','—')} | "
             f"{a.get('p','—')} | {'✓' if a.get('valid_hac') else '—'} | "
             f"{p.get('mean_abn','—')} | {p.get('hac_t','—')} |")
+    lines += [
+        "", "## Requested-window coverage", "",
+        "_Withheld rows remain in the requested denominator. Unqualified means a missing price, "
+        "an incomplete window or a violated prior-window boundary; these causes are not separated "
+        "by the shared return API. The JSON retains row identities._", "",
+        "| Horizon | Event requested | Event admitted | Event withheld | Prior requested | Prior admitted | Prior withheld |",
+        "|--:|--:|--:|--:|--:|--:|--:|",
+    ]
+    for h in _HORIZONS:
+        a, p = ev.get(h, {}), pl.get(h, {})
+        lines.append(
+            f"| {h}d | {a.get('n_requested', '—')} | {a.get('n', '—')} | {a.get('n_withheld', '—')} | "
+            f"{p.get('n_requested', '—')} | {p.get('n', '—')} | {p.get('n_withheld', '—')} |"
+        )
     lines += ["", f"_{gate['note']}._", "",
               "_Caveat: the special-situations pipeline is ~6 months old, so even a SCORED reading is "
               "provisional and rests on a daily-HAC (not the activist gate's 2-year monthly cluster). "

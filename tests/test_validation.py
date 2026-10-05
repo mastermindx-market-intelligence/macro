@@ -180,3 +180,148 @@ def test_backtest_conviction_empty_when_flat():
     close = pd.Series(np.linspace(1.0, 1.1, 100), index=idx)
     assert backtest_conviction(close, None) == {}
     assert backtest_conviction(close, pd.Series(0.0, index=idx)) == {}  # managed peg => no trades
+
+
+# --------------------------------------------------------------------------- #
+# Special Situations: a prior-window contrast must stay before its focal event.
+# Synthetic inputs only; never load the event panel or on-disk quote archives.
+# --------------------------------------------------------------------------- #
+def _ss_prior_fixture(focal="2022-02-11", missing_dates=()):
+    from scripts import validate_special_situations as ss
+
+    dates = pd.bdate_range("2021-09-01", "2022-06-30")
+    dates = dates.difference(pd.DatetimeIndex(missing_dates))
+    closes = pd.DataFrame({"TEST": np.linspace(100.0, 120.0, len(dates))}, index=dates)
+    spy = pd.Series(100.0, index=dates)
+    events = pd.DataFrame({"tk": ["TEST"], "d": [pd.Timestamp(focal)], "category": ["test"]})
+    return ss, events, closes, spy
+
+
+def test_ss_prior_window_must_not_cross_focal_date():
+    ss, events, closes, spy = _ss_prior_fixture()
+    assert ss._study(events, closes, spy, shift_bdays=63)[63]["n"] == 0
+
+
+def test_ss_prior_window_holidays_do_not_relax_end_fence():
+    ss, events, closes, spy = _ss_prior_fixture(
+        missing_dates=("2021-11-25", "2021-12-24", "2022-01-17")
+    )
+    out = ss._study(events, closes, spy, shift_bdays=63)
+    assert out[63]["n"] == 0
+    assert out[21]["n"] == 1  # Preserve fully pre-event shorter windows.
+
+
+def test_ss_prior_window_rejects_same_calendar_day_end():
+    ss, events, closes, spy = _ss_prior_fixture()
+    # First close after focal minus six business days, plus five observations,
+    # is the focal day itself. It must not be used as pre-event evidence.
+    assert ss._study(events, closes, spy, shift_bdays=6)[5]["n"] == 0
+
+
+def test_ss_prior_window_intraday_time_does_not_admit_same_day():
+    ss, events, closes, spy = _ss_prior_fixture(focal="2022-02-11T16:00:00")
+    assert ss._study(events, closes, spy, shift_bdays=6)[5]["n"] == 0
+
+
+def test_ss_prior_window_can_end_friday_before_sunday():
+    ss, events, closes, spy = _ss_prior_fixture(focal="2022-02-13")
+    out = ss._study(events, closes, spy, shift_bdays=7)
+    assert out[5]["n"] == 1
+
+
+def test_ss_prior_window_missing_quotes_must_not_stretch_past_event():
+    ss, events, closes, spy = _ss_prior_fixture()
+    closes.loc[pd.to_datetime(["2022-02-03", "2022-02-04", "2022-02-07", "2022-02-08"]), "TEST"] = np.nan
+    assert ss._study(events, closes, spy, shift_bdays=8)[5]["n"] == 0
+
+
+def test_ss_prior_window_keeps_requested_and_withheld_denominator():
+    ss, events, closes, spy = _ss_prior_fixture()
+    out = ss._study(events, closes, spy, shift_bdays=63)[63]
+    assert out["n_requested"] == 1
+    assert out["n"] == 0
+    assert out["n_withheld"] == 1
+    assert len(out["withheld"]) == 1
+    assert out["withheld"][0]["ticker"] == "TEST"
+    assert out["withheld"][0]["focal_date"] == "2022-02-11T00:00:00"
+    assert out["withheld"][0]["horizon"] == 63
+    assert out["withheld"][0]["reason"] == "WINDOW_OR_PRICE_UNQUALIFIED"
+
+
+def test_ss_prior_window_missing_security_is_withheld_not_zero_return():
+    ss, events, closes, spy = _ss_prior_fixture()
+    events.loc[0, "tk"] = "MISSING"
+    out = ss._study(events, closes, spy, shift_bdays=63)[5]
+    assert out["n_requested"] == out["n_withheld"] == 1
+    assert out["n"] == 0
+    assert "mean_abn" not in out
+    assert out["withheld"][0]["ticker"] == "MISSING"
+
+
+def test_ss_prior_window_never_shortens_a_censored_horizon():
+    ss, events, closes, spy = _ss_prior_fixture()
+    closes = closes.loc[:"2021-12-01"]
+    out = ss._study(events, closes, spy, shift_bdays=63)[63]
+    assert out["n"] == 0
+    assert out["n_withheld"] == 1
+    assert out["withheld"][0]["horizon"] == 63
+
+
+def test_ss_forward_event_window_remains_after_event():
+    ss, events, closes, spy = _ss_prior_fixture()
+    focal = events.loc[0, "d"]
+    result = ss._fwd_abn(closes, spy, "TEST", focal, 5)
+    assert result is not None
+    assert result[0] == pd.Timestamp("2022-02-14")
+    expected = closes.loc["2022-02-21", "TEST"] / closes.loc["2022-02-14", "TEST"] - 1
+    assert abs(result[1] - expected) < 1e-12
+    out = ss._study(events, closes, spy, shift_bdays=0)[5]
+    assert out["n"] == 1
+    assert out["n_requested"] == 1
+    assert out["n_withheld"] == 0
+    assert out["withheld"] == []
+
+
+def test_ss_prior_window_coverage_survives_aggregation_path():
+    ss, events, closes, spy = _ss_prior_fixture()
+    events = pd.concat([events] * 12, ignore_index=True)
+    out = ss._study(events, closes, spy, shift_bdays=63)[5]
+    assert out["n"] == out["n_requested"] == 12
+    assert out["n_withheld"] == 0
+    assert out["withheld"] == []
+
+
+def test_ss_prior_window_withheld_contrast_cannot_support_scored_verdict():
+    ss, events, closes, spy = _ss_prior_fixture()
+    placebo = ss._study(events, closes, spy, shift_bdays=63)
+    event_summary = {63: {"n": 100, "n_days": 100, "valid_hac": True, "mean_abn": 0.4, "hac_t": 5.0}}
+    assert ss._verdict(event_summary, placebo) == (False, None)
+
+
+def test_ss_prior_window_unknown_or_incomparable_cutoff_is_withheld():
+    ss, events, closes, spy = _ss_prior_fixture()
+    anchor = events.loc[0, "d"] - pd.tseries.offsets.BDay(63)
+    for cutoff in (pd.NaT, "not-a-date", pd.Timestamp("2022-02-11", tz="UTC")):
+        assert ss._fwd_abn(closes, spy, "TEST", anchor, 5, end_before=cutoff) is None
+
+
+def test_ss_prior_window_rejects_invalid_shift_configuration():
+    import pytest
+
+    ss, events, closes, spy = _ss_prior_fixture()
+    for shift in (-1, True, 1.5):
+        with pytest.raises(ValueError, match="nonnegative integer"):
+            ss._study(events, closes, spy, shift_bdays=shift)
+
+
+def test_ss_prior_window_mixed_aggregation_keeps_missing_observation_identity():
+    ss, events, closes, spy = _ss_prior_fixture()
+    events = pd.concat([events] * 13, ignore_index=True)
+    events.loc[12, "tk"] = "MISSING"
+    out = ss._study(events, closes, spy, shift_bdays=63)[5]
+    assert out["n_requested"] == 13
+    assert out["n"] == 12
+    assert out["n_withheld"] == 1
+    assert len(out["withheld"]) == 1
+    assert out["withheld"][0]["row_number"] == 12
+    assert out["withheld"][0]["ticker"] == "MISSING"
