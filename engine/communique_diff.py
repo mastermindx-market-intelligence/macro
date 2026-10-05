@@ -292,6 +292,53 @@ def _document_revision_context(
     return revisions, suppress_appeared, suppress_dropped, revised_locators
 
 
+def _retained_correction_added_phrases(
+    all_rows: list[dict],
+    effective_rows: list[dict],
+    book: list[dict],
+    asof_day: str,
+) -> dict[str, set[str]]:
+    """Phrases whose first provenance at a source locator is correction-derived.
+
+    For each effective source row, compare its phrases with the locator's first
+    observed version in the replay-visible history.  If a phrase is present in
+    the effective row but absent from that first version, the locator may not use
+    it as ordinary prior-side novelty evidence: it entered through one of the
+    in-place corrections.  A phrase present in the first version remains valid
+    source evidence even if later revisions removed and restored it.
+
+    Independent source locators are handled separately by the caller, so one
+    correction-derived occurrence never suppresses another source's evidence.
+    """
+    by_locator: dict[str, list[dict]] = {}
+    for row in all_rows:
+        day = _crawl_day(row)
+        if not day or day > asof_day:
+            continue
+        by_locator.setdefault(_source_locator(row), []).append(row)
+
+    forbidden: dict[str, set[str]] = {}
+    for effective in effective_rows:
+        locator = _source_locator(effective)
+        chain = sorted(
+            by_locator.get(locator, []),
+            key=lambda r: (
+                str(r.get("_crawled_at") or ""),
+                _content_fingerprint(r),
+                str(r.get("doc_id") or ""),
+            ),
+        )
+        if len(chain) < 2:
+            continue
+        first_phrases = phrases_in_text(_doc_text(chain[0]), book)
+        effective_phrases = phrases_in_text(_doc_text(effective), book)
+        introduced = effective_phrases - first_phrases
+        if introduced:
+            forbidden[locator] = set(introduced)
+    return forbidden
+
+
+
 # --------------------------------------------------------------------------- #
 # event id — stable, content-defined
 # --------------------------------------------------------------------------- #
@@ -527,25 +574,13 @@ def compute_events(corpus_rows: list[dict], asof: str,
                 str(x) for x in (rev.get("removed_phrases") or [])
             )
 
-        # The prior comparison side needs the same attribution.  An effective
-        # prior row may itself be a correction relative to older full-history
-        # state; a phrase added only by that correction cannot later mint an
-        # ordinary DROPPED event when today omits it.
-        prior_added_by_locator: dict[str, set[str]] = {}
-        for prior_row in effective_prior:
-            prior_day = _crawl_day(prior_row)
-            if not prior_day:
-                continue
-            prior_revs, _pa, _pd, _ploc = _document_revision_context(
-                rows, [prior_row], book, prior_day
-            )
-            for rev in prior_revs:
-                locator = str(rev.get("source_locator_id") or "")
-                if not locator:
-                    continue
-                prior_added_by_locator.setdefault(locator, set()).update(
-                    str(x) for x in (rev.get("added_phrases") or [])
-                )
+        # The prior comparison side needs full-chain attribution.  Immediate
+        # B->C deltas are insufficient when A lacked X, B added X, and effective
+        # C retained X while changing something else.  Trace each effective
+        # source back to its first replay-visible version instead.
+        prior_added_by_locator = _retained_correction_added_phrases(
+            rows, effective_prior, book, asof_day
+        )
 
         def _has_eligible(rows_: list[dict], ph: str,
                           forbidden_: dict[str, set[str]]) -> bool:
