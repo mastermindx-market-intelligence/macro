@@ -21,7 +21,7 @@
 </style>
 <details id="fx-carry-funding-evidence" class="fx-cf">
   <summary>
-    <span><span class="cf-title">{{ cf_t('Carry & funding evidence', '套息与融资证据') }}</span><span class="cf-sub">{{ cf_t('Rate edge, scenario confirmation, positioning and funding are separate evidence families.', '利差、情景确认、持仓与融资属于不同证据家族。') }}</span></span>
+    <span><span class="cf-title">{{ cf_t('Carry & funding evidence', '套息与融资证据') }}</span><span class="cf-sub">{{ cf_t('Rate edge, scenario rule state, positioning and funding are separate evidence families.', '利差、情景规则状态、持仓与融资属于不同证据家族。') }}</span></span>
     <span class="cf-chevron" aria-hidden="true">›</span>
   </summary>
   <div class="cf-body">
@@ -29,8 +29,8 @@
       <div>
         <span class="cf-kicker">{{ cf_t('Canonical carry-unwind state', '官方套息平仓状态') }}</span>
         <h3>
-          {% if _scn.get('state') == 'active' %}{{ cf_t('Carry unwind is confirmed by the existing scenario.', '现有情景已确认套息平仓。') }}
-          {% elif _scn.get('state') == 'inactive' %}{{ cf_t('Carry unwind is not confirmed.', '套息平仓尚未确认。') }}
+          {% if _scn.get('state') == 'active' %}{{ cf_t('Existing carry-unwind scenario rule is active.', '现有套息平仓情景规则已触发。') }}
+          {% elif _scn.get('state') == 'inactive' %}{{ cf_t('Existing carry-unwind scenario rule is inactive.', '现有套息平仓情景规则未触发。') }}
           {% else %}{{ cf_t('Current carry-unwind state is unknown.', '当前套息平仓状态未知。') }}{% endif %}
         </h3>
         <p class="cf-copy">{{ cf_t('This view does not recalculate the scenario. It shows the engine-owned legs beside carry, positioning and funding context.', '本视图不重新计算情景，只把引擎已有的触发项与套息、持仓和融资背景并列展示。') }}</p>
@@ -80,9 +80,10 @@
           <div class="cf-receipt-row">
             <div><span>{{ cf_t('Conditional','条件频率') }}</span><strong>{{ '%.1f'|format(receipt.conditional_frequency * 100) }}%</strong></div>
             <div><span>{{ cf_t('Base rate','基础频率') }}</span><strong>{{ '%.1f'|format(receipt.base_rate * 100) }}%</strong></div>
-            <div><span>95% Wilson</span><strong>{{ '%.1f'|format(receipt.wilson[0]*100) }}–{{ '%.1f'|format(receipt.wilson[1]*100) }}%</strong></div>
-            <div><span>n_eff</span><strong>{{ '%.1f'|format(receipt.n_eff) }}</strong></div>
+            <div><span>{{ cf_t('Raw sample','原始样本') }}</span><strong>{{ receipt.n_raw }}</strong></div>
+            <div><span>{{ cf_t('Horizon','周期') }}</span><strong>{{ receipt.horizon_sessions }} {{ cf_t('sessions','个交易日') }}</strong></div>
           </div>
+          <span class="cf-note">{{ cf_t('Dependence-adjusted interval withheld: the legacy n_eff/Wilson shortcut is not qualified uncertainty.', '依赖调整区间暂不展示：旧有 n_eff/Wilson 捷径尚未通过不确定性资格验证。') }}</span>
         {% elif receipt.get('status') == 'insufficient' %}
           <strong>{{ cf_t('Insufficient sample', '样本不足') }}</strong><span class="cf-note">{{ cf_t('The historical percentage is withheld rather than shown as a current chance.', '不展示历史百分比，避免被误读为当前概率。') }}</span>
         {% else %}
