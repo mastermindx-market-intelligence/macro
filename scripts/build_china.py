@@ -1841,10 +1841,12 @@ def main() -> int:
             vm["scoreboard"] = None
 
         factordata = site / "factordata"
+        _w3c_cn_fallback = False
         if not _is_current_prophet_artifact(vm.get("setups")):
             fallback = _load_json(factordata / "china_standouts.json")
             if _is_current_prophet_artifact(fallback):
                 vm["setups"] = fallback
+                _w3c_cn_fallback = True
                 log.info(
                     "using persisted China Prophet v2 fallback (%d featured)",
                     len(fallback.get("buy") or []),
@@ -2097,6 +2099,29 @@ def main() -> int:
                 watch_definitions=_cn_watch_defs, log=log)
         except Exception as _bse:  # noqa: BLE001 — additive, never fatal
             log.warning("cn board_since stamp failed (%s)", _bse)
+
+        # ONE W3C finalization boundary, shared by BOTH existing renders. No early
+        # library FINALIZED rival, no fallback refresh, no public template expansion.
+        # Current source-specific mixed-vendor capture and per-stock reason capability
+        # are unavailable: typed refusal leaves the board and its reasons unchanged.
+        vm["cn_selection_cohort_internal"] = None
+        try:
+            from datetime import datetime as _w3c_dt, timezone as _w3c_tz
+            from engine.theme_graph.selection_cohort_publication import publish_cn_source
+            _cn_served_bytes = json.dumps(
+                vm.get("setups"), separators=(",", ":"), default=str, allow_nan=False).encode()
+            _cn_library_bytes = (factordata / "china_standouts.json").read_bytes()
+            _cn_w3c = publish_cn_source(
+                _cn_served_bytes, library_bytes=_cn_library_bytes,
+                data_dir=config.data_dir(), finalized_at=_w3c_dt.now(_w3c_tz.utc).isoformat(),
+                reason_ancestry=[], fallback=_w3c_cn_fallback)
+            # Machine binding carries only a matching, rightful INTERNAL result.
+            if _cn_w3c["status"] == "AVAILABLE":
+                vm["cn_selection_cohort_internal"] = _cn_w3c
+            else:
+                log.info("W3C China source unavailable: %s", _cn_w3c["reason_codes"])
+        except Exception as _cn_w3c_e:  # noqa: BLE001 — preserve ordinary publication
+            log.warning("W3C China source unavailable (%s)", _cn_w3c_e)
 
         env = Environment(loader=FileSystemLoader(
             str(Path(__file__).resolve().parent.parent / "templates")), autoescape=False)
