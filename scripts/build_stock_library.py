@@ -6628,10 +6628,12 @@ def main(now: datetime | None = None) -> int:
         # display/preview split. The import pair stamp is lineage, not this event.
         # Missing per-use capture capability refuses without a mixed-vendor archive.
         try:
-            from engine.theme_graph.selection_cohort_publication import publish_us_source
+            from engine.theme_graph.selection_cohort_publication import (
+                default_capture_capability, publish_us_source)
             _us_w3c = publish_us_source(
                 _us_final_payload.encode(), data_dir=config.data_dir(),
-                finalized_at=datetime.now(timezone.utc).isoformat())
+                finalized_at=datetime.now(timezone.utc).isoformat(),
+                authorize_capture=default_capture_capability())
             if _us_w3c["status"] != "AVAILABLE":
                 log.info("W3C source unavailable: %s", _us_w3c["reason_codes"])
         except Exception as _us_w3c_e:  # noqa: BLE001 — provenance cannot alter board publication

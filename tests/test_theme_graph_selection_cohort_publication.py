@@ -4,6 +4,9 @@ import copy
 import gzip
 import hashlib
 import json
+import logging
+import sys
+import types
 from pathlib import Path
 
 import pytest
@@ -64,6 +67,9 @@ def test_existing_owner_finalization_and_both_consumer_seams_are_wired():
     assert "_fresh_w3c != vm.get(\"us_selection_cohort_internal\")" in render
     assert library.count("source_handoff(") == 2
     assert "publish_cn_source(" not in library
+    assert "default_capture_capability()" in us
+    assert "default_capture_capability()" in cn
+    assert "default_capture_capability()" in render
     for source in (us, cn, render, library):
         ast.parse(source)
 
@@ -362,7 +368,10 @@ def test_actual_cn_final_shared_seam_preserves_both_render_vm_and_refuses_no_cap
             target=node
     assert target is not None
     library,served=cn_documents()
-    (tmp_path/"china_standouts.json").write_bytes(library)
+    site=tmp_path/"site"
+    factordata=site/"factordata"
+    factordata.mkdir(parents=True)
+    (factordata/"china_standouts.json").write_bytes(library)
     vm={"setups":json.loads(served),"cn_selection_cohort_internal":None}
     before=copy.deepcopy(vm["setups"]);observed=[]
     incumbent=api().publish_cn_source
@@ -370,11 +379,12 @@ def test_actual_cn_final_shared_seam_preserves_both_render_vm_and_refuses_no_cap
         observed.append(kwargs.copy())
         return incumbent(*args,**kwargs)
     monkeypatch.setattr(api(),"publish_cn_source",capture)
-    namespace=dict(vm=vm,json=json,factordata=tmp_path,_w3c_cn_fallback=False,
+    namespace=dict(vm=vm,json=json,site=site,factordata=factordata,_w3c_cn_fallback=False,
+        _compose_cn_w3c_reason_ancestry=lambda **kwargs: [],
         config=SimpleNamespace(data_dir=lambda:tmp_path/"internal"),
         log=SimpleNamespace(warning=lambda *args:None,info=lambda *args:None))
     exec(compile(ast.Module(body=[target],type_ignores=[]),"<actual CN shared finalization seam>","exec"),namespace)
-    assert len(observed)==1 and "authorize_capture" not in observed[0]
+    assert len(observed)==1 and "authorize_capture" in observed[0]
     assert vm["setups"]==before and vm["cn_selection_cohort_internal"] is None
     assert not (tmp_path/"internal").exists()
 
@@ -554,3 +564,69 @@ def test_same_generation_orphan_retry_never_reassigns_finalization_clock(tmp_pat
     new=raw(generation='actual-distinct-owner-generation')
     assert api().publish_us_source(new,data_dir=tmp_path,finalized_at=LATE,
         authorize_capture=controlled_authority)['status']=='AVAILABLE'
+
+
+def test_default_capture_capability_absent_when_rights_use_missing(monkeypatch):
+    monkeypatch.delitem(sys.modules, "engine.theme_graph.rights_use", raising=False)
+    stub = types.ModuleType("engine.theme_graph.rights_use")
+    monkeypatch.setitem(sys.modules, "engine.theme_graph.rights_use", stub)
+    assert api().default_capture_capability() is None
+
+
+def test_default_capture_capability_returns_wave_c_callable(monkeypatch):
+    def capture_capability(*, path=None):
+        def request(_request):
+            return True
+        request.last_verdict = {"verdict": "allowed", "reason_codes": []}
+        return request
+
+    mod = types.ModuleType("engine.theme_graph.rights_use")
+    mod.capture_capability = capture_capability
+    monkeypatch.setitem(sys.modules, "engine.theme_graph.rights_use", mod)
+    got = api().default_capture_capability()
+    assert callable(got) and got.last_verdict["verdict"] == "allowed"
+
+
+def test_refusing_capture_capability_logs_reason_codes(tmp_path, caplog):
+    def refusing(_request):
+        refusing.last_verdict = {"reason_codes": ["SOURCE_FAMILY_UNRESOLVED"]}
+        return False
+
+    with caplog.at_level(logging.INFO, logger="engine.theme_graph.selection_cohort_publication"):
+        result = api().publish_us_source(
+            raw(), data_dir=tmp_path, finalized_at=T, authorize_capture=refusing)
+    assert result["reason_codes"] == ["CAPTURE_RIGHTS_UNAVAILABLE"]
+    assert "SOURCE_FAMILY_UNRESOLVED" in caplog.text
+
+
+def test_allowing_capture_capability_publishes_then_consumes(tmp_path):
+    def allowing(_request):
+        allowing.last_verdict = {"verdict": "allowed", "reason_codes": []}
+        return True
+
+    published = api().publish_us_source(
+        raw(), data_dir=tmp_path, finalized_at=T, authorize_capture=allowing)
+    assert published["status"] == "AVAILABLE"
+    consumed = api().consume_us_source(
+        raw(), data_dir=tmp_path, authorize_capture=allowing)
+    assert consumed["status"] == "AVAILABLE"
+    assert consumed["receipt"]["receipt_sha256"] == published["receipt"]["receipt_sha256"]
+
+
+def test_cn_complete_reason_ancestry_publishes(tmp_path):
+    library, served = cn_documents()
+    accepted = api().publish_cn_source(
+        served, library_bytes=library, data_dir=tmp_path, finalized_at=T,
+        reason_ancestry=cn_ancestry(served), authorize_capture=controlled_authority)
+    assert accepted["status"] == "AVAILABLE"
+
+
+def test_cn_incomplete_reason_ancestry_refuses_without_archive(tmp_path):
+    library, served = cn_documents()
+    served_before = json.loads(served)
+    refused = api().publish_cn_source(
+        served, library_bytes=library, data_dir=tmp_path, finalized_at=T,
+        reason_ancestry=[], authorize_capture=controlled_authority)
+    assert refused["reason_codes"] == ["REQUIRED_REASON_SOURCE_ANCESTRY_UNAVAILABLE"]
+    assert list(tmp_path.rglob("*.json.gz")) == []
+    assert json.loads(served) == served_before

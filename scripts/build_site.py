@@ -6148,8 +6148,11 @@ def main() -> int:
             try:
                 from hashlib import sha256 as _w3c_sha256
                 _us_w3c_binding = _w3c_sha256(_us_source_bytes).hexdigest()
-                from engine.theme_graph.selection_cohort_publication import consume_us_source
-                _us_w3c_read = consume_us_source(_us_source_bytes, data_dir=config.data_dir())
+                from engine.theme_graph.selection_cohort_publication import (
+                    consume_us_source, default_capture_capability)
+                _us_w3c_read = consume_us_source(
+                    _us_source_bytes, data_dir=config.data_dir(),
+                    authorize_capture=default_capture_capability())
                 if _us_w3c_read["status"] == "AVAILABLE":
                     _us_w3c = _us_w3c_read
             except Exception as _us_w3c_e:  # noqa: BLE001 — preserve incumbent source rendering
@@ -7752,9 +7755,11 @@ def main() -> int:
                 try:
                     from hashlib import sha256 as _w3c_sha256
                     _fresh_w3c_binding = _w3c_sha256(_fresh_source_bytes).hexdigest()
-                    from engine.theme_graph.selection_cohort_publication import consume_us_source
+                    from engine.theme_graph.selection_cohort_publication import (
+                        consume_us_source, default_capture_capability)
                     _fresh_w3c_read = consume_us_source(
-                        _fresh_source_bytes, data_dir=config.data_dir())
+                        _fresh_source_bytes, data_dir=config.data_dir(),
+                        authorize_capture=default_capture_capability())
                     if _fresh_w3c_read["status"] == "AVAILABLE":
                         _fresh_w3c = _fresh_w3c_read
                 except Exception as _fresh_w3c_e:  # noqa: BLE001 — keep ordinary fresh-board rendering
