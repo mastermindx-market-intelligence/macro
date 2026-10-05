@@ -178,6 +178,7 @@ class MassiveBenzingaNewsClient:
         url = BASE_URL
         next_url: str | None = None
         pages = 0
+        seen_urls = {BASE_URL}
         for index in range(self.max_pages):
             response = self._get(url, first_page=index == 0)
             rows, next_url, request_id = self._parse_page(response)
@@ -193,6 +194,16 @@ class MassiveBenzingaNewsClient:
                     gap_unresolved=False,
                     hold_reasons=(),
                 )
+            if next_url in seen_urls:
+                return MassiveBatch(
+                    revisions=tuple(revisions),
+                    pages=pages,
+                    request_ids=tuple(request_ids),
+                    next_url=next_url,
+                    gap_unresolved=True,
+                    hold_reasons=("pagination_loop",),
+                )
+            seen_urls.add(next_url)
             if index + 1 == self.max_pages:
                 break
             url = next_url
