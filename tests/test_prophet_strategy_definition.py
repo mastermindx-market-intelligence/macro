@@ -524,6 +524,41 @@ def _b4_runtime_kwargs(symbol="UNIT", **extra):
     return out
 
 
+def test_private_quote_projection_preserves_b4_clock_provenance_only_when_opted_in():
+    from scripts import build_live_quotes as live_snapshot
+
+    quotes, live, entry, metrics = _b4_runtime_sources()
+    private_quotes = live_snapshot.to_worker_quotes(
+        quotes,
+        include_private_provenance=True,
+    )
+    facts = compose_runtime_owner_facts(
+        _b4_projection(),
+        episode_id=_b4_cid(),
+        **_b4_runtime_kwargs(
+            quotes_by_symbol=private_quotes,
+            live_state_artifact=live,
+            entry_rows_by_symbol=entry,
+            metric_inputs=metrics,
+        ),
+    )
+    assert facts["quote"]["asof"] == "2026-09-18T19:30:00Z"
+
+    public_quotes = live_snapshot.to_worker_quotes(quotes)
+    assert "quote_ts_synthetic" not in public_quotes["UNIT"]
+    with pytest.raises(RuntimeOwnerFactError, match="real source-market timestamp"):
+        compose_runtime_owner_facts(
+            _b4_projection(),
+            episode_id=_b4_cid(),
+            **_b4_runtime_kwargs(
+                quotes_by_symbol=public_quotes,
+                live_state_artifact=live,
+                entry_rows_by_symbol=entry,
+                metric_inputs=metrics,
+            ),
+        )
+
+
 def test_b4_runtime_adapter_binds_identity_quote_basis_and_geometry_without_minting_gates():
     facts = compose_runtime_owner_facts(
         _b4_projection(), episode_id=_b4_cid(), **_b4_runtime_kwargs()

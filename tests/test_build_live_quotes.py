@@ -91,6 +91,7 @@ def test_scrape_site_symbols_extracts_only_valid(tmp_path):
 
 def test_to_worker_quotes_maps_engine_dict_to_contract():
     raw = {"AAPL": {"price": 212.5, "quote_ts": "2026-06-23T14:00:00+00:00",
+                    "quote_ts_synthetic": False,
                     "source": "polygon", "price_basis": "trade",
                     "prev_close": 210.0, "currency": "USD", "delay_min": 1.0}}
     out = blq.to_worker_quotes(raw)["AAPL"]
@@ -101,6 +102,88 @@ def test_to_worker_quotes_maps_engine_dict_to_contract():
     assert isinstance(out["ts"], int) and out["ts"] > 0     # epoch MILLIseconds
     from datetime import datetime
     assert out["ts"] == int(datetime.fromisoformat("2026-06-23T14:00:00+00:00").timestamp() * 1000)
+    # The long-standing Worker/browser contract remains unchanged by default.
+    assert "quote_ts" not in out
+    assert "quote_ts_synthetic" not in out
+
+
+def test_to_worker_quotes_private_provenance_preserves_source_clock_truth():
+    raw = {
+        "REAL": {
+            "price": 212.5,
+            "quote_ts": "2026-06-23T14:00:00.123456+00:00",
+            "quote_ts_synthetic": False,
+            "source": "polygon",
+            "price_basis": "trade",
+            "prev_close": 210.0,
+            "currency": "USD",
+            "delay_min": 1.0,
+        },
+        "SYNTH": {
+            "price": 7400.0,
+            "quote_ts": "2026-06-23T14:00:01+00:00",
+            "quote_ts_synthetic": True,
+            "source": "polygon",
+            "price_basis": "day",
+            "prev_close": 7390.0,
+            "currency": "USD",
+            "delay_min": 0.0,
+        },
+        "UNKNOWN": {
+            "price": 100.0,
+            "quote_ts": "2026-06-23T14:00:02+00:00",
+            "source": "fixture",
+            "price_basis": "trade",
+            "prev_close": 99.0,
+            "currency": "USD",
+            "delay_min": 0.0,
+        },
+    }
+
+    out = blq.to_worker_quotes(raw, include_private_provenance=True)
+
+    assert out["REAL"]["quote_ts"] == raw["REAL"]["quote_ts"]
+    assert out["REAL"]["quote_ts_synthetic"] is False
+    assert out["SYNTH"]["quote_ts"] == raw["SYNTH"]["quote_ts"]
+    assert out["SYNTH"]["quote_ts_synthetic"] is True
+    # Missing provenance is never guessed from a non-null timestamp.
+    assert out["UNKNOWN"]["quote_ts_synthetic"] is None
+
+
+def test_build_private_provenance_is_opt_in(monkeypatch, tmp_path):
+    raw = {
+        "AAPL": {
+            "price": 212.5,
+            "quote_ts": "2026-06-23T14:00:00+00:00",
+            "quote_ts_synthetic": False,
+            "source": "polygon",
+            "price_basis": "trade",
+            "prev_close": 210.0,
+            "currency": "USD",
+            "delay_min": 1.0,
+        }
+    }
+
+    def fake_fetch_quotes(universe, *, offline=False, diag=None):
+        assert universe == ["AAPL"]
+        assert offline is False
+        if diag is not None:
+            diag["polygon_status"] = "fixture"
+        return raw
+
+    monkeypatch.setattr(blq.live_quotes, "fetch_quotes", fake_fetch_quotes)
+
+    public = blq.build(tmp_path, symbols=["AAPL"])
+    private = blq.build(
+        tmp_path,
+        symbols=["AAPL"],
+        include_private_provenance=True,
+    )
+
+    assert "quote_ts" not in public["quotes"]["AAPL"]
+    assert "quote_ts_synthetic" not in public["quotes"]["AAPL"]
+    assert private["quotes"]["AAPL"]["quote_ts"] == raw["AAPL"]["quote_ts"]
+    assert private["quotes"]["AAPL"]["quote_ts_synthetic"] is False
 
 
 def test_to_worker_quotes_handles_missing_prevclose_and_price():
