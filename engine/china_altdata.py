@@ -288,6 +288,18 @@ def _probationary_chips() -> dict[str, dict]:
                     "n_inst_buy": lv.get("n_inst_buy"),
                     "inst_net_buy_yi": lv.get("inst_net_buy_yi"),
                     "inst_accum_score": lv.get("inst_accum_score"),
+                    # CIE-13 actor boundary: aggregate institutional-seat counts
+                    # are participation context, never named-seat / ultimate-
+                    # actor identity.  Keep this alongside the zero-weight chip
+                    # so no consumer can infer identity from the label "机构".
+                    "actor_identity_state": lv.get(
+                        "actor_identity_state",
+                        "aggregate_institutional_seat_counts_only",
+                    ),
+                    "named_seat_identity": None,
+                    "beneficial_actor_identity": None,
+                    "actor_identity_authority": "none",
+                    "seat_count_semantics": "aggregate_count_not_named_actor",
                     "passport": {
                         "basis": "probationary",
                         "measured": "+1.57%/21d t≈0.8 (140 obs, weak-positive, never negative)",
