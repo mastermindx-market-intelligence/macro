@@ -3,9 +3,14 @@
 This module never grades prices and never writes the W3/grades stores. It consumes
 one validated PTSE shadow enrollment and the incumbent us.prophet_grades/v1 rows.
 
-Missing grades remain PENDING. Matured grades are copied verbatim from the shared
-Prophet grader. No p-values, model comparison, pass/fail, promotion, rank, gate,
-sizing, execution or trade authority is created here.
+Missing grades remain PENDING. Matured grades are copied from the shared Prophet
+grader only when the exact grade material is bound to an external owner receipt.
+No p-values, model comparison, pass/fail, promotion, rank, gate, sizing, execution
+or trade authority is created here.
+
+This outcome is explicitly the incumbent Prophet candidate-return ruler
+(excess return versus SPY at the requested shared-grader horizon). It is NOT the
+PTSE B0 H5 normalized downside target and is NOT an Options/GEX volatility target.
 """
 from __future__ import annotations
 
@@ -23,6 +28,20 @@ from research.options_estate.ptse_shadow_enrollment import (
 SCHEMA = "ptse.shadow_outcome_projection/v1-research"
 GRADE_SCHEMA = "us.prophet_grades/v1"
 BENCH = "SPY"
+OUTCOME_TARGET = "prophet.shared_excess_spy_return/v1"
+
+GRADE_BIND_FIELDS = (
+    "schema",
+    "stamp_date",
+    "ticker",
+    "board_definition",
+    "horizon",
+    "bench",
+    "excess_spy",
+    "fill_date",
+    "mark_date",
+    "graded_asof",
+)
 
 
 class PTSEShadowOutcomeError(ValueError):
@@ -39,12 +58,14 @@ class PTSEShadowOutcome:
     ticker: str
     board_definition: str
     horizon: int
+    outcome_target: str
     status: str
     excess_spy: float | None
     fill_date: str | None
     mark_date: str | None
     graded_asof: str | None
     grade_schema: str | None
+    grade_row_ref: Mapping[str, str] | None
     authority: Mapping[str, bool]
 
 
@@ -95,6 +116,23 @@ def _date(value: Any, code: str) -> str:
     return day
 
 
+def _ref(value: Mapping[str, Any] | None, code: str) -> dict[str, str]:
+    if (
+        not isinstance(value, Mapping)
+        or set(value) != {"owner_ref", "artifact_id", "sha256"}
+        or not all(isinstance(value.get(k), str) and value.get(k) for k in value)
+    ):
+        _fail(code)
+    digest = value.get("sha256")
+    if (
+        not isinstance(digest, str)
+        or len(digest) != 64
+        or any(ch not in "0123456789abcdef" for ch in digest)
+    ):
+        _fail(code)
+    return dict(value)
+
+
 def _grade_matches(
     row: Mapping[str, Any],
     *,
@@ -111,13 +149,28 @@ def _grade_matches(
     )
 
 
+def _grade_material(row: Mapping[str, Any]) -> dict[str, Any]:
+    """Canonical semantic subset used by this projection and its owner receipt."""
+    return {field: row.get(field) for field in GRADE_BIND_FIELDS}
+
+
+def _grade_material_sha256(row: Mapping[str, Any]) -> str:
+    return hashlib.sha256(_canon(_grade_material(row))).hexdigest()
+
+
 def project_shadow_outcome(
     *,
     enrollment: Mapping[str, Any],
     grade_rows: Sequence[Mapping[str, Any]],
     horizon: int,
+    grade_row_ref: Mapping[str, Any] | None = None,
 ) -> PTSEShadowOutcome:
-    """Join one PTSE enrollment to the existing Prophet grader by exact key."""
+    """Join one PTSE enrollment to the existing Prophet grader by exact key.
+
+    The shared grader remains the sole outcome owner. A matured row is accepted
+    only when the caller supplies an immutable owner receipt whose digest binds
+    the exact grade fields this projection consumes.
+    """
     try:
         validate_shadow_enrollment(enrollment)
     except Exception as exc:
@@ -146,6 +199,8 @@ def project_shadow_outcome(
         _fail("GRADE_KEY_AMBIGUOUS")
 
     if not matches:
+        if grade_row_ref is not None:
+            _fail("GRADE_REF_WITHOUT_ROW")
         material = {
             "schema": SCHEMA,
             "enrollment_id": enrollment["enrollment_id"],
@@ -153,12 +208,14 @@ def project_shadow_outcome(
             "ticker": ticker,
             "board_definition": definition,
             "horizon": horizon,
+            "outcome_target": OUTCOME_TARGET,
             "status": "PENDING",
             "excess_spy": None,
             "fill_date": None,
             "mark_date": None,
             "graded_asof": None,
             "grade_schema": None,
+            "grade_row_ref": None,
             "authority": dict(AUTHORITY),
         }
     else:
@@ -173,6 +230,11 @@ def project_shadow_outcome(
         graded = _date(row.get("graded_asof"), "GRADE_ASOF_INVALID")
         if not (stamp < fill <= mark <= graded):
             _fail("GRADE_CLOCK_ORDER_INVALID")
+
+        owner_ref = _ref(grade_row_ref, "GRADE_ROW_REF_REQUIRED")
+        if owner_ref["sha256"] != _grade_material_sha256(row):
+            _fail("GRADE_ROW_REF_MISMATCH")
+
         material = {
             "schema": SCHEMA,
             "enrollment_id": enrollment["enrollment_id"],
@@ -180,21 +242,30 @@ def project_shadow_outcome(
             "ticker": ticker,
             "board_definition": definition,
             "horizon": horizon,
+            "outcome_target": OUTCOME_TARGET,
             "status": "MATURED",
             "excess_spy": excess,
             "fill_date": fill,
             "mark_date": mark,
             "graded_asof": graded,
             "grade_schema": GRADE_SCHEMA,
+            "grade_row_ref": owner_ref,
             "authority": dict(AUTHORITY),
         }
 
     pid = "ptse-outcome:" + hashlib.sha256(_canon(material)).hexdigest()
-    return PTSEShadowOutcome(projection_id=pid, **{k:v for k,v in material.items() if k!="schema"})
+    return PTSEShadowOutcome(
+        projection_id=pid,
+        **{k: v for k, v in material.items() if k != "schema"},
+    )
 
 
 __all__ = [
     "AUTHORITY",
+    "BENCH",
+    "GRADE_BIND_FIELDS",
+    "GRADE_SCHEMA",
+    "OUTCOME_TARGET",
     "PTSEShadowOutcome",
     "PTSEShadowOutcomeError",
     "project_shadow_outcome",
