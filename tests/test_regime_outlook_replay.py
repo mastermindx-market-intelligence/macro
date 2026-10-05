@@ -8,9 +8,6 @@ from __future__ import annotations
 import importlib.util
 import io
 import json
-import os
-import subprocess
-import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -434,36 +431,39 @@ def test_replay_end_to_end(tool, mapping, mapping_sha):
 # T8: CLI
 # ---------------------------------------------------------------------------
 
-def test_cli_dry_run_writes_nothing(tool, tmp_path):
+def _run_cli(tool, monkeypatch, argv):
+    """Invoke the CLI entry point in-process and return its exit code.
+
+    Deliberately NOT a subprocess: the CI scope inference
+    (scripts/ci_scope_dependencies.py) reads a ``subprocess.run`` inside a
+    suite as an opaque edge and smears whole scan roots (``scripts/**``,
+    ``config/**``, ...) into the owning job's fallback scope, so an ordinary
+    PR touching any script would select the regime-outlook-mapping job —
+    contract-delta's packing probe measured exactly that on this suite.
+    ``main(argv)`` returns the exit code, so the process boundary buys
+    nothing here.
+    """
+    monkeypatch.setenv("REGIME_OUTLOOK_REPLAY_FAKE_FRAME", "1")
+    monkeypatch.chdir(REPO_ROOT)
+    return tool.main(argv)
+
+
+def test_cli_dry_run_writes_nothing(tool, tmp_path, monkeypatch, capsys):
     """--dry-run prints the table and does not write."""
-    res = subprocess.run(
-        [sys.executable, str(SCRIPT_PATH), "--dry-run"],
-        capture_output=True, text=True, env={
-            **os.environ,
-            "PYTHONPATH": str(REPO_ROOT),
-            "REGIME_OUTLOOK_REPLAY_FAKE_FRAME": "1",
-        },
-        cwd=str(REPO_ROOT),
-    )
-    assert res.returncode == 0, res.stderr
+    rc = _run_cli(tool, monkeypatch, ["--dry-run"])
+    captured = capsys.readouterr()
+    assert rc == 0, captured.err
     out_path = tmp_path / "should_not_exist.json"
     assert not out_path.exists()
-    assert "T | R | M | L | B | D | C" in res.stdout
+    assert "T | R | M | L | B | D | C" in captured.out
 
 
-def test_cli_writes_file(tool, tmp_path):
+def test_cli_writes_file(tool, tmp_path, monkeypatch, capsys):
     """--out writes a parseable JSON file ending in a newline."""
     out_path = tmp_path / "out.json"
-    res = subprocess.run(
-        [sys.executable, str(SCRIPT_PATH), "--out", str(out_path)],
-        capture_output=True, text=True, env={
-            **os.environ,
-            "PYTHONPATH": str(REPO_ROOT),
-            "REGIME_OUTLOOK_REPLAY_FAKE_FRAME": "1",
-        },
-        cwd=str(REPO_ROOT),
-    )
-    assert res.returncode == 0, res.stderr
+    rc = _run_cli(tool, monkeypatch, ["--out", str(out_path)])
+    captured = capsys.readouterr()
+    assert rc == 0, captured.out + captured.err
     assert out_path.exists()
     raw = out_path.read_bytes()
     assert raw.endswith(b"\n")
@@ -490,38 +490,24 @@ def test_history_class_vocabulary(tool, mark, cls):
     assert cls in tool.HISTORY_LEGEND
 
 
-def test_cli_accepts_config_out(tool, tmp_path):
+def test_cli_accepts_config_out(tool, tmp_path, monkeypatch, capsys):
     """config/ is the contract's home for the output (E1r: beside the mapping);
     the CLI must not refuse it. Written under a tmp dir named config/."""
     out_dir = tmp_path / "config"
     out_dir.mkdir()
     out_path = out_dir / "regime_outlook_replay_v2_sh12.json"
-    res = subprocess.run(
-        [sys.executable, str(SCRIPT_PATH), "--out", str(out_path)],
-        capture_output=True, text=True, env={
-            **os.environ,
-            "PYTHONPATH": str(REPO_ROOT),
-            "REGIME_OUTLOOK_REPLAY_FAKE_FRAME": "1",
-        },
-        cwd=str(REPO_ROOT),
-    )
-    assert res.returncode == 0, res.stdout + res.stderr
+    rc = _run_cli(tool, monkeypatch, ["--out", str(out_path)])
+    captured = capsys.readouterr()
+    assert rc == 0, captured.out + captured.err
     assert out_path.exists()
 
 
-def test_cli_refuses_data_out(tool):
+def test_cli_refuses_data_out(tool, monkeypatch, capsys):
     """--out under data/ exits 2 with the forbidden-root message."""
-    res = subprocess.run(
-        [sys.executable, str(SCRIPT_PATH), "--out", "data/x.json"],
-        capture_output=True, text=True, env={
-            **os.environ,
-            "PYTHONPATH": str(REPO_ROOT),
-            "REGIME_OUTLOOK_REPLAY_FAKE_FRAME": "1",
-        },
-        cwd=str(REPO_ROOT),
-    )
-    assert res.returncode == 2
-    assert "regime-outlook-replay-out-forbidden" in res.stdout
+    rc = _run_cli(tool, monkeypatch, ["--out", "data/x.json"])
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "regime-outlook-replay-out-forbidden" in captured.out
 
 
 # ---------------------------------------------------------------------------
