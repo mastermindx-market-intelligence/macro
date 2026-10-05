@@ -1,0 +1,73 @@
+(
+    <div style={{ backgroundColor: 'var(--light-panel)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', height: 'fit-content', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased', width: '520px' }}>
+      <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '24px', paddingBlock: '24px', paddingInline: '28px', width: '100%' }}>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+            QUICK EXPLANATION
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '24px', lineHeight: '24px' }}>
+            ×
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--light-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '28px', fontWeight: 600, letterSpacing: '-0.03em', lineHeight: '36px' }}>
+            Market State Score
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '17px', lineHeight: '26px', maxWidth: '720px' }}>
+            A snapshot of how supportive conditions are for US stocks.
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '32px', width: '100%' }}>
+          <div style={{ backgroundColor: 'var(--light-panel2)', borderRadius: '14px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '20px', minWidth: '0px', padding: '20px' }}>
+            <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.08em', lineHeight: '24px' }}>
+                HOW TO READ IT
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '24px' }}>
+                Illustration only
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', display: 'flex', gap: '4px', width: '100%' }}>
+              <div style={{ borderRadius: '8px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '9px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--light-muted)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  Lower
+                </div>
+              </div>
+              <div style={{ backgroundColor: 'var(--light-panel)', borderRadius: '8px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '9px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--light-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  Mixed
+                </div>
+              </div>
+              <div style={{ borderRadius: '8px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '9px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--light-muted)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  Higher
+                </div>
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--light-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '22px', fontWeight: 600, letterSpacing: '-0.025em', lineHeight: '34px' }}>
+              Mixed signals. Look underneath.
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', maxWidth: '640px' }}>
+              Some inputs support the market. Others do not. The headline alone misses that tension.
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '24px', width: '100%' }}>
+            <div style={{ borderLeftColor: 'var(--light-warn)', borderLeftStyle: 'solid', borderLeftWidth: '3px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '16px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--light-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '24px' }}>
+                Not a prediction.
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>
+                A higher score does not guarantee gains. It describes the current backdrop.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--light-info)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '24px' }}>
+          Open full guide →
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--light-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+          Close to return to exactly where you were.
+        </div>
+      </div>
+    </div>
+  )

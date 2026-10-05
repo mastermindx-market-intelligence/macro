@@ -1,0 +1,63 @@
+{
+  "scope": "R4 local qualification only. Not full browser matrix, hosted CI, integrated release or production acceptance.",
+  "source_subject": "6c5dbe1f9b51f8ebb7ac3ef488f99b1ff57c4926",
+  "view_browser_subject": "a7b5827dad123a69f963fceec4dfad89d41dd891",
+  "view_and_test_blobs_unchanged_since_focused_browser": true,
+  "tests": {
+    "python": 67,
+    "node": 53,
+    "total": 120,
+    "python_cleanup_warnings": 6
+  },
+  "source_files": [
+    {
+      "path": "lib/market_guide.py",
+      "sha256": "f88c9628042e5a4d10076e0b01b43e4d160e7fca0ea52d8c6cc8eab9d7792cb3",
+      "git_blob": "d3a2783d6a884fcb64765e0d70473102f899e331"
+    },
+    {
+      "path": "research/reference_rethink_20260921/guide-client.js",
+      "sha256": "fbf4c1696f06b631f8938444a1b9d45aa97cca514fda216bb00ddfe1554fbce1",
+      "git_blob": "180d774d1224a712b3a9bf3dbc5c98c196dc19c3"
+    },
+    {
+      "path": "research/reference_rethink_20260921/guide-view.js",
+      "sha256": "4b242de4477ca25f619918b2827ab5cc00c2af21f9c125491d7a2e9bb9a904e3",
+      "git_blob": "406e006f479801ac5d72c1255457d60735226d78"
+    },
+    {
+      "path": "research/reference_rethink_20260921/guide-view.css",
+      "sha256": "c4084e49c202908dd2eb4db1dc5531213dffd0bc1da9efa4b7d491082f2f0f7c",
+      "git_blob": "b9c5068f48922cc22503c901900dfbb29ad0d413"
+    },
+    {
+      "path": "research/reference_rethink_20260921/render_shared_preview.py",
+      "sha256": "67b152c3f580b3e88748f277b11a2935290eb54145928f14c62bfd517b832d26",
+      "git_blob": "07e805dfa68a9a28e7c5c29c59826b1bccb764d9"
+    },
+    {
+      "path": "tests/test_market_guide.py",
+      "sha256": "4f5b93d883f6cdc7c1843102505064b6d3c623c2c71a8e45c1305e8b05d6ac82",
+      "git_blob": "22936179cc93821031186621893d735479cd96a0"
+    },
+    {
+      "path": "tests/test_market_guide_preview.py",
+      "sha256": "c7f703e8042336f836fe0ec50fb80bfa33ff669cecdbfd69c1349cd801f4fd68",
+      "git_blob": "2b2b13c077629783c6df36108320ca7ad1617620"
+    },
+    {
+      "path": "tests/test_market_guide_view.cjs",
+      "sha256": "aa7891d45ef1d176c5d40992634ad38ca095df17b1ba55e450e24ae77ef2963c",
+      "git_blob": "3d4dee6ffa276158832886de0263baafa082b562"
+    },
+    {
+      "path": "tests/test_market_guide_client.cjs",
+      "sha256": "87e6a2907efd8cbd39a351272ed0692a961a680c64d77960b9c70f14e1b321c4",
+      "git_blob": "8abac1cc27d10aa2a852bb348075150a4f26eebe"
+    }
+  ],
+  "refused_qualifier_edit_unchanged": true,
+  "macro_composition": "FAILED_NAV_COMPARISON; diagnosis refused; no PASS",
+  "full_matrix": "NOT_RUN; qualifier edit refused",
+  "ci": "Prior enrollment failure not repaired; no waiver"
+}
