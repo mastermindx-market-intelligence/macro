@@ -26,15 +26,23 @@ falsifier: >
 so_what: >
   Never "fix" the payload by hand-editing or truncating state on the VPS, by
   restarting units, or by bounding the served episodes list in the Terminal —
-  the backlog is one merge-precedence bug and self-heals through the normal
-  pack build once `merge_deltas` is terminal-wins: the overlay resolves the
-  stale candidates, `commit` opens inert C5-keyed re-arm blocks (`arm_allowed`
-  is consulted only on the C1/C2/C3 paths), `compact` archives the ~44.9k
-  terminal rows, and the served file shrinks to non-terminal + current/previous
-  session terminals per DEC:ENTRY-RADAR-EPISODES-ARE-ADDITIVE-IN-THE-LIVE-PAYLOAD.
-  Any future merge of an overlay with a replay must preserve terminal
-  precedence; `commit` already refuses to update a stored terminal record and
-  the merge must hold the same rule.
+  the backlog is a ledger defect and drains through the normal pack build.
+  Terminal-wins in merge_deltas is NECESSARY but NOT SUFFICIENT (corrected
+  2026-10-05 the same day, before merge): apply_run looks stored records up in
+  episodes.json only, so once compact() archives the resolved rows the next
+  full-history replay re-creates every one of them as a fresh CANDIDATE and the
+  ledger oscillates between ~1 MB and ~90 MB on alternate builds — see
+  DSC:ARCHIVED-EPISODES-ARE-UNKNOWN-TO-APPLY-RUN-SO-A-FULL-HISTORY-REPLAY-RESURRECTS-THEM
+  for the admission horizon that closes the loop. With both rules in place the
+  overlay resolves the stale candidates, `commit` opens inert C5-keyed re-arm
+  blocks (`arm_allowed` is consulted only on the C1/C2/C3 paths), `compact`
+  archives the ~44.9k terminal rows AND their transitions, the next replay
+  refuses them at the door, and the served file shrinks to non-terminal +
+  current/previous session terminals per
+  DEC:ENTRY-RADAR-EPISODES-ARE-ADDITIVE-IN-THE-LIVE-PAYLOAD. Any future merge
+  of an overlay with a replay must preserve terminal precedence; `commit`
+  already refuses to update a stored terminal record and the merge must hold
+  the same rule.
 kind: landmine
 verified_at: 2026-10-05
 verified_by: >

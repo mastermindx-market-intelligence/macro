@@ -114,6 +114,16 @@ RESOLVE_HORIZON_SESSIONS = 10
 #: archive existing instead of a prune.
 COMPACTION_SESSIONS = 40
 
+#: A replayed trace whose own ``market_session`` is more than this many sessions
+#: before ``as_of_session`` is HISTORICAL and refused at the door.  By the §10
+#: clocks it is already terminal (H = 10 / 15 sessions) and by compaction it
+#: would be archived at once, so admitting it only mints, resolves and archives
+#: the row — and because ``apply_run`` looks a trace up in ``episodes.json``
+#: alone, an ARCHIVED episode is unknown to it and a stateless full-history
+#: replay re-creates every one of them on the next pass.  Measured 2026-10-05:
+#: ~46.8k rows per pack from the C5 replay over 1965→today.
+HISTORICAL_TRACE_SESSIONS = COMPACTION_SESSIONS
+
 #: §13 VERBATIM, in the contract's own order.  ``tests`` pins this tuple against
 #: the amendment text, so a field cannot be quietly added to or dropped from the
 #: episode contract.
@@ -339,6 +349,9 @@ class PendingDelta:
     #: already terminal.  Reported, never silent — see
     #: :meth:`LiveEpisodeLedger.apply_run`.
     superseded: tuple[str, ...] = ()
+    #: Episode ids whose incoming trace was REFUSED as history — older than
+    #: :data:`HISTORICAL_TRACE_SESSIONS` before the pass.  Reported, never silent.
+    historical: tuple[dict[str, Any], ...] = ()
 
     @property
     def empty(self) -> bool:
@@ -350,7 +363,8 @@ class PendingDelta:
                 "events": [copy.deepcopy(e) for e in self.events],
                 "transitions": [copy.deepcopy(t) for t in self.transitions],
                 "episodes": [copy.deepcopy(e) for e in self.episodes],
-                "superseded": list(self.superseded)}
+                "superseded": list(self.superseded),
+                "historical": list(self.historical)}
 
 
 def _row_terminal(row: Mapping[str, Any]) -> bool:
@@ -386,6 +400,7 @@ def merge_deltas(deltas: Sequence[PendingDelta], *, as_of_session: str,
     transitions: dict[tuple[str, ...], dict[str, Any]] = {}
     episodes: dict[str, dict[str, Any]] = {}
     superseded: set[str] = set()
+    historical: dict[str, dict[str, Any]] = {}
     for delta in deltas:
         for event in delta.events:
             events.setdefault(str(event.get("event_id")), event)
@@ -398,12 +413,15 @@ def merge_deltas(deltas: Sequence[PendingDelta], *, as_of_session: str,
                 continue  # a terminal row never loses a merge to a replayed trace
             episodes[episode_id] = episode
         superseded |= set(delta.superseded)
+        for row in delta.historical:
+            historical.setdefault(str(row.get("episode_id")), row)
     return PendingDelta(
         ticker=ticker, as_of_session=as_of_session, pass_id=pass_id,
         events=tuple(events[k] for k in sorted(events)),
         transitions=tuple(transitions[k] for k in sorted(transitions)),
         episodes=tuple(episodes[k] for k in sorted(episodes)),
-        superseded=tuple(sorted(superseded)))
+        superseded=tuple(sorted(superseded)),
+        historical=tuple(historical[k] for k in sorted(historical)))
 
 
 # ---------------------------------------------------------------------------
@@ -508,6 +526,8 @@ class LiveEpisodeLedger:
         seen_addrs: set[tuple[str, ...]] = set()
         new_episodes: dict[str, dict[str, Any]] = {}
         superseded: list[str] = []
+        historical: dict[str, dict[str, Any]] = {}
+        cut = _SessionCut(as_of_session)
 
         for run in runs or ():
             events_by_id = {}
@@ -522,6 +542,14 @@ class LiveEpisodeLedger:
                     episode, ticker=ticker, as_of_session=as_of_session,
                     events_by_id=events_by_id, context=ctx,
                     run_session=getattr(run, "armed_session", None))
+                if cut.beyond(record.market_session, HISTORICAL_TRACE_SESSIONS):
+                    # History, not a live episode: refused with its transitions.
+                    historical.setdefault(record.episode_id, {
+                        "episode_id": record.episode_id, "ticker": record.ticker,
+                        "detector_id": record.detector_id,
+                        "variant": record.variant, "state": record.state,
+                        "market_session": record.market_session})
+                    continue
                 stored = self._episodes.get(record.episode_id)
                 if stored is not None and stored.terminal:
                     if stored.canonical != record.canonical:
@@ -543,7 +571,8 @@ class LiveEpisodeLedger:
             events=tuple(new_events[k] for k in sorted(new_events)),
             transitions=tuple(new_transitions),
             episodes=tuple(new_episodes[k] for k in sorted(new_episodes)),
-            superseded=tuple(sorted(set(superseded))))
+            superseded=tuple(sorted(set(superseded))),
+            historical=tuple(historical[k] for k in sorted(historical)))
 
     def _transition_row(self, transition: Any, *, variant: str | None,
                         pass_id: str) -> dict[str, Any]:
@@ -812,42 +841,68 @@ class LiveEpisodeLedger:
     # -- compaction (never deletion) ---------------------------------------
     def compact(self, *, as_of_session: str, max_sessions: int = COMPACTION_SESSIONS,
                 market: str = "US") -> dict[str, Any]:
-        """Move old TERMINAL episodes to a monthly archive.  Nothing is deleted.
+        """Move old TERMINAL episodes — and old transitions — to a monthly
+        archive.  Nothing is deleted.
 
         The cut is measured on the reference calendar from each episode's own
-        ``market_session``, so the retention is in SESSIONS (what the lifecycle is
-        counted in) rather than in days.
+        ``market_session`` (a transition's from the date of its ``at`` instant),
+        so the retention is in SESSIONS (what the lifecycle is counted in)
+        rather than in days.  Transitions are archived by the same window
+        because they are the bulk of the ledger file — measured 2026-10-05 at
+        58.9 MB of a 90 MB ``episodes.json`` — and an undated transition is kept.
         """
+        cut = _SessionCut(as_of_session, market=market)
         moved: dict[str, list[dict[str, Any]]] = {}
         for episode in self.episodes:
             if not episode.terminal:
                 continue
-            elapsed = sessions_elapsed(episode.market_session, as_of_session,
-                                       market=market)
-            if elapsed is None or elapsed <= int(max_sessions):
+            if not cut.beyond(episode.market_session, max_sessions):
                 continue
             month = str(episode.market_session)[:7].replace("-", "")
             moved.setdefault(month, []).append(episode.to_dict())
             self._episodes.pop(episode.episode_id, None)
 
+        moved_transitions: dict[str, list[dict[str, Any]]] = {}
+        kept: list[dict[str, Any]] = []
+        for row in self._transitions:
+            session = str(row.get("at") or "")[:10]
+            if not session or not cut.beyond(session, max_sessions):
+                kept.append(row)
+                continue
+            moved_transitions.setdefault(session[:7].replace("-", ""), []).append(row)
+        if moved_transitions:
+            self._transitions = kept
+            self._transition_addrs = {transition_address(r) for r in kept}
+
         written: dict[str, int] = {}
-        for month, rows in sorted(moved.items()):
-            written[month] = len(rows)
+        written_transitions: dict[str, int] = {}
+        for month in sorted(set(moved) | set(moved_transitions)):
+            rows = moved.get(month, [])
+            rows_t = moved_transitions.get(month, [])
+            if rows:
+                written[month] = len(rows)
+            if rows_t:
+                written_transitions[month] = len(rows_t)
             if self.state_dir is None:
                 continue
             path = self.state_dir / f"{_ARCHIVE_PREFIX}{month}.json"
-            existing: list[dict[str, Any]] = []
+            existing: dict[str, Any] = {}
             try:
-                existing = json.loads(path.read_text(encoding="utf-8")).get("episodes") or []
+                existing = json.loads(path.read_text(encoding="utf-8")) or {}
             except (OSError, ValueError):
-                existing = []
-            by_id = {str(r.get("episode_id")): r for r in existing}
+                existing = {}
+            by_id = {str(r.get("episode_id")): r for r in existing.get("episodes") or []}
             for row in rows:
                 by_id[str(row.get("episode_id"))] = row
+            by_addr = {transition_address(r): r for r in existing.get("transitions") or []}
+            for row in rows_t:
+                by_addr.setdefault(transition_address(row), row)
             _atomic_write_json(path, {"schema": SCHEMA_LIVE_LEDGER,
                                       "archive_month": month,
-                                      "episodes": [by_id[k] for k in sorted(by_id)]})
-        return {"archived": written, "remaining": len(self._episodes)}
+                                      "episodes": [by_id[k] for k in sorted(by_id)],
+                                      "transitions": [by_addr[k] for k in sorted(by_addr)]})
+        return {"archived": written, "archived_transitions": written_transitions,
+                "remaining": len(self._episodes)}
 
     def archived_episodes(self) -> tuple[dict[str, Any], ...]:
         """Every archived record on disk, newest month last.  Read-only."""
@@ -927,6 +982,34 @@ def _as_session(value: Any) -> date:
     if isinstance(value, date):
         return value
     return date.fromisoformat(str(value)[:10])
+
+
+class _SessionCut:
+    """``sessions_elapsed`` against ONE fixed ``later`` session, calendar fetched
+    once — ``apply_run`` and ``compact`` ask it ~10^5 times per pack."""
+
+    def __init__(self, later: Any, *, market: str = "US") -> None:
+        self._reference = session_anchor.reference_sessions(market)
+        try:
+            self._b = int(self._reference.searchsorted(
+                pd.Timestamp(_as_session(later)).normalize(), side="left"))
+        except (TypeError, ValueError):
+            self._b = len(self._reference)
+
+    def beyond(self, earlier: Any, max_sessions: int) -> bool:
+        """True when strictly MORE than ``max_sessions`` reference sessions lie
+        between ``earlier`` and the fixed session.  Off-calendar or undated ends
+        are never "beyond": the caller keeps what it cannot date."""
+        if self._b >= len(self._reference):
+            return False
+        try:
+            a = int(self._reference.searchsorted(
+                pd.Timestamp(_as_session(earlier)).normalize(), side="left"))
+        except (TypeError, ValueError):
+            return False
+        if a >= len(self._reference):
+            return False
+        return (self._b - a) > int(max_sessions)
 
 
 def sessions_elapsed(earlier: Any, later: Any, *, market: str = "US") -> int | None:
