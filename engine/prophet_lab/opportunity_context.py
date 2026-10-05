@@ -63,6 +63,25 @@ _UNQUALIFIED_FORECAST = {
     "reason": "NO_QUALIFIED_OLI_FORECAST",
 }
 
+_UNAVAILABLE_ENTRY = {
+    "owner_schema": B4_SCHEMA,
+    "state": "UNAVAILABLE_DATA",
+    "entry_open": None,
+    "reason": "B4_NOT_AVAILABLE",
+    "availability_id": None,
+    "evaluated_at": None,
+    "market_session": None,
+    "strategy": None,
+    "current_price": None,
+    "zone": None,
+    "invalidation": None,
+    "chase_state": None,
+    "owner_status": None,
+    "blockers": ["B4_NOT_AVAILABLE"],
+    "reasons": [],
+    "source_receipts": [],
+}
+
 
 class OpportunityContextContractError(ValueError):
     """Raised when owner identities/clocks cannot be joined without guessing."""
@@ -72,6 +91,17 @@ def _text(value: object, field: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise OpportunityContextContractError(f"{field} must be non-empty text")
     return value
+
+
+def _validate_no_authority(authority: object, owner: str) -> None:
+    # Python considers 0 == False. Contract flags require the literal boolean,
+    # not a numeric value that merely compares equal to the all-false template.
+    if (
+        not isinstance(authority, Mapping)
+        or set(authority) != set(ALL_FALSE_AUTHORITY)
+        or any(value is not False for value in authority.values())
+    ):
+        raise OpportunityContextContractError(f"{owner} authority must remain all false")
 
 
 def _candidate_row(
@@ -101,24 +131,7 @@ def _unavailable_entry(row: Mapping[str, object]) -> dict[str, object]:
         raise OpportunityContextContractError(
             "B3 unavailable-entry sentinel is not canonical"
         )
-    return {
-        "owner_schema": B4_SCHEMA,
-        "state": "UNAVAILABLE_DATA",
-        "entry_open": None,
-        "reason": "B4_NOT_AVAILABLE",
-        "availability_id": None,
-        "evaluated_at": None,
-        "market_session": None,
-        "strategy": None,
-        "current_price": None,
-        "zone": None,
-        "invalidation": None,
-        "chase_state": None,
-        "owner_status": None,
-        "blockers": ["B4_NOT_AVAILABLE"],
-        "reasons": [],
-        "source_receipts": [],
-    }
+    return deepcopy(_UNAVAILABLE_ENTRY)
 
 
 def _bound_entry(
@@ -325,8 +338,7 @@ def validate_opportunity_identity_binding(payload: Mapping[str, object]) -> None
                 f"opportunity identity {field} is not canonical"
             )
 
-    if payload.get("authority") != ALL_FALSE_AUTHORITY:
-        raise OpportunityContextContractError("opportunity identity authority must remain all false")
+    _validate_no_authority(payload.get("authority"), "opportunity identity")
 
 def project_terminal_portfolio_relation(
     identity_binding: Mapping[str, object],
@@ -458,8 +470,7 @@ def validate_terminal_portfolio_relation(payload: Mapping[str, object]) -> None:
         "candidate_generation_id", "candidate_state_projection_id",
     ):
         _text(payload.get(field), f"portfolio relation {field}")
-    if payload.get("authority") != ALL_FALSE_AUTHORITY:
-        raise OpportunityContextContractError("portfolio relation authority must remain all false")
+    _validate_no_authority(payload.get("authority"), "portfolio relation")
 
     state = payload.get("state")
     refs = payload.get("position_refs")
@@ -483,7 +494,7 @@ def validate_terminal_portfolio_relation(payload: Mapping[str, object]) -> None:
         if type(count) is not int or count < 1 or count != len(refs) or reason is not None:
             raise OpportunityContextContractError("open portfolio relation is incoherent")
     elif state == "NO_OPEN_POSITION":
-        if count != 0 or refs or reason is not None:
+        if type(count) is not int or count != 0 or refs or reason is not None:
             raise OpportunityContextContractError("empty portfolio relation is incoherent")
     elif state in {"AUTHENTICATION_REQUIRED", "UNAVAILABLE_DATA"}:
         if count is not None or refs or not isinstance(reason, str) or not reason:
@@ -846,8 +857,7 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
         raise OpportunityContextContractError("opportunity context fields are not closed")
     if payload.get("schema") != SCHEMA:
         raise OpportunityContextContractError("opportunity context schema mismatch")
-    if payload.get("authority") != ALL_FALSE_AUTHORITY:
-        raise OpportunityContextContractError("Prophet Lab authority must remain all false")
+    _validate_no_authority(payload.get("authority"), "Prophet Lab")
 
     identity = payload.get("identity")
     if not isinstance(identity, Mapping) or set(identity) != {
@@ -882,12 +892,12 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
         raise OpportunityContextContractError("fresh_entry block is not closed")
     if entry.get("owner_schema") != B4_SCHEMA:
         raise OpportunityContextContractError("fresh_entry owner schema mismatch")
-    if entry.get("state") == "UNAVAILABLE_DATA" and entry.get("availability_id") is None:
-        if entry.get("entry_open") is not None or entry.get("reason") != "B4_NOT_AVAILABLE":
+    if entry.get("availability_id") is None:
+        if entry != _UNAVAILABLE_ENTRY:
             raise OpportunityContextContractError(
                 "missing B4 must remain unknown rather than a false verdict"
             )
-    elif entry.get("entry_open") not in (True, False):
+    elif type(entry.get("entry_open")) is not bool:
         raise OpportunityContextContractError("owner-issued B4 entry_open must be boolean")
 
     user_state = payload.get("user_state")
@@ -930,7 +940,14 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
         )
     else:
         raise OpportunityContextContractError("cross-domain evidence state is incoherent")
-    if payload.get("forecast") != _UNQUALIFIED_FORECAST:
+    forecast = payload.get("forecast")
+    if (
+        not isinstance(forecast, Mapping)
+        or set(forecast) != set(_UNQUALIFIED_FORECAST)
+        or forecast.get("qualified") is not False
+        or forecast.get("heads") is not None
+        or forecast.get("reason") != _UNQUALIFIED_FORECAST["reason"]
+    ):
         raise OpportunityContextContractError("unqualified forecast must remain null")
 
 

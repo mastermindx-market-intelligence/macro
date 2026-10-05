@@ -870,3 +870,80 @@ def test_terminal_portfolio_direct_open_match_still_proves_positive_with_other_r
     )
     assert relation["state"] == "OPEN_POSITION"
     assert relation["position_refs"] == [{"position_id": "p-aapl"}]
+
+
+@pytest.mark.parametrize("bad_value", [0, 0.0])
+@pytest.mark.parametrize("surface", ["context", "identity", "portfolio"])
+def test_authority_flags_require_literal_false_on_every_surface(surface, bad_value):
+    if surface == "context":
+        original = compose_opportunity_context(projection(), episode_id=eid())
+        validator = validate_opportunity_context
+    elif surface == "identity":
+        original = _identity_binding()
+        validator = validate_opportunity_identity_binding
+    else:
+        original = project_terminal_portfolio_relation(
+            _identity_binding(), http_status=200, payload={"positions": []},
+        )
+        validator = validate_terminal_portfolio_relation
+    validator(original)
+    for key in ALL_FALSE_AUTHORITY:
+        bad = deepcopy(original)
+        bad["authority"][key] = bad_value
+        with pytest.raises(OpportunityContextContractError, match="authority"):
+            validator(bad)
+
+
+@pytest.mark.parametrize("bad_value", [0, 1, 0.0, 1.0])
+def test_owner_entry_permission_rejects_numeric_boolean_equivalents(bad_value):
+    p = projection()
+    out = compose_opportunity_context(p, episode_id=eid(), entry_availability=availability(p))
+    out["fresh_entry"]["entry_open"] = bad_value
+    with pytest.raises(OpportunityContextContractError, match="entry_open must be boolean"):
+        validate_opportunity_context(out)
+
+
+@pytest.mark.parametrize("bad_value", [0, 0.0])
+def test_unqualified_forecast_requires_literal_false(bad_value):
+    out = compose_opportunity_context(projection(), episode_id=eid())
+    out["forecast"]["qualified"] = bad_value
+    with pytest.raises(OpportunityContextContractError, match="unqualified forecast"):
+        validate_opportunity_context(out)
+
+
+@pytest.mark.parametrize("bad_value", [False, 0.0])
+def test_empty_position_count_requires_an_actual_integer(bad_value):
+    relation = project_terminal_portfolio_relation(
+        _identity_binding(), http_status=200, payload={"positions": []},
+    )
+    relation["open_position_count"] = bad_value
+    with pytest.raises(OpportunityContextContractError, match="empty portfolio relation"):
+        validate_terminal_portfolio_relation(relation)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("evaluated_at", "2026-09-18T19:30:00Z"),
+    ("market_session", "2026-09-18"),
+    ("strategy", {"strategy_id": "invented"}),
+    ("current_price", {"value": 42.7}),
+    ("zone", {"lower": 42, "upper": 43}),
+    ("invalidation", {"price": 40}),
+    ("chase_state", "NOT_EXTENDED"),
+    ("owner_status", "AVAILABLE"),
+    ("blockers", []),
+    ("reasons", ["invented"]),
+    ("source_receipts", [{"source": "invented"}]),
+])
+def test_missing_b4_cannot_carry_invented_owner_fields(field, value):
+    out = compose_opportunity_context(projection(), episode_id=eid())
+    out["fresh_entry"][field] = value
+    with pytest.raises(OpportunityContextContractError, match="missing B4"):
+        validate_opportunity_context(out)
+
+
+def test_missing_b4_cannot_masquerade_as_an_owner_issued_state():
+    out = compose_opportunity_context(projection(), episode_id=eid())
+    out["fresh_entry"]["state"] = "ENTRY_CLOSED"
+    out["fresh_entry"]["entry_open"] = False
+    with pytest.raises(OpportunityContextContractError, match="missing B4"):
+        validate_opportunity_context(out)
