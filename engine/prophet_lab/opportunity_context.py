@@ -614,10 +614,15 @@ def project_opportunity_evidence_summary(
             "compilation_state": evidence_vector.get("compilation_state"),
             "dominant_degradation": evidence_vector.get("dominant_degradation"),
         },
-        "support": {
+        "owner_evidence": {
             "observed_slots": _slots_for("observed"),
             "inferred_slots": _slots_for("inferred"),
             "market_reflection": deepcopy(projection.get("market_reflection")),
+        },
+        "support": {
+            "state": "UNAVAILABLE",
+            "facts": None,
+            "reason": "DIRECTIONAL_SUPPORT_NOT_ADMITTED",
         },
         "contradiction": {
             "failed_owner_gates": failed,
@@ -646,8 +651,8 @@ def validate_opportunity_evidence_summary(
     if not isinstance(payload, Mapping):
         raise OpportunityContextContractError("opportunity evidence summary must be an object")
     expected = {
-        "status", "source", "support", "contradiction", "unresolved",
-        "next_observable", "reason",
+        "status", "source", "owner_evidence", "support", "contradiction",
+        "unresolved", "next_observable", "reason",
     }
     if set(payload) != expected or payload.get("status") != "JOINED" or payload.get("reason") is not None:
         raise OpportunityContextContractError("joined opportunity evidence summary is incoherent")
@@ -685,15 +690,28 @@ def validate_opportunity_evidence_summary(
     _text(source.get("compilation_state"), "opportunity evidence compilation_state")
     _text(source.get("dominant_degradation"), "opportunity evidence dominant_degradation")
 
-    support = payload.get("support")
-    if not isinstance(support, Mapping) or set(support) != {
+    owner_evidence = payload.get("owner_evidence")
+    if not isinstance(owner_evidence, Mapping) or set(owner_evidence) != {
         "observed_slots", "inferred_slots", "market_reflection",
     }:
-        raise OpportunityContextContractError("opportunity evidence support block is not closed")
-    if not isinstance(support.get("observed_slots"), list) or not isinstance(support.get("inferred_slots"), list):
-        raise OpportunityContextContractError("opportunity evidence support slot lists are unavailable")
-    if not isinstance(support.get("market_reflection"), Mapping):
+        raise OpportunityContextContractError("opportunity evidence owner-evidence block is not closed")
+    if (
+        not isinstance(owner_evidence.get("observed_slots"), list)
+        or not isinstance(owner_evidence.get("inferred_slots"), list)
+    ):
+        raise OpportunityContextContractError("opportunity evidence owner slot lists are unavailable")
+    if not isinstance(owner_evidence.get("market_reflection"), Mapping):
         raise OpportunityContextContractError("opportunity evidence market reflection is unavailable")
+
+    support = payload.get("support")
+    if not isinstance(support, Mapping) or support != {
+        "state": "UNAVAILABLE",
+        "facts": None,
+        "reason": "DIRECTIONAL_SUPPORT_NOT_ADMITTED",
+    }:
+        raise OpportunityContextContractError(
+            "directional support must remain unavailable until an owner admits it"
+        )
 
     contradiction = payload.get("contradiction")
     if not isinstance(contradiction, Mapping) or set(contradiction) != {"failed_owner_gates"}:

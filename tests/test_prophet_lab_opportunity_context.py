@@ -690,10 +690,16 @@ def test_oev_summary_projects_owner_evidence_without_touching_b4():
     assert summary["source"]["content_sha256"] == vector["content_sha256"]
     assert summary["source"]["security_id"] == "SEC:US-XNAS-AAPL"
     assert summary["source"]["market_session"] == "2026-09-18"
-    assert [slot["construct"] for slot in summary["support"]["observed_slots"]] == [
+    assert [slot["construct"] for slot in summary["owner_evidence"]["observed_slots"]] == [
         "turnover_liquidity"
     ]
-    assert summary["support"]["inferred_slots"] == []
+    assert summary["owner_evidence"]["inferred_slots"] == []
+    assert isinstance(summary["owner_evidence"]["market_reflection"], dict)
+    assert summary["support"] == {
+        "state": "UNAVAILABLE",
+        "facts": None,
+        "reason": "DIRECTIONAL_SUPPORT_NOT_ADMITTED",
+    }
     assert summary["contradiction"]["failed_owner_gates"] == [{
         "gate": "risk_ceiling",
         "owner": "engine.risk_owner",
@@ -784,3 +790,43 @@ def test_context_validator_rejects_evidence_identity_laundering():
         match="source security does not match",
     ):
         validate_opportunity_context(bad)
+
+
+def test_oev_observed_slot_cannot_be_laundered_into_directional_support():
+    out = compose_opportunity_context(
+        projection(),
+        episode_id=eid(),
+        opportunity_evidence=_opportunity_evidence_vector(),
+    )
+    summary = out["evidence_summary"]
+    assert summary["owner_evidence"]["observed_slots"][0]["construct"] == "turnover_liquidity"
+    assert summary["support"]["facts"] is None
+
+    bad = deepcopy(out)
+    bad["evidence_summary"]["support"] = {
+        "state": "AVAILABLE",
+        "facts": deepcopy(summary["owner_evidence"]["observed_slots"]),
+        "reason": None,
+    }
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="directional support must remain unavailable",
+    ):
+        validate_opportunity_context(bad)
+
+
+def test_oev_owner_evidence_market_reflection_stays_neutral_and_failed_gate_stays_adverse():
+    out = compose_opportunity_context(
+        projection(),
+        episode_id=eid(),
+        opportunity_evidence=_opportunity_evidence_vector(),
+    )
+    summary = out["evidence_summary"]
+    assert isinstance(summary["owner_evidence"]["market_reflection"], dict)
+    assert summary["support"]["state"] == "UNAVAILABLE"
+    assert summary["contradiction"]["failed_owner_gates"] == [{
+        "gate": "risk_ceiling",
+        "owner": "engine.risk_owner",
+        "state": "failed",
+        "reason": "risk too high",
+    }]
