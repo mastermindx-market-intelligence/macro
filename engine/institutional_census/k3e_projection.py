@@ -12,9 +12,15 @@ and purpose-specific source-use evidence are supplied by their existing owners.
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Any
-
 from engine.institutional_census.catalog import PublishedCatalogGeneration
+from lib.institutional_13f_adapter import (
+    GENERATION_NOT_KNOWABLE_AT_CUTOFF,
+    SOURCE_RECEIPT_MISMATCH,
+    PilotRefusal,
+    cross_check_raw_receipt,
+    resolve_generation,
+    select_effective_filing,
+)
 
 
 SCHEMA = "institutional_13f.k3e_reported_holding_context.v1"
@@ -79,80 +85,116 @@ def _generation_projection(generation: PublishedCatalogGeneration) -> dict:
     }
 
 
-def _select_filing(generation: PublishedCatalogGeneration, accession: str):
-    rows = [row for row in generation.filings if row.get("accession") == accession]
-    return rows[0] if len(rows) == 1 else None
-
-
-def _select_holding(
-    generation: PublishedCatalogGeneration,
+def project_reported_holding(
+    store: object,
     *,
-    accession: str,
-    infotable_sk: int,
-):
+    filer_cik: object,
+    report_period: object,
+    accession: object,
+    infotable_sk: object,
+    decision_cutoff: object,
+    generation_id: str | None = None,
+) -> dict:
+    """Read and project one owner-verified immutable holding row.
+
+    The caller supplies an owner store and selection key, never a preconstructed
+    PublishedCatalogGeneration. Generation integrity, cutoff visibility, filing
+    lineage and raw-source receipt binding remain owned by the existing
+    institutional 13F read adapter.
+    """
+    out = _base()
+
+    if isinstance(store, PublishedCatalogGeneration) or not callable(
+        getattr(store, "get_bytes_strict_bounded", None)
+    ):
+        out["state"] = "REFUSED"
+        out["refusals"] = ["OWNER_STORE_REQUIRED"]
+        return out
+
+    if not isinstance(filer_cik, str) or not filer_cik.strip():
+        out["state"] = "REFUSED"
+        out["refusals"] = ["INVALID_FILER_KEY"]
+        return out
+    if not isinstance(report_period, str) or not report_period.strip():
+        out["state"] = "REFUSED"
+        out["refusals"] = ["INVALID_REPORT_PERIOD"]
+        return out
+    if not isinstance(accession, str) or not accession.strip():
+        out["state"] = "REFUSED"
+        out["refusals"] = ["INVALID_HOLDING_KEY"]
+        return out
+    if isinstance(infotable_sk, bool) or not isinstance(infotable_sk, int) or infotable_sk < 0:
+        out["state"] = "REFUSED"
+        out["refusals"] = ["INVALID_HOLDING_KEY"]
+        return out
+
+    cutoff = _clock(decision_cutoff)
+    if cutoff is None:
+        out["state"] = "REFUSED"
+        out["refusals"] = ["INVALID_DECISION_CUTOFF"]
+        return out
+
+    try:
+        generation = resolve_generation(
+            store,
+            report_period=report_period,
+            cutoff=cutoff,
+            generation_id=generation_id,
+        )
+    except PilotRefusal as refusal:
+        if refusal.reason == GENERATION_NOT_KNOWABLE_AT_CUTOFF:
+            out["refusals"].append("GENERATION_NOT_AVAILABLE_AT_CUTOFF")
+            return out
+        out["state"] = "REFUSED"
+        out["refusals"].append(str(refusal.reason).upper())
+        return out
+
+    out["generation"] = _generation_projection(generation)
+
+    try:
+        filing = select_effective_filing(
+            generation,
+            filer_cik=filer_cik,
+            report_period=report_period,
+            cutoff=cutoff,
+        )
+    except PilotRefusal as refusal:
+        out["state"] = "REFUSED"
+        out["refusals"].append(str(refusal.reason).upper())
+        return out
+
+    if str(filing.get("accession") or "") != accession:
+        out["refusals"].append("FILING_ACCESSION_NOT_EFFECTIVE_AT_CUTOFF")
+        return out
+
     rows = [
         row
         for row in generation.holdings
         if row.get("accession") == accession
         and row.get("infotable_sk") == infotable_sk
     ]
-    return rows[0] if len(rows) == 1 else None
+    if len(rows) != 1:
+        if not rows:
+            out["refusals"].append("HOLDING_ROW_NOT_FOUND")
+        else:
+            out["state"] = "REFUSED"
+            out["refusals"].append("HOLDING_ROW_AMBIGUOUS")
+        return out
+    holding = rows[0]
 
-
-def project_reported_holding(
-    generation: object,
-    *,
-    accession: object,
-    infotable_sk: object,
-    decision_cutoff: object,
-) -> dict:
-    """Project one exact immutable holding row without inferring positioning."""
-    out = _base()
-    if not isinstance(generation, PublishedCatalogGeneration):
+    try:
+        raw_receipt, _raw_bytes = cross_check_raw_receipt(
+            store,
+            filer_cik=filer_cik,
+            filing_row=filing,
+        )
+    except PilotRefusal as refusal:
         out["state"] = "REFUSED"
-        out["refusals"] = ["OWNER_GENERATION_REQUIRED"]
-        return out
-
-    out["generation"] = _generation_projection(generation)
-
-    if not isinstance(accession, str) or not accession.strip():
-        out["state"] = "REFUSED"
-        out["refusals"].append("INVALID_HOLDING_KEY")
-        return out
-    if isinstance(infotable_sk, bool) or not isinstance(infotable_sk, int) or infotable_sk < 0:
-        out["state"] = "REFUSED"
-        out["refusals"].append("INVALID_HOLDING_KEY")
-        return out
-
-    cutoff = _clock(decision_cutoff)
-    published = _clock(generation.manifest.clocks.published_at)
-    if cutoff is None:
-        out["state"] = "REFUSED"
-        out["refusals"].append("INVALID_DECISION_CUTOFF")
-        return out
-    if published is None:
-        out["state"] = "REFUSED"
-        out["refusals"].append("OWNER_PUBLICATION_CLOCK_INVALID")
-        return out
-    if published > cutoff:
-        out["refusals"].append("GENERATION_NOT_AVAILABLE_AT_CUTOFF")
-        return out
-
-    holding = _select_holding(
-        generation,
-        accession=accession,
-        infotable_sk=infotable_sk,
-    )
-    if holding is None:
-        out["refusals"].append("HOLDING_ROW_NOT_FOUND")
-        return out
-
-    filing = _select_filing(generation, accession)
-    if filing is None:
-        # The owner normally prevents this, but keep this projection fail-closed
-        # if a foreign object bypassed that invariant.
-        out["state"] = "REFUSED"
-        out["refusals"].append("FILING_PROVENANCE_UNAVAILABLE")
+        out["refusals"].append(
+            "SOURCE_RECEIPT_MISMATCH"
+            if refusal.reason == SOURCE_RECEIPT_MISMATCH
+            else str(refusal.reason).upper()
+        )
         return out
 
     quantity_value = holding.get("ssh_prn_amt")
@@ -163,8 +205,6 @@ def project_reported_holding(
         limitations.append("QUANTITY_VALUE_UNAVAILABLE")
     if quantity_type is None:
         limitations.append("QUANTITY_TYPE_UNQUALIFIED")
-    # Source tokens remain source tokens.  K3E does not coerce an unknown share /
-    # principal type into a comparable numeric quantity.
     if quantity_value is not None and quantity_type is not None:
         limitations.append("NORMALIZED_QUANTITY_NOT_ADMITTED")
 
@@ -182,8 +222,8 @@ def project_reported_holding(
         "amends_accession": filing.get("amends_accession"),
         "lineage_state": filing.get("lineage_state"),
         "confidential_omitted": filing.get("confidential_omitted"),
-        "source_receipt_id": filing.get("source_receipt_id"),
-        "raw_sha256": filing.get("raw_sha256"),
+        "source_receipt_id": raw_receipt.receipt_id,
+        "raw_sha256": raw_receipt.raw_object.sha256,
         "first_seen_at": filing.get("first_seen_at"),
         "retained_at": filing.get("retained_at"),
         "parser_version": filing.get("parser_version"),
