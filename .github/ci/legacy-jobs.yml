@@ -12142,6 +12142,9 @@ jobs:
       - "tests/fixtures/fms/**"
       - "tests/fixtures/dod_budget/**"
       - "data/government_revenue/fms_staged_objects/**"
+      # FMS publisher convergence imports the served projection itself; exclusive
+      # closure must rerun defense-rail-laws whenever that published source moves.
+      - "site/government-revenue-data/fms-cases.json"
       - "app/**"
       - "collectors/**"
       - "lib/**"
