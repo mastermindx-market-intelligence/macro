@@ -1,5 +1,7 @@
 # TOI recommissioning source packet — 2026-10-03
 
+**October 5 steering and verified native integration:** [first-vertical build assessment and plan](TOI_FIRST_VERTICAL_STEERING_2026-10-05.md) consumes the newer S16, W2-basis and 22-slot rulings. [Seventeen native accounting checks and three mutation tests](native_accounting/README.md) passed using only temporary synthetic ledgers. #8428 is now the actual consumer source carrier, not only an inert proposal; its visual evidence is still owed. No W3 admission or production acceptance is inferred.
+
 **October 4 source preservation:** all [22 original UTF-8 donor files](donor_evidence/INTAKE_README.md) are now present, including the exact configuration/hypothesis tables and four source audits. The PDF alone remains in the supplied ZIP. [Publication validation](DONOR_TEXT_SOURCE_PUBLICATION_2026-10-04.json) distinguishes byte integrity from scientific admission.
 
 **October 3 continuation:** the [complete additional Markdown masterplan](donor_evidence/TOI_Recovery_Masterplan_2026-10-03.md) is now preserved byte-for-byte; [publication receipt](DONOR_FULL_PAPER_PUBLICATION.json). The [existing-consumer empty-source repair proposal](consumer_qualification/README.md) has discriminating synthetic proof and 32 source-only tests passing, with one real-artifact check explicitly untested. It is a proposal, not an applied source patch or deployment.

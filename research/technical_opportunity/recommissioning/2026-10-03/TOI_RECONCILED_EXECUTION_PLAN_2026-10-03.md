@@ -1,5 +1,7 @@
 # TOI reconciled execution plan — October 3, 2026
 
+> October 5 steering update: [first-vertical build assessment and execution direction](TOI_FIRST_VERTICAL_STEERING_2026-10-05.md) incorporates the later source rulings and tested native accounting contract. Historical unresolved-S16/inert-patch descriptions below are superseded only by the exact newer planning ruling and #8428 source adoption; W3 and production remain held.
+
 > October 4 publication scope: [all 22 original UTF-8 donor files](donor_evidence/INTAKE_README.md) are preserved, including the complete Markdown paper, exact CSV proposals and source audits. This is 21 of 22 original manifest content entries plus the manifest; the PDF alone is omitted. [Exact text-source receipt](DONOR_TEXT_SOURCE_PUBLICATION_2026-10-04.json). Seven/eight-file descriptions below are historical intake scopes. The [consumer failure-path proposal](consumer_qualification/README.md) remains tested in isolation, not applied or deployed. No W1/W2/W3 gate is opened.
 
 **Program:** `WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE`, parent `market-timing-intelligence`.
