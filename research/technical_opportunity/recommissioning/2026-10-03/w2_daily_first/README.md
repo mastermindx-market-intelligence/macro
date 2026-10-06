@@ -11,3 +11,8 @@ Start with [the source/clock ruling](W2_DAILY_FIRST_SOURCE_RULING_2026-10-06.md)
 - [exact source/admission snapshot](SOURCE_AND_ADMISSION_SNAPSHOT.json)
 
 The first 22-slot candidate no longer waits on 4H. Broad Daily/Weekly/4H W2 remains held. The proposed population is PIT S&P1500 from 2021-07-06 with missingness retained; historical source knowledge is capped at RETROSPECTIVE unless stronger receipts exist. No outcome or data admission is conferred.
+
+## Live price/date coverage return
+
+The October 6 live R2 coverage return reads only parquet date indexes against the literal PIT membership denominator. Corrected availability is 1,957,003 / 1,990,911 cells (98.2969%). This is not an admission rate: 84.83% of missing cells are before first R2 price under floor-seeded SP400/SP600 membership intervals, exposing identity/membership-start uncertainty rather than proving random price loss. Two keys remain source/identity unresolved. No outcome was read.
+
