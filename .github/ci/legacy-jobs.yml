@@ -4970,6 +4970,9 @@ jobs:
       # EXP1 deterministic expectation query and hermetic consumer tests.
       - "scripts/query_k3e_expectation_surface.py"
       - "tests/test_k3e_expectation_surface.py"
+      # E1 K3E provider-family + semantic-seam qualification suites (strict-xfail GAP-E-*).
+      - "tests/test_k3e_provider_family_qualification.py"
+      - "tests/test_k3e_semantic_seam_qualification.py"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
       - "contracts/theme_graph/probation_relation_event.v2.schema.json"
@@ -5021,6 +5024,9 @@ jobs:
         run: |
           python scripts/query_k3e_expectation_surface.py --help
           python -m pytest --noconftest tests/test_k3e_expectation_surface.py -q
+
+      - name: "E1 K3E provider-family + semantic-seam qualification (strict xfail gaps)"
+        run: python -m pytest --noconftest tests/test_k3e_provider_family_qualification.py tests/test_k3e_semantic_seam_qualification.py -q
 
   neural-web-core:
     if: ${{ false }}
