@@ -166,6 +166,26 @@ def test_xasset_copy_does_not_promote_contemporaneous_beta_to_causality():
     assert "legacy TP10 curve heuristic" in brain_source
     assert "matched-maturity expectations-only" in brain_source
 
+    conditions_source = (root / "engine" / "conditions.py").read_text(encoding="utf-8")
+    assert "legacy TP10 curve heuristic" in conditions_source
+    assert "not a recession signal" not in conditions_source
+
+    bonds_source = (root / "engine" / "bonds.py").read_text(encoding="utf-8")
+    assert "Legacy TP10 curve heuristic is below zero" in bonds_source
+    assert "Term-premium-adjusted curve inverted" not in bonds_source
+
+    playbook_source = (root / "engine" / "playbook.py").read_text(encoding="utf-8")
+    assert "legacy TP10 curve heuristic" in playbook_source
+    assert "term-premium-adjusted curve" not in playbook_source
+
+    pit_source = (root / "scripts" / "calibrate_spvector_pit.py").read_text(encoding="utf-8")
+    assert 'f_pit["curve_tp_adj"] = f_pit["spread_2s10s"] + f_pit["term_premium_10y"]' in pit_source
+    assert 'f_pit["term_premium_10y"].fillna(0)' not in pit_source
+
+    calibration_source = (root / "scripts" / "calibrate_rate_inflation.py").read_text(encoding="utf-8")
+    assert "Legacy TP10 curve heuristic" in calibration_source
+    assert "TP-adjusted curve inversion" not in calibration_source
+
 
 def test_xasset_snapshot_real_or_skip():
     """Real-data smoke: the transmission map must produce signed betas with sane fields."""
@@ -184,7 +204,7 @@ def test_xasset_snapshot_real_or_skip():
         assert a["verdict"] in ("tailwind", "headwind", "neutral")
         assert -1.0 <= (a["corr"] or 0) <= 1.0
         assert a["beta_disp"]
-    # the S&P↔HY-OAS relationship should be measured negative (credit canary)
+    # the contemporaneous S&P↔HY-OAS association should be measured negative
     spx = next((a for a in snap["assets"] if a["key"] == "spx"), None)
     if spx and spx["corr"] is not None:
         assert spx["corr"] < 0, f"S&P↔HY-OAS corr should be negative, got {spx['corr']}"
