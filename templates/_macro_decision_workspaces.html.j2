@@ -55,7 +55,7 @@
             {% set funding = view.get('funding_evidence') if view.get('funding_evidence') is mapping else {} %}
             {% set basis = funding.get('direct_usd_cross_currency_basis') %}
             {% set bps = basis.get('value_bps') if basis is mapping else none %}
-            {% set basis_valid = basis is mapping and bps is number and bps is not sameas true and bps is not sameas false and -1.7976931348623157e308 <= bps <= 1.7976931348623157e308 and basis.get('source') is string and basis.get('source')|trim and basis.get('asof') is string and basis.get('asof')|trim %}
+            {% set basis_valid = basis is mapping and basis.get('date_status') == 'known' and bps is number and bps is not sameas true and bps is not sameas false and -1.7976931348623157e308 <= bps <= 1.7976931348623157e308 and basis.get('source') is string and basis.get('source')|trim and basis.get('asof') is string and basis.get('asof')|trim %}
             <h4 class="compass-title">{{ t('Funding evidence', '融资证据') }}</h4>
             {% if basis_valid %}
               <p>{{ t('Direct USD funding basis', '直接美元融资基差') }}: {{ '%.2f'|format(bps) }} bp · {{ basis.source }} · {{ basis.asof }}</p>

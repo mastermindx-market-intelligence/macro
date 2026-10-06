@@ -1339,6 +1339,7 @@ def _direct_usd_xccy_basis(fx_lobe: dict, today: str) -> Any:
             "value_bps": bps,
             "asof": asof,
             "source": source,
+            "date_status": "known",
         }
     return None
 

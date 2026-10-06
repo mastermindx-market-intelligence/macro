@@ -1311,6 +1311,7 @@ def test_r25_direct_usd_basis_requires_typed_structured_receipt():
         "value_bps": -12.5,
         "asof": "2026-10-02",
         "source": "typed-fixture",
+        "date_status": "known",
     }
     assert not any(g["key"] == "direct_usd_cross_currency_basis" for g in out["data_gaps"])
 
@@ -1409,7 +1410,7 @@ def test_r25_basis_preserves_valid_finite_zero_and_source_date(path, bps, asof):
         _r25_snapshot(), world, _r25_regime_data(), [], "2026-10-02"
     )["forex"]
     assert out["status"] == "ready"
-    assert out["funding_evidence"]["direct_usd_cross_currency_basis"] == receipt
+    assert out["funding_evidence"]["direct_usd_cross_currency_basis"] == {**receipt, "date_status": "known"}
     assert not any(g["key"] == "direct_usd_cross_currency_basis" for g in out["data_gaps"])
     assert out["probability_policy"] == "withheld" and out["display_only"] is True
     assert out["claim_scope"] == "projection_only"
@@ -1432,7 +1433,7 @@ def test_r25_basis_invalid_preferred_receipt_does_not_mask_valid_fallback(invali
         _r25_snapshot(), world, _r25_regime_data(), [], "2026-10-02"
     )["forex"]
     assert out["status"] == "ready"
-    assert out["funding_evidence"]["direct_usd_cross_currency_basis"] == valid
+    assert out["funding_evidence"]["direct_usd_cross_currency_basis"] == {**valid, "date_status": "known"}
 
 
 @pytest.mark.parametrize("today", ("not-a-date", "2026-02-30", None))
@@ -1709,12 +1710,53 @@ def test_r26_missing_basis_is_not_replaced_by_calm_proxy(r26_render):
     assert 'not a substitute' in fragment
 
 
+def _r26_payload_with_builder_basis(value_bps, *, asof='2026-10-01', source='R26_BUILDER_BASIS'):
+    from scripts.build_macro_context import _build_decision_workspaces
+
+    world = _r25_world_state()
+    world['fx_dollar']['direct_usd_cross_currency_basis'] = {
+        'value_bps': value_bps, 'asof': asof, 'source': source}
+    return _build_decision_workspaces(
+        _r25_snapshot(), world, _r25_regime_data(), [], '2026-10-02')
+
+
 def test_r26_explicit_zero_basis_keeps_its_source_and_unit(r26_render):
-    payload = _r26_payload()
-    payload['forex']['funding_evidence']['direct_usd_cross_currency_basis'] = {
-        'value_bps': 0, 'asof': '2026-10-01', 'source': 'ZERO_BASIS_SOURCE'}
+    payload = _r26_payload_with_builder_basis(0, source='ZERO_BASIS_SOURCE')
+    basis = payload['forex']['funding_evidence']['direct_usd_cross_currency_basis']
+    assert basis['date_status'] == 'known'
     fragment, _ = r26_render(payload)
     assert '0.00 bp' in fragment and 'ZERO_BASIS_SOURCE' in fragment
+
+
+def test_r26_normal_builder_admitted_basis_renders_with_known_date_status(r26_render):
+    payload = _r26_payload_with_builder_basis(-12.5, source='NORMAL_BASIS_SOURCE')
+    basis = payload['forex']['funding_evidence']['direct_usd_cross_currency_basis']
+    assert basis == {
+        'value_bps': -12.5, 'asof': '2026-10-01',
+        'source': 'NORMAL_BASIS_SOURCE', 'date_status': 'known'}
+    fragment, _ = r26_render(payload)
+    assert '-12.50 bp' in fragment and 'NORMAL_BASIS_SOURCE' in fragment
+
+
+@pytest.mark.parametrize('date_status', [None, '', 'future', 'unknown', True, 1])
+def test_r26_consumer_requires_builder_known_date_status(r26_render, date_status):
+    payload = _r26_payload()
+    payload['forex']['funding_evidence']['direct_usd_cross_currency_basis'] = {
+        'value_bps': -12.5, 'asof': '2099-01-01',
+        'source': 'UNADMITTED_BASIS_STATUS', 'date_status': date_status}
+    fragment, _ = r26_render(payload)
+    assert 'Direct USD funding basis unavailable' in fragment
+    assert 'UNADMITTED_BASIS_STATUS' not in fragment
+
+
+@pytest.mark.parametrize('asof', ['2099-01-01', 'not-a-date', '2026-13-01', '2026-10-02T00:00:00Z'])
+def test_r26_crafted_basis_date_without_owner_admission_is_withheld(r26_render, asof):
+    payload = _r26_payload()
+    payload['forex']['funding_evidence']['direct_usd_cross_currency_basis'] = {
+        'value_bps': -12.5, 'asof': asof, 'source': 'UNADMITTED_BASIS_DATE'}
+    fragment, _ = r26_render(payload)
+    assert 'Direct USD funding basis unavailable' in fragment
+    assert 'UNADMITTED_BASIS_DATE' not in fragment
 
 
 @pytest.mark.parametrize("value", [None, True, float('inf'), float('nan'), '12'])
