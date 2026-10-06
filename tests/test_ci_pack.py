@@ -4601,6 +4601,9 @@ CURATED_EXCLUSIVE = {
     # exclusive replaces inference, so the declared job must be pinned here
     # or the curated-set contract rejects the manifest.
     "options-signal-campaign-v2",
+    # Pure International browser helpers have a closed source/test dependency
+    # set; unrelated page changes must not select their Node-only PR check.
+    "international-workspace-pure-js",
 }
 
 

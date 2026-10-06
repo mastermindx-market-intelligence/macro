@@ -51,3 +51,9 @@ Wave 3 archive `6442237dcdf11f224af08c4bdf5f2e01a75206065e75c49694348008e740a1a9
 Fresh GitHub read on 2026-10-06 confirms Terminal #777 merged at `d9128b500fb434e3548574e89b25a2a85053f3d7`; #804 remains open and Draft at `0654cf7ad2fb6c5242fe1fc4ffaae3d48b912a7b`. Those facts supersede older reservation-only notes, but do not clear #804 review/migration, #792 raw-ingress or #7870 rights dependencies. IM-08 must freeze its extension with the incumbent owner before shared writes. Library/Search remains independently buildable.
 
 IM00-T1a preflight found open Macro #7202 touching both `engine/intl_performance.py` and its tests. Preserve that carrier and adjudicate its exact delta before granting shared-source edits. The scan was partial; no global no-collision claim is made. Continue a new-file Library search leaf while that dependency is reconciled.
+
+## Accepted pure source leaves
+
+IM06-T2 arithmetic and IM07-T2 local search are independently source-reviewed and registered together in the exclusive `international-workspace-pure-js` PR check. The committed Node suites pass155 tests (55 arithmetic,100 search), with zero failures/skips. Search preserves raw inputs, deterministic EN/ZH matching, Unicode scalar limits, composition boundaries and strict five-field reply identity; it performs no I/O. Source evidence is in `IM07_T2_EVIDENCE.json`. Neither helper is mounted on a product page yet.
+
+A fresh direct M2 Paper read produced a separately hashed three-node dark Library reference subset (RU-0,35T-0,3MN-0), with screenshot/JSX and matching before/after target JSX. `WAVE3_INTAKE.json` binds it. It is not an atomically frozen whole file, complete light design, delivered worker input or browser proof. The original Wave3 ZIP remains unchanged.

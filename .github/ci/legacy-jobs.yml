@@ -3497,6 +3497,28 @@ jobs:
       - name: options + render assertions that read committed data (the data_gate half)
         run: python -m pytest tests/test_options_session_guards.py tests/test_options_unit_seams.py tests/test_render_dead_asset_gate.py -m data_gate -q
 
+  international-workspace-pure-js:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "templates/intl_workspace_scenario.js"
+      - "tests/intl_workspace_scenario_math.test.cjs"
+      - "templates/intl_library_search.js"
+      - "tests/intl_library_search.test.cjs"
+      - "tests/fixtures/intl_library_search_catalogue.json"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: International manual scenario arithmetic and locale parsing
+        run: node --test tests/intl_workspace_scenario_math.test.cjs
+      - name: International Library search and reply identity
+        run: node --test tests/intl_library_search.test.cjs
+
   stock-dashboard-first-frame:
     if: ${{ false }}
     gate: code

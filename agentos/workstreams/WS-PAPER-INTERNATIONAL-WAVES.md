@@ -13,6 +13,9 @@ owns_paths:
   - research/paper_international_wave1_wave2/**
   - templates/intl_workspace_scenario.js
   - tests/intl_workspace_scenario_math.test.cjs
+  - templates/intl_library_search.js
+  - tests/intl_library_search.test.cjs
+  - tests/fixtures/intl_library_search_catalogue.json
 waves:
   - id: IM00
     title: Shared performance, presentation and route foundation
@@ -44,7 +47,8 @@ waves:
     next_action: Source review accepted after exact numerical repair; shared controller, browser and publication integration remain owed.
   - id: IM07
     title: Library and deterministic search
-    status: todo
+    status: in_progress
+    next_action: Pure search source accepted and100 committed tests pass; qualified catalogue and shared controller remain owed.
     depends_on: [IM00]
   - id: IM08
     title: International Investigation adapter
@@ -58,7 +62,7 @@ waves:
     title: Qualified policy comparison
     status: todo
     depends_on: [IM04, IM08, IM09]
-next_action: Serial IM07-T2 local-search leaf under the same Sol CEO; reconcile exact IM00 overlap with Macro7202 before shared-source writes. Freeze Saved extension with Terminal804 incumbent before kernel edits.
+next_action: Sol to adjudicate a path-disjoint additive precision/window seam within the existing performance owner, preserving Macro7202 shared paths; no shared-source grant yet. Freeze Saved extension with Terminal804 incumbent before kernel edits.
 artifacts:
   - research/paper_international_wave1_wave2/README.md
   - research/paper_international_wave1_wave2/INPUTS.json
@@ -83,3 +87,5 @@ artifact. Parent review found and repaired inherited-property parser admissions.
 No route mount, served product or production acceptance is claimed.
 
 Wave 3 is grouped on the same carrier/PR. Terminal #777 is now confirmed merged; #804 remains Draft at0654cf7ad2fb6c5242fe1fc4ffaae3d48b912a7b. The older memory describing #777 as only a reservation is historical. Maintain one CEO and at most one fabric leaf at a time; no concurrency increase.
+
+Search worker rs_20261006T092239Z_16794 delivered source after the commission was made self-contained. Sol rejected its malformed-identity and Unicode-whitespace boundaries; Astra repaired them and Sol independently approved exact source019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f. Source and100 portable review cases are integrated; combined Node155/155 pass. Original worker outcome remains review-rejected; repaired derivative has its own acceptance evidence.
