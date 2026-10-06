@@ -184,7 +184,6 @@
     "tests/test_china_sector_turn.py",
     "tests/test_china_si_workspace_shell.py",
     "tests/test_china_signals.py",
-    "tests/test_china_special_situations.py",
     "tests/test_china_special_situations_filings_migration.py",
     "tests/test_china_turnover_phase0.py",
     "tests/test_china_validation_overlap.py",
