@@ -2105,7 +2105,9 @@ jobs:
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
       - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/selection_cohort_publication.py
+      - engine/theme_graph/selection_cohort_projection.py
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
       - "contracts/theme_graph/theme_state.v1.schema.json"
       - "contracts/theme_graph/theme_state.v2.schema.json"
       - "contracts/theme_graph/theme_state_generation.v1.schema.json"
@@ -2131,6 +2133,7 @@ jobs:
       - "contracts/theme_graph/theme_state_generation_read.v2.schema.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/theme_graph/theme_state_use_reader.py"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4967,6 +4970,8 @@ jobs:
       - "scripts/query_k3e_expectation_surface.py"
       - "tests/test_k3e_expectation_surface.py"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
       - "contracts/theme_graph/theme_state.v1.schema.json"
       - "contracts/theme_graph/theme_state.v2.schema.json"
       - "contracts/theme_graph/theme_state_generation.v1.schema.json"
@@ -5832,6 +5837,8 @@ jobs:
       - "config/theme_sources.yml"
       - "config/transmission_proposals.yml"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
       - "contracts/theme_graph/theme_state.v1.schema.json"
       - "contracts/theme_graph/theme_state.v2.schema.json"
       - "contracts/theme_graph/theme_state_generation.v1.schema.json"
@@ -8652,6 +8659,7 @@ jobs:
       - config/theme_graph_identity_breaks.yml
       - config/theme_sources.yml
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
+      - contracts/theme_graph/selection_cohort_projection.v1.schema.json
       - contracts/theme_graph/probation_proposal.v1.schema.json
       - contracts/theme_graph/theme_state.v1.schema.json
       - engine/__init__.py
@@ -8681,6 +8689,7 @@ jobs:
       - engine/theme_graph/ontology.py
       - engine/theme_graph/probation.py
       - engine/theme_graph/selection_cohort_reads.py
+      - engine/theme_graph/selection_cohort_projection.py
       - engine/theme_graph/store.py
       - engine/theme_graph/theme_state.py
       - lib/__init__.py
@@ -8704,6 +8713,7 @@ jobs:
       - tests/test_publish_company_theme_exposure_r2.py
       - tests/test_theme_graph_selection_cohort.py
       - tests/test_theme_graph_selection_cohort_reads.py
+      - tests/test_theme_graph_selection_cohort_projection.py
       - tests/test_theme_graph_state.py
       - collectors/_drip.py
       - collectors/base.py
@@ -9443,6 +9453,36 @@ jobs:
       - "engine/theme_graph/theme_state_use_reader.py"
       - "tests/test_theme_state_generation_use_reader.py"
       - "tests/test_company_theme_exposure_production_bridge.py"
+      - config/synapse.yml
+      - contracts/theme_graph/capability.v1.schema.json
+      - contracts/theme_graph/evidence.v1.schema.json
+      - contracts/theme_graph/identity_resolution.v1.schema.json
+      - contracts/theme_graph/membership_collection.v2.schema.json
+      - contracts/theme_graph/node_lifecycle.v1.schema.json
+      - contracts/theme_graph/ontology_change_report.v1.schema.json
+      - contracts/theme_graph/ontology_neighborhood.v1.schema.json
+      - contracts/theme_graph/ontology_proposal_review.v1.schema.json
+      - contracts/theme_graph/probation_relation_event.v2.schema.json
+      - engine/theme_graph/change_report.py
+      - engine/theme_graph/membership_evidence.py
+      - engine/theme_graph/ontology_inventory.py
+      - engine/theme_graph/proposal_worklist.py
+      - engine/theme_graph/security_navigation.py
+      - engine/theme_graph/structural_navigation.py
+      - scripts/check_theme_graph_contracts.py
+      - scripts/explain_theme_changes.py
+      - scripts/explain_theme_overlap.py
+      - scripts/list_theme_ontology.py
+      - scripts/list_theme_proposals.py
+      - scripts/propose_basket_ltheme_relations.py
+      - scripts/query_theme_ontology.py
+      - scripts/query_theme_security.py
+      - scripts/theme_coverage_gaps.py
+      - tests/test_basket_membership_pit.py
+      - tests/test_theme_graph_contracts.py
+      - tests/test_theme_graph_local_plane.py
+      - tests/test_theme_graph_materialize.py
+      - tests/test_theme_graph_membership_lifecycle.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9457,7 +9497,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_contracts.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
@@ -9471,7 +9511,7 @@ jobs:
           test -f engine/theme_graph/theme_state.py
           test -f tests/test_theme_graph_state.py
           unset GMI_STATE_OWNER_WORKSPACE
-          TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py -q
+          TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py tests/test_theme_graph_selection_cohort_projection.py -q
       - name: GMI finalized cohort publication and unchanged owner serialization
         run: TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort_publication.py tests/test_china_standouts_serialization.py tests/test_build_china_library_more_actionable_guard.py tests/test_us_standouts_cascade_gate.py -q
 
@@ -10212,6 +10252,8 @@ jobs:
       - "config/theme_graph_identity_breaks.yml"
       - "config/theme_sources.yml"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
       - "contracts/theme_graph/theme_state.v1.schema.json"
       - "contracts/theme_graph/theme_state.v2.schema.json"
       - "contracts/theme_graph/theme_state_generation.v1.schema.json"
@@ -12568,6 +12610,8 @@ jobs:
       - "tests/test_support_map.py"
       - "tools/index.html"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
       - "contracts/theme_graph/theme_state.v1.schema.json"
       - "contracts/theme_graph/theme_state.v2.schema.json"
       - "contracts/theme_graph/theme_state_generation.v1.schema.json"
@@ -14039,6 +14083,13 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py --help
           python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_information_to_price_audit.py -q
+      # Synthetic PIT sample conformance harness (recovered from Sol op
+      # information-to-price-pit-conformance-20261004-sol-001). Name its CLI
+      # as well as its suite for the same sibling-import reason as SRC-A1.
+      - name: information-to-price synthetic PIT sample conformance
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/pit_sample_conformance.py --help
+          python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_pit_sample_conformance.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
@@ -15865,6 +15916,7 @@ jobs:
     # unknown. 12 minutes covers fusion + board-read + era + stage-analysis.
       - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/selection_cohort_publication.py
+      - engine/theme_graph/selection_cohort_projection.py
       - "engine/theme_graph/identity_resolution.py"
       - "engine/theme_graph/ontology.py"
       - "engine/theme_graph/probation.py"
@@ -19375,6 +19427,8 @@ jobs:
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
       - "contracts/theme_graph/theme_state.v1.schema.json"
       - "contracts/theme_graph/theme_state.v2.schema.json"
       - "contracts/theme_graph/theme_state_generation.v1.schema.json"
