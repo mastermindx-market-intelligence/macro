@@ -34344,7 +34344,7 @@
    "unsupported_symbols": 886
   },
   "dry_run": false,
-  "elapsed_s": 307.8,
+  "elapsed_s": 292.0,
   "no_data": 1,
   "parked": 0,
   "period": "max",
@@ -34358,7 +34358,7 @@
     "20.6% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "GPTY": [
-    "20.4% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "20.7% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "LFGY": [
     "20.8% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
@@ -34373,7 +34373,7 @@
     "19.6% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "NVYY": [
-    "20.3% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "20.0% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "QDTY": [
     "20.4% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
@@ -34406,7 +34406,7 @@
     "20.9% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "YMAG": [
-    "17.6% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "17.1% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "YMAX": [
     "16.7% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
@@ -34427,7 +34427,7 @@
   "remaining": 1,
   "schema_rejected": 9,
   "short_history": 42,
-  "started_utc": "2026-10-06T04:33:39+00:00",
+  "started_utc": "2026-10-06T04:51:09+00:00",
   "written": 7
  },
  "parked": {
@@ -46917,54 +46917,54 @@
   "AIHS": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-06T04:33:46+00:00"
+   "last_attempt": "2026-10-06T04:51:16+00:00"
   },
   "CRNX": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-06T04:33:46+00:00"
+   "last_attempt": "2026-10-06T04:51:16+00:00"
   },
   "DBRG": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-06T04:33:47+00:00"
+   "last_attempt": "2026-10-06T04:51:16+00:00"
   },
   "JFB": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-06T04:33:46+00:00"
+   "last_attempt": "2026-10-06T04:51:16+00:00"
   },
   "MMEDV": {
    "attempts": 2,
    "error": "[backfill] no data returned for vendor symbol 'MMEDV'",
-   "last_attempt": "2026-10-06T04:33:39+00:00"
+   "last_attempt": "2026-10-06T04:51:10+00:00"
   },
   "NCSM": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-06T04:33:46+00:00"
+   "last_attempt": "2026-10-06T04:51:16+00:00"
   },
   "NRDE": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-06T04:33:46+00:00"
+   "last_attempt": "2026-10-06T04:51:16+00:00"
   },
   "NTZ": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-06T04:33:46+00:00"
+   "last_attempt": "2026-10-06T04:51:16+00:00"
   },
   "WILC": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-06T04:33:46+00:00"
+   "last_attempt": "2026-10-06T04:51:16+00:00"
   },
   "WKEY": {
    "attempts": 1,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-06T04:38:32+00:00"
+   "last_attempt": "2026-10-06T04:55:47+00:00"
   }
  },
  "schema": "yahoo_backfill_state/1",
- "updated_utc": "2026-10-06T04:38:46+00:00"
+ "updated_utc": "2026-10-06T04:56:00+00:00"
 }
