@@ -1,0 +1,161 @@
+{
+  "schema": "toi.w2_daily_first_source_snapshot.v1",
+  "generated_at": "2026-10-06T07:03:53.985854+00:00",
+  "macro_main": "59b83048bd3d782b707ec6a4ca857415409fd776",
+  "terminal_master": "64c1ea5e25a335a0b0636e73e7fdbe0f8beb7b0e",
+  "w2_head": "5bb1bc68c99146fab040aade04bbf1903c51e5b7",
+  "docs_input_head": "e90df78109e7b1d5ed84f8cada8183999f6ccb2b",
+  "sources": [
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "collectors/massive_stock_day.py",
+      "commit": "59b83048bd3d782b707ec6a4ca857415409fd776",
+      "git_blob": "fcad0850eb5ca3aa699cb52d3ba9a62d92231616",
+      "bytes": 39815
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "data/massive_stock_day/_manifest.json",
+      "commit": "59b83048bd3d782b707ec6a4ca857415409fd776",
+      "git_blob": "d6ad060e3d0af3296757883f43e955012f9564d8",
+      "bytes": 528
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "data/massive_stock_day/_backfill_state.json",
+      "commit": "59b83048bd3d782b707ec6a4ca857415409fd776",
+      "git_blob": "c81d64105174025c6661cae31a8868f2c2daacf9",
+      "bytes": 24724
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "data/breadth/sp1500_pit_membership.parquet",
+      "commit": "59b83048bd3d782b707ec6a4ca857415409fd776",
+      "git_blob": "ec7085bc7460aca4a07661fa5983c424e1559be8",
+      "bytes": 42778
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "scripts/midsmall_pit.py",
+      "commit": "59b83048bd3d782b707ec6a4ca857415409fd776",
+      "git_blob": "00f3857b3c87eb83392254f5792700b7075792f4",
+      "bytes": 7615
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "scripts/build_security_master.py",
+      "commit": "59b83048bd3d782b707ec6a4ca857415409fd776",
+      "git_blob": "e88882b199e588145a50a4bf67c89127bbe13099",
+      "bytes": 209531
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "engine/oracle/oscillators.py",
+      "commit": "59b83048bd3d782b707ec6a4ca857415409fd776",
+      "git_blob": "09eee59c42fdb1ff2569ebd1c109a9203a958979",
+      "bytes": 10909
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "lib/nyse_calendar.py",
+      "commit": "59b83048bd3d782b707ec6a4ca857415409fd776",
+      "git_blob": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3",
+      "bytes": 29814
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/prophet_v4/r6_program/rulings/R6-D07-01_EVIDENCE_CLASS_REGISTER_ADOPTION_2026-09-27.md",
+      "commit": "59b83048bd3d782b707ec6a4ca857415409fd776",
+      "git_blob": "58e61a8559687146c3f3648f07783ae9308960a7",
+      "bytes": 4222
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/technical_opportunity/W2_DATA_CLOCK_ARCHITECTURE_FREEZE.md",
+      "commit": "5bb1bc68c99146fab040aade04bbf1903c51e5b7",
+      "git_blob": "fad78a8e2dcaebbd7910737a2e181d23863df3d9",
+      "bytes": 2233
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "research/technical_opportunity/W2_REPORT.md",
+      "commit": "5bb1bc68c99146fab040aade04bbf1903c51e5b7",
+      "git_blob": "9a6afaba719771ff1f9de4d62b4f4dce661ab11a",
+      "bytes": 2830
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/lib/intradaySources.ts",
+      "commit": "64c1ea5e25a335a0b0636e73e7fdbe0f8beb7b0e",
+      "git_blob": "239f61a9eaba438ce5ea6f277590938302dc7474",
+      "bytes": 40513
+    }
+  ],
+  "massive_manifest": {
+    "store": "massive_stock_day",
+    "n_tickers": 21673,
+    "latest_date": "2026-10-02",
+    "updated_at": "2026-10-03T13:31:13.064263+00:00",
+    "coverage": {
+      "first_day": "2021-07-06",
+      "last_day": "2026-10-02",
+      "n_processed_days": 1369,
+      "max_missing_run_weekdays": 0,
+      "max_missing_run_weekdays_recent": 0,
+      "recent_window_bdays": 90,
+      "missing_sample": []
+    },
+    "anchor": {
+      "ticker": "SPY",
+      "first": "2021-07-06",
+      "last": "2026-10-02",
+      "n_rows": 1318,
+      "max_gap_calendar_days": 4
+    }
+  },
+  "membership_census": {
+    "source_commit": "ca00b1c549733b562aae33d15f070300de3fb21e",
+    "path": "data/breadth/sp1500_pit_membership.parquet",
+    "git_blob": "ec7085bc7460aca4a07661fa5983c424e1559be8",
+    "bytes": 42778,
+    "sha256": "7b34316c0561619ba052f02036ec1fbe7fff3d00dcda3e7acb7dffda10582eca",
+    "rows": 3286,
+    "unique_tickers": 2589,
+    "columns": [
+      "ticker",
+      "start_date",
+      "end_date",
+      "src"
+    ],
+    "sources": {
+      "sp500": 1255,
+      "sp600": 1062,
+      "sp400": 969
+    },
+    "start_min": "1996-01-02",
+    "start_max": "2026-06-02",
+    "closed_intervals": 1780,
+    "open_intervals": 1506,
+    "coverage_from_daily_store_start": {
+      "store_start": "2021-07-06",
+      "intervals_overlapping_or_after_start": 2205,
+      "unique_tickers_overlapping_or_after_start": 1924
+    },
+    "source_contract_limit": "sp400 history reliable ~2012+, sp600 ~2020+ per scripts/midsmall_pit.py; common Daily store starts 2021-07-06, so this membership artifact is a plausible bounded first-wave population, subject to source-owner acceptance and explicit price/missingness coverage.",
+    "not_proved": "price availability for every member-date, identity/ticker-rename continuity, market-wide generalization, historical data first-receipt/correction vintage"
+  },
+  "decision_state": {
+    "first_wave_requires_4h": false,
+    "broad_w2_combined_panel": "HOLD",
+    "population": "PROPOSED_PIT_SP1500_2021_07_06_PLUS",
+    "daily_geometry_source": "PROPOSED_massive_stock_day_RAW",
+    "weekly_source": "DERIVED_FROM_SAME_DAILY",
+    "weekly_clock_contract": "QUALIFIED_SYNTHETIC_NOT_STUDY_ADMITTED",
+    "volume": "HOLD",
+    "economic_outcome_basis": "HOLD",
+    "historical_evidence_class": "PROPOSED_RETROSPECTIVE_CEILING",
+    "w3_outcomes": "HOLD"
+  },
+  "no_market_outcomes_read": true,
+  "no_source_or_production_mutation": true
+}

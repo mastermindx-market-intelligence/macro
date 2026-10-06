@@ -1,0 +1,89 @@
+{
+  "operation": "toi-w2-daily-first-weekly-contract-20261006-c2-001",
+  "observed_at": "2026-10-06T06:48:26.439224+00:00",
+  "source_commit": "a3c4fecba38a9edb03be3a6afefd23c38fc50ed7",
+  "source_path": "engine/oracle/oscillators.py",
+  "source_blob": "09eee59c42fdb1ff2569ebd1c109a9203a958979",
+  "function_source_sha256": "9f2d948a27099cefdde8ca5baf67ed5a7ad879c79f6d39328ba8ba1eca75e3ea",
+  "prior_diagnostic_error": "Local-only variable shadowing reused name b for a pandas Series before hashing; no remote/source effect. Corrected in-place without changing hypothesis.",
+  "observations": {
+    "normal_week": {
+      "input_last": "2026-10-02",
+      "weekly_label": "2026-10-02",
+      "weekly_value": 104.0
+    },
+    "midweek_truncation": {
+      "input_last": "2026-09-30",
+      "raw_weekly_label": "2026-10-02",
+      "raw_weekly_value": 102.0,
+      "future_label_emitted": true,
+      "completed_filter_count": 0
+    },
+    "friday_absent_fixture": {
+      "input_last": "2026-11-26",
+      "raw_weekly_label": "2026-11-27",
+      "future_label_emitted": true
+    },
+    "known_date_filter_truncation_checks": [
+      {
+        "cut": "2026-01-21",
+        "equal": true,
+        "labels": [
+          "2026-01-09",
+          "2026-01-16"
+        ]
+      },
+      {
+        "cut": "2026-01-22",
+        "equal": true,
+        "labels": [
+          "2026-01-09",
+          "2026-01-16"
+        ]
+      },
+      {
+        "cut": "2026-01-23",
+        "equal": true,
+        "labels": [
+          "2026-01-16",
+          "2026-01-23"
+        ]
+      },
+      {
+        "cut": "2026-01-26",
+        "equal": true,
+        "labels": [
+          "2026-01-16",
+          "2026-01-23"
+        ]
+      },
+      {
+        "cut": "2026-01-27",
+        "equal": true,
+        "labels": [
+          "2026-01-16",
+          "2026-01-23"
+        ]
+      },
+      {
+        "cut": "2026-02-25",
+        "equal": true,
+        "labels": [
+          "2026-02-13",
+          "2026-02-20"
+        ]
+      },
+      {
+        "cut": "2026-03-26",
+        "equal": true,
+        "labels": [
+          "2026-03-13",
+          "2026-03-20"
+        ]
+      }
+    ]
+  },
+  "decision": "Same-source completed-Weekly context is feasible, but raw resample output alone is not a completed-bar contract. Filter weekly labels <= decision as-of / use the incumbent known-date mapping before computing or exposing weekly context.",
+  "market_data_or_outcomes_used": false,
+  "production_or_source_mutation": false
+}

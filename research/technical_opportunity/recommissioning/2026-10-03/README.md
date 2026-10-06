@@ -1,5 +1,7 @@
 # TOI recommissioning source packet — 2026-10-03
 
+**October 6 W2 narrowing:** [Daily-first source/clock ruling](w2_daily_first/README.md) removes 4H as a dependency of the 22-slot first wave while preserving broad W2/4H HOLD. It proposes PIT S&P1500 from 2021-07-06, same-source completed-Weekly context and a RETROSPECTIVE ceiling for unprovable historical source timing. No outcome or data admission is conferred.
+
 **New W1 review artifact:** [grouped repair patch and replay proof](w1_grouped_repair/README.md) address the existing #7107 defects in an isolated copy: four validators and37tests pass. The original pending edits and source branch remain untouched; actual custody, adoption and acceptance are still required. This is not another research proposal or W3 admission.
 
 **October 5 steering and verified native integration:** [first-vertical build assessment and plan](TOI_FIRST_VERTICAL_STEERING_2026-10-05.md) consumes the newer S16, W2-basis and 22-slot rulings. [Seventeen native accounting checks and three mutation tests](native_accounting/README.md) passed using only temporary synthetic ledgers. #8428 is now the actual consumer source carrier, not only an inert proposal; its visual evidence is still owed. No W3 admission or production acceptance is inferred.
