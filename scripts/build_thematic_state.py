@@ -43,6 +43,35 @@ _ARTIFACT_ID = "theme-state"
 _DATA_PATH = "data/neuralweb/theme_state.json"
 _SITE_PATH = "site/neuralwebdata/theme_state.json"
 _HISTORY_PATH = "data/neuralweb/theme_phase_history.jsonl"
+_SHADOW_GRAPH_STATE_PATH = "data/theme_graph/shadow_theme_state.v1.json"
+
+
+def _compose_shadow_graph_state(root: Path, generated_at: str | None) -> bytes | None:
+    from datetime import datetime, timezone
+
+    from engine.neuralweb import theme_state_adapter as adapter
+    from engine.theme_graph import theme_state
+
+    try:
+        shadow_now = generated_at or datetime.now(timezone.utc).isoformat()
+        bundle = adapter.capture_owner_bundle(
+            root, effective_at=shadow_now[:10], known_at=shadow_now,
+        )
+        state = adapter.compose_from_owner_bundle(bundle, generated_at=shadow_now)["state"]
+        theme_state.validate_state(state)
+        assert state.get("schema") == theme_state.SCHEMA
+        return json.dumps(
+            state, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False,
+        ).encode("utf-8") + b"\n"
+    except Exception as exc:
+        log.warning(
+            "shadow graph state compose failed: %s: %s", type(exc).__name__, exc,
+        )
+        print(
+            f"::warning title=gmi-shadow-graph-state::{type(exc).__name__}: {exc}",
+            flush=True,
+        )
+        return None
 
 
 def _atomic_write_json(path: Path, payload: dict) -> None:
@@ -107,6 +136,8 @@ def build(root: Path, *, mode: str = "LEGACY", bundle=None,
         now = datetime.now(timezone.utc).isoformat()
         tail, n_rows = generation.plan_phase_history(artifact, entry["history"], recorded_at=now)
         raw = json.dumps(artifact, ensure_ascii=False, indent=2, default=str, allow_nan=False).encode("utf-8")
+        shadow_raw = _compose_shadow_graph_state(root, generated_at)
+        shadow_written = False
         with generation.family_lock(root):
             generation.cas_entry(root, entry)
             if entry["current"] is not None:
@@ -116,7 +147,24 @@ def build(root: Path, *, mode: str = "LEGACY", bundle=None,
             from engine.neuralweb.thematic_state import _ledger_advance_enabled
             if _ledger_advance_enabled() and (tail or not entry["history_exists"]):
                 generation.write_atomic(root, _HISTORY_PATH, entry["history"].raw + tail)
-        print(f"[thematic_state] legacy accepted; phase_history +{n_rows if _ledger_advance_enabled() else 0}", flush=True)
+            if shadow_raw is not None:
+                try:
+                    generation.write_atomic(root, _SHADOW_GRAPH_STATE_PATH, shadow_raw)
+                    shadow_written = True
+                except Exception as exc:
+                    log.warning(
+                        "shadow graph state write failed: %s: %s", type(exc).__name__, exc,
+                    )
+                    print(
+                        f"::warning title=gmi-shadow-graph-state::{type(exc).__name__}: {exc}",
+                        flush=True,
+                    )
+        ledger = _ledger_advance_enabled()
+        print(
+            f"[thematic_state] legacy accepted; phase_history +{n_rows if ledger else 0}"
+            f" shadow_graph_state={'written' if shadow_written else 'skipped'}",
+            flush=True,
+        )
         return 0
     except Exception as exc:
         log.error("ThemeState unaccepted: %s", exc)
