@@ -1,10 +1,41 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-05T00:58:37.518596+00:00",
-  "posts_seen": 10,
-  "seen_total": 259,
-  "evaluated": 0,
-  "activated": 0,
+  "as_of": "2026-10-06T02:59:14.034666+00:00",
+  "posts_seen": 14,
+  "seen_total": 267,
+  "evaluated": 5,
+  "activated": 3,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-10-06-emergency-tax-relief-on-diesel-fuel",
+      "importance": 62,
+      "activated": true,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-06-presidential-message-on-child-health-day-c67c",
+      "importance": 10,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-06-presidential-message-on-fire-prevention-week",
+      "importance": 10,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-06-president-trump-takes-decisive-action-to-lower-diesel-costs-for-american-trucker",
+      "importance": 68,
+      "activated": true,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-06-fact-sheet-president-donald-j-trump-promotes-diesel-affordability",
+      "importance": 68,
+      "activated": true,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }

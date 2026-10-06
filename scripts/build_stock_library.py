@@ -6612,8 +6612,32 @@ def main(now: datetime | None = None) -> int:
         # Same lineage stamp the gate write carries: one pair_id per writer process, so a
         # skew between the two files is readable off the artifacts themselves.
         wide["emit"] = _PAIR_EMIT_STAMP
-        (site / "factordata" / "us_standouts.json").write_text(
-            json.dumps(_json_safe(wide), separators=(",", ":"), default=str, allow_nan=False))
+        # Stable source-availability handoff, not a selection cutoff or new identity.
+        # Its native generation is the incumbent pair_id. Retry/render keeps bytes.
+        try:
+            from engine.theme_graph.selection_cohort_publication import source_handoff
+            wide["w3c_source"] = source_handoff(
+                generation_id=_PAIR_EMIT_STAMP["pair_id"], availability="VALID",
+                available_at=datetime.now(timezone.utc).isoformat())
+        except Exception as _us_source_e:  # noqa: BLE001 — original board publication survives
+            log.warning("W3C US source provenance unavailable (%s)", _us_source_e)
+        _us_final_payload = json.dumps(
+            _json_safe(wide), separators=(",", ":"), default=str, allow_nan=False)
+        (site / "factordata" / "us_standouts.json").write_text(_us_final_payload)
+        # W3C freezes the exact complete serialized Featured shelf, before any
+        # display/preview split. The import pair stamp is lineage, not this event.
+        # Missing per-use capture capability refuses without a mixed-vendor archive.
+        try:
+            from engine.theme_graph.selection_cohort_publication import (
+                default_capture_capability, publish_us_source)
+            _us_w3c = publish_us_source(
+                _us_final_payload.encode(), data_dir=config.data_dir(),
+                finalized_at=datetime.now(timezone.utc).isoformat(),
+                authorize_capture=default_capture_capability())
+            if _us_w3c["status"] != "AVAILABLE":
+                log.info("W3C source unavailable: %s", _us_w3c["reason_codes"])
+        except Exception as _us_w3c_e:  # noqa: BLE001 — provenance cannot alter board publication
+            log.warning("W3C finalization unavailable (%s)", _us_w3c_e)
         log.info("wrote us_standouts.json (%d buy · rank_by=%s · %d eligible / %d universe)",
                  len(wide["buy"]), wide["rank_by"], eligible, len(cand))
         # Render-lane self-check: the board-invariants CI job only fires on PRs that

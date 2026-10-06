@@ -1,7 +1,7 @@
 {
   "schema": "rates_command.v1",
   "asof": "2026-10-02",
-  "built": "2026-10-04T09:43:58.066631+00:00",
+  "built": "2026-10-05T10:11:43.644467+00:00",
   "display_only": true,
   "authority": false,
   "board": {
@@ -11,7 +11,7 @@
       "implied_path": {
         "m1": 3.9,
         "m3": 4.11,
-        "m6": 4.37,
+        "m6": 4.36,
         "m12": 4.71
       },
       "implied_bp_12m": 83,
@@ -42,15 +42,15 @@
         "horizon_label": "end-2026",
         "horizon_months": 2,
         "fed_dot": 4.1,
-        "market": 4.01,
-        "gap_bp": -9,
+        "market": 4.0,
+        "gap_bp": -10,
         "lean_en": "market ≈ the Fed",
         "lean_zh": "市场与美联储基本一致"
       },
       "headline_en": "Market prices ~3 hikes over the next 12m (funds 3.88% → 4.71%)",
       "headline_zh": "市场为未来12个月定价约加息3次（基金利率 3.88% → 4.71%）",
-      "read_en": "At end-2026 the market implies 4.01% vs the Fed's 4.10% median dot (-9bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+1.03pp).",
-      "read_zh": "在end-2026，市场隐含 4.01% 对比美联储 4.10% 的中位点（-9基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+1.03个百分点）。",
+      "read_en": "At end-2026 the market implies 4.00% vs the Fed's 4.10% median dot (-10bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+1.03pp).",
+      "read_zh": "在end-2026，市场隐含 4.00% 对比美联储 4.10% 的中位点（-10基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+1.03个百分点）。",
       "source_en": "ZQ fed-funds futures",
       "source_zh": "ZQ 联邦基金期货"
     },
@@ -68,7 +68,7 @@
         "release_type": "cpi_headline",
         "period": "2026-09",
         "release_date": "2026-10-14",
-        "days_to": 10,
+        "days_to": 9,
         "point": 0.3664,
         "surprise_skew_tag": "inline",
         "surprise_skew_sigma": -0.143
@@ -93,7 +93,7 @@
     "policy_row": {
       "state": "QUIET",
       "jawboning": {
-        "n_7d": 6,
+        "n_7d": 4,
         "n_30d": 11,
         "last_alert_ts": "2026-10-03T03:01:43+00:00",
         "last_alert_summary": "$1.8B Medicare rebate to 20M seniors — modest consumer tailwind, insurer optics negative",
@@ -105,14 +105,14 @@
       "chair_profile_zh": "",
       "optionality_read_en": "Decode the Warsh redesign as PIVOT INFRASTRUCTURE, not just hawkishness. (1) Deleting the dot plot / forward guidance removes the time-stamped record against which a future political-looking cut could be judged — a sudden post-midterm cut violates no prior, it is just 'the new data' (accountability-deletion as optionality). (2) The inflation-frameworks task force is the machinery to re-specify what '2%' operationally means (index, horizon, tariff look-through) — watch for language splitting 'tariff level-shifts' from 'underlying inflation', the cut permission slip that prices first in breakevens and the belly. (3) The productivity/AI task force furnishes a higher-trend-growth / lower-required-real-rate alibi so ~3.3% core PCE becomes compatible with easing without formally moving the target. One week on, the design has already done the Fed's tightening FOR it: dollar 13-mo high, real 10y +57bp, the AI froth and the debasement trade both flushed — with the policy rate UNCHANGED. ADVERSARY CAVEATS: Warsh's anti-guidance ideology predates any 2026-27 cut calculus and cuts both ways; tariff look-through is orthodox decades-old doctrine; any chair would study AI — only TIMING relative to the pivot window discriminates intent from coincidence.",
       "intel_as_of": "2026-07-13",
-      "intel_staleness_days": 83,
+      "intel_staleness_days": 84,
       "iran_context": {
         "title_en": "Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)",
         "title_zh": "伊朗/中东 —— 停火已崩溃（截至7/8）",
         "facts_en": "A ~6-week 2026 Iran war pushed oil above $120/bbl (Brent peak at Hormuz closure) as shipping lanes went offline; Apr 8 2026 a Pakistan-mediated conditional ceasefire. Jun 17 2026: US-Iran signed 14-point MOU opening ~60-day talks window on Hormuz navigation, nuclear/missile limits, and sanctions. Jun 20: Iran briefly re-declared Strait closed. Jun 27: JMIC widened transit route near Oman -- coinciding with the tanker Kiku struck by Iranian projectile and CENTCOM retaliatory airstrikes. Jul 6-7: additional tanker attacks (Al Rekayyat, Wedyan). OVERTAKEN (7/8): Trump declared the ceasefire 'OVER' at the NATO Ankara summit; CENTCOM launched sustained strikes on Iranian sites 7/8-7/11; Brent spiked ~$80 intraday (+8.7%), JMIC raised Hormuz threat to 'severe'; Hormuz tanker traffic near-standstill by 7/9. Doha talks (7/1) said 'going well' (Vance); no comprehensive deal. NUCLEAR GAP: as of Jun 14 the US had shifted to accepting a 15-20 year enrichment SUSPENSION (not permanent zero-enrichment); live gap = suspension duration + HEU down-blended material location; US messaging inconsistent (Vance 6/18: 'Ours will not [allow enrichment]').",
         "facts_zh": "约6周的2026年伊朗战争在霍尔木兹封锁高峰期将布伦特推升至120美元以上，航道一度中断；2026年4月8日达成巴基斯坦斡旋的有条件停火。2026年6月17日：美伊签署14点谅解备忘录，开启约60天谈判窗口，议题涵盖霍尔木兹通航、核/导弹限制、制裁。6月20日：伊朗短暂宣布海峡再次关闭。6月27日：JMIC在阿曼附近拓宽通行航路——同日油轮Kiku遇伊朗投射物打击，CENTCOM展开报复性空袭。7月6-7日：更多油轮遇袭（Al Rekayyat、Wedyan）。已被推翻（7/8）：特朗普在北约安卡拉峰会宣告停火“已终结”；CENTCOM于7/8-7/11对伊朗境内目标发动持续打击；布伦特盘中飙至约80美元（+8.7%），JMIC将霍尔木兹威胁评级升至“严峻”；7/9起霍尔木兹油轮交通濒临停滞。多哈谈判（7/1）万斯称“进展顺利”；无全面协议。核谈分歧：截至6月14日，美方已转为接受15-20年的浓缩暂停（而非永久零浓缩）；现实分歧在于暂停期限及高浓铀下混后材料的存放地点，且美方表态不一致（万斯6/18：“我们不允许浓缩”）。",
-        "as_of_note_en": "Intel as of 2026-07-13 (83d old)",
-        "as_of_note_zh": "情报截至2026-07-13（83天前）",
+        "as_of_note_en": "Intel as of 2026-07-13 (84d old)",
+        "as_of_note_zh": "情报截至2026-07-13（84天前）",
         "unsigned_display": true
       }
     }
@@ -123,9 +123,9 @@
         "key": "H1_path_repricing",
         "active": true,
         "weight": 2,
-        "value": 26.0,
-        "detail_en": "Futures added +26.0bp of 12-month rate over the last month.",
-        "detail_zh": "期货在过去一个月内将12个月利率上调了+26.0个基点。",
+        "value": 15.0,
+        "detail_en": "Futures added +15.0bp of 12-month rate over the last month.",
+        "detail_zh": "期货在过去一个月内将12个月利率上调了+15.0个基点。",
         "null_reason": null
       },
       {
@@ -231,9 +231,9 @@
     {
       "key": "D1_dots_vs_market",
       "active": false,
-      "value_bp": -9.0,
-      "detail_en": "Market vs dot gap: -9bp — within normal range (threshold: ±50bp).",
-      "detail_zh": "市场与点阵图利差：-9个基点——在正常范围内。"
+      "value_bp": -10.0,
+      "detail_en": "Market vs dot gap: -10bp — within normal range (threshold: ±50bp).",
+      "detail_zh": "市场与点阵图利差：-10个基点——在正常范围内。"
     },
     {
       "key": "D2_projection_vs_breakeven",
@@ -252,8 +252,8 @@
     {
       "key": "H1_path_repricing",
       "direction": "hawkish",
-      "en": "Futures added +26.0bp of 12-month rate over the last month.",
-      "zh": "期货在过去一个月内将12个月利率上调了+26.0个基点。",
+      "en": "Futures added +15.0bp of 12-month rate over the last month.",
+      "zh": "期货在过去一个月内将12个月利率上调了+15.0个基点。",
       "watch_en": "If this pressure persists, upward rate repricing stays at risk; a deepening equity correction historically pulls the other way.",
       "watch_zh": "若该压力持续，利率上调风险上升；股市进一步下跌历史上会起到反向对冲作用。"
     },
@@ -278,14 +278,14 @@
     "futures": {
       "m1": 3.9,
       "m3": 4.11,
-      "m6": 4.37,
+      "m6": 4.36,
       "m12": 4.71,
       "implied_bp_12m": 83,
       "plain_read_en": "Market prices ~3 hikes over the next 12m (funds 3.88% → 4.71%)",
       "plain_read_zh": "市场为未来12个月定价约加息3次（基金利率 3.88% → 4.71%）"
     },
     "prediction_markets": {
-      "as_of": "2026-10-03",
+      "as_of": "2026-10-04",
       "source": "Polymarket",
       "events": [
         {
@@ -304,7 +304,17 @@
           "label_zh": "今年降息次数",
           "top_outcome": "0 (0 bps)",
           "top_prob": 96.0,
-          "chg_pp": -0.3,
+          "chg_pp": 0.0,
+          "source": "Polymarket",
+          "type": "market_implied_benchmark"
+        },
+        {
+          "key": "recession",
+          "label_en": "US recession",
+          "label_zh": "美国衰退",
+          "top_outcome": "US recession by end of 2026?",
+          "top_prob": 8.0,
+          "chg_pp": null,
           "source": "Polymarket",
           "type": "market_implied_benchmark"
         }
@@ -650,8 +660,8 @@
   "caveats": [
     "futures-implied path reflects risk premium not stripped — not a forecast",
     "All legs are display-tier context only; no scoring or authority.",
-    "commodity/shock_state.json oil entry is 15d old (>7d threshold) — H3 leg judged on trend+cause_badge only",
-    "policy/intel.json is 83d old — policy row quotes as-of 2026-07-13"
+    "commodity/shock_state.json oil entry is 16d old (>7d threshold) — H3 leg judged on trend+cause_badge only",
+    "policy/intel.json is 84d old — policy row quotes as-of 2026-07-13"
   ],
   "stance": {
     "en": "Outlook is two-sided: futures price about three hikes; hawkish and easing inputs are roughly balanced (3 vs 3). Front-end futures repricing and a deeper equity pullback are pulling against each other.",
@@ -702,29 +712,29 @@
   "regime_outlook": {
     "schema_version": "regime_outlook.v1",
     "scope": "US",
-    "analysis_cutoff": "2026-10-04T09:43:58.059037+00:00",
-    "built_at": "2026-10-04T09:43:58.060943+00:00",
+    "analysis_cutoff": "2026-10-05T10:11:43.634859+00:00",
+    "built_at": "2026-10-05T10:11:43.637487+00:00",
     "mapping_version": "VERDICT_MAPPING_V2",
     "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
     "inputs": {
       "T": {
         "path": "data/transmission/latest.json",
-        "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+        "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
         "read_status": "available"
       },
       "R": {
         "path": "data/regime/latest.json",
-        "sha256": "5d844388d78110e39ee188a4098d24ecdf7a816372bc2dc3986b98d344bed6c4",
+        "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
         "read_status": "available"
       },
       "M": {
         "path": "data/market_state/latest.json",
-        "sha256": "6f2f3248b1ed06868c9cbfccab33c1491878cdb1b7f149d0b4136c2448a043eb",
+        "sha256": "9e90a4b255fd183125767ddae99515eca158064ca0d9b6a6b3b74784576a1b85",
         "read_status": "available"
       },
       "D": {
         "path": "data/dispersion/regime.json",
-        "sha256": "e09e3d3a4b2e23089066f9174c56ca11a99f423d01a96466d451166fc32d099d",
+        "sha256": "bae4457e8f09c1eec46268d33bd81fd26d6b68e8d5e3a0b5d372a57157f4f19c",
         "read_status": "available"
       },
       "L": {
@@ -734,12 +744,12 @@
       },
       "B": {
         "path": "data/bonds/bond_health.json",
-        "sha256": "23b8f8b259da14bd7fe0ce7990987895c3f4473d32f82adfb7a823595c2a686b",
+        "sha256": "e3f80aee3e8520306b0c40e843cb04a6ecd2713a43472b3101c37e92487b1ebf",
         "read_status": "available"
       },
       "C": {
         "path": "data/commodity/latest.json",
-        "sha256": "b35d8282b4fd5512e922eb658d19e73a1edbce5ef7343b9edf63835c75e2490c",
+        "sha256": "28dae3429a7527affdf45708f1f61b9f3b4c27978b23ff4e21966585f8b62e86",
         "read_status": "available"
       }
     },
@@ -876,11 +886,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/inflation/direction",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -913,11 +923,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/inflation/regime",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -950,11 +960,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/expectations/anchoring",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -987,11 +997,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/rates/direction",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1024,11 +1034,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/rates/regime",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1061,11 +1071,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/breakeven_decomp/direction",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1098,11 +1108,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/breakeven_decomp/trend",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1135,11 +1145,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_curve/regime/term_premium_dir",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1172,11 +1182,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/2y/turn_watch",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-01",
           "precision": "date",
-          "age_calendar_days": 3,
+          "age_calendar_days": 4,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1209,11 +1219,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/5y/turn_watch",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-01",
           "precision": "date",
-          "age_calendar_days": 3,
+          "age_calendar_days": 4,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1246,11 +1256,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/10y/turn_watch",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-01",
           "precision": "date",
-          "age_calendar_days": 3,
+          "age_calendar_days": 4,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1283,11 +1293,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/20y/turn_watch",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-01",
           "precision": "date",
-          "age_calendar_days": 3,
+          "age_calendar_days": 4,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1320,11 +1330,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/30y/turn_watch",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-01",
           "precision": "date",
-          "age_calendar_days": 3,
+          "age_calendar_days": 4,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1357,11 +1367,11 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/labor_nowcast/read",
-          "sha256": "5d844388d78110e39ee188a4098d24ecdf7a816372bc2dc3986b98d344bed6c4",
+          "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1394,11 +1404,11 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/state",
-          "sha256": "5d844388d78110e39ee188a4098d24ecdf7a816372bc2dc3986b98d344bed6c4",
+          "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-09-25",
           "precision": "date",
-          "age_calendar_days": 9,
+          "age_calendar_days": 10,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1431,11 +1441,11 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/complacency/breadth_div",
-          "sha256": "5d844388d78110e39ee188a4098d24ecdf7a816372bc2dc3986b98d344bed6c4",
+          "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1468,11 +1478,11 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/label",
-          "sha256": "5d844388d78110e39ee188a4098d24ecdf7a816372bc2dc3986b98d344bed6c4",
+          "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1505,11 +1515,11 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-          "sha256": "5d844388d78110e39ee188a4098d24ecdf7a816372bc2dc3986b98d344bed6c4",
+          "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1542,11 +1552,11 @@
         "source": {
           "artifact": "M",
           "pointer": "/components/[key=breadth]/tone",
-          "sha256": "6f2f3248b1ed06868c9cbfccab33c1491878cdb1b7f149d0b4136c2448a043eb",
+          "sha256": "9e90a4b255fd183125767ddae99515eca158064ca0d9b6a6b3b74784576a1b85",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1583,7 +1593,7 @@
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1616,11 +1626,11 @@
         "source": {
           "artifact": "B",
           "pointer": "/fed_path/implied_cuts_12m",
-          "sha256": "23b8f8b259da14bd7fe0ce7990987895c3f4473d32f82adfb7a823595c2a686b",
+          "sha256": "e3f80aee3e8520306b0c40e843cb04a6ecd2713a43472b3101c37e92487b1ebf",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1648,7 +1658,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/dollar_channel/usd_dir",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "unknown",
           "as_of": null,
           "precision": null,
@@ -1685,11 +1695,11 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-          "sha256": "5d844388d78110e39ee188a4098d24ecdf7a816372bc2dc3986b98d344bed6c4",
+          "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1722,11 +1732,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/inflation/eci_comp_yoy",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1759,16 +1769,16 @@
         "source": {
           "artifact": "C",
           "pointer": "/assets/oil/trend",
-          "sha256": "b35d8282b4fd5512e922eb658d19e73a1edbce5ef7343b9edf63835c75e2490c",
+          "sha256": "28dae3429a7527affdf45708f1f61b9f3b4c27978b23ff4e21966585f8b62e86",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-10-02",
+          "as_of": "2026-10-04",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 1,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
           "expected_us_session": "2026-10-02",
-          "session_relation": "same_completed_session",
+          "session_relation": "after_completed_session",
           "reference_period": null
         }
       },
@@ -1796,11 +1806,11 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_curve/regime/key",
-          "sha256": "dbc2b87308da365a607b13a6d3f50f093723a511d64b5947f8f0775ce29f4423",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1833,9 +1843,9 @@
         "source": {
           "artifact": "D",
           "pointer": "/state",
-          "sha256": "e09e3d3a4b2e23089066f9174c56ca11a99f423d01a96466d451166fc32d099d",
+          "sha256": "bae4457e8f09c1eec46268d33bd81fd26d6b68e8d5e3a0b5d372a57157f4f19c",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-10-04",
+          "as_of": "2026-10-05",
           "precision": "date",
           "age_calendar_days": 0,
           "future_dated": false,
@@ -1870,9 +1880,9 @@
         "source": {
           "artifact": "D",
           "pointer": "/avg_corr",
-          "sha256": "e09e3d3a4b2e23089066f9174c56ca11a99f423d01a96466d451166fc32d099d",
+          "sha256": "bae4457e8f09c1eec46268d33bd81fd26d6b68e8d5e3a0b5d372a57157f4f19c",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-10-04",
+          "as_of": "2026-10-05",
           "precision": "date",
           "age_calendar_days": 0,
           "future_dated": false,
@@ -1907,11 +1917,11 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/trend",
-          "sha256": "5d844388d78110e39ee188a4098d24ecdf7a816372bc2dc3986b98d344bed6c4",
+          "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-09-25",
           "precision": "date",
-          "age_calendar_days": 9,
+          "age_calendar_days": 10,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
@@ -1944,11 +1954,11 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-          "sha256": "5d844388d78110e39ee188a4098d24ecdf7a816372bc2dc3986b98d344bed6c4",
+          "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-02",
           "precision": "date",
-          "age_calendar_days": 2,
+          "age_calendar_days": 3,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
