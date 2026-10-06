@@ -1801,6 +1801,7 @@ jobs:
       - "engine/risk_radar_backtest.py"
       - "engine/risk_radar_intl.py"
       - "engine/risk_radar_intl_audit.py"
+      - "engine/risk_radar_intl_evidence.py"
       - "engine/risk_radar_intl_tune.py"
       - "engine/risk_radar_market_catalysts.py"
       - "engine/risk_radar_recovery.py"
@@ -3383,6 +3384,7 @@ jobs:
           tests/test_risk_radar_scorecard.py
           tests/test_vsb_radar_alert.py
           tests/test_risk_radar_intl_profiles.py
+          tests/test_risk_radar_intl_audit_evidence.py
           tests/test_gd4a_cnhk_ledger_repair.py
           tests/test_risk_radar_dlg_country_wiring.py
           tests/test_risk_radar_dlg_partial.py
@@ -10871,6 +10873,7 @@ jobs:
       - "engine/risk_radar_backtest.py"
       - "engine/risk_radar_intl.py"
       - "engine/risk_radar_intl_audit.py"
+      - "engine/risk_radar_intl_evidence.py"
       - "engine/risk_radar_market_catalysts.py"
       - "engine/risk_radar_recovery.py"
       - "engine/risk_sizing.py"
@@ -15567,6 +15570,7 @@ jobs:
       - "engine/risk_radar_backtest.py"
       - "engine/risk_radar_intl.py"
       - "engine/risk_radar_intl_audit.py"
+      - "engine/risk_radar_intl_evidence.py"
       - "engine/risk_radar_intl_tune.py"
       - "engine/risk_radar_market_catalysts.py"
       - "engine/risk_radar_recovery.py"
