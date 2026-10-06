@@ -14,11 +14,14 @@ import datetime as dt
 import gzip
 import hashlib
 import json
+import logging
 import os
 from pathlib import Path
 import re
 import zlib
 from typing import Callable, Mapping
+
+log = logging.getLogger(__name__)
 
 import jsonschema
 from engine.theme_graph.selection_cohort import (
@@ -38,6 +41,20 @@ RECEIPTS = "theme_graph/selection_cohort_receipts"  # ci-trigger-closure: data â
 
 class PublicationRefusal(ValueError):
     """A concrete publication/binding failure; preserve the existing board."""
+
+
+def default_capture_capability():
+    try:
+        from engine.theme_graph.rights_use import capture_capability
+        return capture_capability()
+    except ImportError:
+        return None
+
+
+def _log_capture_refusal(authorize_capture):
+    verdict = getattr(authorize_capture, "last_verdict", None)
+    if isinstance(verdict, dict) and verdict.get("reason_codes"):
+        log.info("W3C capture refused: %s", verdict["reason_codes"])
 
 
 def _time(value):
@@ -81,7 +98,10 @@ def _authorize(capability, request):
     if capability is None:
         return False
     try:
-        return capability(copy.deepcopy(request)) is True
+        allowed = capability(copy.deepcopy(request)) is True
+        if not allowed:
+            _log_capture_refusal(capability)
+        return allowed
     except Exception as exc:  # narrowly isolate an upstream capability failure
         raise PublicationRefusal("CAPTURE_CAPABILITY_UNAVAILABLE") from exc
 
