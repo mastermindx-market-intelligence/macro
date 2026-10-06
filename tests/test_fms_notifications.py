@@ -944,6 +944,15 @@ class TestFederalRegisterTransportRecovery:
             "citation": "91 FR 17629",
         }
 
+    def test_fr_correction_document_number_rejects_non_ascii_ordinal(self) -> None:
+        with pytest.raises(live.FmsFetchRefused, match="invalid document_number"):
+            live._fr_document_number("C1٢-2025-22754")
+        assert live._fr_document_number_from_source_url(
+            "https://www.federalregister.gov/documents/full_text/text/"
+            "2026/02/13/C1٢-2025-22754.txt"
+        ) is None
+
+
     def test_fr_correction_document_number_preserves_official_c_prefix(self) -> None:
         row = {
             "document_number": "C1-2025-22754",

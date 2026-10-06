@@ -611,9 +611,9 @@ def fetch_fr_raw_text(url: str, *, session: Any = None) -> FetchedResource:
 # identifier behind a correction ordinal, e.g. C1-2025-22754.  Keep that
 # prefix in the identity and bind it through the official raw/GovInfo paths;
 # never normalize a correction into the original document number.
-_FR_DOCUMENT_NUMBER_RE = re.compile(r"^(?:C[1-9]\d*-)?\d{4}-\d{5}$")
+_FR_DOCUMENT_NUMBER_RE = re.compile(r"^(?:C[1-9][0-9]*-)?[0-9]{4}-[0-9]{5}$")
 _FR_DOCUMENT_SOURCE_RE = re.compile(
-    r"/(?P<document>(?:C[1-9]\d*-)?\d{4}-\d{5})(?:\.(?:txt|htm|html|pdf))?$"
+    r"/(?P<document>(?:C[1-9][0-9]*-)?[0-9]{4}-[0-9]{5})(?:\.(?:txt|htm|html|pdf))?$"
 )
 
 
