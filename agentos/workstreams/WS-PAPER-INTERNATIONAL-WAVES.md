@@ -45,17 +45,16 @@ waves:
 - id: IM00
   title: Shared performance, presentation and route foundation
   status: in_progress
-  next_action: Return records, charts, route state, Overview projection and actual DOM controller are source reviewed.
-    Close the actual page browser/design/CI gate on the existing carrier; qualification and all remaining views
-    remain explicit.
+  next_action: Source adapters, Overview projection and DOM controller are reviewed and integrated. Existing input
+    owner must supply applicable source qualification; hosted exact-head CI remains required.
 - id: IM01
   title: Overview
   status: in_progress
   depends_on:
   - IM00
-  next_action: Actual macro template mounts reviewed Overview with preserved legacy and stock mode. Validate final
-    fixture evidence and serve only through the existing publication chain; no accepted live qualification owner
-    yet.
+  next_action: Actual Overview mount, scoped independent source review, 21 render/composition cases, 27 Chrome
+    cases and canonical visual matrix are accepted. Live qualification, authenticated served proof and normal
+    publication remain required.
 - id: IM02
   title: Compare and Rotation
   status: todo
@@ -84,13 +83,13 @@ waves:
   depends_on:
   - IM00
   - IM03
-  next_action: Source review accepted after exact numerical repair; shared controller, browser and publication integration
-    remain owed.
+  next_action: Source review accepted after exact numerical repair; shared controller, browser and publication
+    integration remain owed.
 - id: IM07
   title: Library and deterministic search
   status: in_progress
-  next_action: Pure search and qualified catalogue/resolve source accepted. Bind actual existing rendered tool regions
-    and mount Library through the shared controller; caller qualification remains required.
+  next_action: Pure search and qualified catalogue/resolve source accepted. Bind actual existing rendered tool
+    regions and mount Library through the shared controller; caller qualification remains required.
   depends_on:
   - IM00
 - id: IM08
@@ -110,8 +109,9 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Finish actual Overview integration evidence and consume the Library worker through independent review;
-  preserve the same drafted carrier and incumbent qualification/Saved owners.
+next_action: On an actual Fabric admission recovery, bind the accepted Library consumer to actual rendered legacy
+  tool regions in a bounded build. The critical data dependency is the separately reviewed source qualification
+  extension through the existing input owner. Keep PR8527 Draft until release gates are met.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
@@ -127,28 +127,18 @@ landmines:
   existing Investigation owner and accepted interface.
 ---
 
+The Chairman delivered all three waves to Astra in root `01a1101f-2a37-7320-9a9b-5df3ce1b890d`. PR #8527 is the sole integration carrier. It remains Draft, without auto-merge or a merge-on-green label. No fixed one-worker programme ceiling remains. Every descendant retains the original root and actual host/provider admission; a role or available quota alone creates no capacity.
 
-The Chairman delivered three waves to Astra in Codex root
-`01a1101f-2a37-7320-9a9b-5df3ce1b890d`. The logical plan uses one Sol 6.1
-International CEO and bounded COO/worker groups, with no duplicate CEO per view.
-Native Sol CEO `01a11057-3134-76d2-bcd1-784d69cc17d3` has executed under the Chairman-authorized local exception. The nested COO-to-worker graph is not yet admitted or running.
+Native Sol CEO `01a11057-3134-76d2-bcd1-784d69cc17d3` has executed under the Chairman-authorized local exception, requested `gpt-6.1-sol`; served model is unattested. All commissioned workers and native review phases have settled. The nested COO-to-worker graph is not proven admitted. No unattended Codex-parent wake is installed.
 
-The first bounded construction-fabric worker returned the IM06-T2 calculator
-artifact. Parent review found and repaired inherited-property parser admissions. Native Sol review then found numerical cancellation; Sol authored a bounded repair after an admitted worker timed out, and Astra independently accepted its exact source. Focused tests55/55 and independent oracles2005/2005 plus4900/4900 passed.
-No route mount, served product or production acceptance is claimed.
+The accepted implementation includes the scenario calculator, deterministic Library search, supplied-frame return and chart adapters, route state, qualification-aware Overview projection, actual macro-page DOM integration, and the pure Library catalogue/resolve consumer. Exact source hashes and review limits live in the per-component receipts under `research/paper_international_wave1_wave2/`. Numerical availability never grants current-data or access qualification. Stock mode and all legacy research remain available.
 
-Wave 3 is grouped on the same carrier/PR. Terminal #777 is now confirmed merged; #804 remains Draft at0654cf7ad2fb6c5242fe1fc4ffaae3d48b912a7b. The older memory describing #777 as only a reservation is historical. That earlier one-leaf preference was superseded by the Chairman on October6: use multiple useful coordinators and path-disjoint Fabric workers within existing actual grants, conserving this original root. No fixed one-worker programme ceiling remains.
+The latest accepted source gate covers 94 numerical cases, 21 render/composition cases and 27 real Chrome controller/page cases. The page cases exercise 32 theme/language/width/text-scale states. Canonical committed visual evidence covers eight rest and eight real focus states; synthetic qualified/negative/denied examples are labeled as fixtures. Exact-head hosted CI, live rights and served publication remain separate. Five further workspace views are disabled pending implementation.
 
-Search worker rs_20261006T092239Z_16794 delivered source after the commission was made self-contained. Sol rejected its malformed-identity and Unicode-whitespace boundaries; Astra repaired them and Sol independently approved exact source019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f. Source and100 portable review cases are integrated; combined Node155/155 pass. Original worker outcome remains review-rejected; repaired derivative has its own acceptance evidence.
+The full-GLM Overview template repair resolved six concrete rejected Flash defects. The Library Flash result was separately rejected for metric-descriptor loss, input-dependent ordering and malformed-input failures. Full GLM repaired all three; 23 pytest cases, 24 frozen assertions and 73 independent Sol checks passed. The catalogue consumer is accepted source but is not mounted.
 
-IM00-T1a now adds an adapter inside the existing performance owner through two new paths. After two fully settled admitted timeouts returned no code, Astra took a documented critical-path exception; Sol independently approved exact source. The focused suite passes 43 cases on both Python3.14 and3.12, the prewritten harness passes43 assertions and Sol counterchecks pass23. All nine inherited owner/config inputs remain unchanged. IM00_T1A_EVIDENCE.json binds scope, hashes and limits. Numerical availability is not freshness/rights qualification; no page or production proof is claimed.
+Two installed Fabric faults were repaired and independently reviewed: host selection now honors the narrower configured admission cap, and remote dispatch forwards task complexity. The repair passed 116 distinct affected cases and 52 installed smoke cases. No provider or host limit changed. Later concurrent wrapper changes preserve this repair; the receipt records both revisions. Difficulty still does not automatically select the model: explicit admitted escalation remains necessary. Use GLM Flash for routine bounded building, MiniMax for very easy/repetitive work, and an admitted higher tier for concrete complexity or failures.
 
-IM00-T1b raw chart projection is independently approved at exact source/test hashes in IM00_T1B_EVIDENCE.json. Focused31tests pass locally and onPython3.12; integrated79tests andSol20additionalassertions pass. All13input hashes remain unchanged through the merge observer base refresh. The original worker returned partial source at timeout; parent repair/test derivative has separate acceptance. No qualified current comparison, UI or production claim follows.
+The final browser-fixture dependency repair removed an unused source read that pulled the entire builder graph into CI. Canonical inference now reports zero uncovered paths for both affected jobs. No whole-repository or hosted-green claim follows. Current build selection returned `NONE/no_pool_available`; explicit GLM and Bailian selection also found no eligible host mode. This is task admission evidence, not a fleetwide outage.
 
-IM00-T3a source is independently approved:20 Node cases, frozen33+34 assertions andSol21additional assertions. Original timed-out Fabric candidates remain rejected; Astra repaired the derivative under a bounded exception. IM00_T3A_EVIDENCE.json binds exact bytes. Native Paper mobile light EN/ZH references are captured separately, not product proof. The next Overview projection is frozen but not dispatched after a fresh build selector NONE; no capacity or provider settings changed.
-
-The concurrency/routing phase repaired two installed Fabric faults with independent review: host selection now respects the narrower physical admission cap, and remote economic guards preserve task complexity. FABRIC_ROUTING_REPAIR_EVIDENCE.json records exact source hashes,116 distinct scoped tests and52 installed smoke tests. No capacity limit changed. At the checkpoint Flash controller and Grok chronology repair occupy disjoint source/host lanes; dispatch is not acceptance. The original Overview worker derivatives remain unaccepted pending the nanosecond chronology repair found by Sol. No mounted product or release claim follows.
-
-The Overview projection and DOM controller are now independently source-approved; the actual macro builder/template/entry integration is source-reviewed. 94 numerical cases,18 render/composition cases and24 actual Chrome controller/page cases pass. The latter includes32 responsive/theme/language/text-size states. Formal visual evidence is still being qualified; this is not published product acceptance. The fullGLM template repair was accepted after six concrete Flash defects; a separate Flash Library return is under principal review after a frozen null-metric contract counterexample.
-
-IM07-T1 now has independently approved catalogue/resolve source after fullGLM repaired three Flash contract failures.23pytest cases,24frozen assertions and73Sol delta checks pass. Exact hashes and routing are in IM07_T1_EVIDENCE.json. It grants no rights and is not yet mounted.
+Macro #7202 remains the incumbent performance carrier. Macro #7870 is a Theme Research/shared-kernel dependency, not an International freshness grant. Terminal #777 is merged; #804 remains an incumbent Saved/Investigation dependency. Do not create a new Saved store, source policy plane or Follow writes. The exact continuation is recorded in the matching handoff and external CHECKPOINT; neither record is a scheduler or execution grant.

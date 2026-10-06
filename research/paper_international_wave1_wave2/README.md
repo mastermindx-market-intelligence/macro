@@ -42,9 +42,9 @@ Protected procedure at pickup: Mastermind `a6d40ff648671b03bd4d829d84dd066b58ea8
 
 Input validation passed 17 Wave 1 tests and 75 Wave 2 contract-oracle tests. All three native ZIP digests matched, all 22 Wave 1 payload checks passed, and all 13 Wave 2 image hashes passed. These are specification/reference checks, never product acceptance.
 
-## Wave 3 intake and serial continuation
+## Wave 3 intake and current concurrency
 
-The Chairman supplied Wave 3 and explicitly retained the existing concurrency ceiling: one existing native Sol CEO, at most one bounded fabric leaf at a time, no native grandchildren. New waves join this programme; they do not create extra concurrent CEOs. The packet suggests parallel tasks, but the current Chairman instruction governs scheduling.
+The initial Wave 3 intake retained a one-leaf preference. The later Chairman instruction supersedes that ceiling: dispatch useful path-disjoint Fabric workers and coordinators within actual host/provider/root admission, with review capacity reserved. New waves join this programme. One current native Sol CEO exception remains distinct from fleet capacity; native grandchildren remain excluded. Do not reinstate the historical one-worker programme cap.
 
 Wave 3 archive `6442237dcdf11f224af08c4bdf5f2e01a75206065e75c49694348008e740a1a9` passed 29 internal payload hashes, 62 portable packet checks and 64 specification examples. These are not product tests. It supplies 4 handoffs and 20 tasks. There is no frozen Wave 3 screenshot/JSX archive; preserve the four held search targets and existing browser restriction. Search semantics can be built from the already-read contract.
 

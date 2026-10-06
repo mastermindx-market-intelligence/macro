@@ -62,7 +62,7 @@
   "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/overview-ui",
   "final_review_sha256": "bc7a19b12f349450660e8d7f6fe54ec0469d7927532323dae666d33c5ba5e5ff",
   "dependency_repair_review_sha256": "685eafa331cd4e68d354e45b9f70f8a1a6546ab716602024f77829ad90087b41",
-  "dependency_repair": "Composition helper moved unchanged alongside projection; test reads actual builder ASSETS via AST literal instead of importing entire build graph. Existing upstream builder job scopes2newengine files. Canonical fixture HTML byte parity verified.",
+  "dependency_repair": "Composition helper moved unchanged alongside projection. The final fixture imports that bounded helper directly and does not read the large builder source. Existing upstream builder job scopes its two new engine dependencies. Canonical fixture HTML byte parity verified.",
   "test_only_followup": {
     "change": "Remove unused builder ASSETS declaration read from browser fixture. Real composition and actual template still execute; asset declarations already inspected and normal publication remains a separate gate.",
     "reason": "The first-party read closure follows that Python source file even without importing it, pulling unrelated collectors into a bounded UI test.",
