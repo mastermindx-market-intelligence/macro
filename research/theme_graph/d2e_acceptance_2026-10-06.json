@@ -1,9 +1,9 @@
 {
   "operation": "gmi-theme-accept-d2e-20260827-sol-001",
   "phase": 1,
-  "round": "r1b",
+  "round": "r1d",
   "pin": "cbfa20a45d8401f1cf1cc9fc48155455f1d612fb",
-  "head": "58640b01db0d501a7c704f77314d169dd135140e",
+  "head": "7671cce0227a649361f7740d1c138cac6603c3d9",
   "harness_corrections": [
     {
       "id": "D1",
@@ -20,6 +20,10 @@
     {
       "id": "D7",
       "reason": "site/factordata/us_standouts.json is intentionally unmapped (fail-closed); PASS requires None, not a registry family."
+    },
+    {
+      "id": "r1d-D1",
+      "reason": "r1b computed C5/V3 on the latest-row-per-node view; restored to the R-A7 newest computed_at generation"
     }
   ],
   "generation": {
@@ -79,12 +83,29 @@
       "id": "R1.A",
       "gating": true,
       "gate": "D2A identity resolution",
-      "command": "pytest tests/test_theme_graph_identity*.py",
+      "command": "TZ=UTC COLLECT_LANE=nightly PY -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_identity_resolution.py tests/test_theme_graph_identity.py",
       "rc": 1,
-      "output_tail": "3 failed, 118 passed in 5.16s\ntests/test_theme_graph_identity_resolution.py::test_the_committed_graph_carries_exactly_2806_company_nodes\nE       assert 2807 == 2806",
+      "failing_tests": [
+        "tests/test_theme_graph_identity_resolution.py::test_the_committed_graph_carries_exactly_2806_company_nodes",
+        "tests/test_theme_graph_identity_resolution.py::test_every_company_node_gets_a_row",
+        "tests/test_theme_graph_identity_resolution.py::test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parquet"
+      ],
+      "output_tail": "3 failed, 118 passed in 5.09s\ntests/test_theme_graph_identity_resolution.py::test_the_committed_graph_carries_exactly_2806_company_nodes\nE       assert 2807 == 2806\ntests/test_theme_graph_identity_resolution.py::test_every_company_node_gets_a_row\nE       assert 2807 == 2806\ntests/test_theme_graph_identity_resolution.py::test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parquet\nE       AssertionError: assert 'co:us:VMRK' not in {...}",
+      "cause": "committed nodes.parquet carries 2807 company nodes including co:us:VMRK, a second company node for the EQR->VMRK ticker rename (both co:us:EQR and co:us:VMRK RESOLVED -> SEC:US-XNYS-EQR; first co:us:VMRK sidecar row 2026-09-04T11:52:38Z); the D2A suite pins 2806 and asserts no co:us:VMRK node (\u00a76.1 assertion 3)",
       "verdict": "FAIL",
-      "owner": "D2A identity owner",
-      "repair_packet": "reconcile committed nodes/sidecar with D2A \u00a79 pinned 2806 company count (EQR/VMRK same-security set); re-run TZ=UTC COLLECT_LANE=nightly PY -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_identity_resolution.py tests/test_theme_graph_identity.py"
+      "owner": "seat (WS:GMI-THEME-GRAPH, D2A contract owner)",
+      "repair_packet": "seat rules the canonical company node for the EQR->VMRK rename; then EITHER (a) one D2B3 lifecycle correction merging the duplicate company node (natural rebake, no session rebake) so the committed graph returns to 2806 company nodes, OR (b) a recorded DEC re-pinning D2A \u00a79 to 2807 and re-scoping \u00a76.1 assertion 3 to 'the bridge mints no node'; re-check: the R1.A pytest command above exits 0 on a tree carrying the fix."
+    },
+    {
+      "id": "R1.A-CI",
+      "gating": false,
+      "gate": "D2A suite vs main CI (fail-open probe)",
+      "command": "grep legacy-jobs.yml; gh api actions/runs/37445075780/jobs; gh api ci-pack-10 logs",
+      "rc": 0,
+      "output_tail": "Step owner job unrun-intl-libraries (pack=10 when selected). Run 37445075780 ci-pack-10: Selected jobs: signal-gate-pair-coherence, path-prune-lint, cycle-grading-stats, prophet-lab, china-native-collectors, china-search-universe, cn-standout-audit, qledger-cluster-honest-ci, design-governance, hk-context-chips, metab-throttle-ux, ric-w2-surface, unrun-brain-desks, unrun-dark-guards, zh-filing-term, options-nbbo-cohort, product-experience-capture, options-skew-engine \u2014 unrun-intl-libraries absent; no log match for test_theme_graph_identity_resolution",
+      "verdict": "INFO",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
     },
     {
       "id": "R1.B",
@@ -213,7 +234,7 @@
       "gate": "Identity sidecar R-A2",
       "command": "identity_resolution.parquet NEWEST us-scope",
       "rc": 0,
-      "output_tail": "US total=1239 RESOLVED=1211 NOT_IN_MASTER=25 DEFERRED=2 ENTITY_TYPE_CONFLICT=1; all-scope NEWEST sum=2807; _meta file-total counts unchanged",
+      "output_tail": "US total=1237 RESOLVED=1211 NOT_IN_MASTER=25 DEFERRED=1 (co:us:B) ENTITY_TYPE_CONFLICT=0; RESOLVED share 0.978981; all-scope NEWEST sum=2805 equals _meta.identity_resolution_state_counts",
       "verdict": "PASS",
       "owner": "\u2014",
       "repair_packet": "\u2014"
@@ -301,7 +322,7 @@
       "gate": "Identity generations",
       "command": "identity_resolution NEWEST vs _meta",
       "rc": 0,
-      "output_tail": "NEWEST rows=2807 sum states=2807; file total _meta counts.identity_resolution=2807 (+0 prior-gen rows in NEWEST view)",
+      "output_tail": "NEWEST rows=2805 state sum=2805; _meta.counts.identity_resolution=2807 = 2805 newest + 2 carried (co:us:GOLD, co:us:IBIT); file_rows=154270 generations=55; rows_appended=2805",
       "verdict": "PASS",
       "owner": "\u2014",
       "repair_packet": "\u2014"
@@ -371,12 +392,15 @@
       "retired_live_member_of_violations": 0
     },
     "C5": {
-      "us_total": 1239,
+      "us_total": 1237,
       "RESOLVED": 1211,
       "NOT_IN_MASTER": 25,
-      "DEFERRED_count": 2,
-      "ENTITY_TYPE_CONFLICT": 1,
-      "all_scope_newest_sum": 2807
+      "DEFERRED_count": 1,
+      "DEFERRED_nodes": ["co:us:B"],
+      "ENTITY_TYPE_CONFLICT": 0,
+      "all_scope_newest_sum": 2805,
+      "RESOLVED_share": 0.978981,
+      "carried_not_in_newest": ["co:us:GOLD", "co:us:IBIT"]
     }
   },
   "rights": {
@@ -396,8 +420,8 @@
     "V6_edges_era": {"observed": 12423, "reconstruction": 12677}
   },
   "phase1_verdict": "HOLD:seat:R0.2 Agent OS acceptance trace not recorded",
-  "d2e_verdict": "HOLD:D2A identity owner:R1.A committed D2A tests fail with materialized master (2807 company nodes; VMRK sidecar)",
-  "routed_non_gating": "R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger writer; ledger last changed by #8425/#8465/#8496)",
+  "d2e_verdict": "HOLD:seat:R1.A D2A committed suite red — duplicate company node co:us:VMRK (2807 vs pinned 2806)",
+  "routed_non_gating": "R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger writer; ledger last changed by #8425/#8465/#8496); R1.A-CI INFO -> main ci.yml run 37445075780 ci-pack-10 did not select unrun-intl-libraries",
   "phase2": {
     "status": "PENDING"
   }
