@@ -828,6 +828,54 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
   </section>
   {% endif %}
 
+  {% if explanation_view and explanation_view.get('mechanisms') %}
+  <section class="landing" id="bond-explanations">
+    <p class="landing-kicker">{{ t('WHY BONDS ARE MOVING', '债券为何波动') }}</p>
+    <div class="card">
+      <h2>{{ t('Competing explanations — keep the disagreement visible', '竞争性解释 — 保留分歧') }}</h2>
+      <p class="sub faint">{{ t(
+        'Five evidence rows from existing owners. They are descriptive/mechanical context, not probabilities, forecasts or a forced single story.',
+        '来自现有权威来源的五条证据路径。它们是描述性/机制性背景，不是概率、预测或强行归一的单一叙事。'
+      ) }}</p>
+      {% set _src = explanation_view.get('source_status', {}) %}
+      <p class="sub faint">{{ t('Source join', '来源连接') }} · {{ _src.get('state', 'unknown') }}{% if explanation_view.get('as_of') %} · {{ explanation_view.get('as_of') }}{% endif %}</p>
+
+      {% for row in explanation_view.get('mechanisms', []) %}
+      <details class="card" style="margin-top:10px">
+        <summary>
+          <b><span class="l-en">{{ row.get('label', {}).get('en') }}</span><span class="l-zh">{{ row.get('label', {}).get('zh') }}</span></b>
+          <span class="sub faint"> · {{ row.get('state', 'unknown') }}</span>
+        </summary>
+        <p class="sub" style="margin-top:8px"><span class="l-en">{{ row.get('summary', {}).get('en') }}</span><span class="l-zh">{{ row.get('summary', {}).get('zh') }}</span></p>
+        {% if row.get('withheld_reason') %}
+        <p class="sub faint"><b>{{ t('Withheld', '暂不判断') }}:</b> <span class="l-en">{{ row.get('withheld_reason', {}).get('en') }}</span><span class="l-zh">{{ row.get('withheld_reason', {}).get('zh') }}</span></p>
+        {% endif %}
+
+        {% for bucket, label_en, label_zh in [('supports','Supports','支持'), ('contradicts','Contradicts','反驳'), ('missing','Missing / withheld','缺失 / 暂不使用')] %}
+          {% set items = row.get(bucket, []) %}
+          {% if items %}
+          <div class="sub" style="margin-top:8px"><b>{{ t(label_en, label_zh) }}</b></div>
+          {% for item in items %}
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">{{ item.get('claim', {}).get('en') }}</span><span class="l-zh">{{ item.get('claim', {}).get('zh') }}</span>
+            <span> · {{ item.get('source') or 'source unavailable' }}{% if item.get('source_as_of') %} · {{ item.get('source_as_of') }}{% endif %}</span>
+            {% if item.get('limit') %}
+              <span> · </span><span class="l-en">{{ item.get('limit', {}).get('en') }}</span><span class="l-zh">{{ item.get('limit', {}).get('zh') }}</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </details>
+      {% endfor %}
+      <p class="sub faint" style="margin-top:10px">{{ t(
+        'Display-only evidence. No score, probability, alert, holding, trade or market state is changed here.',
+        '仅展示证据。本区不会改变评分、概率、提醒、持仓、交易或市场状态。'
+      ) }}</p>
+    </div>
+  </section>
+  {% endif %}
+
   <!-- ===================== LANDING: FED PATH ===================== -->
   {% if fed_path %}
   <section class="landing" id="fed-path">
