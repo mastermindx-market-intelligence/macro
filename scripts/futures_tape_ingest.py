@@ -1,0 +1,624 @@
+#!/usr/bin/env python3
+"""Acquire, normalize, derive and audit the Mastermind futures tape plane.
+
+This is a bounded Data OS producer, not a scheduler and not a signal engine.
+
+Examples:
+  python -m scripts.futures_tape_ingest storage
+  python -m scripts.futures_tape_ingest probe-lse --symbol ES.F
+  python -m scripts.futures_tape_ingest backfill-lse --symbol ES.F --start 2020-03-01 --end 2020-04-01
+  python -m scripts.futures_tape_ingest normalize-lse
+  python -m scripts.futures_tape_ingest derive-bars --instrument LSE_ES.F --freq 1min
+  python -m scripts.futures_tape_ingest audit
+
+Production hosts should set MMX_FUTURES_TAPE_ROOT to the external SSD. Bulk work
+is capacity-gated and defaults to preserving 100 GiB free space.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shutil
+import sys
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from lib.dataos.futures_tape import (  # noqa: E402
+    PartitionManifest,
+    PartitionState,
+    SourceRole,
+    audit_manifests,
+    capacity,
+    derived_bar_path,
+    manifest_path,
+    normalized_day_path,
+    raw_export_path,
+    require_capacity,
+    sha256_file,
+    storage_root,
+    utc_now,
+    verify_manifest,
+    write_manifest_atomic,
+)
+
+DEFAULT_RESERVE_GIB = 100.0
+LSE_EXPORT_ROW_CAP = 1_000_000
+LSE_KEY_ENV = "LSE_API_KEY"
+
+
+def _pandas():
+    try:
+        import pandas as pd
+    except Exception as exc:  # pragma: no cover - host dependency
+        raise SystemExit(f"pandas is required for this command: {exc}") from exc
+    return pd
+
+
+def _lse_client():
+    try:
+        from lse import LSE
+    except Exception as exc:  # pragma: no cover - optional dependency
+        raise SystemExit(
+            "lse-data is not installed. Install the official SDK in the ops environment "
+            "(pip install 'lse-data[frames]') before an LSE source probe/backfill."
+        ) from exc
+    key = (os.environ.get(LSE_KEY_ENV) or "").strip()
+    if not key:
+        raise SystemExit(f"{LSE_KEY_ENV} is not set; source effects are blocked.")
+    return LSE(api_key=key)
+
+
+def _catalog_row(client: Any, symbol: str) -> dict:
+    rows = client.catalog("futures")
+    for row in rows or []:
+        if str(row.get("symbol") or "").upper() == symbol.upper():
+            return dict(row)
+    raise SystemExit(f"{symbol!r} not present in LSE futures catalog")
+
+
+def cmd_storage(args: argparse.Namespace) -> int:
+    root = storage_root(args.root)
+    c = capacity(root)
+    print(json.dumps({
+        "root": str(root),
+        "total_gib": round(c.total_bytes / 1024 ** 3, 2),
+        "used_gib": round(c.used_bytes / 1024 ** 3, 2),
+        "free_gib": round(c.free_gib, 2),
+        "reserve_gib": args.reserve_gib,
+        "bulk_ready": c.free_gib >= args.reserve_gib,
+    }, indent=2))
+    return 0 if c.free_gib >= args.reserve_gib else 2
+
+
+def cmd_probe_lse(args: argparse.Namespace) -> int:
+    client = _lse_client()
+    row = _catalog_row(client, args.symbol)
+    usage = None
+    fn = getattr(client, "usage", None)
+    if callable(fn):
+        try:
+            usage = fn()
+        except Exception:
+            usage = {"status": "unavailable"}
+    print(json.dumps({
+        "source": "lse",
+        "role": SourceRole.VENDOR_CONTINUOUS.value,
+        "symbol": args.symbol,
+        "catalog": row,
+        "usage": usage,
+        "probed_at_utc": utc_now(),
+    }, indent=2, default=str))
+    return 0
+
+
+def _coerce_history_result(result: Any, scratch: Path):
+    pd = _pandas()
+    if hasattr(result, "to_parquet") and hasattr(result, "columns"):
+        return result.copy()
+    if isinstance(result, (str, os.PathLike)):
+        return pd.read_parquet(Path(result))
+    if isinstance(result, list):
+        return pd.DataFrame(result)
+    if isinstance(result, dict):
+        rows = result.get("results") or result.get("rows")
+        if isinstance(rows, list):
+            return pd.DataFrame(rows)
+    raise SystemExit(
+        f"unsupported LSE history() return type {type(result).__name__}; "
+        "upgrade/adapt the source adapter before writing bytes"
+    )
+
+
+def _timestamp_column(df) -> str | None:
+    lower = {str(c).lower(): str(c) for c in df.columns}
+    for candidate in ("timestamp_utc", "window_start_utc", "timestamp", "ts", "datetime", "time"):
+        if candidate in lower:
+            return lower[candidate]
+    return None
+
+
+def _row_bounds(df) -> tuple[str | None, str | None]:
+    col = _timestamp_column(df)
+    if not col or len(df) == 0:
+        return None, None
+    pd = _pandas()
+    s = pd.to_datetime(df[col], utc=True, errors="coerce").dropna()
+    if s.empty:
+        return None, None
+    return s.min().isoformat(), s.max().isoformat()
+
+
+def _write_dataframe_export(
+    df,
+    target: Path,
+    *,
+    source: str,
+    source_role: SourceRole,
+    source_symbol: str,
+    state: PartitionState,
+    request_start: str | None = None,
+    request_end: str | None = None,
+) -> PartitionManifest:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    partial = target.with_suffix(target.suffix + ".partial")
+    if partial.exists():
+        partial.unlink()
+    df.to_parquet(partial, index=False)
+    os.replace(partial, target)
+    lo, hi = _row_bounds(df)
+    rel = target.relative_to(storage_root()).as_posix()
+    manifest = PartitionManifest(
+        source=source,
+        source_role=source_role.value,
+        source_symbol=source_symbol,
+        state=state.value,
+        relative_path=rel,
+        row_count=int(len(df)),
+        byte_count=int(target.stat().st_size),
+        sha256=sha256_file(target),
+        retrieved_at_utc=utc_now(),
+        min_timestamp_utc=lo,
+        max_timestamp_utc=hi,
+        request_start=request_start,
+        request_end=request_end,
+    )
+    write_manifest_atomic(target, manifest)
+    return manifest
+
+
+def _read_manifest(target: Path) -> PartitionManifest | None:
+    receipt = manifest_path(target)
+    if not receipt.is_file():
+        return None
+    try:
+        manifest = PartitionManifest.from_json(receipt.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    return manifest
+
+
+def _manifest_state(target: Path) -> PartitionState | None:
+    manifest = _read_manifest(target)
+    if manifest is None:
+        return None
+    try:
+        return PartitionState(manifest.state)
+    except ValueError:
+        return None
+
+
+def _valid_receipted(
+    root: Path,
+    target: Path,
+    required_state: PartitionState | None = None,
+) -> bool:
+    receipt = manifest_path(target)
+    if not (target.is_file() and receipt.is_file()) or verify_manifest(root, receipt):
+        return False
+    if required_state is not None and _manifest_state(target) is not required_state:
+        return False
+    return True
+
+
+def _lse_window_state(end: str) -> PartitionState:
+    # Range end is exclusive. Date-only end=YYYY-MM-DD names midnight at the
+    # start of that UTC date, so end==today means the preceding day is closed.
+    # Timestamped windows that end *inside* the current UTC day remain
+    # provisional even if their wall-clock endpoint has passed: the historical
+    # provider may still correct that current-day tape. Older timestamped
+    # windows are final.
+    raw = str(end).strip()
+    try:
+        end_day = date.fromisoformat(raw[:10])
+    except ValueError as exc:
+        raise SystemExit("--end must begin with YYYY-MM-DD") from exc
+    today_utc = datetime.now(timezone.utc).date()
+    if len(raw) == 10:
+        return PartitionState.FINAL if end_day <= today_utc else PartitionState.PROVISIONAL
+    return PartitionState.FINAL if end_day < today_utc else PartitionState.PROVISIONAL
+
+
+def _date_chunks(start: str, end: str, chunk_days: int) -> list[tuple[str, str]]:
+    if chunk_days < 1:
+        raise SystemExit("--chunk-days must be >= 1")
+    try:
+        left = date.fromisoformat(start)
+        stop = date.fromisoformat(end)
+    except ValueError as exc:
+        raise SystemExit("--start/--end must be YYYY-MM-DD") from exc
+    if stop <= left:
+        raise SystemExit("--end must be after --start")
+    out: list[tuple[str, str]] = []
+    cur = left
+    while cur < stop:
+        nxt = min(stop, cur + timedelta(days=chunk_days))
+        out.append((cur.isoformat(), nxt.isoformat()))
+        cur = nxt
+    return out
+
+
+def cmd_plan_lse(args: argparse.Namespace) -> int:
+    root = storage_root(args.root)
+    windows = _date_chunks(args.start, args.end, args.chunk_days)
+    plan = []
+    for start, end in windows:
+        target = raw_export_path(root, "lse", args.symbol, start, end)
+        required_state = _lse_window_state(end)
+        plan.append({
+            "start": start,
+            "end": end,
+            "path": str(target),
+            "required_state": required_state.value,
+            "complete": _valid_receipted(root, target, required_state),
+        })
+    print(json.dumps({
+        "symbol": args.symbol,
+        "windows": plan,
+        "total": len(plan),
+        "complete": sum(1 for x in plan if x["complete"]),
+        "remaining": sum(1 for x in plan if not x["complete"]),
+    }, indent=2))
+    return 0
+
+
+def cmd_backfill_lse_range(args: argparse.Namespace) -> int:
+    if args.max_jobs < 1:
+        raise SystemExit("--max-jobs must be >= 1")
+    root = storage_root(args.root)
+    os.environ["MMX_FUTURES_TAPE_ROOT"] = str(root)
+    require_capacity(root, args.reserve_gib)
+    windows = _date_chunks(args.start, args.end, args.chunk_days)
+    launched = 0
+    skipped = 0
+    for start, end in windows:
+        target = raw_export_path(root, "lse", args.symbol, start, end)
+        required_state = _lse_window_state(end)
+        if _valid_receipted(root, target, required_state) and not args.force:
+            skipped += 1
+            continue
+        if launched >= args.max_jobs:
+            break
+        rc = cmd_backfill_lse(argparse.Namespace(
+            root=str(root),
+            reserve_gib=args.reserve_gib,
+            symbol=args.symbol,
+            start=start,
+            end=end,
+            force=args.force,
+        ))
+        if rc != 0:
+            return rc
+        launched += 1
+    remaining = 0
+    for start, end in windows:
+        target = raw_export_path(root, "lse", args.symbol, start, end)
+        if not _valid_receipted(root, target, _lse_window_state(end)):
+            remaining += 1
+    print(json.dumps({
+        "status": "complete" if remaining == 0 else "partial",
+        "jobs_run": launched,
+        "already_valid": skipped,
+        "remaining": remaining,
+        "max_jobs": args.max_jobs,
+    }))
+    # A bounded invocation that used its export-job budget successfully is healthy
+    # even when more windows remain. The next scheduled/operator invocation resumes.
+    return 0
+
+
+def cmd_backfill_lse(args: argparse.Namespace) -> int:
+    root = storage_root(args.root)
+    # Keep storage_root() coherent for manifest relative paths inside this process.
+    os.environ["MMX_FUTURES_TAPE_ROOT"] = str(root)
+    require_capacity(root, args.reserve_gib)
+    target = raw_export_path(root, "lse", args.symbol, args.start, args.end)
+    desired_state = _lse_window_state(args.end)
+    if _valid_receipted(root, target, desired_state) and not args.force:
+        print(json.dumps({
+            "status": "already_present_valid",
+            "state": desired_state.value,
+            "path": str(target),
+        }))
+        return 0
+
+    client = _lse_client()
+    _catalog_row(client, args.symbol)  # fail before export if symbol identity is wrong
+    kwargs = {"start": args.start, "end": args.end}
+    result = client.history(args.symbol, **kwargs)
+    df = _coerce_history_result(result, target.parent)
+    # The public LSE free-plan databank documents a 1,000,000-row export cap.
+    # A capped export can look like a valid Parquet file while silently omitting
+    # the tail of a dense window, so never finalize an at/over-cap result.
+    if len(df) >= LSE_EXPORT_ROW_CAP:
+        raise SystemExit(
+            f"LSE export returned {len(df):,} rows for {args.start}..{args.end}; "
+            "treat as capped/incomplete and retry this window at finer granularity"
+        )
+    manifest = _write_dataframe_export(
+        df, target,
+        source="lse",
+        source_role=SourceRole.VENDOR_CONTINUOUS,
+        source_symbol=args.symbol,
+        state=desired_state,
+        request_start=args.start,
+        request_end=args.end,
+    )
+    print(manifest.to_json(), end="")
+    return 0
+
+
+def _normalize_lse_frame(df, source_symbol: str):
+    pd = _pandas()
+    lower = {str(c).lower(): str(c) for c in df.columns}
+    ts_col = _timestamp_column(df)
+    price_col = next((lower[k] for k in ("price", "last", "close") if k in lower), None)
+    if not ts_col or not price_col:
+        raise SystemExit(
+            f"LSE raw export needs timestamp and price columns; got {list(df.columns)}"
+        )
+    out = pd.DataFrame({
+        "timestamp_utc": pd.to_datetime(df[ts_col], utc=True, errors="coerce"),
+        "price_raw": pd.to_numeric(df[price_col], errors="coerce"),
+        "source_symbol": source_symbol,
+    })
+    for canonical, candidates in {
+        "bid_raw": ("bid", "bid_price"),
+        "ask_raw": ("ask", "ask_price"),
+        "volume": ("volume", "size", "qty"),
+    }.items():
+        src = next((lower[k] for k in candidates if k in lower), None)
+        out[canonical] = pd.to_numeric(df[src], errors="coerce") if src else None
+    out = out.dropna(subset=["timestamp_utc", "price_raw"]).sort_values("timestamp_utc")
+    out = out.drop_duplicates(subset=["timestamp_utc", "price_raw", "volume"], keep="last")
+    return out
+
+
+def _parse_utc_boundary(value: str | None) -> datetime | None:
+    if value is None:
+        return None
+    raw = str(value).strip()
+    if not raw:
+        return None
+    if len(raw) == 10:
+        raw += "T00:00:00+00:00"
+    elif raw.endswith("Z"):
+        raw = raw[:-1] + "+00:00"
+    try:
+        dt = datetime.fromisoformat(raw)
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def _day_is_fully_covered(day: str, manifests: list[PartitionManifest]) -> bool:
+    """True only when FINAL raw request windows cover the full UTC day without gaps."""
+    day_start = datetime.fromisoformat(day).replace(tzinfo=timezone.utc)
+    day_end = day_start + timedelta(days=1)
+    spans: list[tuple[datetime, datetime]] = []
+    for manifest in manifests:
+        if manifest.state != PartitionState.FINAL.value:
+            continue
+        start = _parse_utc_boundary(manifest.request_start)
+        end = _parse_utc_boundary(manifest.request_end)
+        if start is None or end is None or end <= start:
+            continue
+        left = max(start, day_start)
+        right = min(end, day_end)
+        if right > left:
+            spans.append((left, right))
+    if not spans:
+        return False
+    spans.sort()
+    cursor = day_start
+    for left, right in spans:
+        if left > cursor:
+            return False
+        if right > cursor:
+            cursor = right
+        if cursor >= day_end:
+            return True
+    return False
+
+
+def cmd_normalize_lse(args: argparse.Namespace) -> int:
+    pd = _pandas()
+    root = storage_root(args.root)
+    os.environ["MMX_FUTURES_TAPE_ROOT"] = str(root)
+    source_dir = root / "raw" / "source=lse" / f"symbol={args.symbol}"
+    paths = sorted(source_dir.glob("window=*/export.parquet"))
+    if not paths:
+        raise SystemExit(f"no raw LSE exports found under {source_dir}")
+
+    by_day: dict[str, list] = {}
+    manifests_by_day: dict[str, list[PartitionManifest]] = {}
+    for raw in paths:
+        if not _valid_receipted(root, raw):
+            raise SystemExit(f"raw source partition has no valid receipt: {raw}")
+        manifest = _read_manifest(raw)
+        if manifest is None:
+            raise SystemExit(f"raw source partition manifest is unreadable: {raw}")
+        df = pd.read_parquet(raw)
+        norm = _normalize_lse_frame(df, args.symbol)
+        if norm.empty:
+            continue
+        norm["_date"] = norm["timestamp_utc"].dt.strftime("%Y-%m-%d")
+        for day, part in norm.groupby("_date", sort=True):
+            by_day.setdefault(day, []).append(part.drop(columns=["_date"]))
+            manifests_by_day.setdefault(day, []).append(manifest)
+
+    written = 0
+    for day in sorted(by_day):
+        frame = pd.concat(by_day[day], ignore_index=True)
+        frame = frame.sort_values("timestamp_utc")
+        frame = frame.drop_duplicates(
+            subset=["timestamp_utc", "price_raw", "volume"], keep="last"
+        ).reset_index(drop=True)
+        desired_state = (
+            PartitionState.FINAL
+            if _day_is_fully_covered(day, manifests_by_day[day])
+            else PartitionState.PROVISIONAL
+        )
+        target = normalized_day_path(root, "lse", args.identity, day)
+        if (
+            desired_state is PartitionState.FINAL
+            and _valid_receipted(root, target, PartitionState.FINAL)
+            and not args.force
+        ):
+            continue
+        _write_dataframe_export(
+            frame,
+            target,
+            source="lse",
+            source_role=SourceRole.VENDOR_CONTINUOUS,
+            source_symbol=args.symbol,
+            state=desired_state,
+        )
+        written += 1
+    print(json.dumps({"status": "ok", "daily_partitions_written": written}))
+    return 0
+
+
+def cmd_derive_bars(args: argparse.Namespace) -> int:
+    pd = _pandas()
+    root = storage_root(args.root)
+    os.environ["MMX_FUTURES_TAPE_ROOT"] = str(root)
+    src = root / "normalized" / "ticks" / "source=lse" / f"instrument={args.instrument}"
+    paths = sorted(src.glob("date=*/part-000.parquet"))
+    if not paths:
+        raise SystemExit(f"no normalized ticks found under {src}")
+    written = 0
+    for path in paths:
+        if not _valid_receipted(root, path):
+            raise SystemExit(f"normalized partition has no valid receipt: {path}")
+        input_state = _manifest_state(path)
+        if input_state is None:
+            raise SystemExit(f"normalized partition state is unreadable: {path}")
+        df = pd.read_parquet(path)
+        if df.empty:
+            continue
+        idx = pd.to_datetime(df["timestamp_utc"], utc=True, errors="coerce")
+        x = df.assign(_ts=idx).dropna(subset=["_ts"]).set_index("_ts")
+        bars = x["price_raw"].resample(args.freq, label="left", closed="left").ohlc()
+        if "volume" in x:
+            bars["volume"] = x["volume"].resample(args.freq).sum(min_count=1)
+        bars = bars.dropna(subset=["open", "high", "low", "close"]).reset_index()
+        bars = bars.rename(columns={"_ts": "window_start_utc"})
+        day = path.parent.name.split("=", 1)[-1]
+        target = derived_bar_path(root, args.instrument, args.freq, day)
+        if (
+            input_state is PartitionState.FINAL
+            and _valid_receipted(root, target, PartitionState.FINAL)
+            and not args.force
+        ):
+            continue
+        _write_dataframe_export(
+            bars, target,
+            source="mmx",
+            source_role=SourceRole.MMX_DERIVED_CONTINUOUS,
+            source_symbol=args.instrument,
+            state=input_state,
+        )
+        written += 1
+    print(json.dumps({"status": "ok", "bar_partitions_written": written, "freq": args.freq}))
+    return 0
+
+
+def cmd_audit(args: argparse.Namespace) -> int:
+    root = storage_root(args.root)
+    problems = audit_manifests(root)
+    result = {"root": str(root), "ok": not problems, "problems": problems}
+    print(json.dumps(result, indent=2))
+    return 0 if not problems else 1
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
+    ap.add_argument("--root", default=None, help="override MMX_FUTURES_TAPE_ROOT")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+
+    p = sub.add_parser("storage")
+    p.add_argument("--reserve-gib", type=float, default=DEFAULT_RESERVE_GIB)
+    p.set_defaults(func=cmd_storage)
+
+    p = sub.add_parser("probe-lse")
+    p.add_argument("--symbol", default="ES.F")
+    p.set_defaults(func=cmd_probe_lse)
+
+    p = sub.add_parser("plan-lse")
+    p.add_argument("--symbol", default="ES.F")
+    p.add_argument("--start", required=True)
+    p.add_argument("--end", required=True)
+    p.add_argument("--chunk-days", type=int, default=1)
+    p.set_defaults(func=cmd_plan_lse)
+
+    p = sub.add_parser("backfill-lse-range")
+    p.add_argument("--symbol", default="ES.F")
+    p.add_argument("--start", required=True)
+    p.add_argument("--end", required=True)
+    p.add_argument("--chunk-days", type=int, default=1)
+    p.add_argument("--max-jobs", type=int, default=1,
+                   help="maximum new LSE export jobs this invocation")
+    p.add_argument("--reserve-gib", type=float, default=DEFAULT_RESERVE_GIB)
+    p.add_argument("--force", action="store_true")
+    p.set_defaults(func=cmd_backfill_lse_range)
+
+    p = sub.add_parser("backfill-lse")
+    p.add_argument("--symbol", default="ES.F")
+    p.add_argument("--start", required=True)
+    p.add_argument("--end", required=True)
+    p.add_argument("--reserve-gib", type=float, default=DEFAULT_RESERVE_GIB)
+    p.add_argument("--force", action="store_true")
+    p.set_defaults(func=cmd_backfill_lse)
+
+    p = sub.add_parser("normalize-lse")
+    p.add_argument("--symbol", default="ES.F")
+    p.add_argument("--identity", default="LSE_ES.F")
+    p.add_argument("--force", action="store_true")
+    p.set_defaults(func=cmd_normalize_lse)
+
+    p = sub.add_parser("derive-bars")
+    p.add_argument("--instrument", default="LSE_ES.F")
+    p.add_argument("--freq", default="1min")
+    p.add_argument("--force", action="store_true")
+    p.set_defaults(func=cmd_derive_bars)
+
+    p = sub.add_parser("audit")
+    p.set_defaults(func=cmd_audit)
+    return ap
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = _build_parser()
+    args = ap.parse_args(argv)
+    return int(args.func(args))
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
