@@ -237,3 +237,68 @@ def test_read_only_open_refuses_wrong_schema_without_mutating_file(tmp_path):
         m.NewsStore.open_readonly(db, source_key="benzinga-rest")
 
     assert db.read_bytes() == before
+
+
+def test_snapshot_query_count_is_constant_with_many_clusters(tmp_path):
+    db = tmp_path / "q.sqlite3"
+    rows = []
+    for i in range(60):
+        token = f"{chr(65 + (i // 26))}{chr(65 + (i % 26))}"
+        rows.append(
+            _routed(
+                item_id=1000 + i,
+                title=f"{token} isolated catalyst marker {i * 104729 + 31}",
+                minute=i,
+            )
+        )
+
+    with m.NewsStore(db, source_key="benzinga-rest") as store:
+        store.commit(rows, expected_cursor=None, next_cursor="1")
+        statements = []
+        store._conn.set_trace_callback(statements.append)
+        try:
+            snapshot = store.snapshot(
+                "SEC:US-XNAS-NVDA",
+                limit=50,
+                cursor=None,
+                rights=_rights(),
+            )
+        finally:
+            store._conn.set_trace_callback(None)
+
+    selects = [
+        statement
+        for statement in statements
+        if statement.lstrip().upper().startswith("SELECT")
+    ]
+    assert len(snapshot.rows) == 50
+    assert len(selects) <= 3, selects
+    assert all("state_json" not in statement.lower() for statement in selects)
+
+
+
+def test_writer_rebuilds_missing_read_projection_from_canonical_state(tmp_path):
+    db = tmp_path / "q.sqlite3"
+    with m.NewsStore(db, source_key="benzinga-rest") as store:
+        store.commit([_routed()], expected_cursor=None, next_cursor="1")
+
+    conn = sqlite3.connect(db)
+    conn.execute("DROP TABLE news_state_projection")
+    conn.commit()
+    conn.close()
+
+    with m.NewsStore(db, source_key="benzinga-rest") as reopened:
+        row = reopened._conn.execute(
+            "SELECT title, received_at FROM news_state_projection "
+            "WHERE source='benzinga' AND source_item_id='1'"
+        ).fetchone()
+        assert row is not None
+        assert row["title"] == "Nvidia launches accelerator"
+        assert row["received_at"]
+        snapshot = reopened.snapshot(
+            "SEC:US-XNAS-NVDA",
+            limit=10,
+            cursor=None,
+            rights=_rights(),
+        )
+        assert snapshot.rows[0].title == "Nvidia launches accelerator"

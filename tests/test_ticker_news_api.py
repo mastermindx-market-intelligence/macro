@@ -324,3 +324,25 @@ def test_production_app_mounts_all_private_ticker_news_routes() -> None:
     assert client.get("/api/ticker-news/NVDA/changes").status_code == 401
     assert client.get("/api/ticker-news/NVDA/stream").status_code == 401
     assert client.get("/api/ticker-news/stories/ev2_missing").status_code == 401
+
+
+def test_snapshot_default_initial_page_is_twenty(monkeypatch, tmp_path):
+    _ticker_news, app, _db = _app(monkeypatch, tmp_path)
+    seen = []
+    original = store_mod.NewsStore.snapshot
+
+    def wrapped(self, security_id, *, limit, cursor, rights):
+        seen.append(limit)
+        return original(
+            self,
+            security_id,
+            limit=limit,
+            cursor=cursor,
+            rights=rights,
+        )
+
+    monkeypatch.setattr(store_mod.NewsStore, "snapshot", wrapped)
+    response = TestClient(app).get("/api/ticker-news/NVDA")
+
+    assert response.status_code == 200
+    assert seen == [20]
