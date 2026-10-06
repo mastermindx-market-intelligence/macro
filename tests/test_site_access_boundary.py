@@ -78,7 +78,7 @@ def _caddy_public_exclusions() -> set[str]:
 
 
 def _caddy_site_block(host: str) -> str:
-    match = re.search(rf"^{re.escape(host)} \\{{\\n(.*?)^\\}}", CADDY, flags=re.S | re.M)
+    match = re.search(rf"^{re.escape(host)} \{{\n(.*?)^\}}", CADDY, flags=re.S | re.M)
     assert match, f"Caddy site block missing for {host}"
     return match.group(1)
 
