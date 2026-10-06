@@ -32,7 +32,7 @@
     "basis": "Self-inclusion at weight 1/N mechanically correlates residual with own return"
   },
   "stale_zero_rule": {
-    "value": "Omit missing or zero-volume cells; omit zero-return positive-volume cells; exclude session after three consecutive identical closes on positive volume; corrupt parquet absent",
+    "value": "Omit missing or zero-volume cells; omit zero-return positive-volume cells; exclude session after repeated identical closes across three or more consecutive positive-volume bars; corrupt parquet absent",
     "basis_label": "INHERITED",
     "basis": "scripts/build_polygon_intraday.py:171-185 tolerant read plus ASSUMED stale-print and zero-return guards"
   },
