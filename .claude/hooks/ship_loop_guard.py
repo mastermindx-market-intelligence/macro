@@ -479,6 +479,61 @@ def _repo_root(payload: dict[str, Any]) -> Path | None:
     return None
 
 
+# A resumed Claude Desktop/Code conversation can outlive the linked worktree it was
+# born in. Upstream Desktop resume bugs have also been observed rebinding an existing
+# conversation to the repository's primary checkout. The ship loop cannot repair that
+# by changing a shell cwd: the durable session root is already wrong. Quarantine such
+# sessions BEFORE their first modifying tool instead of discovering the mismatch at
+# Stop after work has happened.
+_ROOT_ADMISSION_VERSION = 1
+_ROOT_QUARANTINE_READ_ONLY_TOOLS = frozenset({
+    "Read",
+    "Glob",
+    "Grep",
+    "WebFetch",
+    "WebSearch",
+    "AskUserQuestion",
+})
+
+
+def _resolved_git_path(root: Path, raw: str) -> Path:
+    path = Path(raw)
+    if not path.is_absolute():
+        path = root / path
+    return path.resolve()
+
+
+def _delivery_root_admission(root: Path) -> tuple[bool, str]:
+    """Admit only a linked worktree on a claude/* branch for delivery work.
+
+    A branch name alone is insufficient: the shared primary checkout can itself
+    be put on a claude/* branch, which would still let one session mutate the root
+    used by every other process. Conversely, being a linked worktree alone is not
+    enough because the ship loop's ownership chain is defined on claude/*.
+
+    Unknown git identity fails closed. This is admission, not completion: the
+    existing Stop chain still owns every delivery/CI/merge/live proof after a
+    session has been admitted.
+    """
+    try:
+        branch = _run(root, "git", "branch", "--show-current")
+        git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
+        common_dir = _resolved_git_path(
+            root, _run(root, "git", "rev-parse", "--git-common-dir")
+        )
+    except Exception as exc:
+        return False, f"git identity unavailable ({type(exc).__name__})"
+
+    reasons: list[str] = []
+    if git_dir == common_dir:
+        reasons.append("cwd is the primary/shared checkout, not a linked worktree")
+    if not branch.startswith("claude/"):
+        reasons.append(f"branch {branch or 'detached HEAD'} is not claude/*")
+    if reasons:
+        return False, "; ".join(reasons)
+    return True, ""
+
+
 def _state_path(root: Path, payload: dict[str, Any]) -> Path:
     session = re.sub(r"[^A-Za-z0-9_.-]", "_", str(payload.get("session_id") or "default"))
     repo_key = hashlib.sha256(str(root).encode()).hexdigest()[:16]
@@ -4296,50 +4351,109 @@ def _block(
 
 def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
     source = str(payload.get("source") or "")
+    admitted, admission_reason = _delivery_root_admission(root)
     state = _load(path)
     if state is None or source in {"startup", "clear"}:
         state = {
             "root": str(root),
             "start_head": _run(root, "git", "rev-parse", "HEAD"),
-            "baseline": _fingerprint(root),
+            # A quarantined root is read-only, so paying for a full fingerprint of
+            # the shared checkout is both needless and capable of adding fleet noise.
+            "baseline": _fingerprint(root) if admitted else {},
             "last_blocker": "",
             "blocker_count": 0,
             "total_blocks": 0,
             "external_blocks": 0,
         }
-        _save(path, state)
+    # Refresh on every startup/resume/compact. A Desktop conversation can retain
+    # its session identity while its durable cwd changes underneath it.
+    state["root_admission_v"] = _ROOT_ADMISSION_VERSION
+    state["root_admitted"] = admitted
+    state["root_admission_reason"] = admission_reason
+    _save(path, state)
+
+    ship_loop_context = (
+        "MANDATORY SHIP LOOP: Repository rules grant standing approval for "
+        "commit, push, pull request, CI repair, same-day squash merge, deploy "
+        "waiting, and real-live verification. Work only in a fresh "
+        ".claude/worktrees/ claude/* branch. Do not stop at a local change, "
+        "commit, or open PR. This session's starting dirty files were recorded "
+        "and are excluded from enforcement.\n"
+        "EXECUTION CONTINUATION LAW: A blocker freezes the affected lane "
+        "only - check independent authorized lanes and continue. If no "
+        "worker started and lawful principal tools and custody remain, "
+        "with no conflicting owner and no EFFECT_UNKNOWN, bounded direct "
+        "execution may continue; a delegation surface being unavailable "
+        "is not a reason to stop. A wait on external machinery is handed "
+        "to a durable watcher or owner while you do parallel work - never "
+        "spend principal capacity polling. Two equivalent no-delta cycles "
+        "means change tactic, lane, or owner. Accepted work is "
+        "DO_NOT_REDO unless materially invalidated. EFFECT_UNKNOWN is "
+        "reconciled on the same carrier, never by blind retry or "
+        "failover. ACK, QUEUED, START, RUNNING, DELIVERED, CI, MERGED, "
+        "PRODUCTION_PROOF and ACCEPTANCE are distinct facts and none "
+        "implies the next. Before a substantial session ends, state one "
+        "line `SESSION END: <STATE>` with STATE in PROVEN_OUTCOME, "
+        "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, PLATFORM_FAILURE, "
+        "ALL_SCOPED_LANES_BLOCKED, DURABLE_EXECUTION_RUNNING, "
+        "MORE_WORK_EXISTS - and MORE_WORK_EXISTS plus "
+        "ALL_SCOPED_LANES_BLOCKED are never valid stopping states. "
+        "The latter is a diagnostic: internal blockers must be resolved, "
+        "routed to their canonical owner, or bound to real durable execution."
+    )
+    if not admitted:
+        context = (
+            "SESSION ROOT QUARANTINE: This conversation is attached to a repository "
+            "root that is not an admissible linked claude/* worktree ("
+            + admission_reason
+            + "). Treat this session as READ-ONLY. Do not use shell cd, "
+            "change_directory, or a branch rename as a repair: those do not make the "
+            "durable session root a safe carrier. Start a fresh worktree-backed Claude "
+            "session (for example `claude --worktree <name>` or the Desktop worktree "
+            "flow) before any modifying work. Use this conversation only for read-only "
+            "diagnosis or a continuation packet. The normal ship loop belongs to the "
+            "fresh worktree-backed carrier.\n"
+            + ship_loop_context
+        )
+    else:
+        context = ship_loop_context
     _emit(
         {
             "hookSpecificOutput": {
                 "hookEventName": "SessionStart",
-                "additionalContext": (
-                    "MANDATORY SHIP LOOP: Repository rules grant standing approval for "
-                    "commit, push, pull request, CI repair, same-day squash merge, deploy "
-                    "waiting, and real-live verification. Work only in a fresh "
-                    ".claude/worktrees/ claude/* branch. Do not stop at a local change, "
-                    "commit, or open PR. This session's starting dirty files were recorded "
-                    "and are excluded from enforcement.\n"
-                    "EXECUTION CONTINUATION LAW: A blocker freezes the affected lane "
-                    "only - check independent authorized lanes and continue. If no "
-                    "worker started and lawful principal tools and custody remain, "
-                    "with no conflicting owner and no EFFECT_UNKNOWN, bounded direct "
-                    "execution may continue; a delegation surface being unavailable "
-                    "is not a reason to stop. A wait on external machinery is handed "
-                    "to a durable watcher or owner while you do parallel work - never "
-                    "spend principal capacity polling. Two equivalent no-delta cycles "
-                    "means change tactic, lane, or owner. Accepted work is "
-                    "DO_NOT_REDO unless materially invalidated. EFFECT_UNKNOWN is "
-                    "reconciled on the same carrier, never by blind retry or "
-                    "failover. ACK, QUEUED, START, RUNNING, DELIVERED, CI, MERGED, "
-                    "PRODUCTION_PROOF and ACCEPTANCE are distinct facts and none "
-                    "implies the next. Before a substantial session ends, state one "
-                    "line `SESSION END: <STATE>` with STATE in PROVEN_OUTCOME, "
-                    "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, PLATFORM_FAILURE, "
-                    "ALL_SCOPED_LANES_BLOCKED, DURABLE_EXECUTION_RUNNING, "
-                    "MORE_WORK_EXISTS - and MORE_WORK_EXISTS plus "
-                    "ALL_SCOPED_LANES_BLOCKED are never valid stopping states. "
-                    "The latter is a diagnostic: internal blockers must be resolved, "
-                    "routed to their canonical owner, or bound to real durable execution."
+                "additionalContext": context,
+            }
+        }
+    )
+
+
+def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
+    """Make a silently rebound/primary-root session read-only before side effects.
+
+    This hook intentionally re-evaluates the live cwd on every wired effectful
+    tool call instead of trusting SessionStart state. If Desktop loses or rebinds a worktree between
+    turns, the next modifying tool is stopped at admission rather than discovered
+    much later by the Stop hook.
+    """
+    del path  # state is completion evidence; admission is recomputed from live git identity
+    admitted, reason = _delivery_root_admission(root)
+    if admitted:
+        return
+    tool = str(payload.get("tool_name") or "")
+    if tool in _ROOT_QUARANTINE_READ_ONLY_TOOLS:
+        return
+    _emit(
+        {
+            "hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": (
+                    "SESSION ROOT QUARANTINE: refusing tool "
+                    + (tool or "<unknown>")
+                    + " because this conversation is not attached to a linked "
+                    "claude/* worktree (" + reason + "). Do not repair this with "
+                    "cd/change_directory or by repointing the shared checkout. Start "
+                    "a fresh worktree-backed Claude session and continue there."
                 ),
             }
         }
@@ -4583,6 +4697,18 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     # Hooks can be installed during an already-running session. Fail open once so
     # that pre-hook work is not misclassified; every later session is enforced.
     if state is None:
+        return
+
+    # A post-admission quarantined session could not lawfully run a modifying tool
+    # through the repository's wired effectful surfaces: PreToolUse covers Bash,
+    # file writes, agent/workflow launches, skills, EnterWorktree and MCP tools.
+    # Do not then run the delivery chain against an independently moving shared
+    # checkout and manufacture ten cycles of unsafe_branch. Legacy state without
+    # this versioned marker keeps the old fail-closed behavior during rollout.
+    if (
+        state.get("root_admission_v") == _ROOT_ADMISSION_VERSION
+        and state.get("root_admitted") is False
+    ):
         return
 
     # A session's OWN declared end state is the single continuation fact this guard
@@ -5176,6 +5302,8 @@ def main() -> None:
     try:
         if event == "SessionStart":
             _session_start(root, path, payload)
+        elif event == "PreToolUse":
+            _pre_tool_use(root, path, payload)
         elif event == "Stop":
             _stop(root, path, payload)
     except Exception as exc:

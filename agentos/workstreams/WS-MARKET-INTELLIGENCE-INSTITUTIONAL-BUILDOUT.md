@@ -26,9 +26,9 @@ discoveries:
 waves:
   - id: W1
     title: Phase A reconcile — read-only census lanes N0 / E0 / L0 (cursor composer-2.5, GLM tier unavailable)
-    status: awaiting_ci
+    status: done
     pr: [8501, 8502, 8500]
-    next_action: "After the sweeper merges #8501/#8502: bare `git fetch origin main`, then needle blob-verify each pair under research/product_intelligence_local_delivery/ (#8500 already MERGED 2daaf9f1dc8f and verified)."
+    next_action: "None: #8500 2daaf9f1dc8f, #8501 59b83048bd3d, #8502 882c03c3c4c2 all MERGED and blob-verified on origin/main (2026-10-06 06:58Z)."
   - id: W2
     title: "Phase B fronts — N1 Terminal news server child, E1 K3E qualification tests (stacked on #8337), V0 verdict-preservation census"
     status: done
@@ -37,21 +37,21 @@ waves:
     next_action: "None for this seat: N1 (#832) closed superseded by Terminal #831 (DEC:MI-BUILDOUT-N-PACKAGE-OWNER-IS-TERMINAL-831); E1 #8506 stays DRAFT HOLD-linked to #8337/#8312 with its RESULT on issue #8309; V0 #8508 MERGED 0beebb3bd1f2."
   - id: W3
     title: "Phase B/C gates — I0 integrated-answer gate census, S0 intraday estate census, L2 independent review of #8470's retained-history reader"
-    status: awaiting_ci
+    status: done
     pr: [8512, 8511, 8513]
     depends_on: [W1]
-    next_action: "After the sweeper merges #8511/#8512/#8513: needle blob-verify on origin/main. L2 verdict already carried to #8470 (comment 6010401522) as independent-review evidence — owner/Sol decide release."
+    next_action: "None: #8512 5dc3aaf93827, #8511 17acb9646869, #8513 24b77abbccc2 MERGED and blob-verified (2026-10-06 06:58Z); L2 verdict carried to #8470 (comment 6010401522) — owner/Sol decide release."
   - id: W4
     title: Records + L3 display-spec freeze (seat judgment) + L3 context-attach build lane
     status: in_progress
     depends_on: [W3]
-    next_action: "Freeze the L3 display spec in the seat against templates/sector_central.html.j2:2110-2196, engine/company_theme_exposure/views.py:32-65 and the Terminal CTE route; collision-check Terminal #796, #8412, #8470 and the GMI held PRs by owned path across OPEN PRs before any edit; then one cursor (or GLM, if mini2 is freed) build lane."
+    next_action: "L3 spec FROZEN (seat); build lane mi_l3_leadership_receipt_r1 RUNNING under the ORCH-L3 Opus orchestrator (cursor composer-2.5, ubuntu1, branch claude/mi-l3-leadership-receipt-20261006). On return: judge by artifact (T1-T6, 8 evidence PNGs, forward-only design gates), READY, one ACCEPT, merge on concluded checks with --match-head-commit, blob + live verify. Wave-3 records #8515 MERGED ca8412f74171."
   - id: W5
     title: Phase C/D — I composition (gated on accepted H04/H05/H06), S1 registration (gated on product-owner hypothesis acceptance), F2 (gated on C19 reconciliation), R (other owner)
-    status: todo
+    status: in_progress
     depends_on: [W4]
-    next_action: "Deliver the Chairman blocker list LAST; do not race the gates (see landmines)."
-next_action: "Open and merge the W3 records PR (this record, its handoff, the continuation file, DEC + DSC); then start W4 with the L3 display-spec freeze in the seat."
+    next_action: "I1 read-only composition spec RUNNING under ORCH-I1 (cursor, ubuntu2, branch claude/mi-i1-composition-spec-20261006); judge against I0's exact gate states (H01 ACCEPTED, H04/H06 BUILT_NOT_ACCEPTED, H05 ABSENT). S1 / F2 / R stay gated by their owners; deliver the Chairman blocker list LAST."
+next_action: "Judge the ORCH-L3 (L3 build) and ORCH-I1 (I1 spec) returns by artifact, then READY -> one ACCEPT -> merge on concluded checks -> blob/live verify; carry L3 by reference to #8324 and #8470 / Mastermind #1194; one wave-boundary checkpoint on #1258; Chairman blocker list LAST."
 landmines:
   - "Package N is owned by Terminal #831 (Astra, sol/web-ticker-news-r1-20261004-astra-001, DRAFT 'DO NOT MERGE yet', the lawful Macro #8454 child). Never relaunch a Terminal news server lane; #832 is closed superseded and kept only as a cherry-pick reference."
   - "E1 #8506 is stacked on #8337's branch and inherits the #8312/#8337 Sol holds: never `gh pr ready`, label, or merge it from this seat; the E package's living owner is the Fable seat on issue #8309 (MAS-271)."
@@ -61,13 +61,22 @@ landmines:
   - "Package S: S0 confirmed a distinct gap (not a Trend Persistence reopening — C1-NULL stands); S1 registration only after the product owner accepts the hypothesis, and no outcome scan before registration."
   - "The GLM tier is fleet-unavailable while mini2 sits under its 50 GiB storage guard (49.56 GiB free) and m1 is quarantined; lanes ran on cursor composer-2.5 (ubuntu1/ubuntu2) as a recorded deviation. Never use Claude-native subagents for labor on this program."
   - "The sweeper may update-branch an armed PR and move its head (#8501 5657d3a3 → 03c37e14); a merged head SHA cannot be fetched and a diff against it passes vacuously — verify merges by needle grep on origin/main only."
+  - "Opus orchestrators (Chairman 2026-10-05) administer fabric lanes for THIS program only; they never spawn native children, never post to carriers, label, ready or merge — seat-only acts stay with the seat. A ROUTE orchestration commission needs the literal line-start label RETURN: (model_routing_guard HEADER_RE)."
+  - "The sweeper left five concluded-green armed PRs unmerged for 1-2.5 h on 2026-10-06; merge by hand on the exact head (gh pr merge --squash --match-head-commit) after a same-invocation state read + hold grep, and treat a hold-pattern hit inside your own ACCEPT comment quoting another PR as a false positive to re-judge, not a hold."
 do_not_redo:
   - "ACK on Mastermind #1202 exists once (comment 6009097528, 2026-10-06 04:05Z) — never re-ACK or re-START."
   - "N0/E0/L0/V0/I0/S0 censuses and the L2 review are ACCEPTED by artifact (seat re-showed every path:line claim on the pinned heads); do not re-census the same questions."
   - "N1 Terminal server child (#832) is CLOSED superseded by #831 — do not rebuild it."
   - "E1 K3E qualification tests (#8506) are ACCEPTED and returned to issue #8309 (comment 6009863135) — do not re-return or re-review."
+  - "Wave 1-3 PRs #8500/#8501/#8502/#8508/#8511/#8512/#8513 and records #8515 are MERGED + blob-verified — never reopen, re-merge, or re-verify without a material invalidator."
+  - "L3 display spec is FROZEN (seat, 2026-10-05, l3_ruling.txt: engine/leadership_receipt.py + 3-line attach + .lrc- panel, anchors disjoint from PR #7870) — do not re-freeze or re-spec; repair rounds amend the lane packet, not the spec."
 artifacts:
   - research/product_intelligence_local_delivery/L0_LEADERSHIP_THEME_CONTEXT_RECONCILIATION_2026-10-06.md
+  - research/product_intelligence_local_delivery/N0_TICKER_NEWS_TASK_MATRIX_2026-10-06.md
+  - research/product_intelligence_local_delivery/E0_EXPECTATIONS_ACCEPTANCE_PATH_2026-10-06.md
+  - research/product_intelligence_local_delivery/I0_INTEGRATED_ANSWER_GATE_CENSUS_2026-10-06.md
+  - research/product_intelligence_local_delivery/S0_INTRADAY_ESTATE_CENSUS_2026-10-06.md
+  - research/product_intelligence_local_delivery/L2_ROTATION_READER_REVIEW_2026-10-06.md
   - research/product_intelligence_local_delivery/V0_VERDICT_PRESERVATION_CENSUS_2026-10-06.md
   - research/MARKET_INTELLIGENCE_BUILDOUT_CONTINUATION_HANDOFF_2026-10-06.md
 ---
