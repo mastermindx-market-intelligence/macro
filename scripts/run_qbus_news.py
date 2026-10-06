@@ -18,10 +18,15 @@ import json
 import os
 from pathlib import Path
 import signal
+import sys
 import threading
 import time
 from typing import Callable
 from urllib.parse import urlencode
+
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from collectors import benzinga_news
 from engine.qbus_news_receipts import (
@@ -98,6 +103,7 @@ class NewsIngestRunner:
         reconnect_max_seconds: float = 60.0,
         max_frame_bytes: int = 2 * 1024 * 1024,
         health_path: Path | None = None,
+        admission_guard: Callable[[], bool] | None = None,
     ) -> None:
         if not token:
             raise ValueError("qbus_news:missing_stream_token")
@@ -122,6 +128,7 @@ class NewsIngestRunner:
         self.reconnect_max_seconds = float(reconnect_max_seconds)
         self.max_frame_bytes = max_frame_bytes
         self.health_path = health_path
+        self.admission_guard = admission_guard
         self.stats = RunnerStats()
         self._last_successful_catchup: datetime | None = None
         self._last_stream_event_at: datetime | None = None
@@ -159,6 +166,14 @@ class NewsIngestRunner:
             # Health publication is evidence, not ingestion authority. A missing
             # or stale health file makes the API fail closed on its own.
             self.stats.health_write_failures += 1
+
+    def _admitted(self) -> bool:
+        if self.admission_guard is None:
+            return True
+        try:
+            return bool(self.admission_guard())
+        except Exception:
+            return False
 
     def _catch_up(self) -> None:
         observed_at = self.clock()
@@ -223,6 +238,9 @@ class NewsIngestRunner:
 
         try:
             while not self.stop.is_set():
+                if not self._admitted():
+                    self.stop.set()
+                    break
                 if (
                     max_connections is not None
                     and self.stats.connect_attempts >= max_connections
@@ -246,6 +264,9 @@ class NewsIngestRunner:
                             self.monotonic() + self.catchup_interval_seconds
                         )
                         while not self.stop.is_set():
+                            if not self._admitted():
+                                self.stop.set()
+                                break
                             if self.monotonic() >= next_catchup:
                                 self._catch_up()
                                 next_catchup = (
@@ -256,6 +277,9 @@ class NewsIngestRunner:
                                 raw = ws.recv(timeout=self.recv_timeout_seconds)
                             except TimeoutError:
                                 continue
+                            if not self._admitted():
+                                self.stop.set()
+                                break
                             self._handle_frame(raw)
                 except Exception:
                     self.stats.disconnects += 1
@@ -364,6 +388,13 @@ def main(argv=None) -> int:
         )
         return 2
 
+    def rights_admitted() -> bool:
+        return load_rights_receipt(
+            rights_path,
+            now=_utc_now(),
+            audience="site_full",
+        ) is not None
+
     stop = StopFlag()
     for sig in (signal.SIGINT, signal.SIGTERM):
         signal.signal(sig, lambda *_args: stop.set())
@@ -378,6 +409,7 @@ def main(argv=None) -> int:
             direct_client=client,
             stop=stop,
             health_path=health_path,
+            admission_guard=rights_admitted,
         )
         stats = runner.run()
     print(json.dumps(exit_receipt(stats), sort_keys=True))
