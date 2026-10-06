@@ -1,0 +1,155 @@
+{
+  "mutants": [
+    {
+      "mutant": "M2a",
+      "fails": "test_live_lookahead_name_events_true_cross"
+    },
+    {
+      "mutant": "M2b",
+      "fails": "test_outcomes_anchored_at_entry_position"
+    },
+    {
+      "mutant": "M2c",
+      "fails": "test_live_lookahead_name_events_true_cross"
+    },
+    {
+      "mutant": "M3a-table",
+      "fails": "test_production_variant_table_uses_k_constants_not_inverted_literals"
+    },
+    {
+      "mutant": "M3a_const",
+      "fails": "test_half_life_reads_run_module_constants"
+    },
+    {
+      "mutant": "M3b",
+      "fails": "test_half_life_reads_run_module_constants"
+    },
+    {
+      "mutant": "M6a",
+      "fails": "test_delta_bootstrap_pair_cluster_se_and_nonconstant_draws"
+    },
+    {
+      "mutant": "M6b",
+      "fails": "test_bucketing_drops_short_buckets"
+    },
+    {
+      "mutant": "M6c",
+      "fails": "test_bar_date_is_last_session_of_bucket"
+    },
+    {
+      "mutant": "G1 +21\u2192+10",
+      "fails": "test_horizon_gate_uses_21_not_10"
+    },
+    {
+      "mutant": "G6 continue",
+      "fails": "test_no_entry_incremented_on_terminal_session_cross"
+    }
+  ],
+  "details": [
+    {
+      "mutant": "M2a",
+      "returncode": 1,
+      "fails": "test_live_lookahead_name_events_true_cross",
+      "all_fails": [
+        "test_live_lookahead_name_events_true_cross"
+      ],
+      "summary": "1 failed, 33 deselected in 0.40s"
+    },
+    {
+      "mutant": "M2b",
+      "returncode": 1,
+      "fails": "test_outcomes_anchored_at_entry_position",
+      "all_fails": [
+        "test_outcomes_anchored_at_entry_position"
+      ],
+      "summary": "1 failed, 33 deselected in 0.33s"
+    },
+    {
+      "mutant": "M2c",
+      "returncode": 1,
+      "fails": "test_live_lookahead_name_events_true_cross",
+      "all_fails": [
+        "test_live_lookahead_name_events_true_cross"
+      ],
+      "summary": "1 failed, 33 deselected in 0.33s"
+    },
+    {
+      "mutant": "M3a-table",
+      "returncode": 1,
+      "fails": "test_production_variant_table_uses_k_constants_not_inverted_literals",
+      "all_fails": [
+        "test_production_variant_table_uses_k_constants_not_inverted_literals"
+      ],
+      "summary": "1 failed, 33 deselected in 0.36s"
+    },
+    {
+      "mutant": "M3a_const",
+      "returncode": 1,
+      "fails": "test_half_life_reads_run_module_constants",
+      "all_fails": [
+        "test_half_life_reads_run_module_constants",
+        "test_half_life_table_matches_constants_and_record",
+        "test_production_variant_table_uses_k_constants_not_inverted_literals"
+      ],
+      "summary": "3 failed, 31 deselected in 0.34s"
+    },
+    {
+      "mutant": "M3b",
+      "returncode": 1,
+      "fails": "test_half_life_reads_run_module_constants",
+      "all_fails": [
+        "test_half_life_reads_run_module_constants",
+        "test_half_life_table_matches_constants_and_record"
+      ],
+      "summary": "2 failed, 32 deselected in 0.33s"
+    },
+    {
+      "mutant": "M6a",
+      "returncode": 1,
+      "fails": "test_delta_bootstrap_pair_cluster_se_and_nonconstant_draws",
+      "all_fails": [
+        "test_delta_bootstrap_pair_cluster_se_and_nonconstant_draws"
+      ],
+      "summary": "1 failed, 33 deselected in 0.33s"
+    },
+    {
+      "mutant": "M6b",
+      "returncode": 1,
+      "fails": "test_bucketing_drops_short_buckets",
+      "all_fails": [
+        "test_bucketing_drops_short_buckets"
+      ],
+      "summary": "1 failed, 33 deselected in 0.33s"
+    },
+    {
+      "mutant": "M6c",
+      "returncode": 1,
+      "fails": "test_bar_date_is_last_session_of_bucket",
+      "all_fails": [
+        "test_bar_date_is_last_session_of_bucket"
+      ],
+      "summary": "1 failed, 33 deselected in 0.32s"
+    },
+    {
+      "mutant": "G1 +21\u2192+10",
+      "returncode": 1,
+      "fails": "test_horizon_gate_uses_21_not_10",
+      "all_fails": [
+        "test_horizon_gate_uses_21_not_10"
+      ],
+      "summary": "1 failed, 33 deselected in 0.33s"
+    },
+    {
+      "mutant": "G6 continue",
+      "returncode": 1,
+      "fails": "test_no_entry_incremented_on_terminal_session_cross",
+      "all_fails": [
+        "test_no_entry_incremented_on_terminal_session_cross"
+      ],
+      "summary": "1 failed, 33 deselected in 0.33s"
+    }
+  ],
+  "pytest_summary_counts": "34 passed",
+  "l8_sha_a": "ad3f1651333b1744a2edfaf6ee5340f25ef6a5c2ce9fce216e84762a32b11a06",
+  "l8_sha_b": "ad3f1651333b1744a2edfaf6ee5340f25ef6a5c2ce9fce216e84762a32b11a06"
+}
