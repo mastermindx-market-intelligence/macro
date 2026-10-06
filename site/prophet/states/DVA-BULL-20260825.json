@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DVA-BULL-20260825",
-  "asof": "2026-10-04",
+  "asof": "2026-10-06",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 46.3,
-  "raw_confidence": 46.4,
+  "raw_confidence": 46.3,
   "delta_vs_base": -13.7,
   "recommended_action": "trim",
   "human_state": "Deep Giveback \u2014 Reassess",
   "components": {
     "validity": 100.0,
     "progress": 60.0,
-    "pace": 10.5,
-    "retention": 8.9,
-    "overlay": 59.0
+    "pace": 10.8,
+    "retention": 9.2,
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.224,
-    "dist_to_t1_r": 1.276,
-    "dist_to_t2_r": 2.776,
-    "horizon_pct_used": 88.9,
-    "p1": 0.1491,
-    "p2": 0.0745,
+    "dist_to_stop_r": 1.231,
+    "dist_to_t1_r": 1.269,
+    "dist_to_t2_r": 2.769,
+    "horizon_pct_used": 93.3,
+    "p1": 0.1541,
+    "p2": 0.0771,
     "p3": null,
-    "move_r": 0.224,
+    "move_r": 0.231,
     "mfe_r": 4.035,
     "mae_r": -0.724
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": "2026-09-05",
   "_first_t2_ts": "2026-09-16",
-  "days_elapsed": 40,
-  "tau": 0.8889
+  "days_elapsed": 42,
+  "tau": 0.9333
 }

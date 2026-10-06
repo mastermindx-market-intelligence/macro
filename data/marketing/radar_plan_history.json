@@ -2,6 +2,16 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-05",
+      "tickers": [
+        "DAL",
+        "ELF",
+        "HLNE",
+        "KRC",
+        "PPLI"
+      ]
+    },
+    {
       "as_of": "2026-10-04",
       "tickers": [
         "AIO",
@@ -172,33 +182,6 @@
         "VTRS",
         "WING",
         "XRAY"
-      ]
-    },
-    {
-      "as_of": "2026-09-28",
-      "tickers": [
-        "ATO",
-        "BKR",
-        "CARR",
-        "CLH",
-        "CNM",
-        "COHU",
-        "DAL",
-        "ELF",
-        "GAP",
-        "IPGP",
-        "JOBY",
-        "KMT",
-        "LITE",
-        "OTTR",
-        "REX",
-        "REXR",
-        "RPM",
-        "SHO",
-        "STRL",
-        "TNDM",
-        "WABC",
-        "WHR"
       ]
     }
   ]

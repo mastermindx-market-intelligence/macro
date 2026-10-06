@@ -7,10 +7,16 @@ controls prove this one discriminates.
 """
 from __future__ import annotations
 
+from datetime import date
+import hashlib
 import json
+import os
+from pathlib import Path
+import subprocess
 
 import pytest
 
+from engine.k3e_eval_admission import EVAL0_CANONICAL_DIGEST, inspect_eval1_admission
 from engine.qledger_validity import (
     SEVERITY_INVALID,
     SEVERITY_NOTE,
@@ -197,3 +203,512 @@ def test_absent_store_reports_null_findings_not_an_empty_list():
     clean = json.loads(cli._json_payload([], store_absent=False, n_claims=0, n_grades=0))
     assert clean["store_absent"] is False
     assert clean["findings"] == []
+
+
+# --------------------------------------------------------------------------- #
+# K3E EVAL-1 — accepted-main source admission fence
+# --------------------------------------------------------------------------- #
+_K3E_ROOT = Path(__file__).resolve().parents[1]
+_K3E_BASE = Path("research/alpha_intelligence/expectation_market_dynamics")
+_K3E_EVAL0 = _K3E_BASE / "eval0_preregistration.v1.json"
+_K3E_EVAL1 = _K3E_BASE / "eval1_preregistration.v1.json"
+_K3E_OWNER = _K3E_BASE / "eval1_owner_acceptance.v1.json"
+_K3E_ACTIVATION = _K3E_BASE / "eval1_activation_receipt.v1.json"
+
+
+_K3E_DEFAULT_WHEN = "2026-10-04T12:00:00-04:00"
+_K3E_AT_BOUNDARY = "2026-10-05T09:30:00-04:00"
+
+
+def _k3e_git(repo: Path, *args: str, when: str | None = None) -> str:
+    env = dict(os.environ)
+    stamp = when or _K3E_DEFAULT_WHEN
+    env["GIT_AUTHOR_DATE"] = stamp
+    env["GIT_COMMITTER_DATE"] = stamp
+    return subprocess.check_output(
+        ["git", "-C", str(repo), *args],
+        text=True,
+        stderr=subprocess.STDOUT,
+        env=env,
+    ).strip()
+
+
+def _k3e_source_repo(tmp_path: Path) -> Path:
+    bare = tmp_path / "origin.git"
+    subprocess.check_call(["git", "init", "--bare", "-q", str(bare)])
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _k3e_git(repo, "init", "-b", "main")
+    _k3e_git(repo, "config", "user.name", "K3E Test")
+    _k3e_git(repo, "config", "user.email", "k3e-test@example.invalid")
+    _k3e_git(repo, "config", "commit.gpgsign", "false")
+    _k3e_git(repo, "remote", "add", "origin", str(bare))
+    target = repo / _K3E_EVAL0
+    target.parent.mkdir(parents=True)
+    target.write_bytes((_K3E_ROOT / _K3E_EVAL0).read_bytes())
+    _k3e_git(repo, "add", ".")
+    _k3e_git(repo, "commit", "-m", "seed accepted eval0")
+    head = _k3e_git(repo, "rev-parse", "HEAD")
+    _k3e_git(repo, "push", "-q", "origin", "HEAD:refs/heads/main")
+    _k3e_git(repo, "update-ref", "refs/remotes/origin/main", head)
+    return repo
+
+
+def _k3e_write_json(repo: Path, path: Path, payload: dict) -> None:
+    target = repo / path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _k3e_commit_main(
+    repo: Path,
+    message: str,
+    *,
+    when: str | None = None,
+    push: bool = True,
+) -> str:
+    _k3e_git(repo, "add", ".", when=when)
+    _k3e_git(repo, "commit", "-m", message, when=when)
+    head = _k3e_git(repo, "rev-parse", "HEAD")
+    if push:
+        _k3e_git(repo, "push", "-q", "origin", "HEAD:refs/heads/main", when=when)
+    _k3e_git(repo, "update-ref", "refs/remotes/origin/main", head)
+    return head
+
+
+def _k3e_digest(payload: dict) -> str:
+    raw = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode()
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _k3e_frozen_registration(*, status: str = "FROZEN_BEFORE_OUTCOME_ACCESS") -> dict:
+    return {
+        "schema": "k3e.eval1_preregistration/v1",
+        "registration_id": "K3E-EVAL-1-V1",
+        "status": status,
+        "predecessor": {
+            "registration_id": "K3E-EVAL-0-V1",
+            "canonical_digest_sha256": EVAL0_CANONICAL_DIGEST,
+            "prior_trial_budget_reset": False,
+        },
+        "admitted_experiments": ["SYNTHETIC_PROTOCOL_TEST_ONLY"],
+        "scientific_freeze": {
+            "primary_endpoint": "SYNTHETIC_ENDPOINT",
+            "primary_horizon_sessions": 21,
+            "primary_loss": "synthetic_loss",
+            "strongest_baseline_rule": "strongest_eligible_matched_information_baseline",
+            "total_search_budget": 1,
+            "effect_size_threshold": 0.05,
+            "effective_n_rule": "distinct_issuer_episodes",
+            "coverage_rule": "print_abstentions_no_imputation",
+            "dependence_rule": "issuer_episode_cluster_plus_date_block",
+            "censoring_rule": "preserve_censoring",
+            "forward_partitions": "new_forward_only_no_relabel",
+        },
+    }
+
+
+def _k3e_publish_valid_receipts(
+    repo: Path,
+    registration: dict,
+    source_commit: str,
+    *,
+    when: str | None = None,
+    resolved_session: str = "2026-10-05",
+    push: bool = True,
+) -> str:
+    digest = _k3e_digest(registration)
+    _k3e_write_json(repo, _K3E_OWNER, {
+        "schema": "k3e.eval1_owner_acceptance/v1",
+        "registration_id": "K3E-EVAL-1-V1",
+        "registration_digest_sha256": digest,
+        "registration_source_commit": source_commit,
+        "owner_workstream": "WS:EVAL-OS-MEASUREMENT-LAW",
+        "accepted": True,
+    })
+    _k3e_write_json(repo, _K3E_ACTIVATION, {
+        "schema": "k3e.eval1_activation_receipt/v1",
+        "registration_id": "K3E-EVAL-1-V1",
+        "canonical_registration_digest_sha256": digest,
+        "registration_source_commit": source_commit,
+        "freeze_boundary_rule": "first_nyse_session_open_strictly_after_origin_main_commit_containing_exact_registration_digest/v1",
+        "resolved_first_eligible_session": resolved_session,
+    })
+    return _k3e_commit_main(
+        repo,
+        "publish valid eval1 owner and activation receipts",
+        when=when,
+        push=push,
+    )
+
+
+def _k3e_ready_admission(repo: Path) -> dict:
+    """Registration on the default Sunday; receipts introduced at the Monday open."""
+    registration = _k3e_frozen_registration()
+    _k3e_write_json(repo, _K3E_EVAL1, registration)
+    introduction = _k3e_commit_main(repo, "freeze eval1 registration")
+    _k3e_publish_valid_receipts(repo, registration, introduction, when=_K3E_AT_BOUNDARY)
+    return {
+        "registration": registration,
+        "introduction": introduction,
+        "boundary": "2026-10-05",
+    }
+
+
+def _k3e_snapshot(repo: Path) -> str:
+    status = subprocess.check_output(
+        ["git", "-C", str(repo), "status", "--porcelain=v1", "--untracked-files=all"],
+        text=True,
+    )
+    head = subprocess.check_output(
+        ["git", "-C", str(repo), "rev-parse", "HEAD"],
+        text=True,
+    )
+    digest = hashlib.sha256()
+    for path in sorted(p for p in repo.rglob("*") if p.is_file() and ".git" not in p.parts):
+        digest.update(str(path.relative_to(repo)).encode())
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+    return status + "\n" + head + "\n" + digest.hexdigest()
+
+
+def test_k3e_eval1_missing_registration_refuses_and_preserves_eval0(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 4))
+    assert result["admitted"] is False
+    assert result["outcome_access_allowed"] is False
+    assert result["reasons"] == ["EVAL1_REGISTRATION_MISSING"]
+    assert result["eval0"] == {
+        "registration_id": "K3E-EVAL-0-V1",
+        "canonical_digest": EVAL0_CANONICAL_DIGEST,
+        "preserved": True,
+    }
+
+
+def test_k3e_eval1_unsigned_registration_on_main_still_refuses(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    _k3e_write_json(repo, _K3E_EVAL1, _k3e_frozen_registration(status="UNSIGNED_OWNER_REVIEW"))
+    _k3e_commit_main(repo, "publish unsigned review draft")
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 4))
+    assert result["reasons"] == ["EVAL1_REGISTRATION_NOT_FROZEN"]
+    assert result["outcome_access_allowed"] is False
+
+
+def test_k3e_eval1_owner_acceptance_wrong_digest_refuses(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    registration = _k3e_frozen_registration()
+    _k3e_write_json(repo, _K3E_EVAL1, registration)
+    source_commit = _k3e_commit_main(repo, "freeze eval1 registration")
+    _k3e_write_json(repo, _K3E_OWNER, {
+        "schema": "k3e.eval1_owner_acceptance/v1",
+        "registration_id": "K3E-EVAL-1-V1",
+        "registration_digest_sha256": "0" * 64,
+        "registration_source_commit": source_commit,
+        "owner_workstream": "WS:EVAL-OS-MEASUREMENT-LAW",
+        "accepted": True,
+    })
+    _k3e_write_json(repo, _K3E_ACTIVATION, {
+        "schema": "k3e.eval1_activation_receipt/v1",
+        "registration_id": "K3E-EVAL-1-V1",
+        "canonical_registration_digest_sha256": _k3e_digest(registration),
+        "registration_source_commit": source_commit,
+        "resolved_first_eligible_session": "2026-10-05",
+    })
+    _k3e_commit_main(repo, "publish mismatched owner receipt")
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 6))
+    assert result["reasons"] == ["OWNER_ACCEPTANCE_DIGEST_MISMATCH"]
+    assert result["outcome_access_allowed"] is False
+
+
+def test_k3e_eval1_owner_source_commit_must_bind_main_lineage(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    registration = _k3e_frozen_registration()
+    _k3e_write_json(repo, _K3E_EVAL1, registration)
+    _k3e_commit_main(repo, "freeze eval1 registration")
+    _k3e_publish_valid_receipts(repo, registration, "f" * 40)
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 6))
+    assert result["reasons"] == ["OWNER_ACCEPTANCE_SOURCE_NOT_INTRODUCTION"]
+    assert result["detail"]["registration_source_commit"] == "f" * 40
+    assert result["outcome_access_allowed"] is False
+
+
+def test_k3e_eval1_valid_lineage_waits_for_new_forward_boundary(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    registration = _k3e_frozen_registration()
+    _k3e_write_json(repo, _K3E_EVAL1, registration)
+    source_commit = _k3e_commit_main(repo, "freeze eval1 registration")
+    _k3e_publish_valid_receipts(repo, registration, source_commit, when=_K3E_AT_BOUNDARY)
+
+    before = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 4))
+    after = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 5))
+
+    assert before["reasons"] == ["FORWARD_BOUNDARY_NOT_REACHED"]
+    assert before["outcome_access_allowed"] is False
+    assert after["admitted"] is True
+    assert after["outcome_access_allowed"] is True
+    assert after["reasons"] == []
+    assert after["registration_digest"] == _k3e_digest(registration)
+    assert after["registration_source_commit"] == source_commit
+    assert after["resolved_first_eligible_session"] == "2026-10-05"
+
+
+def test_k3e_eval1_backdated_activation_boundary_refuses(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    registration = _k3e_frozen_registration()
+    _k3e_write_json(repo, _K3E_EVAL1, registration)
+    source_commit = _k3e_commit_main(repo, "freeze eval1 registration")
+    _k3e_publish_valid_receipts(repo, registration, source_commit)
+    _k3e_write_json(repo, _K3E_ACTIVATION, {
+        "schema": "k3e.eval1_activation_receipt/v1",
+        "registration_id": "K3E-EVAL-1-V1",
+        "canonical_registration_digest_sha256": _k3e_digest(registration),
+        "registration_source_commit": source_commit,
+        "freeze_boundary_rule": "first_nyse_session_open_strictly_after_origin_main_commit_containing_exact_registration_digest/v1",
+        "resolved_first_eligible_session": "2000-01-03",
+    })
+    _k3e_commit_main(repo, "attempt backdated activation")
+
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 6))
+
+    assert result["admitted"] is False
+    assert result["outcome_access_allowed"] is False
+    assert result["reasons"] == ["EVAL1_ACTIVATION_BOUNDARY_INVALID"]
+
+
+def test_k3e_eval1_boolean_trial_budget_refuses(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    registration = _k3e_frozen_registration()
+    registration["scientific_freeze"]["total_search_budget"] = True
+    _k3e_write_json(repo, _K3E_EVAL1, registration)
+    source_commit = _k3e_commit_main(repo, "freeze malformed eval1 registration")
+    _k3e_publish_valid_receipts(repo, registration, source_commit)
+
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 6))
+
+    assert result["admitted"] is False
+    assert result["outcome_access_allowed"] is False
+    assert result["reasons"] == ["EVAL1_SCIENTIFIC_FREEZE_INCOMPLETE"]
+
+
+def test_k3e_eval1_admission_binds_one_main_commit(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    registration = _k3e_frozen_registration()
+    _k3e_write_json(repo, _K3E_EVAL1, registration)
+    source_commit = _k3e_commit_main(repo, "freeze eval1 registration")
+    _k3e_publish_valid_receipts(repo, registration, source_commit, when=_K3E_AT_BOUNDARY)
+    expected_main = _k3e_git(repo, "rev-parse", "refs/remotes/origin/main")
+
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 5))
+
+    assert result["admitted"] is True
+    assert result["source_main_commit"] == expected_main
+
+
+def test_k3e_eval1_t1_owner_source_ancestor_not_introduction(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    registration = _k3e_frozen_registration()
+    parent = _k3e_git(repo, "rev-parse", "HEAD")
+    _k3e_write_json(repo, _K3E_EVAL1, registration)
+    introduction = _k3e_commit_main(repo, "freeze eval1 registration")
+    _k3e_publish_valid_receipts(repo, registration, parent)
+
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 6))
+
+    assert result["admitted"] is False
+    assert result["outcome_access_allowed"] is False
+    assert result["reasons"] == ["OWNER_ACCEPTANCE_SOURCE_NOT_INTRODUCTION"]
+    assert result["detail"]["registration_source_commit"] == parent
+    assert result["detail"]["introduction_commit"] == introduction
+
+    digest = _k3e_digest(registration)
+    _k3e_write_json(repo, _K3E_OWNER, {
+        "schema": "k3e.eval1_owner_acceptance/v1",
+        "registration_id": "K3E-EVAL-1-V1",
+        "registration_digest_sha256": digest,
+        "registration_source_commit": introduction,
+        "owner_workstream": "WS:EVAL-OS-MEASUREMENT-LAW",
+        "accepted": True,
+    })
+    _k3e_write_json(repo, _K3E_ACTIVATION, {
+        "schema": "k3e.eval1_activation_receipt/v1",
+        "registration_id": "K3E-EVAL-1-V1",
+        "canonical_registration_digest_sha256": digest,
+        "registration_source_commit": parent,
+        "freeze_boundary_rule": "first_nyse_session_open_strictly_after_origin_main_commit_containing_exact_registration_digest/v1",
+        "resolved_first_eligible_session": "2026-10-05",
+    })
+    _k3e_commit_main(repo, "activation names an ancestor instead of the introduction")
+    activation = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 6))
+    assert activation["reasons"] == ["OWNER_ACCEPTANCE_SOURCE_NOT_INTRODUCTION"]
+    assert activation["detail"]["registration_source_commit"] == parent
+    assert activation["detail"]["introduction_commit"] == introduction
+
+
+def test_k3e_eval1_t2_side_branch_merge_is_the_introduction(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    registration = _k3e_frozen_registration()
+    side_when = "2026-09-30T12:00:00-04:00"
+    merge_when = "2026-10-06T15:00:00-04:00"
+    _k3e_git(repo, "checkout", "-b", "side")
+    _k3e_write_json(repo, _K3E_EVAL1, registration)
+    _k3e_git(repo, "add", ".", when=side_when)
+    _k3e_git(repo, "commit", "-m", "side lands the registration", when=side_when)
+    side = _k3e_git(repo, "rev-parse", "HEAD")
+    _k3e_git(repo, "checkout", "main")
+    _k3e_git(repo, "merge", "--no-ff", "-m", "merge side onto main", "side", when=merge_when)
+    merge = _k3e_git(repo, "rev-parse", "HEAD")
+    parents = set(_k3e_git(repo, "rev-parse", "HEAD^1", "HEAD^2").split())
+    assert side in parents and side != merge
+    _k3e_git(repo, "update-ref", "refs/remotes/origin/main", merge)
+    _k3e_git(repo, "push", "-q", "origin", "HEAD:refs/heads/main")
+
+    _k3e_publish_valid_receipts(
+        repo,
+        registration,
+        side,
+        resolved_session="2026-10-01",
+    )
+    refused = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 8))
+    assert refused["admitted"] is False
+    assert refused["outcome_access_allowed"] is False
+    assert refused["reasons"] == ["OWNER_ACCEPTANCE_SOURCE_NOT_INTRODUCTION"]
+    assert refused["detail"]["registration_source_commit"] == side
+    assert refused["detail"]["introduction_commit"] == merge
+
+    _k3e_publish_valid_receipts(
+        repo,
+        registration,
+        merge,
+        when="2026-10-07T09:30:00-04:00",
+        resolved_session="2026-10-07",
+    )
+    admitted = inspect_eval1_admission(repo)
+    assert admitted["admitted"] is True
+    assert admitted["outcome_access_allowed"] is True
+    assert admitted["introduction_commit"] == merge
+    assert admitted["boundary"] == "2026-10-07"
+    assert admitted["registration_source_commit"] == merge
+    assert admitted["main_freshness"]["proven"] is True
+
+
+def test_k3e_eval1_t3_local_main_ahead_of_bare_remote_refuses(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    _k3e_ready_admission(repo)
+    (repo / "local-only.txt").write_text("not pushed\n", encoding="utf-8")
+    _k3e_commit_main(repo, "advance local main without pushing", push=False)
+
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 6))
+
+    assert result["admitted"] is False
+    assert result["outcome_access_allowed"] is False
+    assert result["reasons"] == ["MAIN_REF_FRESHNESS_UNPROVEN"]
+    assert result["main_freshness"]["proven"] is False
+    assert result["main_freshness"]["remote"] is not None
+    assert result["main_freshness"]["local"] != result["main_freshness"]["remote"]
+    assert result["detail"]["freshness_reason"]
+
+
+def test_k3e_eval1_t4_missing_origin_remote_refuses(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    _k3e_ready_admission(repo)
+    local_main = _k3e_git(repo, "rev-parse", "refs/remotes/origin/main")
+    _k3e_git(repo, "remote", "remove", "origin")
+    # remote remove deletes the tracking ref; the local main commit must remain
+    # so the refusal is freshness, not a missing source ref.
+    _k3e_git(repo, "update-ref", "refs/remotes/origin/main", local_main)
+
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 6))
+
+    assert result["admitted"] is False
+    assert result["outcome_access_allowed"] is False
+    assert result["reasons"] == ["MAIN_REF_FRESHNESS_UNPROVEN"]
+    assert result["main_freshness"] == {
+        "local": result["main_freshness"]["local"],
+        "remote": None,
+        "proven": False,
+    }
+    assert result["main_freshness"]["proven"] is False
+    assert result["detail"]["freshness_reason"]
+
+
+def test_k3e_eval1_t5_activation_before_boundary_cannot_be_unlocked(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    registration = _k3e_frozen_registration()
+    _k3e_write_json(repo, _K3E_EVAL1, registration)
+    introduction = _k3e_commit_main(repo, "freeze eval1 registration")
+    _k3e_publish_valid_receipts(repo, registration, introduction)
+
+    result = inspect_eval1_admission(repo, as_of_date=date(2099, 1, 4))
+
+    assert result["admitted"] is False
+    assert result["outcome_access_allowed"] is False
+    assert result["reasons"] == ["FORWARD_BOUNDARY_NOT_REACHED"]
+    assert result["detail"]["activation_introduced_at"].startswith("2026-10-04T12:00:00")
+    assert result["detail"]["boundary_at"].startswith("2026-10-05T09:30:00")
+
+
+def test_k3e_eval1_t6_admits_without_caller_clock_when_main_is_fresh(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    ready = _k3e_ready_admission(repo)
+
+    result = inspect_eval1_admission(repo)
+
+    assert result["admitted"] is True
+    assert result["outcome_access_allowed"] is True
+    assert result["reasons"] == []
+    assert result["introduction_commit"] == ready["introduction"]
+    assert result["boundary"] == ready["boundary"]
+    assert result["resolved_first_eligible_session"] == ready["boundary"]
+    assert result["registration_digest"] == _k3e_digest(ready["registration"])
+    assert result["main_freshness"]["proven"] is True
+    assert result["main_freshness"]["local"] == result["main_freshness"]["remote"]
+    assert result["main_freshness"]["local"] == result["source_main_commit"]
+
+
+def test_k3e_eval1_t7_caller_clock_before_boundary_still_refuses(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    ready = _k3e_ready_admission(repo)
+
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 4))
+
+    assert result["admitted"] is False
+    assert result["outcome_access_allowed"] is False
+    assert result["reasons"] == ["FORWARD_BOUNDARY_NOT_REACHED"]
+    assert result["detail"]["as_of_date"] == "2026-10-04"
+    assert result["detail"]["boundary_date"] == ready["boundary"]
+
+
+def test_k3e_eval1_t8_eval0_runs_first_and_calls_do_not_write(tmp_path: Path):
+    repo = _k3e_source_repo(tmp_path)
+    before_refuse = _k3e_snapshot(repo)
+    refused = inspect_eval1_admission(repo)
+    after_refuse = _k3e_snapshot(repo)
+    assert before_refuse == after_refuse
+    assert refused["reasons"] == ["EVAL1_REGISTRATION_MISSING"]
+    assert refused["eval0"]["registration_id"] == "K3E-EVAL-0-V1"
+    assert refused["eval0"]["canonical_digest"] == EVAL0_CANONICAL_DIGEST
+    assert refused["eval0"]["preserved"] is True
+
+    payload = json.loads((repo / _K3E_EVAL0).read_text(encoding="utf-8"))
+    payload["registration_id"] = "K3E-EVAL-0-TAMPERED"
+    _k3e_write_json(repo, _K3E_EVAL0, payload)
+    _k3e_commit_main(repo, "tamper eval0")
+    tampered = inspect_eval1_admission(repo, as_of_date=date(2099, 1, 4))
+    assert tampered["reasons"] == ["EVAL0_REGISTRATION_CHANGED"]
+    assert tampered["eval0"]["preserved"] is False
+
+    admitted_root = tmp_path / "admitted"
+    admitted_root.mkdir()
+    admitted_repo = _k3e_source_repo(admitted_root)
+    _k3e_ready_admission(admitted_repo)
+    before_admit = _k3e_snapshot(admitted_repo)
+    admitted = inspect_eval1_admission(admitted_repo)
+    after_admit = _k3e_snapshot(admitted_repo)
+    assert admitted["admitted"] is True
+    assert before_admit == after_admit

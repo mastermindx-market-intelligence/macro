@@ -17610,3 +17610,9 @@
 {"date":"2026-10-02","kind":"ticker","subject":"PATH","ticker":"PATH","edge_score":0,"state":"BROKEN_LAGGARD","era":2,"source":"basket_attributed"}
 {"date":"2026-10-02","kind":"ticker","subject":"SOUN","ticker":"SOUN","edge_score":0,"state":"BROKEN_LAGGARD","era":2,"source":"basket_attributed"}
 {"date":"2026-10-02","kind":"ticker","subject":"TEM","ticker":"TEM","edge_score":0,"state":"CONFIRMED_UP","era":2,"source":"basket_attributed"}
+{"date":"2026-10-02","kind":"basket","subject":"ai_infra","ticker":"SMH","edge_score":10,"state":"NEGATIVE_DIVERGENCE","era":2}
+{"date":"2026-10-02","kind":"ticker","subject":"SNOW","ticker":"SNOW","edge_score":56,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-10-02","kind":"ticker","subject":"ARM","ticker":"ARM","edge_score":6,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"basket_attributed"}
+{"date":"2026-10-02","kind":"ticker","subject":"VRT","ticker":"VRT","edge_score":2,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
+{"date":"2026-10-02","kind":"ticker","subject":"CRWV","ticker":"CRWV","edge_score":2,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
+{"date":"2026-10-02","kind":"ticker","subject":"GOOGL","ticker":"GOOGL","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"signal"}
