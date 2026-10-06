@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-10-06T13:18:51Z",
+  "produced_at": "2026-10-06T15:48:26Z",
   "as_of": "2026-10-06",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 38,
-    "passed": 37,
+    "items": 36,
+    "passed": 35,
     "quarantined": 1,
     "quarantined_policy": 1,
     "quarantined_overflow": 0,
@@ -20,41 +20,41 @@
   },
   "quarantined": [
     {
-      "id": "post-cici-003",
-      "account": "cici",
-      "slot": "D1-S3",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "While New York slept, the US labor market stayed firm",
+      "id": "post-founder-005",
+      "account": "founder",
+      "slot": "D1-S5",
+      "type": "signal",
+      "cashtag": "$CRI",
+      "headline": "",
       "class": "policy",
       "reasons": [
-        "near_dup:post-meagan-013"
+        "near_dup:post-flagship-049"
       ]
     }
   ],
   "passed": [
     {
-      "id": "post-flagship-015",
+      "id": "post-flagship-010",
       "account": "flagship",
-      "slot": "D1-S15",
+      "slot": "D1-S10",
       "type": "receipt",
-      "cashtag": "$WING",
-      "headline": ""
+      "cashtag": "$ATR",
+      "headline": "$ATR setup remains inactive"
     },
     {
-      "id": "post-flagship-019",
+      "id": "post-flagship-022",
       "account": "flagship",
-      "slot": "D1-S19",
+      "slot": "D1-S22",
       "type": "chart",
-      "cashtag": "$MTUS",
-      "headline": ""
+      "cashtag": "$ECG",
+      "headline": "$ECG at the line."
     },
     {
       "id": "post-flagship-025",
       "account": "flagship",
       "slot": "D1-S25",
       "type": "signal",
-      "cashtag": "$ICHR",
+      "cashtag": "$AZZ",
       "headline": ""
     },
     {
@@ -62,56 +62,40 @@
       "account": "flagship",
       "slot": "D1-S27",
       "type": "chart",
-      "cashtag": "$RYAN",
-      "headline": "$RYAN has 38 to reclaim"
+      "cashtag": "$SYF",
+      "headline": "$SYF's 4-week slide found 71"
     },
     {
-      "id": "post-flagship-029",
+      "id": "post-flagship-035",
       "account": "flagship",
-      "slot": "D1-S29",
+      "slot": "D1-S35",
       "type": "signal",
-      "cashtag": "$YELP",
+      "cashtag": "$PLUS",
       "headline": ""
-    },
-    {
-      "id": "post-flagship-037",
-      "account": "flagship",
-      "slot": "D1-S37",
-      "type": "signal",
-      "cashtag": "$WRLD",
-      "headline": "$WRLD is still boxed into six months of traffic"
     },
     {
       "id": "post-flagship-039",
       "account": "flagship",
       "slot": "D1-S39",
       "type": "signal",
-      "cashtag": "$RL",
-      "headline": "$RL finds buyers at 363 for the 5th time"
+      "cashtag": "$BURL",
+      "headline": "$BURL at the bottom of its six-month volume range"
     },
     {
       "id": "post-flagship-049",
       "account": "flagship",
       "slot": "D1-S49",
       "type": "chart",
-      "cashtag": "$TDY",
-      "headline": "$TDY keeps finding the same ceiling"
-    },
-    {
-      "id": "post-flagship-050",
-      "account": "flagship",
-      "slot": "D1-S50",
-      "type": "receipt",
-      "cashtag": "$ATR",
-      "headline": ""
+      "cashtag": "$CRI",
+      "headline": "$CRI is testing the floor of its six-month range"
     },
     {
       "id": "post-flagship-051",
       "account": "flagship",
       "slot": "D1-S51",
       "type": "signal",
-      "cashtag": "$LRCX",
-      "headline": "$LRCX keeps holding 307"
+      "cashtag": "$CENT",
+      "headline": "$CENT tests the same floor again"
     },
     {
       "id": "post-conf-flagship-001",
@@ -142,39 +126,31 @@
       "account": "founder",
       "slot": "D1-S1",
       "type": "chart",
-      "cashtag": "$SHOO",
-      "headline": "$SHOO has a familiar floor"
-    },
-    {
-      "id": "post-founder-003",
-      "account": "founder",
-      "slot": "D1-S3",
-      "type": "signal",
       "cashtag": "$MTUS",
+      "headline": "$MTUS retakes the August buyers"
+    },
+    {
+      "id": "post-founder-011",
+      "account": "founder",
+      "slot": "D1-S11",
+      "type": "watchlist",
+      "cashtag": "$ACMR",
+      "headline": "Near-term trend broke while $ACMR's longer support held."
+    },
+    {
+      "id": "post-founder-018",
+      "account": "founder",
+      "slot": "D1-S18",
+      "type": "chart",
+      "cashtag": "$GAP",
       "headline": ""
     },
     {
-      "id": "post-founder-007",
+      "id": "post-insider-002",
       "account": "founder",
-      "slot": "D1-S7",
-      "type": "receipt",
-      "cashtag": "$ATR",
-      "headline": ""
-    },
-    {
-      "id": "post-founder-009",
-      "account": "founder",
-      "slot": "D1-S9",
-      "type": "chart",
-      "cashtag": "$PPLI",
-      "headline": "Above 42, $PPLI's rebound becomes a breakout."
-    },
-    {
-      "id": "post-founder-046",
-      "account": "founder",
-      "slot": "D1-S46",
-      "type": "chart",
-      "cashtag": "$AMG",
+      "slot": "D1-S19",
+      "type": "insider",
+      "cashtag": "$N",
       "headline": ""
     },
     {
@@ -182,15 +158,15 @@
       "account": "meagan",
       "slot": "D1-S2",
       "type": "chart",
-      "cashtag": "$DOCS",
+      "cashtag": "$HLNE",
       "headline": ""
     },
     {
-      "id": "post-meagan-009",
+      "id": "post-meagan-007",
       "account": "meagan",
-      "slot": "D1-S9",
-      "type": "watchlist",
-      "cashtag": "$EFA",
+      "slot": "D1-S7",
+      "type": "signal",
+      "cashtag": "$MTUS",
       "headline": ""
     },
     {
@@ -199,23 +175,7 @@
       "slot": "D1-S13",
       "type": "macro",
       "cashtag": "",
-      "headline": "The labor market still isn't flashing a growth scare."
-    },
-    {
-      "id": "post-meagan-022",
-      "account": "meagan",
-      "slot": "D1-S22",
-      "type": "chart",
-      "cashtag": "$VTRS",
       "headline": ""
-    },
-    {
-      "id": "post-meagan-038",
-      "account": "meagan",
-      "slot": "D1-S38",
-      "type": "receipt",
-      "cashtag": "$PNC",
-      "headline": "$PNC remains below 232, where the most shares traded over the past six months."
     },
     {
       "id": "post-theme-004",
@@ -226,11 +186,35 @@
       "headline": "Industrial Automation ripping, +1.2% avg on Monday"
     },
     {
-      "id": "post-sophia-001",
+      "id": "post-insider-003",
+      "account": "meagan",
+      "slot": "D1-S6",
+      "type": "insider",
+      "cashtag": "$ACCV",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-012",
       "account": "sophia",
-      "slot": "D1-S1",
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-020",
+      "account": "sophia",
+      "slot": "D1-S20",
+      "type": "chart",
+      "cashtag": "$AMG",
+      "headline": "$AMG has one line left overhead"
+    },
+    {
+      "id": "post-sophia-026",
+      "account": "sophia",
+      "slot": "D1-S26",
       "type": "receipt",
-      "cashtag": "$LUV",
+      "cashtag": "$ATR",
       "headline": ""
     },
     {
@@ -238,39 +222,55 @@
       "account": "sophia",
       "slot": "D1-S29",
       "type": "chart",
-      "cashtag": "$AVNT",
+      "cashtag": "$COHU",
       "headline": ""
+    },
+    {
+      "id": "post-sophia-041",
+      "account": "sophia",
+      "slot": "D1-S41",
+      "type": "signal",
+      "cashtag": "$SYF",
+      "headline": "$SYF dipped back to 71 and held"
     },
     {
       "id": "post-sophia-043",
       "account": "sophia",
       "slot": "D1-S43",
       "type": "chart",
-      "cashtag": "$ASML",
-      "headline": "$ASML keeps closing above July's volume-spike base."
+      "cashtag": "$MD",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-047",
+      "account": "sophia",
+      "slot": "D1-S47",
+      "type": "chart",
+      "cashtag": "$BKE",
+      "headline": ""
+    },
+    {
+      "id": "post-mover-002",
+      "account": "sophia",
+      "slot": "D1-S16",
+      "type": "mover",
+      "cashtag": "$PAGS",
+      "headline": "$PAGS +21.4% on Monday"
     },
     {
       "id": "post-insider-004",
       "account": "sophia",
-      "slot": "D1-S16",
+      "slot": "D1-S21",
       "type": "insider",
       "cashtag": "$VCIG",
       "headline": ""
     },
     {
-      "id": "post-kelly-007",
+      "id": "post-kelly-006",
       "account": "kelly",
-      "slot": "D1-S7",
+      "slot": "D1-S6",
       "type": "chart",
-      "cashtag": "$AMKR",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-016",
-      "account": "kelly",
-      "slot": "D1-S16",
-      "type": "chart",
-      "cashtag": "$WWD",
+      "cashtag": "$UTHR",
       "headline": ""
     },
     {
@@ -278,47 +278,31 @@
       "account": "kelly",
       "slot": "D1-S44",
       "type": "receipt",
-      "cashtag": "$SHW",
-      "headline": "$SHW held 318, where the most shares changed hands over the past six months."
+      "cashtag": "$ITW",
+      "headline": "$ITW is still inside the range where most shares traded over six months"
     },
     {
-      "id": "post-kelly-050",
-      "account": "kelly",
-      "slot": "D1-S50",
+      "id": "post-cici-016",
+      "account": "cici",
+      "slot": "D1-S16",
+      "type": "receipt",
+      "cashtag": "$WING",
+      "headline": "Wingstop, $WING, is back among today's most-talked-about names."
+    },
+    {
+      "id": "post-cici-033",
+      "account": "cici",
+      "slot": "D1-S33",
       "type": "chart",
-      "cashtag": "$FIX",
+      "cashtag": "$WS",
       "headline": ""
     },
     {
-      "id": "post-theme-005",
-      "account": "kelly",
-      "slot": "D1-S3",
-      "type": "theme_list",
-      "cashtag": "$PACB",
-      "headline": "Healthcare & Biotech ripping, +1.9% avg on Monday"
-    },
-    {
-      "id": "post-insider-005",
-      "account": "kelly",
-      "slot": "D1-S9",
-      "type": "insider",
-      "cashtag": "$LEN",
-      "headline": ""
-    },
-    {
-      "id": "post-cici-015",
+      "id": "post-cici-043",
       "account": "cici",
-      "slot": "D1-S15",
-      "type": "watchlist",
-      "cashtag": "$SNOW",
-      "headline": "蓄势 (coiling), $SNOW"
-    },
-    {
-      "id": "post-cici-046",
-      "account": "cici",
-      "slot": "D1-S46",
+      "slot": "D1-S43",
       "type": "chart",
-      "cashtag": "$ECG",
+      "cashtag": "$LFUS",
       "headline": ""
     },
     {
@@ -332,7 +316,7 @@
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 560,
+      "pairs_checked": 488,
       "hits": 1,
       "shared_media_hits": 0
     },
