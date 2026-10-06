@@ -41,6 +41,9 @@ depends_on:
   - WS:LIVE-ENTRY-RADAR
   - WS:DEFENSE-PROCUREMENT-V3
 artifacts:
+  - agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-03-exp1.md
+  - research/alpha_intelligence/expectation_market_dynamics/handoffs/EXP_1.md
+  - research/alpha_intelligence/expectation_market_dynamics/EXP_1_NATIVE_CONSUMER_RECEIPT_2026-10-03.json
   - research/alpha_intelligence/MASTERMIND_ALPHA_INTELLIGENCE_EXPANSION_PASS0_2026-08-18.md
   - research/alpha_intelligence/C0_WAVE0_ADJUDICATION_2026-08-19.md
   - research/alpha_intelligence/C0G_G0_SEAT_ADJUDICATION_2026-08-19.md
@@ -225,18 +228,19 @@ waves:
     status: todo
     depends_on: [k6]
 next_action: >
-  Next dependency is to commission K3-D Economic Propagation and K2-C
-  Institutional adapter pilot as two separate bounded waves after a fresh
-  path/authority collision census. They may proceed in parallel only if those
-  surfaces remain genuinely disjoint. K3-D must inherit the c0 D0 rulings,
-  including the four named DNR kills, Data OS exact-identity authority, typed
-  abstention for unresolved identities, no fourth graph/store, and no new
-  grader/ranker. K2-C must adopt K2-B/K1 contracts and prove owner-reader,
-  source/rights, PIT/lineage and correction behavior without creating an
-  institutional aggregation truth store. Do not start K5 OpportunityCase /
-  Prophet integration until BOTH K2 and K3 are complete. K3-E merge itself
-  authorizes no consumer wiring, Market OS UI, rank, gate, size, trade or
-  deployment.
+  Wave-3 release round closed 2026-10-06 under the Chairman's administrative-override ruling
+  (DEC:ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06): twelve program PRs are
+  MERGED (#8312, #8505, #8514, #8394, #8467, #8504, #8521, #8522, #8525, #8461, #8463, #8422).
+  Critical path now: (1) #8337 EXP-1 on merge head 95280c15 (ci.yml run 37437949027) — release and
+  merge on concluded checks, then verify query_k3e_expectation_surface on main's manifest;
+  (2) R1 identity/basis/rights completion gaps G1-G5 — UNOWNED source-owner receipts, a
+  Chairman/owner gate; (3) EVAL-1 positive outcome access P1-2/P1-5 stays with
+  WS:EVAL-OS-MEASUREMENT-LAW; (4) R4 predictive admission and R5 prospective-consumer proof open
+  only after (2) and (3); (5) non-administrative gates reserved to the Chairman: Commission-2
+  #8402 packet cap 569 > 490 (Mastermind #974), PID8688 EFFECT_UNKNOWN, TYPED_GIT_PRECHECK on the
+  PIT-conformance workspace, vendor PIT procurement, capital authority, mini2 free disk >= 50 GB
+  for the GLM tier. No K3-E merge authorizes consumer wiring, Market OS UI, rank, gate, size,
+  trade or deployment.
 ---
 
 # Alpha Intelligence Expansion — integration workstream
@@ -244,6 +248,30 @@ next_action: >
 This is the program-control lane for the Mastermind Alpha Intelligence Expansion
 (operator fanout pack, 2026-08-18). It exists to keep ten responsibilities (A–J)
 reconciled against their canonical owners; it builds nothing itself.
+
+## K3E child consumer preparation — 2026-10-03
+
+The Information-to-Price continuation under Macro #8309 prepared a separate
+EXP-1 declared-capture inspector. Its bounded source-view capability is
+**PARTIAL / independently accepted on native artifacts / publication pending**:
+75 focused tests and ten real paired-Git-blob CLI cases passed. The linked
+EXP-1 handoff and native receipt bind the exact code, inputs, outputs, repairs,
+query limits and still-held publication gates.
+
+Sol accepted SRC-A1 physical proof at
+`63fe5e92d305e34ba8bdd6578ccb56e97076d740`; its canonical acceptance records
+remain pending in PR #8312. Conditional separate EXP-1 preparation was admitted
+after the fresh collision census. This supersedes the earlier source-only
+October `EXP-1 NOT_BUILT` and wait-before-implementation statements for this
+bounded preparation. Source publication and the consumer's own review/checks
+remain prerequisites to dependent canonical publication.
+
+Fable remains the integration owner, runtime authority stays NONE, and broader
+K3, K3-D, canonical K3-E and other keystone states remain unchanged. The
+normalized baseline is always null; raw inspection grants no identity, rights,
+financial comparability, model, rank, sizing or execution authority.
+
+## Program references
 
 The PASS-0 packet — ownership matrix, collision map, capability-adoption map,
 safe/wait lane rulings, perishability verdict, and the K1–K7 merge/dependency

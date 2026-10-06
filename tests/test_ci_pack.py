@@ -4284,6 +4284,10 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
+    # Preserve its concrete imports and dynamic corpus/asset/data inputs.
+    # All packing ceilings, commands, data gate and weights remain unchanged.
+    "transmission-chains",
     "nw-lobe-unfreeze",
     "china-search-universe",
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
@@ -4604,6 +4608,12 @@ CURATED_EXCLUSIVE = {
     # Pure International browser helpers have a closed source/test dependency
     # set; unrelated page changes must not select their Node-only PR check.
     "international-workspace-pure-js",
+    # 2026-10-05 GMI #8455 (lane gmi_a_packing_r1): regime-outlook-mapping's
+    # reader import (world_state -> theme_state_generation_reader ->
+    # theme_graph/thematic_state -> scripts/build_thematic_state.py) was an
+    # opaque code fallback, so every ordinary code PR selected it. The exact
+    # closure is now declared; packing ceilings remain unchanged.
+    "regime-outlook-mapping",
 }
 
 
@@ -6173,6 +6183,43 @@ def test_markets_fresh_render_byte_match_is_code_gated_and_runs_exactly_once() -
         if selector in cmds or node in cmds:
             duplicates.append(name)
     assert not duplicates, sorted(duplicates)
+
+
+@pytest.mark.parametrize("probe", [row[0] for row in PACKING_PROBES])
+def test_transmission_scope_does_not_match_unrelated_packing_probe(probe: str) -> None:
+    """GMI's reader import must not restore transmission's opaque code fallback."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST)
+               if job.job_id == "transmission-chains")
+    assert job.exclusive
+    selected, _ = PACK.select_jobs([job], [probe])
+    assert not selected, f"transmission does not read packing probe {probe}"
+
+
+@pytest.mark.parametrize("owned_path", [
+    "engine/transmission_chains.py",  # ci-trigger-closure: data — selector label, never opened
+    "engine/neuralweb/world_state.py",  # ci-trigger-closure: data — selector label, never opened
+    "engine/neuralweb/theme_state_generation_reader.py",  # ci-trigger-closure: data — selector label, never opened
+    "scripts/build_transmission.py",  # ci-trigger-closure: data — selector label, never opened
+    "tests/test_transmission_chains_nw.py",  # ci-trigger-closure: data — selector label, never opened
+    "tests/fixtures/transmission/new_case.json",  # ci-trigger-closure: data — selector label, never opened
+    "knowledge/transmission/new_chain.yaml",  # ci-trigger-closure: data — selector label, never opened
+    "knowledge/transmission/proposed/new_chain.yaml",  # ci-trigger-closure: data — selector label, never opened
+    "knowledge/transmission/killed/new_chain.yaml",  # ci-trigger-closure: data — selector label, never opened
+    "data/yahoo/NEW_SERIES.parquet",  # ci-trigger-closure: data — selector label, never opened
+    "data/transmission/chain_calibration.json",  # ci-trigger-closure: data — selector label, never opened
+    "site/stockdata/NEW_SYMBOL.json",  # ci-trigger-closure: data — selector label, never opened
+    "site/assets/css/0123abcd.css",  # ci-trigger-closure: data — selector label, never opened
+    "templates/transmission.html.j2",  # ci-trigger-closure: data — selector label, never opened
+    "templates/_navlinks.html.j2",  # ci-trigger-closure: data — selector label, never opened
+    "templates/_future_fragment.html.j2",  # ci-trigger-closure: data — selector label, never opened
+    "config.yml",  # ci-trigger-closure: data — selector label, never opened
+])
+def test_transmission_scope_retains_static_and_future_dynamic_inputs(owned_path: str) -> None:
+    """Future corpus/asset/series members remain selected; no frozen-file loophole."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST)
+               if job.job_id == "transmission-chains")
+    selected, _ = PACK.select_jobs([job], [owned_path])
+    assert [job.job_id for job in selected] == ["transmission-chains"]
 
 
 def test_price_ladder_deterministic_contract_is_owned_by_existing_code_gate(tmp_path: Path) -> None:

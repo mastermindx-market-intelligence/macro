@@ -329,8 +329,6 @@
     <a href="#timeline">
       <span class="l-en">Transitions</span><span class="l-zh">转换记录</span>
       
-      <span class="cnt">1 <span class="l-en">today</span><span class="l-zh">今日</span></span>
-      
     </a>
     <a href="#census">
       <span class="l-en">Contradictions</span><span class="l-zh">矛盾</span>
@@ -419,7 +417,7 @@
              data-tip-en="Confidence shows how strongly the statistical regime model favors the current quadrant. Time in regime shows how long it has lasted; typical duration shows what the model usually sees. Use this as context, not a scored signal."
              data-tip-zh="置信度表示统计周期模型对当前象限的支持程度。已持续时间表示当前状态已维持多久；典型持续时间用于比较。仅作背景，不作为评分信号。">
           <span class="kpi-label"><span class="l-en">Regime model</span><span class="l-zh">周期模型</span></span>
-          <span class="kpi-val c-info">38%</span>
+          <span class="kpi-val c-info">45%</span>
           <span class="kpi-sub l-en">on Q3 &middot; 4 months in &middot; usually ~1.5 months</span>
           <span class="kpi-sub l-zh">判定为 Q3 &middot; 已 4 个月 &middot; 通常约 1.5 个月</span>
         </div>
@@ -436,8 +434,8 @@
         <div class="kpi-chip">
           <span class="kpi-label"><span class="l-en">Labels flipped</span><span class="l-zh">标签变动</span></span>
           <span class="kpi-val c-warn">46</span>
-          <span class="kpi-sub l-en">in 14 days &middot; 1 today</span>
-          <span class="kpi-sub l-zh">近14日 &middot; 今日 1</span>
+          <span class="kpi-sub l-en">in 14 days &middot; 0 today</span>
+          <span class="kpi-sub l-zh">近14日 &middot; 今日 0</span>
         </div>
         
       </div>
@@ -667,7 +665,7 @@
     <!-- Track record (forward-ledger scorecard) — display-only context accrual.
          Guards with .get() so missing keys never crash; absent scorecard = no output. -->
     <div class="trk-line">
-      <span class="l-en">Graded calls accruing — check back once alerts mature (~21 trading days)</span><span class="l-zh">评分记录积累中 — 约21个交易日后可查看</span>
+      <span class="l-en">Monitoring paused — ledger stale</span><span class="l-zh">监控暂停 — 账本数据陈旧</span>
     </div>
     
   </div>
@@ -1119,7 +1117,7 @@
             </span>
           </div>
           
-          <div class="field-chip changed-today"
+          <div class="field-chip"
                data-tip-en="EUR/USD"
                data-tip-zh="欧元兑美元">
             <span class="field-chip-name"><span class="l-en">EUR/USD</span><span class="l-zh">欧元兑美元</span></span>
@@ -1263,8 +1261,8 @@
           <span class="domain-name-en"><span class="l-en">International Risk</span><span class="l-zh">国际风险</span></span>
           
           <span class="domain-asof stale-ok"
-                data-tip-en="Source as-of 2026-10-05"
-                data-tip-zh="数据截至 2026-10-05">2026-10-05</span>
+                data-tip-en="Source as-of 2026-10-06"
+                data-tip-zh="数据截至 2026-10-06">2026-10-06</span>
           
         </div>
         
@@ -1552,7 +1550,7 @@
         <div class="domain-name">
           <span class="domain-name-en"><span class="l-en">China</span><span class="l-zh">中国</span></span>
           
-          <span class="domain-asof stale-warn"
+          <span class="domain-asof stale-old"
                 data-tip-en="Source as-of 2026-09-30"
                 data-tip-zh="数据截至 2026-09-30">2026-09-30</span>
           
@@ -2361,14 +2359,14 @@
         <div class="liq-row" style="margin-top:10px">
           <div class="liq-stat">
             <div class="liq-stat-k">OFR FSI</div>
-            <div class="liq-stat-v c-up">-2.349</div>
+            <div class="liq-stat-v c-up">-2.036</div>
             <div class="liq-stat-sub"><span class="l-en">low stress</span><span class="l-zh">低压力</span></div>
           </div>
           
           <div style="padding:10px 0">
             <div class="spark-lbl"><span class="l-en">90d OFR FSI</span><span class="l-zh">90日OFR FSI</span></div>
             <svg width="100" height="28" viewBox="0 0 140 32" xmlns="http://www.w3.org/2000/svg">
-              <polyline points="0.0,23.0 1.6,29.5 3.1,22.7 4.7,20.2 6.3,22.2 7.9,21.6 9.4,15.9 11.0,13.0 12.6,11.6 14.2,1.0 15.7,3.2 17.3,11.0 18.9,19.3 20.4,23.4 22.0,23.6 23.6,23.2 25.2,21.0 26.7,22.7 28.3,14.7 29.9,7.3 31.5,16.0 33.0,13.6 34.6,7.7 36.2,13.7 37.8,18.1 39.3,26.2 40.9,21.6 42.5,20.3 44.0,25.8 45.6,5.4 47.2,10.7 48.8,17.0 50.3,13.8 51.9,15.5 53.5,19.8 55.1,17.4 56.6,11.4 58.2,11.7 59.8,18.3 61.3,19.6 62.9,12.1 64.5,14.5 66.1,14.0 67.6,7.4 69.2,1.1 70.8,6.3 72.4,18.5 73.9,13.8 75.5,16.2 77.1,19.2 78.7,23.7 80.2,23.8 81.8,26.5 83.4,27.7 84.9,23.2 86.5,24.3 88.1,25.3 89.7,25.4 91.2,21.0 92.8,20.0 94.4,21.4 96.0,25.2 97.5,23.6 99.1,23.0 100.7,23.2 102.2,26.1 103.8,31.0 105.4,23.9 107.0,23.4 108.5,23.9 110.1,22.8 111.7,24.6 113.3,26.8 114.8,17.7 116.4,14.3 118.0,11.0 119.6,15.6 121.1,9.3 122.7,9.8 124.3,14.3 125.8,19.2 127.4,23.0 129.0,22.8 130.6,24.1 132.1,21.1 133.7,13.9 135.3,20.2 136.9,9.2 138.4,9.8 140.0,12.6" fill="none" stroke="var(--up)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+              <polyline points="0.0,29.5 1.6,22.7 3.1,20.2 4.7,22.2 6.3,21.6 7.9,15.9 9.4,13.0 11.0,11.6 12.6,1.0 14.2,3.2 15.7,11.0 17.3,19.3 18.9,23.4 20.4,23.6 22.0,23.2 23.6,21.0 25.2,22.7 26.7,14.7 28.3,7.3 29.9,16.0 31.5,13.6 33.0,7.7 34.6,13.7 36.2,18.1 37.8,26.2 39.3,21.6 40.9,20.3 42.5,25.8 44.0,5.4 45.6,10.7 47.2,17.0 48.8,13.8 50.3,15.5 51.9,19.8 53.5,17.4 55.1,11.4 56.6,11.7 58.2,18.3 59.8,19.6 61.3,12.1 62.9,14.5 64.5,14.0 66.1,7.4 67.6,1.1 69.2,6.3 70.8,18.5 72.4,13.8 73.9,16.2 75.5,19.2 77.1,23.7 78.7,23.8 80.2,26.5 81.8,27.7 83.4,23.2 84.9,24.3 86.5,25.3 88.1,25.4 89.7,21.0 91.2,20.0 92.8,21.4 94.4,25.2 96.0,23.6 97.5,23.0 99.1,23.2 100.7,26.1 102.2,31.0 103.8,23.9 105.4,23.4 107.0,23.9 108.5,22.8 110.1,24.6 111.7,26.8 113.3,17.7 114.8,14.3 116.4,11.0 118.0,15.6 119.6,9.3 121.1,9.8 122.7,14.3 124.3,19.2 125.8,23.0 127.4,22.8 129.0,24.1 130.6,21.1 132.1,13.9 133.7,20.2 135.3,9.2 136.9,9.8 138.4,12.6 140.0,4.2" fill="none" stroke="var(--up)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
             </svg>
           </div>
           
@@ -2381,6 +2379,282 @@
         
       </div>
     </div>
+    
+
+
+
+
+<!-- R26 decision evidence -->
+<details id="bonds-forex-evidence" class="panel" data-panel="macro_context.decision_workspaces.v1" style="margin-top:14px;overflow-wrap:anywhere">
+  <summary class="compass-title" style="cursor:pointer">
+    <span class="l-en">Bonds &amp; Forex</span><span class="l-zh">债券与外汇</span> · <span class="l-en">Review labels and gaps — not a trade signal</span><span class="l-zh">核对标签与缺口，非交易信号</span>
+  </summary>
+  
+  <p class="c-muted"><span class="l-en">Source dates do not certify vendor freshness; this is not a forecast.</span><span class="l-zh">来源日期不代表供应商数据已及时更新；这不是预测。</span></p>
+  <div class="rates-grid">
+    
+      
+      
+      <section data-domain="bonds" aria-labelledby="r26-bonds-title">
+        <h3 id="r26-bonds-title" class="compass-title"><span class="l-en">Bonds</span><span class="l-zh">债券</span></h3>
+        
+          <p class="chip c-muted">
+            <span class="l-en">Evidence incomplete</span><span class="l-zh">证据不完整</span>
+            
+          </p>
+          
+          <dl data-current-read="bonds">
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Bond condition</span><span class="l-zh">债券状况</span></dt>
+              <dd style="margin:0"><span class="l-en">healthy</span><span class="l-zh">健康</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Cycle label</span><span class="l-zh">周期标签</span></dt>
+              <dd style="margin:0"><span class="l-en">recession</span><span class="l-zh">衰退</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Duration context</span><span class="l-zh">久期背景</span></dt>
+              <dd style="margin:0"><span class="l-en">lean long</span><span class="l-zh">偏多</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Curve context</span><span class="l-zh">曲线背景</span></dt>
+              <dd style="margin:0"><span class="l-en">steepener</span><span class="l-zh">Steepener</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Curve regime</span><span class="l-zh">曲线状态</span></dt>
+              <dd style="margin:0"><span class="l-en">bear steepener</span><span class="l-zh">Bear steepener</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Recession risk label</span><span class="l-zh">衰退风险标签</span></dt>
+              <dd style="margin:0"><span class="l-en">low</span><span class="l-zh">低</span></dd>
+            </div>
+          
+          </dl>
+          
+          <h4 class="compass-title"><span class="l-en">Selected source dates</span><span class="l-zh">所选来源日期</span></h4>
+          
+          <ul>
+          
+            
+            <li>
+              
+                <code>data/bonds/bond_health.json</code> · <span class="l-en">2026-10-02</span><span class="l-zh">2026 10 02</span>
+                
+              
+            </li>
+          
+            
+            <li>
+              
+                <code>data/transmission/latest.json</code> · <span class="l-en">2026-10-02</span><span class="l-zh">2026 10 02</span>
+                
+              
+            </li>
+          
+          </ul>
+          <h4 class="compass-title"><span class="l-en">Recent label changes</span><span class="l-zh">近期标签变化</span></h4>
+          
+          
+          
+          <ul>
+            
+              
+              <li><span class="l-en">2026-10-02</span><span class="l-zh">2026 10 02</span> · <span class="l-en">yield curve regime</span><span class="l-zh">Yield curve regime</span>: <span class="l-en">bear flattener</span><span class="l-zh">熊市平坦化</span> → <span class="l-en">bear steepener</span><span class="l-zh">Bear steepener</span></li>
+            
+              
+              <li><span class="l-en">2026-10-01</span><span class="l-zh">2026 10 01</span> · <span class="l-en">bond curve lean</span><span class="l-zh">Bond curve lean</span>: <span class="l-en">neutral</span><span class="l-zh">中性</span> → <span class="l-en">steepener</span><span class="l-zh">Steepener</span></li>
+            
+              
+              <li><span class="l-en">2026-10-01</span><span class="l-zh">2026 10 01</span> · <span class="l-en">bond cycle phase</span><span class="l-zh">Bond cycle phase</span>: <span class="l-en">late</span><span class="l-zh">晚期</span> → <span class="l-en">recession</span><span class="l-zh">衰退</span></li>
+            
+              
+              <li><span class="l-en">2026-09-26</span><span class="l-zh">2026 09 26</span> · <span class="l-en">bond curve lean</span><span class="l-zh">Bond curve lean</span>: <span class="l-en">steepener</span><span class="l-zh">Steepener</span> → <span class="l-en">neutral</span><span class="l-zh">中性</span></li>
+            
+              
+              <li><span class="l-en">2026-09-23</span><span class="l-zh">2026 09 23</span> · <span class="l-en">bond curve lean</span><span class="l-zh">Bond curve lean</span>: <span class="l-en">neutral</span><span class="l-zh">中性</span> → <span class="l-en">steepener</span><span class="l-zh">Steepener</span></li>
+            
+          </ul>
+          
+          
+          <h4 class="compass-title"><span class="l-en">Evidence gaps</span><span class="l-zh">证据缺口</span></h4>
+          
+          
+          
+          <ul>
+            
+              
+              <li><span class="l-en">ebp</span><span class="l-zh">Ebp</span> · <span class="l-en">stale input</span><span class="l-zh">Stale input</span>: <span class="l-en">Upstream regime contract reports this input stale.</span><span class="l-zh">Upstream regime contract reports this input stale.</span></li>
+            
+              
+              <li><span class="l-en">recession risk</span><span class="l-zh">Recession risk</span> · <span class="l-en">stale input</span><span class="l-zh">Stale input</span>: <span class="l-en">Upstream regime contract reports this input stale.</span><span class="l-zh">Upstream regime contract reports this input stale.</span></li>
+            
+          </ul>
+          
+          
+          
+        
+      </section>
+    
+      
+      
+      <section data-domain="forex" aria-labelledby="r26-forex-title">
+        <h3 id="r26-forex-title" class="compass-title"><span class="l-en">Forex</span><span class="l-zh">外汇</span></h3>
+        
+          <p class="chip c-muted">
+            <span class="l-en">Evidence incomplete</span><span class="l-zh">证据不完整</span>
+            
+          </p>
+          
+          <dl data-current-read="forex">
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Dollar direction</span><span class="l-zh">美元方向</span></dt>
+              <dd style="margin:0"><span class="l-en">mixed</span><span class="l-zh">喜忧参半</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Dollar regime</span><span class="l-zh">美元状态</span></dt>
+              <dd style="margin:0"><span class="l-en">Global reflation</span><span class="l-zh">全球再通胀</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">FX risk label</span><span class="l-zh">外汇风险标签</span></dt>
+              <dd style="margin:0"><span class="l-en">risk-off</span><span class="l-zh">避险</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Dollar backdrop</span><span class="l-zh">美元背景</span></dt>
+              <dd style="margin:0"><span class="l-en">dollar-supportive backdrop</span><span class="l-zh">dollar-supportive backdrop</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Real-rate context</span><span class="l-zh">实际利率背景</span></dt>
+              <dd style="margin:0"><span class="l-en">Restrictive real yields</span><span class="l-zh">实际收益率偏紧</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Policy-path context</span><span class="l-zh">政策路径背景</span></dt>
+              <dd style="margin:0"><span class="l-en">hawkish repricing</span><span class="l-zh">鹰派重定价</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Liquidity direction</span><span class="l-zh">流动性方向</span></dt>
+              <dd style="margin:0"><span class="l-en">supportive</span><span class="l-zh">偏积极</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Leading scenario</span><span class="l-zh">主要情景</span></dt>
+              <dd style="margin:0"><span class="l-en">dollar wrecking ball</span><span class="l-zh">Dollar wrecking ball</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Dollar positioning</span><span class="l-zh">美元持仓</span></dt>
+              <dd style="margin:0"><span class="l-en">neutral</span><span class="l-zh">中性</span></dd>
+            </div>
+          
+            <div class="liq-row">
+              <dt class="stat-key"><span class="l-en">Dollar valuation</span><span class="l-zh">美元估值</span></dt>
+              <dd style="margin:0"><span class="l-en">fair</span><span class="l-zh">合理</span></dd>
+            </div>
+          
+          </dl>
+          
+            
+            <h4 class="compass-title"><span class="l-en">Scenario evidence</span><span class="l-zh">情景证据</span></h4>
+            <p><strong><span class="l-en">Active names</span><span class="l-zh">已激活名称</span>:</strong> 
+  
+    <span class="l-en">dollar wrecking ball</span><span class="l-zh">Dollar wrecking ball</span>
+  
+  
+  </p>
+            <p><strong><span class="l-en">Building names</span><span class="l-zh">正在形成的名称</span>:</strong> 
+  
+    <span class="l-en">reflation risk on</span><span class="l-zh">Reflation risk on</span>
+  
+  
+  </p>
+            
+            
+            
+            
+            <h4 class="compass-title"><span class="l-en">Funding evidence</span><span class="l-zh">融资证据</span></h4>
+            
+              <p><span class="l-en">Direct USD funding basis unavailable</span><span class="l-zh">直接美元融资基差不可用</span></p>
+            
+            <p><span class="l-en">Funding proxy</span><span class="l-zh">融资代理指标</span>: <span class="l-en">calm</span><span class="l-zh">平静</span> · <span class="l-en">not a substitute for direct USD basis evidence</span><span class="l-zh">不能替代直接美元基差证据</span></p>
+          
+          <h4 class="compass-title"><span class="l-en">Selected source dates</span><span class="l-zh">所选来源日期</span></h4>
+          
+          <ul>
+          
+            
+            <li>
+              
+                <code>data/forex/latest.json</code> · <span class="l-en">2026-10-05</span><span class="l-zh">2026 10 05</span>
+                
+              
+            </li>
+          
+          </ul>
+          <h4 class="compass-title"><span class="l-en">Recent label changes</span><span class="l-zh">近期标签变化</span></h4>
+          
+          
+          
+          <ul>
+            
+              
+              <li><span class="l-en">2026-10-01</span><span class="l-zh">2026 10 01</span> · <span class="l-en">fx risk</span><span class="l-zh">FX risk</span>: <span class="l-en">risk-on</span><span class="l-zh">偏好风险</span> → <span class="l-en">risk-off</span><span class="l-zh">避险</span></li>
+            
+              
+              <li><span class="l-en">2026-09-25</span><span class="l-zh">2026 09 25</span> · <span class="l-en">fx regime radar</span><span class="l-zh">FX regime radar</span>: <span class="l-en">Not supplied</span><span class="l-zh">未提供</span> → <span class="l-en">intervention risk</span><span class="l-zh">干预风险</span></li>
+            
+              
+              <li><span class="l-en">2026-09-23</span><span class="l-zh">2026 09 23</span> · <span class="l-en">fx regime radar</span><span class="l-zh">FX regime radar</span>: <span class="l-en">intervention risk</span><span class="l-zh">干预风险</span> → <span class="l-en">Not supplied</span><span class="l-zh">未提供</span></li>
+            
+              
+              <li><span class="l-en">2026-09-23</span><span class="l-zh">2026 09 23</span> · <span class="l-en">usd trend</span><span class="l-zh">USD trend</span>: <span class="l-en">down</span><span class="l-zh">下行</span> → <span class="l-en">mixed</span><span class="l-zh">喜忧参半</span></li>
+            
+              
+              <li><span class="l-en">2026-09-18</span><span class="l-zh">2026 09 18</span> · <span class="l-en">fx regime radar</span><span class="l-zh">FX regime radar</span>: <span class="l-en">Not supplied</span><span class="l-zh">未提供</span> → <span class="l-en">intervention risk</span><span class="l-zh">干预风险</span></li>
+            
+              
+              <li><span class="l-en">2026-09-18</span><span class="l-zh">2026 09 18</span> · <span class="l-en">fx risk</span><span class="l-zh">FX risk</span>: <span class="l-en">risk-off</span><span class="l-zh">避险</span> → <span class="l-en">risk-on</span><span class="l-zh">偏好风险</span></li>
+            
+              
+              <li><span class="l-en">2026-09-17</span><span class="l-zh">2026 09 17</span> · <span class="l-en">fx liquidity dir</span><span class="l-zh">FX liquidity dir</span>: <span class="l-en">soft</span><span class="l-zh">偏弱</span> → <span class="l-en">supportive</span><span class="l-zh">偏积极</span></li>
+            
+              
+              <li><span class="l-en">2026-09-17</span><span class="l-zh">2026 09 17</span> · <span class="l-en">fx risk</span><span class="l-zh">FX risk</span>: <span class="l-en">risk-on</span><span class="l-zh">偏好风险</span> → <span class="l-en">risk-off</span><span class="l-zh">避险</span></li>
+            
+          </ul>
+          
+          
+          <h4 class="compass-title"><span class="l-en">Evidence gaps</span><span class="l-zh">证据缺口</span></h4>
+          
+          
+          
+          <ul>
+            
+              
+              <li><span class="l-en">direct usd cross currency basis</span><span class="l-zh">Direct USD cross currency basis</span> · <span class="l-en">unavailable</span><span class="l-zh">Unavailable</span>: <span class="l-en">Direct market-wide USD cross-currency basis is unavailable; CNH basis and funding proxies are not substitutes.</span><span class="l-zh">Direct market-wide USD cross-currency basis is unavailable; CNH basis and funding proxies are not substitutes.</span></li>
+            
+          </ul>
+          
+          
+          
+        
+      </section>
+    
+  </div>
+  
+</details>
+<!-- /R26 decision evidence -->
   </div>
 
   <!-- ── HEADWIND / TAILWIND MATRIX ────────────────────────────── -->
@@ -2487,7 +2761,7 @@
         </div>
         
         
-        <div class="meta-foot"><span class="l-en">As of</span><span class="l-zh">截至</span> 2026-10-03</div>
+        <div class="meta-foot"><span class="l-en">As of</span><span class="l-zh">截至</span> 2026-10-05</div>
       </div>
     </div>
   </div>
@@ -2498,27 +2772,17 @@
 
     <!-- Breaking slug -->
     
-    <div class="breaking-slug">
-      <span class="breaking-badge"><span class="l-en">TODAY</span><span class="l-zh">今日</span></span>
-      <span class="breaking-text">
-        1 <span class="l-en">flip(s) this session</span><span class="l-zh">项转换本轮</span>
-        
-        — <span class="l-en">FX / Dollar</span><span class="l-zh">外汇 / 美元</span>: <span class="l-en">EUR/USD</span><span class="l-zh">欧元兑美元</span>
-        
-      </span>
-    </div>
-    
 
     
     
     <div class="tl-date-group">
-      <div class="tl-date-header today">
+      <div class="tl-date-header">
         2026-10-05
-         — <span class="l-en">TODAY</span><span class="l-zh">今日</span>
+        
       </div>
       <div class="tl-events">
         
-        <div class="tl-event hot">
+        <div class="tl-event">
           <span class="tl-domain"><span class="l-en">FX / Dollar</span><span class="l-zh">外汇 / 美元</span></span>
           <span style="font-size:12px;color:var(--muted)"><span class="l-en">EUR/USD</span><span class="l-zh">欧元兑美元</span></span>
           <span class="tl-from"><span class="l-en">Short</span><span class="l-zh">空头</span></span>
@@ -3098,7 +3362,7 @@
         </div>
         
         
-        <div class="contra-sub"><span class="l-en">Intelligence divergences</span><span class="l-zh">情报分歧</span>: 36</div>
+        <div class="contra-sub"><span class="l-en">Intelligence divergences</span><span class="l-zh">情报分歧</span>: 28</div>
         
         
         <div class="contra-pairs">
@@ -3138,7 +3402,7 @@
       <b><span class="l-en">Context labels, not trade signals.</span><span class="l-zh">背景标签，不是交易信号。</span></b>
       <span class="l-en">These regime labels summarize source data. They have not been validated as trade signals and do not directly change positions, scores, or rankings.</span><span class="l-zh">这些周期标签用于概括来源数据。它们尚未被验证为交易信号，也不会直接改变持仓、评分或排名。</span>
     </div>
-    <div class="meta-foot"><span class="l-en">Built</span><span class="l-zh">构建于</span> 2026-10-05 09:53 UTC</div>
+    <div class="meta-foot"><span class="l-en">Built</span><span class="l-zh">构建于</span> 2026-10-06 07:44 UTC</div>
   </div>
 
 </div><!-- /page-wrap -->

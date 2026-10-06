@@ -1,0 +1,313 @@
+{
+  "schema": "itp.r4_descriptive_coupling_dryrun_receipt.v1",
+  "authority": "descriptive_dry_run_only",
+  "financial_influence": false,
+  "k3e_admissible": false,
+  "answer": "RAN on C1 and on C2. Every stage returned. Every market row refused OWNER_STATE_INVALID because the price-pressure bar store has no parquet files. Coupling composed that refusal and emitted no score.",
+  "composition": {
+    "main_sha": "1df8c05fc1dcb18e3a8f5865902a409245895630",
+    "heads": {
+      "exp1": "13910854fbd652dcdf975301bdc8c6728c2e4767",
+      "mkt1": "314ddae3f926c4ab1e424c646b1f21e90b2c6a68",
+      "cpl1": "3bf903fae36b94cff461eca81a9538862ec0cc38"
+    },
+    "conflicts_resolved": [
+      ".github/ci/legacy-jobs.yml"
+    ],
+    "composite_tree_sha": "5b7055e5a8c4e768894c249acf59372fd51de7bd",
+    "composite_head_sha": "01c668c1cf2fa86162ebb74702dc5fcc49faa3c2"
+  },
+  "collections": {
+    "C1": {
+      "commit": "be061c6d49e9b9e40cea5b01b9b7b9acacdc757a",
+      "input_blobs": {
+        "data/revisions/expectation_attempts.parquet": "2f6bab62541a73d55d6dca5a5ecd749bea019f9c",
+        "data/revisions/expectation_observations.parquet": "88863256666ea972f28ed53dcad92881eede8311"
+      }
+    },
+    "C2": {
+      "commit": "576959b11804d4d7a0b0f19d443b232234c00ce7",
+      "input_blobs": {
+        "data/revisions/expectation_attempts.parquet": "298877fb22fac0057cc212493446fd760a247f34",
+        "data/revisions/expectation_observations.parquet": "c54c64ab8afb2f15c69de475cfa088f147792000"
+      }
+    }
+  },
+  "prereg": {
+    "registration_id": "K3E-EVAL-0-V1",
+    "expected_digest": "986ec117e8517b77e8dece565fd9d9dc169e758beb9d1619acc443e061ef87fd",
+    "recomputed_digest": "986ec117e8517b77e8dece565fd9d9dc169e758beb9d1619acc443e061ef87fd",
+    "match": true
+  },
+  "materialized_paths": [],
+  "selection_rule": "Every distinct (ticker_compat, metric, horizon_label_raw) triple in the collection observation parquet. Sorted by ticker, metric, then horizon. Provider yfinance is the only provider in either file, not a hand-picked subset. Candidate counts: C1 1600 triples from 11200 rows and 200 tickers; C2 3192 triples from 22344 rows and 399 tickers. C2 attempt ticker CWEN-A has no observation row and is outside this rule.",
+  "as_of_rule": "The committer time of the collection commit, written as UTC. C1 2026-08-24T22:42:31-07:00 is 2026-08-25T05:42:31Z. C2 2026-08-25T23:15:15-07:00 is 2026-08-26T06:15:15Z. Both are later than the latest system_observed_at in that revision.",
+  "window_rule": "For each ticker, start_session and end_session are the earliest and latest market_session on that ticker's rows. Every ticker has one market_session, so the two ends are equal. C1 sessions are only 2026-08-24. C2 sessions are 2026-08-24 and 2026-08-26, but no ticker appears on both.",
+  "stages": [
+    {
+      "stage": "EXP-1",
+      "collection": "C1",
+      "status": "RAN",
+      "command": "In the scratch composite, load_frozen_source(repository, source_revision) then inspect_expectation_surface for every distinct (ticker_compat, metric, horizon_label_raw) in that revision's expectation_observations.parquet, provider yfinance. This is the same pair of functions scripts/query_k3e_expectation_surface.py calls. Positive control: python3 scripts/query_k3e_expectation_surface.py --repository /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/itp-r4-composite-1898133bb4afacba --source-revision be061c6d49e9b9e40cea5b01b9b7b9acacdc757a --ticker A --metric EPS --horizon 0q --as-of 2026-08-25T05:42:31Z matched semantic digest 280b96ba8a5885482647107c10a3cb803047679c575969ccd1c55475b6dea7ef. source_revision=be061c6d49e9b9e40cea5b01b9b7b9acacdc757a as_of=2026-08-25T05:42:31Z composed_at=2026-10-06T07:12:00Z.",
+      "input_sha256": "f6f7a44db92b984cec377d496c9bd2d9030a2f4e717bbd89aa9f86db829c2967",
+      "output_sha256": "0ca0f12231c6d4c0e105acee4e424843cc1ec3d86d69354c1de7691b020d1087",
+      "rows_in": 11200,
+      "rows_out": 1600,
+      "refusal_counts": {},
+      "error": null
+    },
+    {
+      "stage": "MKT-1",
+      "collection": "C1",
+      "status": "RAN",
+      "command": "python3 -m scripts.build_price_pressure --root /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/itp-r4-composite-1898133bb4afacba ; then export_market_response(None, ticker=<each observation ticker>, start_session=<that ticker's only market_session>, end_session=<the same session>) from engine.price_pressure.response_export. Owner state is None because the store gate returned before prepare().",
+      "input_sha256": "c3b28b39d9bac71c7c5b510d68c234835216af652db44e050721640513115f97",
+      "output_sha256": "920d39ccb7447877ece433c0d3aaef54ef29e0f78a7829a2a729687270b8dd47",
+      "rows_in": 200,
+      "rows_out": 200,
+      "refusal_counts": {
+        "OWNER_STATE_INVALID": 200
+      },
+      "error": null
+    },
+    {
+      "stage": "CPL-1",
+      "collection": "C1",
+      "status": "RAN",
+      "command": "compose_descriptive_coupling(expectation_result, market_response) from engine.k3e_coupling once per expectation triple, using that ticker's export_market_response refusal object as market_response.",
+      "input_sha256": "9e74932bc4915c6d2e6bb3b724030ace6d7afb1d4b8cc99e058413441da5fe48",
+      "output_sha256": "539ad37d44262bb8923888ca229810ecd4706405ac9cdd8caebe94e2736a093e",
+      "rows_in": 1600,
+      "rows_out": 1600,
+      "refusal_counts": {},
+      "error": null
+    },
+    {
+      "stage": "EXP-1",
+      "collection": "C2",
+      "status": "RAN",
+      "command": "In the scratch composite, load_frozen_source(repository, source_revision) then inspect_expectation_surface for every distinct (ticker_compat, metric, horizon_label_raw) in that revision's expectation_observations.parquet, provider yfinance. This is the same pair of functions scripts/query_k3e_expectation_surface.py calls. Positive control: python3 scripts/query_k3e_expectation_surface.py --repository /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/itp-r4-composite-1898133bb4afacba --source-revision be061c6d49e9b9e40cea5b01b9b7b9acacdc757a --ticker A --metric EPS --horizon 0q --as-of 2026-08-25T05:42:31Z matched semantic digest 280b96ba8a5885482647107c10a3cb803047679c575969ccd1c55475b6dea7ef. source_revision=576959b11804d4d7a0b0f19d443b232234c00ce7 as_of=2026-08-26T06:15:15Z composed_at=2026-10-06T07:12:00Z.",
+      "input_sha256": "a80341fb2e67557c654fad85277fd564937386d3d6e393afe895d74c3e658a8d",
+      "output_sha256": "4404ba0fae13c238a517302f6da85b87da80523b17d1384e8a235fbc75b85d82",
+      "rows_in": 22344,
+      "rows_out": 3192,
+      "refusal_counts": {},
+      "error": null
+    },
+    {
+      "stage": "MKT-1",
+      "collection": "C2",
+      "status": "RAN",
+      "command": "python3 -m scripts.build_price_pressure --root /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/itp-r4-composite-1898133bb4afacba ; then export_market_response(None, ticker=<each observation ticker>, start_session=<that ticker's only market_session>, end_session=<the same session>) from engine.price_pressure.response_export. Owner state is None because the store gate returned before prepare().",
+      "input_sha256": "22ae8ef3116c73f586a27aa22749939c9ce6ad87cd2b4c56bd908737cd034376",
+      "output_sha256": "2219da154e8fdf8138a2f31e81f4f7b968d7e9bd0232c80110113d0d5fedc766",
+      "rows_in": 399,
+      "rows_out": 399,
+      "refusal_counts": {
+        "OWNER_STATE_INVALID": 399
+      },
+      "error": null
+    },
+    {
+      "stage": "CPL-1",
+      "collection": "C2",
+      "status": "RAN",
+      "command": "compose_descriptive_coupling(expectation_result, market_response) from engine.k3e_coupling once per expectation triple, using that ticker's export_market_response refusal object as market_response.",
+      "input_sha256": "a84fef0903ae85b2a73b942fe55601ebafa435df629ffcec75558414ef271582",
+      "output_sha256": "5891903b2a8a4ba98f3fb248c0671d6905776fe1e6a6f6adb7c8c279b564736a",
+      "rows_in": 3192,
+      "rows_out": 3192,
+      "refusal_counts": {},
+      "error": null
+    }
+  ],
+  "coupling_states": {
+    "C1": {
+      "COMPONENTS_ONLY": 1600
+    },
+    "C2": {
+      "COMPONENTS_ONLY": 3192
+    }
+  },
+  "coupling_status": {
+    "C1": {
+      "UNAVAILABLE_NORMALIZED_EXPECTATION": 1600
+    },
+    "C2": {
+      "UNAVAILABLE_NORMALIZED_EXPECTATION": 3192
+    }
+  },
+  "missingness": {
+    "C1.basis": {
+      "missing": 11200,
+      "total": 11200
+    },
+    "C1.currency": {
+      "missing": 11200,
+      "total": 11200
+    },
+    "C1.fiscal_period": {
+      "missing": 11200,
+      "total": 11200
+    },
+    "C1.fiscal_year": {
+      "missing": 11200,
+      "total": 11200
+    },
+    "C1.issuer_ref": {
+      "missing": 11200,
+      "total": 11200
+    },
+    "C1.period_end": {
+      "missing": 11200,
+      "total": 11200
+    },
+    "C1.security_ref": {
+      "missing": 11200,
+      "total": 11200
+    },
+    "C1.unit": {
+      "missing": 11200,
+      "total": 11200
+    },
+    "C1.value": {
+      "missing": 1652,
+      "total": 11200
+    },
+    "C2.basis": {
+      "missing": 22344,
+      "total": 22344
+    },
+    "C2.currency": {
+      "missing": 22344,
+      "total": 22344
+    },
+    "C2.fiscal_period": {
+      "missing": 22344,
+      "total": 22344
+    },
+    "C2.fiscal_year": {
+      "missing": 22344,
+      "total": 22344
+    },
+    "C2.issuer_ref": {
+      "missing": 22344,
+      "total": 22344
+    },
+    "C2.period_end": {
+      "missing": 22344,
+      "total": 22344
+    },
+    "C2.security_ref": {
+      "missing": 22344,
+      "total": 22344
+    },
+    "C2.unit": {
+      "missing": 22344,
+      "total": 22344
+    },
+    "C2.value": {
+      "missing": 3322,
+      "total": 22344
+    }
+  },
+  "honest_n": {
+    "episodes_distinct": 0,
+    "rows": 22344,
+    "tickers": 399,
+    "rule": "Applied eval0_preregistration.v1.json episode_law (K3E-EVAL-0-V1), quoted: effective_n is distinct_issuer_episodes_after_overlap_clustering; episode_identity is sha256(issuer_ref,metric,horizon_or_fiscal_period,episode_start_nyse_session); cluster_keys are issuer_ref, episode_id, and event_cluster_id; event_overlap_policy is overlapping_owner_native_events_for_one_issuer_collapse_to_one_event_cluster_for_inference; fiscal_roll_policy is new_period_identity_without_nonzero_same_period_change_does_not_start_revision_episode; quiet_gap_sessions is 20; minimum_overall_episodes is 100; minimum_subgroup_episodes is 25; raw_row_count_may_substitute is false. issuer_ref is null on every observation row (C1 11200/11200, C2 22344/22344). episode_id and event_cluster_id are not columns on these rows. fiscal_period and period_end are null on every row. market_session is present but is not an episode start under the 20-session quiet-gap rule. Zero episode identities can be formed. The row and ticker counts are printed beside that zero and are not an effective N. Distinct observation ids across the two commits are the C2 file: all 11200 C1 observation ids are inside the 22344 C2 rows, and all 200 C1 tickers are inside the 399 C2 tickers. Per collection file: C1 episodes_distinct=0, rows=11200, tickers=200; C2 episodes_distinct=0, rows=22344, tickers=399.",
+    "per_collection": {
+      "C1": {
+        "episodes_distinct": 0,
+        "rows": 11200,
+        "tickers": 200
+      },
+      "C2": {
+        "episodes_distinct": 0,
+        "rows": 22344,
+        "tickers": 399
+      }
+    }
+  },
+  "comparators": [
+    {
+      "baseline_id": "B0_NO_CHANGE",
+      "computed": false,
+      "value_or_reason": "Not computed. This dry-run does not label a later revision and does not emit a score."
+    },
+    {
+      "baseline_id": "B1_LATEST_ELIGIBLE_CONSENSUS",
+      "computed": false,
+      "value_or_reason": "Not computed. The expectation inspection withholds a normalized value; every normalized baseline status is UNESTIMABLE."
+    },
+    {
+      "baseline_id": "B2_REVISION_30D",
+      "computed": false,
+      "value_or_reason": "Not computed. No eligible nonzero change series was formed, and this receipt does not emit a score."
+    },
+    {
+      "baseline_id": "B3_REVISION_90D",
+      "computed": false,
+      "value_or_reason": "Not computed. No eligible nonzero change series was formed, and this receipt does not emit a score."
+    },
+    {
+      "baseline_id": "B4_FRESH_MEDIAN",
+      "computed": false,
+      "value_or_reason": "Not computed. The inspection freshness policy is unavailable and the normalized value is null."
+    },
+    {
+      "baseline_id": "B5_DETERMINISTIC_WAVE",
+      "computed": false,
+      "value_or_reason": "Not computed. The REV-1 wave contract is not part of this EXP-1, MKT-1, and CPL-1 composition."
+    },
+    {
+      "baseline_id": "B6_HISTORICAL_BASE_RATE",
+      "computed": false,
+      "value_or_reason": "Not computed. The prereg fits this baseline on the development era only. This receipt does not fit a base rate and does not emit a score."
+    },
+    {
+      "baseline_id": "B7_MARKET_SECTOR_ONLY",
+      "computed": false,
+      "value_or_reason": "Not computed. The price-pressure owner produced no raw, market, or sector frame because the bar store has no parquet files."
+    },
+    {
+      "baseline_id": "B8_REVISIONS_ONLY",
+      "computed": false,
+      "value_or_reason": "Not computed. No admitted deterministic expectation component was produced. The normalized value is null."
+    }
+  ],
+  "gaps": [
+    {
+      "id": "MKT1-OWNER-FRAME-ABSENT",
+      "stage": "MKT-1",
+      "what": "The existing price-pressure owner refused to build a close frame or a residual frame. Every export_market_response call then refused with OWNER_STATE_INVALID. No price and no residual were read. C1 refused 200 tickers. C2 refused 399 tickers.",
+      "exact_command": "python3 -m scripts.build_price_pressure --root /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/itp-r4-composite-1898133bb4afacba",
+      "exact_error": "::warning title=price-pressure-store-stale::bar store unusable at /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/itp-r4-composite-1898133bb4afacba/data/massive_stock_day (store absent or contains no parquet bars) — artifacts left untouched\n2026-10-06 00:13:09,502 WARNING price_pressure: refusing to run (store absent or contains no parquet bars)"
+    },
+    {
+      "id": "MKT1-WINDOW-IS-ONE-SESSION",
+      "stage": "MKT-1",
+      "what": "Every ticker has exactly one market_session, so the same-ticker window has the same start and end. The export checks the missing owner frame first, so a same-session window refusal was not the observed code. The observed code is OWNER_STATE_INVALID.",
+      "exact_command": "export_market_response(None, ticker=<observation ticker>, start_session=<market_session>, end_session=<market_session>)",
+      "exact_error": "OWNER_STATE_INVALID on every ticker; start_session equals end_session for C1 200/200 and C2 399/399."
+    },
+    {
+      "id": "EPISODE-IDENTITY-UNFORMED",
+      "stage": "EXP-1",
+      "what": "The prereg episode identity needs an issuer reference. That field is empty on every observation row, so the episode count is zero. The row counts are not a substitute.",
+      "exact_command": "Counted issuer_ref nulls on the observation rows returned by load_frozen_source for C1 be061c6d49e9b9e40cea5b01b9b7b9acacdc757a and C2 576959b11804d4d7a0b0f19d443b232234c00ce7.",
+      "exact_error": "issuer_ref null C1 11200/11200 and C2 22344/22344. episode_id and event_cluster_id are not columns."
+    },
+    {
+      "id": "C2-ATTEMPT-WITHOUT-OBSERVATION",
+      "stage": "EXP-1",
+      "what": "One C2 attempt ticker has no observation row. The selection rule uses observation triples only, so that ticker was not queried.",
+      "exact_command": "Set difference of ticker_compat on C2 expectation_attempts.parquet minus expectation_observations.parquet at 576959b11804d4d7a0b0f19d443b232234c00ce7.",
+      "exact_error": "attempt-only ticker CWEN-A"
+    }
+  ],
+  "forbidden_fields_non_null": {
+    "C1": {},
+    "C2": {}
+  }
+}

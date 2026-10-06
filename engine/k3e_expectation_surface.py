@@ -1,0 +1,416 @@
+"""EXP-1 declared-capture inspection; no normalized financial admission."""
+from collections import Counter, defaultdict
+from datetime import datetime, timezone
+import hashlib
+import json
+import math
+import re
+
+SCHEMA = "k3e.declared_capture_inspection.v1"
+OBSERVATIONS_PATH = "data/revisions/expectation_observations.parquet"
+ATTEMPTS_PATH = "data/revisions/expectation_attempts.parquet"
+STATUSES = {"success", "partial", "null", "http_401", "http_403",
+            "http_429", "malformed", "error"}
+ESTIMATE_TYPES = {"average", "median", "high", "low", "growth", "year_ago"}
+BLOCKED_RIGHTS = {"RIGHTS_BLOCKED", "UNLICENSED", "PROHIBITED", "BLOCKED"}
+GROUP_FIELDS = ("collection_session_id", "attempt_id", "provider",
+                "provider_record_class", "provider_payload_hash",
+                "ticker_compat", "metric", "horizon_label_raw")
+RAW_FIELDS = ("observation_id", "observation_type", "value", "missingness_reason",
+              "correction_state", "supersedes_observation_id", "rights_class",
+              "source_effective_at", "source_published_at", "provider_observed_at",
+              "system_observed_at", "period_end", "fiscal_period", "fiscal_year",
+              "unit", "currency", "basis", "issuer_ref", "security_ref",
+              "market_session", "aggregation_level", "contributor_id", "provenance_note")
+ATTEMPT_FIELDS = ("attempt_id", "collection_session_id", "provider", "ticker_compat",
+                  "attempted_at", "completed_at", "status", "http_status",
+                  "latency_ms", "response_payload_hash", "safe_error_class",
+                  "observation_count")
+
+
+class QueryRefusal(ValueError):
+    """Typed refusal for malformed query/input envelope."""
+    def __init__(self, reason):
+        self.reason = reason
+        super().__init__(reason)
+
+
+def parse_utc(value):
+    """Require an ISO clock with an explicit zero UTC offset."""
+    if not isinstance(value, str):
+        raise QueryRefusal("INVALID_UTC_CLOCK")
+    try:
+        result = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise QueryRefusal("INVALID_UTC_CLOCK") from exc
+    if result.tzinfo is None or result.utcoffset().total_seconds() != 0:
+        raise QueryRefusal("INVALID_UTC_CLOCK")
+    return result.astimezone(timezone.utc)
+
+
+def _clock(value):
+    if value is None:
+        return None
+    try:
+        return parse_utc(value)
+    except QueryRefusal:
+        return None
+
+
+def _iso(value):
+    return value.isoformat().replace("+00:00", "Z")
+
+
+def _digest(value):
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(raw.encode()).hexdigest()
+
+
+def _number(value):
+    return (isinstance(value, (int, float)) and not isinstance(value, bool)
+            and math.isfinite(value))
+
+
+def _count(value):
+    return _number(value) and value >= 0 and int(value) == value
+
+
+def _raw(row):
+    return {key: row.get(key) for key in RAW_FIELDS}
+
+
+def _latest(items, clock_key):
+    if not items:
+        return {"status": "UNAVAILABLE", "snapshot": None, "candidates": []}
+    newest = max(item[clock_key] for item in items)
+    tied = [item for item in items if item[clock_key] == newest]
+    if len(tied) != 1:
+        return {"status": "UNESTIMABLE", "snapshot": None,
+                "reason": "AMBIGUOUS_EQUAL_CAPTURE_CLOCK",
+                "candidates": sorted(
+                    [item["identity"] for item in tied],
+                    key=lambda item: json.dumps(item, sort_keys=True))}
+    return {"status": "AVAILABLE", "snapshot": tied[0]["public"], "candidates": []}
+
+
+def _validate_provenance(provenance):
+    if not isinstance(provenance, dict):
+        raise QueryRefusal("INVALID_SOURCE_PROVENANCE")
+    revision = provenance.get("source_revision")
+    if not isinstance(revision, str) or not re.fullmatch(r"[0-9a-f]{40}", revision):
+        raise QueryRefusal("FULL_IMMUTABLE_SOURCE_REVISION_REQUIRED")
+    inputs = provenance.get("inputs", {})
+    if not isinstance(inputs, dict):
+        raise QueryRefusal("PAIRED_INPUT_HASHES_REQUIRED")
+    for path in (OBSERVATIONS_PATH, ATTEMPTS_PATH):
+        item = inputs.get(path, {})
+        if not isinstance(item, dict):
+            raise QueryRefusal("PAIRED_INPUT_HASHES_REQUIRED")
+        if (not isinstance(item.get("sha256"), str)
+                or not re.fullmatch(r"[0-9a-f]{64}", item["sha256"])
+                or not isinstance(item.get("git_blob_id"), str)
+                or not re.fullmatch(r"[0-9a-f]{40}", item["git_blob_id"])):
+            raise QueryRefusal("PAIRED_INPUT_HASHES_REQUIRED")
+
+
+def inspect_expectation_surface(observations, attempts, *, source_provenance,
+                                ticker, metric, horizon, as_of,
+                                provider="yfinance", composed_at=None):
+    """Read mappings without mutation; source clocks are declarations, not PIT proof.
+
+    Callers must supply JSON-compatible mappings (including real nulls). The CLI
+    verifies source bytes. Caller labels never authorize normalized consumption.
+    """
+    cutoff = parse_utc(as_of)
+    if (not isinstance(ticker, str) or not ticker.strip() or ticker != ticker.strip()
+            or not isinstance(provider, str) or not provider.strip()
+            or not isinstance(horizon, str) or not horizon.strip()
+            or metric not in {"EPS", "revenue"}):
+        raise QueryRefusal("INVALID_QUERY_DIMENSIONS")
+    _validate_provenance(source_provenance)
+    obs = list(observations)
+    att = list(attempts)
+    if not all(isinstance(row, dict) for row in obs + att):
+        raise QueryRefusal("RECORD_MAPPINGS_REQUIRED")
+    composition = parse_utc(composed_at) if composed_at else datetime.now(timezone.utc)
+    query = {"provider": provider, "ticker_compat": ticker, "metric": metric,
+             "horizon_label_raw": horizon, "as_of": _iso(cutoff)}
+    provenance = {"source_revision": source_provenance["source_revision"],
+                  "inputs": {path: {key: source_provenance["inputs"][path][key]
+                                    for key in ("sha256", "git_blob_id")}
+                             for path in (OBSERVATIONS_PATH, ATTEMPTS_PATH)}}
+    query_identity = _digest({"schema": SCHEMA, "query": query, "source": provenance})
+    reasons = Counter()
+    eligible_attempts = []
+    pending_attempts = []
+    invalid_attempts = []
+    attempt_by_id = defaultdict(list)
+    # Start visibility and completion visibility are separate. No pending
+    # classification may inspect the final outcome, including invalid labels.
+    for row in att:
+        if row.get("provider") != provider or row.get("ticker_compat") != ticker:
+            continue
+        start = _clock(row.get("attempted_at"))
+        identity = row.get("attempt_id")
+        if start is None:
+            continue
+        if start > cutoff:
+            continue
+        end = _clock(row.get("completed_at"))
+        start_identity_valid = (
+            isinstance(identity, str) and bool(identity)
+            and isinstance(row.get("collection_session_id"), str)
+            and bool(row["collection_session_id"]))
+        pending = (row.get("completed_at") is None
+                   or (end is not None and end > cutoff))
+        if pending:
+            valid = False
+            public = {key: row.get(key) for key in
+                      ("attempt_id", "collection_session_id", "provider",
+                       "ticker_compat", "attempted_at")}
+            public.update(status=None, completed_at=None,
+                          derived_query_state="INCOMPLETE_AT_CUTOFF")
+            if not start_identity_valid:
+                public["start_identity_degradation"] = "INVALID_ATTEMPT_START_IDENTITY"
+            pending_attempts.append({"time": start, "identity": {"attempt_id": identity},
+                                     "public": public})
+        else:
+            valid = (start_identity_valid and end is not None
+                     and start <= end <= cutoff and row.get("status") in STATUSES)
+            if valid:
+                public = {key: row.get(key) for key in ATTEMPT_FIELDS}
+                public["age_seconds_since_completed"] = (cutoff - end).total_seconds()
+                eligible_attempts.append({"time": start, "identity": {"attempt_id": identity},
+                                          "public": public})
+            else:
+                reasons["INVALID_ATTEMPT_RECEIPT"] += 1
+                invalid_attempts.append({
+                    "time": start, "identity": {"attempt_id": identity},
+                    "public": {"attempt_id": identity, "attempted_at": row["attempted_at"],
+                               "status": None, "completed_at": None,
+                               "derived_query_state": "INVALID_ATTEMPT_RECEIPT"}})
+        attempt_by_id[identity].append(
+            {"row": row, "start": start, "end": end,
+             "valid": valid, "pending": pending})
+    for identity, entries in attempt_by_id.items():
+        if len(entries) > 1:
+            reasons["DUPLICATE_ATTEMPT_ID"] += len(entries)
+    attempt_views = eligible_attempts + pending_attempts + invalid_attempts
+
+    relevant = []
+    # Establish the whole declared temporal boundary before reading observation
+    # IDs, values, missingness, rights, payloads or group multiplicity. Explicit
+    # not-yet-completed observations have no historical diagnostic population.
+    # Locatable missing/malformed receipts remain eligible for exclusion reasons.
+    for row in obs:
+        if any(row.get(key) != query[key] for key in
+               ("provider", "ticker_compat", "metric", "horizon_label_raw")):
+            continue
+        entries = attempt_by_id.get(row.get("attempt_id"), [])
+        # Any pending receipt makes a reused attempt ID temporally ambiguous.
+        # Withhold every observation under it, including completed candidates;
+        # the known starts still supply duplicate-attempt diagnostics above.
+        if any(entry["pending"] for entry in entries):
+            continue
+        captures = [_clock(row.get(key)) for key in
+                    ("provider_observed_at", "system_observed_at")]
+        present = [clock for clock in captures if clock is not None]
+        if not present or any(clock > cutoff for clock in present):
+            continue
+        relevant.append((row, captures))
+    ids = Counter(row.get("observation_id") for row, _ in relevant)
+    groups = defaultdict(list)
+    excluded = 0
+    true_missing = 0
+    for row, captures in relevant:
+        faults = []
+        if None in captures:
+            faults.append("MISSING_OR_MALFORMED_CAPTURE_CLOCK")
+        entries = attempt_by_id.get(row.get("attempt_id"), [])
+        receipt = entries[0] if len(entries) == 1 else None
+        if not entries:
+            faults.append("MISSING_LINKED_ATTEMPT")
+        elif len(entries) != 1:
+            faults.append("DUPLICATE_LINKED_ATTEMPT")
+        elif not receipt["valid"]:
+            faults.append("INVALID_LINKED_ATTEMPT")
+        if not row.get("observation_id") or ids[row.get("observation_id")] != 1:
+            faults.append("MISSING_OR_DUPLICATE_OBSERVATION_ID")
+        identifiable = all(isinstance(row.get(key), str) and row[key]
+                           for key in GROUP_FIELDS)
+        if not identifiable:
+            faults.append("INCOMPLETE_SNAPSHOT_IDENTITY")
+        if row.get("observation_type") not in ESTIMATE_TYPES | {"covering_analyst_count"}:
+            faults.append("INVALID_OBSERVATION_TYPE")
+        if row.get("value") is None:
+            if row.get("missingness_reason") is None:
+                faults.append("NULL_WITHOUT_MISSINGNESS")
+            else:
+                true_missing += 1
+        elif not _number(row["value"]) or row.get("missingness_reason") is not None:
+            faults.append("INVALID_VALUE_MISSINGNESS")
+        if (receipt and receipt["valid"] and None not in captures):
+            attempt = receipt["row"]
+            if any(row.get(key) != attempt.get(key) for key in
+                   ("collection_session_id", "provider", "ticker_compat")):
+                faults.append("ATTEMPT_IDENTITY_MISMATCH")
+            if row.get("provider_payload_hash") != attempt.get("response_payload_hash"):
+                faults.append("ATTEMPT_PAYLOAD_MISMATCH")
+            if any(clock < receipt["start"] for clock in captures):
+                faults.append("CAPTURE_PRECEDES_ATTEMPT")
+            if captures[1] < captures[0]:
+                faults.append("SYSTEM_CAPTURE_PRECEDES_PROVIDER_CAPTURE")
+            published = _clock(row.get("source_published_at"))
+            effective = _clock(row.get("source_effective_at"))
+            for field, parsed in (("source_published_at", published),
+                                  ("source_effective_at", effective)):
+                if row.get(field) is not None and parsed is None:
+                    faults.append("MALFORMED_" + field.upper())
+            if published and any(published > clock for clock in captures):
+                faults.append("PUBLICATION_AFTER_CAPTURE")
+            # Economic effective dates may be future dates; they are not known_at.
+        reasons.update(set(faults))
+        if not identifiable:
+            excluded += 1
+            continue
+        # Retain invalid identifiable members until field and clock coherence
+        # adjudication. Dropping a bad duplicate first would manufacture support.
+        availability = (max(*captures, receipt["end"])
+                        if not faults else None)
+        groups[tuple(row[key] for key in GROUP_FIELDS)].append(
+            {"row": row, "availability": availability,
+             "receipt": receipt, "faults": faults})
+
+    snapshots = []
+    supported = []
+    supported_records = 0
+    inconsistent_records = 0
+    for key, members in groups.items():
+        rows = [item["row"] for item in members]
+        fields = defaultdict(list)
+        for row in rows:
+            fields[row.get("observation_type")].append(row)
+        faults = []
+        if any(len(items) > 1 for items in fields.values()):
+            faults.append("DUPLICATE_SNAPSHOT_FIELD")
+        for field in ("period_end", "provider_observed_at", "system_observed_at"):
+            if len({row.get(field) for row in rows}) > 1:
+                faults.append("INCONSISTENT_SNAPSHOT_" + field.upper())
+        if faults:
+            reasons.update(faults)
+            inconsistent_records += len(rows)
+            continue
+        valid_members = [item for item in members if not item["faults"]]
+        excluded += len(members) - len(valid_members)
+        if not valid_members:
+            continue
+        rows = [item["row"] for item in valid_members]
+        fields = {row["observation_type"]: [row] for row in rows}
+        chosen = fields.get("average", [None])[0]
+        coverage = fields.get("covering_analyst_count", [None])[0]
+        coverage_valid = (coverage is not None and coverage.get("missingness_reason") is None
+                          and _count(coverage.get("value")))
+        if coverage is not None and coverage.get("value") is not None and not coverage_valid:
+            reasons["INVALID_COVERING_ANALYST_COUNT"] += 1
+        attempt = valid_members[0]["receipt"]["row"]
+        is_supported = (attempt["status"] == "success" and chosen is not None
+                        and _number(chosen.get("value"))
+                        and chosen.get("missingness_reason") is None
+                        and coverage_valid and coverage["value"] > 0)
+        support_reasons = []
+        if attempt["status"] != "success":
+            support_reasons.append("ATTEMPT_NOT_SUCCESSFUL")
+        if chosen is None:
+            support_reasons.append("AVERAGE_FIELD_ABSENT")
+        elif chosen.get("value") is None or chosen.get("missingness_reason") is not None:
+            support_reasons.append("AVERAGE_UNAVAILABLE")
+        if not coverage_valid:
+            support_reasons.append("COVERING_ANALYST_COUNT_UNAVAILABLE_OR_INVALID")
+        elif coverage["value"] == 0:
+            support_reasons.append("ZERO_COVERING_ANALYST_COUNT")
+        availability = max(item["availability"] for item in valid_members)
+        identity = dict(zip(GROUP_FIELDS, key))
+        public = {"identity": identity, "derived_capture_available_at": _iso(availability),
+                  "derived_capture_availability_rule":
+                      "max(system_observed_at,provider_observed_at,linked_attempt_completed_at)",
+                  "age_seconds": (cutoff - availability).total_seconds(),
+                  "selected_raw_field": "average", "selected_observation": _raw(chosen) if chosen else None,
+                  "provider_reported_covering_analyst_count":
+                      coverage["value"] if coverage_valid else None,
+                  "covering_count_observation": _raw(coverage) if coverage else None,
+                  "structurally_supported": is_supported, "support_reasons": support_reasons,
+                  "attempt_status": attempt["status"], "attempted_at": attempt["attempted_at"],
+                  "completed_at": attempt["completed_at"],
+                  "raw_fields": {name: _raw(items[0]) for name, items in sorted(fields.items())},
+                  "evidence_use": "RAW_CAPTURE_INSPECTION_ONLY"}
+        item = {"time": availability, "identity": identity, "public": public}
+        snapshots.append(item)
+        if is_supported:
+            supported.append(item)
+        if attempt["status"] == "success" and coverage_valid and coverage["value"] > 0:
+            supported_records += sum(row["observation_type"] in ESTIMATE_TYPES
+                                     and _number(row.get("value"))
+                                     and row.get("missingness_reason") is None for row in rows)
+
+    latest_capture = _latest(snapshots, "time")
+    last_supported = _latest(supported, "time")
+    latest_attempt = _latest(attempt_views, "time")
+    current = latest_capture["snapshot"]
+    previous = last_supported["snapshot"]
+    current_anchor = current["selected_observation"].get("period_end") if current and current["selected_observation"] else None
+    previous_anchor = previous["selected_observation"].get("period_end") if previous else None
+    continuity = ("ANCHOR_UNAVAILABLE" if not current_anchor or not previous_anchor else
+                  "SAME_NATIVE_PERIOD" if current_anchor == previous_anchor else
+                  "NATIVE_PERIOD_CHANGED_NO_REVISION_INFERENCE")
+    raw_rights = sorted({row.get("rights_class") or "UNKNOWN" for row, _ in relevant})
+    rights_blocked = any(right in BLOCKED_RIGHTS for right in raw_rights)
+    baseline_reasons = ["NORMALIZED_CONSUMER_ADMISSION_NOT_GRANTED"]
+    if not rights_blocked:
+        baseline_reasons.append("SOURCE_USE_RIGHTS_UNKNOWN")
+    if rights_blocked:
+        baseline_reasons.append("SOURCE_USE_RIGHTS_BLOCKED")
+    candidate = previous["selected_observation"] if previous else None
+    for field in ("issuer_ref", "security_ref", "unit", "currency", "basis", "period_end"):
+        if candidate is None or candidate.get(field) is None:
+            baseline_reasons.append("CANONICAL_" + field.upper() + "_UNAVAILABLE")
+    if previous is None:
+        baseline_reasons.append("NO_UNAMBIGUOUS_STRUCTURALLY_SUPPORTED_SNAPSHOT")
+    baseline_status = ("RIGHTS_BLOCKED" if rights_blocked else
+                       "UNESTIMABLE" if relevant else "UNAVAILABLE")
+    payload = {"schema": SCHEMA, "query_identity": query_identity, "query": query,
+               "source": provenance,
+               "replay_basis": "declared_capture_at_frozen_source_revision",
+               "historical_public_availability_verified": False,
+               "historical_repository_visibility_verified": False,
+               "latest_captured_snapshot": latest_capture,
+               "last_structurally_supported_snapshot": last_supported,
+               "latest_attempt": latest_attempt, "period_continuity": continuity,
+               "freshness_policy": {"status": "UNAVAILABLE", "reason": "NO_ADMITTED_FRESHNESS_POLICY"},
+               "normalized_baseline": {"value": None, "status": baseline_status,
+                                       "rights_state": "RIGHTS_BLOCKED" if rights_blocked else "UNKNOWN",
+                                       "source_declared_rights_labels": raw_rights,
+                                       "reasons": baseline_reasons,
+                                       "candidate_observation_id": candidate["observation_id"] if candidate else None},
+               "denominators": {
+                   "capture_clock_bounded_relevant_records": len(relevant),
+                   "valid_captured_records": len(relevant) - excluded - inconsistent_records,
+                   "structurally_supported_estimate_records": supported_records,
+                   "true_missing_records": true_missing,
+                   "invalid_or_inconsistent_excluded_records": excluded + inconsistent_records,
+                   "distinct_coherent_source_snapshots": len(snapshots),
+                   "distinct_structurally_supported_snapshots": len(supported),
+                   "started_attempt_records_by_cutoff": sum(len(items) for items in attempt_by_id.values()),
+                   "unique_completed_valid_attempts_by_cutoff": len([item for item in eligible_attempts
+                                                                    if len(attempt_by_id[item["identity"]["attempt_id"]]) == 1]),
+                   "reason_counts": dict(sorted(reasons.items())),
+                   "population_notes": {
+                       "records": "query-dimension rows temporally available by cutoff, plus historically locatable missing/malformed receipts; explicitly pending linked captures excluded before all observation adjudication",
+                       "support": "finite nonmissing estimate fields with a same-group positive integral covering count and successful completed linked attempt",
+                       "true_missing": "null value with explicit missingness in capture-clock-bounded relevant records; may overlap excluded records",
+                       "attempts": "provider/ticker attempts with valid attempted_at <= cutoff; not metric-specific",
+                       "reasons": "nonexclusive diagnostic counts; not additive partitions"}}}
+    return {"semantic_payload": payload, "semantic_digest": _digest(payload),
+            "composition_time": _iso(composition),
+            "input_provenance": {"full_input_observation_records": len(obs),
+                                 "full_input_attempt_records": len(att),
+                                 "historical_population": False}}

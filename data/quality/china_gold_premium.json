@@ -1,6 +1,6 @@
 {
   "schema": "commodity.china_gold_premium_quality.v1",
-  "checked_at": "2026-10-05T10:17:57+00:00",
+  "checked_at": "2026-10-06T09:20:47+00:00",
   "status": "honest_unavailable",
   "render_consistent": true,
   "machine_projection_consistent": true,
@@ -65,9 +65,9 @@
       "column": "cny_per_oz",
       "path": "data/gold_china_basis/xaucny_spot.parquet",
       "exists": true,
-      "rows": 267,
-      "sha256": "eb86fd5763c5ce2af512d9bb2640b8fe29b081df5887297926865fa23c4677e1",
-      "asof": "2026-10-02T07:30:00+00:00",
+      "rows": 268,
+      "sha256": "cb5716fcdab2c26015b0feae84738b05e0a0b38f3dbf8f72661c388478ef8103",
+      "asof": "2026-10-05T07:30:00+00:00",
       "selected_asof_present": true
     }
   ],
