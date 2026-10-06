@@ -123,8 +123,10 @@
       "outcome": "Heatmap economic sizing: propagate genuine capitalization and disclose coverage",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "SCOPED_SOURCE_AND_7_REAL_BROWSER_CASES_ACCEPTED; FULL_MATRIX_BLOCKED",
-      "evidence_summary": "Parent single test helper correction, no productwrites: actual11cases7pass4fail0skip. 100xSVG ratio, volume invariance, missing/zero exclusion, native keyboard and31/601 missing-name coverage verified; dev initialization/Chinese andresponsive matrix incomplete. Remote3345 restored free. No new sourcewriter/CI/live candidate accepted."
+      "review_status": "SCOPED_SOURCE_AND_11_REAL_BROWSER_CASES_ACCEPTED; PR839_REQUIRED_CI_PENDING",
+      "evidence_summary": "Higher Grok r8 repaired only owned fixture initialization and qualified actual mounted Discover/Heatmap in own production-mode Next: 11 pass, 0 fail, 0 skip; native process/fixture cleanup proven. Parent integrated immutable six-file proposal at16b30bf005ca9040aa556b9dcb630de3ae4872b0. Normal npm build/typecheck exit0, focused24, full unit7715 plus4 existing TODOs, responsive shell41 pass4 skips0 fail across desktop/tablet/mobile. Earlier concurrent unchanged Pine budget timeout preserved; isolated4 and bounded full suite pass. PR839 ready, native auto-merge and merge-on-green armed. Exact CI, merged-master deploy and actual live acceptance still owed.",
+      "source_head": "16b30bf005ca9040aa556b9dcb630de3ae4872b0",
+      "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/839"
     },
     {
       "mission": "A16",
@@ -177,9 +179,10 @@
     "A08_owner_head": "53a1fc4cc47b4b9240fad828d0ef2161346aaacc",
     "A04_transaction_function_sha256": "1bb8d8639c73945bae80e1523d64d84414a49cde0964ea8ab82af69809cb38d2",
     "A04_concurrency_proof": "3 actual isolatedPostgreSQL17.11 cases: two sessions one commit/one conflict, stable replay, admitted write rollback; fullrow readback and fixturecleanup verified",
-    "A04_transaction_regressions_sha256": "a8a8d5f7a02b0e4299f0ca6a001107168440a1d48ed56869e09c14e93f309249"
+    "A04_transaction_regressions_sha256": "a8a8d5f7a02b0e4299f0ca6a001107168440a1d48ed56869e09c14e93f309249",
+    "A15_PR839": "research/terminal_audit20/A15_PR839/reviewed-proof.json"
   },
-  "updated_at": "2026-10-06T16:54:04.333459+00:00",
+  "updated_at": "2026-10-06T18:00:07.800163+00:00",
   "current_terminal_deployment": "8f3d04f1c7b2d26a90623497b30f0901160d03a2",
   "active_fabric_children": []
 }

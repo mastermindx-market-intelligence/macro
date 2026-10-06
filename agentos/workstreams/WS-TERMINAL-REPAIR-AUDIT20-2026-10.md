@@ -8,6 +8,7 @@ objective: >-
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: blocked
 blocked_by:
+  - Terminal PR839 exact-head required browser CI is pending; merged-master deployment and actual USD CAP acceptance remain owed.
   - Exact active Terminal PR597 source-owner binding is unresolved for shared startup, editor and drawing caller hunks.
   - Macro PR8526 incumbent incorporation, owning CI and live delivery of the reviewed Brain contribution are unaccepted.
   - Existing holds and drawing bootstrap/schema, financial source-unit, private identity and recipient contracts remain unclosed.
@@ -25,7 +26,8 @@ waves:
     title: Consume higher-level repairs and deliver accepted scoped changes
     status: in_progress
 next_action: >-
-  Recover exact incumbent Terminal PR597 owner binding for startup, editor and drawing
+  Finish Terminal PR839 exact-head CI, merged-master git-gated deployment and actual
+  USD CAP mode/disclosure acceptance. Then recover exact incumbent Terminal PR597 owner binding for startup, editor and drawing
   caller contributions; incorporate the qualified Brain patch through Macro PR8526.
   Use the accepted drawing DB prototype only after legacy bootstrap, client/outbox
   and migration/source admission; preserve all incumbent holds and actual live gates.
@@ -34,6 +36,7 @@ artifacts:
   - research/TERMINAL_AUDIT20_REVIEW_2026-10-06.json
   - research/terminal_audit20/A08_PR8526/README.md
   - research/terminal_audit20/A04_RPC_PROTOTYPE/README.md
+  - research/terminal_audit20/A15_PR839/README.md
   - agentos/handoffs/TERMINAL-REPAIR-AUDIT20-2026-10-2026-10-06.md
 landmines:
   - Incumbent holds and migration reservations remain in force; this record claims no source paths.
@@ -72,3 +75,8 @@ The drawing prototype is reviewed with 33 guard, 11 transaction and three indepe
 concurrency/replay/rollback cases on isolated PostgreSQL17.11. Production, migration,
 legacy bootstrap and TerminalShell integration are unaccepted. All Fabric children from
 this wave are consumed and sealed; no future automatic wake or source takeover is claimed.
+
+Terminal PR839 carries the independently reviewed cached USD capitalization upgrade at
+`16b30bf005ca9040aa556b9dcb630de3ae4872b0`. Eleven Heatmap browser fixture cases,
+parent normal build/typecheck,7715 unit and41 responsive shell cases passed. Required
+browser CI is pending; production remains8f3 and actual USD CAP live acceptance is owed.
