@@ -24,6 +24,12 @@ from typing import Callable
 from urllib.parse import urlencode
 
 from collectors import benzinga_news
+from engine.qbus_news_receipts import (
+    HEALTH_SCHEMA,
+    NewsReceiptError,
+    load_rights_receipt,
+    write_health_receipt,
+)
 from engine.qbus_news_store import NewsStore
 from engine.qbus_news_universe import UniverseQualification, qualify_universe
 
@@ -41,6 +47,7 @@ class RunnerStats:
     catchups_ok: int = 0
     catchups_gap: int = 0
     catchups_failed: int = 0
+    health_write_failures: int = 0
 
 
 def exit_receipt(stats: RunnerStats) -> dict:
@@ -90,6 +97,7 @@ class NewsIngestRunner:
         reconnect_base_seconds: float = 1.0,
         reconnect_max_seconds: float = 60.0,
         max_frame_bytes: int = 2 * 1024 * 1024,
+        health_path: Path | None = None,
     ) -> None:
         if not token:
             raise ValueError("qbus_news:missing_stream_token")
@@ -113,23 +121,68 @@ class NewsIngestRunner:
         self.reconnect_base_seconds = float(reconnect_base_seconds)
         self.reconnect_max_seconds = float(reconnect_max_seconds)
         self.max_frame_bytes = max_frame_bytes
+        self.health_path = health_path
         self.stats = RunnerStats()
+        self._last_successful_catchup: datetime | None = None
+        self._last_stream_event_at: datetime | None = None
+        self._gap_unresolved = False
+
+    def _health_payload(self, state: str) -> dict:
+        observed = self.clock()
+        return {
+            "schema": HEALTH_SCHEMA,
+            "source": "benzinga",
+            "state": state,
+            "observed_at": observed.isoformat(),
+            "last_successful_catchup": (
+                None
+                if self._last_successful_catchup is None
+                else self._last_successful_catchup.isoformat()
+            ),
+            "last_stream_event_at": (
+                None
+                if self._last_stream_event_at is None
+                else self._last_stream_event_at.isoformat()
+            ),
+            "gap_unresolved": self._gap_unresolved,
+            "connect_attempts": self.stats.connect_attempts,
+            "disconnects": self.stats.disconnects,
+            "catchups_failed": self.stats.catchups_failed,
+        }
+
+    def _publish_health(self, state: str) -> None:
+        if self.health_path is None:
+            return
+        try:
+            write_health_receipt(self.health_path, self._health_payload(state))
+        except (OSError, NewsReceiptError):
+            # Health publication is evidence, not ingestion authority. A missing
+            # or stale health file makes the API fail closed on its own.
+            self.stats.health_write_failures += 1
 
     def _catch_up(self) -> None:
+        observed_at = self.clock()
         try:
             result = benzinga_news.catch_up_once(
                 client=self.direct_client,
                 store=self.store,
                 universe=self.universe_provider(),
-                observed_at=self.clock(),
+                observed_at=observed_at,
             )
         except Exception:  # source/service loop records class, never raw secret text
             self.stats.catchups_failed += 1
+            state = "degraded" if self._last_successful_catchup else "catching_up"
+            self._publish_health(state)
             return
         if result.gap_unresolved:
             self.stats.catchups_gap += 1
+            self._gap_unresolved = True
+            self._publish_health("degraded")
         elif result.committed:
             self.stats.catchups_ok += 1
+            self._last_successful_catchup = observed_at
+            self._gap_unresolved = False
+            self._publish_health("live")
 
     def _handle_frame(self, raw: object) -> None:
         size = _frame_size(raw)
@@ -150,6 +203,14 @@ class NewsIngestRunner:
             )
             self.store.commit_observations([routed])
             self.stats.stream_events += 1
+            self._last_stream_event_at = self.clock()
+            if self._gap_unresolved:
+                state = "degraded"
+            elif self._last_successful_catchup is None:
+                state = "catching_up"
+            else:
+                state = "live"
+            self._publish_health(state)
         except Exception:
             self.stats.stream_errors += 1
 
@@ -158,54 +219,64 @@ class NewsIngestRunner:
         if max_connections is not None and max_connections < 0:
             raise ValueError("qbus_news:invalid_connection_bound")
         backoff = self.reconnect_base_seconds
+        self._publish_health("catching_up")
 
-        while not self.stop.is_set():
-            if (
-                max_connections is not None
-                and self.stats.connect_attempts >= max_connections
-            ):
-                break
+        try:
+            while not self.stop.is_set():
+                if (
+                    max_connections is not None
+                    and self.stats.connect_attempts >= max_connections
+                ):
+                    break
 
-            self._catch_up()
-            if self.stop.is_set():
-                break
+                self._catch_up()
+                if self.stop.is_set():
+                    break
 
-            self.stats.connect_attempts += 1
-            try:
-                with self.connect(
-                    stream_url(self.token),
-                    open_timeout=20,
-                    close_timeout=5,
-                    max_size=self.max_frame_bytes,
-                ) as ws:
-                    backoff = self.reconnect_base_seconds
-                    next_catchup = (
-                        self.monotonic() + self.catchup_interval_seconds
+                self.stats.connect_attempts += 1
+                try:
+                    with self.connect(
+                        stream_url(self.token),
+                        open_timeout=20,
+                        close_timeout=5,
+                        max_size=self.max_frame_bytes,
+                    ) as ws:
+                        backoff = self.reconnect_base_seconds
+                        next_catchup = (
+                            self.monotonic() + self.catchup_interval_seconds
+                        )
+                        while not self.stop.is_set():
+                            if self.monotonic() >= next_catchup:
+                                self._catch_up()
+                                next_catchup = (
+                                    self.monotonic()
+                                    + self.catchup_interval_seconds
+                                )
+                            try:
+                                raw = ws.recv(timeout=self.recv_timeout_seconds)
+                            except TimeoutError:
+                                continue
+                            self._handle_frame(raw)
+                except Exception:
+                    self.stats.disconnects += 1
+                    state = (
+                        "degraded"
+                        if self._last_successful_catchup is not None
+                        else "catching_up"
                     )
-                    while not self.stop.is_set():
-                        if self.monotonic() >= next_catchup:
-                            self._catch_up()
-                            next_catchup = (
-                                self.monotonic()
-                                + self.catchup_interval_seconds
-                            )
-                        try:
-                            raw = ws.recv(timeout=self.recv_timeout_seconds)
-                        except TimeoutError:
-                            continue
-                        self._handle_frame(raw)
-            except Exception:
-                self.stats.disconnects += 1
+                    self._publish_health(state)
 
-            if self.stop.is_set():
-                break
-            if (
-                max_connections is not None
-                and self.stats.connect_attempts >= max_connections
-            ):
-                break
-            self.wait(backoff)
-            backoff = min(backoff * 2.0, self.reconnect_max_seconds)
+                if self.stop.is_set():
+                    break
+                if (
+                    max_connections is not None
+                    and self.stats.connect_attempts >= max_connections
+                ):
+                    break
+                self.wait(backoff)
+                backoff = min(backoff * 2.0, self.reconnect_max_seconds)
+        finally:
+            self._publish_health("unavailable")
 
         return self.stats
 
@@ -227,6 +298,8 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Run the disabled-by-default qbus news source service.")
     p.add_argument("--database", type=Path, default=Path("data/qbus/qbus.sqlite3"))
     p.add_argument("--universe-snapshot", type=Path)
+    p.add_argument("--rights-receipt", type=Path)
+    p.add_argument("--health-path", type=Path)
     p.add_argument("--token-env", default="BENZINGA_API_KEY")
     p.add_argument("--run", action="store_true", help="explicitly enter the live service loop")
     return p
@@ -235,6 +308,15 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
     token = os.environ.get(args.token_env, "")
+    rights_path = args.rights_receipt
+    if rights_path is None:
+        env_rights = os.environ.get("MM_TICKER_NEWS_RIGHTS", "").strip()
+        rights_path = Path(env_rights) if env_rights else None
+    health_path = args.health_path
+    if health_path is None:
+        env_health = os.environ.get("MM_TICKER_NEWS_HEALTH", "").strip()
+        health_path = Path(env_health) if env_health else None
+
     report = {
         "schema": "qbus.news_runner_preflight.v1",
         "run_requested": bool(args.run),
@@ -242,21 +324,46 @@ def main(argv=None) -> int:
         "universe_present": bool(
             args.universe_snapshot and args.universe_snapshot.is_file()
         ),
+        "rights_receipt_present": bool(rights_path and rights_path.is_file()),
+        "health_path_present": health_path is not None,
         "database": str(args.database),
         "stream": STREAM_LOG_LABEL,
     }
     if not args.run:
         print(json.dumps(report, sort_keys=True))
         return 0
-    if not token or args.universe_snapshot is None:
-        print(json.dumps({**report, "error": "activation_prerequisite_missing"}, sort_keys=True))
+    if (
+        not token
+        or args.universe_snapshot is None
+        or rights_path is None
+        or health_path is None
+    ):
+        print(
+            json.dumps(
+                {**report, "error": "activation_prerequisite_missing"},
+                sort_keys=True,
+            )
+        )
+        return 2
+
+    now = _utc_now()
+    if load_rights_receipt(
+        rights_path,
+        now=now,
+        audience="site_full",
+    ) is None:
+        print(
+            json.dumps(
+                {**report, "error": "activation_rights_unqualified"},
+                sort_keys=True,
+            )
+        )
         return 2
 
     stop = StopFlag()
     for sig in (signal.SIGINT, signal.SIGTERM):
         signal.signal(sig, lambda *_args: stop.set())
 
-    now = _utc_now()
     universe = load_universe_snapshot(args.universe_snapshot, asof=now)
     client = benzinga_news.BenzingaNewsClient(token=token)
     with NewsStore(args.database, source_key="benzinga-rest") as store:
@@ -266,6 +373,7 @@ def main(argv=None) -> int:
             universe_provider=lambda: universe,
             direct_client=client,
             stop=stop,
+            health_path=health_path,
         )
         stats = runner.run()
     print(json.dumps(exit_receipt(stats), sort_keys=True))

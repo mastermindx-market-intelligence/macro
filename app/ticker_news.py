@@ -26,6 +26,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from engine.company_intelligence.contracts import ContractError, safe_ticker
+from engine.qbus_news_receipts import load_health_receipt, load_rights_receipt
 from engine.qbus_news_store import (
     ChangePage,
     NewsReadRights,
@@ -195,24 +196,56 @@ def _security_for_ticker(ticker: str, now: datetime) -> str | None:
     return next(iter(hits)) if hits else None
 
 
-def _rights_for_user(user: Mapping[str, Any]) -> NewsReadRights | None:
-    """Current feed-specific display-rights resolver.
+def _rights_receipt_path() -> Path | None:
+    raw = os.environ.get("MM_TICKER_NEWS_RIGHTS", "").strip()
+    return Path(raw) if raw else None
 
-    Authentication and a Massive market-data license do not independently prove
-    that the selected Benzinga partner/news product may be displayed through this
-    endpoint. Until Task 10 binds an owner-backed feed-specific receipt, production
-    reads remain withheld.
+
+def _health_receipt_path() -> Path | None:
+    raw = os.environ.get("MM_TICKER_NEWS_HEALTH", "").strip()
+    return Path(raw) if raw else None
+
+
+def _rights_for_user(user: Mapping[str, Any]) -> NewsReadRights | None:
+    """Map only an owner-backed, current site-full receipt into display rights.
+
+    Authentication and vendor API possession are deliberately insufficient.  The
+    current store persists provider history, so the receipt contract also requires
+    explicit ingestion + historical-retention capability before display can arm.
     """
-    del user
-    return None
+    del user  # site-full audience was already authenticated by the route dependency
+    path = _rights_receipt_path()
+    if path is None:
+        return None
+    qualified = load_rights_receipt(
+        path,
+        now=datetime.now(timezone.utc),
+        audience="site_full",
+    )
+    return None if qualified is None else qualified.rights
 
 
 def _source_health() -> dict[str, Any]:
-    """Conservative source health until the runtime owner publishes a receipt."""
-    return {
-        "state": "unavailable",
-        "last_successful_catchup": None,
-    }
+    """Read runtime evidence; absent or stale receipts never imply live."""
+    path = _health_receipt_path()
+    if path is None:
+        return {
+            "schema": "qbus.news_health.v1",
+            "source": "benzinga",
+            "state": "unavailable",
+            "last_successful_catchup": None,
+            "last_stream_event_at": None,
+            "gap_unresolved": False,
+            "reason": "receipt_path_unset",
+        }
+    return dict(
+        load_health_receipt(
+            path,
+            now=datetime.now(timezone.utc),
+            max_observation_age_seconds=120.0,
+            max_catchup_age_seconds=120.0,
+        )
+    )
 
 
 def _state_from_health(health: Mapping[str, Any], *, row_count: int) -> str:
