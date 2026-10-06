@@ -84,6 +84,15 @@ def _native_json(value: Any) -> Any:
     raise ValueError("unsupported native result type: " + type(value).__name__)
 
 
+def _captured_label(value: Any) -> str | None:
+    """A captured display label: its text, or null when the owner row carried a native null."""
+    if value is None or isinstance(value, str):
+        return value
+    if isinstance(value, dict) and set(value) == {"native_null"}:
+        return None
+    raise ValueError("invalid captured subject label")
+
+
 @dataclass(frozen=True)
 class OwnerBundle:
     payload_json: str
@@ -717,7 +726,7 @@ def _assemble_from_bundle(snapshot: dict) -> tuple:
                 generations[owner] = generation
         native_observations[node_id] = native
         source_dispositions[node_id] = _source_dispositions(native, qualified_sources, narrative_source, observations)
-        inputs.append({"node_id": node_id, **{k: subject[k] for k in ("kind", "name_en", "name_zh", "source_family", "native_id")}, "owners": owners, "observations": observations, "canonical_aggregation": None})
+        inputs.append({"node_id": node_id, "kind": subject["kind"], "name_en": _captured_label(subject["name_en"]), "name_zh": _captured_label(subject["name_zh"]), "source_family": subject["source_family"], "native_id": subject["native_id"], "owners": owners, "observations": observations, "canonical_aggregation": None})
     return inputs, generations, native_observations, source_dispositions
 
 

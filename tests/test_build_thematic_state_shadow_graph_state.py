@@ -7,6 +7,7 @@ import json
 from datetime import timezone
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from engine.neuralweb import theme_state_generation as g
@@ -265,3 +266,40 @@ def test_t10_production_clock_path_writes_shadow(production_world, monkeypatch, 
 
     assert _parse_instant(loaded["generated_at"]) >= _parse_instant(loaded["known_at"])
     assert "shadow_graph_state=written" in out
+
+
+def test_t11_native_null_labels_write_shadow(production_world, monkeypatch, capsys):
+    nodes_path = production_world / "data/theme_graph/nodes.parquet"
+    nodes = pd.read_parquet(nodes_path)
+    nodes.loc[nodes["node_id"] == "ltheme:finviz:power_grid", "name_zh"] = float("nan")
+    nodes.loc[nodes["node_id"] == "ltheme:ths:900001", "name_en"] = pd.NA
+    nodes.to_parquet(nodes_path, index=False)
+
+    monkeypatch.setattr(builder, "compose", lambda **kw: artifact())
+    rc = builder.build(production_world, mode="LEGACY", generated_at=EMITTED)
+    out = capsys.readouterr().out
+
+    assert rc == 0
+    shadow_path = production_world / SHADOW
+    assert shadow_path.is_file()
+    loaded = json.loads(shadow_path.read_bytes())
+    theme_state.validate_state(loaded)
+    assert "shadow_graph_state=written" in out
+
+    subjects = {subject["node_id"]: subject for subject in loaded["subjects"]}
+    assert subjects["ltheme:finviz:power_grid"]["name_zh"] is None
+    assert subjects["ltheme:finviz:power_grid"]["name_en"] == "ltheme:finviz:power_grid"
+    assert subjects["ltheme:ths:900001"]["name_en"] is None
+    assert subjects["ltheme:ths:900001"]["name_zh"] == "测试"
+
+
+def test_t12_captured_label_contract():
+    from engine.neuralweb.theme_state_adapter import _captured_label
+
+    assert _captured_label(None) is None
+    assert _captured_label("x") == "x"
+    assert _captured_label({"native_null": "NaN"}) is None
+    assert _captured_label({"native_null": "NaTType"}) is None
+    for value in (1.5, {"native_null": "NaN", "x": 1}, ["a"]):
+        with pytest.raises(ValueError):
+            _captured_label(value)
