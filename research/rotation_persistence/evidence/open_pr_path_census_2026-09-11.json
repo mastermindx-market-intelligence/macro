@@ -1,0 +1,205 @@
+{
+  "candidate_path_count": 22,
+  "candidate_paths": [
+    "agentos/decisions/DEC-LEADERSHIP-PERSISTENCE-CROSS-OWNER-BOUNDARY.md",
+    "agentos/handoffs/LEADERSHIP-PERSISTENCE-INTELLIGENCE-2026-09-10-RPH0.md",
+    "agentos/workstreams/WS-LEADERSHIP-PERSISTENCE-INTELLIGENCE.md",
+    "docs/superpowers/plans/2026-09-10-leadership-persistence-rph0.md",
+    "research/rotation_persistence/LEADERSHIP_PERSISTENCE_RPH0_ARCHITECTURE_FREEZE_2026-09-10.md",
+    "research/rotation_persistence/RPH0_FINDINGS_2026-09-10.md",
+    "research/rotation_persistence/evidence/mutation_self_review_2026-09-11.json",
+    "research/rotation_persistence/evidence/open_pr_path_census_2026-09-11.json",
+    "research/rotation_persistence/evidence/verification_2026-09-11.json",
+    "research/rotation_persistence/results/report.md",
+    "research/rotation_persistence/results/result.json",
+    "scripts/research/rotation_persistence/__init__.py",
+    "scripts/research/rotation_persistence/archive.py",
+    "scripts/research/rotation_persistence/contracts.py",
+    "scripts/research/rotation_persistence/metrics.py",
+    "scripts/research/rotation_persistence/report.py",
+    "scripts/research/rotation_persistence/survival.py",
+    "scripts/research/run_rotation_persistence_rph0.py",
+    "tests/test_rotation_persistence_archive.py",
+    "tests/test_rotation_persistence_cli.py",
+    "tests/test_rotation_persistence_metrics.py",
+    "tests/test_rotation_persistence_survival.py"
+  ],
+  "errors": [],
+  "file_lists_complete": true,
+  "foreign_overlap_count": 0,
+  "foreign_overlap_matches": [],
+  "local_subject_head": "254641cbbe2017bd57e2ae7018417b42964cf956",
+  "local_subject_tree": "d9284540feec918533615dbc94a35ed17c37a7cc",
+  "merge_base": "1f8eeab603fc37def47e1cfc6f7f3788c0300ad3",
+  "notes": [
+    "The self PR is expected to overlap its own candidate paths and is separated from foreign collision results.",
+    "Candidate paths include committed, modified and untracked in-scope paths present at the census edge."
+  ],
+  "observed_at": "2026-09-11T04:15:53Z",
+  "open_pr_count": 177,
+  "operation_key": "leadership-persistence-rph0-20260910-sol-001",
+  "origin_main": "1f8eeab603fc37def47e1cfc6f7f3788c0300ad3",
+  "repository": "mastermindx-market-intelligence/macro",
+  "saturated_prs_fully_paginated": [
+    {
+      "files_fetched": 195,
+      "page_sizes": [
+        100,
+        95
+      ],
+      "pages": 2,
+      "pr": 6685
+    },
+    {
+      "files_fetched": 160,
+      "page_sizes": [
+        100,
+        60
+      ],
+      "pages": 2,
+      "pr": 6832
+    },
+    {
+      "files_fetched": 215,
+      "page_sizes": [
+        100,
+        100,
+        15
+      ],
+      "pages": 3,
+      "pr": 6834
+    },
+    {
+      "files_fetched": 158,
+      "page_sizes": [
+        100,
+        58
+      ],
+      "pages": 2,
+      "pr": 6982
+    },
+    {
+      "files_fetched": 302,
+      "page_sizes": [
+        100,
+        100,
+        100,
+        2
+      ],
+      "pages": 4,
+      "pr": 6983
+    },
+    {
+      "files_fetched": 1057,
+      "page_sizes": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        57
+      ],
+      "pages": 11,
+      "pr": 6985
+    },
+    {
+      "files_fetched": 212,
+      "page_sizes": [
+        100,
+        100,
+        12
+      ],
+      "pages": 3,
+      "pr": 6989
+    },
+    {
+      "files_fetched": 115,
+      "page_sizes": [
+        100,
+        15
+      ],
+      "pages": 2,
+      "pr": 7034
+    },
+    {
+      "files_fetched": 110,
+      "page_sizes": [
+        100,
+        10
+      ],
+      "pages": 2,
+      "pr": 7053
+    },
+    {
+      "files_fetched": 121,
+      "page_sizes": [
+        100,
+        21
+      ],
+      "pages": 2,
+      "pr": 7054
+    },
+    {
+      "files_fetched": 120,
+      "page_sizes": [
+        100,
+        20
+      ],
+      "pages": 2,
+      "pr": 7055
+    },
+    {
+      "files_fetched": 172,
+      "page_sizes": [
+        100,
+        72
+      ],
+      "pages": 2,
+      "pr": 7056
+    },
+    {
+      "files_fetched": 113,
+      "page_sizes": [
+        100,
+        13
+      ],
+      "pages": 2,
+      "pr": 7057
+    }
+  ],
+  "schema_version": "research.rotation_persistence.open_pr_path_census.v2",
+  "self_pr_number": 7064,
+  "self_pr_overlap": {
+    "head": "sol/rotation-persistence-rph0-20260910",
+    "head_sha": "254641cbbe2017bd57e2ae7018417b42964cf956",
+    "overlap": [
+      "agentos/decisions/DEC-LEADERSHIP-PERSISTENCE-CROSS-OWNER-BOUNDARY.md",
+      "agentos/workstreams/WS-LEADERSHIP-PERSISTENCE-INTELLIGENCE.md",
+      "docs/superpowers/plans/2026-09-10-leadership-persistence-rph0.md",
+      "research/rotation_persistence/LEADERSHIP_PERSISTENCE_RPH0_ARCHITECTURE_FREEZE_2026-09-10.md",
+      "research/rotation_persistence/RPH0_FINDINGS_2026-09-10.md",
+      "research/rotation_persistence/evidence/mutation_self_review_2026-09-11.json",
+      "research/rotation_persistence/evidence/open_pr_path_census_2026-09-11.json",
+      "research/rotation_persistence/results/report.md",
+      "research/rotation_persistence/results/result.json",
+      "scripts/research/rotation_persistence/__init__.py",
+      "scripts/research/rotation_persistence/archive.py",
+      "scripts/research/rotation_persistence/contracts.py",
+      "scripts/research/rotation_persistence/metrics.py",
+      "scripts/research/rotation_persistence/report.py",
+      "scripts/research/rotation_persistence/survival.py",
+      "scripts/research/run_rotation_persistence_rph0.py",
+      "tests/test_rotation_persistence_archive.py",
+      "tests/test_rotation_persistence_cli.py",
+      "tests/test_rotation_persistence_metrics.py",
+      "tests/test_rotation_persistence_survival.py"
+    ],
+    "pr": 7064,
+    "title": "HOLD: measure published theme leadership persistence without authority"
+  }
+}
