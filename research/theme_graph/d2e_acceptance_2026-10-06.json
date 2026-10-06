@@ -1,7 +1,7 @@
 {
   "operation": "gmi-theme-accept-d2e-20260827-sol-001",
-  "phase": 1,
-  "round": "r1d",
+  "phase": 2,
+  "round": "r2",
   "pin": "cbfa20a45d8401f1cf1cc9fc48155455f1d612fb",
   "head": "7671cce0227a649361f7740d1c138cac6603c3d9",
   "harness_corrections": [
@@ -51,9 +51,9 @@
       "gating": true,
       "gate": "Agent OS acceptance trace",
       "command": "git grep D2C|D2D accept|merged in agentos/",
-      "rc": 3,
-      "output_tail": "Lines cite D2C/D2D dependency text; no line cites both as merged with squash 0b1fe887/79b566f5",
-      "verdict": "HOLD",
+      "rc": 0,
+      "output_tail": "WS:GMI-THEME-GRAPH.md:58 D2C MERGED 0b1fe887; :70 D2D MERGED 79b566f5",
+      "verdict": "PASS",
       "owner": "seat",
       "repair_packet": "seat records D2C+D2D acceptance in WS:GMI-THEME-GRAPH"
     },
@@ -90,7 +90,7 @@
         "tests/test_theme_graph_identity_resolution.py::test_every_company_node_gets_a_row",
         "tests/test_theme_graph_identity_resolution.py::test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parquet"
       ],
-      "output_tail": "3 failed, 118 passed in 5.09s\ntests/test_theme_graph_identity_resolution.py::test_the_committed_graph_carries_exactly_2806_company_nodes\nE       assert 2807 == 2806\ntests/test_theme_graph_identity_resolution.py::test_every_company_node_gets_a_row\nE       assert 2807 == 2806\ntests/test_theme_graph_identity_resolution.py::test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parquet\nE       AssertionError: assert 'co:us:VMRK' not in {...}",
+      "output_tail": "3 failed, 118 passed \u2014 2807 vs 2806 company nodes; co:us:VMRK",
       "cause": "committed nodes.parquet carries 2807 company nodes including co:us:VMRK, a second company node for the EQR->VMRK ticker rename (both co:us:EQR and co:us:VMRK RESOLVED -> SEC:US-XNYS-EQR; first co:us:VMRK sidecar row 2026-09-04T11:52:38Z); the D2A suite pins 2806 and asserts no co:us:VMRK node (\u00a76.1 assertion 3)",
       "verdict": "FAIL",
       "owner": "seat (WS:GMI-THEME-GRAPH, D2A contract owner)",
@@ -242,13 +242,13 @@
     {
       "id": "C6",
       "gating": true,
-      "gate": "Generation provenance P1",
+      "gate": "Generation provenance (Phase 2)",
       "command": "merge-base vs DATA_COMMIT f7dd829...",
       "rc": 3,
-      "output_tail": "0b1fe887 rc=1; 79b566f5 rc=1; seat fact: gen predates D2C/D2D merges",
+      "output_tail": "N5 HOLD \u2014 first non-PASS among N1\u2013N5",
       "verdict": "HOLD",
       "owner": "seat",
-      "repair_packet": "natural receipt on a main containing D2C+D2D pending \u2014 Phase 2"
+      "repair_packet": "clear N5 HOLD (natural-receipt log probe)"
     },
     {
       "id": "C7",
@@ -396,11 +396,16 @@
       "RESOLVED": 1211,
       "NOT_IN_MASTER": 25,
       "DEFERRED_count": 1,
-      "DEFERRED_nodes": ["co:us:B"],
+      "DEFERRED_nodes": [
+        "co:us:B"
+      ],
       "ENTITY_TYPE_CONFLICT": 0,
       "all_scope_newest_sum": 2805,
       "RESOLVED_share": 0.978981,
-      "carried_not_in_newest": ["co:us:GOLD", "co:us:IBIT"]
+      "carried_not_in_newest": [
+        "co:us:GOLD",
+        "co:us:IBIT"
+      ]
     }
   },
   "rights": {
@@ -416,13 +421,509 @@
     "V2_newest_rows": 643,
     "V2_carried_node": "ltheme:ths:309263",
     "V5_proposals_lines": 236,
-    "V5_status": {"proposed": 234, "rejected": 2},
-    "V6_edges_era": {"observed": 12423, "reconstruction": 12677}
+    "V5_status": {
+      "proposed": 234,
+      "rejected": 2
+    },
+    "V6_edges_era": {
+      "observed": 12423,
+      "reconstruction": 12677
+    }
   },
   "phase1_verdict": "HOLD:seat:R0.2 Agent OS acceptance trace not recorded",
-  "d2e_verdict": "HOLD:seat:R1.A D2A committed suite red — duplicate company node co:us:VMRK (2807 vs pinned 2806)",
-  "routed_non_gating": "R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger writer; ledger last changed by #8425/#8465/#8496); R1.A-CI INFO -> main ci.yml run 37445075780 ci-pack-10 did not select unrun-intl-libraries",
+  "d2e_verdict": "HOLD:seat:theme_graph steps not found in engine job log",
+  "routed_non_gating": "R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger writer; #8425/#8465/#8496); R1.A-CI INFO -> data-health.yml red on unrun-intl-libraries D2A step (caught by the data lane, unhealed; clears with R1.A)",
   "phase2": {
-    "status": "PENDING"
-  }
+    "status": "DONE",
+    "pin": "e061209069a1bc05157d9078cd394e9ce1d96cc9",
+    "generation": {
+      "computed_at": "2026-10-06T13:27:04Z",
+      "data_commit": "f9ccad3e50f671499893f8113ba96ae2910ab5e7",
+      "lane": "nightly",
+      "mode": "nightly",
+      "era": "observed",
+      "belief_time": "2026-10-06",
+      "store_eq_rc": 0
+    },
+    "natural_receipt": {
+      "run_id": "37404125352",
+      "event": "schedule",
+      "engine_job_id": "112118780036",
+      "job_conclusion": "failure",
+      "job_started_at": "2026-10-06T11:14:43Z",
+      "job_completed_at": "2026-10-06T14:42:06Z",
+      "checkout_sha": "640e3e237eede62351b6f657c8e13ad20274585c",
+      "effective_sha": "640e3e237eede62351b6f657c8e13ad20274585c",
+      "ancestry": {
+        "0b1fe887": 0,
+        "79b566f5": 0
+      },
+      "pr8507": {
+        "state": "MERGED",
+        "merged_at": "2026-10-06T11:28:40Z",
+        "note": "merged after job start \u2014 not required by D3(b)"
+      },
+      "data_commit_time": "2026-10-06T13:40:52Z",
+      "guard_groups": {
+        "mandated_grep_matches": 0,
+        "observed_brun_headers": [
+          "theme graph nightly materialization [8s, rc=0]",
+          "theme graph contract guard [3s, rc=0]"
+        ]
+      }
+    },
+    "rows": [
+      {
+        "id": "N1",
+        "gating": true,
+        "gate": "Natural run identity",
+        "command": "gh run view 37404125352 job 112118780036",
+        "rc": 0,
+        "output_tail": "event=schedule; engine completed; conclusion=failure",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "N2",
+        "gating": true,
+        "gate": "Effective code sha",
+        "command": "gh api job logs; grep checkout/pull",
+        "rc": 0,
+        "output_tail": "line 111: 640e3e237eede62351b6f657c8e13ad20274585c; line 120: Already up to date.",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "N3",
+        "gating": true,
+        "gate": "Ancestry D3(b)",
+        "command": "merge-base --is-ancestor on CHECKOUT_SHA",
+        "rc": 0,
+        "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n#8507 merged after job start \u2014 not required by D3(b)",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "N4",
+        "gating": true,
+        "gate": "Data-commit linkage",
+        "command": "git show DATA_COMMIT; merge-base CHECKOUT_SHA DATA_COMMIT",
+        "rc": 0,
+        "output_tail": "computed_at=2026-10-06T13:27:04Z; job 11:14:43Z\u201314:42:06Z; commit 13:40:52Z; rc=0",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "N5",
+        "gating": true,
+        "gate": "Advisory guard in job",
+        "command": "grep ::group::theme graph ...",
+        "rc": 1,
+        "output_tail": "mandated ::group:: grep: 0 matches; observed ##[group] nightly materialization [8s, rc=0] and contract guard [3s, rc=0]",
+        "verdict": "HOLD",
+        "owner": "seat",
+        "repair_packet": "seat adjudicates brun ##[group] log shape vs mandated ::group:: grep, or amends D3(d) probe"
+      },
+      {
+        "id": "N6",
+        "gating": true,
+        "gate": "Strict guard local",
+        "command": "check_theme_graph_contracts --selftest/--strict",
+        "rc": 0,
+        "output_tail": "selftest rc=0; strict rc=0; no breach/INDETERMINATE",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "N7",
+        "gating": true,
+        "gate": "R-A8 edge stability",
+        "command": "edges P1_PIN vs HEAD probe",
+        "rc": 0,
+        "output_tail": "GOLD rows 2/2 identical latest; IBIT rows 2/2 identical; totals 25100/12863",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "Q1",
+        "gating": true,
+        "gate": "PIT meta",
+        "command": "RepositoryStore _meta",
+        "rc": 0,
+        "output_tail": "computed_at 2026-10-06T13:27:04Z nightly observed",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "Q2",
+        "gating": true,
+        "gate": "Strict readers",
+        "command": "read_nodes/lifecycle/edges/proposals",
+        "rc": 0,
+        "output_tail": "nodes=3882 lifecycle=2 edges=25100 proposals=236",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "Q3",
+        "gating": true,
+        "gate": "Identity resolution",
+        "command": "resolve_graph_node_identity x4",
+        "rc": 0,
+        "output_tail": "NVDA RESOLVED; B/GOLD DEFERRED_IDENTITY_EXCEPTION; IBIT ENTITY_TYPE_CONFLICT",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "Q4",
+        "gating": true,
+        "gate": "Neighborhoods",
+        "command": "compose_neighborhood a\u2013e",
+        "rc": 0,
+        "output_tail": "gold_a\u2013e OK; crypto_d etf:IBIT present",
+        "verdict": "PASS",
+        "owner": "\u2014",
+        "repair_packet": "\u2014"
+      },
+      {
+        "id": "R0.1",
+        "verdict": "PASS",
+        "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n192a46de rc=0"
+      },
+      {
+        "id": "R0.2",
+        "verdict": "PASS",
+        "output_tail": "WS:GMI-THEME-GRAPH.md:58 D2C MERGED 0b1fe887; :70 D2D MERGED 79b566f5"
+      },
+      {
+        "id": "R0.3",
+        "verdict": "PASS",
+        "output_tail": "[{\"number\":8324,\"title\":\"research(gmi): audited v3 report...\"}]"
+      },
+      {
+        "id": "R0.4",
+        "verdict": "PASS",
+        "output_tail": "state=MERGED mergeCommit=cbfa20a45d8401f1cf1cc9fc48155455f1d612fb; grep matches=5"
+      },
+      {
+        "id": "R1.A",
+        "verdict": "FAIL",
+        "output_tail": "3 failed, 118 passed \u2014 2807 vs 2806 company nodes; co:us:VMRK"
+      },
+      {
+        "id": "R1.A-CI",
+        "verdict": "INFO",
+        "output_tail": "Step owner job unrun-intl-libraries (pack=10 when selected). Run 37445075780 ci-pack-10: Selected jobs: signal-gate-pair-coherence, path-prune-lint, cycle-grading-stats, prophet-lab, china-native-collectors, china-search-universe, cn-standout-audit, qledger-cluster-honest-ci, design-governance, hk-context-chips, metab-throttle-ux, ric-w2-surface, unrun-brain-desks, unrun-dark-guards, zh-filing-term, options-nbbo-cohort, product-experience-capture, options-skew-engine \u2014 unrun-intl-libraries absent; no log match for test_theme_graph_identity_resolution"
+      },
+      {
+        "id": "R1.B",
+        "verdict": "PASS",
+        "output_tail": "26 passed in 2.43s"
+      },
+      {
+        "id": "R1.C",
+        "verdict": "PASS",
+        "output_tail": "143 passed, 14 warnings in 2.98s"
+      },
+      {
+        "id": "R1.D",
+        "verdict": "PASS",
+        "output_tail": "575 passed, 1 skipped in 10.40s; skips: 1 (reasons in Appendix A)"
+      },
+      {
+        "id": "R1.E",
+        "verdict": "PASS",
+        "output_tail": "132 passed in 6.65s"
+      },
+      {
+        "id": "R1.F",
+        "verdict": "PASS",
+        "output_tail": "30 passed in 0.72s"
+      },
+      {
+        "id": "R1.X",
+        "verdict": "FAIL-INFO",
+        "output_tail": "3 failed, 16 passed in 0.53s\ntests/test_market_ontology_half_b_rights_docket.py::test_blocked_on_quotes_the_ledger_verbatim\nE           AssertionError: MO-PAID-019: 'one issuer page joining >=2 module streams...' not in '- **Blocked on (verbatim from the ledger):** `unified capital-markets tape journey...`'"
+      },
+      {
+        "id": "R2",
+        "verdict": "PASS",
+        "output_tail": "selftest rc=0\nstrict rc=0\n(no breach lines; identity resolution census notice only). Round r1 recorded rc=0 for a breaching --strict run in a tree without data/reference; that value was not the guard's exit status and is superseded."
+      },
+      {
+        "id": "C1",
+        "verdict": "PASS",
+        "output_tail": "GOLD retired 2025-12-02 identity_break; IBIT retired 2026-08-22 entity_type_conflict"
+      },
+      {
+        "id": "C2",
+        "verdict": "PASS",
+        "output_tail": "latest valid_to=2025-12-02; 2 beliefs; current gold_miners excludes GOLD; GOLD# count=0; B\u2194GOLD edges=0"
+      },
+      {
+        "id": "C3",
+        "verdict": "PASS",
+        "output_tail": "annulled MEMBER_OF; IBIT refusal etf_conflict; etf:IBIT TRACKS live; co:us:IBIT live MEMBER_OF=0"
+      },
+      {
+        "id": "C4",
+        "verdict": "PASS",
+        "output_tail": "violations: 0"
+      },
+      {
+        "id": "C5",
+        "verdict": "PASS",
+        "output_tail": "US total=1237 RESOLVED=1211 NOT_IN_MASTER=25 DEFERRED=1 (co:us:B) ENTITY_TYPE_CONFLICT=0; RESOLVED share 0.978981; all-scope NEWEST sum=2805 equals _meta.identity_resolution_state_counts"
+      },
+      {
+        "id": "C6",
+        "verdict": "HOLD",
+        "output_tail": "N5 HOLD \u2014 first non-PASS among N1\u2013N5"
+      },
+      {
+        "id": "C7",
+        "verdict": "PASS",
+        "output_tail": "5/5 commits: node_lifecycle=2 and IBIT refusal present"
+      },
+      {
+        "id": "R3.1",
+        "verdict": "PASS",
+        "output_tail": "finviz_themes internal_only; ths_concepts internal_only; all families have rights_class"
+      },
+      {
+        "id": "R3.2",
+        "verdict": "FAIL",
+        "output_tail": "22 rows / 17 distinct refs; ths_concepts 12; mastermind_curated 6; finviz_themes 2; None 2 (gmi:entity_type_conflict:co:us:IBIT; config/theme_graph_identity_breaks.yml#us:GOLD)"
+      },
+      {
+        "id": "R3.3",
+        "verdict": "PASS",
+        "output_tail": "probation jsonl#x \u2192 mastermind_curated; site/factordata/us_standouts.json \u2192 None (intentional, rights.py 70-72)"
+      },
+      {
+        "id": "V1",
+        "verdict": "PASS",
+        "output_tail": "total=3882; co:us=1239 co:cn=1021 ltheme=644 basket=358 ... as-of GEN"
+      },
+      {
+        "id": "V2",
+        "verdict": "PASS",
+        "output_tail": "read_capability=644; newest gen rows=643; carried ltheme:ths:309263 semantic_only @ 2026-08-22T04:50:43Z; in nodes.parquet"
+      },
+      {
+        "id": "V3",
+        "verdict": "PASS",
+        "output_tail": "NEWEST rows=2805 state sum=2805; _meta.counts.identity_resolution=2807 = 2805 newest + 2 carried (co:us:GOLD, co:us:IBIT); file_rows=154270 generations=55; rows_appended=2805"
+      },
+      {
+        "id": "V4",
+        "verdict": "PASS",
+        "output_tail": "ths concepts=375; crosswalk mapped 61 + unknown 0 = 61 code rows; ths_unmapped_concept_count=314; unresolved_concept_names=0"
+      },
+      {
+        "id": "V5",
+        "verdict": "PASS",
+        "output_tail": "lines=236; status counts recorded in \u00a75"
+      },
+      {
+        "id": "V6",
+        "verdict": "PASS",
+        "output_tail": "membership_published_at per suite; edges observed vs reconstruction labeled"
+      },
+      {
+        "id": "V7",
+        "verdict": "PASS",
+        "output_tail": "company_mint_refusals=1; finviz refused=0; NOT_IN_MASTER=195; UNSUPPORTED_MARKET=233 ..."
+      }
+    ],
+    "pit_queries": {
+      "Q1": "2026-10-06T13:27:04Z",
+      "Q2": {
+        "nodes": 3882,
+        "lifecycle": 2,
+        "edges": 25100,
+        "proposals": 236
+      },
+      "Q3": {
+        "NVDA": "RESOLVED",
+        "B": "DEFERRED_IDENTITY_EXCEPTION",
+        "GOLD": "DEFERRED_IDENTITY_EXCEPTION",
+        "IBIT": "ENTITY_TYPE_CONFLICT"
+      },
+      "Q4": "all cases OK"
+    },
+    "phase2_verdict": "HOLD:seat:theme_graph steps not found in engine job log"
+  },
+  "pin2": "e061209069a1bc05157d9078cd394e9ce1d96cc9",
+  "generation_phase2": {
+    "computed_at": "2026-10-06T13:27:04Z",
+    "data_commit": "f9ccad3e50f671499893f8113ba96ae2910ab5e7",
+    "lane": "nightly",
+    "mode": "nightly",
+    "era": "observed",
+    "belief_time": "2026-10-06",
+    "store_eq_rc": 0
+  },
+  "phase2_verdict": "HOLD:seat:theme_graph steps not found in engine job log",
+  "natural_receipt": {
+    "run_id": "37404125352",
+    "event": "schedule",
+    "engine_job_id": "112118780036",
+    "job_conclusion": "failure",
+    "job_started_at": "2026-10-06T11:14:43Z",
+    "job_completed_at": "2026-10-06T14:42:06Z",
+    "checkout_sha": "640e3e237eede62351b6f657c8e13ad20274585c",
+    "effective_sha": "640e3e237eede62351b6f657c8e13ad20274585c",
+    "ancestry": {
+      "0b1fe887": 0,
+      "79b566f5": 0
+    },
+    "pr8507": {
+      "state": "MERGED",
+      "merged_at": "2026-10-06T11:28:40Z",
+      "note": "merged after job start \u2014 not required by D3(b)"
+    },
+    "data_commit_time": "2026-10-06T13:40:52Z",
+    "guard_groups": {
+      "mandated_grep_matches": 0,
+      "observed_brun_headers": [
+        "theme graph nightly materialization [8s, rc=0]",
+        "theme graph contract guard [3s, rc=0]"
+      ]
+    }
+  },
+  "rows_phase2_gate": [
+    {
+      "id": "N1",
+      "gating": true,
+      "gate": "Natural run identity",
+      "command": "gh run view 37404125352 job 112118780036",
+      "rc": 0,
+      "output_tail": "event=schedule; engine completed; conclusion=failure",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "N2",
+      "gating": true,
+      "gate": "Effective code sha",
+      "command": "gh api job logs; grep checkout/pull",
+      "rc": 0,
+      "output_tail": "line 111: 640e3e237eede62351b6f657c8e13ad20274585c; line 120: Already up to date.",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "N3",
+      "gating": true,
+      "gate": "Ancestry D3(b)",
+      "command": "merge-base --is-ancestor on CHECKOUT_SHA",
+      "rc": 0,
+      "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n#8507 merged after job start \u2014 not required by D3(b)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "N4",
+      "gating": true,
+      "gate": "Data-commit linkage",
+      "command": "git show DATA_COMMIT; merge-base CHECKOUT_SHA DATA_COMMIT",
+      "rc": 0,
+      "output_tail": "computed_at=2026-10-06T13:27:04Z; job 11:14:43Z\u201314:42:06Z; commit 13:40:52Z; rc=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "N5",
+      "gating": true,
+      "gate": "Advisory guard in job",
+      "command": "grep ::group::theme graph ...",
+      "rc": 1,
+      "output_tail": "mandated ::group:: grep: 0 matches; observed ##[group] nightly materialization [8s, rc=0] and contract guard [3s, rc=0]",
+      "verdict": "HOLD",
+      "owner": "seat",
+      "repair_packet": "seat adjudicates brun ##[group] log shape vs mandated ::group:: grep, or amends D3(d) probe"
+    },
+    {
+      "id": "N6",
+      "gating": true,
+      "gate": "Strict guard local",
+      "command": "check_theme_graph_contracts --selftest/--strict",
+      "rc": 0,
+      "output_tail": "selftest rc=0; strict rc=0; no breach/INDETERMINATE",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "N7",
+      "gating": true,
+      "gate": "R-A8 edge stability",
+      "command": "edges P1_PIN vs HEAD probe",
+      "rc": 0,
+      "output_tail": "GOLD rows 2/2 identical latest; IBIT rows 2/2 identical; totals 25100/12863",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "Q1",
+      "gating": true,
+      "gate": "PIT meta",
+      "command": "RepositoryStore _meta",
+      "rc": 0,
+      "output_tail": "computed_at 2026-10-06T13:27:04Z nightly observed",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "Q2",
+      "gating": true,
+      "gate": "Strict readers",
+      "command": "read_nodes/lifecycle/edges/proposals",
+      "rc": 0,
+      "output_tail": "nodes=3882 lifecycle=2 edges=25100 proposals=236",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "Q3",
+      "gating": true,
+      "gate": "Identity resolution",
+      "command": "resolve_graph_node_identity x4",
+      "rc": 0,
+      "output_tail": "NVDA RESOLVED; B/GOLD DEFERRED_IDENTITY_EXCEPTION; IBIT ENTITY_TYPE_CONFLICT",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "Q4",
+      "gating": true,
+      "gate": "Neighborhoods",
+      "command": "compose_neighborhood a\u2013e",
+      "rc": 0,
+      "output_tail": "gold_a\u2013e OK; crypto_d etf:IBIT present",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    }
+  ],
+  "written_at_utc": "2026-10-06T21:55:00Z",
+  "lane_host_model": "Cursor/Grok bounded fabric builder (META-CEO commission r2)"
 }
