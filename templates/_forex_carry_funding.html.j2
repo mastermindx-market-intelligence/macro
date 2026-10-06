@@ -102,7 +102,16 @@
         {% set a2 = _fund.get('a2p2_spread', {}) %}<div class="cf-card"><strong>A2/P2 {{ cf_t('spread','利差') }}</strong><div class="cf-metric">{% if a2.status == 'available' %}{{ '%.1f'|format(a2.value_bp) }} bp{% else %}<span class="cf-missing">{{ cf_t('Unavailable','不可用') }}</span>{% endif %}</div><span class="cf-note">{% if a2.artifact_as_of %}{{ cf_t('Regime artifact as of','Regime 产物截至') }} {{ a2.artifact_as_of }} · {% endif %}{{ cf_t('context proxy, not FX-swap basis','背景代理，不是外汇掉期基差') }}</span></div>
         {% set cp = _fund.get('cp_bill_spread', {}) %}<div class="cf-card"><strong>CP − bill {{ cf_t('spread','利差') }}</strong><div class="cf-metric">{% if cp.status == 'available' %}{{ '%.1f'|format(cp.value_bp) }} bp{% else %}<span class="cf-missing">{{ cf_t('Unavailable','不可用') }}</span>{% endif %}</div><span class="cf-note">{% if cp.artifact_as_of %}{{ cf_t('Regime artifact as of','Regime 产物截至') }} {{ cp.artifact_as_of }} · {% endif %}{% if cp.stress_state %}{{ cf_t('recorded state','记录状态') }}: {{ cp.stress_state }} · {% endif %}{{ cf_t('vendor freshness unknown','供应商新鲜度未知') }}</span></div>
       </div>
-      <div class="cf-gap"><strong>{{ cf_t('Direct USD cross-currency basis · Unavailable', '直接美元跨币种基差 · 不可用') }}</strong><span class="cf-note">{{ cf_t('Available OFR, SOFR and commercial-paper proxies do not prove the FX-swap basis is normal. No substitute value is invented.', '现有 OFR、SOFR 与商业票据代理不能证明外汇掉期基差正常；不会人为填入替代值。') }}</span></div>
+      {% set xb = _fund.get('direct_usd_xccy_basis', {}) %}
+      <div class="cf-gap">
+        {% if xb.get('status') == 'available' %}
+          <strong>{{ cf_t('Direct USD cross-currency basis', '直接美元跨币种基差') }} · {{ '%.1f'|format(xb.value_bp) }} bp</strong>
+          <span class="cf-note">{{ cf_t('owner-qualified direct receipt', '权威来源已确认的直接回执') }} · {{ xb.source }} · {{ xb.asof }}. {{ cf_t('OFR, SOFR and commercial-paper rows remain context proxies rather than independent confirmation.', 'OFR、SOFR 与商业票据仍仅作背景代理，不构成独立确认。') }}</span>
+        {% else %}
+          <strong>{{ cf_t('Direct USD cross-currency basis · Unavailable', '直接美元跨币种基差 · 不可用') }}</strong>
+          <span class="cf-note">{{ cf_t('Available OFR, SOFR and commercial-paper proxies do not prove the FX-swap basis is normal. No substitute value is invented.', '现有 OFR、SOFR 与商业票据代理不能证明外汇掉期基差正常；不会人为填入替代值。') }}</span>
+        {% endif %}
+      </div>
     </section>
 
     <div class="cf-footer">{{ cf_t('Display-only evidence. No scenario state, watch, position or trade is changed. Calculation dates and vendor freshness remain separate questions.', '仅展示证据；不会改变情景状态、监控、持仓或交易。计算日期与供应商新鲜度是两个独立问题。') }}</div>
