@@ -883,6 +883,137 @@ def _refusal_codes(blob):
     return {item["code"] for item in blob.get("refusals", [])}
 
 
+def _fixture_qualified_state(receipt):
+    """Owner-shaped fixture receipt only — not attested production qualification."""
+    state, refusals = va._validate_qualified_input(receipt)
+    assert state is not None, refusals
+    assert refusals == []
+    return state
+
+
+def _fixture_evaluate_qualified(receipt, **overrides):
+    state = _fixture_qualified_state(receipt)
+    params = {
+        "sales_growth_pct": 3.0,
+        "margin_delta_pp": 0.0,
+        "earnings_multiple": 18.0,
+    }
+    params.update(overrides)
+    return va._evaluate_qualified_assumptions_internal(state, **params)
+
+
+def _fixture_required_multiple(receipt, **overrides):
+    state = _fixture_qualified_state(receipt)
+    params = {
+        "sales_growth_pct": 3.0,
+        "margin_delta_pp": 0.0,
+        "price_tolerance": 0.01,
+    }
+    params.update(overrides)
+    return va._required_earnings_multiple_internal(state, **params)
+
+
+def _assert_owner_qualification_unavailable(out, *, schema):
+    assert out["schema"] == schema
+    assert out["valid"] is False
+    assert va.OWNER_QUALIFICATION_UNAVAILABLE in _refusal_codes(out)
+
+
+def test_public_a6_owner_qualification_unavailable_for_caller_authored_bundle():
+    """RED on pre-repair head 2fbd255: public seam accepted fixture bundles."""
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            _qualified_a6_input(),
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a6_hostile_fake_identity_refuses_at_owner_seam():
+    receipt = _qualified_a6_input()
+    receipt["price"]["security_ref"] = "security:hostile-fake"
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            receipt,
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a6_hostile_fake_fiscal_facts_refuses_at_owner_seam():
+    receipt = _qualified_a6_input()
+    receipt["financial"]["net_income"] = True
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            receipt,
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a6_hostile_fake_price_session_receipt_refuses_at_owner_seam():
+    receipt = _qualified_a6_input()
+    receipt["price"]["receipt_id"] = ""
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            receipt,
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a6_hostile_fake_permitted_use_refuses_at_owner_seam():
+    receipt = _qualified_a6_input()
+    receipt["financial"]["permitted_uses"] = []
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            receipt,
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a6_hostile_cutoff_incompatible_refuses_at_owner_seam():
+    receipt = _qualified_a6_input()
+    receipt["price"]["observed_at"] = "2026-01-02T21:00:01Z"
+    _assert_owner_qualification_unavailable(
+        va.evaluate_qualified_assumptions(
+            receipt,
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            earnings_multiple=18,
+        ),
+        schema="valuation_scenario_forward_evaluation.v1",
+    )
+
+
+def test_public_a7_owner_qualification_unavailable_for_caller_authored_bundle():
+    _assert_owner_qualification_unavailable(
+        va.required_earnings_multiple(
+            _qualified_a6_input(),
+            sales_growth_pct=3,
+            margin_delta_pp=0,
+            price_tolerance=0.01,
+        ),
+        schema="valuation_scenario_required_multiple.v1",
+    )
+
+
 def test_a6_pure_import_does_not_load_moving_event_readers():
     code = """
 import sys
@@ -900,14 +1031,9 @@ assert 'engine.valuation_event_proposal' not in sys.modules
     assert result.returncode == 0, result.stderr
 
 
-def test_a6_qualified_forward_preserves_owner_order_and_raw_display_split():
+def test_a6_fixture_internal_forward_preserves_owner_order_and_raw_display_split():
     receipt = _qualified_a6_input()
-    out = va.evaluate_qualified_assumptions(
-        receipt,
-        sales_growth_pct=3,
-        margin_delta_pp=0,
-        earnings_multiple=18,
-    )
+    out = _fixture_evaluate_qualified(receipt)
     assert out["schema"] == "valuation_scenario_forward_evaluation.v1"
     assert out["valid"] is True
     assert out["refusals"] == []
@@ -919,6 +1045,7 @@ def test_a6_qualified_forward_preserves_owner_order_and_raw_display_split():
     assert out["unrounded_per_share"] == 185.4
     assert out["display_per_share"] == round(out["unrounded_per_share"], 2)
     assert out["display_policy"] == "python_round_half_even_2dp"
+    assert out["evidence_tier"] == "fixture_testing_only_not_attested"
     assert out["accounting"]["debt_bridge"] == "NOT_APPLICABLE"
     assert out["accounting"]["terminal_growth"] == "NOT_APPLICABLE"
     assert out["accounting"]["terminal_value_share"] == "NOT_APPLICABLE"
@@ -928,17 +1055,12 @@ def test_a6_qualified_forward_preserves_owner_order_and_raw_display_split():
 
     changed_debt = json.loads(json.dumps(receipt))
     changed_debt["financial"]["net_debt"] = -123456.0
-    changed = va.evaluate_qualified_assumptions(
-        changed_debt,
-        sales_growth_pct=3,
-        margin_delta_pp=0,
-        earnings_multiple=18,
-    )
+    changed = _fixture_evaluate_qualified(changed_debt)
     assert changed["valid"] is True
     assert changed["unrounded_per_share"] == out["unrounded_per_share"]
 
 
-def test_a6_forward_refuses_invalid_domain_basis_rights_and_cutoff():
+def test_a6_fixture_input_validation_refuses_invalid_domain_basis_rights_and_cutoff():
     cases = []
 
     bad = _qualified_a6_input()
@@ -991,23 +1113,31 @@ def test_a6_forward_refuses_invalid_domain_basis_rights_and_cutoff():
     cases.append((_qualified_a6_input(), {"earnings_multiple": 7.99}, "PARAMETER_OUT_OF_BOUNDS"))
 
     for receipt, overrides, expected_code in cases:
-        params = {
-            "sales_growth_pct": 3,
-            "margin_delta_pp": 0,
-            "earnings_multiple": 18,
-        }
-        params.update(overrides)
-        out = va.evaluate_qualified_assumptions(receipt, **params)
-        assert out["valid"] is False, (expected_code, out)
-        assert expected_code in _refusal_codes(out), (expected_code, out)
+        if overrides:
+            state = _fixture_qualified_state(receipt)
+            params = {
+                "sales_growth_pct": 3.0,
+                "margin_delta_pp": 0.0,
+                "earnings_multiple": 18.0,
+            }
+            params.update(overrides)
+            out = va._evaluate_qualified_assumptions_internal(state, **params)
+            assert out["valid"] is False, (expected_code, out)
+            assert expected_code in _refusal_codes(out), (expected_code, out)
+            continue
+        _, refusals = va._validate_qualified_input(receipt)
+        assert expected_code in {item["code"] for item in refusals}, (
+            expected_code,
+            refusals,
+        )
 
 
-def test_a6_forward_refuses_nonfinite_owner_order_intermediate():
+def test_a6_fixture_internal_refuses_nonfinite_owner_order_intermediate():
     receipt = _qualified_a6_input()
     receipt["financial"]["net_income"] = 1e308
     receipt["financial"]["revenue"] = 1e308
     receipt["financial"]["shares"] = 1e308
-    out = va.evaluate_qualified_assumptions(
+    out = _fixture_evaluate_qualified(
         receipt,
         sales_growth_pct=20,
         margin_delta_pp=0,
@@ -1017,12 +1147,12 @@ def test_a6_forward_refuses_nonfinite_owner_order_intermediate():
     assert "NONFINITE_FORWARD_INTERMEDIATE" in _refusal_codes(out)
 
 
-def test_a6_raw_value_is_preserved_separately_from_legacy_display_rounding():
+def test_a6_fixture_internal_raw_value_is_preserved_separately_from_legacy_display_rounding():
     receipt = _qualified_a6_input()
     receipt["financial"]["net_income"] = 26.75
     receipt["financial"]["revenue"] = 267.5
     receipt["financial"]["shares"] = 80.0
-    out = va.evaluate_qualified_assumptions(
+    out = _fixture_evaluate_qualified(
         receipt,
         sales_growth_pct=0,
         margin_delta_pp=0,
@@ -1034,14 +1164,9 @@ def test_a6_raw_value_is_preserved_separately_from_legacy_display_rounding():
     assert out["unrounded_per_share"] != out["display_per_share"]
 
 
-def test_a7_conditional_inverse_recovers_multiple_and_identification_geometry():
+def test_a7_fixture_internal_conditional_inverse_recovers_multiple_and_identification_geometry():
     receipt = _qualified_a6_input()
-    out = va.required_earnings_multiple(
-        receipt,
-        sales_growth_pct=3,
-        margin_delta_pp=0,
-        price_tolerance=0.01,
-    )
+    out = _fixture_required_multiple(receipt)
     assert out["schema"] == "valuation_scenario_required_multiple.v1"
     assert out["valid"] is True
     assert out["refusals"] == []
@@ -1073,15 +1198,14 @@ def test_a7_conditional_inverse_recovers_multiple_and_identification_geometry():
         "value": None,
         "reason": "INDEPENDENT_JOINT_REFERENCE_NOT_QUALIFIED",
     }
+    assert out["evidence_tier"] == "fixture_testing_only_not_attested"
 
 
-def test_a7_out_of_bounds_exact_inverse_is_not_clamped_even_if_band_intersects():
+def test_a7_fixture_internal_out_of_bounds_exact_inverse_is_not_clamped_even_if_band_intersects():
     receipt = _qualified_a6_input()
     receipt["price"]["value"] = 400.0
-    out = va.required_earnings_multiple(
+    out = _fixture_required_multiple(
         receipt,
-        sales_growth_pct=3,
-        margin_delta_pp=0,
         price_tolerance=50.0,
     )
     assert out["valid"] is False
@@ -1092,14 +1216,9 @@ def test_a7_out_of_bounds_exact_inverse_is_not_clamped_even_if_band_intersects()
     assert out["feasible_multiple_interval"]["upper"] == 35.0
 
 
-def test_a7_refuses_invalid_tolerance_and_zero_or_nonfinite_scale():
+def test_a7_fixture_internal_refuses_invalid_tolerance_and_zero_or_nonfinite_scale():
     receipt = _qualified_a6_input()
-    out = va.required_earnings_multiple(
-        receipt,
-        sales_growth_pct=3,
-        margin_delta_pp=0,
-        price_tolerance=-0.01,
-    )
+    out = _fixture_required_multiple(receipt, price_tolerance=-0.01)
     assert out["valid"] is False
     assert "INVALID_TOLERANCE" in _refusal_codes(out)
 
@@ -1108,7 +1227,7 @@ def test_a7_refuses_invalid_tolerance_and_zero_or_nonfinite_scale():
     tiny["financial"]["revenue"] = 5e-324
     tiny["financial"]["shares"] = 1e308
     tiny["price"]["value"] = 1.0
-    out = va.required_earnings_multiple(
+    out = _fixture_required_multiple(
         tiny,
         sales_growth_pct=0,
         margin_delta_pp=0,

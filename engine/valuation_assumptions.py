@@ -55,6 +55,7 @@ _V1_MISSING_LABELS = MISSING_LABELS
 QUALIFIED_INPUT_SCHEMA = "valuation_scenario_qualified_input.v1"
 FORWARD_EVALUATION_SCHEMA = "valuation_scenario_forward_evaluation.v1"
 REQUIRED_MULTIPLE_SCHEMA = "valuation_scenario_required_multiple.v1"
+OWNER_QUALIFICATION_UNAVAILABLE = "OWNER_QUALIFICATION_UNAVAILABLE"
 _FORWARD_MODEL_FAMILY = "earnings_multiple"
 _FORWARD_MODEL_VERSION = "B-F07-A6.v1"
 _REQUIRED_MULTIPLE_VERSION = "K3E-A7.v1"
@@ -396,28 +397,37 @@ def _forward_common_fields(state: dict) -> dict:
     }
 
 
-def evaluate_qualified_assumptions(
-    receipt: object,
+def _owner_qualification_unavailable(schema: str, **extra) -> dict:
+    return _qualified_invalid(
+        schema,
+        [_refusal(OWNER_QUALIFICATION_UNAVAILABLE)],
+        **extra,
+    )
+
+
+def _evaluate_qualified_assumptions_internal(
+    state: dict,
     *,
     sales_growth_pct: object,
     margin_delta_pp: object,
     earnings_multiple: object,
 ) -> dict:
-    """Pure A6 forward evaluation over one immutable qualified owner receipt.
+    """Fixture/testing-only forward math over an already-validated owner-shaped state.
 
-    This is descriptive research math only. It never loads event readers, current
-    files, prices, clocks, stores or network state. The operation sequence mirrors
-    valuation_scenario.v1 before display rounding.
+    Not a production qualification path. Callers must not treat a passing receipt
+    validation as attested owner qualification.
     """
-    state, refusals = _validate_qualified_input(receipt)
     params_refusals: list[dict] = []
     g = _validate_parameter("sales_growth_pct", sales_growth_pct, params_refusals)
     d = _validate_parameter("margin_delta_pp", margin_delta_pp, params_refusals)
     k = _validate_parameter("earnings_multiple", earnings_multiple, params_refusals)
-    refusals.extend(params_refusals)
-    if state is None or refusals:
-        return _qualified_invalid(FORWARD_EVALUATION_SCHEMA, refusals)
-
+    if params_refusals:
+        return _qualified_invalid(
+            FORWARD_EVALUATION_SCHEMA,
+            params_refusals,
+            **_forward_common_fields(state),
+        )
+    assert g is not None and d is not None and k is not None
     raw, steps, forward_refusals = _forward_unrounded(state, g, d, k)
     if forward_refusals:
         return _qualified_invalid(
@@ -432,11 +442,12 @@ def evaluate_qualified_assumptions(
         "tier": "research_display_only",
         "authority": "descriptive_context_only",
         "financial_influence": False,
+        "evidence_tier": "fixture_testing_only_not_attested",
         **_forward_common_fields(state),
         "assumptions": {
-            "sales_growth_pct": g,
-            "margin_delta_pp": d,
-            "earnings_multiple": k,
+            "sales_growth_pct": sales_growth_pct,
+            "margin_delta_pp": margin_delta_pp,
+            "earnings_multiple": earnings_multiple,
         },
         "unrounded_per_share": raw,
         "display_per_share": round(raw, 2),
@@ -445,35 +456,47 @@ def evaluate_qualified_assumptions(
     }
 
 
-def required_earnings_multiple(
+def evaluate_qualified_assumptions(
     receipt: object,
+    *,
+    sales_growth_pct: object,
+    margin_delta_pp: object,
+    earnings_multiple: object,
+) -> dict:
+    """Public A6 owner-qualified path.
+
+    Fail closed until incumbent owners supply a complete positive qualification
+    bundle (Data OS binding, attested FIF facts, owner price/session receipt,
+    permitted-use decision, cutoff compatibility). Caller-authored qualified-input
+    bundles are never accepted at this seam.
+    """
+    del receipt, sales_growth_pct, margin_delta_pp, earnings_multiple
+    return _owner_qualification_unavailable(
+        FORWARD_EVALUATION_SCHEMA,
+        model_family=_FORWARD_MODEL_FAMILY,
+        model_version=_FORWARD_MODEL_VERSION,
+    )
+
+
+def _required_earnings_multiple_internal(
+    state: dict,
     *,
     sales_growth_pct: object,
     margin_delta_pp: object,
     price_tolerance: object,
 ) -> dict:
-    """A7 conditional inverse with growth and margin visibly locked.
-
-    Solves only for the earnings multiple. The one-price / three-parameter
-    identification geometry remains explicit; no probability, fair-value claim,
-    compatibility percentage, rank, sizing or trading authority is emitted.
-    """
-    state, refusals = _validate_qualified_input(receipt)
+    """Fixture/testing-only A7 inverse over an already-validated owner-shaped state."""
     params_refusals: list[dict] = []
     g = _validate_parameter("sales_growth_pct", sales_growth_pct, params_refusals)
     d = _validate_parameter("margin_delta_pp", margin_delta_pp, params_refusals)
     tol = _strict_number(price_tolerance, "price_tolerance", params_refusals)
     if tol is not None and tol < 0:
         params_refusals.append(_refusal("INVALID_TOLERANCE", "price_tolerance"))
-    refusals.extend(params_refusals)
-    base_extra = {
-        "model_family": _FORWARD_MODEL_FAMILY,
-        "model_version": _REQUIRED_MULTIPLE_VERSION,
-    }
-    if state is None or refusals:
-        return _qualified_invalid(REQUIRED_MULTIPLE_SCHEMA, refusals, **base_extra)
     inverse_common = _forward_common_fields(state)
     inverse_common["model_version"] = _REQUIRED_MULTIPLE_VERSION
+    if params_refusals:
+        return _qualified_invalid(REQUIRED_MULTIPLE_SCHEMA, params_refusals, **inverse_common)
+    assert g is not None and d is not None and tol is not None
     if state["price"] - tol <= 0:
         return _qualified_invalid(
             REQUIRED_MULTIPLE_SCHEMA,
@@ -562,6 +585,7 @@ def required_earnings_multiple(
         "tier": "research_display_only",
         "authority": "descriptive_context_only",
         "financial_influence": False,
+        "evidence_tier": "fixture_testing_only_not_attested",
         **_forward_common_fields(state),
         "model_version": _REQUIRED_MULTIPLE_VERSION,
         "locked_assumptions": {
@@ -604,6 +628,26 @@ def required_earnings_multiple(
             "reason": "INDEPENDENT_JOINT_REFERENCE_NOT_QUALIFIED",
         },
     }
+
+
+def required_earnings_multiple(
+    receipt: object,
+    *,
+    sales_growth_pct: object,
+    margin_delta_pp: object,
+    price_tolerance: object,
+) -> dict:
+    """Public A7 owner-qualified path.
+
+    Fail closed until incumbent owners supply a complete positive qualification
+    bundle. Caller-authored qualified-input bundles are never accepted.
+    """
+    del receipt, sales_growth_pct, margin_delta_pp, price_tolerance
+    return _owner_qualification_unavailable(
+        REQUIRED_MULTIPLE_SCHEMA,
+        model_family=_FORWARD_MODEL_FAMILY,
+        model_version=_REQUIRED_MULTIPLE_VERSION,
+    )
 
 
 def _bridge_for_issuer(event_class: object):
