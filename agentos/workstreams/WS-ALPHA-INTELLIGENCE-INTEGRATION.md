@@ -228,19 +228,18 @@ waves:
     status: todo
     depends_on: [k6]
 next_action: >
-  Wave-3 release round closed 2026-10-06 under the Chairman's administrative-override ruling
-  (DEC:ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06): twelve program PRs are
-  MERGED (#8312, #8505, #8514, #8394, #8467, #8504, #8521, #8522, #8525, #8461, #8463, #8422).
-  Critical path now: (1) #8337 EXP-1 on merge head 95280c15 (ci.yml run 37437949027) — release and
-  merge on concluded checks, then verify query_k3e_expectation_surface on main's manifest;
-  (2) R1 identity/basis/rights completion gaps G1-G5 — UNOWNED source-owner receipts, a
-  Chairman/owner gate; (3) EVAL-1 positive outcome access P1-2/P1-5 stays with
-  WS:EVAL-OS-MEASUREMENT-LAW; (4) R4 predictive admission and R5 prospective-consumer proof open
-  only after (2) and (3); (5) non-administrative gates reserved to the Chairman: Commission-2
-  #8402 packet cap 569 > 490 (Mastermind #974), PID8688 EFFECT_UNKNOWN, TYPED_GIT_PRECHECK on the
-  PIT-conformance workspace, vendor PIT procurement, capital authority, mini2 free disk >= 50 GB
-  for the GLM tier. No K3-E merge authorizes consumer wiring, Market OS UI, rank, gate, size,
-  trade or deployment.
+  Information-to-Price build-out closed 2026-10-06 under the Chairman's administrative-override
+  ruling (DEC:ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06). Sixteen program
+  PRs are MERGED, the last four being #8337 EXP-1 (a9f815e1), records #8532 (4d470120),
+  Commission-2 #8402 (0f9bc8e8) and the PIT sample conformance harness #8534 (960cb183).
+  PID 8688 is inert and the GLM tier is available again. No build lane is open. Remaining gates
+  are real: (1) R1 G1-G5 owner-issued receipts; no workstream owns data/reference/,
+  data/symbol_directory/, data/revisions/ or collectors/equity_revisions.py, and the rights
+  vocabulary belongs to the shared-base owner, so the Chairman designates owners; (2) EVAL-1
+  positive outcome access P1-2/P1-5 stays with WS:EVAL-OS-MEASUREMENT-LAW; (3) vendor PIT
+  procurement; (4) capital and rank authority. R4 predictive admission and R5
+  prospective-consumer proof open only after (1) and (2). No K3-E merge authorizes consumer
+  wiring, Market OS UI, rank, gate, size, trade or deployment.
 ---
 
 # Alpha Intelligence Expansion — integration workstream
