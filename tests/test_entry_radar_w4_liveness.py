@@ -54,14 +54,16 @@ from __future__ import annotations
 import ast
 import inspect
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
 
 import scripts.freshness_sentinel as FS
+from engine import session_anchor
 from engine.entry_radar import live_eval as le
 from engine.entry_radar import live_ledger as ll
+from engine.entry_radar.readings import BANNED_FEATURE_TOKENS
 from engine.session_digest import session_window_et
 from tests.test_entry_radar_w4_pack import AS_OF, NEXT_SESSION, build
 
@@ -389,6 +391,229 @@ def test_LIV1_a_clean_pass_is_live_with_no_reasons(census):
     assert state_of(result) == "live"
     assert result.health["reasons"] == []
     assert result.exit_code == 0
+
+
+# ---------------------------------------------------------------------------
+# EP — live episodes publication (product spec §3.3)
+# ---------------------------------------------------------------------------
+
+_EPISODE_STATES = frozenset({
+    "PROBING", "ARMED", "TURNING", "CANDIDATE", "INVALIDATED", "EXPIRED", "RESOLVED",
+})
+
+
+def _f1_selected_episodes(ledger: ll.LiveEpisodeLedger,
+                          session: date | None) -> list[ll.LiveEpisode]:
+    session_iso = session.isoformat() if session is not None else None
+    selected: list[ll.LiveEpisode] = []
+    for episode in ledger.episodes:
+        if not episode.terminal:
+            selected.append(episode)
+        elif session_iso is not None:
+            elapsed = ll.sessions_elapsed(episode.market_session, session_iso,
+                                          market="US")
+            if elapsed is not None and elapsed <= 1:
+                selected.append(episode)
+    return selected
+
+
+def _f1_episode_rows(ledger: ll.LiveEpisodeLedger,
+                     session: date | None) -> list[dict]:
+    return ll.iter_episode_dicts(_f1_selected_episodes(ledger, session))
+
+
+def _assert_episodes_carry_no_strength(episodes: list[dict]) -> None:
+    json.dumps(episodes)
+    for episode in episodes:
+        for name in ll.NULL_ONLY_FIELDS:
+            assert name in episode
+            assert episode[name] is None
+        for key in episode:
+            if key in ll.NULL_ONLY_FIELDS:
+                continue
+            low = key.lower()
+            if "score" in low or "priority" in low:
+                raise AssertionError(f"unexpected score/priority key {key!r}")
+        for block in ("feature_snapshot", "risk_geometry", "bar_availability",
+                      "freshness"):
+            block_dict = episode.get(block) or {}
+            for key in block_dict:
+                low = str(key).lower()
+                if any(tok in low for tok in BANNED_FEATURE_TOKENS):
+                    raise AssertionError(
+                        f"{block} key {key!r} looks like a strength token")
+
+
+def test_EP1_live_pass_publishes_f1_episode_rows_and_health(census, pack, tmp_path):
+    result = census["live"]
+    payload, health = result.payload, result.health
+    episodes = payload["episodes"]
+    assert isinstance(episodes, list)
+    for row in episodes:
+        assert row["schema"] == ll.SCHEMA_LIVE_EPISODE
+        assert row["state"] in _EPISODE_STATES
+    session = date.fromisoformat(payload["session"])
+    ledger = ll.LiveEpisodeLedger(tmp_path / "mirror")
+    arming_pass(pack, tmp_path / "mirror", ledger=ledger)
+    assert payload["episodes"] == _f1_episode_rows(ledger, session)
+    assert health["episodes_count"] == len(payload["episodes"])
+    assert health["episodes_schema"] == ll.SCHEMA_LIVE_EPISODE
+
+
+def test_EP2_spool_failure_withholds_withheld_transitions_from_episodes(census, pack,
+                                                                       tmp_path):
+    result = census["spool_failed"]
+    assert result.committed is False
+    payload = result.payload
+    ledger = ll.LiveEpisodeLedger(tmp_path / "spool")
+    arming_pass(
+        pack, tmp_path / "spool",
+        ledger=ledger,
+        spool=RecordingSpool(tmp_path / "spool" / "spool", ok=False),
+        unspooled_ok=False,
+    )
+    session = date.fromisoformat(payload["session"])
+    by_id = {row["episode_id"]: row for row in payload["episodes"]}
+    for transition in result.delta.transitions:
+        episode_id = str(transition.get("episode_id") or "")
+        to_state = str(transition.get("to_state") or "")
+        if episode_id in by_id:
+            assert by_id[episode_id]["state"] != to_state
+    assert payload["episodes"] == _f1_episode_rows(ledger, session)
+
+
+def test_EP3_refusal_and_failure_payload_episodes_health(census, pack):
+    for label in ("killed_env", "stale_pack"):
+        payload = census[label].payload
+        health = census[label].health
+        assert isinstance(payload.get("episodes"), list)
+        assert "episodes_count" in health
+    fail_payload, fail_health = le.failure_payload(
+        now=session_instant(12), pack=pack, error=RuntimeError("x"))
+    assert "episodes" not in fail_payload
+    assert "episodes_count" not in fail_health
+
+
+def test_EP4_terminal_episodes_are_session_filtered(pack, census, tmp_path):
+    template = census["live"].payload["episodes"][0]
+    ref_list = list(session_anchor.reference_sessions("US"))
+    pos = next(i for i, s in enumerate(ref_list)
+               if str(s)[:10] == NEXT_SESSION.isoformat())
+    old_session = str(ref_list[pos - 2])[:10]
+    prev_session = str(ref_list[pos - 1])[:10]
+    old_row = dict(template)
+    old_row.update({"episode_id": "ep-terminal-old", "state": "RESOLVED",
+                    "market_session": old_session})
+    prev_row = dict(template)
+    prev_row.update({"episode_id": "ep-terminal-prev", "state": "RESOLVED",
+                     "market_session": prev_session})
+    state_dir = tmp_path / "filter"
+    state_dir.mkdir()
+    ledger_file = {
+        "schema": ll.SCHEMA_LIVE_LEDGER,
+        "last_session": None,
+        "episodes": [old_row, prev_row],
+        "events": [],
+        "transitions": [],
+        "rearm": {},
+        "suppressions": [],
+    }
+    (state_dir / "episodes.json").write_text(json.dumps(ledger_file), encoding="utf-8")
+    ledger = ll.LiveEpisodeLedger.load(state_dir)
+    result = arming_pass(pack, state_dir, ledger=ledger)
+    published = {row["episode_id"] for row in result.payload["episodes"]}
+    assert "ep-terminal-prev" in published
+    assert "ep-terminal-old" not in published
+    assert {e.episode_id for e in ledger.episodes} == {"ep-terminal-old", "ep-terminal-prev"}
+
+
+def test_EP5_non_terminal_episodes_ignore_session_age(pack, census, tmp_path):
+    template = census["live"].payload["episodes"][0]
+    ref_list = list(session_anchor.reference_sessions("US"))
+    pos = next(i for i, s in enumerate(ref_list)
+               if str(s)[:10] == NEXT_SESSION.isoformat())
+    old_session = str(ref_list[pos - 2])[:10]
+    old_row = dict(template)
+    old_row.update({"episode_id": "ep-probing-old", "state": "PROBING",
+                    "market_session": old_session})
+    state_dir = tmp_path / "nont"
+    state_dir.mkdir()
+    (state_dir / "episodes.json").write_text(json.dumps({
+        "schema": ll.SCHEMA_LIVE_LEDGER,
+        "last_session": None,
+        "episodes": [old_row],
+        "events": [],
+        "transitions": [],
+        "rearm": {},
+        "suppressions": [],
+    }), encoding="utf-8")
+    ledger = ll.LiveEpisodeLedger.load(state_dir)
+    result = arming_pass(pack, state_dir, ledger=ledger)
+    assert any(row["episode_id"] == "ep-probing-old"
+               for row in result.payload["episodes"])
+
+
+def test_EP6_episodes_json_carries_no_strength_tokens(census):
+    _assert_episodes_carry_no_strength(census["live"].payload["episodes"])
+
+
+def test_EP_catalyst_receipt_on_real_producer_paths(census):
+    from engine.entry_radar.live_eval import _CATALYST_COVERAGE_PHRASES
+
+    allowed_coverage = set(_CATALYST_COVERAGE_PHRASES.values())
+    for key in ("live", "stale_pack"):
+        payload = census[key].payload
+        health = payload["health"]
+        assert "catalyst" in health
+        assert isinstance(health["catalyst"]["attached_count"], int)
+        for episode in payload.get("episodes") or []:
+            cat = episode.get("catalyst")
+            if cat is None:
+                continue
+            assert set(cat.keys()) == frozenset({
+                "radar_episode_schema",
+                "radar_episode_id",
+                "fresh_until",
+                "relevant_until",
+                "coverage",
+                "context_state",
+                "catalyst_schema",
+            })
+            assert cat["coverage"] in allowed_coverage
+        _assert_episodes_carry_no_strength(payload["episodes"])
+
+
+def test_EP_catalyst_live_read_is_opt_in_on_real_producer_paths(
+    pack, tmp_path_factory, monkeypatch,
+):
+    monkeypatch.delenv("ENTRY_RADAR_CATALYST_LIVE", raising=False)
+    monkeypatch.setattr(
+        "engine.entry_radar.catalyst_edgar_live.read_edgar_item_202_live",
+        lambda **_k: (_ for _ in ()).throw(AssertionError("network")),
+    )
+    scenarios = {
+        "live": (pack, tmp_path_factory.mktemp("ep_cat_live")),
+        "stale_pack": (
+            pack,
+            tmp_path_factory.mktemp("ep_cat_stale"),
+            datetime(2026, 8, 18, 14, 2, tzinfo=timezone.utc),
+            quote_book(
+                pack, ts=datetime(2026, 8, 18, 14, 0, tzinfo=timezone.utc),
+            ),
+        ),
+    }
+    for key, args in scenarios.items():
+        if key == "live":
+            result = arming_pass(args[0], args[1])
+        else:
+            result = arming_pass(args[0], args[1], now=args[2], quotes=args[3])
+        health = result.payload["health"]
+        assert "catalyst" in health
+        cat_rc = health["catalyst"]
+        assert cat_rc["live_enabled"] is False
+        assert cat_rc["live"] is None
+        if cat_rc["rows_considered"]:
+            assert isinstance(cat_rc["decision_at"], str)
 
 
 def test_LIV1_failed_has_EXACTLY_ONE_producer_and_run_pass_is_not_it(census):

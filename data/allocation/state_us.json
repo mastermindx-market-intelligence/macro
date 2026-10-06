@@ -3,6 +3,7 @@
   "crash": false,
   "eligible": [
     "ai_infra",
+    "ai_neoclouds",
     "ai_semiconductors",
     "ai_software",
     "big_pharma",
@@ -15,7 +16,6 @@
     "managed_care",
     "memory_storage",
     "non_ai_tech",
-    "obesity_glp1",
     "reshoring",
     "robotics_automation",
     "semicap_equipment",
@@ -25,12 +25,12 @@
     "us_sector_tech"
   ],
   "held": [
-    "memory_storage",
     "ai_infra",
+    "memory_storage",
     "cybersecurity",
-    "energy_complex"
+    "non_ai_tech"
   ],
-  "leader": "memory_storage",
+  "leader": "ai_infra",
   "names": {
     "ai_agents": "AI Agents & Applications",
     "ai_infra": "AI Infrastructure",

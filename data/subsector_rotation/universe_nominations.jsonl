@@ -109,3 +109,6 @@
 {"date":"2026-10-02","theme":"Space Tech","donor":"spaceinfrastructure","receiver":"spacedataanalytics","confidence":0.185,"both_confirmed":false}
 {"date":"2026-10-02","theme":"Semiconductors","donor":"semismemory","receiver":"semisdesigntools","confidence":0.184,"both_confirmed":false}
 {"date":"2026-10-02","theme":"Commodities Agriculture","donor":"commagribiofuels","receiver":"commagrilivestock","confidence":0.167,"both_confirmed":false}
+{"date":"2026-10-05","theme":"FinTech","donor":"fintechblockchain","receiver":"fintechinsurance","confidence":0.592,"both_confirmed":false}
+{"date":"2026-10-05","theme":"Software","donor":"softwareos","receiver":"softwaredesign","confidence":0.322,"both_confirmed":false}
+{"date":"2026-10-05","theme":"Electric Vehicles","donor":"evscharging","receiver":"evsbatteries","confidence":0.289,"both_confirmed":false}

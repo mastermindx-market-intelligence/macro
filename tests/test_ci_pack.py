@@ -4284,6 +4284,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "nw-lobe-unfreeze",
+    "china-search-universe",
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
     # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
     # because its suites read most of the repository: inferred, the job would add
@@ -4291,6 +4293,7 @@ CURATED_EXCLUSIVE = {
     # plus the files they read. The cover-their-own-import-closure test and
     # check_ci_trigger_closure.py (both run in this job) keep that list honest.
     "ci-control-plane-contracts",
+    "live-flow-recovery-guards",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
     # this file's own packing-ceiling probe: templates/index.html 132 jobs /
     # 5,810 weight > 5,800; the two code probes over their job ceilings too).
@@ -4578,6 +4581,26 @@ CURATED_EXCLUSIVE = {
     # (site/**, data/**) onto them — files that cannot move either verdict.
     "validated-claims-source",
     "validated-claims-contract",
+    # 2026-10-03 Terminal599 OA-1C canonical-history repair (#8342 follow-up):
+    # the options-alpha candidate feed composer is a code-plane artifact
+    # (engine/options_alpha_candidate_feed.py + every schema it validates
+    # against + the formation policy v2 JSON + the architecture / OA-1C
+    # DECs), not a flow-surface data artefact. The composer was previously
+    # registered on the gate:data flow-surface job; that lane's broader
+    # site/templates/data ownership was reaching the test path through
+    # opaque-fallback inference, and a future edit to a flow-surface file
+    # could select this suite without the right behavioural checks running.
+    # The exclusive declaration pins the exact transitive closure of the
+    # composer (campaign engine + signal episode + ledger lane + session
+    # digest + lib helpers + OPTIONS_SIGNAL_CAMPAIGN_V2_PREREG the test
+    # reaches through dynamic importlib loads); widening is always the
+    # safe direction.
+    "options-alpha-candidate-feed",
+    # 2026-10-03 PR #8350: options-signal-campaign-v2 is the gate:code owner
+    # of tests/test_options_signal_campaign_effective_view.py. scope:
+    # exclusive replaces inference, so the declared job must be pinned here
+    # or the curated-set contract rejects the manifest.
+    "options-signal-campaign-v2",
 }
 
 
@@ -5285,6 +5308,38 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     the drift surfaces after merge, on integration-baseline.yml. That lane
     runs this file on every source push to main and every 4 hours, and
     merge-on-green pauses ordinary merges while it is red.
+
+    PR #8322 round 2 (2026-10-03): ``live-flow-recovery-guards`` (w1,
+    ``gate: code``, 12 declared paths) joins the manifest with ordinary
+    ``paths:`` inference — NOT ``scope: exclusive``, per the META-CEO
+    ruling for this round ("Ordinary paths inference, not scope:exclusive
+    until closure verified"). Its declared subject (engine/live_flow.py,
+    engine/session_digest.py, lib/{__init__,config.py,nyse_calendar.py},
+    scripts/live_flow_poller.py + build_flow_archive.py + build_flow_surface.py,
+    tests/test_flow_archive.py + test_live_flow_recovery.py + test_live_flow_tiering.py,
+    ops/LIVE_FLOW_RUNBOOK.md) touches NONE of the three probes directly,
+    but ordinary inference widens its fallback tier to the directory globs
+    the declared files live under (engine/**, scripts/**, templates/**).
+    Re-measured, full manifest, inference on, before this entry:
+
+        templates/index.html          134 -> 135 jobs, 5,800 weight (AT)
+        scripts/build_free_content.py 132 -> 133 jobs, 5,585 weight
+        engine/prophet/plan_book.py   127 -> 128 jobs, 5,534 weight
+
+    JOB ceilings re-based to measurement + 1 (135 / 133 / 128) per the
+    standing rule. The decision recorded here follows the wave-9 re-frame
+    exactly: the job enters all three on its OWN inferred FALLBACK tier
+    (templates/**, scripts/**, engine/**), so it is a curation candidate
+    — its closure is small (one production source, one new test file,
+    three path helpers; closure-coverage audit: zero misses) and ``scope:
+    exclusive`` would cover it cleanly. The ruling pins that to round 3,
+    not this round; this entry funds the headroom so the PR lands green,
+    and the curation follow-on is named live-flow-recovery-guards-scope
+    (must run before the next entrant). WEIGHT and PACK ceilings stay
+    unmoved (5,800 / 5,600 / 5,600 and 10 packs): weights are 5,800 /
+    5,585 / 5,534, packs are 10 / 10 / 10, and templates/index.html sits
+    AT its 5,800 weight bound — the next weight delta is the same kind
+    of decision this entry makes.
 
     2026-09-27: that drift now reds its own PR. The measurement and the
     verdict moved to scripts/run_ci_pack.py (packing_probe_measurements,
@@ -6115,3 +6170,32 @@ def test_markets_fresh_render_byte_match_is_code_gated_and_runs_exactly_once() -
         if selector in cmds or node in cmds:
             duplicates.append(name)
     assert not duplicates, sorted(duplicates)
+
+
+def test_price_ladder_deterministic_contract_is_owned_by_existing_code_gate(tmp_path: Path) -> None:
+    """Production ladder source AND test-only edits run the deterministic suite."""
+    manifest = _yaml(MANIFEST)
+    owner = manifest["jobs"]["price-basis-census"]
+    suite = "tests/test_price_ladder.py"  # ci-trigger-closure: data — suite NAME for planner/argv checks
+    assert owner["gate"] == "code"
+    assert {"pytest", "pandas", "numpy", "pyarrow"} <= _job_pip_packages(owner)
+    runs = [str(step.get("run") or "") for step in owner["steps"]]
+    pytest_runs = [command for command in runs if " -m pytest " in command]
+    assert len(pytest_runs) == 1
+    assert shlex.split(pytest_runs[0]) == [
+        "python", "-m", "pytest", "tests/test_price_basis_graders.py", suite, "-q",
+        "--deselect", suite + "::test_real_store_cfg_diverges_from_the_cache_by_a_dividend",
+        "--deselect", suite + "::test_real_store_control_non_payers_agree_across_sources",
+        "--deselect", suite + "::test_real_store_ladder_prefers_adjusted_for_a_cached_name",
+    ]
+    assert _job_pip_packages(manifest["jobs"]["dataos-foundation"]) == {"pytest", "pyyaml"}
+    owner_manifest = tmp_path / "price-basis-owner.yml"
+    owner_manifest.write_text(yaml.safe_dump({"jobs": {"price-basis-census": owner}}))
+    jobs, scope_reason = PACK.infer_job_scopes(PACK.load_legacy_jobs(owner_manifest, gate="code"))
+    assert len(jobs) == 1 and jobs[0].is_scoped, scope_reason
+    for changed in (["engine/price_ladder.py"], [suite]):  # ci-trigger-closure: data — synthetic diff
+        selected, reason = PACK.select_jobs(jobs, changed)
+        assert [job.job_id for job in selected] == ["price-basis-census"], reason
+        assert "unowned path" not in reason, reason
+    selected, reason = PACK.select_jobs(jobs, ["tests/test_dataos_price.py"])  # ci-trigger-closure: data — synthetic diff
+    assert not selected, reason

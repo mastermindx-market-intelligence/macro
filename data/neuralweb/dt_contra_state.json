@@ -1,5 +1,5 @@
 {
-  "asof": "2026-10-02",
+  "asof": "2026-10-05",
   "universe_n": 2945,
   "n_with_chip": 248,
   "counts_by_state": {
@@ -144,9 +144,9 @@
       "ticker": "APD",
       "state": "neutral",
       "band": "washed",
-      "score_pct": 0.143,
-      "whale": 46.1,
-      "whale_chg": -0.6
+      "score_pct": 0.169,
+      "whale": 43.5,
+      "whale_chg": -5.0
     },
     {
       "ticker": "APH",

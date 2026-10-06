@@ -1,16 +1,16 @@
 {
-  "date": "2026-10-03",
+  "date": "2026-10-05",
   "regime": "mixed / no clear trend",
   "breadth": 0.23,
   "favored": [
     "equity_us",
     "copper",
+    "oil",
     "equity_intl",
-    "equity_em",
-    "dollar"
+    "equity_em"
   ],
   "correlation": "diversified",
-  "asof": "2026-10-03",
+  "asof": "2026-10-05",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
@@ -148,6 +148,11 @@
         "z": 1.0
       },
       {
+        "asset": "oil",
+        "trend": "up",
+        "z": 1.0
+      },
+      {
         "asset": "equity_intl",
         "trend": "up",
         "z": 1.0
@@ -156,11 +161,6 @@
         "asset": "equity_em",
         "trend": "up",
         "z": 1.0
-      },
-      {
-        "asset": "dollar",
-        "trend": "up",
-        "z": 0.67
       },
       {
         "asset": "equity_sm",
@@ -178,19 +178,19 @@
         "pair": "copper_gold",
         "ratio": 0.002,
         "trend": "elevated",
-        "pctile": 81.0
+        "pctile": 88.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 69.398,
+        "ratio": 67.695,
         "trend": "mid",
-        "pctile": 39.0
+        "pctile": 31.0
       },
       {
         "pair": "oil_gold",
         "ratio": 0.022,
         "trend": "mid",
-        "pctile": 72.0
+        "pctile": 71.0
       },
       {
         "pair": "stocks_gold",
@@ -213,7 +213,7 @@
           "key": "roll_oil",
           "label_en": "Oil roll yield",
           "label_zh": "oil \u5c55\u671f\u6536\u76ca",
-          "value": 0.5,
+          "value": 0.2,
           "unit": "%/yr",
           "state": "backwardation (positive)"
         }
@@ -309,7 +309,7 @@
           "equity_blind": true
         }
       ],
-      "asof": "2026-10-01"
+      "asof": "2026-10-02"
     },
     "dollar": {
       "usd_dir": "flat",
@@ -332,8 +332,8 @@
       "unstable_n": 0,
       "fx_stress": {
         "dominant": "dollar_wrecking_ball",
-        "top_key": "dollar_wrecking_ball",
-        "top_val": 60.8
+        "top_key": "reflation_risk_on",
+        "top_val": 50.0
       }
     },
     "shadow": {
