@@ -30,6 +30,7 @@ Nothing here reads ``data/``, ``site/`` or the network.
 from __future__ import annotations
 
 import copy
+import dataclasses
 import json
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -626,3 +627,106 @@ def test_W3_14_the_arm_is_an_instant_and_a_same_session_turn_stays_eligible(c3_s
     assert all(r.features["eligible"] is True for r in same_session), \
         "a 13:30 bucket on the arming session is AFTER a 09:30 arm"
     assert all(r.features["pre_arm"] is False for r in same_session)
+
+
+# ---------------------------------------------------------------------------
+# CO — compute-once tables (2026-10-06).  ``run_c3`` reads every daily leg and
+# every 4H turn from ONE indicator pass per name: the production ``eval_c3``
+# stage (#8546 timings) was ~190 s of 61× full-history StochRSI plus ~120×
+# RSI-MACD recomputes per C3 name against a 570 s unit budget.  These pin EXACT
+# equality with the reference functions, session by session, bucket by bucket.
+# ---------------------------------------------------------------------------
+
+
+def _completed_of(buckets):
+    return [b for _s, bs in buckets for b in bs if b.confirmed and b.close is not None]
+
+
+def test_CO1_the_daily_leg_table_equals_c3_daily_leg_at_every_session(c3_setup):
+    daily, sessions, _buckets = c3_setup
+    table = fh._C3DailyLegTable(daily)
+    probes = [sessions[0] - timedelta(days=3), *sessions, sessions[-1] + timedelta(days=3)]
+    legs = [table.leg(s) for s in probes]
+    for s, leg in zip(probes, legs):
+        assert leg == fh.c3_daily_leg(daily, s), s
+    states = {leg.availability for leg in legs}
+    assert {"unavailable", "confirmed"} <= states, states  # warm-up AND warmed exercised
+    assert any(leg.washed is True for leg in legs), "the fixture's late washout"
+
+
+def test_CO1b_the_daily_leg_table_matches_on_a_frame_that_swings_through_K20(c3_setup):
+    """The module fixture holds K at 0 once it confirms; this path oscillates so
+    washed=True, washed=False and warm-up all occur, and every one is pinned."""
+    daily, sessions, _buckets = c3_setup
+    t = np.arange(len(daily.frame), dtype=float)
+    closes = 100.0 * (1 + 0.05 * np.sin(t / 7.0) + 0.01 * np.sin(t / 2.3))
+    frame = pd.DataFrame({"open": closes, "high": closes * 1.004,
+                          "low": closes * 0.996, "close": closes}, index=daily.frame.index)
+    wavy = ch.DailyHistory(frame=frame, vintage="wavy")
+    table = fh._C3DailyLegTable(wavy)
+    legs = [table.leg(s) for s in sessions]
+    for s, leg in zip(sessions, legs):
+        assert leg == fh.c3_daily_leg(wavy, s), s
+    assert any(leg.washed is True for leg in legs) and any(leg.washed is False for leg in legs)
+    assert any(leg.availability == "unavailable" for leg in legs)
+
+
+def test_CO2_the_daily_leg_table_matches_on_gapped_and_stale_frames(c3_setup):
+    daily, sessions, _buckets = c3_setup
+    gapped_frame = daily.frame.copy()
+    gapped_frame.iloc[40:43, gapped_frame.columns.get_loc("close")] = np.nan
+    gapped = ch.DailyHistory(frame=gapped_frame, vintage="gapped")
+    stale = ch.DailyHistory(frame=daily.frame.iloc[:-60], vintage="stale")
+    for history in (gapped, stale):
+        table = fh._C3DailyLegTable(history)
+        for s in sessions:
+            assert table.leg(s) == fh.c3_daily_leg(history, s), (history.vintage, s)
+    assert any(fh._C3DailyLegTable(stale).leg(s).availability == "stale" for s in sessions)
+
+
+def test_CO3_the_turn_table_equals_four_hour_turn_at_every_prefix(c3_setup):
+    _daily, _sessions, buckets = c3_setup
+    completed = _completed_of(buckets)
+    table = fh._four_hour_turn_table(completed)
+    assert len(table) == len(completed)
+    for k in range(len(completed)):
+        assert table[k] == fh.four_hour_turn(
+            fh.confirmed_four_hour_series(completed[:k + 1])), k
+    assert table[0] is None and (True in table) and (False in table)
+    assert fh._four_hour_turn_table([]) == []
+    assert fh._four_hour_turn_table(completed[:1]) == [None]
+
+
+def test_CO4_run_c3_turns_follow_the_reference_with_provisional_and_empty_buckets(c3_setup):
+    daily, _sessions, buckets = c3_setup
+    mutated = [(s, list(bs)) for s, bs in buckets]
+    mutated[30][1][0] = dataclasses.replace(mutated[30][1][0], confirmed=False)
+    mutated[31][1][0] = dataclasses.replace(mutated[31][1][0], close=None)
+    run = fh.run_c3(ticker=TICKER, daily=daily, buckets_by_session=mutated)
+    completed: list[fh.FourHourBucket] = []
+    expected_turns: list[str] = []
+    for _s, bs in mutated:
+        for b in bs:
+            if not b.confirmed or b.close is None:
+                continue
+            completed.append(b)
+            if fh.four_hour_turn(fh.confirmed_four_hour_series(completed)):
+                expected_turns.append(ch.utc_iso(b.effective_end))
+    assert expected_turns, "the synthetic path must turn somewhere"
+    assert list(run.turns) == expected_turns
+    assert len(run.provisional) >= 2, "the dropped buckets are still DISCLOSED"
+
+
+def test_CO5_run_c3_derives_each_indicator_ONCE_per_name(c3_setup, monkeypatch):
+    daily, _sessions, buckets = c3_setup
+    counts = {"stoch_rsi_kd": 0, "rsi_macd_hist": 0}
+    for name in list(counts):
+        real = getattr(ic, name)
+
+        def counting(*args, _name=name, _real=real, **kwargs):
+            counts[_name] += 1
+            return _real(*args, **kwargs)
+
+        monkeypatch.setattr(ic, name, counting)
+    fh.run_c3(ticker=TICKER, daily=daily, buckets_by_session=buckets)
+    assert counts == {"stoch_rsi_kd": 1, "rsi_macd_hist": 1}, counts
