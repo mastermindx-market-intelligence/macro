@@ -2214,3 +2214,22 @@ def test_candidate_link_integrity_accepts_exact_stock_href(check_name):
     check = getattr(_pjr, check_name)
     result = check(soup, "TEST1", _standouts_payload(ticker="TEST1"))
     assert result["status"] == "PASS", result
+
+
+def test_j9_runtime_absent_does_not_hide_assessment_clock_failure():
+    soup = BeautifulSoup(_corrected_html(assessment_asof="2099-01-01"), _pjr.HTML_PARSER)
+    result = _pjr._check_j9(
+        soup, _index_payload(), _standouts_payload(ticker="TEST1"),
+        None, "en", "TEST1")
+    assert result["status"] == "FAIL", result
+
+
+def test_j9_runtime_absent_does_not_hide_plan_book_failure():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    book = soup.select_one("#us-plan-book-asof")
+    assert book is not None
+    book["data-plan-book-asof"] = "2099-01-01"
+    result = _pjr._check_j9(
+        soup, _index_payload(), _standouts_payload(ticker="TEST1"),
+        None, "en", "TEST1")
+    assert result["status"] == "FAIL", result

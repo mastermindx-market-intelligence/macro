@@ -1328,6 +1328,15 @@ def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
                 if state == expected and expected == "today" and day in text:
                     fails.append("#plv-asof today text names a prior day")
     if runtime is None:
+        deterministic_fails = [
+            failure for failure in fails
+            if failure != "runtime payload missing"
+            and not (ticker is None and failure == "assessment clock missing")
+        ]
+        if deterministic_fails:
+            return _check_status(
+                "FAIL", "source-bound clocks remain valid without runtime quote evidence",
+                {"fails": deterministic_fails, "runtime": "not supplied"}, where)
         return _check_status("UNSUPPORTED",
                              "runtime quote state judged from rendered DOM",
                              {"reason": "live/prophet_live.json runtime payload not supplied",
