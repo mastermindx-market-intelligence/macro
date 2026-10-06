@@ -144,6 +144,29 @@ def test_measured_beta_sign():
     assert b["corr"] < 0
 
 
+def test_xasset_copy_does_not_promote_contemporaneous_beta_to_causality():
+    stories = {row["key"]: row["story_en"].lower() for row in BX._ASSETS}
+    assert "contemporaneous" in stories["spx"]
+    assert "proven lead" in stories["spx"]
+    assert "leads equity drawdowns" not in stories["spx"]
+    assert "does not observe bank net interest margins" in stories["fins"]
+    assert "lifts net interest margins" not in stories["fins"]
+
+    root = Path(__file__).resolve().parent.parent
+    inputs_source = (root / "engine" / "inputs.py").read_text(encoding="utf-8")
+    assert 'f["curve_tp_adj"] = f["spread_2s10s"] + f["term_premium_10y"]' in inputs_source
+    assert 'f["term_premium_10y"].fillna(0)' not in inputs_source
+
+    bonds_template = (root / "templates" / "bonds.html.j2").read_text(encoding="utf-8")
+    assert "TP10 curve heuristic" in bonds_template
+    assert "matched-maturity expectations-only" in bonds_template
+    assert "TP-adjusted" not in bonds_template
+
+    brain_source = (root / "engine" / "neuralweb" / "brain_curve.py").read_text(encoding="utf-8")
+    assert "legacy TP10 curve heuristic" in brain_source
+    assert "matched-maturity expectations-only" in brain_source
+
+
 def test_xasset_snapshot_real_or_skip():
     """Real-data smoke: the transmission map must produce signed betas with sane fields."""
     try:
