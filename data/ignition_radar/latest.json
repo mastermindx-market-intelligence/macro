@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-10-02",
-  "data_session": "2026-10-02",
+  "as_of": "2026-10-05",
+  "data_session": "2026-10-05",
   "state": "off",
   "k_count": 0,
   "chips": [
@@ -55,8 +55,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "pct_above_50=22.4% (was 31.4% 10d ago)",
-      "detail_zh": "50\u65e5\u7ebf\u4e0a\u6bd4\u4f8b=22.4%\uff0810\u65e5\u524d31.4%\uff09",
+      "detail_en": "pct_above_50=27.1% (was 30.6% 10d ago)",
+      "detail_zh": "50\u65e5\u7ebf\u4e0a\u6bd4\u4f8b=27.1%\uff0810\u65e5\u524d30.6%\uff09",
       "source": "breadth"
     },
     {
@@ -66,8 +66,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "10d mean(nh-nl)=-17.8 (was -6.2 10d ago)",
-      "detail_zh": "10\u65e5\u5747(\u65b0\u9ad8-\u65b0\u4f4e)=-17.8\uff0810\u65e5\u524d-6.2\uff09",
+      "detail_en": "10d mean(nh-nl)=-15.5 (was -10.8 10d ago)",
+      "detail_zh": "10\u65e5\u5747(\u65b0\u9ad8-\u65b0\u4f4e)=-15.5\uff0810\u65e5\u524d-10.8\uff09",
       "source": "breadth"
     },
     {
@@ -77,8 +77,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "20d log-RS slope=-0.0422 (negative)",
-      "detail_zh": "20\u65e5\u5bf9\u6570RS\u659c\u7387=-0.0422\uff08\u8d1f\u5411\uff09",
+      "detail_en": "20d log-RS slope=-0.0414 (negative)",
+      "detail_zh": "20\u65e5\u5bf9\u6570RS\u659c\u7387=-0.0414\uff08\u8d1f\u5411\uff09",
       "source": "yahoo/RSP,SPY"
     },
     {
@@ -88,8 +88,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "2/11 ETFs above rising 50dma (need 8)",
-      "detail_zh": "2/11\u4e2aETF\u9ad8\u4e8e\u4e0a\u5347\u4e2d50\u65e5\u7ebf\uff08\u97008\u4e2a\uff09",
+      "detail_en": "3/11 ETFs above rising 50dma (need 8)",
+      "detail_zh": "3/11\u4e2aETF\u9ad8\u4e8e\u4e0a\u5347\u4e2d50\u65e5\u7ebf\uff08\u97008\u4e2a\uff09",
       "source": "yahoo/sector_etfs"
     }
   ],
@@ -104,7 +104,7 @@
     "items": [
       {
         "id": "SMH",
-        "ignition_score": 0.9994,
+        "ignition_score": 0.9958,
         "state": "igniting",
         "components": {
           "breadth_thrust": null,
@@ -112,8 +112,8 @@
             0,
             0
           ],
-          "rs_slope_change": 0.999,
-          "rs_slope_raw": 0.17371,
+          "rs_slope_change": 0.9937,
+          "rs_slope_raw": 0.12635,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
@@ -127,7 +127,7 @@
       },
       {
         "id": "XLK",
-        "ignition_score": 0.9713,
+        "ignition_score": 0.9499,
         "state": "igniting",
         "components": {
           "breadth_thrust": null,
@@ -135,8 +135,8 @@
             0,
             0
           ],
-          "rs_slope_change": 0.957,
-          "rs_slope_raw": 0.07758,
+          "rs_slope_change": 0.9248,
+          "rs_slope_raw": 0.06273,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
@@ -149,24 +149,70 @@
         "above_200d_rising": true
       },
       {
-        "id": "data_center_power",
-        "ignition_score": 0.7,
+        "id": "XLI",
+        "ignition_score": 0.7655,
         "state": "igniting",
         "components": {
-          "breadth_thrust": 0.25,
+          "breadth_thrust": null,
           "breadth_n": [
-            2,
-            8
+            0,
+            0
           ],
-          "rs_slope_change": 1.0,
-          "rs_slope_raw": 0.24869,
+          "rs_slope_change": 0.6482,
+          "rs_slope_raw": 0.01528,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
         },
-        "name": "Data-Center Power & Cooling",
-        "name_zh": "\u6570\u636e\u4e2d\u5fc3\u7535\u529b\u4e0e\u6563\u70ed",
-        "category": "Energy & Power",
+        "name": "XLI",
+        "name_zh": "XLI",
+        "category": "Sector ETF",
+        "type": "etf",
+        "rs_new_high": false,
+        "above_200d_rising": false
+      },
+      {
+        "id": "robotics_automation",
+        "ignition_score": 0.6991,
+        "state": "igniting",
+        "components": {
+          "breadth_thrust": 0.25,
+          "breadth_n": [
+            3,
+            12
+          ],
+          "rs_slope_change": 0.9978,
+          "rs_slope_raw": 0.153,
+          "mtf_confirm": 1.0,
+          "mtf_ok": true,
+          "commodity_flip": false
+        },
+        "name": "Robotics & Automation",
+        "name_zh": "\u673a\u5668\u4eba\u4e0e\u81ea\u52a8\u5316",
+        "category": "Industrials",
+        "type": "basket",
+        "rs_new_high": false,
+        "above_200d_rising": true
+      },
+      {
+        "id": "ai_infra",
+        "ignition_score": 0.6906,
+        "state": "igniting",
+        "components": {
+          "breadth_thrust": 0.25,
+          "breadth_n": [
+            6,
+            24
+          ],
+          "rs_slope_change": 0.9765,
+          "rs_slope_raw": 0.09316,
+          "mtf_confirm": 1.0,
+          "mtf_ok": true,
+          "commodity_flip": false
+        },
+        "name": "AI Infrastructure",
+        "name_zh": "AI \u57fa\u7840\u8bbe\u65bd",
+        "category": "AI & Technology",
         "type": "basket",
         "rs_new_high": false,
         "above_200d_rising": true
@@ -181,8 +227,8 @@
             2,
             10
           ],
-          "rs_slope_change": 0.9999,
-          "rs_slope_raw": 0.22061,
+          "rs_slope_change": 0.9998,
+          "rs_slope_raw": 0.21922,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
@@ -195,96 +241,50 @@
         "above_200d_rising": true
       },
       {
-        "id": "robotics_automation",
-        "ignition_score": 0.6664,
+        "id": "us_sector_tech",
+        "ignition_score": 0.6489,
         "state": "igniting",
         "components": {
-          "breadth_thrust": 0.1667,
+          "breadth_thrust": 0.1486,
           "breadth_n": [
-            2,
-            12
+            11,
+            74
           ],
-          "rs_slope_change": 0.9993,
-          "rs_slope_raw": 0.18025,
+          "rs_slope_change": 0.9735,
+          "rs_slope_raw": 0.09014,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
         },
-        "name": "Robotics & Automation",
-        "name_zh": "\u673a\u5668\u4eba\u4e0e\u81ea\u52a8\u5316",
-        "category": "Industrials",
+        "name": "Technology (Equal-Weight)",
+        "name_zh": "\u4fe1\u606f\u6280\u672f\uff08\u7b49\u6743\uff09",
+        "category": "US Sectors (EW)",
         "type": "basket",
         "rs_new_high": false,
         "above_200d_rising": true
       },
       {
-        "id": "travel",
-        "ignition_score": 0.6399,
-        "state": "igniting",
+        "id": "XLY",
+        "ignition_score": 0.6141,
+        "state": "running",
         "components": {
-          "breadth_thrust": 0.1667,
+          "breadth_thrust": null,
           "breadth_n": [
-            4,
-            24
+            0,
+            0
           ],
-          "rs_slope_change": 0.9332,
-          "rs_slope_raw": 0.06593,
+          "rs_slope_change": 0.4212,
+          "rs_slope_raw": -0.00795,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
         },
-        "name": "Travel & Experiences",
-        "name_zh": "\u65c5\u884c\u4e0e\u4f53\u9a8c",
-        "category": "Consumer Cyclical",
-        "type": "basket",
+        "name": "XLY",
+        "name_zh": "XLY",
+        "category": "Sector ETF",
+        "type": "etf",
         "rs_new_high": false,
         "above_200d_rising": false
-      },
-      {
-        "id": "ai_infra",
-        "ignition_score": 0.6311,
-        "state": "igniting",
-        "components": {
-          "breadth_thrust": 0.0833,
-          "breadth_n": [
-            2,
-            24
-          ],
-          "rs_slope_change": 0.9944,
-          "rs_slope_raw": 0.12936,
-          "mtf_confirm": 1.0,
-          "mtf_ok": true,
-          "commodity_flip": false
-        },
-        "name": "AI Infrastructure",
-        "name_zh": "AI \u57fa\u7840\u8bbe\u65bd",
-        "category": "AI & Technology",
-        "type": "basket",
-        "rs_new_high": false,
-        "above_200d_rising": true
-      },
-      {
-        "id": "non_ai_tech",
-        "ignition_score": 0.63,
-        "state": "igniting",
-        "components": {
-          "breadth_thrust": 0.0769,
-          "breadth_n": [
-            1,
-            13
-          ],
-          "rs_slope_change": 0.998,
-          "rs_slope_raw": 0.15571,
-          "mtf_confirm": 1.0,
-          "mtf_ok": true,
-          "commodity_flip": false
-        },
-        "name": "Non-AI Tech & Hardware",
-        "name_zh": "\u975eAI\u79d1\u6280\u4e0e\u786c\u4ef6",
-        "category": "Semiconductors & Hardware",
-        "type": "basket",
-        "rs_new_high": false,
-        "above_200d_rising": true
       }
     ],
     "event_excluded": [
@@ -292,28 +292,28 @@
         "id": "defense",
         "name": "Defense & Aerospace",
         "name_zh": "\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929",
-        "ignition_score": 0.4259,
+        "ignition_score": 0.403,
         "state": "running",
         "reason": "geopolitical event sector outside broad ignition (suspension 2026-07-23: single-sector bids \u2260 ignition)"
       }
     ],
     "n_scored": 61,
-    "n_qualifying": 22,
+    "n_qualifying": 31,
     "null": false,
     "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-    "as_of": "2026-10-02"
+    "as_of": "2026-10-05"
   },
   "narrow_top": {
     "basket_id": "SMH",
     "name": "SMH",
     "name_zh": "SMH",
-    "score": 0.9994,
-    "streak_sessions": 4
+    "score": 0.9958,
+    "streak_sessions": 5
   },
   "radar_xref": {
     "state": "caution",
     "phase": null
   },
   "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-  "_timing_s": 1.91
+  "_timing_s": 2.24
 }

@@ -42,7 +42,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import basket_membership_pit  # noqa: E402
-from engine.theme_graph import materialize, store  # noqa: E402
+from engine.theme_graph import materialize, probation, store  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_theme_graph")
@@ -101,10 +101,26 @@ def _retired_node_ids() -> frozenset[str]:
     return frozenset(str(n) for n in retired["node_id"])
 
 
+def _relation_event_sources() -> tuple[Path, Path]:
+    """Separate versioned owner input; the v1 proposal queue stays unchanged."""
+    return (store.probation_path().parent / "relation_events.v2.jsonl",
+            Path(__file__).resolve().parent.parent / "config/theme_crosswalk.yml")
+
+
+def _relation_action_owner_reader():
+    """Actual authenticated curator resolver remains an explicit integration gate."""
+    return None
+
+
 def run(*, backfill: bool, force_backfill: bool,
         allow_source_shrink: tuple[str, ...] = ()) -> int:
     lane = store.collect_lane()
     era = "reconstruction" if backfill else "observed"
+    try:
+        store.preflight_existing_stores()
+    except store.GraphIntegrityError as exc:
+        log.error("theme graph prior-state integrity refusal: %s", exc)
+        return 1
     stored = store.read_edges(latest_belief=True)
 
     if backfill and not stored.empty and not force_backfill:
@@ -116,7 +132,7 @@ def run(*, backfill: bool, force_backfill: bool,
 
     try:
         ths_history = basket_membership_pit.read_history(
-            basket_membership_pit.SUITE_THS, strict=True)
+            basket_membership_pit.SUITE_THS, strict=True, include_collection_records=True)
     except Exception as exc:  # noqa: BLE001 — corrupt owner state must fail closed
         log.error("theme graph: THS PIT history is present but unreadable (%s) — "
                   "refusing to publish an empty-history interpretation", exc)
@@ -141,7 +157,6 @@ def run(*, backfill: bool, force_backfill: bool,
                   "build (a swallowed exception here must not look like a "
                   "legitimate zero-membership night)")
         return 1
-    pit_member_edges = int(ths_per_suite.get("member_edges") or 0)
 
     # B1: retract the superseded membership_doc.v1 THS MEMBER_OF generation so the
     # PIT re-key cannot leave both generations live. Retraction reuses the stored
@@ -176,7 +191,19 @@ def run(*, backfill: bool, force_backfill: bool,
     if expression_closings:
         log.info("THS canonical expression refresh: closing %d superseded live edge(s)",
                  len(expression_closings))
-    closings = membership_closings + expression_closings
+    try:
+        event_path, curation_path = _relation_event_sources()
+        relation_events = probation.read_relation_events(
+            event_path, source_path=curation_path, emitted_at=run_computed_at,
+            owner_action_reader=_relation_action_owner_reader())
+        event_closings, event_evidence = materialize.apply_relation_events(
+            stored, view.edges, relation_events, belief_time=belief_time,
+            era=era, computed_at=run_computed_at)
+    except (ValueError, OSError) as exc:
+        log.error("theme graph: owner relation event refused (%s)", exc)
+        return 1
+    view.evidence.extend(event_evidence)
+    closings = membership_closings + expression_closings + event_closings
     computed = list(view.edges) + closings
     edges = computed if backfill else materialize.changed_edges(computed, stored)
 
@@ -184,14 +211,13 @@ def run(*, backfill: bool, force_backfill: bool,
     # this one guards the path every WRITE takes, so a hand-edited or truncated input
     # that never went through a refresh still cannot mass-close a source family. Refusing
     # here is cheap; un-closing 2,000 permanent rows in an append-only store is not.
-    # The membership_doc→pit generation cutover IS a deliberate full-family close of the
-    # superseded edge_ids — auto-waive ths_concepts ONLY when the PIT plane actually
-    # produced replacement edges THIS run (BLOCKER 3): a swallowed-exception night with
-    # zero PIT edges must hit the wall like any other mass-closure, not sail through it.
+    # Only exact validated owner closures and superseded legacy rows are explained
+    # changes. Uncovered pairs and collateral loss still enter the shrink numerator.
     allow = set(allow_source_shrink)
-    if membership_closings and pit_member_edges > 0:
-        allow.add(materialize.THS_FAMILY)
-    refusals = materialize.source_shrink_refusals(edges, stored, allow=allow)
+    # The guard derives exact explained legacy/PIT closures from this same
+    # validated owner input. A THS cutover never waives collateral loss.
+    refusals = materialize.source_shrink_refusals(
+        edges, stored, allow=allow, owner_membership_history=ths_history)
     if refusals:
         for r in refusals:
             log.error("theme graph shrink wall: %s", r)

@@ -624,11 +624,11 @@ def chart_curve_now(f):
 
 
 def chart_spreads(fr, years=12):
-    """Curve slope over time (10y-3m, 2s10s, term-premium-adjusted); zero = flat."""
+    """Curve slope over time (10y-3m, 2s10s, legacy TP10 heuristic); zero = flat."""
     return _multi([
         _mser("10y-3m", "10年-3月", "var(--info)", _col(fr, "spread_10y3m"), years),
         _mser("2s10s", "2年/10年", "var(--warn)", _col(fr, "spread_2s10s"), years),
-        _mser("TP-adjusted", "期限溢价调整", "var(--muted)", _col(fr, "curve_tp_adj"), years),
+        _mser("TP10 heuristic", "TP10启发式", "var(--muted)", _col(fr, "curve_tp_adj"), years),
     ], height=190, baseline=0, value_fmt="{:+,.2f}",
        aria_en="Yield curve slope measures over time")
 

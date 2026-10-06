@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "GNL-BULL-20260805",
-  "asof": "2026-10-02",
+  "asof": "2026-10-06",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.8,
@@ -13,20 +13,20 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 49.0,
-    "overlay": 50.0
+    "retention": 48.9,
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.064,
+    "dist_to_stop_r": -0.181,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 117.8,
-    "p1": -0.7092,
-    "p2": -0.3546,
+    "horizon_pct_used": 126.7,
+    "p1": -0.7872,
+    "p2": -0.3936,
     "p3": null,
-    "move_r": -1.064,
+    "move_r": -1.181,
     "mfe_r": 0.0,
-    "mae_r": -1.064
+    "mae_r": -1.181
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -1.0,
+  "_mae": -1.109999656677246,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 53,
-  "tau": 1.1778
+  "days_elapsed": 57,
+  "tau": 1.2667
 }

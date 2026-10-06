@@ -1,0 +1,666 @@
+{
+  "schema": "prophet.trade_plan/v1",
+  "id": "IRDM-BULL-20260930",
+  "asof": "2026-10-03",
+  "recorded_at": "2026-10-03",
+  "asset": "IRDM",
+  "direction": "BULL",
+  "thesis": "IRDM \u2014 conviction 35/100 (neutral) Entry grade: solid. Drivers: earnings \u00b7 insider \u00b7 revisions; quality. Cautions: Trades 33% above its long-term trend line. Buying here is chasing.; Its market cycle still argues for waiting (uptrend).. Trust tier: Event edge: insider buying (lone FDR survivor) + earnings-surprise PEAD context + revisions \u2014 a confluence read, not a standalone alpha. DISPLAY-ONLY: machine-generated from factor scores; no forward return guarantee; display-tier artifact.",
+  "thesis_zh": "IRDM \u2014 \u786e\u4fe1\u5ea6 35/100\uff08\u4e2d\u6027\uff09 \u5165\u573a\u8bc4\u7ea7: solid\u3002 \u9a71\u52a8\u56e0\u7d20: earnings \u00b7 insider \u00b7 revisions; quality\u3002 \u6ce8\u610f\u4e8b\u9879: \u80a1\u4ef7\u9ad8\u4e8e\u957f\u671f\u8d8b\u52bf\u7ebf 33%\u3002\u6b64\u4ef7\u4f4d\u4e70\u5165\u5c5e\u4e8e\u8ffd\u9ad8\u3002; \u6240\u5904\u7684\u5e02\u573a\u5468\u671f\u4ecd\u5efa\u8bae\u7b49\u5f85\uff08\u4e0a\u6da8\u8d8b\u52bf\uff09\u3002\u3002 \u53ef\u4fe1\u5ea6: \u4e8b\u4ef6\u9a71\u52a8\u4f18\u52bf\uff1a\u5185\u90e8\u4eba\u4e70\u5165\uff08\u552f\u4e00\u901a\u8fc7 FDR \u7684\u56e0\u5b50\uff09\uff0b\u76c8\u5229\u8d85\u9884\u671f PEAD \u80cc\u666f\uff0b\u8bc4\u7ea7\u8c03\u6574 \u2014 \u7efc\u5408\u53c2\u8003\uff0c\u975e\u72ec\u7acb\u8d85\u989d\u6536\u76ca\u3002 \u4ec5\u4f9b\u5c55\u793a\uff1a\u7531\u56e0\u5b50\u5206\u6570\u673a\u5668\u751f\u6210\uff1b\u65e0\u524d\u77bb\u6536\u76ca\u4fdd\u8bc1\uff1b\u5c55\u793a\u5c42\u7ea7\u8f93\u51fa\u3002",
+  "source_engines": [
+    "us_standouts_buy_lane",
+    "neural_web"
+  ],
+  "trigger": 48.96,
+  "entry": 48.96,
+  "invalidation": 40.58,
+  "targets": [
+    61.53,
+    74.1
+  ],
+  "horizon_days": 45,
+  "min_hold_days": 10,
+  "tranche": 1,
+  "option_contract": null,
+  "stage_tilt": {
+    "leash": 1.0,
+    "eligible": false,
+    "stage_at_entry": 2,
+    "ec_sent": 21.0,
+    "ec_call_date": "2026-04-23",
+    "ec_source_state": "available",
+    "ec_source_path": "data/earnings_calls/history.parquet",
+    "ec_source_tier": "r2_history",
+    "ec_source_generation": {
+      "generation_id": "15014e5cb8d333f597d1fbf0",
+      "published_at": "2026-10-03T06:45:29.177355+00:00",
+      "rows": 50982
+    },
+    "ec_source_reason": null,
+    "bear_gate": false,
+    "provisional": true,
+    "demoted": false,
+    "basis": "PSQ 2026-07-20 quality re-grade; provisional \u2014 forward-shadow checked (~2026-12)"
+  },
+  "management_ref": "prophet/state/IRDM-BULL-20260930.json",
+  "authority_tier": "display",
+  "reliability": {
+    "plan": "display \u2014 us_standouts buy-lane originated; display-only until forward ledger gate passes",
+    "option_premium": "null \u2014 symbol not in ThetaData store"
+  },
+  "formation_date": "2026-09-30",
+  "signal_date": "2026-10-02",
+  "confirmed_date": null,
+  "observed_date": "2026-10-02",
+  "signal_tier": "T1",
+  "signal_date_basis": "tier_event_date",
+  "signal_provisional": true,
+  "source_marker_date": "2026-09-30",
+  "price_basis_date": "2026-10-02",
+  "entry_date": "2026-10-02",
+  "what_to_do_now": [
+    "Wait for a pullback into the $47.70\u2013$48.38 zone before starting. No entry above $48.96; the plan waits at the band rather than paying the last print.",
+    "Keep the first tranche small; there is no need to rush. Exit on a close below $40.58.",
+    "If the zone fills, scale in gradually toward T1 ($61.53)."
+  ],
+  "what_to_do_now_zh": [
+    "\u7b49\u5f85\u4ef7\u683c\u56de\u843d\u81f3 $47.70\u2013$48.38 \u533a\u95f4\u518d\u5efa\u4ed3\u3002\u4e0d\u8981\u5728 $48.96 \u4e4b\u4e0a\u4e70\u5165\uff1b\u8ba1\u5212\u5728\u533a\u95f4\u7b49\u5f85\uff0c\u800c\u975e\u6309\u6700\u65b0\u4ef7\u8ffd\u5165\u3002",
+    "\u9996\u7b14\u4fdd\u6301\u5c0f\u4ed3\u4f4d\uff0c\u65e0\u9700\u6025\u4e8e\u5165\u573a\u3002\u6536\u76d8\u8dcc\u7834 $40.58 \u5373\u79bb\u573a\u3002",
+    "\u82e5\u533a\u95f4\u88ab\u89e6\u53ca\uff0c\u53ef\u9010\u6b65\u52a0\u4ed3\u81f3 T1\uff08$61.53\uff09\u3002"
+  ],
+  "profit_plan": [
+    {
+      "level": 61.53,
+      "label": "T1",
+      "action": "Scale out 40%, trail stop to entry",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 74.1,
+      "label": "T2",
+      "action": "Close remaining 60%, exit full position",
+      "status": "PENDING"
+    }
+  ],
+  "profit_plan_zh": [
+    {
+      "level": 61.53,
+      "label": "T1",
+      "action": "\u51cf\u4ed3 40%\uff0c\u5c06\u6b62\u635f\u4e0a\u79fb\u81f3\u5165\u573a\u4f4d",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 74.1,
+      "label": "T2",
+      "action": "\u5e73\u4ed3\u5269\u4f59 60%\uff0c\u5168\u90e8\u79bb\u573a",
+      "status": "PENDING"
+    }
+  ],
+  "_signal_date": "2026-10-02",
+  "_priority_score": 52.2,
+  "_conviction_score": 35,
+  "_act_level": 1,
+  "_r_unit": 8.38,
+  "_gate_go": false,
+  "admission_class": "patience",
+  "entry_status": "hold",
+  "selection_era": "anticipation-v1-2026-08-08",
+  "entry_basis": {
+    "basis_date": "2026-10-02",
+    "basis_source": "staleness_price_through",
+    "run_asof": "2026-10-03",
+    "lag": 0,
+    "lag_basis": "sessions",
+    "max_lag": 3,
+    "state": "current",
+    "signal_basis_date": "2026-09-30",
+    "signal_lag_sessions": 2,
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "entry_zone": {
+    "schema": "prophet.entry_zone/v1",
+    "low": 47.7,
+    "high": 48.38,
+    "chase_above": 48.96,
+    "pct_from_entry": -1.88,
+    "zone_class": "reset_band",
+    "stance": "wait",
+    "basis": "the 10- and 20-day average band under the last price, from the entry ladder",
+    "basis_zh": "\u6700\u65b0\u4ef7\u4e0b\u65b9\u7684 10 \u65e5\u4e0e 20 \u65e5\u5747\u7ebf\u533a\u95f4\uff0c\u6765\u81ea\u5165\u573a\u9636\u68af",
+    "price_basis_date": "2026-10-02",
+    "expiry_sessions": 30,
+    "expiry_date": "2026-11-13",
+    "conversion_class": "washout",
+    "conversion_evidence": "its group has already sold off hard and is starting to turn",
+    "conversion_evidence_zh": "\u6240\u5c5e\u677f\u5757\u5df2\u7ecf\u6df1\u5ea6\u56de\u843d\uff0c\u5e76\u5f00\u59cb\u8f6c\u5411",
+    "converts_on_expiry": true,
+    "extension": {
+      "daily_stoch_k": 71.72,
+      "htf_stoch_k": 55.11,
+      "daily_extended": false,
+      "htf_extended": false,
+      "both_extended": false,
+      "threshold": 80.0,
+      "htf_timeframe": 3,
+      "source": "price_store_stoch_rsi",
+      "reason": null,
+      "asof": "2026-10-02"
+    },
+    "leader_pullback": {
+      "leader_pullback": false,
+      "state": "RESUMED",
+      "pullback_high": 50.03694152832031,
+      "days_in_state": 10.0,
+      "construction_era": "leader-pullback-v0-2026-08-08",
+      "state_asof": "2026-10-02",
+      "context_states": [
+        "PULLBACK",
+        "RESET_TURN"
+      ],
+      "source": "us_leader_pullback",
+      "reason": "organ state RESUMED is not an open controlled pullback"
+    },
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "early_turn": {
+    "fired": false,
+    "reason": "signature incomplete: from_washed",
+    "timeframes": [],
+    "washout_state": "TURNING",
+    "leader_pullback_source": "us_leader_pullback",
+    "union_fired": false,
+    "union_legs": [
+      "relaxed_cross"
+    ],
+    "union_texture": {},
+    "basket_context_chip": "TURNING"
+  },
+  "government_revenue_annotation": {
+    "contract": "government_revenue.prophet_annotation.v1",
+    "schema_version": "1.0.0",
+    "label": {
+      "en": "shadow context",
+      "zh": "\u5f71\u5b50\u80cc\u666f"
+    },
+    "allowed_behavior": "annotate_only",
+    "authority": {
+      "tier": "display",
+      "context_only": true,
+      "can_rank": false,
+      "can_size": false,
+      "can_gate": false,
+      "can_originate_signal": false,
+      "can_add_candidates": false,
+      "can_escalate": false
+    },
+    "annotations": [
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-303cf2f794248df4bd1c15d7",
+        "observation_id": "gro1-6d01dd4bce07b9f60fb52aa0",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "IRDM",
+        "issuer": {
+          "company_name": "Iridium Communications",
+          "ticker": "IRDM",
+          "issuer_company_id": "central:IRDM",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-2d8194ee21fd13e70086a3a7",
+          "record_id": "award:generated:CONT_AWD_HC101319C0003_9700_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-08-26T00:00:00+00:00",
+          "known_at": "2026-08-28T07:50:14.386742+00:00",
+          "amount_id": null,
+          "amount_value": -19164.27999999374,
+          "amount_units": "usd",
+          "transmission_direction": "possible_negative"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "059ff7bf7ec975ea55106858aedb31b1111d45cefdc08797f16259b6e7eab84f",
+            "aed2471515e80b9a5e8a48047ab5b9a86b7b171e678e93af26a6415d308c9d60",
+            "b93d1260bf3735e93b590709d87608ee8ff2b605669f471c064939adf50fef38",
+            "c8b76c1a0f99ae1784eb7dfd25df70f9e57a6a5fb930fa0627d0a3e9a1f3e2a9",
+            "e2b68863b6695ee362c32f1171150925d290647d6b3f25f04797acae4e9d1945",
+            "f73c64c1920a6b19f640a7363d2c91a9ccdb94770448f0ee39a04c7b99ac9569",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_HC101319C0003_9700_-NONE-_-NONE-",
+            "govws-2d8194ee21fd13e70086a3a7"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:irdm:iridium-communications-inc",
+            "ownership:irdm:iridium-satellite-llc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:irdm-sec-10k",
+            "evidence:irdm-sec-ex21",
+            "evidence:irdm-usaspending-hdgmk3rkngc1",
+            "evidence:irdm-usaspending-hlrbbnms1eb8",
+            "https://api.usaspending.gov/api/v2/awards/CONT_AWD_HC101319C0003_9700_-NONE-_-NONE-/",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:ac77246b4a602b78:aed2471515e80b9a",
+            "usaspending:usaspending-6e0a6267927c4cfc51207f31:award_detail:ac77246b4a602b78:f73c64c1920a6b19"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:ac77246b4a602b78:aed2471515e80b9a",
+            "usaspending:usaspending-6e0a6267927c4cfc51207f31:award_detail:ac77246b4a602b78:f73c64c1920a6b19"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-28T07:50:14.386742+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-28T07:50:14.386742+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-fb88b494e9487b1b20902ca6",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-9cd386041d8b27a08d554759",
+        "observation_id": "gro1-ab2de513e5663ef35295ed28",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "IRDM",
+        "issuer": {
+          "company_name": "Iridium Communications",
+          "ticker": "IRDM",
+          "issuer_company_id": "central:IRDM",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-5887c980d57a145107a49780",
+          "record_id": "award:generated:CONT_AWD_HC101319C0003_9700_-NONE-_-NONE-",
+          "event_type": "deobligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-04-08T00:00:00+00:00",
+          "known_at": "2026-08-28T07:50:14.386742+00:00",
+          "amount_id": null,
+          "amount_value": -19164.28,
+          "amount_units": "usd",
+          "transmission_direction": "possible_negative"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "059ff7bf7ec975ea55106858aedb31b1111d45cefdc08797f16259b6e7eab84f",
+            "b93d1260bf3735e93b590709d87608ee8ff2b605669f471c064939adf50fef38",
+            "c688280e75e4d3d6af2e0894d8b41488180fb2df88977e46afe9685223f40f7a",
+            "c8b76c1a0f99ae1784eb7dfd25df70f9e57a6a5fb930fa0627d0a3e9a1f3e2a9",
+            "e2b68863b6695ee362c32f1171150925d290647d6b3f25f04797acae4e9d1945",
+            "f73c64c1920a6b19f640a7363d2c91a9ccdb94770448f0ee39a04c7b99ac9569",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_HC101319C0003_9700_-NONE-_-NONE-",
+            "govws-5887c980d57a145107a49780"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:irdm:iridium-communications-inc",
+            "ownership:irdm:iridium-satellite-llc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:irdm-sec-10k",
+            "evidence:irdm-sec-ex21",
+            "evidence:irdm-usaspending-hdgmk3rkngc1",
+            "evidence:irdm-usaspending-hlrbbnms1eb8",
+            "https://api.usaspending.gov/api/v2/transactions/",
+            "usaspending:usaspending-6e0a6267927c4cfc51207f31:actions:c8115d6ab9dd738c:c688280e75e4d3d6",
+            "usaspending:usaspending-6e0a6267927c4cfc51207f31:award_detail:ac77246b4a602b78:f73c64c1920a6b19"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-6e0a6267927c4cfc51207f31:actions:c8115d6ab9dd738c:c688280e75e4d3d6",
+            "usaspending:usaspending-6e0a6267927c4cfc51207f31:award_detail:ac77246b4a602b78:f73c64c1920a6b19"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-28T07:50:14.386742+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-28T07:50:14.386742+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-b3a032b0fd9e34c904630c41",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-025ab7cfdb7f9735f0e1e575",
+        "observation_id": "gro1-3d7b619b2e179fb098be83d1",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "IRDM",
+        "issuer": {
+          "company_name": "Iridium Communications",
+          "ticker": "IRDM",
+          "issuer_company_id": "central:IRDM",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-a6c70850a9cbdce9fa3e7f3b",
+          "record_id": "award:generated:CONT_AWD_HC101319C0006_9700_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-05-12T00:00:00+00:00",
+          "known_at": "2026-08-12T23:50:04.442107+00:00",
+          "amount_id": null,
+          "amount_value": 18416666.66,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "059ff7bf7ec975ea55106858aedb31b1111d45cefdc08797f16259b6e7eab84f",
+            "2a07ba19681a3c9d07f69b3316850b4646db48a8075d2ea8375755e112d02bab",
+            "39ddb128a49985cf051e59376d288f8b2cc4322feb57f8396efdf50a215ae339",
+            "ae9fc95e9cd4e6cc470ba11e8839e5202322c53212da409722b0fd5ba7b995df",
+            "b93d1260bf3735e93b590709d87608ee8ff2b605669f471c064939adf50fef38",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_HC101319C0006_9700_-NONE-_-NONE-",
+            "govws-a6c70850a9cbdce9fa3e7f3b"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:irdm:iridium-communications-inc",
+            "ownership:irdm:iridium-government-services-llc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:irdm-sec-10k",
+            "evidence:irdm-sec-ex21",
+            "evidence:irdm-usaspending-s77sw52lcr57",
+            "https://api.usaspending.gov/api/v2/transactions/",
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:actions:1d52f66cfa31a196:2a07ba19681a3c9d",
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:award_detail:f7cb11995cfb1e18:39ddb128a49985cf"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:actions:1d52f66cfa31a196:2a07ba19681a3c9d",
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:award_detail:f7cb11995cfb1e18:39ddb128a49985cf"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-12T23:50:04.442107+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-79882ba6f69e7c7027a7d84b",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-6c6208f162d2b817b676debc",
+        "observation_id": "gro1-b8c93a23456b911e23dcbf03",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "IRDM",
+        "issuer": {
+          "company_name": "Iridium Communications",
+          "ticker": "IRDM",
+          "issuer_company_id": "central:IRDM",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-08-19:defense21-v1",
+          "graph_digest": "93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+        },
+        "procurement_event": {
+          "event_id": "govws-70d45adde3342d5eca8f8014",
+          "record_id": "award:generated:CONT_AWD_HC101319C0006_9700_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-05-12T00:00:00+00:00",
+          "known_at": "2026-08-12T23:50:04.442107+00:00",
+          "amount_id": null,
+          "amount_value": 18416666.659999967,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "059ff7bf7ec975ea55106858aedb31b1111d45cefdc08797f16259b6e7eab84f",
+            "17f15c8b5003d2dd1996e45d3cb973000a10ecb0a1d92745577cc2c94c9984a1",
+            "39ddb128a49985cf051e59376d288f8b2cc4322feb57f8396efdf50a215ae339",
+            "ae9fc95e9cd4e6cc470ba11e8839e5202322c53212da409722b0fd5ba7b995df",
+            "b93d1260bf3735e93b590709d87608ee8ff2b605669f471c064939adf50fef38",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_HC101319C0006_9700_-NONE-_-NONE-",
+            "govws-70d45adde3342d5eca8f8014"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:irdm:iridium-communications-inc",
+            "ownership:irdm:iridium-government-services-llc"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:irdm-sec-10k",
+            "evidence:irdm-sec-ex21",
+            "evidence:irdm-usaspending-s77sw52lcr57",
+            "https://api.usaspending.gov/api/v2/awards/CONT_AWD_HC101319C0006_9700_-NONE-_-NONE-/",
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:award_detail:f7cb11995cfb1e18:39ddb128a49985cf",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:f7cb11995cfb1e18:17f15c8b5003d2dd"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:award_detail:f7cb11995cfb1e18:39ddb128a49985cf",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:f7cb11995cfb1e18:17f15c8b5003d2dd"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-06a7c020729b3b207d0322b2",
+          "queue_known_at": "2026-09-01T02:14:59.461519+00:00",
+          "queue_as_of": "2026-09-01T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-b181f0361d435377388656b1",
+            "recipient-graph:reviewed:2026-08-19:defense21-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:93171ba0e6f7286de02e0918ef85be7db80df3f6b7fd8eb3d47e7e8e4adfa843",
+            "grw2-b181f0361d435377388656b1",
+            "latest-sha256:57005149aca24b4011be2daefd7d64152298fcd7df61f64971eaffe5d831eb5f"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-12T23:50:04.442107+00:00",
+          "graph_known_at": "2026-08-19T05:44:34.128190+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-7e89b660d6e66fa557143957",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      }
+    ]
+  },
+  "context_engines": [
+    "government_revenue_foresight"
+  ]
+}

@@ -1,20 +1,20 @@
 {
   "schema": "calibration_hub.v1",
-  "as_of": "2026-10-02",
+  "as_of": "2026-10-06",
   "desks": [
     {
       "name": "AI Desk",
       "slug": "ai_desk",
-      "scored": 60,
-      "open": 8,
-      "hit_rate": 0.933,
-      "dir_accuracy": 0.65,
-      "null_hit_rate": 0.8986,
-      "null_dir_rate": 0.4913,
-      "p_hit": 0.20868,
+      "scored": 63,
+      "open": 5,
+      "hit_rate": 0.921,
+      "dir_accuracy": 0.651,
+      "null_hit_rate": 0.8858,
+      "null_dir_rate": 0.4926,
+      "p_hit": 0.20056,
       "p_hit_holm": 1.0,
-      "p_dir": 0.00948,
-      "p_dir_holm": 0.047400000000000005,
+      "p_dir": 0.00816,
+      "p_dir_holm": 0.0408,
       "independent_blocks": 4,
       "placebo_coverage": 1.0,
       "placebo_available": true,
@@ -22,42 +22,42 @@
       "placebo_mix_source": "scored",
       "placebo_by_kind": {
         "level": {
-          "n": 3,
-          "null_hit_rate": 0.1701,
-          "null_dir_rate": 0.5329
+          "n": 4,
+          "null_hit_rate": 0.1563,
+          "null_dir_rate": 0.5352
         },
         "rel_return": {
-          "n": 57,
-          "null_hit_rate": 0.9369,
-          "null_dir_rate": 0.4891
+          "n": 59,
+          "null_hit_rate": 0.9353,
+          "null_dir_rate": 0.4898
         }
       },
       "conviction_monotone": null,
-      "conviction_note": "conviction ordering untested \u2014 all 60 calls are single-tier (low 60)",
+      "conviction_note": "conviction ordering untested \u2014 all 63 calls are single-tier (low 63)",
       "conviction_tiers": {
         "high": 0,
         "medium": 0,
-        "low": 60
+        "low": 63
       },
       "regimes": [
         "Goldilocks",
         "Reflation"
       ],
       "health": "unproven",
-      "health_note": "not-falsified 93% vs 90% of these same falsifiers go untriggered by chance (57 rel-return, 3 level; 60 graded, 4 independent windows); direction called right 65% vs 49% by chance \u2014 no separation from its own null (gap +3pp); needs 5pp. conviction ordering untested \u2014 all 60 calls are single-tier (low 60). Direction, not the not-falsified rate, is where this desk's signal would be (p 0.047, though on windows this overlapping that is a lead to follow, not a result)."
+      "health_note": "not-falsified 92% vs 89% of these same falsifiers go untriggered by chance (59 rel-return, 4 level; 63 graded, 4 independent windows); direction called right 65% vs 49% by chance \u2014 no separation from its own null (gap +4pp); needs 5pp. conviction ordering untested \u2014 all 63 calls are single-tier (low 63). Direction, not the not-falsified rate, is where this desk's signal would be (p 0.041, though on windows this overlapping that is a lead to follow, not a result)."
     },
     {
       "name": "Policy Intent",
       "slug": "policy_intent",
-      "scored": 11,
-      "open": 33,
-      "hit_rate": 0.636,
-      "dir_accuracy": 0.364,
-      "null_hit_rate": 0.8173,
-      "null_dir_rate": 0.5155,
-      "p_hit": 0.96754,
+      "scored": 14,
+      "open": 30,
+      "hit_rate": 0.571,
+      "dir_accuracy": 0.357,
+      "null_hit_rate": 0.7743,
+      "null_dir_rate": 0.5015,
+      "p_hit": 0.98277,
       "p_hit_holm": 1.0,
-      "p_dir": 0.9064,
+      "p_dir": 0.91375,
       "p_dir_holm": 1.0,
       "independent_blocks": 1,
       "placebo_coverage": 1.0,
@@ -66,67 +66,67 @@
       "placebo_mix_source": "scored",
       "placebo_by_kind": {
         "rel_return": {
-          "n": 11,
-          "null_hit_rate": 0.8173,
-          "null_dir_rate": 0.5155
+          "n": 14,
+          "null_hit_rate": 0.7743,
+          "null_dir_rate": 0.5015
         }
       },
       "conviction_monotone": null,
-      "conviction_note": "conviction ordering untested \u2014 all 11 calls are single-tier (low 11)",
+      "conviction_note": "conviction ordering untested \u2014 all 14 calls are single-tier (low 14)",
       "conviction_tiers": {
         "high": 0,
         "medium": 0,
-        "low": 11
+        "low": 14
       },
       "regimes": [
         "Goldilocks",
         "Reflation"
       ],
       "health": "inverted",
-      "health_note": "not-falsified 64% vs 82% of these same falsifiers go untriggered by chance (11 graded, 1 independent window); direction called right 36% vs 52% by chance \u2014 the leans point the WRONG WAY; a lenient not-falsified rate cannot rescue that. conviction ordering untested \u2014 all 11 calls are single-tier (low 11)."
+      "health_note": "not-falsified 57% vs 77% of these same falsifiers go untriggered by chance (14 graded, 1 independent window); direction called right 36% vs 50% by chance \u2014 the leans point the WRONG WAY; a lenient not-falsified rate cannot rescue that. conviction ordering untested \u2014 all 14 calls are single-tier (low 14)."
     },
     {
       "name": "Alt-Data Brain",
       "slug": "altdata",
-      "scored": 288,
-      "open": 346,
-      "hit_rate": 0.545,
-      "dir_accuracy": 0.413,
-      "null_hit_rate": 0.7052,
-      "null_dir_rate": 0.5151,
+      "scored": 305,
+      "open": 337,
+      "hit_rate": 0.528,
+      "dir_accuracy": 0.4,
+      "null_hit_rate": 0.7015,
+      "null_dir_rate": 0.5133,
       "p_hit": null,
       "p_hit_holm": null,
       "p_dir": null,
       "p_dir_holm": null,
       "independent_blocks": 2,
-      "placebo_coverage": 0.9896,
+      "placebo_coverage": 0.9902,
       "placebo_available": false,
-      "placebo_note": "reconstructed 285 graded predicates but the track record has 288 \u2014 cannot pair observed outcomes to their nulls",
+      "placebo_note": "reconstructed 302 graded predicates but the track record has 305 \u2014 cannot pair observed outcomes to their nulls",
       "placebo_mix_source": "scored",
       "placebo_by_kind": {
         "rel_return": {
-          "n": 285,
-          "null_hit_rate": 0.7052,
-          "null_dir_rate": 0.5151
+          "n": 302,
+          "null_hit_rate": 0.7015,
+          "null_dir_rate": 0.5133
         }
       },
       "conviction_monotone": null,
-      "conviction_note": "conviction ordering untested \u2014 all 288 calls are single-tier (low 288)",
+      "conviction_note": "conviction ordering untested \u2014 all 305 calls are single-tier (low 305)",
       "conviction_tiers": {
         "high": 0,
         "medium": 0,
-        "low": 288
+        "low": 305
       },
       "regimes": [],
       "health": "inverted",
-      "health_note": "not-falsified 55% vs 71% of these same falsifiers go untriggered by chance (the 285 of 288 graded we could price, 2 independent windows); direction called right 41% vs 52% by chance \u2014 the leans point the WRONG WAY; a lenient not-falsified rate cannot rescue that. conviction ordering untested \u2014 all 288 calls are single-tier (low 288)."
+      "health_note": "not-falsified 53% vs 70% of these same falsifiers go untriggered by chance (the 302 of 305 graded we could price, 2 independent windows); direction called right 40% vs 51% by chance \u2014 the leans point the WRONG WAY; a lenient not-falsified rate cannot rescue that. conviction ordering untested \u2014 all 305 calls are single-tier (low 305)."
     },
     {
       "name": "Divergence Radar",
       "slug": "radar",
-      "scored": 105,
-      "open": 242,
-      "hit_rate": 0.476,
+      "scored": 112,
+      "open": 253,
+      "hit_rate": 0.464,
       "dir_accuracy": 0.286,
       "null_hit_rate": null,
       "null_dir_rate": null,
@@ -151,20 +151,20 @@
         "Goldilocks"
       ],
       "health": "inverted",
-      "health_note": "not-falsified 48% vs no placebo baseline (no graded predicate had enough price history for a placebo sweep); direction called right 29% vs 50% a coin flip \u2014 the leans point the WRONG WAY; a lenient not-falsified rate cannot rescue that. conviction ordering untested \u2014 no calls tiered."
+      "health_note": "not-falsified 46% vs no placebo baseline (no graded predicate had enough price history for a placebo sweep); direction called right 29% vs 50% a coin flip \u2014 the leans point the WRONG WAY; a lenient not-falsified rate cannot rescue that. conviction ordering untested \u2014 no calls tiered."
     },
     {
       "name": "Stock Desk",
       "slug": "stock_desk",
-      "scored": 199,
-      "open": 116,
-      "hit_rate": 0.653,
-      "dir_accuracy": 0.452,
-      "null_hit_rate": 0.7517,
-      "null_dir_rate": 0.5071,
-      "p_hit": 0.99937,
+      "scored": 217,
+      "open": 125,
+      "hit_rate": 0.664,
+      "dir_accuracy": 0.47,
+      "null_hit_rate": 0.7484,
+      "null_dir_rate": 0.5059,
+      "p_hit": 0.99817,
       "p_hit_holm": 1.0,
-      "p_dir": 0.94751,
+      "p_dir": 0.86974,
       "p_dir_holm": 1.0,
       "independent_blocks": 4,
       "placebo_coverage": 1.0,
@@ -173,21 +173,21 @@
       "placebo_mix_source": "scored",
       "placebo_by_kind": {
         "rel_return": {
-          "n": 199,
-          "null_hit_rate": 0.7517,
-          "null_dir_rate": 0.5071
+          "n": 217,
+          "null_hit_rate": 0.7484,
+          "null_dir_rate": 0.5059
         }
       },
       "conviction_monotone": true,
-      "conviction_note": "conviction ordering holds (medium 76% \u2265 low 62%; medium n=38, low n=159)",
+      "conviction_note": "conviction ordering holds (medium 79% \u2265 low 63%; medium n=42, low n=173)",
       "conviction_tiers": {
         "high": 2,
-        "medium": 38,
-        "low": 159
+        "medium": 42,
+        "low": 173
       },
       "regimes": [],
       "health": "inverted",
-      "health_note": "not-falsified 65% vs 75% of these same falsifiers go untriggered by chance (199 graded, 4 independent windows); direction called right 45% vs 51% by chance \u2014 the leans point the WRONG WAY; a lenient not-falsified rate cannot rescue that. conviction ordering holds (medium 76% \u2265 low 62%; medium n=38, low n=159)."
+      "health_note": "not-falsified 66% vs 75% of these same falsifiers go untriggered by chance (217 graded, 4 independent windows); direction called right 47% vs 51% by chance \u2014 the leans point the WRONG WAY; a lenient not-falsified rate cannot rescue that. conviction ordering holds (medium 79% \u2265 low 63%; medium n=42, low n=173)."
     },
     {
       "name": "Demand Chain",
@@ -222,15 +222,15 @@
     {
       "name": "Thematic Desk",
       "slug": "thematic_desk",
-      "scored": 265,
-      "open": 137,
-      "hit_rate": 0.672,
-      "dir_accuracy": 0.449,
-      "null_hit_rate": 0.8386,
-      "null_dir_rate": 0.5073,
+      "scored": 280,
+      "open": 155,
+      "hit_rate": 0.664,
+      "dir_accuracy": 0.446,
+      "null_hit_rate": 0.8367,
+      "null_dir_rate": 0.5082,
       "p_hit": 1.0,
       "p_hit_holm": 1.0,
-      "p_dir": 0.97518,
+      "p_dir": 0.98362,
       "p_dir_holm": 1.0,
       "independent_blocks": 4,
       "placebo_coverage": 1.0,
@@ -239,29 +239,29 @@
       "placebo_mix_source": "scored",
       "placebo_by_kind": {
         "theme_rel_return": {
-          "n": 265,
-          "null_hit_rate": 0.8386,
-          "null_dir_rate": 0.5073
+          "n": 280,
+          "null_hit_rate": 0.8367,
+          "null_dir_rate": 0.5082
         }
       },
       "conviction_monotone": null,
-      "conviction_note": "conviction ordering untested \u2014 only 1 of 3 tiers has 5+ calls (medium 3, low 262)",
+      "conviction_note": "conviction ordering untested \u2014 only 1 of 3 tiers has 5+ calls (medium 4, low 276)",
       "conviction_tiers": {
         "high": 0,
-        "medium": 3,
-        "low": 262
+        "medium": 4,
+        "low": 276
       },
       "regimes": [],
       "health": "inverted",
-      "health_note": "not-falsified 67% vs 84% of these same falsifiers go untriggered by chance (265 graded, 4 independent windows); direction called right 45% vs 51% by chance \u2014 the leans point the WRONG WAY; a lenient not-falsified rate cannot rescue that. conviction ordering untested \u2014 only 1 of 3 tiers has 5+ calls (medium 3, low 262)."
+      "health_note": "not-falsified 66% vs 84% of these same falsifiers go untriggered by chance (280 graded, 4 independent windows); direction called right 45% vs 51% by chance \u2014 the leans point the WRONG WAY; a lenient not-falsified rate cannot rescue that. conviction ordering untested \u2014 only 1 of 3 tiers has 5+ calls (medium 4, low 276)."
     },
     {
       "name": "Narrative Brain",
       "slug": "narrative_brain",
-      "scored": 38,
-      "open": 16,
-      "hit_rate": 0.895,
-      "dir_accuracy": 0.684,
+      "scored": 41,
+      "open": 18,
+      "hit_rate": 0.902,
+      "dir_accuracy": 0.707,
       "null_hit_rate": null,
       "null_dir_rate": null,
       "p_hit": null,
@@ -275,9 +275,9 @@
       "placebo_mix_source": "scored",
       "placebo_by_kind": {},
       "conviction_monotone": null,
-      "conviction_note": "conviction ordering untested \u2014 all 18 calls are single-tier (high 18)",
+      "conviction_note": "conviction ordering untested \u2014 all 19 calls are single-tier (high 19)",
       "conviction_tiers": {
-        "high": 18,
+        "high": 19,
         "medium": 0,
         "low": 0
       },
@@ -285,7 +285,7 @@
         "Reflation"
       ],
       "health": "unproven",
-      "health_note": "not-falsified 90% vs no placebo baseline (no graded predicate had enough price history for a placebo sweep); direction called right 68% vs 50% a coin flip \u2014 cannot promote without a null covering every graded call (no graded predicate had enough price history for a placebo sweep). conviction ordering untested \u2014 all 18 calls are single-tier (high 18)."
+      "health_note": "not-falsified 90% vs no placebo baseline (no graded predicate had enough price history for a placebo sweep); direction called right 71% vs 50% a coin flip \u2014 cannot promote without a null covering every graded call (no graded predicate had enough price history for a placebo sweep). conviction ordering untested \u2014 all 19 calls are single-tier (high 19)."
     },
     {
       "name": "Master Brain",
@@ -294,11 +294,11 @@
       "open": 0,
       "hit_rate": 0.833,
       "dir_accuracy": 0.583,
-      "null_hit_rate": 0.8285,
-      "null_dir_rate": 0.4724,
-      "p_hit": 0.66224,
+      "null_hit_rate": 0.8284,
+      "null_dir_rate": 0.4723,
+      "p_hit": 0.66178,
       "p_hit_holm": 1.0,
-      "p_dir": 0.31327,
+      "p_dir": 0.31305,
       "p_dir_holm": 1.0,
       "independent_blocks": 2,
       "placebo_coverage": 1.0,
@@ -308,8 +308,8 @@
       "placebo_by_kind": {
         "rel_return": {
           "n": 12,
-          "null_hit_rate": 0.8285,
-          "null_dir_rate": 0.4724
+          "null_hit_rate": 0.8284,
+          "null_dir_rate": 0.4723
         }
       },
       "conviction_monotone": null,
@@ -358,9 +358,9 @@
       },
       {
         "family": "entry_radar",
-        "itemized": 239,
+        "itemized": 323,
         "declared": 253,
-        "effective_n": 253
+        "effective_n": 323
       },
       {
         "family": "btc_vector_optimal_phase0",
@@ -1240,7 +1240,7 @@
       }
     ],
     "total_families": 148,
-    "total_effective_n": 3504
+    "total_effective_n": 3574
   },
   "summary_note": "8/9 desk loops live; 1 still cold (windows maturing); 0 promoted to calibrated. A desk is judged against the rate ITS OWN falsifiers go untriggered by chance, not against one-half \u2014 'not falsified' is a lenient endpoint, and most leans clear it without any skill. Display-only \u2014 track records calibrate conviction, never size a position.",
   "standout_tracks": [

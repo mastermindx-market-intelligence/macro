@@ -195,8 +195,10 @@ def ex_self_returns(R: pd.DataFrame) -> pd.DataFrame:
 def vasicek_shrink(beta: pd.Series, w: float = VASICEK_W) -> pd.Series:
     """Vasicek-lite companion (DISPLAY ONLY — never the probe quantity).
 
-    Mirrors ``engine/cn_global_beta._shrink``. Shrinkage compresses cross-sectional dispersion
-    and would overstate H3 stability by construction, so H1/H2/H3 all key on the raw beta.
+    Mirrors ``engine/cn_global_beta._shrink``. At the common weight 0.66, shrinkage
+    compresses cross-sectional dispersion but preserves ranks and ties in exact arithmetic
+    on identical observations; it does not inflate H2/H3 Spearman statistics.
+    H1/H2/H3 retain the preregistered raw beta. See the append-only W2 report erratum.
     """
     if w is None or w >= 1.0:
         return beta
