@@ -24,6 +24,11 @@ on:
         required: false
         type: boolean
         default: false
+      research_cross_session_controls:
+        description: "research-only: measure frozen selected U.S. control legs, no store writes"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -36,7 +41,7 @@ jobs:
   bars:
     # VPS bars use /var/lib/macro-live/data/intraday and never mutate repo data.
     # Manual dispatch remains available if the VPS lane is unhealthy.
-    if: ${{ (github.event_name == 'workflow_dispatch' || vars.VPS_LIVE_PRIMARY != 'true') && github.event.inputs.research_cross_session_us != 'true' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || vars.VPS_LIVE_PRIMARY != 'true') && github.event.inputs.research_cross_session_us != 'true' && github.event.inputs.research_cross_session_controls != 'true' }}
     runs-on: [self-hosted, macstudio-light]   # light runner — hourly ~2.5m bar accrual must not queue behind the heavy pool
     timeout-minutes: 20
     steps:
@@ -126,5 +131,85 @@ jobs:
         with:
           name: prospective-us-measurements
           path: prospective-us-measurements.json
+          if-no-files-found: error
+          retention-days: 14
+
+
+  research-cross-session-controls:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.research_cross_session_controls == 'true' }}
+    runs-on: [self-hosted, macstudio-light]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: python 3.12
+        run: |
+          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
+          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
+          echo "$VENV/bin" >> "$GITHUB_PATH"
+          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - run: pip install -r requirements.txt
+      - name: measure frozen prior U.S. controls only
+        env:
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          from scripts.research import capture_cross_session_transfer as capture
+
+          source_path = Path("research/CROSS_SESSION_PROSPECTIVE_SOURCE_ADMISSIONS_2026-10-05.json")
+          controls_path = Path("research/CROSS_SESSION_PROSPECTIVE_MATCHED_CONTROLS_2026-10-05.json")
+          sources = json.loads(source_path.read_text(encoding="utf-8"))
+          controls_doc = json.loads(controls_path.read_text(encoding="utf-8"))
+          admission_by_id = {row["event_id"]: row for row in sources["events"]}
+
+          rows = []
+          for controls in controls_doc["controls"]:
+              selected = controls["prior"]
+              if selected.get("status") != "SELECTED":
+                  continue
+              admission = admission_by_id[controls["event_id"]]
+              measured = capture.measure_control_us_response(
+                  admission,
+                  controls,
+                  side="prior",
+              )
+              if measured.get("hk_outcome_state") != "NOT_READ_BY_THIS_HARNESS":
+                  raise SystemExit("HK outcome firewall violated")
+              rows.append(measured)
+
+          out = {
+              "schema": "research.cross_session_prospective_control_us_measurements.v1",
+              "source_admission_sha256": hashlib.sha256(source_path.read_bytes()).hexdigest(),
+              "controls_sha256": hashlib.sha256(controls_path.read_bytes()).hexdigest(),
+              "github_sha": os.environ["GITHUB_SHA"],
+              "control_side": "prior",
+              "hsi_outcomes_read": False,
+              "vendor_bars_persisted": False,
+              "measurements": rows,
+          }
+          Path("prospective-prior-control-us-measurements.json").write_text(
+              json.dumps(out, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps([
+              {
+                  "event_id": row["event_id"],
+                  "control_date": row["control_date"],
+                  "control_anchor_at": row["control_anchor_at"],
+                  "primary_v1_bps": row["primary_v1"]["return_bps"],
+                  "challenger_v1_1_bps": row["challenger_v1_1"]["return_bps"],
+                  "hk_outcome_state": row["hk_outcome_state"],
+              }
+              for row in rows
+          ], indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prospective-prior-control-us-measurements
+          path: prospective-prior-control-us-measurements.json
           if-no-files-found: error
           retention-days: 14
