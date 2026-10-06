@@ -140,7 +140,7 @@ waves:
         Seat role per Sol issuecomment-5991567681: C3 integration/acceptance only. ChatGPT product
         gate: Business cannot refresh a published app in place, so a fresh custom MCP app is
         recreated and republished on the existing tunnel/OAuth resource with the then-installed tool
-        inventory (installed V3 1.4.0 = 10 tools today; protected master 7c12c394 carries #1251 → 1.5.0 / 11 tools after the next install, so the recreate waits for that install receipt), admin acknowledgement
+        inventory (installed V3 1.4.0 = 10 tools today; protected master a6d40ff6 carries #1251 → V3 1.5.0 with 11 spec tools plus the host-configured session_reply_read from executive_mcp_entry, i.e. 12 published actions expected after the next install per the writer census v3-1.5-tool-census.json sha256 d7c5395e… (Mastermind #1143 issuecomment-6012064580); the recreate waits for that install receipt and accepts only a 12-action scan), admin acknowledgement
         and Auth0 entry all human (issuecomment-5984271681); first acceptance read-only in a new
         conversation. Remote Control toggle for this seat's session only if a Claude-native child
         is ever the canary target. The draft product slice (render EFFECT_UNKNOWN roots distinctly)
