@@ -924,15 +924,11 @@ The next study should freeze the hypothesis before reading future outcomes and a
 
 # 16. NVDA had an earlier “important but not enterable” state
 
-The full v3 board ledger contains an earlier NVDA sequence that is directly relevant to the proposed Emergence / Research-Attention head.
+The graded v3 H5 board ledger contains an earlier NVDA sequence that is directly relevant to the proposed Emergence / Research-Attention head.
 
-NVDA appeared on the **watch** lane on:
+In that **graded** ledger, NVDA appeared on the watch lane on Sep-08, Sep-09 and Sep-10 with the same two-evidence pattern described below. A later raw-Git board reconstruction extends the visible episode earlier: the first preserved >=2-evidence watch snapshot is **Sep-04**. Therefore Sep-08 is a grading-store boundary, not the true start of the research-attention episode.
 
-- 2026-09-08;
-- 2026-09-09;
-- 2026-09-10.
-
-Across all three dates:
+Across the graded Sep-08 to Sep-10 observations:
 
 - lane: `watch`;
 - state: `HOLD`;
@@ -1165,16 +1161,58 @@ But it is enough to establish a useful research question:
 
 That is a much better objective for early research attention than five-day return from the first watch stamp.
 
+
+## 20.2 Matched conversion study: emergence appears to buy lead time, not immediacy
+
+A raw historical-board reconstruction through Sep-25 was used to avoid the H5 grade ledger's censoring.
+
+Construction:
+
+- one latest preserved `us_standouts.json` snapshot per board `as_of` date;
+- v3 window: Aug-17 through Sep-25;
+- emergence event: first watch-lane snapshot for a ticker carrying >=2 of the legacy evidence legs (`news_burst`, nonzero `sue_z`, smart-money `new/add`);
+- confirmation event: a later T1/T2 technical tier;
+- same-date controls: other watch-lane names with <2 evidence legs on the emergence date;
+- windows measured in observed board sessions, not calendar days.
+
+The result is **not** an immediate-conversion rule:
+
+- within 3 sessions: 0/18 emergence events converted;
+- within 5 sessions: 1/18 converted;
+- within 10 sessions: 3/14 converted = **21.4%**, versus mean same-date control conversion ~**6.1%**;
+- within 11 sessions: 3/13 converted = **23.1%**, versus mean same-date controls ~**5.7%**;
+- within 12 sessions: 3/13 converted = **23.1%**, versus mean same-date controls ~**7.1%**.
+
+At 11 sessions, the three converted names were:
+
+- FORM: Sep-03 watch emergence -> Sep-11 T2 buy, 5 observed board sessions;
+- PWR: Sep-04 watch emergence -> Sep-21 T1 buy, 9 sessions;
+- NVDA: Sep-04 watch emergence -> Sep-23 T1 `buy_now`, 11 sessions.
+
+This is a small, selected, right-censored study. It is not production evidence.
+
+But it falsifies the idea that the emergence layer should be judged on 3-5 day actionability.
+
+The more plausible product objective is:
+
+> **identify unresolved candidates early enough that the system can preserve and research them for 1-3 weeks, then let the independent ignition / Entry Availability owners decide when action becomes valid.**
+
+That is exactly what the NVDA episode required.
+
 ## 20.1 NVDA is the strongest golden transition
 
-NVDA's raw-board progression after the early watch state was:
+NVDA's raw-board progression after the early watch state includes:
 
+- Sep-04: **watch / await_confluence**, first preserved >=2-evidence watch snapshot in the raw Git reconstruction;
+- Sep-08 to Sep-10: watch / unresolved in the graded H5 ledger;
 - Sep-18: watch / await_confluence / HOLD;
 - Sep-21: watch / await_confluence / FRESH BUY;
 - Sep-22: watch / await_confluence / FRESH BUY;
 - Sep-23: **buy / T1 / buy_now**;
 - Sep-24: watch / T3 / extended;
 - Sep-25: **buy / T2 / partial**.
+
+From the Sep-04 preserved emergence snapshot to the Sep-23 T1 buy state is **11 observed board sessions** in the reconstructed board history.
 
 This demonstrates why a durable opportunity episode should not disappear when one nightly gate changes.
 
