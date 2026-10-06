@@ -816,6 +816,20 @@ def _assert_state_matches_bundle(state: dict, bundle: OwnerBundle) -> tuple:
     return snapshot, native, dispositions
 
 
+def compose_state_only_from_owner_bundle(bundle: OwnerBundle, *, generated_at: str, previous=None) -> dict:
+    """theme_state/v1 only (seat ruling G1-RC1, 2026-10-06): the same snapshot, clock guard,
+    assembly and compose_state call as compose_from_owner_bundle, without the legacy
+    baseline/projection/shadow comparison. Byte-equal to compose_from_owner_bundle(...)["state"]
+    (pinned by tests/test_build_thematic_state_shadow_graph_state.py)."""
+    snapshot = bundle.snapshot()
+    _clock(generated_at, precise=True)
+    if _clock(generated_at, precise=True) < _clock(snapshot["observed_at"], precise=True):
+        raise ValueError("generation emission precedes actual owner capture")
+    inputs, generations, _native_observations, _dispositions = _assemble_from_bundle(snapshot)
+    return theme_state.compose_state(inputs, graph_generation_id=snapshot["graph_capture_id"], owner_generations=generations,
+                                     **snapshot["query"], generated_at=generated_at, previous=previous)
+
+
 def compose_from_owner_bundle(bundle: OwnerBundle, *, generated_at: str, previous=None) -> dict:
     snapshot = bundle.snapshot()
     _clock(generated_at, precise=True)

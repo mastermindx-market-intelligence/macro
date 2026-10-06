@@ -5752,6 +5752,11 @@ jobs:
       # zero jobs, uncancellable. The budget test reds growth before the cap.
       - name: workflow file size stays under GitHub's silent processing cap
         run: python -m pytest tests/test_workflow_file_size.py -q
+      # Gate #8 (seat ruling G1-RC1, 2026-10-06): the GMI graph shadow theme_state
+      # step stays in oracle_offrender (off-render, bounded, continue-on-error) and
+      # never moves into the engine job's render budget.
+      - name: GMI graph shadow-state step pin (oracle_offrender)
+        run: python -m pytest tests/test_daily_graph_shadow_state_step.py -q
       # Same incident, other half. The size guard stops daily.yml being stranded
       # AGAIN; this one notices when the nightly stops producing runs for ANY
       # reason — strand, cancellation, or a green run that never advances the

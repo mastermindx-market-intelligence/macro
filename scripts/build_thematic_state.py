@@ -15,6 +15,7 @@ Runs AFTER build_foresight and build_baskets steps in the engine lane.
 
 Usage:
     python -m scripts.build_thematic_state [--root /path/to/repo]
+    python -m scripts.build_thematic_state --mode GRAPH_SHADOW_STATE   # gate #8 shadow only
 """
 from __future__ import annotations
 
@@ -44,9 +45,27 @@ _DATA_PATH = "data/neuralweb/theme_state.json"
 _SITE_PATH = "site/neuralwebdata/theme_state.json"
 _HISTORY_PATH = "data/neuralweb/theme_phase_history.jsonl"
 _SHADOW_GRAPH_STATE_PATH = "data/theme_graph/shadow_theme_state.v1.json"
+# Seat ruling G1-RC1 (2026-10-06): the graph theme_state/v1 shadow for the
+# selection_cohort_reads owner is its own narrow mode, run off-render
+# (daily.yml oracle_offrender), never inside LEGACY / the engine job.
+_GRAPH_SHADOW_STATE_MODE = "GRAPH_SHADOW_STATE"
+
+
+def _peak_rss_mib() -> str:
+    try:
+        import resource
+
+        peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        return f"{peak / (1024 * 1024 if sys.platform == 'darwin' else 1024):.0f}"
+    except Exception:  # noqa: BLE001 - telemetry only
+        return "na"
 
 
 def _write_shadow_graph_state(root: Path, generated_at: str | None) -> bool:
+    """Capture -> state-only compose -> validate -> atomic write of the shadow ONLY.
+
+    Fail-open: any failure prints one ::warning and leaves the prior shadow untouched.
+    """
     from datetime import datetime, timezone
 
     from engine.neuralweb import theme_state_adapter as adapter
@@ -65,7 +84,7 @@ def _write_shadow_graph_state(root: Path, generated_at: str | None) -> bool:
 
         phase_started = time.perf_counter()
         emitted_at = generated_at or datetime.now(timezone.utc).isoformat()
-        state = adapter.compose_from_owner_bundle(bundle, generated_at=emitted_at)["state"]
+        state = adapter.compose_state_only_from_owner_bundle(bundle, generated_at=emitted_at)
         compose_s = time.perf_counter() - phase_started
 
         phase_started = time.perf_counter()
@@ -98,7 +117,8 @@ def _write_shadow_graph_state(root: Path, generated_at: str | None) -> bool:
             + " "
             + (f"serialize_s={serialize_s:.3f}" if serialize_s is not None else "serialize_s=na")
             + " "
-            + (f"bytes={len(raw)}" if raw is not None else "bytes=na"),
+            + (f"bytes={len(raw)}" if raw is not None else "bytes=na")
+            + f" peak_rss_mib={_peak_rss_mib()}",
             flush=True,
         )
 
@@ -127,8 +147,13 @@ def build(root: Path, *, mode: str = "LEGACY", bundle=None,
     from engine.neuralweb import theme_state_generation as generation
     root = Path(root)
     try:
-        if mode not in {"LEGACY", "SHADOW", "SUCCESSOR"}:
+        if mode not in {"LEGACY", "SHADOW", "SUCCESSOR", _GRAPH_SHADOW_STATE_MODE}:
             raise generation.GenerationUnavailable("UNKNOWN_SOURCE_MODE")
+        if mode == _GRAPH_SHADOW_STATE_MODE:
+            # Shadow only: no legacy entry preflight/CAS/compose/history, no optional stages.
+            written = _write_shadow_graph_state(root, generated_at)
+            print(f"[thematic_state] shadow_graph_state={'written' if written else 'skipped'}", flush=True)
+            return 0
         # Immutable entry preflight before ANY directory, temporary or output.
         entry = generation.entry_preflight(root, legacy_api=True)
         if mode != "LEGACY":
@@ -174,12 +199,7 @@ def build(root: Path, *, mode: str = "LEGACY", bundle=None,
             from engine.neuralweb.thematic_state import _ledger_advance_enabled
             if _ledger_advance_enabled() and (tail or not entry["history_exists"]):
                 generation.write_atomic(root, _HISTORY_PATH, entry["history"].raw + tail)
-        print(
-            f"[thematic_state] legacy accepted; phase_history +{n_rows if _ledger_advance_enabled() else 0}",
-            flush=True,
-        )
-        shadow_written = _write_shadow_graph_state(root, generated_at)
-        print(f"[thematic_state] shadow_graph_state={'written' if shadow_written else 'skipped'}", flush=True)
+        print(f"[thematic_state] legacy accepted; phase_history +{n_rows if _ledger_advance_enabled() else 0}", flush=True)
         return 0
     except Exception as exc:
         log.error("ThemeState unaccepted: %s", exc)
@@ -228,7 +248,8 @@ def main() -> None:
         "--root", default=None,
         help="Repo root path (default: inferred from script location)",
     )
-    parser.add_argument("--mode", choices=("LEGACY", "SHADOW", "SUCCESSOR"), default="LEGACY")
+    parser.add_argument("--mode", choices=("LEGACY", "SHADOW", "SUCCESSOR", _GRAPH_SHADOW_STATE_MODE),
+                        default="LEGACY")
     args = parser.parse_args()
     root = Path(args.root).resolve() if args.root else _REPO_ROOT
     code = build(root, mode=args.mode)
