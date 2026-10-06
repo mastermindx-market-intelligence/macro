@@ -210,7 +210,8 @@ def snapshot(f: pd.DataFrame) -> dict | None:
         "move": _r(_f(f, "move").iloc[-1] if _f(f, "move") is not None else None, 0),
     }
 
-    snap = {"as_of": str(f.index[-1].date()), "drivers_now": drv_now, "assets": assets,\n            "interpretation_scope": "contemporaneous_association_not_lead_or_causal_effect"}
+    snap = {"as_of": str(f.index[-1].date()), "drivers_now": drv_now, "assets": assets,
+            "interpretation_scope": "contemporaneous_association_not_lead_or_causal_effect"}
     snap["verdict_en"], snap["verdict_zh"] = _verdict(snap)
     return snap
 
