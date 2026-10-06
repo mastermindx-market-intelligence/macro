@@ -168,6 +168,8 @@ Read and preserve:
 
 - `research/prophet_v4/PROPHET_EMERGENCE_CONVERSION_PREREG_2026-10-06.md`
 - `research/prophet_v4/B03_EMERGENCE_RESEARCH_ATTENTION_EXECUTION_PACKET_2026-10-06.md` — owner-safe implementation shape for the lossless early-opportunity field; docs-only, no implementation authority
+- `research/prophet_v4/A2_ALERT_PLAN_FRESHNESS_CONSISTENCY_EXECUTION_PACKET_2026-10-06.md` — existing A2 settlement/freshness repair shape for stale-alert vs plan-provenance consistency
+- `research/prophet_v4/PROPHET_MANAGEMENT_MISSING_BAR_REPLAY_EXECUTION_PACKET_2026-10-06.md` — existing management-owner repair shape for historical first-cross/MFE/MAE replay
 
 It freezes H-EMERGENCE-CONVERSION with a **12 observed board-session** primary conversion endpoint.
 
