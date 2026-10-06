@@ -8,14 +8,16 @@ GEN2: `2026-10-06T13:27:04Z` nightly / observed / belief_time `2026-10-06`
 DATA_COMMIT (natural): `f9ccad3e50f671499893f8113ba96ae2910ab5e7`  
 RUN_ID: `37404125352` / ENGINE_JOB_ID: `112118780036` / TRIGGER_COMPUTED_AT: `2026-10-06T13:27:04Z`  
 lane host/model (Phase 2): Cursor/Grok bounded fabric builder — META-CEO commission repair round `r2`  
-written-at UTC: `2026-10-06T15:05:00Z`  
-repair round: `r1d` (Phase 1 harness); `r2` (Phase 2 natural receipt + PIT readers at PIN2); `r2b` (N5 probe + verdict composition)
+written-at UTC: `2026-10-06T15:35:00Z`  
+repair round: `r1d` (Phase 1 harness); `r2` (Phase 2 natural receipt + PIT readers at PIN2); `r2b` (N5 probe + verdict composition); `r2c` (P3 review fixes)
 
 **Round r1b (repair) — harness corrections by orchestrator E:** D1 materializes `data/reference/security_master.parquet` so R1.B/R2 are not run against a degraded guard. D5 moves MarketOntology half-B docket tests to non-gating R1.X and limits R1.F to theme-graph rights tests. D6 censuses `evidence.source_ref` only via `family_for_source_ref`. D7 treats `site/factordata/us_standouts.json` as intentionally unmapped (PASS when `None`).
 
 **D1 (r1d):** C5/V3 restored to the R-A7 newest-generation population (direct `identity_resolution.parquet` read at `max(computed_at)`, not `store.read_identity_resolution(latest=True)`).
 
 **Round r2b (repair) — harness corrections by seat orchestrator E:** D8 N5 probe amended: GitHub job logs render `::group::` as `##[group]`; probe now matches both forms. D9 round r2 composed PHASE-2/D2E from the first HOLD (N5) although FAIL rows (R1.A, R3.2) existed; rule takes the first FAIL row first.
+
+**Round r2c (repair) — harness corrections by seat orchestrator E:** D10 P3 adversarial review fixes — B1 GEN1 capability generations 53; B2 phase-2 V2/V3 re-measured at GEN2; B3 R1.D CN-panel hydration artifact; M1 R1.A-CI is gate: data (data-health.yml), not a ci.yml pack; M2 pin/head note; m1–m4.
 
 ## §1 VERDICT
 
@@ -33,10 +35,10 @@ ROUTED (non-gating): R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger
 | R0.3 | No overlapping D2E carrier | commission §2 | `gh pr list --search D2E` | Open hit #8324 blueprint only (not D2E acceptance) | PASS | — | — |
 | R0.4 | Owner-action authority #8507 | commission §2 | `gh pr view 8507`; `git grep OWNER_ACTION…` | `state=MERGED`; mergeCommit=`cbfa20a45d8401f1cf1cc9fc48155455f1d612fb`; grep≥1 | PASS | — | — |
 | R1.A | D2A identity resolution | D2A | `pytest` identity_resolution + identity | `3 failed, 118 passed in 5.09s`<br>`tests/test_theme_graph_identity_resolution.py::test_the_committed_graph_carries_exactly_2806_company_nodes`<br>`E       assert 2807 == 2806`<br>`tests/test_theme_graph_identity_resolution.py::test_every_company_node_gets_a_row`<br>`E       assert 2807 == 2806`<br>`tests/test_theme_graph_identity_resolution.py::test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parquet`<br>`E       AssertionError: assert 'co:us:VMRK' not in {...}` | FAIL | seat (PR #8544) | PR #8544 (branch claude/gmi-vmrk-duplicate-mint-20261006; seat-accepted frozen P-R1A: merge rename re-mint co:us:VMRK into co:us:EQR + D2A re-pin under DEC-THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE) — seat merges #8544, then ONE #8540 re-measure round at PIN3 = origin/main after #8544 re-runs R1.A, R3.2, R1.B–F, R2, C1–C7 |
-| R1.A-CI | D2A suite vs main CI (informational) | fail-open probe | `legacy-jobs.yml` step owner `unrun-intl-libraries`; main `ci.yml` run 37445075780 ci-pack-10 logs | `Selected jobs: signal-gate-pair-coherence, path-prune-lint, cycle-grading-stats, prophet-lab, china-native-collectors, china-search-universe, cn-standout-audit, qledger-cluster-honest-ci, design-governance, hk-context-chips, metab-throttle-ux, ric-w2-surface, unrun-brain-desks, unrun-dark-guards, zh-filing-term, options-nbbo-cohort, product-experience-capture, options-skew-engine` (no `unrun-intl-libraries`; no log line for `test_theme_graph_identity_resolution`) | INFO | — | — |
+| R1.A-CI | D2A data lane (INFO) | informational | `data-health.yml` run list | run `37407802317` (`event=workflow_run`, `headSha=2d3ab1e087a07d63b6dcf8c4682c7541c5386b73`, `conclusion=failure`) failing on `unrun-intl-libraries` D2A step | INFO | — | clears with R1.A |
 | R1.B | D2B lifecycle hostile matrix | D2B | `pytest` test_theme_graph_lifecycle.py | `26 passed in 2.43s` | PASS | — | — |
 | R1.C | D2C PIT vintage | D2C #8432 | `pytest` basket PIT + membership + gmi_history | `143 passed, 14 warnings in 2.98s` | PASS | — | — |
-| R1.D | D2D ontology/probation | D2D #8435 | `pytest` crosswalk + local_plane + structural + exposure | `575 passed, 1 skipped in 10.40s`; skips: 1 (reasons in Appendix A) | PASS | — | — |
+| R1.D | D2D ontology/probation | D2D #8435 | `pytest` crosswalk + local_plane + structural + exposure | `575 passed, 1 skipped in 10.40s`; skips: 1 (reasons in Appendix A); the 1 skip was a lane-checkout hydration artifact (CN panel tracked in git) — re-measured with the panel hydrated at PIN2 in r2c, see §6 R1.D | PASS | — | — |
 | R1.E | Materialize + contracts | store contract | `pytest` materialize + contracts | `132 passed in 6.65s` | PASS | — | — |
 | R1.F | Rights tests (theme graph) | rights gate | `pytest` rights_use + theme_sources | `30 passed in 0.72s` | PASS | — | — |
 | R1.X | MarketOntology half-B rights docket | F00C ledger (non-gating) | `pytest` half_b docket | `3 failed, 16 passed in 0.53s`<br>`tests/test_market_ontology_half_b_rights_docket.py::test_blocked_on_quotes_the_ledger_verbatim`<br>`E           AssertionError: MO-PAID-019: 'one issuer page joining >=2 module streams...' not in '...unified capital-markets tape journey...'` | FAIL-INFO | MarketOntology CEO A (F00C closure-ledger writer; ledger last changed by #8425/#8465/#8496) | reconcile `tests/test_market_ontology_half_b_rights_docket.py` (EXPECTED_DISPOSITION_CENSUS, docket rows) with the F00C closure ledger CSV as amended by records waves #8425/#8465/#8496, or restore those ledger rows; re-run `TZ=UTC PY -m pytest -q tests/test_market_ontology_half_b_rights_docket.py` |
@@ -44,7 +46,7 @@ ROUTED (non-gating): R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger
 | C1 | Lifecycle standing | D2B3 §3 | pandas `node_lifecycle.parquet` | GOLD retired 2025-12-02 identity_break; IBIT retired entity_type_conflict | PASS | — | — |
 | C2 | GOLD edge closure | D2B3 §4 | pandas GOLD `MEMBER_OF` beliefs | latest `valid_to=2025-12-02`; 2 beliefs; current gold_miners excludes GOLD | PASS | — | — |
 | C3 | IBIT refusal fence | D2B3 §6 | pandas IBIT + `_meta` refusals | annulled MEMBER_OF; IBIT refusal present; live `co:us:IBIT` MEMBER_OF=0 | PASS | — | — |
-| C4 | Retired-consistency | D2B3 §12 | retired vs live MEMBER_OF | `violations: 0` | PASS | — | — |
+| C4 | Retired-consistency | D2B3 §12 | retired vs live MEMBER_OF | `violations: 0 (7798 live MEMBER_OF edges, 2 retired nodes, 0 offenders)` | PASS | — | — |
 | C5 | Identity sidecar R-A2 | D2B3 §13 | `identity_resolution.parquet` NEWEST gen | US 1237: RESOLVED 1211, NOT_IN_MASTER 25, DEFERRED 1 (`co:us:B`), ENTITY_TYPE_CONFLICT 0; RESOLVED share 0.978981; all-scope NEWEST 2805 = `_meta.identity_resolution_state_counts` sum | PASS | — | — |
 | C6 | Generation provenance P1 | receipt timing | `merge-base` vs DATA_COMMIT | `0b1fe887 rc=1`; `79b566f5 rc=1`; seat fact: gen predates D2C/D2D merges | HOLD | seat | natural receipt on a main containing D2C+D2D pending — Phase 2 |
 | C7 | Nightly `_meta` history | informational | `git log -5` `_meta.json` | 5/5: `node_lifecycle>=2` and IBIT refusal | PASS | — | — |
@@ -72,7 +74,7 @@ ROUTED (non-gating): R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger
 
 **C3 — IBIT:** latest MEMBER_OF belief annulled (`valid_to=valid_from=2023-05-09`). `_meta.company_mint_refusals`: IBIT / etf_conflict / etf:IBIT. `etf:IBIT` present; two live TRACKS edges; live `co:us:IBIT` MEMBER_OF count 0.
 
-**C4 — retired-consistency:** 0 live MEMBER_OF edges whose src latest lifecycle is retired.
+**C4 — retired-consistency:** violations: 0 (7798 live MEMBER_OF edges, 2 retired nodes, 0 offenders).
 
 **C5 — identity sidecar (NEWEST `computed_at=2026-10-06T08:07:42Z`, R-A7 population):** US-scope (`market_scope==us`) denominator 1237 — RESOLVED 1211, NOT_IN_MASTER 25, DEFERRED_IDENTITY_EXCEPTION 1 (`co:us:B`), ENTITY_TYPE_CONFLICT 0; RESOLVED share 0.978981 (threshold 0.97896). All-scope NEWEST sum=2805 matches `_meta.identity_resolution_state_counts` (`DEFERRED_IDENTITY_EXCEPTION` 1, `NOT_IN_MASTER` 195, `RESOLVED` 2376, `UNSUPPORTED_MARKET` 233). Latest-row-per-node view 2807 carries two fossils not in the newest generation: `co:us:GOLD` (2026-08-21T11:48:22Z, DEFERRED_IDENTITY_EXCEPTION) and `co:us:IBIT` (2026-08-22T04:50:43Z, ENTITY_TYPE_CONFLICT). vs the R-A2 frozen expectation 1,236 = 1,210/25/1/0 the newest generation carries +1 RESOLVED, which is `co:us:VMRK` (see R1.A).
 
@@ -115,7 +117,7 @@ None refs (verbatim): `gmi:entity_type_conflict:co:us:IBIT` (`evidence_id=ev:4d8
 
 **V1 nodes (denominator 3882):** co:us 1239, co:cn 1021, ltheme 644, basket 358, co:ca 167, co:intl 233, co:hk 147, etf 55, theme 18.
 
-**V2 capability:** 52 generations in file; NEWEST generation rows 643 = measurement_candidate 505 + semantic_only 138. `len(store.read_capability())` = 644 = 643 newest + 1 carried `ltheme:ths:309263` (`semantic_only`, `computed_at` 2026-08-22T04:50:43Z).
+**V2 capability:** 34061 rows / 53 generations in file; NEWEST generation rows 643 = measurement_candidate 505 + semantic_only 138. `len(store.read_capability())` = 644 = 643 newest + 1 carried `ltheme:ths:309263` (`semantic_only`, `computed_at` 2026-08-22T04:50:43Z).
 
 **V3 identity:** NEWEST generation rows 2805 (state sum 2805); `_meta.counts.identity_resolution` 2807 = 2805 newest + 2 carried nodes; parquet file 154270 rows over 55 generations; `_meta.rows_appended.identity_resolution` 2805.
 
@@ -150,7 +152,7 @@ None refs (verbatim): `gmi:entity_type_conflict:co:us:IBIT` (`evidence_id=ev:4d8
 | R1.A-CI | D2A data lane (INFO) | informational | `data-health.yml` run list | run `37407802317` failure on `unrun-intl-libraries` D2A step (seat evidence) | INFO | — | clears with R1.A |
 | R1.B | D2B lifecycle | D2B | `pytest test_theme_graph_lifecycle.py` | `26 passed in 2.49s` | PASS | — | — |
 | R1.C | D2C PIT | D2C | basket PIT pytest bundle | `143 passed, 14 warnings in 3.01s` | PASS | — | — |
-| R1.D | D2D ontology | D2D | crosswalk/local_plane/structural/exposure | `575 passed, 1 skipped in 10.38s` | PASS | — | — |
+| R1.D | D2D ontology | D2D | crosswalk/local_plane/structural/exposure | `576 passed in 10.14s` | PASS | — | — |
 | R1.E | Materialize/contracts | store | materialize + contracts pytest | `132 passed in 6.87s` | PASS | — | — |
 | R1.F | Rights | rights | rights_use + theme_sources | `30 passed in 0.70s` | PASS | — | — |
 | R1.X | MO half-B docket | non-gating | half_b_rights_docket pytest | `3 failed, 16 passed in 0.49s` | FAIL-INFO | MarketOntology CEO A | reconcile docket vs F00C closure ledger CSV |
@@ -161,7 +163,7 @@ None refs (verbatim): `gmi:entity_type_conflict:co:us:IBIT` (`evidence_id=ev:4d8
 | R3.1 | Registry | rights | `theme_sources.yml` | finviz/ths `internal_only`; all families have `rights_class` | PASS | — | — |
 | R3.2 | Source-ref census | display tier | `family_for_source_ref` on evidence | 22 rows / 17 refs; 2 `None` without recorded fail-closed grep hit | FAIL | seat (PR #8544) | PR #8544 (seat-accepted frozen P-R3.2: rights registry entries for the correction source_refs; orchestrator gate 4 on #8544 = 23 evidence rows / 18 refs / None 0) — re-measured in the same PIN3 round |
 | R3.3 | Spot checks | #8499 | two spot calls + `rights.py` 70–72 | probation → `mastermind_curated`; us_standouts → `None` intentional | PASS | — | — |
-| V1–V7 | Coverage census | steps 4–5 | probes @ GEN2 | reconcile PASS (V2 capability 644; V3 2805/2807) | PASS | — | — |
+| V1–V7 | Coverage census | steps 4–5 | probes @ GEN2 | reconcile PASS (V2 capability 644 / 34704 file rows / 54 generations; V3 2805/2807 / 157075 file rows / 56 generations) | PASS | — | — |
 
 **Ancestry (Phase 2):** `CHECKOUT_SHA` = `640e3e237eede62351b6f657c8e13ad20274585c` (job log line 111, verbatim after `git log -1 --format=%H`). `EFFECTIVE_SHA` = same (line 120 `Already up to date.` — pull only fast-forwards). `git merge-base --is-ancestor 0b1fe887 640e3e237eede62351b6f657c8e13ad20274585c` → `rc=0`; `79b566f5` → `rc=0`. Natural trigger `event=schedule` on run `37404125352`.
 
@@ -185,7 +187,7 @@ None refs (verbatim): `gmi:entity_type_conflict:co:us:IBIT` (`evidence_id=ev:4d8
 
 *(Phase 1 Appendix A retained above for historical PIN `cbfa20a45d8401f1cf1cc9fc48155455f1d612fb`.)*
 
-Phase 2 will re-run commission steps 6–7 on a natural nightly generation baked from main containing accepted D2C+D2D merges, append receipt rows to this carrier, and lift C6 / PHASE-1 verdict when measured.
+Phase 2 was measured in §6 (rounds r2/r2b/r2c) on the natural nightly generation GEN2.
 
 ## Appendix A — commands and probe (output tail ≤25 lines each)
 
@@ -361,13 +363,12 @@ open_gm = gm[gm["valid_to"].map(lambda x: pd.isna(x))]
 gold_in = "co:us:GOLD" in set(open_gm["src"].astype(str))
 print("  open gold_miners MEMBER_OF", len(open_gm), "GOLD_in", gold_in)
 
-ibit_id = "member_of:co:us:IBIT->basket:baskets:gold_miners@2023-05-09"
-ibit_rows = hist[hist["edge_id"] == ibit_id] if not hist.empty else pd.DataFrame()
-print("C3 IBIT beliefs", len(ibit_rows))
-cur = edges[edges["edge_id"]==ibit_id]
-if not cur.empty:
-    r = cur.iloc[0]
-    print("  annul valid_to==valid_from", r["valid_to"]==r["valid_from"])
+mo_hist = hist[(hist["src"]=="co:us:IBIT") & (hist["type"]=="MEMBER_OF")]
+print("C3 co:us:IBIT MEMBER_OF edges:")
+for eid in sorted(mo_hist["edge_id"].unique()):
+    rows = mo_hist[mo_hist["edge_id"]==eid].sort_values(["belief_time","computed_at"], kind="stable")
+    latest = rows.iloc[-1]
+    print(f"  {eid} belief_rows={len(rows)} latest valid_from={latest['valid_from']} valid_to={latest['valid_to']}")
 refusals = meta.get("company_mint_refusals", [])
 print("  IBIT refusals", len([x for x in refusals if "IBIT" in json.dumps(x)]))
 live_ibit_mo = edges[(edges["src"]=="co:us:IBIT") & (edges["type"]=="MEMBER_OF") & edges["valid_to"].map(pd.isna)]
@@ -379,7 +380,7 @@ ordered = hist.sort_values(["edge_id","belief_time","computed_at"], kind="stable
 current_edges = ordered.drop_duplicates(subset=["edge_id"], keep="last")
 live_mo = current_edges[(current_edges["type"]=="MEMBER_OF") & current_edges["valid_to"].map(pd.isna)]
 offenders = sorted(set(live_mo["src"].astype(str)) & retired)
-print("violations:", len(offenders))
+print("violations:", len(offenders), f"({len(live_mo)} live MEMBER_OF edges, {len(retired)} retired nodes, {len(offenders)} offenders)")
 
 idres = store.read_identity_resolution(latest=True)
 us = idres[idres["market_scope"].astype(str)=="us"]
@@ -399,10 +400,11 @@ C1 node_lifecycle (latest):
   co:us:IBIT: status=retired retire_date=2026-08-22 reason=entity_type_conflict
 C2 GOLD belief_rows 2
   open gold_miners MEMBER_OF 12 GOLD_in False
-C3 IBIT beliefs 0
+C3 co:us:IBIT MEMBER_OF edges:
+  member_of:co:us:IBIT->basket:baskets:crypto_rails@2023-05-09 belief_rows=2 latest valid_from=2023-05-09 valid_to=2023-05-09
   IBIT refusals 1
   live co:us:IBIT MEMBER_OF 0
-violations: 0
+violations: 0 (7798 live MEMBER_OF edges, 2 retired nodes, 0 offenders)
 US resolution_state counts: {'RESOLVED': 1211, 'NOT_IN_MASTER': 25, 'DEFERRED_IDENTITY_EXCEPTION': 2, 'ENTITY_TYPE_CONFLICT': 1} denom= 1239
 all-scope NEWEST sum= 2807
 _meta: {'DEFERRED_IDENTITY_EXCEPTION': 1, 'NOT_IN_MASTER': 195, 'RESOLVED': 2376, 'UNSUPPORTED_MARKET': 233}

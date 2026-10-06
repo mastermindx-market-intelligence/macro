@@ -1,9 +1,10 @@
 {
   "operation": "gmi-theme-accept-d2e-20260827-sol-001",
   "phase": 2,
-  "round": "r2b",
+  "round": "r2c",
   "pin": "cbfa20a45d8401f1cf1cc9fc48155455f1d612fb",
   "head": "7671cce0227a649361f7740d1c138cac6603c3d9",
+  "pin_head_note": "pin/head = the Phase-1 (r1d) measurement pin and PR head; Phase 2 was measured at pin2 (PIN2 e061209069a1bc05157d9078cd394e9ce1d96cc9, GEN2 2026-10-06T13:27:04Z); the record's own commit is stated in the PR body, never in the record",
   "harness_corrections": [
     {
       "id": "D1",
@@ -32,6 +33,10 @@
     {
       "id": "D9",
       "reason": "Round r2 composed PHASE-2/D2E from the first HOLD (N5) although FAIL rows (R1.A, R3.2) existed; the rule takes the first FAIL row first (round r2b)."
+    },
+    {
+      "id": "D10",
+      "reason": "r2c: P3 adversarial review fixes — B1 GEN1 capability generations 53; B2 phase-2 V2/V3 re-measured at GEN2; B3 R1.D CN-panel hydration artifact; M1 R1.A-CI is gate: data (data-health.yml), not a ci.yml pack; M2 pin/head note; m1–m4"
     }
   ],
   "generation": {
@@ -107,13 +112,13 @@
     {
       "id": "R1.A-CI",
       "gating": false,
-      "gate": "D2A suite vs main CI (fail-open probe)",
-      "command": "grep legacy-jobs.yml; gh api actions/runs/37445075780/jobs; gh api ci-pack-10 logs",
+      "gate": "D2A data lane (INFO)",
+      "command": "gh run view 37407802317 -R mastermindx-market-intelligence/macro --json conclusion,event,headSha; data-health.yml unrun-intl-libraries step",
       "rc": 0,
-      "output_tail": "Step owner job unrun-intl-libraries (pack=10 when selected). Run 37445075780 ci-pack-10: Selected jobs: signal-gate-pair-coherence, path-prune-lint, cycle-grading-stats, prophet-lab, china-native-collectors, china-search-universe, cn-standout-audit, qledger-cluster-honest-ci, design-governance, hk-context-chips, metab-throttle-ux, ric-w2-surface, unrun-brain-desks, unrun-dark-guards, zh-filing-term, options-nbbo-cohort, product-experience-capture, options-skew-engine — unrun-intl-libraries absent; no log match for test_theme_graph_identity_resolution",
+      "output_tail": "run 37407802317 (event=workflow_run, headSha=2d3ab1e087a07d63b6dcf8c4682c7541c5386b73, conclusion=failure) failing on unrun-intl-libraries D2A step (gate: data — exercised by data-health.yml, not ci.yml packs)",
       "verdict": "INFO",
       "owner": "—",
-      "repair_packet": "—"
+      "repair_packet": "clears with R1.A"
     },
     {
       "id": "R1.B",
@@ -143,7 +148,7 @@
       "gate": "D2D ontology/probation",
       "command": "pytest crosswalk/local_plane/structural/exposure",
       "rc": 0,
-      "output_tail": "575 passed, 1 skipped in 10.40s; skips: 1 (reasons in Appendix A)",
+      "output_tail": "575 passed, 1 skipped in 10.40s; skips: 1 (reasons in Appendix A); the 1 skip was a lane-checkout hydration artifact (CN panel tracked in git) — re-measured with the panel hydrated at PIN2 in r2c, see §6 R1.D",
       "verdict": "PASS",
       "owner": "—",
       "repair_packet": "—"
@@ -220,7 +225,7 @@
       "gate": "IBIT refusal fence",
       "command": "pandas IBIT + _meta refusals",
       "rc": 0,
-      "output_tail": "annulled MEMBER_OF; IBIT refusal etf_conflict; etf:IBIT TRACKS live; co:us:IBIT live MEMBER_OF=0",
+      "output_tail": "member_of:co:us:IBIT->basket:baskets:crypto_rails@2023-05-09 belief_rows=2 latest valid_from=valid_to=2023-05-09; IBIT refusal etf_conflict; etf:IBIT TRACKS live; live co:us:IBIT MEMBER_OF=0",
       "verdict": "PASS",
       "owner": "—",
       "repair_packet": "—"
@@ -231,7 +236,7 @@
       "gate": "Retired-consistency",
       "command": "latest-belief MEMBER_OF vs retired lifecycle",
       "rc": 0,
-      "output_tail": "violations: 0",
+      "output_tail": "violations: 0 (7798 live MEMBER_OF edges, 2 retired nodes, 0 offenders)",
       "verdict": "PASS",
       "owner": "—",
       "repair_packet": "—"
@@ -319,7 +324,7 @@
       "gate": "Capability generations",
       "command": "store.read_capability vs newest generation",
       "rc": 0,
-      "output_tail": "read_capability=644; newest gen rows=643; carried ltheme:ths:309263 semantic_only @ 2026-08-22T04:50:43Z; in nodes.parquet",
+      "output_tail": "read_capability=644; file 34061 rows / 53 generations; newest gen rows=643 (measurement_candidate 505 + semantic_only 138); carried ltheme:ths:309263 semantic_only @ 2026-08-22T04:50:43Z; in nodes.parquet",
       "verdict": "PASS",
       "owner": "—",
       "repair_packet": "—"
@@ -473,7 +478,8 @@
       },
       "data_commit_time": "2026-10-06T13:40:52Z",
       "guard_groups": {
-        "mandated_grep_matches": 0,
+        "mandated_grep_matches": 2,
+        "probe": "corrected r2b ((::group::|##[group]) pattern)",
         "observed_brun_headers": [
           "theme graph nightly materialization [8s, rc=0]",
           "theme graph contract guard [3s, rc=0]"
@@ -632,7 +638,7 @@
       {
         "id": "R1.A-CI",
         "verdict": "INFO",
-        "output_tail": "Step owner job unrun-intl-libraries (pack=10 when selected). Run 37445075780 ci-pack-10: Selected jobs: signal-gate-pair-coherence, path-prune-lint, cycle-grading-stats, prophet-lab, china-native-collectors, china-search-universe, cn-standout-audit, qledger-cluster-honest-ci, design-governance, hk-context-chips, metab-throttle-ux, ric-w2-surface, unrun-brain-desks, unrun-dark-guards, zh-filing-term, options-nbbo-cohort, product-experience-capture, options-skew-engine — unrun-intl-libraries absent; no log match for test_theme_graph_identity_resolution"
+        "output_tail": "run 37407802317 (event=workflow_run, headSha=2d3ab1e087a07d63b6dcf8c4682c7541c5386b73, conclusion=failure) failing on unrun-intl-libraries D2A step (gate: data — exercised by data-health.yml, not ci.yml packs)"
       },
       {
         "id": "R1.B",
@@ -647,7 +653,7 @@
       {
         "id": "R1.D",
         "verdict": "PASS",
-        "output_tail": "575 passed, 1 skipped in 10.40s; skips: 1 (reasons in Appendix A)"
+        "output_tail": "576 passed in 10.14s"
       },
       {
         "id": "R1.E",
@@ -682,12 +688,12 @@
       {
         "id": "C3",
         "verdict": "PASS",
-        "output_tail": "annulled MEMBER_OF; IBIT refusal etf_conflict; etf:IBIT TRACKS live; co:us:IBIT live MEMBER_OF=0"
+        "output_tail": "member_of:co:us:IBIT->basket:baskets:crypto_rails@2023-05-09 belief_rows=2 latest valid_from=valid_to=2023-05-09; IBIT refusal etf_conflict; etf:IBIT TRACKS live; live co:us:IBIT MEMBER_OF=0"
       },
       {
         "id": "C4",
         "verdict": "PASS",
-        "output_tail": "violations: 0"
+        "output_tail": "violations: 0 (7798 live MEMBER_OF edges, 2 retired nodes, 0 offenders)"
       },
       {
         "id": "C5",
@@ -732,12 +738,12 @@
       {
         "id": "V2",
         "verdict": "PASS",
-        "output_tail": "read_capability=644; newest gen rows=643; carried ltheme:ths:309263 semantic_only @ 2026-08-22T04:50:43Z; in nodes.parquet"
+        "output_tail": "read_capability=644; file 34704 rows / 54 generations; newest gen rows=643 (measurement_candidate 505 + semantic_only 138); carried ltheme:ths:309263 semantic_only @ 2026-08-22T04:50:43Z; in nodes.parquet"
       },
       {
         "id": "V3",
         "verdict": "PASS",
-        "output_tail": "NEWEST rows=2805 state sum=2805; _meta.counts.identity_resolution=2807 = 2805 newest + 2 carried (co:us:GOLD, co:us:IBIT); file_rows=154270 generations=55; rows_appended=2805"
+        "output_tail": "NEWEST rows=2805 state sum=2805; _meta.counts.identity_resolution=2807 = 2805 newest + 2 carried (co:us:GOLD, co:us:IBIT); file_rows=157075 generations=56; rows_appended=2805"
       },
       {
         "id": "V4",
@@ -809,7 +815,8 @@
     },
     "data_commit_time": "2026-10-06T13:40:52Z",
     "guard_groups": {
-      "mandated_grep_matches": 0,
+      "mandated_grep_matches": 2,
+      "probe": "corrected r2b ((::group::|##[group]) pattern)",
       "observed_brun_headers": [
         "theme graph nightly materialization [8s, rc=0]",
         "theme graph contract guard [3s, rc=0]"
@@ -939,6 +946,6 @@
       "repair_packet": "—"
     }
   ],
-  "written_at_utc": "2026-10-06T15:05:00Z",
+  "written_at_utc": "2026-10-06T15:35:00Z",
   "lane_host_model": "Cursor/Grok bounded fabric builder (META-CEO commission r2)"
 }
