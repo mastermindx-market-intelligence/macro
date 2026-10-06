@@ -23,6 +23,8 @@ from engine.theme_graph.selection_cohort import FLAGS
 from engine.theme_graph import selection_cohort_reads as scr
 from engine.theme_graph.selection_cohort_reads import (
     COMPOSE_KEYS,
+    MEMBERSHIP_OWNER_SCHEMA,
+    _REASON_NO_OVERLAP,
     _REASON_OWNER,
     publication_reads,
     qualified_reads,
@@ -380,3 +382,85 @@ def test_t9_authority_stamp_and_publication_keys(data_root, monkeypatch):
         assert reads[flag] is False
     pub = publication_reads(source, data_dir=data_root)
     assert set(pub) == set(COMPOSE_KEYS)
+
+
+def _membership_concept_node_ids(reads: dict) -> list[str]:
+    ids: list[str] = []
+    for receipt in reads["membership_reads"].values():
+        for row in receipt["memberships"]:
+            ids.append(str(row["node_id"]))
+    return ids
+
+
+def _install_cutoff_spies(monkeypatch):
+    recorded_nodes: list[object] = []
+    recorded_edges: list[object] = []
+    orig_nodes = scr._nodes_as_known
+    orig_collapse = scr._collapse_relevant_edges
+
+    def spy_nodes(*args, **kwargs):
+        recorded_nodes.append(kwargs.get("knowledge_cutoff"))
+        return orig_nodes(*args, **kwargs)
+
+    def spy_collapse(*args, **kwargs):
+        recorded_edges.append(kwargs.get("knowledge_cutoff"))
+        return orig_collapse(*args, **kwargs)
+
+    monkeypatch.setattr(scr, "_nodes_as_known", spy_nodes)
+    monkeypatch.setattr(scr, "_collapse_relevant_edges", spy_collapse)
+    return recorded_nodes, recorded_edges
+
+
+def test_t10_qualified_reads_wires_knowledge_cutoff_into_ontology(data_root, monkeypatch):
+    recorded_nodes, recorded_edges = _install_cutoff_spies(monkeypatch)
+    source = _qualified_reads_setup(data_root, monkeypatch, "2026-10-06T18:00:00Z")
+    qualified_reads(source, data_dir=data_root)
+
+    expected_instant = dt.datetime(2026, 10, 6, 1, 0, tzinfo=dt.timezone.utc)
+    assert len(recorded_nodes) >= 1
+    assert len(recorded_edges) >= 2
+    for cutoff in recorded_nodes + recorded_edges:
+        assert isinstance(cutoff, dt.datetime)
+        assert cutoff.tzinfo is not None
+        assert cutoff == expected_instant
+
+    recorded_nodes.clear()
+    recorded_edges.clear()
+    _write_graph(data_root, lifecycle_computed_at="2026-10-06T18:00:00Z")
+    source_date = _selection()
+    source_date = {**source_date, "known_at": "2026-10-06"}
+    monkeypatch.setattr(
+        "engine.theme_graph.selection_cohort_reads.ir.resolve_graph_node_identity",
+        lambda node_id, asof=None: _resolved_identity(),
+    )
+    qualified_reads(source_date, data_dir=data_root)
+
+    expected_day = dt.date(2026, 10, 6)
+    for cutoff in recorded_nodes + recorded_edges:
+        assert type(cutoff) is dt.date
+        assert cutoff == expected_day
+
+
+def test_t11_belief_time_same_day_excludes_theme_from_membership_reads(data_root, monkeypatch):
+    monkeypatch.setattr(
+        "engine.theme_graph.selection_cohort_reads.ir.resolve_graph_node_identity",
+        lambda node_id, asof=None: _resolved_identity(),
+    )
+    source = _selection()
+
+    _write_graph(data_root, lifecycle_computed_at=OLD, belief_time="2026-10-06")
+    reads_same_day = qualified_reads(source, data_dir=data_root)
+    assert THEME not in _membership_concept_node_ids(reads_same_day)
+    membership_unqualified = [
+        u
+        for u in reads_same_day["unqualified"]
+        if u.get("kind") == "membership" and u.get("detail") == COMPANY
+    ]
+    if membership_unqualified:
+        row = membership_unqualified[0]
+        assert row["reason_code"] == _REASON_NO_OVERLAP
+        assert row["owner"] == MEMBERSHIP_OWNER_SCHEMA
+
+    _write_graph(data_root, lifecycle_computed_at=OLD, belief_time="2026-10-05")
+    reads_prior_day = qualified_reads(source, data_dir=data_root)
+    assert THEME in _membership_concept_node_ids(reads_prior_day)
