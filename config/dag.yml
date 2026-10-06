@@ -2155,6 +2155,18 @@ lanes:
         note: >
           Publish oracle panels to R2 (refreshes render-path sponsorship inputs).
           Non-fatal (::warning:: on failure).
+      - id: build_graph_shadow_theme_state
+        module: scripts.build_thematic_state
+        note: >
+          Gate #8 (seat ruling G1-RC1) — `--mode GRAPH_SHADOW_STATE`: capture the
+          owner bundle, state-only compose, validate, atomic write of
+          data/theme_graph/shadow_theme_state.v1.json ONLY (the file
+          engine/theme_graph/selection_cohort_reads.py reads). Never in the engine
+          job; runs only when engine succeeded (fresh owner inputs). Shadow +
+          research-internal; six-false authority unchanged. Fail-open: one
+          ::warning title=gmi-shadow-graph-state:: and the prior shadow stands;
+          step timeout 8 min, continue-on-error.
+          outputs: [data/theme_graph/shadow_theme_state.v1.json]
 
   # ── daily.yml / cortex ───────────────────────────────────────────────────
   - workflow: .github/workflows/daily.yml
