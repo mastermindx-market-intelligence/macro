@@ -104,16 +104,18 @@ Must carry:
 
 ### B. Positive earnings / revisions
 
-Must be directionally positive.
+Must be directionally positive **and carry a real point-in-time availability clock**.
 
 Eligible examples:
 
-- positive SUE / earnings surprise;
-- upward estimate revision acceleration;
+- positive SUE / earnings surprise with the actual filing / release known-at timestamp;
+- upward estimate revision acceleration with the collector's decision-time snapshot;
 - guidance raise;
 - positive KPI revision.
 
 Legacy `sue_fresh = bool(nonzero z)` is **not** sufficient serving semantics for this prospective exposure.
+
+Nor is legacy `sue_fresh_days` a valid event-arrival clock: the current producer documents that the EPS panel uses a synthetic `period_end + 60 days` `asof_date` because the real filing date is absent. Until a true filing/release availability timestamp is carried, SUE may be contextual evidence but **must not count as a timed ignition-arrival leg** in the prospective primary exposure.
 
 ### C. Ownership / positioning accumulation
 
@@ -309,7 +311,31 @@ This pre-registration creates no new ranker, gate, memory store, lifecycle plane
 
 ---
 
-# 12. Current disposition
+# 12. Emergence / research-attention companion hypothesis
+
+The NVDA case also establishes a distinct upstream research question that is **not** the H5 primary:
+
+> Can Mastermind preserve important unresolved candidates when independent evidence has accumulated but Entry Availability remains closed?
+
+NVDA carried `news_burst + smartmoney_add` on Sep-08/09/10 while `entry_status=await_confluence`, then received the later Sep-25 acceptance event.
+
+Generic watch-lane multi-evidence convergence performed poorly at H5, so this companion head must not be optimized as another immediate-return screen.
+
+Its prospective objectives are instead:
+
+- lead time before eventual ignition;
+- later conversion into a valid T1/T2/T3 ignition episode;
+- eventual top-decile / leader capture;
+- false-attention burden;
+- time spent unresolved;
+- whether the candidate remains supported by independent evidence;
+- whether Entry Availability ever opens.
+
+This companion accrual must use the existing candidate-episode / evaluation owners. It creates no new lifecycle or memory plane.
+
+---
+
+# 13. Current disposition
 
 **Status:** PROSPECTIVE / ZERO AUTHORITY  
 **Historical discovery:** suggestive, post-selected, insufficient for promotion  
