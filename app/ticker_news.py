@@ -165,9 +165,9 @@ def _safe_ticker_or_422(ticker: str) -> str:
         raise _private_error(422, "invalid ticker") from None
 
 
-def _universe_path() -> Path | None:
+def _universe_path() -> Path:
     raw = os.environ.get("MM_TICKER_NEWS_UNIVERSE", "").strip()
-    return Path(raw) if raw else None
+    return Path(raw) if raw else config.data_dir() / "qbus" / "news_universe.json"
 
 
 def _security_for_ticker(ticker: str, now: datetime) -> str | None:

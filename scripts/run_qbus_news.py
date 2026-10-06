@@ -297,7 +297,11 @@ def load_universe_snapshot(path: Path, *, asof: datetime) -> UniverseQualificati
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Run the disabled-by-default qbus news source service.")
     p.add_argument("--database", type=Path, default=Path("data/qbus/qbus.sqlite3"))
-    p.add_argument("--universe-snapshot", type=Path)
+    p.add_argument(
+        "--universe-snapshot",
+        type=Path,
+        default=Path("data/qbus/news_universe.json"),
+    )
     p.add_argument("--rights-receipt", type=Path)
     p.add_argument("--health-path", type=Path)
     p.add_argument("--token-env", default="BENZINGA_API_KEY")
