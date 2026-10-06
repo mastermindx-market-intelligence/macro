@@ -35,8 +35,8 @@
       "outcome": "Drawing persistence: transactional replacement, conflict detection and unknown-outcome recovery",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "VALIDATION_33_POSTGRES_CASES_PASS; BOUNDED_TRANSACTION_REPAIR_ADMITTED",
-      "evidence_summary": "Accepted standalone guard33 actualPG17.11 cases0skip/containerremoved; production17.6 untouched. New bounded GLM5.3 Mini2 rs_20261006T162201Z_15783 admitted for atomic existing-table transaction and replay artifacts. Admission is not START/return/acceptance. Client/source/migration/live/fullA04 remain owed."
+      "review_status": "SCOPED_TRANSACTION_SQL_ACCEPTED; ACTUAL_SOURCE_OWNER_AND_MIGRATION_GATES",
+      "evidence_summary": "Higher GrokUbuntu2 r6 rc0/STARTtrue/cleanuptrue/residual0; actualPostgreSQL17.11 33guard+11transaction cases passed0skip/psql0/containerremoved, independently reviewed. Exactfunction1bb8d863 andguard1b9d5472 unchanged; independent actualtwo-session conflict/replay/admittedrollback3cases passed. Current8f3 four sourceblobs match64c1. TerminalShell callerowner597/legacybootstrap/client/outbox/migration/production17.6/browser/live remain owed."
     },
     {
       "mission": "A05",
@@ -170,12 +170,16 @@
   "accepted_validation_artifacts": {
     "A04_guard_sha256": "1b9d5472005a585beb231e44b4f20cfcb107411df6731f54f28a1ca894bdfcf1",
     "A04_regressions_sha256": "745f8f01814880c276e8cf9fe4f34abad99f2bbbfdac015644bee7aa9d83ef8f",
-    "A04_proof": "33 actual PostgreSQL17.11 fixture cases, not production17.6, not transactional replacement",
+    "A04_proof": "33 guard +11 transaction +3 independent concurrent/replay/rollback cases, actual isolatedPostgreSQL17.11, not production17.6 or client/migration acceptance",
     "A09_helper_sha256": "9d328a64212e923d773b45627abce2a67ef52ef54dd2fcab0f36fe6136542383",
     "A15_proof": "24 unit + full TSC +7/11 actual browser cases; full matrix failed/incomplete",
     "A08_owner_widget_sha256": "e3bc058057220af801fd43b9733416ae8be5e300fb4303a465b2d85c7cfea2e8",
-    "A08_owner_head": "53a1fc4cc47b4b9240fad828d0ef2161346aaacc"
+    "A08_owner_head": "53a1fc4cc47b4b9240fad828d0ef2161346aaacc",
+    "A04_transaction_function_sha256": "1bb8d8639c73945bae80e1523d64d84414a49cde0964ea8ab82af69809cb38d2",
+    "A04_concurrency_proof": "3 actual isolatedPostgreSQL17.11 cases: two sessions one commit/one conflict, stable replay, admitted write rollback; fullrow readback and fixturecleanup verified",
+    "A04_transaction_regressions_sha256": "a8a8d5f7a02b0e4299f0ca6a001107168440a1d48ed56869e09c14e93f309249"
   },
-  "updated_at": "2026-10-06T16:24:44.119137+00:00",
-  "current_terminal_deployment": "8f3d04f1c7b2d26a90623497b30f0901160d03a2"
+  "updated_at": "2026-10-06T16:54:04.333459+00:00",
+  "current_terminal_deployment": "8f3d04f1c7b2d26a90623497b30f0901160d03a2",
+  "active_fabric_children": []
 }

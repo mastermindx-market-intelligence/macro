@@ -6,7 +6,7 @@ objective: >-
   repair rejected returns through qualified escalation, and deliver accepted changes through
   their existing source owners with exact CI and production evidence. Whole-mission acceptance
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
-status: active
+status: blocked
 program: terminal-charting
 repos: [terminal, macro]
 owner: ceo-sol
@@ -21,13 +21,16 @@ waves:
     title: Consume higher-level repairs and deliver accepted scoped changes
     status: in_progress
 next_action: >-
-  Consume the bounded drawing transaction repair and execute it against the existing
-  disposable PostgreSQL fixture. Incorporate the tested Brain contribution through exact
-  owner PR8526, without a competing writer. PR597 owner identification remains unresolved.
+  Recover exact incumbent Terminal PR597 owner binding for startup, editor and drawing
+  caller contributions; incorporate the qualified Brain patch through Macro PR8526.
+  Use the accepted drawing DB prototype only after legacy bootstrap, client/outbox
+  and migration/source admission; preserve all incumbent holds and actual live gates.
 owns_paths: []
 artifacts:
   - research/TERMINAL_AUDIT20_REVIEW_2026-10-06.json
   - research/terminal_audit20/A08_PR8526/README.md
+  - research/terminal_audit20/A04_RPC_PROTOTYPE/README.md
+  - agentos/handoffs/TERMINAL-REPAIR-AUDIT20-2026-10-2026-10-06.md
 landmines:
   - Incumbent holds and migration reservations remain in force; this record claims no source paths.
   - Retired MiMo model errors and host admission refusals are capability evidence, not source-quality verdicts.
@@ -60,3 +63,8 @@ The Brain freshness contribution passed 20 checks and five actual widget fixture
 against exact owner PR8526 head `53a1fc4cc47b4b9240fad828d0ef2161346aaacc`.
 The contribution is preserved under `research/terminal_audit20/A08_PR8526`; owner
 incorporation, CI and live delivery remain outstanding.
+
+The drawing prototype is reviewed with 33 guard, 11 transaction and three independent
+concurrency/replay/rollback cases on isolated PostgreSQL17.11. Production, migration,
+legacy bootstrap and TerminalShell integration are unaccepted. All Fabric children from
+this wave are consumed and sealed; no future automatic wake or source takeover is claimed.

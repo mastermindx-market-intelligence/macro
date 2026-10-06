@@ -1,0 +1,40 @@
+{
+  "scope": "TRANSACTION_ARTIFACT_FIXTURE_ONLY",
+  "production_effects": false,
+  "cases_pass": 33,
+  "fixture_cleanup": true,
+  "image_id": "sha256:ae69c452f483507a6b99fb654cf93aad7fe156ffd2c56247707eef4e36d3c12b",
+  "container_id": "be83977f409a8a09696e3903cbfaede470a34718fcbf46cd3a5dd20da96dfa2f",
+  "psql_exit": 0,
+  "cases_skip": 0,
+  "transaction_notices": [
+    "PASS: initial insert",
+    "PASS: exact replay/no-change",
+    "PASS: prior-op payload mismatch/no-change",
+    "PASS: stale CAS/no-change",
+    "PASS: prior-op superseded replay/no-change",
+    "PASS: clear[]/prior-operation collapse",
+    "PASS: owner/symbol isolation preservation",
+    "PASS: subtransaction rollback exact whole object",
+    "PASS: ring bound 32",
+    "PASS: malformed legacy collection refusal/no-change",
+    "PASS: direct invalid input/no-change"
+  ],
+  "transaction_cases_pass": 11,
+  "version": "17.11 (Debian 17.11-1.pgdg13+2)",
+  "cleanup_remove_exit": 0,
+  "cleanup_inspect_exit": 1,
+  "function_sha256": "1bb8d8639c73945bae80e1523d64d84414a49cde0964ea8ab82af69809cb38d2",
+  "guard_sha256": "1b9d5472005a585beb231e44b4f20cfcb107411df6731f54f28a1ca894bdfcf1",
+  "guard_regressions_sha256": "745f8f01814880c276e8cf9fe4f34abad99f2bbbfdac015644bee7aa9d83ef8f",
+  "executed_pass": 11,
+  "executed_fail": 0,
+  "executed_skip": 0,
+  "guard_cases_pass": 33,
+  "cleanup_proof": {
+    "remove_exit": 0,
+    "inspect_exit": 1,
+    "container_absent": true,
+    "fixture_cleanup": true
+  }
+}
