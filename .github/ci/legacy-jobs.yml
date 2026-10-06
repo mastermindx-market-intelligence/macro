@@ -4905,6 +4905,8 @@ jobs:
       - "tests/test_check_intelligence_registry.py"
       - "tests/test_intelligence_registry.py"
       - "tests/test_output_health.py"
+      # SRC-A1 acceptance tests import the collector already owned above.
+      - "tests/test_equity_revisions_src_a1_acceptance.py"
       # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
       # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
       # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
@@ -4945,6 +4947,8 @@ jobs:
       # dependency beyond the pytest/pyyaml line already installed above.
       - name: "output health contract (Eval OS T4)"
         run: python -m pytest tests/test_output_health.py -q
+      - name: "SRC-A1 native lineage, failure preservation and legacy compatibility"
+        run: python -m pytest --noconftest tests/test_equity_revisions_src_a1_acceptance.py -q
 
   neural-web-core:
     if: ${{ false }}
@@ -13689,6 +13693,13 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn pillow
+      # SRC-A1 is a hermetic research audit. Name its CLI as well as its
+      # suite: the selector cannot resolve the suite's sibling-file
+      # spec_from_file_location import through Path.with_name().
+      - name: information-to-price SRC-A1 source clocks, identity and attempt denominator
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py --help
+          python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_information_to_price_audit.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
@@ -19058,6 +19069,45 @@ jobs:
       - "scripts/ci/daily_engine_regional_desk_builders.sh"
       - "scripts/validate_options_skew.py"
       - "tests/test_options_skew.py"
+      # MKT-1 hosted execution (Sol 5987749403). scope: exclusive skips
+      # inference, so the suite's measured import closure is listed here.
+      # A non-exclusive owner fallback-selects ordinary packing probes.
+      - "engine/price_pressure/**"
+      - "tests/test_price_pressure.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/confluence_tiers.py"
+      - "engine/cross_asset.py"
+      - "engine/cycles.py"
+      - "engine/extension.py"
+      - "engine/grading.py"
+      - "engine/hysteresis.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/ledger_lane.py"
+      - "engine/market_drivers.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/session_anchor.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/technicals.py"
+      - "engine/trial_ledger.py"
+      - "engine/universe_history.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/store.py"
+      - "research/DISLOCATION_RECOVERY_LOBE_MASTERPLAN_BY_FABLE.md"
+      - "scripts/__init__.py"
+      - "scripts/build_price_pressure.py"
+      - "scripts/publish_r2.py"
+      - "scripts/replay_standout_pipeline.py"
+      - "scripts/research_liquidity_shock_reversal.py"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/us_standouts.json"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -19069,6 +19119,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: options skew engine
         run: python -m pytest tests/test_options_skew.py -q
+      - name: price-pressure response export + MKT-1 regressions (K3E MKT-1 hosted execution; Sol 5987749403)
+        run: python -m pytest tests/test_price_pressure.py -q -rs
 
   market-ontology-f09-usgs-mcs:
     if: ${{ false }}
