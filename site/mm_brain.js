@@ -848,6 +848,8 @@
     #mmb-panel.open{transform:none} .mmb-cards,#mmb-panel.max .mmb-cards{grid-template-columns:1fr}
     /* mobile is compact-only: no large mode (the overlay isn't responsive there) */
     .mmb-icon[data-act="max"]{display:none!important}
+    .mmb-head .mmb-icon,.mmb-abtn,.mmb-ti-act,.mmb-ti-yes,.mmb-ti-no{min-width:44px;min-height:44px}
+    .mmb-actions{height:auto;min-height:44px}
     #mmb-panel.max .mmb-rail,#mmb-panel.max .mmb-threads{display:none}
     /* iOS: composer font MUST be ≥16px or Safari zooms the viewport on focus */
     .mmb-ta{font-size:16px}

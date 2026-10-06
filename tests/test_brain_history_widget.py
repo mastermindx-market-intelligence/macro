@@ -340,6 +340,45 @@ def test_composer_controls_keep_touch_targets_and_reflow(page,width,lang,text_sc
         page.screenshot(path=str(folder/f'{width}-{lang}-{text_scale}x-composer.png'))
 
 
+@pytest.mark.parametrize('width', [320, 390])
+@pytest.mark.parametrize('lang', ['en', 'zh'])
+@pytest.mark.parametrize('text_scale', [1, 2])
+def test_mobile_history_and_answer_controls_are_reachable(page, width, lang, text_scale):
+    page.locator(f'.mmb-ti[data-id="{A}"] .mmb-ti-body').click()
+    expect(page.locator('.mmb-msg')).to_contain_text('Exact retained answer A')
+    page.set_viewport_size({'width': width, 'height': 844})
+    page.evaluate('MMBrain.close();MMBrain.open();')
+    page.evaluate("""({lang,scale})=>{
+      document.documentElement.dataset.lang=lang;document.dispatchEvent(new Event('langchange'));
+      const nodes=Array.from(document.querySelectorAll('#mmb-root *')).filter(n=>n.namespaceURI==='http://www.w3.org/1999/xhtml');
+      const sizes=nodes.map(n=>parseFloat(getComputedStyle(n).fontSize));
+      nodes.forEach((n,i)=>{if(sizes[i])n.style.fontSize=(sizes[i]*scale)+'px';});
+    }""", {'lang': lang, 'scale': text_scale})
+
+    def check_targets(selector):
+        controls=page.locator(selector)
+        assert controls.count()>0
+        for control in controls.all():
+            control.click(trial=True)
+            box=control.bounding_box()
+            assert box and box['width']>=44 and box['height']>=44
+            assert box['x']>=0 and box['x']+box['width']<=width
+            assert control.evaluate('(node)=>{const b=node.getBoundingClientRect();const hit=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return node===hit||node.contains(hit);}')
+            control.focus()
+            expect(control).to_be_focused()
+    check_targets('.mmb-head .mmb-icon:visible, .mmb-abtn:visible')
+    proof=os.environ.get('MM_BRAIN_HISTORY_PROOF_DIR')
+    if proof:
+        folder=Path(proof);folder.mkdir(parents=True,exist_ok=True)
+        page.screenshot(path=str(folder/f'{width}-{lang}-{text_scale}x-answer-actions.png'))
+    page.locator('[data-act="side"][title="Chats"]').click()
+    check_targets(f'.mmb-ti[data-id="{A}"] .mmb-ti-act:visible')
+    if proof:
+        page.screenshot(path=str(folder/f'{width}-{lang}-{text_scale}x-history-actions.png'))
+    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    assert all(r['method']=='GET' for r in page.evaluate('window.__requests'))
+
+
 @pytest.mark.parametrize("action", ["account", "close", "new", "thread", "pagehide"])
 def test_voice_recognition_is_aborted_when_composer_context_ends(page, action):
     page.evaluate("""() => {
