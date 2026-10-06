@@ -33,6 +33,11 @@ discoveries:
   - "DSC:A-DECLARED-BASIS-IS-A-LABEL-UNTIL-SOMETHING-READS-IT"
   - "DSC:AN-ENUMERATED-GUARD-IS-BLIND-OUTSIDE-ITS-ENUMERATION"
   - "DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-AIMED-AT"
+  - "DSC:TWO-ENDS-OF-ONE-POINTER-VALIDATED-IN-ISOLATION-BOTH-PASS-WHILE-IT-DANGLES"
+  - "DSC:A-BLOCKLIST-ENUMERATES-THE-RULES-NOUNS-NOT-THE-VIOLATIONS-VOCABULARY"
+  - "DSC:FULLMATCH-ON-A-BOUNDARY-STEM-PATTERN-IS-A-DEAD-GUARD-THAT-LOOKS-ALIVE"
+  - "DSC:A-GUARD-NAMED-IN-THE-DOCSTRING-CAN-HAVE-ZERO-CALL-SITES"
+  - "DSC:A-REQUIRED-ENUM-FIELD-CAN-HAVE-ONE-PRODUCIBLE-VALUE-AND-ZERO-READERS"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
@@ -273,11 +278,142 @@ next_action: >
   disagreement collapses the pair and declares.
   .
   Swept to date: 21 fact fields; 5 root scalars; basis binding; input_refs;
-  pair agreement. The honest unswept remainder is the explanation object,
-  source_records, and availability/state derivation. Anyone running that sweep
-  must first read DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-
-  AIMED-AT: two probes in this wave returned a vacuous green because the
-  mutation died at an earlier gate or was a no-op.
+  pair agreement; and as of wave 7 the native_ref -> source_records pointer.
+  Anyone running the remaining sweep must first read
+  DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-AIMED-AT: two
+  probes in wave 6 returned a vacuous green because the mutation died at an
+  earlier gate or was a no-op.
+  .
+  CC-V1-PROVENANCE-POINTER (wave 7) is PR #8106. A fact could name a
+  source record absent from its own document's source_records ledger and be
+  emitted at availability "ready" with ZERO schema errors; separately,
+  native_ref carried no pattern while record_id was pinned to
+  ^src_[a-z0-9_]+$, so the two ends of one pointer had different grammars and
+  "SRC-NOT-LEGAL" was accepted. Repaired at document level because
+  _fact_admission_failure structurally cannot see source_records. 22 test
+  fixtures using an unsatisfiable hyphenated ref convention were swept. Also
+  corrected a FALSE _compose_changes docstring that claimed native_admitted:
+  False suppressed a result (citing section 7) while the code 20 lines below
+  refuses that gate citing 4a -- a reader who trusted it would have restored a
+  gate that breaks the golden oracle; now pinned by a test. 114 passed, both
+  cases oracle-exact at 0 schema errors, envelope sweep unchanged 17/4.
+  See DSC:TWO-ENDS-OF-ONE-POINTER-VALIDATED-IN-ISOLATION-BOTH-PASS-WHILE-IT-
+  DANGLES.
+  .
+  NOT a defect and DO NOT "fix" it: frozen-spec 4a's literal "native_ref is
+  null" is STALE, not violated. V1-CORE facts point at a source record whose
+  retention_state is not_retained -- strictly more honest than a bare null and
+  exactly the "source-coordinate-bound, not natively admitted" posture 4a
+  itself describes. Forcing null destroys information and breaks the oracle.
+  .
+  CORRECTION 2026-09-28 (wave 8): the sentence that stood here -- "the honest
+  unswept remainder is now the explanation object and availability/state
+  derivation" -- is SPENT, not wrong-at-the-time. Wave 7 swept both and both
+  returned NULL: `explanation` is assembled from frozen constants with no
+  number interpolation, and `availability` is derived from READY results and
+  makes no independent claim. Wave 8 then swept the authority guard and found
+  TWO real defects (see the two DSC keys registered above). Do not re-sweep
+  explanation or availability; the open lead is the SIBLING verticals, not
+  this module. source_records itself is NOT unswept in the
+  passthrough sense first suspected: it is copied verbatim from the case but
+  _assert_document_matches_contract_shape runs full jsonschema validation over
+  the whole document, so every record is deeply checked against the 12
+  required fields of $defs/source_record. What was missing was only the
+  RELATION between it and native_ref, which wave 7 closed.
+  .
+  WAVE 8 (authority vocabulary). _assert_no_forbidden_authority_keys carried a
+  docstring asserting the full frozen-spec section 6 rule 10 guarantee -- no
+  ranking, entry, gating, sizing or origination field -- and enforced 4 of 30
+  category-representative keys. Two distinct defects. (a) The blocklist held
+  the RULE'S OWN NOUNS: "sizing" was refused while position_size, weight,
+  allocation, notional and exposure were not. (b) The compound pattern was
+  applied with re.fullmatch, under which "(^|_)(stem)(_|$)" cannot consume a
+  compound name, so composite_score / analyst_rank / conviction_score /
+  signal_strength ALL passed the one construct named for catching them; its
+  only hits were bare stems the exact-match frozenset already held, so its
+  marginal contribution was zero. Both repaired; guard now 28 of 30, pattern
+  live, docstring corrected to name additionalProperties:false as the FIRST
+  line and itself as the second.
+  .
+  NEITHER DEFECT WAS REACHABLE. The root and every composite $defs carry
+  additionalProperties:false, and injecting each key into a real emitted
+  document showed position_size / weight / recommendation refused at the SHAPE
+  gate and only rank at the authority gate. So wave 8 is a false-confidence
+  repair, not a vulnerability fix, and it must not be described as the latter.
+  The risk it removes is that a future change unsealing a $defs would drop the
+  real protection while the guard that appears to cover it still passed review.
+  .
+  Defect (b) was found by a mutation that SURVIVED: a negative-control test
+  asserting sample_size stays unrefused should have gone red when size|weight
+  was added to the compound pattern, and did not -- impossible unless the
+  pattern never fires. The surviving mutation indicted the test first and the
+  module second. 118 passed; 4/4 mutations caught; no legal contract property
+  name is refused by the widened guard; oracle and envelope sweep unchanged.
+  .
+  WAVE 8 MERGED + PRODUCTION_PROOF. Squash 2dac71fc659b, 2026-09-28T00:19:08Z,
+  merged by the sweeper 9s after the last check concluded (26 checks, 0
+  unconcluded; sole red ci-authority/codex/merge-queue-pilot, red by design and
+  name-excluded). Proof from main's own re-extracted bytes: 8 of 8 assertions
+  OK, 118 passed, oracle exact both cases, sweep unchanged 17 REFUSED / 4
+  MINTED. Reported on carrier #7804 (comment 5861199381). ACCEPTANCE remains
+  Sol's and is not claimed.
+  .
+  WAVE 9 (sibling census) -- the wave-8 unresolved lead, RUN, and it refuted its
+  own premise. The lead said "probe the Finance / Mining / Industrials /
+  Healthcare / Energy authority guards". engine/sector_intelligence/ holds
+  exactly TWO projection modules, consumer_cyclical and finance; the other three
+  have no module there. That five-name list was written from the PROGRAM ROSTER,
+  not from a module census -- A ROSTER IS NOT A CENSUS. The lead's suggested
+  discriminator was also wrong: grep -rn "_RE.fullmatch" engine/ returns 475
+  hits, nearly all correct format validators where fullmatch is right; the shape
+  is a boundary-stem PATTERN under fullmatch, not fullmatch as such.
+  .
+  The refuted lead sat in THREE records (the wave-8 handoff's unresolved AND its
+  unverified, plus the wave-8 DSC's scope). All three are corrected AT SOURCE in
+  this same commit, not superseded from a newer file -- a reader travels into
+  the wrong record, so that is where the correction has to be.
+  .
+  FINDING, routed as knowledge and NOT acted on: the one real sibling carries the
+  shape in a deader form. finance_projection.py:296 defines _FORBIDDEN_KEY_RE
+  with ZERO call sites repo-wide (7 hits total; the other 6 are local copies in
+  lib/project_runtime_state.py and a test, each of which DOES use its own), while
+  the module docstring line 15 advertises the protection. Finance imports only
+  stdlib so it cannot validate at emit; its real protection is a 43/43-sealed
+  contract enforced by validate_contract at
+  tests/test_finance_intelligence_contract.py:95 -- at CI time, in the test.
+  Classified FALSE CONFIDENCE, not a demonstrated reachable leak: reachability
+  was NOT verified and needs a mutation probe of that test. finance_projection.py
+  is seat 938d17d6's custody and was not edited from this seat. See
+  DSC:A-GUARD-NAMED-IN-THE-DOCSTRING-CAN-HAVE-ZERO-CALL-SITES.
+  .
+  Wave 9 MERGED as #8115 (squash e274e2c5f5be), 11/11 records verified in main's
+  bytes.
+  .
+  Wave 10 measured the last two unswept Consumer surfaces and BOTH returned a
+  null against the wave-8 thesis -- recording the null is the result. The
+  explanation object cannot carry the defect: _build_explanation selects between
+  exactly two module-owned documents, no caller text enters, both directions have
+  named tests, and _check_explanation_for_forbidden reads all four emitted keys
+  with zero uncovered. degraded_dependency.state is a three-value contract enum
+  with exactly ONE producible value -- _degraded defaults state to "unavailable"
+  and all seven call sites omit the argument -- and zero readers outside the
+  producing module; "available" on an entry in a list OF degraded dependencies is
+  self-contradictory. Censused across all twelve contract enums it is the ONLY
+  module-authored one that cannot be fully exercised: seven are fully exercised
+  and the four others that look narrow (fact.basis / role / perimeter,
+  source_record.retention_state) are CALLER-authored passthroughs whose enums
+  correctly constrain input -- the wave-7 who-writes-it rule is the
+  discriminator, and skipping it gives four false positives out of five flags.
+  Classified LOOSE, not false: the document never claims
+  anything untrue, so no contract narrowing was opened with no consumer to
+  benefit. Shipped one mutation-probed pin
+  (tests/test_consumer_cyclical_projection.py:1911) that asserts each mutation
+  changed the case and requires >1 distinct reason before asserting the state
+  set, so a stale fact-key filter fails loudly instead of passing on an empty
+  list. Suite 103 passed (119 with the sibling contract file). This CLOSES the
+  Consumer correctness sweep; see do_not_redo in the wave-10 handoff. V1 has not
+  returned to Sol and ACCEPTANCE remains Sol's.
+  See DSC:A-REQUIRED-ENUM-FIELD-CAN-HAVE-ONE-PRODUCIBLE-VALUE-AND-ZERO-READERS.
 ---
 
 ## Scope

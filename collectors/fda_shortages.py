@@ -227,7 +227,14 @@ def collect_shortage_sweep(fetch_page, *, clock, page_size, max_pages) -> dict:
             break
         seen_pages.add(page_identity)
         pages += 1
-        if unique_count >= reported_total:
+        # Completeness is a RAW-row question: "did we observe every record the source
+        # reported". ``unique_count`` is post-deduplication, so comparing it against the
+        # raw ``reported_total`` makes any feed containing a repeated dedupe key look
+        # permanently incomplete — the sweep then pages past the end of the feed, and
+        # openFDA answers ``skip >= total`` with HTTP 404, recording PAGE_FAILED.
+        # Measured live 2026-09-28: total=1601 with four repeated
+        # (package_ndc, initial_posting_date) pairs => unique_count capped at 1597.
+        if raw_count >= reported_total:
             break
         if pages == max_pages:
             failure_code = "CAP_BEFORE_TOTAL"
@@ -238,7 +245,10 @@ def collect_shortage_sweep(fetch_page, *, clock, page_size, max_pages) -> dict:
         isinstance(source_generation, str) and source_generation
     ):
         failure_code = "NO_SOURCE_GENERATION"
-    complete = failure_code is None and reported_total is not None and unique_count == reported_total
+    # Same invariant as the loop exit above: the source's total counts raw records, so
+    # completeness compares raw_count. Deduplication reduces what we STORE, never what
+    # we observed, and must not be able to make a complete interval look truncated.
+    complete = failure_code is None and reported_total is not None and raw_count == reported_total
     capture = {
         "started_at": _iso_utc(started),
         "finished_at": _iso_utc(finished),

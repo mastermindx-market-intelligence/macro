@@ -13,11 +13,11 @@
   },
   "browser": {
     "engine": "chromium",
-    "version": "151.0.7922.34"
+    "version": "149.0.7827.55"
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "e41d36f998b827cc6a7533b6a712f80528b0e43de62c1a7646e9d2f28a8154a3"
+    "sha256": "747b63f0dfb9b98757cefb49d5d0efd7e9d6c43de2bf2222c279a54b94d69762"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "ca",
@@ -313,8 +313,8 @@
     "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
     "site/stocktable.js": "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c",
     "site/tablesort.js": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78",
-    "site/theme.css": "4a7e32977b2ccfe6776748d2b4c680b46727a156514de9da428e00c76449911f",
-    "site/theme.js": "8683471719b6718595b14dc57ac1db622fdba304ecfd9b17b30cbbc2f9617187"
+    "site/theme.css": "d6d5207461084867fa835042037b0393deccb193498e946b2c5eef414d0c4f0e",
+    "site/theme.js": "a0fdddc2c4cb905dd1ca4bf488881173517e45e3bbe2c2d36b74253a6c12add3"
   },
   "viewport": {
     "width": 390,

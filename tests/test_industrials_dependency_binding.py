@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+import re
+from pathlib import Path
+
 import pytest
 
 from engine.company_intelligence.financial_dossier import DELIVERY_INPUT_VALIDATOR_VERSION
 from tests.industrials_result_cash_helpers import (
     FIXTURE_NAMES,
+    PLAN_REQUIREMENT_ANCHORS,
     case,
     cell,
     comparison,
@@ -491,3 +495,281 @@ def test_uppercase_digest_is_digest_malformed() -> None:
     release = result["bindings"]["release_binding"]
     assert release["status"] == "unavailable"
     assert release["reason"] == "digest_malformed"
+
+
+# ---------------------------------------------------------------------------
+# Plan-named requirement anchors (IND-D02, IND-D06) and the test that makes the
+# frozen plan's traceability table gradeable.
+#
+# `test_ind_sf07` above is one of only two anchors the plan's table named that
+# actually existed before 2026-09-27 -- and it existed because the plan also
+# froze its BODY, not because the table named it.  See
+# `DSC:A-PLANS-TRACEABILITY-TABLE-IS-NOT-COVERAGE` and the map's own commentary
+# in `tests/industrials_result_cash_helpers.py`.
+# ---------------------------------------------------------------------------
+
+
+def _admissible_payload() -> dict:
+    """The payload `test_registered_pair_with_accepted_bindings_is_admissible`
+    proves clean: a registered pair with both bindings accepted and no join."""
+    payload = case("source_only")
+    payload["identity"] = {
+        "company_id": "synthetic:northgate",
+        "external_ids": {"cik": "0000987654"},
+    }
+    payload["release_binding"] = {
+        "status": "accepted",
+        "owner_ref": "synthetic:release:candidate",
+        "revision": "r1",
+        "digest": "0" * 64,
+    }
+    payload["private_binding"] = {
+        "status": "accepted",
+        "owner_ref": "synthetic:private:candidate",
+        "revision": "r1",
+        "digest": "0" * 64,
+        "rights_state": "public_primary",
+    }
+    return payload
+
+
+def test_ind_d02(tmp_path) -> None:
+    """IND-D02 — a new curation payload on the current GMI schema and store is
+    refused until the shared native schema, persistence AND the reader
+    round-trip are all admitted.
+
+    The requirement is a CONJUNCTION, which is exactly how it can be
+    half-satisfied and read as done.  Persistence is admitted here: ``publish``
+    validates a locally built staging tree, freezes one generation, and the
+    store records the read.  A delivery claim resting on that alone would look
+    satisfied.  The reader round-trip is NOT admitted -- the route is unbound for
+    an entitled client as much as an unentitled one, and no store read happens
+    behind that refusal -- and the curation payload itself is still refused by
+    the delivery-input validator with a reason from the closed set.
+
+    Research continues throughout: ``research_usable`` stays True, which is the
+    half of the requirement that must NOT be over-enforced.
+    """
+    harness = publication_harness()
+
+    published = harness.publish({}, stage_dir=tmp_path)
+    assert published["status"] == "ok", published
+    assert published["generation_id"].startswith("earnpriv_"), published
+    assert published["read_count"] > 0, published        # persistence admitted
+
+    before = harness.read_count
+    for entitled in (False, True):
+        response = harness.client(entitled=entitled).get("anything")
+        assert response["status"] == "unavailable", (entitled, response)
+        assert response["reason"] == "route_unbound", (entitled, response)
+    # A refusal that read the store anyway would be a partial round-trip
+    # masquerading as none.
+    assert harness.read_count == before, harness.read_count
+
+    admission = _validate(case("source_only"), registry=issuer_registry())
+    assert admission["live_admission"] == "refused", admission
+    assert "accepted_binding_missing" in admission["reasons"], admission
+    assert admission["research_usable"] is True, admission
+
+
+def test_ind_d06() -> None:
+    """IND-D06 — a caller-declared cross-type K1 join: the required composition
+    refuses, while the optional exclusions and the denominator stay VISIBLE.
+
+    The refusal must be surgical.  Built on the payload that is otherwise fully
+    admissible, adding the join produces exactly ONE reason, and it withdraws
+    nothing the caller could still legitimately read: each binding keeps
+    reporting its own accepted / resolved state, and ``research_usable`` is
+    unchanged from the identical payload without the join.  A validator that
+    answered a refused composition by blanking its bindings, by adding
+    collateral reasons, or by dropping research usability would satisfy the
+    refusal assertion and fail these -- which is the failure mode the
+    requirement's second clause exists to prevent.
+    """
+    base = _admissible_payload()
+    without_join = _validate(base, registry=issuer_registry())
+    assert without_join["live_admission"] == "admissible", without_join
+    assert without_join["reasons"] == [], without_join
+
+    joined = dict(base)
+    joined["cross_subject_join"] = {"claimed_binding": "caller-authored"}
+    result = _validate(joined, registry=issuer_registry())
+
+    assert result["live_admission"] == "refused", result
+    assert result["reasons"] == ["unsupported_cross_subject_join"], result
+    # Exclusions and denominator remain visible.
+    assert result["bindings"]["release_binding"] == (
+        without_join["bindings"]["release_binding"]
+    ), result
+    assert result["bindings"]["private_binding"] == (
+        without_join["bindings"]["private_binding"]
+    ), result
+    assert result["bindings"]["identity"] == without_join["bindings"]["identity"], result
+    assert result["research_usable"] == without_join["research_usable"], result
+
+
+def test_every_plan_named_requirement_anchor_exists() -> None:
+    """The frozen plan's traceability table, made gradeable.
+
+    This is the enforcing half of ``PLAN_REQUIREMENT_ANCHORS``.  Before it
+    existed, the table was prose on a research branch: 13 of the 15 anchors it
+    named for T01 and T04 did not exist, both tasks were merged and CI-green, and
+    nothing in the repository could resolve a single row -- a suite run names
+    FILES, so a missing test is not a failing test.
+
+    Resolution is by AST rather than by import or ``getattr`` so a row cannot be
+    satisfied by a name that merely happens to be reachable, and so a syntax
+    error in a suite surfaces here as a failure rather than a collection skip.
+    """
+    import ast
+
+    repo_root = Path(__file__).resolve().parent.parent
+    seen: dict[str, set[str]] = {}
+    for requirement, (relative_path, test_name) in sorted(
+        PLAN_REQUIREMENT_ANCHORS.items()
+    ):
+        suite_path = repo_root / relative_path
+        assert suite_path.is_file(), f"{requirement}: no such suite {relative_path}"
+        if relative_path not in seen:
+            tree = ast.parse(suite_path.read_text(encoding="utf-8"), filename=str(suite_path))
+            seen[relative_path] = {
+                node.name
+                for node in ast.walk(tree)
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            }
+        assert test_name in seen[relative_path], (
+            f"{requirement}: the plan assigns {relative_path}::{test_name}, "
+            f"which does not exist. A missing anchor is invisible to a suite run "
+            f"-- `pytest {relative_path}::{test_name}` reports `no tests ran`, "
+            f"not a failure -- so it is asserted here instead."
+        )
+
+    # The map is a claim about coverage, so its own shape is asserted too: an
+    # empty or silently-truncated map would pass every loop above.
+    assert len(PLAN_REQUIREMENT_ANCHORS) == 21, sorted(PLAN_REQUIREMENT_ANCHORS)
+    assert all(
+        requirement.startswith("IND-") for requirement in PLAN_REQUIREMENT_ANCHORS
+    ), sorted(PLAN_REQUIREMENT_ANCHORS)
+
+
+_REQUIREMENT_INDEX = "research/industrials/first_vertical_program/requirement_index.md"
+_INDEX_ROW = re.compile(
+    r"^\|\s*(IND-[A-Z]+\d+)\s*\|\s*(T\d\d)\s*\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*"
+    r"\|\s*([A-Z_]+)\s*\|$"
+)
+
+
+def _read_requirement_index() -> dict[str, tuple[str, str, str, str]]:
+    """Return ``{requirement: (task, test_file, test_name, anchor_basis)}``."""
+    repo_root = Path(__file__).resolve().parent.parent
+    path = repo_root / _REQUIREMENT_INDEX
+    assert path.is_file(), (
+        f"{_REQUIREMENT_INDEX} is missing. The anchor map's only external "
+        f"authority is that file; without it a row asserts nothing but itself."
+    )
+    rows: dict[str, tuple[str, str, str, str]] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        match = _INDEX_ROW.match(line.strip())
+        if match is None:
+            continue
+        requirement, task, test_file, test_name, basis = match.groups()
+        assert requirement not in rows, f"{requirement}: duplicated index row"
+        rows[requirement] = (task, test_file, test_name, basis)
+    return rows
+
+
+def test_anchor_map_agrees_with_the_recovered_requirement_index() -> None:
+    """An anchor row may not invent the requirement it claims to enforce.
+
+    ``test_every_plan_named_requirement_anchor_exists`` above proves each row
+    points at a test that EXISTS.  It cannot prove the row is honest, because
+    the frozen plan's traceability table is not in this repository: a row naming
+    an id the plan never assigned, or pointing at the suite of a different task,
+    resolves exactly as cleanly as a correct one.
+
+    The missing authority is the obligation's text.  Measured 2026-09-29, of the
+    56 ids the plan names, 41 appear NOWHERE in this tree -- no spec, no doc, no
+    fixture, no test -- because the requirement texts are inherited "unchanged
+    from r1/r2/W12" and those specifications are not vendored here.  The 15 that
+    did appear were exactly T01's and T04's, and only because landed code cites
+    them.  So an anchor for any of the other 41 could not be enforcing a
+    requirement; it would be inventing one, and nothing in CI would notice.
+
+    UPDATED 2026-09-29: "absent from this tree" turned out NOT to mean lost.  Sol's
+    CONTINUE ruling (#7789 comment 5894127980) recovered r1/r2/W12 from the original
+    branch history, so the obligation texts are readable at named blobs even though
+    they are still vendored at no path on ``main``.  That adds a fourth and stronger
+    basis, ``RECOVERED_ORIGINAL``, which quotes the obligation itself rather than
+    reconstructing it from a ruling or from landed code.  The barrier below is
+    UNCHANGED and still fail-closed: a row migrates off ``NO_SOURCE`` only in a
+    change that actually enforces it, one row at a time, never in a bulk edit.
+
+    This binds the map to ``research/industrials/first_vertical_program/
+    requirement_index.md``, which carries the plan's rows verbatim plus a declared
+    ``anchor_basis`` per requirement.  A ``NO_SOURCE`` requirement may not be
+    anchored, so extending coverage requires naming a real source in the same
+    change instead of adding one line to a dict.
+    """
+    index = _read_requirement_index()
+    assert len(index) == 56, f"expected the plan's 56 rows, parsed {len(index)}"
+
+    assert {
+        "RULING",
+        "LANDED_BEHAVIOUR",
+        "RECOVERED_ORIGINAL",
+        "NO_SOURCE",
+    } >= {row[3] for row in index.values()}, sorted(
+        {row[3] for row in index.values()}
+    )
+    sourced = {r for r, row in index.items() if row[3] != "NO_SOURCE"}
+    unsourced = {r for r, row in index.items() if row[3] == "NO_SOURCE"}
+    # Derived, not a second hard-coded constant: clause 4 below binds `sourced`
+    # to the anchor map, whose own size the sibling test asserts, so the count of
+    # unsourced requirements follows from the plan's 56 rows.
+    assert len(sourced) + len(unsourced) == 56, (sorted(sourced), sorted(unsourced))
+
+    # 1. Every anchored requirement is one the plan actually named.
+    for requirement in sorted(PLAN_REQUIREMENT_ANCHORS):
+        assert requirement in index, (
+            f"{requirement} is anchored but the plan's table never names it; "
+            f"an anchor for an id outside the frozen scope is not coverage."
+        )
+
+    # 2. The anchor's suite and test name are the plan's own, not a paraphrase.
+    for requirement, (relative_path, test_name) in sorted(
+        PLAN_REQUIREMENT_ANCHORS.items()
+    ):
+        _task, planned_file, planned_test, _basis = index[requirement]
+        assert relative_path == planned_file, (
+            f"{requirement}: anchored to {relative_path}, plan assigns {planned_file}"
+        )
+        assert test_name == planned_test, (
+            f"{requirement}: anchored to {test_name}, plan assigns {planned_test}"
+        )
+
+    # 3. The barrier this test exists for: no requirement whose obligation text
+    #    nobody holds may be claimed as covered.
+    invented = sorted(set(PLAN_REQUIREMENT_ANCHORS) & unsourced)
+    assert not invented, (
+        f"anchored with anchor_basis=NO_SOURCE: {invented}. The obligation's text "
+        f"is not reachable from this repository, so the row would assert a "
+        f"requirement rather than enforce one. Supply a source in "
+        f"{_REQUIREMENT_INDEX} in the same change, or leave it unanchored."
+    )
+
+    # 4. The converse, so the index cannot claim a source that nothing enforces.
+    assert sourced == set(PLAN_REQUIREMENT_ANCHORS), (
+        f"index/anchor disagreement: sourced-but-unanchored="
+        f"{sorted(sourced - set(PLAN_REQUIREMENT_ANCHORS))}, "
+        f"anchored-but-unsourced={sorted(set(PLAN_REQUIREMENT_ANCHORS) - sourced)}"
+    )
+
+    # 5. A RULING basis names a ruling that has to exist.
+    repo_root = Path(__file__).resolve().parent.parent
+    ruling = repo_root / (
+        "research/industrials/first_vertical_program/rulings/"
+        "R-IND-2026-09-27-requirement-anchors.md"
+    )
+    by_ruling = sorted(r for r, row in index.items() if row[3] == "RULING")
+    assert by_ruling == ["IND-D08", "IND-D09", "IND-D10", "IND-R208"], by_ruling
+    assert ruling.is_file(), f"anchor_basis=RULING for {by_ruling} but {ruling} is absent"

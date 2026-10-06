@@ -1,0 +1,31 @@
+{
+  "schema": "mastermind.marketdesk_extractor.release.v1",
+  "release_id": "marketdesk-source-evolution-baseline-r1-20261005",
+  "capability": "source-lineage separation for evolvable MarketDesk extractor releases",
+  "base_import_commit": "31981dc426f2e7fbb2b333f0fd73789f21deb8cd",
+  "source_of_truth": "Git commit plus current release manifest",
+  "manifest": "SHA256SUMS",
+  "manifest_sha256": "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602",
+  "payload_count": 58,
+  "recovery_manifest": "RECOVERY_SHA256SUMS",
+  "recovery_manifest_sha256": "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602",
+  "historical_import_receipt": "IMPORT_RECEIPT.json",
+  "creates_new_execution_plane": false,
+  "runtime_authority": {
+    "collector_label": "com.mastermindx.research-trickle",
+    "immediate_ingest_trigger": "com.mastermindx.research-feed",
+    "hourly_workflow_backstop": "research-ingest.yml",
+    "repository": "mastermindx-market-intelligence/macro"
+  },
+  "changes": [
+    "Preserve the original recovery manifest as immutable provenance.",
+    "Define SHA256SUMS as the current release manifest governed by Git review.",
+    "Allow later source-owned runtime releases to update SHA256SUMS plus this release receipt without rewriting historical import evidence."
+  ],
+  "non_goals": [
+    "No runtime payload bytes change in this baseline release.",
+    "No LaunchAgent activation, restart, retirement, or replacement.",
+    "No MarketDesk authentication or browser-profile effect.",
+    "No queue, database, bucket, scheduler, workflow, or publication-authority change."
+  ]
+}

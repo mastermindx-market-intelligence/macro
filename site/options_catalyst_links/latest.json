@@ -2,8 +2,8 @@
   "schema": "mastermind.options_catalyst_links/v1",
   "spec_version": "v1",
   "session_date": "2026-09-25",
-  "asof": "2026-09-27",
-  "generated_utc": "2026-09-27T07:58:04Z",
+  "asof": "2026-10-05",
+  "generated_utc": "2026-10-05T09:16:32Z",
   "horizon_days": 63,
   "source": {
     "events": "r2:live_flow/events/2026-09-25.jsonl",
@@ -14,17 +14,17 @@
   "counts": {
     "events": 2544,
     "dropped_malformed": 0,
-    "known_symbols": 247,
+    "known_symbols": 249,
     "candidates_earnings": 6,
     "candidates_macro": 1,
     "by_state": {
       "BOUND": 329,
-      "UNBOUND_NO_CATALYST": 1051,
+      "UNBOUND_NO_CATALYST": 327,
       "AMBIGUOUS_MULTIPLE": 0,
       "STALE_CATALYST": 0,
       "IDENTITY_UNRESOLVED": 417,
       "EXPIRY_MISMATCH": 0,
-      "EXPIRY_BEFORE_ASOF": 747,
+      "EXPIRY_BEFORE_ASOF": 1471,
       "SAME_DAY_UNORDERED": 0
     }
   },
@@ -41,8 +41,8 @@
   ],
   "links_path": "2026-09-25.jsonl",
   "macro_calendar": {
-    "asof": "2026-09-27",
-    "horizon_end": "2026-11-29",
+    "asof": "2026-10-05",
+    "horizon_end": "2026-12-07",
     "source": "engine.event_calendar",
     "fomc": [
       {

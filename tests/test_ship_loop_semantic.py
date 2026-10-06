@@ -72,6 +72,44 @@ def test_delivery_root_accepts_linked_claude_worktree(tmp_path):
     assert GUARD._delivery_root_admission(worktree) == (True, "")
 
 
+def test_linked_handoff_seat_is_quarantined_and_stop_does_not_loop(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    worktree = tmp_path / "handoff-seat"
+    _git(
+        primary,
+        "worktree",
+        "add",
+        "-b",
+        "handoff/information-to-price-fable-program-ceo-20261005",
+        str(worktree),
+    )
+
+    admitted, reason = GUARD._delivery_root_admission(worktree)
+    assert admitted is False
+    assert "branch handoff/information-to-price-fable-program-ceo-20261005 is not claude/*" in reason
+
+    state_path = tmp_path / "handoff-state.json"
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+    start = json.loads(capsys.readouterr().out.strip())
+    context = start["hookSpecificOutput"]["additionalContext"]
+    assert "SESSION ROOT QUARANTINE" in context
+    assert "MANDATORY SHIP LOOP" in context
+
+    GUARD._stop(
+        worktree,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+    assert capsys.readouterr().out.strip() == ""
+
+
 def test_quarantined_root_denies_bash_before_side_effect(tmp_path, capsys):
     primary = _root_fixture(tmp_path)
 

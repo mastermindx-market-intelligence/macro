@@ -148,21 +148,59 @@ _FORBIDDEN_CONCLUSION_PATTERNS: tuple[tuple[str, str], ...] = (
 # document — frozen-spec section 6 rule 10 and section 5
 # "explanation must expose NO ranking, entry, gating, sizing or
 # origination field".
+#: Authority vocabulary refused anywhere in the emitted document, grouped by
+#: the five categories frozen-spec section 6 rule 10 names.
+#:
+#: The list carries the IMPLEMENTATION vocabulary -- what a violating field
+#: would actually be called -- not only the policy's own words. The original
+#: eight entries were the rule's nouns, and measured against thirty
+#: category-representative keys they caught four: ``sizing`` was refused
+#: while ``position_size``, ``weight`` and ``allocation`` were not. See
+#: DSC:A-BLOCKLIST-WRITTEN-FROM-THE-RULES-PROSE-BLOCKS-THE-RULES-WORDS.
 _FORBIDDEN_BARE_KEYS: frozenset[str] = frozenset(
     {
-        "rank",
-        "score",
-        "entry",
-        "gate",
-        "sizing",
-        "origination",
-        "attractiveness",
-        "composite",
+        # ranking
+        "rank", "ranking", "score", "percentile", "tier", "grade",
+        "conviction", "attractiveness", "composite",
+        # entry
+        "entry", "entry_price", "buy_price", "sell_price",
+        "trigger_price", "target_price", "stop_loss", "timing",
+        # gating
+        "gate", "gating", "eligible", "tradeable", "approved", "pass_fail",
+        # sizing
+        "sizing", "size", "position_size", "weight", "allocation",
+        "notional", "exposure",
+        # origination
+        "origination", "originated_by", "signal", "recommendation",
+        "verdict", "direction", "thesis_direction",
+        # Deliberately ABSENT: "action" and "call". Both are ordinary English
+        # with plausible non-authority readings here ("corporate action", an
+        # earnings call), and the contract's seal already refuses them --
+        # they are outside its property vocabulary. Blocking a generic word
+        # to reach a round number would buy a spurious refusal, not safety.
     }
 )
-# Compound / underscored authority keys (mirrors the finance idiom).
+#: Compound / underscored authority keys (mirrors the finance idiom).
+#:
+#: Matched with ``re.search``, NOT ``re.fullmatch``. Measured 2026-09-27:
+#: under ``fullmatch`` this pattern caught nothing the bare set above did not
+#: already catch -- ``(^|_)(stem)(_|$)`` cannot consume a whole compound
+#: name, so ``composite_score``, ``analyst_rank``, ``conviction_score`` and
+#: ``signal_strength`` all passed the one construct named for catching them.
+#: A bare stem still matches, which is why the dead call looked alive.
+#:
+#: Deliberately NARROWER than the bare set above. This pattern matches on
+#: stem boundaries, so it also judges names that do not exist yet; the bare
+#: set matches exactly and cannot. Stems admitted here are ones with no
+#: plausible non-authority reading in this contract. ``size`` and ``weight``
+#: are excluded on purpose -- ``sample_size`` and ``batch_size`` are ordinary
+#: engineering names, and refusing them would trade a silent leak for a
+#: spurious refusal. Both are still caught exactly by the bare set.
 _FORBIDDEN_COMPOUND_KEY_RE = re.compile(
-    r"(^|_)(rank|score|attractiveness|composite)(_|$)",
+    r"(^|_)(rank|score|attractiveness|composite|conviction|percentile"
+    r"|sizing|entry|gate"
+    r"|allocation|notional|exposure|signal|recommendation|origination"
+    r"|gating)(_|$)",
     re.IGNORECASE,
 )
 
@@ -1281,11 +1319,67 @@ def _assert_document_matches_contract_shape(document: Mapping[str, Any]) -> None
         )
 
 
+def _assert_provenance_pointers_resolve(document: Mapping[str, Any]) -> None:
+    """Refuse a document whose provenance pointer names nothing that exists.
+
+    ``fact.native_ref`` and ``source_records[].record_id`` are the two ends
+    of ONE pointer, spelled in two places. The contract validates each end
+    in isolation, so both pass happily while the pointer dangles -- and a
+    dangling provenance pointer is the exact shape frozen-spec section 4a
+    forbids: a fact that appears source-bound while naming no source.
+
+    This is referential integrity WITHIN one emitted document, which is why
+    it belongs here and not in ``_fact_admission_failure`` -- that gate sees
+    one fact and structurally cannot see ``source_records``.
+
+    A ``null`` ``native_ref`` is left alone deliberately. It is the
+    contract's own "unknown" and DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-
+    EMPTINESS-GATE so_what (4) rules that tightening it would refuse
+    otherwise-complete facts to gain nothing. Absence is honest; a pointer
+    to a record that was never declared is not.
+    """
+
+    declared = {
+        record.get("record_id")
+        for record in document.get("source_records") or ()
+        if isinstance(record, Mapping)
+    }
+    orphans = sorted(
+        {
+            str(fact.get("native_ref"))
+            for fact in document.get("facts") or ()
+            if isinstance(fact, Mapping) and fact.get("native_ref") is not None
+        }
+        - declared
+    )
+    if orphans:
+        raise CaseShapeError(
+            "projection would emit facts whose native_ref resolves to no "
+            "declared source record: " + ", ".join(orphans)
+        )
+
+
 def _assert_no_forbidden_authority_keys(document: Mapping[str, Any]) -> None:
     """Walk the document and refuse any forbidden authority / scoring key.
 
     Frozen-spec section 6 rule 10 and section 5: the document exposes
     NO ranking, entry, gating, sizing or origination field.
+
+    THIS GUARD IS THE SECOND LINE, NOT THE FIRST, and saying so is the
+    point of this paragraph. The property above is primarily enforced by
+    ``additionalProperties: false`` on the root and on every composite
+    ``$defs`` of the published contract, checked in
+    ``_assert_document_matches_contract_shape``: a key outside the
+    contract's fixed property vocabulary is refused there whether or not it
+    appears in the blocklist below. Measured 2026-09-27, ``position_size``,
+    ``weight`` and ``recommendation`` were all refused at the shape gate and
+    only ``rank`` at this one.
+
+    Keep both. The seal cannot cover a free-form object added later, nor a
+    name already legal in the contract that acquires an authority meaning;
+    the blocklist cannot cover a name nobody thought of. Neither is
+    redundant, and the failure this docstring now prevents is believing the
+    weaker of the two is the mechanism.
     """
 
     def walk(node: object) -> None:
@@ -1296,7 +1390,7 @@ def _assert_no_forbidden_authority_keys(document: Mapping[str, Any]) -> None:
                         raise CaseShapeError(
                             "document carries forbidden authority key: " + k
                         )
-                    if _FORBIDDEN_COMPOUND_KEY_RE.fullmatch(k):
+                    if _FORBIDDEN_COMPOUND_KEY_RE.search(k):
                         raise CaseShapeError(
                             "document carries forbidden authority key: " + k
                         )
@@ -1325,11 +1419,19 @@ def _compose_changes(
 
     Returns ``(ready_results_by_key, degraded_facts)``.
 
-    A fact whose ``value_text`` is unparseable, whose
-    ``native_admitted`` flag is False (research oracle — frozen-spec
-    section 7), or whose pair cannot be located against the
-    ``comparison_basis`` is recorded in ``degraded_facts`` and the
-    corresponding change result is suppressed.
+    A fact whose ``value_text`` is unparseable, or whose pair cannot be
+    located against the ``comparison_basis``, is recorded in
+    ``degraded_facts`` and the corresponding change result is suppressed.
+
+    ``native_admitted`` is NOT in that list and must not be added to it.
+    Frozen-spec section 4a makes it a PROVENANCE LABEL, never a suppression
+    gate -- see the comment at the pairing site below. Every real V1-CORE
+    fact carries ``native_admitted: False`` because PLNT's Q2 2026 exhibit
+    is retained nowhere, so gating here would make this module structurally
+    incapable of its own golden case. This docstring previously claimed the
+    suppression the code 20 lines below explicitly refuses, and cited
+    section 7 for it; a reader who trusted it would have "restored" a gate
+    that breaks the frozen oracle.
 
     The emitted result key is the fact key with a ``_change`` suffix
     (e.g. fact ``total_revenue`` -> result ``total_revenue_change``)
@@ -1706,6 +1808,7 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
 
     _assert_no_forbidden_authority_keys(document)
     _assert_document_matches_contract_shape(document)
+    _assert_provenance_pointers_resolve(document)
 
     return document
 

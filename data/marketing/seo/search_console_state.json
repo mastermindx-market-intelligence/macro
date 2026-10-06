@@ -1,6 +1,6 @@
 {
   "schema": "gsc_state.v1",
-  "as_of": "2026-09-27",
+  "as_of": "2026-10-04",
   "available": true,
   "reason": null,
   "property": "sc-domain:mastermind-x.com",
@@ -8,9 +8,9 @@
     "client_email": "mas***@***.gserviceaccount.com"
   },
   "window": {
-    "start": "2026-08-31",
-    "end": "2026-09-27"
+    "start": "2026-09-07",
+    "end": "2026-10-04"
   },
-  "rows_fetched": 13,
+  "rows_fetched": 10,
   "rows_may_be_incomplete": true
 }

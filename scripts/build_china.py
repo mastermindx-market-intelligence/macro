@@ -10,6 +10,7 @@ Usage: python -m scripts.build_china   (run after build_site, before build_vecto
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import sys
@@ -96,6 +97,51 @@ def _load_json(path: Path) -> dict | None:
     return None
 
 
+def _theme_intel_for_act_now(
+    baskets_json_path: Path,
+    *,
+    observed_at: datetime | None = None,
+    refresh: bool = True,
+) -> dict | None:
+    """Return the China theme-intelligence generation for the Act Now consumer.
+
+    The Asia data-refresh lane owns the fresh close, so it recomputes through
+    the existing theme_scoring owner even when the persisted artifact has the
+    same session date; this catches same-session corrections. Site-only and
+    no-network rerenders reuse the persisted artifact. Nothing is restamped:
+    stale or malformed evidence still fails closed in china_act_now.
+    """
+    persisted_doc = _load_json(baskets_json_path)
+    persisted = (persisted_doc.get("theme_intel")
+                 if isinstance(persisted_doc, dict) else None)
+    if not refresh:
+        return persisted if isinstance(persisted, dict) else None
+
+    try:
+        from engine.theme_scoring import compute_theme_intel
+
+        current = compute_theme_intel("china")
+        if isinstance(current, dict):
+            if observed_at is not None:
+                from lib import cn_calendar
+
+                expected = cn_calendar.expected_last_session(observed_at).isoformat()
+                if current.get("as_of") != expected:
+                    log.warning(
+                        "china Act Now recompute is not on expected settled session "
+                        "(have=%s expected=%s); downstream freshness gate will withhold",
+                        current.get("as_of"),
+                        expected,
+                    )
+            return current
+    except Exception as exc:  # noqa: BLE001 — optional refresh, downstream fails closed
+        log.error(
+            "china Act Now theme-intel refresh failed (%s); preserving source evidence",
+            exc,
+        )
+
+    return persisted if isinstance(persisted, dict) else None
+
 def _no_network_render() -> bool:
     """True for site-only rerender lanes that must reuse committed China caches.
 
@@ -171,6 +217,59 @@ _PROPHET_OUTAGE_REASON = (
 _PROPHET_OUTAGE_REASON_ZH = (
     "今日榜单暂不可用，我们不会用另一套排序的榜单顶替。今日此处无可操作标的。"
 )
+
+
+def _cn_stock_json_name(ticker: str) -> str:
+    return ticker.replace("=", "_").replace("^", "_")
+
+
+def _compose_cn_w3c_reason_ancestry(*, library_doc, served_doc, site, library_handoff):
+    """Per-row reason receipts for served projections that differ from the library file."""
+    from engine.theme_graph.selection_cohort import content_sha256
+    from engine.theme_graph.selection_cohort_publication import REASONS
+
+    lib_rows = library_doc.get("buy")
+    srv_rows = served_doc.get("buy")
+    if not isinstance(lib_rows, list) or not isinstance(srv_rows, list):
+        return []
+    changed = {
+        i for i, (old, new) in enumerate(zip(lib_rows, srv_rows))
+        if content_sha256({k: old.get(k) for k in REASONS})
+        != content_sha256({k: new.get(k) for k in REASONS})
+    }
+    if not changed:
+        return []
+    if not isinstance(library_handoff, dict):
+        return []
+    generation_id = library_handoff.get("generation_id")
+    available_at = library_handoff.get("available_at")
+    if not generation_id or not available_at:
+        return []
+    stock_dir = site / "chinastockdata"
+    rows = []
+    for row_index in sorted(changed):
+        if row_index >= len(srv_rows):
+            continue
+        row = srv_rows[row_index]
+        ticker = row.get("ticker")
+        if not isinstance(ticker, str) or not ticker:
+            continue
+        path = stock_dir / f"{_cn_stock_json_name(ticker)}.json"
+        if not path.is_file():
+            continue
+        raw = path.read_bytes()
+        projection = {k: row.get(k) for k in REASONS}
+        rows.append(dict(
+            owner="build_china_library",
+            source_family="cn_per_stock_library",
+            source_ref=f"site/chinastockdata/{path.name}",
+            sha256=hashlib.sha256(raw).hexdigest(),
+            generation_id=generation_id,
+            available_at=available_at,
+            row_index=row_index,
+            reason_projection_sha256=content_sha256(projection),
+        ))
+    return rows
 
 
 def _prophet_outage_shell(reason: str = _PROPHET_OUTAGE_REASON,
@@ -1365,14 +1464,17 @@ def main() -> int:
         act_now_v2 = None
         try:
             from engine.china_act_now import (  # noqa: PLC0415
-                assemble_act_now, load_cycle_rows, load_member_names, load_theme_intel,
+                assemble_act_now, load_cycle_rows, load_member_names,
             )
             cfg = config.load()
             site_dir = Path(cfg["storage"]["site_dir"])
             baskets_json_path = site_dir / "chinabasketdata" / "baskets.json"
             data_dir = Path(cfg["storage"].get("data_dir", "data"))
             forward_log_path = data_dir / "china_sector_cycles" / "forward_log.parquet"
-            theme_intel = load_theme_intel(str(baskets_json_path))
+            theme_intel = _theme_intel_for_act_now(
+                baskets_json_path,
+                refresh=not _no_network_render(),
+            )
             cycle_rows = load_cycle_rows(str(forward_log_path))
             # W8-R7 rider: load basket_turn_cn artifact for bottoming-watch organ chips
             _basket_turn_cn: dict | None = None
@@ -1793,10 +1895,12 @@ def main() -> int:
             vm["scoreboard"] = None
 
         factordata = site / "factordata"
+        _w3c_cn_fallback = False
         if not _is_current_prophet_artifact(vm.get("setups")):
             fallback = _load_json(factordata / "china_standouts.json")
             if _is_current_prophet_artifact(fallback):
                 vm["setups"] = fallback
+                _w3c_cn_fallback = True
                 log.info(
                     "using persisted China Prophet v2 fallback (%d featured)",
                     len(fallback.get("buy") or []),
@@ -2049,6 +2153,39 @@ def main() -> int:
                 watch_definitions=_cn_watch_defs, log=log)
         except Exception as _bse:  # noqa: BLE001 — additive, never fatal
             log.warning("cn board_since stamp failed (%s)", _bse)
+
+        # ONE W3C finalization boundary, shared by BOTH existing renders. No early
+        # library FINALIZED rival, no fallback refresh, no public template expansion.
+        # Current source-specific mixed-vendor capture and per-stock reason capability
+        # are unavailable: typed refusal leaves the board and its reasons unchanged.
+        vm["cn_selection_cohort_internal"] = None
+        try:
+            from datetime import datetime as _w3c_dt, timezone as _w3c_tz
+            from engine.theme_graph.selection_cohort_publication import (
+                default_capture_capability, publish_cn_source)
+            _cn_served_bytes = json.dumps(
+                vm.get("setups"), separators=(",", ":"), default=str, allow_nan=False).encode()
+            _cn_library_bytes = (factordata / "china_standouts.json").read_bytes()
+            _cn_library_doc = json.loads(_cn_library_bytes)
+            _cn_served_doc = json.loads(_cn_served_bytes)
+            _cn_reason_ancestry = _compose_cn_w3c_reason_ancestry(
+                library_doc=_cn_library_doc,
+                served_doc=_cn_served_doc,
+                site=site,
+                library_handoff=_cn_library_doc.get("w3c_source"),
+            )
+            _cn_w3c = publish_cn_source(
+                _cn_served_bytes, library_bytes=_cn_library_bytes,
+                data_dir=config.data_dir(), finalized_at=_w3c_dt.now(_w3c_tz.utc).isoformat(),
+                reason_ancestry=_cn_reason_ancestry, fallback=_w3c_cn_fallback,
+                authorize_capture=default_capture_capability())
+            # Machine binding carries only a matching, rightful INTERNAL result.
+            if _cn_w3c["status"] == "AVAILABLE":
+                vm["cn_selection_cohort_internal"] = _cn_w3c
+            else:
+                log.info("W3C China source unavailable: %s", _cn_w3c["reason_codes"])
+        except Exception as _cn_w3c_e:  # noqa: BLE001 — preserve ordinary publication
+            log.warning("W3C China source unavailable (%s)", _cn_w3c_e)
 
         env = Environment(loader=FileSystemLoader(
             str(Path(__file__).resolve().parent.parent / "templates")), autoescape=False)

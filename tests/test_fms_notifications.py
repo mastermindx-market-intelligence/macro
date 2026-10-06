@@ -932,6 +932,136 @@ class _HtmlResponse:
 # ---------------------------------------------------------------------------
 
 
+class TestFederalRegisterTransportRecovery:
+    @staticmethod
+    def _api_row(*, pdf_url: str = "https://www.govinfo.gov/content/pkg/FR-2026-04-22/pdf/2026-07278.pdf"):
+        return {
+            "document_number": "2026-07278",
+            "raw_text_url": "https://www.federalregister.gov/documents/full_text/text/2026/04/22/2026-07278.txt",
+            "pdf_url": pdf_url,
+            "publication_date": "2026-04-22",
+            "title": "Arms Sales Notification",
+            "citation": "91 FR 17629",
+        }
+
+    def test_unseen_fr_redirect_uses_shape_validated_api_govinfo_html(self, tmp_path: Path) -> None:
+        content = _read_bytes("fr/2026-07278.txt")
+        calls = []
+
+        class _Session:
+            def get(self, url, **kwargs):
+                calls.append(url)
+                if "documents.json" in url:
+                    return _JsonResponse({"results": [TestFederalRegisterTransportRecovery._api_row()]})
+                if url.endswith("2026-07278.txt"):
+                    response = _TextResponse(b"", status_code=302)
+                    response.headers["Location"] = "https://unblock.federalregister.gov/challenge"
+                    return response
+                if url == "https://www.govinfo.gov/content/pkg/FR-2026-04-22/html/2026-07278.htm":
+                    return _HtmlResponse(content)
+                raise AssertionError(f"unexpected fetch: {url}")
+
+        rc = live.run_fms_acquisition(
+            root=tmp_path,
+            store=None,
+            session=_Session(),
+            observed_at=RECEIPT_AT,
+            staged_dir=(FIXTURES / "dsca").resolve(),
+            publication_from="2026-01-01",
+            publication_through="2026-08-25",
+        )
+        assert rc == 0
+        assert "https://www.govinfo.gov/content/pkg/FR-2026-04-22/html/2026-07278.htm" in calls
+        rows = [
+            json.loads(line)
+            for line in (tmp_path / "data/government_revenue/fms_observations.jsonl").read_text().splitlines()
+            if line.strip()
+        ]
+        fr_rows = [row for row in rows if row["source_surface"] == "federal_register"]
+        assert len(fr_rows) == 1
+        assert fr_rows[0]["source_url"] == "https://www.govinfo.gov/content/pkg/FR-2026-04-22/html/2026-07278.htm"
+        assert fr_rows[0]["transport"] == "cli"
+
+    def test_non_redirect_raw_failure_does_not_fallback(self, tmp_path: Path) -> None:
+        content = _read_bytes("fr/2026-07278.txt")
+        calls = []
+
+        class _Session:
+            def get(self, url, **kwargs):
+                calls.append(url)
+                if "documents.json" in url:
+                    return _JsonResponse({"results": [TestFederalRegisterTransportRecovery._api_row()]})
+                if url.endswith("2026-07278.txt"):
+                    return _TextResponse(b"not found", status_code=404)
+                if "govinfo.gov" in url:
+                    return _HtmlResponse(content)
+                raise AssertionError(f"unexpected fetch: {url}")
+
+        rc = live.run_fms_acquisition(
+            root=tmp_path,
+            store=None,
+            session=_Session(),
+            observed_at=RECEIPT_AT,
+            staged_dir=(FIXTURES / "dsca").resolve(),
+            publication_from="2026-01-01",
+            publication_through="2026-08-25",
+        )
+        assert rc == 1
+        assert not any("govinfo.gov" in url for url in calls)
+
+
+    @pytest.mark.parametrize(
+        "pdf_url",
+        [
+            "https://evil.example/content/pkg/FR-2026-04-22/pdf/2026-07278.pdf",
+            "https://www.govinfo.gov/content/pkg/FR-2026-04-22/pdf/2026-99999.pdf",
+            "https://www.govinfo.gov/content/pkg/FR-2026-04-21/pdf/2026-07278.pdf",
+            "https://www.govinfo.gov/content/pkg/not-fr/pdf/2026-07278.pdf",
+        ],
+    )
+    def test_govinfo_fallback_requires_api_bound_official_shape(self, pdf_url: str) -> None:
+        with pytest.raises(live.FmsFetchRefused):
+            live.fr_govinfo_html_url(TestFederalRegisterTransportRecovery._api_row(pdf_url=pdf_url))
+
+    def test_retained_fr_document_satisfies_current_sweep_without_refetch_or_restamp(self, tmp_path: Path) -> None:
+        original = _fr_observation(
+            "2026-07278",
+            "https://www.federalregister.gov/documents/full_text/text/2026/04/22/2026-07278.txt",
+        )
+        data_dir = tmp_path / "data" / "government_revenue"
+        data_dir.mkdir(parents=True)
+        (data_dir / "fms_observations.jsonl").write_text(
+            json.dumps(original, sort_keys=True, separators=(",", ":")) + "\n",
+            encoding="utf-8",
+        )
+
+        class _Session:
+            def get(self, url, **kwargs):
+                if "documents.json" in url:
+                    return _JsonResponse({"results": [TestFederalRegisterTransportRecovery._api_row()]})
+                raise AssertionError(f"retained FR document must not be refetched: {url}")
+
+        rc = live.run_fms_acquisition(
+            root=tmp_path,
+            store=None,
+            session=_Session(),
+            observed_at="2026-10-04T06:10:00Z",
+            staged_dir=(FIXTURES / "dsca").resolve(),
+            publication_from="2026-01-01",
+            publication_through="2026-10-04",
+        )
+        assert rc == 0
+        rows = [
+            json.loads(line)
+            for line in (data_dir / "fms_observations.jsonl").read_text().splitlines()
+            if line.strip()
+        ]
+        fr_rows = [row for row in rows if row["source_surface"] == "federal_register"]
+        assert fr_rows == [original]
+        graph = json.loads((data_dir / "fms_case_graph.json").read_text())
+        assert graph["coverage"]["reconciliation"]["denominator_transmittals"] == 1
+
+
 class TestParseSurveyInvariants:
     def test_state_value_grammar_classes(self) -> None:
         # Amended spec §5 grammar, five receipted sentence classes; four of
@@ -1701,3 +1831,223 @@ class TestProductionAmendments6b:
         rc = live.stage_state(["--staged-dir", str(tmp_path / "capture")])
         assert rc == 1
         assert not (tmp_path / "capture" / live.STATE_STAGED_MANIFEST_NAME).exists()
+
+
+# Sol cadence continuation: one existing collector, one existing publisher.
+def _cadence_workflow():
+    import yaml
+    return yaml.load((Path(__file__).resolve().parents[1] / ".github/workflows/fms-acquire.yml").read_text(), Loader=yaml.BaseLoader)
+
+
+def test_fms_cadence_uses_daily_schedule_and_preserves_manual_dispatch():
+    workflow = _cadence_workflow()
+    assert workflow["on"]["schedule"] == [{"cron": "43 10 * * *"}]
+    assert workflow["on"]["workflow_dispatch"]["inputs"]["ref"]["required"] == "true"
+    assert workflow["env"]["FMS_TARGET_REF"] == "${{ inputs.ref || github.event.repository.default_branch }}"
+    steps = workflow["jobs"]["acquire"]["steps"]
+    checkout = next(step for step in steps if step.get("uses", "").startswith("actions/checkout@"))
+    assert checkout["with"]["ref"] == "${{ env.FMS_TARGET_REF }}"
+
+
+def test_fms_cadence_keeps_single_writer_and_existing_resource_limits():
+    workflow = _cadence_workflow()
+    assert workflow["jobs"]["acquire"]["concurrency"] == {"group": "government-revenue-live", "cancel-in-progress": "false"}
+    assert workflow["permissions"] == {"contents": "write"}
+    job = workflow["jobs"]["acquire"]
+    assert job["runs-on"] == ["self-hosted", "macstudio-light"]
+    assert job["timeout-minutes"] == "30"
+    commands = [step.get("run", "") for step in job["steps"]]
+    assert sum("python -m collectors.fms_notifications_live acquire" in cmd for cmd in commands) == 1
+    assert not any("build_government_revenue" in cmd or "site/" in cmd for cmd in commands)
+
+
+def _cadence_git_root(tmp_path, branch="main"):
+    import subprocess
+    origin, checkout = tmp_path / "origin.git", tmp_path / "checkout"
+    def git(*args, cwd=None):
+        return subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
+    git("init", "--bare", str(origin))
+    git("clone", str(origin), str(checkout))
+    git("checkout", "-b", branch, cwd=checkout)
+    git("config", "user.name", "FMS test", cwd=checkout)
+    git("config", "user.email", "fms-test@example.invalid", cwd=checkout)
+    data = checkout / "data/government_revenue"
+    data.mkdir(parents=True)
+    for name in ("fms_collection_receipts.jsonl", "fms_observations.jsonl", "fms_projection_state.json", "fms_case_graph.json"):
+        (data / name).write_text("{}\n")
+    git("add", "data", cwd=checkout)
+    git("commit", "-m", "initial", cwd=checkout)
+    git("push", "origin", f"HEAD:{branch}", cwd=checkout)
+    return checkout, origin, git
+
+
+def _run_cadence_step(step_id, checkout, tmp_path, ref="main", **extra_env):
+    import os, subprocess
+    step = next(s for s in _cadence_workflow()["jobs"]["acquire"]["steps"] if s.get("id") == step_id)
+    env = dict(os.environ, FMS_TARGET_REF=ref, GITHUB_OUTPUT=str(tmp_path / "outputs"), GITHUB_STEP_SUMMARY=str(tmp_path / "summary"), **extra_env)
+    return subprocess.run(["bash", "-e", "-o", "pipefail", "-c", step["run"]], cwd=checkout, env=env, capture_output=True, text=True)
+
+
+@pytest.mark.parametrize("branch", ["main", "manual/fms;literal"])
+def test_fms_cadence_publishes_only_selected_literal_branch(tmp_path, branch):
+    checkout, origin, git = _cadence_git_root(tmp_path, branch)
+    assert _run_cadence_step("validate_target", checkout, tmp_path, branch).returncode == 0
+    before = git("rev-parse", "HEAD", cwd=checkout)
+    (checkout / "data/government_revenue/fms_observations.jsonl").write_text('{"new":true}\n')
+    result = _run_cadence_step("persist", checkout, tmp_path, branch)
+    assert result.returncode == 0, result.stderr
+    after = git("rev-parse", f"refs/heads/{branch}", cwd=origin)
+    assert after != before
+    assert _fms_step_outputs(tmp_path)["projection_changed"] == "true"
+    assert git("diff", "--name-only", before, after, cwd=checkout) == "data/government_revenue/fms_observations.jsonl"
+
+
+def test_fms_cadence_unchanged_working_tree_does_not_create_a_commit(tmp_path):
+    checkout, origin, git = _cadence_git_root(tmp_path)
+    before = git("rev-parse", "HEAD", cwd=checkout)
+    result = _run_cadence_step("persist", checkout, tmp_path)
+    assert result.returncode == 0, result.stderr
+    assert git("rev-parse", "refs/heads/main", cwd=origin) == before
+    assert _fms_step_outputs(tmp_path)["projection_changed"] == "false"
+    assert _fms_step_outputs(tmp_path).get("publish_default") != "true"
+
+
+def test_fms_cadence_refuses_unrelated_files_before_commit(tmp_path):
+    checkout, origin, git = _cadence_git_root(tmp_path)
+    before = git("rev-parse", "HEAD", cwd=checkout)
+    (checkout / "unrelated.txt").write_text("must not publish")
+    assert _run_cadence_step("persist", checkout, tmp_path).returncode != 0
+    assert git("rev-parse", "refs/heads/main", cwd=origin) == before
+
+
+@pytest.mark.parametrize("ref", ["", "bad ref", "../main", "main\nother"])
+def test_fms_cadence_refuses_invalid_target_before_acquisition(tmp_path, ref):
+    result = _run_cadence_step("validate_target", tmp_path, tmp_path, ref)
+    assert result.returncode != 0
+    steps = _cadence_workflow()["jobs"]["acquire"]["steps"]
+    ids = [s.get("id") for s in steps]
+    assert ids.index("validate_target") < ids.index("acquire_notifications")
+
+
+@pytest.mark.parametrize("acquisition,persist,changed", [("success", "success", "false"), ("failure", "skipped", "unknown")])
+def test_fms_cadence_reports_step_outcome_without_fabricating_freshness(tmp_path, acquisition, persist, changed):
+    steps = _cadence_workflow()["jobs"]["acquire"]["steps"]
+    report = next(s for s in steps if s.get("id") == "check_summary")
+    assert report["if"] == "always()"
+    result = _run_cadence_step("check_summary", tmp_path, tmp_path,
+        ACQUISITION_OUTCOME=acquisition, PERSIST_OUTCOME=persist, PROJECTION_CHANGED=changed)
+    assert result.returncode == 0, result.stderr
+    summary = (tmp_path / "summary").read_text()
+    assert f"Acquisition step: {acquisition}" in summary
+    assert f"Commit step: {persist}" in summary
+    assert f"Projection files changed: {changed}" in summary
+    assert "does not advance source publication time" in summary
+
+
+# GITHUB_TOKEN source pushes do not trigger the downstream on:push publisher.
+def _fms_step_outputs(tmp_path):
+    path = tmp_path / "outputs"
+    return dict(line.split("=", 1) for line in path.read_text().splitlines()) if path.exists() else {}
+
+
+def test_fms_publisher_handoff_reuses_existing_owner_without_parent_lock():
+    workflow = _cadence_workflow()
+    assert "concurrency" not in workflow, "a parent lock would deadlock the called publisher"
+    acquire = workflow["jobs"]["acquire"]
+    assert acquire["concurrency"] == {"group": "government-revenue-live", "cancel-in-progress": "false"}
+    assert acquire["outputs"]["publish_default"] == "${{ steps.persist.outputs.publish_default }}"
+    assert workflow["env"]["FMS_DEFAULT_BRANCH"] == "${{ github.event.repository.default_branch }}"
+    publish = workflow["jobs"]["publish"]
+    assert publish["needs"] == "acquire"
+    assert publish["if"] == "needs.acquire.outputs.publish_default == 'true'"
+    assert publish["uses"] == "./.github/workflows/government-revenue-live.yml"
+    assert publish["with"] == {"projection_only": "true"}
+    assert not any(key in publish for key in ("steps", "runs-on", "concurrency", "secrets"))
+    assert workflow["permissions"] == {"contents": "write"}
+    root = Path(__file__).resolve().parents[1]
+    import yaml
+    owner = yaml.load((root / ".github/workflows/government-revenue-live.yml").read_text(), Loader=yaml.BaseLoader)
+    assert owner["on"]["workflow_call"]["inputs"]["projection_only"]["type"] == "boolean"
+    assert owner["concurrency"] == acquire["concurrency"]
+    checkout = next(s for s in owner["jobs"]["refresh"]["steps"] if s.get("uses", "").startswith("actions/checkout@"))
+    assert checkout["with"]["ref"] == "main"
+
+
+@pytest.mark.parametrize("target,workflow_ref,default_branch,expected", [
+    ("main", "refs/heads/main", "main", "true"),
+    ("manual/fms;literal", "refs/heads/main", "main", "false"),
+    ("main", "refs/heads/unreleased", "main", "false"),
+    ("main", "refs/heads/main", "other", "false"),
+    ("main", "", "main", "false"),
+])
+def test_fms_publisher_handoff_requires_committed_production_ref(tmp_path, target, workflow_ref, default_branch, expected):
+    checkout, origin, git = _cadence_git_root(tmp_path, target)
+    (checkout / "data/government_revenue/fms_observations.jsonl").write_text('{"new":true}\n')
+    result = _run_cadence_step("persist", checkout, tmp_path, target,
+        GITHUB_REF=workflow_ref, FMS_DEFAULT_BRANCH=default_branch)
+    assert result.returncode == 0, result.stderr
+    outputs = _fms_step_outputs(tmp_path)
+    assert outputs.get("publish_default") == expected
+    assert outputs["projection_changed"] == "true"
+    assert git("rev-parse", f"refs/heads/{target}", cwd=origin) == git("rev-parse", "HEAD", cwd=checkout)
+
+
+def _run_fms_publish_verifier(root: Path):
+    import os
+    import subprocess
+    workflow = _cadence_workflow()
+    step = next(
+        item for item in workflow["jobs"]["verify_publish"]["steps"]
+        if item.get("id") == "verify_projection"
+    )
+    return subprocess.run(
+        ["bash", "-e", "-o", "pipefail", "-c", step["run"]],
+        cwd=root,
+        env=dict(os.environ),
+        capture_output=True,
+        text=True,
+    )
+
+
+def test_fms_publisher_handoff_verifies_released_source_matches_served_twin():
+    workflow = _cadence_workflow()
+    verify = workflow["jobs"]["verify_publish"]
+    assert verify["needs"] == ["acquire", "publish"]
+    assert verify["if"] == "needs.acquire.outputs.publish_default == 'true'"
+    assert verify["runs-on"] == ["self-hosted", "macstudio-light"]
+    assert verify["timeout-minutes"] == "5"
+    checkout = next(step for step in verify["steps"] if step.get("uses", "").startswith("actions/checkout@"))
+    assert checkout["with"]["ref"] == "$" + "{{ github.event.repository.default_branch }}"
+    verifier = next(step for step in verify["steps"] if step.get("id") == "verify_projection")
+    assert "data/government_revenue/fms_case_graph.json" in verifier["run"]
+    assert "site/government-revenue-data/fms-cases.json" in verifier["run"]
+    assert "cmp" in verifier["run"]
+
+
+def test_fms_publisher_handoff_verifier_fails_stale_site_and_accepts_exact_twin(tmp_path):
+    source = tmp_path / "data/government_revenue/fms_case_graph.json"
+    site = tmp_path / "site/government-revenue-data/fms-cases.json"
+    source.parent.mkdir(parents=True)
+    site.parent.mkdir(parents=True)
+    source.write_text('{"graph_id":"new","cases":[1]}')
+    site.write_text('{"graph_id":"old","cases":[]}')
+
+    stale = _run_fms_publish_verifier(tmp_path)
+    assert stale.returncode != 0
+    assert "served FMS projection does not match released source graph" in stale.stdout
+
+    site.write_bytes(source.read_bytes())
+    converged = _run_fms_publish_verifier(tmp_path)
+    assert converged.returncode == 0, converged.stderr
+    assert "FMS source/site convergence verified" in converged.stdout
+
+
+def test_fms_publisher_handoff_does_not_publish_after_failed_push(tmp_path):
+    checkout, origin, git = _cadence_git_root(tmp_path)
+    hook = origin / "hooks/pre-receive"
+    hook.write_text("#!/bin/sh\nexit 1\n")
+    hook.chmod(0o700)
+    (checkout / "data/government_revenue/fms_observations.jsonl").write_text('{"new":true}\n')
+    result = _run_cadence_step("persist", checkout, tmp_path, GITHUB_REF="refs/heads/main", FMS_DEFAULT_BRANCH="main")
+    assert result.returncode != 0
+    assert _fms_step_outputs(tmp_path).get("publish_default") != "true"

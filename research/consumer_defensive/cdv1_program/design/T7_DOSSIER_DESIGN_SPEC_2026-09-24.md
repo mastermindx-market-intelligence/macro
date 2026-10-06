@@ -301,7 +301,11 @@ The machine rule ID is never shown.
 | segments | Segment detail is unavailable. | 分部明细不可用。 |
 | reconciliation | The company’s core EPS reconciliation is unavailable. | 公司核心每股收益调节说明不可用。 |
 | margin_to_cash | The margin-to-cash bridge is unavailable. | 利润率与现金流之间的衔接信息不可用。 |
+| demand | Some demand figures are unavailable. | 部分需求数据不可用。 |
+| earnings | Some earnings figures are unavailable. | 部分盈利数据不可用。 |
 | empty list | Nothing required is missing. | 必需信息没有缺失。 |
+
+The payload carries one missing-context item per absent input, so several items can share an owner value. Each owner value's sentence renders once, at the position of its first item in server order; later items with the same owner add no second sentence. (Seat amendment 2026-09-30, `reviews/SEAT_RULING_T3_R4_2026-09-30.md`.)
 
 ### 5.8 Mandatory definition lines
 
@@ -368,7 +372,7 @@ Every source-derived placeholder maps exactly as follows:
 | `[data-economic-findings]` items | `interpretation.findings` in server order |
 | Finding text | Fixed §5.6 sentence selected by `findings[].rule_id` and page language |
 | Finding `data-economic-rule` | `findings[].rule_id` |
-| `[data-economic-missing]` items | `interpretation.missing_context` in server order |
+| `[data-economic-missing]` items | `interpretation.missing_context` in server order, one rendered item per distinct owner value (§5.7) |
 | Missing-context text | Fixed §5.7 sentence selected by owner value and page language |
 | Fiscal-period footer item | `interpretation.clocks.fiscal_period.{en,zh}` |
 | Source-accepted footer item | `interpretation.clocks.source_accepted.{en,zh}` |

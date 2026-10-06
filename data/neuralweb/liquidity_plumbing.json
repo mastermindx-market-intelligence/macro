@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.liquidity_plumbing.v1",
-  "asof": "2026-09-25",
+  "asof": "2026-10-02",
   "phase_status": {
     "p0_p1_quantity_quality": "integrated",
     "p3_funding_spreads": "integrated",
@@ -19,58 +19,58 @@
     "hard_gate": false
   },
   "headline": {
-    "state": "stress_liquidity_expansion",
-    "summary": "Net liquidity is technically expanding but credit/funding stress gauges are confirming stress — expansion quality is poor; treat with caution, not as a clean tailwind. RRP buffer is empty — the next liquidity drain hits bank reserves directly."
+    "state": "neutral_hollow",
+    "summary": "Net liquidity is neutral but RRP exhausted or composition is mechanical — buffer is hollow; net-neutral read with limited downside cushion. RRP buffer is empty — the next liquidity drain hits bank reserves directly."
   },
   "fed": {
-    "assets_bn": 6747.704,
-    "assets_chg_20d_bn": 16.792,
-    "reserve_balances_bn": 2930.193,
+    "assets_bn": 6743.031,
+    "assets_chg_20d_bn": 5.827,
+    "reserve_balances_bn": 2948.09,
     "walcl_stale_days": 2,
     "policy_stance": "hawkish",
     "administered_rate_posture": "tightening",
-    "asof": "2026-09-25"
+    "asof": "2026-10-02"
   },
   "treasury": {
-    "tga_bn": 924.627,
-    "tga_chg_20d_bn": -34.808,
-    "net_issuance_20d_bn": 52.037,
+    "tga_bn": 893.699,
+    "tga_chg_20d_bn": -50.665,
+    "net_issuance_20d_bn": 10.063,
     "expected_tga_pressure": "unknown_until_financing_estimates_parser",
     "coupon_supply_pressure": "context_only",
     "tga_impulse": {
       "active": true,
-      "direction": "build",
-      "magnitude_bn": 106.5,
+      "direction": "drawdown",
+      "magnitude_bn": 79.0,
       "days": 10,
-      "since": "2026-09-10",
+      "since": "2026-09-17",
       "quarter_end_adjacent": false,
-      "summary_en": "Treasury rebuilt its cash account by $106B since Sep 10 — that cash is absorbed from the financial system (mild headwind while it lasts).",
-      "summary_zh": "自9月10日起，美国财政部已向现金账户补充$106B — 这部分资金从金融体系中吸收（短期内为温和阻力）。"
+      "summary_en": "Treasury spent down $79B of its cash account since Sep 17 — that cash re-enters the financial system (supportive while it lasts).",
+      "summary_zh": "自9月17日起，美国财政部已动用现金账户中的$79B — 这部分资金重新流入金融体系（短期内具支撑性）。"
     },
-    "asof": "2026-09-24"
+    "asof": "2026-10-01"
   },
   "rrp": {
-    "rrp_bn": 0.576,
-    "rrp_chg_20d_bn": 0.12,
+    "rrp_bn": 1.501,
+    "rrp_chg_20d_bn": 0.799,
     "buffer_state": "exhausted"
   },
   "quantity": {
-    "netliq_bn": 5822.501,
-    "netliq_chg_20d_bn": 42.849,
-    "netliq_chg_65d_bn": -35.957,
-    "netliq_pctile_expanding": 0.776858,
-    "overlay": "expanding"
+    "netliq_bn": 5847.831,
+    "netliq_chg_20d_bn": 15.257,
+    "netliq_chg_65d_bn": -103.971,
+    "netliq_pctile_expanding": 0.782944,
+    "overlay": "neutral"
   },
   "quality": {
-    "label": "stress-expansion",
-    "fed_share": 0.02,
+    "label": "neutral-hollow",
+    "fed_share": 0.5,
     "mechanical": true,
     "stress_confirming": true,
     "stress_overlay": {
-      "hy_oas_pct": 2.8,
-      "hy_oas_z": 1.06,
-      "nfci": -0.555,
-      "nfci_trend": "loose",
+      "hy_oas_pct": 3.24,
+      "hy_oas_z": 2.78,
+      "nfci": -0.548,
+      "nfci_trend": "tightening",
       "confirming_stress": true
     },
     "walcl_stale_days": 2
@@ -78,58 +78,38 @@
   "funding": {
     "effr_minus_iorb_bp": -2.0,
     "effr_minus_iorb_d20_bp": 0.0,
-    "effr_minus_iorb_pctile": 0.915,
-    "sofr_minus_iorb_bp": -2.0,
-    "sofr_minus_iorb_d20_bp": -1.0,
-    "sofr_minus_iorb_pctile": 0.8353,
-    "sofr_99pctl_minus_iorb_bp": 6.0,
+    "effr_minus_iorb_pctile": 0.9153,
+    "sofr_minus_iorb_bp": -3.0,
+    "sofr_minus_iorb_d20_bp": -3.0,
+    "sofr_minus_iorb_pctile": 0.8065,
+    "sofr_99pctl_minus_iorb_bp": 7.0,
     "sofr_99pctl_minus_iorb_d20_bp": -1.0,
-    "sofr_99pctl_minus_iorb_pctile": 0.7691,
+    "sofr_99pctl_minus_iorb_pctile": 0.8048,
     "srf_takeup_bn": null,
     "discount_window_primary_credit_bn": null,
     "reserve_scarcity_state": "tightening",
-    "asof": "2026-09-24"
+    "asof": "2026-10-01"
   },
   "components": {
     "walcl": {
-      "level_bn": 6747.7,
-      "d20_bn": 16.8,
-      "d65_bn": 12.1,
-      "pctile": 0.7732
+      "level_bn": 6743.0,
+      "d20_bn": 5.8,
+      "d65_bn": 18.5,
+      "pctile": 0.7697
     },
     "rrp": {
-      "level_bn": 0.6,
-      "d20_bn": 0.1,
-      "d65_bn": -5.1,
-      "pctile": 0.1354
+      "level_bn": 1.5,
+      "d20_bn": 0.8,
+      "d65_bn": -0.7,
+      "pctile": 0.3082
     },
     "tga": {
-      "level_bn": 924.6,
-      "d20_bn": -26.2,
-      "d65_bn": 53.2,
-      "pctile": 0.9338
+      "level_bn": 893.7,
+      "d20_bn": -10.2,
+      "d65_bn": 123.1,
+      "pctile": 0.923
     },
     "netliq_sparkline_90d": [
-      {
-        "d": "2026-06-29",
-        "v": 5855.1
-      },
-      {
-        "d": "2026-06-30",
-        "v": 5789.6
-      },
-      {
-        "d": "2026-07-01",
-        "v": 5916.2
-      },
-      {
-        "d": "2026-07-02",
-        "v": 5951.8
-      },
-      {
-        "d": "2026-07-03",
-        "v": 5945.5
-      },
       {
         "d": "2026-07-06",
         "v": 5938.7
@@ -364,27 +344,47 @@
       },
       {
         "d": "2026-09-25",
-        "v": 5822.5
+        "v": 5801.8
+      },
+      {
+        "d": "2026-09-28",
+        "v": 5787.3
+      },
+      {
+        "d": "2026-09-29",
+        "v": 5799.7
+      },
+      {
+        "d": "2026-09-30",
+        "v": 5747.4
+      },
+      {
+        "d": "2026-10-01",
+        "v": 5849.0
+      },
+      {
+        "d": "2026-10-02",
+        "v": 5847.8
       }
     ],
     "reserves": {
-      "level_bn": 2930.2,
-      "d20_bn": -102.4,
-      "d65_bn": -439.1,
-      "pctile": 0.7558
+      "level_bn": 2948.1,
+      "d20_bn": -154.7,
+      "d65_bn": -277.9,
+      "pctile": 0.7601
     }
   },
   "foreign_dollar": {
-    "swap_lines_bn": 0.072,
-    "facility_loans_bn": 6.311,
+    "swap_lines_bn": 0.207,
+    "facility_loans_bn": 8.804,
     "fima_repo_bn": null,
     "state": "quiescent",
     "note": "IRD-R5: swap-line levels are confirmation tier — they grade severity after price signals fire, never trigger alerts. FIMA repo: no free per-facility breakout; aggregate rides H.4.1 repo line.",
-    "asof": "2026-09-23"
+    "asof": "2026-09-30"
   },
   "entry_effect": {
-    "direction": "tailwind",
-    "quality": "low_quality_tailwind",
+    "direction": "neutral",
+    "quality": "neutral",
     "measured_basis": "cycle_ladder_21d_odds",
     "use": "support existing buy setup, never originate one"
   },
@@ -394,7 +394,7 @@
   "degraded": false,
   "schema_version": 1,
   "produced_by": "scripts/build_liquidity_plumbing.py",
-  "produced_at": "2026-09-27T08:43:32Z",
-  "inputs_hash": "sha256:3cf54a78a7e3a489109dde6e72202611bddd4e06d31423031bbc25483b28e584",
+  "produced_at": "2026-10-05T10:07:52Z",
+  "inputs_hash": "sha256:e2cb9d840d07df6bc99319249761f8d4a077214320ff2947b1283514b33309dd",
   "tier": "shadow"
 }

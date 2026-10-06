@@ -1,15 +1,15 @@
 {
   "appended": 0,
-  "asof": "2026-09-25",
+  "asof": "2026-10-02",
   "candidates": {
     "R": 0,
-    "T": 19,
-    "W": 4
+    "T": 9,
+    "W": 5
   },
   "deduped": {
     "R": 0,
-    "T": 19,
-    "W": 4
+    "T": 9,
+    "W": 5
   },
   "dry_run": false,
   "feature_source": {
@@ -80,47 +80,47 @@
     "T": [],
     "W": []
   },
-  "n_universe": 1492,
+  "n_universe": 1493,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-27 09:36:21",
-  "runtime_s": 133.0,
+  "run_utc": "2026-10-05 10:53:13",
+  "runtime_s": 101.4,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 0,
-    "asof": "2026-09-25",
-    "n_members": 129,
+    "age_days": -3,
+    "asof": "2026-10-05",
+    "n_members": 122,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 4.214,
+        "emerging_score": 3.415,
         "rank": 1,
         "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.367,
+        "emerging_score": 2.127,
         "rank": 2,
-        "theme": "Quantum Computing"
-      },
-      {
-        "emerging_score": 2.084,
-        "rank": 3,
-        "theme": "Space Tech"
-      },
-      {
-        "emerging_score": 1.559,
-        "rank": 4,
         "theme": "Industrial Automation"
       },
       {
-        "emerging_score": 1.55,
+        "emerging_score": 1.744,
+        "rank": 3,
+        "theme": "Robotics"
+      },
+      {
+        "emerging_score": 1.587,
+        "rank": 4,
+        "theme": "Biometrics"
+      },
+      {
+        "emerging_score": 1.587,
         "rank": 5,
-        "theme": "Nanotechnology"
+        "theme": "Cybersecurity"
       }
     ]
   },
@@ -129,19 +129,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 4,
-    "asof_max": "2026-09-25",
+    "aligned": 5,
+    "asof_max": "2026-10-02",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-25",
+    "asof_run": "2026-10-02",
     "evaluated": 713,
-    "fresh": 4,
+    "fresh": 5,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 23.9,
+    "runtime_s": 20.2,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 67,
+    "state_turn": 61,
     "universe_n": 717
   }
 }
