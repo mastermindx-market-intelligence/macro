@@ -4400,11 +4400,18 @@ def _fast_forwarded_onto_main(root: Path) -> bool:
         return False
 
 
-# The only HEAD-reflog subjects a pure sync onto origin/main writes — a
-# fast-forward `git merge` (`merge origin/main`, or `merge <sha>` for FETCH_HEAD),
-# a fast-forward `git pull` with whatever flags it was given, and a hard reset to
-# origin/main. See `_head_moved_only_by_sync`.
-_SYNC_REFLOG_SUBJECT = re.compile(r"^(?:merge \S+|pull(?: \S+)*): Fast-forward$")
+# The only HEAD-reflog subjects accepted as a sync, every one naming origin/main:
+# the law's own `git merge --ff-only origin/main`, a fast-forward `git pull` that
+# names `origin main` (flags only before it), a bare fast-forward `git pull`
+# (flags only) — accepted only while `main`'s configured upstream IS origin/main —
+# and a reset to origin/main. Everything else declines, deliberately including
+# `merge FETCH_HEAD`, `merge <sha>` (what git writes for a FETCH_HEAD merge) and
+# `merge <any other ref>`: a fast-forward onto a LOCAL ref is how a commit made
+# off HEAD's reflog (`commit-tree` + `update-ref`, or another worktree) would
+# reach main and then be pushed. See `_head_moved_only_by_sync`.
+_SYNC_MERGE_SUBJECT = "merge origin/main: Fast-forward"
+_SYNC_PULL_NAMED_SUBJECT = re.compile(r"^pull(?: --?\S+)* origin main: Fast-forward$")
+_SYNC_PULL_BARE_SUBJECT = re.compile(r"^pull(?: --?\S+)*: Fast-forward$")
 _SYNC_RESET_SUBJECT = "reset: moving to origin/main"
 
 
@@ -4426,15 +4433,23 @@ def _head_moved_only_by_sync(root: Path, start_head: str, head: str) -> bool:
     syncing to someone else's commits and committing on main then pushing straight
     to origin/main both end at origin's tip with a zero ahead-count. This
     worktree's HEAD reflog CAN tell them apart, because the two leave different
-    trails. A sync writes only fast-forward merge/pull entries or
+    trails. A sync writes only a fast-forward merge/pull of origin/main or
     `reset: moving to origin/main`; any authored commit writes a `commit`-class
     entry (`commit`, `commit (amend)`, `cherry-pick`, `rebase …`, `revert`, a
     non-fast-forward merge), and a branch switch writes `checkout: …`. So the
     window strictly newer than start_head's entry must consist only of sync
-    subjects (`_SYNC_REFLOG_SUBJECT` / `_SYNC_RESET_SUBJECT`), and every sha in it
-    must also be an ancestor of origin/main — the subject is the authorship test,
-    the ancestry is belt-and-braces that each step landed somewhere origin
-    already holds. The caller has just fetched origin/main inside
+    subjects (`_SYNC_MERGE_SUBJECT`, `_SYNC_PULL_NAMED_SUBJECT`,
+    `_SYNC_PULL_BARE_SUBJECT`, `_SYNC_RESET_SUBJECT`), and every sha in it must
+    also be an ancestor of origin/main — the subject is the authorship test, the
+    ancestry is belt-and-braces that each step landed somewhere origin already
+    holds. The ref a sync names must be origin/main itself, because a
+    fast-forward onto a local ref is how a direct push to main would hide its
+    commit: `commit-tree` + `update-ref refs/heads/scratch`, then
+    `merge --ff-only scratch` and `push origin main`, leaves only
+    `merge scratch: Fast-forward` in this reflog, every sha an ancestor of
+    origin/main once pushed. A bare `pull` names no ref, so it counts only while
+    `main`'s configured upstream is origin/main — read once, and only when such an
+    entry is in the window. The caller has just fetched origin/main inside
     `_fast_forwarded_onto_main`; this helper does not fetch again.
 
     The window is bounded by the OLDEST entry naming start_head, never the newest.
@@ -4475,9 +4490,21 @@ def _head_moved_only_by_sync(root: Path, start_head: str, head: str) -> bool:
         if not starts:
             return False
         window = entries[: starts[-1]]
+        upstream_is_origin_main: bool | None = None
         for _sha, subject in window:
-            if not (_SYNC_REFLOG_SUBJECT.match(subject) or subject == _SYNC_RESET_SUBJECT):
-                return False
+            if subject in (_SYNC_MERGE_SUBJECT, _SYNC_RESET_SUBJECT):
+                continue
+            if _SYNC_PULL_NAMED_SUBJECT.match(subject):
+                continue
+            if _SYNC_PULL_BARE_SUBJECT.match(subject):
+                if upstream_is_origin_main is None:
+                    upstream = _run(
+                        root, "git", "for-each-ref", "--format=%(upstream:short)", "refs/heads/main"
+                    )
+                    upstream_is_origin_main = upstream == "origin/main"
+                if upstream_is_origin_main:
+                    continue
+            return False
         for sha in dict.fromkeys(sha for sha, _subject in window):
             _run(root, "git", "merge-base", "--is-ancestor", sha, "origin/main")
         return True

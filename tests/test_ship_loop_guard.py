@@ -3200,6 +3200,44 @@ def test_a_detached_head_at_the_origin_main_tip_still_blocks(monkeypatch, tmp_pa
     assert "detached HEAD" in emitted["reason"]
 
 
+def _plumbing_commit_on_scratch(repo: Path) -> str:
+    """A commit HEAD's reflog never sees: `commit-tree` + `update-ref` on scratch."""
+    sha = _git(repo, "commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "feat: made off HEAD")
+    _git(repo, "update-ref", "refs/heads/scratch", sha)
+    return sha
+
+
+def test_a_fast_forward_onto_a_local_ref_then_a_push_to_main_still_blocks(
+    monkeypatch, tmp_path, capsys
+):
+    """T7 — the fail-open the first cut of the sync set allowed, built exactly.
+
+    A commit made with plumbing on another ref writes nothing to HEAD's reflog;
+    `merge --ff-only scratch` on main writes `merge scratch: Fast-forward`; and
+    once `push origin main` lands it, every window sha is an ancestor of
+    origin/main. A subject set accepting `merge <any ref>: Fast-forward` exempted
+    that direct push to main. Only origin/main-targeted syncs count now.
+    """
+    repo, state_path, _other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    authored = _plumbing_commit_on_scratch(repo)
+    _git(repo, "merge", "--ff-only", "scratch")
+    _git(repo, "push", "origin", "main")
+    _git(repo, "fetch", "origin")
+
+    head = _git(repo, "rev-parse", "HEAD")
+    assert head == authored == _git(repo, "rev-parse", "origin/main")
+    assert _reflog_window(repo, start_head) == ["merge scratch: Fast-forward"]
+    assert re.fullmatch(r"merge \S+: Fast-forward", "merge scratch: Fast-forward"), (
+        "precondition: the first cut's subject pattern would have accepted it"
+    )
+    assert GUARD._fast_forwarded_onto_main(repo), "precondition: position alone would exempt"
+    assert GUARD._head_moved_only_by_sync(repo, start_head, head) is False
+
+    verdict = _stop_verdict(monkeypatch, capsys, repo, state_path, merged_pr=None)
+    assert verdict == "unsafe_branch"
+
+
 def _sync_by_ff_merge(repo: Path, other: Path) -> None:
     _land_elsewhere(other, "landed.txt")
     _sync_main(repo)
@@ -3208,6 +3246,48 @@ def _sync_by_ff_merge(repo: Path, other: Path) -> None:
 def _sync_by_ff_pull(repo: Path, other: Path) -> None:
     _land_elsewhere(other, "landed.txt")
     _git(repo, "pull", "--no-rebase", "--ff-only", "origin", "main")
+
+
+def _sync_by_named_pull(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "config", "pull.rebase", "false")
+    _git(repo, "pull", "origin", "main")
+
+
+def _sync_by_ff_only_named_pull(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "pull", "--ff-only", "origin", "main")
+
+
+def _sync_by_bare_pull_tracking_origin_main(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "fetch", "origin")
+    _git(repo, "branch", "--set-upstream-to=origin/main", "main")
+    _git(repo, "config", "pull.rebase", "false")
+    _git(repo, "pull")
+
+
+def _bare_pull_from_a_local_upstream(repo: Path, other: Path) -> None:
+    _plumbing_commit_on_scratch(repo)
+    _git(repo, "branch", "--set-upstream-to=scratch", "main")
+    _git(repo, "config", "pull.rebase", "false")
+    _git(repo, "pull")
+    _git(repo, "push", "origin", "main")
+    _git(repo, "fetch", "origin")
+
+
+def _merge_a_local_ref(repo: Path, other: Path) -> None:
+    _plumbing_commit_on_scratch(repo)
+    _git(repo, "merge", "--ff-only", "scratch")
+    _git(repo, "push", "origin", "main")
+    _git(repo, "fetch", "origin")
+
+
+def _merge_fetch_head(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "fetch", "origin", "main")
+    _git(repo, "merge", "--ff-only", "FETCH_HEAD")
+    _git(repo, "fetch", "origin")
 
 
 def _sync_by_reset(repo: Path, other: Path) -> None:
@@ -3233,19 +3313,33 @@ def _merge_without_fast_forward(repo: Path, other: Path) -> None:
     (
         (_sync_by_ff_merge, r"merge origin/main: Fast-forward", True),
         (_sync_by_ff_pull, r"pull --no-rebase --ff-only origin main: Fast-forward", True),
+        (_sync_by_named_pull, r"pull origin main: Fast-forward", True),
+        (_sync_by_ff_only_named_pull, r"pull --ff-only origin main: Fast-forward", True),
+        (_sync_by_bare_pull_tracking_origin_main, r"pull: Fast-forward", True),
         (_sync_by_reset, r"reset: moving to origin/main", True),
         (_author_and_push, r"commit: feat: authored on main", False),
         (_merge_without_fast_forward, r"merge origin/main: Merge made by the '\w+' strategy\.", False),
+        (_merge_a_local_ref, r"merge scratch: Fast-forward", False),
+        (_bare_pull_from_a_local_upstream, r"pull: Fast-forward", False),
+        (_merge_fetch_head, r"merge [0-9a-f]{40}: Fast-forward", False),
     ),
-    ids=("ff-merge", "ff-pull", "reset-origin-main", "commit", "non-ff-merge"),
+    ids=(
+        "ff-merge", "ff-pull", "pull-origin-main", "pull-ff-only-origin-main",
+        "bare-pull-upstream-origin-main", "reset-origin-main", "commit", "non-ff-merge",
+        "ff-merge-local-ref", "bare-pull-local-upstream", "ff-merge-fetch-head",
+    ),
 )
 def test_head_moved_only_by_sync_accepts_exactly_the_sync_subjects(tmp_path, move, subject, exempt):
     """The sync-only subject set, pinned against git's OWN reflog wording.
 
     Every case ends with HEAD an ancestor of origin/main (the authored ones push
     first), so the ancestry clause is satisfied throughout and the verdict is the
-    reflog SUBJECT alone: fast-forward merge, fast-forward pull and a reset to
-    origin/main are syncs; a commit and a non-fast-forward merge are authorship.
+    reflog SUBJECT alone. Syncs: a fast-forward merge of origin/main, a
+    fast-forward pull naming `origin main` (with or without leading flags), a bare
+    pull while main's upstream is origin/main, and a reset to origin/main.
+    Declined: a commit, a non-fast-forward merge, a fast-forward onto a local ref
+    (by merge, or by a bare pull whose upstream is that ref), and a FETCH_HEAD
+    merge — which git logs as `merge <sha>`, naming no ref at all.
     """
     repo, state_path, other = _main_sync_session(tmp_path)
     start_head = GUARD._load(state_path)["start_head"]
@@ -3256,6 +3350,94 @@ def test_head_moved_only_by_sync_accepts_exactly_the_sync_subjects(tmp_path, mov
     assert len(window) == 1 and re.fullmatch(subject, window[0]), window
     _git(repo, "merge-base", "--is-ancestor", head, "origin/main")
     assert GUARD._head_moved_only_by_sync(repo, start_head, head) is exempt
+
+
+def _log_forged_entry(repo: Path, subject: str, sha: str) -> None:
+    """Move main to ``sha`` with an exact HEAD-reflog subject (`update-ref -m`)."""
+    _git(repo, "update-ref", "-m", subject, "HEAD", sha)
+
+
+@pytest.mark.parametrize(
+    ("subject", "upstream", "exempt"),
+    (
+        ("merge origin/main: Fast-forward", None, True),
+        ("pull origin main: Fast-forward", None, True),
+        ("pull --ff-only origin main: Fast-forward", None, True),
+        ("pull --no-rebase -q --ff-only origin main: Fast-forward", None, True),
+        ("pull: Fast-forward", "origin/main", True),
+        ("pull --ff-only: Fast-forward", "origin/main", True),
+        ("reset: moving to origin/main", None, True),
+        ("merge FETCH_HEAD: Fast-forward", None, False),
+        ("merge scratch: Fast-forward", None, False),
+        ("merge claude/x: Fast-forward", None, False),
+        ("merge origin/main~0: Fast-forward", None, False),
+        ("pull: Fast-forward", None, False),
+        ("pull: Fast-forward", "scratch", False),
+        ("pull --ff-only: Fast-forward", "scratch", False),
+        ("pull origin scratch: Fast-forward", None, False),
+        ("pull upstream main: Fast-forward", None, False),
+        ("pull origin main:main: Fast-forward", None, False),
+        ("reset: moving to scratch", None, False),
+        ("reset: moving to HEAD~1", None, False),
+    ),
+)
+def test_head_moved_only_by_sync_accepts_only_origin_main_targeted_subjects(
+    tmp_path, subject, upstream, exempt
+):
+    """The exact accepted set, string by string, ancestry held constant.
+
+    Each entry moves main onto a commit origin/main already holds, so only the
+    SUBJECT (and, for a bare pull, main's configured upstream) decides. A sync
+    must name origin/main: a fast-forward onto any other ref, FETCH_HEAD
+    included, is how a commit made off HEAD's reflog reaches main.
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    landed = _land_elsewhere(other, "landed.txt")
+    _git(repo, "fetch", "origin")
+    if upstream == "scratch":
+        _git(repo, "update-ref", "refs/heads/scratch", landed)
+    if upstream is not None:
+        _git(repo, "branch", f"--set-upstream-to={upstream}", "main")
+    _log_forged_entry(repo, subject, landed)
+
+    assert _reflog_window(repo, start_head) == [subject]
+    assert GUARD._head_moved_only_by_sync(repo, start_head, landed) is exempt
+
+
+@pytest.mark.parametrize(
+    ("subjects", "reads"),
+    (
+        (("merge origin/main: Fast-forward", "pull origin main: Fast-forward"), 0),
+        (("pull: Fast-forward", "pull --ff-only: Fast-forward"), 1),
+    ),
+    ids=("no-bare-pull", "two-bare-pulls"),
+)
+def test_main_upstream_is_read_once_and_only_for_a_bare_pull(
+    monkeypatch, tmp_path, subjects, reads
+):
+    """`main`'s upstream costs one git call per helper call, and none without a bare pull."""
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    _git(repo, "fetch", "origin")
+    for index, subject in enumerate(subjects):
+        landed = _land_elsewhere(other, f"landed-{index}.txt")
+        _git(repo, "fetch", "origin")
+        _log_forged_entry(repo, subject, landed)
+    _git(repo, "branch", "--set-upstream-to=origin/main", "main")
+
+    calls: list[tuple[str, ...]] = []
+    real_run = GUARD._run
+
+    def counting_run(root, *args, **kwargs):
+        if args[:2] == ("git", "for-each-ref"):
+            calls.append(args)
+        return real_run(root, *args, **kwargs)
+
+    monkeypatch.setattr(GUARD, "_run", counting_run)
+
+    assert GUARD._head_moved_only_by_sync(repo, start_head, landed) is True
+    assert len(calls) == reads
 
 
 def _pushed_session_repo(tmp_path: Path) -> tuple[Path, Path]:
