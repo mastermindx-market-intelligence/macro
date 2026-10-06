@@ -2,104 +2,36 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script data-dbase>(function () {
+  window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
+  var B = window.DATA_BASE;
+  if (!B) return;                                         // no-op when unset -> zero behavior change
+  B = B.replace(/\/+$/, "");                              // strip trailing slash
+  // the per-ticker stores that live in R2 (mirror scripts/publish_r2.py DEFAULT_DIRS)
+  var RE = /^(ohlc|chinaohlc|hkohlc|intlohlc|canadaohlc|subsectorohlc(?:_china|_russell|_nasdaq)?|stockdata|chinastockdata|hkstockdata|canadastockdata|intlstockdata|intraday)\//;
+  var orig = window.fetch;
+  window.fetch = function (u, o) {
+    try {
+      if (typeof u === "string") {
+        /* theme.js resolves shared assets from its own script URL, so its stock
+           libraries arrive here as absolute same-origin URLs.  The old shim only
+           recognized bare/../ paths, leaving those requests on the protected HTML
+           origin (401 on Start) and the search spinner alive forever.  Normalize
+           every same-origin string to a root-relative key before matching; preserve
+           query/hash cache keys, and never rewrite an already-external URL. */
+        var a = new URL(u, location.href);
+        if (a.origin === location.origin) {
+          var rel = a.pathname.replace(/^\/+/, "") + a.search + a.hash;
+          if (RE.test(rel)) u = B + "/" + rel;            // -> https://<data-host>/ohlc/AAPL.json
+        }
+      }
+    } catch (e) { /* never let the shim break a fetch */ }
+    return orig.call(this, u, o);
+  };
+})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Filing lineage — what was known, and when</title>
-<style>
-  :root {
-    --bg: #f6f7f9;
-    --panel: #ffffff;
-    --panel2: #f0f2f5;
-    --text: #131822;
-    --muted: #616b7c;
-    --line: #dfe3ea;
-    --line-strong: #c3cad6;
-    --ok: #157a52;
-    --ok-bg: #e7f4ee;
-    --warn: #8a5a12;
-    --warn-bg: #fbf1de;
-    --info: #24507f;
-    --info-bg: #e8f0f9;
-    --refuse: #8d2f2f;
-    --refuse-bg: #fbeced;
-    --radius: 14px;
-    --radius-sm: 9px;
-    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0d1017; --panel: #151a23; --panel2: #1c222d; --text: #e8ecf3;
-      --muted: #97a2b4; --line: #262e3b; --line-strong: #394353;
-      --ok: #59d3a0; --ok-bg: #12291f; --warn: #e3b169; --warn-bg: #2a2111;
-      --info: #7fb3ec; --info-bg: #13202f; --refuse: #ef8f8f; --refuse-bg: #2b1517;
-    }
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-  .wrap { max-width: 1060px; margin: 0 auto; padding: 32px 22px 72px; }
-  header.page { margin-bottom: 26px; }
-  .kicker {
-    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
-    color: var(--muted); font-weight: 650; margin: 0 0 7px;
-  }
-  h1 { font-size: 27px; line-height: 1.22; margin: 0 0 8px; letter-spacing: -.018em; font-weight: 640; }
-  .sub { color: var(--muted); margin: 0; max-width: 62ch; }
-  .card {
-    background: var(--panel); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: 20px 22px; margin-bottom: 16px;
-  }
-  .controls { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; }
-  .ctl { display: flex; flex-direction: column; gap: 6px; }
-  .ctl label { font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 650; }
-  .ctl input, .ctl select {
-    font: inherit; padding: 8px 11px; border-radius: var(--radius-sm);
-    border: 1px solid var(--line-strong); background: var(--panel2); color: var(--text); min-width: 190px;
-  }
-  button.run {
-    font: inherit; font-weight: 600; padding: 9px 20px; border-radius: var(--radius-sm);
-    border: 1px solid transparent; background: var(--text); color: var(--panel); cursor: pointer;
-  }
-  button.run:hover { opacity: .88; }
-  .hint { color: var(--muted); font-size: 12.5px; margin: 12px 0 0; }
-  .answer { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(292px, 1fr)); }
-  .policy { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); padding: 17px 18px; }
-  .policy h3 { margin: 0 0 3px; font-size: 13px; letter-spacing: .03em; text-transform: uppercase; color: var(--muted); font-weight: 650; }
-  .policy .q { font-size: 13px; color: var(--muted); margin: 0 0 13px; min-height: 2.9em; }
-  .val { font: 600 26px/1.15 var(--mono); letter-spacing: -.02em; margin: 0 0 3px; }
-  .val.none { font-size: 16px; font-weight: 550; color: var(--muted); font-family: inherit; }
-  .val-note { font-size: 12px; color: var(--muted); margin: 0 0 13px; }
-  .src { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 11px; margin-top: 3px; }
-  .src dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 0; }
-  .src dt { color: var(--muted); }
-  .src dd { margin: 0; color: var(--text); font-family: var(--mono); font-size: 11.5px; overflow-wrap: anywhere; }
-  .tag {
-    display: inline-block; font-size: 11px; font-weight: 640; letter-spacing: .04em;
-    padding: 3px 9px; border-radius: 999px; margin-bottom: 11px;
-  }
-  .tag.value { background: var(--ok-bg); color: var(--ok); }
-  .tag.ne { background: var(--warn-bg); color: var(--warn); }
-  .tag.missing { background: var(--info-bg); color: var(--info); }
-  .verdict { border-left: 3px solid var(--ok); background: var(--ok-bg); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 15px 18px; margin: 0 0 4px; }
-  .verdict.none { border-left-color: var(--warn); background: var(--warn-bg); }
-  .verdict strong { display: block; margin-bottom: 4px; font-size: 15px; }
-  .verdict p { margin: 0; font-size: 13.5px; }
-  table.ev { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 12px; }
-  table.ev th, table.ev td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  table.ev th { color: var(--muted); font-weight: 620; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
-  table.ev td { font-family: var(--mono); font-size: 11.5px; overflow-wrap: anywhere; }
-  details.drill { margin-top: 14px; }
-  details.drill summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--info); }
-  pre.receipt {
-    background: var(--panel2); border: 1px solid var(--line); border-radius: var(--radius-sm);
-    padding: 13px; overflow-x: auto; font: 11.5px/1.5 var(--mono); margin: 11px 0 0;
-  }
-  .err { color: var(--refuse); background: var(--refuse-bg); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13.5px; }
-  .foot { color: var(--muted); font-size: 12px; margin-top: 26px; border-top: 1px solid var(--line); padding-top: 14px; }
-  .foot code { font-family: var(--mono); font-size: 11.5px; }
-</style>
+<link rel="stylesheet" href="assets/css/665fc434.css?v=665fc434">
 </head>
 <body>
 <div class="wrap">
@@ -367,5 +299,6 @@
   run();
 })();
 </script>
+<script defer data-whb data-root="" src="wh_banner.js?v=b1207f44"></script>
 </body>
 </html>

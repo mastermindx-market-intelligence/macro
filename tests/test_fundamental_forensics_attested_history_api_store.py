@@ -691,11 +691,11 @@ def test_minted_credentials_never_render_their_secret_or_token() -> None:
 def test_a_none_client_from_the_factory_is_refused() -> None:
     """A factory returning None must fail closed, never inherit ambient creds.
 
-    `R2Store.__init__` (r2_store.py:257) is
-    `self._s3 = client if client is not None else _r2_client()`, and
-    `_r2_client()` reads R2_RESEARCH_* / generic R2_*.  So handing R2Store a
-    None client silently reopens the exact Research Vault fallback this whole
-    module exists to make impossible.
+    `R2Store.__init__` uses `_r2_client()` when the supplied client is
+    None. That ambient client is now restricted to the explicit R2_RESEARCH_*
+    namespace, but this dedicated attested-history reader must not inherit even
+    that unrelated Research Vault authority. Handing R2Store a None client would
+    still cross the domain boundary this module exists to keep closed.
     """
     store = _store(client_factory=lambda **_kwargs: None)
     with pytest.raises(AttestedHistoryStoreError, match="returned no client"):

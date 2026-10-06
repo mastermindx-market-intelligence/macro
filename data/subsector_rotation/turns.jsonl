@@ -188,3 +188,7 @@
 {"date":"2026-10-02","key":"energybaseoilrefining","name":"Oil Refining","theme":"Energy Traditional","state":"turn_down","since":"2026-09-28","score":0.048,"n_members":11,"breadth":0.091,"dd_from_peak":-1.5,"up_from_trough":53.76}
 {"date":"2026-10-02","key":"transportationmaritime","name":"Maritime","theme":"Transportation & Logistics","state":"turn_down","since":"2026-09-28","score":0.031,"n_members":7,"breadth":0.0,"dd_from_peak":0.0,"up_from_trough":82.08}
 {"date":"2026-10-02","key":"commagribiofuels","name":"Biofuels","theme":"Commodities Agriculture","state":"turn_down","since":"2026-09-28","score":0.318,"n_members":9,"breadth":0.222,"dd_from_peak":-4.64,"up_from_trough":47.52}
+{"date":"2026-10-05","key":"fintechinsurance","name":"Insurance","theme":"FinTech","state":"turn_up","since":"2026-10-05","score":0.75,"n_members":8,"breadth":1.0,"dd_from_peak":-22.91,"up_from_trough":19.52}
+{"date":"2026-10-05","key":"biometricsgovdefense","name":"Gov & Defense","theme":"Biometrics","state":"turn_up","since":"2026-10-01","score":0.285,"n_members":12,"breadth":0.417,"dd_from_peak":-29.77,"up_from_trough":0.0}
+{"date":"2026-10-05","key":"wearablessoftware","name":"Software","theme":"Wearables","state":"turn_down","since":"2026-10-02","score":0.805,"n_members":5,"breadth":1.0,"dd_from_peak":-3.66,"up_from_trough":27.48}
+{"date":"2026-10-05","key":"nanotechmedicine","name":"Medicine","theme":"Nanotechnology","state":"turn_down","since":"2026-10-01","score":0.675,"n_members":12,"breadth":1.0,"dd_from_peak":-11.56,"up_from_trough":58.03}
