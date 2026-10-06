@@ -458,7 +458,8 @@ def test_compute_correction_is_idempotent_against_an_already_retired_node():
                     "ratified_at": "2026-08-14"}]
     lifecycle_rows, edge_rows, evidence_rows, receipt = corr.compute_correction(
         nodes_df=nodes_df, live_edges=pd.DataFrame(columns=list(store.EDGE_COLUMNS)),
-        breaks_rows=breaks_rows, already_retired={"co:us:GOLD"},
+        breaks_rows=breaks_rows, dup_rows=[], lifecycle_latest=pd.DataFrame(),
+        idres_latest=pd.DataFrame(), already_retired={"co:us:GOLD"},
         today="2026-08-22", computed_at="2026-08-22T00:00:00Z")
     assert lifecycle_rows == [] and edge_rows == [] and evidence_rows == []
     assert receipt["skipped_already_retired"] == ["co:us:GOLD"]
@@ -802,3 +803,123 @@ def test_matrix_13_edges_and_edges_latest_belief_first_lawful_divergence():
     assert breaches == [], (
         f"the guard must report no breach on a store where edges > "
         f"edges_latest_belief for the first time: {breaches}")
+
+
+# ===========================================================================
+# duplicate_mint correction path (DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE)
+# ===========================================================================
+
+def test_load_duplicate_mint_rows_fail_closed_on_self_merge(tmp_path):
+    p = tmp_path / "dup.yml"
+    p.write_text(
+        "duplicate_mints:\n"
+        "  - node_id: co:us:AAA\n    merged_into: co:us:AAA\n"
+        "    effective: '2026-08-18'\n    ratified_at: '2026-10-06'\n"
+        "    evidence: x\n    ratified_by: DEC:TEST\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="self-merge"):
+        corr._load_duplicate_mint_rows(p)
+
+
+def test_load_duplicate_mint_rows_fail_closed_on_bad_ratified_by(tmp_path):
+    p = tmp_path / "dup.yml"
+    p.write_text(
+        "duplicate_mints:\n"
+        "  - node_id: co:us:AAA\n    merged_into: co:us:BBB\n"
+        "    effective: '2026-08-18'\n    ratified_at: '2026-10-06'\n"
+        "    evidence: x\n    ratified_by: operator\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="DEC:"):
+        corr._load_duplicate_mint_rows(p)
+
+
+def test_duplicate_mint_targets_fail_closed_on_security_mismatch():
+    nodes_df = pd.DataFrame([
+        {"node_id": "co:us:AAA", "kind": "company"},
+        {"node_id": "co:us:BBB", "kind": "company"},
+    ])
+    idres = pd.DataFrame([
+        {"node_id": "co:us:AAA", "security_id": "SEC:US-XNYS-AAA"},
+        {"node_id": "co:us:BBB", "security_id": "SEC:US-XNYS-BBB"},
+    ])
+    dup_rows = [{
+        "node_id": "co:us:AAA", "merged_into": "co:us:BBB",
+        "effective": "2026-08-18", "ratified_at": "2026-10-06",
+        "evidence": "e", "ratified_by": "DEC:TEST",
+    }]
+    with pytest.raises(ValueError, match="security_id"):
+        corr.duplicate_mint_targets(
+            nodes_df, dup_rows, lifecycle_latest=pd.DataFrame(), idres_latest=idres)
+
+
+def test_duplicate_mint_compute_annuls_with_valid_to_equals_valid_from():
+    nodes_df = pd.DataFrame([{"node_id": "co:us:DUP", "kind": "company"}])
+    edge = {
+        "edge_id": "member_of:co:us:DUP->basket:baskets:demo@2023-05-09",
+        "type": "MEMBER_OF", "src": "co:us:DUP", "dst": "basket:baskets:demo",
+        "valid_from": "2023-05-09", "valid_to": None, "belief_time": "2026-09-04",
+        "computed_at": "2026-09-04T00:00:00Z", "evidence_refs": ["ev:old"],
+        "era": "observed", "source_class": "curated", "date_provenance": "membership_pit",
+        "engine_version": store.ENGINE_VERSION,
+    }
+    live_edges = pd.DataFrame([edge])
+    dup_rows = [{
+        "node_id": "co:us:DUP", "merged_into": "co:us:CANON",
+        "effective": "2026-08-18", "ratified_at": "2026-10-06",
+        "evidence": "fixture evidence", "ratified_by": "DEC:TEST",
+    }]
+    idres = pd.DataFrame([
+        {"node_id": "co:us:DUP", "security_id": "SEC:US-XNYS-X"},
+        {"node_id": "co:us:CANON", "security_id": "SEC:US-XNYS-X"},
+    ])
+    nodes_df = pd.DataFrame([
+        {"node_id": "co:us:DUP", "kind": "company"},
+        {"node_id": "co:us:CANON", "kind": "company"},
+    ])
+    lc, edges, ev, receipt = corr.compute_correction(
+        nodes_df=nodes_df, live_edges=live_edges, breaks_rows=[], dup_rows=dup_rows,
+        lifecycle_latest=pd.DataFrame(), idres_latest=idres,
+        already_retired=set(), today="2026-10-06", computed_at="2026-10-06T12:00:00Z")
+    assert len(lc) == 1 and lc[0]["status"] == "merged" and lc[0]["reason"] == "duplicate_mint"
+    assert len(edges) == 1 and edges[0]["valid_to"] == edges[0]["valid_from"]
+    assert receipt["duplicate_mint"][0]["edges_annulled"]
+
+
+def test_guard_merged_node_with_open_member_edge_breaches(tmp_path):
+    """retired-consistency invariant covers merged status (duplicate_mint guard iv)."""
+    nodes = pd.DataFrame([
+        {"node_id": "co:us:MERGED", "kind": "company", "identity_epoch": 1,
+         "external_ids": "{}", "name_en": None, "name_zh": None, "market_scope": "us",
+         "tier": None, "status": "canonical", "merged_into": None, "birth_date": None,
+         "retire_date": None, "provenance": "fixture", "computed_at": STAMP_A,
+         "engine_version": store.ENGINE_VERSION, "source_meta": None},
+    ])
+    lc = pd.DataFrame([_lifecycle_row(
+        node_id="co:us:MERGED", status="merged", merged_into="co:us:OTHER",
+        reason="duplicate_mint", retire_date="2026-10-06")])
+    edges = pd.DataFrame([{
+        "edge_id": "member_of:co:us:MERGED->basket:baskets:demo@2023-05-09",
+        "type": "MEMBER_OF", "src": "co:us:MERGED", "dst": "basket:baskets:demo",
+        "valid_from": "2023-05-09", "valid_to": None, "belief_time": "2026-09-04",
+        "computed_at": "2026-09-04T00:00:00Z", "evidence_refs": ["ev:1"],
+        "era": "observed", "source_class": "curated", "date_provenance": "membership_pit",
+        "engine_version": store.ENGINE_VERSION,
+    }])
+    ev = pd.DataFrame([{
+        "evidence_id": "ev:1", "kind": "operator_curation", "published_at": "2026-10-06",
+        "effective_at": None, "source_ref": "fixture://x",
+        "licensing_internal_ok": True, "licensing_display_ok": True,
+        "licensing_redistribution_ok": True, "retention": None,
+        "computed_at": STAMP_A, "provider": None, "claim_type": "membership",
+    }])
+    d = tmp_path / "merged_open_edge"
+    d.mkdir()
+    nodes.reindex(columns=list(store.NODE_COLUMNS)).to_parquet(d / "nodes.parquet", index=False)
+    edges.reindex(columns=list(store.EDGE_COLUMNS)).to_parquet(d / "edges.parquet", index=False)
+    ev.reindex(columns=list(store.EVIDENCE_COLUMNS)).to_parquet(d / "evidence.parquet", index=False)
+    lc.reindex(columns=list(store.NODE_LIFECYCLE_COLUMNS)).to_parquet(
+        d / "node_lifecycle.parquet", index=False)
+    b, _ = guard.audit(d, identity.breaks_path())
+    assert any("retired-like" in x for x in b)
