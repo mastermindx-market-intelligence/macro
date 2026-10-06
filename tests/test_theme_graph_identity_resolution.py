@@ -115,9 +115,9 @@ def test_the_committed_graph_carries_exactly_2806_company_nodes(company_nodes):
         assert row["status"] == "merged"
         merged_into = str(row["merged_into"])
         assert merged_into in set(company_nodes["node_id"].astype(str))
-        target_lc = lc[lc["node_id"].astype(str) == merged_into]
-        assert len(target_lc) == 1
-        assert target_lc.iloc[0]["status"] not in store.RETIRED_LIKE_STATUSES
+        if merged_into in set(lc["node_id"].astype(str)):
+            target_lc = lc[lc["node_id"].astype(str) == merged_into].iloc[0]
+            assert target_lc["status"] not in store.RETIRED_LIKE_STATUSES
 
 
 def test_every_company_node_gets_a_row(nodes, company_nodes, master_inputs, etf_symbols):

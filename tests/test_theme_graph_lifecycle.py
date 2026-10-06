@@ -452,7 +452,7 @@ def test_entity_conflict_targets_finds_only_the_symbol_collision():
 
 
 def test_compute_correction_is_idempotent_against_an_already_retired_node():
-    nodes_df = pd.DataFrame([{"node_id": "co:us:GOLD"}])
+    nodes_df = pd.DataFrame([{"node_id": "co:us:GOLD", "kind": "company"}])
     breaks_rows = [{"symbol": "GOLD", "market": "us", "break_date": "2025-12-02",
                     "prior_node_retired_as": "co:us:GOLD", "ratified_by": "x",
                     "ratified_at": "2026-08-14"}]
@@ -729,28 +729,34 @@ def test_matrix_9_identity_resolution_history_is_append_only_untouched():
 @needs_real_store
 def test_matrix_10_blast_radius_node_lifecycle_and_edge_history_deltas():
     """Matrix 10 / FIX-1 — blast radius, proven WITHOUT git: node_lifecycle.parquet
-    carries exactly 2 rows (GOLD, IBIT — not ABX), and both corrected edges carry a
-    second belief row. The GLOBAL history-minus-current delta is deliberately NOT
-    pinned: every natural nightly may lawfully append later-belief rows for edges
-    whose material fields moved (changed_edges), so "only two edges ever diverge"
-    is true only until the first post-correction bake. The lifecycle table has no
-    nightly writer, so its exact-2 pin is append-only-lawful."""
+    carries exactly 3 rows (GOLD, IBIT, VMRK duplicate_mint — not ABX), and the
+    corrected edges carry a second belief row. The GLOBAL history-minus-current delta is
+    deliberately NOT pinned: every natural nightly may lawfully append later-belief rows
+    for edges whose material fields moved (changed_edges), so "only two edges ever
+    diverge" is true only until the first post-correction bake. The lifecycle table has
+    no nightly writer, so its exact-3 pin is append-only-lawful (DEC VMRK merge)."""
     lifecycle = store.read_node_lifecycle(latest=True)
     if lifecycle.empty:
         pytest.skip("correction not yet applied in this checkout")
-    assert len(lifecycle) == 2
-    assert set(lifecycle["node_id"]) == {"co:us:GOLD", "co:us:IBIT"}
-    assert set(lifecycle["status"]) == {"retired"}
+    assert len(lifecycle) == 3
+    assert set(lifecycle["node_id"].astype(str)) == {"co:us:GOLD", "co:us:IBIT", "co:us:VMRK"}
+    by_id = {str(r["node_id"]): r for r in lifecycle.to_dict("records")}
+    assert by_id["co:us:GOLD"]["status"] == "retired"
+    assert by_id["co:us:IBIT"]["status"] == "retired"
+    assert by_id["co:us:VMRK"]["status"] == "merged"
 
+    VMRK_EDGE_ID = (
+        "member_of:co:us:VMRK->basket:baskets:us_sector_realestate@2023-05-09")
     history = store.read_edges(latest_belief=False)
     current = store.read_edges(latest_belief=True)
     assert len(history) > len(current), (
         f"edge history ({len(history)}) must exceed distinct edge_ids "
         f"({len(current)}) once the correction lineage is in use")
     multi_belief = history.groupby("edge_id").size()
-    assert {GOLD_EDGE_ID, IBIT_EDGE_ID} <= set(multi_belief[multi_belief > 1].index), (
-        "both corrected edges must carry a second (correction) belief row — later "
-        "nightlies may lawfully add more multi-belief edges, never remove these two")
+    assert {GOLD_EDGE_ID, IBIT_EDGE_ID, VMRK_EDGE_ID} <= set(
+        multi_belief[multi_belief > 1].index), (
+        "all corrected edges must carry a second (correction) belief row — later "
+        "nightlies may lawfully add more multi-belief edges, never remove these")
 
 
 # ===========================================================================
