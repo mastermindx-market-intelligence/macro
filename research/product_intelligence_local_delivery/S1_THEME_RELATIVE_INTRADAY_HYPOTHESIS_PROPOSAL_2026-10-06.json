@@ -1,0 +1,126 @@
+{
+  "schema": "mastermind.s1_hypothesis_proposal.v1",
+  "main_pin": "1e3299d7b75202be9a951d0b877388d243cd5ba5",
+  "hypothesis": {
+    "value": "Theme-constituent trailing-beta residual sum over five hourly RTH bars after frozen decision_at; descriptive only",
+    "basis_label": "STATED",
+    "basis": "Package S theme-relative intraday descriptive strength commission text"
+  },
+  "decision_time": {
+    "value": "Offset-aware ISO decision_at at last completed hourly RTH bar ending by 16:00 America/New_York",
+    "basis_label": "INHERITED",
+    "basis": "engine/prophet_entry_policy.py:86-95 offset-aware decision_at contract"
+  },
+  "sessions": {
+    "value": "US RTH 09:30-16:00 America/New_York only; early-close dates per prophet_entry_policy",
+    "basis_label": "INHERITED",
+    "basis": "engine/prophet_entry_policy.py:58-66 RTH open/close constants"
+  },
+  "estimation": {
+    "value": "63 completed RTH sessions daily returns strictly before decision session; trailing-only OLS beta and vol",
+    "basis_label": "ASSUMED",
+    "basis": "A-priori window chosen before any S1 data examination"
+  },
+  "benchmark_overlap": {
+    "value": "Equal-weight theme benchmark on same hourly bar; residual return vs beta-scaled benchmark",
+    "basis_label": "STATED",
+    "basis": "Package S requires frozen benchmark overlap for theme-relative descriptive strength"
+  },
+  "self_inclusion": {
+    "value": "Constituent excluded from theme benchmark weights on every bar",
+    "basis_label": "ASSUMED",
+    "basis": "Standard theme-relative bookkeeping chosen before data read"
+  },
+  "stale_zero_rule": {
+    "value": "Omit missing or zero-volume hourly cells; corrupt per-ticker parquet treated as absent",
+    "basis_label": "INHERITED",
+    "basis": "scripts/build_polygon_intraday.py:171-185 tolerant read semantics extended to study cells"
+  },
+  "halts_corporate_actions": {
+    "value": "Split-adjusted hourly OHLCV only; sessions without post-delay RTH bars omitted",
+    "basis_label": "INHERITED",
+    "basis": "scripts/build_polygon_intraday.py:135-136 adjusted=true receipt fields"
+  },
+  "membership_cutoff": {
+    "value": "PIT theme membership from data/baskets/membership.json as of prior completed US daily session",
+    "basis_label": "INHERITED",
+    "basis": "scripts/build_intraday_flow.py:324-325 membership.json resolution"
+  },
+  "baselines": {
+    "value": "Raw hourly RTH simple return and trailing-beta residual vs theme benchmark",
+    "basis_label": "STATED",
+    "basis": "Package S requires raw and residual baselines distinguished"
+  },
+  "coverage": {
+    "value": "Existing POLYGON_API_KEY and MASSIVE_API_KEY hourly accrual universe only",
+    "basis_label": "INHERITED",
+    "basis": ".github/workflows/intraday.yml:55-60 scheduled accrual on existing secrets"
+  },
+  "costs": {
+    "value": "8 basis points per assumed round-trip for optional display-tier tradability sensitivity",
+    "basis_label": "INHERITED",
+    "basis": "engine/signal_foundry/harness.py:9-14 house documentation band for cost-aware backtests"
+  },
+  "registration": {
+    "start_rule": {
+      "value": "First formation decision_at strictly after product-owner acceptance timestamp in S2 commit",
+      "basis_label": "STATED",
+      "basis": "Package S prospective registration on untouched future formation dates"
+    },
+    "maturity_rule": {
+      "value": "120 distinct decision sessions with per-session coverage at or above 80 percent",
+      "basis_label": "ASSUMED",
+      "basis": "Pre-declared sample size before any outcome examination"
+    },
+    "rejection_rule": {
+      "value": "Below 80 percent constituent-hour cell coverage in the five-bar forward window yields session reject",
+      "basis_label": "STATED",
+      "basis": "S1 section 1 rejection rule fixed at proposal time"
+    },
+    "inconclusive_rule": {
+      "value": "Coverage from 50 percent up to 80 percent yields session inconclusive",
+      "basis_label": "STATED",
+      "basis": "S1 section 1 inconclusive band fixed at proposal time"
+    },
+    "accounting_owner_path": {
+      "value": "engine/trial_ledger.py:126-151",
+      "basis_label": "INHERITED",
+      "basis": "TrialLedger.log_trial append-only writes to data/trial_ledger.jsonl"
+    }
+  },
+  "distinctness": [
+    {
+      "key": "DEC-TREND-PERSISTENCE-STOPS-AT-WAVE-C",
+      "why_distinct": "Closed eleven-sector daily 20/60-session persistence family; S1 is hourly theme residual descriptives"
+    },
+    {
+      "key": "KILL-TREND-PERSISTENCE-SECTOR-GROUP-PERSISTENCE",
+      "why_distinct": "DNR closes GICS sector group persistence cells; S1 is theme hourly descriptives only"
+    },
+    {
+      "key": "KILL-TREND-PERSISTENCE-PATH-FEATURE-PROFILE",
+      "why_distinct": "DNR closes path-feature drawdown profile family; S1 does not reopen path-shape persistence"
+    },
+    {
+      "key": "KILL-INTRADAY-CHRONICLE",
+      "why_distinct": "Forbids chronicle lane writes; S1 uses price-bar accrual only"
+    },
+    {
+      "key": "S0 section Q3 daily strength",
+      "why_distinct": "Listed modules use daily closes; none score hourly theme-relative residuals"
+    },
+    {
+      "key": "S0 section Q2 Prophet session policy",
+      "why_distinct": "Prophet entry policy is execution law; S1 does not extend Prophet regime promotion"
+    }
+  ],
+  "forbidden": [
+    "rank gate or size authority",
+    "inferred fund inflow claims",
+    "holdability or ease-of-holding claims",
+    "the CI-enforced claim word in user-facing copy",
+    "front-facing thesis-verdict vocabulary",
+    "outcome scan before registration"
+  ],
+  "acceptance_ask": "Do you accept commissioning Package S2 prospective registration for theme-relative intraday descriptive strength on hourly RTH bars under section 3 frozen parameters?"
+}
