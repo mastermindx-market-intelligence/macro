@@ -1,0 +1,39 @@
+<section class="intl-workspace" data-im-workspace data-im-mode="macro" aria-labelledby="intl-workspace-title">
+  <header>
+    <h1 id="intl-workspace-title" data-im-heading>{{ t('International markets', '国际市场') }}</h1>
+    <p>{{ t('Compare covered markets, understand currency effects and inspect the evidence.', '比较覆盖市场，了解汇率影响，并查看相关依据。') }}</p>
+  </header>
+  <fieldset class="intl-workspace__toolbar" data-im-controls disabled>
+    <legend id="intl-context-label">{{ t('Research context', '研究范围') }}</legend>
+    <nav class="intl-workspace__view-nav" aria-labelledby="intl-context-label">
+      {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
+      <button type="button" data-im-action="set_view" data-im-view="{{ key|e }}"{% if key != 'overview' %} disabled{% endif %}>{{ t(en, zh) }}</button>
+      {% endfor %}
+    </nav>
+    <label class="intl-workspace__view-select">{{ t('Views', '视图') }}
+      <select data-im-action="set_view">
+        {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
+        <option value="{{ key|e }}" data-im-label-en="{{ en|e }}" data-im-label-zh="{{ zh|e }}"{% if key != 'overview' %} disabled{% endif %}>{{ en|e }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>{{ t('Return horizon', '回报区间') }}
+      <select data-im-action="set_horizon">
+        {% for horizon in intl_workspace.config.horizons %}<option value="{{ horizon|e }}">{{ horizon|e }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>{{ t('Currency basis', '计价币种') }}
+      <select data-im-action="set_basis">
+        <option value="usd_unhedged" data-im-label-en="USD · Unhedged" data-im-label-zh="美元 · 未对冲">USD · Unhedged</option>
+        <option value="local" data-im-label-en="Local currency" data-im-label-zh="本币">Local currency</option>
+      </select>
+    </label>
+  </fieldset>
+  <p data-im-issues role="status" aria-live="polite"></p>
+  <p data-im-unavailable hidden>{{ t('Data unavailable for this selection. Try another horizon or use the detailed research below.', '此选择暂无可用数据。请尝试其他区间，或查看下方的详细研究。') }}</p>
+  {% for panel in intl_workspace.panels %}
+    {% with overview=panel.overview, context_id=panel.context_id %}{% include 'intl_workspace/overview.html.j2' %}{% endwith %}
+  {% endfor %}
+  <p><a href="#intl-legacy-research">{{ t('Detailed research and existing tools', '详细研究与现有工具') }}</a> · <a href="intl_stocks.html">{{ t('International stocks', '国际股票') }}</a></p>
+  <script type="application/json" data-im-config>{{ intl_workspace.config|tojson }}</script>
+</section>

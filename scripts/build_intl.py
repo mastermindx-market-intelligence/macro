@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config, site_assets  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from engine.intl_workspace_overview import build_workspace_overviews as _workspace_overviews  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_intl")
@@ -31,7 +32,9 @@ log = logging.getLogger("build_intl")
 ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "dashboard-icons.js", "theme.js",
           "mtf.js", "chart_i18n.js", "charts.js",
-          "tablesort.js", "stockdata.js", "stockview.js")
+          "tablesort.js", "stockdata.js", "stockview.js",
+          "intl_workspace.css", "intl_workspace_state.js",
+          "intl_workspace.js", "intl_workspace_entry.js")
 
 # quad colour keys (match the .q-Qn CSS) — uniform with the other verticals
 QUAD_MEANING = {
@@ -144,6 +147,8 @@ def _cgl_compact_summary(artifact: dict | None) -> dict | None:
         "pressure":    pct_map,
         "top_stressed": top_stressed,
     }
+
+
 
 
 def main() -> int:
@@ -885,7 +890,14 @@ def main() -> int:
         if isinstance(perf, dict):
             perf.pop("bench", None)
 
+        workspace = None
+        try:
+            workspace = _workspace_overviews(_wr_intl_raw)
+        except Exception as exc:  # Preserve all incumbent views on adapter failure.
+            log.error("International workspace unavailable (%s)", type(exc).__name__)
+
         vm = {
+            "intl_workspace": workspace,
             "latest": latest,
             "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
             "records": latest["records"],

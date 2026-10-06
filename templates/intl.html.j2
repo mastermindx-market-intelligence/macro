@@ -23,6 +23,12 @@
 {% include "_seo_head.html.j2" %}
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
+{% if mode != 'stocks' and intl_workspace|default(none) %}
+<link rel="stylesheet" href="intl_workspace.css">
+<script defer src="intl_workspace_state.js"></script>
+<script defer src="intl_workspace.js"></script>
+<script defer src="intl_workspace_entry.js"></script>
+{% endif %}
 {% if mode == 'stocks' %}<link rel="stylesheet" href="dashboard-icons.css">{% endif %}
 {% if mode == 'stocks' %}<script defer src="dashboard-icons.js"></script>{% endif %}
 <style>
@@ -473,6 +479,11 @@
 {% include "_site_nav.html.j2" %}
 
 <main class="intl-flow">
+{% if mode != 'stocks' and intl_workspace|default(none) %}
+{% include 'intl_workspace/shell.html.j2' %}
+<details id="intl-legacy-research" open>
+  <summary>{{ t('Detailed international research and existing tools', '详细国际市场研究与现有工具') }}</summary>
+{% endif %}
 
 {# Chairman-directed cross-market overview; US Macro retains its own dashboard. #}
 {% if mode != 'stocks' %}
@@ -1959,6 +1970,8 @@
 </div>
 
 </details><!-- /ref-fold B -->
+
+{% if intl_workspace|default(none) %}</details>{% endif %}
 
 {% else %}{# ================= STOCK DASHBOARD ================= #}
 

@@ -4610,6 +4610,8 @@ CURATED_EXCLUSIVE = {
     "international-workspace-pure-js",
     # Numerical records reuse the performance owner's measured import closure.
     "international-workspace-foundation",
+    # Actual macro template/controller with explicit supplied-frame browser fixture.
+    "international-workspace-browser",
     # 2026-10-05 GMI #8455 (lane gmi_a_packing_r1): regime-outlook-mapping's
     # reader import (world_state -> theme_state_generation_reader ->
     # theme_graph/thematic_state -> scripts/build_thematic_state.py) was an

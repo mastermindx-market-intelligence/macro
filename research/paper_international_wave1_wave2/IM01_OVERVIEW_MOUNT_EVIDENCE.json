@@ -1,0 +1,59 @@
+{
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "scope": "Actual Overview macro-page integration; legacy content/stock mode retained",
+  "source_hashes": {
+    "scripts/build_intl.py": "15712f49beb43d9391f1e00c907e62bc2fecf0c1f03d5558b75615e9738a223c",
+    "templates/intl.html.j2": "19b54a0df062a21cb5aa37ecdb06b50292bbbe15437fe34f224a0169ec00d4f1",
+    "templates/intl_workspace/shell.html.j2": "eacf01cc8044807cc48169318b57f2c2826817fd4afdf5ef83273c3577c4f0fb",
+    "templates/intl_workspace/overview.html.j2": "aadabd533c15c123a06204582cb66f851488211bf5d88c2827990de581676a6d",
+    "templates/intl_workspace_entry.js": "83c592dae9db4a61a70e3009569ab6a46e37598e3d6340c7f6cf32a7c774978d",
+    "templates/intl_workspace.css": "5821405a10eb66400e4d12d662c43a06f373b77f3d7a9978a69ed4e2b02deb0f",
+    "templates/intl_workspace.js": "088c7308f98eb519f34b90017be74c75007a53ea728a822fb89a3180975c94f9",
+    "templates/intl_workspace_state.js": "54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d",
+    "tests/test_intl_workspace_integration.py": "a648a52d5b43f13fc67958deb2a64461e12b6e75eecc02ac0a0ca6f92fd54f15",
+    "tests/test_intl_workspace_overview_render.py": "385d30281b01bec827351e8d62fa807e28eef0ef1e2863b6ece5f79a54c95834",
+    "tests/intl_workspace_page.test.cjs": "1f57f1187e6b6663592eb6cebfe21920567ab2c260b1e904a72b8d8938127df9",
+    "tests/intl_workspace_controller.test.cjs": "4b0a264116e5b52128c763ce8f76040e8836ffac6a24db2e4b0060853e080c71",
+    "engine/intl_workspace_overview.py": "979fe0ada31f876febd65f7361a856d74bf9f634155c3a13da71411d209bef2e"
+  },
+  "source_review": "Independent Sol mount approval plus final exact-source delta approval; full closure/release conditions retained",
+  "validation": {
+    "numerical_pytest": 94,
+    "render_composition_pytest": 21,
+    "actual_chrome_controller_page_tests": 27,
+    "responsive_cases_inside_page_test": 32,
+    "synthetic_data_state_captures": 24,
+    "ci_manifest_jobs_validated": 247,
+    "ci_scope_tests": 2,
+    "legacy_rich_template_cases_python312": 7,
+    "ci_full_import_closure": "Initial candidate failed for2scopes; repaired candidate final full check running, not yet green",
+    "dependency_repair_focused_tests": 29
+  },
+  "visual": {
+    "canonical_manifest": "mockups/evidence/paper-international-overview/manifest.json",
+    "kind": "synthetic empty supplied-frame actual builder/template fixture",
+    "rest_states": 8,
+    "focus_states": 8,
+    "additional_qualified_negative_denied": "Explicitly synthetic values and qualification receipts; never live owner decisions",
+    "responsive": "1440/768/390/320 xdark/light xEN/ZH x1x/2x text",
+    "source_qualification": null,
+    "independent_parent_assessment": "Scoped unknown state and representative populated/negative/denied states readable, separate light material treatment, no locale leakage or horizontal overflow in workspace, native44px controls; legacy floating assistant/sharednav preserved."
+  },
+  "fabric_template_return": {
+    "run": "rs_20261006T214124Z_41658",
+    "requested_model": "glm-5.3",
+    "served_model": null,
+    "status": "accepted after six specific Flash defects"
+  },
+  "open_gates": [
+    "No accepted applicable live qualification/source owner yet; production input stays unknown",
+    "Other five research views are disabled pending implementation; full Waves1-3 not complete",
+    "No production publish, authenticated access or Saved owner proof",
+    "Existing live_config.js absent in isolated fixture; browser icon fallback404 reported, no live quote deployment claim",
+    "Original template-site publication chain and subsequent normal publication remain required"
+  ],
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/overview-ui",
+  "final_review_sha256": "bc7a19b12f349450660e8d7f6fe54ec0469d7927532323dae666d33c5ba5e5ff",
+  "dependency_repair_review_sha256": "685eafa331cd4e68d354e45b9f70f8a1a6546ab716602024f77829ad90087b41",
+  "dependency_repair": "Composition helper moved unchanged alongside projection; test reads actual builder ASSETS via AST literal instead of importing entire build graph. Existing upstream builder job scopes2newengine files. Canonical fixture HTML byte parity verified."
+}

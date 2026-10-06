@@ -1,0 +1,165 @@
+{% set projection_context = overview %}
+{% set source_value = projection_context.context.source_reference if projection_context.context.source_reference is not none else '' %}
+{% set quality_labels = {
+  'qualified': {'en': 'Qualified', 'zh': '符合条件'},
+  'stale': {'en': 'Stale data', 'zh': '数据过期'},
+  'missing': {'en': 'Missing data', 'zh': '数据缺失'},
+  'denied': {'en': 'Information withheld', 'zh': '信息未披露'},
+  'failed': {'en': 'Calculation failed', 'zh': '计算失败'},
+  'unsupported': {'en': 'Unsupported', 'zh': '不支持'},
+  'unknown': {'en': 'Unavailable', 'zh': '不可用'}
+} %}
+{% macro quality_notice(metric) %}
+  {% if metric.value is none %}
+    {% set quality = quality_labels.get(metric.quality, quality_labels.unknown) %}
+    <small data-im-quality><span class="l-en">{{ quality.en|e }}</span><span class="l-zh" lang="zh">{{ quality.zh|e }}</span></small>
+  {% endif %}
+{% endmacro %}
+<section
+  class="intl-overview"
+  data-im-panel
+  data-view="overview"
+  data-horizon="{{ projection_context.context.horizon|e }}"
+  data-basis="{{ projection_context.context.currency_basis|e }}"
+  data-source="{{ source_value|e }}"
+  id="{{ context_id|e }}-overview"
+  aria-labelledby="{{ context_id|e }}-title"
+>
+  <h2 id="{{ context_id|e }}-title">
+    <span class="l-en">Market overview</span>
+    <span class="l-zh" lang="zh">市场概览</span>
+  </h2>
+
+  <div class="intl-overview__first-read">
+    <div class="intl-overview__context">
+      <span class="l-en">{{ projection_context.configured_count }} configured markets, {{ projection_context.eligible_count }} qualified returns</span>
+      <span class="l-zh" lang="zh">覆盖市场 {{ projection_context.configured_count }} 个，符合条件的回报 {{ projection_context.eligible_count }} 个</span>
+      <span class="l-en">{{ projection_context.context.horizon|e }}</span>
+      <span class="l-zh" lang="zh">{{ projection_context.context.horizon|e }}</span>
+      {% if projection_context.context.currency_basis == 'usd_unhedged' %}
+        <span class="l-en">USD · Unhedged</span><span class="l-zh" lang="zh">美元·未对冲</span>
+      {% else %}
+        <span class="l-en">Local currency</span><span class="l-zh" lang="zh">本币</span>
+      {% endif %}
+      <span class="l-en">Price return</span><span class="l-zh" lang="zh">价格回报</span>
+    </div>
+
+    <div class="intl-overview__summary" data-im-summary>
+      {% if overview.summary.kind == 'highest_lowest_returns' %}
+        {% set highest = overview.rows | selectattr('market_id', 'defined') | selectattr('market_id', 'equalto', overview.summary.highest_market_id) | first %}
+        {% set lowest = overview.rows | selectattr('market_id', 'defined') | selectattr('market_id', 'equalto', overview.summary.lowest_market_id) | first %}
+        <h3>
+          <span class="l-en">Highest and lowest returns</span><span class="l-zh" lang="zh">最高与最低回报</span>
+        </h3>
+        <p>
+          <span class="l-en"><strong>{{ highest.name_en|e }}</strong> highest, <strong>{{ lowest.name_en|e }}</strong> lowest</span>
+          <span class="l-zh" lang="zh"><strong>{{ lowest.name_zh|e }}</strong> 最低，<strong>{{ highest.name_zh|e }}</strong> 最高</span>
+        </p>
+        {% if overview.summary.positive_count is not none %}
+          <p><span class="l-en">{{ overview.summary.positive_count }} of {{ projection_context.eligible_count }} positive</span><span class="l-zh" lang="zh">{{ overview.summary.positive_count }} / {{ projection_context.eligible_count }} 个为正</span></p>
+        {% endif %}
+        {% if overview.summary.fx_detracted_count is not none and projection_context.context.currency_basis == 'usd_unhedged' %}
+          <p><span class="l-en">{{ overview.summary.fx_detracted_count }} of {{ overview.summary.fx_eligible_count }} reduced by currency</span><span class="l-zh" lang="zh">{{ overview.summary.fx_detracted_count }} / {{ overview.summary.fx_eligible_count }} 个受汇率拖累</span></p>
+        {% endif %}
+      {% elif overview.ranking_reason == 'unequal_windows' %}
+        <h3><span class="l-en">Available returns use different calculation windows</span><span class="l-zh" lang="zh">可用回报采用不同计算窗口</span></h3>
+      {% else %}
+        <h3><span class="l-en">Current returns unavailable</span><span class="l-zh" lang="zh">当前回报不可用</span></h3>
+      {% endif %}
+      {% if overview.ranking_status == 'available' %}
+        <p class="intl-overview__limitation">
+          <span class="l-en">Comparable price returns; not an allocation recommendation</span>
+          <span class="l-zh" lang="zh">可比价格回报；不构成配置建议</span>
+        </p>
+      {% endif %}
+    </div>
+
+    {% if overview.ranking_status == 'available' and overview.focus_ids %}
+      {% set focus_rows = [] %}
+      {% for focus_id in overview.focus_ids %}
+        {% for row in overview.rows %}
+          {% if row.market_id is defined and row.market_id == focus_id %}{% set _ = focus_rows.append(row) %}{% endif %}
+        {% endfor %}
+      {% endfor %}
+      <div class="intl-overview__focus" data-im-focus>
+        <h3>
+          <span class="l-en">{% if projection_context.eligible_count > 4 %}Three highest and lowest remaining{% else %}All qualified returns{% endif %}</span>
+          <span class="l-zh" lang="zh">{% if projection_context.eligible_count > 4 %}最高三个及其余最低一个{% else %}全部符合条件的回报{% endif %}</span>
+        </h3>
+        <ol class="intl-overview__focus-list" data-im-focus-list>
+          {% for row in focus_rows %}
+            <li data-im-focus-item data-market-id="{{ row.market_id|e }}" id="{{ context_id|e }}-focus-{{ row.slot|e }}">
+              <span class="intl-overview__market-name"><span class="l-en">{{ row.name_en|e }}</span><span class="l-zh" lang="zh">{{ row.name_zh|e }}</span></span>
+              {% if row.index_id is defined %}<span class="intl-overview__index" data-index-id="{{ row.index_id|e }}">{{ row.index_label|e }}</span>{% endif %}
+              <span class="intl-overview__return" data-im-return>
+                {% if row.metric.value is none %}
+                  <span class="l-en">Unavailable</span><span class="l-zh" lang="zh">不可用</span>
+                {% else %}
+                  {{ '%+.2f'|format(row.metric.value) if row.metric.value > 0 else '%.2f'|format(row.metric.value) }}%
+                {% endif %}
+              </span>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    {% endif %}
+  </div>
+
+  <button
+    class="intl-overview__expansion-trigger"
+    type="button"
+    hidden
+    data-im-action="set_expanded"
+    data-im-expanded="true"
+    data-im-expansion-trigger
+    aria-controls="{{ context_id|e }}-markets"
+    aria-expanded="true"
+  >
+    <span class="l-en">Expand all markets</span><span class="l-zh" lang="zh">展开全部市场</span>
+  </button>
+
+  <section
+    class="intl-overview__markets"
+    id="{{ context_id|e }}-markets"
+    data-im-expanded-region
+    aria-labelledby="{{ context_id|e }}-markets-title"
+  >
+    <h3 id="{{ context_id|e }}-markets-title">
+      <span class="l-en">All markets</span>
+      <span class="l-zh" lang="zh">全部市场</span>
+    </h3>
+    <div class="intl-overview__market-list" data-im-market-list role="list">
+      {% for row in overview.rows %}
+        {% if row.quality == 'denied' %}
+          <article class="intl-overview__market __market" data-im-market-denied id="{{ context_id|e }}-market-{{ row.slot|e }}" role="listitem">
+            <p data-im-denied><span class="l-en">Market details withheld</span><span class="l-zh" lang="zh">市场详情未披露</span></p>
+          </article>
+        {% elif row.quality == 'unknown' %}
+          <article class="intl-overview__market __market" data-im-market-unknown id="{{ context_id|e }}-market-{{ row.slot|e }}" role="listitem">
+            <p><span class="l-en">{{ row.name_en|e }}</span><span class="l-zh" lang="zh">{{ row.name_zh|e }}</span></p>
+            <div>
+              <span><span class="l-en">Unavailable</span><span class="l-zh" lang="zh">不可用</span></span>
+            </div>
+          </article>
+        {% else %}
+          <article class="intl-overview__market __market" data-im-market id="{{ context_id|e }}-market-{{ row.slot|e }}" role="listitem">
+            <p><span class="l-en">{{ row.name_en|e }}</span><span class="l-zh" lang="zh">{{ row.name_zh|e }}</span></p>
+            <div>
+              <span data-im-market-id>{{ row.market_id|e }}</span>
+              <span data-im-index>{{ row.index_label|e }}</span>
+              <div data-im-metrics>
+                <div><span class="l-en">Selected return</span><span class="l-zh" lang="zh">所选回报</span> <span data-im-selected>{% if row.metric.value is none %}{{ quality_notice(row.metric) }}{% else %}{{ '%+.2f'|format(row.metric.value) if row.metric.value > 0 else '%.2f'|format(row.metric.value) }}{% if row.metric.unit == 'percent' %}%{% endif %}{% endif %}</span></div>
+                <div><span class="l-en">Local</span><span class="l-zh" lang="zh">本币</span> <span data-im-local>{% if row.local.value is none %}{{ quality_notice(row.local) }}{% else %}{{ '%+.2f'|format(row.local.value) if row.local.value > 0 else '%.2f'|format(row.local.value) }}{% if row.local.unit == 'percent' %}%{% endif %}{% endif %}</span></div>
+                <div><span class="l-en">USD</span><span class="l-zh" lang="zh">美元</span> <span data-im-usd>{% if row.usd.value is none %}{{ quality_notice(row.usd) }}{% else %}{{ '%+.2f'|format(row.usd.value) if row.usd.value > 0 else '%.2f'|format(row.usd.value) }}{% if row.usd.unit == 'percent' %}%{% endif %}{% endif %}</span></div>
+                <div><span class="l-en">Currency effect</span><span class="l-zh" lang="zh">汇率影响</span> <span data-im-fx>{% if row.fx_contribution.value is none %}{{ quality_notice(row.fx_contribution) }}{% else %}{{ '%+.2f'|format(row.fx_contribution.value) if row.fx_contribution.value > 0 else '%.2f'|format(row.fx_contribution.value) }}{% if row.fx_contribution.unit == 'percentage_points' %} <span class="l-en">pp</span><span class="l-zh" lang="zh">个百分点</span>{% endif %}{% endif %}</span></div>
+                {% if row.metric.window %}
+                  <div data-im-window><span class="l-en">Calculation window</span><span class="l-zh" lang="zh">计算窗口</span> <time datetime="{{ row.metric.window.start|e }}">{{ row.metric.window.start|e }}</time>–<time datetime="{{ row.metric.window.end|e }}">{{ row.metric.window.end|e }}</time></div>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+</section>
