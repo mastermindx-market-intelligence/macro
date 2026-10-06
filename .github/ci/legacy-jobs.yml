@@ -8664,6 +8664,7 @@ jobs:
       - collectors/__init__.py
       - collectors/china_ths_concepts.py
       - config/theme_crosswalk.yml
+      - config/theme_graph_duplicate_mints.yml
       - config/theme_graph_identity_breaks.yml
       - config/theme_sources.yml
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
