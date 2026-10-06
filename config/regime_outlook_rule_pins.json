@@ -125,7 +125,7 @@
     {
       "file": "engine/conditions.py",
       "name": "conditions_snapshot",
-      "sha256": "f19330ea6d59ba1a0a2de6844dea2996d3ed05dd418e8cd2bfbafabb351aebb5",
+      "sha256": "9c84726456354bddaaf689d358675e37f12b2e66c8a138cc3c224ac8a3ae6d85",
       "birth_sha256": "f19330ea6d59ba1a0a2de6844dea2996d3ed05dd418e8cd2bfbafabb351aebb5",
       "decides": [
         "R.conditions.labor_nowcast.read",
@@ -501,13 +501,13 @@
         "stress_oas_z"
       ],
       "present": true,
-      "value": 1.0,
+      "value": 1,
       "decides": [
         "R.liquidity_quality.label",
         "R.liquidity_quality.stress_overlay.confirming_stress"
       ],
       "birth_present": true,
-      "birth_value": 1.0
+      "birth_value": 1
     },
     {
       "file": "config.yml",
@@ -518,12 +518,12 @@
         "claims_yoy_warn_pct"
       ],
       "present": true,
-      "value": 10.0,
+      "value": 10,
       "decides": [
         "R.conditions.labor_nowcast.read"
       ],
       "birth_present": true,
-      "birth_value": 10.0
+      "birth_value": 10
     },
     {
       "file": "config.yml",
@@ -534,12 +534,12 @@
         "indeed_chg_warn_pct"
       ],
       "present": true,
-      "value": -5.0,
+      "value": -5,
       "decides": [
         "R.conditions.labor_nowcast.read"
       ],
       "birth_present": true,
-      "birth_value": -5.0
+      "birth_value": -5
     },
     {
       "file": "config.yml",
@@ -615,5 +615,18 @@
       ]
     }
   ],
-  "reviews": []
+  "reviews": [
+    {
+      "date": "2026-10-06",
+      "reviewer": "Sol CEO",
+      "finding": "R10 terminology repair changes only conditions_snapshot curve-note wording from a causal TP-adjusted interpretation to a legacy TP10 heuristic disagreement. Re-read the pinned labor_nowcast.read, financial_conditions.state, and complacency.breadth_div decisions under R-E; their decision code and values are unchanged.",
+      "changed": [
+        {
+          "pin": "engine/conditions.py:conditions_snapshot",
+          "from": "f19330ea6d59ba1a0a2de6844dea2996d3ed05dd418e8cd2bfbafabb351aebb5",
+          "to": "9c84726456354bddaaf689d358675e37f12b2e66c8a138cc3c224ac8a3ae6d85"
+        }
+      ]
+    }
+  ]
 }
