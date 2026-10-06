@@ -160,6 +160,9 @@ def test_xasset_copy_does_not_promote_contemporaneous_beta_to_causality():
     bonds_template = (root / "templates" / "bonds.html.j2").read_text(encoding="utf-8")
     assert "TP10 curve heuristic" in bonds_template
     assert "matched-maturity expectations-only" in bonds_template
+    assert "does not isolate expectations" in bonds_template
+    assert "removes low-term-premium noise" not in bonds_template
+    assert "below zero = inverted" not in bonds_template
     assert "TP-adjusted" not in bonds_template
 
     brain_source = (root / "engine" / "neuralweb" / "brain_curve.py").read_text(encoding="utf-8")
