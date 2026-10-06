@@ -270,12 +270,17 @@ def certify_source_day(
                 f"source-day channel {channel} missing event-class coverage: "
                 + ", ".join(missing_classes)
             )
+        receipt = str(raw.get("receipt") or "").strip()
+        if not receipt:
+            raise CaptureContractError(
+                f"source-day channel {channel} requires evidence receipt"
+            )
         channels[channel] = {
             "channel": channel,
             "status": status,
             "swept_through": _iso(swept_through),
             "covered_event_classes": sorted(covered_classes),
-            "receipt": str(raw.get("receipt") or "").strip() or None,
+            "receipt": receipt,
         }
 
     missing = sorted(SOURCE_DAY_REQUIRED_CHANNELS - set(channels))

@@ -938,12 +938,14 @@ def test_capture_epoch2_source_day_refuses_partial_utc_day():
                     "status": "COMPLETE",
                     "swept_through": "2026-10-07T00:00:00Z",
                     "covered_event_classes": sorted(capture.EVENT_CLASSES),
+                    "receipt": "wire-sweep:oct6",
                 },
                 {
                     "channel": "ukmto",
                     "status": "COMPLETE",
                     "swept_through": "2026-10-07T00:00:00Z",
                     "covered_event_classes": ["physical_energy_shipping_security"],
+                    "receipt": "ukmto-sweep:oct6",
                 },
             ],
             candidate_dispositions=[],
@@ -961,6 +963,7 @@ def test_capture_epoch2_source_day_requires_reuters_and_ukmto():
                     "status": "COMPLETE",
                     "swept_through": "2026-10-07T00:00:00Z",
                     "covered_event_classes": sorted(capture.EVENT_CLASSES),
+                    "receipt": "wire-sweep:oct6",
                 }
             ],
             candidate_dispositions=[],
@@ -1061,6 +1064,30 @@ def test_capture_epoch2_source_day_requires_family_coverage_receipts():
                     "status": "COMPLETE",
                     "swept_through": "2026-10-07T00:00:00Z",
                     "covered_event_classes": ["physical_energy_shipping_security"],
+                },
+            ],
+            candidate_dispositions=[],
+        )
+
+def test_capture_epoch2_source_day_requires_channel_evidence_receipt():
+    with pytest.raises(capture.CaptureContractError, match="requires evidence receipt"):
+        capture.certify_source_day(
+            source_date="2026-10-06",
+            source_coverage_complete_through="2026-10-07T00:00:00Z",
+            channel_receipts=[
+                {
+                    "channel": "reuters_wire",
+                    "status": "COMPLETE",
+                    "swept_through": "2026-10-07T00:00:00Z",
+                    "covered_event_classes": sorted(capture.EVENT_CLASSES),
+                    "receipt": "",
+                },
+                {
+                    "channel": "ukmto",
+                    "status": "COMPLETE",
+                    "swept_through": "2026-10-07T00:00:00Z",
+                    "covered_event_classes": ["physical_energy_shipping_security"],
+                    "receipt": "ukmto-sweep:oct6",
                 },
             ],
             candidate_dispositions=[],
