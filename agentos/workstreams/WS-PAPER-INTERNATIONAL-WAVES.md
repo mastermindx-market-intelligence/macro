@@ -22,12 +22,14 @@ owns_paths:
 - tests/fixtures/intl_library_search_catalogue.json
 - engine/intl_performance_records.py
 - tests/test_intl_performance_records.py
+- engine/intl_performance_charts.py
+- tests/test_intl_performance_charts.py
 waves:
 - id: IM00
   title: Shared performance, presentation and route foundation
   status: in_progress
-  next_action: IM00-T1a numerical/provenance source is independently approved; timestamped charts/common-period
-    comparison, qualification projection and route/controller integration remain owed.
+  next_action: Return records and raw chart projection are source-reviewed; qualified common endpoints, presentation
+    projection, one controller and page integration remain.
 - id: IM01
   title: Overview
   status: todo
@@ -87,9 +89,9 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Complete the same PR source release after refreshing the semantic proof base and validating the numerical
-  CI job; then advance timestamped source charts and the presentation/controller foundation. Preserve Macro7202
-  and Terminal804 owner boundaries.
+next_action: Finish the same PR source release with fresh exact-candidate semantic evidence; then dispatch the already
+  adjudicated route-state core through an actually available admitted build slot. Preserve one leaf, source qualification
+  and incumbent Saved ownership.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
@@ -119,3 +121,5 @@ Wave 3 is grouped on the same carrier/PR. Terminal #777 is now confirmed merged;
 Search worker rs_20261006T092239Z_16794 delivered source after the commission was made self-contained. Sol rejected its malformed-identity and Unicode-whitespace boundaries; Astra repaired them and Sol independently approved exact source019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f. Source and100 portable review cases are integrated; combined Node155/155 pass. Original worker outcome remains review-rejected; repaired derivative has its own acceptance evidence.
 
 IM00-T1a now adds an adapter inside the existing performance owner through two new paths. After two fully settled admitted timeouts returned no code, Astra took a documented critical-path exception; Sol independently approved exact source. The focused suite passes 43 cases on both Python3.14 and3.12, the prewritten harness passes43 assertions and Sol counterchecks pass23. All nine inherited owner/config inputs remain unchanged. IM00_T1A_EVIDENCE.json binds scope, hashes and limits. Numerical availability is not freshness/rights qualification; no page or production proof is claimed.
+
+IM00-T1b raw chart projection is independently approved at exact source/test hashes in IM00_T1B_EVIDENCE.json. Focused31tests pass locally and onPython3.12; integrated79tests andSol20additionalassertions pass. All13input hashes remain unchanged through the merge observer base refresh. The original worker returned partial source at timeout; parent repair/test derivative has separate acceptance. No qualified current comparison, UI or production claim follows.

@@ -3587,6 +3587,7 @@ jobs:
       - "engine/intl_market_state.py"
       - "engine/intl_performance.py"
       - "engine/intl_performance_records.py"
+      - "engine/intl_performance_charts.py"
       - "engine/technicals.py"
       - "lib/__init__.py"
       - "lib/config.py"
@@ -3594,6 +3595,7 @@ jobs:
       - "config.yml"
       - "tests/conftest.py"
       - "tests/test_intl_performance_records.py"
+      - "tests/test_intl_performance_charts.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -3604,7 +3606,7 @@ jobs:
       - name: install numerical test dependencies
         run: pip install pytest pandas numpy pyyaml
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_performance_records.py -q
+        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_performance_charts.py -q
 
   stock-dashboard-first-frame:
     if: ${{ false }}
