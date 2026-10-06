@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 295,
+    "opportunity_queue_depth": 298,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,14 +1690,14 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 295,
-      "scored": 471,
+      "open": 298,
+      "scored": 474,
       "newest": [
         {
           "id": "radar-stage-ACA-2026-10-06",
           "problem_or_desire": "$ACA: stage 2D_extended_run, SATA 10, 52w in stage",
           "expected_value": 0.4,
-          "score": 0.378605,
+          "score": 0.374732,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-stage-ACU-2026-10-06",
           "problem_or_desire": "$ACU: stage 2D_extended_run, SATA 9, 26w in stage",
           "expected_value": 0.4,
-          "score": 0.378605,
+          "score": 0.374732,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-stage-CDNA-2026-10-06",
           "problem_or_desire": "$CDNA: stage 2D_extended_run, SATA 10, 34w in stage",
           "expected_value": 0.4,
-          "score": 0.378605,
+          "score": 0.374732,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 35,
-    "signal_posts": 7,
-    "charts": 167,
+    "total_posts": 32,
+    "signal_posts": 9,
+    "charts": 171,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-10-06"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-10-06T13:19:25Z",
-  "inputs_hash": "sha256:2cf6edf341c0e3f570aae165ac83ef47c65a36f0c57df3f2293b1884c89f179f",
+  "produced_at": "2026-10-06T15:48:57Z",
+  "inputs_hash": "sha256:5056e5ae160928ba04aca11fa0c41cd79246c6f9c1640352bb7c1f4037f8ed63",
   "tier": "display"
 }

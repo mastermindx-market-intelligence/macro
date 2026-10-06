@@ -1,6 +1,6 @@
 {
   "status": "degraded_pack_only",
-  "asof": "2026-10-06T13:39:38+00:00",
+  "asof": "2026-10-06T15:51:40+00:00",
   "reason": "generator failed: rate_limited_all",
   "degraded": true
 }

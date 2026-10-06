@@ -13,13 +13,38 @@
     }
   ],
   "computed_at": "2026-10-06T13:27:04Z",
+  "correction_receipt": {
+    "duplicate_mint": [
+      {
+        "edges_annulled": [
+          "member_of:co:us:VMRK->basket:baskets:us_sector_realestate@2023-05-09"
+        ],
+        "evidence_id": "ev:42b7e0a6d7f18faa",
+        "merged_into": "co:us:EQR",
+        "node_id": "co:us:VMRK"
+      }
+    ],
+    "entity_type_conflict": [],
+    "identity_break": [],
+    "rows_appended": {
+      "edges": 1,
+      "evidence": 1,
+      "node_lifecycle": 1
+    },
+    "run_at": "2026-10-06T13:55:11Z",
+    "script": "scripts.correct_gmi_identity_lineage",
+    "skipped_already_retired": [
+      "co:us:GOLD",
+      "co:us:IBIT"
+    ]
+  },
   "counts": {
     "capability": 644,
-    "edges": 25100,
+    "edges": 25101,
     "edges_latest_belief": 12863,
-    "evidence": 22,
+    "evidence": 23,
     "identity_resolution": 2807,
-    "node_lifecycle": 2,
+    "node_lifecycle": 3,
     "nodes": 3882
   },
   "engine_version": "theme_graph.v1",
