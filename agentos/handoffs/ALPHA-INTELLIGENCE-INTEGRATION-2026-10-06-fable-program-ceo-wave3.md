@@ -26,7 +26,7 @@ verified:
     result: "Exit 0; agentos: 1552 records (81 workstreams, 408 decisions, 465 discoveries, 598 handoffs) — 0 error(s), 121 warning(s)."
   - claim: "Research handoff append is delete-free against origin/main."
     command: "git diff origin/main -- research/INFORMATION_TO_PRICE_CONTINUATION_HANDOFF_2026-10-06.md | grep '^-[^-]' | wc -l"
-    result: "0 (append-only)."
+    result: "0"
   - claim: "Diff against origin/main touches only the two owned paths."
     command: "git diff --stat origin/main...HEAD"
     result: "Exactly research/INFORMATION_TO_PRICE_CONTINUATION_HANDOFF_2026-10-06.md and agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-06-fable-program-ceo-wave3.md."
