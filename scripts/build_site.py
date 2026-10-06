@@ -7887,6 +7887,11 @@ def main() -> int:
                     _prior_as_of, _fresh_su.get("as_of"),
                     _prior_stale.get("delayed"),
                     (_fresh_su.get("staleness") or {}).get("delayed"))
+            try:
+                from engine.theme_graph.selection_cohort_projection import write_product_projection
+                write_product_projection(site, "us", vm.get("us_selection_cohort_internal"))
+            except Exception as _scp_e:  # noqa: BLE001 — projection never breaks ordinary rendering
+                log.warning("selection-cohort projection (us) not written (%s)", _scp_e)
         except Exception as _rr_e:  # noqa: BLE001 — additive, never fatal
             log.warning("one-build-lag re-render skipped (%s)", _rr_e)
         _tmark("one_build_lag_rerender")
