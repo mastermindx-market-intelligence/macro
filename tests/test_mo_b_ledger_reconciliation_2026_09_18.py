@@ -844,3 +844,17 @@ def test_ceo_a_w13_records_d90_to_d92_without_state_moves():
     assert "#815" in r["MO-DELTA-007"]["adjudication_notes"]
     for rid in ("MO-PAID-027", "MO-DELTA-003", "MO-DELTA-007"):
         assert r[rid]["capability_state_c2"] == "PARTIAL", rid
+
+
+def test_ceo_a_w14_records_d93_without_state_moves():
+    # CEO A W14 (2026-10-05): D93 CEO B 6004683154 F13-WS (#815) natural run 22:38:47Z on 007;
+    # Terminal #820 on 054 and #807 on 003 (rows named by the PR bodies / #805 lineage). No state moves.
+    r = _rows()
+    assert "22:38:47Z" in r["MO-DELTA-007"]["adjudication_notes"]
+    assert "a89ae219cb33" in r["MO-DELTA-007"]["adjudication_notes"]
+    assert "#820" in r["MO-PAID-054"]["adjudication_notes"]
+    assert "61fe025abc5e" in r["MO-PAID-054"]["adjudication_notes"]
+    assert "#807" in r["MO-DELTA-003"]["adjudication_notes"]
+    assert "5dcaf15f320b" in r["MO-DELTA-003"]["adjudication_notes"]
+    for rid in ("MO-DELTA-003", "MO-DELTA-007", "MO-PAID-054"):
+        assert r[rid]["capability_state_c2"] == "PARTIAL", rid
