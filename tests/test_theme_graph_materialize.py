@@ -1615,7 +1615,12 @@ def test_supplied_action_without_resolved_authority_refuses_actual_build(tree, m
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(event) + "\n")
     monkeypatch.setattr(bake, "_relation_event_sources", lambda: (path, source))
-    if owner_verdict != "UNWIRED":
+    if owner_verdict == "UNWIRED":
+        # Chairman gate #5 (2026-10-06) wires the probation owner's own ledger
+        # resolver into the normal builder, so "unwired" is now a simulated
+        # condition: a None reader must still refuse rather than accept.
+        monkeypatch.setattr(bake, "_relation_action_owner_reader", lambda: None)
+    else:
         reader = _TrustedRelationActionFixture([])
         reader.receipts[event["event_sha256"]] = (event if owner_verdict == "ECHO" else dict(
             schema="gmi.probation_owner_action_read/v1", owner="theme_graph.probation",
