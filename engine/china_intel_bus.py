@@ -366,6 +366,24 @@ def _visit_text(value) -> str:
         return ""
 
 
+def _visit_company_code(value) -> str:
+    """Resolve a visit-plane company code through the existing Data OS owner.
+
+    The visit store normally carries bare six-digit mainland codes. A hostile or
+    historical row may carry a malformed value or a suffixed alias; do not mint
+    a second identity predicate here. Reuse normalize_cn_symbol and retain only
+    its canonical code. Any unavailable/invalid identity fails closed to "".
+    """
+    raw = _visit_text(value)
+    if not raw:
+        return ""
+    try:
+        from lib.dataos.identity import normalize_cn_symbol
+        return normalize_cn_symbol(raw).code
+    except Exception:  # noqa: BLE001 — identity uncertainty is an authority block
+        return ""
+
+
 def _visit_frame_records(frame) -> list[dict] | None:
     """Bounded adapter for tests/lists and the owner DataFrames; None means unreadable."""
     if frame is None:
@@ -514,11 +532,12 @@ def _visit_discovery_snapshot(
     # duplicate may not hide an unscoped positive behind a well-keyed keep-FIRST
     # row and thereby restore global absence/baseline/first-seen authority.
     unscoped_positive_rows = [
-        row for row in raw_rows if not _visit_text(row.get("sec_code"))
+        row for row in raw_rows if not _visit_company_code(row.get("sec_code"))
     ]
     unscoped_positive_evidence = [
         {
             "announcement_id": _visit_text(row.get("announcement_id")) or None,
+            "sec_code_raw": _visit_text(row.get("sec_code")) or None,
             "sec_name": _visit_text(row.get("sec_name")) or None,
             "exchange": _visit_text(row.get("exchange")) or None,
             "title": _visit_text(row.get("title")) or None,
@@ -542,7 +561,7 @@ def _visit_discovery_snapshot(
     source_routes_by_announcement: dict[str, dict[str, set[str]]] = {}
     for row in raw_rows:
         aid = _visit_text(row.get("announcement_id"))
-        code = _visit_text(row.get("sec_code"))
+        code = _visit_company_code(row.get("sec_code"))
         if not aid or not code:
             continue
         identity_by_announcement.setdefault(aid, set()).add(code)
@@ -602,12 +621,12 @@ def _visit_discovery_snapshot(
     # already on tape. Keep the positive row, but fail closed for negative and
     # baseline authority.
     if any(
-        _visit_text(r.get("sec_code")) and observed is None
+        _visit_company_code(r.get("sec_code")) and observed is None
         for r, observed in zip(raw_rows, authority_row_observation_instants)
     ):
         clock_errors.append("row_observation_clock_invalid")
     if any(
-        _visit_text(r.get("sec_code")) and source_day is None
+        _visit_company_code(r.get("sec_code")) and source_day is None
         for r, source_day in zip(raw_rows, authority_row_source_days)
     ):
         clock_errors.append("row_source_clock_invalid")
@@ -822,7 +841,7 @@ def _visit_discovery_snapshot(
 
     grouped: dict[str, dict] = {}
     for row in deduped:
-        code = _visit_text(row.get("sec_code"))
+        code = _visit_company_code(row.get("sec_code"))
         if not code:
             continue
         exchange = _visit_text(row.get("exchange")).lower()
