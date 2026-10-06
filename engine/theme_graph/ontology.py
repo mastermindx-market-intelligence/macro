@@ -164,6 +164,28 @@ def _clock_date(value: Any, field: str) -> dt.date:
     return _clock_instant(value, field).date()
 
 
+def _has_time_grain(value: Any) -> bool:
+    if isinstance(value, dt.datetime):
+        return True
+    try:
+        import pandas as pd
+
+        if isinstance(value, pd.Timestamp):
+            return True
+    except ImportError:
+        pass
+    if isinstance(value, dt.date):
+        return False
+    text = str(value or "").strip()
+    return len(text) > 10 and text[10] in ("T", " ")
+
+
+def _visible_by_instant(value: Any, field: str, cutoff: dt.datetime) -> bool:
+    if _has_time_grain(value):
+        return _clock_instant(value, field) <= cutoff
+    return _parse_date(value, field) < cutoff.date()
+
+
 def _node_projection(row: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "node_id": str(row.get("node_id") or ""),
@@ -187,8 +209,11 @@ def _nodes_as_known(
     lifecycle_rows: Sequence[Mapping[str, Any]],
     *,
     asof: dt.date,
-    knowledge_cutoff: dt.date,
+    knowledge_cutoff: dt.date | dt.datetime,
 ) -> dict[str, dict[str, Any]]:
+    instant = isinstance(knowledge_cutoff, dt.datetime)
+    if instant:
+        knowledge_cutoff = _clock_instant(knowledge_cutoff, "knowledge_cutoff")
     visible: dict[str, dict[str, Any]] = {}
     for original in node_rows:
         row = dict(original)
@@ -196,10 +221,12 @@ def _nodes_as_known(
         if not node_id:
             continue
         computed = row.get("computed_at")
-        if not _is_null(computed) and _clock_date(
-            computed, "computed_at"
-        ) > knowledge_cutoff:
-            continue
+        if not _is_null(computed):
+            if instant:
+                if not _visible_by_instant(computed, "computed_at", knowledge_cutoff):
+                    continue
+            elif _clock_date(computed, "computed_at") > knowledge_cutoff:
+                continue
         birth = row.get("birth_date")
         if not _is_null(birth) and _parse_date(birth, "birth_date") > asof:
             continue
@@ -215,7 +242,10 @@ def _nodes_as_known(
         if _is_null(computed):
             continue
         computed_instant = _clock_instant(computed, "computed_at")
-        if computed_instant.date() > knowledge_cutoff:
+        if instant:
+            if not _visible_by_instant(computed, "computed_at", knowledge_cutoff):
+                continue
+        elif computed_instant.date() > knowledge_cutoff:
             continue
         candidate = (computed_instant, index, row)
         if node_id not in latest or candidate[:2] > latest[node_id][:2]:
@@ -272,8 +302,11 @@ def _collapse_relevant_edges(
     *,
     node_id: str,
     asof: dt.date,
-    knowledge_cutoff: dt.date,
+    knowledge_cutoff: dt.date | dt.datetime,
 ) -> tuple[list[dict[str, Any]], int]:
+    instant = isinstance(knowledge_cutoff, dt.datetime)
+    if instant:
+        knowledge_cutoff = _clock_instant(knowledge_cutoff, "knowledge_cutoff")
     eligible: list[tuple[dt.date, str, int, dict[str, Any]]] = []
     future_beliefs = 0
     for index, original in enumerate(rows):
@@ -286,10 +319,16 @@ def _collapse_relevant_edges(
         type_ = str(row.get("type") or "")
         if not edge_id or not type_ or not src or not dst:
             raise ValueError("relevant edge is missing edge_id/type/src/dst")
-        belief = _parse_date(row.get("belief_time"), "belief_time")
-        if belief > knowledge_cutoff:
-            future_beliefs += 1
-            continue
+        if instant:
+            if not _visible_by_instant(row.get("belief_time"), "belief_time", knowledge_cutoff):
+                future_beliefs += 1
+                continue
+            belief = _clock_date(row.get("belief_time"), "belief_time")
+        else:
+            belief = _parse_date(row.get("belief_time"), "belief_time")
+            if belief > knowledge_cutoff:
+                future_beliefs += 1
+                continue
         eligible.append((belief, str(row.get("computed_at") or ""), index, row))
 
     latest: dict[str, tuple[dt.date, str, int, dict[str, Any]]] = {}
