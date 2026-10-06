@@ -2273,3 +2273,25 @@ def test_j10_rejects_prefixed_cross_market_href(href):
     host.append(link)
     result = _pjr._check_j10(soup, "TEST1", [])
     assert result["status"] == "FAIL", result
+
+
+@pytest.mark.parametrize("check_name", ["_check_j2", "_check_j3"])
+def test_candidate_row_missing_fails_when_pool_is_present(check_name):
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
+    row = soup.select_one('#us-candidate-pool [data-ticker="TEST1"]')
+    assert row is not None
+    row.decompose()
+    check = getattr(_pjr, check_name)
+    result = check(soup, "TEST1", _standouts_payload(ticker="TEST1"))
+    assert result["status"] == "FAIL", result
+
+
+@pytest.mark.parametrize("check_name", ["_check_j2", "_check_j3"])
+def test_candidate_row_absent_is_na_when_pool_not_captured(check_name):
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
+    pool = soup.select_one("#us-candidate-pool")
+    assert pool is not None
+    pool.decompose()
+    check = getattr(_pjr, check_name)
+    result = check(soup, "TEST1", _standouts_payload(ticker="TEST1"))
+    assert result["status"] == "N/A", result

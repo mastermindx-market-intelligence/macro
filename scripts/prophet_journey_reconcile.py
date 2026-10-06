@@ -477,8 +477,12 @@ def _check_j2(soup: BeautifulSoup, ticker: str | None,
              "templates/_us_candidate_pool.html.j2:17)")
     rows = _pool_rows(soup, "table", ticker)
     if not rows:
-        return _check_status("N/A", "table row present",
-                             "no row under #us-candidate-pool[data-view=table]",
+        pool = _select_first(soup, '#us-candidate-pool[data-view="table"]')
+        if pool is None:
+            return _check_status("N/A", "table row present",
+                                 "no captured table Candidates container", where)
+        return _check_status("FAIL", "table row present",
+                             "Candidates table captured without selected ticker row",
                              where)
     row = rows[0]
     off_board = row.get("data-off-board", "")
@@ -516,8 +520,12 @@ def _check_j3(soup: BeautifulSoup, ticker: str | None,
     rows = (_pool_rows(soup, "grid", ticker)
             + _pool_rows(soup, "table", ticker))
     if not rows:
-        return _check_status("N/A", "grid row present",
-                             "no row under #us-candidate-pool at any view",
+        pool = _select_first(soup, "#us-candidate-pool")
+        if pool is None:
+            return _check_status("N/A", "grid row present",
+                                 "Candidates container not captured", where)
+        return _check_status("FAIL", "grid/table row present",
+                             "Candidates captured without selected ticker row",
                              where)
     row = rows[0]
     off_board = row.get("data-off-board", "")
