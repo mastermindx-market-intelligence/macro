@@ -1,0 +1,342 @@
+{
+  "operation": "gmi-theme-accept-d2e-20260827-sol-001",
+  "phase": 1,
+  "pin": "cbfa20a45d8401f1cf1cc9fc48155455f1d612fb",
+  "generation": {
+    "computed_at": "2026-10-06T08:07:45Z",
+    "data_commit": "f7dd82910f315e82f376144388f2b38490c94ffe",
+    "lane": "nightly",
+    "mode": "nightly",
+    "era": "observed",
+    "belief_time": "2026-10-06"
+  },
+  "rows": [
+    {
+      "id": "R0.1",
+      "gate": "Predecessor ancestry",
+      "command": "git merge-base --is-ancestor {0b1fe887,79b566f5,192a46de} HEAD",
+      "rc": 0,
+      "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n192a46de rc=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R0.2",
+      "gate": "Agent OS acceptance trace",
+      "command": "git grep D2C|D2D accept|merged in agentos/",
+      "rc": 3,
+      "output_tail": "Lines cite D2C/D2D dependency text; no line cites both as merged with squash 0b1fe887/79b566f5",
+      "verdict": "HOLD",
+      "owner": "seat",
+      "repair_packet": "seat records D2C+D2D acceptance in WS:GMI-THEME-GRAPH"
+    },
+    {
+      "id": "R0.3",
+      "gate": "No overlapping D2E carrier",
+      "command": "gh pr list --search D2E",
+      "rc": 0,
+      "output_tail": "[{\"number\":8324,\"title\":\"research(gmi): audited v3 report...\"}]",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R0.4",
+      "gate": "Owner-action authority #8507",
+      "command": "gh pr view 8507; git grep OWNER_ACTION...",
+      "rc": 0,
+      "output_tail": "state=MERGED mergeCommit=cbfa20a45d8401f1cf1cc9fc48155455f1d612fb; grep matches=5",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.A",
+      "gate": "D2A identity resolution",
+      "command": "pytest tests/test_theme_graph_identity*.py",
+      "rc": 0,
+      "output_tail": "65 passed, 56 skipped in 0.81s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.B",
+      "gate": "D2B lifecycle hostile matrix",
+      "command": "pytest tests/test_theme_graph_lifecycle.py",
+      "rc": 2,
+      "output_tail": "1 failed, 25 passed in 2.34s\ntests/test_theme_graph_lifecycle.py:802: 1168 identity_resolution biconditional breach",
+      "verdict": "FAIL",
+      "owner": "D2B identity owner",
+      "repair_packet": "repair through the existing owner, re-run TZ=UTC COLLECT_LANE=nightly PY -m pytest -p no:cacheprovider -q -rs tests/test_theme_graph_lifecycle.py"
+    },
+    {
+      "id": "R1.C",
+      "gate": "D2C PIT vintage",
+      "command": "pytest basket_membership_pit + gmi_history...",
+      "rc": 0,
+      "output_tail": "143 passed, 14 warnings in 2.88s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.D",
+      "gate": "D2D ontology/probation",
+      "command": "pytest crosswalk/local_plane/structural/exposure",
+      "rc": 0,
+      "output_tail": "575 passed, 1 skipped in 10.29s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.E",
+      "gate": "Materialize + contracts",
+      "command": "pytest materialize + contracts",
+      "rc": 0,
+      "output_tail": "132 passed in 6.84s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.F",
+      "gate": "Rights tests",
+      "command": "pytest rights_use + theme_sources + half_b docket",
+      "rc": 2,
+      "output_tail": "3 failed, 46 passed in 1.03s\ntests/test_market_ontology_half_b_rights_docket.py:140",
+      "verdict": "FAIL",
+      "owner": "rights registry owner (seat \u2192 Chairman ruling)",
+      "repair_packet": "repair through the existing owner, re-run TZ=UTC COLLECT_LANE=nightly PY -m pytest -p no:cacheprovider -q -rs tests/test_theme_graph_rights_use.py tests/test_theme_sources_registry.py tests/test_market_ontology_half_b_rights_docket.py"
+    },
+    {
+      "id": "R2",
+      "gate": "Strict contract guard",
+      "command": "check_theme_graph_contracts --selftest; --strict",
+      "rc": 2,
+      "output_tail": "selftest rc=0\nstrict rc=0\n::warning title=theme graph contract breach::1168 identity_resolution...",
+      "verdict": "FAIL",
+      "owner": "D2B identity owner",
+      "repair_packet": "repair identity_resolution biconditional on committed store; re-run PY -m scripts.check_theme_graph_contracts --strict"
+    },
+    {
+      "id": "C1",
+      "gate": "GOLD/IBIT lifecycle standing",
+      "command": "pandas node_lifecycle.parquet probe",
+      "rc": 0,
+      "output_tail": "GOLD retired 2025-12-02 identity_break; IBIT retired entity_type_conflict",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "C2",
+      "gate": "GOLD edge closure",
+      "command": "pandas edges GOLD MEMBER_OF probe",
+      "rc": 0,
+      "output_tail": "latest valid_to=2025-12-02; 2 beliefs; current gold_miners excludes GOLD; GOLD# count=0; B\u2194GOLD edges=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "C3",
+      "gate": "IBIT refusal fence",
+      "command": "pandas IBIT + _meta refusals",
+      "rc": 0,
+      "output_tail": "annulled MEMBER_OF; IBIT refusal etf_conflict; etf:IBIT TRACKS live; co:us:IBIT live MEMBER_OF=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "C4",
+      "gate": "Retired-consistency",
+      "command": "latest-belief MEMBER_OF vs retired lifecycle",
+      "rc": 0,
+      "output_tail": "violations=0/retired-src live edges as-of 2026-10-06T08:07:45Z",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "C5",
+      "gate": "Identity sidecar R-A2",
+      "command": "identity_resolution.parquet NEWEST us-scope",
+      "rc": 0,
+      "output_tail": "US total=1237 RESOLVED=1211 DEFERRED={B} ENTITY_TYPE_CONFLICT=0; all-scope matches _meta counts",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "C6",
+      "gate": "Generation provenance P1",
+      "command": "merge-base vs DATA_COMMIT f7dd829...",
+      "rc": 3,
+      "output_tail": "0b1fe887 rc=1; 79b566f5 rc=1; seat fact: gen predates D2C/D2D merges",
+      "verdict": "HOLD",
+      "owner": "seat",
+      "repair_packet": "natural receipt on a main containing D2C+D2D pending \u2014 Phase 2"
+    },
+    {
+      "id": "C7",
+      "gate": "Nightly _meta history",
+      "command": "git log -5 _meta.json",
+      "rc": 0,
+      "output_tail": "5/5 commits: node_lifecycle=2 and IBIT refusal present",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R3.1",
+      "gate": "theme_sources.yml registry",
+      "command": "python yaml families",
+      "rc": 0,
+      "output_tail": "finviz_themes internal_only; ths_concepts internal_only; all families have rights_class",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R3.2",
+      "gate": "Source-ref census",
+      "command": "family_for_source_ref over censused columns",
+      "rc": 2,
+      "output_tail": "distinct=5900/5900 none=5885/5900 (as-of 2026-10-06T08:07:45Z)",
+      "verdict": "FAIL",
+      "owner": "rights registry owner (seat \u2192 Chairman ruling)",
+      "repair_packet": "mint registry family rows / SOURCE_PREFIX_FAMILY entries for unmapped prefixes (do not edit registry in this lane)"
+    },
+    {
+      "id": "R3.3",
+      "gate": "Spot checks",
+      "command": "family_for_source_ref spot refs",
+      "rc": 2,
+      "output_tail": "probation jsonl#x \u2192 mastermind_curated; site/factordata/us_standouts.json \u2192 None",
+      "verdict": "FAIL",
+      "owner": "rights registry owner (seat \u2192 Chairman ruling)",
+      "repair_packet": "mint a registry family row / SOURCE_PREFIX_FAMILY entry for site/factordata/us_standouts.json"
+    },
+    {
+      "id": "V1",
+      "gate": "Node prefix census",
+      "command": "nodes.parquet distinct prefixes",
+      "rc": 0,
+      "output_tail": "total=3882; co:us=1239 co:cn=1021 ltheme=644 basket=358 ... as-of GEN",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V2",
+      "gate": "Capability generations",
+      "command": "capability.parquet by computed_at",
+      "rc": 3,
+      "output_tail": "NEWEST gen 643 rows (505+138); _meta counts.capability=644 vs capability_counts sum=643 (+1 unexplained)",
+      "verdict": "HOLD",
+      "owner": "seat",
+      "repair_packet": "reconcile counts.capability 644 vs newest-generation 643 and capability_counts sum 643"
+    },
+    {
+      "id": "V3",
+      "gate": "Identity generations",
+      "command": "identity_resolution NEWEST vs _meta",
+      "rc": 0,
+      "output_tail": "NEWEST rows=2805 sum states=2805; file total _meta counts.identity_resolution=2807 (+2 prior-generation rows)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V4",
+      "gate": "THS mapping arithmetic",
+      "command": "_meta local_plane + crosswalk",
+      "rc": 0,
+      "output_tail": "ths concepts=375; crosswalk mapped 61 + unknown 0 = 61 code rows; ths_unmapped_concept_count=314; unresolved_concept_names=0",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V5",
+      "gate": "Probation proposals",
+      "command": "proposals.jsonl status field",
+      "rc": 0,
+      "output_tail": "lines=130; status counts recorded in \u00a75",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V6",
+      "gate": "PIT vintage + edge era",
+      "command": "_meta per_suite + edges.parquet era",
+      "rc": 0,
+      "output_tail": "membership_published_at per suite; edges observed vs reconstruction labeled",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "V7",
+      "gate": "Refusal/negative categories",
+      "command": "_meta negative buckets",
+      "rc": 0,
+      "output_tail": "company_mint_refusals=1; finviz refused=0; NOT_IN_MASTER=195; UNSUPPORTED_MARKET=233 ...",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    }
+  ],
+  "d2b3": {
+    "C1": {
+      "GOLD": "retired/2025-12-02/identity_break",
+      "IBIT": "retired/entity_type_conflict"
+    },
+    "C2": {
+      "gold_miners_valid_to": "2025-12-02",
+      "belief_rows": 2,
+      "current_gold_miners_count": 12,
+      "GOLD_in_current": false
+    },
+    "C3": {
+      "IBIT_annulled": true,
+      "etf_tracks_live": 2,
+      "live_co_ibit_member_of": 0
+    },
+    "C4": {
+      "retired_live_member_of_violations": 0
+    },
+    "C5": {
+      "us_total": 1237,
+      "RESOLVED": 1211,
+      "DEFERRED_symbols": [
+        "B"
+      ],
+      "ENTITY_TYPE_CONFLICT": 0
+    }
+  },
+  "rights": {
+    "R3.2_none_count": 5885,
+    "R3.2_distinct": 5900,
+    "R3.3_probation": "mastermind_curated",
+    "R3.3_us_standouts": null
+  },
+  "coverage": {
+    "V1_total_nodes": 3882,
+    "V2_meta_capability": 644,
+    "V2_newest_rows": 643,
+    "V5_proposals_lines": 236,
+    "V5_status": {"proposed": 234, "rejected": 2},
+    "V6_edges_era": {"observed": 12423, "reconstruction": 12677}
+  },
+  "phase1_verdict": "HOLD:seat:multiple gate rows not PASS (see matrix)",
+  "d2e_verdict": "HOLD:D2B identity owner:1168 identity_resolution biconditional breach on committed store",
+  "phase2": {
+    "status": "PENDING"
+  }
+}
