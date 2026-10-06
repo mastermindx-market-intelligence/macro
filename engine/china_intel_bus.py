@@ -509,8 +509,12 @@ def _visit_discovery_snapshot(
     # absence. Preserve it separately instead of fabricating identity. Because it
     # could belong to any issuer, it blocks global negative/baseline/first-seen
     # authority until the existing identity owner resolves or accounts for it.
+    # Identity uncertainty is authority-bearing too, so inspect raw persisted
+    # rows before dedup just like the clock integrity checks below. A conflicting
+    # duplicate may not hide an unscoped positive behind a well-keyed keep-FIRST
+    # row and thereby restore global absence/baseline/first-seen authority.
     unscoped_positive_rows = [
-        row for row in deduped if not _visit_text(row.get("sec_code"))
+        row for row in raw_rows if not _visit_text(row.get("sec_code"))
     ]
     unscoped_positive_evidence = [
         {

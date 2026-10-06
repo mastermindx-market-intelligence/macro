@@ -297,6 +297,51 @@ def test_visit_discovery_unscoped_positive_is_preserved_and_blocks_global_absenc
     assert unknown[0]["may_trade"] is False
 
 
+def test_visit_discovery_unscoped_duplicate_blocks_authority_before_dedup():
+    known = _visit_row(
+        "A-dup-identity", "000032", "2026-07-01T09:00:00+08:00",
+        recorded="2026-07-01T02:00:00+00:00",
+    )
+    hidden_unscoped = dict(known)
+    hidden_unscoped["sec_code"] = ""
+    hidden_unscoped["sec_name"] = "未知归属"
+    recent = _visit_row(
+        "A-recent-identity", "000032", "2026-10-02T09:00:00+08:00",
+        recorded="2026-10-02T02:00:00+00:00",
+    )
+
+    snap = bus._visit_discovery_snapshot(
+        [known, hidden_unscoped, recent],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    # Presentation/counting still uses the owner's keep-FIRST natural-key rule.
+    assert snap["n_rows_observed"] == 2
+    assert snap["n_recent_companies"] == 1
+    assert snap["examples"][0]["sec_code"] == "000032"
+    assert snap["examples"][0]["recent_count"] == 1
+
+    # But the raw conflicting identity remains explicit and blocks all negative
+    # history authority because it may belong to any issuer.
+    assert snap["n_unscoped_positive_rows"] == 1
+    assert snap["unscoped_positive_evidence"][0]["announcement_id"] ==         "A-dup-identity"
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] ==         "visit_company_identity_unresolved"
+    assert snap["n_measured_baselines"] == 0
+    assert snap["n_first_observed_recent"] == 0
+    assert snap["examples"][0]["baseline_state"] ==         "blocked_unresolved_company_identity"
+    assert snap["examples"][0]["first_seen_state"] ==         "unknown_unresolved_company_identity"
+
+
 def test_visit_discovery_unscoped_positive_blocks_other_company_baseline_and_first_seen():
     visits = [
         _visit_row(
