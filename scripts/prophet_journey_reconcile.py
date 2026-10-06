@@ -1253,8 +1253,18 @@ def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
                 fails.append("plan book attribute differs from index.source_asof")
         elif rendered and source_asof_date is None:
             fails.append("plan book attribute dated without valid source_asof")
-        elif rendered and (not text or rendered not in text):
-            fails.append("plan book dated text mismatch")
+        elif rendered:
+            visible_dates = set(re.findall(r"\d{4}-\d{2}-\d{2}", text))
+            allowed_visible_dates = {rendered}
+            source_board = index.get("source_board_asof")
+            if _iso_date(source_board) is not None:
+                allowed_visible_dates.add(str(source_board))
+            publication = index.get("asof") or index.get("as_of")
+            if _iso_date(publication) is not None:
+                allowed_visible_dates.add(str(publication))
+            if (rendered not in visible_dates
+                    or not visible_dates.issubset(allowed_visible_dates)):
+                fails.append("plan book dated text mismatch")
         elif not rendered:
             if source_asof_date is not None or (
                     "Plan record date unavailable" not in text

@@ -2353,3 +2353,15 @@ def test_j7_accepts_timestamp_shaped_price_asof_from_native_source():
     pool["data-source-digest"] = source["candidate_pool"]["source_digest"]
     result = _pjr._check_j7(soup, source, "TEST1")
     assert result["status"] == "PASS", result
+
+
+def test_j9_fail_plan_book_visible_dates_disagree_bilingually():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    book = soup.select_one("#us-plan-book-asof")
+    assert book is not None
+    book.select_one(".l-en").string = "Plan records as of 2026-09-26"
+    book.select_one(".l-zh").string = "计划记录截至 2099-01-01"
+    result = _pjr._check_j9(
+        soup, _index_payload(), _standouts_payload(), _runtime_payload(),
+        ticker="TEST1")
+    assert result["status"] == "FAIL", result
