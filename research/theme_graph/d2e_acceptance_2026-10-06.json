@@ -1,7 +1,7 @@
 {
   "operation": "gmi-theme-accept-d2e-20260827-sol-001",
   "phase": 2,
-  "round": "r2",
+  "round": "r2b",
   "pin": "cbfa20a45d8401f1cf1cc9fc48155455f1d612fb",
   "head": "7671cce0227a649361f7740d1c138cac6603c3d9",
   "harness_corrections": [
@@ -24,6 +24,14 @@
     {
       "id": "r1d-D1",
       "reason": "r1b computed C5/V3 on the latest-row-per-node view; restored to the R-A7 newest computed_at generation"
+    },
+    {
+      "id": "D8",
+      "reason": "N5 probe amended by seat orchestrator: GitHub job logs render ::group:: as ##[group]; probe now matches both forms (round r2b)."
+    },
+    {
+      "id": "D9",
+      "reason": "Round r2 composed PHASE-2/D2E from the first HOLD (N5) although FAIL rows (R1.A, R3.2) existed; the rule takes the first FAIL row first (round r2b)."
     }
   ],
   "generation": {
@@ -43,8 +51,8 @@
       "rc": 0,
       "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n192a46de rc=0",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "R0.2",
@@ -65,8 +73,8 @@
       "rc": 0,
       "output_tail": "[{\"number\":8324,\"title\":\"research(gmi): audited v3 report...\"}]",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "R0.4",
@@ -76,8 +84,8 @@
       "rc": 0,
       "output_tail": "state=MERGED mergeCommit=cbfa20a45d8401f1cf1cc9fc48155455f1d612fb; grep matches=5",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "R1.A",
@@ -90,11 +98,11 @@
         "tests/test_theme_graph_identity_resolution.py::test_every_company_node_gets_a_row",
         "tests/test_theme_graph_identity_resolution.py::test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parquet"
       ],
-      "output_tail": "3 failed, 118 passed \u2014 2807 vs 2806 company nodes; co:us:VMRK",
-      "cause": "committed nodes.parquet carries 2807 company nodes including co:us:VMRK, a second company node for the EQR->VMRK ticker rename (both co:us:EQR and co:us:VMRK RESOLVED -> SEC:US-XNYS-EQR; first co:us:VMRK sidecar row 2026-09-04T11:52:38Z); the D2A suite pins 2806 and asserts no co:us:VMRK node (\u00a76.1 assertion 3)",
+      "output_tail": "3 failed, 118 passed — 2807 vs 2806 company nodes; co:us:VMRK",
+      "cause": "committed nodes.parquet carries 2807 company nodes including co:us:VMRK, a second company node for the EQR->VMRK ticker rename (both co:us:EQR and co:us:VMRK RESOLVED -> SEC:US-XNYS-EQR; first co:us:VMRK sidecar row 2026-09-04T11:52:38Z); the D2A suite pins 2806 and asserts no co:us:VMRK node (§6.1 assertion 3)",
       "verdict": "FAIL",
-      "owner": "seat (WS:GMI-THEME-GRAPH, D2A contract owner)",
-      "repair_packet": "seat rules the canonical company node for the EQR->VMRK rename; then EITHER (a) one D2B3 lifecycle correction merging the duplicate company node (natural rebake, no session rebake) so the committed graph returns to 2806 company nodes, OR (b) a recorded DEC re-pinning D2A \u00a79 to 2807 and re-scoping \u00a76.1 assertion 3 to 'the bridge mints no node'; re-check: the R1.A pytest command above exits 0 on a tree carrying the fix."
+      "owner": "seat (PR #8544)",
+      "repair_packet": "PR #8544 (branch claude/gmi-vmrk-duplicate-mint-20261006; seat-accepted frozen P-R1A: merge rename re-mint co:us:VMRK into co:us:EQR + D2A re-pin under DEC-THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE) — seat merges #8544, then ONE #8540 re-measure round at PIN3 = origin/main after #8544 re-runs R1.A, R3.2, R1.B–F, R2, C1–C7"
     },
     {
       "id": "R1.A-CI",
@@ -102,10 +110,10 @@
       "gate": "D2A suite vs main CI (fail-open probe)",
       "command": "grep legacy-jobs.yml; gh api actions/runs/37445075780/jobs; gh api ci-pack-10 logs",
       "rc": 0,
-      "output_tail": "Step owner job unrun-intl-libraries (pack=10 when selected). Run 37445075780 ci-pack-10: Selected jobs: signal-gate-pair-coherence, path-prune-lint, cycle-grading-stats, prophet-lab, china-native-collectors, china-search-universe, cn-standout-audit, qledger-cluster-honest-ci, design-governance, hk-context-chips, metab-throttle-ux, ric-w2-surface, unrun-brain-desks, unrun-dark-guards, zh-filing-term, options-nbbo-cohort, product-experience-capture, options-skew-engine \u2014 unrun-intl-libraries absent; no log match for test_theme_graph_identity_resolution",
+      "output_tail": "Step owner job unrun-intl-libraries (pack=10 when selected). Run 37445075780 ci-pack-10: Selected jobs: signal-gate-pair-coherence, path-prune-lint, cycle-grading-stats, prophet-lab, china-native-collectors, china-search-universe, cn-standout-audit, qledger-cluster-honest-ci, design-governance, hk-context-chips, metab-throttle-ux, ric-w2-surface, unrun-brain-desks, unrun-dark-guards, zh-filing-term, options-nbbo-cohort, product-experience-capture, options-skew-engine — unrun-intl-libraries absent; no log match for test_theme_graph_identity_resolution",
       "verdict": "INFO",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "R1.B",
@@ -115,8 +123,8 @@
       "rc": 0,
       "output_tail": "26 passed in 2.43s",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "R1.C",
@@ -126,8 +134,8 @@
       "rc": 0,
       "output_tail": "143 passed, 14 warnings in 2.98s",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "R1.D",
@@ -137,8 +145,8 @@
       "rc": 0,
       "output_tail": "575 passed, 1 skipped in 10.40s; skips: 1 (reasons in Appendix A)",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "R1.E",
@@ -148,8 +156,8 @@
       "rc": 0,
       "output_tail": "132 passed in 6.65s",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "R1.F",
@@ -159,8 +167,8 @@
       "rc": 0,
       "output_tail": "30 passed in 0.72s",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "R1.X",
@@ -181,8 +189,8 @@
       "rc": 0,
       "output_tail": "selftest rc=0\nstrict rc=0\n(no breach lines; identity resolution census notice only). Round r1 recorded rc=0 for a breaching --strict run in a tree without data/reference; that value was not the guard's exit status and is superseded.",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "C1",
@@ -192,8 +200,8 @@
       "rc": 0,
       "output_tail": "GOLD retired 2025-12-02 identity_break; IBIT retired 2026-08-22 entity_type_conflict",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "C2",
@@ -201,10 +209,10 @@
       "gate": "GOLD edge closure",
       "command": "pandas edges GOLD MEMBER_OF probe",
       "rc": 0,
-      "output_tail": "latest valid_to=2025-12-02; 2 beliefs; current gold_miners excludes GOLD; GOLD# count=0; B\u2194GOLD edges=0",
+      "output_tail": "latest valid_to=2025-12-02; 2 beliefs; current gold_miners excludes GOLD; GOLD# count=0; B↔GOLD edges=0",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "C3",
@@ -214,8 +222,8 @@
       "rc": 0,
       "output_tail": "annulled MEMBER_OF; IBIT refusal etf_conflict; etf:IBIT TRACKS live; co:us:IBIT live MEMBER_OF=0",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "C4",
@@ -225,8 +233,8 @@
       "rc": 0,
       "output_tail": "violations: 0",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "C5",
@@ -236,19 +244,19 @@
       "rc": 0,
       "output_tail": "US total=1237 RESOLVED=1211 NOT_IN_MASTER=25 DEFERRED=1 (co:us:B) ENTITY_TYPE_CONFLICT=0; RESOLVED share 0.978981; all-scope NEWEST sum=2805 equals _meta.identity_resolution_state_counts",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "C6",
       "gating": true,
       "gate": "Generation provenance (Phase 2)",
       "command": "merge-base vs DATA_COMMIT f7dd829...",
-      "rc": 3,
-      "output_tail": "N5 HOLD \u2014 first non-PASS among N1\u2013N5",
-      "verdict": "HOLD",
-      "owner": "seat",
-      "repair_packet": "clear N5 HOLD (natural-receipt log probe)"
+      "rc": 0,
+      "output_tail": "N1–N5 all PASS (N5 after corrected probe)",
+      "verdict": "PASS",
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "C7",
@@ -258,8 +266,8 @@
       "rc": 0,
       "output_tail": "5/5 commits: node_lifecycle=2 and IBIT refusal present",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "R3.1",
@@ -269,8 +277,8 @@
       "rc": 0,
       "output_tail": "finviz_themes internal_only; ths_concepts internal_only; all families have rights_class",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "R3.2",
@@ -280,8 +288,8 @@
       "rc": 2,
       "output_tail": "22 rows / 17 distinct refs; ths_concepts 12; mastermind_curated 6; finviz_themes 2; None 2 (gmi:entity_type_conflict:co:us:IBIT; config/theme_graph_identity_breaks.yml#us:GOLD)",
       "verdict": "FAIL",
-      "owner": "rights registry owner (seat \u2192 Chairman ruling)",
-      "repair_packet": "for each None ref prefix: SOURCE_PREFIX_FAMILY entry in engine/theme_graph/rights.py or recorded seat/Chairman ruling that it is intentionally fail-closed like site/factordata/us_standouts.json \u2014 no registry edit in this PR"
+      "owner": "seat (PR #8544)",
+      "repair_packet": "PR #8544 (seat-accepted frozen P-R3.2: rights registry entries for the correction source_refs; orchestrator gate 4 on #8544 = 23 evidence rows / 18 refs / None 0) — re-measured in the same PIN3 round"
     },
     {
       "id": "R3.3",
@@ -289,10 +297,10 @@
       "gate": "Spot checks",
       "command": "family_for_source_ref spot refs",
       "rc": 0,
-      "output_tail": "probation jsonl#x \u2192 mastermind_curated; site/factordata/us_standouts.json \u2192 None (intentional, rights.py 70-72)",
+      "output_tail": "probation jsonl#x → mastermind_curated; site/factordata/us_standouts.json → None (intentional, rights.py 70-72)",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "V1",
@@ -302,8 +310,8 @@
       "rc": 0,
       "output_tail": "total=3882; co:us=1239 co:cn=1021 ltheme=644 basket=358 ... as-of GEN",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "V2",
@@ -313,8 +321,8 @@
       "rc": 0,
       "output_tail": "read_capability=644; newest gen rows=643; carried ltheme:ths:309263 semantic_only @ 2026-08-22T04:50:43Z; in nodes.parquet",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "V3",
@@ -324,8 +332,8 @@
       "rc": 0,
       "output_tail": "NEWEST rows=2805 state sum=2805; _meta.counts.identity_resolution=2807 = 2805 newest + 2 carried (co:us:GOLD, co:us:IBIT); file_rows=154270 generations=55; rows_appended=2805",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "V4",
@@ -335,8 +343,8 @@
       "rc": 0,
       "output_tail": "ths concepts=375; crosswalk mapped 61 + unknown 0 = 61 code rows; ths_unmapped_concept_count=314; unresolved_concept_names=0",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "V5",
@@ -344,10 +352,10 @@
       "gate": "Probation proposals",
       "command": "proposals.jsonl status field",
       "rc": 0,
-      "output_tail": "lines=236; status counts recorded in \u00a75",
+      "output_tail": "lines=236; status counts recorded in §5",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "V6",
@@ -357,8 +365,8 @@
       "rc": 0,
       "output_tail": "membership_published_at per suite; edges observed vs reconstruction labeled",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "V7",
@@ -368,8 +376,8 @@
       "rc": 0,
       "output_tail": "company_mint_refusals=1; finviz refused=0; NOT_IN_MASTER=195; UNSUPPORTED_MARKET=233 ...",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     }
   ],
   "d2b3": {
@@ -431,7 +439,7 @@
     }
   },
   "phase1_verdict": "HOLD:seat:R0.2 Agent OS acceptance trace not recorded",
-  "d2e_verdict": "HOLD:seat:theme_graph steps not found in engine job log",
+  "d2e_verdict": "HOLD:seat:R1.A D2A company-node pin 2807 vs 2806 (co:us:VMRK duplicate mint) — repair = PR #8544",
   "routed_non_gating": "R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger writer; #8425/#8465/#8496); R1.A-CI INFO -> data-health.yml red on unrun-intl-libraries D2A step (caught by the data lane, unhealed; clears with R1.A)",
   "phase2": {
     "status": "DONE",
@@ -461,7 +469,7 @@
       "pr8507": {
         "state": "MERGED",
         "merged_at": "2026-10-06T11:28:40Z",
-        "note": "merged after job start \u2014 not required by D3(b)"
+        "note": "merged after job start — not required by D3(b)"
       },
       "data_commit_time": "2026-10-06T13:40:52Z",
       "guard_groups": {
@@ -481,8 +489,8 @@
         "rc": 0,
         "output_tail": "event=schedule; engine completed; conclusion=failure",
         "verdict": "PASS",
-        "owner": "\u2014",
-        "repair_packet": "\u2014"
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "N2",
@@ -492,8 +500,8 @@
         "rc": 0,
         "output_tail": "line 111: 640e3e237eede62351b6f657c8e13ad20274585c; line 120: Already up to date.",
         "verdict": "PASS",
-        "owner": "\u2014",
-        "repair_packet": "\u2014"
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "N3",
@@ -501,10 +509,10 @@
         "gate": "Ancestry D3(b)",
         "command": "merge-base --is-ancestor on CHECKOUT_SHA",
         "rc": 0,
-        "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n#8507 merged after job start \u2014 not required by D3(b)",
+        "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n#8507 merged after job start — not required by D3(b)",
         "verdict": "PASS",
-        "owner": "\u2014",
-        "repair_packet": "\u2014"
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "N4",
@@ -512,21 +520,21 @@
         "gate": "Data-commit linkage",
         "command": "git show DATA_COMMIT; merge-base CHECKOUT_SHA DATA_COMMIT",
         "rc": 0,
-        "output_tail": "computed_at=2026-10-06T13:27:04Z; job 11:14:43Z\u201314:42:06Z; commit 13:40:52Z; rc=0",
+        "output_tail": "computed_at=2026-10-06T13:27:04Z; job 11:14:43Z–14:42:06Z; commit 13:40:52Z; rc=0",
         "verdict": "PASS",
-        "owner": "\u2014",
-        "repair_packet": "\u2014"
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "N5",
         "gating": true,
         "gate": "Advisory guard in job",
-        "command": "grep ::group::theme graph ...",
-        "rc": 1,
-        "output_tail": "mandated ::group:: grep: 0 matches; observed ##[group] nightly materialization [8s, rc=0] and contract guard [3s, rc=0]",
-        "verdict": "HOLD",
-        "owner": "seat",
-        "repair_packet": "seat adjudicates brun ##[group] log shape vs mandated ::group:: grep, or amends D3(d) probe"
+        "command": "gh api job 112118780036 logs; perl ANSI strip; grep -n -E '(::group::|##[group])theme graph (nightly materialization|contract guard)'",
+        "rc": 0,
+        "output_tail": "grep -n -E '(::group::|##[group])theme graph (nightly materialization|contract guard)' → 34798: ##[group]theme graph nightly materialization (build_theme_graph)  [8s, rc=0]; 34814: ##[group]theme graph contract guard (check_theme_graph_contracts)  [3s, rc=0]; guard body: two ##[notice] lines (historical snapshots, not breaches); grep -c warning/error over guard body = 0",
+        "verdict": "PASS",
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "N6",
@@ -536,8 +544,8 @@
         "rc": 0,
         "output_tail": "selftest rc=0; strict rc=0; no breach/INDETERMINATE",
         "verdict": "PASS",
-        "owner": "\u2014",
-        "repair_packet": "\u2014"
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "N7",
@@ -547,8 +555,8 @@
         "rc": 0,
         "output_tail": "GOLD rows 2/2 identical latest; IBIT rows 2/2 identical; totals 25100/12863",
         "verdict": "PASS",
-        "owner": "\u2014",
-        "repair_packet": "\u2014"
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "Q1",
@@ -558,8 +566,8 @@
         "rc": 0,
         "output_tail": "computed_at 2026-10-06T13:27:04Z nightly observed",
         "verdict": "PASS",
-        "owner": "\u2014",
-        "repair_packet": "\u2014"
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "Q2",
@@ -569,8 +577,8 @@
         "rc": 0,
         "output_tail": "nodes=3882 lifecycle=2 edges=25100 proposals=236",
         "verdict": "PASS",
-        "owner": "\u2014",
-        "repair_packet": "\u2014"
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "Q3",
@@ -580,19 +588,19 @@
         "rc": 0,
         "output_tail": "NVDA RESOLVED; B/GOLD DEFERRED_IDENTITY_EXCEPTION; IBIT ENTITY_TYPE_CONFLICT",
         "verdict": "PASS",
-        "owner": "\u2014",
-        "repair_packet": "\u2014"
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "Q4",
         "gating": true,
         "gate": "Neighborhoods",
-        "command": "compose_neighborhood a\u2013e",
+        "command": "compose_neighborhood a–e",
         "rc": 0,
-        "output_tail": "gold_a\u2013e OK; crypto_d etf:IBIT present",
+        "output_tail": "gold_a–e OK; crypto_d etf:IBIT present",
         "verdict": "PASS",
-        "owner": "\u2014",
-        "repair_packet": "\u2014"
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "R0.1",
@@ -617,12 +625,14 @@
       {
         "id": "R1.A",
         "verdict": "FAIL",
-        "output_tail": "3 failed, 118 passed \u2014 2807 vs 2806 company nodes; co:us:VMRK"
+        "output_tail": "3 failed, 118 passed — 2807 vs 2806 company nodes; co:us:VMRK",
+        "owner": "seat (PR #8544)",
+        "repair_packet": "PR #8544 (branch claude/gmi-vmrk-duplicate-mint-20261006; seat-accepted frozen P-R1A: merge rename re-mint co:us:VMRK into co:us:EQR + D2A re-pin under DEC-THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE) — seat merges #8544, then ONE #8540 re-measure round at PIN3 = origin/main after #8544 re-runs R1.A, R3.2, R1.B–F, R2, C1–C7"
       },
       {
         "id": "R1.A-CI",
         "verdict": "INFO",
-        "output_tail": "Step owner job unrun-intl-libraries (pack=10 when selected). Run 37445075780 ci-pack-10: Selected jobs: signal-gate-pair-coherence, path-prune-lint, cycle-grading-stats, prophet-lab, china-native-collectors, china-search-universe, cn-standout-audit, qledger-cluster-honest-ci, design-governance, hk-context-chips, metab-throttle-ux, ric-w2-surface, unrun-brain-desks, unrun-dark-guards, zh-filing-term, options-nbbo-cohort, product-experience-capture, options-skew-engine \u2014 unrun-intl-libraries absent; no log match for test_theme_graph_identity_resolution"
+        "output_tail": "Step owner job unrun-intl-libraries (pack=10 when selected). Run 37445075780 ci-pack-10: Selected jobs: signal-gate-pair-coherence, path-prune-lint, cycle-grading-stats, prophet-lab, china-native-collectors, china-search-universe, cn-standout-audit, qledger-cluster-honest-ci, design-governance, hk-context-chips, metab-throttle-ux, ric-w2-surface, unrun-brain-desks, unrun-dark-guards, zh-filing-term, options-nbbo-cohort, product-experience-capture, options-skew-engine — unrun-intl-libraries absent; no log match for test_theme_graph_identity_resolution"
       },
       {
         "id": "R1.B",
@@ -667,7 +677,7 @@
       {
         "id": "C2",
         "verdict": "PASS",
-        "output_tail": "latest valid_to=2025-12-02; 2 beliefs; current gold_miners excludes GOLD; GOLD# count=0; B\u2194GOLD edges=0"
+        "output_tail": "latest valid_to=2025-12-02; 2 beliefs; current gold_miners excludes GOLD; GOLD# count=0; B↔GOLD edges=0"
       },
       {
         "id": "C3",
@@ -686,8 +696,11 @@
       },
       {
         "id": "C6",
-        "verdict": "HOLD",
-        "output_tail": "N5 HOLD \u2014 first non-PASS among N1\u2013N5"
+        "verdict": "PASS",
+        "output_tail": "N1–N5 all PASS (N5 after corrected probe)",
+        "rc": 0,
+        "owner": "—",
+        "repair_packet": "—"
       },
       {
         "id": "C7",
@@ -702,12 +715,14 @@
       {
         "id": "R3.2",
         "verdict": "FAIL",
-        "output_tail": "22 rows / 17 distinct refs; ths_concepts 12; mastermind_curated 6; finviz_themes 2; None 2 (gmi:entity_type_conflict:co:us:IBIT; config/theme_graph_identity_breaks.yml#us:GOLD)"
+        "output_tail": "22 rows / 17 distinct refs; ths_concepts 12; mastermind_curated 6; finviz_themes 2; None 2 (gmi:entity_type_conflict:co:us:IBIT; config/theme_graph_identity_breaks.yml#us:GOLD)",
+        "owner": "seat (PR #8544)",
+        "repair_packet": "PR #8544 (seat-accepted frozen P-R3.2: rights registry entries for the correction source_refs; orchestrator gate 4 on #8544 = 23 evidence rows / 18 refs / None 0) — re-measured in the same PIN3 round"
       },
       {
         "id": "R3.3",
         "verdict": "PASS",
-        "output_tail": "probation jsonl#x \u2192 mastermind_curated; site/factordata/us_standouts.json \u2192 None (intentional, rights.py 70-72)"
+        "output_tail": "probation jsonl#x → mastermind_curated; site/factordata/us_standouts.json → None (intentional, rights.py 70-72)"
       },
       {
         "id": "V1",
@@ -732,7 +747,7 @@
       {
         "id": "V5",
         "verdict": "PASS",
-        "output_tail": "lines=236; status counts recorded in \u00a75"
+        "output_tail": "lines=236; status counts recorded in §5"
       },
       {
         "id": "V6",
@@ -761,7 +776,7 @@
       },
       "Q4": "all cases OK"
     },
-    "phase2_verdict": "HOLD:seat:theme_graph steps not found in engine job log"
+    "phase2_verdict": "FAIL:seat:R1.A D2A company-node pin 2807 vs 2806 (co:us:VMRK duplicate mint) — repair = PR #8544"
   },
   "pin2": "e061209069a1bc05157d9078cd394e9ce1d96cc9",
   "generation_phase2": {
@@ -773,7 +788,7 @@
     "belief_time": "2026-10-06",
     "store_eq_rc": 0
   },
-  "phase2_verdict": "HOLD:seat:theme_graph steps not found in engine job log",
+  "phase2_verdict": "FAIL:seat:R1.A D2A company-node pin 2807 vs 2806 (co:us:VMRK duplicate mint) — repair = PR #8544",
   "natural_receipt": {
     "run_id": "37404125352",
     "event": "schedule",
@@ -790,7 +805,7 @@
     "pr8507": {
       "state": "MERGED",
       "merged_at": "2026-10-06T11:28:40Z",
-      "note": "merged after job start \u2014 not required by D3(b)"
+      "note": "merged after job start — not required by D3(b)"
     },
     "data_commit_time": "2026-10-06T13:40:52Z",
     "guard_groups": {
@@ -810,8 +825,8 @@
       "rc": 0,
       "output_tail": "event=schedule; engine completed; conclusion=failure",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "N2",
@@ -821,8 +836,8 @@
       "rc": 0,
       "output_tail": "line 111: 640e3e237eede62351b6f657c8e13ad20274585c; line 120: Already up to date.",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "N3",
@@ -830,10 +845,10 @@
       "gate": "Ancestry D3(b)",
       "command": "merge-base --is-ancestor on CHECKOUT_SHA",
       "rc": 0,
-      "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n#8507 merged after job start \u2014 not required by D3(b)",
+      "output_tail": "0b1fe887 rc=0\n79b566f5 rc=0\n#8507 merged after job start — not required by D3(b)",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "N4",
@@ -841,21 +856,21 @@
       "gate": "Data-commit linkage",
       "command": "git show DATA_COMMIT; merge-base CHECKOUT_SHA DATA_COMMIT",
       "rc": 0,
-      "output_tail": "computed_at=2026-10-06T13:27:04Z; job 11:14:43Z\u201314:42:06Z; commit 13:40:52Z; rc=0",
+      "output_tail": "computed_at=2026-10-06T13:27:04Z; job 11:14:43Z–14:42:06Z; commit 13:40:52Z; rc=0",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "N5",
       "gating": true,
       "gate": "Advisory guard in job",
-      "command": "grep ::group::theme graph ...",
-      "rc": 1,
-      "output_tail": "mandated ::group:: grep: 0 matches; observed ##[group] nightly materialization [8s, rc=0] and contract guard [3s, rc=0]",
-      "verdict": "HOLD",
-      "owner": "seat",
-      "repair_packet": "seat adjudicates brun ##[group] log shape vs mandated ::group:: grep, or amends D3(d) probe"
+      "command": "gh api job 112118780036 logs; perl ANSI strip; grep -n -E '(::group::|##[group])theme graph (nightly materialization|contract guard)'",
+      "rc": 0,
+      "output_tail": "grep -n -E '(::group::|##[group])theme graph (nightly materialization|contract guard)' → 34798: ##[group]theme graph nightly materialization (build_theme_graph)  [8s, rc=0]; 34814: ##[group]theme graph contract guard (check_theme_graph_contracts)  [3s, rc=0]; guard body: two ##[notice] lines (historical snapshots, not breaches); grep -c warning/error over guard body = 0",
+      "verdict": "PASS",
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "N6",
@@ -865,8 +880,8 @@
       "rc": 0,
       "output_tail": "selftest rc=0; strict rc=0; no breach/INDETERMINATE",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "N7",
@@ -876,8 +891,8 @@
       "rc": 0,
       "output_tail": "GOLD rows 2/2 identical latest; IBIT rows 2/2 identical; totals 25100/12863",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "Q1",
@@ -887,8 +902,8 @@
       "rc": 0,
       "output_tail": "computed_at 2026-10-06T13:27:04Z nightly observed",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "Q2",
@@ -898,8 +913,8 @@
       "rc": 0,
       "output_tail": "nodes=3882 lifecycle=2 edges=25100 proposals=236",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "Q3",
@@ -909,21 +924,21 @@
       "rc": 0,
       "output_tail": "NVDA RESOLVED; B/GOLD DEFERRED_IDENTITY_EXCEPTION; IBIT ENTITY_TYPE_CONFLICT",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     },
     {
       "id": "Q4",
       "gating": true,
       "gate": "Neighborhoods",
-      "command": "compose_neighborhood a\u2013e",
+      "command": "compose_neighborhood a–e",
       "rc": 0,
-      "output_tail": "gold_a\u2013e OK; crypto_d etf:IBIT present",
+      "output_tail": "gold_a–e OK; crypto_d etf:IBIT present",
       "verdict": "PASS",
-      "owner": "\u2014",
-      "repair_packet": "\u2014"
+      "owner": "—",
+      "repair_packet": "—"
     }
   ],
-  "written_at_utc": "2026-10-06T21:55:00Z",
+  "written_at_utc": "2026-10-06T15:05:00Z",
   "lane_host_model": "Cursor/Grok bounded fabric builder (META-CEO commission r2)"
 }

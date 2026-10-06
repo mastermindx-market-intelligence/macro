@@ -8,18 +8,20 @@ GEN2: `2026-10-06T13:27:04Z` nightly / observed / belief_time `2026-10-06`
 DATA_COMMIT (natural): `f9ccad3e50f671499893f8113ba96ae2910ab5e7`  
 RUN_ID: `37404125352` / ENGINE_JOB_ID: `112118780036` / TRIGGER_COMPUTED_AT: `2026-10-06T13:27:04Z`  
 lane host/model (Phase 2): Cursor/Grok bounded fabric builder — META-CEO commission repair round `r2`  
-written-at UTC: `2026-10-06T21:55:00Z`  
-repair round: `r1d` (Phase 1 harness); `r2` (Phase 2 natural receipt + PIT readers at PIN2)
+written-at UTC: `2026-10-06T15:05:00Z`  
+repair round: `r1d` (Phase 1 harness); `r2` (Phase 2 natural receipt + PIT readers at PIN2); `r2b` (N5 probe + verdict composition)
 
 **Round r1b (repair) — harness corrections by orchestrator E:** D1 materializes `data/reference/security_master.parquet` so R1.B/R2 are not run against a degraded guard. D5 moves MarketOntology half-B docket tests to non-gating R1.X and limits R1.F to theme-graph rights tests. D6 censuses `evidence.source_ref` only via `family_for_source_ref`. D7 treats `site/factordata/us_standouts.json` as intentionally unmapped (PASS when `None`).
 
 **D1 (r1d):** C5/V3 restored to the R-A7 newest-generation population (direct `identity_resolution.parquet` read at `max(computed_at)`, not `store.read_identity_resolution(latest=True)`).
 
+**Round r2b (repair) — harness corrections by seat orchestrator E:** D8 N5 probe amended: GitHub job logs render `::group::` as `##[group]`; probe now matches both forms. D9 round r2 composed PHASE-2/D2E from the first HOLD (N5) although FAIL rows (R1.A, R3.2) existed; rule takes the first FAIL row first.
+
 ## §1 VERDICT
 
 PHASE-1 VERDICT: HOLD:seat:R0.2 Agent OS acceptance trace not recorded  
-PHASE-2 VERDICT: HOLD:seat:theme_graph steps not found in engine job log  
-D2E VERDICT: HOLD:seat:theme_graph steps not found in engine job log  
+PHASE-2 VERDICT: FAIL:seat:R1.A D2A company-node pin 2807 vs 2806 (co:us:VMRK duplicate mint) — repair = PR #8544  
+D2E VERDICT: HOLD:seat:R1.A D2A company-node pin 2807 vs 2806 (co:us:VMRK duplicate mint) — repair = PR #8544  
 ROUTED (non-gating): R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger writer; #8425/#8465/#8496); R1.A-CI INFO -> data-health.yml red on unrun-intl-libraries D2A step (caught by the data lane, unhealed; clears with R1.A)
 
 ## §2 GATE MATRIX
@@ -30,7 +32,7 @@ ROUTED (non-gating): R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger
 | R0.2 | Agent OS acceptance trace | commission §1 | `git grep` agentos D2C/D2D accept | No line cites both D2C and D2D merged with `0b1fe887`/`79b566f5` | HOLD | seat | seat records D2C+D2D acceptance in WS:GMI-THEME-GRAPH |
 | R0.3 | No overlapping D2E carrier | commission §2 | `gh pr list --search D2E` | Open hit #8324 blueprint only (not D2E acceptance) | PASS | — | — |
 | R0.4 | Owner-action authority #8507 | commission §2 | `gh pr view 8507`; `git grep OWNER_ACTION…` | `state=MERGED`; mergeCommit=`cbfa20a45d8401f1cf1cc9fc48155455f1d612fb`; grep≥1 | PASS | — | — |
-| R1.A | D2A identity resolution | D2A | `pytest` identity_resolution + identity | `3 failed, 118 passed in 5.09s`<br>`tests/test_theme_graph_identity_resolution.py::test_the_committed_graph_carries_exactly_2806_company_nodes`<br>`E       assert 2807 == 2806`<br>`tests/test_theme_graph_identity_resolution.py::test_every_company_node_gets_a_row`<br>`E       assert 2807 == 2806`<br>`tests/test_theme_graph_identity_resolution.py::test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parquet`<br>`E       AssertionError: assert 'co:us:VMRK' not in {...}` | FAIL | seat (WS:GMI-THEME-GRAPH, D2A contract owner) | seat rules the canonical company node for the EQR→VMRK rename; then EITHER (a) one D2B3 lifecycle correction merging the duplicate company node (natural rebake, no session rebake) so the committed graph returns to 2806 company nodes, OR (b) a recorded DEC re-pinning D2A §9 to 2807 and re-scoping §6.1 assertion 3 to “the bridge mints no node”; re-check: the R1.A pytest command above exits 0 on a tree carrying the fix. |
+| R1.A | D2A identity resolution | D2A | `pytest` identity_resolution + identity | `3 failed, 118 passed in 5.09s`<br>`tests/test_theme_graph_identity_resolution.py::test_the_committed_graph_carries_exactly_2806_company_nodes`<br>`E       assert 2807 == 2806`<br>`tests/test_theme_graph_identity_resolution.py::test_every_company_node_gets_a_row`<br>`E       assert 2807 == 2806`<br>`tests/test_theme_graph_identity_resolution.py::test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parquet`<br>`E       AssertionError: assert 'co:us:VMRK' not in {...}` | FAIL | seat (PR #8544) | PR #8544 (branch claude/gmi-vmrk-duplicate-mint-20261006; seat-accepted frozen P-R1A: merge rename re-mint co:us:VMRK into co:us:EQR + D2A re-pin under DEC-THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE) — seat merges #8544, then ONE #8540 re-measure round at PIN3 = origin/main after #8544 re-runs R1.A, R3.2, R1.B–F, R2, C1–C7 |
 | R1.A-CI | D2A suite vs main CI (informational) | fail-open probe | `legacy-jobs.yml` step owner `unrun-intl-libraries`; main `ci.yml` run 37445075780 ci-pack-10 logs | `Selected jobs: signal-gate-pair-coherence, path-prune-lint, cycle-grading-stats, prophet-lab, china-native-collectors, china-search-universe, cn-standout-audit, qledger-cluster-honest-ci, design-governance, hk-context-chips, metab-throttle-ux, ric-w2-surface, unrun-brain-desks, unrun-dark-guards, zh-filing-term, options-nbbo-cohort, product-experience-capture, options-skew-engine` (no `unrun-intl-libraries`; no log line for `test_theme_graph_identity_resolution`) | INFO | — | — |
 | R1.B | D2B lifecycle hostile matrix | D2B | `pytest` test_theme_graph_lifecycle.py | `26 passed in 2.43s` | PASS | — | — |
 | R1.C | D2C PIT vintage | D2C #8432 | `pytest` basket PIT + membership + gmi_history | `143 passed, 14 warnings in 2.98s` | PASS | — | — |
@@ -47,7 +49,7 @@ ROUTED (non-gating): R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger
 | C6 | Generation provenance P1 | receipt timing | `merge-base` vs DATA_COMMIT | `0b1fe887 rc=1`; `79b566f5 rc=1`; seat fact: gen predates D2C/D2D merges | HOLD | seat | natural receipt on a main containing D2C+D2D pending — Phase 2 |
 | C7 | Nightly `_meta` history | informational | `git log -5` `_meta.json` | 5/5: `node_lifecycle>=2` and IBIT refusal | PASS | — | — |
 | R3.1 | Registry table | rights gate #2 | `config/theme_sources.yml` | `finviz_themes`/`ths_concepts` `internal_only`; all families have `rights_class` | PASS | — | — |
-| R3.2 | Source-ref census | display tier | `family_for_source_ref` on `evidence.source_ref` | 22 rows / 17 distinct; `ths_concepts` 12; `mastermind_curated` 6; `finviz_themes` 2; `None` 2 (`gmi:entity_type_conflict:co:us:IBIT`; `config/theme_graph_identity_breaks.yml#us:GOLD`) | FAIL | rights registry owner (seat → Chairman ruling) | for each `None` ref prefix: `SOURCE_PREFIX_FAMILY` in `engine/theme_graph/rights.py` or recorded seat/Chairman fail-closed ruling — no registry edit in this PR |
+| R3.2 | Source-ref census | display tier | `family_for_source_ref` on `evidence.source_ref` | 22 rows / 17 distinct; `ths_concepts` 12; `mastermind_curated` 6; `finviz_themes` 2; `None` 2 (`gmi:entity_type_conflict:co:us:IBIT`; `config/theme_graph_identity_breaks.yml#us:GOLD`) | FAIL | seat (PR #8544) | PR #8544 (seat-accepted frozen P-R3.2: rights registry entries for the correction source_refs; orchestrator gate 4 on #8544 = 23 evidence rows / 18 refs / None 0) — re-measured in the same PIN3 round |
 | R3.3 | Spot checks | #8499 | two `family_for_source_ref` calls | probation `#x` → `mastermind_curated`; `site/factordata/us_standouts.json` → `None` (intentional; `rights.py` 70–72) | PASS | — | — |
 | V1 | Node prefix census | coverage | `nodes.parquet` | total=3882; co:us=1239, co:cn=1021, ltheme=644, basket=358, … | PASS | — | — |
 | V2 | Capability generations | coverage | `store.read_capability()` vs newest gen | `read_capability=644`; newest gen 643; +1 carried `ltheme:ths:309263` semantic_only @ 2026-08-22T04:50:43Z; node present in `nodes.parquet` | PASS | — | — |
@@ -133,7 +135,7 @@ None refs (verbatim): `gmi:entity_type_conflict:co:us:IBIT` (`evidence_id=ev:4d8
 | N2 | Effective code sha | D3(a) | job log grep checkout/pull | L111 `640e3e237eede62351b6f657c8e13ad20274585c`; L120 `Already up to date.` → EFFECTIVE_SHA same | PASS | — | — |
 | N3 | Ancestry | D3(b) | `merge-base --is-ancestor` on CHECKOUT_SHA | `0b1fe887 rc=0`; `79b566f5 rc=0`; #8507 merged 11:28:40Z after job start 11:14:43Z — not required | PASS | — | — |
 | N4 | Data-commit linkage | D3 timing | `git show f9ccad3…`; `merge-base CHECKOUT_SHA DATA_COMMIT` | `computed_at=2026-10-06T13:27:04Z`; job `11:14:43Z`–`14:42:06Z`; commit `13:40:52Z`; `rc=0` | PASS | — | — |
-| N5 | Advisory guard in job | D3(d) | `grep ::group::theme graph …` on job log | mandated `::group::` grep **0** matches; observed `##[group]theme graph nightly materialization (build_theme_graph)  [8s, rc=0]` and `##[group]theme graph contract guard (check_theme_graph_contracts)  [3s, rc=0]` with 0 `::warning`/`::error` in guard body | HOLD | seat | seat adjudicates brun `##[group]` log shape vs mandated `::group::` grep, or amends D3(d) probe |
+| N5 | Advisory guard in job | D3(d) | `grep -E '(::group::\|##\[group\])theme graph …'` on job log `112118780036` | L34798 `##[group]theme graph nightly materialization (build_theme_graph)  [8s, rc=0]`; L34814 `##[group]theme graph contract guard (check_theme_graph_contracts)  [3s, rc=0]`; guard body two `##[notice]` lines; `warning`/`error` count 0 | PASS | — | — |
 | N6 | Strict guard (local) | D3(d) | `check_theme_graph_contracts --selftest/--strict` | `selftest rc=0`; `strict rc=0`; no breach/INDETERMINATE | PASS | — | — |
 | N7 | R-A8 edge stability | D3(d) | edges probe P1_PIN vs HEAD | GOLD edge rows 2/2 identical latest belief; IBIT crypto_rails 2/2 identical; totals 25100 / latest-belief 12863; `rows_appended.edges=0` both | PASS | — | — |
 | Q1 | PIT meta | step 7 | `_meta.json` | `computed_at=2026-10-06T13:27:04Z` nightly observed; `store_eq_rc=0` | PASS | — | — |
@@ -144,7 +146,7 @@ None refs (verbatim): `gmi:entity_type_conflict:co:us:IBIT` (`evidence_id=ev:4d8
 | R0.2 | Agent OS trace | P1 §1 | `git grep` D2C/D2D merged | `WS-GMI-THEME-GRAPH.md:58` D2C MERGED `0b1fe887`; `:70` D2D MERGED `79b566f5` | PASS | — | — |
 | R0.3 | No overlapping carrier | P1 §2 | `gh pr list --search D2E` | #8540 + blueprint #8324 only | PASS | — | — |
 | R0.4 | #8507 authority | P1 §2 | `gh pr view 8507`; grep | MERGED `cbfa20a45d84`; grep≥1 | PASS | — | — |
-| R1.A | D2A | D2A | `pytest` identity_resolution + identity | `3 failed, 118 passed in 5.21s` (2807 company nodes; `co:us:VMRK`) | FAIL | seat (WS:GMI-THEME-GRAPH, D2A) | seat rules EQR→VMRK canonical node; rebake to 2806 company nodes or DEC re-pin; re-run R1.A pytest |
+| R1.A | D2A | D2A | `pytest` identity_resolution + identity | `3 failed, 118 passed in 5.21s` (2807 company nodes; `co:us:VMRK`) | FAIL | seat (PR #8544) | PR #8544 (branch claude/gmi-vmrk-duplicate-mint-20261006; seat-accepted frozen P-R1A: merge rename re-mint co:us:VMRK into co:us:EQR + D2A re-pin under DEC-THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE) — seat merges #8544, then ONE #8540 re-measure round at PIN3 = origin/main after #8544 re-runs R1.A, R3.2, R1.B–F, R2, C1–C7 |
 | R1.A-CI | D2A data lane (INFO) | informational | `data-health.yml` run list | run `37407802317` failure on `unrun-intl-libraries` D2A step (seat evidence) | INFO | — | clears with R1.A |
 | R1.B | D2B lifecycle | D2B | `pytest test_theme_graph_lifecycle.py` | `26 passed in 2.49s` | PASS | — | — |
 | R1.C | D2C PIT | D2C | basket PIT pytest bundle | `143 passed, 14 warnings in 3.01s` | PASS | — | — |
@@ -154,10 +156,10 @@ None refs (verbatim): `gmi:entity_type_conflict:co:us:IBIT` (`evidence_id=ev:4d8
 | R1.X | MO half-B docket | non-gating | half_b_rights_docket pytest | `3 failed, 16 passed in 0.49s` | FAIL-INFO | MarketOntology CEO A | reconcile docket vs F00C closure ledger CSV |
 | R2 | Strict guard | CI guard | `--selftest` / `--strict` | both `rc=0` | PASS | — | — |
 | C1–C5 | D2B3 clauses | frozen contract | pandas probes @ GEN2 | unchanged PASS vs P1 on natural generation | PASS | — | — |
-| C6 | Generation provenance | Phase 2 | N1–N5 composite | first non-PASS: **N5 HOLD** | HOLD | seat | clear N5 log-probe HOLD |
+| C6 | Generation provenance | Phase 2 | N1–N5 composite | N1–N5 all PASS (N5 after corrected probe) | PASS | — | — |
 | C7 | `_meta` history | informational | `git log -5` `_meta.json` | 5/5 `node_lifecycle=2` + IBIT refusal | PASS | — | — |
 | R3.1 | Registry | rights | `theme_sources.yml` | finviz/ths `internal_only`; all families have `rights_class` | PASS | — | — |
-| R3.2 | Source-ref census | display tier | `family_for_source_ref` on evidence | 22 rows / 17 refs; 2 `None` without recorded fail-closed grep hit | FAIL | rights registry owner (seat → Chairman) | SOURCE_PREFIX_FAMILY or recorded fail-closed ruling per None ref |
+| R3.2 | Source-ref census | display tier | `family_for_source_ref` on evidence | 22 rows / 17 refs; 2 `None` without recorded fail-closed grep hit | FAIL | seat (PR #8544) | PR #8544 (seat-accepted frozen P-R3.2: rights registry entries for the correction source_refs; orchestrator gate 4 on #8544 = 23 evidence rows / 18 refs / None 0) — re-measured in the same PIN3 round |
 | R3.3 | Spot checks | #8499 | two spot calls + `rights.py` 70–72 | probation → `mastermind_curated`; us_standouts → `None` intentional | PASS | — | — |
 | V1–V7 | Coverage census | steps 4–5 | probes @ GEN2 | reconcile PASS (V2 capability 644; V3 2805/2807) | PASS | — | — |
 
@@ -175,7 +177,7 @@ None refs (verbatim): `gmi:entity_type_conflict:co:us:IBIT` (`evidence_id=ev:4d8
 
 **T1 N2:** log `wc -c` 2970107; checkout line 111 + pull line 120 as above.
 
-**T1 N5:** `grep ::group::theme graph` → 0; `grep '##[group]theme graph'` → 2 headers with `rc=0`.
+**T1 N5 (corrected probe r2b):** `grep -n -E '(::group::|##\[group\])theme graph (nightly materialization|contract guard)'` → `34798:…nightly materialization (build_theme_graph)  [8s, rc=0]`; `34814:…contract guard (check_theme_graph_contracts)  [3s, rc=0]`; guard body verbatim: `##[notice]3 evidence row(s) carry mint-time licensing…historical snapshots, not breaches…`; `##[notice]company nodes=2807…`; `grep -c -E '::(warning|error)|##\[(warning|error)\]'` over guard body → `0`.
 
 **T1 N6:** `selftest rc=0`; `strict rc=0`.
 
