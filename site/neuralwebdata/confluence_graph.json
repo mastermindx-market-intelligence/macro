@@ -51,7 +51,7 @@
       "type": "engine",
       "label": "china_special_sits",
       "meta": {
-        "n_spine_rows": 127
+        "n_spine_rows": 128
       }
     },
     {
@@ -147,7 +147,7 @@
       "type": "engine",
       "label": "intel_hub",
       "meta": {
-        "n_spine_rows": 7065
+        "n_spine_rows": 7129
       }
     },
     {
@@ -155,7 +155,7 @@
       "type": "engine",
       "label": "macro_context",
       "meta": {
-        "n_spine_rows": 668
+        "n_spine_rows": 679
       }
     },
     {
@@ -211,7 +211,7 @@
       "type": "engine",
       "label": "reflex.cortex_attention",
       "meta": {
-        "n_spine_rows": 266
+        "n_spine_rows": 276
       }
     },
     {
@@ -219,7 +219,7 @@
       "type": "engine",
       "label": "reflex.options_flow_attention",
       "meta": {
-        "n_spine_rows": 949
+        "n_spine_rows": 963
       }
     },
     {
@@ -235,7 +235,7 @@
       "type": "engine",
       "label": "stock_desk",
       "meta": {
-        "n_spine_rows": 160
+        "n_spine_rows": 164
       }
     },
     {
@@ -243,7 +243,7 @@
       "type": "engine",
       "label": "stock_personality",
       "meta": {
-        "n_spine_rows": 1717
+        "n_spine_rows": 2941
       }
     },
     {
@@ -259,7 +259,7 @@
       "type": "engine",
       "label": "thematic_desk",
       "meta": {
-        "n_spine_rows": 61
+        "n_spine_rows": 62
       }
     },
     {
@@ -22373,7 +22373,7 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "pair_id=briefing-divergences kind=directional-opposition severity=tension a=36 ticker-level demand-vs-supply divergences b=n_divergences=36, top tickers=['NVMI', 'LRCX', 'OKE', 'LNG',"
+      "note": "pair_id=briefing-divergences kind=directional-opposition severity=tension a=38 ticker-level demand-vs-supply divergences b=n_divergences=38, top tickers=['NVMI', 'LRCX', 'OKE', 'LNG',"
     },
     {
       "src": "data/regime/latest.json:cross_asset_confirm (bonds/FX)",
@@ -22762,16 +22762,16 @@
       "pair_id": "briefing-divergences",
       "a": {
         "artifact": "site/intelligence/by_ticker.json (demand/tape)",
-        "reading": "36 ticker-level demand-vs-supply divergences"
+        "reading": "38 ticker-level demand-vs-supply divergences"
       },
       "b": {
         "artifact": "site/intelligence/briefing.json",
-        "reading": "n_divergences=36, top tickers=['NVMI', 'LRCX', 'OKE', 'LNG', 'ANET']"
+        "reading": "n_divergences=38, top tickers=['NVMI', 'LRCX', 'OKE', 'LNG', 'UCTT']"
       },
       "kind": "directional-opposition",
       "severity": "tension",
-      "as_of": "2026-10-04",
-      "note": "36 ticker-level demand (news_dir) vs supply (alt+radar) direction disagreements detected by engine/briefing.py.  Top 5: NVMI, LRCX, OKE, LNG, ANET.  These are pre-computed; no recomputation here.  Display-only context (news_dir×supply_dir sign-product < 0 or early_edge/crowded_top labels).",
+      "as_of": "2026-10-05",
+      "note": "38 ticker-level demand (news_dir) vs supply (alt+radar) direction disagreements detected by engine/briefing.py.  Top 5: NVMI, LRCX, OKE, LNG, UCTT.  These are pre-computed; no recomputation here.  Display-only context (news_dir×supply_dir sign-product < 0 or early_edge/crowded_top labels).",
       "display_only": true
     },
     {
@@ -22809,7 +22809,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/confluence.py",
-  "produced_at": "2026-10-04T09:27:51Z",
-  "inputs_hash": "sha256:073701eda912458d57bac8f1a39212548efb3967b1470e85ec4991e374b1ec5d",
+  "produced_at": "2026-10-05T09:54:39Z",
+  "inputs_hash": "sha256:13bd5a35a6abccc99f27d361451e4a5562718948bdc4b3e5a366d14e51d7c0f7",
   "tier": "display"
 }

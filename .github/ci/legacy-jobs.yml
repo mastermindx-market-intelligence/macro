@@ -1476,6 +1476,7 @@ jobs:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/rights_use.py"
       - "engine/earnings_release/receipts.py"
       - "engine/earnings_release/filing_key.py"
       - "engine/earnings_release/figures.py"
@@ -2499,6 +2500,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -8481,9 +8483,10 @@ jobs:
       - engine/theme_graph/local_sources.py
       - engine/theme_graph/materialize.py
       - engine/theme_graph/rights.py
+      - engine/theme_graph/rights_use.py
+      - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/ontology.py
       - engine/theme_graph/probation.py
-      - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/selection_cohort_reads.py
       - engine/theme_graph/store.py
       - engine/theme_graph/theme_state.py
@@ -10053,6 +10056,8 @@ jobs:
     # empty state / SEO-baked cards), hero + lanes + viewer modal markup, balanced
     # EN/ZH spans, plain-English <title>, compliance copy, and the body-never-leaks
     # projection. jinja2 (already a repo dep) is the only page-build need.
+    # RV F6 subject/Data OS identity bridge (test_research_vault_subjects.py): stdlib +
+    # lib.dataos.identity only, so it runs here with the install line unchanged (#8475).
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10077,7 +10082,7 @@ jobs:
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
       - name: research vault ingestion-spine + page unit tests
-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py -q
+        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py -q
 
 
   research-vault-source-lineage:
@@ -10173,6 +10178,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
@@ -10813,6 +10819,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
@@ -12777,6 +12784,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity_resolution.py -q
       - name: theme graph — W3A local-theme plane (hostile tests D-M, capability sidecar, rights gate)
         run: TZ=UTC python -m pytest tests/test_theme_graph_local_plane.py -q
+      - name: theme graph — W-C per-use rights verdict (fresh registry snapshot, revocation, ancestry)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_rights_use.py -q
       - name: theme graph — source-rights registry shape + F20 grandfather pin
         run: TZ=UTC python -m pytest tests/test_theme_sources_registry.py -q
       - name: market ontology — GMI exposure composer (shock->theme->company, rights + as-of + typed nulls)
@@ -12906,6 +12915,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
       - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
@@ -13287,6 +13297,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
@@ -14714,6 +14725,8 @@ jobs:
       - "engine/security_state.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/rights_use.py"
       - "lib/dataos/identity.py"
       # Price-ladder consumers now import the Data OS price vocabulary directly.
       - "lib/dataos/price.py"
@@ -16068,7 +16081,7 @@ jobs:
     # one venv; execute_pack sorts by install string, so this costs one extra venv.
     if: ${{ false }}
     gate: code
-    timeout-minutes: 5
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16076,9 +16089,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
-        run: python -m pytest tests/test_brain_gateway.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
+        run: python -m pytest tests/test_brain_gateway.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
         run: >-
           python -m pytest
@@ -16093,6 +16106,11 @@ jobs:
           tests/test_intelligence_workspace_workspace_layout.py -q
       - name: source-bound report evidence — Brain projection + CI owner law
         run: python -m pytest tests/test_brain_research_evidence.py tests/test_mastermind_ai_evidence_ci_ownership.py -q
+
+      - name: install Brain browser
+        run: python -m playwright install --with-deps chromium
+      - name: Brain history, principal isolation and narrow-screen controls
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py -q
 
   unrun-macro-panels:
     # commodities / forex / rates / news / policy panels and their calibration guards.
@@ -17087,6 +17105,7 @@ jobs:
     scope: exclusive
     paths:
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
+      - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation

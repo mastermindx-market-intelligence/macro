@@ -1,7 +1,7 @@
 {
   "schema": "china_market_state.v1",
-  "as_of": "2026-10-04",
-  "generated_utc": "2026-10-04T13:16:27Z",
+  "as_of": "2026-10-05",
+  "generated_utc": "2026-10-05T14:59:47Z",
   "authority": {
     "tier": "context_only",
     "why": [
@@ -88,7 +88,7 @@
     "names_ref": "site/chinastatedata/microstructure.json#name_packets"
   },
   "policy": {
-    "as_of": "2026-10-04",
+    "as_of": "2026-10-05",
     "policy_impulse": "neutral",
     "transmission_channel": [],
     "recent_event_count": 10,
@@ -126,15 +126,15 @@
     ],
     "staleness": {
       "per_source_days": {
-        "lpr": 14,
-        "rrr": 515,
-        "fr007": 4,
-        "communiques": 159
+        "lpr": 15,
+        "rrr": 516,
+        "fr007": 5,
+        "communiques": 160
       }
     }
   },
   "rotation": {
-    "as_of": "2026-10-04",
+    "as_of": "2026-10-05",
     "sector_phase_distribution": {
       "Bottoming": 39,
       "Topping": 7,
@@ -158,7 +158,7 @@
       "LAGGARD: Agriculture ranked #29/31 (-26.3%) — among the weakest this leg"
     ],
     "ths_heat": {
-      "as_of": "2026-10-04",
+      "as_of": "2026-10-05",
       "basket_count": 237,
       "above_200d_pct": 22.4,
       "hot_baskets": [
@@ -390,7 +390,7 @@
   "external": {
     "yield_curve": {
       "as_of": "2026-10-02",
-      "staleness_days": 2,
+      "staleness_days": 3,
       "cn_10y": null,
       "cn_2y": null,
       "cn_slope_10_2": null,
@@ -398,7 +398,7 @@
     },
     "cgb_curve": {
       "as_of": "2026-09-30",
-      "staleness_days": 4,
+      "staleness_days": 5,
       "m3": 1.1611,
       "y1": 1.2197,
       "y5": 1.409,
@@ -407,13 +407,13 @@
       "slope_10y_3m": 0.5211
     },
     "usdcnh": {
-      "quote": 6.672,
+      "quote": 6.674,
       "chg_pct": -0.5,
-      "as_of": "Oct 03, 2026"
+      "as_of": "Oct 05, 2026"
     },
     "dxy": {
-      "quote": 101.93,
-      "chg": 2.8,
+      "quote": 102.0,
+      "chg": 3.2,
       "label": "DXY"
     }
   },
