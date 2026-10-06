@@ -21,6 +21,25 @@ Treat their accepted measurements as the current frontier unless you find contra
 
 Your job is to determine how much of the NVDA success is a reproducible mechanism, what parts are merely correlated context, how to increase both early winner recall and decision precision without overfitting the golden case, and how this should change the Prophet roadmap.
 
+### Chairman refinement — do not treat older eras or `news_burst` as cleanly comparable by default
+
+The Chairman added four material hypotheses after the first census. Treat these as **research priors to adjudicate**, not conclusions to assume:
+
+1. **July confluence-era intelligence maturity may be materially lower than v3.** Repository history shows major intelligence substrate was still being built during July:
+   - 2026-07-07: stock flow-to-price / 13F + short-flow work (#1833);
+   - 2026-07-10: verified smart-money roster/backfill (#2191) and Ownership Intelligence Desk (#2192);
+   - 2026-07-10: narrative-flare witness engine (#2147);
+   - 2026-07-30: Intelligence Desk V2 (#4006).
+   Therefore an unchanged `T2 + news_burst` cross-era comparison may mix **feature semantics / coverage / maturity drift** with true predictive drift.
+
+2. **June–July 2026 was a materially different semiconductor/AI-hardware regime.** Do not call it a broad-market crash without evidence. External and internal market data should adjudicate whether the correct label is semiconductor correction, AI-capex/growth scare, rate-pressure rotation, value-over-growth rotation, or some combination. The observed July selloff in semiconductors/memory makes regime comparability a first-class question.
+
+3. **Yesterday's Trend Persistence study returned C1-NULL, but its null is construction-scoped.** Canonical result: `Mastermind@7eac3ec252475600147ec9a376b8ca16403ac4c5`, `research/data/trend_persistence_c1_result.json`. It closes only the tested eleven-GICS-sector, 20/60-session, rank-linear construction with as-of-now / non-era-correct labels and a survivor-tilted labelled universe. Its own wording says GICS industry-group/industry, basket and dynamic-theme constructions remain untested. Do not interpret this as “leadership persistence does not exist.”
+
+4. **`news_burst` is probably a proxy for information arrival / rerating, not the complete causal class.** Important reratings can occur without a ticker-specific news burst: earnings/guidance, analyst estimate or target revisions, peer read-through, sector-wide pricing/capacity changes, hyperscaler capex, supply-demand/inventory evidence, contracts/policy, smart-money/flow, or theme/regime rotation may be the true rerating driver.
+
+The revised commission must therefore search for the stable **rerating-conditioned ignition mechanism**, not optimize a literal `T2 && news_burst` rule.
+
 ## Established facts — do not waste the run rediscovering them
 
 ### NVDA decision transition
@@ -127,31 +146,68 @@ high-value opportunity substrate
 
 Determine which edges in that sequence are necessary, sufficient, merely amplifying, or incidental.
 
-### H2 — ignition interaction
+### H2 — rerating-conditioned ignition interaction
 
-In the current v3 population, fresh technical confirmation has much higher immediate follow-through when accompanied by a fresh attention/catalyst event.
+In the current v3 population, fresh technical confirmation appears to have much higher immediate follow-through when accompanied by a fresh **rerating / information-arrival event**.
 
-Do not assume the exact interaction is `T2 AND news_burst`. Treat that as the discovery seed and search for the underlying stable construct.
+`T2 AND news_burst` is only the discovery seed. Do not make “news” the ontology.
 
-Possibilities include:
+Construct and compare a point-in-time rerating taxonomy, including where lawful:
 
-- F1 technical x F8 attention;
-- F1 x F4 catalyst;
-- F1 x F4 x F8;
-- F1 x F8 x F5 flow;
-- state transition x evidence arrival;
-- an interaction that is positive pre-extension but negative as crowding after extension.
+- earnings surprise / post-earnings drift;
+- guidance raise/cut or KPI inflection;
+- analyst estimate revisions / target changes / upgrade clusters;
+- peer earnings or customer/supplier read-through;
+- sector pricing, capacity, inventory, utilization or supply-demand changes;
+- hyperscaler / major-customer capex or procurement signals;
+- government contracts / policy / regulatory change;
+- smart-money / ownership / positioning change where the clock is lawful;
+- options/flow as confirmer, never source of a fabricated event;
+- theme/sector breadth and relative-strength rerating;
+- technical reacceleration with **no identifiable discrete information event**;
+- ordinary ticker-level `news_burst`.
 
-### H3 — separate ignition and durability
+Ask whether the stable construct is **technical confirmation × rerating arrival**, and whether event species determines the horizon.
+
+Candidate interactions include:
+
+- F1 technical × F8 attention;
+- F1 × F4 catalyst;
+- F1 × F4 × F8;
+- F1 × F8 × F5 flow;
+- technical transition × revision acceleration;
+- technical transition × sector/theme rerating;
+- technical transition × peer read-through;
+- state transition × any new independent evidence family;
+- an interaction that is positive pre-extension but becomes negative crowding after extension.
+
+The goal is a causal/typed mechanism, not an ever-growing additive catalyst score.
+
+### H3 — separate ignition and durability; persistence remains open after C1-NULL
 
 The discovered interaction may predict 3–10 session ignition but not 21–63 session leadership persistence.
 
+Yesterday's Trend Persistence C1-NULL is a **negative control for one persistence construction**, not a veto on this head. It failed to show incremental persistence for the tested eleven-sector rank-linear feature family after controlling for member trailing return/volatility. It did **not** test the same object Prophet needs here.
+
 Test whether Prophet needs separate heads:
 
-- emergence;
-- ignition/follow-through;
-- durability/leadership persistence;
-- deterministic Entry Availability.
+- **emergence / research attention** — “this opportunity is becoming unusually important”;
+- **ignition / follow-through** — “a rerating is being accepted now”;
+- **leadership persistence / durability** — “this ignition is likely to remain a leader rather than mean-revert”;
+- **deterministic Entry Availability** — “entry is/is not open at this price and strategy.”
+
+For the durability head, explicitly test constructions left open by C1-NULL:
+
+- stock-level persistence conditional on a known ignition episode;
+- industry-group / industry persistence;
+- basket / dynamic-theme persistence;
+- leader retention and RS persistence **after** the rerating cut;
+- revision/catalyst persistence;
+- breadth and participation persistence;
+- relative-strength depth and dip-recovery behavior;
+- survival/hazard framing: continue leadership vs stall vs breakdown/mean reversion.
+
+Do not simply rerun the failed eleven-sector C1 model under a new name.
 
 ### H4 — recall bottleneck is upstream of the board
 
@@ -177,24 +233,77 @@ Produce a causal graph separating:
 
 For every edge, name whether it could have changed the existence of the plan, its rank, its entry state, or only its narrative.
 
-### 2. Explain the era split
+### 2. Explain the era split as two separate problems: data-plane maturity and market regime
 
-The T2+news interaction is strong in v3 and weak in the July confluence era.
+The T2+news interaction is strong in v3 and weak in the July confluence era. Do **not** read that immediately as predictive non-replication.
 
-Determine whether this is explained by:
+#### 2A. Intelligence-data-plane maturity audit
+
+Build an era-by-era matrix for every evidence leg used in the comparison:
+
+- producer existed yet?;
+- historical depth actually available?;
+- PIT/availability semantics?;
+- serving coverage?;
+- cross-sectional variation?;
+- stale/snapshot/forward-only state?;
+- same definition as v3 or changed semantics?;
+- whether the feature was actually consumed by Prophet at that time.
+
+At minimum audit `news_burst`, attention, smart-money/13F, SUE/catalyst, analyst revisions, options/flow, theme evidence and the candidate universe.
+
+Explicitly determine whether July has a **measurement-comparability failure**. If a v3 feature did not exist, was sparse, had different semantics, or had materially weaker source coverage, the cross-era outcome is “not comparable on this dimension,” not “the mechanism failed.”
+
+#### 2B. Market-regime comparability audit
+
+Independently reconstruct June–July vs August–September regime using PIT market data.
+
+At minimum measure:
+
+- SOX/SMH and memory-relative drawdown;
+- SPY/QQQ and equal-weight market behavior;
+- growth-vs-value rotation;
+- rates / rate pressure;
+- volatility;
+- semiconductor breadth;
+- AI-hardware vs software dispersion;
+- memory / equipment / designers separately;
+- market-wide vs sector-specific stress.
+
+Adjudicate whether July was a semiconductor/AI-hardware correction, capex/growth scare, rate-pressure rotation, broad-market risk-off, or a mixture.
+
+Then test the interaction **within comparable regimes and comparable data-plane eras**.
+
+Other differences to preserve:
 
 - changed candidate populations;
 - changed entry semantics;
-- changed `news_burst` semantics/coverage;
 - different signal-tier construction;
-- regime composition;
 - survivor/selection effects;
-- data availability;
-- genuine context dependence.
+- true context dependence.
 
-Do not pool incompatible eras to make the effect look stable.
+Do not pool incompatible eras to make the effect look stable or unstable.
 
-### 3. Construct a PIT-safe episode study
+### 3. Build a PIT-safe rerating-event ontology and episode study
+
+Before modeling outcomes, define the event species available at the decision cut.
+
+For every candidate episode, distinguish:
+
+- no identifiable rerating event;
+- ticker-specific news/attention;
+- earnings/guidance;
+- analyst/revision;
+- peer/customer/supplier read-through;
+- sector/theme fundamental rerating;
+- macro/rate/policy rerating;
+- ownership/flow/positioning;
+- multi-source convergence.
+
+Keep source provenance and independent-family budgets so multiple articles repeating one fact do not become multiple events.
+
+Then construct the episode study.
+
 
 Primary unit should be candidate episode / first relevant transition, not duplicate nightly rows.
 
@@ -231,7 +340,10 @@ A 90% rule that catches 2% of winners is not a complete Prophet solution.
 For eventual winners, reconstruct the earliest lawful observation of:
 
 - candidate emergence;
+- first rerating evidence of any species;
 - attention/news burst;
+- earnings/guidance or analyst-revision change;
+- peer/sector/theme read-through;
 - catalyst freshness;
 - technical anticipation;
 - confirmed technical ignition;
@@ -264,7 +376,23 @@ C5 already reserves multiple heads.
 
 Recommend extensions inside this ladder. Do not create a parallel fusion/rank/control plane.
 
-### 8. Reconcile with R6/V4
+### 8. Reconcile the failed Trend Persistence study with the new durability head
+
+Read and cite the canonical C1-NULL result before proposing a durability design:
+
+- `Mastermind@7eac3ec252475600147ec9a376b8ca16403ac4c5`
+- `research/data/trend_persistence_c1_result.json`
+- `research/TREND_PERSISTENCE_PREREG_C1.md`
+
+Return a scope table with three columns:
+
+1. what C1-NULL actually falsified;
+2. what remains untested;
+3. what Prophet's leadership-persistence head specifically needs.
+
+The new durability work must be hypothesis-distinct from the failed construction. Prefer episode-conditioned, group-granular and hazard/survival formulations over another unconditional sector-level rank-linear persistence score.
+
+### 9. Reconcile with R6/V4
 
 R6 did not produce the Sep NVDA hit.
 
@@ -280,18 +408,22 @@ Ensure any R6 recommendation preserves:
 
 Pair Sep NVDA with the weaker Aug NVDA case and matched false positives.
 
-### 9. Decide what should accrue prospectively now
+### 10. Decide what should accrue prospectively now
 
 Recommend the smallest zero-authority shadow telemetry that materially accelerates learning.
 
 At minimum evaluate whether to accrue an explicit research-only interaction receipt containing:
 
 - episode id;
-- F1/F4/F5/F8 state;
+- rerating-event species and source provenance;
+- evidence-arrival timestamp / decision cut;
+- F1/F3/F4/F5/F8 state where lawful;
+- technical state before and after the event;
 - interaction keys;
-- decision cut;
-- later H=5/H=10/H=21 outcomes;
-- lead-time milestones.
+- group/theme context;
+- later H=3/H=5/H=10/H=21/H=42/H=63 outcomes as they mature;
+- lead-time milestones;
+- durability transition / terminal state.
 
 Do not make it a new state/control plane; write through the existing evaluation owner.
 
@@ -324,6 +456,10 @@ Return explicit rulings on:
 9. What can be built now at zero authority?
 10. What must wait for lawful data depth?
 11. What exact evidence would justify promotion later?
+12. Was the July confluence era actually comparable to v3 on intelligence coverage and semantics?
+13. How much of the July/v3 difference is attributable to semiconductor/regime state versus data-plane maturity?
+14. What rerating-event ontology captures winners that `news_burst` misses?
+15. What did Trend Persistence C1-NULL truly falsify, and what distinct durability study should replace it?
 
 ## DONE_WHEN
 
@@ -332,8 +468,12 @@ This research phase is complete only when it leaves:
 - an exact causal/mechanistic attribution for NVDA;
 - a reproducibility assessment with uncertainty;
 - an interaction study with era/regime/negative-control analysis;
-- a precision-recall/lead-time frontier;
+- an explicit **data-plane maturity / comparability matrix** for July through v3;
+- an adjudicated June–July semiconductor/market regime reconstruction;
+- a typed **rerating-event ontology** broader than ticker news;
+- a precision-recall/lead-time frontier by rerating species;
 - an ignition-vs-durability ruling;
+- a Trend Persistence C1-NULL scope reconciliation and a hypothesis-distinct persistence research design;
 - a current C1–C5/R6 ownership map;
 - a bounded prospective experiment plan;
 - a prioritized Prophet upgrade recommendation;
