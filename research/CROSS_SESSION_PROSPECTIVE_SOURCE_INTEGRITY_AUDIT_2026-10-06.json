@@ -1,0 +1,169 @@
+{
+  "schema": "research.cross_session_prospective_source_integrity_audit.v1",
+  "generated_at": "2026-10-06T04:25:00Z",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "branch": "sol/geopolitical-relief-event-study-20260924",
+    "parent_head": "ec0fe392e36f3642529379b9b5a51a4f70237e88"
+  },
+  "protected_procedure": {
+    "master_pin": "877b1e7f275da0b6d3558d2667778b32d628bf67",
+    "index_blob": "38a18571229e487f525b1c9780f7993220a5da93",
+    "active_execution_blob": "413b1ce8b5cf6feaea33ab53434acfad1e8956c8",
+    "session_reliability_enrolled": true
+  },
+  "immutable_bindings": {
+    "initial_admissions_path": "research/CROSS_SESSION_PROSPECTIVE_SOURCE_ADMISSIONS_2026-10-05.json",
+    "initial_admissions_git_blob": "0ed3e38eecb3682d3c55eadb0c60df7dcde0a050",
+    "late_recovery_path": "research/CROSS_SESSION_PROSPECTIVE_LATE_SOURCE_RECOVERY_2026-10-06.json",
+    "late_recovery_git_blob": "2f1bb914a02ecde09a305e5fb8722c47cf847939",
+    "protocol_path": "research/CROSS_SESSION_TRANSFER_PROSPECTIVE_PROTOCOL_2026-09-26.md",
+    "amendment_v1_1_path": "research/CROSS_SESSION_TRANSFER_PROSPECTIVE_AMENDMENT_V1_1_2026-09-26.md"
+  },
+  "target_firewall": {
+    "hsi_outcomes_read": false,
+    "late_rows_own_us_returns_read": false,
+    "market_outcomes_used_for_candidate_disposition": false,
+    "note": "This audit uses source evidence and frozen admission law only. It does not open or score the Hong Kong target."
+  },
+  "integrity_ruling": {
+    "state": "SOURCE_ADMISSION_INCOMPLETE_AFTER_US_EXPOSURE",
+    "initial_source_first_rows": 10,
+    "late_qualifying_rows": 2,
+    "pooled_n10_review_allowed": false,
+    "clean_event_level_rows_may_remain_logged": true,
+    "late_rows_receive_clean_prospective_credit": false,
+    "no_backfill_to_rescue_sample": true,
+    "reason": "Two qualifying Oct 3-4 Russia/Ukraine operational-policy events were recovered only after the first 10-row U.S. measurement artifact had been opened."
+  },
+  "bounded_source_audit": {
+    "through_utc": "2026-10-06T04:25:00Z",
+    "oct6_full_day_certified": false,
+    "families": [
+      "physical_energy_shipping_security",
+      "ceasefire_deescalation_or_escalation",
+      "official_or_attributed_policy_operational_change"
+    ],
+    "theatres": [
+      "Russia/Ukraine",
+      "Israel/Gaza",
+      "Iran/Hormuz",
+      "Saudi/Yemen/Houthi/Red Sea",
+      "Taiwan/China"
+    ],
+    "qualifying_late_rows": [
+      {
+        "event_id": "2026-10-03-zelenskiy-doubles-russian-refinery-strikes",
+        "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+        "reason": "Official policy/operational response to a newly described Russian strike doctrine; already preserved in the late-source recovery receipt."
+      },
+      {
+        "event_id": "2026-10-04-russia-announces-intensified-ukraine-strikes",
+        "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+        "reason": "Official Russian declaration of intensified strikes; already preserved in the late-source recovery receipt."
+      }
+    ],
+    "audited_exclusions": [
+      {
+        "source_clock": "2026-09-27T16:08:00Z",
+        "headline": "Russian drones kill people around Kyiv and other regions",
+        "source_ref": "https://www.marketscreener.com/news/russian-attacks-kills-three-in-ukrainian-cities-strikes-hit-kyiv-districts-officials-say-ce785adcd88ffe20",
+        "disposition": "EXCLUDED_CONTINUATION",
+        "reason": "Reuters describes continued intensive attacks in an already-active barrage. The frozen law requires a material change in the risk channel; the next day's unusually persistent jet-drone escalation is separately admitted."
+      },
+      {
+        "source_clock": "2026-09-27T15:15:00Z",
+        "headline": "Russia says it struck military infrastructure and vessels in Ukraine",
+        "source_ref": "https://www.marketscreener.com/news/russia-says-it-struck-military-infrastructure-vessels-in-ukraine-ce785adcd88ff125",
+        "disposition": "EXCLUDED_CONTINUATION",
+        "reason": "Operational continuation of the same active strike campaign; no separately identified material policy/risk-channel change."
+      },
+      {
+        "source_clock": "2026-10-01T03:59:00Z",
+        "headline": "Taiwan transfers senior naval commander to Coast Guard to boost deterrence coordination",
+        "source_ref": "https://www.marketscreener.com/news/taiwan-transfers-naval-commander-to-coast-guard-to-boost-deterrence-against-china-ce785ad3da80fe22",
+        "disposition": "EXCLUDED_NONMATERIAL_ADMINISTRATIVE",
+        "reason": "Official personnel/coordination change, but bounded source review did not establish a material change in the active cross-strait risk channel under the frozen admission rule."
+      },
+      {
+        "source_clock": "2026-10-05T09:36:00Z",
+        "headline": "Middle East oil exports rise while tanker attacks increase",
+        "source_ref": "https://www.marketscreener.com/news/middle-east-oil-exports-top-pre-war-levels-in-september-but-tanker-attacks-increase-ce785ddbd18ef622",
+        "disposition": "EXCLUDED_SYNTHESIS_NOT_NEW_EVENT",
+        "reason": "Retrospective shipping/flow synthesis describing already-recorded tanker risk, not a new first-disclosure geopolitical event."
+      }
+    ],
+    "same_day_oct6_qualifying_event_identified": false,
+    "note": "This is a bounded audit, not a universal world-news completeness claim. Oct 6 remains open and uncertified until the next UTC midnight."
+  },
+  "parent_cluster_dependence": {
+    "purpose": "Preserve row-level admissions while preventing repeated developments in one campaign from being treated as independent scientific proof.",
+    "changes_event_eligibility": false,
+    "changes_event_clock": false,
+    "changes_measurements": false,
+    "independent_draw_claim_allowed": false,
+    "clusters": [
+      {
+        "parent_cluster_id": "russia_ukraine_air_energy_escalation_2026-09-28_10-04",
+        "event_ids": [
+          "2026-09-28-russia-jet-drone-escalation-kyiv-dnipro",
+          "2026-09-30-russia-launches-heavy-ukraine-energy-grid-assault",
+          "2026-10-03-zelenskiy-doubles-russian-refinery-strikes",
+          "2026-10-04-russia-announces-intensified-ukraine-strikes"
+        ],
+        "initial_source_first_rows": 2,
+        "late_non_evaluable_rows": 2
+      },
+      {
+        "parent_cluster_id": "gaza_north_hamas_command_event_2026-09-29",
+        "event_ids": [
+          "2026-09-29-israel-kills-north-gaza-hamas-armed-wing-chief"
+        ],
+        "initial_source_first_rows": 1,
+        "late_non_evaluable_rows": 0
+      },
+      {
+        "parent_cluster_id": "hormuz_physical_shipping_2026-10-01",
+        "event_ids": [
+          "2026-10-01-three-hormuz-tankers-hit-by-projectiles"
+        ],
+        "initial_source_first_rows": 1,
+        "late_non_evaluable_rows": 0
+      },
+      {
+        "parent_cluster_id": "saudi_houthi_red_sea_counteroffensive_2026-10-01_05",
+        "event_ids": [
+          "2026-10-01-saudi-coalition-intercepts-four-drones-two-missiles",
+          "2026-10-02-yemen-government-twenty-taiz-strikes",
+          "2026-10-02-saudi-plans-houthi-offensive-red-sea",
+          "2026-10-03-riyadh-aramco-fire-houthi-claim",
+          "2026-10-04-yemen-government-major-offensive-launch",
+          "2026-10-05-yemen-forces-seize-bab-el-mandeb-positions"
+        ],
+        "initial_source_first_rows": 6,
+        "late_non_evaluable_rows": 0
+      }
+    ],
+    "conservative_parent_clusters": 4,
+    "discovered_source_rows": 12,
+    "initial_source_first_rows": 10,
+    "note": "Four conservative parent clusters is a dependence disclosure, not an effective sample-size estimate."
+  },
+  "future_accrual_safeguard": {
+    "event_definition_changed": false,
+    "predictor_definition_changed": false,
+    "target_definition_changed": false,
+    "operational_rule": "Before opening any future row's U.S. leg, complete and persist a bounded source-only family sweep through that row's admission window, record candidate exclusions and exact clocks, then measure only rows already in that frozen source receipt.",
+    "rationale": "Prevents recurrence of the observed source-recall failure without tuning the frozen scientific hypothesis."
+  },
+  "authority": {
+    "research_only": true,
+    "product_or_trading_authority": false,
+    "may_rank": false,
+    "may_alert": false,
+    "may_size": false,
+    "may_execute": false
+  }
+}

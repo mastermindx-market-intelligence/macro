@@ -1036,3 +1036,26 @@ SOURCE_ADMISSION_INCOMPLETE_AFTER_US_EXPOSURE and cannot support the n>=10 poole
 pattern-analysis mission remains open at a real time/source-completeness gate rather than an
 implementation gap.
 
+## 2026-10-06 continuation addendum — source-integrity audit and parent-cluster dependence
+
+The source-admission defect is now bounded before any HSI target read. A broader source-only audit
+found no additional clearly qualifying late row beyond the two already quarantined in
+`CROSS_SESSION_PROSPECTIVE_LATE_SOURCE_RECOVERY_2026-10-06.json`. Candidate Reuters items on Sep 27
+(Russia/Ukraine continuation), Oct 1 (Taiwan personnel/coordination change), and Oct 5 (retrospective
+shipping synthesis) were adjudicated against the **frozen** admission law and excluded without using
+market outcomes.
+
+Durable audit: `research/CROSS_SESSION_PROSPECTIVE_SOURCE_INTEGRITY_AUDIT_2026-10-06.json`.
+It binds the immutable initial-admission and late-recovery blobs, keeps HSI unread, and records that:
+- the original 10 source-first rows remain event-level research observations;
+- the two late Russia/Ukraine rows receive no clean prospective evaluation credit and are not measured;
+- the pooled n>=10 descriptive review remains blocked by source-admission incompleteness;
+- 12 discovered source rows conservatively collapse to four parent clusters for dependence disclosure;
+- six initial rows belong to one Saudi/Houthi/Red Sea escalation campaign, so row count must never be
+  described as independent geopolitical proof;
+- future rows must complete a bounded source-only family sweep and candidate-disposition receipt before
+  their U.S. leg is opened. This changes no event definition, predictor, target or threshold.
+
+Oct 6 remains an open UTC source day. No Oct 6 qualifying event was identified in the bounded audit at
+this checkpoint, but the day is not certified complete until the next UTC midnight. The next-control
+and HSI gates therefore remain closed.
