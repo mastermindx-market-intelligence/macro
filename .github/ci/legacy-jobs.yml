@@ -5026,6 +5026,9 @@ jobs:
       # EXP1 deterministic expectation query and hermetic consumer tests.
       - "scripts/query_k3e_expectation_surface.py"
       - "tests/test_k3e_expectation_surface.py"
+      # E1 K3E provider-family + semantic-seam qualification suites (strict-xfail GAP-E-*).
+      - "tests/test_k3e_provider_family_qualification.py"
+      - "tests/test_k3e_semantic_seam_qualification.py"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
       - "contracts/theme_graph/probation_relation_event.v2.schema.json"
@@ -5077,6 +5080,9 @@ jobs:
         run: |
           python scripts/query_k3e_expectation_surface.py --help
           python -m pytest --noconftest tests/test_k3e_expectation_surface.py -q
+
+      - name: "E1 K3E provider-family + semantic-seam qualification (strict xfail gaps)"
+        run: python -m pytest --noconftest tests/test_k3e_provider_family_qualification.py tests/test_k3e_semantic_seam_qualification.py -q
 
   neural-web-core:
     if: ${{ false }}
@@ -7375,6 +7381,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/universe_history.py"
       - "engine/validation.py"
+      - "engine/verdict_preservation.py"
       - "engine/vol_forecast.py"
       - "engine/vol_regime.py"
       - "lib/__init__.py"
@@ -8770,6 +8777,7 @@ jobs:
       - tests/test_publish_company_theme_exposure_r2.py
       - tests/test_theme_graph_selection_cohort.py
       - tests/test_theme_graph_selection_cohort_reads.py
+      - tests/test_theme_graph_selection_cohort_reads_wiring.py
       - tests/test_theme_graph_selection_cohort_projection.py
       - tests/test_theme_graph_state.py
       - tests/test_leadership_receipt.py
@@ -9572,6 +9580,7 @@ jobs:
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - tests/test_theme_graph_structural_owner_binding.py
+      - tests/test_theme_graph_relation_action_resolver.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9586,7 +9595,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
@@ -9607,7 +9616,7 @@ jobs:
           unset GMI_STATE_OWNER_WORKSPACE
           TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py tests/test_theme_graph_selection_cohort_projection.py -q
       - name: GMI finalized cohort publication and unchanged owner serialization
-        run: TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort_publication.py tests/test_china_standouts_serialization.py tests/test_build_china_library_more_actionable_guard.py tests/test_us_standouts_cascade_gate.py -q
+        run: TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort_publication.py tests/test_theme_graph_selection_cohort_reads_wiring.py tests/test_china_standouts_serialization.py tests/test_build_china_library_more_actionable_guard.py tests/test_us_standouts_cascade_gate.py -q
 
   sa-w4-improvement-lanes:
     if: ${{ false }}
@@ -14189,7 +14198,7 @@ jobs:
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
       # generated-page and hostile-null pins never sit outside CI.
       - name: factor registry + measurement evidence and research implications
-        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py tests/test_research_implication_card.py tests/test_measurement_research_implications.py -q
+        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py tests/test_research_implication_card.py tests/test_measurement_research_implications.py tests/test_measurement_verdict_preservation.py -q
       - name: look-ahead tripwire over engine/ + collectors/ (feature-leak guard)
         run: python -m pytest tests/test_no_lookahead.py -q
       - name: study + trial lanes (OOS, divergence, drift, fingerprints, gauntlets)
@@ -16012,6 +16021,7 @@ jobs:
       - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/selection_cohort_publication.py
       - engine/theme_graph/selection_cohort_projection.py
+      - engine/theme_graph/selection_cohort_reads.py
       - "engine/theme_graph/identity_resolution.py"
       - "engine/theme_graph/ontology.py"
       - "engine/theme_graph/probation.py"
