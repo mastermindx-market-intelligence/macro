@@ -580,7 +580,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
             delta = ll.merge_deltas(deltas, as_of_session=pack.as_of, pass_id=ll.PACK_PASS_ID)
         print(f"entry-radar-pack delta: {len(delta.transitions)} transition(s), "
               f"{len(delta.events)} event(s), {len(delta.episodes)} episode(s), "
-              f"{len(delta.superseded)} superseded terminal trace(s); "
+              f"{len(delta.superseded)} superseded terminal trace(s), "
+              f"{len(delta.historical)} historical trace(s) refused; "
               f"g0={lanes['g0']} c5={lanes['c5']}", flush=True)
 
         if args.dry_run:

@@ -32,15 +32,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", help="optional JSON output path; stdout otherwise")
     parser.add_argument("--structure", action="store_true", help="read exact owner structural references for a node")
     parser.add_argument("--format", choices=("json", "markdown"), default="json", help="Markdown is available with --structure")
+    parser.add_argument("--structure-version", choices=("v1", "v2"), default="v1",
+                        help="v2 adds bounded current US industry owner observations; v1 remains the default")
     args = parser.parse_args(argv)
     try:
+        if args.structure_version != "v1" and not args.structure:
+            raise ValueError("versioned owner references require --structure")
         if args.structure:
             if args.proposal_id:
                 raise ValueError("structural references require an exact node, not a proposal")
-            from engine.theme_graph.structural_navigation import compose_structure, render_markdown
-            result = compose_structure(RepositoryStore(), node_id=args.node_id,
+            from engine.theme_graph import structural_navigation
+            compose = structural_navigation.compose_structure_v2 if args.structure_version == "v2" else structural_navigation.compose_structure
+            render = structural_navigation.render_markdown_v2 if args.structure_version == "v2" else structural_navigation.render_markdown
+            result = compose(RepositoryStore(), node_id=args.node_id,
                 asof=args.asof, knowledge_cutoff=args.knowledge_cutoff)
-            text = render_markdown(result) if args.format == "markdown" else json.dumps(
+            text = render(result) if args.format == "markdown" else json.dumps(
                 result, ensure_ascii=False, sort_keys=True, allow_nan=False, indent=2) + "\n"
             if args.out:
                 with Path(args.out).open("x", encoding="utf-8") as stream:

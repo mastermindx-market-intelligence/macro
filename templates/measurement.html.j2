@@ -720,6 +720,42 @@ html[data-theme="light"] .ric-stance{border-top-color:var(--line)}
 .ric-nulls li{font-size:.78rem;line-height:1.55;color:var(--text)}
 html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--card-shadow)}
 .ric-filter-count{margin:-12px 0 18px;font-size:.74rem;color:var(--muted)}
+/* Preserved Research Verdicts (#vp-section) — theme.css tokens only.
+   DARK: luminance steps (--bg -> --panel card -> --panel2 badge) + hairline; no shadow, no glow.
+   LIGHT: white --panel material + --card-shadow; shadow, never glow. */
+#vp-section .vp-lede{margin:6px 0 0;font-size:var(--fs-sm);color:var(--muted);line-height:1.5;max-width:72ch}
+#vp-section .vp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px;margin-top:14px}
+#vp-section .vp-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+#vp-section .vp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+#vp-section .vp-key{font-family:var(--font-mono);font-size:var(--fs-label);color:var(--muted);letter-spacing:.04em}
+#vp-section .vp-badge{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-label);font-weight:650;letter-spacing:.03em;padding:3px 8px;border-radius:var(--r-ctl,8px);background:var(--panel2);border:1px solid var(--line);color:var(--text)}
+#vp-section .vp-badge::before{content:"";width:6px;height:6px;border-radius:var(--r-ctl,8px);background:var(--muted)}
+#vp-section .vp-s-insufficient_support,#vp-section .vp-s-pit_partial{color:var(--ink-warn)}
+#vp-section .vp-s-insufficient_support::before,#vp-section .vp-s-pit_partial::before{background:var(--ink-warn)}
+#vp-section .vp-s-mixed,#vp-section .vp-s-law{color:var(--ink-info)}
+#vp-section .vp-s-mixed::before,#vp-section .vp-s-law::before{background:var(--ink-info)}
+#vp-section .vp-s-broken{color:var(--ink-orange)}
+#vp-section .vp-s-broken::before{background:var(--ink-orange)}
+#vp-section .vp-s-not_supported,#vp-section .vp-s-scoped_null{color:var(--text)}
+#vp-section .vp-s-not_supported::before,#vp-section .vp-s-scoped_null::before{background:var(--muted)}
+#vp-section .vp-s-counterfactual{border-style:dashed;background:transparent;color:var(--muted)}
+#vp-section .vp-s-counterfactual::before{background:transparent;border:1px solid var(--muted)}
+#vp-section .vp-plain{margin:0;font-size:var(--fs-sm);line-height:1.5;color:var(--text)}
+#vp-section .vp-receipt{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 12px;margin:0;font-size:var(--fs-label);border-top:1px solid var(--line);padding-top:8px}
+#vp-section .vp-receipt dt{color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-size:var(--fs-micro)}
+#vp-section .vp-receipt dd{margin:0;color:var(--text);overflow-wrap:anywhere;min-width:0}
+#vp-section .vp-receipt code{font-family:var(--font-mono);font-size:var(--fs-label)}
+#vp-section .vp-chip{display:inline-flex;align-items:center;padding:2px 7px;border-radius:var(--r-ctl,8px);border:1px dashed var(--line);color:var(--muted);font-size:var(--fs-micro)}
+#vp-section .vp-cf{grid-column:1/-1;margin-left:24px;background:transparent;border-style:dashed;padding:10px 14px}
+#vp-section .vp-cf .vp-plain{color:var(--muted)}
+#vp-section .vp-ref{margin:0;font-size:var(--fs-micro);color:var(--muted)}
+#vp-section .vp-ref a{color:var(--ink-link)}
+#vp-section .vp-dnc{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+#vp-section .vp-dnc h3{margin:0 0 6px;font-size:var(--fs-label);font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+#vp-section .vp-dnc ul{margin:0;padding-left:18px;color:var(--muted);font-size:var(--fs-sm);line-height:1.55}
+html[data-theme="light"] #vp-section .vp-card{box-shadow:var(--card-shadow)}
+html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
+@media (max-width:720px){ #vp-section .vp-cf{margin-left:12px} #vp-section .vp-receipt{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -2626,6 +2662,49 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
     </div>
   </section>{# end #ric-section #}
   {% endif %}
+
+{% if verdict_preservation and verdict_preservation.available %}{% set vp = verdict_preservation %}
+  <section class="mh-section" id="vp-section">
+    <div class="mh-sh">
+      <h2><span class="l-en">Preserved Research Verdicts</span><span class="l-zh">已保留的研究结论</span></h2>
+      <span class="mh-sh-sub"><span class="l-en">What the 2026-10-04 regime-indicator handoff actually concluded — read-only</span><span class="l-zh">2026-10-04 市场状态指标交接的实际结论 — 只读</span></span>
+    </div>
+    <p class="mh-stand"><span class="l-en"><strong>Research context — do not use as a trading signal.</strong></span><span class="l-zh"><strong>研究背景 — 请勿作为交易信号使用。</strong></span></p>
+    <p class="vp-lede"><span class="l-en">Each card restates one recorded verdict in its source's own words, with the file and line it came from. Nothing here is re-scored or combined.</span><span class="l-zh">每张卡片以来源原文复述一项已记录的结论，并注明文件与行号。此处不重新评分，也不做合并。</span></p>
+    <div class="vp-grid">
+    {% for r in vp.rows %}
+      <article class="vp-card{% if not r.actual %} vp-cf{% endif %}" id="{{ r.anchor }}" data-status-class="{{ r.status_class }}" data-pin-ok="{{ 'true' if r.pin_ok else 'false' }}">
+        <div class="vp-head">
+          {% if r.pin_ok %}<span class="vp-badge vp-s-{{ r.status_class }}"><span class="l-en">{{ r.badge_en }}</span><span class="l-zh">{{ r.badge_zh }}</span></span>{% else %}<span class="vp-chip vp-recheck"><span class="l-en">Source re-check needed</span><span class="l-zh">来源待复核</span></span>{% endif %}
+          <span class="vp-key">{{ r.verdict_key }}</span>
+        </div>
+        <p class="vp-plain"><span class="l-en">{{ r.plain_en }}</span><span class="l-zh">{{ r.plain_zh }}</span></p>
+        {% if not r.actual %}<p class="vp-ref"><span class="l-en">Refers to <a href="#vp-c2-regime-indicator">C2 regime indicator</a></span><span class="l-zh">对应 <a href="#vp-c2-regime-indicator">C2 市场状态指标</a></span></p>{% endif %}
+        <dl class="vp-receipt">
+          <dt><span class="l-en">Recorded verdict</span><span class="l-zh">记录的结论</span></dt>
+          <dd>{% if r.pin_ok %}<code>{{ r.status_literal }}</code>{% else %}<span class="vp-chip"><span class="l-en">not confirmed at source</span><span class="l-zh">来源未确认</span></span>{% endif %}</dd>
+          {% if r.qualifiers_en %}<dt><span class="l-en">Qualifiers</span><span class="l-zh">限定</span></dt>
+          <dd><span class="l-en">{{ r.qualifiers_en }}</span><span class="l-zh">{{ r.qualifiers_zh }}</span></dd>{% endif %}
+          <dt><span class="l-en">Source</span><span class="l-zh">来源</span></dt>
+          <dd><code>{{ r.source_path }}:{{ r.source_line }}</code></dd>
+          <dt><span class="l-en">Owner</span><span class="l-zh">归属</span></dt>
+          <dd>{{ r.owner_ref }}</dd>
+          <dt><span class="l-en">Use</span><span class="l-zh">用途</span></dt>
+          <dd><span class="l-en">Display tier only</span><span class="l-zh">仅限展示层</span></dd>
+        </dl>
+      </article>
+    {% endfor %}
+    </div>
+    <div class="vp-dnc">
+      <h3><span class="l-en">Not consumed until repaired</span><span class="l-zh">修复前不消费</span></h3>
+      <ul>
+      {% for en in vp.do_not_consume_until_repair %}
+        <li><span class="l-en">{{ en }}</span><span class="l-zh">{{ vp.do_not_consume_until_repair_zh[loop.index0] }}</span></li>
+      {% endfor %}
+      </ul>
+    </div>
+  </section>{# end #vp-section #}
+{% endif %}
 
   {# ── PROVENANCE FOOTER ────────────────────────────────────────────────── #}
   <div class="mh-provenance">

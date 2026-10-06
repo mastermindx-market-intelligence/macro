@@ -15999,8 +15999,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     <div class="grid" style="margin-top:14px">
       {% if chart_curve %}
       <div class="span6">
-        <h3>{{ t('Yield curve — recession lead', '收益率曲线 — 衰退先行指标') }}
-          {{ help("The 2-year/10-year slope, raw vs term-premium-adjusted. Below zero (inversion) is the classic recession lead. The TP-adjusted line strips the term premium so a low-term-premium flattening (e.g. 2022-24) isn't misread as a recession signal. NBER recessions shaded.", "2年／10年期利差，原始值对比剥离期限溢价后。低于零（倒挂）是经典的衰退先行信号。剥离期限溢价的线条避免把低期限溢价导致的平坦化（如 2022–24）误读为衰退信号。阴影为 NBER 衰退期。") }}
+        <h3>{{ t('Yield curve — recession context', '收益率曲线 — 衰退背景') }}
+          {{ help("The 2-year/10-year slope, raw vs the legacy TP10 heuristic (2s10s plus the 10-year term-premium model estimate). A raw value below zero is an inversion. The heuristic is context only: it is not a matched-maturity expectations-only decomposition and does not identify why the curve flattened or inverted. NBER recessions shaded.", "2年／10年期利差：原始值与旧版TP10启发式（2年/10年利差加10年期限溢价模型估计）并列展示。原始值低于零表示倒挂。该启发式仅作背景，并非期限匹配的纯预期分解，也不能识别曲线平坦化或倒挂的原因。阴影为NBER衰退期。") }}
         </h3>
         <div>{{ chart_curve | safe }}</div>
       </div>

@@ -1027,6 +1027,13 @@ jobs:
       # network, and the K1/K2-B suites above already supply the import closure.
       - name: K2-C institutional owner-read adapter contracts
         run: python -m pytest tests/test_institutional_13f_adapter_contract.py -q
+      # K3E A10 13F reported-holding projection (engine/institutional_census/
+      # k3e_projection.py, PR #8463) composes the same institutional_census read
+      # APIs and lib/institutional_13f_adapter as K2-C over an in-test LocalStore
+      # published through the owner's own APIs — no credentials, no network — so
+      # it rides this job directly after K2-C.
+      - name: K3E A10 institutional 13F reported-holding projection contract
+        run: python -m pytest tests/test_institutional_census_k3e_projection.py -q
       # K3-E is the Opportunity Evidence Vector: a typed, deterministic view/join
       # over canonical owner outputs (contracts/opportunity_evidence/vector.v1.
       # schema.json + slot_registry.v1.json) — never a store, never a score. Rides
@@ -1039,6 +1046,13 @@ jobs:
       # contract compilers adjacent.
       - name: K3-E Opportunity Evidence Vector contract and hostile-fixture kills
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py -q
+      # K3E A9 descriptive coupling (engine/k3e_coupling.py, PR #8461) is a pure
+      # stdlib composer over the EXP-1 declared-capture inspection and the MKT-1
+      # market-response export: no store, no score, financial_influence false,
+      # k3e_admissible false. Rides this contract job beside K3-E for the same
+      # reason K3-E does — it imports no owner and materializes nothing.
+      - name: K3E A9 descriptive coupling composer contract
+        run: python -m pytest tests/test_k3e_coupling.py -q
       # B-A-F10-4 estimator implication output contract (contracts/estimator_
       # implication.v1.schema.json, engine/estimator_implication.py). Rides this
       # same contract job for the same reason K2-B/K3-E do: a pure read-only
@@ -1871,6 +1885,7 @@ jobs:
       - "scripts/build_spvector.py"
       - "scripts/build_strategies.py"
       - "scripts/build_theme_detail.py"
+      - "engine/leadership_receipt.py"
       - "scripts/build_vector.py"
       - "scripts/capture_china_archetype_d_evidence.py"
       - "scripts/capture_page_evidence.py"
@@ -2091,6 +2106,35 @@ jobs:
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
       - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/selection_cohort_publication.py
+      - engine/theme_graph/selection_cohort_projection.py
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "engine/neuralweb/thematic_state.py"
+      - "engine/neuralweb/theme_state_adapter.py"
+      - "engine/neuralweb/theme_state_generation.py"
+      - "engine/neuralweb/theme_state_generation_reader.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/theme_state.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "scripts/build_thematic_state.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "contracts/theme_graph/theme_state_generation_read.v2.schema.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      - "engine/theme_graph/theme_state_use_reader.py"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3011,6 +3055,15 @@ jobs:
     # asserted against a vendored copy of the Terminal contract (surfaceContract.ts); the
     # greek math is checked against engine/greeks + engine/gex_engine (the EOD source it
     # mirrors), so numpy/pandas/scipy are needed (the greek engine is numpy-vectorized).
+      - "engine/basket_membership_pit.py"
+      - "scripts/build_thematic_state.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4916,6 +4969,23 @@ jobs:
       - "scripts/sparse_guard.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      # EXP1 deterministic expectation query and hermetic consumer tests.
+      - "scripts/query_k3e_expectation_surface.py"
+      - "tests/test_k3e_expectation_surface.py"
+      # E1 K3E provider-family + semantic-seam qualification suites (strict-xfail GAP-E-*).
+      - "tests/test_k3e_provider_family_qualification.py"
+      - "tests/test_k3e_semantic_seam_qualification.py"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "scripts/build_thematic_state.py"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4951,6 +5021,14 @@ jobs:
         run: python -m pytest tests/test_output_health.py -q
       - name: "SRC-A1 native lineage, failure preservation and legacy compatibility"
         run: python -m pytest --noconftest tests/test_equity_revisions_src_a1_acceptance.py -q
+
+      - name: "EXP1 deterministic K3E expectation query consumer"
+        run: |
+          python scripts/query_k3e_expectation_surface.py --help
+          python -m pytest --noconftest tests/test_k3e_expectation_surface.py -q
+
+      - name: "E1 K3E provider-family + semantic-seam qualification (strict xfail gaps)"
+        run: python -m pytest --noconftest tests/test_k3e_provider_family_qualification.py tests/test_k3e_semantic_seam_qualification.py -q
 
   neural-web-core:
     if: ${{ false }}
@@ -5753,6 +5831,127 @@ jobs:
         run: python -m pytest tests/test_append_only_base_fence.py -q
 
   transmission-chains:
+    # GMI consumer imports expose opaque engine/scripts fallback, not new
+    # transmission ownership. Keep the measured concrete closure and real
+    # dynamic resource families; never fund unrelated matches by raising caps.
+    scope: exclusive
+    paths:
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "config.yml"
+      - "config/causal_llm.yml"
+      - "config/dataset_registry.yml"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_graph_identity_breaks.yml"
+      - "config/theme_sources.yml"
+      - "config/transmission_proposals.yml"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "data/**"
+      - "engine/__init__.py"
+      - "engine/basket_membership_pit.py"
+      - "engine/bonds.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/government_revenue/federation.py"
+      - "engine/government_revenue/freshness.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/intelligence_workspace/contracts.py"
+      - "engine/intelligence_workspace/entity.py"
+      - "engine/ledger_lane.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/_dates.py"
+      - "engine/neuralweb/_law.py"
+      - "engine/neuralweb/causal_schema.py"
+      - "engine/neuralweb/contradictions.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/governance.py"
+      - "engine/neuralweb/mastermind_context.py"
+      - "engine/neuralweb/metabolism.py"
+      - "engine/neuralweb/options_plane.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/neuralweb/thematic_state.py"
+      - "engine/neuralweb/theme_state_adapter.py"
+      - "engine/neuralweb/theme_state_generation.py"
+      - "engine/neuralweb/theme_state_generation_reader.py"
+      - "engine/neuralweb/world_state.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rate_inflation_transmission.py"
+      - "engine/seasonality/contracts.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/theme_graph/theme_state.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "engine/transmission_calibration.py"
+      - "engine/transmission_chains.py"
+      - "engine/transmission_company_continuation.py"
+      - "engine/transmission_context.py"
+      - "engine/transmission_publish.py"
+      - "engine/trial_ledger.py"
+      - "engine/yield_curve.py"
+      - "engine/yield_momentum.py"
+      - "knowledge/transmission/**"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/store.py"
+      - "scripts/__init__.py"
+      - "scripts/build_thematic_state.py"
+      - "scripts/build_transmission.py"
+      - "scripts/ingest_transmission_chains.py"
+      - "scripts/propose_transmission_chains.py"
+      - "scripts/run_transmission_proposals.py"
+      - "site/altdata/mastermind.json"
+      - "site/assets/css/**"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/oracle_state.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/basketdata/radar_ticker.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/chinastatedata/market_state.json"
+      - "site/factordata/us_standouts.json"
+      - "site/intelligence/briefing.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/bottom_sensors.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/stockdata/**"
+      - "site/transmission.html"
+      - "templates/_*.html.j2"
+      - "templates/transmission.html.j2"
+      - "tests/fixtures/transmission/**"
+      - "tests/test_transmission_calibration.py"
+      - "tests/test_transmission_cascade_monitor.py"
+      - "tests/test_transmission_chains.py"
+      - "tests/test_transmission_chains_nw.py"
+      - "tests/test_transmission_company_continuation.py"
+      - "tests/test_transmission_proposals.py"
+      - "tests/test_transmission_publish.py"
+      - "contracts/theme_graph/theme_state_generation_read.v2.schema.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      - "engine/theme_graph/theme_state_use_reader.py"
     if: ${{ false }}
     gate: data
     # TXI W1/W3: the transmission chain library (knowledge/transmission/*.yaml), its compiler
@@ -7128,6 +7327,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/universe_history.py"
       - "engine/validation.py"
+      - "engine/verdict_preservation.py"
       - "engine/vol_forecast.py"
       - "engine/vol_regime.py"
       - "lib/__init__.py"
@@ -8466,9 +8666,11 @@ jobs:
       - collectors/__init__.py
       - collectors/china_ths_concepts.py
       - config/theme_crosswalk.yml
+      - config/theme_graph_duplicate_mints.yml
       - config/theme_graph_identity_breaks.yml
       - config/theme_sources.yml
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
+      - contracts/theme_graph/selection_cohort_projection.v1.schema.json
       - contracts/theme_graph/probation_proposal.v1.schema.json
       - contracts/theme_graph/theme_state.v1.schema.json
       - engine/__init__.py
@@ -8498,6 +8700,7 @@ jobs:
       - engine/theme_graph/ontology.py
       - engine/theme_graph/probation.py
       - engine/theme_graph/selection_cohort_reads.py
+      - engine/theme_graph/selection_cohort_projection.py
       - engine/theme_graph/store.py
       - engine/theme_graph/theme_state.py
       - lib/__init__.py
@@ -8521,7 +8724,11 @@ jobs:
       - tests/test_publish_company_theme_exposure_r2.py
       - tests/test_theme_graph_selection_cohort.py
       - tests/test_theme_graph_selection_cohort_reads.py
+      - tests/test_theme_graph_selection_cohort_reads_pit.py
+      - tests/test_theme_graph_selection_cohort_reads_wiring.py
+      - tests/test_theme_graph_selection_cohort_projection.py
       - tests/test_theme_graph_state.py
+      - tests/test_leadership_receipt.py
       - collectors/_drip.py
       - collectors/base.py
       - collectors/breadth.py
@@ -9176,6 +9383,7 @@ jobs:
       - scripts/build_subsector_rotation_china_pages.py
       - scripts/build_subsector_rotation_pages.py
       - scripts/build_theme_detail.py
+      - engine/leadership_receipt.py
       - scripts/build_themes_heatmap.py
       - scripts/build_vector.py
       - scripts/check_board_contradictions.py
@@ -9228,6 +9436,99 @@ jobs:
       - tests/test_china_standouts_serialization.py
       - tests/test_theme_graph_selection_cohort_publication.py
       - tests/test_us_standouts_cascade_gate.py
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "engine/neuralweb/thematic_state.py"
+      - "engine/neuralweb/theme_state_adapter.py"
+      - "engine/neuralweb/theme_state_generation.py"
+      - "engine/neuralweb/theme_state_generation_reader.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "scripts/build_thematic_state.py"
+      - "tests/fixtures/theme_state_owner/theme_crosswalk.yml"
+      - "tests/fixtures/theme_state_owner/theme_sources.yml"
+      - "tests/test_theme_phase_history_generation_filter.py"
+      - "tests/test_theme_state_generation.py"
+      - "tests/test_theme_state_generation_reader.py"
+      - "tests/test_theme_state_owner_adapter.py"
+      - "tests/test_theme_state_production.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
+      # 2026-10-05 GMI #8455 round 2: the production-bridge suite imports the package root,
+      # so the job closure now reaches __init__.py (contract-delta finding on the wiring itself).
+      - "engine/company_theme_exposure/__init__.py"
+      - "tests/test_gmi_cte_generation_bridge.py"
+      - "contracts/theme_graph/theme_state_generation_read.v2.schema.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      - "engine/theme_graph/theme_state_use_reader.py"
+      - "tests/test_theme_state_generation_use_reader.py"
+      - "tests/test_company_theme_exposure_production_bridge.py"
+      - config/synapse.yml
+      - contracts/theme_graph/capability.v1.schema.json
+      - contracts/theme_graph/evidence.v1.schema.json
+      - contracts/theme_graph/identity_resolution.v1.schema.json
+      - contracts/theme_graph/membership_collection.v2.schema.json
+      - contracts/theme_graph/node_lifecycle.v1.schema.json
+      - contracts/theme_graph/ontology_change_report.v1.schema.json
+      - contracts/theme_graph/ontology_neighborhood.v1.schema.json
+      - contracts/theme_graph/ontology_proposal_review.v1.schema.json
+      - contracts/theme_graph/probation_relation_event.v2.schema.json
+      - engine/theme_graph/change_report.py
+      - engine/theme_graph/membership_evidence.py
+      - engine/theme_graph/ontology_inventory.py
+      - engine/theme_graph/proposal_worklist.py
+      - engine/theme_graph/security_navigation.py
+      - engine/theme_graph/structural_navigation.py
+      - scripts/check_theme_graph_contracts.py
+      - scripts/explain_theme_changes.py
+      - scripts/explain_theme_overlap.py
+      - scripts/list_theme_ontology.py
+      - scripts/list_theme_proposals.py
+      - scripts/propose_basket_ltheme_relations.py
+      - scripts/query_theme_ontology.py
+      - scripts/query_theme_security.py
+      - scripts/theme_coverage_gaps.py
+      - tests/test_basket_membership_pit.py
+      - tests/test_theme_graph_contracts.py
+      - tests/test_theme_graph_local_plane.py
+      - tests/test_theme_graph_materialize.py
+      - tests/test_theme_graph_membership_lifecycle.py
+      - collectors/equity_earnings.py
+      - config/dataset_registry.yml
+      - config/intelligence_workspace/datapoints.v1.json
+      - contracts/intelligence_workspace/datapoint_registry.schema.json
+      - contracts/intelligence_workspace/datapoint_value.schema.json
+      - contracts/theme_graph/structural_context.v1.schema.json
+      - contracts/theme_graph/theme_structural_context.v2.schema.json
+      - engine/intelligence_workspace/__init__.py
+      - engine/intelligence_workspace/adapters/base.py
+      - engine/intelligence_workspace/adapters/company_intelligence.py
+      - engine/intelligence_workspace/adapters/earnings.py
+      - engine/intelligence_workspace/adapters/industry.py
+      - engine/intelligence_workspace/adapters/quote.py
+      - engine/intelligence_workspace/adapters/stage.py
+      - engine/intelligence_workspace/adapters/technicals.py
+      - engine/intelligence_workspace/adapters/theme.py
+      - engine/intelligence_workspace/contracts.py
+      - engine/intelligence_workspace/entity.py
+      - engine/intelligence_workspace/projection.py
+      - engine/intelligence_workspace/registry.py
+      - engine/intelligence_workspace/resolver.py
+      - engine/intelligence_workspace/runtime.py
+      - engine/quote_resolution.py
+      - lib/dataos/__init__.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/quality.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - tests/test_theme_graph_structural_owner_binding.py
+      - tests/test_theme_graph_relation_action_resolver.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9242,11 +9543,18 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
+      - name: GMI sealed owner, generation integrity, and read-only accepted publications
+        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
-        run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py -k 'not live_theme_inputs' -q
+        run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py -k 'not live_theme_inputs' -q
+      - name: L3 leadership receipt (theme_state freshness + descriptive rows)
+        # Wired 2026-10-06 (#8519): engine/leadership_receipt.py reads
+        # site/neuralwebdata/theme_state.json with a 5-day ceiling; this job owns
+        # views.py + theme_graph_state, the receipt's two inputs.
+        run: TZ=UTC python -m pytest tests/test_leadership_receipt.py -q
       - name: GMI finalized selection cohort contract and owner-state interface
         run: |
           set -eu
@@ -9254,9 +9562,9 @@ jobs:
           test -f engine/theme_graph/theme_state.py
           test -f tests/test_theme_graph_state.py
           unset GMI_STATE_OWNER_WORKSPACE
-          TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py -q
+          TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py tests/test_theme_graph_selection_cohort_reads_pit.py tests/test_theme_graph_selection_cohort_projection.py -q
       - name: GMI finalized cohort publication and unchanged owner serialization
-        run: TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort_publication.py tests/test_china_standouts_serialization.py tests/test_build_china_library_more_actionable_guard.py tests/test_us_standouts_cascade_gate.py -q
+        run: TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort_publication.py tests/test_theme_graph_selection_cohort_reads_wiring.py tests/test_china_standouts_serialization.py tests/test_build_china_library_more_actionable_guard.py tests/test_us_standouts_cascade_gate.py -q
 
   sa-w4-improvement-lanes:
     if: ${{ false }}
@@ -9951,6 +10259,7 @@ jobs:
     # neural-web-core, which owns those modules' base suites, is data-gated and
     # never runs on a pull request. The readers import the neuralweb modules,
     # hence the pandas-family install below.
+    scope: exclusive
     paths:
       - "config/regime_outlook_mapping_v2.json"
       - "engine/rates_command_outlook.py"
@@ -9989,6 +10298,80 @@ jobs:
       - "tests/test_regime_outlook_reader_world_state.py"
       - "tests/test_regime_outlook_reader_context.py"
       - "tests/test_regime_outlook_reader_digest.py"
+      # 2026-10-05 GMI #8455 (lane gmi_a_packing_r1): curated exclusive. The reader import closure (world_state -> theme_state_generation_reader -> theme_graph/thematic_state -> scripts/build_thematic_state.py) was an opaque code fallback that made this job an always-on selector for every code PR (contract-delta packing probes 128>127, 133>132). Closure declared exactly; ceilings unchanged.
+      - "config/theme_crosswalk.yml"
+      - "config/theme_graph_identity_breaks.yml"
+      - "config/theme_sources.yml"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      - "engine/basket_membership_pit.py"
+      - "engine/bonds.py"
+      - "engine/canon.py"
+      - "engine/government_revenue/federation.py"
+      - "engine/government_revenue/freshness.py"
+      - "engine/indicators.py"
+      - "engine/ledger_lane.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/_dates.py"
+      - "engine/neuralweb/_law.py"
+      - "engine/neuralweb/contradictions.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/options_plane.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/neuralweb/thematic_state.py"
+      - "engine/neuralweb/theme_state_adapter.py"
+      - "engine/neuralweb/theme_state_generation.py"
+      - "engine/neuralweb/theme_state_generation_reader.py"
+      - "engine/seasonality/contracts.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/theme_graph/theme_state.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "engine/theme_graph/theme_state_use_reader.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/dataos/identity.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "scripts/__init__.py"
+      - "scripts/build_thematic_state.py"
+      # 2026-10-05 GMI #8455 round 2 (contract-delta on head 029fe5b1): the curated closure
+      # above also reaches the site artifacts engine/neuralweb/mastermind_context.py names by
+      # literal (world_state -> theme_state_generation_reader.legacy_consumer_barrier is the new
+      # edge; mastermind_context is the catalog). Declared exactly, widening only; ceilings unchanged.
+      - "site/altdata/mastermind.json"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/oracle_state.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/basketdata/radar_ticker.json"
+      - "site/canadabasketdata/baskets.json"
+      - "site/chinabasketdata/baskets.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/chinastatedata/market_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/us_standouts.json"
+      - "site/hkbasketdata/baskets.json"
+      - "site/intelligence/briefing.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/bottom_sensors.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/vol/regime.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -10718,6 +11101,10 @@ jobs:
     # B1/B1b/B2 command: the legacy pack runner applies timeout-minutes per
     # logical job.  Eight minutes is generous versus the serial profile while
     # still naming the responsible contract if this lane regresses.
+      - "engine/basket_membership_pit.py"
+      - "scripts/build_thematic_state.py"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -11191,6 +11578,16 @@ jobs:
     # B1b/B2 Record History retrieval, exact-diff replay and public-safe model
     # projection.  This is deliberately independently bounded because its
     # repeated source-evidence verification is the heaviest validation family.
+      - "engine/basket_membership_pit.py"
+      - "scripts/__init__.py"
+      - "scripts/build_thematic_state.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -12263,6 +12660,28 @@ jobs:
       - "tests/test_options_command_aib.py"
       - "tests/test_support_map.py"
       - "tools/index.html"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/theme_graph/theme_state.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "lib/dataos/identity.py"
+      - "scripts/build_thematic_state.py"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      - "engine/theme_graph/theme_state_use_reader.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -13032,6 +13451,10 @@ jobs:
       - "scripts/worktree_sparse.py"
     # Install-dominated like its former host; the two batteries themselves
     # are ~30s.
+      - "scripts/__init__.py"
+      - "scripts/build_thematic_state.py"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -13670,6 +14093,15 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      - "engine/basket_membership_pit.py"
+      - "scripts/build_thematic_state.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -13702,12 +14134,19 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py --help
           python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_information_to_price_audit.py -q
+      # Synthetic PIT sample conformance harness (recovered from Sol op
+      # information-to-price-pit-conformance-20261004-sol-001). Name its CLI
+      # as well as its suite for the same sibling-import reason as SRC-A1.
+      - name: information-to-price synthetic PIT sample conformance
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/pit_sample_conformance.py --help
+          python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_pit_sample_conformance.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
       # generated-page and hostile-null pins never sit outside CI.
       - name: factor registry + measurement evidence and research implications
-        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py tests/test_research_implication_card.py tests/test_measurement_research_implications.py -q
+        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py tests/test_research_implication_card.py tests/test_measurement_research_implications.py tests/test_measurement_verdict_preservation.py -q
       - name: look-ahead tripwire over engine/ + collectors/ (feature-leak guard)
         run: python -m pytest tests/test_no_lookahead.py -q
       - name: study + trial lanes (OOS, divergence, drift, fingerprints, gauntlets)
@@ -15341,6 +15780,7 @@ jobs:
       - "scripts/build_subsector_rotation_china_pages.py"
       - "scripts/build_subsector_rotation_pages.py"
       - "scripts/build_theme_detail.py"
+      - "engine/leadership_receipt.py"
       - "scripts/build_themes_heatmap.py"
       - "scripts/build_vector.py"
       - "scripts/check_board_contradictions.py"
@@ -15530,6 +15970,17 @@ jobs:
     # unknown. 12 minutes covers fusion + board-read + era + stage-analysis.
       - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/selection_cohort_publication.py
+      - engine/theme_graph/selection_cohort_projection.py
+      - engine/theme_graph/selection_cohort_reads.py
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/theme_state.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "scripts/build_thematic_state.py"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "engine/theme_graph/theme_state_use_reader.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -17483,6 +17934,15 @@ jobs:
       # inference, so an undeclared dependency stops selecting the job when it changes.
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      - "engine/basket_membership_pit.py"
+      - "scripts/build_thematic_state.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -19021,6 +19481,17 @@ jobs:
       - "scripts/worktree_sparse.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "scripts/build_thematic_state.py"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
