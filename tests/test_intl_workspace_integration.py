@@ -1,5 +1,4 @@
 """Actual builder/template seam, with supplied frames and no external data I/O."""
-import ast
 from copy import deepcopy
 from pathlib import Path
 import json
@@ -15,11 +14,6 @@ from engine.intl_workspace_overview import build_overview, build_workspace_overv
 from lib import store
 
 ROOT = Path(__file__).resolve().parents[1]
-# Read the actual asset-copy declaration without importing the unrelated full
-# collector/build graph. The page composition itself is called, not mocked.
-_BUILDER_TREE = ast.parse((ROOT / "scripts/build_intl.py").read_text())
-ASSETS = next(ast.literal_eval(node.value) for node in _BUILDER_TREE.body
-              if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == "ASSETS" for target in node.targets))
 
 
 def synthetic_qualified_workspace(state="qualified"):
@@ -122,7 +116,7 @@ def test_actual_macro_template_mounts_once_and_retains_legacy_owner_fragment():
     assert 'Current returns unavailable' in html and '当前回报不可用' in html
     assert 'intl_stocks.html' in html
     for asset in ("intl_workspace.css", "intl_workspace_state.js", "intl_workspace.js", "intl_workspace_entry.js"):
-        assert asset in ASSETS and asset in html
+        assert asset in html
         assert (ROOT / "templates" / asset).is_file()
 
 

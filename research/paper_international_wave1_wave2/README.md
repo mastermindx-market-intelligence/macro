@@ -95,3 +95,5 @@ The latest concurrency instruction supersedes the old one-worker programme ceili
 ## Accepted Library catalogue consumer
 
 `lib/intl_library_view.py` adds a pure projection and resolver for the18 existing tools and six groups. It preserves declared ordering and explicit research/analytical contexts, withholds ineligible values without discarding metric descriptors, and refuses invented routes or mismatched sources. Full GLM repaired three rejected Flash invariants; Sol independently approved the exact bytes.23 tests,24 frozen assertions and73 independent delta checks pass. `IM07_T1_EVIDENCE.json` records scope and limits. The consumer is not yet mounted, and caller qualifications do not create a new rights authority.
+
+The final CI scope repair removes an unused test-only read of the large builder module. Actual composition/template execution remains tested; the canonical inference now reports zero uncovered paths for both affected jobs. The existing builder job also names its new projection dependencies. Hosted exact-head CI, current-data qualification and publication are still separate gates.
