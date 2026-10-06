@@ -278,3 +278,8 @@
 {"asof": "2026-10-05", "key": "carry_unwind", "state": false, "intensity_pct": 7.8, "graded": null}
 {"asof": "2026-10-05", "key": "dollar_wrecking_ball", "state": true, "intensity_pct": 44.2, "graded": null}
 {"asof": "2026-10-05", "key": "smile_regime", "state": "Global reflation", "intensity_pct": null, "graded": null}
+{"asof": "2026-10-06", "key": "triple_red", "state": false, "intensity_pct": null, "graded": null}
+{"asof": "2026-10-06", "key": "cnh_stress", "state": true, "intensity_pct": 55.1, "graded": null}
+{"asof": "2026-10-06", "key": "carry_unwind", "state": false, "intensity_pct": 8.4, "graded": null}
+{"asof": "2026-10-06", "key": "dollar_wrecking_ball", "state": true, "intensity_pct": 62.5, "graded": null}
+{"asof": "2026-10-06", "key": "smile_regime", "state": "Risk-off haven bid", "intensity_pct": null, "graded": null}

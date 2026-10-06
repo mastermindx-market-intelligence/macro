@@ -1,0 +1,112 @@
+{# R26: consume the existing projection only. No scores, model calls or new data output. #}
+{% macro evidence_label(value) -%}
+  {% if value is string and value|trim %}{{ t(value|replace('_', ' '), tr(value)) }}{% else %}{{ t('Not supplied', '未提供') }}{% endif %}
+{%- endmacro %}
+{% macro scenario_names(value, empty_en, empty_zh) -%}
+  {% set names = value|select('string')|map('trim')|reject('equalto', '')|list if value is sequence and value is not string and value is not mapping else [] %}
+  {% for name in names[:8] %}
+    {% if not loop.first %} · {% endif %}{{ evidence_label(name) }}
+  {% endfor %}
+  {% if not names %}{{ t(empty_en, empty_zh) }}{% endif %}
+  {% if names|length > 8 %} · {{ t('Additional scenario names remain in the source record.', '来源记录中仍有其他情景名称。') }}{% endif %}
+{%- endmacro %}
+{% set decision = vm.decision_workspaces|default(none) %}
+{% set admitted = decision is mapping and decision.get('schema') == 'macro_context.decision_workspaces.v1' and decision.get('display_only') is sameas true and decision.get('claim_scope') == 'projection_only' and decision.get('probability_policy') == 'withheld' %}
+<!-- R26 decision evidence -->
+<details id="bonds-forex-evidence" class="panel" data-panel="macro_context.decision_workspaces.v1" style="margin-top:14px;overflow-wrap:anywhere">
+  <summary class="compass-title" style="cursor:pointer">
+    {{ t('Bonds & Forex', '债券与外汇') }} · {{ t('Review labels and gaps — not a trade signal', '核对标签与缺口，非交易信号') }}
+  </summary>
+  {% if not admitted %}
+  <p class="empty-state">{{ t('Evidence unavailable. The supported read-only context has not been supplied; other page sections remain separate.', '证据不可用。尚未提供受支持的只读背景；页面其他部分仍独立显示。') }}</p>
+  {% else %}
+  <p class="c-muted">{{ t('Source dates do not certify vendor freshness; this is not a forecast.', '来源日期不代表供应商数据已及时更新；这不是预测。') }}</p>
+  <div class="rates-grid">
+    {% for domain, title_en, title_zh, fields in [
+      ('bonds', 'Bonds', '债券', [('health','Bond condition','债券状况'),('cycle','Cycle label','周期标签'),('duration_lean','Duration context','久期背景'),('curve_trade','Curve context','曲线背景'),('yield_curve_regime','Curve regime','曲线状态'),('recession_risk','Recession risk label','衰退风险标签')]),
+      ('forex', 'Forex', '外汇', [('usd_trend','Dollar direction','美元方向'),('usd_regime','Dollar regime','美元状态'),('fx_risk','FX risk label','外汇风险标签'),('desk_lean','Dollar backdrop','美元背景'),('real_rate_regime','Real-rate context','实际利率背景'),('fed_path_lean','Policy-path context','政策路径背景'),('liquidity_dir','Liquidity direction','流动性方向'),('regime_radar','Leading scenario','主要情景'),('usd_positioning','Dollar positioning','美元持仓'),('usd_valuation','Dollar valuation','美元估值')])
+    ] %}
+      {% set view = decision.get(domain) %}
+      {% set valid = view is mapping and view.get('display_only') is sameas true and view.get('claim_scope') == 'projection_only' and view.get('probability_policy') == 'withheld' and view.get('status') in ['ready', 'partial', 'unavailable'] %}
+      <section data-domain="{{ domain }}" aria-labelledby="r26-{{ domain }}-title">
+        <h3 id="r26-{{ domain }}-title" class="compass-title">{{ t(title_en, title_zh) }}</h3>
+        {% if not valid %}
+          <p class="empty-state">{{ t('Evidence unavailable. This source does not meet the read-only display contract.', '证据不可用。此来源不符合只读展示约定。') }}</p>
+        {% else %}
+          <p class="chip c-muted">
+            {% if view.status == 'ready' %}{{ t('Supplied fields complete', '已提供字段完整') }}
+            {% elif view.status == 'partial' %}{{ t('Evidence incomplete', '证据不完整') }}
+            {% else %}{{ t('Evidence unavailable', '证据不可用') }}{% endif %}
+          </p>
+          {% set current = view.get('current_read') if view.get('current_read') is mapping else {} %}
+          <dl data-current-read="{{ domain }}">
+          {% for key, label_en, label_zh in fields %}
+            <div class="liq-row">
+              <dt class="stat-key">{{ t(label_en, label_zh) }}</dt>
+              <dd style="margin:0">{{ evidence_label(current.get(key)) }}</dd>
+            </div>
+          {% endfor %}
+          </dl>
+          {% if domain == 'forex' %}
+            {% set mechanism = view.get('mechanism_evidence') if view.get('mechanism_evidence') is mapping else {} %}
+            <h4 class="compass-title">{{ t('Scenario evidence', '情景证据') }}</h4>
+            <p><strong>{{ t('Active names', '已激活名称') }}:</strong> {{ scenario_names(mechanism.get('active_scenarios'), 'No active scenario names supplied', '未提供已激活情景名称') }}</p>
+            <p><strong>{{ t('Building names', '正在形成的名称') }}:</strong> {{ scenario_names(mechanism.get('building_scenarios'), 'No building scenario names supplied', '未提供正在形成的情景名称') }}</p>
+            {% set funding = view.get('funding_evidence') if view.get('funding_evidence') is mapping else {} %}
+            {% set basis = funding.get('direct_usd_cross_currency_basis') %}
+            {% set bps = basis.get('value_bps') if basis is mapping else none %}
+            {% set basis_valid = basis is mapping and basis.get('date_status') == 'known' and bps is number and bps is not sameas true and bps is not sameas false and -1.7976931348623157e308 <= bps <= 1.7976931348623157e308 and basis.get('source') is string and basis.get('source')|trim and basis.get('asof') is string and basis.get('asof')|trim %}
+            <h4 class="compass-title">{{ t('Funding evidence', '融资证据') }}</h4>
+            {% if basis_valid %}
+              <p>{{ t('Direct USD funding basis', '直接美元融资基差') }}: {{ '%.2f'|format(bps) }} bp · {{ basis.source }} · {{ basis.asof }}</p>
+            {% else %}
+              <p>{{ t('Direct USD funding basis unavailable', '直接美元融资基差不可用') }}</p>
+            {% endif %}
+            <p>{{ t('Funding proxy', '融资代理指标') }}: {{ evidence_label(funding.get('proxy_funding_state')) }} · {{ t('not a substitute for direct USD basis evidence', '不能替代直接美元基差证据') }}</p>
+          {% endif %}
+          <h4 class="compass-title">{{ t('Selected source dates', '所选来源日期') }}</h4>
+          {% set receipts = view.get('source_receipts') if view.get('source_receipts') is mapping else {} %}
+          <ul>
+          {% for key in (['bond_health', 'transmission'] if domain == 'bonds' else ['forex']) %}
+            {% set receipt = receipts.get(key) %}
+            <li>
+              {% if receipt is mapping %}
+                {% if receipt.get('path') is string and receipt.get('path')|trim %}<code>{{ receipt.get('path') }}</code>{% else %}{{ t('Source path not supplied', '未提供来源路径') }}{% endif %} · {{ evidence_label(receipt.get('asof')) }}
+                {% if receipt.get('date_status') == 'future' %} · <strong class="c-warn">{{ t('Future-dated source', '来源日期在未来') }}</strong>
+                {% elif receipt.get('date_status') != 'known' %} · {{ t('Source date unverified', '来源日期未核实') }}{% endif %}
+              {% else %}{{ t('Source date not supplied', '未提供来源日期') }}{% endif %}
+            </li>
+          {% endfor %}
+          </ul>
+          <h4 class="compass-title">{{ t('Recent label changes', '近期标签变化') }}</h4>
+          {% set changes = view.get('changes') %}
+          {% set changed = namespace(any=false) %}
+          {% if changes is sequence and changes is not string and changes is not mapping %}
+          <ul>
+            {% for row in changes[:8] if row is mapping %}
+              {% set changed.any = true %}
+              <li>{{ evidence_label(row.get('asof')) }} · {{ evidence_label(row.get('field')) }}: {{ evidence_label(row.get('from')) }} → {{ evidence_label(row.get('to')) }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% if not changed.any %}<p>{{ t('No label changes supplied', '未提供标签变化') }}</p>{% endif %}
+          <h4 class="compass-title">{{ t('Evidence gaps', '证据缺口') }}</h4>
+          {% set gaps = view.get('data_gaps') %}
+          {% set missing = namespace(any=false) %}
+          {% if gaps is sequence and gaps is not string and gaps is not mapping %}
+          <ul>
+            {% for row in gaps[:8] if row is mapping %}
+              {% set missing.any = true %}
+              <li>{{ evidence_label(row.get('key')) }} · {{ evidence_label(row.get('status')) }}{% if row.get('note') is string and row.get('note')|trim %}: {{ evidence_label(row.get('note')) }}{% endif %}</li>
+            {% endfor %}
+          </ul>
+          {% if gaps|length > 8 %}<p>{{ t('Additional gaps remain in the source record.', '来源记录中仍有其他缺口。') }}</p>{% endif %}
+          {% endif %}
+          {% if not missing.any %}<p>{{ t('No explicit gap entries supplied; this is not a completeness guarantee.', '未提供明确缺口条目；不代表证据完整。') }}</p>{% endif %}
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+  {% endif %}
+</details>
+<!-- /R26 decision evidence -->

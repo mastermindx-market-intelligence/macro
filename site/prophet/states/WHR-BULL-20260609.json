@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WHR-BULL-20260609",
-  "asof": "2026-10-05",
+  "asof": "2026-10-06",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.8,
@@ -17,16 +17,16 @@
     "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": -3.129,
+    "dist_to_stop_r": -3.239,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 77.8,
-    "p1": -2.7529,
-    "p2": -1.3765,
+    "horizon_pct_used": 80.0,
+    "p1": -2.8261,
+    "p2": -1.4131,
     "p3": null,
-    "move_r": -4.129,
+    "move_r": -4.239,
     "mfe_r": 0.0,
-    "mae_r": -4.129
+    "mae_r": -4.239
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.5258788721439487e-07,
-  "_mae": -10.53000053405762,
+  "_mae": -10.809999313354496,
   "_max_p1": 3.9892258095266676e-08,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 35,
-  "tau": 0.7778
+  "days_elapsed": 36,
+  "tau": 0.8
 }
