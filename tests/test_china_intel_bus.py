@@ -86,7 +86,11 @@ def _kind_labeler(title):
 def test_visit_discovery_first_seen_requires_no_preexisting_observation():
     snap = bus._visit_discovery_snapshot(
         [_visit_row("A1", "000001", "2026-10-02T09:00:00+08:00")],
-        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
         coverage_start="2026-09-15",
         open_scoped_codes=set(),
         has_unscoped_open=False,
@@ -115,7 +119,11 @@ def test_visit_discovery_missing_earlier_observation_clock_cannot_claim_first_se
 
     snap = bus._visit_discovery_snapshot(
         [early, later],
-        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
         coverage_start="2026-09-15",
         open_scoped_codes=set(),
         has_unscoped_open=False,
@@ -220,6 +228,61 @@ def test_visit_discovery_malformed_last_attempt_is_not_treated_as_absent():
 
 
 
+def test_visit_discovery_ok_health_missing_attempt_is_incomplete_receipt():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("A-noattempt", "000026", "2026-10-02T09:00:00+08:00")],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+    assert "ok_health_receipt_incomplete" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == \
+        "ok_health_receipt_incomplete"
+    assert snap["n_first_observed_recent"] == 0
+
+
+def test_visit_discovery_unusable_source_clock_preserves_explicit_unknown_company():
+    row = _visit_row(
+        "A-badsource", "000027", "2026-10-02T09:00:00+08:00",
+        recorded="2026-10-02T10:00:00+00:00",
+    )
+    row["source_published_at"] = "not-a-source-clock"
+
+    snap = bus._visit_discovery_snapshot(
+        [row],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    assert "row_source_clock_invalid" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == "row_source_clock_invalid"
+    assert len(snap["examples"]) == 1
+    out = snap["examples"][0]
+    assert out["sec_code"] == "000027"
+    assert out["coverage_state"] == "unknown_source_clock"
+    assert out["source_clock_state"] == "invalid"
+    assert out["first_seen_state"] == "unknown_source_clock"
+    assert out["baseline_state"] == "blocked_source_clock_invalid"
+    assert out["recent_count"] == 0
+
+
+
 def test_visit_discovery_partial_or_naive_owner_timestamps_fail_closed():
     for bad in (
         "2026-10-03T01",
@@ -283,10 +346,10 @@ def test_visit_discovery_missing_last_success_cannot_measure_quiet_baseline():
     )
     assert snap["global_negative_authority"] is False
     assert snap["global_negative_authority_blocker"] == \
-        "last_success_clock_unavailable"
+        "ok_health_receipt_incomplete"
     row = snap["examples"][0]
-    assert row["baseline_state"] == "unavailable_last_success_clock"
-    assert row["first_seen_state"] == "unknown_last_success_clock"
+    assert row["baseline_state"] == "blocked_owner_clock_order_invalid"
+    assert row["first_seen_state"] == "unknown_owner_clock_order_invalid"
     assert snap["n_first_observed_recent"] == 0
 
 
@@ -295,7 +358,11 @@ def test_visit_discovery_unknown_exception_coverage_cannot_claim_first_seen():
 
     unreadable = bus._visit_discovery_snapshot(
         visits,
-        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
         coverage_start="2026-01-01",
         open_scoped_codes=set(),
         has_unscoped_open=False,
@@ -309,7 +376,11 @@ def test_visit_discovery_unknown_exception_coverage_cannot_claim_first_seen():
 
     unscoped = bus._visit_discovery_snapshot(
         visits,
-        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
         coverage_start="2026-01-01",
         open_scoped_codes=set(),
         has_unscoped_open=True,
@@ -512,7 +583,11 @@ def test_visit_discovery_keeps_precoverage_source_event_as_positive_observation(
             "A0", "000010", "2026-09-14T09:00:00+08:00",
             recorded="2026-09-15T02:00:00+00:00",
         )],
-        health={"status": "ok", "last_success_utc": "2026-09-15T02:00:00+00:00"},
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-09-15T02:00:00+00:00",
+            "last_attempt_utc": "2026-09-15T02:00:00+00:00",
+        },
         coverage_start="2026-09-15",
         open_scoped_codes=set(),
         has_unscoped_open=False,
@@ -538,7 +613,11 @@ def test_visit_discovery_measures_only_fully_observed_baseline():
     ]
     snap = bus._visit_discovery_snapshot(
         visits,
-        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
         coverage_start="2026-01-01",
         open_scoped_codes=set(),
         has_unscoped_open=False,
@@ -558,7 +637,11 @@ def test_visit_discovery_measures_only_fully_observed_baseline():
 def test_visit_discovery_scoped_exception_blocks_company_baseline_not_positive_evidence():
     snap = bus._visit_discovery_snapshot(
         [_visit_row("C1", "000002", "2026-10-01T09:00:00+08:00")],
-        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
         coverage_start="2026-01-01",
         open_scoped_codes={"000002"},
         has_unscoped_open=False,
@@ -577,7 +660,11 @@ def test_visit_discovery_scoped_exception_blocks_company_baseline_not_positive_e
 def test_visit_discovery_unscoped_exception_blocks_global_negative_authority():
     snap = bus._visit_discovery_snapshot(
         [_visit_row("D1", "000003", "2026-10-01T09:00:00+08:00")],
-        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
         coverage_start="2026-01-01",
         open_scoped_codes=set(),
         has_unscoped_open=True,
@@ -681,7 +768,11 @@ def test_visit_discovery_dedupes_announcement_identity_before_recurrence():
     same = _visit_row("F1", "000005", "2026-10-01T09:00:00+08:00")
     snap = bus._visit_discovery_snapshot(
         [same, dict(same)],
-        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
         coverage_start="2026-01-01",
         open_scoped_codes=set(),
         has_unscoped_open=False,
@@ -698,7 +789,11 @@ def test_visit_discovery_never_promotes_actor_or_rank_authority():
             visitor_class="institution",
             title="特定对象调研记录",
         )],
-        health={"status": "ok", "last_success_utc": "2026-10-03T01:00:00+00:00"},
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
         coverage_start="2026-01-01",
         open_scoped_codes=set(),
         has_unscoped_open=False,
