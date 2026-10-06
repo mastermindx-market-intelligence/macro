@@ -2,7 +2,7 @@
 workstream: "WS:MARKET-OS"
 session: "chatgpt/market-pattern-analysis-20260926-sol"
 model: sol
-ended_because: context_budget
+ended_because: blocked
 mission: >-
   Continue the bounded geopolitical narrative-repricing / cross-session transfer research on Macro
   PR #8012, preserve falsifiers and frozen prospective geometry, repair the current CI blocker, and
@@ -54,11 +54,26 @@ changed:
       can never become a control; measure event/control U.S. V1+V1.1 geometry; fail closed until all
       required pre-HK receipts agree; then score the frozen HSI next-open endpoint through ephemeral
       Yahoo ^HSI adjusted OHLC with zero persistence or product/trading authority.
+  - path: research/CROSS_SESSION_PROSPECTIVE_SOURCE_ADMISSIONS_2026-10-05.json
+    what: >-
+      Freeze the first 10-event prospective source cohort across Sept 28-Oct 5 before any HSI read,
+      including the corrected Oct-4 Reuters first-publication clock and bounded source exclusions.
+  - path: research/CROSS_SESSION_PROSPECTIVE_MATCHED_CONTROLS_2026-10-05.json
+    what: >-
+      Freeze source-only matched controls through the Oct-5 completeness boundary: Sept 25 is the
+      selected prior control for every row and every next control remains PENDING_OBSERVED_SESSION.
+  - path: research/CROSS_SESSION_PROSPECTIVE_US_MEASUREMENTS_2026-10-05.json
+    what: >-
+      Persist the credentialed Massive/Polygon U.S.-event measurement receipt from run 37410784671;
+      three of ten rows have valid frozen V1/V1.1 geometry, seven remain honest DATA_GAP, HSI unread.
+  - path: research/CROSS_SESSION_PROSPECTIVE_PRIOR_CONTROL_US_MEASUREMENTS_2026-10-05.json
+    what: >-
+      Persist the credentialed Sept-25 prior-control U.S. receipt from run 37411125402; five of ten
+      controls have valid geometry, five remain DATA_GAP, with no HSI access or vendor-bar persistence.
   - path: agentos/handoffs/GEOPOLITICAL-RELIEF-EVENT-STUDY-2026-09-26.md
     what: >-
-      Repair the durable continuation record to the current AgentOS handoff schema, bind it to the
-      canonical WS:MARKET-OS owner, and carry the latest source-clock and two-candidate scientific
-      ruling without changing frozen prospective geometry.
+      Maintain the cumulative continuation record and advance it to the first prospective accrual
+      frontier without changing frozen candidate families, clocks, target endpoint, or authority.
 verified:
   - claim: >-
       Exact head 37e232528735709b68680ad48df802263b8c7746 failed fences because this handoff
@@ -138,19 +153,64 @@ verified:
       Exact sparse-worktree research pack at bed673021eff31d3100ecc59780a2c32e9a17711 passed
       57/57 tests. A 2026-10-02T18:00Z cutoff certifies only through Oct 1; Oct 2 remains PENDING
       until a 2026-10-03T00:00Z completeness cutoff. Temporary verifier worktree removed.
+  - claim: >-
+      The first prospective source cohort was frozen before any target HSI read and now contains
+      10 admitted events across eight event dates from 2026-09-28 through 2026-10-05.
+    command: >-
+      cat research/CROSS_SESSION_PROSPECTIVE_SOURCE_ADMISSIONS_2026-10-05.json
+    result: >-
+      Ten PROSPECTIVE_V1_1 rows are retained; nine SOURCE_RESOLVED rows are clean-primary and the
+      Oct-3 Riyadh/Aramco attribution row is SOURCE_CONFOUNDED. All retain outcome_state=NOT_READ.
+  - claim: >-
+      Matched-control selection is frozen without returns or HSI and excludes every admitted event date.
+    command: >-
+      cat research/CROSS_SESSION_PROSPECTIVE_MATCHED_CONTROLS_2026-10-05.json
+    result: >-
+      All ten rows select 2026-09-25 as prior control at their exact UTC clock; session distances are
+      1-6. Every next control is PENDING_OBSERVED_SESSION. Source completeness is certified through
+      2026-10-05 by cutoff 2026-10-06T00:00:00Z.
+  - claim: >-
+      Credentialed U.S.-event measurement consumed the exact frozen source cohort and never opened HSI.
+    command: >-
+      GitHub Actions run 37410784671 / artifact 11389043137; compare artifact source_admission_sha256
+      to git show 7c9b5f4d...:research/CROSS_SESSION_PROSPECTIVE_SOURCE_ADMISSIONS_2026-10-05.json.
+    result: >-
+      Artifact digest sha256:a2de393780dd16edb675c752c9b29c0acb0d2bcfbaf114f1c2767d9c04a24255;
+      embedded source hash ecec37ae4c0f22127dfa10bef274f2a014e936e1eb5e229edfaea2abc5d2aa2e
+      exactly matches Git. Three valid event rows: Sep-28 V1/V1.1 -22.803810/-22.805033 bp;
+      Oct-1 coalition interception +18.316482/+0.728895 bp; Oct-2 Saudi offensive planning
+      -12.873494/-4.344380 bp. Seven rows are DATA_GAP. hsi_outcomes_read=false.
+  - claim: >-
+      Credentialed prior-control measurement consumed the exact frozen source and control receipts,
+      while all non-research intraday work stayed skipped.
+    command: >-
+      GitHub Actions run 37411125402 / artifact 11389625739; compare artifact source/control SHA256
+      values to Git blobs at run head 4195fca8....
+    result: >-
+      Run concluded SUCCESS. Artifact digest sha256:8993c6c03e93333b7377301888301f69d2bb9bd4493abe37faf0cf570ba572e7;
+      source hash ecec37ae... and control hash 6370cf6c... both exactly match Git. Five prior controls
+      have valid V1/V1.1 geometry and five are DATA_GAP. hsi_outcomes_read=false.
+  - claim: >-
+      The temporary credentialed research carrier left no permanent workflow drift.
+    command: >-
+      compare .github/workflows/intraday.yml at current head with original e11e9688... blob.
+    result: >-
+      intraday.yml restored exactly to blob c47c0277e7c030da5e4490e20630c5ae941b84ba; the temporary
+      standalone research workflow was deleted after use.
 unverified:
-  - "The current post-harness closeout head still requires exact-head hosted ci and fences before the carrier can be called fully green."
-  - "Prospective cross-session transfer generalization on future events remains unproven."
-  - "The QQQ-minus-SPY challenger has zero prospective observations at this amendment boundary."
+  - "The current prospective-accrual checkpoint head still requires exact-head hosted ci and fences after this handoff update."
+  - "Prospective cross-session target transfer remains ungraded because the HSI endpoint is still firewalled behind pending next controls."
+  - "V1 and V1.1 now have three valid prospective U.S.-event observations, but zero prospective HSI outcomes."
   - "Prospective operational HK-intraday capture through Tencent's roughly five-session retention window remains unproven on a qualifying future event."
 unresolved:
-  - "Current PR head must clear exact-head ci + fences after the completed prospective harness checkpoint before the research carrier is considered fully green."
-  - "The source census remains retrieval_incomplete, so timing-frequency population claims remain blocked."
-  - "The prospective hypothesis remains concentrated in the 2026 Iran/Hormuz family and needs future-event evidence."
+  - "Current PR head must clear exact-head ci + fences after the first prospective-accrual checkpoint."
+  - "The bounded Reuters-led source census is sufficient for this frozen cohort but is not a universal population-completeness claim; timing-frequency population claims remain blocked."
+  - "The target transfer question is blocked until a post-Oct-5 U.S. session is observed and the entire corresponding UTC source day is complete, allowing next controls to become terminal before HSI access."
 next_actions:
-  - "Consume exact-head ci/fences for the completed prospective harness checkpoint; repair only new branch-owned failures."
-  - "If exact-head checks clear, preserve PR #8012 as the DRAFT frozen development/prospective carrier and do no further development predictor search."
-  - "On the next qualifying future event, run the existing capture harness in sequence: source admission -> event U.S. measurement -> matched-control freeze once observed-session/source coverage is terminal -> selected control U.S. measurements -> pre-HK gate -> HSI score. Later confirmations remain amendments to the same first-disclosure event."
+  - "Consume exact-head ci/fences for the first prospective-accrual checkpoint; repair only new branch-owned failures."
+  - "Preserve PR #8012 as the DRAFT frozen development/prospective carrier and do no further development predictor search."
+  - "After the 2026-10-06 U.S. session exists and the full 2026-10-06 UTC source day is complete (earliest completeness cutoff 2026-10-07T00:00:00Z), extend the bounded source census through Oct 6, re-run freeze_matched_controls on the same 10 admissions, and accept only terminal SELECTED/DATA_GAP next-control states."
+  - "Measure any newly selected next-control U.S. legs through the incumbent Massive/Polygon carrier; only after gate_hk_outcome_read returns READY may score_hsi_outcome open the frozen HSI endpoint. No pre-gate HSI read."
   - "If the secondary HK intraday endpoint is used prospectively, use only the frozen Terminal Tencent owner while the required session remains in its recent-window coverage; HSI next-open remains primary and source failure remains DATA_GAP."
 do_not_redo:
   - "Do not reopen or repurpose the existing Narrative Repricing V2 prospective holdout."
@@ -163,6 +223,8 @@ do_not_redo:
   - "Do not treat V1.1 as a development winner from its higher raw hit rate; on common controls its event-minus-control uplift does not dominate V1, and its extra correctness is one development event."
   - "Do not bypass the pre-HK gate or substitute a scheduled/future U.S. session for an observed source-covered control session; PENDING stays PENDING and blocks HSI reads."
   - "Do not certify the source-completeness cutoff's own UTC calendar date as a control day; the full date is incomplete until the next UTC midnight."
+  - "Do not open HSI for the 10-event prospective cohort while any next control is PENDING; the current earliest lawful re-freeze boundary is 2026-10-07T00:00:00Z after the Oct-6 U.S. session/source day."
+  - "Do not re-run the first event-U.S. or Sept-25 prior-control measurements: immutable artifacts 11389043137 and 11389625739 are provenance-matched to their frozen inputs."
   - "Do not promote the Sep-26 Saudi/Houthi interception into V1 or V1.1; its exact first disclosure at 01:00Z predates both protocol freezes and its market outcomes remain uninspected."
 danger_areas:
   - "A later positive Hong Kong move must not overwrite CAUSAL_REJECTED, CONFLICTED, or DATA_GAP evidence states."
@@ -812,4 +874,135 @@ Primary next action:
 Independent parallel action:
 - source-corpus completeness may improve through existing owners without opening the V2 holdout or
   changing the two-family prospective design.
+
+## 2026-10-06 continuation addendum — first prospective cohort accrued
+
+### Protected procedure and carrier
+
+- Protected Mastermind Skillpack pin: `d1594f3c7ae750db3f14b4eebf0de3460f84267a`.
+- INDEX blob: `4b0189a75d559d963365097485e8509a49c70e23`.
+- ACTIVE_EXECUTION blob: `9fed10f7cc7a2f4323d039b406f7c0715445e22e`.
+- CLOSEOUT blob: `4a9ec3782da001322604e977dbe91b9cf371f0b9`.
+- `SESSION_RELIABILITY.md` is **not enrolled** by this protected INDEX and was not promoted from an unmerged candidate.
+- Carrier remains Macro PR #8012 / `sol/geopolitical-relief-event-study-20260924`, DRAFT / research-only.
+
+### Before / after capability delta
+
+Before:
+- the harness was ready, but the study still had zero post-V1.1 prospective observations.
+
+After:
+- ten future source events are frozen before HSI access;
+- event-side U.S. V1/V1.1 geometry is captured where the frozen clock is tradable;
+- all prior controls are frozen and their U.S. legs captured where available;
+- the target HSI endpoint is still provably unread and fail-closed behind pending next controls.
+
+This is **prospective accrual**, not target validation.
+
+### Prospective source cohort
+
+Durable source receipt:
+`research/CROSS_SESSION_PROSPECTIVE_SOURCE_ADMISSIONS_2026-10-05.json`.
+
+Cohort = **10 events** over admitted source dates **2026-09-28 through 2026-10-05**:
+- Sep 28 Russia jet-drone escalation over Kyiv/Dnipro — clean;
+- Sep 29 killing of Hamas north-Gaza armed-wing chief — clean;
+- Sep 30 heaviest Ukraine energy-grid assault in months — clean;
+- Oct 1 three Hormuz tankers hit by unknown projectiles — clean physical-shipping event;
+- Oct 1 Saudi coalition intercepts four drones/two missiles — clean;
+- Oct 2 Yemen government 20-strike Taiz wave — clean;
+- Oct 2 Saudi offensive planning to break Red Sea chokehold — clean;
+- Oct 3 Riyadh/Aramco fire with unconfirmed Houthi attribution — **SOURCE_CONFOUNDED**, outside clean-primary;
+- Oct 4 Yemeni government announces major anti-Houthi operation — clean, corrected first Reuters clock **12:11Z** before any market read;
+- Oct 5 Saudi-backed forces report Bab el-Mandeb gains — clean with conflict note preserving Houthi denial.
+
+Bounded source exclusions preserve generic continuation rather than padding the cohort:
+- later Trump/Iran rejection confirmation = pre-V1.1 claim provenance;
+- routine Gaza strike continuation = excluded;
+- unchanged Taiwan arms-policy commentary = excluded.
+
+This is a bounded Reuters-led census, not a world-news completeness claim.
+
+### Event U.S. receipt
+
+`research/CROSS_SESSION_PROSPECTIVE_US_MEASUREMENTS_2026-10-05.json`
+
+Canonical execution:
+- GitHub Actions run **37410784671**;
+- artifact **11389043137**;
+- artifact digest `sha256:a2de393780dd16edb675c752c9b29c0acb0d2bcfbaf114f1c2767d9c04a24255`;
+- run head `7c9b5f4d7b99a7d8917376a04fdc3d9b54e604da`;
+- artifact source SHA256 exactly matches the frozen source file:
+  `ecec37ae4c0f22127dfa10bef274f2a014e936e1eb5e229edfaea2abc5d2aa2e`.
+
+Valid frozen event geometry exists for **3/10** rows:
+- Sep 28: V1 **-22.803810 bp**, V1.1 **-22.805033 bp**;
+- Oct 1 coalition interception: V1 **+18.316482 bp**, V1.1 **+0.728895 bp**;
+- Oct 2 Saudi offensive planning: V1 **-12.873494 bp**, V1.1 **-4.344380 bp**.
+
+The other seven are honest market-closed / overnight / weekend DATA_GAP under the frozen no-reanchor law.
+`hsi_outcomes_read=false`; vendor bars were not persisted.
+
+The run-level conclusion reads CANCELLED only because a pre-start cancellation request raced with
+runner pickup. The bound research job itself completed every step successfully, including measurement
+and artifact upload; normal intraday bars were skipped. Do not rerun it.
+
+### Prior matched-control receipt
+
+`research/CROSS_SESSION_PROSPECTIVE_MATCHED_CONTROLS_2026-10-05.json` freezes:
+- prior control = **2026-09-25** for all ten rows;
+- exact event UTC clock reused;
+- session distance = 1..6;
+- all next controls = `PENDING_OBSERVED_SESSION`;
+- source completeness cutoff = `2026-10-06T00:00:00Z`, certifying only through Oct 5.
+
+`research/CROSS_SESSION_PROSPECTIVE_PRIOR_CONTROL_US_MEASUREMENTS_2026-10-05.json`:
+- GitHub Actions run **37411125402** = SUCCESS;
+- artifact **11389625739**;
+- digest `sha256:8993c6c03e93333b7377301888301f69d2bb9bd4493abe37faf0cf570ba572e7`;
+- source SHA256 and controls SHA256 both exactly match Git;
+- five valid prior-control V1/V1.1 rows, five DATA_GAP;
+- HSI unread.
+
+For the three events with valid event-side geometry, the prior-control comparison is:
+- Sep 28: event V1/V1.1 **-22.80/-22.81** vs prior **-50.69/-22.77** bp;
+- Oct 1 coalition interception: event **+18.32/+0.73** vs prior **+1.19/+4.09** bp;
+- Oct 2 Saudi offensive planning: event **-12.87/-4.34** vs prior **+4.08/+0.55** bp.
+
+This is U.S.-side specificity only. It is **not** evidence of HSI transfer.
+
+### Workflow cleanup
+
+The credential was never moved onto the fleet. The existing GitHub Actions secret supplied the
+incumbent Massive/Polygon transport through a temporary branch-only mode in the existing
+`intraday.yml` carrier.
+
+Cleanup is complete:
+- normal intraday writer was skipped on both research runs;
+- temporary standalone workflow removed;
+- `.github/workflows/intraday.yml` restored byte-for-byte to original blob
+  `c47c0277e7c030da5e4490e20630c5ae941b84ba`.
+
+No new credential store, data plane, or persistent vendor-bar store was created.
+
+### Current hard gate
+
+The target endpoint is **not readable yet**.
+
+Every next matched control is still `PENDING_OBSERVED_SESSION`. The earliest lawful continuation is:
+1. Oct 6 U.S. session becomes observed;
+2. the entire Oct 6 UTC source day completes;
+3. at/after **2026-10-07T00:00:00Z**, extend the bounded source census through Oct 6;
+4. re-freeze matched controls; only terminal SELECTED/DATA_GAP states may proceed;
+5. measure selected next-control U.S. legs;
+6. require `gate_hk_outcome_read` = READY;
+7. only then run the frozen HSI next-open scorer.
+
+Until step 6, **no HSI outcome read is permitted**.
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+
+Bounded source/U.S./prior-control accrual is proven; the parent pattern-analysis mission remains open
+at a real time/source-completeness gate rather than an implementation gap.
 
