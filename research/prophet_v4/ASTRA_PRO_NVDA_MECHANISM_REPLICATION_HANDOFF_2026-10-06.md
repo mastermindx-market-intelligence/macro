@@ -143,6 +143,25 @@ Current implementation-carrier check at the time of this re-audit:
 - B04 has active/draft work on #7869 and #8004;
 - route any bounded product implementation through the existing R6 B03 owner/carrier after exact-head/custody reconciliation.
 
+
+### Existing research-priority owner (do not duplicate)
+
+Live Entry Radar already owns `mastermind.research_priority.v1` (RP1), a deterministic ACCRUING research-attention ordering.
+
+RP1 is **not** the same object as the new rerating-convergence hypothesis:
+
+- RP1 ranks developing Radar episodes from structural/reset/resilience/recovery measures;
+- RP1 explicitly excludes attention hotness, lobe counts, sentiment and outcome-conditioned features;
+- H-EMERGENCE-CONVERSION asks whether independently sourced rerating evidence predicts later valid confirmation.
+
+Therefore:
+
+- do not create a new Prophet “Research Priority” score;
+- accrue emergence convergence first as a typed evidence/cohort state;
+- use existing RP1 where a Radar research-attention ordering is needed;
+- any future integration of rerating evidence into an ordering must go through the existing RP1 owner or a registered Conditional Fusion challenger and its promotion gate.
+
+
 ## New prospective freeze
 
 Read and preserve:
