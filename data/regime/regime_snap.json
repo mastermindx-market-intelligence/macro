@@ -39,17 +39,17 @@
   "veto": {
     "schema": "regime_snap_veto.v1",
     "is_context_only": true,
-    "lean": "unclear",
-    "confidence": "low",
+    "lean": "fragile",
+    "confidence": "medium",
     "checks": {
-      "catalyst": "No legible structural or verbal macro catalyst; the move is narrow AI/semis leadership rather than a signed deal, policy shift, or hard broad-market surprise.",
-      "premium": "Little fear premium appears decisively unwound: only 2 of 7 legs have flipped and the snap is still building.",
-      "washout": "No real capitulation is evident; cap_recent is false and fear_built is modest at 0.335.",
-      "follow_through": "Next-session confirmation is doubtful because participation is narrow, only credit spreads and copper/gold have turned, and oil/yield pressure remains."
+      "catalyst": "A hard Micron earnings and guidance surprise is structural for semiconductors, but not a broad cross-asset catalyst; the overall driver is narrow and low-confidence.",
+      "premium": "Only 2 of 7 legs have flipped and fear built is modest, so limited fear premium has unwound while much remains.",
+      "washout": "No real capitulation is evident: cap_recent is false and the move follows a shallow fear build rather than a washout.",
+      "follow_through": "Narrow AI/semiconductor leadership without broad confirmation is vulnerable to fading next session."
     },
-    "read": "This is not yet a durable relief signal, but the catalyst is too unclear to call it definitively fragile. The absence of capitulation and broad cross-asset participation argues against fading fear aggressively.",
+    "read": "The catalyst has some fundamental substance, but it is too narrow to support durable cross-asset relief. With no capitulation and only two confirming legs, this looks more like a fragile bounce than a durable dip-buying signal.",
     "model": "deepseek-v4-pro",
-    "generated_at": "2026-10-06T06:07:47.947009+00:00",
+    "generated_at": "2026-10-06T11:31:40.636015+00:00",
     "degraded_reason": null,
     "disclaimer": "AI durability read \u2014 context only, never scored or sized. The snap detector is coincident; this is a fallible judgement on whether the relief is structural or a dead-cat, not a trade recommendation."
   }

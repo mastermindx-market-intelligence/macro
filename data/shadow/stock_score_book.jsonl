@@ -6992,3 +6992,4 @@
 {"date": "2026-10-05", "ticker": "WD", "score": 0.0, "percentile": 0.09124087591240876, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-05", "ticker": "MCD", "score": 0.0, "percentile": 0.09124087591240876, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-05", "ticker": "TEM", "score": 4.0, "percentile": 0.22262773722627738, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-05", "ticker": "FTI", "score": 9.0, "percentile": 0.3795620437956204, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
