@@ -1,0 +1,68 @@
+{
+  "schema": "research.cross_session_prospective_late_source_recovery.v1",
+  "generated_at": "2026-10-06T04:00:00Z",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "branch": "sol/geopolitical-relief-event-study-20260924",
+    "parent_head": "511bd6a3ff5f5c449e8e4bc5056df993ee8e6e49"
+  },
+  "protected_procedure": {
+    "master_pin": "d1594f3c7ae750db3f14b4eebf0de3460f84267a",
+    "index_blob": "4b0189a75d559d963365097485e8509a49c70e23"
+  },
+  "integrity_state": "SOURCE_ADMISSION_INCOMPLETE_AFTER_US_EXPOSURE",
+  "target_state": {
+    "hsi_outcomes_read": false,
+    "missing_event_us_returns_read": false,
+    "note": "The two recovered rows were found through a source-only Reuters sweep after the first 10-event U.S. measurement artifact had been opened. Their own U.S. returns and all HSI outcomes remain unread."
+  },
+  "consequence": {
+    "retain_in_prospective_source_log": true,
+    "evaluation_credit": "NO_CLEAN_PROSPECTIVE_CREDIT",
+    "clean_primary_eligible": false,
+    "pooled_n10_review_allowed": false,
+    "control_date_effect": "none — both recovered dates (Oct 3 and Oct 4) were already excluded by admitted events on those dates",
+    "repair_law": "Do not backfill these rows into the clean cohort or measure them to rescue the sample. Preserve as late-source discoveries and require future source-first accrual for additional evaluable observations."
+  },
+  "events": [
+    {
+      "event_id": "2026-10-03-zelenskiy-doubles-russian-refinery-strikes",
+      "available_at": "2026-10-03T16:02:00Z",
+      "event_time": "2026-10-03T16:02:00Z",
+      "event_class": "official_policy_or_operational_change",
+      "source_state": "SOURCE_RESOLVED",
+      "source_name": "Reuters / Ukrainian President Volodymyr Zelenskiy interview",
+      "source_ref": "https://es.marketscreener.com/noticias/ucrania-atacar-las-refiner-as-rusas-en-respuesta-a-la-nueva-doctrina-de-bombardeos-de-mosc-ce785ddbdd80f727",
+      "headline": "Ukraine will double down on strikes against Russian oil refineries in response to Moscow's new air-strike doctrine",
+      "clock_basis": "Earliest recovered Reuters/MarketScreener Spain publication 3 Oct 2026 18:02 CEST = 16:02Z.",
+      "admission_timing_state": "LATE_SOURCE_RECOVERY_AFTER_US_EXPOSURE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false,
+      "clean_primary_eligible": false,
+      "evaluation_eligible": false
+    },
+    {
+      "event_id": "2026-10-04-russia-announces-intensified-ukraine-strikes",
+      "available_at": "2026-10-04T11:10:00Z",
+      "event_time": "2026-10-04T11:10:00Z",
+      "event_class": "official_policy_or_operational_change",
+      "source_state": "SOURCE_RESOLVED",
+      "source_name": "Reuters / Russian Defence Ministry",
+      "source_ref": "https://uk.marketscreener.com/news/russia-to-intensify-strikes-on-ukraine-after-zelenskiy-interview-ce785ddbdc8cf22d",
+      "headline": "Russia says it will intensify strikes on Kyiv and other parts of Ukraine after Zelenskiy's refinery-strike pledge",
+      "clock_basis": "Reuters/MarketScreener UK published 4 Oct 2026 12:10 BST = 11:10Z.",
+      "admission_timing_state": "LATE_SOURCE_RECOVERY_AFTER_US_EXPOSURE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false,
+      "clean_primary_eligible": false,
+      "evaluation_eligible": false
+    }
+  ],
+  "bounded_oct6_source_sweep": {
+    "through": "2026-10-06T04:00:00Z",
+    "same_day_qualifying_event_identified": false,
+    "note": "Results surfaced Oct-5 continuation and commentary, but no new Oct-6 qualifying material event at this checkpoint. The Oct-6 source day remains open and uncertified."
+  }
+}
