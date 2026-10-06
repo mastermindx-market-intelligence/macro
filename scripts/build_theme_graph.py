@@ -108,8 +108,8 @@ def _relation_event_sources() -> tuple[Path, Path]:
 
 
 def _relation_action_owner_reader():
-    """Actual authenticated curator resolver remains an explicit integration gate."""
-    return None
+    """Chairman gate #5 (2026-10-06): the probation owner's own ledger is the sole action authority; read-only resolver, fails closed."""
+    return probation.RelationActionOwnerReader(_relation_event_sources()[0])
 
 
 def run(*, backfill: bool, force_backfill: bool,

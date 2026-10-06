@@ -18,9 +18,11 @@ auto-promotion path the queue exists to prevent.
 """
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import logging
+import re
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
@@ -338,6 +340,138 @@ def _require_relation_rights(row: dict) -> None:
     rights.rights_class("mastermind_curated")
     if rights.licensing_for_family("mastermind_curated")[0] is not True:
         raise RelationEventRefusal("curation internal use refused")
+
+
+_HEX64 = re.compile(r"^[a-f0-9]{64}$")
+
+
+class RelationActionOwnerReader:
+    """Narrow read-only resolver over the probation owner's own append-only relation-event ledger. Resolves an explicit ratified row by event_sha256; never writes; never infers."""
+
+    OWNER = "theme_graph.probation"
+    SCHEMA = "gmi.probation_owner_action_read/v1"
+
+    def __init__(self, ledger_path):
+        self._ledger_path = Path(ledger_path)
+
+    def _refusal(self, status: str, reason: str) -> dict:
+        return {"schema": self.SCHEMA, "owner": self.OWNER, "status": status,
+                "receipt_ref": None, "reason": reason}
+
+    def _parse_cutoff(self, knowledge_cutoff):
+        if knowledge_cutoff is None:
+            return None
+        try:
+            if isinstance(knowledge_cutoff, str):
+                return _relation_clock(knowledge_cutoff)
+            if isinstance(knowledge_cutoff, datetime):
+                if knowledge_cutoff.tzinfo is None:
+                    return None
+                return knowledge_cutoff.astimezone(timezone.utc)
+        except (RelationEventRefusal, ValueError, TypeError):
+            return None
+        return None
+
+    def _not_ratified(self, field: str) -> dict:
+        return self._refusal("UNAVAILABLE",
+                             f"relation action not ratified by the curator path: {field}")
+
+    def read_relation_action(self, *, event_sha256, knowledge_cutoff) -> dict:
+        if not isinstance(event_sha256, str) or not _HEX64.match(event_sha256):
+            return self._refusal("UNAVAILABLE", "malformed resolver request")
+        cutoff = self._parse_cutoff(knowledge_cutoff)
+        if cutoff is None:
+            return self._refusal("UNAVAILABLE", "malformed resolver request")
+
+        if not self._ledger_path.exists():
+            return self._refusal("UNAVAILABLE", "owner ledger absent")
+
+        matches: list[dict] = []
+        try:
+            lines = self._ledger_path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return self._refusal("UNAVAILABLE", "owner ledger absent")
+
+        for line in lines:
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                return self._refusal("STALE", "owner ledger line unreadable")
+            if not isinstance(row, dict):
+                return self._refusal("STALE", "owner ledger line unreadable")
+            if row.get("event_sha256") == event_sha256:
+                matches.append(row)
+
+        if not matches:
+            return self._refusal("UNAVAILABLE", "no accepted relation action for event")
+        if len(matches) > 1:
+            return self._refusal("STALE", "duplicate ledger rows for event")
+
+        row = matches[0]
+        if relation_event_digest(row) != event_sha256:
+            return self._refusal("STALE", "receipt digest mismatch")
+        if row.get("event_id") != "relation-event:" + event_sha256:
+            return self._refusal("STALE", "receipt identity mismatch")
+
+        if row.get("schema") != "gmi.probation_relation_event/v2":
+            return self._not_ratified("schema")
+        if row.get("status") != "ratified":
+            return self._not_ratified("status")
+        ratified_by = row.get("ratified_by")
+        if not isinstance(ratified_by, str) or not ratified_by.strip():
+            return self._not_ratified("ratified_by")
+        for clock_field in ("adjudicated_at", "known_at", "created_at"):
+            try:
+                _relation_clock(row[clock_field])
+            except (KeyError, RelationEventRefusal, TypeError):
+                return self._not_ratified(clock_field)
+        if row.get("action") not in {"RELATION_WITHDRAW", "DESTINATION_CHANGE"}:
+            return self._not_ratified("action")
+        caps = row.get("authority_caps")
+        if not isinstance(caps, dict):
+            return self._not_ratified("authority_caps")
+        for cap_key in ("may_rank", "may_size", "may_gate", "may_escalate"):
+            if caps.get(cap_key) is not False:
+                return self._not_ratified("authority_caps")
+        evidence_refs = row.get("evidence_refs")
+        if (not isinstance(evidence_refs, list) or not evidence_refs
+                or not all(isinstance(ref, str) and ref for ref in evidence_refs)):
+            return self._not_ratified("evidence_refs")
+
+        try:
+            created = _relation_clock(row["created_at"])
+            adjudicated = _relation_clock(row["adjudicated_at"])
+            known = _relation_clock(row["known_at"])
+        except (RelationEventRefusal, TypeError):
+            return self._not_ratified("clock")
+
+        if created > adjudicated or adjudicated > known:
+            return self._refusal("STALE", "receipt chronology violated")
+        if known > cutoff:
+            return self._refusal("UNAVAILABLE", "relation action not yet knowable at cutoff")
+
+        accepted = {
+            "schema": self.SCHEMA,
+            "owner": self.OWNER,
+            "status": "ACCEPTED",
+            "receipt_ref": "data/theme_graph/probation/relation_events.v2.jsonl#"
+            + row["event_id"],
+            "reason": None,
+            "event_sha256": event_sha256,
+            "action": row["action"],
+            "prior_relation": row["prior_relation"],
+            "new_destination": row.get("new_destination"),
+            "source_receipt": row["source_receipt"],
+            "ratified_by": row["ratified_by"],
+            "evidence_refs": list(row["evidence_refs"]),
+            "accepted_at": row["adjudicated_at"],
+            "known_at": row["known_at"],
+            "valid_from": row["adjudicated_at"],
+            "valid_to": None,
+        }
+        return copy.deepcopy(accepted)
 
 
 def _read_owner_action(reader, row: dict, *, emitted_at: str) -> dict:
