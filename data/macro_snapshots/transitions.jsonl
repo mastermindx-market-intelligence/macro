@@ -371,3 +371,8 @@
 {"asof": "2026-10-03", "domain": "us", "field": "us_liquidity_overlay", "from_value": "expanding", "to_value": "neutral", "macro_context_id": "4d03fb928ac59a27"}
 {"asof": "2026-10-03", "domain": "fx", "field": "fx_eurusd_action", "from_value": "FLAT", "to_value": "SHORT", "macro_context_id": "4d03fb928ac59a27"}
 {"asof": "2026-10-05", "domain": "fx", "field": "fx_eurusd_action", "from_value": "SHORT", "to_value": "FLAT", "macro_context_id": "f9ee4ffb0ddf8051"}
+{"asof": "2026-10-06", "domain": "us", "field": "us_liquidity_quality", "from_value": "neutral-hollow", "to_value": "contracting", "macro_context_id": "7c7ca424404f58e2"}
+{"asof": "2026-10-06", "domain": "us", "field": "us_liquidity_overlay", "from_value": "neutral", "to_value": "contracting", "macro_context_id": "7c7ca424404f58e2"}
+{"asof": "2026-10-06", "domain": "fx", "field": "usd_trend", "from_value": "mixed", "to_value": "up", "macro_context_id": "7c7ca424404f58e2"}
+{"asof": "2026-10-06", "domain": "fx", "field": "usd_regime", "from_value": "Global reflation", "to_value": "Risk-off haven bid", "macro_context_id": "7c7ca424404f58e2"}
+{"asof": "2026-10-06", "domain": "intl", "field": "intl_kr_quad", "from_value": "Q3", "to_value": "Q2", "macro_context_id": "7c7ca424404f58e2"}
