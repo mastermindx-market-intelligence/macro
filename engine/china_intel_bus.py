@@ -538,6 +538,16 @@ def _visit_discovery_snapshot(
     row_source_days = [
         _visit_source_day(r.get("source_published_at")) for r in deduped
     ]
+    # system_recorded_at is the owner/write clock. Any keyed persisted row whose
+    # observation clock is absent or malformed makes receipt coverage unknown:
+    # the latest successful health receipt cannot prove whether that row was
+    # already on tape. Keep the positive row, but fail closed for negative and
+    # baseline authority.
+    if any(
+        _visit_text(r.get("sec_code")) and observed is None
+        for r, observed in zip(deduped, row_observation_instants)
+    ):
+        clock_errors.append("row_observation_clock_invalid")
     if any(
         _visit_text(r.get("sec_code")) and source_day is None
         for r, source_day in zip(deduped, row_source_days)
@@ -692,6 +702,7 @@ def _visit_discovery_snapshot(
             else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
             else "ok_health_receipt_incomplete" if "ok_health_receipt_incomplete" in clock_errors
             else "row_source_clock_invalid" if "row_source_clock_invalid" in clock_errors
+            else "row_observation_clock_invalid" if "row_observation_clock_invalid" in clock_errors
             else "row_observation_before_source" if "row_observation_before_source" in clock_errors
             # Coverage/future/order defects are more fundamental than the
             # secondary invariant that successful attempt/success clocks match.
@@ -856,10 +867,12 @@ def _visit_discovery_snapshot(
             first_seen_state = "unknown_coverage_start"
         elif last_success_day is None:
             first_seen_state = "unknown_last_success_clock"
+        elif observation_clock_incomplete:
+            # Preserve the explicit observation-clock diagnosis even though the
+            # same defect now also invalidates global/baseline authority.
+            first_seen_state = "observation_clock_unavailable"
         elif not owner_clock_order_valid:
             first_seen_state = "unknown_owner_clock_order_invalid"
-        elif observation_clock_incomplete:
-            first_seen_state = "observation_clock_unavailable"
         elif first_observed_day is None:
             first_seen_state = "observation_clock_unavailable"
         elif coverage_day is None or first_observed_day < coverage_day:

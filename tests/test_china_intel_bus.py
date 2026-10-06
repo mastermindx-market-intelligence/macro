@@ -132,8 +132,13 @@ def test_visit_discovery_missing_earlier_observation_clock_cannot_claim_first_se
 
     assert snap["n_recent_companies"] == 1
     assert snap["n_first_observed_recent"] == 0
+    assert "row_observation_clock_invalid" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == "row_observation_clock_invalid"
+    assert snap["n_measured_baselines"] == 0
     row = snap["examples"][0]
     assert row["recent_count"] == 2
+    assert row["baseline_state"] == "blocked_owner_clock_order_invalid"
     assert row["first_seen_state"] == "observation_clock_unavailable"
     assert row["first_observed_system_day"] is None
     assert row["observation_clock_complete"] is False
@@ -159,7 +164,12 @@ def test_visit_discovery_malformed_full_observation_clock_cannot_claim_first_see
     )
     assert snap["n_recent_companies"] == 1
     assert snap["n_first_observed_recent"] == 0
+    assert "row_observation_clock_invalid" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == "row_observation_clock_invalid"
+    assert snap["n_measured_baselines"] == 0
     out = snap["examples"][0]
+    assert out["baseline_state"] == "blocked_owner_clock_order_invalid"
     assert out["first_seen_state"] == "observation_clock_unavailable"
     assert out["first_observed_system_day"] is None
     assert out["observation_clock_complete"] is False
