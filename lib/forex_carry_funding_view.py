@@ -76,10 +76,40 @@ def _latest_point(frame: object, family: str) -> dict[str, Any]:
             "source_family": family}
 
 
+def _direct_basis_owner_receipt(receipt: object) -> dict[str, Any]:
+    """Consume one owner-admitted direct USD x-ccy receipt without re-owning date policy."""
+    base = {
+        "status": "unavailable",
+        "reason": "not_collected",
+        "source_family": "direct_usd_xccy_basis",
+    }
+    if not isinstance(receipt, Mapping):
+        return base
+    if receipt.get("date_status") != "known":
+        return {**base, "reason": "owner_receipt_not_admitted"}
+    value = _finite(receipt.get("value_bps"))
+    source = receipt.get("source")
+    asof = receipt.get("asof")
+    if value is None or not isinstance(source, str) or not source.strip():
+        return {**base, "reason": "owner_receipt_invalid"}
+    if not isinstance(asof, str) or not asof.strip():
+        return {**base, "reason": "owner_receipt_invalid"}
+    return {
+        "status": "available",
+        "value_bp": value,
+        "unit": "basis_points",
+        "asof": asof,
+        "source": source.strip(),
+        "date_status": "known",
+        "source_family": "direct_usd_xccy_basis",
+    }
+
+
 def collect_funding_context(
     read_store: Callable[[str, str], object],
     intl_risk_artifact: object = None,
     regime_artifact: object = None,
+    direct_basis_receipt: object = None,
 ) -> dict[str, Any]:
     """Collect contextual funding evidence through existing published owners.
 
@@ -87,7 +117,9 @@ def collect_funding_context(
     from data/intl_risk/latest.json rather than recomputing contagion inside
     the Forex builder. A2/P2 and CP-bill come from the existing regime artifact.
     Artifact build/as-of dates are not promoted to vendor observation times.
-    No direct market-wide USD x-ccy basis source is implied by any proxy.
+    No direct market-wide USD x-ccy basis source is implied by any proxy. A direct
+    basis value is consumed only from a separately admitted owner receipt stamped
+    date_status="known"; this projection does not parse/admit that source itself.
     """
     try:
         ofr = _latest_point(read_store("ofr_fsi", "fsi"), "ofr_fsi")
@@ -168,10 +200,7 @@ def collect_funding_context(
         "sofr_iorb": corridor,
         "a2p2_spread": a2p2,
         "cp_bill_spread": cp_bill,
-        "direct_usd_xccy_basis": {
-            "status": "unavailable", "reason": "not_collected",
-            "source_family": "direct_usd_xccy_basis",
-        },
+        "direct_usd_xccy_basis": _direct_basis_owner_receipt(direct_basis_receipt),
     }
 
 
@@ -354,8 +383,30 @@ def _funding_view(funding: object) -> dict[str, Any]:
         "status": "unavailable", "reason": "not_collected",
         "family": "direct_usd_xccy_basis",
     }
-    if isinstance(direct, Mapping) and direct.get("status") == "unavailable":
-        direct_view["reason"] = direct.get("reason") or "not_collected"
+    if isinstance(direct, Mapping):
+        if direct.get("status") == "available":
+            value = _finite(direct.get("value_bp"))
+            source_name = direct.get("source")
+            asof = direct.get("asof")
+            owner_known = direct.get("date_status") == "known"
+            if (value is not None and owner_known and isinstance(source_name, str)
+                    and source_name.strip() and isinstance(asof, str) and asof.strip()):
+                direct_view = {
+                    "status": "available",
+                    "value_bp": value,
+                    "unit": "basis_points",
+                    "asof": asof,
+                    "source": source_name.strip(),
+                    "date_status": "known",
+                    "family": "direct_usd_xccy_basis",
+                }
+            else:
+                direct_view = {
+                    "status": "invalid", "reason": "owner_receipt_invalid",
+                    "family": "direct_usd_xccy_basis",
+                }
+        elif direct.get("status") == "unavailable":
+            direct_view["reason"] = direct.get("reason") or "not_collected"
 
     observed = sum(x["status"] == "available" for x in (ofr, off, corridor, a2p2, cp_bill))
     return {
@@ -371,19 +422,22 @@ def _funding_view(funding: object) -> dict[str, Any]:
 
 def project_carry_funding(pairs: object, regime: object, funding: object) -> dict[str, Any]:
     """Project existing evidence without creating a new carry/funding diagnosis."""
+    funding_view = _funding_view(funding)
+    limitations = [
+        "no_composite_score",
+        "canonical_carry_unwind_state_not_recomputed",
+        "pair_source_freshness_unknown",
+        "ofr_total_and_funding_are_related_not_independent_votes",
+        "funding_proxies_do_not_prove_direct_fx_swap_basis_normal",
+    ]
+    if funding_view["direct_usd_xccy_basis"]["status"] != "available":
+        limitations.append("direct_usd_cross_currency_basis_unavailable")
     return {
         "version": 1,
         "display_only": True,
         "semantics": "evidence_projection_not_trade_or_forecast",
         "rate_edges": _pair_rows(pairs),
         "carry_unwind": _carry_unwind(regime),
-        "funding": _funding_view(funding),
-        "limitations": [
-            "no_composite_score",
-            "canonical_carry_unwind_state_not_recomputed",
-            "pair_source_freshness_unknown",
-            "ofr_total_and_funding_are_related_not_independent_votes",
-            "funding_proxies_do_not_prove_direct_fx_swap_basis_normal",
-            "direct_usd_cross_currency_basis_unavailable",
-        ],
+        "funding": funding_view,
+        "limitations": limitations,
     }
