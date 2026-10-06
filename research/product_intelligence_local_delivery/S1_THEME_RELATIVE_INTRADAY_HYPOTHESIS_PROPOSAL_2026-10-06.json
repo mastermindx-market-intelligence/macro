@@ -1,20 +1,20 @@
 {
   "schema": "mastermind.s1_hypothesis_proposal.v1",
-  "main_pin": "77fc9b1c447ab8432284f5a6023dc4558f0d534a",
+  "main_pin": "8280428333f6a8ff9dbc99a39886eadeabc09df7",
   "hypothesis": {
-    "value": "Mean across matured sessions of cross-sectional Spearman correlations between pre-decision (first full RTH bar through 11:00 ET) and same-session forward (K=5 hourly RTH bars ending by 16:00 ET) theme-relative trailing-beta residuals; support when 95% two-sided t-interval on session correlations excludes 0; rejection when that interval lies entirely in [-0.05,0.05]; inconclusive otherwise or before maturity",
+    "value": "Each hourly bar is defined by its start time in America/New_York (ZoneInfo; RTH anchors per engine/prophet_entry_policy.py:58). Vendor aggregate field t is the window start (ASSUMED vendor documentation until the S2 interval/alignment audit confirms; collector indexes ts from t at scripts/build_polygon_intraday.py:271). Full-RTH bars are those starting 10:00, 11:00, 12:00, 13:00, 14:00, and 15:00 ET. Exclude the bar starting 09:00 ET (contains 09:00-09:30 extended hours). Exclude every bar starting before 09:00 ET or at/after 16:00 ET. Pre-decision window: the single bar starting 10:00 ET (ends 11:00 ET, the decision time). Forward window: K=5 bars starting 11:00 ET, 12:00 ET, 13:00 ET, 14:00 ET, and 15:00 ET (last ends 16:00 ET). Mean across matured sessions of cross-sectional Spearman correlations between pre-decision and forward-window theme-relative trailing-beta residuals; support when 95% two-sided t-interval on session correlations excludes 0; rejection when that interval lies entirely in [-0.10,0.10]; inconclusive otherwise or before maturity",
     "basis_label": "STATED",
     "basis": "Package S theme-relative intraday descriptive strength with testable session-level statistic and interval rules fixed at proposal time"
   },
   "decision_time": {
-    "value": "11:00 America/New_York bar-end decision clock; K=5 forward hourly RTH bars with ends <=16:00 ET same session (11:00+5h<=16:00)",
+    "value": "Each hourly bar is defined by its start time in America/New_York (ZoneInfo; RTH anchors per engine/prophet_entry_policy.py:58). Vendor aggregate field t is the window start (ASSUMED vendor documentation until the S2 interval/alignment audit confirms; collector indexes ts from t at scripts/build_polygon_intraday.py:271). Full-RTH bars are those starting 10:00, 11:00, 12:00, 13:00, 14:00, and 15:00 ET. Exclude the bar starting 09:00 ET (contains 09:00-09:30 extended hours). Exclude every bar starting before 09:00 ET or at/after 16:00 ET. Pre-decision window: the single bar starting 10:00 ET (ends 11:00 ET, the decision time). Forward window: K=5 bars starting 11:00 ET, 12:00 ET, 13:00 ET, 14:00 ET, and 15:00 ET (last ends 16:00 ET).",
     "basis_label": "ASSUMED",
-    "basis": "Wall-clock and K frozen before any S1 data examination; arithmetic ties forward window to regular close"
+    "basis": "Wall-clock and bar-start convention frozen before any S1 data examination; K=5 is derived (PHYSICS) from decision time and 16:00 close"
   },
   "sessions": {
-    "value": "US RTH 09:30-16:00 America/New_York; exclude early-close dates per engine/prophet_entry_policy.py:58-66; exclude session years outside _SUPPORTED_SESSION_YEARS until policy owner extends",
+    "value": "US RTH 09:30-16:00 America/New_York; exclude early-close dates per engine/prophet_entry_policy.py:58-66; exclude session years outside _SUPPORTED_SESSION_YEARS until policy owner extends _SUPPORTED_SESSION_YEARS and _EARLY_CLOSE_DATES (engine/prophet_entry_policy.py:63-65); maturity n=120 requires that extension (S2 prerequisite); ~58 valid 2026 sessions after 2026-10-07 acceptance",
     "basis_label": "INHERITED",
-    "basis": "engine/prophet_entry_policy.py:58-66 and explicit 2026-only supported-year frozenset at line 62"
+    "basis": "engine/prophet_entry_policy.py:58-66 and explicit 2026-only supported-year frozenset at line 62; calendar arithmetic ASSUMED without data read"
   },
   "estimation": {
     "value": "63 completed daily RTH sessions strictly before decision session for OLS beta vs theme benchmark; beta applied to hourly residuals; vol from same daily pre-decision window",
@@ -32,9 +32,9 @@
     "basis": "Self-inclusion at weight 1/N mechanically correlates residual with own return"
   },
   "stale_zero_rule": {
-    "value": "Omit missing or zero-volume cells; omit zero-return positive-volume cells; exclude session after repeated identical closes across three or more consecutive positive-volume bars; corrupt parquet absent",
+    "value": "Constituent-session scope only. Rules may use data at or before the decision time (bars starting before 11:00 ET and trailing daily data) or presence/volume of forward-window bars; never forward-window return or close values. Missing bar or zero volume omits constituent cell; zero return with positive volume in forward window is legitimate. Repeated identical closes on three or more consecutive positive-volume pre-decision bars omits that constituent for that session. Corrupt parquet absent per scripts/build_polygon_intraday.py:171-185. Omitted constituent cells count against 80% coverage",
     "basis_label": "INHERITED",
-    "basis": "scripts/build_polygon_intraday.py:171-185 tolerant read plus ASSUMED stale-print and zero-return guards"
+    "basis": "scripts/build_polygon_intraday.py:171-185 tolerant read; stale-print guard on pre-decision data only; no outcome-conditioned exclusions"
   },
   "halts_corporate_actions": {
     "value": "Split-adjusted hourly OHLCV (adjusted=true); dividend policy vendor-defined inside adjusted aggregates (S2 audit); same-session window excludes overnight ex-date jumps",
@@ -68,14 +68,14 @@
       "basis": "Package S prospective registration on untouched future formation dates"
     },
     "maturity_rule": {
-      "value": "120 valid decision sessions after session-validity exclusions",
+      "value": "n=120 valid decision sessions after session-validity exclusions; requires _SUPPORTED_SESSION_YEARS and _EARLY_CLOSE_DATES extension beyond 2026 (S2 prerequisite); sigma=0.25 ASSUMED; SE=0.0228; h=0.045 with t(0.975,119); h<=delta/2; earliest ASSUMED maturity July 2027 or 2028 if extension delayed",
       "basis_label": "ASSUMED",
-      "basis": "Pre-declared n=120 with ASSUMED per-session sigma for interval precision; no outcome tuning"
+      "basis": "Frozen n=120 delta=0.10 with h=t(0.975,n-1)*sigma/sqrt(n)<=delta/2 target P(reject|mean 0)≈0.95; 2027 policy extension required; no outcome tuning"
     },
     "rejection_rule": {
-      "value": "After maturity, 95% two-sided t-interval on per-session Spearman mean lies entirely within [-0.05,0.05]",
+      "value": "After maturity, 95% two-sided t-interval on per-session Spearman mean lies entirely within [-0.10,0.10]; delta=0.10; h=0.045; P(reject|true mean 0)≈0.95 at sigma=0.25 n=120",
       "basis_label": "ASSUMED",
-      "basis": "Equivalence band delta=0.05 chosen a priori as negligible rank association"
+      "basis": "Equivalence band delta=0.10 below minimum effect of interest (ASSUMED); P(reject|0)=2Phi((delta-h)/SE)-1 with SE=sigma/sqrt(n)"
     },
     "inconclusive_rule": {
       "value": "Interval neither supports nor rejects per band rules, or maturity not met",
