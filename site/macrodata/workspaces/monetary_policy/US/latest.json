@@ -134,7 +134,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-10-02",
+        "source_asof": "2026-10-05",
         "status": "PRESENT"
       },
       {
@@ -174,15 +174,15 @@
         "prior_value": 82.0
       },
       {
-        "current_value": 0.45,
-        "delta": 0.0,
+        "current_value": 0.47,
+        "delta": 0.02,
         "metric_id": "curve_2s10s",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 0.45
       },
       {
-        "current_value": -9.0,
-        "delta": 0.0,
+        "current_value": -10.0,
+        "delta": -1.0,
         "metric_id": "dots_vs_market_gap_bp",
         "note": "same method version; numeric comparison permitted",
         "prior_value": -9.0
@@ -195,10 +195,13 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "monetary_policy-US-32d953581f8d2522"
+    "changed_fingerprints": [
+      "curve_2s10s:curve_2s10s:748fe262f5f0087f",
+      "dots_vs_market_gap_bp:dots_vs_market_gap_bp:cc3f9d95c54f4743"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "monetary_policy-US-103bbaa3a1e3c687"
   },
   "drivers": {
     "balance_sheet": [
@@ -277,7 +280,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "dots_vs_market_gap_bp",
-        "impact_magnitude": 9.0,
+        "impact_magnitude": 10.0,
         "impact_sign": -1,
         "label": {
           "en": "Dots vs market gap",
@@ -286,12 +289,12 @@
         "note": "positive = market prices a higher rate than the FOMC SEP median dot",
         "owner_field": "board.rate_path_row.gap.gap_bp",
         "unit": "bp",
-        "value": -9.0
+        "value": -10.0
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "curve_2s10s",
-        "impact_magnitude": 0.45,
+        "impact_magnitude": 0.47,
         "impact_sign": 1,
         "label": {
           "en": "2s10s curve",
@@ -300,12 +303,12 @@
         "note": "positive = normal (upward-sloping) curve; near/below zero = flat-to-inverted",
         "owner_field": "state.rates.curve_2s10s",
         "unit": "pct_pts",
-        "value": 0.45
+        "value": 0.47
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "real_10y",
-        "impact_magnitude": 2.88,
+        "impact_magnitude": 2.92,
         "impact_sign": 1,
         "label": {
           "en": "Real 10y yield",
@@ -314,16 +317,16 @@
         "note": "higher = more restrictive real financing cost",
         "owner_field": "state.rates.real_10y",
         "unit": "percent",
-        "value": 2.88
+        "value": 2.92
       }
     ]
   },
   "generation": {
-    "built_at": "2026-10-05T05:51:24Z",
+    "built_at": "2026-10-06T06:04:23Z",
     "calculation_as_of": "2026-10-02",
-    "code_version": "c6ae3233359296c85c06dae9c80ae97d6546a548",
-    "content_sha256": "103bbaa3a1e3c687aeb270eba530578f4c0091100a1c232bb0aba7534a13b618",
-    "generation_id": "monetary_policy-US-103bbaa3a1e3c687",
+    "code_version": "7db649d66e54835ad3dc1b324725251489128215",
+    "content_sha256": "20f7d860054a06f9bf45fef5c69a7e10aff48f4ef0a46a37e9ebf6662425cb65",
+    "generation_id": "monetary_policy-US-20f7d860054a06f9",
     "producer": "engine.market_os.macro_workspaces.monetary_policy",
     "rendered_at": null
   },
@@ -445,8 +448,8 @@
         "horizon": "months",
         "implication_id": "dots_vs_market_read",
         "text": {
-          "en": "At end-2026 the market implies 4.01% vs the Fed's 4.1% median dot (-9bp - market ≈ the Fed). This is a market PRICE (futures-implied), not a Fed forecast or stated intent.",
-          "zh": "在end-2026，市场隐含4.01%，对比美联储4.1%的中位点（-9个基点 — 市场与美联储基本一致）。这是市场价格（期货隐含），并非美联储预测或既定意图。"
+          "en": "At end-2026 the market implies 4.0% vs the Fed's 4.1% median dot (-10bp - market ≈ the Fed). This is a market PRICE (futures-implied), not a Fed forecast or stated intent.",
+          "zh": "在end-2026，市场隐含4.0%，对比美联储4.1%的中位点（-10个基点 — 市场与美联储基本一致）。这是市场价格（期货隐含），并非美联储预测或既定意图。"
         },
         "trace_ref": "data/rates_command/latest.json#board.rate_path_row.gap"
       }
@@ -679,7 +682,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.37,
+        "value": 4.36,
         "value_type": "percent"
       },
       {
@@ -787,7 +790,7 @@
           "value": null
         },
         "unit": "bp",
-        "value": -9.0,
+        "value": -10.0,
         "value_type": "basis_points"
       },
       {
@@ -830,7 +833,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-02",
+        "calculation_as_of": "2026-10-05",
         "collected_at": null,
         "coverage": null,
         "definition_id": "state.rates.nominal_10y",
@@ -841,10 +844,10 @@
         "metric_id": "nominal_10y",
         "model_version": "monetary_policy.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-02",
+        "observed_at": "2026-10-05",
         "owner_ref": "engine.rate_inflation_transmission",
         "reference_id": "mastermind.market_reference/v1#nominal_10y",
-        "reference_period": "2026-10-02",
+        "reference_period": "2026-10-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -859,14 +862,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 5.24,
+        "value": 5.28,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "tips_implied_real_yield",
-        "calculation_as_of": "2026-10-02",
+        "calculation_as_of": "2026-10-05",
         "collected_at": null,
         "coverage": null,
         "definition_id": "state.rates.real_10y",
@@ -877,10 +880,10 @@
         "metric_id": "real_10y",
         "model_version": "monetary_policy.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-02",
+        "observed_at": "2026-10-05",
         "owner_ref": "engine.rate_inflation_transmission",
         "reference_id": "mastermind.market_reference/v1#real_10y",
-        "reference_period": "2026-10-02",
+        "reference_period": "2026-10-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -895,14 +898,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 2.88,
+        "value": 2.92,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-02",
+        "calculation_as_of": "2026-10-05",
         "collected_at": null,
         "coverage": null,
         "definition_id": "state.rates.curve_2s10s",
@@ -913,10 +916,10 @@
         "metric_id": "curve_2s10s",
         "model_version": "monetary_policy.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-02",
+        "observed_at": "2026-10-05",
         "owner_ref": "engine.rate_inflation_transmission",
         "reference_id": "mastermind.market_reference/v1#curve_2s10s",
-        "reference_period": "2026-10-02",
+        "reference_period": "2026-10-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -931,14 +934,14 @@
           "value": null
         },
         "unit": "pct_pts",
-        "value": 0.45,
+        "value": 0.47,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "tips_breakeven_inflation_expectation",
-        "calculation_as_of": "2026-10-02",
+        "calculation_as_of": "2026-10-05",
         "collected_at": null,
         "coverage": null,
         "definition_id": "state.expectations.breakeven_10y",
@@ -949,10 +952,10 @@
         "metric_id": "breakeven_10y",
         "model_version": "monetary_policy.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-02",
+        "observed_at": "2026-10-05",
         "owner_ref": "engine.rate_inflation_transmission",
         "reference_id": "mastermind.market_reference/v1#breakeven_10y",
-        "reference_period": "2026-10-02",
+        "reference_period": "2026-10-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1219,7 +1222,7 @@
           "value": null
         },
         "unit": "days",
-        "value": 24.0,
+        "value": 23.0,
         "value_type": "count"
       },
       {
@@ -1255,7 +1258,7 @@
           "value": null
         },
         "unit": "days",
-        "value": 25.0,
+        "value": 24.0,
         "value_type": "count"
       },
       {
@@ -1291,7 +1294,7 @@
           "value": null
         },
         "unit": "days",
-        "value": 26.0,
+        "value": 25.0,
         "value_type": "count"
       }
     ]
@@ -2383,7 +2386,7 @@
         },
         "owner_ref": "engine.rate_inflation_transmission",
         "provider": "FRED (DGS10/DFII10)",
-        "reference_period": "2026-10-02",
+        "reference_period": "2026-10-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
