@@ -373,6 +373,11 @@
       <span class="asof"><span class="l-en">daily · as of</span><span class="l-zh">日度 · 截至</span> 2026-09-30</span>
     </div>
     
+    <div class="fv-hero-notice">
+      <span class="l-en">⚠ Cross-border data behind — see sources</span>
+      <span class="l-zh">⚠ 跨境数据滞后——见数据来源</span>
+    </div>
+    
     
     
       
@@ -430,20 +435,20 @@
         <span class="s-state"><span class="l-en">current</span><span class="l-zh">最新</span></span>
       </div>
       
-      <div class="fv-src fv-src--behind"
-           data-tip-en="Official Stock-Connect southbound aggregate net flow — Eastmoney RPT_MUTUAL_DEAL_HISTORY, whole-channel tape. one session behind its own calendar" data-tip-zh="沪深港通南向整体净流入——东方财富 RPT_MUTUAL_DEAL_HISTORY，整条通道口径。 落后自身日历一个交易日" role="button" tabindex="0"
+      <div class="fv-src fv-src--stale"
+           data-tip-en="Official Stock-Connect southbound aggregate net flow — Eastmoney RPT_MUTUAL_DEAL_HISTORY, whole-channel tape. multiple sessions behind its own calendar" data-tip-zh="沪深港通南向整体净流入——东方财富 RPT_MUTUAL_DEAL_HISTORY，整条通道口径。 落后自身日历多个交易日" role="button" tabindex="0"
            data-ev="trust_open" data-ev-id="sb_aggregate">
         <span class="s-name"><span class="l-en">Southbound aggregate</span><span class="l-zh">南向整体</span></span>
         <span class="s-meta tnum">2026-09-30 · 1</span>
-        <span class="s-state"><span class="l-en">behind — showing 2026-09-30 data</span><span class="l-zh">滞后 · 显示2026-09-30数据</span></span>
+        <span class="s-state"><span class="l-en">stale — showing 2026-09-30</span><span class="l-zh">已过期 · 显示2026-09-30数据</span></span>
       </div>
       
-      <div class="fv-src fv-src--expected_lag"
-           data-tip-en="Mainland southbound per-name holdings — Eastmoney RPT_MUTUAL_STOCK_HOLDRANKS, expected one HK session behind. expected — this leg normally lags one session by design" data-tip-zh="内地南向个股持仓——东方财富 RPT_MUTUAL_STOCK_HOLDRANKS，预期滞后一个港股交易日。 预期滞后——该数据源按设计正常滞后一个交易日" role="button" tabindex="0"
+      <div class="fv-src fv-src--behind"
+           data-tip-en="Mainland southbound per-name holdings — Eastmoney RPT_MUTUAL_STOCK_HOLDRANKS, expected one HK session behind. behind its own T−1 cadence" data-tip-zh="内地南向个股持仓——东方财富 RPT_MUTUAL_STOCK_HOLDRANKS，预期滞后一个港股交易日。 落后于其自身T−1节奏" role="button" tabindex="0"
            data-ev="trust_open" data-ev-id="hk_sb_holdings">
         <span class="s-name"><span class="l-en">HK southbound holdings</span><span class="l-zh">南向持仓</span></span>
         <span class="s-meta tnum">2026-09-30 · 501 (425 sized)</span>
-        <span class="s-state"><span class="l-en">expected T−1</span><span class="l-zh">预期T−1</span></span>
+        <span class="s-state"><span class="l-en">behind — showing 2026-09-30 data</span><span class="l-zh">滞后 · 显示2026-09-30数据</span></span>
       </div>
       
       <div class="fv-src fv-src--historical"
@@ -458,7 +463,7 @@
            data-tip-en="Dragon-Tiger institutional-seat net flow on recent event-selected names — an anonymous, event-selected sample, never a market-wide census. event-window sample — a quiet stretch is normal" data-tip-zh="近期事件筛选个股的龙虎榜机构专用席位净额——匿名、事件样本，非市场普查。 事件窗口样本——平静期属正常现象" role="button" tabindex="0"
            data-ev="trust_open" data-ev-id="lhb_inst_seats">
         <span class="s-name"><span class="l-en">Dragon-Tiger institutional seats</span><span class="l-zh">龙虎榜机构专用</span></span>
-        <span class="s-meta tnum">2026-10-04 · 104</span>
+        <span class="s-meta tnum">2026-10-05 · 104</span>
         <span class="s-state"><span class="l-en">current</span><span class="l-zh">最新</span></span>
       </div>
       
@@ -565,7 +570,7 @@
         
       </ul>
       
-      <details class="fv-disc" data-ev="changed_expand"><summary><span class="l-en">all 19 changes</span><span class="l-zh">全部 19 项变化</span></summary>
+      <details class="fv-disc" data-ev="changed_expand"><summary><span class="l-en">all 20 changes</span><span class="l-zh">全部 20 项变化</span></summary>
         <ul class="fv-chg-list">
           
           
@@ -673,6 +678,17 @@
 
 <li class="fv-chg-row">
   <b><span class="l-en">Southbound aggregate</span><span class="l-zh">南向整体</span></b>
+  
+  
+  <span class="l-en">: current → stale</span><span class="l-zh">：最新 → 已过期</span>
+</li>
+
+          
+          
+
+
+<li class="fv-chg-row">
+  <b><span class="l-en">HK southbound holdings</span><span class="l-zh">南向持仓</span></b>
   
   
   <span class="l-en">: current → behind</span><span class="l-zh">：最新 → 滞后</span>
@@ -9687,9 +9703,15 @@
 
 
   
+  
 
 
 
+
+<div class="fv-watermark">
+  <span class="l-en">Showing last good data from 2026-09-30 — source behind.</span>
+  <span class="l-zh">显示2026-09-30最近有效数据 — 数据源滞后。</span>
+</div>
 
     
     <div class="vgrid">
@@ -9741,7 +9763,7 @@
     <b><span class="l-en">Method</span><span class="l-zh">方法</span>:</b>
     <span class="qm" data-tip-en="themes threshold recalibrated Sep 2026 — 0.75σ; names & Southbound unchanged at 0.5σ" data-tip-zh="主题阈值于2026年9月重校准——0.75σ；个股与南向维持0.5σ" role="button" tabindex="0">?</span>
     <span class="l-en">Velocity = slope_z of cumulative net-flow (drift ÷ its own volatility); acceleration = the trailing slope of that velocity. A sector’s velocity is the equal-weight mean of its members’. Breadth = the share of groups drawing net inflow. Confluence is a render-time agree/diverge class joining 主力 velocity to the institutional-seat direction on the same ticker — nothing numeric is manufactured. Causal, point-in-time, descriptive context — not investment advice.</span><span class="l-zh">流速＝累计净流向的 slope_z（漂移÷自身波动）；加速度＝该流速的滚动斜率。板块流速＝成分股等权均值。广度＝净流入板块的占比。共振为渲染期一致/背离类别，将主力流速与同一代码的机构席位方向相连——不制造任何分值。因果、时点对齐、描述性背景，非投资建议。</span>
-    · <span class="l-en">Built</span><span class="l-zh">构建于</span> 2026-10-04 13:11 UTC
+    · <span class="l-en">Built</span><span class="l-zh">构建于</span> 2026-10-05 14:54 UTC
   </div>
 </div>
 <script>
@@ -10062,5 +10084,4 @@
 })();
 </script>
 <script src="theme.js?v=405fef2c" defer></script>
-<script defer data-whb data-root="" src="wh_banner.js?v=b1207f44"></script>
 </body></html>
