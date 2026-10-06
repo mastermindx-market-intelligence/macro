@@ -15334,7 +15334,7 @@ jobs:
     # one venv; execute_pack sorts by install string, so this costs one extra venv.
     if: ${{ false }}
     gate: code
-    timeout-minutes: 5
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15342,9 +15342,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
-        run: python -m pytest tests/test_brain_gateway.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
+        run: python -m pytest tests/test_brain_gateway.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
         run: >-
           python -m pytest
@@ -15359,6 +15359,11 @@ jobs:
           tests/test_intelligence_workspace_workspace_layout.py -q
       - name: source-bound report evidence — Brain projection + CI owner law
         run: python -m pytest tests/test_brain_research_evidence.py tests/test_mastermind_ai_evidence_ci_ownership.py -q
+
+      - name: install Brain browser
+        run: python -m playwright install --with-deps chromium
+      - name: Brain history, principal isolation and narrow-screen controls
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py -q
 
   unrun-macro-panels:
     # commodities / forex / rates / news / policy panels and their calibration guards.
