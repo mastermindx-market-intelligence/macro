@@ -59,7 +59,7 @@
   "costs": {
     "value": "8 basis points per assumed round-trip for optional display-tier tradability sensitivity",
     "basis_label": "INHERITED",
-    "basis": "engine/signal_foundry/harness.py:9-14 house documentation band for cost-aware backtests"
+    "basis": "engine/signal_foundry/harness.py:14 documents 8 bps vs declared baseline for optional sensitivity tables"
   },
   "registration": {
     "start_rule": {
