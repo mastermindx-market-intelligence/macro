@@ -575,8 +575,8 @@ def _verdict(s: dict) -> tuple[str, str]:
 
 
 def _drivers_for(s: dict) -> dict:
-    """The explicit cross-asset hand-off: what bonds imply for each other dashboard.
-    This is the bond layer's contribution to the holistic AI synthesis."""
+    """The explicit cross-asset hand-off: descriptive bond-side context for other dashboards.
+    It preserves associations and mechanisms without claiming a directed causal lead."""
     c = s["pillars"]["curve"]
     ri = s["pillars"]["real_inflation"]
     cr = s["pillars"]["credit"]
@@ -601,7 +601,7 @@ def _drivers_for(s: dict) -> dict:
         },
         "equities": {
             "note_en": "Discount-rate channel (real-10y, term premium) compresses long-duration multiples; "
-                       "credit (HY OAS) is the canary that leads equity drawdowns; the SPEED of yield moves "
+                       "HY OAS widening is associated with equity drawdowns in stress episodes; this snapshot does not establish a lead; the SPEED of yield moves "
                        "(MOVE) matters more than the level.",
             "hy_oas": cr.get("hy_oas"), "credit_canary": cr.get("direction") == "widening",
             "stock_bond_corr": s["pillars"]["cross_asset"].get("stock_bond_corr"),
