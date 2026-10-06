@@ -538,32 +538,48 @@ def _visit_discovery_snapshot(
     # different nonblank company identities. Such a conflict is not a second
     # event and neither assignment may erase the other; surface it as unresolved
     # raw evidence and remove all negative-history authority.
-    identity_by_announcement: dict[str, set[tuple[str, str]]] = {}
+    identity_by_announcement: dict[str, set[str]] = {}
+    source_routes_by_announcement: dict[str, dict[str, set[str]]] = {}
     for row in raw_rows:
         aid = _visit_text(row.get("announcement_id"))
         code = _visit_text(row.get("sec_code"))
         if not aid or not code:
             continue
+        identity_by_announcement.setdefault(aid, set()).add(code)
         exchange = _visit_text(row.get("exchange")).lower()
-        identity_by_announcement.setdefault(aid, set()).add((exchange, code))
+        if exchange:
+            source_routes_by_announcement.setdefault(aid, {}).setdefault(
+                code, set()
+            ).add(exchange)
+
+    # exchange on the CNInfo filing tape is collection/source routing, not a
+    # listing-venue identity authority: the live 2026-10-06 tape legitimately
+    # contains Shanghai and Beijing codes under the szse route. Company
+    # contradiction therefore means distinct nonblank sec_code assignments for
+    # one source event; differing source routes for the SAME code are provenance.
     identity_conflicts = {
-        aid: sorted(identities)
-        for aid, identities in identity_by_announcement.items()
-        if len(identities) > 1
+        aid: sorted(codes)
+        for aid, codes in identity_by_announcement.items()
+        if len(codes) > 1
     }
     identity_conflict_evidence = [
         {
             "announcement_id": aid,
             "observed_identities": [
-                {"exchange": exchange or None, "sec_code": code}
-                for exchange, code in identities
+                {
+                    "sec_code": code,
+                    "source_routes": sorted(
+                        source_routes_by_announcement.get(aid, {}).get(code, set())
+                    ),
+                }
+                for code in codes
             ],
             "coverage_state": "unknown_company_identity_conflict",
             "company_identity_state": "conflicting_duplicate_natural_key",
             "may_rank": False,
             "may_trade": False,
         }
-        for aid, identities in sorted(identity_conflicts.items())[:8]
+        for aid, codes in sorted(identity_conflicts.items())[:8]
     ]
 
     # Positive rows may be written before the owner health receipt is updated.

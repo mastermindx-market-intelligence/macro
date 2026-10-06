@@ -337,8 +337,8 @@ def test_visit_discovery_conflicting_duplicate_company_identity_fails_closed():
     assert conflict["announcement_id"] == "A-conflicting-company"
     assert conflict["company_identity_state"] ==         "conflicting_duplicate_natural_key"
     assert conflict["observed_identities"] == [
-        {"exchange": "ss", "sec_code": "600000"},
-        {"exchange": "sz", "sec_code": "000033"},
+        {"sec_code": "000033", "source_routes": ["sz"]},
+        {"sec_code": "600000", "source_routes": ["ss"]},
     ]
     assert snap["global_negative_authority"] is False
     assert snap["global_negative_authority_blocker"] ==         "visit_company_identity_conflict"
@@ -346,6 +346,35 @@ def test_visit_discovery_conflicting_duplicate_company_identity_fails_closed():
     assert snap["n_first_observed_recent"] == 0
     assert snap["examples"][0]["baseline_state"] ==         "blocked_conflicting_company_identity"
     assert snap["examples"][0]["first_seen_state"] ==         "unknown_conflicting_company_identity"
+
+
+def test_visit_discovery_same_company_under_two_source_routes_is_not_identity_conflict():
+    first = _visit_row(
+        "A-route-only", "600519", "2026-10-02T09:00:00+08:00",
+        recorded="2026-10-02T02:00:00+00:00",
+        exchange="sse",
+    )
+    mirrored = dict(first)
+    mirrored["exchange"] = "szse"
+
+    snap = bus._visit_discovery_snapshot(
+        [first, mirrored],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    assert snap["n_rows_observed"] == 1
+    assert snap["n_identity_conflict_announcements"] == 0
+    assert snap["identity_conflict_evidence"] == []
+    assert snap["global_negative_authority"] is True
 
 
 def test_visit_discovery_unscoped_duplicate_blocks_authority_before_dedup():
