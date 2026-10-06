@@ -128,7 +128,7 @@ waves:
         75/effect_unknown only after an attempted modifying launchctl verb; Sol APPROVE 5412288374)
         together with #1250 Control-UID pre-arm quiescence (master 877b1e7f); installed generation
         5b244a2b is now behind master on ops/executive_os, so the host owner's install/qualify of a
-        generation at or after 877b1e7f is owed before activation. UPDATE 2026-10-06: master moved to d8c302b8 (#1225 OS consumer, accepts V3 1.4.0/1.5.0; merged 05:39Z) and 7c12c394 (#1251 V3 1.5.0 reconcile_ceo_request; merged ~06:34Z after the one-file server.py union predicted by the seat pre-check #1251 issuecomment-6009775212), so installed 5b244a2b is now also behind on the MCP entry/server; the owed install is a generation at or after 7c12c394 or the #1219 merge SHA. STILL BLOCKED at the HUMAN
+        generation at or after 877b1e7f is owed before activation. UPDATE 2026-10-06: master moved to d8c302b8 (#1225 OS consumer, accepts V3 1.4.0/1.5.0; merged 05:39Z) and 7c12c394 (#1251 V3 1.5.0 reconcile_ceo_request; merged ~06:34Z after the one-file server.py union predicted by the seat pre-check #1251 issuecomment-6009775212), so installed 5b244a2b is now also behind on the MCP entry/server; the owed install is a generation at or after 7c12c394 or the #1219 merge SHA. UPDATE 2026-10-06 23:30Z: #1219 MERGED 22:46:47Z as 760f51b5 (MastermindX1 exact-head APPROVE 5435142290 citing C3 issuecomment-6025565788); protected master 2d590c51 (#1071). A Chairman-assigned release/install owner (Mastermind #1143 issuecomment-6027192883) holds the install until the open #1220 findings close (#1220 issuecomment-6027163987); packet-01 structural preflight at 2d590c51 PASS with two human controls pending (cutover authorization; device-auth revalidation deadline 30-60 min ahead, issuecomment-6027198246); packet 04 source-qualified, live pilot held (installed 5b244a2b / 1.4.0, client 7 tools, worker LaunchDaemon absent, issuecomment-6027202762); packet 02 held until the 1.5.0 / 12-tool proof (issuecomment-6026742046, -6026773008); Python runtime seal repaired without reprovisioning (issuecomment-6026597374). STILL BLOCKED at the HUMAN
         Slack-admin ceremony (Sol fresh read 2026-10-05T09:16Z: no Mastermind Relay bot,
         #agent-dispatch 17 members without it, M2 agent-relay token/json/plist absent, launchd relay
         absent 113): app A0BUDHZ137A carries an inactive connections:write app-level token and no
@@ -156,10 +156,10 @@ waves:
       source review) → repair or null → aggregate.
 next_action: >
   Integrator on the XH chain (C3 integration/acceptance only, Sol issuecomment-5991567681): consume
-  the Slack ceremony receipt against DEC:A2-CEREMONY-RECEIPT-REQUIRES-NO-APP-LEVEL-TOKEN; consume
-  the host owner's install receipt for a generation at or after master 7c12c394 (#1257 + #1250 + #1225 + #1251), or the #1219 merge SHA under Sol's release sequencing (Mastermind #1143 issuecomment-6010564791: protect #1219 too, then ONE exact-source install, Gate B, receipt, acceptance, then MCP-only restart-gateway)
-  and verify it read-only; one bounded watcher on #1143, #811, the terminal state of #1219/#1251
-  and mission-path master; no reviews on #1219/#1251 while Sol owns their gates; no lane on the
+  the Slack ceremony receipt against DEC:A2-CEREMONY-RECEIPT-REQUIRES-NO-APP-LEVEL-TOKEN (fields restated in Mastermind #1143 issuecomment-6027309991); consume
+  the install receipt of the Chairman-assigned release owner (Mastermind #1143 issuecomment-6027192883) for its ONE serialized exact-source install (protected 2d590c51 = #1219 merge 760f51b5 + #1071, or the #1220 merge SHA while its hold stands), with Gate B, receipt, acceptance and the live 1.5.0 / 12-tool census
+  and verify it read-only; one bounded watcher on #1143, #811, the terminal state of #1220
+  and mission-path master; no reviews or queue actions on #1220 while Sol owns its gate; no lane on the
   host, the Slack app or service-control.sh; final acceptance at the XH-5 outcome; #811 parked;
   no host act.
 landmines:
@@ -171,6 +171,7 @@ landmines:
   - "A release-SHA change never replays the CEO-submit arm; the host owner migrates the live config and arms canonically (autonomy-582e4c15d334 on 5b244a2b). Historical JOB-003/JOB-006 are preserved, never rewritten or replayed."
   - "The Slack-admin ceremony (app-level token deletion, two-scope reinstall, bot invite), the bot-token enrollment (stdin/native TTY, --enable-w3c) and the ChatGPT Business app recreate+republish (or connecting the private mastermind-web-ceo plugin, if a fresh read ever shows it visible; it is UNVERIFIED after a NOT_FOUND metadata read, Mastermind #1143 issuecomment-6025513145) are human/UI gates; a Web or seat session stops before them and never routes around them."
 do_not_redo:
+  - "Do not re-post the #1219 C3 acceptance (Mastermind #1219 issuecomment-6025565788) or the Slack receipt delta (Mastermind #1143 issuecomment-6027309991); #1219 is merged as 760f51b5 and its controller hardening is not reopened."
   - "Do not reopen Mastermind #1191 (merged 2026-10-04T20:59Z as 5b244a2b) or #1227; the three convergence blockers are closed on master and installed."
   - "Do not repeat the receipt-criterion ruling (#1143 issuecomment-5985445813) or the writer liveness reconciliation (#1143 issuecomment-5979777147)."
   - "Do not re-ACK or re-START operation executive-os-autonomy-v1-closure-20261003-fable-001 (ACK 1791083562.416539, START 1791083970.655569)."
