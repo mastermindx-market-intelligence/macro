@@ -1119,3 +1119,18 @@ removed in a separate exact cleanup call and `CLEANUP_OK` was observed.
 
 HSI remains unread. Hosted fences/CI for this head were started by the PR and remain release proof,
 not permission to open the target.
+
+### Epoch-2 Oct-6 open-day receipt
+
+Exact code head `2adde3f5fd6755f0790108e280a2e3b48bafe8b9` passes **66/66** owned research
+tests with verifier cleanup `CLEANUP_OK`. In addition to requiring Reuters+UKMTO presence and a
+completed UTC day, each required channel must now declare the frozen event classes it covered and
+carry a non-empty evidence receipt.
+
+`research/CROSS_SESSION_EPOCH2_SOURCE_DAY_OPEN_2026-10-06.json` records partial source-only work from
+the Epoch-2 activation at 04:31:47Z through **04:41:17Z**. Reuters/wire family queries and the UKMTO
+official incident page surfaced no qualifying post-activation Oct-6 event at that checkpoint.
+
+This is deliberately `OPEN_UNCERTIFIED`: it is **not** a source-day certificate, cannot unlock U.S.
+measurement, and cannot be converted to COMPLETE in place. A fresh completed-day receipt is required
+after 2026-10-07T00:00:00Z. Epoch-1 HSI and all Epoch-2 market outcomes remain unopened.
