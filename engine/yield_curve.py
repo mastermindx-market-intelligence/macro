@@ -7,7 +7,7 @@ decomposition (level / slope / curvature, with the Litterman-Scheinkman PCA vari
 the three factors span), every canonical SLOPE + its momentum, the bull/bear ×
 steepener/flattener REGIME with its Fed-cycle phase and asset implications, the
 RECESSION dashboard (near-term forward spread + the NY-Fed 10y-3m probit + the
-un-inversion alarm + the term-premium-adjusted slope), the FORWARD-rate grid with
+un-inversion alarm + the legacy TP10 curve heuristic), the FORWARD-rate grid with
 carry & roll-down, and the REAL curve / breakeven curve.
 
 It then distils four typed SIGNAL families for the rest of the dashboard — core-macro
@@ -656,10 +656,10 @@ def forwards(f: pd.DataFrame) -> dict:
 # --------------------------------------------------------------------------- #
 # the curve drivers in the transmission IC matrix, strongest-first — NTFS and the
 # 2s5s10s curvature carry CONFIRMED split-half forward-IC cells for most equity sleeves
-# (the calibration found them far stronger than the raw TP-adjusted slope, which is
+# (the calibration found them far stronger than the legacy TP10 curve heuristic, which is
 # CONTEXT). A sector tile is tagged MEASURED off the strongest confirmed cell among these.
 CURVE_IC_DRIVERS = ["ntfs", "curvature", "curve_tp_adj", "slope_chg63"]
-_CURVE_DRIVER_LABEL = {"ntfs": "NTFS", "curvature": "curvature", "curve_tp_adj": "TP-curve",
+_CURVE_DRIVER_LABEL = {"ntfs": "NTFS", "curvature": "curvature", "curve_tp_adj": "TP10 heuristic",
                        "slope_chg63": "Δslope"}
 
 
