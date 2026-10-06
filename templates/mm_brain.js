@@ -3118,6 +3118,9 @@
      into the chat they opened. Take the composer when it is live, the gate's own primary
      action when it is not, and the first thing the panel is actually showing otherwise. */
   function focusPanel() {
+    /* The entry delay must not steal a control the user has already focused,
+       or move focus back into a panel they closed before the callback ran. */
+    if (!panel.classList.contains('open') || panel.contains(DOC.activeElement)) return;
     var cands = [ta, $('.mmb-signin')].concat(
       [].slice.call(panel.querySelectorAll('button:not([disabled]),a[href],textarea,[tabindex="0"]')));
     for (var i = 0; i < cands.length; i++) {

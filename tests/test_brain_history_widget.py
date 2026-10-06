@@ -304,6 +304,37 @@ def test_late_resumed_thread_cannot_attach_or_delete_next_accounts_run(page):
     assert not any('/runs/held-run-A/stream' in r['url'] for r in page.evaluate('window.__requests'))
 
 
+@pytest.mark.parametrize('next_focus', ['control', 'closed', 'initial'])
+def test_delayed_open_focus_respects_current_interaction(page, next_focus):
+    # Wait for the fixture's opening focus, then control the next deferred focus
+    # so the user interaction occurs before that callback deterministically.
+    expect(page.locator('#mmb-ta')).to_be_focused()
+    page.evaluate("""() => {
+      const outside=document.createElement('button');outside.id='outside-focus';
+      outside.textContent='Outside';document.body.appendChild(outside);
+      MMBrain.close();outside.focus();
+      const schedule=window.setTimeout;window.__openFocus=[];
+      window.setTimeout=(fn,delay,...args)=>{
+        if(delay===260){window.__openFocus.push(fn);return 0;}
+        return schedule(fn,delay,...args);
+      };
+      MMBrain.open();window.setTimeout=schedule;
+    }""")
+    assert page.evaluate('window.__openFocus.length') == 1
+    target=page.locator('.mmb-tools button[data-lane="fast"]')
+    if next_focus=='control':
+        target.focus()
+    elif next_focus=='closed':
+        page.evaluate('MMBrain.close()')
+        target=page.locator('#outside-focus')
+        target.focus()
+    else:
+        target=page.locator('#mmb-ta')
+    page.evaluate('window.__openFocus.forEach(fn=>fn())')
+    expect(target).to_be_focused()
+    assert all(r['method']=='GET' for r in page.evaluate('window.__requests'))
+
+
 @pytest.mark.parametrize('width',[320,390,560])
 @pytest.mark.parametrize('lang',['en','zh'])
 @pytest.mark.parametrize('text_scale',[1,2])
