@@ -463,6 +463,11 @@ def _visit_discovery_snapshot(
         clock_errors.append("last_attempt_before_last_success")
     if (
         owner_health_status == "ok"
+        and (not last_success_raw or not last_attempt_raw)
+    ):
+        clock_errors.append("ok_health_receipt_incomplete")
+    if (
+        owner_health_status == "ok"
         and last_success_instant is not None
         and last_attempt_instant is not None
         and last_attempt_instant != last_success_instant
@@ -504,6 +509,14 @@ def _visit_discovery_snapshot(
     row_source_instants = [
         _visit_observed_instant(r.get("source_published_at")) for r in deduped
     ]
+    row_source_days = [
+        _visit_source_day(r.get("source_published_at")) for r in deduped
+    ]
+    if any(
+        _visit_text(r.get("sec_code")) and source_day is None
+        for r, source_day in zip(deduped, row_source_days)
+    ):
+        clock_errors.append("row_source_clock_invalid")
     if any(
         observed is not None and source is not None and observed < source
         for observed, source in zip(row_observation_instants, row_source_instants)
@@ -540,7 +553,7 @@ def _visit_discovery_snapshot(
     owner_clock_order_valid = not clock_errors
 
     source_event_days = [
-        d for d in (_visit_source_day(r.get("source_published_at")) for r in deduped)
+        d for d in row_source_days
         if d is not None and d <= reference_day
     ]
     system_observed_days = [
@@ -632,6 +645,8 @@ def _visit_discovery_snapshot(
             else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
             else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
             else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
+            else "ok_health_receipt_incomplete" if "ok_health_receipt_incomplete" in clock_errors
+            else "row_source_clock_invalid" if "row_source_clock_invalid" in clock_errors
             else "row_observation_before_source" if "row_observation_before_source" in clock_errors
             # Coverage/future/order defects are more fundamental than the
             # secondary invariant that successful attempt/success clocks match.
@@ -680,8 +695,6 @@ def _visit_discovery_snapshot(
         exchange = _visit_text(row.get("exchange"))
         key = f"{exchange}:{code}" if exchange else code
         source_day = _visit_source_day(row.get("source_published_at"))
-        if source_day is None:
-            continue
         observed_day = _visit_observed_day(row.get("system_recorded_at"))
         bucket = grouped.setdefault(key, {
             "company_key": key,
@@ -715,18 +728,25 @@ def _visit_discovery_snapshot(
     for key in sorted(grouped):
         bucket = grouped[key]
         rows = sorted(bucket["rows"], key=lambda item: (
-            item[0], item[1] or date.min, _visit_text(item[2].get("announcement_id"))
+            item[0] or date.max,
+            item[1] or date.min,
+            _visit_text(item[2].get("announcement_id")),
         ))
         code = bucket["sec_code"]
+        source_clock_incomplete = any(source_day is None for source_day, _observed_day, _r in rows)
         recent = [r for source_day, _observed_day, r in rows
-                  if recent_start <= source_day <= observation_end]
+                  if source_day is not None
+                  and recent_start <= source_day <= observation_end]
         baseline = [r for source_day, _observed_day, r in rows
-                    if baseline_start <= source_day <= baseline_end]
-        if not recent and code not in open_scoped_codes:
+                    if source_day is not None
+                    and baseline_start <= source_day <= baseline_end]
+        if not recent and not source_clock_incomplete and code not in open_scoped_codes:
             continue
 
         company_exception = code in open_scoped_codes
-        if not exception_ledger_readable:
+        if source_clock_incomplete:
+            baseline_state = "blocked_source_clock_invalid"
+        elif not exception_ledger_readable:
             baseline_state = "blocked_exception_ledger_unreadable"
         elif has_unscoped_open:
             baseline_state = "blocked_unscoped_coverage_exception"
@@ -762,6 +782,8 @@ def _visit_discovery_snapshot(
         first_observed_day = min(observed_days) if observed_days else None
         if company_exception:
             first_seen_state = "unknown_due_coverage_exception"
+        elif source_clock_incomplete:
+            first_seen_state = "unknown_source_clock"
         elif not recent:
             first_seen_state = "no_recent_positive_evidence"
         elif not exception_ledger_readable:
@@ -825,11 +847,20 @@ def _visit_discovery_snapshot(
             "exchange": bucket["exchange"],
             "coverage_state": (
                 "unknown_company_exception" if company_exception
+                else "unknown_source_clock" if source_clock_incomplete
                 else "positive_metadata_observed" if recent
                 else "unknown"
             ),
+            "source_clock_state": "invalid" if source_clock_incomplete else "valid",
             "first_seen_state": first_seen_state,
-            "earliest_source_published_day": rows[0][0].isoformat() if rows else None,
+            "earliest_source_published_day": (
+                min(
+                    source_day for source_day, _observed_day, _r in rows
+                    if source_day is not None
+                ).isoformat()
+                if any(source_day is not None for source_day, _observed_day, _r in rows)
+                else None
+            ),
             "first_observed_system_day": (
                 first_observed_day.isoformat()
                 if first_observed_day and not observation_clock_incomplete
