@@ -150,6 +150,7 @@ def test_visit_discovery_malformed_full_observation_clock_cannot_claim_first_see
         health={
             "status": "ok",
             "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
         },
         coverage_start="2026-09-15",
         open_scoped_codes=set(),
