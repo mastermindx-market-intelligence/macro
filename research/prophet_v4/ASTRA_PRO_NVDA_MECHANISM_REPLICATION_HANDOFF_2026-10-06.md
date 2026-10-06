@@ -12,12 +12,15 @@
 
 Lead the next research phase on the September 2026 NVDA Prophet golden case.
 
-Do **not** begin by redoing the completed census. Read the two research artifacts on PR #8495 first:
+Do **not** begin by redoing the completed census. Read these research artifacts on PR #8495 first, IN THIS ORDER:
 
-1. `research/prophet_v4/PROPHET_NVDA_CONVERSION_CAUSALITY_AUDIT_2026-10-06.md`
-2. `research/prophet_v4/PROPHET_NVDA_MECHANISM_EXTRACTION_2026-10-06.md`
+1. `research/prophet_v4/PROPHET_NVDA_PRO_REAUDIT_2026-10-06.md` — **latest corrective frontier; supersedes loose headline interpretations in the earlier studies**
+2. `research/prophet_v4/PROPHET_NVDA_CONVERSION_CAUSALITY_AUDIT_2026-10-06.md`
+3. `research/prophet_v4/PROPHET_NVDA_MECHANISM_EXTRACTION_2026-10-06.md`
 
-Treat their accepted measurements as the current frontier unless you find contradictory primary evidence.
+Where an earlier report says “90.9% win rate,” use the re-audit's corrected semantics: 10/11 H5 board rows had positive **excess vs SPY**, not 10/11 profitable trades; first observation per issuer was 6/7 positive SPY excess and 4/7 positive absolute return.
+
+Treat the re-audit's accepted measurements as the current frontier unless you find contradictory primary evidence.
 
 Your job is to determine how much of the NVDA success is a reproducible mechanism, what parts are merely correlated context, how to increase both early winner recall and decision precision without overfitting the golden case, and how this should change the Prophet roadmap.
 
@@ -42,6 +45,31 @@ The Chairman added four material hypotheses after the first census. Treat these 
 4. **`news_burst` is probably a proxy for information arrival / rerating, not the complete causal class.** Important reratings can occur without a ticker-specific news burst: earnings/guidance, analyst estimate or target revisions, peer read-through, sector-wide pricing/capacity changes, hyperscaler capex, supply-demand/inventory evidence, contracts/policy, smart-money/flow, or theme/regime rotation may be the true rerating driver.
 
 The revised commission must therefore search for the stable **rerating-conditioned ignition mechanism**, not optimize a literal `T2 && news_burst` rule.
+
+## Pro re-audit correction — detection, entry, and plan publication are separate outcomes
+
+The latest Pro re-audit established an important chronology:
+
+- a real watchlist sentinel alert was generated at `2026-09-25T09:02:33Z` and first committed at 09:20 UTC / 05:20 ET, before the US market open;
+- the producer uses `datetime.now(timezone.utc)`, so this is a real wall-clock generation timestamp;
+- it read an older board state (board as-of Sep-23 / signal basis Sep-22) that already had NVDA `buy_now`, T1, buy zone $223.30–$228.90, chase ceiling $231.10;
+- NVDA's Sep-25 opening price (~$225.13) was inside that zone, so the broader Entry Signal / watchlist stack exposed a potentially executable pre-move entry;
+- the formal plan `NVDA-BULL-20260917` was first added Sep-26, after the Sep-25 close, and its tighter no-chase ceiling was $226.90; do NOT use that later plan as proof of an executable Sep-25 plan;
+- the old Aug NVDA plan had already closed Sep-21, so duplicate-plan suppression did not cause the lag;
+- on Sep-25 the new NVDA candidate cleared admission but formal plan validation correctly refused stale/mixed-vintage source data;
+- Sep-25 Prophet checkpoints had `mixed_vintage=true` and originated **zero new plans** across the intake;
+- Sep-26 source freshness became clean/current and 22 plans originated, including NVDA.
+
+Therefore the Astra study must grade four clocks separately:
+
+1. **detection / research attention**;
+2. **Entry Availability / actionable window**;
+3. **formal plan publication**;
+4. **realistically executable price after publication**.
+
+A recommendation system that detects a winner early but cannot publish a provenance-clean plan until the entry window has passed has an infrastructure/latency problem even if its selection intelligence is good.
+
+Do not weaken the clock-provenance validator. Investigate and reduce the upstream source-freshness lag and align freshness semantics across alert, board and plan surfaces.
 
 ## Established facts — do not waste the run rediscovering them
 
@@ -103,26 +131,45 @@ Do not propose:
 
 The existing matured cohorts do not support those claims.
 
-### Discovered interaction
+### Discovered interaction — corrected semantics
 
-In the matured `us_prophet_v3` 5-session board history:
+In the matured `us_prophet_v3` H=5 board history, T2+news remains an interesting **relative-performance discovery**, not a demonstrated trade win rate:
 
-- all buy rows: n=1,098, 34.2% positive excess vs SPY, mean -1.08%;
-- T2: n=327, 37.9%, mean -0.57%;
-- news burst any tier: n=18, 66.7%;
-- non-T2 + news: n=7, 28.6%, mean -7.24%;
-- **T2 + news: n=11, 10/11 = 90.9%, mean +3.58%;**
-- T2 + news + smartmoney-add: n=7, 7/7 positive, mean +3.70%.
+- n=11 board rows / 7 issuers;
+- 8/11 positive absolute five-session returns;
+- 10/11 positive excess vs SPY;
+- 9/11 positive sector excess;
+- mean SPY excess +3.58%.
 
-T2+news vs T2/no-news Fisher OR ~17.7, one-sided p ~0.00036.
+First observation per issuer:
 
-Collapse to first call per ticker: 6/7 positive, mean +3.82%.
+- 7 issuers;
+- 4/7 positive absolute return;
+- 6/7 positive SPY excess;
+- 5/7 positive sector excess;
+- mean SPY excess +3.82%.
 
-Leave-one-ticker/date tests stay roughly 86–100% positive.
+At H=10 the result weakens materially:
 
-Same-date T2/no-news controls were worse on every observed date-level comparison; average date-level mean-excess advantage ~+5.8pp at H=5.
+- 10 rows / 6 issuers;
+- 5/10 positive absolute;
+- 5/10 positive SPY excess;
+- mean SPY excess +0.84%;
+- excluding INTC, mean SPY excess falls to about **-1.28%**.
 
-The effect weakens at H=10 and is not mature at H=21.
+Also note: NVDA's `news_burst` itself was six recent items with **neutral sentiment** (0 positive / 0 negative), so this feature is better understood as attention/information arrival than bullish news.
+
+A broader OR across `news_burst || sue_fresh || smartmoney_add` did **not** improve T2.
+
+The more interesting discovery seed is **T2 + at least two independent evidence legs**:
+
+- H=5 n=12 rows / 5 issuers;
+- 10/12 positive SPY excess;
+- 9/12 positive absolute return;
+- first observation per issuer: 5/5 positive SPY excess, 4/5 positive absolute;
+- mean first-issuer SPY excess +3.66%.
+
+This is extremely small and discovered after inspection. Treat it as a hypothesis for **independent evidence convergence × ignition**, not as a rule or expected live win rate.
 
 ### Critical caveats
 
@@ -318,6 +365,8 @@ Preserve:
 - board definition;
 - selection era;
 - source availability clocks;
+- alert-generation / board-publication / plan-publication clocks as separate fields;
+- realistically executable first price after each publication clock;
 - ticker clustering;
 - date clustering;
 - non-overlapping episode logic.
@@ -328,8 +377,10 @@ Never condition the sample on future winners.
 
 For H=3/5/10/21/42/63 where data exists, report:
 
+- positive absolute return rate;
 - P(excess_SPY > 0);
-- mean/median excess;
+- sector-relative positive rate;
+- mean/median absolute, SPY-relative and sector-relative returns;
 - MFE/MAE/MDD;
 - date-relative top-decile winner precision;
 - top-decile winner capture/recall;
@@ -355,6 +406,8 @@ For eventual winners, reconstruct the earliest lawful observation of:
 - RS leadership;
 - board inclusion;
 - plan origination;
+- first provenance-clean formal plan publication;
+- first realistic executable price after publication;
 - Entry Availability.
 
 Determine how much earlier a full-universe research-attention surface could have seen the opportunity than the existing action board.
@@ -427,7 +480,8 @@ At minimum evaluate whether to accrue an explicit research-only interaction rece
 - interaction keys;
 - group/theme context;
 - later H=3/H=5/H=10/H=21/H=42/H=63 outcomes as they mature;
-- lead-time milestones;
+- lead-time milestones across detection, availability, plan publication and executable price;
+- stale/mixed-vintage state at every milestone;
 - durability transition / terminal state.
 
 Do not make it a new state/control plane; write through the existing evaluation owner.
@@ -465,6 +519,9 @@ Return explicit rulings on:
 13. How much of the July/v3 difference is attributable to semiconductor/regime state versus data-plane maturity?
 14. What rerating-event ontology captures winners that `news_burst` misses?
 15. What did Trend Persistence C1-NULL truly falsify, and what distinct durability study should replace it?
+16. How much winner lead time is currently lost between detection, Entry Availability, and formal plan publication?
+17. Which freshness/data-plane failure modes consume that lead time, and how should existing owners eliminate them without weakening provenance gates?
+18. Does independent multi-family convergence explain ignition better than any single event proxy?
 
 ## DONE_WHEN
 
@@ -476,7 +533,8 @@ This research phase is complete only when it leaves:
 - an explicit **data-plane maturity / comparability matrix** for July through v3;
 - an adjudicated June–July semiconductor/market regime reconstruction;
 - a typed **rerating-event ontology** broader than ticker news;
-- a precision-recall/lead-time frontier by rerating species;
+- a precision-recall/lead-time frontier by rerating species, with absolute vs relative outcomes separated;
+- a detection -> availability -> plan-publication -> executable-price latency decomposition;
 - an ignition-vs-durability ruling;
 - a Trend Persistence C1-NULL scope reconciliation and a hypothesis-distinct persistence research design;
 - a current C1–C5/R6 ownership map;
