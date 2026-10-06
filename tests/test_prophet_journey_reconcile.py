@@ -1709,8 +1709,7 @@ def test_j5_against_committed_fixture():
                 "stop": 164.00,
                 "chase_above": 184.00,
             },
-            "signal": {"above200": True, "weekly_bull": True,
-                        "provisional": False},
+            "signal": {"above200": True, "weekly_bull": True},
             "hold": {"invalidation": 158.00},
             "price": 178.42,
                     }],
@@ -1733,7 +1732,7 @@ def test_j6_against_committed_fixture():
     Every ``[data-source-field]`` in the fixture body must resolve in
     the synthetic payload with a dd that matches the template's
     formatting (``$X.YY`` for money, ``Yes``/``No``/``是``/``否`` for
-    booleans, verbatim for strings).
+    supplied booleans, unavailable copy for an absent boolean, verbatim for strings).
     """
     wrapped = _wrapped_amd_fixture()
     soup = BeautifulSoup(wrapped, _pjr.HTML_PARSER)
@@ -1750,8 +1749,7 @@ def test_j6_against_committed_fixture():
                 "stop": 164.00,
                 "chase_above": 184.00,
             },
-            "signal": {"above200": True, "weekly_bull": True,
-                        "provisional": False},
+            "signal": {"above200": True, "weekly_bull": True},
             "hold": {"invalidation": 158.00},
             "price": 178.42,
                         "envelope": {"as_of": "2026-09-27"},
@@ -1788,8 +1786,7 @@ def test_cli_against_committed_fixture():
             "entry_signal": {"status": "bounce_wait",
                              "buy_zone": {"low": 171.00, "high": 176.00},
                              "stop": 164.00, "chase_above": 184.00},
-            "signal": {"above200": True, "weekly_bull": True,
-                       "provisional": False},
+            "signal": {"above200": True, "weekly_bull": True},
             "hold": {"invalidation": 158.00},
             "price": 178.42,
                         "envelope": {"as_of": "2026-09-27"},
