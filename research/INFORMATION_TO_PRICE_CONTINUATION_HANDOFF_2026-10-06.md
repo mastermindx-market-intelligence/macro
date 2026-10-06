@@ -70,3 +70,71 @@ Nothing in this program is MERGED since #8480 itself; nothing is PRODUCTION_PROO
 5. Chairman-only gates, last: #8402 cap (569 > 490, Mastermind #974), PID 8688 EFFECT_UNKNOWN,
    TYPED_GIT_PRECHECK, vendor procurement, capital authority, mini2 disk (≥ 50 GB free), EVAL-1 P1-2 / P1-5
    custody, and every Sol HOLD release.
+
+## Wave 2b / wave 3 delta (2026-10-06 08:45Z)
+
+**Scope:** Seat ledger D28–D35 (D33 is seat-ledger-only — not recorded here) plus orchestrator wave-3
+lanes W3-A/B/C. **Ordinary records PR** for this delta (no hold on the records lane itself). Carrier #8309
+unchanged; Opus 5.5 orchestrators may administer fabric lanes per Chairman ruling (D32); held program PRs
+release per D34 (Meta-CEO seat posts `HOLD-RELEASED` naming Chairman authority, then `gh pr ready` and
+exact-head squash — never `merge-on-green` on a held PR).
+
+### 5. Seat ledger (D28–D32, D34–D35)
+
+| Id | Time (Z) | Decision |
+|---|---|---|
+| D28 | 05:43 | Records PR **#8510 MERGED** 05:42:44Z squash `91f274d860e77f245bde31232a617f81d9a5b331` (ci 37419129533 success). Both paths blob-verified on fresh `origin/main` = **PRODUCTION_PROOF** for records-only work. Watcher bhy72774m concluded. Worktree `…/itp-records-wave2-20261006-45ad6225fe668ffa` reclaimable. |
+| D29 | 06:03 | R1-completion lane **DELIVERED PR #8514** (DRAFT, HOLD-FOR-SOL, no labels, automerge null) head `9f0b775415e6cadf4e3250ab5b1d51a42f706771` → **ACCEPTED by artifact**: three ADDED research files only; probe on `origin/main` `ef1f7db98cff` with `--check` vs #8505 census JSON on `ab77f792` → `OK (shared counts equal)` exit 0. G1–G5 OPEN, owners UNOWNED. Seat note **6010391922** = ACCEPT + RESULT / HOLD-FOR-SOL. |
+| D30 | 06:22 | #8514 ci 37420775034 **FAILURE**: only red = ci-pack-5 `unrun-brain-gateway` → `tests/test_brain_history_widget.py::test_composer_controls_keep_touch_targets_and_reflow[2-en-320]` focus assertion. **Not #8514's defect**: test and manifest step created by merged #8473 `585d26568a9` (05:46:51Z); main's newest concluded ci.yml proof **predates** that merge. One `gh run rerun 37420775034 --failed` (watcher b5yofhmz1). Never touch test/manifest; never second rerun. |
+| D31 | 06:4x | Rerun **GREEN** → D30 red was runner-local flake of #8473's new test, not inherited main red. #8514 fully green; still DRAFT + HOLD-FOR-SOL. Merge only on `HOLD-RELEASED` with `--match-head-commit 9f0b775415e6cadf4e3250ab5b1d51a42f706771`. |
+| D32 | 07:0x | Chairman: Opus 5.5 orchestrators administer fabric lanes for this seat (no native children; Opus never a worker). Wave 3 commissioned to one Opus orchestrator (`$S/orch_wave3/`): W3-A R4 dry-run receipt, W3-B R5 prospective-consumer spec, W3-C D17 queue pre-staging, W3-D records refresh (this PR). |
+| D34 | 07:3x | Chairman: Sol HOLD-FOR-SOL on **this program's own PRs** is an administrative block the Meta-CEO seat releases itself (`HOLD-RELEASED` + Chairman authority + release condition; body hold edited out once after checks; `gh pr ready`; exact-head squash). Release order: #8312 (released comment 6011558025), then #8505, #8514, #8394, #8467; D17 queue #8422 → #8337 → #8461 → #8463 one at a time; #8521/#8522 stay DRAFT until seat releases after queue. |
+| D35 | 07:31 | **#8312 MERGED** squash `0f575e51469fc66fa9fd326022ac2d7eee814926`. Post-merge blob compare: 12/13 paths byte-identical to head `94fc9825`; 13th `.github/ci/legacy-jobs.yml` 3-way-merged with main and carries **both** enrolments (needles present). **D17 queue OPEN.** |
+
+### 6. Wave-3 orchestrator outcomes (DELIVERED ≠ MERGED)
+
+| Lane | PR / branch | Rung | Summary |
+|---|---|---|---|
+| W3-A `itp_r4_dryrun` | #8522 DRAFT HOLD, head `a14846336932a2579bd3cdec707362d13ec94c56`, `claude/ssd-itp-r4-dryrun-20261006-2fc05761` | **DELIVERED**, orchestrator-**ACCEPTED** | Three files under `research/alpha_intelligence/expectation_market_dynamics/`. Composite = main + held #8337/#8422/#8461 heads (never pushed). Stages 6/6 RAN; MKT-1 refused (no parquet bars); coupling COMPONENTS_ONLY; honest N = 0 issuer episodes; prereg K3E-EVAL-0-V1 digest MATCH; `k3e_admissible=false`. verified: `python3 research/alpha_intelligence/expectation_market_dynamics/r4_dryrun_receipt_check.py --check …/R4_DRYRUN_RECEIPT_2026-10-06.json` rc=0; negative controls rc=1. |
+| W3-B `itp_r5_spec` | #8521 DRAFT HOLD, head `ad498bddac6fd2400cead0ddc63ed19235059927`, `claude/ssd-itp-r5-consumer-spec-20261006-2fc05761` | **DELIVERED**, orchestrator-**ACCEPTED** (one repair) | Single file `R5_PROSPECTIVE_CONSUMER_SPEC_2026-10-06.md`. Round-1 fixed manifest enrolment precondition (#8312 + D17 queue) and CI-authority note for future build PR. verified: path:line and DNR keys checked against `origin/main`; binding checks green on head (inactive codex merge-queue context only fail). |
+| W3-C `itp_queue_prestage` | (nothing pushed) | **DELIVERED** (seat-held scratch) | Post-#8312 merge-tree probes; three post-8312 patches sha256 `47ae5768…`, `42b19975…`, `cf372fc2…`; 12-pack validate-only fail=0; patch apply-check on bare post-#8312 main. Pre-#8312 patch set **SUPERSEDED**. Launch args `args_itp_d17_enrol_{8337,8461,8463}.json` await seat, one PR at a time. |
+| W3-D `itp_records_wave3` | (this PR) | **RUNNING → DELIVERED** when pushed | Docs-only: this append + wave-3 agentos handoff. |
+
+GLM probe **refused** this wave (mini2 below 50 GiB `min_free_gb`); fabric lanes used grok on local m2.
+
+### 7. Updated ladder (selected artifacts)
+
+| Artifact | Head / note | Rung |
+|---|---|---|
+| #8510 wave-2 records | squash `91f274d8…` | **MERGED** → PRODUCTION_PROOF (D28) |
+| #8312 source integration | squash `0f575e51…` | **MERGED** (D35) |
+| #8514 R1 completion spec | `9f0b775415e6…` | **ACCEPTED** + CI green + DRAFT HOLD (D29/D31) |
+| #8505 census | `ab77f792…` | CI green + RESULT; census JSON not on main (held) |
+| #8522 R4 dry-run receipt | `a1484633…` | DELIVERED on branch; not on main |
+| #8521 R5 consumer spec | `ad498bdd…` | DELIVERED on branch; not on main |
+| Queue #8422/#8337/#8461/#8463 | per §2 D8/D17 | OPEN after #8312 merge |
+
+### 8. do_not_redo (wave 3 additions)
+
+- **#8510** records merge and blob proof (D28).
+- **#8514** R1 completion acceptance and probe counts (D29); do not re-run the lane.
+- **W3-C post-#8312 patches** — validated on main descendant `e95e32d4418f` containing squash `0f575e51`; do not regenerate unless main's manifest neural-web or signal-contract jobs change before the queue finishes.
+- **#8312** merge and paths (D35).
+- **GLM probe** outcome for this wave (storage guard).
+- Wave-2 `do_not_redo` in §3 and the wave-2 agentos handoff remain binding.
+
+### 9. danger_areas (wave 3 additions)
+
+- **#8337** `.github/ci/legacy-jobs.yml` conflict: merge main into branch, keep **MAIN's** manifest, apply `pr8337_legacy-jobs_enrolment_post8312.patch`; four pre-#8312 patches are **SUPERSEDED**.
+- **#8473** `test_brain_history_widget` focus flake: at most one failed-run rerun; never edit test or manifest.
+- **Held PR protocol** (D34): `HOLD-RELEASED` → ready → `--match-head-commit` squash; never merge-on-green on held PRs.
+- **contract-delta** for any new `tests/test_*.py` without legacy-jobs enrolment (W3-B D1).
+- **ci-authority**: second body edit on same PR cancels ci-authority run.
+
+### 10. NEXT (wave 3 critical path)
+
+1. Ship W3-D records PR (this append + handoff); arm ordinary merge path when checks conclude.
+2. Execute D34 release order on held PRs after green checks (seat may post `HOLD-RELEASED` for this program).
+3. Run D17 queue with post-#8312 patches and `args_itp_d17_enrol_*.json`, one merge at a time.
+4. Release #8522 / #8521 when queue and upstream gates allow; blob-verify after each merge.
+5. Chairman-only gates unchanged from §4 item 5.
