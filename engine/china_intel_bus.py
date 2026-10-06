@@ -825,8 +825,12 @@ def _visit_discovery_snapshot(
         code = _visit_text(row.get("sec_code"))
         if not code:
             continue
-        exchange = _visit_text(row.get("exchange"))
-        key = f"{exchange}:{code}" if exchange else code
+        exchange = _visit_text(row.get("exchange")).lower()
+        # CNInfo exchange is a collection/source route, not listing identity.
+        # Bare six-digit sec_code is the owner-native company key on this plane;
+        # using route:code here would split one company whenever the same code
+        # arrives through multiple CNInfo routes.
+        key = code
         source_day = _visit_source_day(row.get("source_published_at"))
         observed_day = _visit_observed_day(row.get("system_recorded_at"))
         bucket = grouped.setdefault(key, {
@@ -834,8 +838,11 @@ def _visit_discovery_snapshot(
             "sec_code": code,
             "sec_name": _visit_text(row.get("sec_name")),
             "exchange": exchange,
+            "source_routes": set(),
             "rows": [],
         })
+        if exchange:
+            bucket["source_routes"].add(exchange)
         # Positive source evidence remains visible even when its publication
         # predates our forward-only coverage stamp (the first P1 run uses a
         # bounded lookback). The source day is the event clock; system_recorded_at
@@ -854,6 +861,7 @@ def _visit_discovery_snapshot(
                 "sec_code": code,
                 "sec_name": "",
                 "exchange": "",
+                "source_routes": set(),
                 "rows": [],
             }
 
@@ -991,7 +999,11 @@ def _visit_discovery_snapshot(
             "company_key": key,
             "sec_code": code,
             "sec_name": bucket["sec_name"],
+            # Legacy field retained for compatibility; this is the first
+            # observed CNInfo source route, not listing-venue identity.
             "exchange": bucket["exchange"],
+            "exchange_semantics": "cninfo_source_route_not_listing_venue",
+            "source_routes": sorted(bucket.get("source_routes") or []),
             "coverage_state": (
                 "unknown_company_exception" if company_exception
                 else "unknown_source_clock" if source_clock_incomplete

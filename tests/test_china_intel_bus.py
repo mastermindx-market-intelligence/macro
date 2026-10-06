@@ -348,6 +348,42 @@ def test_visit_discovery_conflicting_duplicate_company_identity_fails_closed():
     assert snap["examples"][0]["first_seen_state"] ==         "unknown_conflicting_company_identity"
 
 
+def test_visit_discovery_distinct_announcements_same_company_across_routes_group_once():
+    first = _visit_row(
+        "A-route-one", "600519", "2026-10-01T09:00:00+08:00",
+        recorded="2026-10-01T02:00:00+00:00",
+        exchange="sse",
+    )
+    second = _visit_row(
+        "A-route-two", "600519", "2026-10-02T09:00:00+08:00",
+        recorded="2026-10-02T02:00:00+00:00",
+        exchange="szse",
+    )
+
+    snap = bus._visit_discovery_snapshot(
+        [first, second],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    assert snap["n_recent_companies"] == 1
+    assert len(snap["examples"]) == 1
+    row = snap["examples"][0]
+    assert row["company_key"] == "600519"
+    assert row["sec_code"] == "600519"
+    assert row["recent_count"] == 2
+    assert row["source_routes"] == ["sse", "szse"]
+    assert row["exchange_semantics"] == "cninfo_source_route_not_listing_venue"
+
+
 def test_visit_discovery_same_company_under_two_source_routes_is_not_identity_conflict():
     first = _visit_row(
         "A-route-only", "600519", "2026-10-02T09:00:00+08:00",
