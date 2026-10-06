@@ -82,6 +82,10 @@ BAR_TOLERANCE_MINUTES = 2
 MAX_CONTROL_SESSION_DISTANCE = 10
 HK_LOOKAHEAD_CALENDAR_DAYS = 21
 SOURCE_DAY_REQUIRED_CHANNELS = frozenset({"reuters_wire", "ukmto"})
+SOURCE_DAY_CHANNEL_CLASS_REQUIREMENTS = {
+    "reuters_wire": EVENT_CLASSES,
+    "ukmto": frozenset({"physical_energy_shipping_security"}),
+}
 SOURCE_DAY_CHANNEL_STATES = frozenset({"COMPLETE"})
 SOURCE_DAY_DISPOSITIONS = frozenset({"ADMIT", "EXCLUDE", "UNRESOLVED_CLOCK"})
 EPOCH1_QUARANTINED_EVENT_IDS = frozenset(
@@ -243,10 +247,34 @@ def certify_source_day(
             raise CaptureContractError(
                 f"source-day channel {channel} does not cover the full UTC day"
             )
+        covered_raw = raw.get("covered_event_classes")
+        if isinstance(covered_raw, (str, bytes)) or not isinstance(
+            covered_raw, Sequence
+        ):
+            raise CaptureContractError(
+                f"source-day channel {channel} requires covered_event_classes"
+            )
+        covered_classes = {str(value or "").strip() for value in covered_raw}
+        unsupported_classes = sorted(covered_classes - EVENT_CLASSES)
+        if unsupported_classes:
+            raise CaptureContractError(
+                f"source-day channel {channel} has unsupported event class(es): "
+                + ", ".join(unsupported_classes)
+            )
+        required_classes = SOURCE_DAY_CHANNEL_CLASS_REQUIREMENTS.get(
+            channel, frozenset()
+        )
+        missing_classes = sorted(required_classes - covered_classes)
+        if missing_classes:
+            raise CaptureContractError(
+                f"source-day channel {channel} missing event-class coverage: "
+                + ", ".join(missing_classes)
+            )
         channels[channel] = {
             "channel": channel,
             "status": status,
             "swept_through": _iso(swept_through),
+            "covered_event_classes": sorted(covered_classes),
             "receipt": str(raw.get("receipt") or "").strip() or None,
         }
 

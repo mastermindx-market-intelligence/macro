@@ -904,12 +904,14 @@ def _epoch2_source_day(
                 "channel": "reuters_wire",
                 "status": "COMPLETE",
                 "swept_through": "2026-10-07T00:00:00Z",
+                "covered_event_classes": sorted(capture.EVENT_CLASSES),
                 "receipt": "wire-sweep:oct6",
             },
             {
                 "channel": "ukmto",
                 "status": "COMPLETE",
                 "swept_through": "2026-10-07T00:00:00Z",
+                "covered_event_classes": ["physical_energy_shipping_security"],
                 "receipt": "ukmto-sweep:oct6",
             },
         ],
@@ -935,11 +937,13 @@ def test_capture_epoch2_source_day_refuses_partial_utc_day():
                     "channel": "reuters_wire",
                     "status": "COMPLETE",
                     "swept_through": "2026-10-07T00:00:00Z",
+                    "covered_event_classes": sorted(capture.EVENT_CLASSES),
                 },
                 {
                     "channel": "ukmto",
                     "status": "COMPLETE",
                     "swept_through": "2026-10-07T00:00:00Z",
+                    "covered_event_classes": ["physical_energy_shipping_security"],
                 },
             ],
             candidate_dispositions=[],
@@ -956,6 +960,7 @@ def test_capture_epoch2_source_day_requires_reuters_and_ukmto():
                     "channel": "reuters_wire",
                     "status": "COMPLETE",
                     "swept_through": "2026-10-07T00:00:00Z",
+                    "covered_event_classes": sorted(capture.EVENT_CLASSES),
                 }
             ],
             candidate_dispositions=[],
@@ -1035,4 +1040,29 @@ def test_capture_epoch2_seal_requires_candidate_admit_disposition():
     census = _epoch2_source_day(candidate_id="other-event")
     with pytest.raises(capture.CaptureContractError, match="not admitted"):
         capture.seal_epoch2_admission(admission, census)
+
+def test_capture_epoch2_source_day_requires_family_coverage_receipts():
+    with pytest.raises(capture.CaptureContractError, match="missing event-class coverage"):
+        capture.certify_source_day(
+            source_date="2026-10-06",
+            source_coverage_complete_through="2026-10-07T00:00:00Z",
+            channel_receipts=[
+                {
+                    "channel": "reuters_wire",
+                    "status": "COMPLETE",
+                    "swept_through": "2026-10-07T00:00:00Z",
+                    "covered_event_classes": [
+                        "ceasefire_deescalation_or_escalation",
+                        "official_policy_or_operational_change",
+                    ],
+                },
+                {
+                    "channel": "ukmto",
+                    "status": "COMPLETE",
+                    "swept_through": "2026-10-07T00:00:00Z",
+                    "covered_event_classes": ["physical_energy_shipping_security"],
+                },
+            ],
+            candidate_dispositions=[],
+        )
 
