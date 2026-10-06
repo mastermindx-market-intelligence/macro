@@ -2,8 +2,8 @@
 key: PAPER-INTERNATIONAL-WAVES
 title: International Markets Paper implementation Waves 1–3
 objective: Deliver the existing International product with the received foundation, ten views and existing-owner
-  Saved integration, preserved legacy tools, truthful source qualification, independent review, served user journeys
-  and a subsequent normal publication.
+  Saved integration, preserved legacy tools, truthful source qualification, independent review, served user
+  journeys and a subsequent normal publication.
 status: active
 program: international-risk-intelligence
 repos:
@@ -24,12 +24,15 @@ owns_paths:
 - tests/test_intl_performance_records.py
 - engine/intl_performance_charts.py
 - tests/test_intl_performance_charts.py
+- templates/intl_workspace_state.js
+- tests/intl_workspace_state.test.cjs
 waves:
 - id: IM00
   title: Shared performance, presentation and route foundation
   status: in_progress
-  next_action: Return records and raw chart projection are source-reviewed; qualified common endpoints, presentation
-    projection, one controller and page integration remain.
+  next_action: Return records, raw charts and pure route-state source are reviewed. Build the frozen Overview
+    projection when an admitted Fabric build slot is available; then wire one actual macro controller and retained
+    views.
 - id: IM01
   title: Overview
   status: todo
@@ -63,8 +66,8 @@ waves:
   depends_on:
   - IM00
   - IM03
-  next_action: Source review accepted after exact numerical repair; shared controller, browser and publication integration
-    remain owed.
+  next_action: Source review accepted after exact numerical repair; shared controller, browser and publication
+    integration remain owed.
 - id: IM07
   title: Library and deterministic search
   status: in_progress
@@ -89,9 +92,9 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Finish the same PR source release with fresh exact-candidate semantic evidence; then dispatch the already
-  adjudicated route-state core through an actually available admitted build slot. Preserve one leaf, source qualification
-  and incumbent Saved ownership.
+next_action: Complete exact-head Node20/semantic CI through the existing merge observer. The next Overview
+  projection selector returned NONE; preserve original root, one leaf and incumbent qualification/Saved owners
+  while waiting for actual admission.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
@@ -103,9 +106,10 @@ landmines:
 - This knowledge record grants no source lease, job, execution permission, routing or wake.
 - One integration writer owns the root controller, builder, main template and CI integration.
 - gpt-6.1-sol is catalog-visible but not in the installed native fabric allowlist at pickup.
-- Browser, rights and deployment proof remain separate gates; Follow remains excluded; Saved writes require the
-  existing Investigation owner and accepted interface.
+- Browser, rights and deployment proof remain separate gates; Follow remains excluded; Saved writes require
+  the existing Investigation owner and accepted interface.
 ---
+
 
 The Chairman delivered three waves to Astra in Codex root
 `01a1101f-2a37-7320-9a9b-5df3ce1b890d`. The logical plan uses one Sol 6.1
@@ -123,3 +127,5 @@ Search worker rs_20261006T092239Z_16794 delivered source after the commission wa
 IM00-T1a now adds an adapter inside the existing performance owner through two new paths. After two fully settled admitted timeouts returned no code, Astra took a documented critical-path exception; Sol independently approved exact source. The focused suite passes 43 cases on both Python3.14 and3.12, the prewritten harness passes43 assertions and Sol counterchecks pass23. All nine inherited owner/config inputs remain unchanged. IM00_T1A_EVIDENCE.json binds scope, hashes and limits. Numerical availability is not freshness/rights qualification; no page or production proof is claimed.
 
 IM00-T1b raw chart projection is independently approved at exact source/test hashes in IM00_T1B_EVIDENCE.json. Focused31tests pass locally and onPython3.12; integrated79tests andSol20additionalassertions pass. All13input hashes remain unchanged through the merge observer base refresh. The original worker returned partial source at timeout; parent repair/test derivative has separate acceptance. No qualified current comparison, UI or production claim follows.
+
+IM00-T3a source is independently approved:20 Node cases, frozen33+34 assertions andSol21additional assertions. Original timed-out Fabric candidates remain rejected; Astra repaired the derivative under a bounded exception. IM00_T3A_EVIDENCE.json binds exact bytes. Native Paper mobile light EN/ZH references are captured separately, not product proof. The next Overview projection is frozen but not dispatched after a fresh build selector NONE; no capacity or provider settings changed.

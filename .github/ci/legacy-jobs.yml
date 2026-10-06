@@ -3560,6 +3560,8 @@ jobs:
       - "templates/intl_library_search.js"
       - "tests/intl_library_search.test.cjs"
       - "tests/fixtures/intl_library_search_catalogue.json"
+      - "templates/intl_workspace_state.js"
+      - "tests/intl_workspace_state.test.cjs"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -3571,6 +3573,8 @@ jobs:
         run: node --test tests/intl_workspace_scenario_math.test.cjs
       - name: International Library search and reply identity
         run: node --test tests/intl_library_search.test.cjs
+      - name: International research context and route state
+        run: node --test tests/intl_workspace_state.test.cjs
 
   international-workspace-foundation:
     # Supplied-frame numerical records use the existing performance owner.
