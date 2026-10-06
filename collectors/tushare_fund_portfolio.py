@@ -32,6 +32,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from collectors import tushare_client as tc
+from collectors.china_tushare_spine import SpineError, canonical_identity
 from lib import config
 
 log = logging.getLogger("tushare_fund_portfolio")
@@ -53,12 +54,15 @@ _VENDOR_COLUMNS = (
     "stk_mkv_ratio",
     "stk_float_ratio",
 )
-_VERSION_KEY = ("fund_code", "ann_date", "period_end", "symbol")
+_VERSION_KEY = ("fund_code", "ann_date", "period_end", "security_id")
 _STORE_COLUMNS = (
     "fund_code",
     "ann_date",
     "period_end",
+    "source_symbol",
     "symbol",
+    "security_id",
+    "source_exchange",
     "market_value_cny",
     "shares",
     "fund_stock_mkv_ratio_pct",
@@ -127,18 +131,24 @@ def _normalize_frame(
     *,
     queried_ann_date: str,
     observed_at: str,
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
+    """Normalize only positively resolved mainland A-share identities.
+
+    The vendor's symbol field is evidence, not canonical identity authority.
+    Reuse Data OS canonical_identity so bare/malformed/off-venue values are
+    excluded and accounted rather than entering the tape as if canonical.
+    """
     missing = [name for name in _VENDOR_COLUMNS if name not in frame.columns]
     if missing:
         raise ValueError(f"fund_portfolio schema missing fields: {missing}")
 
     records: list[dict[str, Any]] = []
+    exclusions: list[dict[str, Any]] = []
     for raw in frame.loc[:, list(_VENDOR_COLUMNS)].to_dict("records"):
         ann_date = _clean(raw.get("ann_date"))
         period_end = _clean(raw.get("end_date"))
         fund_code = _clean(raw.get("ts_code"))
         symbol_raw = _clean(raw.get("symbol"))
-        symbol = tc.norm_ticker(symbol_raw) or symbol_raw
 
         if len(ann_date) != 8 or not ann_date.isdigit():
             raise ValueError("fund_portfolio row has invalid ann_date")
@@ -149,14 +159,25 @@ def _normalize_frame(
             )
         if len(period_end) != 8 or not period_end.isdigit():
             raise ValueError("fund_portfolio row has invalid end_date")
-        if not fund_code or not symbol:
-            raise ValueError("fund_portfolio row missing fund/security identity")
+        if not fund_code:
+            raise ValueError("fund_portfolio row missing fund identity")
+
+        try:
+            identity = canonical_identity(symbol_raw)
+        except SpineError:
+            exclusions.append({
+                "queried_ann_date": queried_ann_date,
+                "source_symbol": symbol_raw,
+                "reason": "unresolved_or_offscope_a_share_identity",
+            })
+            continue
 
         version_payload = {
             "fund_code": fund_code,
             "ann_date": ann_date,
             "period_end": period_end,
-            "symbol": symbol,
+            "symbol": identity.ticker,
+            "security_id": identity.security_id,
             "market_value_cny": _number(raw.get("mkv")),
             "shares": _number(raw.get("amount")),
             "fund_stock_mkv_ratio_pct": _number(raw.get("stk_mkv_ratio")),
@@ -164,6 +185,8 @@ def _normalize_frame(
         }
         records.append({
             **version_payload,
+            "source_symbol": symbol_raw,
+            "source_exchange": identity.source_exchange,
             "source_known_at_date": ann_date,
             "source_known_at_quality": "vendor_announcement_date_date_only",
             "first_collected_at": observed_at,
@@ -171,7 +194,7 @@ def _normalize_frame(
             "payload_sha256": _canonical_hash(version_payload),
         })
 
-    return pd.DataFrame(records)
+    return pd.DataFrame(records), exclusions
 
 
 def _with_lineage(frame: pd.DataFrame) -> pd.DataFrame:
@@ -182,6 +205,16 @@ def _with_lineage(frame: pd.DataFrame) -> pd.DataFrame:
     for col in _VERSION_KEY + ("payload_sha256", "first_collected_at"):
         if col not in out.columns:
             raise ValueError(f"fund_portfolio store missing {col}")
+
+    same_observation = out.groupby(
+        [*_VERSION_KEY, "first_collected_at"],
+        sort=False,
+        dropna=False,
+    )["payload_sha256"].nunique(dropna=False)
+    if bool((same_observation > 1).any()):
+        raise ValueError(
+            "fund_portfolio conflicting payloads share one observation instant"
+        )
 
     out = out.drop_duplicates(
         subset=[*_VERSION_KEY, "payload_sha256"],
@@ -241,6 +274,8 @@ def refresh(
     empty: list[str] = []
     unavailable: list[str] = []
     frames: list[pd.DataFrame] = []
+    identity_exclusions: list[dict[str, Any]] = []
+    source_rows_observed = 0
 
     for ann_date in requested:
         result = query(
@@ -257,13 +292,15 @@ def refresh(
         if result.empty:
             empty.append(ann_date)
             continue
-        frames.append(
-            _normalize_frame(
-                result,
-                queried_ann_date=ann_date,
-                observed_at=observed_at,
-            )
+        source_rows_observed += len(result)
+        normalized, excluded = _normalize_frame(
+            result,
+            queried_ann_date=ann_date,
+            observed_at=observed_at,
         )
+        identity_exclusions.extend(excluded)
+        if not normalized.empty:
+            frames.append(normalized)
 
     observed_rows = sum(len(frame) for frame in frames)
     existing = _read_existing()
@@ -279,8 +316,28 @@ def refresh(
         window_state = "source_unavailable"
     elif unavailable:
         window_state = "partial_request_window"
+    elif identity_exclusions:
+        window_state = "observed_with_identity_exclusions"
     else:
         window_state = "observed_request_window"
+
+    exclusion_reasons: dict[str, int] = {}
+    exclusions_by_ann_date: dict[str, int] = {}
+    for row in identity_exclusions:
+        reason = str(row.get("reason") or "unknown")
+        ann_date = str(row.get("queried_ann_date") or "")
+        exclusion_reasons[reason] = exclusion_reasons.get(reason, 0) + 1
+        if ann_date:
+            exclusions_by_ann_date[ann_date] = exclusions_by_ann_date.get(ann_date, 0) + 1
+
+    if source_rows_observed == 0:
+        identity_state = "NO_SOURCE_ROWS"
+    elif not identity_exclusions:
+        identity_state = "ALL_SOURCE_ROWS_CANONICAL_A_SHARE"
+    elif observed_rows == 0:
+        identity_state = "ALL_SOURCE_ROWS_IDENTITY_EXCLUDED"
+    else:
+        identity_state = "PARTIAL_IDENTITY_EXCLUSIONS"
 
     health = {
         "schema": "tushare_fund_portfolio.health.v1",
@@ -314,6 +371,20 @@ def refresh(
                 "returned rows are not a full-population completeness receipt"
             ),
         },
+        "identity_accounting": {
+            "state": identity_state,
+            "source_rows_observed": source_rows_observed,
+            "accepted_a_share_rows": observed_rows,
+            "excluded_identity_rows": len(identity_exclusions),
+            "excluded_reasons": exclusion_reasons,
+            "excluded_by_ann_date": exclusions_by_ann_date,
+            "excluded_source_symbols_sample": [
+                str(row.get("source_symbol") or "")
+                for row in identity_exclusions[:8]
+            ],
+            "identity_owner": "collectors.china_tushare_spine.canonical_identity",
+        },
+        "source_rows_observed_this_run": source_rows_observed,
         "rows_observed_this_run": observed_rows,
         "new_distinct_versions": new_versions,
         "stored_distinct_versions": len(merged),
