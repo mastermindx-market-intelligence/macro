@@ -665,9 +665,7 @@ def _check_j5(soup: BeautifulSoup, standouts: dict[str, Any],
     wrapper = detail.find_parent(attrs={"data-setup-ticker": True}) \
         or detail
     setup_asof = wrapper.get("data-setup-asof", "")
-    entry_status_node = detail.select_one("[data-entry-status]")
-    entry_status = (entry_status_node.get("data-entry-status", "")
-                    if entry_status_node is not None else "")
+    entry_status = _entry_status(detail)
     # Match setup-asof against standouts.as_of OR the payload row's signal_asof.
     standouts_asof = standouts.get("as_of")
     payload_row = _standouts_payload_row(standouts, ticker or "")
@@ -813,11 +811,17 @@ def _setup_source_bodies(soup: BeautifulSoup,
     return displayed, templates
 
 
+def _entry_status(body: Tag) -> str:
+    """Read the native status attribute from the rendered pvs-read child."""
+    node = body.select_one("[data-entry-status]")
+    return str(node.get("data-entry-status", "")) if node is not None else ""
+
+
 def _body_binding(body: Tag) -> dict[str, Any]:
     clock = body.select_one(".pvs-summary-clock")
     return {
         "data-plan-relation": str(body.get("data-plan-relation", "")),
-        "data-entry-status": str(body.get("data-entry-status", "")),
+        "data-entry-status": _entry_status(body),
         "data-native-id": str(body.get("data-native-id", "")),
         "summary-clock-text": (clock.get_text(" ", strip=True, types=_TEXT_TYPES)
                                if clock else ""),
@@ -1026,7 +1030,7 @@ def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
     for body in selected_bodies:
         rendered_bindings.append({
             "ticker": str(body.get("data-native-id", "")),
-            "entry_status": str(body.get("data-entry-status", "")),
+            "entry_status": _entry_status(body),
             "signal_asof": str((_body_clock_text(body, ".pvs-assessment-clock")
                                 or {"data-assessment-asof": ""})
                                .get("data-assessment-asof", "")),

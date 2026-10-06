@@ -243,7 +243,7 @@ def _full_page(*, ticker: str = "TEST1", with_plan: bool = True,
          data-setup-ticker="{ticker}" data-setup-asof="{detail_as_of}">
 <summary><span class="l-en">Setup detail</span><span class="l-zh">形态详情</span></summary>
 <div class="pv-setup-body" data-setup-kind="board"
-     data-native-id="{ticker}" data-plan-relation="{plan_relation}" data-entry-status="{detail_entry_status}">
+     data-native-id="{ticker}" data-plan-relation="{plan_relation}">
   {plan_section}
   <p class="pvs-assessment-clock" data-assessment-asof="{assessment_asof}">
    <span class="l-en">Entry read date {assessment_asof}</span>
@@ -2295,3 +2295,24 @@ def test_candidate_row_absent_is_na_when_pool_not_captured(check_name):
     check = getattr(_pjr, check_name)
     result = check(soup, "TEST1", _standouts_payload(ticker="TEST1"))
     assert result["status"] == "N/A", result
+
+
+def test_entry_status_binding_reads_native_descendant_not_body_attribute():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    body = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
+    assert body is not None
+    del body["data-entry-status"]
+    assert _pjr._body_binding(body)["data-entry-status"] == "bounce_wait"
+
+
+def test_j7_passes_native_descendant_entry_status_without_body_attribute():
+    source = _standouts_payload(pool_digest="pool-source-digest")
+    soup = BeautifulSoup(_corrected_html(plan_relation="none"), _pjr.HTML_PARSER)
+    pool = soup.select_one("#us-candidate-pool")
+    assert pool is not None
+    pool["data-source-digest"] = source["candidate_pool"]["source_digest"]
+    body = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
+    assert body is not None
+    del body["data-entry-status"]
+    result = _pjr._check_j7(soup, source, "TEST1")
+    assert result["status"] == "PASS", result
