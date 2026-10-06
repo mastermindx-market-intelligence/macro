@@ -54,7 +54,7 @@ waves:
       #1219 issuecomment-5990732208); the generation-producer pairing is owed by the release/host
       owner (DSC:MCP-GENERATION-HAS-NO-ARMED-PUBLISHER-ON-MASTER); Sol owns its review gate (one
       P1: accept an absent print-disabled row as default-enabled); after #1257 it must re-merge
-      master (usage-string conflict only, issuecomment-5991833933). Reopen only for a changed head
+      master (usage-string conflict only, issuecomment-5991833933). UPDATE 2026-10-06: #1225 MERGED d8c302b8 and #1251 MERGED 7c12c394; #1219 head 7723ece3 closed the three gateway-refresh P1s (a7f829bf/307c4e7f, exact-head hosted gate green), must re-merge 7c12c394 (one comment-only hunk in tests/test_executive_mcp_web_ceo_v3.py; seat note #1219 issuecomment-6011249322) and carries Sol's in-flight full-resource preflight repair (issuecomment-6011068351); Sol is the active writer on that carrier. Reopen only for a changed head
       or a writer objection on the carrier.
   - id: P2
     title: Release-owner and install reproducibility without a second release controller
@@ -128,7 +128,7 @@ waves:
         75/effect_unknown only after an attempted modifying launchctl verb; Sol APPROVE 5412288374)
         together with #1250 Control-UID pre-arm quiescence (master 877b1e7f); installed generation
         5b244a2b is now behind master on ops/executive_os, so the host owner's install/qualify of a
-        generation at or after 877b1e7f is owed before activation. STILL BLOCKED at the HUMAN
+        generation at or after 877b1e7f is owed before activation. UPDATE 2026-10-06: master moved to d8c302b8 (#1225 OS consumer, accepts V3 1.4.0/1.5.0; merged 05:39Z) and 7c12c394 (#1251 V3 1.5.0 reconcile_ceo_request; merged ~06:34Z after the one-file server.py union predicted by the seat pre-check #1251 issuecomment-6009775212), so installed 5b244a2b is now also behind on the MCP entry/server; the owed install is a generation at or after 7c12c394 or the #1219 merge SHA. STILL BLOCKED at the HUMAN
         Slack-admin ceremony (Sol fresh read 2026-10-05T09:16Z: no Mastermind Relay bot,
         #agent-dispatch 17 members without it, M2 agent-relay token/json/plist absent, launchd relay
         absent 113): app A0BUDHZ137A carries an inactive connections:write app-level token and no
@@ -140,7 +140,7 @@ waves:
         Seat role per Sol issuecomment-5991567681: C3 integration/acceptance only. ChatGPT product
         gate: Business cannot refresh a published app in place, so a fresh custom MCP app is
         recreated and republished on the existing tunnel/OAuth resource with the then-installed tool
-        inventory (V3 1.4.0 = 10 tools today; #1251 would make it 1.5.0 / 11), admin acknowledgement
+        inventory (installed V3 1.4.0 = 10 tools today; protected master 7c12c394 carries #1251 → 1.5.0 / 11 tools after the next install, so the recreate waits for that install receipt), admin acknowledgement
         and Auth0 entry all human (issuecomment-5984271681); first acceptance read-only in a new
         conversation. Remote Control toggle for this seat's session only if a Claude-native child
         is ever the canary target. The draft product slice (render EFFECT_UNKNOWN roots distinctly)
@@ -157,7 +157,7 @@ waves:
 next_action: >
   Integrator on the XH chain (C3 integration/acceptance only, Sol issuecomment-5991567681): consume
   the Slack ceremony receipt against DEC:A2-CEREMONY-RECEIPT-REQUIRES-NO-APP-LEVEL-TOKEN; consume
-  the host owner's install receipt for a generation at or after master 877b1e7f (#1257 + #1250)
+  the host owner's install receipt for a generation at or after master 7c12c394 (#1257 + #1250 + #1225 + #1251), or the #1219 merge SHA under Sol's release sequencing (Mastermind #1143 issuecomment-6010564791: protect #1219 too, then ONE exact-source install, Gate B, receipt, acceptance, then MCP-only restart-gateway)
   and verify it read-only; one bounded watcher on #1143, #811, the terminal state of #1219/#1251
   and mission-path master; no reviews on #1219/#1251 while Sol owns their gates; no lane on the
   host, the Slack app or service-control.sh; final acceptance at the XH-5 outcome; #811 parked;
@@ -167,7 +167,7 @@ landmines:
   - "QUEUED is admission only; delivery is not ACK; ACK is not START; CI is not acceptance; merged is not installed; installed is not armed."
   - "The CEO-submit sink and the armed operator harness are mutually exclusive on current source; the runtime sink's not-yet-integrated eligibility gate is not permission."
   - "autonomy-state-v1.json and ceo-submit-state-v1.json are host-owner receipts; the seat reads them and never writes, arms, disarms or restarts."
-  - "Live Agent Relay activation (start-agent-relay) stays HELD: the Sol lifecycle lane merged as Mastermind #1257 (master 1df1367f, 2026-10-05T09:42Z) but is not installed; activation needs the host owner install of a generation at or after 877b1e7f plus the human ceremony and native-TTY enrollment. #1241/#1257 merged is not activation readiness."
+  - "Live Agent Relay activation (start-agent-relay) stays HELD: the Sol lifecycle lane merged as Mastermind #1257 (master 1df1367f, 2026-10-05T09:42Z) but is not installed; activation needs the host owner install of a generation at or after master 7c12c394 (or the #1219 merge SHA) plus the human ceremony and native-TTY enrollment. #1241/#1257 merged is not activation readiness."
   - "A release-SHA change never replays the CEO-submit arm; the host owner migrates the live config and arms canonically (autonomy-582e4c15d334 on 5b244a2b). Historical JOB-003/JOB-006 are preserved, never rewritten or replayed."
   - "The Slack-admin ceremony (app-level token deletion, two-scope reinstall, bot invite), the bot-token enrollment (stdin/native TTY, --enable-w3c) and the ChatGPT Business app recreate+republish are human/UI gates; a Web or seat session stops before them and never routes around them."
 do_not_redo:
@@ -182,6 +182,7 @@ do_not_redo:
   - "Do not re-post the #1227 review (pullrequestreview-5404908792) or the #1241 integration read (issuecomment-5978317957)."
   - "Do not re-file reviews on #1219 or #1251 while Sol (MastermindX1) owns their review gates; do not re-post the seat #1251 review (pullrequestreview-5408951316), the #1219 adjudication (issuecomment-5990732208) or the #1257 x #1219 merge pre-check (issuecomment-5991833933)."
   - "Do not enqueue, re-approve or re-merge Mastermind #1257 (merged 2026-10-05T09:42:52Z as 1df1367f) and do not create another canary Job: JOB-003 / JOB-013 are the natural acceptance roots (Sol issuecomment-5991883687); JOB-002 is never repurposed."
+  - "Do not re-post the seat integration notes #1219 issuecomment-6005154414 / issuecomment-6011249322 or #1251 issuecomment-6009775212; do not resolve #1219 master re-merges for its writer (Sol is the active writer on the carrier); #1225 was owned by a different session on the shared mastermindxryan identity — never treat it as a seat artifact."
 ---
 
 ## Why this workstream exists
