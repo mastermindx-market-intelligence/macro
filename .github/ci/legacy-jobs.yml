@@ -2105,6 +2105,7 @@ jobs:
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
       - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/selection_cohort_publication.py
+      - engine/theme_graph/selection_cohort_projection.py
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
       - "contracts/theme_graph/theme_state.v1.schema.json"
       - "contracts/theme_graph/theme_state.v2.schema.json"
@@ -8652,6 +8653,7 @@ jobs:
       - config/theme_graph_identity_breaks.yml
       - config/theme_sources.yml
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
+      - contracts/theme_graph/selection_cohort_projection.v1.schema.json
       - contracts/theme_graph/probation_proposal.v1.schema.json
       - contracts/theme_graph/theme_state.v1.schema.json
       - engine/__init__.py
@@ -8681,6 +8683,7 @@ jobs:
       - engine/theme_graph/ontology.py
       - engine/theme_graph/probation.py
       - engine/theme_graph/selection_cohort_reads.py
+      - engine/theme_graph/selection_cohort_projection.py
       - engine/theme_graph/store.py
       - engine/theme_graph/theme_state.py
       - lib/__init__.py
@@ -8704,6 +8707,7 @@ jobs:
       - tests/test_publish_company_theme_exposure_r2.py
       - tests/test_theme_graph_selection_cohort.py
       - tests/test_theme_graph_selection_cohort_reads.py
+      - tests/test_theme_graph_selection_cohort_projection.py
       - tests/test_theme_graph_state.py
       - collectors/_drip.py
       - collectors/base.py
@@ -9471,7 +9475,7 @@ jobs:
           test -f engine/theme_graph/theme_state.py
           test -f tests/test_theme_graph_state.py
           unset GMI_STATE_OWNER_WORKSPACE
-          TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py -q
+          TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py tests/test_theme_graph_selection_cohort_projection.py -q
       - name: GMI finalized cohort publication and unchanged owner serialization
         run: TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort_publication.py tests/test_china_standouts_serialization.py tests/test_build_china_library_more_actionable_guard.py tests/test_us_standouts_cascade_gate.py -q
 
@@ -15865,6 +15869,7 @@ jobs:
     # unknown. 12 minutes covers fusion + board-read + era + stage-analysis.
       - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/selection_cohort_publication.py
+      - engine/theme_graph/selection_cohort_projection.py
       - "engine/theme_graph/identity_resolution.py"
       - "engine/theme_graph/ontology.py"
       - "engine/theme_graph/probation.py"
