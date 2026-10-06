@@ -818,10 +818,10 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
     <div class="flag warn">⚑ {{ t('Legacy TP10 curve heuristic is below zero. This is context only; it does not prove an expectations-only or "real" inversion.', '旧版TP10曲线启发式低于零。该读数仅作背景，并不能证明纯预期或“真实”倒挂。') }}</div>
     {% endif %}
     <div style="margin-top:16px">
-      <div class="sub" style="margin-bottom:4px">{{ t('Recession spreads & TP10 heuristic over time — zero = flat, below zero = inverted', '衰退利差与TP10启发式走势 · 0=平坦，负值=倒挂') }}</div>
+      <div class="sub" style="margin-bottom:4px">{{ t('Recession spreads & TP10 heuristic over time — zero = flat heuristic, below zero = negative heuristic', '衰退利差与TP10启发式走势 · 0=启发式为平，负值=启发式为负') }}</div>
       {{ charts.spreads | safe }}
     </div>
-    <div class="sub faint" style="margin-top:8px">{{ t('10y−3m feeds the NY Fed model. The near-term forward spread is cleaner when markets price Fed cuts. The TP10 curve heuristic removes low-term-premium noise.', '10年−3月用于纽约联储模型。近端远期利差更能反映降息定价。TP10曲线启发式剔除低期限溢价噪音。') }}</div>
+    <div class="sub faint" style="margin-top:8px">{{ t('10y−3m feeds the NY Fed model. The near-term forward spread is cleaner when markets price Fed cuts. The TP10 curve heuristic combines 2s10s with the 10y term-premium model estimate; it does not isolate expectations.', '10年−3月用于纽约联储模型。近端远期利差更能反映降息定价。TP10曲线启发式把2年/10年利差与10年期限溢价模型估计相加；它并不分离纯预期成分。') }}</div>
     </div>
   </section>
   {% endif %}
