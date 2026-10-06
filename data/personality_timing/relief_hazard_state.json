@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-03",
+  "as_of": "2026-10-05",
   "authority": {
     "may_alert": false,
     "may_auto_promote": false,
@@ -38,10 +38,10 @@
   },
   "family": "pss_rh1_relief_hazard_prospective",
   "gate_open": true,
-  "generated_utc": "2026-10-03T05:50:38.066062+00:00",
+  "generated_utc": "2026-10-05T05:41:41.348184+00:00",
   "ledger": {
     "advanced_today": 0,
-    "appended_today": 4,
+    "appended_today": 0,
     "earliest_action": "2026-07-29",
     "events": 120,
     "latest_action": "2026-10-02",

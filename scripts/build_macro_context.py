@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -1250,6 +1251,357 @@ def _build_rebalance_chip(data_dir: "Path") -> dict | None:
     }
 
 
+def _decision_source_receipt(snapshot: dict | None, path: str, today: str) -> dict:
+    """Describe source dating without claiming vendor freshness."""
+    sources = (snapshot or {}).get("sources") or {}
+    raw_asof = sources.get(path)
+    age_days = None
+    if isinstance(raw_asof, str):
+        try:
+            age_days = (date.fromisoformat(today) - date.fromisoformat(raw_asof)).days
+        except Exception:
+            raw_asof = None
+    else:
+        raw_asof = None
+    date_status = "unknown"
+    if raw_asof:
+        date_status = "future" if age_days is not None and age_days < 0 else "known"
+    return {
+        "path": path,
+        "asof": raw_asof,
+        "date_status": date_status,
+        "age_days": age_days,
+    }
+
+
+def _decision_changes(transitions: list[dict], domains: set[str], limit: int = 8) -> list[dict]:
+    """Project only descriptive label transitions for the requested domains."""
+    rows: list[dict] = []
+    for row in transitions or []:
+        if not isinstance(row, dict) or row.get("domain") not in domains:
+            continue
+        rows.append({
+            "asof": row.get("asof"),
+            "domain": row.get("domain"),
+            "field": row.get("field"),
+            "from": row.get("from_value") if "from_value" in row else row.get("from"),
+            "to": row.get("to_value") if "to_value" in row else row.get("to"),
+        })
+    return rows[-limit:]
+
+
+def _decision_status(current_read: dict, gaps: list[dict]) -> str:
+    values = list(current_read.values())
+    if not any(value is not None for value in values):
+        return "unavailable"
+    if any(value is None for value in values) or gaps:
+        return "partial"
+    return "ready"
+
+
+def _direct_usd_xccy_basis(fx_lobe: dict, today: str) -> Any:
+    """Accept only a typed market-wide USD xccy receipt; CNH basis is not a substitute."""
+    try:
+        today_date = date.fromisoformat(today)
+    except (TypeError, ValueError):
+        return None
+
+    candidates = [
+        fx_lobe.get("direct_usd_cross_currency_basis"),
+        fx_lobe.get("usd_cross_currency_basis"),
+        (fx_lobe.get("funding") or {}).get("usd_cross_currency_basis")
+        if isinstance(fx_lobe.get("funding"), dict) else None,
+    ]
+    for value in candidates:
+        if not isinstance(value, dict):
+            continue
+        bps = value.get("value_bps")
+        asof = value.get("asof")
+        source = value.get("source")
+        if isinstance(bps, bool) or not isinstance(bps, (int, float)):
+            continue
+        try:
+            bps = float(bps)
+        except OverflowError:
+            continue
+        if not math.isfinite(bps):
+            continue
+        if not isinstance(source, str) or not source.strip():
+            continue
+        if not isinstance(asof, str):
+            continue
+        try:
+            if date.fromisoformat(asof) > today_date:
+                continue
+        except (TypeError, ValueError):
+            continue
+        return {
+            "value_bps": bps,
+            "asof": asof,
+            "source": source,
+            "date_status": "known",
+        }
+    return None
+
+
+def _build_decision_workspaces(
+    snapshot: dict | None,
+    world_state: dict | None,
+    regime_data: dict | None,
+    transitions: list[dict],
+    today: str,
+) -> dict:
+    """Display-only Bonds/FX decision projection over existing canonical owners.
+
+    This is deliberately not a state engine: it selects existing owner fields,
+    preserves source dating and gaps, and withholds probabilities/authority.
+    """
+    snap = snapshot or {}
+    labels = snap.get("labels") or {}
+    ws = world_state or {}
+    rates = ws.get("rates_credit") if isinstance(ws.get("rates_credit"), dict) else {}
+    fx = ws.get("fx_dollar") if isinstance(ws.get("fx_dollar"), dict) else {}
+    cross_asset = (
+        ws.get("cross_asset_flows")
+        if isinstance(ws.get("cross_asset_flows"), dict) else {}
+    )
+    regime = regime_data or {}
+    conditions = regime.get("conditions") if isinstance(regime.get("conditions"), dict) else {}
+    vintages = conditions.get("vintages") if isinstance(conditions.get("vintages"), dict) else {}
+
+    bond_labels = labels.get("bonds") if isinstance(labels.get("bonds"), dict) else {}
+    tx_labels = labels.get("transmission") if isinstance(labels.get("transmission"), dict) else {}
+    fx_labels = labels.get("fx") if isinstance(labels.get("fx"), dict) else {}
+
+    duration = (
+        (rates.get("bond_compass") or {}).get("duration")
+        if isinstance(rates.get("bond_compass"), dict) else {}
+    )
+    duration = duration if isinstance(duration, dict) else {}
+    curve_trade = (
+        (rates.get("bond_compass") or {}).get("curve_trade")
+        if isinstance(rates.get("bond_compass"), dict) else {}
+    )
+    curve_trade = curve_trade if isinstance(curve_trade, dict) else {}
+    drivers = rates.get("drivers_for") if isinstance(rates.get("drivers_for"), dict) else {}
+    equities_driver = drivers.get("equities") if isinstance(drivers.get("equities"), dict) else {}
+    forex_driver = drivers.get("forex") if isinstance(drivers.get("forex"), dict) else {}
+
+    bonds_current = {
+        "health": bond_labels.get("bond_health_label") or rates.get("health_label"),
+        "cycle": bond_labels.get("bond_cycle_phase") or rates.get("cycle_phase"),
+        "duration_lean": bond_labels.get("bond_duration_bucket") or duration.get("bucket"),
+        "curve_trade": bond_labels.get("bond_curve_lean") or curve_trade.get("lean"),
+        "yield_curve_regime": tx_labels.get("yield_curve_regime"),
+        "recession_risk": tx_labels.get("recession_risk"),
+    }
+    bonds_gaps: list[dict] = []
+    for key, path in (
+        ("bond_health_source", "data/bonds/bond_health.json"),
+        ("transmission_source", "data/transmission/latest.json"),
+    ):
+        receipt = _decision_source_receipt(snap, path, today)
+        if receipt["date_status"] != "known":
+            bonds_gaps.append({
+                "key": key,
+                "status": (
+                    "source_date_anomaly"
+                    if receipt["date_status"] == "future"
+                    else "missing_source_date"
+                ),
+                "note": (
+                    f"Selected source date for {path} is in the future."
+                    if receipt["date_status"] == "future"
+                    else f"No selected source date for {path}."
+                ),
+            })
+    bond_stale_keys = {
+        "ebp", "recession_risk", "hy_oas", "us10y", "real_10y",
+        "term_premium", "move", "ofr_fsi", "nfci", "anfci", "stlfsi",
+        "sofr_iorb", "repo",
+    }
+    for key in conditions.get("stale_inputs") or []:
+        if str(key) not in bond_stale_keys:
+            continue
+        vintage = vintages.get(key) if isinstance(vintages.get(key), dict) else {}
+        bonds_gaps.append({
+            "key": str(key),
+            "status": "stale_input",
+            "asof": vintage.get("asof"),
+            "age_days": vintage.get("age_days"),
+            "note": "Upstream regime contract reports this input stale.",
+        })
+    for gap in snap.get("gaps") or []:
+        bonds_gaps.append({
+            "key": "snapshot_gap",
+            "status": "reported",
+            "note": str(gap),
+        })
+    if not rates:
+        bonds_gaps.append({
+            "key": "rates_credit_lobe",
+            "status": "unavailable",
+            "note": "Canonical rates/credit display lobe is unavailable.",
+        })
+
+    fed_path = rates.get("fed_path") if isinstance(rates.get("fed_path"), dict) else {}
+    bonds = {
+        "status": None,
+        "display_only": True,
+        "claim_scope": "projection_only",
+        "probability_policy": "withheld",
+        "source_receipts": {
+            "bond_health": _decision_source_receipt(snap, "data/bonds/bond_health.json", today),
+            "transmission": _decision_source_receipt(snap, "data/transmission/latest.json", today),
+        },
+        "current_read": bonds_current,
+        "changes": _decision_changes(transitions, {"bonds", "transmission"}),
+        "mechanism_evidence": {
+            "fed_path": {
+                "policy_rate": fed_path.get("policy_rate"),
+                "implied_bp_12m": fed_path.get("implied_bp_12m"),
+            },
+            "real_10y": forex_driver.get("real_10y"),
+            "term_premium": forex_driver.get("term_premium"),
+            "curve_slope_10y3m": curve_trade.get("slope_10y3m"),
+        },
+        "transmission": {
+            "equities": {
+                key: equities_driver.get(key)
+                for key in ("note_en", "hy_oas", "credit_canary", "stock_bond_corr")
+                if key in equities_driver
+            },
+            "forex": {
+                key: forex_driver.get(key)
+                for key in ("note_en", "real_10y", "term_premium")
+                if key in forex_driver
+            },
+        } if rates else {},
+        "cross_asset": {
+            "asof": cross_asset.get("asof"),
+            "regime": cross_asset.get("regime"),
+            "funding_state": cross_asset.get("funding_state"),
+            "confirm_verdict": (
+                (cross_asset.get("confirm") or {}).get("verdict")
+                if isinstance(cross_asset.get("confirm"), dict) else None
+            ),
+        },
+        "data_gaps": bonds_gaps,
+    }
+    bonds["status"] = _decision_status(bonds_current, bonds_gaps)
+
+    desk = fx.get("dollar_desk") if isinstance(fx.get("dollar_desk"), dict) else {}
+    radar = fx.get("regime_radar") if isinstance(fx.get("regime_radar"), dict) else {}
+    fx_current = {
+        "usd_trend": fx_labels.get("usd_trend") or desk.get("trend"),
+        "usd_regime": fx_labels.get("usd_regime") or fx.get("regime"),
+        "fx_risk": fx_labels.get("fx_risk") or fx.get("risk"),
+        "desk_lean": desk.get("lean"),
+        "real_rate_regime": fx_labels.get("real_rate_regime") or desk.get("real_rate_regime"),
+        "fed_path_lean": fx_labels.get("fed_path_lean") or desk.get("fed_path_lean"),
+        "liquidity_dir": fx_labels.get("fx_liquidity_dir") or desk.get("liquidity_dir"),
+        "regime_radar": fx_labels.get("fx_regime_radar") or radar.get("dominant"),
+        "usd_positioning": fx_labels.get("usd_positioning"),
+        "usd_valuation": fx_labels.get("usd_valuation") or desk.get("usd_valuation"),
+    }
+    forex_gaps: list[dict] = []
+    fx_receipt = _decision_source_receipt(snap, "data/forex/latest.json", today)
+    if fx_receipt["date_status"] != "known":
+        forex_gaps.append({
+            "key": "forex_source",
+            "status": (
+                "source_date_anomaly"
+                if fx_receipt["date_status"] == "future"
+                else "missing_source_date"
+            ),
+            "note": (
+                "Selected source date for data/forex/latest.json is in the future."
+                if fx_receipt["date_status"] == "future"
+                else "No selected source date for data/forex/latest.json."
+            ),
+        })
+    direct_basis = _direct_usd_xccy_basis(fx, today)
+    if direct_basis is None:
+        forex_gaps.append({
+            "key": "direct_usd_cross_currency_basis",
+            "status": "unavailable",
+            "substitute_allowed": False,
+            "note": "Direct market-wide USD cross-currency basis is unavailable; CNH basis and funding proxies are not substitutes.",
+        })
+    if not fx:
+        forex_gaps.append({
+            "key": "fx_dollar_lobe",
+            "status": "unavailable",
+            "note": "Canonical FX/dollar display lobe is unavailable.",
+        })
+    for gap in snap.get("gaps") or []:
+        forex_gaps.append({
+            "key": "snapshot_gap",
+            "status": "reported",
+            "note": str(gap),
+        })
+
+    pair_rows = []
+    seen_pairs: set[str] = set()
+    for row in fx.get("pairs") or []:
+        if not isinstance(row, dict) or not row.get("pair"):
+            continue
+        pair = str(row.get("pair"))
+        if pair in seen_pairs:
+            continue
+        seen_pairs.add(pair)
+        pair_rows.append({"pair": pair, "action": row.get("action")})
+
+    transmission = fx.get("transmission") if isinstance(fx.get("transmission"), dict) else {}
+    forex = {
+        "status": None,
+        "display_only": True,
+        "claim_scope": "projection_only",
+        "probability_policy": "withheld",
+        "source_receipts": {"forex": fx_receipt},
+        "current_read": fx_current,
+        "changes": _decision_changes(transitions, {"fx"}),
+        "mechanism_evidence": {
+            "desk_lean": desk.get("lean"),
+            "real_rate_regime": desk.get("real_rate_regime"),
+            "fed_path_lean": desk.get("fed_path_lean"),
+            "liquidity_dir": desk.get("liquidity_dir"),
+            "active_scenarios": list(radar.get("active_scenarios", radar.get("active")) or []),
+            "building_scenarios": list(radar.get("building_scenarios") or []),
+        },
+        "transmission": {
+            key: transmission.get(key)
+            for key in ("usd_dir", "headwind_for", "tailwind_for", "unstable")
+            if key in transmission
+        } if fx else {},
+        "pairs": pair_rows,
+        "funding_evidence": {
+            "direct_usd_cross_currency_basis": direct_basis,
+            "proxy_funding_state": cross_asset.get("funding_state"),
+            "proxy_asof": cross_asset.get("asof"),
+        },
+        "cross_asset": {
+            "asof": cross_asset.get("asof"),
+            "regime": cross_asset.get("regime"),
+            "confirm_verdict": (
+                (cross_asset.get("confirm") or {}).get("verdict")
+                if isinstance(cross_asset.get("confirm"), dict) else None
+            ),
+        },
+        "data_gaps": forex_gaps,
+    }
+    forex["status"] = _decision_status(fx_current, forex_gaps)
+
+    return {
+        "schema": "macro_context.decision_workspaces.v1",
+        "display_only": True,
+        "claim_scope": "projection_only",
+        "probability_policy": "withheld",
+        "bonds": bonds,
+        "forex": forex,
+    }
+
+
 def _build_view_model(
     snapshot: dict | None,
     world_state: dict | None,
@@ -1307,6 +1659,9 @@ def _build_view_model(
     contradictions = _build_contradictions(world_state)
     ms_history = _ms_history(data_dir / "regime" / "market_state_history.parquet")
     rebalance_chip = _build_rebalance_chip(data_dir)
+    decision_workspaces = _build_decision_workspaces(
+        snapshot, world_state, regime_data, transitions, today
+    )
 
     return {
         # Hub contract keys (exact, unchanged)
@@ -1329,6 +1684,7 @@ def _build_view_model(
         "snapshot_present": snapshot is not None,
         "world_state_present": world_state is not None,
         "rebalance_chip": rebalance_chip,
+        "decision_workspaces": decision_workspaces,
     }
 
 

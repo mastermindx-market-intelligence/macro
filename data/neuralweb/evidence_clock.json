@@ -1,13 +1,13 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-10-02",
-  "generated_utc": "2026-10-02T11:11:32Z",
+  "as_of": "2026-10-05",
+  "generated_utc": "2026-10-05T10:16:25Z",
   "authority": "display_only",
   "summary": {
-    "n_rows": 319,
+    "n_rows": 322,
     "by_state": {
-      "overdue": 77,
-      "due": 50,
+      "overdue": 81,
+      "due": 49,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
@@ -22,7 +22,7 @@
       "due_at": "2026-06-22",
       "owner_program": "qualitative-intelligence"
     },
-    "morning_line": "127 due/overdue, 1 missing, 188 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
+    "morning_line": "130 due/overdue, 1 missing, 188 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
   },
   "rows": [
     {
@@ -230,7 +230,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 42146,
-        "n_past_check_by": 33338
+        "n_past_check_by": 33550
       },
       "allowed_actions": [
         "inspect",
@@ -278,7 +278,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 42146,
-        "n_past_check_by": 33338
+        "n_past_check_by": 33550
       },
       "allowed_actions": [
         "inspect",
@@ -417,8 +417,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 226,
-        "n_past_check_by": 197
+        "n_open": 236,
+        "n_past_check_by": 226
       },
       "allowed_actions": [
         "inspect",
@@ -465,7 +465,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 5868,
+        "n_open": 6070,
         "n_past_check_by": 4511
       },
       "allowed_actions": [
@@ -578,7 +578,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 1585,
-        "n_past_check_by": 644
+        "n_past_check_by": 658
       },
       "allowed_actions": [
         "inspect",
@@ -642,7 +642,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 43,
-        "n_past_check_by": 15
+        "n_past_check_by": 18
       },
       "allowed_actions": [
         "inspect",
@@ -1059,7 +1059,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 20,
+        "n_open": 21,
         "n_past_check_by": 10
       },
       "allowed_actions": [
@@ -2382,8 +2382,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 13602,
-        "n_past_check_by": 3575
+        "n_open": 13928,
+        "n_past_check_by": 3860
       },
       "allowed_actions": [
         "inspect",
@@ -2596,70 +2596,6 @@
       "packet": null
     },
     {
-      "clock_id": "qledger:thematic_desk",
-      "source_system": "qledger",
-      "subject_id": "thematic_desk",
-      "subject_type": "claim_family",
-      "owner_program": null,
-      "clock_type": "check_by",
-      "due_at": "2026-09-28",
-      "as_of": null,
-      "state": "overdue",
-      "date_state": "overdue",
-      "readiness": {
-        "n_open": 54,
-        "n_past_check_by": 3
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [
-        "data/qledger/claims.jsonl"
-      ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "qledger:stock_desk",
-      "source_system": "qledger",
-      "subject_id": "stock_desk",
-      "subject_type": "claim_family",
-      "owner_program": null,
-      "clock_type": "check_by",
-      "due_at": "2026-09-29",
-      "as_of": null,
-      "state": "overdue",
-      "date_state": "overdue",
-      "readiness": {
-        "n_open": 132,
-        "n_past_check_by": 12
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [
-        "data/qledger/claims.jsonl"
-      ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
       "clock_id": "experiments:btc-regime-ledger",
       "source_system": "experiments",
       "subject_id": "btc-regime-ledger",
@@ -2668,8 +2604,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-25",
       "as_of": "2026-06-20",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "First 90d window closes 2026-09-18. Falsifier needs >=8 graded quarters (~2028-06). Independent-episode count, not row count, is the honest denominator.",
         "cadence": "daily",
@@ -2700,8 +2636,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-26",
       "as_of": "2026-06-15",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "PL-R4: first SCOREABLE read at refire_lockout_sessions=63d from first fires (entry books need >=21 matured obs; long-hold >=10). Ruler: 126d_252d_sector_relative_spy_excess_descriptive. SA-R5: replay may authorize shadow experiments at Tier-0; promotion requires pre-registered gauntlet (Tier-2).",
         "cadence": "daily",
@@ -2732,8 +2668,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-26",
       "as_of": "2026-06-15",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "PL-R4: first SCOREABLE read at refire_lockout_sessions=63d from first fires (entry books need >=21 matured obs; long-hold >=10). Ruler: 126d_252d_sector_relative_spy_excess_descriptive. SA-R5: replay may authorize shadow experiments at Tier-0; promotion requires pre-registered gauntlet (Tier-2).",
         "cadence": "daily",
@@ -2764,8 +2700,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-26",
       "as_of": "2026-06-15",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "PL-R4: first SCOREABLE read at refire_lockout_sessions=63d from first fires (entry books need >=21 matured obs; long-hold >=10). Ruler: 126d_252d_sector_relative_spy_excess_descriptive. SA-R5: replay may authorize shadow experiments at Tier-0; promotion requires pre-registered gauntlet (Tier-2).",
         "cadence": "daily",
@@ -2782,6 +2718,70 @@
         "score"
       ],
       "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "qledger:thematic_desk",
+      "source_system": "qledger",
+      "subject_id": "thematic_desk",
+      "subject_type": "claim_family",
+      "owner_program": null,
+      "clock_type": "check_by",
+      "due_at": "2026-09-28",
+      "as_of": null,
+      "state": "overdue",
+      "date_state": "overdue",
+      "readiness": {
+        "n_open": 58,
+        "n_past_check_by": 4
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/qledger/claims.jsonl"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "qledger:stock_desk",
+      "source_system": "qledger",
+      "subject_id": "stock_desk",
+      "subject_type": "claim_family",
+      "owner_program": null,
+      "clock_type": "check_by",
+      "due_at": "2026-09-29",
+      "as_of": null,
+      "state": "overdue",
+      "date_state": "overdue",
+      "readiness": {
+        "n_open": 152,
+        "n_past_check_by": 12
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/qledger/claims.jsonl"
+      ],
       "regenerate_cmd": null,
       "acknowledged": false,
       "review": null,
@@ -4144,13 +4144,77 @@
       "packet": null
     },
     {
+      "clock_id": "experiments:exit_crowding_phase0",
+      "source_system": "experiments",
+      "subject_id": "exit_crowding_phase0",
+      "subject_type": "phase0_battery",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-04",
+      "as_of": "2026-07-04",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "L4 gate needs n >= 60 matured 21d fires on the sector-ETF PRIMARY lane; each leg additionally splits 2018-19/2020-22/2023-> (>=20/era to report an era mean). BH q<=0.10 within the 16-trial EXIT-CROWD sub-family, printed ONLY when L1-L4 all complete. Below floor => ACCRUE, never KILL (§4).",
+        "cadence": "daily snapshot accrual + on-manifest run",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:species-S14",
+      "source_system": "experiments",
+      "subject_id": "species-S14",
+      "subject_type": "species_phase0",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-05",
+      "as_of": "2026-07-05",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "Phase-0 W1. Requires ≥25 logged failed-breakout fire events for statistical feasibility (MIN_N=25 server clamp). Come-back 2026-10-05 allows one full quarter of accrual. The research queue ranker (nw-quant-synthesis B) lists S14 as its first ranked customer.",
+        "cadence": "quarterly",
+        "status": "registered",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
       "clock_id": "rule_experiments:disp_gate_1",
       "source_system": "rule_experiments",
       "subject_id": "disp_gate_1",
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-02",
+      "due_at": "2026-10-05",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -4182,7 +4246,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-02",
+      "due_at": "2026-10-05",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -4214,7 +4278,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-02",
+      "due_at": "2026-10-05",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -4246,7 +4310,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-02",
+      "due_at": "2026-10-05",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -4265,6 +4329,39 @@
       ],
       "evidence_refs": [
         "data/rule_experiments/registry.jsonl"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "species:S14",
+      "source_system": "species",
+      "subject_id": "S14",
+      "subject_type": "hypothesis",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-05",
+      "as_of": "2026-07-03",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "validation_status": "phase0",
+        "deployment_status": "unshipped",
+        "cadence": "quarterly"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/species/registry.json"
       ],
       "regenerate_cmd": null,
       "acknowledged": false,
@@ -4317,11 +4414,8 @@
       "readiness": {
         "as_of": "2026-09-01",
         "stale_chips": [
-          "market",
           "reliability",
           "contradictions",
-          "bottom_sensors",
-          "cortex",
           "government_revenue"
         ]
       },
@@ -4405,10 +4499,10 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 115857,
-        "n_with_falsifier": 1094,
-        "falsifier_coverage": "0.9%",
-        "blocking_reason": "falsifier coverage 0.9%; not a promotion-grade substrate"
+        "n_claims": 116421,
+        "n_with_falsifier": 1124,
+        "falsifier_coverage": "1.0%",
+        "blocking_reason": "falsifier coverage 1.0%; not a promotion-grade substrate"
       },
       "allowed_actions": [
         "inspect",
@@ -4421,101 +4515,6 @@
       ],
       "evidence_refs": [
         "data/qledger/claims.jsonl"
-      ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:exit_crowding_phase0",
-      "source_system": "experiments",
-      "subject_id": "exit_crowding_phase0",
-      "subject_type": "phase0_battery",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-04",
-      "as_of": "2026-07-04",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "L4 gate needs n >= 60 matured 21d fires on the sector-ETF PRIMARY lane; each leg additionally splits 2018-19/2020-22/2023-> (>=20/era to report an era mean). BH q<=0.10 within the 16-trial EXIT-CROWD sub-family, printed ONLY when L1-L4 all complete. Below floor => ACCRUE, never KILL (§4).",
-        "cadence": "daily snapshot accrual + on-manifest run",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:species-S14",
-      "source_system": "experiments",
-      "subject_id": "species-S14",
-      "subject_type": "species_phase0",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-05",
-      "as_of": "2026-07-05",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "Phase-0 W1. Requires ≥25 logged failed-breakout fire events for statistical feasibility (MIN_N=25 server clamp). Come-back 2026-10-05 allows one full quarter of accrual. The research queue ranker (nw-quant-synthesis B) lists S14 as its first ranked customer.",
-        "cadence": "quarterly",
-        "status": "registered"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "species:S14",
-      "source_system": "species",
-      "subject_id": "S14",
-      "subject_type": "hypothesis",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-10-05",
-      "as_of": "2026-07-03",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "validation_status": "phase0",
-        "deployment_status": "unshipped",
-        "cadence": "quarterly"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [
-        "data/species/registry.json"
       ],
       "regenerate_cmd": null,
       "acknowledged": false,
@@ -6247,6 +6246,102 @@
       ],
       "evidence_refs": [
         "data/radar/radar_ic.json"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "cortex:cortex-2026-10-02-when-net-liquidity-is-expanding-but-the-7c3e49",
+      "source_system": "cortex",
+      "subject_id": "cortex-2026-10-02-when-net-liquidity-is-expanding-but-the-7c3e49",
+      "subject_type": "hypothesis",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-30",
+      "as_of": "2026-10-02",
+      "state": "accruing",
+      "date_state": "accruing",
+      "readiness": {
+        "horizon_d": 21,
+        "status": "registered"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/neuralweb/machine_registry.jsonl"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "cortex:cortex-2026-10-03-in-q2-observations-zero-agreement-bonds-061ea1",
+      "source_system": "cortex",
+      "subject_id": "cortex-2026-10-03-in-q2-observations-zero-agreement-bonds-061ea1",
+      "subject_type": "hypothesis",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-31",
+      "as_of": "2026-10-03",
+      "state": "accruing",
+      "date_state": "accruing",
+      "readiness": {
+        "horizon_d": 21,
+        "status": "registered"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/neuralweb/machine_registry.jsonl"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "cortex:cortex-2026-10-03-when-semiconductor-leadership-persists-w-c546b6",
+      "source_system": "cortex",
+      "subject_id": "cortex-2026-10-03-when-semiconductor-leadership-persists-w-c546b6",
+      "subject_type": "hypothesis",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-31",
+      "as_of": "2026-10-03",
+      "state": "accruing",
+      "date_state": "accruing",
+      "readiness": {
+        "horizon_d": 21,
+        "status": "registered"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/neuralweb/machine_registry.jsonl"
       ],
       "regenerate_cmd": null,
       "acknowledged": false,
@@ -9963,12 +10058,12 @@
       "owner_program": null,
       "clock_type": "fdr_batch_due",
       "due_at": null,
-      "as_of": "2026-09-27",
+      "as_of": "2026-10-03",
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_trials": 21,
-        "last_ts": "2026-09-27T22:32:17.457584+00:00"
+        "n_trials": 24,
+        "last_ts": "2026-10-03T21:03:47.862197+00:00"
       },
       "allowed_actions": [
         "inspect",
@@ -10027,12 +10122,12 @@
       "owner_program": null,
       "clock_type": "fdr_batch_due",
       "due_at": null,
-      "as_of": "2026-08-17",
+      "as_of": "2026-09-17",
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_trials": 240,
-        "last_ts": "2026-08-17T09:00:09.619677+00:00"
+        "n_trials": 324,
+        "last_ts": "2026-09-17T22:52:36.763240+00:00"
       },
       "allowed_actions": [
         "inspect",

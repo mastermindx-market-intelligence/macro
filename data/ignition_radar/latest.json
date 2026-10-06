@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-02",
+  "as_of": "2026-10-04",
   "data_session": "2026-10-02",
   "state": "off",
   "k_count": 0,
@@ -55,8 +55,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "pct_above_50=22.4% (was 31.4% 10d ago)",
-      "detail_zh": "50\u65e5\u7ebf\u4e0a\u6bd4\u4f8b=22.4%\uff0810\u65e5\u524d31.4%\uff09",
+      "detail_en": "pct_above_50=24.2% (was 28.6% 10d ago)",
+      "detail_zh": "50\u65e5\u7ebf\u4e0a\u6bd4\u4f8b=24.2%\uff0810\u65e5\u524d28.6%\uff09",
       "source": "breadth"
     },
     {
@@ -66,8 +66,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "10d mean(nh-nl)=-17.8 (was -6.2 10d ago)",
-      "detail_zh": "10\u65e5\u5747(\u65b0\u9ad8-\u65b0\u4f4e)=-17.8\uff0810\u65e5\u524d-6.2\uff09",
+      "detail_en": "10d mean(nh-nl)=-16.9 (was -9.7 10d ago)",
+      "detail_zh": "10\u65e5\u5747(\u65b0\u9ad8-\u65b0\u4f4e)=-16.9\uff0810\u65e5\u524d-9.7\uff09",
       "source": "breadth"
     },
     {
@@ -301,7 +301,7 @@
     "n_qualifying": 22,
     "null": false,
     "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-    "as_of": "2026-10-02"
+    "as_of": "2026-10-04"
   },
   "narrow_top": {
     "basket_id": "SMH",

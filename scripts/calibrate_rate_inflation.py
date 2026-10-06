@@ -3,12 +3,12 @@ and honestly test whether any rate/inflation leg earns a SCORED tier.
 
 The dashboard already SCORES the validated rate/inflation legs that have forward
 content (breakeven direction + TIPS-nominal momentum in the inflation axis; real
-yields for commodities/BTC; the term-premium-adjusted curve in recession-risk). This
+yields for commodities/BTC; the legacy TP10 curve heuristic in recession-risk). This
 calibrator does two NEW things, both leakage-free:
 
   1. TRANSMISSION MATRIX (display-only coefficients). For every rate/inflation DRIVER
      (real-rate level & 63d SPEED, nominal-rate speed, breakeven level & change, 5y5y,
-     the TP-adjusted curve, the us2y-funds policy gap, the core-PCE-vs-2%-target gap,
+     the legacy TP10 curve heuristic, the us2y-funds policy gap, the core-PCE-vs-2%-target gap,
      a 3m-vs-12m inflation re-acceleration read, and a market-vs-model expectations
      wedge) measured against the strictly-FORWARD return of every asset class we track
      (broad equities, growth/duration/financial/energy/defensive sectors, gold, oil,
@@ -174,7 +174,7 @@ SCORED_CANDIDATES = [
     ("corepce_gap", +1, "Core-PCE-vs-target gap (sticky inflation)"),
     ("infl_accel", +1, "Inflation re-acceleration (3m>12m)"),
     ("exp_wedge", +1, "Expectations unanchoring (market>model)"),
-    ("curve_tp_adj", -1, "TP-adjusted curve inversion (flip: low=stress)"),
+    ("curve_tp_adj", -1, "Legacy TP10 curve heuristic (flip: low=stress; not expectations-only)"),
     ("nom10y_chg63", +1, "Nominal-rate SPEED (63d rise)"),
     # --- yield-curve SHAPE candidates (engine/yield_curve.py) — tested on the same bar
     ("ntfs", -1, "Near-term forward spread inversion (flip: low=stress; Engstrom-Sharpe beats 2s10s)"),

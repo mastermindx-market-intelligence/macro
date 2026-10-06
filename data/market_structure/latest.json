@@ -1,7 +1,7 @@
 {
   "schema": "market_structure_context.v1",
   "asof": "2026-10-02",
-  "built_at": "2026-10-03T05:59:08.612146+00:00",
+  "built_at": "2026-10-05T05:51:19.821432+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
@@ -4529,7 +4529,7 @@
     "cor1m_pctile_hi": 80,
     "cor1m_available": true,
     "cor3m": 11.48,
-    "dspx": 35.57,
+    "dspx": 34.7,
     "history": [
       {
         "date": "2024-10-04",

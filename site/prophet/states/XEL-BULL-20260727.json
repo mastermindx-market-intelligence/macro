@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "XEL-BULL-20260727",
-  "asof": "2026-10-02",
+  "asof": "2026-10-06",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.399,
+    "dist_to_stop_r": -0.382,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 111.1,
-    "p1": -0.9323,
-    "p2": -0.4662,
+    "horizon_pct_used": 120.0,
+    "p1": -0.9213,
+    "p2": -0.4606,
     "p3": null,
-    "move_r": -1.399,
+    "move_r": -1.382,
     "mfe_r": 0.079,
     "mae_r": -1.876
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 50,
-  "tau": 1.1111
+  "days_elapsed": 54,
+  "tau": 1.2
 }

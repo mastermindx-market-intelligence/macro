@@ -8,7 +8,7 @@
   "scope_en": "India national economy; Nifty 50 and Sensex are market context.",
   "scope_zh": "印度全国经济；Nifty 50与Sensex仅作市场背景。",
   "asof": "2026-10-01",
-  "built": "2026-10-02 10:32 UTC",
+  "built": "2026-10-05 09:25 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
@@ -16,7 +16,7 @@
     "inflation_score": 0.0,
     "confidence": 0.083,
     "liquidity": "unknown",
-    "recession_score": 61.0,
+    "recession_score": 59.0,
     "recession_band": "watch",
     "data_limited": true
   },
@@ -41,7 +41,7 @@
       "base": 50.0,
       "growth": -7.33,
       "inflation": -0.0,
-      "recession": -10.98,
+      "recession": -10.62,
       "liquidity": 0.0,
       "risk_state": 0.0
     },
@@ -183,15 +183,15 @@
     "index_label": "Nifty 50 / Sensex",
     "currency_label": "USD/INR",
     "equity": {
-      "price": 22284.0,
-      "off_52w_high": -15.4,
+      "price": 22421.95,
+      "off_52w_high": -14.8,
       "above_50d": false,
       "above_200d": false,
-      "realvol": 10.7,
-      "rsi": 21.0,
-      "ext_z": -1.65,
-      "ext_grade": "steady",
-      "drawdown_risk": 61.0,
+      "realvol": 10.1,
+      "rsi": 23.0,
+      "ext_z": -1.53,
+      "ext_grade": "intrend",
+      "drawdown_risk": 60.0,
       "drawdown_band": "elevated",
       "bubble_flag": false
     }
@@ -204,17 +204,17 @@
   },
   "risk": {
     "state": "watch",
-    "top_score": 71,
+    "top_score": 69,
     "dominant_en": "US rate shock",
     "dominant_zh": "美债利率冲击",
     "h21": 0.185,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
-      "intensity": 70.6,
+      "intensity": 69.2,
       "peak": 95.2,
       "peak_days_ago": 4,
-      "off_peak": 24.6,
-      "velocity": 15.9,
+      "off_peak": 26.0,
+      "velocity": 14.5,
       "phase": "rising",
       "reached_risk": true,
       "state_now": "watch",
@@ -245,16 +245,16 @@
         63.1,
         66.5,
         69.6,
-        70.6
+        69.2
       ],
-      "spark_pts": "3.0,21.7 6.9,23.0 10.8,21.1 14.7,19.3 18.7,21.0 22.6,21.8 26.5,21.0 30.4,22.8 34.3,21.4 38.2,17.8 42.1,11.6 46.0,12.1 50.0,10.6 53.9,12.5 57.8,13.8 61.7,9.5 65.6,15.7 69.5,12.6 73.4,12.9 77.3,3.0 81.3,10.8 85.2,10.0 89.1,9.3 93.0,9.0",
+      "spark_pts": "3.0,21.7 6.9,23.0 10.8,21.1 14.7,19.3 18.7,21.0 22.6,21.8 26.5,21.0 30.4,22.8 34.3,21.4 38.2,17.8 42.1,11.6 46.0,12.1 50.0,10.6 53.9,12.5 57.8,13.8 61.7,9.5 65.6,15.7 69.5,12.6 73.4,12.9 77.3,3.0 81.3,10.8 85.2,10.0 89.1,9.3 93.0,9.3",
       "spark_peak": {
         "x": 77.3,
         "y": 3.0
       },
       "spark_last": {
         "x": 93.0,
-        "y": 9.0
+        "y": 9.3
       },
       "spark_w": 96,
       "spark_h": 26,
@@ -266,22 +266,22 @@
         "tier": "A",
         "label_en": "US rate shock",
         "label_zh": "美债利率冲击",
-        "score": 97.9,
+        "score": 96.3,
         "band": "risk-off",
         "firing_legs": [
           {
             "leg": "us_real_rate",
-            "pctile": 0.993,
+            "pctile": 0.99,
             "confirmed": true
           },
           {
             "leg": "us_rate_10y",
-            "pctile": 0.98,
+            "pctile": 0.959,
             "confirmed": true
           },
           {
             "leg": "us_rate_2y",
-            "pctile": 0.965,
+            "pctile": 0.94,
             "confirmed": true
           }
         ]
@@ -306,7 +306,7 @@
         "tier": "A",
         "label_en": "Parabolic extension / exhaustion",
         "label_zh": "抛物线伸展／透支",
-        "score": 6.7,
+        "score": 6.2,
         "band": "calm",
         "firing_legs": []
       }
@@ -390,8 +390,8 @@
       "key": "drawdown",
       "label_en": "Index from 52w high",
       "label_zh": "指数距52周高点",
-      "raw": -15.4,
-      "value": "-15.40%",
+      "raw": -14.8,
+      "value": "-14.80%",
       "unit": "%",
       "asof": null
     },
@@ -399,8 +399,8 @@
       "key": "realvol",
       "label_en": "Realized volatility",
       "label_zh": "实现波动率",
-      "raw": 10.7,
-      "value": "10.70%",
+      "raw": 10.1,
+      "value": "10.10%",
       "unit": "%",
       "asof": null
     }
@@ -557,7 +557,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2025-03",
-      "age_days": 580,
+      "age_days": 583,
       "state": "stale",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -581,7 +581,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-07",
-      "age_days": 93,
+      "age_days": 96,
       "state": "stale",
       "label_en": "Rates",
       "label_zh": "利率"
@@ -641,6 +641,13 @@
   ],
   "caveat_en": "India’s official data are distributed across MoSPI and RBI systems. Until each adapter passes release-period and unit checks, unavailable fields remain blank rather than backfilled with unrelated proxies.",
   "caveat_zh": "印度官方数据分布于MoSPI与RBI系统。在各适配器通过发布期与单位检查前，不可用字段保持空白，不以无关代理补填。",
+  "dossier": {
+    "schema": "intl_country_dossier.v1",
+    "state": "no_coverage",
+    "items": [],
+    "stance": null,
+    "leadership": "no rights-cleared source"
+  },
   "navigation": [
     {
       "cc": "JP",

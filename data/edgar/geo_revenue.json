@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-10-03T03:51:17.692238+00:00",
+"updated":"2026-10-06T04:22:09.597302+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -35791,8 +35791,8 @@
 "attempted":2878,
 "parsed":1002,
 "skips":{
-"no_geo_axis":1369,
-"no_denominator":399,
+"no_geo_axis":1370,
+"no_denominator":398,
 "no_10k":72,
 "no_instance":27,
 "agg_no_total":3,

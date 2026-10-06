@@ -33,6 +33,17 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "Bash|PowerShell|Edit|Write|MultiEdit|NotebookEdit|Agent|Task|Workflow|Skill|EnterWorktree|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/ship_loop_guard.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking session delivery root"
+          }
+        ]
+      },
+      {
         "matcher": "Agent|Task|Workflow",
         "hooks": [
           {
@@ -83,6 +94,17 @@
             "statusMessage": "Regenerating chat.html nav from _site_nav.html.j2"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/ship_loop_guard.py\"",
+            "timeout": 10,
+            "statusMessage": "Capturing report-only Agent OS PR metadata"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -93,6 +115,16 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/ship_loop_hold_wrapper.py\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/ship_loop_guard.py\"",
             "timeout": 540,
             "statusMessage": "Verifying ship state, including lawful external holds"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/agentos.py\" ship-report --hook || true",
+            "timeout": 10,
+            "statusMessage": "Checking the advisory Agent OS handoff reminder"
           }
         ]
       }

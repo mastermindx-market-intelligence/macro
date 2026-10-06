@@ -52,6 +52,8 @@ artifacts:
   - contracts/evidence_foundation/block.v1.schema.json
   - contracts/evidence_foundation/recipe.v1.schema.json
   - contracts/evidence_foundation/vocabulary.v1.json
+  - research/alpha_intelligence/expectation_market_dynamics/SRC_A1_POST_REPAIR_ACCEPTANCE_2026-10-03.md
+  - agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-03-information-to-price.md
 landmines:
   - "Runtime authority of this workstream is NONE, permanently. It coordinates and
     adjudicates; it never gates, dispatches, ranks, or owns production state. Its
@@ -280,3 +282,21 @@ the snapshot after ~1 week.
 Keystone packets K1–K7 go to Sol in the K-PACKET format defined by the
 commission; ordinary PRs are never escalated. If a K packet's "CEO DECISIONS
 NEEDED" is empty, the program continues automatically.
+
+## K3E child-source acceptance — 2026-10-03
+
+The Information-to-Price initiation under Macro #8309 / PR #8312 completed the
+existing SRC-A1 native proof assessment. The proposed canonical state is
+`PROVEN_LIVE` within the unchanged prospective physical source contract,
+bound to the current collector blob, full scheduled source/attempt witnesses,
+all ten mutation gates and independently checked hourly/daily operating evidence.
+See `research/alpha_intelligence/expectation_market_dynamics/SRC_A1_POST_REPAIR_ACCEPTANCE_2026-10-03.md`
+and the cumulative handoff linked above for exact identities and limitations.
+
+This accepts a K3E source prerequisite only. Fable remains the integration
+owner; runtime authority stays NONE. The broader K3 wave, canonical K3-E
+Opportunity Evidence Vector, K3-D and other keystones retain their own states.
+EXP-1 remains NOT_BUILT; after source publication and a fresh relevant collision
+census it must be commissioned with a real consumer in a separate bounded PR.
+Historical defects stay retained/excluded; identity, basis, rights and public
+history are not certified; EVAL-0 and all financial authority remain unchanged.

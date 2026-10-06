@@ -367,3 +367,7 @@
 {"asof": "2026-10-02", "domain": "commodity", "field": "commodity_mtf_grade", "from_value": "AVOID", "to_value": "CAUTION", "macro_context_id": "688b257b68589bf3"}
 {"asof": "2026-10-02", "domain": "commodity", "field": "commodity_ladder", "from_value": "BOTTOM WATCH", "to_value": "COUNTERTREND BOUNCE", "macro_context_id": "688b257b68589bf3"}
 {"asof": "2026-10-02", "domain": "canada", "field": "canada_overlay_state", "from_value": "Neutral", "to_value": "Risk-off", "macro_context_id": "688b257b68589bf3"}
+{"asof": "2026-10-03", "domain": "us", "field": "us_liquidity_quality", "from_value": "stress-expansion", "to_value": "neutral-hollow", "macro_context_id": "4d03fb928ac59a27"}
+{"asof": "2026-10-03", "domain": "us", "field": "us_liquidity_overlay", "from_value": "expanding", "to_value": "neutral", "macro_context_id": "4d03fb928ac59a27"}
+{"asof": "2026-10-03", "domain": "fx", "field": "fx_eurusd_action", "from_value": "FLAT", "to_value": "SHORT", "macro_context_id": "4d03fb928ac59a27"}
+{"asof": "2026-10-05", "domain": "fx", "field": "fx_eurusd_action", "from_value": "SHORT", "to_value": "FLAT", "macro_context_id": "f9ee4ffb0ddf8051"}

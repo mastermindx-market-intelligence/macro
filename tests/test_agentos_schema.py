@@ -187,8 +187,10 @@ def test_fast_yaml_loader_preserves_historical_malformed_diagnostic() -> None:
 
 
 # (rule, relative path, anchor, replacement)
+# Mutate the top-level status prefix; its current valid value becomes a comment.
+# Workstreams may legitimately advance from active to done without hiding bad enums.
 MUTATIONS: list[tuple[str, str, str, str]] = [
-    ("bad-enum", "workstreams/WS-AGENT-OS.md", "status: active", "status: humming"),
+    ("bad-enum", "workstreams/WS-AGENT-OS.md", "\nstatus:", "\nstatus: humming #"),
     (
         "required-field",
         "workstreams/WS-PROPHET-US-ENTRY-TIMING.md",
@@ -840,7 +842,7 @@ def test_annotations_start_the_line(store: Path) -> None:
     This shipped dead five times in this repo before #3587 swept 69 sites, so the
     assertion is on line position, not on wording.
     """
-    _patch(store / "workstreams" / "WS-AGENT-OS.md", "status: active", "status: humming")
+    _patch(store / "workstreams" / "WS-AGENT-OS.md", "\nstatus:", "\nstatus: humming #")
     result = _validate(store)
     annotations = [ln for ln in result.stdout.splitlines() if "::error" in ln or "::warning" in ln]
     assert annotations, "no annotation emitted for a hard failure"

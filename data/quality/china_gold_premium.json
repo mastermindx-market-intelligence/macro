@@ -1,27 +1,24 @@
 {
   "schema": "commodity.china_gold_premium_quality.v1",
-  "checked_at": "2026-10-03T08:27:19+00:00",
-  "status": "available_fresh",
+  "checked_at": "2026-10-05T10:17:57+00:00",
+  "status": "honest_unavailable",
   "render_consistent": true,
   "machine_projection_consistent": true,
-  "available": true,
-  "headline_method": "close_proxy",
-  "headline_state": "premium",
-  "premium_pct": 0.36134232188682613,
-  "expected_display_source": "proxy",
-  "rendered_display_source": "proxy",
-  "expected_currency": "CNY",
-  "rendered_currency": "CNY",
-  "rendered_state": "premium",
-  "rendered_source_asof": "2026-09-30T07:30:00+00:00",
-  "rendered_premium_pct": 0.361342,
-  "source_fresh": true,
-  "source_asof": "2026-09-30T07:30:00+00:00",
-  "sources": [
-    "Shanghai Gold Exchange Au99.99",
-    "Global XAU/CNY spot"
-  ],
-  "reason_code": null,
+  "available": false,
+  "headline_method": null,
+  "headline_state": "unavailable",
+  "premium_pct": null,
+  "expected_display_source": null,
+  "rendered_display_source": "canonical",
+  "expected_currency": null,
+  "rendered_currency": "USD",
+  "rendered_state": "unavailable",
+  "rendered_source_asof": "",
+  "rendered_premium_pct": null,
+  "source_fresh": false,
+  "source_asof": null,
+  "sources": [],
+  "reason_code": "stale_observation",
   "official_canonical_available": false,
   "methods": {
     "canonical": {
@@ -36,13 +33,13 @@
     },
     "close_proxy": {
       "available": true,
-      "fresh": true,
+      "fresh": false,
       "asof": "2026-09-30T07:30:00+00:00"
     }
   },
-  "history_points": 246,
-  "stats_5_ready": true,
-  "stats_30_ready": true,
+  "history_points": 0,
+  "stats_5_ready": false,
+  "stats_30_ready": false,
   "violations": [],
   "source_artifacts": [
     {
@@ -55,7 +52,7 @@
       "path": "data/gold_china_basis/sge_au9999.parquet",
       "exists": true,
       "rows": 253,
-      "sha256": "8f8a50e930d7855bbec29a5451660262e27b9556d9decf4247637505222581a9",
+      "sha256": "1e5c51a68f913fba6b5e0fcf76238ac9afce7f7a18f002d402b8cbfcb2efe118",
       "asof": "2026-09-30T07:30:00+00:00",
       "selected_asof_present": true
     },
@@ -69,11 +66,16 @@
       "path": "data/gold_china_basis/xaucny_spot.parquet",
       "exists": true,
       "rows": 267,
-      "sha256": "c64ee13ced8c7b861aa42f7507c190c229da3f54a04517872e29f446a2ef0a7c",
+      "sha256": "eb86fd5763c5ce2af512d9bb2640b8fe29b081df5887297926865fa23c4677e1",
       "asof": "2026-10-02T07:30:00+00:00",
       "selected_asof_present": true
     }
   ],
-  "close_proxy_dataos_promotion_ready": true,
-  "close_proxy_dataos_promotion_blockers": []
+  "close_proxy_dataos_promotion_ready": false,
+  "close_proxy_dataos_promotion_blockers": [
+    "status is honest_unavailable, not available_fresh",
+    "5-session average is not ready",
+    "30-session range is not ready",
+    "headline method is none, required close_proxy"
+  ]
 }
