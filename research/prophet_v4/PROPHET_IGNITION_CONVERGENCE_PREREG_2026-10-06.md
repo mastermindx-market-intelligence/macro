@@ -40,6 +40,34 @@ Because this was discovered after outcome inspection, none of those values count
 
 ---
 
+
+# 1.1 Reconciliation with the 2026-10-04 timeframe/grain program
+
+A concurrent Prophet timeframe study now on main reports:
+
+- standalone 3D grain effect: **NOT SUPPORTED** at cost-adjusted SPY-excess H10 after matching elapsed memory;
+- standalone 2D grain effect: **NOT SUPPORTED**;
+- matched-memory effect: **NOT SUPPORTED**;
+- C2 regime-conditioned grain: **INSUFFICIENT SUPPORT** because the upstream rotation-state control is BROKEN; its counterfactual is separately NOT SUPPORTED.
+
+This is **not contradictory evidence** to H-IGNITION-CONVERGENCE, because the hypotheses differ materially:
+
+- the timeframe program asks whether bar grain / slower confirmation itself improves H10 outcomes over matched-memory controls across a broad final-vintage survivor-selected panel;
+- H-IGNITION-CONVERGENCE asks whether the existing **specific T2 state interacts with independently sourced rerating evidence** to improve short-horizon H5 follow-through in a PIT-serving context.
+
+The new result strengthens two fences:
+
+1. this preregistration must never claim “T2/2D/3D confirmation is alpha by itself”;
+2. the confirmatory comparison must be **T2 + convergence versus same-date T2 without convergence**, not T2 versus generic lower-frequency signals.
+
+If the prospective interaction does not outperform same-state controls, the hypothesis fails even if T2 looks good unconditionally.
+
+The timeframe study's B1 label is a research-lane identifier (“grain vs memory”), **not** the R6 B1 `prophet.candidate_episode/v1` owner. Do not conflate the two B1s in implementation or records.
+
+Evidence-level caveat on the concurrent study remains binding: final-vintage prices and survivor-selected universe. Its null is still decisive for the construction it tested and must be preserved as a negative control.
+
+---
+
 # 2. Unit of account
 
 Primary unit:
@@ -317,7 +345,7 @@ The NVDA case also establishes a distinct upstream research question that is **n
 
 > Can Mastermind preserve important unresolved candidates when independent evidence has accumulated but Entry Availability remains closed?
 
-NVDA carried `news_burst + smartmoney_add` on Sep-08/09/10 while `entry_status=await_confluence`, then received the later Sep-25 acceptance event.
+NVDA's first preserved raw-board >=2-evidence watch snapshot is Sep-04; the graded H5 ledger first shows the same pattern on Sep-08/09/10 while `entry_status=await_confluence`. It then reached T1 `buy_now` on Sep-23 and T2 `partial` on Sep-25. Sep-08 is therefore a grading-store boundary, not the beginning of the emergence episode.
 
 Generic watch-lane multi-evidence convergence performed poorly at H5, so this companion head must not be optimized as another immediate-return screen.
 
