@@ -133,22 +133,96 @@ def test_constituent_count_is_variable_and_never_truncated_to_500():
     assert len(snapshot["securities"]) == 7
 
 
-def test_current_roster_must_exactly_equal_active_pit_sp500():
+def test_current_roster_is_authority_and_stale_pit_context_does_not_block():
     from engine import qbus_news_universe_snapshot as m
 
-    with pytest.raises(m.NewsUniverseSnapshotError) as exc:
-        m.build_news_universe_snapshot(
-            current_rows=_current("NVDA", "AMD"),
-            pit_rows=_pit(("NVDA", "2001-01-01", None)),
-            alias_rows=_aliases(
-                ("NVDA", "NVDA", "SEC:US-XNAS-NVDA"),
-                ("AMD", "AMD", "SEC:US-XNAS-AMD"),
-            ),
-            security_rows=_master("SEC:US-XNAS-NVDA", "SEC:US-XNAS-AMD"),
-            observed_at=NOW,
-            min_count=1,
-        )
-    assert exc.value.code == "membership_set_mismatch"
+    snapshot = m.build_news_universe_snapshot(
+        current_rows=_current("NVDA", "AMD"),
+        pit_rows=_pit(
+            ("NVDA", "2001-01-01", None),
+            ("OLD", "1999-01-01", None),
+        ),
+        alias_rows=_aliases(
+            ("NVDA", "NVDA", "SEC:US-XNAS-NVDA"),
+            ("AMD", "AMD", "SEC:US-XNAS-AMD"),
+        ),
+        security_rows=_master("SEC:US-XNAS-NVDA", "SEC:US-XNAS-AMD"),
+        observed_at=NOW,
+        min_count=1,
+    )
+
+    assert [row["ticker"] for row in snapshot["securities"]] == ["AMD", "NVDA"]
+    amd = next(row for row in snapshot["securities"] if row["ticker"] == "AMD")
+    assert amd["membership_basis"] == "current_observation"
+    assert amd["valid_from"] == "2026-10-05T00:00:00+00:00"
+    assert snapshot["pit_context_active_count"] == 2
+    assert snapshot["pit_context_matched_security_count"] == 1
+    assert snapshot["current_observation_only_count"] == 1
+    assert snapshot["pit_context_unresolved_count"] == 1
+
+
+def test_historical_alias_maps_stale_rename_pit_row_to_current_security_start():
+    from engine import qbus_news_universe_snapshot as m
+
+    aliases = [
+        {
+            "vendor": "membership",
+            "vendor_symbol": "SATS",
+            "security_id": "SEC:US-XNAS-SATS",
+            "valid_from": None,
+            "valid_to": "2026-06-24",
+        },
+        {
+            "vendor": "membership",
+            "vendor_symbol": "ECHO",
+            "security_id": "SEC:US-XNAS-SATS",
+            "valid_from": "2026-06-24",
+            "valid_to": None,
+        },
+        {
+            "vendor": "yahoo_fetch",
+            "vendor_symbol": "ECHO",
+            "security_id": "SEC:US-XNAS-SATS",
+            "valid_from": None,
+            "valid_to": None,
+        },
+    ]
+    snapshot = m.build_news_universe_snapshot(
+        current_rows=_current("ECHO"),
+        pit_rows=_pit(("SATS", "2015-01-01", None)),
+        alias_rows=aliases,
+        security_rows=_master("SEC:US-XNAS-SATS"),
+        observed_at=NOW,
+        min_count=1,
+    )
+
+    row = snapshot["securities"][0]
+    assert row["ticker"] == "ECHO"
+    assert row["security_id"] == "SEC:US-XNAS-SATS"
+    assert row["valid_from"] == "2015-01-01T00:00:00+00:00"
+    assert row["membership_basis"] == "pit_identity_match"
+    assert snapshot["pit_context_matched_security_count"] == 1
+    assert snapshot["current_observation_only_count"] == 0
+
+
+def test_observation_clock_never_changes_revision_for_current_only_member():
+    from engine import qbus_news_universe_snapshot as m
+
+    kwargs = dict(
+        current_rows=_current("AMD"),
+        pit_rows=[],
+        alias_rows=_aliases(("AMD", "AMD", "SEC:US-XNAS-AMD")),
+        security_rows=_master("SEC:US-XNAS-AMD"),
+        min_count=1,
+    )
+    first = m.build_news_universe_snapshot(observed_at=NOW, **kwargs)
+    second = m.build_news_universe_snapshot(
+        observed_at=NOW + timedelta(days=2), **kwargs
+    )
+
+    assert first["revision"] == second["revision"]
+    assert first["securities"][0]["valid_from"] != second["securities"][0]["valid_from"]
+    assert first["securities"][0]["membership_basis"] == "current_observation"
 
 
 def test_departed_pit_row_is_not_current_and_does_not_cause_mismatch():

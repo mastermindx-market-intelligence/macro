@@ -3,6 +3,9 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 import json
+from pathlib import Path
+import subprocess
+import sys
 
 import pandas as pd
 import pytest
@@ -198,3 +201,33 @@ def test_cli_write_requires_explicit_flag(monkeypatch, tmp_path, capsys):
     assert rc == 0
     assert payload["mode"] == "write"
     assert out.is_file()
+
+def test_direct_script_invocation_bootstraps_repo_imports(tmp_path):
+    paths = _fixtures(tmp_path / "data")
+    out = tmp_path / "qbus" / "news_universe.json"
+    script = Path(cli.__file__).resolve()
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--current", str(paths["current"]),
+            "--pit", str(paths["pit"]),
+            "--aliases", str(paths["aliases"]),
+            "--security-master", str(paths["security"]),
+            "--output", str(out),
+            "--min-count", "1",
+            "--observed-at", NOW.isoformat(),
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+
+    assert proc.returncode == 0, proc.stderr
+    payload = json.loads(proc.stdout)
+    assert payload["mode"] == "check_only"
+    assert payload["qualified"] is True
+    assert not out.exists()
