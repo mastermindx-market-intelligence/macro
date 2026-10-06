@@ -177,6 +177,34 @@ def test_growth_cut_row_preserves_credit_widening_but_does_not_override_low_rece
     assert "widen" in credit["claim"]["en"].lower()
 
 
+def test_stale_recession_risk_is_withheld_from_growth_direction():
+    bond, transmission, regime = _inputs()
+    regime["conditions"]["stale_inputs"] = ["recession_risk"]
+
+    row = _mechanism(build_bonds_explanation_view(bond, transmission, regime), "growth_cuts")
+    status = _statuses(row)
+
+    assert row["state"] == "insufficient"
+    assert "recession" in status["missing"]
+    assert "recession" not in status["supports"]
+    assert "recession" not in status["contradicts"]
+    recession = next(x for x in row["missing"] if x["family"] == "recession")
+    assert "stale" in recession["claim"]["en"].lower()
+    assert "credit" in status["supports"]
+    assert {"front_end", "policy_path"} <= status["contradicts"]
+
+
+def test_unrelated_stale_input_does_not_poison_recession_evidence():
+    bond, transmission, regime = _inputs()
+    regime["conditions"]["stale_inputs"] = ["ebp"]
+
+    row = _mechanism(build_bonds_explanation_view(bond, transmission, regime), "growth_cuts")
+    status = _statuses(row)
+
+    assert row["state"] == "contradicted"
+    assert "recession" in status["contradicts"]
+
+
 def test_inflation_row_calls_contribution_mixed_when_breakevens_rise_but_real_rates_move_more():
     bond, transmission, regime = _inputs()
     row = _mechanism(build_bonds_explanation_view(bond, transmission, regime), "inflation_reflation")
