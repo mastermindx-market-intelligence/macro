@@ -1087,7 +1087,7 @@ or target-validation credit is allowed.
 A clean second epoch is preregistered in
 `research/CROSS_SESSION_TRANSFER_SOURCE_ADMISSION_SAFEGUARD_V1_2_2026-10-06.md`.
 It changes no V1/V1.1 predictor, target, event-family definition, geometry, threshold or authority.
-The first commit introducing that file is the immutable Epoch-2 activation boundary. Only later
+The first commit introducing that file is the immutable Epoch-2 activation boundary. Exact activation: `41c08c218efa8261d4750dd923c5b3d3c2ff3a79` at **2026-10-06T04:31:47Z**; safeguard blob `b3d5697dfab24526f5c5e9b2bd87c3464ce0c9fd`. Only later
 first-disclosure events can earn clean Epoch-2 credit.
 
 Epoch-2 operational gate: complete and persist each **full UTC source day** before opening any admitted

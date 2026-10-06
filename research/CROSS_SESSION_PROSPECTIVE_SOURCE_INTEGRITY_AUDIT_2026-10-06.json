@@ -112,7 +112,9 @@
       }
     ],
     "same_day_oct6_qualifying_event_identified": false,
-    "note": "The earlier two-row miss estimate is superseded. A date-by-date audit found a systemic Reuters-only recall gap for maritime security. Oct 6 remains open and uncertified."
+    "note": "The earlier two-row miss estimate is superseded. A date-by-date audit found a systemic Reuters-only recall gap for maritime security. Oct 6 remains open and uncertified.",
+    "epoch2_source_sweep_through_utc": "2026-10-06T04:31:47Z",
+    "epoch2_qualifying_event_identified_before_activation": false
   },
   "parent_cluster_dependence": {
     "purpose": "Dependence disclosure only; Epoch 1 is quarantined before target read.",
@@ -171,5 +173,13 @@
       "UKMTO warnings/advisories for physical shipping-security family"
     ],
     "new_event_rail_created": false
+  },
+  "epoch2_activation": {
+    "state": "FROZEN",
+    "commit": "41c08c218efa8261d4750dd923c5b3d3c2ff3a79",
+    "commit_time_utc": "2026-10-06T04:31:47Z",
+    "safeguard_path": "research/CROSS_SESSION_TRANSFER_SOURCE_ADMISSION_SAFEGUARD_V1_2_2026-10-06.md",
+    "safeguard_git_blob": "b3d5697dfab24526f5c5e9b2bd87c3464ce0c9fd",
+    "clean_credit_rule": "earliest decision-eligible public available_at must be strictly after activation commit time and pass the completed-source-day admission gate before any U.S. measurement"
   }
 }
