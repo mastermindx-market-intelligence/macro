@@ -13,12 +13,10 @@ claim: >
   deadline plus settlement headroom; and the forced 200k context ceiling was removed in favor of
   provider/client native capacity with an explicit caller-supplied context ceiling when needed.
 falsifier: >
-  Any current kit read showing standalone Grok again fixed at timeout=1800, native remote default
-  REMOTE_SUB_MAX_SECS=210 for all native modes, native admission capped at 600 seconds, a fixed
-  provider --ttl 900 on normal remote acquisition, or an unconditional
-  CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000 in active MiniMax/GLM/Go-Claude launch paths; alternatively,
-  failure of the targeted timeout/context/native-lease regression set or a live-controller dry-run
-  that no longer derives the lease TTL from the requested worker deadline.
+  `K=~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08; grep -nE 'timeout=1800|REMOTE_SUB_MAX_SECS:-210.*NATIVE|assert 1 <= timeout <= 600|CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000' "$K"/ext/sub.sh "$K"/ext/remote_sub.sh "$K"/ext/native_remote.py`
+  returning an active regression, or the installed pool-controller dry-run with
+  `REMOTE_SUB_MAX_SECS=7200` no longer deriving a provider lease TTL near the owned-worker deadline,
+  falsifies this record.
 so_what: >
   A subagent timeout is a fabric safety/custody boundary, not evidence that the model cannot do long
   work. Long but bounded commissions can now receive useful runtime while preserving exact-process
