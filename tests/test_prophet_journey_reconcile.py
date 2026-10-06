@@ -2257,3 +2257,19 @@ def test_j8_fallback_route_accepts_exact_stock_page():
     card.append(link)
     result, _ = _pjr._check_j8(soup, _index_payload(), "TEST1")
     assert result["status"] == "PASS", result
+
+
+@pytest.mark.parametrize("href", [
+    "/markets/hk_stocks.html#XYZ",
+    "../china.html#XYZ",
+    "https://example.invalid/canada_stocks.html#XYZ",
+])
+def test_j10_rejects_prefixed_cross_market_href(href):
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
+    host = soup.select_one("#us-standouts")
+    assert host is not None
+    link = soup.new_tag("a", href=href)
+    link.string = "foreign market"
+    host.append(link)
+    result = _pjr._check_j10(soup, "TEST1", [])
+    assert result["status"] == "FAIL", result

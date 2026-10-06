@@ -127,7 +127,7 @@ import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 if os.environ.get("PYTHONPATH"):
@@ -346,6 +346,12 @@ def _stock_href_ticker(href: str) -> str | None:
 def _stock_href_matches(href: str, ticker: str) -> bool:
     """Match the exact relative stock route emitted by the candidate template."""
     return _stock_href_ticker(href) == ticker.upper()
+
+
+def _href_filename(href: str) -> str:
+    """Return the decoded URL-path filename without query or fragment."""
+    path = unquote(urlsplit(href).path)
+    return path.rsplit("/", 1)[-1]
 
 
 def _data_mkts(node: Tag) -> list[str]:
@@ -1375,7 +1381,7 @@ def _check_j10(soup: BeautifulSoup, ticker: str | None,
     bad_mkts: list[dict[str, str]] = []
     for n in nodes:
         for href in _hrefs(n):
-            if _CROSSMARKET_HREF_RE.match(href):
+            if _CROSSMARKET_HREF_RE.match(_href_filename(href)):
                 bad_hrefs.append({"node": n.name or "?", "href": href})
         for mkt in _data_mkts(n):
             if mkt.upper() != "US":
