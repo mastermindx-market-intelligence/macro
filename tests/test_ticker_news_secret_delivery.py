@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SETUP = ROOT / "app" / "deploy" / "ticker-news-setup.sh"
+RUNBOOK = ROOT / "docs" / "ops" / "ticker-news.md"
 
 
 def test_setup_script_defaults_to_check_and_serializes_with_macro_update():
@@ -107,3 +108,28 @@ def test_setup_status_is_observational_not_activation_check():
     assert "scripts/build_qbus_news_universe.py" not in block
     assert "systemctl is-enabled" in block
     assert "systemctl is-active" in block
+
+
+def test_operator_runbook_preserves_rights_and_activation_boundaries():
+    text = RUNBOOK.read_text(encoding="utf-8")
+
+    for token in (
+        "internal_ingestion",
+        "historical_retention",
+        "headline_display",
+        "source_link_display",
+        "teaser_display",
+        "derivative_processing",
+        "ticker-news-setup.sh --check",
+        "ticker-news-setup.sh --install",
+        "ticker-news-setup.sh --arm",
+        "ticker-news-setup.sh --disarm",
+        "RestartPreventExitStatus=2",
+        "at least five",
+        "actual trading sessions",
+    ):
+        assert token in text
+    assert "API possession alone" in text
+    assert "Organization-level" in text
+    assert "secret presence" in text
+    assert "remains **unknown**" in text
