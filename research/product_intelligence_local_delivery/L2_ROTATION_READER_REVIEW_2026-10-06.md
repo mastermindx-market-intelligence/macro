@@ -1,6 +1,6 @@
 # L2 independent adversarial review — `read_ledger_history` (#8470 @ 1537636f)
 
-**C0:** **ACCEPT_WITH_FOLLOWUPS** — replay vs retained-unmarked is honest when consumers honor per-row `mode` and both clocks, but mis-tagged `replayed` and write-clock vs observation-clock skew are not surfaced in coverage (`engine/rotation_events.py:1415-1418 @ 1537636f`).
+**C0:** **ACCEPT_WITH_FOLLOWUPS** — replay vs retained-unmarked is honest when consumers honor per-row `mode` and both clocks, but mis-tagged `replayed` and write-clock vs observation-clock skew are not surfaced in coverage (`engine/rotation_events.py:1419-1423 @ 1537636f`).
 
 **MAIN_PIN** (after `git fetch origin main`): `7db649d66e54835ad3dc1b324725251489128215`  
 **Reviewed head:** `1537636f53cc24184a16e7a044f066d7e43f2ac4`  
@@ -12,9 +12,9 @@
 
 | n | severity | probe | claim | path:line | repair | re-check |
 |---|----------|-------|-------|-----------|--------|----------|
-| 1 | MAJOR | a/f | Mode is `RECONSTRUCTED_REPLAY` only when `replayed is True`; missing flag → `RETAINED_LEDGER_UNMARKED` | `engine/rotation_events.py:1415-1418 @ 1537636f` | Document and/or warn in coverage | Probe replay row without `replayed` |
-| 2 | MAJOR | f | `ts` after `through` allowed when `asof`/`closed_asof` ≤ `through`; no skew signal | `engine/rotation_events.py:1339-1343 @ 1537636f` | Optional `clock_skew_rows` in coverage | Probe ts after through, asof within |
-| 3 | MINOR | e | Duplicates inflate `event_counts`; no duplicate lifecycle metric | `engine/rotation_events.py:1442-1443 @ 1537636f` | Add duplicate count to coverage | Two identical lines → metric |
+| 1 | MAJOR | a/f | Mode is `RECONSTRUCTED_REPLAY` only when `replayed is True`; missing flag → `RETAINED_LEDGER_UNMARKED` | `engine/rotation_events.py:1419-1423 @ 1537636f` | Document and/or warn in coverage | Probe replay row without `replayed` |
+| 2 | MAJOR | f | `ts` after `through` allowed when `asof`/`closed_asof` ≤ `through`; no skew signal | `engine/rotation_events.py:1341-1346 @ 1537636f` | Optional `clock_skew_rows` in coverage | Probe ts after through, asof within |
+| 3 | MINOR | e | Duplicates inflate `event_counts`; no duplicate lifecycle metric | `engine/rotation_events.py:1447-1448 @ 1537636f` | Add duplicate count to coverage | Two identical lines → metric |
 | 4 | NOTE | L-B | No membership-as-of-observation-date | L0 / `engine/rotation_events.py:1371-1389 @ 1537636f` | none in reader | #8432 / #8486 |
 
 ## Probe a — replay vs retained-unmarked
@@ -40,7 +40,7 @@ unm_r = read_ledger_history(ledger, mode="ledger_unmarked")
 }
 ```
 
-**Verdict:** HANDLED — native `row` preserved; filters match modes (`engine/rotation_events.py:1419-1428 @ 1537636f`).
+**Verdict:** HANDLED — native `row` preserved; filters match modes (`engine/rotation_events.py:1424-1431 @ 1537636f`).
 
 ## Probe b — malformed before/after boundary
 
@@ -60,7 +60,7 @@ unm_r = read_ledger_history(ledger, mode="ledger_unmarked")
 
 ## Probe d — through semantics
 
-- Created rows gate on `asof`; closed on `closed_asof` (`engine/rotation_events.py:1323-1326 @ 1537636f`).
+- Created rows gate on `asof`; closed on `closed_asof` (`engine/rotation_events.py:1325-1346 @ 1537636f`).
 - `closed_asof=2026-07-10` excluded at `through=2026-07-05` (stops before later lines).
 - `asof == through` included; `closed_asof == through` included.
 
