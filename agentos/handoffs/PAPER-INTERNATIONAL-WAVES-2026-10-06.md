@@ -3,69 +3,91 @@ workstream: WS:PAPER-INTERNATIONAL-WAVES
 session: claude/ssd-paper-international-waves-ad8d40c8d3b06fff
 model: codex
 ended_because: blocked
-mission: Deliver all three International Paper waves through the existing product with the requested economical Sol 6.1 hierarchy and real user-path acceptance.
-state_before: Received specifications; no worker start or implemented product claim.
+mission: Deliver all three International Paper waves through the existing product with the requested economical Sol 6.1
+  hierarchy and real user-path acceptance.
+state_before: Received three-wave specifications; no installed International redesign. Earlier reviews and source-only
+  phases are retained in exact evidence receipts.
 changed:
-  - path: research/paper_international_wave1_wave2/
-    what: Bound original archive hashes, preserved the three original ZIPs containing all 88 byte-identical packet files and recorded hierarchy, dependency and acceptance boundaries.
-  - path: templates/intl_workspace_scenario.js
-    what: Added the pure manual arithmetic and locale parser returned by the construction fabric, with a parent repair for prototype-key admissions.
-  - path: tests/intl_workspace_scenario_math.test.cjs
-    what: Added 45 worker tests, two parent parser controls and eight numerical regressions.
+- path: research/paper_international_wave1_wave2/
+  what: Preserved all three original ZIPs and 88 member hashes; bound source, hierarchy, evidence and acceptance limits.
+- path: templates/intl_workspace_scenario.js
+  what: Independently reviewed exact binary-input scenario arithmetic and closed EN/ZH parser; 55 focused tests.
+- path: templates/intl_library_search.js
+  what: Independently reviewed deterministic permitted-label search and strict stale-reply identity guard; 100 focused
+    tests.
+- path: engine/intl_performance_records.py
+  what: Independently reviewed adapter over real owner helpers for unrounded returns, same-window decomposition and actual
+    contributing observation dates.
+- path: tests/test_intl_performance_records.py
+  what: 43 supplied-frame regression cases without financial helper mocks or data-store reads.
+- path: .github/ci/legacy-jobs.yml
+  what: Scoped code checks for JS primitives and numerical foundation; exact dependency closure registered with the existing
+    CI owner.
 verified:
-  - claim: Original packet validation and oracles pass.
-    command: python3 verification/verify_packet.py; python3 -m unittest discover -s verification -p 'test_*.py' (in each exact extracted archive)
-    result: Wave 1 17 passed; Wave 2 75 passed; packet verifiers returned 0.
-  - claim: The repaired pure helper passes focused source tests.
-    command: node --test tests/intl_workspace_scenario_math.test.cjs
-    result: 55 passed, 0 failed, 0 skipped; numerical red controls fail on original bytes; both independent exact-binary oracles pass repaired bytes.
-  - claim: The exact worker completed with owned-process cleanup.
-    command: Read ext/state/remote_sub/rs_20261006T073746Z_70350.native-terminal.json in the installed pool kit.
-    result: started true, returncode 0, output_complete true, cleanup_proven true, residual_count 0.
-  - claim: Native Sol 6.1 admission is missing on this installed route.
-    command: Read native_remote.MODELS; pool pick orchestration --pool codex-native; pool placement --mode codex-native --json.
-    result: Catalog lists gpt-6.1-sol, installed allowlist excludes it, picker selects gpt-6-sol, no eligible native host.
-  - claim: Initial fabric review could not be placed; later native Sol and Astra reviews superseded this gap.
-    command: pool pick review --subject-pool grok --host auto
-    result: Initial NONE reason=no_pool_available; subsequent source review accepted as recorded below.
-  - claim: Executive V3 currently provides read visibility only.
-    command: mastermind_executive_v3_executive_state({}) at 2026-10-06T07:56:35Z
-    result: ok true, mode readonly, installed source 5b244a2bbe4c2a94ec25a887eb4a0d8fafe1ea2f; no dispatch or admission claimed.
+- claim: All three packet specifications validated; this is input proof only.
+  command: Run each original verification/verify_packet.py; Wave1/2 unittest discovery; Wave3 pytest verification/test_contract_examples.py.
+  result: Wave1 17, Wave2 75, Wave3 64 examples passed; Wave3 29 hashes and62 portable checks passed.
+- claim: Accepted JS helper source hashes remain unchanged through the base refresh.
+  command: node --test tests/intl_workspace_scenario_math.test.cjs tests/intl_library_search.test.cjs; SHA256 bindings
+    in IM06/IM07 evidence.
+  result: 155 passed,0 failed/skipped at accepted source; numerical oracles2005 and4900 independently pass.
+- claim: Numerical/provenance adapter passes against real owner helpers on both verified runtimes.
+  command: PYTHONPATH=. python -m pytest -c /dev/null -p no:cacheprovider -q tests/test_intl_performance_records.py (in
+    each bound artifact).
+  result: 43 passed on localPython3.14/pandas3.0.5 andUbuntu2Python3.12/pandas3.0.6; prewritten43assertions andSol23additionalcounterchecks
+    pass.
+- claim: Source integrates without changing the inherited numerical owner/config closure.
+  command: Compare nine OWNER_SOURCE_MANIFEST.json SHA256 values after merge of79b566f5c0ccba878ab963084a239993d3116aa9;
+    integrated pytest focused numerical suite plus five CI pack checks.
+  result: Nine unchanged inputs;48passed; no shared PR7202 file edit.
+- claim: New Python PR check covers its actual imports and selects only its declared input scope.
+  command: PACK.infer_job_scopes on the staged test job with exclusive=False; compare named closure against declared
+    paths and exercise _job_diff_match.
+  result: 15 named dependencies covered;15 positive and4negative selections pass. Empty pre-staging inference was rejected,
+    not accepted as closure proof.
 unverified:
-  - claim: Full product and hierarchy completion.
-    what_would_verify: Admitted Sol6.1 CEO and descendant bindings, independent exact-head review, foundation and ten actual views, browser/rights proof, served release and subsequent normal publication.
+- claim: Full programme, installed user journeys, rights qualification and production acceptance.
+  what_would_verify: Remaining foundation/chart/projection/controller and ten views, admitted owner-bound Saved integration,
+    full design/browser matrix, actual served release and subsequent normal publication.
+- claim: Current refreshed candidate has terminal-green remote CI and is merged.
+  what_would_verify: Existing CI/merge owners bind semantic proof to the current candidate/base, conclude required checks
+    and merge; verify exact source bytes against freshly fetched main.
 unresolved:
-  - Local native Sol CEO execution is proven under a later explicit Chairman exception; the nested COO-to-worker grant remains unproven.
-  - Ubuntu2 native Codex reports Not logged in; no account or credential was substituted.
-  - The source helper has no page mount or publisher integration; do not present it as a delivered Scenario page.
-  - Source review is now accepted for the parser and numerical delta; route integration and product acceptance remain unproven.
+- Merge observer reported semantic evidence base_sha mismatch on a75a957e68043ba33777f94bb2704af8db4b3346. Parent disarmed
+  merge-on-green, retained merge-blocked and returned PR to Draft for a normal base refresh and reviewed-source integration;
+  no proof fallback or force-merge.
+- Cheap Qwen selected mini2 but outer leased key was unavailable before provider START. Two admitted Grok foundation
+  attempts returned no source at their bounded deadlines; each cleanup and lease release is proven. No third unchanged
+  attempt or quality-policy override.
+- Native Sol execution is proven under the explicit Chairman local exception; actual served model and nested COO-to-worker
+  admission remain unproven.
+- No helpers or adapter are mounted on a page. Current-eligibility policy, browser/rights proof, authenticated Investigation/Saved
+  admission and normal publication remain owed.
 next_actions:
-  - Preserve accepted exact source hashes in IM06_T2_EVIDENCE.json and qualify the eventual integrated candidate separately before merge/release.
-  - Reuse native Sol session01a11057-3134-76d2-bcd1-784d69cc17d3; its explicit local exception does not edit remote model/host policy or grant a nested COO graph.
-  - Commission IM00-T1 against the same integration carrier and frozen source/qualification contract, then consume each accepted leaf before extending its dependency.
-  - Implement remaining views through the single shared controller and publication owner; satisfy browser, rights and real served acceptance separately.
+- Finish the refreshed source candidate on the same PR/carrier, register its numerical CI scope, and re-arm only after
+  scoped review/validation; preserve semantic proof refusal until fresh evidence resolves it.
+- Reuse nativeSol01a11057-3134-76d2-bcd1-784d69cc17d3 for judgment and independent review. Let the existing Fabric wrapper
+  own routine waits; one leaf at a time, originalroot01a1101f-2a37-7320-9a9b-5df3ce1b890d, no native grandchildren.
+- Advance timestamped charts/common-period source semantics and the presentation/controller foundation after consuming
+  this reviewed vertical; retain existing performance, input, auth and publication owners.
+- Freeze the International Investigation extension with incumbentTerminal804 before shared kernel or Saved writes; no
+  duplicate store or held migration takeover.
 do_not_redo:
-  - Keep received archive bytes and the completed 1589-board census; inspect only material design/source invalidators.
-  - Do not recreate the old International R3 core; exact named seams match the current pickup base.
-  - Do not replay rs_20261006T073746Z_70350 or mint an independent budget root.
+- Keep received archive bytes and the completed 1589-board census; inspect only material design/source invalidators.
+- Do not recreate the old International R3 core; exact named seams match the current pickup base.
+- Do not replay rs_20261006T073746Z_70350 or mint an independent budget root.
 danger_areas:
-  - Do not confuse source tests, Paper snapshots, transport rc0 or CI with product acceptance.
-  - Preserve dirty historical and remote checkouts; only the registered SSD carrier is an integration writer.
-  - Do not infer Paper M2 access from a remote harness starting a local Paper process.
-  - Keep Follow, first-known history and new financial-policy authority out of scope; Wave 3 Saved writes remain incumbent Investigation-owned.
+- Do not confuse source tests, Paper snapshots, transport rc0 or CI with product acceptance.
+- Preserve dirty historical and remote checkouts; only the registered SSD carrier is an integration writer.
+- Do not infer Paper M2 access from a remote harness starting a local Paper process.
+- Keep Follow, first-known history and new financial-policy authority out of scope; Wave 3 Saved writes remain incumbent
+  Investigation-owned.
 ---
 
-MISSION_COMPLETE: false. Source candidate and programme recovery only.
+MISSION_COMPLETE: false. This is a source-phase continuation checkpoint, not an installed product or final delivery receipt.
 
-Parent evidence remains in `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/`.
-The returned worker used an admitted construction-fabric route, not the broken
-Executive dispatch path. A later V3 read succeeded in readonly mode. No Executive Job, unattended parent wake or nested COO-to-worker tree is claimed. A later explicit Chairman instruction authorized one local native Sol CEO; that session has now executed. The first numerical leaf was dispatched using the
-operator transport class; its semantic class is execution and the pool outcome
-records that correction. Future leaf dispatches must use their actual class and
-explicit cheap-route-unavailable escalation, not relabel them as operators.
+Exact source and review bindings are in `research/paper_international_wave1_wave2/IM00_T1A_EVIDENCE.json`, `IM06_T2_EVIDENCE.json` and `IM07_T2_EVIDENCE.json`. Parent process/effect evidence remains under `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/`; its compact CHECKPOINT names the current frontier. These artifacts create no queue, lease, provider capacity or control plane.
 
-Native continuation: Sol01a11057-3134-76d2-bcd1-784d69cc17d3 independently rejected the original candidate for cancellation near loss boundaries. Grok repairrs_20261006T083929Z_61093 timed out without source output; cleanup and lease2a47ca8c4c2a release were proven. Astra then authorized direct Sol numerical authorship as a bounded hard-debugging exception and independently reviewed the delta. Node55/55, frozen Sol oracle2005/2005 and independently generated Astra oracle4900/4900 passed; originals fail309 and56 oracle cases respectively. Native process groups were empty at return. The code requires BigInt/DataView; browser and served compatibility remain unproven. The source review is APPROVE_SCOPED, never full programme acceptance.
+Astra used a documented CRITICAL_PATH_SHORTCUT/LOWER_TOTAL_OVERHEAD exception for the numerical adapter after two bounded, settled Fabric attempts produced no source, including a narrower first-edit commission. Sol independently read the complete module and tests and approved the real-grid suffix and timezone handling after adversarial checks. The original failed worker outcomes remain unaccepted; source acceptance belongs to the separately reviewed Astra artifact.
 
-Wave 3 continuation: original archive/member hashes preserved; 29 payload hashes, 62 portable checks and 64 specification examples passed. Four new lanes IM07–IM10 are on this same programme/PR with unchanged concurrency. Fresh Terminal777 merge and804 exact Draft head are recorded in the programme README. IM07 local search can proceed independently. IM00 source custody requires exact Macro7202 overlap adjudication; no shared-source grant was issued. This is an active continuation checkpoint; the earlier blocked classification describes the original pre-native yield.
-
-IM07-T2 accepted source continuation: exact repaired search019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f,100 committed Node tests, combined155/155. Sourceworker rs_20261006T092239Z_16794 returnedrc0/cleanup/residual0/releasedlease; Sol independently approved Astra's bounded repair. Earlier rs_20261006T091009Z_55274 returned384bytes of progress, not empty stdout; no source. Narrowing the capsule removed absent-document searches. Current source-only CI job is registered with exact five source/test/fixture paths and the curated-set entry; focused6 checks and5-positive/3-negative selection controls pass. Broadpack suite was interrupted after127passes/1registration failure; exact omission repaired, no full-suite-green claim. Three-node dark native reference subset is now bound by WAVE3_INTAKE.json, without changing held targets or original packet. No page, liveSaved or release claim.
+The existing merge observer was bound for the earlier inactive-helper release and returned a real semantic-proof refusal. The parent retains the complete GitHub/release chain and is refreshing the candidate through normal source integration. No automatic Codex-parent wake or unattended implementation continuation is installed. Do not claim watcher delivery or full programme completion from a label, source test or native Paper capture.

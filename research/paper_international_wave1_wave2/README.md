@@ -57,3 +57,11 @@ IM00-T1a preflight found open Macro #7202 touching both `engine/intl_performance
 IM06-T2 arithmetic and IM07-T2 local search are independently source-reviewed and registered together in the exclusive `international-workspace-pure-js` PR check. The committed Node suites pass155 tests (55 arithmetic,100 search), with zero failures/skips. Search preserves raw inputs, deterministic EN/ZH matching, Unicode scalar limits, composition boundaries and strict five-field reply identity; it performs no I/O. Source evidence is in `IM07_T2_EVIDENCE.json`. Neither helper is mounted on a product page yet.
 
 A fresh direct M2 Paper read produced a separately hashed three-node dark Library reference subset (RU-0,35T-0,3MN-0), with screenshot/JSX and matching before/after target JSX. `WAVE3_INTAKE.json` binds it. It is not an atomically frozen whole file, complete light design, delivered worker input or browser proof. The original Wave3 ZIP remains unchanged.
+
+## Accepted numerical foundation
+
+IM00-T1a is implemented in `engine/intl_performance_records.py` and its focused test suite. It accepts supplied closes, reuses the incumbent return/conversion helpers, preserves unrounded values and actual calculation/contributing-observation dates, and keeps local-only windows distinct when FX is unavailable. Paired legs use the real shared owner grid; timezone-aware YTD retains original output timestamps. It never collects/stores data or grants freshness, rights or ranking eligibility.
+
+Astra implemented this bounded adapter after two admitted, fully settled worker attempts returned no source. Sol independently reviewed the exact module, tests and additional countercases. The 43 focused cases pass on both verified Python runtimes; the separate prewritten43 assertions and independent23 counterchecks pass. `IM00_T1A_EVIDENCE.json` records the exact hashes, runtime/proof boundaries and failed-attempt facts. Shared performance/input/config files and PR7202 remain unchanged.
+
+The dedicated `international-workspace-foundation` code check owns its measured import closure and configuration input. The existing International library group is data-gated and is not used as a substitute for this PR check. The same carrier remains responsible for the full GitHub/publication chain. Neither this adapter nor the two JS helpers is mounted on a product page yet.

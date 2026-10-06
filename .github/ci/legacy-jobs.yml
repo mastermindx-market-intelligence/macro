@@ -1885,6 +1885,7 @@ jobs:
       - "scripts/build_spvector.py"
       - "scripts/build_strategies.py"
       - "scripts/build_theme_detail.py"
+      - "engine/leadership_receipt.py"
       - "scripts/build_vector.py"
       - "scripts/capture_china_archetype_d_evidence.py"
       - "scripts/capture_page_evidence.py"
@@ -3570,6 +3571,40 @@ jobs:
         run: node --test tests/intl_workspace_scenario_math.test.cjs
       - name: International Library search and reply identity
         run: node --test tests/intl_library_search.test.cjs
+
+  international-workspace-foundation:
+    # Supplied-frame numerical records use the existing performance owner.
+    # Scope includes the measured first-party import closure and config input.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/indicators.py"
+      - "engine/intl_inputs.py"
+      - "engine/intl_market_state.py"
+      - "engine/intl_performance.py"
+      - "engine/intl_performance_records.py"
+      - "engine/technicals.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/store.py"
+      - "config.yml"
+      - "tests/conftest.py"
+      - "tests/test_intl_performance_records.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install numerical test dependencies
+        run: pip install pytest pandas numpy pyyaml
+      - name: International return identity, windows and observation provenance
+        run: python -m pytest tests/test_intl_performance_records.py -q
 
   stock-dashboard-first-frame:
     if: ${{ false }}
@@ -8737,6 +8772,7 @@ jobs:
       - tests/test_theme_graph_selection_cohort_reads.py
       - tests/test_theme_graph_selection_cohort_projection.py
       - tests/test_theme_graph_state.py
+      - tests/test_leadership_receipt.py
       - collectors/_drip.py
       - collectors/base.py
       - collectors/breadth.py
@@ -9391,6 +9427,7 @@ jobs:
       - scripts/build_subsector_rotation_china_pages.py
       - scripts/build_subsector_rotation_pages.py
       - scripts/build_theme_detail.py
+      - engine/leadership_receipt.py
       - scripts/build_themes_heatmap.py
       - scripts/build_vector.py
       - scripts/check_board_contradictions.py
@@ -9505,6 +9542,36 @@ jobs:
       - tests/test_theme_graph_local_plane.py
       - tests/test_theme_graph_materialize.py
       - tests/test_theme_graph_membership_lifecycle.py
+      - collectors/equity_earnings.py
+      - config/dataset_registry.yml
+      - config/intelligence_workspace/datapoints.v1.json
+      - contracts/intelligence_workspace/datapoint_registry.schema.json
+      - contracts/intelligence_workspace/datapoint_value.schema.json
+      - contracts/theme_graph/structural_context.v1.schema.json
+      - contracts/theme_graph/theme_structural_context.v2.schema.json
+      - engine/intelligence_workspace/__init__.py
+      - engine/intelligence_workspace/adapters/base.py
+      - engine/intelligence_workspace/adapters/company_intelligence.py
+      - engine/intelligence_workspace/adapters/earnings.py
+      - engine/intelligence_workspace/adapters/industry.py
+      - engine/intelligence_workspace/adapters/quote.py
+      - engine/intelligence_workspace/adapters/stage.py
+      - engine/intelligence_workspace/adapters/technicals.py
+      - engine/intelligence_workspace/adapters/theme.py
+      - engine/intelligence_workspace/contracts.py
+      - engine/intelligence_workspace/entity.py
+      - engine/intelligence_workspace/projection.py
+      - engine/intelligence_workspace/registry.py
+      - engine/intelligence_workspace/resolver.py
+      - engine/intelligence_workspace/runtime.py
+      - engine/quote_resolution.py
+      - lib/dataos/__init__.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/quality.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - tests/test_theme_graph_structural_owner_binding.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9519,13 +9586,18 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_contracts.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
         run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
         run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py -k 'not live_theme_inputs' -q
+      - name: L3 leadership receipt (theme_state freshness + descriptive rows)
+        # Wired 2026-10-06 (#8519): engine/leadership_receipt.py reads
+        # site/neuralwebdata/theme_state.json with a 5-day ceiling; this job owns
+        # views.py + theme_graph_state, the receipt's two inputs.
+        run: TZ=UTC python -m pytest tests/test_leadership_receipt.py -q
       - name: GMI finalized selection cohort contract and owner-state interface
         run: |
           set -eu
@@ -14105,6 +14177,13 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py --help
           python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_information_to_price_audit.py -q
+      # Synthetic PIT sample conformance harness (recovered from Sol op
+      # information-to-price-pit-conformance-20261004-sol-001). Name its CLI
+      # as well as its suite for the same sibling-import reason as SRC-A1.
+      - name: information-to-price synthetic PIT sample conformance
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/pit_sample_conformance.py --help
+          python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_pit_sample_conformance.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
@@ -15742,6 +15821,7 @@ jobs:
       - "scripts/build_subsector_rotation_china_pages.py"
       - "scripts/build_subsector_rotation_pages.py"
       - "scripts/build_theme_detail.py"
+      - "engine/leadership_receipt.py"
       - "scripts/build_themes_heatmap.py"
       - "scripts/build_vector.py"
       - "scripts/check_board_contradictions.py"
