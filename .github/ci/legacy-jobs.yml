@@ -1871,6 +1871,7 @@ jobs:
       - "scripts/build_spvector.py"
       - "scripts/build_strategies.py"
       - "scripts/build_theme_detail.py"
+      - "engine/leadership_receipt.py"
       - "scripts/build_vector.py"
       - "scripts/capture_china_archetype_d_evidence.py"
       - "scripts/capture_page_evidence.py"
@@ -8507,6 +8508,7 @@ jobs:
       - tests/test_publish_company_theme_exposure_r2.py
       - tests/test_theme_graph_selection_cohort.py
       - tests/test_theme_graph_state.py
+      - tests/test_leadership_receipt.py
       - collectors/_drip.py
       - collectors/base.py
       - collectors/breadth.py
@@ -9161,6 +9163,7 @@ jobs:
       - scripts/build_subsector_rotation_china_pages.py
       - scripts/build_subsector_rotation_pages.py
       - scripts/build_theme_detail.py
+      - engine/leadership_receipt.py
       - scripts/build_themes_heatmap.py
       - scripts/build_vector.py
       - scripts/check_board_contradictions.py
@@ -9232,6 +9235,11 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
         run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py -k 'not live_theme_inputs' -q
+      - name: L3 leadership receipt (theme_state freshness + descriptive rows)
+        # Wired 2026-10-06 (#8519): engine/leadership_receipt.py reads
+        # site/neuralwebdata/theme_state.json with a 5-day ceiling; this job owns
+        # views.py + theme_graph_state, the receipt's two inputs.
+        run: TZ=UTC python -m pytest tests/test_leadership_receipt.py -q
       - name: GMI finalized selection cohort contract and owner-state interface
         run: |
           set -eu
@@ -15315,6 +15323,7 @@ jobs:
       - "scripts/build_subsector_rotation_china_pages.py"
       - "scripts/build_subsector_rotation_pages.py"
       - "scripts/build_theme_detail.py"
+      - "engine/leadership_receipt.py"
       - "scripts/build_themes_heatmap.py"
       - "scripts/build_vector.py"
       - "scripts/check_board_contradictions.py"
