@@ -211,6 +211,20 @@ For T2+news versus other T2 buy rows:
 
 These are discovery statistics, not promotion evidence.
 
+### Temporal relationship to the NVDA case
+
+All 11 rows in the measured v3 T2+news discovery cohort are dated **2026-08-21 through 2026-09-17**, before NVDA's Sep-25 signal. NVDA's outcome is therefore not included in the 10/11 statistic.
+
+NVDA is a later real-world case that matches the discovered historical configuration:
+
+- confirmed T2;
+- `news_burst` present (6 recent items);
+- unusually high F8 attention percentile;
+- strong catalyst/event and flow evidence;
+- then positive immediate follow-through.
+
+This is stronger than calculating a pattern from NVDA's own subsequent return, but it is **not a preregistered out-of-sample test**: the interaction was selected for study after inspecting the NVDA golden case. Treat NVDA as a temporal hold-forward corroboration, not as independent confirmatory evidence.
+
 ### Repeated-name robustness
 
 The 11 rows include repeated calls. Collapsing to the first T2+news occurrence per ticker:
