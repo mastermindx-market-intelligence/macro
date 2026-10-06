@@ -167,6 +167,7 @@ Therefore:
 Read and preserve:
 
 - `research/prophet_v4/PROPHET_EMERGENCE_CONVERSION_PREREG_2026-10-06.md`
+- `research/prophet_v4/B03_EMERGENCE_RESEARCH_ATTENTION_EXECUTION_PACKET_2026-10-06.md` — owner-safe implementation shape for the lossless early-opportunity field; docs-only, no implementation authority
 
 It freezes H-EMERGENCE-CONVERSION with a **12 observed board-session** primary conversion endpoint.
 
