@@ -1097,3 +1097,25 @@ HSI read. A repeated late-source failure quarantines the affected epoch rather t
 
 Oct 6 remains open and uncertified. HSI remains unread across the program.
 
+### Mechanical Epoch-2 source-day gate
+
+Commit `525ba1e6c10ac9aa4792febdcfdd8ab1b6a41232` hardens
+`scripts/research/capture_cross_session_transfer.py` so the V1.2 source-integrity amendment is
+executable rather than prose-only:
+
+- `certify_source_day` refuses a partial UTC day and requires complete `reuters_wire` + `ukmto`
+  channel receipts;
+- admitted candidates require an exact clock and parent-cluster tag;
+- `seal_epoch2_admission` binds the admission to that completed-day receipt and the immutable
+  Epoch-2 activation boundary `41c08c21... / 2026-10-06T04:31:47Z`;
+- any post-activation U.S. measurement without that seal fails **before transport**;
+- the known Epoch-1 event IDs are quarantined from further measurement/HSI, and known late-recovered
+  event IDs are non-evaluable;
+- controls and the pre-HK gate consume the same admission-integrity check.
+
+Exact-head local research verification: **64 passed**. The test wrapper then hit zsh's reserved
+`status` variable after pytest had completed; no test failed. The leftover verifier worktree was
+removed in a separate exact cleanup call and `CLEANUP_OK` was observed.
+
+HSI remains unread. Hosted fences/CI for this head were started by the PR and remain release proof,
+not permission to open the target.

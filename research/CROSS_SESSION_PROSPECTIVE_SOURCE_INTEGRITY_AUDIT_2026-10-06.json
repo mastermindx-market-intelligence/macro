@@ -140,7 +140,26 @@
     "target_definition_changed": false,
     "threshold_changed": false,
     "operational_rule": "Clean target validation restarts in a new source-first epoch. For each UTC source day, freeze a completed source-only census/disposition receipt across declared family-specific channels before opening any event's U.S. leg. Physical shipping-security requires UKMTO plus Reuters/wire. Unresolved source clocks remain logged but unmeasured.",
-    "late_recovery_rule": "Any qualifying source row discovered only after relevant U.S. exposure quarantines that row; a recurrent systematic recall failure quarantines the epoch. Never backfill to rescue sample size."
+    "late_recovery_rule": "Any qualifying source row discovered only after relevant U.S. exposure quarantines that row; a recurrent systematic recall failure quarantines the epoch. Never backfill to rescue sample size.",
+    "mechanical_enforcement": {
+      "commit": "525ba1e6c10ac9aa4792febdcfdd8ab1b6a41232",
+      "capture_script": "scripts/research/capture_cross_session_transfer.py",
+      "test_file": "tests/test_event_microstructure_replay.py",
+      "source_day_schema": "research.cross_session_transfer_source_day_census.v1",
+      "required_channels": [
+        "reuters_wire",
+        "ukmto"
+      ],
+      "gates": [
+        "complete UTC source day before post-activation U.S. measurement",
+        "sealed Epoch-2 admission bound to admitted source-day candidate and parent cluster",
+        "known Epoch-1 rows refuse further measurement/HSI",
+        "known late-recovered rows refuse U.S. measurement",
+        "post-activation unsealed rows fail before transport"
+      ],
+      "local_verification": "64/64 owned research tests passed at exact code head; temporary worktree cleanup verified separately",
+      "hsi_outcomes_read": false
+    }
   },
   "authority": {
     "research_only": true,
