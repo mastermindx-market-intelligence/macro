@@ -212,3 +212,121 @@ def test_projection_is_strict_json_and_has_no_positioning_score_or_flow(tmp_path
     assert "positioning_score" not in out
     assert "holding_change" not in out
     assert "flow" not in out
+
+
+AMEND_ACCESSION = "0000000001-26-000002"
+
+
+def _publish_amendment_generation(store, *, filing_orig, holding_orig, raw_orig):
+    raw_amend = publish_raw_evidence(
+        store,
+        accession=AMEND_ACCESSION,
+        filer_cik=FILER_CIK,
+        form="13F-HR/A",
+        report_period=REPORT_PERIOD,
+        accepted_at="2026-05-20T12:00:00Z",
+        retained_at="2026-05-20T12:05:00Z",
+        source_url="https://www.sec.gov/Archives/edgar/data/1/000000000126000002/index.json",
+        payload=b"owner-verified-a10-amend-fixture",
+        producer_version="k3e-a10-fixture/1.0.0",
+    )
+    filing_amend = {
+        **filing_orig,
+        "accession": AMEND_ACCESSION,
+        "form": "13F-HR/A",
+        "accepted_at": "2026-05-20T12:00:00Z",
+        "is_amendment": True,
+        "amendment_number": 1,
+        "amendment_type": "RESTATEMENT",
+        "amends_accession": ACCESSION,
+        "lineage_state": "amendment_restatement",
+        "source_receipt_id": raw_amend.receipt_id,
+        "raw_sha256": raw_amend.raw_object.sha256,
+        "retained_at": "2026-05-20T12:05:00Z",
+    }
+    holding_amend = {
+        **holding_orig,
+        "accession": AMEND_ACCESSION,
+        "ssh_prn_amt": "999999",
+        "row_hash": "c" * 64,
+    }
+    prepared = prepare_catalog_generation(
+        report_period=REPORT_PERIOD,
+        source_cutoff_at="2026-05-21T00:00:00Z",
+        published_at="2026-05-21T12:00:00Z",
+        producer_version="k3e-a10-fixture/1.0.0",
+        filings=[filing_orig, filing_amend],
+        holdings=[holding_orig, holding_amend],
+        manager_relationships=[],
+        source_receipt_ids=[raw_orig.receipt_id, raw_amend.receipt_id],
+        coverage={"fixture": True, "complete": True},
+    )
+    return publish_catalog_generation(store, prepared)
+
+
+def test_later_generation_amendment_does_not_change_pinned_earlier_snapshot(tmp_path):
+    store, generation_a = _world(tmp_path)
+    filing_orig = dict(generation_a.filings[0])
+    holding_orig = dict(generation_a.holdings[0])
+
+    class _RawRef:
+        def __init__(self, receipt_id: str, sha256: str) -> None:
+            self.receipt_id = receipt_id
+            self.raw_object = type("RawObj", (), {"sha256": sha256})()
+
+    raw_ref = _RawRef(
+        str(filing_orig["source_receipt_id"]),
+        str(filing_orig["raw_sha256"]),
+    )
+    _publish_amendment_generation(
+        store, filing_orig=filing_orig, holding_orig=holding_orig, raw_orig=raw_ref
+    )
+
+    out = _project(store, generation_id=generation_a.generation_id)
+
+    assert out["valid"] is True
+    assert out["holding"]["quantity"]["value"] == "125000"
+
+
+def test_non_effective_accession_is_refused_not_partial(tmp_path):
+    store, _ = _world(tmp_path)
+
+    out = _project(store, accession=AMEND_ACCESSION)
+
+    assert out["valid"] is False
+    assert out["state"] == "UNAVAILABLE"
+    assert "FILING_ACCESSION_NOT_EFFECTIVE_AT_CUTOFF" in out["refusals"]
+    assert out["holding"] is None
+
+
+def test_invalid_identity_keys_are_refused_without_projection(tmp_path):
+    store, _ = _world(tmp_path)
+
+    assert _project(store, filer_cik="")["refusals"] == ["INVALID_FILER_KEY"]
+    assert _project(store, decision_cutoff="not-a-clock")["refusals"] == [
+        "INVALID_DECISION_CUTOFF"
+    ]
+    assert _project(store, infotable_sk=-1)["refusals"] == ["INVALID_HOLDING_KEY"]
+
+
+def test_unknown_generation_id_pins_fail_closed_without_holding(tmp_path):
+    store, _ = _world(tmp_path)
+    missing_id = "i13fgen_" + "0" * 64
+
+    out = _project(store, generation_id=missing_id)
+
+    assert out["valid"] is False
+    assert out["state"] == "REFUSED"
+    assert out["holding"] is None
+    assert "GENERATION_LOAD_REFUSED" in out["refusals"]
+
+
+def test_malformed_generation_id_pin_is_refused_without_holding(tmp_path):
+    store, _ = _world(tmp_path)
+
+    out = _project(store, generation_id="not-a-generation-id")
+
+    assert out["valid"] is False
+    assert out["state"] == "REFUSED"
+    assert out["holding"] is None
+    assert out["refusals"] == ["INVALID_GENERATION_ID"]

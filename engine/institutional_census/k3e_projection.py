@@ -12,7 +12,11 @@ and purpose-specific source-use evidence are supplied by their existing owners.
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from engine.institutional_census.catalog import PublishedCatalogGeneration
+from engine.institutional_census.catalog import (
+    Institutional13FCatalogError,
+    PublishedCatalogGeneration,
+)
+from engine.institutional_census.models import Institutional13FError
 from lib.institutional_13f_adapter import (
     GENERATION_NOT_KNOWABLE_AT_CUTOFF,
     SOURCE_RECEIPT_MISMATCH,
@@ -147,6 +151,14 @@ def project_reported_holding(
             return out
         out["state"] = "REFUSED"
         out["refusals"].append(str(refusal.reason).upper())
+        return out
+    except Institutional13FCatalogError:
+        out["state"] = "REFUSED"
+        out["refusals"].append("GENERATION_LOAD_REFUSED")
+        return out
+    except Institutional13FError:
+        out["state"] = "REFUSED"
+        out["refusals"].append("INVALID_GENERATION_ID")
         return out
 
     out["generation"] = _generation_projection(generation)
