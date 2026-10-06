@@ -144,3 +144,20 @@ def test_api_health_binding_downgrades_stale_catchup(monkeypatch, tmp_path):
 
     assert health["state"] == "degraded"
     assert health["reason"] == "catchup_stale"
+
+def test_api_universe_path_defaults_to_derived_qbus_artifact(monkeypatch, tmp_path):
+    from app import ticker_news
+
+    monkeypatch.delenv("MM_TICKER_NEWS_UNIVERSE", raising=False)
+    monkeypatch.setattr(ticker_news.config, "data_dir", lambda: tmp_path)
+
+    assert ticker_news._universe_path() == tmp_path / "qbus" / "news_universe.json"
+
+
+def test_api_universe_path_env_override_wins(monkeypatch, tmp_path):
+    from app import ticker_news
+
+    custom = tmp_path / "custom-universe.json"
+    monkeypatch.setenv("MM_TICKER_NEWS_UNIVERSE", str(custom))
+
+    assert ticker_news._universe_path() == custom
