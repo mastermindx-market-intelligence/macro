@@ -370,3 +370,4 @@
 {"asof": "2026-10-03", "domain": "us", "field": "us_liquidity_quality", "from_value": "stress-expansion", "to_value": "neutral-hollow", "macro_context_id": "4d03fb928ac59a27"}
 {"asof": "2026-10-03", "domain": "us", "field": "us_liquidity_overlay", "from_value": "expanding", "to_value": "neutral", "macro_context_id": "4d03fb928ac59a27"}
 {"asof": "2026-10-03", "domain": "fx", "field": "fx_eurusd_action", "from_value": "FLAT", "to_value": "SHORT", "macro_context_id": "4d03fb928ac59a27"}
+{"asof": "2026-10-05", "domain": "fx", "field": "fx_eurusd_action", "from_value": "SHORT", "to_value": "FLAT", "macro_context_id": "f9ee4ffb0ddf8051"}

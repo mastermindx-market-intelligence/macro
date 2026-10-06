@@ -4376,7 +4376,7 @@
         "reason": "version-matched + fresh",
         "calibration_version": "w2.7-loro-v1",
         "calibration_generated_at": "2026-07-02T12:32:51Z",
-        "calibration_age_days": 93
+        "calibration_age_days": 94
       },
       "lag_passport": {
         "basis": "per_leg_schedule",
@@ -4957,9 +4957,9 @@
     ],
     "freshness": {
       "asof": "2026-10-02",
-      "built_at": "2026-10-03T16:58:10Z",
-      "age_days": 1,
-      "age_sessions": 0,
+      "built_at": "2026-10-05T05:41:46Z",
+      "age_days": 3,
+      "age_sessions": 1,
       "max_age_sessions": 1,
       "stale": false,
       "note": "contract asof vs build time; the daily build lands post-close (22:40 UTC) so a consumer reading intraday should expect asof = prior session — recompute age against built_at at read time."
@@ -4999,7 +4999,7 @@
     "asof": "2026-10-02",
     "regime": {
       "n_active_complexes": 0,
-      "breadth": null,
+      "breadth": 0.2185,
       "vix_regime": 0.1726,
       "rotation_tag": {
         "tag": "quiet",
@@ -5181,11 +5181,11 @@
             ],
             [
               "rate_sensitive",
-              0.3143
+              0.2857
             ],
             [
               "speculative_unprofitable",
-              0.1143
+              0.1429
             ]
           ],
           "dominant_chart_labels": [
@@ -5403,7 +5403,7 @@
             ]
           ],
           "tinderbox_share": 0.0612,
-          "event_override_share": 0.0,
+          "event_override_share": 0.0068,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
             "chart_labels": "label_emissions"
@@ -5425,12 +5425,11 @@
     "liquidity_overlay": "neutral"
   },
   "data_health": {
-    "last_run": "2026-10-03T15:13:53.350007+00:00",
+    "last_run": "2026-10-05T03:54:29.664049+00:00",
     "counts": {
-      "ok": 173,
-      "dead": 3,
-      "stale": 1,
-      "failed": 4,
+      "ok": 171,
+      "failed": 7,
+      "stale": 3,
       "blocked": 6,
       "outside_lease": 1,
       "creds_present": 1,
@@ -5440,36 +5439,51 @@
     "n_stale_series": 175,
     "failed_sources": [
       {
-        "source": "intl_universe",
-        "error": "RuntimeError: intl_universe: no closes downloaded",
-        "checked_at": "2026-10-03T15:13:53.350772+00:00"
+        "source": "sentiment_naaim",
+        "error": "ValueError: NAAIM since-inception workbook link not found on page",
+        "checked_at": "2026-10-05T03:54:29.664377+00:00"
+      },
+      {
+        "source": "china_filings",
+        "error": "RuntimeError: china_filings: all exchanges failed — sse: HTTP 504 from CNInfo exchange=sse | szse: HTTP 504 from CNInfo ",
+        "checked_at": "2026-10-04T12:26:18.571252+00:00"
       },
       {
         "source": "imf_weo",
         "error": "RuntimeError: imf_weo: all indicators/countries failed",
-        "checked_at": "2026-10-03T15:13:53.350655+00:00"
+        "checked_at": "2026-10-05T03:54:29.664712+00:00"
       },
       {
         "source": "usaspending_subawards",
         "error": "ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
-        "checked_at": "2026-10-03T15:13:53.350486+00:00"
+        "checked_at": "2026-10-05T03:54:29.664536+00:00"
+      },
+      {
+        "source": "sec_capital_structure_companyfacts",
+        "error": "CompanyFactsIntakeError: Company Facts external head witness is unreadable",
+        "checked_at": "2026-10-05T03:54:29.665182+00:00"
+      },
+      {
+        "source": "sbir_awards",
+        "error": "SbirRateLimitError: SBIR public API refused the request with HTTP 403; the published limit is 10 requests per 600s",
+        "checked_at": "2026-10-05T03:54:29.664554+00:00"
       },
       {
         "source": "ofac_sdn",
         "error": "RuntimeError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
-        "checked_at": "2026-10-03T15:13:53.350286+00:00"
+        "checked_at": "2026-10-05T03:54:29.664348+00:00"
       }
     ]
   },
   "alerts": {
     "asof": "2026-10-02",
-    "generated_utc": "2026-10-03 17:07",
+    "generated_utc": "2026-10-05 05:51",
     "total": 60,
     "critical": 2,
-    "major": 3,
-    "minor": 55,
+    "major": 4,
+    "minor": 54,
     "actionable": 4,
-    "backtested": 4
+    "backtested": 5
   },
   "factor_weather": {
     "style_regime": "mixed",
@@ -5482,7 +5496,7 @@
     "ratio_qqq_spy_20d": 0.047645505709518865,
     "ratio_iwm_spy_20d": -0.04172466885531134,
     "display_only": true,
-    "factor_state_as_of": "2026-10-03",
+    "factor_state_as_of": "2026-10-05",
     "seasonal_climate": {
       "month": 10,
       "seasonality_as_of": "2026-08",
@@ -5507,7 +5521,7 @@
     "share_skew_rising": 0.15789473684210525,
     "median_ivspread_rel": 0.00866,
     "share_pin_risk": null,
-    "opex_days": 13,
+    "opex_days": 11,
     "note": "sector-ETF/index options weather (raw aggregates; no composite — RO-2). Gamma-regime evidence is vol-conditioning with era-dependent sign (W-E1); never directional.",
     "display_only": true
   },
@@ -5629,7 +5643,7 @@
     "display_only": true
   },
   "fx_dollar": {
-    "asof": "2026-10-03",
+    "asof": "2026-10-05",
     "regime": "Global reflation",
     "risk": "risk-off",
     "favored": [
@@ -5672,7 +5686,9 @@
       "active_scenarios": [
         "dollar_wrecking_ball"
       ],
-      "building_scenarios": []
+      "building_scenarios": [
+        "reflation_risk_on"
+      ]
     },
     "dollar_day": {
       "z": 0.01,
@@ -5681,7 +5697,7 @@
     },
     "em": {
       "cnh_basis_state": "neutral",
-      "risk_off_composite": 0.18
+      "risk_off_composite": 0.179
     },
     "stance": {
       "word_en": "Get ready",
@@ -5696,17 +5712,12 @@
       {
         "pair": "USDMXN",
         "action": "LONG",
-        "score": 27.7
+        "score": 32.5
       },
       {
         "pair": "AUDUSD",
         "action": "SHORT",
-        "score": -23.9
-      },
-      {
-        "pair": "EURUSD",
-        "action": "SHORT",
-        "score": -20.3
+        "score": -22.7
       },
       {
         "pair": "DXY",
@@ -5716,12 +5727,12 @@
     ],
     "scenario_intensity": [
       {
-        "name": "dollar_wrecking_ball",
-        "value": 60.8
+        "name": "reflation_risk_on",
+        "value": 50.0
       },
       {
-        "name": "haven_flight_risk_off",
-        "value": 26.7
+        "name": "dollar_wrecking_ball",
+        "value": 44.2
       }
     ],
     "deltas": {
@@ -5729,115 +5740,115 @@
         "value": "mixed",
         "prev": "down",
         "since": "2026-09-23",
-        "days_in_state": 11
+        "days_in_state": 13
       },
       "usd_regime": {
         "value": "Global reflation",
         "prev": "US growth premium",
         "since": "2026-09-04",
-        "days_in_state": 30
+        "days_in_state": 32
       },
       "fx_risk": {
         "value": "risk-off",
         "prev": "risk-on",
         "since": "2026-10-01",
-        "days_in_state": 3
+        "days_in_state": 5
       },
       "real_rate_regime": {
         "value": "Restrictive real yields",
         "prev": null,
         "since": "2026-07-05",
-        "days_in_state": 91
+        "days_in_state": 93
       },
       "fx_liquidity_dir": {
         "value": "supportive",
         "prev": "soft",
         "since": "2026-09-17",
-        "days_in_state": 17
+        "days_in_state": 19
       },
       "fx_regime_radar": {
         "value": "dollar_wrecking_ball",
         "prev": "intervention_risk",
         "since": "2026-10-01",
-        "days_in_state": 3
+        "days_in_state": 5
       },
       "usd_valuation": {
         "value": "fair",
         "prev": "rich",
         "since": "2026-08-26",
-        "days_in_state": 39
+        "days_in_state": 41
       },
       "usd_positioning": {
         "value": "neutral",
         "prev": "crowded_long",
         "since": "2026-08-21",
-        "days_in_state": 44
+        "days_in_state": 46
       },
       "fed_path_lean": {
         "value": "hawkish_repricing",
         "prev": "steady",
         "since": "2026-09-01",
-        "days_in_state": 33
+        "days_in_state": 35
       },
       "fx_eurusd_action": {
-        "value": "SHORT",
-        "prev": "FLAT",
-        "since": "2026-10-03",
+        "value": "FLAT",
+        "prev": "SHORT",
+        "since": "2026-10-05",
         "days_in_state": 1
       },
       "fx_gbpusd_action": {
         "value": "FLAT",
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 77
+        "days_in_state": 79
       },
       "fx_usdjpy_action": {
         "value": "FLAT",
         "prev": "SHORT",
         "since": "2026-09-12",
-        "days_in_state": 22
+        "days_in_state": 24
       },
       "fx_usdchf_action": {
         "value": "FLAT",
         "prev": "LONG",
         "since": "2026-10-01",
-        "days_in_state": 3
+        "days_in_state": 5
       },
       "fx_audusd_action": {
         "value": "SHORT",
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 77
+        "days_in_state": 79
       },
       "fx_usdcad_action": {
         "value": "FLAT",
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 77
+        "days_in_state": 79
       },
       "fx_usdmxn_action": {
         "value": "LONG",
         "prev": "FLAT",
         "since": "2026-10-01",
-        "days_in_state": 3
+        "days_in_state": 5
       },
       "fx_usdbrl_action": {
         "value": "FLAT",
         "prev": "LONG",
         "since": "2026-08-18",
-        "days_in_state": 47
+        "days_in_state": 49
       },
       "fx_usdcnh_action": {
         "value": "FLAT",
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 77
+        "days_in_state": 79
       },
       "fx_dxy_action": {
         "value": null,
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 77
+        "days_in_state": 79
       }
     },
     "smile_decomp_regime": "safety-driven",
@@ -5848,43 +5859,43 @@
         "current": "Global reflation",
         "prev": "US growth premium",
         "changed_on": "2026-09-01",
-        "days_in_state": 33
+        "days_in_state": 35
       },
       "lean": {
         "current": "dollar-supportive backdrop",
         "prev": "mixed backdrop",
         "changed_on": "2026-09-16",
-        "days_in_state": 18
+        "days_in_state": 20
       },
       "risk": {
         "current": "risk-off",
         "prev": "risk-on",
         "changed_on": "2026-09-30",
-        "days_in_state": 4
+        "days_in_state": 6
       },
       "fed_path_lean": {
         "current": "hawkish_repricing",
         "prev": "steady",
         "changed_on": "2026-08-31",
-        "days_in_state": 34
+        "days_in_state": 36
       },
       "liquidity_dir": {
         "current": "supportive",
         "prev": "soft",
         "changed_on": "2026-09-16",
-        "days_in_state": 18
+        "days_in_state": 20
       },
       "trend": {
         "current": "mixed",
         "prev": "down",
         "changed_on": "2026-09-18",
-        "days_in_state": 16
+        "days_in_state": 18
       },
       "triple_red": {
         "current": false,
         "prev": true,
         "changed_on": "2026-09-18",
-        "days_in_state": 16
+        "days_in_state": 18
       },
       "cnh_basis_state": {
         "current": "neutral",
@@ -5896,24 +5907,24 @@
         "current": "dollar_wrecking_ball",
         "prev": null,
         "changed_on": "2026-09-30",
-        "days_in_state": 4
+        "days_in_state": 6
       }
     },
     "regime_radar_dominant_scenario": {
       "key": "dollar_wrecking_ball",
-      "intensity": 60.8,
+      "intensity": 44.2,
       "prob_status": "ok",
-      "p_cond": 0.1913,
-      "base_rate": 0.1318
+      "p_cond": 0.1706,
+      "base_rate": 0.1317
     },
     "strength_extremes": {
       "strongest": {
         "ccy": "CNH",
-        "strength": 0.644
+        "strength": 0.581
       },
       "weakest": {
         "ccy": "MXN",
-        "strength": -0.902
+        "strength": -0.995
       },
       "horizon": "1m"
     },
@@ -6087,7 +6098,7 @@
     "display_only": true
   },
   "commodity_context": {
-    "asof": "2026-10-02",
+    "asof": "2026-10-04",
     "regime": "Reflation",
     "favored": [
       "Copper",
@@ -6099,44 +6110,50 @@
         "label": "Gold",
         "trend": "up",
         "action": "SELL",
-        "conviction": -32.7
+        "conviction": -29.6
       },
       {
         "label": "Silver",
         "trend": "up",
         "action": "SELL",
-        "conviction": -27.2
+        "conviction": -25.5
       },
       {
         "label": "Copper",
         "trend": "up",
         "action": "HOLD",
-        "conviction": -15.1
+        "conviction": -14.5
       },
       {
         "label": "Oil · WTI",
         "trend": "up",
         "action": "SELL",
-        "conviction": -21.3
+        "conviction": -18.9
       }
     ],
     "index": {
       "mtf_grade": "CAUTION",
       "ladder_state": "COUNTERTREND BOUNCE",
       "shock_state": "normal",
-      "impulse": -1.681,
-      "chg_1m_pct": -5.1,
+      "impulse": -1.295,
+      "chg_1m_pct": -3.4,
       "headline": "Unconfirmed turn within a bearish bigger picture"
     },
     "breadth": {
-      "n_members": 17,
-      "n_up_trend": 12,
-      "pct_up_trend": 0.706,
+      "n_members": 12,
+      "n_up_trend": 10,
+      "pct_up_trend": 0.833,
       "bucket": "broad"
     },
     "confluence": {
       "index_state": "Neutral",
       "standouts": [
+        {
+          "name": "palladium",
+          "label": "Palladium",
+          "state": "Basing — early bottom signs",
+          "score": 42.9
+        },
         {
           "name": "cotton",
           "label": "Cotton",
@@ -6148,13 +6165,13 @@
     "ratios": {
       "copper_gold": {
         "value": 0.0016,
-        "chg_20d_pct": 2.26,
+        "chg_20d_pct": 7.78,
         "dir": "up"
       },
       "gold_silver": {
-        "value": 69.3983,
-        "chg_20d_pct": 5.7,
-        "dir": "up"
+        "value": 67.6954,
+        "chg_20d_pct": -1.26,
+        "dir": "down"
       }
     },
     "usd_sensitivity": {
@@ -6168,77 +6185,77 @@
         "value": "Reflation",
         "prev": "Stagflation",
         "since": "2026-09-23",
-        "days_in_state": 11
+        "days_in_state": 13
       },
       "commodity_favored": {
         "value": "Copper, Oil · WTI, Silver",
         "prev": "Gold, Silver",
         "since": "2026-09-23",
-        "days_in_state": 11
+        "days_in_state": 13
       },
       "commodity_mtf_grade": {
         "value": "CAUTION",
         "prev": "AVOID",
         "since": "2026-10-02",
-        "days_in_state": 2
+        "days_in_state": 4
       },
       "commodity_ladder": {
         "value": "COUNTERTREND BOUNCE",
         "prev": "BOTTOM WATCH",
         "since": "2026-10-02",
-        "days_in_state": 2
+        "days_in_state": 4
       },
       "commodity_shock_state": {
         "value": "normal",
         "prev": "blowoff",
         "since": "2026-09-04",
-        "days_in_state": 30
+        "days_in_state": 32
       },
       "commodity_confluence_state": {
         "value": "Neutral",
         "prev": "Extended — late cycle",
         "since": "2026-09-01",
-        "days_in_state": 33
+        "days_in_state": 35
       },
       "commodity_breadth_bucket": {
         "value": "broad",
         "prev": null,
         "since": "2026-07-19",
-        "days_in_state": 77
+        "days_in_state": 79
       },
       "gold_action": {
         "value": "SELL",
         "prev": "HOLD",
         "since": "2026-09-09",
-        "days_in_state": 25
+        "days_in_state": 27
       },
       "silver_action": {
         "value": "SELL",
         "prev": "HOLD",
         "since": "2026-09-23",
-        "days_in_state": 11
+        "days_in_state": 13
       },
       "copper_action": {
         "value": "HOLD",
         "prev": "BUY",
         "since": "2026-09-11",
-        "days_in_state": 23
+        "days_in_state": 25
       },
       "oil_action": {
         "value": "SELL",
         "prev": "HOLD",
         "since": "2026-09-16",
-        "days_in_state": 18
+        "days_in_state": 20
       }
     },
     "display_only": true
   },
   "intelligence": {
-    "as_of": "2026-10-03",
-    "n_universe": 3456,
+    "as_of": "2026-10-05",
+    "n_universe": 3240,
     "n_priority": 25,
     "n_actionable": 3,
-    "n_divergences": 36,
+    "n_divergences": 28,
     "macro_context": {
       "regime": "Reflation",
       "posture": "Reflation — growth and inflation both heating up. Posture: CAREFUL — reduce size, tighten stops, let cash build.",
@@ -6270,8 +6287,8 @@
         "read": "accumulation"
       },
       {
-        "ticker": "BMY",
-        "priority": 0.35,
+        "ticker": "DELL",
+        "priority": 0.394,
         "lean": -1,
         "read": "fading"
       }
@@ -6280,13 +6297,6 @@
   },
   "macro_deltas": {
     "transitions": [
-      {
-        "asof": "2026-10-01",
-        "domain": "us",
-        "field": "us_gamma_regime",
-        "from": "long",
-        "to": "short"
-      },
       {
         "asof": "2026-10-01",
         "domain": "us",
@@ -6419,13 +6429,20 @@
         "field": "fx_eurusd_action",
         "from": "FLAT",
         "to": "SHORT"
+      },
+      {
+        "asof": "2026-10-05",
+        "domain": "fx",
+        "field": "fx_eurusd_action",
+        "from": "SHORT",
+        "to": "FLAT"
       }
     ],
     "n_transitions_14d": 20,
     "display_only": true
   },
   "cross_asset_flows": {
-    "asof": "2026-10-03",
+    "asof": "2026-10-05",
     "source": "data/crossasset/latest.json",
     "regime": "mixed / no clear trend",
     "breadth": 0.23,
@@ -6449,7 +6466,7 @@
       },
       {
         "pair": "gold_silver",
-        "ratio": 69.398,
+        "ratio": 67.695,
         "trend": "mid"
       },
       {
@@ -6482,7 +6499,7 @@
     "display_only": true
   },
   "cycle_pattern": {
-    "as_of": "2026-10-03",
+    "as_of": "2026-10-05",
     "model_epoch": "price_c4414dcb",
     "gate_status": {
       "up": {
@@ -6523,7 +6540,7 @@
   },
   "inflation_intelligence": {
     "schema": "inflation_intelligence.v1",
-    "as_of": "2026-10-03",
+    "as_of": "2026-10-05",
     "available": true,
     "released_state": {
       "available": true,
@@ -6596,9 +6613,9 @@
         "release_type": "cpi_headline",
         "period": "2026-09",
         "release_date": "2026-10-14",
-        "days_to_release": 11,
+        "days_to_release": 9,
         "target": "mom_sa_pct",
-        "forecast_asof": "2026-10-03T20:19:46Z",
+        "forecast_asof": "2026-10-05T10:10:00Z",
         "model_epoch": "champion_legacy_target_v1",
         "target_epoch": "legacy_cross_vintage_initial_levels_v0",
         "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
@@ -6627,7 +6644,7 @@
           "model_epoch": "combined_v1_legacy_target_v1",
           "target_epoch": "mixed_legacy_cross_vintage_v0",
           "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-          "inputs_hash": "60ae33c597fda62e4635fdb3c8eef4d6cb9328bd77d12f99bd66c8abf2e78e9d",
+          "inputs_hash": "13035d8e3246b4b0d78a149ad4871445a63e677b1c4dc90c7faa4f9350199691",
           "inputs_used": [
             "champion",
             "v3_factor",
@@ -6638,7 +6655,7 @@
           "input_hashes": {
             "champion": "7d534a5ec6b22740322e12caef69d13990f0a38cb866a2ecd3e6ef7f8629d0f1",
             "cleveland": "68e34eb88be1f92d62d474b5cd1884af3825cd19dd68e47e44bfc54eceaaafee",
-            "cpi_bridge": "417bfb739a8efe48b3e8ea68bd7527224cb63ab4ee0e012e960428acb81ef794",
+            "cpi_bridge": "5a191f841bbfbd99c6b5f76df4ddff29d898bde5e22cadb50c1648a7e443798c",
             "mf_energy": "2ab247dae758a4a7e742118d9b5c41d52a11d46b80e647e46089bacaf454c85e",
             "v3_factor": "e7a998887210343a35826460cf514efde27fdbf26b1ee2beb054481958374512"
           },
@@ -6669,16 +6686,16 @@
             }
           ]
         },
-        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-09_first_2026-10-03_v1.json",
+        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-09_first_2026-10-05_v1.json",
         "forecast_evolution": {
           "basis": "append_only_release_radar_forward_ledger_champion_path",
-          "cutoff_asof": "2026-10-03",
+          "cutoff_asof": "2026-10-05",
           "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
           "excluded_after_cutoff": 0,
           "excluded_unparseable_asof": 0,
-          "n_points": 19,
+          "n_points": 21,
           "first_asof": "2026-09-04",
-          "last_asof": "2026-10-03"
+          "last_asof": "2026-10-05"
         }
       },
       "core": {
@@ -6686,9 +6703,9 @@
         "release_type": "cpi_core",
         "period": "2026-09",
         "release_date": "2026-10-14",
-        "days_to_release": 11,
+        "days_to_release": 9,
         "target": "mom_sa_pct",
-        "forecast_asof": "2026-10-03T20:19:46Z",
+        "forecast_asof": "2026-10-05T10:10:00Z",
         "model_epoch": "champion_legacy_target_v1",
         "target_epoch": "legacy_cross_vintage_initial_levels_v0",
         "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
@@ -6748,16 +6765,16 @@
           "range_violation_legs": [],
           "bridge_known_scope_mismatches": []
         },
-        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-09_first_2026-10-03_v1.json",
+        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-09_first_2026-10-05_v1.json",
         "forecast_evolution": {
           "basis": "append_only_release_radar_forward_ledger_champion_path",
-          "cutoff_asof": "2026-10-03",
+          "cutoff_asof": "2026-10-05",
           "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
           "excluded_after_cutoff": 0,
           "excluded_unparseable_asof": 0,
-          "n_points": 19,
+          "n_points": 21,
           "first_asof": "2026-09-04",
-          "last_asof": "2026-10-03"
+          "last_asof": "2026-10-05"
         }
       }
     },
@@ -6771,9 +6788,9 @@
         "release_type": "cpi_headline",
         "period": "2026-10",
         "release_date": "2026-11-10",
-        "days_to_release": 38,
+        "days_to_release": 36,
         "target": "mom_sa_pct",
-        "forecast_asof": "2026-10-03T20:19:46Z",
+        "forecast_asof": "2026-10-05T10:10:00Z",
         "model_epoch": "champion_legacy_target_v1",
         "target_epoch": "legacy_cross_vintage_initial_levels_v0",
         "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
@@ -6791,18 +6808,18 @@
           "confidence": 0.2876
         },
         "combined_display_estimate": {
-          "point": 0.286636,
-          "p10": 0.006942,
-          "p25": 0.139434,
-          "p50": 0.286636,
-          "p75": 0.433837,
-          "p90": 0.56633,
+          "point": 0.233236,
+          "p10": -0.037935,
+          "p25": 0.09052,
+          "p50": 0.233236,
+          "p75": 0.375952,
+          "p90": 0.504407,
           "includes_external_benchmark": true,
           "n_scored_basis": 0,
           "model_epoch": "combined_v1_legacy_target_v1",
           "target_epoch": "mixed_legacy_cross_vintage_v0",
           "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
-          "inputs_hash": "5233c24c4d9424c85618761541ef2f55a08bb1116b033c28704e968db0965d66",
+          "inputs_hash": "6448199cbff821f2583b577f124ec1bef679637d257e6abd9f2e080d647e800a",
           "inputs_used": [
             "champion",
             "v3_factor",
@@ -6813,8 +6830,8 @@
           "input_hashes": {
             "champion": "9651a1b05c4e4715e2d2f9b1c3038440b515565f978689fd7a86f8136a73f298",
             "cleveland": "d91d64d9a8f56c1e407c20985dadb16e951ec1311ecff5a825a41fb596ecd152",
-            "cpi_bridge": "83c37d09042adb28a65406a38c474392ae00a26e59b2e412245b5305f10b5bfd",
-            "mf_energy": "3a127d3f7b647bdcf2339a930fbd675b65aada03780b765d06a9695e98111944",
+            "cpi_bridge": "b52a7a684acfc6dce4b20d202db9657ba5b72a7e32869b9deb19ab3790cf2bb3",
+            "mf_energy": "57edb75139d195046654da0aafe7eccfb95ce82fdb8fb7dda75b4cd4b2896fab",
             "v3_factor": "3efc0be581f3bf143894111c54b7719862f6b591b121411670eeb51daffa6f63"
           },
           "display_only": true,
@@ -6846,16 +6863,16 @@
             }
           ]
         },
-        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-10_first_2026-10-03_v1.json",
+        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-10_first_2026-10-05_v1.json",
         "forecast_evolution": {
           "basis": "append_only_release_radar_forward_ledger_champion_path",
-          "cutoff_asof": "2026-10-03",
+          "cutoff_asof": "2026-10-05",
           "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
           "excluded_after_cutoff": 0,
           "excluded_unparseable_asof": 0,
-          "n_points": 3,
+          "n_points": 5,
           "first_asof": "2026-10-01",
-          "last_asof": "2026-10-03"
+          "last_asof": "2026-10-05"
         }
       },
       "core_model_pressure": {
@@ -6863,9 +6880,9 @@
         "release_type": "cpi_core",
         "period": "2026-10",
         "release_date": "2026-11-10",
-        "days_to_release": 38,
+        "days_to_release": 36,
         "target": "mom_sa_pct",
-        "forecast_asof": "2026-10-03T20:19:46Z",
+        "forecast_asof": "2026-10-05T10:10:00Z",
         "model_epoch": "champion_legacy_target_v1",
         "target_epoch": "legacy_cross_vintage_initial_levels_v0",
         "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
@@ -6925,16 +6942,16 @@
           "range_violation_legs": [],
           "bridge_known_scope_mismatches": []
         },
-        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-10_first_2026-10-03_v1.json",
+        "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-10_first_2026-10-05_v1.json",
         "forecast_evolution": {
           "basis": "append_only_release_radar_forward_ledger_champion_path",
-          "cutoff_asof": "2026-10-03",
+          "cutoff_asof": "2026-10-05",
           "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
           "excluded_after_cutoff": 0,
           "excluded_unparseable_asof": 0,
-          "n_points": 3,
+          "n_points": 5,
           "first_asof": "2026-10-01",
-          "last_asof": "2026-10-03"
+          "last_asof": "2026-10-05"
         }
       },
       "coverage": {
@@ -7048,10 +7065,10 @@
         "available": true,
         "malformed_rows": 0,
         "path": "data/release_forecast/forward_ledger.jsonl",
-        "rows_read": 1854
+        "rows_read": 1957
       },
       "release_radar_latest": {
-        "asof": "2026-10-03T20:19:46Z",
+        "asof": "2026-10-05T10:10:00Z",
         "available": true,
         "cpi_entries": 4,
         "path": "data/release_forecast/latest.json"
@@ -7073,49 +7090,8 @@
   },
   "rotation_events": {
     "as_of": "2026-10-02",
-    "n_active": 2,
-    "events": [
-      {
-        "sector": "xlk",
-        "from_leg": {
-          "key": "software",
-          "name_en": "Software (non-AI)"
-        },
-        "to_leg": {
-          "key": "ai_semis",
-          "name_en": "AI semiconductors"
-        },
-        "severity": "notable",
-        "day_n": 5,
-        "started": "2026-09-28",
-        "confirmed_tonight": false,
-        "event_type": "handoff",
-        "to_sector": "xlk",
-        "from_sector": "xlk",
-        "severity_effective": "notable",
-        "health_state": "active"
-      },
-      {
-        "sector": "xlk",
-        "from_leg": {
-          "key": "software",
-          "name_en": "Software (non-AI)"
-        },
-        "to_leg": {
-          "key": "semicap",
-          "name_en": "Semicap equipment"
-        },
-        "severity": "standard",
-        "day_n": 5,
-        "started": "2026-09-28",
-        "confirmed_tonight": false,
-        "event_type": "handoff",
-        "to_sector": "xlk",
-        "from_sector": "xlk",
-        "severity_effective": "standard",
-        "health_state": "active"
-      }
-    ],
+    "n_active": 0,
+    "events": null,
     "n_truncated": 0,
     "ruler": {
       "n": 8,
@@ -7132,7 +7108,7 @@
     "n_tickers": 2941,
     "coverage": {
       "archetype": 0.729,
-      "dna_class": 0.385,
+      "dna_class": 0.386,
       "ownership": 0.423,
       "micro": 0.181,
       "chart": 0.777
@@ -7140,15 +7116,15 @@
     "top_archetype_shares": [
       [
         "speculative_unprofitable",
-        0.3803
+        0.3804
       ],
       [
         "rate_sensitive",
-        0.1288
+        0.1282
       ],
       [
         "financial",
-        0.1022
+        0.1021
       ]
     ],
     "top_chart_shares": [
@@ -7166,39 +7142,39 @@
       ]
     ],
     "n_tinderbox": 300,
-    "n_event_override": 12,
+    "n_event_override": 13,
     "display_only": true
   },
   "context_risk": {
     "available": true,
-    "as_of": "2026-10-03T10:22Z",
+    "as_of": "2026-10-04T10:31Z",
     "board_top_overweights": [
       {
-        "archetype": "high_beta_momentum",
-        "ratio": 5.25,
-        "member_share": 0.0735,
-        "universe_share": 0.014,
-        "member_n": 5
-      },
-      {
         "archetype": "deep_value",
-        "ratio": 2.262,
-        "member_share": 0.0147,
+        "ratio": 4.4,
+        "member_share": 0.0286,
         "universe_share": 0.0065,
-        "member_n": 1
+        "member_n": 2
       },
       {
-        "archetype": "quality_compounder",
-        "ratio": 2.17,
-        "member_share": 0.0588,
-        "universe_share": 0.0271,
+        "archetype": "high_beta_momentum",
+        "ratio": 4.23,
+        "member_share": 0.0571,
+        "universe_share": 0.0135,
         "member_n": 4
+      },
+      {
+        "archetype": "mixed",
+        "ratio": 2.007,
+        "member_share": 0.1714,
+        "universe_share": 0.0854,
+        "member_n": 12
       }
     ],
-    "weighted_p10_21d": -0.0801,
-    "weighted_median_21d": 0.0125,
+    "weighted_p10_21d": -0.0821,
+    "weighted_median_21d": 0.0123,
     "p10_interpretation": "per-type share-weighted average of marginal worst-decile returns; NOT a portfolio P10 — diversification and cross-type correlation are not modeled.",
-    "n_board": 69,
+    "n_board": 75,
     "regime_context": {
       "quad": "Q2",
       "liq": "neutral",
@@ -7290,38 +7266,15 @@
     }
   },
   "china_market_state": {
-    "available": true,
-    "as_of": "2026-10-03",
-    "schema": "china_market_state.v1",
-    "phase": {
-      "label": "GRINDING_BEAR",
-      "confidence": 0.8
-    },
-    "participation": {
-      "regime": "dormant",
-      "who_controls": "mixed",
-      "risk": "low"
-    },
-    "policy_impulse": "neutral",
-    "microstructure": {
-      "limit_up_count": 5.0,
-      "limit_down_count": 0.0,
-      "sealed_up_close": 3.0,
-      "failed_up_seal_count": 2.0,
-      "lianban_max": 1.0,
-      "chase_veto_count": 1,
-      "fillable_count": 107
-    },
-    "contradictions_count": 1,
-    "top_contradiction": null,
-    "data_gaps_count": 3,
-    "top_data_gap": "participation: zt_breadth:null on 2026-09-29",
+    "available": false,
     "authority": "context_only",
+    "note": "stale: as_of 2026-10-04 exceeds 30.0h SLA",
+    "as_of": "2026-10-04",
     "display_only": true
   },
   "thematic_state": {
     "available": true,
-    "as_of": "2026-10-03",
+    "as_of": "2026-10-04",
     "n_themes": 18,
     "stage_counts": {
       "WATCH": 13,
@@ -7348,7 +7301,7 @@
         "falsifier_id": "ag_f1"
       }
     ],
-    "n_stale_legs": 9,
+    "n_stale_legs": 8,
     "noteworthy": [
       {
         "theme_id": "data_center_power",
@@ -7367,7 +7320,7 @@
       },
       {
         "theme_id": "glp1_obesity",
-        "reason": "stage=RE-RATING, tight_bottleneck+stale",
+        "reason": "stage=RE-RATING",
         "stage": "RE-RATING"
       },
       {
@@ -7399,8 +7352,8 @@
   "live_overlay": {
     "source": "data/regime/latest.json:freshness",
     "asof": "2026-10-02",
-    "built_at": "2026-10-03T16:58:10Z",
-    "age_days": 1,
+    "built_at": "2026-10-05T05:41:46Z",
+    "age_days": 3,
     "stale": false
   },
   "contradictions": {
@@ -7447,7 +7400,7 @@
       {
         "market": "au",
         "state": "elevated",
-        "asof": "2026-10-02",
+        "asof": "2026-10-05",
         "mature": true
       },
       {
@@ -7458,12 +7411,6 @@
       },
       {
         "market": "hk",
-        "state": "risk-off",
-        "asof": "2026-10-02",
-        "mature": true
-      },
-      {
-        "market": "tw",
         "state": "risk-off",
         "asof": "2026-10-02",
         "mature": true
@@ -7486,14 +7433,14 @@
     "display_only": true
   },
   "special_situations": {
-    "asof": "2026-10-03",
+    "asof": "2026-10-05",
     "counts": {
-      "total": 1524,
-      "new_today": 92,
+      "total": 1572,
+      "new_today": 38,
       "grade_a": 0,
-      "grade_b": 3,
-      "with_arb": 25,
-      "cross_border": 553
+      "grade_b": 4,
+      "with_arb": 28,
+      "cross_border": 574
     },
     "setups_display": [
       {
@@ -7519,6 +7466,19 @@
         "why": [
           "Buy setup live",
           "Deeply oversold (weeks)"
+        ]
+      },
+      {
+        "ticker": "INGN",
+        "company": "Inogen Inc",
+        "category": "Divestitures",
+        "stage": "announced",
+        "grade": "B",
+        "score": 55.0,
+        "why": [
+          "Buy setup live",
+          "Deeply oversold (weeks)",
+          "EDGAR filing confirmed"
         ]
       },
       {
@@ -7557,77 +7517,64 @@
         "why": [
           "Buy setup live"
         ]
-      },
-      {
-        "ticker": "TRIP",
-        "company": "Tripadvisor, Inc.",
-        "category": "Divestitures",
-        "stage": "",
-        "grade": "C",
-        "score": 44.0,
-        "why": [
-          "Setup approaching entry level",
-          "Deeply oversold (weeks)",
-          "Strong history for this event type"
-        ]
       }
     ],
     "changes": [
       {
         "kind": "new",
-        "ticker": "VUECF",
-        "category": "Spin-Offs",
+        "ticker": "XOM",
+        "category": "Capital Returns",
         "from": null,
         "to": "announced"
       },
       {
         "kind": "new",
-        "ticker": "WSKEF",
+        "ticker": "AHRO",
+        "category": "Strategic Reviews",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "grade_up",
+        "ticker": "INGN",
+        "category": "Divestitures",
+        "from": null,
+        "to": "B"
+      },
+      {
+        "kind": "new",
+        "ticker": "FWACU",
         "category": "SPACs",
         "from": null,
         "to": "de-SPAC"
       },
       {
         "kind": "new",
-        "ticker": "CMCWF",
+        "ticker": "TONT-WT",
         "category": "SPACs",
         "from": null,
         "to": "de-SPAC"
       },
       {
         "kind": "new",
-        "ticker": "TAVIR",
+        "ticker": "HAVAU",
         "category": "SPACs",
         "from": null,
         "to": "de-SPAC"
       },
       {
         "kind": "new",
-        "ticker": "TBCVU",
-        "category": "SPACs",
-        "from": null,
-        "to": "de-SPAC"
-      },
-      {
-        "kind": "new",
-        "ticker": "ECHO",
-        "category": "Restructuring",
+        "ticker": "IMNN",
+        "category": "Other",
         "from": null,
         "to": "announced"
       },
       {
         "kind": "new",
-        "ticker": "KITTW",
-        "category": "Restructuring",
+        "ticker": "JELD",
+        "category": "Issuer Tenders",
         "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
-        "ticker": "STHO",
-        "category": "Restructuring",
-        "from": null,
-        "to": "announced"
+        "to": "initiated"
       }
     ],
     "risk_arb_top": [
@@ -7635,22 +7582,22 @@
         "ticker": "ACVA",
         "company": "ACV Auctions Inc.",
         "gross_spread_pct": 45.43,
-        "annualized_pct": 13091.3,
-        "days_to_close": 28
+        "annualized_pct": 19103.7,
+        "days_to_close": 26
       },
       {
         "ticker": "FNWD",
         "company": "Finward Bancorp",
         "gross_spread_pct": 13.59,
-        "annualized_pct": 123.0,
-        "days_to_close": 58
+        "annualized_pct": 129.4,
+        "days_to_close": 56
       },
       {
         "ticker": "VCTR",
         "company": "Victory Capital Holdings, Inc.",
         "gross_spread_pct": 2.68,
-        "annualized_pct": 41.1,
-        "days_to_close": 28
+        "annualized_pct": 44.9,
+        "days_to_close": 26
       }
     ],
     "display_only": true
@@ -7658,7 +7605,7 @@
   "theme_rotation": {
     "as_of": "2026-10-02",
     "leadership_state": "steady",
-    "days_in_state": 1,
+    "days_in_state": 2,
     "stance_en": "Leadership steady — stay with the leaders.",
     "stance_zh": "领涨格局稳定——持有领涨主题。",
     "trailing_leader": {
@@ -7724,43 +7671,19 @@
         "current": "steady",
         "prev": "steady",
         "changed_on": "2026-10-01",
-        "days_in_state": 2
+        "days_in_state": 3
       },
       "trailing_leader_id": {
         "current": "ai_infra",
-        "prev": "memory_storage",
+        "prev": "ai_infra",
         "changed_on": "2026-10-02",
-        "days_in_state": 1
+        "days_in_state": 2
       },
       "leader_health": {
         "current": "confirmed",
         "prev": "confirmed",
         "changed_on": "2026-10-01",
-        "days_in_state": 2
-      },
-      "theme_label:memory_storage": {
-        "current": "neutral",
-        "prev": "dominant",
-        "changed_on": "2026-10-02",
-        "days_in_state": 1
-      },
-      "theme_label:space_economy": {
-        "current": "neutral",
-        "prev": "deteriorating",
-        "changed_on": "2026-10-02",
-        "days_in_state": 1
-      },
-      "theme_label:crypto_rails": {
-        "current": "deteriorating",
-        "prev": "neutral",
-        "changed_on": "2026-10-02",
-        "days_in_state": 1
-      },
-      "theme_label:crypto": {
-        "current": "deteriorating",
-        "prev": "fading",
-        "changed_on": "2026-10-02",
-        "days_in_state": 1
+        "days_in_state": 3
       }
     },
     "china": {
@@ -7866,7 +7789,7 @@
     "display_only": true
   },
   "stage_analysis": {
-    "as_of": "2026-10-03",
+    "as_of": "2026-10-05",
     "counts": {
       "total": 2710,
       "stage1": 109,
@@ -8478,7 +8401,2077 @@
     "futures_plain_en": "Market prices ~3 hikes over the next 12m (funds 3.88% → 4.71%)",
     "futures_plain_zh": "市场为未来12个月定价约加息3次（基金利率 3.88% → 4.71%）",
     "display_only": true,
-    "authority": false
+    "authority": false,
+    "regime_outlook": {
+      "schema_version": "regime_outlook.v1",
+      "scope": "US",
+      "analysis_cutoff": "2026-10-05T10:11:43.634859+00:00",
+      "built_at": "2026-10-05T10:11:43.637487+00:00",
+      "mapping_version": "VERDICT_MAPPING_V2",
+      "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
+      "inputs": {
+        "T": {
+          "path": "data/transmission/latest.json",
+          "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+          "read_status": "available"
+        },
+        "R": {
+          "path": "data/regime/latest.json",
+          "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
+          "read_status": "available"
+        },
+        "M": {
+          "path": "data/market_state/latest.json",
+          "sha256": "9e90a4b255fd183125767ddae99515eca158064ca0d9b6a6b3b74784576a1b85",
+          "read_status": "available"
+        },
+        "D": {
+          "path": "data/dispersion/regime.json",
+          "sha256": "bae4457e8f09c1eec46268d33bd81fd26d6b68e8d5e3a0b5d372a57157f4f19c",
+          "read_status": "available"
+        },
+        "L": {
+          "path": "data/leadership_crack/latest.json",
+          "sha256": "84835dd280362a16289460564a70bfa5b4ffc71990a0a4f0d27b79c2a873d829",
+          "read_status": "available"
+        },
+        "B": {
+          "path": "data/bonds/bond_health.json",
+          "sha256": "e3f80aee3e8520306b0c40e843cb04a6ecd2713a43472b3101c37e92487b1ebf",
+          "read_status": "available"
+        },
+        "C": {
+          "path": "data/commodity/latest.json",
+          "sha256": "28dae3429a7527affdf45708f1f61b9f3b4c27978b23ff4e21966585f8b62e86",
+          "read_status": "available"
+        }
+      },
+      "evidence_clock_range": {
+        "oldest": "2026-09-25",
+        "newest": "2026-10-02",
+        "by_clock_semantics": {
+          "owner_snapshot_date": 20,
+          "source_observation_date": 9,
+          "unknown": 1
+        }
+      },
+      "families": [
+        {
+          "family_id": "growth_and_inflation",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": [
+            "T.state.inflation.direction",
+            "T.state.inflation.regime",
+            "R.conditions.labor_nowcast.read",
+            "T.state.inflation.eci_comp_yoy"
+          ]
+        },
+        {
+          "family_id": "rates_and_discounting",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": [
+            "T.state.expectations.anchoring",
+            "T.state.rates.direction",
+            "T.state.rates.regime",
+            "T.breakeven_decomp.direction",
+            "T.breakeven_decomp.trend",
+            "T.yield_curve.regime.term_premium_dir",
+            "T.yield_momentum.series.2y.turn_watch",
+            "T.yield_momentum.series.5y.turn_watch",
+            "T.yield_momentum.series.10y.turn_watch",
+            "T.yield_momentum.series.20y.turn_watch",
+            "T.yield_momentum.series.30y.turn_watch",
+            "B.fed_path.implied_cuts_12m",
+            "T.yield_curve.regime.key"
+          ]
+        },
+        {
+          "family_id": "liquidity_and_financing",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "R.conditions.financial_conditions.state",
+            "R.liquidity_quality.label",
+            "R.liquidity_quality.stress_overlay.confirming_stress",
+            "R.liquidity_quality.stress_overlay.hy_oas_pct",
+            "R.conditions.financial_conditions.trend",
+            "R.liquidity_quality.stress_overlay.nfci_trend"
+          ]
+        },
+        {
+          "family_id": "market_structure",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "R.conditions.complacency.breadth_div",
+            "M.components.breadth.tone",
+            "D.state"
+          ]
+        },
+        {
+          "family_id": "leadership_and_fundamentals",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "L.state"
+          ]
+        },
+        {
+          "family_id": "valuation_and_exposures",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": []
+        },
+        {
+          "family_id": "volatility_correlation_positioning",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "D.avg_corr"
+          ]
+        },
+        {
+          "family_id": "flows_and_reflexive_effects",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": []
+        },
+        {
+          "family_id": "cross_asset_and_regional",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "T.dollar_channel.usd_dir",
+            "C.assets.oil.trend"
+          ]
+        },
+        {
+          "family_id": "change_and_outlook",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": []
+        }
+      ],
+      "evidence": [
+        {
+          "id": "T.state.inflation.direction",
+          "family_id": "growth_and_inflation",
+          "evidence_family_id": "core_pce",
+          "kind": "categorical",
+          "values": {
+            "direction": "cooling"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "cooling",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/state/inflation/direction",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.state.inflation.regime",
+          "family_id": "growth_and_inflation",
+          "evidence_family_id": "core_pce",
+          "kind": "categorical",
+          "values": {
+            "regime": "above target"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "above target",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/state/inflation/regime",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.state.expectations.anchoring",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "anchoring": "anchored"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "anchored",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/state/expectations/anchoring",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.state.rates.direction",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "direction": "rising"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "rising",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/state/rates/direction",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.state.rates.regime",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "regime": "restrictive"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "restrictive",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/state/rates/regime",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.breakeven_decomp.direction",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "direction": "flat"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "flat",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/breakeven_decomp/direction",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.breakeven_decomp.trend",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "trend": "uptrend"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "uptrend",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/breakeven_decomp/trend",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.yield_curve.regime.term_premium_dir",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "term_premium_dir": "rising"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "rising",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/yield_curve/regime/term_premium_dir",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.yield_momentum.series.2y.turn_watch",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "turn_watch": null
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": null,
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/yield_momentum/series/2y/turn_watch",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "source_observation_date",
+            "as_of": "2026-10-01",
+            "precision": "date",
+            "age_calendar_days": 4,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "older_than_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.yield_momentum.series.5y.turn_watch",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "turn_watch": "extreme_high_watch"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "extreme_high_watch",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/yield_momentum/series/5y/turn_watch",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "source_observation_date",
+            "as_of": "2026-10-01",
+            "precision": "date",
+            "age_calendar_days": 4,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "older_than_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.yield_momentum.series.10y.turn_watch",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "turn_watch": "extreme_high_watch"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "extreme_high_watch",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/yield_momentum/series/10y/turn_watch",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "source_observation_date",
+            "as_of": "2026-10-01",
+            "precision": "date",
+            "age_calendar_days": 4,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "older_than_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.yield_momentum.series.20y.turn_watch",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "turn_watch": "extreme_high_watch"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "extreme_high_watch",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/yield_momentum/series/20y/turn_watch",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "source_observation_date",
+            "as_of": "2026-10-01",
+            "precision": "date",
+            "age_calendar_days": 4,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "older_than_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.yield_momentum.series.30y.turn_watch",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "turn_watch": "extreme_high_watch"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "extreme_high_watch",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/yield_momentum/series/30y/turn_watch",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "source_observation_date",
+            "as_of": "2026-10-01",
+            "precision": "date",
+            "age_calendar_days": 4,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "older_than_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "R.conditions.labor_nowcast.read",
+          "family_id": "growth_and_inflation",
+          "evidence_family_id": "labour",
+          "kind": "categorical",
+          "values": {
+            "read": "labor firm"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "labor firm",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "R",
+            "pointer": "/conditions/labor_nowcast/read",
+            "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "R.conditions.financial_conditions.state",
+          "family_id": "liquidity_and_financing",
+          "evidence_family_id": "credit_and_funding",
+          "kind": "categorical",
+          "values": {
+            "state": "loose"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "loose",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "R",
+            "pointer": "/conditions/financial_conditions/state",
+            "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
+            "clock_semantics": "source_observation_date",
+            "as_of": "2026-09-25",
+            "precision": "date",
+            "age_calendar_days": 10,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "older_than_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "R.conditions.complacency.breadth_div",
+          "family_id": "market_structure",
+          "evidence_family_id": "participation",
+          "kind": "categorical",
+          "values": {
+            "breadth_div": true
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": true,
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "R",
+            "pointer": "/conditions/complacency/breadth_div",
+            "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
+            "clock_semantics": "source_observation_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "R.liquidity_quality.label",
+          "family_id": "liquidity_and_financing",
+          "evidence_family_id": "credit_and_funding",
+          "kind": "categorical",
+          "values": {
+            "label": "neutral-hollow"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "neutral-hollow",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "R",
+            "pointer": "/liquidity_quality/label",
+            "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "R.liquidity_quality.stress_overlay.confirming_stress",
+          "family_id": "liquidity_and_financing",
+          "evidence_family_id": "credit_and_funding",
+          "kind": "categorical",
+          "values": {
+            "confirming_stress": true
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": true,
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "R",
+            "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
+            "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "M.components.breadth.tone",
+          "family_id": "market_structure",
+          "evidence_family_id": "participation",
+          "kind": "categorical",
+          "values": {
+            "tone": "bad"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "bad",
+            "verdict_class": "composite"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "M",
+            "pointer": "/components/[key=breadth]/tone",
+            "sha256": "9e90a4b255fd183125767ddae99515eca158064ca0d9b6a6b3b74784576a1b85",
+            "clock_semantics": "source_observation_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "L.state",
+          "family_id": "leadership_and_fundamentals",
+          "evidence_family_id": "leader_damage",
+          "kind": "categorical",
+          "values": {
+            "state": "INTACT"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": "INTACT",
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "L",
+            "pointer": "/state",
+            "sha256": "84835dd280362a16289460564a70bfa5b4ffc71990a0a4f0d27b79c2a873d829",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "B.fed_path.implied_cuts_12m",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "policy_pricing",
+          "kind": "market_pricing",
+          "values": {
+            "implied_cuts_12m": -3
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": {
+            "token": -3,
+            "verdict_class": "banded"
+          },
+          "status": "available",
+          "issues": [],
+          "notes": [
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "B",
+            "pointer": "/fed_path/implied_cuts_12m",
+            "sha256": "e3f80aee3e8520306b0c40e843cb04a6ecd2713a43472b3101c37e92487b1ebf",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.dollar_channel.usd_dir",
+          "family_id": "cross_asset_and_regional",
+          "evidence_family_id": "dollar",
+          "kind": "categorical",
+          "values": {},
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": null,
+          "status": "unknown_date",
+          "issues": [],
+          "notes": [
+            "Banded by the owner, but the number it was decided from is not published and the block date is the newest of several pairs, not this field's. Status unknown_date until slice E0 publishes both."
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/dollar_channel/usd_dir",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "unknown",
+            "as_of": null,
+            "precision": null,
+            "age_calendar_days": null,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": null,
+            "reference_period": null
+          }
+        },
+        {
+          "id": "R.liquidity_quality.stress_overlay.hy_oas_pct",
+          "family_id": "liquidity_and_financing",
+          "evidence_family_id": "credit_and_funding",
+          "kind": "level",
+          "values": {
+            "hy_oas_pct": 3.24
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": null,
+          "status": "partial",
+          "issues": [
+            "no_owner_verdict"
+          ],
+          "notes": [
+            "The spread level; a number with no owner verdict.",
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "R",
+            "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
+            "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.state.inflation.eci_comp_yoy",
+          "family_id": "growth_and_inflation",
+          "evidence_family_id": "wages_services",
+          "kind": "change",
+          "values": {
+            "eci_comp_yoy": 3.38
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": null,
+          "status": "partial",
+          "issues": [
+            "no_owner_verdict"
+          ],
+          "notes": [
+            "Written through a zero default at the pin: an exact 0.00 carries possible_missing_as_zero.",
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/state/inflation/eci_comp_yoy",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "C.assets.oil.trend",
+          "family_id": "cross_asset_and_regional",
+          "evidence_family_id": "oil",
+          "kind": "categorical",
+          "values": {
+            "trend": "up"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": null,
+          "status": "partial",
+          "issues": [
+            "sign_only_verdict"
+          ],
+          "notes": [
+            "A bare sign.",
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "C",
+            "pointer": "/assets/oil/trend",
+            "sha256": "28dae3429a7527affdf45708f1f61b9f3b4c27978b23ff4e21966585f8b62e86",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-04",
+            "precision": "date",
+            "age_calendar_days": 1,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "after_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "T.yield_curve.regime.key",
+          "family_id": "rates_and_discounting",
+          "evidence_family_id": "treasury_curve",
+          "kind": "categorical",
+          "values": {
+            "key": "bear_steepener"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": null,
+          "status": "partial",
+          "issues": [
+            "sign_only_verdict"
+          ],
+          "notes": [
+            "Bare signs of a 21-observation change.",
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "T",
+            "pointer": "/yield_curve/regime/key",
+            "sha256": "3092ac4b955983a5d4a694ea77845706ddb4c53ec46e6a9bc425f646d5aec11b",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "D.state",
+          "family_id": "market_structure",
+          "evidence_family_id": "dispersion",
+          "kind": "categorical",
+          "values": {
+            "state": "lean_out"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": null,
+          "status": "partial",
+          "issues": [
+            "no_owner_verdict"
+          ],
+          "notes": [
+            "A level tercile; no path condition reads a level.",
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "D",
+            "pointer": "/state",
+            "sha256": "bae4457e8f09c1eec46268d33bd81fd26d6b68e8d5e3a0b5d372a57157f4f19c",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-05",
+            "precision": "date",
+            "age_calendar_days": 0,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "after_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "D.avg_corr",
+          "family_id": "volatility_correlation_positioning",
+          "evidence_family_id": "correlation",
+          "kind": "level",
+          "values": {
+            "avg_corr": 0.07
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": null,
+          "status": "partial",
+          "issues": [
+            "no_owner_verdict"
+          ],
+          "notes": [
+            "A variance-ratio proxy over the last 63 rows, not a measured correlation.",
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "D",
+            "pointer": "/avg_corr",
+            "sha256": "bae4457e8f09c1eec46268d33bd81fd26d6b68e8d5e3a0b5d372a57157f4f19c",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-05",
+            "precision": "date",
+            "age_calendar_days": 0,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "after_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "R.conditions.financial_conditions.trend",
+          "family_id": "liquidity_and_financing",
+          "evidence_family_id": "credit_and_funding",
+          "kind": "categorical",
+          "values": {
+            "trend": "loosening"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": null,
+          "status": "partial",
+          "issues": [
+            "sign_only_verdict"
+          ],
+          "notes": [
+            "Two tokens split at zero on the 13-week change.",
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "R",
+            "pointer": "/conditions/financial_conditions/trend",
+            "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
+            "clock_semantics": "source_observation_date",
+            "as_of": "2026-09-25",
+            "precision": "date",
+            "age_calendar_days": 10,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "older_than_completed_session",
+            "reference_period": null
+          }
+        },
+        {
+          "id": "R.liquidity_quality.stress_overlay.nfci_trend",
+          "family_id": "liquidity_and_financing",
+          "evidence_family_id": "credit_and_funding",
+          "kind": "categorical",
+          "values": {
+            "nfci_trend": "tightening"
+          },
+          "unit": null,
+          "window": null,
+          "scope": "US",
+          "owner_verdict": null,
+          "status": "partial",
+          "issues": [
+            "sign_only_verdict"
+          ],
+          "notes": [
+            "Two tokens split at zero.",
+            "age is not checked yet: only the producer's own stale flag is applied"
+          ],
+          "currentness_certified": false,
+          "source": {
+            "artifact": "R",
+            "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
+            "sha256": "f56340707eebbc2f9fbed82ef92043558d3f67a7b6249e842a10faf94a5cba72",
+            "clock_semantics": "owner_snapshot_date",
+            "as_of": "2026-10-02",
+            "precision": "date",
+            "age_calendar_days": 3,
+            "future_dated": false,
+            "known_at": null,
+            "available_at": null,
+            "expected_us_session": "2026-10-02",
+            "session_relation": "same_completed_session",
+            "reference_period": null
+          }
+        }
+      ],
+      "conditional_paths": [
+        {
+          "path_id": "orderly_disinflation",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "OD-1",
+              "statement_id": "core_inflation_recent_below_12m",
+              "evidence_ids": [
+                "T.state.inflation.direction"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-2",
+              "statement_id": "expectations_drifting_down",
+              "evidence_ids": [
+                "T.state.expectations.anchoring"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-3",
+              "statement_id": "labour_firm",
+              "evidence_ids": [
+                "R.conditions.labor_nowcast.read"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-4",
+              "statement_id": "credit_stress_flag_off",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-5",
+              "statement_id": "financial_conditions_loose",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-7",
+              "statement_id": "real_yields_falling",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-8",
+              "statement_id": "inflation_composition",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "core_pce",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "labour",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "inflation_breadth",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "OD-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "growth_deterioration",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "GD-1",
+              "statement_id": "real_yields_falling",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-2",
+              "statement_id": "labour_cooling",
+              "evidence_ids": [
+                "R.conditions.labor_nowcast.read"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-3",
+              "statement_id": "credit_stress_flag_on",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-4",
+              "statement_id": "financial_conditions_tight",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-5",
+              "statement_id": "real_activity_weakening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GD-6",
+              "statement_id": "earnings_context",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GD-7",
+              "statement_id": "dollar_behaviour",
+              "evidence_ids": [
+                "T.dollar_channel.usd_dir"
+              ],
+              "reading": "unknown",
+              "reason": "unknown_date"
+            },
+            {
+              "condition_id": "GD-8",
+              "statement_id": "credit_spreads_wide_level",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.hy_oas_pct"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "labour",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "real_activity",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "earnings",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "dollar",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "GD-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "renewed_inflation_pressure",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "RI-1",
+              "statement_id": "core_inflation_recent_above_12m",
+              "evidence_ids": [
+                "T.state.inflation.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-2",
+              "statement_id": "core_inflation_above_owner_band",
+              "evidence_ids": [
+                "T.state.inflation.regime"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-3",
+              "statement_id": "expectations_drifting_up",
+              "evidence_ids": [
+                "T.state.expectations.anchoring"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-4",
+              "statement_id": "breakevens_rising",
+              "evidence_ids": [
+                "T.breakeven_decomp.direction"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-5",
+              "statement_id": "wages_services_firming",
+              "evidence_ids": [
+                "T.state.inflation.eci_comp_yoy"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            },
+            {
+              "condition_id": "RI-6",
+              "statement_id": "market_prices_rate_rises_12m",
+              "evidence_ids": [
+                "B.fed_path.implied_cuts_12m"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-7",
+              "statement_id": "inflation_broadening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "RI-8",
+              "statement_id": "oil_mechanism",
+              "evidence_ids": [
+                "C.assets.oil.trend"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "core_pce",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "not_discriminating"
+            },
+            {
+              "evidence_family_id": "wages_services",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "policy_pricing",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "inflation_breadth",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "oil",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "RI-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "RI-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "RI-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "long_end_premium_shock",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "LP-1",
+              "statement_id": "term_premium_rising",
+              "evidence_ids": [
+                "T.yield_curve.regime.term_premium_dir"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "LP-2",
+              "statement_id": "real_yields_rising",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "LP-4",
+              "statement_id": "curve_steepening_long_end",
+              "evidence_ids": [
+                "T.yield_curve.regime.key"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            },
+            {
+              "condition_id": "LP-5",
+              "statement_id": "issuance_demand_deteriorating",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LP-6",
+              "statement_id": "term_premium_models_agree",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LP-7",
+              "statement_id": "long_end_rise_not_explained_by_policy",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "issuance_and_demand",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "policy_pricing",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "LP-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "technical_pause",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "TP-1",
+              "statement_id": "turn_forming_10y",
+              "evidence_ids": [
+                "T.yield_momentum.series.10y.turn_watch"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "TP-4",
+              "statement_id": "positioning_stretched",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "TP-5",
+              "statement_id": "later_macro_not_confirmed",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "TP-6",
+              "statement_id": "breadth_confirms_turn",
+              "evidence_ids": [
+                "M.components.breadth.tone"
+              ],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "positioning",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "macro_confirmation",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "participation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "TP-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "TP-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "TP-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "continued_selective_concentration",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "SC-1",
+              "statement_id": "index_near_high_breadth_low",
+              "evidence_ids": [
+                "R.conditions.complacency.breadth_div"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-2",
+              "statement_id": "credit_stress_flag_off",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-3",
+              "statement_id": "financial_conditions_loose",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-4",
+              "statement_id": "cap_weight_ahead_of_equal_weight",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "SC-5",
+              "statement_id": "same_leaders_persist",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "participation",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "concentration",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "leader_turnover",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "SC-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "SC-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "genuine_broadening",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "GB-1",
+              "statement_id": "breadth_component_strong",
+              "evidence_ids": [
+                "M.components.breadth.tone"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GB-2",
+              "statement_id": "dispersion_falling_without_correlation_rising",
+              "evidence_ids": [
+                "D.state",
+                "D.avg_corr"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            },
+            {
+              "condition_id": "GB-3",
+              "statement_id": "revision_breadth_widening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GB-4",
+              "statement_id": "participation_rising_fixed_universe",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "participation",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "dispersion",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "revision_breadth",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "GB-2",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GB-3",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GB-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "internal_leadership_handoff",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "LH-1",
+              "statement_id": "leader_damage_monitor_intact",
+              "evidence_ids": [
+                "L.state"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "LH-2",
+              "statement_id": "leaders_turning_over_inside_theme",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LH-3",
+              "statement_id": "theme_participation_holding",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "leader_damage",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "leader_turnover",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "participation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "LH-2",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LH-3",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "deterioration_spreading_to_leaders",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "DS-1",
+              "statement_id": "leader_damage_monitor_cracking_or_broken",
+              "evidence_ids": [
+                "L.state"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "DS-2",
+              "statement_id": "credit_stress_flag_on",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "DS-3",
+              "statement_id": "financial_conditions_tight",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "DS-4",
+              "statement_id": "correlation_rising_with_dispersion",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "vocabulary_not_audited"
+            },
+            {
+              "condition_id": "DS-5",
+              "statement_id": "funding_credit_worsening",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.trend",
+                "R.liquidity_quality.stress_overlay.nfci_trend"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "leader_damage",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "correlation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "DS-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "DS-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        }
+      ],
+      "baseline": {
+        "status": "absent",
+        "reason": "no_earlier_projection"
+      },
+      "changes": [],
+      "historical_comparisons": {
+        "status": "absent",
+        "reason": "history_not_qualified",
+        "qualification": {}
+      },
+      "forecast_distributions": {
+        "status": "absent",
+        "reason": "no_admitted_owner"
+      },
+      "conditional_exposures": {
+        "status": "absent",
+        "reason": "no_admitted_owner"
+      },
+      "authority": {
+        "may_rank": false,
+        "may_gate": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_forecast": false,
+        "may_escalate": false
+      },
+      "tier": "display_research",
+      "notes": [
+        "age is not checked yet: only the producer's own stale flag is applied"
+      ]
+    }
   },
   "gaps": [],
   "sources": {
@@ -8486,26 +10479,26 @@
     "data/regime/latest.json": "2026-10-02",
     "data/breadth/breadth.parquet": "2026-10-02",
     "site/basketdata/oracle_state.json": "2026-10-02",
-    "data/run_status.json": "2026-10-03T15:13:53.350007+00:00",
+    "data/run_status.json": "2026-10-05T03:54:29.664049+00:00",
     "site/factordata/alerts_triage.json": "2026-10-02",
     "data/neuralweb/liquidity_plumbing.json": "2026-10-02",
     "data/rebalance_pulse/latest.json": "2026-10-02",
-    "site/chinastatedata/market_state.json": "2026-10-03",
-    "data/neuralweb/theme_state.json": "2026-10-03",
+    "site/chinastatedata/market_state.json": null,
+    "data/neuralweb/theme_state.json": "2026-10-04",
     "data/transmission/latest.json": "2026-10-02",
     "data/rates_command/latest.json": "2026-10-02",
-    "data/forex/latest.json": "2026-10-03",
+    "data/forex/latest.json": "2026-10-05",
     "data/bonds/bond_health.json": "2026-10-02",
     "data/china_regime/latest.json": "2026-09-30",
     "data/hk_regime/latest.json": "2026-10-02",
     "data/canada_regime/latest.json": "2026-10-02",
-    "data/commodity/latest.json": "2026-10-02",
-    "site/intelligence/briefing.json": "2026-10-03",
-    "data/crossasset/latest.json": "2026-10-03",
+    "data/commodity/latest.json": "2026-10-04",
+    "site/intelligence/briefing.json": "2026-10-05",
+    "data/crossasset/latest.json": "2026-10-05",
     "data/intl_risk/latest.json": null,
     "site/basketdata/theme_context.json": "2026-10-02",
     "data/market_structure/latest.json": "2026-10-02",
-    "data/stage_analysis/context/latest.json": "2026-10-03",
+    "data/stage_analysis/context/latest.json": "2026-10-05",
     "data/darkpool/context/latest.json": "2026-10-02",
     "data/transmission/chain_state.json": "2026-10-02",
     "data/mag7_washout/latest.json": "2026-10-02",
@@ -8513,7 +10506,7 @@
   },
   "schema_version": 1,
   "produced_by": "engine/neuralweb/world_state.py",
-  "produced_at": "2026-10-03T20:22:34Z",
-  "inputs_hash": "sha256:5f8c8616cb40a361b9891a7ec7a1ca45248c0a4c67341fc2516b5724f3f2ff30",
+  "produced_at": "2026-10-05T10:13:00Z",
+  "inputs_hash": "sha256:199ec2477e6297c7f7f2faea643630b2e1ae088fcf5af63bdbf050473a29e03a",
   "tier": "infrastructure"
 }

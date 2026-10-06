@@ -8,7 +8,7 @@
   "scope_en": "Euro area aggregate (current EA21 composition), not the European Union. STOXX Europe 600 is broader market context only.",
   "scope_zh": "欧元区当前21国总量（EA21），并非欧盟整体。STOXX Europe 600仅作更广泛市场背景。",
   "asof": "2026-10-02",
-  "built": "2026-10-03 19:44 UTC",
+  "built": "2026-10-05 09:25 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
@@ -210,11 +210,11 @@
     "h21": 0.2,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
-      "intensity": 86.7,
+      "intensity": 87.1,
       "peak": 96.6,
       "peak_days_ago": 5,
-      "off_peak": 9.9,
-      "velocity": -9.9,
+      "off_peak": 9.5,
+      "velocity": -9.5,
       "phase": "receding",
       "reached_risk": true,
       "state_now": "caution",
@@ -245,16 +245,16 @@
         90.7,
         89.3,
         76.0,
-        86.7
+        87.1
       ],
-      "spark_pts": "3.0,21.6 6.9,18.9 10.8,18.2 14.7,21.0 18.7,19.2 22.6,22.5 26.5,23.0 30.4,18.7 34.3,14.9 38.2,16.0 42.1,13.7 46.0,11.4 50.0,6.8 53.9,5.6 57.8,4.8 61.7,4.4 65.6,3.8 69.5,3.1 73.4,3.0 77.3,3.3 81.3,5.1 85.2,5.6 89.1,10.2 93.0,6.5",
+      "spark_pts": "3.0,21.6 6.9,18.9 10.8,18.2 14.7,21.0 18.7,19.2 22.6,22.5 26.5,23.0 30.4,18.7 34.3,14.9 38.2,16.0 42.1,13.7 46.0,11.4 50.0,6.8 53.9,5.6 57.8,4.8 61.7,4.4 65.6,3.8 69.5,3.1 73.4,3.0 77.3,3.3 81.3,5.1 85.2,5.6 89.1,10.2 93.0,6.3",
       "spark_peak": {
         "x": 73.4,
         "y": 3.0
       },
       "spark_last": {
         "x": 93.0,
-        "y": 6.5
+        "y": 6.3
       },
       "spark_w": 96,
       "spark_h": 26,
@@ -291,12 +291,12 @@
         "tier": "A",
         "label_en": "Euro depreciation / outflows",
         "label_zh": "欧元贬值／资金外流",
-        "score": 95.6,
+        "score": 96.0,
         "band": "risk-off",
         "firing_legs": [
           {
             "leg": "eur_depreciation",
-            "pctile": 0.956,
+            "pctile": 0.96,
             "confirmed": true
           }
         ]
@@ -372,8 +372,8 @@
       "key": "fx",
       "label_en": "FX reference",
       "label_zh": "汇率参考",
-      "raw": 1.1257,
-      "value": "1.13",
+      "raw": 1.125,
+      "value": "1.12",
       "unit": "",
       "asof": null
     },
@@ -531,7 +531,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2026-08",
-      "age_days": 63,
+      "age_days": 65,
       "state": "fresh",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -539,7 +539,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 185,
+      "age_days": 187,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -547,7 +547,7 @@
     {
       "metric": "unemployment",
       "asof": "2026-08",
-      "age_days": 63,
+      "age_days": 65,
       "state": "fresh",
       "label_en": "Labour",
       "label_zh": "就业"
@@ -555,7 +555,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-01",
-      "age_days": 275,
+      "age_days": 277,
       "state": "stale",
       "label_en": "Rates",
       "label_zh": "利率"

@@ -1,6 +1,6 @@
 {
   "schema": "winner_autopsy_panel.v1",
-  "generated_at": "2026-10-03T20:25:00Z",
+  "generated_at": "2026-10-05T10:15:23Z",
   "display_only": true,
   "horizon_role": "hold_thesis",
   "census": {
@@ -2070,7 +2070,7 @@
   },
   "watch": {
     "available": true,
-    "as_of": "2026-10-03",
+    "as_of": "2026-10-05",
     "state_counts": {
       "breakaway": 72,
       "emerging": 1871,
@@ -22912,14 +22912,14 @@
         }
       },
       {
-        "ticker": "XONI",
+        "ticker": "KBLB",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 24.16,
-        "excess_42d_pp": -28.6,
+        "excess_42d_pp": -0.03,
         "new_high_63d": false,
-        "dollar_vol_z21": 2.62,
+        "dollar_vol_z21": 0.32,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -22929,14 +22929,14 @@
         }
       },
       {
-        "ticker": "KBLB",
+        "ticker": "XONI",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 24.16,
-        "excess_42d_pp": -0.03,
+        "excess_42d_pp": -28.6,
         "new_high_63d": false,
-        "dollar_vol_z21": 0.32,
+        "dollar_vol_z21": 2.62,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -34176,7 +34176,7 @@
         }
       },
       {
-        "ticker": "FOXOD",
+        "ticker": "FOXO",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -34193,7 +34193,7 @@
         }
       },
       {
-        "ticker": "FOXO",
+        "ticker": "FOXOD",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -35723,48 +35723,14 @@
         }
       },
       {
-        "ticker": "SAFLY",
+        "ticker": "BWMN",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -0.84,
-        "excess_42d_pp": 26.3,
-        "new_high_63d": true,
-        "dollar_vol_z21": null,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "HWKE",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": -0.84,
-        "excess_42d_pp": 83.64,
+        "excess_42d_pp": 53.54,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.35,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "TSEOQ",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": -0.84,
-        "excess_42d_pp": 549.97,
-        "new_high_63d": true,
-        "dollar_vol_z21": 0.0,
+        "dollar_vol_z21": -1.17,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -35808,14 +35774,48 @@
         }
       },
       {
-        "ticker": "BWMN",
+        "ticker": "SAFLY",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -0.84,
-        "excess_42d_pp": 53.54,
+        "excess_42d_pp": 26.3,
+        "new_high_63d": true,
+        "dollar_vol_z21": null,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "TSEOQ",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": -0.84,
+        "excess_42d_pp": 549.97,
+        "new_high_63d": true,
+        "dollar_vol_z21": 0.0,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "HWKE",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": -0.84,
+        "excess_42d_pp": 83.64,
         "new_high_63d": false,
-        "dollar_vol_z21": -1.17,
+        "dollar_vol_z21": -0.35,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],

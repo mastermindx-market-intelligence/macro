@@ -139,12 +139,12 @@
    "TWLO",
    "NTAP"
   ],
-  "plan_universe_n": 473
+  "plan_universe_n": 474
  },
  "themes": {
   "basis": "subsector_rotation.emerging_score",
   "days_since_top5_entry_basis": null,
-  "rotation_asof": "2026-10-02",
+  "rotation_asof": "2026-10-05",
   "standouts_asof": "2026-10-02",
   "available": true,
   "themes": [
@@ -418,17 +418,16 @@
     "n_members": 16,
     "n_members_live": 16,
     "n_members_read": 16,
-    "n_members_on_board": 5,
+    "n_members_on_board": 4,
     "members_on_board": [
      "AME",
      "CAT",
-     "DOV",
      "HON",
      "ROK"
     ],
     "present_counts": {
      "buy": 2,
-     "watch": 3,
+     "watch": 2,
      "leaders": 0,
      "ran": 0
     },
@@ -881,13 +880,12 @@
     "n_members": 80,
     "n_members_live": 80,
     "n_members_read": 80,
-    "n_members_on_board": 12,
+    "n_members_on_board": 11,
     "members_on_board": [
      "AME",
      "CAT",
      "CMI",
      "CTAS",
-     "DOV",
      "EME",
      "HON",
      "JBHT",
@@ -898,7 +896,7 @@
     ],
     "present_counts": {
      "buy": 3,
-     "watch": 9,
+     "watch": 8,
      "leaders": 0,
      "ran": 0
     },
@@ -1075,13 +1073,14 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
+     "APA",
      "MPC"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 0,
+     "watch": 1,
      "leaders": 1,
      "ran": 0
     },
@@ -1492,7 +1491,7 @@
   "graded_by": "engine.grading.grade_next_bar_return (next-bar fill, survivorship-aware) via engine.name_score_grader's own forward-store ladder",
   "scored_field": "score — name_score.potential_score, the number the US board displays as conviction.score (scripts/build_stock_library.py overwrites c['score'] with the potential score for backward compatibility)",
   "available": true,
-  "n_calls": 171048,
+  "n_calls": 171049,
   "n_frozen_echoes_excluded": 232,
   "n_stamp_dates": 70,
   "stamp_dates": {

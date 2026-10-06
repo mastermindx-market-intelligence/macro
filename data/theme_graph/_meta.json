@@ -1,5 +1,5 @@
 {
-  "belief_time": "2026-10-03",
+  "belief_time": "2026-10-05",
   "capability_counts": {
     "measurement_candidate": 505,
     "semantic_only": 138
@@ -12,7 +12,7 @@
       "symbol": "IBIT"
     }
   ],
-  "computed_at": "2026-10-03T18:14:07Z",
+  "computed_at": "2026-10-05T07:55:06Z",
   "counts": {
     "capability": 644,
     "edges": 25100,
@@ -93,7 +93,7 @@
         "ths_concept_dump"
       ],
       "member_edges": 3532,
-      "membership_pit_rows": 17660,
+      "membership_pit_rows": 21192,
       "membership_published_at": "2026-06-30",
       "note": null,
       "seed_constant": "2021-06-15",
@@ -130,8 +130,8 @@
   },
   "rows_appended": {
     "capability": 643,
-    "edges": 394,
-    "evidence": 1,
+    "edges": 0,
+    "evidence": 0,
     "identity_resolution": 2805,
     "nodes": 0
   },

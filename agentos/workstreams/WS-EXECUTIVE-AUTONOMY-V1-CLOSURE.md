@@ -25,9 +25,12 @@ decisions:
   - DEC:AUTONOMY-V1-CLOSURE-SOURCE-ESTATE-DISPOSITION
   - DEC:FIRST-WEB-CEO-ROOT-BINDS-THE-ARMED-OPERATOR-HARNESS
   - DEC:AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION
+  - DEC:A2-CEREMONY-RECEIPT-REQUIRES-NO-APP-LEVEL-TOKEN
 discoveries:
   - DSC:CEO-SUBMIT-SINK-AND-ARMED-HARNESS-ARE-MUTUALLY-EXCLUSIVE-ON-MASTER
   - DSC:AGENT-DISPATCH-CURRENTLY-HAS-NO-WORKER-RECEIVER
+  - DSC:A2-ENROLLMENT-PLIST-IS-ACCEPTED-BY-SERVICE-CONTROL-VALIDATE-PLIST
+  - DSC:MCP-GENERATION-HAS-NO-ARMED-PUBLISHER-ON-MASTER
 owns_paths:
   - research/EXECUTIVE_AUTONOMY_V1_CLOSURE_CONTINUATION_HANDOFF_2026-10-03.md
 artifacts:
@@ -35,6 +38,9 @@ artifacts:
   - research/EXECUTIVE_AUTONOMY_V1_CLOSURE_CONTINUATION_HANDOFF_2026-10-03.md
   - agentos/decisions/DEC-AUTONOMY-V1-CLOSURE-SOURCE-ESTATE-DISPOSITION.md
   - agentos/discoveries/DSC-CEO-SUBMIT-SINK-AND-ARMED-HARNESS-ARE-MUTUALLY-EXCLUSIVE-ON-MASTER.md
+  - agentos/discoveries/DSC-A2-ENROLLMENT-PLIST-IS-ACCEPTED-BY-SERVICE-CONTROL-VALIDATE-PLIST.md
+  - agentos/decisions/DEC-A2-CEREMONY-RECEIPT-REQUIRES-NO-APP-LEVEL-TOKEN.md
+  - agentos/discoveries/DSC-MCP-GENERATION-HAS-NO-ARMED-PUBLISHER-ON-MASTER.md
 waves:
   - id: P1
     title: Reconcile the inherited source estate (#811 #1145 #1041 #1157 #1166 #1169 #1204 and adjacent #1219 #1178 #1176 #1175)
@@ -43,7 +49,13 @@ waves:
       COMPLETED_DO_NOT_REPEAT. Dispositions ruled 2026-10-04 and posted on every carrier
       (DEC:AUTONOMY-V1-CLOSURE-SOURCE-ESTATE-DISPOSITION). Successor train = protected master
       a2646f45 (installed) + repaired #811, optionally + repaired #1219 with its MCP generation
-      producer. Reopen only for a changed head or a writer objection on the carrier.
+      producer. UPDATE 2026-10-05: #1219 source blockers (1) expected-release binding and (3)
+      disabled-service semantics are closed at head 4513fd77 (integrator adjudication Mastermind
+      #1219 issuecomment-5990732208); the generation-producer pairing is owed by the release/host
+      owner (DSC:MCP-GENERATION-HAS-NO-ARMED-PUBLISHER-ON-MASTER); Sol owns its review gate (one
+      P1: accept an absent print-disabled row as default-enabled); after #1257 it must re-merge
+      master (usage-string conflict only, issuecomment-5991833933). Reopen only for a changed head
+      or a writer objection on the carrier.
   - id: P2
     title: Release-owner and install reproducibility without a second release controller
     status: done
@@ -84,9 +96,18 @@ waves:
         until the parenting-loop canary (ChatGPT parent → one exact already-running child → governed
         CONTINUE → correlated RESULT → same parent) is proven. The 2026-10-04 coexistence ruling
         request (options a/b/c on Slack 1791083562.416539 and #1143) is superseded while the hold
-        stands and re-opens when it lifts.
+        stands and re-opens when it lifts. UPDATE 2026-10-04T09:10Z: the host owner armed the
+        CEO-submit sink on accepted a2646f45 (receipt ceo-submit-state-v1.json: CEO_SUBMIT_ARMED,
+        transaction autonomy-f236038098b1, digest 4c27e71c…; coo_autonomy, COO operator-harness and
+        worker-harness all false) — the lawful separation-law state, verified read-only by the seat
+        (Mastermind #1143 issuecomment-5978400215). The arm half of P4 is closed by its owner; root
+        admission for the acceptance operation stays held by the ruling. UPDATE 2026-10-04T22:06Z:
+        after the #1191 successor install the host owner migrated the config and armed CEO-submit
+        canonically on installed 5b244a2b (transaction autonomy-582e4c15d334; receipt schema
+        mastermind.executive_ceo_submit_receipt/v1 nests the flags under `projection`), seat-verified
+        read-only; the a2646f45 arm was not replayed.
     next_action: >
-      When the hold lifts, re-open the coexistence ruling on the carrier;
+      Never seat-arm or seat-disarm; read the host receipts only. When the hold lifts, re-open the coexistence ruling on the carrier;
       DSC:CEO-SUBMIT-SINK-AND-ARMED-HARNESS-ARE-MUTUALLY-EXCLUSIVE-ON-MASTER stays binding; never
       seat-author the widening; a PARTIAL rehearsal never records AUTONOMY_V1_PROVEN_LIVE.
   - id: P5
@@ -97,35 +118,70 @@ waves:
       kind: external_action
       review_after: 2026-10-06
       condition: >
-        Held by the same Chairman convergence ruling as P4. The draft product slice (render
-        EFFECT_UNKNOWN roots distinctly) was refuted 2026-10-04 — master a2646f45 already renders it
+        Held by the same Chairman convergence ruling as P4. XH chain state (Mastermind #1143
+        issuecomment-5978404256, 5991567681): XH-1 DONE — #1191 merged 2026-10-04T20:59Z as master
+        5b244a2b with the three convergence blockers closed; XH-2 DONE — #1241 merged as 28be2ce2;
+        XH-3 DONE — release 5b244a2b installed by the incumbent release owner (host acceptance PASS,
+        issuecomment-5984877127) and credential-free A2 host preparation reconciled
+        (A2_DISABLE_PREPARED, transaction autonomy-634882dbc6fa; issuecomment-5985262783). Sol
+        lifecycle lane SOURCE MERGED 2026-10-05T09:42Z as Mastermind #1257 (master 1df1367f; code
+        75/effect_unknown only after an attempted modifying launchctl verb; Sol APPROVE 5412288374)
+        together with #1250 Control-UID pre-arm quiescence (master 877b1e7f); installed generation
+        5b244a2b is now behind master on ops/executive_os, so the host owner's install/qualify of a
+        generation at or after 877b1e7f is owed before activation. STILL BLOCKED at the HUMAN
+        Slack-admin ceremony (Sol fresh read 2026-10-05T09:16Z: no Mastermind Relay bot,
+        #agent-dispatch 17 members without it, M2 agent-relay token/json/plist absent, launchd relay
+        absent 113): app A0BUDHZ137A carries an inactive connections:write app-level token and no
+        bot identity; DEC:A2-CEREMONY-RECEIPT-REQUIRES-NO-APP-LEVEL-TOKEN rules the receipt
+        criterion. Then: host operator runs installed enroll --enable-w3c with the bot token on
+        native stdin/TTY → verify → start-agent-relay → target re-census (no summon) → one parenting
+        canary on an EXISTING queued acceptance root (JOB-003 or JOB-013; never a new Job, never
+        JOB-002 — Sol issuecomment-5991883687) → only then session_summon/delegation expansion.
+        Seat role per Sol issuecomment-5991567681: C3 integration/acceptance only. ChatGPT product
+        gate: Business cannot refresh a published app in place, so a fresh custom MCP app is
+        recreated and republished on the existing tunnel/OAuth resource with the then-installed tool
+        inventory (V3 1.4.0 = 10 tools today; #1251 would make it 1.5.0 / 11), admin acknowledgement
+        and Auth0 entry all human (issuecomment-5984271681); first acceptance read-only in a new
+        conversation. Remote Control toggle for this seat's session only if a Claude-native child
+        is ever the canary target. The draft product slice (render EFFECT_UNKNOWN roots distinctly)
+        was refuted 2026-10-04 — master already renders it
         (app/static/chairman_control/control_room.js:1498-1666); a replacement slice is chosen only
         after the hold lifts.
     next_action: >
       Freeze the spec only after written Sol/Chairman acceptance of the narrower equivalents for
       steps 5, 7, 11, 12 and 14 and a carrier (or ASD-A2 release) for step 8; require the host
-      owner's first normal arm receipt on a2646f45 and the disarm/arm rehearsal (S0') before the
-      root; run the B1 qualification canary first; shape = root via the sink → planner → one write
+      owner's current arm receipt on the installed release (5b244a2b, autonomy-582e4c15d334) and
+      the disarm/arm rehearsal (S0') before the root; run the B1 qualification canary first; shape = root via the sink → planner → one write
       child on codex-01 → two READ-only children in parallel (B1 review 1440/390 + independent
       source review) → repair or null → aggregate.
 next_action: >
-  Stay on the Chairman convergence ruling's critical path as integrator: obtain the #1143 owner's
-  writer ruling for the composition slice (integrations/session_bridge/installed.py and
-  scripts/executive_os_phase1c.py have an active writer, draft Mastermind #1191 — do not race it);
-  consume carrier edges from the single bounded watcher on #1143, #811 and master; #811 parked;
+  Integrator on the XH chain (C3 integration/acceptance only, Sol issuecomment-5991567681): consume
+  the Slack ceremony receipt against DEC:A2-CEREMONY-RECEIPT-REQUIRES-NO-APP-LEVEL-TOKEN; consume
+  the host owner's install receipt for a generation at or after master 877b1e7f (#1257 + #1250)
+  and verify it read-only; one bounded watcher on #1143, #811, the terminal state of #1219/#1251
+  and mission-path master; no reviews on #1219/#1251 while Sol owns their gates; no lane on the
+  host, the Slack app or service-control.sh; final acceptance at the XH-5 outcome; #811 parked;
   no host act.
 landmines:
   - Full Autonomy V1, multi-worker concurrency, consultation and session_summon are held by the Chairman convergence ruling (Mastermind #1143 issuecomment-5976964871) until the parenting loop is proven; a green PR or an installed release does not lift it.
   - "QUEUED is admission only; delivery is not ACK; ACK is not START; CI is not acceptance; merged is not installed; installed is not armed."
   - "The CEO-submit sink and the armed operator harness are mutually exclusive on current source; the runtime sink's not-yet-integrated eligibility gate is not permission."
   - "autonomy-state-v1.json and ceo-submit-state-v1.json are host-owner receipts; the seat reads them and never writes, arms, disarms or restarts."
+  - "Live Agent Relay activation (start-agent-relay) stays HELD: the Sol lifecycle lane merged as Mastermind #1257 (master 1df1367f, 2026-10-05T09:42Z) but is not installed; activation needs the host owner install of a generation at or after 877b1e7f plus the human ceremony and native-TTY enrollment. #1241/#1257 merged is not activation readiness."
+  - "A release-SHA change never replays the CEO-submit arm; the host owner migrates the live config and arms canonically (autonomy-582e4c15d334 on 5b244a2b). Historical JOB-003/JOB-006 are preserved, never rewritten or replayed."
+  - "The Slack-admin ceremony (app-level token deletion, two-scope reinstall, bot invite), the bot-token enrollment (stdin/native TTY, --enable-w3c) and the ChatGPT Business app recreate+republish are human/UI gates; a Web or seat session stops before them and never routes around them."
 do_not_redo:
-  - Do not commission a lane on integrations/session_bridge/installed.py or scripts/executive_os_phase1c.py while draft Mastermind #1191 is an active writer on them; return the carrier/head and the exact remaining proof instead (Mastermind #1143 issuecomment-5977021747).
+  - "Do not reopen Mastermind #1191 (merged 2026-10-04T20:59Z as 5b244a2b) or #1227; the three convergence blockers are closed on master and installed."
+  - "Do not repeat the receipt-criterion ruling (#1143 issuecomment-5985445813) or the writer liveness reconciliation (#1143 issuecomment-5979777147)."
   - "Do not re-ACK or re-START operation executive-os-autonomy-v1-closure-20261003-fable-001 (ACK 1791083562.416539, START 1791083970.655569)."
   - "Do not reopen the #1218 D8 repair: merged 2026-10-04T04:14:27Z as a2646f45 and installed as Control by the host owner."
   - "Do not open duplicate PRs for #811 or #1219; repairs happen through the incumbent writer or a recorded custody transfer on the carrier."
   - "Do not merge #1041, #1204, #1178, #1176 or #1175 into the V1 train; do not activate the in-band release owner beside install.sh."
   - "Do not sequence around the separation law (ceo-submit-arm → full arm → submit) and do not override proves_safe_coexistence."
+  - "Do not revive Mastermind #1227 (closed unmerged 2026-10-04T08:29Z, superseded by #1191 commit 3149fe6f); its review criteria reach #1191 only through the incumbent writer."
+  - "Do not re-post the #1227 review (pullrequestreview-5404908792) or the #1241 integration read (issuecomment-5978317957)."
+  - "Do not re-file reviews on #1219 or #1251 while Sol (MastermindX1) owns their review gates; do not re-post the seat #1251 review (pullrequestreview-5408951316), the #1219 adjudication (issuecomment-5990732208) or the #1257 x #1219 merge pre-check (issuecomment-5991833933)."
+  - "Do not enqueue, re-approve or re-merge Mastermind #1257 (merged 2026-10-05T09:42:52Z as 1df1367f) and do not create another canary Job: JOB-003 / JOB-013 are the natural acceptance roots (Sol issuecomment-5991883687); JOB-002 is never repurposed."
 ---
 
 ## Why this workstream exists

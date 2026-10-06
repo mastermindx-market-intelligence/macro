@@ -2,6 +2,51 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-05",
+      "tickers": [
+        "DAL",
+        "ELF",
+        "HLNE",
+        "KRC",
+        "PPLI"
+      ]
+    },
+    {
+      "as_of": "2026-10-04",
+      "tickers": [
+        "AIO",
+        "AMKR",
+        "ASTH",
+        "COST",
+        "CR",
+        "CTVA",
+        "DLHC",
+        "ECG",
+        "EGBN",
+        "ESE",
+        "FBK",
+        "FIX",
+        "GAP",
+        "KRC",
+        "MRSH",
+        "MYRG",
+        "N",
+        "NTCT",
+        "NYAX",
+        "PANW",
+        "PL",
+        "PORT.U",
+        "PPLI",
+        "RL",
+        "SQQQ",
+        "SYF",
+        "TBBK",
+        "TNDM",
+        "TRIP",
+        "VOO"
+      ]
+    },
+    {
       "as_of": "2026-10-03",
       "tickers": [
         "ATR",
@@ -136,53 +181,6 @@
         "TNDM",
         "VTRS",
         "WING",
-        "XRAY"
-      ]
-    },
-    {
-      "as_of": "2026-09-28",
-      "tickers": [
-        "ATO",
-        "BKR",
-        "CARR",
-        "CLH",
-        "CNM",
-        "COHU",
-        "DAL",
-        "ELF",
-        "GAP",
-        "IPGP",
-        "JOBY",
-        "KMT",
-        "LITE",
-        "OTTR",
-        "REX",
-        "REXR",
-        "RPM",
-        "SHO",
-        "STRL",
-        "TNDM",
-        "WABC",
-        "WHR"
-      ]
-    },
-    {
-      "as_of": "2026-09-27",
-      "tickers": [
-        "AEIS",
-        "AMKR",
-        "CNM",
-        "COHU",
-        "KLAC",
-        "MOG-A",
-        "PDFS",
-        "QDEL",
-        "REXR",
-        "SHO",
-        "SIG",
-        "STRL",
-        "VTRS",
-        "WABC",
         "XRAY"
       ]
     }
