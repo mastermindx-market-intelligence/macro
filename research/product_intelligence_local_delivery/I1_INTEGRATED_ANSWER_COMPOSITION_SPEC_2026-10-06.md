@@ -44,14 +44,15 @@ Each leg contributes a **pin** (schema key + generation_id or sha256 + `as_of` +
 
 | Leg | Owner | Artifact / route | Read mechanism | Contributes | Must not use for |
 |-----|--------|------------------|----------------|-------------|------------------|
-| **H01** | WS:FIF / FF | `engine/fundamental_forensics/query.py`; serve `app/forensics.py` POST `/api/forensics/v1/financial/query` | Request body + response `schema` + snapshot generation; freshness = query `as_of` and health clocks | Point-in-time financial facts, spans, abstentions | Board order, alerts, sizing; authority beyond FIF acceptance |
-| **H04** | WS:EARNINGS-INTEL | `engine/expectation_state.py` → per-ticker panel in `site/stockdata/<TICKER>.json` | `schema` implicit panel; `as_of` = build date; `_display_only=True`, `_horizon_role='hold_thesis'` | SUE / PEAD drift chips (display) | Gates, rankers, Prophet floors (`expectation_state` module law) |
-| **H05** | WS:CS-INTEL-V2 | *(no main artifact)* | — | Debt/share qualification when built | Any inference until owner ships W4/W6 |
-| **H06** | WS:FUNDAMENTAL-FORENSICS | `engine/fundamental_forensics/query_snapshots.py`, `private_state.py`; gated read `app/forensics.py` | Entitlement + publication flags; pin snapshot id | Whether private/default-off blocks a public leg | Leaking private purpose into anonymous tiers |
-| **Event workspace** | WS:EARNINGS-INTEL | `engine/company_intelligence/event_workspace.py` nest `event_workspaces/`; reader `engine/neuralweb/company_intelligence_reader.py` `read_event_workspace` / `read_current_event_workspace` | `event_workspace.v1` + manifest hash; `as_of` from workspace | Canonical event glance, alias selection | Thesis **mutation** without owner acceptance |
-| **Theme context** | WS:GMI theme graph | Producer `engine/theme_context.py` `compute_theme_context`; artifact `site/basketdata/theme_context.json` (+ `_cn.json`); reader `read_context` | `theme_context.v1` + file `as_of` | Basket/theme tape context (display) | Scoring, ranking, escalation |
-| **Company–theme exposure** | WS:GMI theme graph | `engine/company_theme_exposure/views.py` `build_bundle`; contract `engine/company_theme_exposure/contracts.py` `company_theme_exposure.v1` | Strict closed keys only; pins `theme_state` sha256 + CI generation | Membership projection, context_only authority | Thematic score, relationship model, extra wire keys |
-| **Basket / theme state shapes** | Data owners | `site/basketdata/baskets.json` (`baskets`, `theme_intel`, `as_of`, …); `site/neuralwebdata/theme_state.json` (`themes`, `schema`, `as_of`, `tier`, …) | Read JSON by path; never inline copy into a warehouse | Labels and membership inputs for CTE/theme_context | Standalone “integrated score” |
+| **H01** | WS:FINANCIAL-INTELLIGENCE-FABRIC; WS:FUNDAMENTAL-FORENSICS | `engine/fundamental_forensics/query.py`; `app/forensics.py` | POST `/api/forensics/v1/financial/query`; response generation + query `as_of` and health clocks | Point-in-time financial facts, spans, abstentions | Board order, alerts, sizing; authority beyond FIF acceptance |
+| **H04** | WS:EARNINGS-INTELLIGENCE-OS | `engine/expectation_state.py`; `scripts/build_ticker_pages.py` | Module pins + nightly build id; per-ticker expectation panel is a served render artifact, not committed | Earnings-expectation chips (display-only) | Gates, rankers, Prophet floors (module law) |
+| **H05** | WS:CAPITAL-STRUCTURE-INTELLIGENCE-V2 | n/a — no committed leg on main | — | Debt/share qualification when built | Any inference until owner ships W4/W6 |
+| **H06** | WS:FUNDAMENTAL-FORENSICS | `engine/fundamental_forensics/query_snapshots.py`; `engine/fundamental_forensics/private_state.py`; `app/forensics.py` | Entitlement + publication flags; pin snapshot id | Whether private/default-off blocks a public leg | Leaking private purpose into anonymous tiers |
+| **Event workspace** | WS:EARNINGS-INTELLIGENCE-OS | `engine/company_intelligence/event_workspace.py`; `engine/neuralweb/company_intelligence_reader.py` | `read_event_workspace` / `read_current_event_workspace`; manifest hash; workspace `as_of` | Canonical event glance, alias selection | Thesis **mutation** without owner acceptance |
+| **Theme context** | WS:GMI-THEME-GRAPH | `engine/theme_context.py`; `site/basketdata/theme_context.json` | `read_context`; file `as_of` | Basket/theme tape context (display) | Scoring, ranking, escalation |
+| **Company–theme exposure** | WS:GMI-THEME-GRAPH | `engine/company_theme_exposure/views.py`; `engine/company_theme_exposure/contracts.py` | `build_bundle`; strict closed keys; membership pin + generation | Membership projection, context-only authority | Thematic score, relationship model, extra wire keys |
+| **Basket labels** | owner: not recorded (GAP) | `site/basketdata/baskets.json` | Read JSON by path; never inline copy into a warehouse | Labels and basket metadata for theme legs | Standalone “integrated score” |
+| **Theme membership state** | owner: not recorded (GAP) | `site/neuralwebdata/theme_state.json` | Read JSON by path; never inline copy into a warehouse | Membership inputs for exposure/theme context | Standalone “integrated score” |
 
 ---
 
@@ -63,31 +64,50 @@ When legs disagree, **dual-read leads**: name the user-visible tension in plain 
 
 ## §4 Honest-null matrix (Tier 1 EN / ZH)
 
+For each §2 reader and state **absent**, **stale**, or **refused**: glance copy below or an explicit n/a line. **Coverage: 27 cells** (9 readers × 3 states).
+
 | Condition | Glance EN | Glance ZH |
 |-----------|-----------|-----------|
-| H01 refused / entitlement | “Financial detail isn’t available on this view.” | “此视图无法提供财务明细。” |
-| H01 stale vs composer `as_of` | “Financial facts are older than this page stamp — check the receipt.” | “财务事实早于本页时间戳，请查看来源说明。” |
-| H04 not accepted / absent | “Earnings expectation detail isn’t wired here yet.” | “盈利预期细节尚未接入。” |
-| H05 absent | “Capital-structure context isn’t published for this market.” | “资本结构背景尚未对此市场发布。” |
-| H06 blocks publication | “Some financial material is restricted on your account tier.” | “部分财务内容受账户权限限制。” |
-| Event workspace missing | “No current event workspace for this company.” | “该公司暂无活动事件工作区。” |
-| Theme context shortfall | “Theme tape context isn’t available right now.” | “主题盘面背景暂不可用。” |
-| CTE warning `theme_state_stale` | “Theme membership may be dated — watch, don’t chase.” | “主题归属可能已过期，宜观望。” |
-| Any leg display-only | Stance: **Watch — don’t chase**; footer: “Heads-up only, not a buy signal.” | 立场：**观望，勿追**；脚注：“仅为提示，非买入信号。” |
+| Financial facts refused (entitlement) | “Financial detail isn’t available on this view.” | “此视图无法提供财务明细。” |
+| Financial facts stale vs page stamp | “Financial facts are older than this page stamp — check the receipt.” | “财务事实早于本页时间戳，请查看来源说明。” |
+| Earnings expectation absent | “Earnings expectation detail isn’t wired here yet.” | “盈利预期细节尚未接入。” |
+| Earnings expectation stale | “Earnings expectation chips may be from an older build — check the receipt.” | “盈利预期标签可能来自较早构建，请查看来源说明。” |
+| Earnings expectation refused | “Earnings expectation detail isn’t available on this view.” | “此视图无法提供盈利预期细节。” |
+| Capital-structure leg absent | “Capital-structure context isn’t built yet.” | “资本结构背景尚未构建。” |
+| Capital-structure leg stale | n/a — leg not on main | n/a |
+| Capital-structure leg refused | n/a — leg not on main | n/a |
+| Publication seam absent | “Account publication rules aren’t loaded for this answer.” | “本答复尚未加载账户发布规则。” |
+| Publication seam stale | “Publication rules may be older than this page — check the receipt.” | “发布规则可能早于本页，请查看来源说明。” |
+| Publication seam refused | “Some financial material is restricted on your account tier.” | “部分财务内容受账户权限限制。” |
+| Event workspace absent | “No current event workspace for this company.” | “该公司暂无活动事件工作区。” |
+| Event workspace stale | “Event workspace may be from an older quarter — check the receipt.” | “事件工作区可能来自较早季度，请查看来源说明。” |
+| Event workspace refused | “Event workspace isn’t available on this view.” | “此视图无法提供事件工作区。” |
+| Theme tape context absent | “Theme tape context isn’t available right now.” | “主题盘面背景暂不可用。” |
+| Theme tape context stale | “Theme tape context may be dated — watch, don’t chase.” | “主题盘面背景可能已过期，宜观望。” |
+| Theme tape context refused | “Theme tape context isn’t available on this view.” | “此视图无法提供主题盘面背景。” |
+| Company–theme exposure absent | “Theme membership for this company isn’t available right now.” | “该公司主题归属暂不可用。” |
+| Company–theme exposure stale | “Theme membership may be dated — watch, don’t chase.” | “主题归属可能已过期，宜观望。” |
+| Company–theme exposure refused | “Theme membership isn’t available on this view.” | “此视图无法提供主题归属。” |
+| Basket labels file absent | “Basket labels aren’t available right now.” | “篮子标签暂不可用。” |
+| Basket labels file stale | “Basket labels may be from an older build — check the receipt.” | “篮子标签可能来自较早构建，请查看来源说明。” |
+| Basket labels file refused | “Basket labels aren’t available on this view.” | “此视图无法提供篮子标签。” |
+| Theme membership file absent | “Theme membership file isn’t available right now.” | “主题归属文件暂不可用。” |
+| Theme membership file stale | “Theme membership file may be dated — check the receipt.” | “主题归属文件可能已过期，请查看来源说明。” |
+| Theme membership file refused | “Theme membership file isn’t available on this view.” | “此视图无法提供主题归属文件。” |
 
-Tier 2 hover carries generation ids, hashes, and study receipts per `docs/DESIGN_DOCTRINE.md` §1–2.
+Financial facts absent: n/a — accepted leg; composer attempts load when entitled. Display-only legs: stance **Watch — don’t chase**; footer “Heads-up only, not a buy signal.” / 立场 **观望，勿追**；脚注 “仅为提示，非买入信号。” Tier 2 hover carries generation ids, hashes, and study receipts per `docs/DESIGN_DOCTRINE.md` §1–2.
 
 ---
 
 ## §5 Freshness and coverage
 
-Composer publishes one **page `as_of`** (ISO date or timestamp) ≥ max leg `as_of` used. Each leg declares: `fresh` (within owner SLA), `stale` (older than SLA but readable), `refused` (entitlement), `not_published` (H05/H06/market). SLA defaults (owner-adjustable): theme_context and theme_state **1 build day**; event workspace **current alias** only; FIF query **request-time cutoff**; expectation panel **nightly stock JSON build**. Coverage footnote when `observation_refusals` or CTE `warnings` non-empty: “Not everything below is published for every market.” Propagate `as_of` into every Tier 1 panel once (Law 4).
+Composer publishes one **page `as_of`** (ISO date or timestamp) ≥ max leg `as_of` used. Each leg declares fresh, stale, refused, or not-yet-built. SLA defaults (owner-adjustable): theme context and theme membership files **1 build day**; event workspace **current alias** only; FIF query **request-time cutoff**; expectation panel **nightly render build**. Coverage footnote when observation refusals or exposure warnings are non-empty: “Not everything below is published for every market.” Propagate `as_of` into every Tier 1 panel once.
 
 ---
 
 ## §6 Forbidden (package I + DNR)
 
-No inferred fund-flow quantity; no calibrated probability; no new opportunity ranker; no holdability claim; no “intraday strength” wording; no warehouse table or materialized integrated state table; no thesis field mutation from the composer; no second thesis lobe (`DNR:KILL-THESIS-LOBE`); no causal-DAG alpha (`DNR:KILL-CAUSAL-DAG-ALPHA`); no fused composite score across legs (`DNR:KILL-FUSED-COMPOSITE`). LLM may narrate **only** from pinned artifacts (A7); no new keys on `company_theme_exposure.v1`.
+No inferred fund-flow quantity; no calibrated probability; no new opportunity ranker; no holdability claim; no “intraday strength” wording; no statistical-approval claim wording on the integrated surface (the CI-banned promotion adjective in any case); no warehouse table or materialized integrated state table; no thesis field mutation from the composer; no second thesis lobe (`DNR:KILL-THESIS-LOBE`); no causal-DAG alpha (`DNR:KILL-CAUSAL-DAG-ALPHA`); no fused composite score across legs (`DNR:KILL-FUSED-COMPOSITE`). LLM may narrate **only** from pinned artifacts (A7); no new keys on the company–theme exposure wire contract.
 
 ---
 
@@ -108,9 +128,10 @@ No inferred fund-flow quantity; no calibrated probability; no new opportunity ra
 3. **WS:CAPITAL-STRUCTURE-INTELLIGENCE-V2:** Will W4/W6 ship a read-only artifact addressable like other legs before H05 counts accepted? **Yes/No**
 4. **WS:FUNDAMENTAL-FORENSICS:** Does H06 acceptance require a new DEC explicitly blessing default-off snapshots for integrated glance? **Yes/No**
 5. **WS:FINANCIAL-INTELLIGENCE-FABRIC:** Is POST forensics query the only H01 transport, or also a pinned GET snapshot? **Yes/No**
-6. **WS:GMI theme graph:** Is Terminal `company-theme-context/[symbol]` the first consumer shell for the composed glance? **Yes/No**
+6. **WS:GMI-THEME-GRAPH:** Is Terminal `company-theme-context/[symbol]` the first consumer shell for the composed glance? **Yes/No**
 7. **Meta-CEO / package I seat:** Is `OPEN_FOR_READ_ONLY_COMPOSITION` sufficient to authorize the §7 route before any thesis mutation? **Yes/No**
 8. **WS:EARNINGS-INTELLIGENCE-OS:** Must integrated glance strip all Tier-3 receipts (current public workspace behavior)? **Yes/No**
+9. **Meta-CEO / package I seat:** May the composer read `site/basketdata/baskets.json` and `site/neuralwebdata/theme_state.json` before an agentos owner is recorded for those paths? **Yes/No**
 
 ---
 
