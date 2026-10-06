@@ -22,7 +22,7 @@ waves:
     status: in_progress
 next_action: >-
   Consume the portfolio per-claim repair on its original root, finish the heatmap source
-  qualification, and reconcile the missing required CI for Terminal PR835. Return owner-bound
+  qualification, and consume the approved exact-head CI for Terminal PR835. Return owner-bound
   proposals through their incumbent carriers; PR597 owner identification remains unresolved.
 owns_paths: []
 artifacts:

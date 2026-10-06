@@ -12,7 +12,7 @@
       "original_started": true,
       "whole_mission_accepted": false,
       "review_status": "INTEGRATED_SCOPED_HISTORY_REPAIR_WITH_BROWSER_WORKER_PROOF",
-      "evidence_summary": "PR835 auto armed; controller refreshed44825db7 onto69df as35be0023, Pine owned source unchanged. Parent89pass/fullTSC0/3 native-worker browser cases; refreshed required checks absent in13:13 receipt; no merge/live claim."
+      "evidence_summary": "PR835 head35be0023 Pine source unchanged from448; same-head dispatchedCI37464421604 all requiredjobs+responsive succeeded. Bot PRrun37464432413 awaited approval; same-carrier POST approval succeeded and run in progress. Auto-merge armed; no merge/live claim."
     },
     {
       "mission": "A02",
@@ -75,8 +75,8 @@
       "outcome": "Portfolio monetary integrity: currency-aware cost, value and exposure",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "CONTRACT_REPAIR_READY",
-      "evidence_summary": "Per-claim units/freshness dependencies, actual live schema; C3 r2 packet prepared, no DDL"
+      "review_status": "FOUR_FILE_PROPOSAL_REQUEST_REPAIR_TWO_ACTUAL_COUNTEREXAMPLES",
+      "evidence_summary": "Grok r2 STARTtrue timeout124 cleanuptrue; parent26pass0skip, actualmonetary reporting-unit mismatch and omitted unknown nonzero cost lot found. Exact2case r3 repair prepared; no sourcewriter/schema/live effects. Qualified repair r3 rs_20261006T140344Z_4488 reached verified START; awaiting exact return, no acceptance claim."
     },
     {
       "mission": "A10",
@@ -123,8 +123,8 @@
       "outcome": "Heatmap economic sizing: propagate genuine capitalization and disclose coverage",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "CURRENT_SOURCE_PRESENTATION_REPAIR_RUNNING",
-      "evidence_summary": "Grok rs_20261006T124257Z_8916 admitted, current69df capsule plus prior reviewed17-caseproposal; preserve current localization/regular quotes; one bounded cached-cap mode copy/fullmissinglist repair."
+      "review_status": "SCOPED_SOURCE_PASS_ACTUAL_BROWSER_QUALIFICATION_READY",
+      "evidence_summary": "Grok r4 parent24pass0skip + actual fullsource TSC0 after typed fixtures and ingest closure. Completed source read confirms DiscoverWorkspace mounts HeatmapPageRoot for heatmap tab; browser actual sizing/disclosure proof pending. Existing770 separate denied source operations/610 strings preserved. Browser repair r5 rs_20261006T140334Z_4127 reached verified START. Parent removed unsupported saved-view retention promise; source copy proof updated, browser fixture proof remains separate."
     },
     {
       "mission": "A16",
