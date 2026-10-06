@@ -944,6 +944,30 @@ class TestFederalRegisterTransportRecovery:
             "citation": "91 FR 17629",
         }
 
+    def test_fr_correction_document_number_preserves_official_c_prefix(self) -> None:
+        row = {
+            "document_number": "C1-2025-22754",
+            "raw_text_url": (
+                "https://www.federalregister.gov/documents/full_text/text/"
+                "2026/02/13/C1-2025-22754.txt"
+            ),
+            "pdf_url": (
+                "https://www.govinfo.gov/content/pkg/FR-2026-02-13/"
+                "pdf/C1-2025-22754.pdf"
+            ),
+            "publication_date": "2026-02-13",
+            "title": "Arms Sales Notification",
+            "citation": "91 FR 6832",
+        }
+
+        assert live._fr_document_number(row["document_number"]) == "C1-2025-22754"
+        assert live._fr_document_number_from_source_url(row["raw_text_url"]) == "C1-2025-22754"
+        assert live._fr_raw_text_url(row) == row["raw_text_url"]
+        assert live.fr_govinfo_html_url(row) == (
+            "https://www.govinfo.gov/content/pkg/FR-2026-02-13/"
+            "html/C1-2025-22754.htm"
+        )
+
     def test_unseen_fr_redirect_uses_shape_validated_api_govinfo_html(self, tmp_path: Path) -> None:
         content = _read_bytes("fr/2026-07278.txt")
         calls = []
