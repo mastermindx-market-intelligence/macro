@@ -1311,11 +1311,15 @@ def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
         rendered = str(clock.get("data-assessment-asof", ""))
         source = str(selected_row.get("signal_asof", ""))
         source_date = _iso_date(source)
-        clock_text = clock.get_text(" ", strip=True)
+        clock_text = clock.get_text(" ", strip=True, types=_TEXT_TYPES)
+        visible_dates = set(re.findall(r"\d{4}-\d{2}-\d{2}", clock_text))
         if rendered and _iso_date(rendered) is None:
             fails.append("assessment clock differs from signal_asof")
-        elif source_date is not None and rendered != source:
-            fails.append("assessment clock differs from signal_asof")
+        elif source_date is not None:
+            if rendered != source:
+                fails.append("assessment clock differs from signal_asof")
+            elif visible_dates != {source}:
+                fails.append("assessment visible date differs from signal_asof")
         elif source_date is None:
             if rendered != "":
                 fails.append("assessment clock differs from signal_asof")

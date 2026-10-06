@@ -2316,3 +2316,27 @@ def test_j7_passes_native_descendant_entry_status_without_body_attribute():
     del body["data-entry-status"]
     result = _pjr._check_j7(soup, source, "TEST1")
     assert result["status"] == "PASS", result
+
+
+def test_j9_fail_assessment_visible_date_differs_from_source():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    clock = soup.select_one(".pvs-assessment-clock")
+    assert clock is not None
+    clock.select_one(".l-en").string = "Entry read date 2099-01-01"
+    clock.select_one(".l-zh").string = "入场判读日期 2099-01-01"
+    result = _pjr._check_j9(
+        soup, _index_payload(), _standouts_payload(), _runtime_payload(),
+        ticker="TEST1")
+    assert result["status"] == "FAIL", result
+
+
+def test_j9_fail_assessment_visible_dates_disagree_bilingually():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    clock = soup.select_one(".pvs-assessment-clock")
+    assert clock is not None
+    clock.select_one(".l-en").string = "Entry read date 2026-09-26"
+    clock.select_one(".l-zh").string = "入场判读日期 2099-01-01"
+    result = _pjr._check_j9(
+        soup, _index_payload(), _standouts_payload(), _runtime_payload(),
+        ticker="TEST1")
+    assert result["status"] == "FAIL", result
