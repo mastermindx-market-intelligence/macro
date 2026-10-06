@@ -14,11 +14,11 @@
     "note_zh": "\u534a\u5bfc\u4f53\u7ec4\u5408\uff08SMH/SOXX\u7b49\u6743\uff09\u8ddd\u8fc7\u53bb120\u65e5\u9ad8\u70b9-7.9%\u3002\u56de\u64a4\u6df1\u5ea6\u662f\u8f6e\u52a8\u53cd\u8f6c\u6761\u4ef6\u7684\u7ed3\u6784\u6027\u80cc\u666f\u3002"
   },
   "jawboning": {
-    "n_7d": 4,
-    "n_30d": 12,
-    "last_alert_ts": "2026-10-03T03:01:43+00:00",
-    "last_alert_summary": "$1.8B Medicare rebate to 20M seniors \u2014 modest consumer tailwind, insurer optics negative",
-    "last_alert_summary_zh": "\u8054\u90a6\u54112000\u4e07\u8001\u5e74\u4eba\u53d1\u653e18\u4ebf\u7f8e\u5143\u533b\u4fdd\u8fd4\u8fd8\u2014\u2014\u6d88\u8d39\u7aef\u5c0f\u5e45\u5229\u597d\uff0c\u4fdd\u9669\u5546\u5f62\u8c61\u627f\u538b"
+    "n_7d": 7,
+    "n_30d": 15,
+    "last_alert_ts": "2026-10-06T01:13:53+00:00",
+    "last_alert_summary": "Trump defers federal diesel excise taxes Q4 2026 \u2014 freight, agri margins get breathing room",
+    "last_alert_summary_zh": "\u7279\u6717\u666e\u5ba3\u5e032026\u5e74Q4\u6682\u7f13\u5f81\u6536\u8054\u90a6\u67f4\u6cb9\u6d88\u8d39\u7a0e\u2014\u2014\u8d27\u8fd0\u548c\u519c\u4e1a\u5229\u6da6\u7387\u83b7\u5f97\u5598\u606f\u7a7a\u95f4"
   },
   "calendar": {
     "days_to_midterm": 28,
@@ -31,13 +31,13 @@
       "name_zh": "\u4f0a\u6717/\u77f3\u6cb9",
       "asset": "CL=F",
       "arming": {
-        "stoch_k": 8.6,
-        "stoch_d": 13.84,
-        "stoch_curl": false,
+        "stoch_k": 17.3,
+        "stoch_d": 14.65,
+        "stoch_curl": true,
         "macd_curl": true,
         "basing": false,
         "days_in_base": 0,
-        "flatness": 0.0549,
+        "flatness": 0.0167,
         "armed": false,
         "stoch_curl_recent": true,
         "stoch_traverse": false,
