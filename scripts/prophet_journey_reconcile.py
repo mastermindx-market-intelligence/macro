@@ -1045,7 +1045,7 @@ def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
         "entry_status": str((row.get("entry_signal") or {}).get("status", "")
                             if isinstance(row.get("entry_signal"), dict) else ""),
         "signal_asof": str(row.get("signal_asof", "")),
-        "price_as_of": str(row.get("price_as_of", "")),
+        "price_as_of": _displayed_date(str(row.get("price_as_of", ""))),
         "plan_relation": str(plan_relation
                             if plan_relation is not None else "none"),
         "plan_ids": list(plan_ids or []),

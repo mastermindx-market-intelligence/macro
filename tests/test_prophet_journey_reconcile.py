@@ -2340,3 +2340,16 @@ def test_j9_fail_assessment_visible_dates_disagree_bilingually():
         soup, _index_payload(), _standouts_payload(), _runtime_payload(),
         ticker="TEST1")
     assert result["status"] == "FAIL", result
+
+
+def test_j7_accepts_timestamp_shaped_price_asof_from_native_source():
+    stamp = "2026-09-26T09:30:00Z"
+    source = _standouts_payload(
+        pool_digest="pool-source-digest", price_as_of=stamp)
+    soup = BeautifulSoup(_corrected_html(detail_price_as_of=stamp, plan_relation="none"),
+                         _pjr.HTML_PARSER)
+    pool = soup.select_one("#us-candidate-pool")
+    assert pool is not None
+    pool["data-source-digest"] = source["candidate_pool"]["source_digest"]
+    result = _pjr._check_j7(soup, source, "TEST1")
+    assert result["status"] == "PASS", result
