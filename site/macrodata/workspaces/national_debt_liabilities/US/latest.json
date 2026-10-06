@@ -180,15 +180,15 @@
       },
       {
         "component_id": "bond_desk_state",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Bond-desk health/cycle-phase state",
           "zh": "债券台面健康/周期阶段状态"
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-10-02",
-        "status": "PARTIAL"
+        "source_asof": "2026-10-05",
+        "status": "PRESENT"
       }
     ],
     "state": "CURRENT",
@@ -229,8 +229,8 @@
         "prior_value": 13.8
       },
       {
-        "current_value": 78.0,
-        "delta": 0.0,
+        "current_value": 77.0,
+        "delta": -1.0,
         "metric_id": "bond_desk_health_score_level",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 78.0
@@ -243,10 +243,12 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "national_debt_liabilities-US-c6530fef96f4ec9f"
+    "changed_fingerprints": [
+      "bond_desk_health_score_level:bond_desk_health_score_level:1ce8cb5a52e03ec4"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "national_debt_liabilities-US-753893939b2ab2cf"
   },
   "drivers": {
     "balance_sheet": [
@@ -367,11 +369,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-06T06:04:23Z",
+    "built_at": "2026-10-06T11:28:26Z",
     "calculation_as_of": "2026-10-05",
-    "code_version": "7db649d66e54835ad3dc1b324725251489128215",
-    "content_sha256": "753893939b2ab2cf7625985242c377dec84c833dc332367819ec19befb40837e",
-    "generation_id": "national_debt_liabilities-US-753893939b2ab2cf",
+    "code_version": "640e3e237eede62351b6f657c8e13ad20274585c",
+    "content_sha256": "0e39dccf45cb95b75b6d5e18f4d93766ed57c15b5c13290138d5c30734231fdc",
+    "generation_id": "national_debt_liabilities-US-0e39dccf45cb95b7",
     "producer": "engine.market_os.macro_workspaces.national_debt",
     "rendered_at": null
   },
@@ -581,8 +583,8 @@
         "horizon": "current",
         "implication_id": "bond_desk_passthrough_read",
         "text": {
-          "en": "Bond-desk coverage state: health healthy (78/100), cycle phase recession -- a coverage read, not a forecast this composer originates.",
-          "zh": "债券台面覆盖状态：健康度healthy（78/100），周期阶段recession——此为覆盖读数，并非本组合器自行给出的预测。"
+          "en": "Bond-desk coverage state: health healthy (77/100), cycle phase recession -- a coverage read, not a forecast this composer originates.",
+          "zh": "债券台面覆盖状态：健康度healthy（77/100），周期阶段recession——此为覆盖读数，并非本组合器自行给出的预测。"
         },
         "trace_ref": "data/bonds/latest.json"
       },
@@ -1437,21 +1439,21 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-02",
+        "calculation_as_of": "2026-10-05",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.health_score",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_healthy",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "bond_desk_health_score_level",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-02",
+        "observed_at": "2026-10-05",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_health_score_level",
-        "reference_period": "2026-10-02",
+        "reference_period": "2026-10-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1466,28 +1468,28 @@
           "value": null
         },
         "unit": "score_0_100",
-        "value": 78.0,
+        "value": 77.0,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-02",
+        "calculation_as_of": "2026-10-05",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.health_label",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "bond_desk_health_label",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-02",
+        "observed_at": "2026-10-05",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_health_label",
-        "reference_period": "2026-10-02",
+        "reference_period": "2026-10-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1509,21 +1511,21 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-02",
+        "calculation_as_of": "2026-10-05",
         "collected_at": null,
         "coverage": null,
         "definition_id": "bonds_desk.cycle_phase",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "bond_desk_cycle_phase",
         "model_version": "national_debt_liabilities.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-02",
+        "observed_at": "2026-10-05",
         "owner_ref": "data/bonds/latest.json",
         "reference_id": "mastermind.market_reference/v1#bond_desk_cycle_phase",
-        "reference_period": "2026-10-02",
+        "reference_period": "2026-10-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -3436,14 +3438,14 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Bond-desk health/cycle-phase state",
           "zh": "债券台面健康/周期阶段状态"
         },
         "owner_ref": "scripts.build_bonds",
         "provider": "Mastermind Bond Desk",
-        "reference_period": "2026-10-02",
+        "reference_period": "2026-10-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

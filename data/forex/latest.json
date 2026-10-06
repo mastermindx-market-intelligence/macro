@@ -193,7 +193,7 @@
       "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 0.693, 'jpy2y': 0.164, 'gbp2y': 0.143}.",
       "gaps": [],
       "display_only": true,
-      "built": "2026-10-06T07:55:13.440803+00:00"
+      "built": "2026-10-06T13:14:08.692036+00:00"
     }
   },
   "transmission": {
@@ -489,6 +489,784 @@
       "1w",
       "1m",
       "3m"
+    ]
+  },
+  "kinematics": {
+    "version": 1,
+    "producer": "engine.forex_regime.fx_kinematics_table",
+    "display_only": true,
+    "value_status": "complete",
+    "basis": "currency_vs_usd",
+    "positive_direction": "currency_appreciation_vs_usd",
+    "positive_direction_scope": "literal_returns_only",
+    "table_as_of": "2026-10-06",
+    "date_basis": "producer_max_index",
+    "freshness": "unknown",
+    "metric_dates_available": false,
+    "calculation_date_status": "complete",
+    "calculation_date_basis": "derived_series_index",
+    "limitations": [
+      "last_non_null",
+      "per_metric_dates_unavailable",
+      "calculation_index_is_not_source_observation_or_availability",
+      "normalized_inputs_can_contain_filled_values",
+      "observation_windows_not_calendar_days",
+      "coincident_not_a_forecast",
+      "correlated_metrics_not_independent_votes"
+    ],
+    "metrics": {
+      "return_short": {
+        "source_field": "lit_1d_pct",
+        "unit": "percent",
+        "basis": "currency_vs_usd",
+        "window_observations": 1,
+        "positive_means": "currency_appreciation_vs_usd"
+      },
+      "return_medium": {
+        "source_field": "lit_5d_pct",
+        "unit": "percent",
+        "basis": "currency_vs_usd",
+        "window_observations": 5,
+        "positive_means": "currency_appreciation_vs_usd"
+      },
+      "return_long": {
+        "source_field": "lit_20d_pct",
+        "unit": "percent",
+        "basis": "currency_vs_usd",
+        "window_observations": 20,
+        "positive_means": "currency_appreciation_vs_usd"
+      },
+      "velocity_z": {
+        "source_field": "vel_z",
+        "unit": "z_score",
+        "basis": "currency_vs_usd",
+        "window_observations": 5,
+        "z_lookback_observations": 252,
+        "z_min_periods": 60,
+        "ewma_halflife_observations": 20,
+        "comparison_basis": "prior_observations_only",
+        "display_clip_abs": 8,
+        "positive_means": "above_prior_risk_adjusted_momentum_baseline"
+      },
+      "acceleration_z": {
+        "source_field": "accel_z",
+        "unit": "z_score",
+        "basis": "currency_vs_usd",
+        "window_observations": 5,
+        "z_lookback_observations": 252,
+        "z_min_periods": 60,
+        "ewma_halflife_observations": 20,
+        "comparison_basis": "prior_observations_only",
+        "display_clip_abs": 8,
+        "positive_means": "above_prior_momentum_change_baseline",
+        "change_window_observations": 1
+      },
+      "volatility_percentile": {
+        "source_field": "rvol_pctile",
+        "unit": "fraction",
+        "basis": "currency_vs_usd",
+        "window_observations": 20,
+        "percentile_lookback_observations": 504,
+        "positive_means": "higher_volatility_rank_not_price_direction"
+      },
+      "residual_return": {
+        "source_field": "resid_5d_pct",
+        "unit": "percent",
+        "basis": "upstream_residual_index",
+        "window_observations": 5,
+        "adjustment_evidence_field": "residual_adjustment",
+        "positive_means": "upstream_residual_index_increase"
+      }
+    },
+    "rows": [
+      {
+        "ccy": "EUR",
+        "values": {
+          "return_short": -0.33,
+          "return_medium": -1.37,
+          "return_long": -3.53,
+          "velocity_z": -2.09,
+          "acceleration_z": -0.75,
+          "volatility_percentile": 0.04,
+          "residual_return": -1.21
+        },
+        "availability": {
+          "return_short": "available",
+          "return_medium": "available",
+          "return_long": "available",
+          "velocity_z": "available",
+          "acceleration_z": "available",
+          "volatility_percentile": "available",
+          "residual_return": "available"
+        },
+        "observed_at": {
+          "return_short": null,
+          "return_medium": null,
+          "return_long": null,
+          "velocity_z": null,
+          "acceleration_z": null,
+          "volatility_percentile": null,
+          "residual_return": null
+        },
+        "calculated_through": {
+          "return_short": "2026-10-06",
+          "return_medium": "2026-10-06",
+          "return_long": "2026-10-06",
+          "velocity_z": "2026-10-06",
+          "acceleration_z": "2026-10-06",
+          "volatility_percentile": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "index_relation": {
+          "return_short": "at_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
+          "acceleration_z": "at_table_date",
+          "volatility_percentile": "at_table_date",
+          "residual_return": "at_table_date"
+        },
+        "normalized_input_dates": {
+          "close": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "clock_issues": [],
+        "residual_adjustment": {
+          "status": "adjusted",
+          "window_observations": 5,
+          "window_start": "2026-09-30",
+          "window_end": "2026-10-06",
+          "counts": {
+            "adjusted": 5,
+            "raw_fallback": 0,
+            "zero_filled": 0,
+            "unavailable": 0
+          },
+          "carried_driver_observations": 2
+        },
+        "movement_comparison": {
+          "status": "calculation_dates_match",
+          "reason": null,
+          "return_metric": "return_medium",
+          "window_observations": 5,
+          "calculated_through": "2026-10-06",
+          "return_state": "fell",
+          "momentum_state": "below_baseline",
+          "value_basis": "displayed_producer_values"
+        }
+      },
+      {
+        "ccy": "JPY",
+        "values": {
+          "return_short": -0.11,
+          "return_medium": -0.35,
+          "return_long": -2.57,
+          "velocity_z": -0.21,
+          "acceleration_z": -0.26,
+          "volatility_percentile": 0.16,
+          "residual_return": -0.28
+        },
+        "availability": {
+          "return_short": "available",
+          "return_medium": "available",
+          "return_long": "available",
+          "velocity_z": "available",
+          "acceleration_z": "available",
+          "volatility_percentile": "available",
+          "residual_return": "available"
+        },
+        "observed_at": {
+          "return_short": null,
+          "return_medium": null,
+          "return_long": null,
+          "velocity_z": null,
+          "acceleration_z": null,
+          "volatility_percentile": null,
+          "residual_return": null
+        },
+        "calculated_through": {
+          "return_short": "2026-10-06",
+          "return_medium": "2026-10-06",
+          "return_long": "2026-10-06",
+          "velocity_z": "2026-10-06",
+          "acceleration_z": "2026-10-06",
+          "volatility_percentile": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "index_relation": {
+          "return_short": "at_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
+          "acceleration_z": "at_table_date",
+          "volatility_percentile": "at_table_date",
+          "residual_return": "at_table_date"
+        },
+        "normalized_input_dates": {
+          "close": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "clock_issues": [],
+        "residual_adjustment": {
+          "status": "adjusted",
+          "window_observations": 5,
+          "window_start": "2026-09-30",
+          "window_end": "2026-10-06",
+          "counts": {
+            "adjusted": 5,
+            "raw_fallback": 0,
+            "zero_filled": 0,
+            "unavailable": 0
+          },
+          "carried_driver_observations": 2
+        },
+        "movement_comparison": {
+          "status": "calculation_dates_match",
+          "reason": null,
+          "return_metric": "return_medium",
+          "window_observations": 5,
+          "calculated_through": "2026-10-06",
+          "return_state": "fell",
+          "momentum_state": "below_baseline",
+          "value_basis": "displayed_producer_values"
+        }
+      },
+      {
+        "ccy": "GBP",
+        "values": {
+          "return_short": -0.21,
+          "return_medium": -0.29,
+          "return_long": -2.45,
+          "velocity_z": -0.41,
+          "acceleration_z": -0.97,
+          "volatility_percentile": 0.06,
+          "residual_return": -0.14
+        },
+        "availability": {
+          "return_short": "available",
+          "return_medium": "available",
+          "return_long": "available",
+          "velocity_z": "available",
+          "acceleration_z": "available",
+          "volatility_percentile": "available",
+          "residual_return": "available"
+        },
+        "observed_at": {
+          "return_short": null,
+          "return_medium": null,
+          "return_long": null,
+          "velocity_z": null,
+          "acceleration_z": null,
+          "volatility_percentile": null,
+          "residual_return": null
+        },
+        "calculated_through": {
+          "return_short": "2026-10-06",
+          "return_medium": "2026-10-06",
+          "return_long": "2026-10-06",
+          "velocity_z": "2026-10-06",
+          "acceleration_z": "2026-10-06",
+          "volatility_percentile": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "index_relation": {
+          "return_short": "at_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
+          "acceleration_z": "at_table_date",
+          "volatility_percentile": "at_table_date",
+          "residual_return": "at_table_date"
+        },
+        "normalized_input_dates": {
+          "close": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "clock_issues": [],
+        "residual_adjustment": {
+          "status": "adjusted",
+          "window_observations": 5,
+          "window_start": "2026-09-30",
+          "window_end": "2026-10-06",
+          "counts": {
+            "adjusted": 5,
+            "raw_fallback": 0,
+            "zero_filled": 0,
+            "unavailable": 0
+          },
+          "carried_driver_observations": 2
+        },
+        "movement_comparison": {
+          "status": "calculation_dates_match",
+          "reason": null,
+          "return_metric": "return_medium",
+          "window_observations": 5,
+          "calculated_through": "2026-10-06",
+          "return_state": "fell",
+          "momentum_state": "below_baseline",
+          "value_basis": "displayed_producer_values"
+        }
+      },
+      {
+        "ccy": "CHF",
+        "values": {
+          "return_short": -0.43,
+          "return_medium": 0.0,
+          "return_long": -2.73,
+          "velocity_z": 0.1,
+          "acceleration_z": -0.35,
+          "volatility_percentile": 0.04,
+          "residual_return": 0.16
+        },
+        "availability": {
+          "return_short": "available",
+          "return_medium": "available",
+          "return_long": "available",
+          "velocity_z": "available",
+          "acceleration_z": "available",
+          "volatility_percentile": "available",
+          "residual_return": "available"
+        },
+        "observed_at": {
+          "return_short": null,
+          "return_medium": null,
+          "return_long": null,
+          "velocity_z": null,
+          "acceleration_z": null,
+          "volatility_percentile": null,
+          "residual_return": null
+        },
+        "calculated_through": {
+          "return_short": "2026-10-06",
+          "return_medium": "2026-10-06",
+          "return_long": "2026-10-06",
+          "velocity_z": "2026-10-06",
+          "acceleration_z": "2026-10-06",
+          "volatility_percentile": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "index_relation": {
+          "return_short": "at_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
+          "acceleration_z": "at_table_date",
+          "volatility_percentile": "at_table_date",
+          "residual_return": "at_table_date"
+        },
+        "normalized_input_dates": {
+          "close": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "clock_issues": [],
+        "residual_adjustment": {
+          "status": "adjusted",
+          "window_observations": 5,
+          "window_start": "2026-09-30",
+          "window_end": "2026-10-06",
+          "counts": {
+            "adjusted": 5,
+            "raw_fallback": 0,
+            "zero_filled": 0,
+            "unavailable": 0
+          },
+          "carried_driver_observations": 2
+        },
+        "movement_comparison": {
+          "status": "calculation_dates_match",
+          "reason": null,
+          "return_metric": "return_medium",
+          "window_observations": 5,
+          "calculated_through": "2026-10-06",
+          "return_state": "flat_at_display_precision",
+          "momentum_state": "above_baseline",
+          "value_basis": "displayed_producer_values"
+        }
+      },
+      {
+        "ccy": "AUD",
+        "values": {
+          "return_short": 0.28,
+          "return_medium": -0.64,
+          "return_long": -3.45,
+          "velocity_z": -0.84,
+          "acceleration_z": 0.3,
+          "volatility_percentile": 0.2,
+          "residual_return": -0.89
+        },
+        "availability": {
+          "return_short": "available",
+          "return_medium": "available",
+          "return_long": "available",
+          "velocity_z": "available",
+          "acceleration_z": "available",
+          "volatility_percentile": "available",
+          "residual_return": "available"
+        },
+        "observed_at": {
+          "return_short": null,
+          "return_medium": null,
+          "return_long": null,
+          "velocity_z": null,
+          "acceleration_z": null,
+          "volatility_percentile": null,
+          "residual_return": null
+        },
+        "calculated_through": {
+          "return_short": "2026-10-06",
+          "return_medium": "2026-10-06",
+          "return_long": "2026-10-06",
+          "velocity_z": "2026-10-06",
+          "acceleration_z": "2026-10-06",
+          "volatility_percentile": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "index_relation": {
+          "return_short": "at_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
+          "acceleration_z": "at_table_date",
+          "volatility_percentile": "at_table_date",
+          "residual_return": "at_table_date"
+        },
+        "normalized_input_dates": {
+          "close": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "clock_issues": [],
+        "residual_adjustment": {
+          "status": "adjusted",
+          "window_observations": 5,
+          "window_start": "2026-09-30",
+          "window_end": "2026-10-06",
+          "counts": {
+            "adjusted": 5,
+            "raw_fallback": 0,
+            "zero_filled": 0,
+            "unavailable": 0
+          },
+          "carried_driver_observations": 2
+        },
+        "movement_comparison": {
+          "status": "calculation_dates_match",
+          "reason": null,
+          "return_metric": "return_medium",
+          "window_observations": 5,
+          "calculated_through": "2026-10-06",
+          "return_state": "fell",
+          "momentum_state": "below_baseline",
+          "value_basis": "displayed_producer_values"
+        }
+      },
+      {
+        "ccy": "CAD",
+        "values": {
+          "return_short": -0.07,
+          "return_medium": -0.61,
+          "return_long": -3.22,
+          "velocity_z": -0.92,
+          "acceleration_z": 0.22,
+          "volatility_percentile": 0.0,
+          "residual_return": -0.34
+        },
+        "availability": {
+          "return_short": "available",
+          "return_medium": "available",
+          "return_long": "available",
+          "velocity_z": "available",
+          "acceleration_z": "available",
+          "volatility_percentile": "available",
+          "residual_return": "available"
+        },
+        "observed_at": {
+          "return_short": null,
+          "return_medium": null,
+          "return_long": null,
+          "velocity_z": null,
+          "acceleration_z": null,
+          "volatility_percentile": null,
+          "residual_return": null
+        },
+        "calculated_through": {
+          "return_short": "2026-10-06",
+          "return_medium": "2026-10-06",
+          "return_long": "2026-10-06",
+          "velocity_z": "2026-10-06",
+          "acceleration_z": "2026-10-06",
+          "volatility_percentile": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "index_relation": {
+          "return_short": "at_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
+          "acceleration_z": "at_table_date",
+          "volatility_percentile": "at_table_date",
+          "residual_return": "at_table_date"
+        },
+        "normalized_input_dates": {
+          "close": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "clock_issues": [],
+        "residual_adjustment": {
+          "status": "adjusted",
+          "window_observations": 5,
+          "window_start": "2026-09-30",
+          "window_end": "2026-10-06",
+          "counts": {
+            "adjusted": 5,
+            "raw_fallback": 0,
+            "zero_filled": 0,
+            "unavailable": 0
+          },
+          "carried_driver_observations": 2
+        },
+        "movement_comparison": {
+          "status": "calculation_dates_match",
+          "reason": null,
+          "return_metric": "return_medium",
+          "window_observations": 5,
+          "calculated_through": "2026-10-06",
+          "return_state": "fell",
+          "momentum_state": "below_baseline",
+          "value_basis": "displayed_producer_values"
+        }
+      },
+      {
+        "ccy": "CNH",
+        "values": {
+          "return_short": 0.01,
+          "return_medium": 0.16,
+          "return_long": 0.5,
+          "velocity_z": 0.01,
+          "acceleration_z": 0.49,
+          "volatility_percentile": 0.0,
+          "residual_return": 0.57
+        },
+        "availability": {
+          "return_short": "available",
+          "return_medium": "available",
+          "return_long": "available",
+          "velocity_z": "available",
+          "acceleration_z": "available",
+          "volatility_percentile": "available",
+          "residual_return": "available"
+        },
+        "observed_at": {
+          "return_short": null,
+          "return_medium": null,
+          "return_long": null,
+          "velocity_z": null,
+          "acceleration_z": null,
+          "volatility_percentile": null,
+          "residual_return": null
+        },
+        "calculated_through": {
+          "return_short": "2026-10-05",
+          "return_medium": "2026-10-02",
+          "return_long": "2026-10-05",
+          "velocity_z": "2026-10-02",
+          "acceleration_z": "2026-09-30",
+          "volatility_percentile": "2026-10-06",
+          "residual_return": "2026-10-05"
+        },
+        "index_relation": {
+          "return_short": "before_table_date",
+          "return_medium": "before_table_date",
+          "return_long": "before_table_date",
+          "velocity_z": "before_table_date",
+          "acceleration_z": "before_table_date",
+          "volatility_percentile": "at_table_date",
+          "residual_return": "before_table_date"
+        },
+        "normalized_input_dates": {
+          "close": "2026-10-05",
+          "residual_return": "2026-10-05"
+        },
+        "clock_issues": [],
+        "residual_adjustment": {
+          "status": "adjusted",
+          "window_observations": 5,
+          "window_start": "2026-09-29",
+          "window_end": "2026-10-05",
+          "counts": {
+            "adjusted": 5,
+            "raw_fallback": 0,
+            "zero_filled": 0,
+            "unavailable": 0
+          },
+          "carried_driver_observations": 2
+        },
+        "movement_comparison": {
+          "status": "calculation_dates_match",
+          "reason": null,
+          "return_metric": "return_medium",
+          "window_observations": 5,
+          "calculated_through": "2026-10-02",
+          "return_state": "rose",
+          "momentum_state": "above_baseline",
+          "value_basis": "displayed_producer_values"
+        }
+      },
+      {
+        "ccy": "MXN",
+        "values": {
+          "return_short": 0.47,
+          "return_medium": -0.58,
+          "return_long": -6.24,
+          "velocity_z": -0.51,
+          "acceleration_z": 2.24,
+          "volatility_percentile": 0.71,
+          "residual_return": -0.4
+        },
+        "availability": {
+          "return_short": "available",
+          "return_medium": "available",
+          "return_long": "available",
+          "velocity_z": "available",
+          "acceleration_z": "available",
+          "volatility_percentile": "available",
+          "residual_return": "available"
+        },
+        "observed_at": {
+          "return_short": null,
+          "return_medium": null,
+          "return_long": null,
+          "velocity_z": null,
+          "acceleration_z": null,
+          "volatility_percentile": null,
+          "residual_return": null
+        },
+        "calculated_through": {
+          "return_short": "2026-10-06",
+          "return_medium": "2026-10-06",
+          "return_long": "2026-10-06",
+          "velocity_z": "2026-10-06",
+          "acceleration_z": "2026-10-06",
+          "volatility_percentile": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "index_relation": {
+          "return_short": "at_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
+          "acceleration_z": "at_table_date",
+          "volatility_percentile": "at_table_date",
+          "residual_return": "at_table_date"
+        },
+        "normalized_input_dates": {
+          "close": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "clock_issues": [],
+        "residual_adjustment": {
+          "status": "adjusted",
+          "window_observations": 5,
+          "window_start": "2026-09-30",
+          "window_end": "2026-10-06",
+          "counts": {
+            "adjusted": 5,
+            "raw_fallback": 0,
+            "zero_filled": 0,
+            "unavailable": 0
+          },
+          "carried_driver_observations": 2
+        },
+        "movement_comparison": {
+          "status": "calculation_dates_match",
+          "reason": null,
+          "return_metric": "return_medium",
+          "window_observations": 5,
+          "calculated_through": "2026-10-06",
+          "return_state": "fell",
+          "momentum_state": "below_baseline",
+          "value_basis": "displayed_producer_values"
+        }
+      },
+      {
+        "ccy": "BRL",
+        "values": {
+          "return_short": 4.49,
+          "return_medium": 4.48,
+          "return_long": 2.56,
+          "velocity_z": 2.4,
+          "acceleration_z": 3.89,
+          "volatility_percentile": 0.89,
+          "residual_return": 4.53
+        },
+        "availability": {
+          "return_short": "available",
+          "return_medium": "available",
+          "return_long": "available",
+          "velocity_z": "available",
+          "acceleration_z": "available",
+          "volatility_percentile": "available",
+          "residual_return": "available"
+        },
+        "observed_at": {
+          "return_short": null,
+          "return_medium": null,
+          "return_long": null,
+          "velocity_z": null,
+          "acceleration_z": null,
+          "volatility_percentile": null,
+          "residual_return": null
+        },
+        "calculated_through": {
+          "return_short": "2026-10-06",
+          "return_medium": "2026-10-06",
+          "return_long": "2026-10-06",
+          "velocity_z": "2026-10-06",
+          "acceleration_z": "2026-10-06",
+          "volatility_percentile": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "index_relation": {
+          "return_short": "at_table_date",
+          "return_medium": "at_table_date",
+          "return_long": "at_table_date",
+          "velocity_z": "at_table_date",
+          "acceleration_z": "at_table_date",
+          "volatility_percentile": "at_table_date",
+          "residual_return": "at_table_date"
+        },
+        "normalized_input_dates": {
+          "close": "2026-10-06",
+          "residual_return": "2026-10-06"
+        },
+        "clock_issues": [],
+        "residual_adjustment": {
+          "status": "adjusted",
+          "window_observations": 5,
+          "window_start": "2026-09-30",
+          "window_end": "2026-10-06",
+          "counts": {
+            "adjusted": 5,
+            "raw_fallback": 0,
+            "zero_filled": 0,
+            "unavailable": 0
+          },
+          "carried_driver_observations": 2
+        },
+        "movement_comparison": {
+          "status": "calculation_dates_match",
+          "reason": null,
+          "return_metric": "return_medium",
+          "window_observations": 5,
+          "calculated_through": "2026-10-06",
+          "return_state": "rose",
+          "momentum_state": "above_baseline",
+          "value_basis": "displayed_producer_values"
+        }
+      }
+    ],
+    "issues": [],
+    "reference_rows_excluded": [
+      "USD"
     ]
   },
   "regime_radar": {

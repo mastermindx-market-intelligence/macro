@@ -1,19 +1,19 @@
 {
   "as_of": "2026-10-05",
-  "health_score": 77,
+  "health_score": 78,
   "health_label": "healthy",
   "cycle_phase": "recession",
-  "recession_risk": 0.17714285714285716,
-  "drawdown_risk": 13.19796954314721,
+  "recession_risk": 0.27555555555555555,
+  "drawdown_risk": 12.828795569912321,
   "pillars": {
     "curve": {
       "spread_10y3m": 1.09,
       "spread_2s10s": 0.47,
-      "curve_tp_adjusted": 0.47,
+      "curve_tp_adjusted": null,
       "ntfs": 1.1025000000000036,
       "ny_fed_recession_prob": 0.10458318531214933,
       "inverted": false,
-      "tp_adj_inverted": false,
+      "tp_adj_inverted": null,
       "move_taxonomy": "bear_steepener",
       "move_taxonomy_en": "Bear steepener",
       "move_taxonomy_zh": "熊市陡峭",
@@ -65,8 +65,8 @@
     }
   },
   "stress_legs": {
-    "recession": 0.17714285714285716,
-    "drawdown": 13.19796954314721,
+    "recession": 0.27555555555555555,
+    "drawdown": 12.828795569912321,
     "credit": 21.5,
     "rates_vol": 59.39571285247803,
     "plumbing": 11.999999999999993
@@ -79,8 +79,8 @@
       "zh": "欧元区外围利差自平静水平扩大 — 留意分化风险。"
     }
   ],
-  "verdict_en": "Bond health healthy (77/100), recession. Curve positively sloped. Credit normal. Rates-vol normal.",
-  "verdict_zh": "债券健康度健康（77/100），衰退。曲线正向倾斜。信用正常。利率波动正常。",
+  "verdict_en": "Bond health healthy (78/100), recession. Curve positively sloped. Credit normal. Rates-vol normal.",
+  "verdict_zh": "债券健康度健康（78/100），衰退。曲线正向倾斜。信用正常。利率波动正常。",
   "drivers_for": {
     "forex": {
       "note_en": "Rate differentials drive FX — the US 2y policy-path and the real-10y are the carry and value anchors; a US-favorable widening vs foreign rates is a USD tailwind.",
@@ -98,7 +98,7 @@
       "risk_off_gate": false
     },
     "equities": {
-      "note_en": "Discount-rate channel (real-10y, term premium) compresses long-duration multiples; credit (HY OAS) is the canary that leads equity drawdowns; the SPEED of yield moves (MOVE) matters more than the level.",
+      "note_en": "Discount-rate channel (real-10y, term premium) compresses long-duration multiples; HY OAS widening is associated with equity drawdowns in stress episodes; this snapshot does not establish a lead; the SPEED of yield moves (MOVE) matters more than the level.",
       "hy_oas": 3.1,
       "credit_canary": true,
       "stock_bond_corr": 0.5087186451773001
@@ -106,7 +106,7 @@
   },
   "fed_path": {
     "asof": "2026-10-05",
-    "built": "2026-10-06T07:55:19.012661+00:00",
+    "built": "2026-10-06T13:14:16.000509+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -157,7 +157,7 @@
       "lean_zh": "市场与美联储基本一致"
     },
     "ntfs": 1.1,
-    "curve_tp_adj": 0.47,
+    "curve_tp_adj": 1.47,
     "rate_exp_proxy": 0.95,
     "headline_en": "Market prices ~3 hikes over the next 12m (funds 3.88% → 4.71%)",
     "headline_zh": "市场为未来12个月定价约加息3次（基金利率 3.88% → 4.71%）",
@@ -478,8 +478,8 @@
         "impulse_en": "+40bp/3m",
         "impulse_zh": "+40基点/3月",
         "verdict": "headwind",
-        "story_en": "Credit (HY OAS) is the canary that leads equity drawdowns; widening = headwind.",
-        "story_zh": "信用利差是领先股票回撤的预警；走阔=逆风。"
+        "story_en": "HY OAS and S&P returns co-move inversely in this contemporaneous panel; widening is an associated headwind, not a proven lead.",
+        "story_zh": "本同步面板中，高收益利差与标普回报呈反向共变；利差走阔对应逆风，但并非已证明的领先关系。"
       },
       {
         "key": "ndx",
@@ -516,8 +516,8 @@
         "impulse_en": "+40bp/3m",
         "impulse_zh": "+40基点/3月",
         "verdict": "tailwind",
-        "story_en": "Banks earn the curve — a steeper slope lifts net interest margins.",
-        "story_zh": "银行赚取曲线利差——曲线越陡，净息差越高。"
+        "story_en": "Curve slope and XLF returns can co-move, but this panel does not observe bank net interest margins or prove a causal margin channel.",
+        "story_zh": "曲线斜率与XLF回报可能同步共变，但本面板不观测银行净息差，也不证明因果性的息差通道。"
       },
       {
         "key": "reit",
@@ -672,8 +672,9 @@
         "story_zh": "长久期流动性资产——实际利率下行+利率波动平静为顺风。"
       }
     ],
-    "verdict_en": "Real-10y 2.92% (+61bp/3m), curve 1.09pp, HY OAS 3.1%. 4 markets with a bond tailwind, 7 with a headwind right now.",
-    "verdict_zh": "10年实际利率 2.92%（+61基点/3月），曲线 1.09pp，高收益利差 3.1%。当前 4 个市场受债券顺风，7 个受逆风。"
+    "interpretation_scope": "contemporaneous_association_not_lead_or_causal_effect",
+    "verdict_en": "Real-10y 2.92% (+61bp/3m), curve 1.09pp, HY OAS 3.1%. 4 markets with a bond-associated tailwind, 7 with a bond-associated headwind right now.",
+    "verdict_zh": "10年实际利率 2.92%（+61基点/3月），曲线 1.09pp，高收益利差 3.1%。当前 4 个市场呈与债券指标相关的顺风，7 个呈相关逆风。"
   },
   "intl": {
     "em_oas_ladder": {
@@ -720,7 +721,7 @@
       "synchronized": false
     },
     "swap_lines_bn": 0.2,
-    "em_stress_state": "calm",
+    "em_stress_state": "strained",
     "display_only": true
   },
   "corporate_credit": {
