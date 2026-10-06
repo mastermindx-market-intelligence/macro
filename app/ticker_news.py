@@ -378,7 +378,7 @@ def ticker_news_changes(
 @router.get("/api/ticker-news/{ticker}")
 def ticker_news_snapshot(
     ticker: str,
-    limit: int = Query(default=50, ge=1, le=200),
+    limit: int = Query(default=20, ge=1, le=200),
     cursor: int | None = Query(default=None, ge=1),
     user: dict = Depends(require_site_full_user),
 ) -> JSONResponse:

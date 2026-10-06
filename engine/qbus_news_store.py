@@ -214,6 +214,21 @@ CREATE TABLE IF NOT EXISTS news_states (
     FOREIGN KEY(current_revision_id) REFERENCES news_revisions(revision_id)
 );
 
+CREATE TABLE IF NOT EXISTS news_state_projection (
+    source TEXT NOT NULL,
+    source_item_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    url TEXT NOT NULL,
+    teaser TEXT NOT NULL,
+    published_at TEXT,
+    updated_at TEXT,
+    received_at TEXT NOT NULL,
+    PRIMARY KEY(source, source_item_id),
+    FOREIGN KEY(source, source_item_id)
+        REFERENCES news_states(source, source_item_id)
+        ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS news_security_index (
     security_id TEXT NOT NULL,
     source TEXT NOT NULL,
@@ -487,6 +502,46 @@ def _validate_routed(item: RoutedRevision) -> RoutedRevision:
     )
 
 
+def _projection_dt(value: object, *, required: bool = False) -> datetime | None:
+    if value is None or value == "":
+        if required:
+            raise StoreSchemaError("qbus_news_store:projection_clock_missing")
+        return None
+    try:
+        return datetime.fromisoformat(str(value))
+    except ValueError:
+        raise StoreSchemaError("qbus_news_store:projection_clock_invalid") from None
+
+
+def _projection_story(
+    *,
+    sequence: int,
+    row: sqlite3.Row,
+    story_id: str,
+    source_count: int,
+    item_count: int,
+    universe_revision: str,
+    rights: NewsReadRights,
+) -> StoryRow:
+    received_at = _projection_dt(row["received_at"], required=True)
+    assert received_at is not None
+    return StoryRow(
+        sequence=sequence,
+        source=str(row["source"]),
+        source_item_id=str(row["source_item_id"]),
+        story_id=story_id,
+        source_count=source_count,
+        item_count=item_count,
+        title=str(row["title"]) if rights.allow_title else "",
+        url=str(row["url"]) if rights.allow_url else "",
+        teaser=str(row["teaser"]) if rights.allow_teaser else "",
+        published_at=_projection_dt(row["published_at"]),
+        updated_at=_projection_dt(row["updated_at"]),
+        received_at=received_at,
+        universe_revision=universe_revision,
+    )
+
+
 def _redact_story(
     *,
     sequence: int,
@@ -613,6 +668,31 @@ class NewsStore:
             )
         elif row["value"] != SCHEMA:
             raise StoreSchemaError("qbus_news_store:schema_mismatch")
+        self._backfill_read_projection()
+
+    def _backfill_read_projection(self) -> None:
+        rows = self._conn.execute(
+            """
+            SELECT s.state_json
+            FROM news_states s
+            LEFT JOIN news_state_projection p
+              ON p.source=s.source AND p.source_item_id=s.source_item_id
+            WHERE p.source IS NULL
+            ORDER BY s.source, s.source_item_id
+            """
+        ).fetchall()
+        if not rows:
+            return
+        self._conn.execute("BEGIN IMMEDIATE")
+        try:
+            for row in rows:
+                self._write_projection_state(
+                    _state_from_json(str(row["state_json"]))
+                )
+            self._conn.execute("COMMIT")
+        except Exception:
+            self._conn.execute("ROLLBACK")
+            raise
 
     def current_cursor(self) -> str | None:
         row = self._conn.execute(
@@ -765,6 +845,33 @@ class NewsStore:
         )
         return inserted
 
+    def _write_projection_state(self, state: NewsState) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO news_state_projection(
+                source, source_item_id, title, url, teaser,
+                published_at, updated_at, received_at
+            ) VALUES(?,?,?,?,?,?,?,?)
+            ON CONFLICT(source,source_item_id) DO UPDATE SET
+                title=excluded.title,
+                url=excluded.url,
+                teaser=excluded.teaser,
+                published_at=excluded.published_at,
+                updated_at=excluded.updated_at,
+                received_at=excluded.received_at
+            """,
+            (
+                state.source,
+                state.source_item_id,
+                state.title,
+                state.url,
+                state.teaser,
+                _iso(state.published_at),
+                _iso(state.updated_at),
+                state.last_received_at.isoformat(),
+            ),
+        )
+
     def _write_state(
         self,
         state: NewsState,
@@ -795,6 +902,7 @@ class NewsStore:
                 universe_revision,
             ),
         )
+        self._write_projection_state(state)
 
     def _replace_security_index(
         self,
@@ -1279,42 +1387,62 @@ class NewsStore:
         has_more = len(clusters) > limit
         selected = clusters[:limit]
         out: list[StoryRow] = []
-        for cluster in selected:
-            cluster_id = str(cluster["cluster_id"])
-            member_params: list[object] = [
-                cluster_id,
-                security_id,
-                *sorted(rights.allowed_sources),
-            ]
-            members = self._conn.execute(
+
+        # Fetch every selected cluster's active members in one query.  The old
+        # implementation issued one SELECT per story (N+1), which made 100-reader
+        # bursts spend ~1s in SQLite even though the index lookup itself was fast.
+        # Keep cluster selection/order above unchanged; this query only materializes
+        # the already-selected members.
+        members_by_cluster: dict[str, list[sqlite3.Row]] = {}
+        if selected:
+            selected_ids = [str(cluster["cluster_id"]) for cluster in selected]
+            cluster_placeholders = ",".join("?" for _ in selected_ids)
+            member_rows = self._conn.execute(
                 f"""
-                SELECT s.state_json, s.last_sequence, s.universe_revision
+                SELECT m.cluster_id, s.last_sequence, s.universe_revision,
+                       s.source, s.source_item_id,
+                       p.title, p.url, p.teaser,
+                       p.published_at, p.updated_at, p.received_at
                 FROM news_cluster_members m
                 JOIN news_states s
                   ON s.source=m.source AND s.source_item_id=m.source_item_id
+                JOIN news_state_projection p
+                  ON p.source=s.source AND p.source_item_id=s.source_item_id
                 JOIN news_security_index i
                   ON i.source=s.source AND i.source_item_id=s.source_item_id
-                WHERE m.cluster_id=?
-                  AND i.security_id=?
+                WHERE i.security_id=?
                   AND s.status='active'
                   AND s.source IN ({placeholders})
-                ORDER BY s.last_sequence DESC, s.source, s.source_item_id
+                  AND m.cluster_id IN ({cluster_placeholders})
+                ORDER BY m.cluster_id, s.last_sequence DESC,
+                         s.source, s.source_item_id
                 """,
-                tuple(member_params),
+                (
+                    security_id,
+                    *sorted(rights.allowed_sources),
+                    *selected_ids,
+                ),
             ).fetchall()
+            for row in member_rows:
+                members_by_cluster.setdefault(
+                    str(row["cluster_id"]), []
+                ).append(row)
+
+        for cluster in selected:
+            cluster_id = str(cluster["cluster_id"])
+            members = members_by_cluster.get(cluster_id, [])
             if not members:
                 continue
             representative = members[0]
-            states = [
-                _state_from_json(row["state_json"]) for row in members
-            ]
             out.append(
-                _redact_story(
+                _projection_story(
                     sequence=int(cluster["cluster_sequence"]),
-                    state=states[0],
+                    row=representative,
                     story_id=cluster_id,
-                    source_count=len({state.source for state in states}),
-                    item_count=len(states),
+                    source_count=len(
+                        {str(member["source"]) for member in members}
+                    ),
+                    item_count=len(members),
                     universe_revision=str(
                         representative["universe_revision"]
                     ),
@@ -1345,10 +1473,14 @@ class NewsStore:
         placeholders = ",".join("?" for _ in rights.allowed_sources)
         rows = self._conn.execute(
             f"""
-            SELECT s.state_json, s.last_sequence, s.universe_revision
+            SELECT s.source, s.source_item_id, s.last_sequence,
+                   s.universe_revision, p.title, p.url, p.teaser,
+                   p.published_at, p.updated_at, p.received_at
             FROM news_cluster_members m
             JOIN news_states s
               ON s.source=m.source AND s.source_item_id=m.source_item_id
+            JOIN news_state_projection p
+              ON p.source=s.source AND p.source_item_id=s.source_item_id
             WHERE m.cluster_id=?
               AND s.status='active'
               AND s.source IN ({placeholders})
@@ -1358,20 +1490,19 @@ class NewsStore:
         ).fetchall()
         if not rows:
             return None
-        states = [_state_from_json(row["state_json"]) for row in rows]
-        source_count = len({state.source for state in states})
-        item_count = len(states)
+        source_count = len({str(row["source"]) for row in rows})
+        item_count = len(rows)
         members = tuple(
-            _redact_story(
+            _projection_story(
                 sequence=int(row["last_sequence"] or 0),
-                state=state,
+                row=row,
                 story_id=story_id,
                 source_count=source_count,
                 item_count=item_count,
                 universe_revision=str(row["universe_revision"]),
                 rights=rights,
             )
-            for row, state in zip(rows, states)
+            for row in rows
         )
         return StoryDetail(
             schema=SCHEMA,
