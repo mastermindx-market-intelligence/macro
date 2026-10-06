@@ -79,6 +79,9 @@ def _market(*, status="RAW_AND_RESIDUAL_CONTEXT"):
             "state": "AVAILABLE_UNQUALIFIED" if raw_available else "UNAVAILABLE",
             "simple_return": 0.10 if raw_available else None,
             "log_return": 0.0953101798 if raw_available else None,
+            # Incumbent MKT-1 available raw always carries the endpoint closes.
+            "start_close": 100.0 if raw_available else None,
+            "end_close": 110.0 if raw_available else None,
         },
         "residual_response": {
             "state": "AVAILABLE_UNQUALIFIED" if residual_available else "UNAVAILABLE",
@@ -265,3 +268,89 @@ def test_market_projection_refuses_nonfinite_or_boolean_numeric_values():
         encoded = __import__("json").dumps(out, allow_nan=False, sort_keys=True)
         assert "NaN" not in encoded
         assert "Infinity" not in encoded
+
+
+def _assert_market_state_value_refused(market: dict) -> None:
+    out = compose_descriptive_coupling(_expectation(), market)
+
+    assert out["state"] == "REFUSED"
+    assert out["refusals"] == ["MARKET_STATE_VALUE_INCONSISTENT"]
+    assert out["coupling"]["status"] == "REFUSED"
+    assert out["financial_influence"] is False
+    assert out["k3e_admissible"] is False
+    assert out["market"]["raw_simple_return"] is None
+    assert out["market"]["raw_log_return"] is None
+    assert out["market"]["residual_log_return"] is None
+    assert out["market"]["residual_simple_equivalent"] is None
+    assert out["market"]["qualification_missing"] == []
+    assert out["expectation"]["normalized_value"] is None
+    assert out["expectation"]["raw_numeric_values_consumed"] is False
+
+
+def test_raw_unavailable_with_values_refuses_market_state_value_inconsistent():
+    market = _market(status="RAW_ONLY")
+    market["raw_response"]["state"] = "UNAVAILABLE"
+    market["raw_response"]["start_close"] = None
+    market["raw_response"]["end_close"] = None
+    # Overall status would be lawful if the raw returns were null.
+    market["status"] = "UNAVAILABLE"
+
+    _assert_market_state_value_refused(market)
+
+
+def test_residual_unavailable_with_values_refuses_market_state_value_inconsistent():
+    market = _market(status="RESIDUAL_ONLY")
+    market["residual_response"]["state"] = "UNAVAILABLE"
+    market["status"] = "UNAVAILABLE"
+
+    _assert_market_state_value_refused(market)
+
+
+def test_contradictory_overall_status_refuses_market_state_value_inconsistent():
+    market = _market()
+    market["status"] = "RESIDUAL_ONLY"
+
+    _assert_market_state_value_refused(market)
+
+
+def test_malformed_missing_gate_string_is_not_a_character_list():
+    for missing in (
+        "canonical_security_identity_receipt",
+        ["canonical_security_identity_receipt", None],
+        ("canonical_security_identity_receipt",),
+    ):
+        market = _market()
+        market["qualification"]["missing"] = missing
+        _assert_market_state_value_refused(market)
+
+
+def test_available_component_missing_promised_field_refuses():
+    for field in ("simple_return", "log_return", "start_close", "end_close"):
+        market = _market()
+        market["raw_response"][field] = None
+        _assert_market_state_value_refused(market)
+
+    market = _market()
+    market["residual_response"]["simple_equivalent"] = None
+    _assert_market_state_value_refused(market)
+
+
+def test_raw_unavailable_with_values_on_close_refuses():
+    market = _market(status="UNAVAILABLE")
+    market["raw_response"]["start_close"] = 100.0
+
+    _assert_market_state_value_refused(market)
+
+
+def test_contradictory_market_is_not_degraded_to_price_only():
+    market = _market(status="RAW_ONLY")
+    market["raw_response"]["state"] = "UNAVAILABLE"
+    market["status"] = "UNAVAILABLE"
+
+    out = compose_descriptive_coupling(None, market)
+
+    assert out["state"] == "REFUSED"
+    assert out["refusals"] == ["MARKET_STATE_VALUE_INCONSISTENT"]
+    assert out["coupling"]["status"] == "REFUSED"
+    assert out["market"]["state"] == "UNAVAILABLE"
+    assert out["market"]["raw_simple_return"] is None

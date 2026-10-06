@@ -143,6 +143,52 @@ def _expectation_projection(result: object) -> tuple[dict | None, list[str]]:
     }, []
 
 
+def _values_match_state(component: dict, fields: tuple[str, ...]) -> bool:
+    """Unavailable numerics are null; an available component carries each promised field."""
+    state = component.get("state")
+    if state == "UNAVAILABLE":
+        return all(component.get(name) is None for name in fields)
+    if state == "AVAILABLE_UNQUALIFIED":
+        return all(component.get(name) is not None for name in fields)
+    return False
+
+
+def _market_envelope_is_consistent(
+    result: dict,
+    raw: dict,
+    residual: dict,
+    qualification: dict,
+) -> bool:
+    """Mirror PR #8422 MKT-1 state/field promises. Do not import that module."""
+    raw_fields = ("simple_return", "log_return", "start_close", "end_close")
+    residual_fields = ("log_residual", "simple_equivalent")
+    if not _values_match_state(raw, raw_fields):
+        return False
+    if not _values_match_state(residual, residual_fields):
+        return False
+
+    raw_state = raw.get("state")
+    residual_state = residual.get("state")
+    raw_available = raw_state == "AVAILABLE_UNQUALIFIED"
+    residual_available = residual_state == "AVAILABLE_UNQUALIFIED"
+    if raw_available and residual_available:
+        expected_status = "RAW_AND_RESIDUAL_CONTEXT"
+    elif raw_available and residual_state == "UNAVAILABLE":
+        expected_status = "RAW_ONLY"
+    elif residual_available and raw_state == "UNAVAILABLE":
+        expected_status = "RESIDUAL_ONLY"
+    elif raw_state == "UNAVAILABLE" and residual_state == "UNAVAILABLE":
+        expected_status = "UNAVAILABLE"
+    else:
+        return False
+    if result.get("status") != expected_status:
+        return False
+
+    # A string must stay a string. list("gate") would emit a character list.
+    missing = qualification.get("missing", None)
+    return isinstance(missing, list) and all(isinstance(item, str) for item in missing)
+
+
 def _market_projection(result: object) -> tuple[dict | None, list[str]]:
     if result is None:
         return None, []
@@ -168,12 +214,10 @@ def _market_projection(result: object) -> tuple[dict | None, list[str]]:
         # amendment and semantic review.
         return None, ["MARKET_QUALIFICATION_UNSUPPORTED"]
 
-    raw = result.get("raw_response") if isinstance(result.get("raw_response"), dict) else {}
-    residual = (
-        result.get("residual_response")
-        if isinstance(result.get("residual_response"), dict)
-        else {}
-    )
+    raw = result.get("raw_response")
+    residual = result.get("residual_response")
+    if not isinstance(raw, dict) or not isinstance(residual, dict):
+        return None, ["MARKET_STATE_VALUE_INCONSISTENT"]
     window = result.get("window") if isinstance(result.get("window"), dict) else {}
 
     import math
@@ -188,6 +232,8 @@ def _market_projection(result: object) -> tuple[dict | None, list[str]]:
     copied_numbers = (
         raw.get("simple_return"),
         raw.get("log_return"),
+        raw.get("start_close"),
+        raw.get("end_close"),
         residual.get("log_residual"),
         residual.get("simple_equivalent"),
         window.get("owner_observation_steps"),
@@ -195,22 +241,24 @@ def _market_projection(result: object) -> tuple[dict | None, list[str]]:
     )
     if not all(valid_optional_number(value) for value in copied_numbers):
         return None, ["MARKET_NUMERIC_INVALID"]
+    if not _market_envelope_is_consistent(result, raw, residual, qualification):
+        return None, ["MARKET_STATE_VALUE_INCONSISTENT"]
 
     return {
-        "state": result.get("status") or "UNAVAILABLE",
+        "state": result.get("status"),
         "schema": MARKET_SCHEMA,
         "ticker": result.get("ticker"),
         "response_model": result.get("response_model"),
-        "raw_state": raw.get("state") or "UNAVAILABLE",
+        "raw_state": raw.get("state"),
         "raw_simple_return": raw.get("simple_return"),
         "raw_log_return": raw.get("log_return"),
-        "residual_state": residual.get("state") or "UNAVAILABLE",
+        "residual_state": residual.get("state"),
         "residual_log_return": residual.get("log_residual"),
         "residual_simple_equivalent": residual.get("simple_equivalent"),
         "owner_observation_steps": window.get("owner_observation_steps"),
         "session_steps": window.get("session_steps"),
         "qualification_state": qualification.get("state"),
-        "qualification_missing": list(qualification.get("missing") or []),
+        "qualification_missing": list(qualification["missing"]),
     }, []
 
 
