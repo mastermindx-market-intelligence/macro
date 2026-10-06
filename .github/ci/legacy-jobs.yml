@@ -1039,6 +1039,13 @@ jobs:
       # contract compilers adjacent.
       - name: K3-E Opportunity Evidence Vector contract and hostile-fixture kills
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py -q
+      # K3E A9 descriptive coupling (engine/k3e_coupling.py, PR #8461) is a pure
+      # stdlib composer over the EXP-1 declared-capture inspection and the MKT-1
+      # market-response export: no store, no score, financial_influence false,
+      # k3e_admissible false. Rides this contract job beside K3-E for the same
+      # reason K3-E does — it imports no owner and materializes nothing.
+      - name: K3E A9 descriptive coupling composer contract
+        run: python -m pytest tests/test_k3e_coupling.py -q
       # B-A-F10-4 estimator implication output contract (contracts/estimator_
       # implication.v1.schema.json, engine/estimator_implication.py). Rides this
       # same contract job for the same reason K2-B/K3-E do: a pure read-only
