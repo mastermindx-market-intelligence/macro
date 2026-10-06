@@ -1163,6 +1163,25 @@ def test_capture_epoch2_rejects_mutated_sealed_admission_before_us_transport():
     assert calls == []
 
 
+def test_capture_epoch2_rejects_clock_downgrade_before_us_transport():
+    admission = _capture_admission("2026-10-06T13:45:00Z")
+    sealed = capture.seal_epoch2_admission(admission, _epoch2_source_day())
+    # The epoch decision must not trust mutable clocks before authenticating the
+    # already-sealed receipt. Moving both clocks backward used to reach transport
+    # before a later digest check rejected the receipt.
+    sealed["available_at"] = "2026-10-05T13:45:00Z"
+    sealed["observed_at"] = "2026-10-05T13:46:00Z"
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="sealed admission digest mismatch"):
+        capture.measure_us_response(sealed, transport=transport)
+    assert calls == []
+
+
 def test_capture_epoch2_rejects_mutated_control_selection_before_control_transport():
     sealed, _, controls, *_ = _epoch2_integrity_chain()
     tampered = copy.deepcopy(controls)

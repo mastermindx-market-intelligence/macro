@@ -475,6 +475,21 @@ def seal_epoch2_admission(
 
 def _validate_measurement_admission(admission: Mapping[str, Any]) -> None:
     """Fail before transport when source-admission integrity is not measurement-safe."""
+    # Verify any already-sealed Epoch-2-shaped admission *before* trusting clocks
+    # that decide whether Epoch-2 rules apply. Otherwise mutating available_at +
+    # observed_at backward could downgrade a sealed receipt to the legacy path,
+    # allowing vendor transport before the later digest check rejects it.
+    integrity_markers = (
+        "sha256",
+        "source_epoch",
+        "source_admission_integrity",
+        "source_day_census_receipt",
+        "parent_cluster_id",
+    )
+    preverified_seal = any(key in admission for key in integrity_markers)
+    if preverified_seal:
+        _verify_receipt(admission, "sealed admission")
+
     event_id = str(admission.get("event_id") or "")
     if event_id in EPOCH1_QUARANTINED_EVENT_IDS:
         raise CaptureContractError("Epoch-1 event is quarantined from further measurement/HSI")
@@ -526,7 +541,8 @@ def _validate_measurement_admission(admission: Mapping[str, Any]) -> None:
         raise CaptureContractError("Epoch-2 admitted_event_ids receipt is malformed")
     if event_id not in admitted_ids:
         raise CaptureContractError("Epoch-2 event is absent from its source-day receipt")
-    _verify_receipt(admission, "sealed admission")
+    if not preverified_seal:
+        _verify_receipt(admission, "sealed admission")
 
 
 def admit_source_event(
