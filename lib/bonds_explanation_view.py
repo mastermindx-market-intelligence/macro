@@ -323,6 +323,7 @@ def _policy_real_rate(
 def _growth_cuts(
     bond: Mapping[str, Any],
     transmission: Mapping[str, Any],
+    stale_inputs: set[str] | None = None,
 ) -> dict[str, Any]:
     as_of_t = _date(transmission.get("asof"))
     as_of_b = _date(bond.get("as_of"))
@@ -336,7 +337,15 @@ def _growth_cuts(
     risk = recession.get("risk")
     n_flags = _number(recession.get("n_flags"))
     ntfs = _number(recession.get("ntfs"))
-    if not isinstance(risk, str) or n_flags is None or ntfs is None:
+    if stale_inputs and "recession_risk" in stale_inputs:
+        items.append(_missing(
+            "recession",
+            "Recession-risk evidence is stale under the upstream regime contract and is withheld from directional interpretation.",
+            "上游状态合约将衰退风险证据标记为陈旧，因此不用于方向性解释。",
+            source="yield_curve.recession",
+            source_as_of=as_of_t,
+        ))
+    elif not isinstance(risk, str) or n_flags is None or ntfs is None:
         items.append(_missing("recession", "Recession-state evidence is incomplete.", "衰退状态证据不完整。", source="yield_curve.recession", source_as_of=as_of_t))
     else:
         risk_l = risk.lower()
@@ -674,9 +683,15 @@ def build_bonds_explanation_view(
     trans = _mapping(transmission)
     reg = _mapping(regime)
     status = _source_status(bond, trans, reg)
+    conditions = _mapping(reg.get("conditions"))
+    raw_stale_inputs = conditions.get("stale_inputs")
+    stale_inputs = {
+        str(key) for key in raw_stale_inputs
+        if isinstance(raw_stale_inputs, (list, tuple, set))
+    } if isinstance(raw_stale_inputs, (list, tuple, set)) else set()
     mechanisms = [
         _policy_real_rate(bond, trans),
-        _growth_cuts(bond, trans),
+        _growth_cuts(bond, trans, stale_inputs),
         _inflation_reflation(trans),
         _term_premium_supply(bond, trans),
         _funding_liquidity(bond, reg),
