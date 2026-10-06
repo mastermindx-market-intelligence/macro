@@ -920,6 +920,184 @@ The legacy historical legs used to discover it are not yet suitable as the final
 The next study should freeze the hypothesis before reading future outcomes and accrue episode-level observations through the existing Conditional Fusion evaluation owner.
 
 
+---
+
+# 16. NVDA had an earlier “important but not enterable” state
+
+The full v3 board ledger contains an earlier NVDA sequence that is directly relevant to the proposed Emergence / Research-Attention head.
+
+NVDA appeared on the **watch** lane on:
+
+- 2026-09-08;
+- 2026-09-09;
+- 2026-09-10.
+
+Across all three dates:
+
+- lane: `watch`;
+- state: `HOLD`;
+- entry status: `await_confluence`;
+- act level: 1;
+- no T1/T2/T3 cascade tier on the graded row;
+- `news_burst = true`;
+- `smartmoney_add = true`;
+- independent-evidence count = 2.
+
+Its C1 score remained material:
+
+- Sep-08: 58;
+- Sep-09: 62;
+- Sep-10: 51.
+
+This is almost exactly the product state the Chairman requested:
+
+> **“This is an unusually important emerging ignition candidate. Entry is not open yet.”**
+
+## 16.1 This early state was not an immediate five-day alpha rule
+
+The Sep-08 to Sep-10 watch observations did not all immediately outperform:
+
+- Sep-08 H5 excess vs SPY: -3.17%;
+- Sep-09: -0.18%;
+- Sep-10: +0.64%.
+
+At H10 they improved modestly:
+
+- Sep-08: +0.22% excess;
+- Sep-09: +1.36%;
+- Sep-10: +2.22%.
+
+This is important.
+
+The Emergence head should **not** be optimized as another five-day buy predictor.
+
+Its job is:
+
+1. preserve an important unresolved candidate;
+2. explain why it matters;
+3. keep following the evidence;
+4. wait for a separate ignition / Entry Availability transition.
+
+## 16.2 Generic watch-lane convergence is not enough
+
+Across the v3 H5 watch lane:
+
+- two-or-more legacy evidence legs: n=44;
+- only 27.3% positive excess vs SPY;
+- mean excess -1.59%.
+
+Simple refinements such as near-high, C1 score >=50 or nonnegative alpha did not rescue the cohort.
+
+Therefore:
+
+> **Do not turn “watch + multiple evidence legs” into a promotion rule.**
+
+NVDA's earlier watch state is a useful example of **research persistence**, not evidence that every such state predicts near-term returns.
+
+A future Emergence head needs a different objective from the Ignition head: recall of important future opportunities, lead time, and successful later conversion — not H5 return from the first watch stamp.
+
+---
+
+# 17. Sep-25 did not receive a new fundamental catalyst; it received price acceptance
+
+A direct Sep-24 vs frozen Sep-25 comparison shows the “why this name?” evidence was already present before the action switch.
+
+## Sep-24
+
+- SUE z: +1.47;
+- revision z: +2.16;
+- news burst: 6, neutral sentiment;
+- smart-money chip: unchanged `add`;
+- selection-axis z: ~1.121;
+- potential fuel: ~0.077;
+- potential edge: ~1.224;
+- entry-axis z: **-0.32**;
+- cycle blocked: true;
+- potential trigger: **0.075**;
+- potential score: **4 / low**;
+- entry status: `extended`.
+
+## Sep-25
+
+- SUE z: +1.47;
+- revision z: +2.23;
+- news burst: the same 6 neutral items;
+- smart-money chip: unchanged;
+- selection-axis z: ~1.116;
+- potential fuel: ~0.074;
+- potential edge: ~1.223;
+- entry-axis z: **+0.907**;
+- cycle blocked: false;
+- potential trigger: **0.92**;
+- potential score: **51 / constructive**;
+- entry status: `partial`.
+
+Thus almost all the decisive change occurred in **timing / acceptance**, not the rerating substrate.
+
+The best causal description of the Sep-25 recommendation is:
+
+> **an already-supported rerating thesis received a fresh multi-timescale price-acceptance confirmation.**
+
+This is stronger and more precise than saying “news caused Prophet to buy NVDA.”
+
+## 17.1 SUE freshness clock caveat is stronger than previously stated
+
+`sue_fresh_days` must not be interpreted as the true age of an earnings release.
+
+The producer documents that the EDGAR EPS panel lacks the real filing date and uses a synthetic:
+
+> `period_end + 60 days`
+
+as `asof_date`.
+
+Therefore NVDA's `sue_fresh_days = 1` on Sep-25 does **not** prove that earnings arrived one day earlier.
+
+This matters for the rerating ontology:
+
+- SUE magnitude can remain contextual evidence;
+- the current freshness field is not a lawful event-arrival clock for ignition timing;
+- prospective rerating studies need a real filing / known-at timestamp before earnings evidence can count as a timed information-arrival event.
+
+## 17.2 Analyst revisions are more plausible rerating context — but were already strong before T2
+
+The analyst revision leg is built from current revision breadth and 30-day estimate change, cross-sectionally normalized.
+
+NVDA carried:
+
+- revision z ~+2.16 on Sep-24;
+- revision z ~+2.23 on Sep-25.
+
+That is strong rerating context, but it barely changed across the action transition.
+
+So revisions help explain **why NVDA was important**, not what mechanically flipped the Sep-25 recommendation.
+
+---
+
+# 18. Product consequence: persistence has two different meanings
+
+The study now distinguishes:
+
+### Research persistence
+
+Keep an unresolved, high-importance candidate alive across days/weeks even when:
+
+- Entry Availability is closed;
+- H5 return is initially weak;
+- the technical acceptance event has not fired.
+
+NVDA Sep-08→Sep-25 is the golden example.
+
+This is a **candidate-memory / attention priority problem**, not a directional trade signal.
+
+### Leadership persistence
+
+After ignition has occurred, update the probability that relative leadership will survive.
+
+This is the post-ignition survival problem described in §14.
+
+These should not be one model.
+
+
 # Final ruling
 
 NVDA remains a valuable golden case, but its real lesson is more subtle than “Prophet picked a winner.”
