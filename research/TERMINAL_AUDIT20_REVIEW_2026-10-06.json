@@ -1,0 +1,170 @@
+{
+  "schema": "terminal.audit20.review_snapshot.v1",
+  "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+  "mission_complete": false,
+  "all20_original_start_verified": true,
+  "scope": "Knowledge and review evidence only; no dispatch, ownership or live-activity authority",
+  "evidence_root": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92",
+  "missions": [
+    {
+      "mission": "A01",
+      "outcome": "Pine request.security: eliminate silent symbol substitution and future-data leakage",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "INTEGRATED_SCOPED_HISTORY_REPAIR_WITH_BROWSER_WORKER_PROOF",
+      "evidence_summary": "PR835 auto armed; controller refreshed44825db7 onto69df as35be0023, Pine owned source unchanged. Parent89pass/fullTSC0/3 native-worker browser cases; refreshed required checks absent in13:13 receipt; no merge/live claim."
+    },
+    {
+      "mission": "A02",
+      "outcome": "Pine worker containment: bounded compilation, cancellation and disposal",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_SOURCE_BROWSER_ACCEPTED; REQUIRED_CI_RED",
+      "evidence_summary": "Ready auto-merge PR834 exactac5c02; mobile startup identity failure, incumbent597 dependency"
+    },
+    {
+      "mission": "A03",
+      "outcome": "Pine editor saving: preserve edits across concurrent saves, switching and external revisions",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_SOURCE_ACCEPTED; OWNER_CALLER_BINDING",
+      "evidence_summary": "r7Grog cleanuptrue; parent40pass0skip and actual fullsourcepreviewTSC0 after fourexactfixtureimportsrestored. SoleactualShellrenamefunction and microsecond order qualified; no sourcewriter/CI/liveclaim."
+    },
+    {
+      "mission": "A04",
+      "outcome": "Drawing persistence: transactional replacement, conflict detection and unknown-outcome recovery",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "CONTRACT_REPAIR_REQUIRED",
+      "evidence_summary": "Atomic existing-drawings store only; invalid Postgres chr(0), direct RPC validation and migration gate unresolved"
+    },
+    {
+      "mission": "A05",
+      "outcome": "Live Flow transport: prevent fallback polling from rolling back a recovered SSE feed",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_SOURCE_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "12pass; existing686 HOLD; old poll/cache and real-path gates remain"
+    },
+    {
+      "mission": "A06",
+      "outcome": "SSE connection lifecycle: access expiry and bounded slow-client buffering",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_ROUTE_ORACLE_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "33pass after Grog oracle repair; existing668; real private request/feed path remains"
+    },
+    {
+      "mission": "A07",
+      "outcome": "Persistent JSON cache: invalidation must fence in-flight IndexedDB readback",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_CACHE_REPAIR_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "43pass; existing707 HOLD/merge-blocked; real IndexedDB reload gates remain"
+    },
+    {
+      "mission": "A08",
+      "outcome": "A08 — Copilot evidence integrity: unknown freshness, mixed GEX snapshots and truncation",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SOURCE_BOUNDARY_REPAIR_REQUIRED",
+      "evidence_summary": "Draft833; 6 actual boundary failures; actual Brain Macro source differs from deprecated copilot router"
+    },
+    {
+      "mission": "A09",
+      "outcome": "Portfolio monetary integrity: currency-aware cost, value and exposure",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "CONTRACT_REPAIR_READY",
+      "evidence_summary": "Per-claim units/freshness dependencies, actual live schema; C3 r2 packet prepared, no DDL"
+    },
+    {
+      "mission": "A10",
+      "outcome": "Account portability: export the user’s actual research and chart work",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_EXPORT_DEPLOYED_AND_AUTHENTICATED_DOWNLOAD_VERIFIED",
+      "evidence_summary": "PR836 merged69dfda2e and git-gated VPS deploy/healthy public marker69df; authenticated JSON+CSV completed. Native JSON schema/146watchlist rows/13positions/2scripts/2layouts read; filesystem byte hash unavailable. Whole declared archive scope remains partial."
+    },
+    {
+      "mission": "A11",
+      "outcome": "Chart Bar Replay: one truthful historical instant through layout and timeframe changes",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_MODULE_REPAIR_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "68pass; existing643 merge-blocked; actual UI close-availability integration remains"
+    },
+    {
+      "mission": "A12",
+      "outcome": "Order-block event timing: formation anchors must not become earlier knowledge",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_STAMP_REPAIR_ACCEPTED_OWNER_PATCH",
+      "evidence_summary": "PR631 bb97 owner-addressed stamp repair: parent121/121 across actual detector/resampler/event-to-alert controls; new macro source geometry143/confirmed147 and forming-prefix refusal verified. No owner carrier takeover; chart/sidecar/CI/live outstanding."
+    },
+    {
+      "mission": "A13",
+      "outcome": "Expiry exposure truth: missing Greeks must not become a complete total",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_PROJECTION_ORACLE_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "107pass; existing768 contribution into723 only; runtime aggregation and source/live gates remain"
+    },
+    {
+      "mission": "A14",
+      "outcome": "Volatility investigation: exact expiry, explicit gaps and defensible IV context",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_CURRENT_MODULE_WITNESS_ACCEPTED",
+      "evidence_summary": "29pass sourceunchanged; existing780 changes-requested; panel/runtime/source/live gates remain"
+    },
+    {
+      "mission": "A15",
+      "outcome": "Heatmap economic sizing: propagate genuine capitalization and disclose coverage",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "CURRENT_SOURCE_PRESENTATION_REPAIR_RUNNING",
+      "evidence_summary": "Grok rs_20261006T124257Z_8916 admitted, current69df capsule plus prior reviewed17-caseproposal; preserve current localization/regular quotes; one bounded cached-cap mode copy/fullmissinglist repair."
+    },
+    {
+      "mission": "A16",
+      "outcome": "Options coverage discovery: expose quiet covered roots without fabricating coverage",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_CURRENT_MODULE_WITNESS_ACCEPTED",
+      "evidence_summary": "29pass sourceunchanged; existing686 HOLD; actual quiet-root UI/live gates remain"
+    },
+    {
+      "mission": "A17",
+      "outcome": "Options Plan: finish deterministic multi-leg payoff planning as a real workflow",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_PAYOFF_ORACLE_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "39pass after corrected independent ratio arithmetic; sourceunchanged existing781; UI/live gates remain"
+    },
+    {
+      "mission": "A18",
+      "outcome": "Prophet performance history: replace placeholder with private, interpretable outcomes",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_COMPONENT_SCHEMA_WITNESS_ACCEPTED",
+      "evidence_summary": "20pass exact candidate fixtures restored; existing668; auth/private backend/live remain"
+    },
+    {
+      "mission": "A19",
+      "outcome": "Follow a Prophet opportunity: material changes through the existing Alerts plane",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "OWNER_BINDING_CONTRACT_NOT_ADMITTED",
+      "evidence_summary": "Actual Terminal legacy private planbook has no confirmed current B1 episode join; no follow/notification effects"
+    },
+    {
+      "mission": "A20",
+      "outcome": "Signed webhook delivery: prove real alert-to-recipient integrity and recovery",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_STOPPED_OUTCOME_REPAIR_ACCEPTED_FOR_INCUMBENT_582",
+      "evidence_summary": "C3 Grok r4 STARTtrue/timeout124/cleanuptrue; parent68pass0skip across5files. Existing failed terminal/null clock preserves prior timeout receipt; actual API count verified. Incumbent582/0026/recipient live gates remain."
+    }
+  ]
+}
