@@ -439,6 +439,10 @@ class RelationActionOwnerReader:
         if (not isinstance(evidence_refs, list) or not evidence_refs
                 or not all(isinstance(ref, str) and ref for ref in evidence_refs)):
             return self._not_ratified("evidence_refs")
+        if not isinstance(row.get("prior_relation"), dict):
+            return self._not_ratified("prior_relation")
+        if not isinstance(row.get("source_receipt"), dict):
+            return self._not_ratified("source_receipt")
 
         try:
             created = _relation_clock(row["created_at"])
@@ -477,9 +481,10 @@ class RelationActionOwnerReader:
 def _read_owner_action(reader, row: dict, *, emitted_at: str) -> dict:
     """Consume an authenticated incumbent reader capability, never source assertions.
 
-    No such resolver is wired in the normal builder. Injection is a trusted owner
-    interface, not data granting itself authority; controlled test implementations
-    explicitly stand in for that missing capability and prove no natural acceptance.
+    The normal builder wires the probation owner's own ``RelationActionOwnerReader``
+    (Chairman gate #5, 2026-10-06); a ``None`` reader still refuses. Injection is a
+    trusted owner interface, not data granting itself authority; controlled test
+    implementations stand in for that capability and prove no natural acceptance.
     """
     import jsonschema
 

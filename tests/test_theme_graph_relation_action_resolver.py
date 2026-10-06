@@ -90,23 +90,25 @@ def test_missing_action_refuses_unavailable(tmp_path):
 def test_unratified_action_refuses_unavailable(tmp_path):
     source, path, row = _relation_owner_fixture(tmp_path)
     cases = [
-        ("proposed", {"status": "proposed"}),
-        ("ratifier", {"ratified_by": " "}),
-        ("adjudicated", {"adjudicated_at": None}),
+        ("proposed", {"status": "proposed"}, "status"),
+        ("ratifier", {"ratified_by": " "}, "ratified_by"),
+        ("adjudicated", {"adjudicated_at": None}, "adjudicated_at"),
         ("caps", {"authority_caps": dict(may_rank=False, may_size=False,
-                                         may_gate=True, may_escalate=False)}),
+                                         may_gate=True, may_escalate=False)}, "authority_caps"),
+        ("prior", {"prior_relation": None}, "prior_relation"),
+        ("receipt", {"source_receipt": "crosswalk:2026-08-13"}, "source_receipt"),
     ]
-    for _name, patch in cases:
+    for _name, patch, field in cases:
         _, p, r = _relation_owner_fixture(tmp_path, tag="_" + _name)
         r.update(patch)
-        if patch.get("adjudicated_at") is None:
+        if "adjudicated_at" in patch and patch["adjudicated_at"] is None:
             del r["adjudicated_at"]
         _write_relation_event(p, r)
         reader = probation.RelationActionOwnerReader(p)
         out = reader.read_relation_action(
             event_sha256=r["event_sha256"], knowledge_cutoff="2026-08-14T01:00:00Z")
-        assert out["status"] == "UNAVAILABLE"
-        assert out["reason"].startswith("relation action not ratified by the curator path")
+        assert out["status"] == "UNAVAILABLE", _name
+        assert out["reason"] == "relation action not ratified by the curator path: " + field, _name
 
 
 def test_malformed_or_stale_receipt_refuses(tmp_path):
