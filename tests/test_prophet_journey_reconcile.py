@@ -2233,3 +2233,27 @@ def test_j9_runtime_absent_does_not_hide_plan_book_failure():
         soup, _index_payload(), _standouts_payload(ticker="TEST1"),
         None, "en", "TEST1")
     assert result["status"] == "FAIL", result
+
+
+def test_j8_fallback_route_rejects_non_stock_page_with_matching_fragment():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    card = soup.select_one("#pv-PLAN1")
+    assert card is not None
+    del card["data-ticker"]
+    link = soup.new_tag("a", href="otherstock.html#TEST1")
+    link.string = "TEST1"
+    card.append(link)
+    result, _ = _pjr._check_j8(soup, _index_payload(), "TEST1")
+    assert result["status"] == "FAIL", result
+
+
+def test_j8_fallback_route_accepts_exact_stock_page():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    card = soup.select_one("#pv-PLAN1")
+    assert card is not None
+    del card["data-ticker"]
+    link = soup.new_tag("a", href="stock.html#TEST1")
+    link.string = "TEST1"
+    card.append(link)
+    result, _ = _pjr._check_j8(soup, _index_payload(), "TEST1")
+    assert result["status"] == "PASS", result

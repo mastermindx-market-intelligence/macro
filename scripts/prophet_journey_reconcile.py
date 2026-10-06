@@ -334,12 +334,18 @@ def _hrefs(node: Tag) -> list[str]:
             if isinstance(a, Tag) and a.get("href")]
 
 
-def _stock_href_matches(href: str, ticker: str) -> bool:
-    """Match the exact relative stock route emitted by the candidate template."""
+def _stock_href_ticker(href: str) -> str | None:
+    """Return the ticker only for the exact relative stock route."""
     prefix = "stock.html#"
     if not href.startswith(prefix):
-        return False
-    return unquote(href[len(prefix):]).upper() == ticker.upper()
+        return None
+    ticker = unquote(href[len(prefix):]).strip()
+    return ticker.upper() if ticker else None
+
+
+def _stock_href_matches(href: str, ticker: str) -> bool:
+    """Match the exact relative stock route emitted by the candidate template."""
+    return _stock_href_ticker(href) == ticker.upper()
 
 
 def _data_mkts(node: Tag) -> list[str]:
@@ -1120,9 +1126,11 @@ def _check_j8(soup: BeautifulSoup, index: dict[str, Any],
                              "live_nodes": len(live_cards)})
         card_ticker = str(card.get("data-ticker", "")).upper() if card else ""
         if not card_ticker and card is not None:
-            href = card.select_one('a[href*="stock.html#"]')
-            if href:
-                card_ticker = (href.get("href", "").split("#", 1)[-1]).upper()
+            for href in card.select('a[href]'):
+                fallback_ticker = _stock_href_ticker(str(href.get("href", "")))
+                if fallback_ticker is not None:
+                    card_ticker = fallback_ticker
+                    break
         expected_ticker = str(book.get("asset", "")).upper() if book else ticker.upper()
         if not plan_id or rendered_id != plan_id:
             failures.append({"target": target, "reason": "record_id_mismatch",
