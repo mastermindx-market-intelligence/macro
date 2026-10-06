@@ -991,6 +991,236 @@ def _read_for(stage: str, lean: int, dirs: dict, edge_score: int, gap: int,
             f"温和偏积极（剩余边际约 {pct}%）。")
 
 
+# ── CIE-14: recognition / dependence / contradiction composition ──────────── #
+
+_RECOGNITION_SCHEMA = "china_intel.evidence_recognition.v1"
+_PARTICIPATION_SOURCE_CONTRACT = "china_participation.source_contract.v1"
+
+
+def _recognition_token(value) -> str:
+    """Normalize an explicit owner-provided identity token; blank means unknown."""
+    if value is None:
+        return ""
+    try:
+        text = str(value).strip()
+    except Exception:  # noqa: BLE001
+        return ""
+    return "" if text.lower() in {"", "none", "nan", "nat", "<na>"} else text
+
+
+def _explicit_dependency_groups(evidence: list[dict], field: str) -> list[dict]:
+    """Group only explicit owner-provided dependency IDs.
+
+    Title/date/ticker proximity is never enough to mint syndication, economic-event,
+    or economic-actor identity.
+    """
+    grouped: dict[str, list[tuple[int, dict]]] = {}
+    for idx, row in enumerate(evidence):
+        dep = _recognition_token(row.get(field))
+        if dep:
+            grouped.setdefault(dep, []).append((idx, row))
+
+    out: list[dict] = []
+    for dep in sorted(grouped):
+        members = grouped[dep]
+        sources = sorted({
+            _recognition_token(row.get("source"))
+            for _idx, row in members
+            if _recognition_token(row.get("source"))
+        })
+        out.append({
+            "id": dep,
+            "member_count": len(members),
+            "source_count": len(sources),
+            "sources": sources,
+            "basis": "explicit_owner_id",
+        })
+    return out
+
+
+def _evidence_recognition_block(evidence: list[dict] | None) -> dict:
+    """Compose dependence truth without minting a second event or score authority.
+
+    Exact source+source_id earns source-event collapse. Higher-order dependence
+    (syndication, economic event, economic actor) is recognized only when an
+    existing owner supplies an explicit ID. Missing IDs remain unresolved.
+    """
+    rows = [dict(r) for r in (evidence or []) if isinstance(r, dict)]
+    source_groups: dict[str, dict] = {}
+    missing_source_identity = 0
+
+    for idx, row in enumerate(rows):
+        source = _recognition_token(row.get("source"))
+        source_id = _recognition_token(row.get("source_id"))
+        if not source or not source_id:
+            missing_source_identity += 1
+            continue
+        key = f"{source}:{source_id}"
+        group = source_groups.setdefault(key, {
+            "source": source,
+            "source_id": source_id,
+            "members": [],
+            "semantic_signatures": set(),
+            "addresses": set(),
+        })
+        group["members"].append(idx)
+        group["semantic_signatures"].add((
+            _recognition_token(row.get("kind")),
+            _recognition_token(row.get("title")),
+            _recognition_token(row.get("source_published_at")),
+            # Exact source identity may not silently collapse contradictory
+            # owner semantics. Explicit higher-order linkage IDs are part of
+            # the source-event consistency signature, not inferred joins.
+            _recognition_token(row.get("syndication_id")),
+            _recognition_token(row.get("economic_event_id")),
+            _recognition_token(row.get("economic_actor_id")),
+        ))
+        address = _recognition_token(row.get("source_url"))
+        if address:
+            group["addresses"].add(address)
+
+    source_event_groups: list[dict] = []
+    conflict_keys: list[str] = []
+    for key in sorted(source_groups):
+        group = source_groups[key]
+        conflict = len(group["semantic_signatures"]) > 1
+        if conflict:
+            conflict_keys.append(key)
+        source_event_groups.append({
+            "source_event_key": key,
+            "source": group["source"],
+            "source_id": group["source_id"],
+            "member_count": len(group["members"]),
+            "state": "source_identity_conflict" if conflict else "exact_source_identity",
+            "source_address_state": (
+                "multiple_addresses_observed"
+                if len(group["addresses"]) > 1 else
+                "one_address_observed"
+                if len(group["addresses"]) == 1 else
+                "address_unavailable"
+            ),
+        })
+
+    syndication_groups = _explicit_dependency_groups(rows, "syndication_id")
+    economic_event_groups = _explicit_dependency_groups(rows, "economic_event_id")
+    economic_actor_groups = _explicit_dependency_groups(rows, "economic_actor_id")
+    missing_syndication = sum(
+        1 for row in rows if not _recognition_token(row.get("syndication_id"))
+    )
+    missing_economic_event = sum(
+        1 for row in rows if not _recognition_token(row.get("economic_event_id"))
+    )
+    missing_economic_actor = sum(
+        1 for row in rows if not _recognition_token(row.get("economic_actor_id"))
+    )
+
+    cross_source_economic = any(g["source_count"] > 1 for g in economic_event_groups)
+    cross_source_syndication = any(g["source_count"] > 1 for g in syndication_groups)
+
+    if not rows:
+        state = "no_positive_evidence"
+    elif conflict_keys:
+        state = "source_event_conflict"
+    elif cross_source_economic:
+        state = "cross_source_economic_event_linked"
+    elif cross_source_syndication:
+        state = "cross_source_syndication_linked"
+    elif len(source_event_groups) == 1 and missing_source_identity == 0:
+        state = "single_source_event"
+    elif len(rows) > 1:
+        state = "multiple_observations_dependency_unresolved"
+    else:
+        state = "single_observation_dependency_unresolved"
+
+    unresolved: list[str] = []
+    if missing_source_identity:
+        unresolved.append("source_event_identity_missing")
+    if len(rows) > 1 and missing_economic_event:
+        unresolved.append("economic_event_linkage_unresolved")
+    if len(rows) > 1 and missing_syndication:
+        unresolved.append("syndication_linkage_unresolved")
+    if rows and missing_economic_actor:
+        unresolved.append("economic_actor_linkage_unresolved")
+
+    return {
+        "schema": _RECOGNITION_SCHEMA,
+        "is_context_only": True,
+        "authority": {
+            "ranking": "none",
+            "prophet": "none",
+            "trade": "none",
+            "may_multiply_conviction": False,
+        },
+        "state": state,
+        "dependency_contract": {
+            "source_event": "exact_source_plus_source_id_only",
+            "syndication": "explicit_owner_id_only",
+            "economic_event": "explicit_owner_id_only",
+            "economic_actor": "explicit_owner_id_only",
+        },
+        "source_event_groups": source_event_groups,
+        "syndication_groups": syndication_groups,
+        "economic_event_groups": economic_event_groups,
+        "economic_actor_groups": economic_actor_groups,
+        "source_event_conflicts": conflict_keys,
+        "unresolved_dependencies": sorted(set(unresolved)),
+        # Deliberately absent as a numeric estimate: unresolved dependence cannot
+        # honestly become an independent-evidence count or conviction multiplier.
+        "independent_event_count": None,
+        "conviction_multiplier": None,
+    }
+
+
+def _participation_context_block(raw: dict | None) -> dict:
+    """Bounded CIE-13 context; never reinterpret who_controls as actor identity."""
+    authority = {
+        "ranking": "none",
+        "prophet": "none",
+        "trade": "none",
+        "actor_identity": "none",
+    }
+    if not isinstance(raw, dict):
+        return {
+            "status": "unavailable",
+            "source_ref": "site/chinastatedata/participation.json",
+            "authority": authority,
+            "economic_actor_id": None,
+            "actor_identity_state": "not_inferred_from_participation_regime",
+        }
+
+    contract = raw.get("source_contract")
+    contract = contract if isinstance(contract, dict) else {}
+    contract_schema = _recognition_token(contract.get("schema"))
+    provenance_state = (
+        "accepted_source_contract"
+        if contract_schema == _PARTICIPATION_SOURCE_CONTRACT
+        else "provenance_unavailable"
+    )
+    return {
+        "status": "available" if provenance_state == "accepted_source_contract"
+                  else "available_provenance_unverified",
+        "source_ref": "site/chinastatedata/participation.json",
+        "date": raw.get("date"),
+        "regime": raw.get("regime"),
+        "who_controls": raw.get("who_controls"),
+        "risk": raw.get("risk"),
+        "source_contract_schema": contract_schema or None,
+        "source_legs": sorted((contract.get("legs") or {}).keys())
+                       if isinstance(contract.get("legs"), dict) else [],
+        "actor_semantics": contract.get("actor_semantics"),
+        "clock_semantics": contract.get("clock_semantics"),
+        "authority": authority,
+        "economic_actor_id": None,
+        "actor_identity_state": "not_inferred_from_participation_regime",
+    }
+
+
+def _load_participation_context() -> dict | None:
+    """Read the existing participation publication; no network/store mutation."""
+    raw = _read_json("site/chinastatedata/participation.json")
+    return raw if isinstance(raw, dict) else None
+
+
 # ── Bounded company evidence packet (CIE-04/05/06) ─────────────────────────── #
 
 _COMPANY_EVIDENCE_SCHEMA = "china_intel.company_evidence.v1"
@@ -1001,6 +1231,7 @@ def _company_evidence_block(
     traj: dict | None,
     concern_en: str | None,
     concern_zh: str | None,
+    participation: dict | None = None,
 ) -> dict:
     """Compose owner-native company evidence without creating a new authority.
 
@@ -1022,7 +1253,7 @@ def _company_evidence_block(
         visitor_unknown = visitor_class in (None, "", "not_yet_available", "unresolved")
         if visitor_unknown:
             unknowns.append("visitor_identity_not_available")
-        evidence.append({
+        rec = {
             "kind": "institutional_visit_filing",
             "source": "CNInfo",
             "source_id": row.get("announcement_id"),
@@ -1031,7 +1262,13 @@ def _company_evidence_block(
             "source_published_at": row.get("source_published_at"),
             "system_recorded_at": row.get("system_recorded_at"),
             "visitor_identity_state": "unknown" if visitor_unknown else "resolved",
-        })
+        }
+        # Higher-order identity may be attached by an accepted owner later; this
+        # composer only preserves explicit IDs and never derives them from text/date.
+        for field in ("syndication_id", "economic_event_id", "economic_actor_id"):
+            if _recognition_token(row.get(field)):
+                rec[field] = row.get(field)
+        evidence.append(rec)
 
     state_unknown = {
         "no_coverage": "visit_coverage_not_started",
@@ -1043,6 +1280,13 @@ def _company_evidence_block(
         unknowns.append(state_unknown)
     if visits.get("coverage_exception"):
         unknowns.append("visit_coverage_incomplete")
+
+    recognition = _evidence_recognition_block(evidence)
+    participation_context = _participation_context_block(participation)
+    if participation_context["status"] == "unavailable":
+        unknowns.append("participation_context_unavailable")
+    elif participation_context["status"] != "available":
+        unknowns.append("participation_provenance_unavailable")
 
     latest = evidence[0] if evidence else {}
     previous = evidence[1] if len(evidence) > 1 else {}
@@ -1062,6 +1306,17 @@ def _company_evidence_block(
             "basis": "existing_hub_risk_context",
             "detail_en": concern_en,
             "detail_zh": concern_zh or concern_en,
+        })
+    for key in recognition.get("source_event_conflicts") or []:
+        contradictions.append({
+            "basis": "source_event_identity_conflict",
+            "detail_en": (
+                f"Conflicting observations share exact source identity {key}; "
+                "dependence remains unresolved rather than collapsed."
+            ),
+            "detail_zh": (
+                f"同一来源事件标识 {key} 出现冲突观察；依赖关系保持未决，不做合并。"
+            ),
         })
 
     return {
@@ -1087,6 +1342,12 @@ def _company_evidence_block(
             "latest_system_recorded_at": latest.get("system_recorded_at"),
         },
         "market_context": market_context,
+        "participation_context": participation_context,
+        "recognition": recognition,
+        "packet_delta": {
+            "state": "unavailable_without_prior_packet_receipt",
+            "basis": "current_packet_only",
+        },
         "contradictions": contradictions,
         "unknowns": sorted(set(unknowns)),
     }
@@ -1098,7 +1359,8 @@ def _dossier(ticker: str, altdata_row: dict | None, radar_row: dict | None,
              news_items: list | None, board_row: dict | None,
              special_flags: dict | None, traj: dict | None,
              board_member: bool, gov: dict | None = None,
-             visit_ctx: dict | None = None) -> dict:
+             visit_ctx: dict | None = None,
+             participation_ctx: dict | None = None) -> dict:
     """Build the per-ticker command dossier."""
     dirs = _dirs(altdata_row, radar_row, news_items, board_row)
     gap_rec = _leading_gap(dirs)
@@ -1156,7 +1418,9 @@ def _dossier(ticker: str, altdata_row: dict | None, radar_row: dict | None,
         visit_ctx or {"by_code": {}, "coverage_start": None,
                       "health": {"status": "no_coverage"}},
     )
-    company_evidence = _company_evidence_block(visits, traj, fals, fals_zh)
+    company_evidence = _company_evidence_block(
+        visits, traj, fals, fals_zh, participation=participation_ctx
+    )
 
     # desk directions matrix for display (present=True/False + direction)
     desk_matrix = {
@@ -1769,6 +2033,7 @@ def _build_inner(today: date, top: int) -> dict:
     # ── 3. Load price data once ─────────────────────────────────────────── #
     closes, bench = _load_closes_and_benchmark()
     visit_ctx = _load_visits_context()
+    participation_ctx = _load_participation_context()
 
     # ── 4. Per-ticker dossiers ──────────────────────────────────────────── #
     # SIGNAL GOVERNOR (CN) — per-feeder trust map (de-escalation only). Absent/corrupt ⇒ {}
@@ -1787,8 +2052,11 @@ def _build_inner(today: date, top: int) -> dict:
         board_member = ticker in board_members
         special_flags = special_bt.get(ticker)
         traj = _price_trajectory(ticker, closes, bench)
-        d = _dossier(ticker, altdata_row, radar_row, news_items, board_row,
-                     special_flags, traj, board_member, gov=gov, visit_ctx=visit_ctx)
+        d = _dossier(
+            ticker, altdata_row, radar_row, news_items, board_row,
+            special_flags, traj, board_member, gov=gov, visit_ctx=visit_ctx,
+            participation_ctx=participation_ctx,
+        )
 
         # ── BLOCKER 3b: price-plane missing → veto_blind, honest opportunity ── #
         veto_blind = traj is None  # No price data from either source
