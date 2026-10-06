@@ -9486,6 +9486,36 @@ jobs:
       - tests/test_theme_graph_local_plane.py
       - tests/test_theme_graph_materialize.py
       - tests/test_theme_graph_membership_lifecycle.py
+      - collectors/equity_earnings.py
+      - config/dataset_registry.yml
+      - config/intelligence_workspace/datapoints.v1.json
+      - contracts/intelligence_workspace/datapoint_registry.schema.json
+      - contracts/intelligence_workspace/datapoint_value.schema.json
+      - contracts/theme_graph/structural_context.v1.schema.json
+      - contracts/theme_graph/theme_structural_context.v2.schema.json
+      - engine/intelligence_workspace/__init__.py
+      - engine/intelligence_workspace/adapters/base.py
+      - engine/intelligence_workspace/adapters/company_intelligence.py
+      - engine/intelligence_workspace/adapters/earnings.py
+      - engine/intelligence_workspace/adapters/industry.py
+      - engine/intelligence_workspace/adapters/quote.py
+      - engine/intelligence_workspace/adapters/stage.py
+      - engine/intelligence_workspace/adapters/technicals.py
+      - engine/intelligence_workspace/adapters/theme.py
+      - engine/intelligence_workspace/contracts.py
+      - engine/intelligence_workspace/entity.py
+      - engine/intelligence_workspace/projection.py
+      - engine/intelligence_workspace/registry.py
+      - engine/intelligence_workspace/resolver.py
+      - engine/intelligence_workspace/runtime.py
+      - engine/quote_resolution.py
+      - lib/dataos/__init__.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/quality.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - tests/test_theme_graph_structural_owner_binding.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9500,7 +9530,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_contracts.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
