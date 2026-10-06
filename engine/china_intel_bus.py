@@ -500,6 +500,30 @@ def _visit_discovery_snapshot(
             seen_ids.add(aid)
         deduped.append(row)
 
+    # A readable positive row without a canonical company key is evidence, not
+    # absence. Preserve it separately instead of fabricating identity. Because it
+    # could belong to any issuer, it blocks global negative/baseline/first-seen
+    # authority until the existing identity owner resolves or accounts for it.
+    unscoped_positive_rows = [
+        row for row in deduped if not _visit_text(row.get("sec_code"))
+    ]
+    unscoped_positive_evidence = [
+        {
+            "announcement_id": _visit_text(row.get("announcement_id")) or None,
+            "sec_name": _visit_text(row.get("sec_name")) or None,
+            "exchange": _visit_text(row.get("exchange")) or None,
+            "title": _visit_text(row.get("title")) or None,
+            "source_published_at": _visit_text(row.get("source_published_at")) or None,
+            "system_recorded_at": _visit_text(row.get("system_recorded_at")) or None,
+            "visitor_class": _visit_text(row.get("visitor_class")) or None,
+            "coverage_state": "unknown_company_identity",
+            "company_identity_state": "unresolved",
+            "may_rank": False,
+            "may_trade": False,
+        }
+        for row in unscoped_positive_rows[:8]
+    ]
+
     # Positive rows may be written before the owner health receipt is updated.
     # If any persisted observation is newer than the latest valid attempt/success
     # receipt, the positive remains visible but first-seen and absence authority
@@ -656,11 +680,13 @@ def _visit_discovery_snapshot(
             and exception_ledger_readable
             and exception_status_valid
             and not has_unscoped_open
+            and not unscoped_positive_rows
         ),
         "global_negative_authority_blocker": (
             "coverage_exception_ledger_unreadable" if not exception_ledger_readable
             else "coverage_exception_status_unknown" if not exception_status_valid
             else "unscoped_coverage_exception" if has_unscoped_open
+            else "visit_company_identity_unresolved" if unscoped_positive_rows
             else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
             else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
             else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
@@ -691,6 +717,11 @@ def _visit_discovery_snapshot(
             else None
         ),
         "n_rows_observed": len(deduped),
+        "n_unscoped_positive_rows": len(unscoped_positive_rows),
+        "unscoped_positive_evidence": unscoped_positive_evidence,
+        "unscoped_positive_evidence_truncated": (
+            len(unscoped_positive_rows) > len(unscoped_positive_evidence)
+        ),
         "n_recent_companies": 0,
         "n_first_observed_recent": 0,
         "n_measured_baselines": 0,
@@ -771,6 +802,8 @@ def _visit_discovery_snapshot(
             baseline_state = "blocked_exception_status_unknown"
         elif has_unscoped_open:
             baseline_state = "blocked_unscoped_coverage_exception"
+        elif unscoped_positive_rows:
+            baseline_state = "blocked_unresolved_company_identity"
         elif company_exception:
             baseline_state = "blocked_company_coverage_exception"
         elif not health_clock_order_valid:
@@ -813,6 +846,8 @@ def _visit_discovery_snapshot(
             first_seen_state = "unknown_exception_status"
         elif has_unscoped_open:
             first_seen_state = "unknown_unscoped_coverage_exception"
+        elif unscoped_positive_rows:
+            first_seen_state = "unknown_unresolved_company_identity"
         elif not health_clock_order_valid:
             first_seen_state = "unknown_owner_clock_order_invalid"
         elif source_status != "ok":
