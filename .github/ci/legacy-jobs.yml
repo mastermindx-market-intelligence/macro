@@ -8721,6 +8721,7 @@ jobs:
       - tests/test_publish_company_theme_exposure_r2.py
       - tests/test_theme_graph_selection_cohort.py
       - tests/test_theme_graph_selection_cohort_reads.py
+      - tests/test_theme_graph_selection_cohort_reads_pit.py
       - tests/test_theme_graph_selection_cohort_reads_wiring.py
       - tests/test_theme_graph_selection_cohort_projection.py
       - tests/test_theme_graph_state.py
@@ -9558,7 +9559,7 @@ jobs:
           test -f engine/theme_graph/theme_state.py
           test -f tests/test_theme_graph_state.py
           unset GMI_STATE_OWNER_WORKSPACE
-          TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py tests/test_theme_graph_selection_cohort_projection.py -q
+          TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py tests/test_theme_graph_selection_cohort_reads_pit.py tests/test_theme_graph_selection_cohort_projection.py -q
       - name: GMI finalized cohort publication and unchanged owner serialization
         run: TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort_publication.py tests/test_theme_graph_selection_cohort_reads_wiring.py tests/test_china_standouts_serialization.py tests/test_build_china_library_more_actionable_guard.py tests/test_us_standouts_cascade_gate.py -q
 
