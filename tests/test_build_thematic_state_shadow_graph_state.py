@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import ast
+import datetime as dt
 import json
+from datetime import timezone
 from pathlib import Path
 
 import pytest
@@ -209,3 +211,57 @@ def test_t9_source_shape():
                     candidate = f"{mod}.{alias.name}"
                     seen.add(candidate if candidate in allowed else mod)
     assert seen <= allowed, f"unexpected imports: {seen - allowed}"
+
+
+def test_t10_production_clock_path_writes_shadow(production_world, monkeypatch, capsys):
+    """Production LEGACY call shape: no pinned generated_at; emission after capture."""
+    from engine.neuralweb import theme_state_adapter as adapter
+    import types
+
+    # Capture ends after the pre-capture wall instant (production ordering).
+    capture_observed = dt.datetime.fromisoformat("2026-10-04T12:00:00.150000+00:00")
+
+    class CaptureEndClock(dt.datetime):
+        @classmethod
+        def now(cls, tz=None):
+            if tz is not None:
+                return capture_observed.astimezone(tz)
+            return capture_observed.replace(tzinfo=None)
+
+    namespace = {name: getattr(dt, name) for name in dir(dt) if not name.startswith("__")}
+    namespace["datetime"] = CaptureEndClock
+    monkeypatch.setattr(adapter, "dt", types.SimpleNamespace(**namespace))
+
+    emission_times = [
+        dt.datetime(2026, 10, 4, 12, 0, 0, tzinfo=timezone.utc),
+        dt.datetime(2026, 10, 4, 12, 0, 0, 100000, tzinfo=timezone.utc),
+        dt.datetime(2026, 10, 4, 12, 0, 0, 200000, tzinfo=timezone.utc),
+    ]
+    call_idx = {"n": 0}
+
+    class ProductionWallClock(dt.datetime):
+        @classmethod
+        def now(cls, tz=None):
+            instant = emission_times[min(call_idx["n"], len(emission_times) - 1)]
+            call_idx["n"] += 1
+            if tz is not None:
+                return instant.astimezone(tz)
+            return instant.replace(tzinfo=None)
+
+    real_datetime = dt.datetime
+    monkeypatch.setattr(dt, "datetime", ProductionWallClock)
+
+    monkeypatch.setattr(builder, "compose", lambda **kw: artifact())
+    rc = builder.build(production_world, mode="LEGACY")
+    out = capsys.readouterr().out
+    assert rc == 0
+    shadow_path = production_world / SHADOW
+    assert shadow_path.is_file()
+    loaded = json.loads(shadow_path.read_bytes())
+    theme_state.validate_state(loaded)
+
+    def _parse_instant(value: str) -> dt.datetime:
+        return real_datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+    assert _parse_instant(loaded["generated_at"]) >= _parse_instant(loaded["known_at"])
+    assert "shadow_graph_state=written" in out

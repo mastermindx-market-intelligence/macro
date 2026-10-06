@@ -53,11 +53,12 @@ def _compose_shadow_graph_state(root: Path, generated_at: str | None) -> bytes |
     from engine.theme_graph import theme_state
 
     try:
-        shadow_now = generated_at or datetime.now(timezone.utc).isoformat()
+        known_at = generated_at or datetime.now(timezone.utc).isoformat()
         bundle = adapter.capture_owner_bundle(
-            root, effective_at=shadow_now[:10], known_at=shadow_now,
+            root, effective_at=known_at[:10], known_at=known_at,
         )
-        state = adapter.compose_from_owner_bundle(bundle, generated_at=shadow_now)["state"]
+        emitted_at = generated_at or datetime.now(timezone.utc).isoformat()
+        state = adapter.compose_from_owner_bundle(bundle, generated_at=emitted_at)["state"]
         theme_state.validate_state(state)
         assert state.get("schema") == theme_state.SCHEMA
         return json.dumps(
