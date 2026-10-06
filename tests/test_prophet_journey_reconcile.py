@@ -1808,13 +1808,20 @@ def test_cli_against_committed_fixture():
                    "--out", str(out)])
     assert rc in (0, 1, 2), f"unexpected exit={rc}"
     report = json.loads(out.read_text(encoding="utf-8"))
-    # This frozen current-UI fixture is intentionally known-bad under J8 and
-    # has no runtime quote clock, so its terminal verdict is FAIL.
+    # This frozen current-UI fixture is intentionally known-bad under J8.
+    # It is dialog-only, so the global Plan and quote-clock nodes are absent:
+    # J9 must keep those deterministic omissions as FAIL even though no runtime
+    # quote payload is supplied. Runtime absence is UNSUPPORTED only when the
+    # deterministic source/display clocks are otherwise valid.
     assert report["verdict"] == "FAIL", report
-    verdicts = {check["id"]: check["status"] for check in report["checks"]}
+    checks = {check["id"]: check for check in report["checks"]}
+    verdicts = {check_id: check["status"] for check_id, check in checks.items()}
     assert verdicts["J6"] == "PASS"
     assert verdicts["J8"] == "FAIL"
-    assert verdicts["J9"] == "UNSUPPORTED"
+    assert verdicts["J9"] == "FAIL"
+    j9_observed = checks["J9"]["observed"]
+    assert "plan book clock missing" in j9_observed["fails"], j9_observed
+    assert "#plv-asof missing" in j9_observed["fails"], j9_observed
     if report["verdict"] == "PARTIAL":
         na_ids = [c["id"] for c in report["checks"]
                   if c["status"] == "N/A"]
