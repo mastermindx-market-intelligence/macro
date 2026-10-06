@@ -5,7 +5,7 @@
 **Implementation authority:** NONE unless separately granted by the Chairman.  
 **Trading authority:** NONE.  
 **Canonical research carrier:** macro draft PR #8495, branch `sol/prophet-nvda-conversion-audit-20261006`  
-**Current branch head at handoff:** `b31dd90bca1709afcc972f9a19d19361e64e1dbd`  
+**Parent research head immediately before this handoff commit:** `b31dd90bca1709afcc972f9a19d19361e64e1dbd`  
 **Primary source pin used by the prior census:** `macro@2f2feec4851b45636f63a48ec61e6f0b02b8118a`
 
 ## Commission
