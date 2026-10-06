@@ -108,8 +108,6 @@ def _revision(securities: list[dict[str, object]]) -> str:
                 "security_id": row["security_id"],
                 "ticker": row["ticker"],
                 "aliases": row["aliases"],
-                "valid_from": row["valid_from"],
-                "valid_to": row["valid_to"],
             }
             for row in sorted(securities, key=lambda item: str(item["security_id"]))
         ],
@@ -182,13 +180,47 @@ def build_news_universe_snapshot(
         raise NewsUniverseSnapshotError("current_roster_suspicious")
 
     active_pit = _active_pit(pit_rows, on=observed.date())
-    if set(current) != set(active_pit):
-        raise NewsUniverseSnapshotError("membership_set_mismatch")
+
+    cleaned_alias_rows: list[dict[str, object]] = []
+    for raw in alias_rows:
+        if not isinstance(raw, Mapping):
+            raise NewsUniverseSnapshotError("alias_table_invalid")
+        rec = dict(raw)
+        for field in ("valid_from", "valid_to"):
+            value = rec.get(field)
+            if _is_nullish(value):
+                rec[field] = None
+            else:
+                parsed = _date_value(value, f"alias_{field}_invalid")
+                rec[field] = None if parsed is None else parsed
+        cleaned_alias_rows.append(rec)
 
     try:
-        aliases = VendorAliasTable.from_records(list(alias_rows))
+        aliases = VendorAliasTable.from_records(cleaned_alias_rows)
     except (IdentityError, TypeError, ValueError):
         raise NewsUniverseSnapshotError("alias_table_invalid") from None
+
+    historical_alias_spaces = frozenset(
+        {"membership", "yahoo", "yahoo_fetch", "store", "ledger"}
+    )
+    historical_security_ids: dict[str, set[str]] = {}
+    for row in aliases.rows:
+        if row.vendor not in historical_alias_spaces:
+            continue
+        token = _symbol(row.vendor_symbol, "historical_alias_invalid")
+        historical_security_ids.setdefault(token, set()).add(row.security_id)
+
+    pit_start_by_security: dict[str, date] = {}
+    pit_unresolved = 0
+    for ticker, start in active_pit.items():
+        candidates = historical_security_ids.get(ticker, set())
+        if len(candidates) != 1:
+            pit_unresolved += 1
+            continue
+        sid = next(iter(candidates))
+        prior = pit_start_by_security.get(sid)
+        if prior is None or start < prior:
+            pit_start_by_security[sid] = start
 
     try:
         security_master = IssuerMaster.from_records(list(security_rows))
@@ -223,7 +255,11 @@ def build_news_universe_snapshot(
         if market_alias not in row_aliases:
             row_aliases.append(market_alias)
 
-        start = active_pit[ticker]
+        start = pit_start_by_security.get(security_id)
+        membership_basis = "pit_identity_match"
+        if start is None:
+            start = observed.date()
+            membership_basis = "current_observation"
         securities.append(
             {
                 "security_id": security_id,
@@ -232,6 +268,7 @@ def build_news_universe_snapshot(
                 "valid_from": _midnight_utc(start).isoformat(),
                 "valid_to": None,
                 "known_at": observed.isoformat(),
+                "membership_basis": membership_basis,
             }
         )
 
@@ -241,6 +278,10 @@ def build_news_universe_snapshot(
     effective_at = max(
         datetime.fromisoformat(str(row["valid_from"])) for row in securities
     )
+    current_security_ids = {
+        str(row["security_id"]) for row in securities
+    }
+    matched_security_ids = current_security_ids.intersection(pit_start_by_security)
     snapshot: dict[str, object] = {
         "schema": SCHEMA,
         "owner": OWNER,
@@ -250,6 +291,15 @@ def build_news_universe_snapshot(
         "effective_at": effective_at.isoformat(),
         "known_at": observed.isoformat(),
         "fresh_until": (observed + fresh_for).isoformat(),
+        "current_membership_authority": "breadth.current_sp500",
+        "pit_context_authority": "breadth.sp1500_pit_membership",
+        "pit_context_active_count": len(active_pit),
+        "pit_context_matched_security_count": len(matched_security_ids),
+        "current_observation_only_count": len(current_security_ids - matched_security_ids),
+        "pit_context_stale_only_count": len(
+            set(pit_start_by_security) - current_security_ids
+        ),
+        "pit_context_unresolved_count": pit_unresolved,
         "securities": securities,
     }
 

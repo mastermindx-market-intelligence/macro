@@ -13,6 +13,11 @@ import os
 from pathlib import Path
 import tempfile
 from typing import Iterable, Mapping, Sequence
+import sys
+
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 import pandas as pd
 
