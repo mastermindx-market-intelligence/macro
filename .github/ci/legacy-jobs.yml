@@ -18309,6 +18309,45 @@ jobs:
       - "scripts/ci/daily_engine_regional_desk_builders.sh"
       - "scripts/validate_options_skew.py"
       - "tests/test_options_skew.py"
+      # MKT-1 hosted execution (Sol 5987749403). scope: exclusive skips
+      # inference, so the suite's measured import closure is listed here.
+      # A non-exclusive owner fallback-selects ordinary packing probes.
+      - "engine/price_pressure/**"
+      - "tests/test_price_pressure.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/confluence_tiers.py"
+      - "engine/cross_asset.py"
+      - "engine/cycles.py"
+      - "engine/extension.py"
+      - "engine/grading.py"
+      - "engine/hysteresis.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/ledger_lane.py"
+      - "engine/market_drivers.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/session_anchor.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/technicals.py"
+      - "engine/trial_ledger.py"
+      - "engine/universe_history.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/store.py"
+      - "research/DISLOCATION_RECOVERY_LOBE_MASTERPLAN_BY_FABLE.md"
+      - "scripts/__init__.py"
+      - "scripts/build_price_pressure.py"
+      - "scripts/publish_r2.py"
+      - "scripts/replay_standout_pipeline.py"
+      - "scripts/research_liquidity_shock_reversal.py"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/us_standouts.json"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -18320,6 +18359,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: options skew engine
         run: python -m pytest tests/test_options_skew.py -q
+      - name: price-pressure response export + MKT-1 regressions (K3E MKT-1 hosted execution; Sol 5987749403)
+        run: python -m pytest tests/test_price_pressure.py -q -rs
 
   market-ontology-f09-usgs-mcs:
     if: ${{ false }}
