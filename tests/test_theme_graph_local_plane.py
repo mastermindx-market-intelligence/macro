@@ -3245,3 +3245,247 @@ def test_gmi_structure_owner_loader_rejects_ambiguous_or_unreadable_input(monkey
     monkeypatch.setattr(module,"CROSSWALK_PATH",path)
     with pytest.raises(ValueError):module.load_structural_owner()
     assert path.read_text()==raw
+
+
+# Version-selected curation lifecycle acts; these are not v1 mapping proposals.
+class _TrustedRelationActionFixture:
+    """Explicitly preaccepted controlled owner records; never a natural resolver."""
+    def __init__(self, rows):
+        import copy
+        self.receipts = {}
+        for row in rows:
+            receipt = {key: copy.deepcopy(row[key]) for key in (
+                "event_sha256", "action", "prior_relation", "new_destination",
+                "source_receipt", "ratified_by", "evidence_refs")}
+            receipt.update(schema="gmi.probation_owner_action_read/v1",
+                           owner="theme_graph.probation", status="ACCEPTED",
+                           receipt_ref="controlled:independent-owner-action:" + row["event_sha256"],
+                           reason=None, accepted_at=row["adjudicated_at"],
+                           known_at=row["known_at"], valid_from=row["adjudicated_at"], valid_to=None)
+            self.receipts[row["event_sha256"]] = receipt
+
+    def read_relation_action(self, *, event_sha256, knowledge_cutoff):
+        import copy
+        return copy.deepcopy(self.receipts.get(event_sha256, {
+            "schema": "gmi.probation_owner_action_read/v1",
+            "owner": "theme_graph.probation", "status": "REJECTED",
+            "receipt_ref": None, "reason": "not in the separately preaccepted fixture population"}))
+
+
+def _relation_owner_fixture(tmp_path):
+    source = tmp_path / "theme_crosswalk.yml"
+    source.write_text(yaml.safe_dump({"date": "2026-08-13", "themes": []}))
+    prior = dict(type="EXPRESSES", src="basket:baskets_china_ths:thsc900001",
+                 dst="theme:solar", valid_from="2026-07-09")
+    prior["edge_id"] = materialize.edge_id_for(
+        prior["type"], prior["src"], prior["dst"], prior["valid_from"])
+    row = dict(schema="gmi.probation_relation_event/v2",
+               action="RELATION_WITHDRAW", status="ratified",
+               ratified_by="controlled-authorized-curator",
+               created_at="2026-08-12T00:00:00Z",
+               adjudicated_at="2026-08-13T14:00:00Z",
+               known_at="2026-08-13T14:00:00Z", effective_at="2026-08-13T00:00:00Z",
+               prior_relation=prior, new_destination=None,
+               source_receipt=probation.relation_source_receipt(source),
+               evidence_refs=["controlled:adjudication"], reason="curation",
+               authority_caps=dict(may_rank=False, may_size=False,
+                                   may_gate=False, may_escalate=False))
+    path = tmp_path / "relation_events.v2.jsonl"
+    return source, path, row
+
+
+def _write_relation_event(path, row):
+    digest = probation.relation_event_digest(row)
+    row.update(event_sha256=digest, event_id="relation-event:" + digest)
+    path.write_text(json.dumps(row) + "\n")
+
+
+@pytest.mark.parametrize("mutation", [
+    "unratified", "ratifier", "bad_digest", "bad_source", "scope", "action",
+    "same_destination", "date_only", "unzoned", "future", "bad_chronology",
+    "bad_adjudication", "numeric_authority", "extra_rights", "source_version",
+])
+def test_relation_owner_refuses_unadmitted_tampered_or_imprecise_inputs(tmp_path, mutation):
+    source, path, row = _relation_owner_fixture(tmp_path)
+    if mutation == "unratified":
+        row["status"] = "proposed"
+    elif mutation == "ratifier":
+        row["ratified_by"] = " "
+    elif mutation == "bad_source":
+        row["source_receipt"]["sha256"] = "0" * 64
+    elif mutation == "scope":
+        row["prior_relation"]["src"] = "basket:baskets_china_ths:other"
+    elif mutation == "action":
+        row["action"] = "POPULATION_COMPLETE"
+    elif mutation == "same_destination":
+        row.update(action="DESTINATION_CHANGE", new_destination="theme:solar")
+    elif mutation == "date_only":
+        row["known_at"] = row["adjudicated_at"] = "2026-08-13"
+    elif mutation == "unzoned":
+        row["effective_at"] = "2026-08-13T00:00:00"
+    elif mutation == "future":
+        row["effective_at"] = "2026-08-15T00:00:00Z"
+    elif mutation == "bad_chronology":
+        row["created_at"] = "2026-08-14T00:00:00Z"
+    elif mutation == "bad_adjudication":
+        row["adjudicated_at"] = "2026-08-13T13:00:00Z"
+    elif mutation == "numeric_authority":
+        row["authority_caps"]["may_gate"] = 0
+    elif mutation == "extra_rights":
+        row["rights"] = "PUBLIC"
+    elif mutation == "source_version":
+        row["source_receipt"]["version"] = "2026-08-12"
+    _write_relation_event(path, row)
+    if mutation == "bad_digest":
+        path.write_text(path.read_text().replace(row["event_sha256"], "0" * 64))
+    with pytest.raises((ValueError, probation.RelationEventRefusal)):
+        probation.read_relation_events(path, source_path=source,
+                                       emitted_at="2026-08-14T01:00:00Z")
+
+
+def test_relation_receipt_daily_boundary_immutability_and_current_rights(tmp_path, monkeypatch):
+    source, path, row = _relation_owner_fixture(tmp_path)
+    _write_relation_event(path, row)
+    event = probation.read_relation_events(path, source_path=source,
+                                          emitted_at="2026-08-14T01:00:00Z",
+                                          owner_action_reader=_TrustedRelationActionFixture([row]))[0]
+    with pytest.raises(probation.RelationEventRefusal, match="DAILY_GRAPH_UNREPRESENTABLE"):
+        probation.require_daily_relation_event(
+            event, belief_time="2026-08-13", emitted_at="2026-08-13T15:00:00Z")
+    exact = probation.require_daily_relation_event(
+        event, belief_time="2026-08-14", emitted_at="2026-08-14T01:00:00Z")
+    assert exact["known_at"] == "2026-08-13T14:00:00Z"
+    assert exact["effective_at"] == "2026-08-13T00:00:00Z"
+    exact["prior_relation"]["dst"] = "theme:tamper"
+    assert event.receipt["prior_relation"]["dst"] == "theme:solar"
+    with pytest.raises(AttributeError):
+        event._json = "{}"
+    with pytest.raises(ValueError, match="owner admission"):
+        probation.AcceptedRelationEvent(row)
+    with pytest.raises(probation.RelationEventRefusal, match="unadmitted"):
+        probation.require_daily_relation_event(
+            row, belief_time="2026-08-14", emitted_at="2026-08-14T01:00:00Z")
+    monkeypatch.setattr(rights, "licensing_for_family", lambda family: (False, False, False))
+    with pytest.raises(ValueError, match="internal use refused"):
+        probation.require_daily_relation_event(
+            event, belief_time="2026-08-14", emitted_at="2026-08-14T01:00:00Z")
+
+
+def test_relation_exact_midnight_known_is_representable_on_its_day(tmp_path):
+    source, path, row = _relation_owner_fixture(tmp_path)
+    row["known_at"] = row["adjudicated_at"] = "2026-08-13T00:00:00Z"
+    _write_relation_event(path, row)
+    event = probation.read_relation_events(path, source_path=source,
+                                          emitted_at="2026-08-13T01:00:00Z",
+                                          owner_action_reader=_TrustedRelationActionFixture([row]))[0]
+    assert probation.require_daily_relation_event(
+        event, belief_time="2026-08-13", emitted_at="2026-08-13T01:00:00Z")["known_at"] == row["known_at"]
+
+
+@pytest.mark.parametrize("raw", ['{"schema":1,"schema":2}\n', '[]\n', '{broken\n'])
+def test_relation_owner_malformed_input_never_becomes_empty(tmp_path, raw):
+    source, path, _row = _relation_owner_fixture(tmp_path)
+    path.write_text(raw)
+    with pytest.raises(ValueError):
+        probation.read_relation_events(path, source_path=source,
+                                       emitted_at="2026-08-14T01:00:00Z")
+
+
+def test_relation_event_does_not_reinterpret_or_mutate_v1_queue(tmp_path):
+    source, path, row = _relation_owner_fixture(tmp_path)
+    legacy = probation.make_proposal(kind="mapping", subject={"old": "subject"},
+                                    proposed_by="coverage_gap", created="2026-08-12")
+    queue = tmp_path / "proposals.jsonl"
+    probation.append_proposals([legacy], queue)
+    before = queue.read_bytes()
+    assert probation.read_relation_events(path, source_path=source,
+                                         emitted_at="2026-08-14T01:00:00Z") == []
+    path.write_bytes(before)
+    with pytest.raises(ValueError):
+        probation.read_relation_events(path, source_path=source,
+                                       emitted_at="2026-08-14T01:00:00Z")
+    _write_relation_event(path, row)
+    assert len(probation.read_relation_events(path, source_path=source,
+                                             emitted_at="2026-08-14T01:00:00Z",
+                                             owner_action_reader=_TrustedRelationActionFixture([row]))) == 1
+    assert queue.read_bytes() == before
+    assert probation.read_proposals(queue) == [legacy]
+
+
+def test_relation_action_self_asserted_ratifier_and_references_have_no_authority(tmp_path):
+    source, path, row = _relation_owner_fixture(tmp_path)
+    row["ratified_by"] = "unauthorized-review-counterexample"
+    row["evidence_refs"] = ["invented:no-owner-adjudication"]
+    _write_relation_event(path, row)
+    with pytest.raises(probation.RelationEventRefusal, match="OWNER_ACTION_AUTHORITY_UNAVAILABLE"):
+        probation.read_relation_events(path, source_path=source,
+                                       emitted_at="2026-08-14T01:00:00Z")
+
+
+@pytest.mark.parametrize("fault", [
+    "bool", "string", "event_echo", "wrong_owner", "wrong_event", "wrong_relation",
+    "wrong_destination", "wrong_source", "wrong_ratifier", "wrong_refs",
+    "future_known", "wrong_acceptance", "future_valid", "expired", "null_clock",
+    "UNAVAILABLE", "REJECTED", "REVOKED", "STALE"])
+def test_trusted_action_read_must_resolve_exact_live_accepted_receipt(tmp_path, fault):
+    source, path, row = _relation_owner_fixture(tmp_path)
+    _write_relation_event(path, row)
+    reader = _TrustedRelationActionFixture([row])
+    accepted = reader.receipts[row["event_sha256"]]
+    if fault == "bool":
+        replacement = True
+    elif fault == "string":
+        replacement = "accepted"
+    elif fault == "event_echo":
+        replacement = row
+    elif fault in ("UNAVAILABLE", "REJECTED", "REVOKED", "STALE"):
+        replacement = dict(schema="gmi.probation_owner_action_read/v1",
+                           owner="theme_graph.probation", status=fault,
+                           receipt_ref=None, reason="controlled explicit owner verdict")
+    else:
+        replacement = accepted
+        if fault == "wrong_owner":
+            replacement["owner"] = "caller"
+        elif fault == "wrong_event":
+            replacement["event_sha256"] = "0" * 64
+        elif fault == "wrong_relation":
+            replacement["prior_relation"]["src"] = "basket:baskets_china_ths:other"
+        elif fault == "wrong_destination":
+            replacement["new_destination"] = "theme:invented"
+        elif fault == "wrong_source":
+            replacement["source_receipt"]["sha256"] = "0" * 64
+        elif fault == "wrong_ratifier":
+            replacement["ratified_by"] = "invented"
+        elif fault == "wrong_refs":
+            replacement["evidence_refs"] = ["invented"]
+        elif fault == "future_known":
+            replacement["known_at"] = "2026-08-15T00:00:00Z"
+        elif fault == "wrong_acceptance":
+            replacement["accepted_at"] = "2026-08-13T13:00:00Z"
+        elif fault == "future_valid":
+            replacement["valid_from"] = "2026-08-15T00:00:00Z"
+        elif fault == "expired":
+            replacement["valid_to"] = "2026-08-14T00:00:00Z"
+        elif fault == "null_clock":
+            replacement["known_at"] = None
+    reader.receipts[row["event_sha256"]] = replacement
+    with pytest.raises(probation.RelationEventRefusal, match="OWNER_ACTION_AUTHORITY"):
+        probation.read_relation_events(path, source_path=source,
+                                       emitted_at="2026-08-14T01:00:00Z",
+                                       owner_action_reader=reader)
+
+
+def test_action_authority_is_refreshed_independently_of_rights_at_graph_use(tmp_path):
+    source, path, row = _relation_owner_fixture(tmp_path)
+    _write_relation_event(path, row)
+    reader = _TrustedRelationActionFixture([row])
+    event = probation.read_relation_events(path, source_path=source,
+                                          emitted_at="2026-08-14T01:00:00Z",
+                                          owner_action_reader=reader)[0]
+    assert event.authority_receipt["owner"] == "theme_graph.probation"
+    reader.receipts[row["event_sha256"]] = dict(
+        schema="gmi.probation_owner_action_read/v1", owner="theme_graph.probation",
+        status="REVOKED", receipt_ref="controlled:revoked-action", reason="fixture revocation")
+    with pytest.raises(probation.RelationEventRefusal, match="OWNER_ACTION_AUTHORITY_REVOKED"):
+        probation.require_daily_relation_event(
+            event, belief_time="2026-08-14", emitted_at="2026-08-14T01:00:00Z")

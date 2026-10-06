@@ -84,7 +84,7 @@ DRIVERS_META = {
     "be10y": ("10y breakeven (inflation comp.)", "10年期盈亏平衡通胀", "level"),
     "be10y_chg63": ("10y breakeven — 63d change", "10年期盈亏平衡—63日变动", "change"),
     "be5y5y": ("5y5y forward breakeven (anchor)", "5年5年远期盈亏平衡（锚）", "level"),
-    "curve_tp_adj": ("TP-adjusted 2s10s curve", "期限溢价调整后的2-10年曲线", "level"),
+    "curve_tp_adj": ("Legacy TP10 curve heuristic", "旧版TP10曲线启发式", "level"),
     "policy_gap": ("us2y − funds (cut/hike pricing)", "2年期−联邦基金（降/加息定价）", "level"),
     "corepce_gap": ("Core PCE YoY − 2% target", "核心PCE同比−2%目标", "level"),
     "infl_accel": ("Inflation re-acceleration (3m−12m)", "通胀再加速（3月−12月）", "change"),

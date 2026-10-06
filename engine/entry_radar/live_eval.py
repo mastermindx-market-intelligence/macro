@@ -123,6 +123,14 @@ SCHEMA_JOURNAL = "entry_radar.journal/v1"
 #: Kill switches.  The env var is the operator's stand-down without a unit edit;
 #: the file is the stand-down for a host with no way to change the environment.
 KILL_ENV = "ENTRY_RADAR_LIVE_DISABLED"
+
+from engine.entry_radar import catalyst_edgar_live as cel
+
+CATALYST_LIVE_ENV = cel.CATALYST_LIVE_ENV
+
+
+def _catalyst_live_enabled(environ: Mapping[str, str]) -> bool:
+    return str(environ.get(CATALYST_LIVE_ENV, "")).strip() == "1"
 KILL_FILE = "KILL"
 
 #: Minutes past the exchange close during which a pass still evaluates.  The
@@ -1318,6 +1326,10 @@ def _attach_catalyst(
     *,
     now: datetime,
     health: dict[str, Any] | None,
+    environ: Mapping[str, str] | None = None,
+    clock: Callable[[], datetime] | None = None,
+    live_reader: Callable[..., Any] | None = None,
+    store_reader: Callable[..., Any] | None = None,
 ) -> None:
     rc: dict[str, Any] = {
         "attached_count": 0,
@@ -1330,6 +1342,10 @@ def _attach_catalyst(
         "episode_errors": 0,
         "states": {},
         "error": None,
+        "live_enabled": False,
+        "live": None,
+        "source_modes": {"live": 0, "store": 0, "none": 0},
+        "decision_at": None,
     }
     if isinstance(health, dict):
         health["catalyst"] = rc
@@ -1339,42 +1355,92 @@ def _attach_catalyst(
     from engine.entry_radar import catalyst_context as cc  # noqa: PLC0415
     from engine.entry_radar import catalyst_edgar_store as ces  # noqa: PLC0415
 
+    if environ is None:
+        environ = os.environ
+    if clock is None:
+        clock = lambda: datetime.now(timezone.utc)
+    if live_reader is None:
+        live_reader = cel.read_edgar_item_202_live
+    if store_reader is None:
+        store_reader = ces.read_edgar_item_202_for_tickers
+
     tickers = sorted({str(r.get("ticker") or "") for r in rows} - {""})
+    enabled = _catalyst_live_enabled(environ)
+    rc["live_enabled"] = enabled
+    live = None
+    if enabled:
+        try:
+            live = live_reader(tickers=tickers, now=now, clock=clock)
+            rc["live"] = {
+                "attempted": live.attempted,
+                "fetched_ok": live.fetched_ok,
+                "budget_exhausted": live.budget_exhausted,
+                "elapsed_s": live.elapsed_seconds,
+                "error": live.error,
+                "refusals": dict(live.refusals),
+                "last_observed_at": (
+                    _iso(live.last_observed_at) if live.last_observed_at else None
+                ),
+            }
+        except Exception as exc:
+            live = None
+            rc["live"] = {
+                "attempted": 0,
+                "fetched_ok": 0,
+                "budget_exhausted": 0,
+                "elapsed_s": None,
+                "error": repr(exc)[:300],
+                "refusals": {},
+                "last_observed_at": None,
+            }
+    decision_at = (
+        max(now, live.last_observed_at)
+        if live is not None and live.last_observed_at is not None
+        else now
+    )
+    generated_at = decision_at
+    rc["decision_at"] = _iso(decision_at)
     try:
-        read = ces.read_edgar_item_202_for_tickers(
-            tickers=tickers, decision_at=now, generated_at=now,
+        store = store_reader(
+            tickers=tickers,
+            decision_at=decision_at,
+            generated_at=generated_at,
         )
     except Exception as exc:
         rc["error"] = repr(exc)[:300]
         return
-    rc["reader_error"] = read.error
-    rc["refusals"] = dict(read.refusals)
-    rc["source_asof"] = _iso(read.source_asof) if read.source_asof else None
-    reads = list(read.reads_by_ticker.values())
-    if not reads:
-        rc["source_status"] = None
-    elif all(r.status == "ok" for r in reads):
-        rc["source_status"] = "ok"
-    elif all(r.status == "unavailable" for r in reads):
-        rc["source_status"] = "unavailable"
-    else:
-        rc["source_status"] = "mixed"
-    rc["source_usable"] = any(r.usable_at(now) for r in reads)
+    rc["reader_error"] = store.error
+    rc["refusals"] = dict(store.refusals)
+    used_by_ticker: dict[str, Any] = {}
     try:
         for row in rows:
             ticker = str(row.get("ticker") or "")
-            src = read.reads_by_ticker.get(ticker)
-            if src is None:
-                rc["episode_errors"] += 1
-                continue
+            live_read = (
+                live.reads_by_ticker.get(ticker) if live is not None else None
+            )
+            if live_read is not None and live_read.status == "ok":
+                src = live_read
+                ev = live.evidence_by_ticker.get(ticker, ())
+                mode = "live"
+            else:
+                store_read = store.reads_by_ticker.get(ticker)
+                if store_read is None:
+                    rc["source_modes"]["none"] += 1
+                    rc["episode_errors"] += 1
+                    continue
+                src = store_read
+                ev = store.evidence_by_ticker.get(ticker, ())
+                mode = "store"
+            rc["source_modes"][mode] += 1
+            used_by_ticker[ticker] = src
             try:
                 ctx = cc.assess_catalyst_context_for_live_episode(
                     episode=row,
-                    decision_at=now,
-                    generated_at=now,
+                    decision_at=decision_at,
+                    generated_at=generated_at,
                     required_sources=(ces.EDGAR_STORE_SOURCE_ID,),
                     source_reads=(src,),
-                    evidence=read.evidence_by_ticker.get(ticker, ()),
+                    evidence=ev,
                 )
             except cc.CatalystContextError:
                 rc["episode_errors"] += 1
@@ -1387,6 +1453,24 @@ def _attach_catalyst(
                 rc["attached_count"] += 1
     except Exception as exc:
         rc["error"] = repr(exc)[:300]
+        return
+    used_reads = list(used_by_ticker.values())
+    if not used_reads:
+        rc["source_status"] = None
+        rc["source_asof"] = None
+        rc["source_usable"] = False
+    else:
+        if all(r.status == "ok" for r in used_reads):
+            rc["source_status"] = "ok"
+        elif all(r.status == "unavailable" for r in used_reads):
+            rc["source_status"] = "unavailable"
+        else:
+            rc["source_status"] = "mixed"
+        rc["source_usable"] = any(r.usable_at(decision_at) for r in used_reads)
+        ok_asofs = [
+            r.source_asof for r in used_reads if r.status == "ok" and r.source_asof
+        ]
+        rc["source_asof"] = _iso(max(ok_asofs)) if ok_asofs else None
 
 
 def _episode_rows(ledger: ll.LiveEpisodeLedger | None, session: date | None,

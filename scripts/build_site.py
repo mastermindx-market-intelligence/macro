@@ -4592,11 +4592,10 @@ def chart_risk_model(cf: pd.DataFrame) -> str:
 
 
 def chart_curve(cf: pd.DataFrame) -> str:
-    """Yield curve: the 2s10s slope RAW vs TERM-PREMIUM-ADJUSTED, ~25y, NBER-shaded.
-    Inversion (below 0) is the classic recession lead; the TP-adjusted line strips
-    the term premium so a low-TP flattening isn't misread as a recession signal
-    (it's why 2022-24's raw inversion didn't fire the composite). Colours sit
-    outside the zh swap map (a curve isn't a price-direction read)."""
+    """Yield curve: raw 2s10s vs the legacy TP10 compatibility heuristic.
+    The heuristic is 2s10s plus the 10y term-premium model estimate. It is context,
+    not a matched-maturity expectations-only decomposition and does not identify why
+    an inversion occurred. Colours sit outside the zh swap map."""
     start = cf.index.max() - pd.Timedelta(days=365 * 25)
     raw = cf.loc[start:, "curve_raw"].dropna().resample("W-FRI").last().dropna().round(2)
     adj = cf.loc[start:, "curve_tp_adj"].dropna().resample("W-FRI").last().dropna().round(2)
@@ -4612,7 +4611,7 @@ def chart_curve(cf: pd.DataFrame) -> str:
                               fillcolor="#8b93a1", opacity=0.16, line_width=0)
     fig.add_trace(go.Scatter(x=raw.index, y=raw, name="2s10s (raw)",
                              line={"color": "#7aa7e0", "width": 1.3}))
-    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s (term-premium adj.)",
+    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s + TP10 heuristic",
                              line={"color": "#c08af0", "width": 1.3}))
     fig.add_hline(y=0, line={"color": "#9aa4b2", "width": 0.8, "dash": "dot"})
     fig.update_layout(**PLOT_LAYOUT)
@@ -6136,10 +6135,27 @@ def main() -> int:
     # surfaced via the card's as_of). Absent (first run) => the strip degrades to the
     # action_board notable cards below.
     us_standouts = None
+    _us_w3c = None
+    _us_w3c_binding = None
     _us = site / "factordata" / "us_standouts.json"
     if _us.exists():
         try:
-            us_standouts = json.loads(_us.read_text())
+            _us_source_bytes = _us.read_bytes()
+            us_standouts = json.loads(_us_source_bytes)
+            # Freeze raw owner binding before display attachments and tier splitting.
+            # An optional provenance import/read failure cannot hide the board.
+            try:
+                from hashlib import sha256 as _w3c_sha256
+                _us_w3c_binding = _w3c_sha256(_us_source_bytes).hexdigest()
+                from engine.theme_graph.selection_cohort_publication import (
+                    consume_us_source, default_capture_capability)
+                _us_w3c_read = consume_us_source(
+                    _us_source_bytes, data_dir=config.data_dir(),
+                    authorize_capture=default_capture_capability())
+                if _us_w3c_read["status"] == "AVAILABLE":
+                    _us_w3c = _us_w3c_read
+            except Exception as _us_w3c_e:  # noqa: BLE001 — preserve incumbent source rendering
+                log.warning("W3C US source binding unavailable (%s)", _us_w3c_e)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("us_standouts.json unreadable (%s)", e)
     # DISPLAY-ONLY board attaches (personality chips + RLT-R6 sector-stance) — factored
@@ -7046,6 +7062,8 @@ def main() -> int:
         action_board=_ab,
         top_setups=top_setups,
         us_standouts=us_standouts,
+        # Internal machine binding only; no template/public-rights/tier expansion.
+        us_selection_cohort_internal=_us_w3c,
         us_candidate_visibility=us_candidate_visibility,
         us_prophet_book=us_prophet_book,
         us_leader_observations=us_leader_observations,
@@ -7088,7 +7106,7 @@ def main() -> int:
         alloc_card=alloc_card_state(),           # macro-page allocation CTA card
         risk_model=risk_model_view(f, hist, _cf),  # de-risk score + leg breakdown
         chart_risk_model=chart_risk_model(_cf),    # drawdown/recession risk-model chart
-        chart_curve=chart_curve(_cf),              # 2s10s raw vs term-premium-adjusted
+        chart_curve=chart_curve(_cf),              # raw 2s10s vs legacy TP10 heuristic
         chart_vix_term=chart_vix_term(f, _cf),     # VIX level + term-structure ratio
         cross_asset=cross_asset_snap,
         fear_euphoria=fear_euphoria_synthesis(latest, f),
@@ -7729,8 +7747,24 @@ def main() -> int:
         # error leaves the first-pass pages in place.
         try:
             _us_path = site / "factordata" / "us_standouts.json"
+            _fresh_source_bytes = _us_path.read_bytes() if _us_path.exists() else None
+            _fresh_w3c = None
+            _fresh_w3c_binding = None
+            if _fresh_source_bytes is not None:
+                try:
+                    from hashlib import sha256 as _w3c_sha256
+                    _fresh_w3c_binding = _w3c_sha256(_fresh_source_bytes).hexdigest()
+                    from engine.theme_graph.selection_cohort_publication import (
+                        consume_us_source, default_capture_capability)
+                    _fresh_w3c_read = consume_us_source(
+                        _fresh_source_bytes, data_dir=config.data_dir(),
+                        authorize_capture=default_capture_capability())
+                    if _fresh_w3c_read["status"] == "AVAILABLE":
+                        _fresh_w3c = _fresh_w3c_read
+                except Exception as _fresh_w3c_e:  # noqa: BLE001 — keep ordinary fresh-board rendering
+                    log.warning("W3C fresh US source binding unavailable (%s)", _fresh_w3c_e)
             _fresh_su = _attach_board_display_chips(
-                site, json.loads(_us_path.read_text())) if _us_path.exists() else None
+                site, json.loads(_fresh_source_bytes)) if _fresh_source_bytes is not None else None
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
             _fresh_candidate_visibility = project_candidate_visibility(
@@ -7741,7 +7775,13 @@ def main() -> int:
                     # A same-session correction can change names, exclusion reasons,
                     # or availability without advancing the date/freshness clock.
                     # Compare the existing allowlisted view, not unrelated raw fields.
-                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")):
+                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")
+                    # Same-session source/reason/explanation corrections cannot pair
+                    # the fresh board with an older first-pass internal context.
+                    or _fresh_w3c_binding != _us_w3c_binding
+                    or _fresh_w3c != vm.get("us_selection_cohort_internal")):
+                vm["us_selection_cohort_internal"] = _fresh_w3c
+                _us_w3c_binding = _fresh_w3c_binding
                 vm["us_standouts"] = _fresh_su
                 vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
@@ -7850,6 +7890,11 @@ def main() -> int:
         except Exception as _rr_e:  # noqa: BLE001 — additive, never fatal
             log.warning("one-build-lag re-render skipped (%s)", _rr_e)
         _tmark("one_build_lag_rerender")
+        try:
+            from engine.theme_graph.selection_cohort_projection import write_product_projection
+            write_product_projection(site, "us", vm.get("us_selection_cohort_internal"))
+        except Exception as _scp_e:  # noqa: BLE001 — projection never breaks ordinary rendering
+            log.warning("selection-cohort projection (us) not written (%s)", _scp_e)
 
         # Bespoke single-stock chart data: a compact per-ticker OHLC JSON
         # (site/ohlc/<T>.json) read client-side by chart.js. Pure serialisation of
