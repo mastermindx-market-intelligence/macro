@@ -1,0 +1,43 @@
+{
+  "schema": "toi.w2_corporate_action_basis_publication_validation.v1",
+  "source_docs_head": "9ecd9f9f01d54d01f344f5537b65fcfe64d5f814",
+  "macro_observed": "0f575e51469fc66fa9fd326022ac2d7eee814926",
+  "rights_blob": "3969a9aae918141b51baffbb0e17d8a2ec2485a0",
+  "data_contracts_blob": "46306c7f9421237655f6f1200d9c67f59592a0b0",
+  "heuristic_splitter_blob": "1f60faf4d71b851e855eda640ed5e600d160f05a",
+  "synthetic_tests_passed": 10,
+  "market_data_or_outcomes_used": false,
+  "source_or_production_mutation": false,
+  "anonymous_vendor_probe": {
+    "status": 401,
+    "effect": "none",
+    "credential_mapping": false
+  },
+  "files": [
+    {
+      "path": "w2_daily_first/CORPORATE_ACTION_SOURCE_BOUNDARY_2026-10-06.json",
+      "bytes": 2243,
+      "sha256": "aea712bb982e452fa2e83ca7600a899f1fd8628e9bf0ec84c8dd5c56bdf09bd9"
+    },
+    {
+      "path": "w2_daily_first/CORPORATE_ACTION_TRANSFORM_CONTRACT_VALIDATION_2026-10-06.json",
+      "bytes": 3206,
+      "sha256": "fd4dfa27a9ff6d7e4f3c0eb792f7fac60e244ef1f0b811c6fa92e5e41e4ad36b"
+    },
+    {
+      "path": "w2_daily_first/README.md",
+      "bytes": 2138,
+      "sha256": "7f7064f4c27544f9b8c2dfe7d63c12de90fc2d3154a4153cdcd3571715df397a"
+    },
+    {
+      "path": "w2_daily_first/W2_CORPORATE_ACTION_BASIS_RULING_2026-10-06.md",
+      "bytes": 6538,
+      "sha256": "0528bc0feb4d5bfb6bc6d5d245919c6711dbe6256ea7625166914c8583dde9ff"
+    },
+    {
+      "path": "w2_daily_first/corporate_action_transform_contract.py.txt",
+      "bytes": 5293,
+      "sha256": "a39f006832349a7c3769ac29e28c8e22ed75cf5ab3f64cb19ecc4668e58fe1bb"
+    }
+  ]
+}

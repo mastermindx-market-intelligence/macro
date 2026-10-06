@@ -1,0 +1,50 @@
+{
+  "schema": "toi.corporate_action_transform_contract_validation.v1",
+  "generated_at": "2026-10-06T07:33:47.646085+00:00",
+  "scope": "Synthetic contract validation only. No market prices, outcomes, models or production stores.",
+  "contract": {
+    "source_of_record": "massive_stock_day raw Daily bars plus existing Data OS reference.corporate_actions owner once populated from authoritative source events",
+    "split_effective_rule": "On execution_date trading is already on post-split share basis; apply split_from/split_to to prices strictly before execution_date and reciprocal to volume.",
+    "decision_vintage_rule": "Use only corporate-action events with execution_date <= decision cutoff. Preserve source snapshot/fetched_at separately; historical current-vintage use remains RETROSPECTIVE.",
+    "geometry_basis": "split-adjusted price-only analytical frame derived from immutable raw source; preserve original raw trigger/invalidation geometry and factor/vintage; no dividend adjustment in detector geometry.",
+    "volume_basis": "raw persisted integer volume transformed by reciprocal split-price factor when participation spans a split; preserve raw volume and factor.",
+    "economic_primary": "split-adjusted price return on the same price-only basis, with transaction costs separate. Not total shareholder return.",
+    "economic_secondary": "total-return ruler remains HOLD until authoritative dividend events plus an explicit entitlement/reinvestment convention and transform receipt are accepted.",
+    "unmodelled_actions": "spin-offs, mergers, cash/stock consideration and unresolved identity changes return CORPORATE_ACTION_UNRESOLVED rather than being inferred from price jumps.",
+    "heuristic_boundary": "scripts/replay_standout_pipeline.split_adjust is compatibility/diagnostic evidence only for TOI; its price-jump heuristic must not be the authoritative corporate-action source."
+  },
+  "tests": {
+    "no_action_identity": true,
+    "forward_split_continuity": true,
+    "reverse_split_continuity": true,
+    "serial_split_product": true,
+    "dollar_volume_invariance": true,
+    "future_event_excluded_from_prior_cutoff": true,
+    "nonaction_crash_not_rewritten_without_event": true,
+    "conflict_refusals": [
+      {
+        "case": "conflicting_same_date",
+        "refused": true,
+        "reason": "conflicting same-date split ratios"
+      },
+      {
+        "case": "duplicate_id",
+        "refused": true,
+        "reason": "duplicate corporate action id"
+      },
+      {
+        "case": "zero_ratio",
+        "refused": true,
+        "reason": "nonpositive split ratio"
+      }
+    ]
+  },
+  "market_data_or_outcomes_used": false,
+  "source_or_production_mutation": false,
+  "reproducible_test_source_sha256": "a39f006832349a7c3769ac29e28c8e22ed75cf5ab3f64cb19ecc4668e58fe1bb",
+  "replay_exit_code": 0,
+  "replay_tests_run": 10,
+  "replay_tests_passed": 10,
+  "replay_output_sha256": "782059570b5cfb0b457dbdc2812b74e35cd264d36d32b1eb37e2e8b521d41a7d",
+  "initial_replay_failure": "no-action value identity passed semantically but pandas assertion compared derived float64 to fixture int64; assertion corrected to float value identity; transform unchanged"
+}

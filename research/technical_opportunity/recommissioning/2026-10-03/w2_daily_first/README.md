@@ -16,3 +16,7 @@ The first 22-slot candidate no longer waits on 4H. Broad Daily/Weekly/4H W2 rema
 
 The October 6 live R2 coverage return reads only parquet date indexes against the literal PIT membership denominator. Corrected availability is 1,957,003 / 1,990,911 cells (98.2969%). This is not an admission rate: 84.83% of missing cells are before first R2 price under floor-seeded SP400/SP600 membership intervals, exposing identity/membership-start uncertainty rather than proving random price loss. Two keys remain source/identity unresolved. No outcome was read.
 
+## Corporate-action / economic basis
+
+The October 6 corporate-action basis ruling freezes the first-wave transform semantics without building another data plane. Raw massive_stock_day remains the source of record; analytical geometry and primary price-return outcomes require authoritative split events from the existing Data OS reference.corporate_actions owner. Ten synthetic transform tests pass. The house price-jump splitter remains diagnostic only; total-return is secondary/HOLD until dividends and its convention are receipted. Current host access to the Massive corporate-action REST source is owner/credential-gated, so W3 remains HOLD.
+
