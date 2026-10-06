@@ -49,13 +49,13 @@
     "note": "16751 events across 820 distinct date(s)",
     "start": "2013-04-02"
   },
-  "elapsed_s": 2.79,
+  "elapsed_s": 3.186,
   "gap_notes": [
     "earnings: coverage: 2158/2315 tickers carried reported surprises; 543 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
     "macro_release: 31/31 release event(s) joined to a scored actual print",
     "risk_band: 1 event(s) retained after their source row left the current snapshot (union-merge, never deleted)"
   ],
-  "inputs_hash": "sha256:8811e3592c4ac9a18bfc5ad3e4e7efff70a6d82c69a0837dc3efa76965dc235d",
+  "inputs_hash": "sha256:3caa3dd723f1debc4866439efd68e275f514677aa96960265c79c3b4f1af4c1b",
   "ledgers": {
     "earnings_calls": {
       "path": "data/chronicle/earnings_call_events.jsonl",
@@ -76,7 +76,7 @@
       "sha256": "sha256:b442cee1bc0d811830cb3d7cf3fccde37e44144751d6bdaa5c3cddc6a5a7c4c6"
     }
   },
-  "produced_at": "2026-10-06T10:18:31Z",
+  "produced_at": "2026-10-06T14:34:32Z",
   "produced_by": "scripts/build_chronicle.py",
   "schema": "chronicle.manifest/v1",
   "schema_version": 1,
@@ -111,7 +111,7 @@
     },
     "data/research_vault/catalog.json": {
       "present": true,
-      "sha256": "sha256:4a0cef854770372072267c4b0480b6ef3b2bf4e0126cb4aa3fcafab43a0bf4b4"
+      "sha256": "sha256:bf4cba4d72709ee855ce8822441c4ea6996ba810b666c75dcfef24d9343f2d50"
     },
     "data/risk_radar/forward_log.jsonl": {
       "present": true,
