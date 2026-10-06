@@ -2098,6 +2098,7 @@
   /* openThread(id, done): `done` fires once the messages are painted — the resume path
      needs it so it can attach a still-running turn to the thread it belongs to. */
   function openThread(id, done) {
+    stopVoice();
     var generation = ++historyOpenGeneration, epoch = historyEpoch;
     abortStream();
     withAuth().then(function (h) { return fetch(API + '/api/brain/threads/' + encodeURIComponent(id), { headers: h, credentials: 'include' }); })
@@ -3143,6 +3144,7 @@
   /* Closing the panel does NOT tear the turn down — the widget is hidden, not gone, and
      the answer keeps painting into it. Re-opening shows the finished reply. */
   function close() {
+    stopVoice();
     if (panel._morph) { try { panel._morph.cancel(); } catch (e) {} }
     /* Read activeElement BEFORE the classes drop: the panel goes visibility:hidden on the
        way out, and the browser blurs whatever was focused inside it the moment it does. */
@@ -3201,12 +3203,13 @@
     });
   }
   function toggleSide() { panel.classList.toggle('show-side'); }
-  function newChat() { historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max')) panel.classList.remove('show-side'); }
+  function newChat() { stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max')) panel.classList.remove('show-side'); }
 
   /* ── auth wiring ── */
   function onAuth(user) {
     var owner = user && (user.id || user.email) || null;
     if (!principalKnown || owner !== historyOwner) {
+      stopVoice();
       if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
       abortStream(); resuming = false;
       historyOwner = owner; historyEpoch++; historyListGeneration++; historyOpenGeneration++;
@@ -3462,13 +3465,25 @@
   }
 
   /* ── voice (best-effort Web Speech) ── */
+  var activeVoice = null;
+  function stopVoice() {
+    var r = activeVoice; activeVoice = null;
+    /* Fence callbacks before abort: a provider can deliver a final result synchronously. */
+    if (r) { try { r.abort(); } catch (e) {} }
+  }
   function voiceSupported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
   function startVoice() {
+    stopVoice();
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return;
-    var epoch = historyEpoch, r = new SR(); r.lang = zh() ? 'zh-CN' : 'en-US'; r.interimResults = false;
-    r.onresult = function (ev) { if (epoch !== historyEpoch) return; ta.value = (ta.value + ' ' + ev.results[0][0].transcript).trim(); autosize(); syncSend(); updateCounter(); };
-    try { r.start(); } catch (e) {}
+    var epoch = historyEpoch, r;
+    try { r = new SR(); } catch (e) { return; }
+    activeVoice = r; r.lang = zh() ? 'zh-CN' : 'en-US'; r.interimResults = false;
+    r.onresult = function (ev) { if (activeVoice !== r || epoch !== historyEpoch) return; ta.value = (ta.value + ' ' + ev.results[0][0].transcript).trim(); autosize(); syncSend(); updateCounter(); };
+    r.onend = function () { if (activeVoice === r) activeVoice = null; };
+    r.onerror = function () { if (activeVoice === r) stopVoice(); };
+    try { r.start(); } catch (e) { stopVoice(); }
   }
+  window.addEventListener('pagehide', stopVoice);
   /* Hide the mic entirely where Web Speech is unsupported (rather than a dead button). */
   (function () { if (!voiceSupported()) { var vb = root.querySelector('[data-act="voice"]'); if (vb) vb.style.display = 'none'; } })();
 

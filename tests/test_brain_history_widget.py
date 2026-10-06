@@ -338,3 +338,62 @@ def test_composer_controls_keep_touch_targets_and_reflow(page,width,lang,text_sc
     if proof:
         folder=Path(proof);folder.mkdir(parents=True,exist_ok=True)
         page.screenshot(path=str(folder/f'{width}-{lang}-{text_scale}x-composer.png'))
+
+
+@pytest.mark.parametrize("action", ["account", "close", "new", "thread", "pagehide"])
+def test_voice_recognition_is_aborted_when_composer_context_ends(page, action):
+    page.evaluate("""() => {
+      window.__speechInstances=[];
+      window.SpeechRecognition=function(){
+        window.__speechInstances.push(this); this.aborted=0;
+        this.start=()=>{}; this.abort=()=>{this.aborted++;this.onresult({results:[[{transcript:'late abort result'}]]});};
+      };
+      document.querySelector('[data-act=voice]').style.display='';
+    }""")
+    page.locator('[data-act="voice"]').click()
+    if action == "account":
+        page.evaluate("MMBrain.setPrincipal('user-B')")
+    elif action == "close":
+        page.evaluate("MMBrain.close()")
+    elif action == "new":
+        page.locator('[data-act="new"]').first.click()
+    elif action == "thread":
+        page.locator(f'.mmb-ti[data-id="{A}"]').click()
+    else:
+        page.evaluate("window.dispatchEvent(new Event('pagehide'))")
+    assert page.evaluate("window.__speechInstances[0].aborted") == 1
+    expect(page.locator('#mmb-ta')).to_have_value('')
+
+
+def test_voice_replacement_keeps_only_current_recognizer(page):
+    page.evaluate("""() => {
+      window.__speechInstances=[];
+      window.SpeechRecognition=function(){window.__speechInstances.push(this);this.aborted=0;this.start=()=>{};this.abort=()=>{this.aborted++;};};
+      document.querySelector('[data-act=voice]').style.display='';
+    }""")
+    page.locator('[data-act="voice"]').click()
+    page.locator('[data-act="voice"]').click()
+    assert page.evaluate("window.__speechInstances[0].aborted") == 1
+    page.evaluate("""() => {
+      const old=window.__speechInstances[0], current=window.__speechInstances[1];
+      old.onresult({results:[[{transcript:'obsolete'}]]}); old.onend();
+      current.onresult({results:[[{transcript:'current dictation'}]]});
+    }""")
+    expect(page.locator('#mmb-ta')).to_have_value('current dictation')
+    page.evaluate("MMBrain.close()")
+    assert page.evaluate("window.__speechInstances[1].aborted") == 1
+
+
+def test_voice_error_aborts_and_late_end_cannot_release_a_new_session(page):
+    page.evaluate("""() => {
+      window.__speechInstances=[];
+      window.SpeechRecognition=function(){window.__speechInstances.push(this);this.aborted=0;this.start=()=>{};this.abort=()=>{this.aborted++;};};
+      document.querySelector('[data-act=voice]').style.display='';
+    }""")
+    page.locator('[data-act="voice"]').click()
+    page.evaluate("window.__speechInstances[0].onerror()")
+    assert page.evaluate("window.__speechInstances[0].aborted") == 1
+    page.locator('[data-act="voice"]').click()
+    page.evaluate("window.__speechInstances[0].onend();window.__speechInstances[0].onerror();MMBrain.close()")
+    assert page.evaluate("window.__speechInstances[0].aborted") == 1
+    assert page.evaluate("window.__speechInstances[1].aborted") == 1
