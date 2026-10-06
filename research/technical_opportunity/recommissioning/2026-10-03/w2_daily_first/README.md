@@ -19,4 +19,7 @@ The October 6 live R2 coverage return reads only parquet date indexes against th
 ## Corporate-action / economic basis
 
 The October 6 corporate-action basis ruling freezes the first-wave transform semantics without building another data plane. Raw massive_stock_day remains the source of record; analytical geometry and primary price-return outcomes require authoritative split events from the existing Data OS reference.corporate_actions owner. Ten synthetic transform tests pass. The house price-jump splitter remains diagnostic only; total-return is secondary/HOLD until dividends and its convention are receipted. Current host access to the Massive corporate-action REST source is owner/credential-gated, so W3 remains HOLD.
+## Observational unit and manifest draft
+
+The source-only spell census defines a proposed membership-bounded vendor-ticker spell that never crosses missing expected source sessions or S&P1500 non-membership hiatuses. Its ruling and compact receipt are in this directory. The companion w3_manifest directory binds the 22 Daily planning objects to content-hashed source/population/detector/label/model/evaluation blocks while leaving every unresolved owner setting null. Neither artifact is W3 admission.
 
