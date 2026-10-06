@@ -383,3 +383,146 @@ def test_runner_treats_admission_guard_error_as_denial(monkeypatch, tmp_path):
     assert stats.stream_events == 0
     assert counts["revisions"] == 0
     assert published[-1]["state"] == "unavailable"
+
+def _rights_receipt_for_now(now):
+    return {
+        "schema": "qbus.news_rights_receipt.v1",
+        "receipt_id": "activation-check",
+        "owner_ref": "test/source-rights",
+        "status": "approved",
+        "source": "benzinga",
+        "product_id": "synthetic-commercial",
+        "audiences": ["site_full"],
+        "effective_at": (now - timedelta(hours=1)).isoformat(),
+        "expires_at": (now + timedelta(hours=1)).isoformat(),
+        "capabilities": {
+            "internal_ingestion": True,
+            "historical_retention": True,
+            "headline_display": True,
+            "source_link_display": True,
+            "teaser_display": False,
+            "body_display": False,
+            "image_display": False,
+            "derivative_processing": False,
+        },
+    }
+
+
+def _activation_universe_for_now(now):
+    return {
+        "owner": "test.security_reference.sp500",
+        "revision": "activation-r1",
+        "complete": True,
+        "truncated": False,
+        "effective_at": (now - timedelta(days=1)).isoformat(),
+        "known_at": (now - timedelta(minutes=1)).isoformat(),
+        "fresh_until": (now + timedelta(hours=2)).isoformat(),
+        "securities": [
+            {
+                "security_id": "SEC:US-XNAS-NVDA",
+                "ticker": "NVDA",
+                "aliases": ["NVDA"],
+                "valid_from": (now - timedelta(days=100)).isoformat(),
+                "valid_to": None,
+                "known_at": (now - timedelta(minutes=1)).isoformat(),
+            }
+        ],
+    }
+
+
+def test_cli_check_activation_qualifies_without_network_or_database(monkeypatch, tmp_path, capsys):
+    now = datetime.now(UTC)
+    universe = tmp_path / "universe.json"
+    rights = tmp_path / "rights.json"
+    health = tmp_path / "health.json"
+    database = tmp_path / "qbus.sqlite3"
+    universe.write_text(json.dumps(_activation_universe_for_now(now)), encoding="utf-8")
+    rights.write_text(json.dumps(_rights_receipt_for_now(now)), encoding="utf-8")
+    monkeypatch.setenv("BENZINGA_API_KEY", "PRESENT-BUT-NEVER-CONNECT")
+
+    class ForbiddenClient:
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("activation check must not create provider client")
+
+    monkeypatch.setattr(run_qbus_news.benzinga_news, "BenzingaNewsClient", ForbiddenClient)
+
+    rc = run_qbus_news.main(
+        [
+            "--check-activation",
+            "--database", str(database),
+            "--universe-snapshot", str(universe),
+            "--rights-receipt", str(rights),
+            "--health-path", str(health),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 0
+    assert payload["activation_qualified"] is True
+    assert payload["run_requested"] is False
+    assert payload["check_requested"] is True
+    assert payload["universe_count"] == 1
+    assert not database.exists()
+    assert not health.exists()
+
+
+def test_cli_check_activation_fails_closed_on_expired_rights(monkeypatch, tmp_path, capsys):
+    now = datetime.now(UTC)
+    universe = tmp_path / "universe.json"
+    rights = tmp_path / "rights.json"
+    universe.write_text(json.dumps(_activation_universe_for_now(now)), encoding="utf-8")
+    expired = _rights_receipt_for_now(now)
+    expired["effective_at"] = (now - timedelta(hours=2)).isoformat()
+    expired["expires_at"] = (now - timedelta(seconds=1)).isoformat()
+    rights.write_text(json.dumps(expired), encoding="utf-8")
+    monkeypatch.setenv("BENZINGA_API_KEY", "PRESENT")
+
+    rc = run_qbus_news.main(
+        [
+            "--check-activation",
+            "--universe-snapshot", str(universe),
+            "--rights-receipt", str(rights),
+            "--health-path", str(tmp_path / "health.json"),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 2
+    assert payload["activation_qualified"] is False
+    assert payload["error"] == "activation_rights_unqualified"
+
+
+def test_cli_check_activation_fails_closed_on_unqualified_universe(monkeypatch, tmp_path, capsys):
+    now = datetime.now(UTC)
+    universe = tmp_path / "universe.json"
+    rights = tmp_path / "rights.json"
+    bad = _activation_universe_for_now(now)
+    bad["fresh_until"] = (now - timedelta(seconds=1)).isoformat()
+    universe.write_text(json.dumps(bad), encoding="utf-8")
+    rights.write_text(json.dumps(_rights_receipt_for_now(now)), encoding="utf-8")
+    monkeypatch.setenv("BENZINGA_API_KEY", "PRESENT")
+
+    rc = run_qbus_news.main(
+        [
+            "--check-activation",
+            "--universe-snapshot", str(universe),
+            "--rights-receipt", str(rights),
+            "--health-path", str(tmp_path / "health.json"),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 2
+    assert payload["activation_qualified"] is False
+    assert payload["error"] == "activation_universe_unqualified"
+
+
+def test_cli_check_activation_requires_all_prerequisites(monkeypatch, tmp_path, capsys):
+    monkeypatch.delenv("BENZINGA_API_KEY", raising=False)
+
+    rc = run_qbus_news.main(["--check-activation"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 2
+    assert payload["activation_qualified"] is False
+    assert payload["error"] == "activation_prerequisite_missing"
