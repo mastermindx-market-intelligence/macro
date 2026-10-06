@@ -11,7 +11,7 @@
     {
       "id": "a",
       "verdict": "HANDLED",
-      "evidence": "engine/rotation_events.py:1415-1428 @ 1537636f",
+      "evidence": "engine/rotation_events.py:1419-1431 @ 1537636f",
       "script": "Mix _history_created(replayed=True) + _history_closed(); assert modes, mode_counts, mode filters (see L2 md §a).",
       "output": "modes_all=[RECONSTRUCTED_REPLAY, RETAINED_LEDGER_UNMARKED]; mode_counts {1,1}; replay_count=1; unmarked_count=1",
       "consumer_rule": "Display each row's envelope mode; filter with query mode replay vs ledger_unmarked."
@@ -19,7 +19,7 @@
     {
       "id": "b",
       "verdict": "HANDLED",
-      "evidence": "engine/rotation_events.py:1289-1303,1339-1343 @ 1537636f",
+      "evidence": "engine/rotation_events.py:1289-1301,1341-1346 @ 1537636f",
       "script": "Before: bad asof before through → INVALID. After: boundary+future obs>through then malformed line 3 → OK stopped_by through (PR test pattern).",
       "output": "malformed_before: INVALID MISSING_OBSERVATION_CLOCK; after-through pattern: OK through 1 row first_uninspected_line=3; junk on line 2 immediately after in-window row still INVALID_JSON",
       "consumer_rule": "Fail closed on corrupt lines already reached; rows with observation_date>through are not parsed."
@@ -35,7 +35,7 @@
     {
       "id": "d",
       "verdict": "HANDLED",
-      "evidence": "engine/rotation_events.py:1323-1343 @ 1537636f",
+      "evidence": "engine/rotation_events.py:1325-1346 @ 1537636f",
       "script": "closed closed_asof vs through; asof==through inclusion.",
       "output": "closed_asof 2026-07-10 excluded at through 2026-07-05; asof==2026-07-05 included; closed_asof==through included",
       "consumer_rule": "Boundary is observation clock: created uses asof, closed uses closed_asof; inclusive at ==."
@@ -43,7 +43,7 @@
     {
       "id": "e",
       "verdict": "HANDLED",
-      "evidence": "engine/rotation_events.py:1431-1443 @ 1537636f",
+      "evidence": "engine/rotation_events.py:1435-1448 @ 1537636f",
       "script": "Duplicate identical created rows.",
       "output": "selected_rows=2; event_counts.created=2; same lifecycle_id twice; no duplicate field in coverage",
       "consumer_rule": "Treat event_counts as raw line counts; dedupe by lifecycle_id+line if needed."
@@ -51,7 +51,7 @@
     {
       "id": "f",
       "verdict": "HANDLED",
-      "evidence": "engine/rotation_events.py:1339-1343,1392-1413,1435-1436 @ 1537636f",
+      "evidence": "engine/rotation_events.py:1341-1346,1395-1416,1439-1440 @ 1537636f",
       "script": "ts before/after asof; ts after through with asof<=through; bad/missing ts.",
       "output": "ts_before_asof OK both clocks returned; ts_after_through_asof_ok OK row kept; bad/missing ts INVALID MISSING_RECORD_CLOCK",
       "consumer_rule": "through gates observation_date only; show recorded_at vs observation_date per row; no coverage skew flag."
@@ -59,7 +59,7 @@
     {
       "id": "L-A",
       "verdict": "HANDLED",
-      "evidence": "engine/rotation_events.py:1431-1467 @ 1537636f",
+      "evidence": "engine/rotation_events.py:1435-1446,1457-1472 @ 1537636f",
       "script": "List envelope and native clock fields on created+closed rows.",
       "output": "Envelope: observation_date, recorded_at, mode; native ts/asof/closed_asof/started; coverage first/last are observation dates",
       "consumer_rule": "first_observation/last_observation are observation-clock bounds on selected rows only."
@@ -75,7 +75,7 @@
     {
       "id": "P1",
       "verdict": "HANDLED",
-      "evidence": "engine/rotation_events.py:1249-1250 @ 1537636f",
+      "evidence": "engine/rotation_events.py:1251 @ 1537636f",
       "script": "shasum -a 256; stat before/after read; one-byte append.",
       "output": "source_sha256 matches shasum; mtime/size unchanged; one-byte changes hash",
       "consumer_rule": "Cite source_sha256 for ledger bytes provenance."
@@ -83,7 +83,7 @@
     {
       "id": "P2",
       "verdict": "HANDLED",
-      "evidence": "engine/rotation_events.py:1205-1208,1345-1350 @ 1537636f",
+      "evidence": "engine/rotation_events.py:1200-1208,1450-1453 @ 1537636f",
       "script": "limit=2 with malformed line 3; invalid limit/through raise ValueError; 50k-row timing.",
       "output": "limit2 OK stopped_by limit; query_errors typed ValueError; time_full_50k=1.955s time_limit100=0.028s",
       "consumer_rule": "Invalid query args raise before IO; limit stops scan before later physical lines."
@@ -99,7 +99,7 @@
     {
       "id": "P4",
       "verdict": "HANDLED",
-      "evidence": "return dict shape @ 1537636f:1452-1470",
+      "evidence": "engine/rotation_events.py:1458-1472 @ 1537636f (return dict shape)",
       "script": "Build consumer display lines from OK result with through.",
       "output": "statement 4 lines; cannot_support: ts/through skew warning, duplicate inflation, membership PIT",
       "consumer_rule": "Honest counts need mode_counts + invalid_rows + observation bounds; gaps named above."
@@ -111,7 +111,7 @@
       "severity": "MAJOR",
       "probe": "a/f",
       "claim": "RECONSTRUCTED_REPLAY is inferred only from native `replayed is True`; replay-sourced rows without the flag classify as RETAINED_LEDGER_UNMARKED with no warning.",
-      "evidence": "engine/rotation_events.py:1415-1418 @ 1537636f",
+      "evidence": "engine/rotation_events.py:1419-1423 @ 1537636f",
       "repair": "Document contract and/or add coverage flag when replay metadata is absent; optional source hint field.",
       "recheck": "Probe row with replay provenance but replayed omitted; expect explicit UNMARKED_WITH_REPLAY_RISK or documented consumer rule."
     },
@@ -120,7 +120,7 @@
       "severity": "MAJOR",
       "probe": "f",
       "claim": "Write clock `ts` may be after `through` while observation_date is within `through`; reader returns OK with no coverage skew signal.",
-      "evidence": "engine/rotation_events.py:1339-1343 @ 1537636f",
+      "evidence": "engine/rotation_events.py:1341-1346 @ 1537636f",
       "repair": "Add optional coverage.clock_skew_rows or per-row clock_consistency field.",
       "recheck": "Probe ts=2026-07-20, asof=2026-07-05, through=2026-07-05; expect skew listed in coverage."
     },
@@ -129,7 +129,7 @@
       "severity": "MINOR",
       "probe": "e",
       "claim": "Duplicate lifecycle lines inflate event_counts; coverage has no duplicate lifecycle count.",
-      "evidence": "engine/rotation_events.py:1442-1443 @ 1537636f",
+      "evidence": "engine/rotation_events.py:1447-1448 @ 1537636f",
       "repair": "Expose duplicate_lifecycle_count or distinct lifecycle_id count in coverage.",
       "recheck": "Two identical created lines; coverage reports duplicate count 1."
     },
