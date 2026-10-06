@@ -104,6 +104,34 @@ Among 134 first-T2 episodes with both H5/H10 grades, 55 were SPY-positive at H5 
 Treat this as architectural evidence that durability should be studied as **P(persistence | ignition has already been accepted)**, with a dynamic post-ignition survival update, not as proof of any current persistence feature.
 
 
+
+## Concurrent timeframe-program negative control (landed during this study)
+
+Current main now includes the Oct-04/Oct-06 Prophet timeframe/grain program and verdict-preservation census (#8508).
+
+Preserve these findings:
+
+- standalone 3D grain effect: NOT SUPPORTED at H10 after matched-memory control;
+- standalone 2D grain effect: NOT SUPPORTED;
+- memory effect: NOT SUPPORTED;
+- regime-conditioned grain C2: INSUFFICIENT SUPPORT because its rotation-state control is BROKEN; counterfactual NOT SUPPORTED is diagnostic, not the actual verdict.
+
+This does **not** invalidate H-IGNITION-CONVERGENCE. It sharpens it.
+
+The new study is explicitly an **interaction test**:
+
+> same T2 state + independent rerating convergence versus same-date T2 state without convergence.
+
+Do not test or claim “slower timeframe confirmation is alpha.”
+
+Also note the namespace collision:
+
+- regime/timeframe “B1” = grain-vs-memory research lane;
+- R6 “B1” = `prophet.candidate_episode/v1` identity plane.
+
+Never conflate these in handoffs, code or product copy.
+
+
 ## Architecture reuse / owner routing discovered by the Pro re-audit
 
 Do **not** create a new candidate-memory, lifecycle, evidence, or all-candidate plane.
