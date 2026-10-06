@@ -336,6 +336,42 @@ They may motivate the hypothesis but may not be counted as prospective confirmat
 
 ---
 
+---
+
+# 11. Existing Research Priority owner — no competing score
+
+Live Entry Radar already owns `mastermind.research_priority.v1` (RP1).
+
+RP1 is:
+
+- deterministic;
+- ACCRUING;
+- a research-attention ordering;
+- explicitly **not** probability, edge, confidence or Prophet;
+- computed from structural quality, reset quality, resilience and recovery quality;
+- explicitly excludes attention hotness, lobe nomination count, sentiment, historical outcomes and LLM output.
+
+Therefore this preregistration does **not** authorize a second “Research Priority” score.
+
+The emergence-convergence hypothesis must first accrue as a **typed research evidence state / cohort label**, for example:
+
+- evidence convergence present / absent;
+- evidence-family identities;
+- evidence known-at clocks;
+- emergence first-seen / latest-seen;
+- current technical confirmation state;
+- current Entry Availability state.
+
+If operators need an ordering before the hypothesis is validated, consume the existing RP1 where its live Radar contract applies.
+
+If prospective H-EMERGENCE-CONVERSION evidence later supports using rerating convergence in prioritization, that requires an explicit owner-level decision:
+
+- either extend/version the existing Research Priority policy through its owner and scientific gate; or
+- register a Conditional Fusion challenger that remains non-authoritative until promoted.
+
+Do not create a Prophet-specific “emergence priority score” beside RP1.
+
+
 # Final preregistered question
 
 > **Can Mastermind reliably recognize important unresolved candidates 1-3 weeks before valid technical confirmation, without turning that early research state into a premature trade signal?**
