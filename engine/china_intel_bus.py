@@ -386,6 +386,8 @@ def _visit_discovery_snapshot(
     open_scoped_codes: set[str],
     has_unscoped_open: bool,
     exception_ledger_readable: bool = True,
+    exception_status_valid: bool = True,
+    unknown_exception_status_count: int = 0,
     kind_labeler,
     recent_days: int = _VISIT_DISCOVERY_RECENT_DAYS,
     baseline_days: int = _VISIT_DISCOVERY_BASELINE_DAYS,
@@ -518,9 +520,22 @@ def _visit_discovery_snapshot(
     ):
         clock_errors.append("row_source_clock_invalid")
     if any(
-        observed is not None and source is not None and observed < source
-        for observed, source in zip(row_observation_instants, row_source_instants)
+        observed is not None
+        and (
+            (source is not None and observed < source)
+            or (
+                source is None
+                and source_day is not None
+                and observed.date() < source_day
+            )
+        )
+        for observed, source, source_day in zip(
+            row_observation_instants, row_source_instants, row_source_days
+        )
     ):
+        # Full timestamps compare as instants. Accepted date-only source clocks
+        # compare at day precision so an observation cannot precede the source
+        # date merely because the source lacks an intraday timestamp.
         clock_errors.append("row_observation_before_source")
     if health_receipt_instant is not None:
         if any(
@@ -620,6 +635,8 @@ def _visit_discovery_snapshot(
         "owner_health_status": owner_health_status,
         "stale_after_days": max(int(stale_after_days), 0),
         "exception_ledger_readable": bool(exception_ledger_readable),
+        "exception_status_valid": bool(exception_status_valid),
+        "unknown_exception_status_count": max(int(unknown_exception_status_count), 0),
         "owner_clock_state": "valid" if owner_clock_order_valid else "invalid",
         "owner_clock_errors": sorted(set(clock_errors)),
         "reference_day": reference_day.isoformat(),
@@ -637,10 +654,12 @@ def _visit_discovery_snapshot(
             and last_success_day is not None
             and owner_clock_order_valid
             and exception_ledger_readable
+            and exception_status_valid
             and not has_unscoped_open
         ),
         "global_negative_authority_blocker": (
             "coverage_exception_ledger_unreadable" if not exception_ledger_readable
+            else "coverage_exception_status_unknown" if not exception_status_valid
             else "unscoped_coverage_exception" if has_unscoped_open
             else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
             else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
@@ -748,6 +767,8 @@ def _visit_discovery_snapshot(
             baseline_state = "blocked_source_clock_invalid"
         elif not exception_ledger_readable:
             baseline_state = "blocked_exception_ledger_unreadable"
+        elif not exception_status_valid:
+            baseline_state = "blocked_exception_status_unknown"
         elif has_unscoped_open:
             baseline_state = "blocked_unscoped_coverage_exception"
         elif company_exception:
@@ -788,6 +809,8 @@ def _visit_discovery_snapshot(
             first_seen_state = "no_recent_positive_evidence"
         elif not exception_ledger_readable:
             first_seen_state = "unknown_exception_ledger_unreadable"
+        elif not exception_status_valid:
+            first_seen_state = "unknown_exception_status"
         elif has_unscoped_open:
             first_seen_state = "unknown_unscoped_coverage_exception"
         elif not health_clock_order_valid:
@@ -933,6 +956,12 @@ def _visit_discovery_block() -> dict | None:
 
         exception_ledger_readable = exceptions is not None
         exception_rows = exceptions or []
+        allowed_exception_statuses = {"open", "resolved"}
+        unknown_status_rows = [
+            r for r in exception_rows
+            if _visit_text(r.get("status")) not in allowed_exception_statuses
+        ]
+        exception_status_valid = not unknown_status_rows
         open_rows = [
             r for r in exception_rows if _visit_text(r.get("status")) == "open"
         ]
@@ -953,6 +982,7 @@ def _visit_discovery_block() -> dict | None:
             not visits
             and not open_rows
             and exception_ledger_readable
+            and exception_status_valid
             and _visit_text(health.get("status")) == "no_coverage"
             and not coverage_start
         ):
@@ -965,6 +995,8 @@ def _visit_discovery_block() -> dict | None:
             open_scoped_codes=open_scoped_codes,
             has_unscoped_open=has_unscoped,
             exception_ledger_readable=exception_ledger_readable,
+            exception_status_valid=exception_status_valid,
+            unknown_exception_status_count=len(unknown_status_rows),
             kind_labeler=cv.visit_kind_label,
             reference_day=datetime.now(timezone.utc).date(),
             stale_after_days=getattr(
