@@ -4905,6 +4905,8 @@ jobs:
       - "tests/test_check_intelligence_registry.py"
       - "tests/test_intelligence_registry.py"
       - "tests/test_output_health.py"
+      # SRC-A1 acceptance tests import the collector already owned above.
+      - "tests/test_equity_revisions_src_a1_acceptance.py"
       # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
       # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
       # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
@@ -4945,6 +4947,8 @@ jobs:
       # dependency beyond the pytest/pyyaml line already installed above.
       - name: "output health contract (Eval OS T4)"
         run: python -m pytest tests/test_output_health.py -q
+      - name: "SRC-A1 native lineage, failure preservation and legacy compatibility"
+        run: python -m pytest --noconftest tests/test_equity_revisions_src_a1_acceptance.py -q
 
   neural-web-core:
     if: ${{ false }}
@@ -7593,13 +7597,17 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps (the builder suite runs real builders)
-        run: pip install pytest pyyaml jinja2 pandas numpy pyarrow
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       # test_site_shim.py itself (units + tripwire + source guard) runs on the
       # template-site-sync lane, which #3635 wired and which needs only pyyaml.
       # This job exists for the suite that lane CANNOT host: it RUNS each builder,
       # so it needs the data stack below.
       - name: every page builder emits the shim (runs each against a fixture root)
         run: python -m pytest tests/test_builder_shim_writes.py -q
+      # Hermetic Forex producer/projector/writer/HTML contracts belong to PR code CI,
+      # not the main-only data-health plane. Preserve real-data macro tests below.
+      - name: Forex context bus and movement evidence (synthetic inputs, temporary output)
+        run: python -m pytest tests/test_forex_context_bus.py -q
 
   grader-manifest:
     if: ${{ false }}
@@ -8459,6 +8467,7 @@ jobs:
       - config/theme_graph_identity_breaks.yml
       - config/theme_sources.yml
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
+      - contracts/theme_graph/probation_proposal.v1.schema.json
       - contracts/theme_graph/theme_state.v1.schema.json
       - engine/__init__.py
       - engine/basket_index.py
@@ -8484,6 +8493,9 @@ jobs:
       - engine/theme_graph/rights.py
       - engine/theme_graph/rights_use.py
       - engine/theme_graph/selection_cohort.py
+      - engine/theme_graph/ontology.py
+      - engine/theme_graph/probation.py
+      - engine/theme_graph/selection_cohort_reads.py
       - engine/theme_graph/store.py
       - engine/theme_graph/theme_state.py
       - lib/__init__.py
@@ -8506,6 +8518,7 @@ jobs:
       - tests/test_gmi_history_integrity.py
       - tests/test_publish_company_theme_exposure_r2.py
       - tests/test_theme_graph_selection_cohort.py
+      - tests/test_theme_graph_selection_cohort_reads.py
       - tests/test_theme_graph_state.py
       - collectors/_drip.py
       - collectors/base.py
@@ -9239,7 +9252,7 @@ jobs:
           test -f engine/theme_graph/theme_state.py
           test -f tests/test_theme_graph_state.py
           unset GMI_STATE_OWNER_WORKSPACE
-          TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py -q
+          TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py -q
       - name: GMI finalized cohort publication and unchanged owner serialization
         run: TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort_publication.py tests/test_china_standouts_serialization.py tests/test_build_china_library_more_actionable_guard.py tests/test_us_standouts_cascade_gate.py -q
 
@@ -13680,6 +13693,13 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn pillow
+      # SRC-A1 is a hermetic research audit. Name its CLI as well as its
+      # suite: the selector cannot resolve the suite's sibling-file
+      # spec_from_file_location import through Path.with_name().
+      - name: information-to-price SRC-A1 source clocks, identity and attempt denominator
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py --help
+          python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_information_to_price_audit.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
@@ -16158,7 +16178,7 @@ jobs:
       # Placed right after test_yield_momentum.py so a source regression is the masking unit and a
       # consumer regression is the next failure a reader sees. Paths widened for the suite + engine.
       - name: commodities / forex / rates / news / policy panels and their calibration guards
-        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_credit_momentum_yield_consumer.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
+        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_credit_momentum_yield_consumer.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
       - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
         run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
       # E1c4 (Granular Regime Intelligence, 2026-10-04): scripts/build_rates_command.py now
@@ -16184,7 +16204,7 @@ jobs:
       - "tests/test_crossasset_flows.py"
       - "tests/test_financial_news.py"
       - "tests/test_forex.py"
-      - "tests/test_forex_context_bus.py"
+      - "templates/forex.html.j2"
       - "tests/test_news_event_ledger.py"
       - "tests/test_phase_buildout.py"
       - "tests/test_policy_lever.py"
@@ -19049,6 +19069,45 @@ jobs:
       - "scripts/ci/daily_engine_regional_desk_builders.sh"
       - "scripts/validate_options_skew.py"
       - "tests/test_options_skew.py"
+      # MKT-1 hosted execution (Sol 5987749403). scope: exclusive skips
+      # inference, so the suite's measured import closure is listed here.
+      # A non-exclusive owner fallback-selects ordinary packing probes.
+      - "engine/price_pressure/**"
+      - "tests/test_price_pressure.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/confluence_tiers.py"
+      - "engine/cross_asset.py"
+      - "engine/cycles.py"
+      - "engine/extension.py"
+      - "engine/grading.py"
+      - "engine/hysteresis.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/ledger_lane.py"
+      - "engine/market_drivers.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/session_anchor.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/technicals.py"
+      - "engine/trial_ledger.py"
+      - "engine/universe_history.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/store.py"
+      - "research/DISLOCATION_RECOVERY_LOBE_MASTERPLAN_BY_FABLE.md"
+      - "scripts/__init__.py"
+      - "scripts/build_price_pressure.py"
+      - "scripts/publish_r2.py"
+      - "scripts/replay_standout_pipeline.py"
+      - "scripts/research_liquidity_shock_reversal.py"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/us_standouts.json"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -19060,6 +19119,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: options skew engine
         run: python -m pytest tests/test_options_skew.py -q
+      - name: price-pressure response export + MKT-1 regressions (K3E MKT-1 hosted execution; Sol 5987749403)
+        run: python -m pytest tests/test_price_pressure.py -q -rs
 
   market-ontology-f09-usgs-mcs:
     if: ${{ false }}

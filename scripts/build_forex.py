@@ -31,6 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config, store  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from lib.forex_kinematics_view import project_kinematics  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_forex")
@@ -1185,6 +1186,8 @@ def main() -> int:
     cal_span = f"{min(results[p].index.min() for p in order).date()}..{max(results[p].index.max() for p in order).date()}"
     cot_ok = any("pos_pctile" in results[p].columns and results[p]["pos_pctile"].notna().any() for p in order)
 
+    # One validated display projection serves both the page and machine snapshot.
+    kinematics_view = project_kinematics(kinematics, cfg)
     from engine.i18n import tr, td
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     env.globals.update(tr=tr, td=td)
@@ -1192,7 +1195,7 @@ def main() -> int:
         C=C, as_of=as_of, built=built, cal_span=cal_span,
         dollar=dollar, desk=desk, real_rate_chart=real_rate_chart,
         transmission=transmission, strength=strength, scorecards=scorecards,
-        regime=regime, kinematics=kinematics,
+        regime=regime, kinematics=kinematics, kinematics_view=kinematics_view,
         pairs=pairs, sections=sections, carry_table=ctable, cot_ok=cot_ok,
         timeline=timeline, timeline_days=acfg["timeline_days"], n_alerts=len(recent_events),
         # B1.4 new view-model vars (populated in the new template; stub values for
@@ -1301,6 +1304,8 @@ def main() -> int:
         "transmission": _transmission_latest(transmission),
         # MSX-1: strength meter forwarded verbatim (was display-dead-end)
         "strength": strength if strength else {},
+        # R12: existing computed values, explicit units and unknown per-metric clocks.
+        "kinematics": kinematics_view,
         # MSX-1: regime_radar gains 'scenarios' compact receipts (additive)
         "regime_radar": ({"as_of": regime.get("as_of"), "dominant": regime.get("dominant"),
                           "active": [s["key"] for s in regime.get("scenarios", []) if s.get("active")],
