@@ -2897,6 +2897,12 @@ jobs:
       # this one glob was the only gap the import-closure contract
       # (test_curated_exclusive_scopes_cover_their_own_import_closure) found.
       - "site/basketdata/fear_greed.json"
+      # engine/neuralweb/regime_context.py SOURCE_PATHS (spread into
+      # engine/neuralweb/market_packet._ROOT_SOURCES) name these two
+      # site/basketdata files — the same market_packet closure edge as
+      # fear_greed.json above (PR #8257).
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "site/canadabasketdata/**"
       - "site/chinabasketdata/**"
       - "site/coming-soon.html"
@@ -10401,6 +10407,12 @@ jobs:
       # requires the declared scope to cover these site reads too, or the job
       # silently stops running for edits to them.
       - "site/basketdata/fear_greed.json"
+      # engine/neuralweb/regime_context.py SOURCE_PATHS (spread into
+      # engine/neuralweb/market_packet._ROOT_SOURCES) name these two
+      # site/basketdata files — the same market_packet closure edge as
+      # fear_greed.json above (PR #8257).
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "site/canadabasketdata/**"
       - "site/chinabasketdata/**"
       - "site/coming-soon.html"
@@ -12880,6 +12892,12 @@ jobs:
       # (test_curated_exclusive_scopes_cover_their_own_import_closure)
       # requires the declared scope to cover these site reads too.
       - "site/basketdata/fear_greed.json"
+      # engine/neuralweb/regime_context.py SOURCE_PATHS (spread into
+      # engine/neuralweb/market_packet._ROOT_SOURCES) name these two
+      # site/basketdata files — the same market_packet closure edge as
+      # fear_greed.json above (PR #8257).
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "site/canadabasketdata/**"
       - "site/chinabasketdata/**"
       - "site/coming-soon.html"
@@ -15345,6 +15363,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
         run: python -m pytest tests/test_brain_gateway.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
+      - name: granular regime context - source clocks, real consumer and entitlement boundary
+        run: python -m pytest tests/test_regime_context.py tests/test_regime_native_degradation.py tests/test_regime_degradation_contract.py tests/test_regime_context_entitled_block.py tests/test_regime_context_owner_vocabulary.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
         run: >-
           python -m pytest
@@ -16675,6 +16695,12 @@ jobs:
       # (test_curated_exclusive_scopes_cover_their_own_import_closure)
       # requires the declared scope to cover these site reads too.
       - "site/basketdata/fear_greed.json"
+      # engine/neuralweb/regime_context.py SOURCE_PATHS (spread into
+      # engine/neuralweb/market_packet._ROOT_SOURCES) name these two
+      # site/basketdata files — the same market_packet closure edge as
+      # fear_greed.json above (PR #8257).
+      - "site/basketdata/breadth_split.json"
+      - "site/basketdata/vol_weather.json"
       - "site/canadabasketdata/**"
       - "site/chinabasketdata/**"
       - "site/coming-soon.html"

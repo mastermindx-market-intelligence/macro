@@ -1,0 +1,86 @@
+{
+  "source_commit": "11af49ee9978c904b6d693432f360e2b40d2cfa6",
+  "method": "git show exact bytes, no recomputation",
+  "sources": [
+    {
+      "path": "data/regime/latest.json",
+      "sha256": "82aac2279bc220fd9b91e3ea3d83d1db3c8d372add3d063246193f177aae4ce5",
+      "bytes": 874817
+    },
+    {
+      "path": "data/transmission/latest.json",
+      "sha256": "2c75aa6e5b474b75f3737cfd8fdba2e5202df18f696191239f2dba9fa616163f",
+      "bytes": 78139
+    },
+    {
+      "path": "site/basketdata/breadth_split.json",
+      "sha256": "2bdf21d1d5c233fb23d02a42a61c1807d5e3bac8f66f9b75134e2b94be7cf0b8",
+      "bytes": 1839
+    },
+    {
+      "path": "site/basketdata/vol_weather.json",
+      "sha256": "68a5fa6f7823d84406281d29d720205ad0496c840ce04cc6ecfac2a902deb267",
+      "bytes": 5459
+    },
+    {
+      "path": "data/dispersion/regime.json",
+      "sha256": "5f2f83c6092e6404a216bc7f16c736fa03ad1c56a6a6399f64011f08a3107a7b",
+      "bytes": 9475
+    },
+    {
+      "path": "data/neuralweb/world_state.json",
+      "sha256": "49d1db7a3eadcb09b52d8f3f53e50116a1d2580c35b010830be36aa0f573b05b",
+      "bytes": 206233
+    },
+    {
+      "path": "data/leadership_crack/latest.json",
+      "sha256": "5289936a5298fc44b6bbe1072c953204590e0fd2cec6c660cd0d92530131cd4c",
+      "bytes": 676
+    },
+    {
+      "path": "site/live/quotes.json",
+      "sha256": "812af30033cb0f84e755d8fb5d8f5424ad170a429f89d361505ce3d2f5fe94dd",
+      "bytes": 5263
+    },
+    {
+      "path": "site/live/risk_state.json",
+      "sha256": "039e8e87a5a8a01641efc1e5ea65e9de10875f0100f60c017e31c38c676a35f3",
+      "bytes": 4212
+    },
+    {
+      "path": "site/live/breadth.json",
+      "sha256": "5c195802e6e24c484da11a8391ba908794c84b851d4a313ede8c8011c41faea7",
+      "bytes": 1514
+    },
+    {
+      "path": "site/live/market_drivers.json",
+      "sha256": "8841d2c6ba22d14109b2adc105f1459c36a5056f23de62a6cd6a40fc9ca62962",
+      "bytes": 4816
+    },
+    {
+      "path": "site/live/basket_pulse.json",
+      "sha256": "9ffbe879ca70f5b5de304a0dc36978cb17b55291b4642b9782ff2c22d044a314",
+      "bytes": 14256
+    },
+    {
+      "path": "site/master_brief.json",
+      "sha256": "c3cb170b484cb8b896572c342dcbd3818228380a722f7e334b94107da8c03537",
+      "bytes": 10091
+    },
+    {
+      "path": "data/rates_command/latest.json",
+      "sha256": "63118eb76a7fdf02e32d483062b3b162fea80b3c4ccf09d4aa9e96736b072158",
+      "bytes": 34095
+    },
+    {
+      "path": "site/vol/regime.json",
+      "sha256": "fcc2e360d1732b776273e91c50e07e1223201f83ae1013bb07f052584b4cc0c8",
+      "bytes": 6240
+    },
+    {
+      "path": "data/crossasset/latest.json",
+      "sha256": "9e3dadb81aab48ed4c129fe22ccc2967934c5e60c8c45639f4854c5a857b8d2c",
+      "bytes": 7098
+    }
+  ]
+}

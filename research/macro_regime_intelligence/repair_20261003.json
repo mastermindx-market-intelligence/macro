@@ -1,0 +1,141 @@
+{
+  "schema": "regime_context_repair_receipt.v1",
+  "observed_at": "2026-10-03T00:00:00Z",
+  "base_candidate": "d09721be4387d1f64dd02bf248b5e1dbb6106edf",
+  "files_round_2": {
+    "engine/neuralweb/regime_context.py": "e4246a29985c7d5409a0a186dadcf1783a6bbf9443943075c22ed2a7c7b8f07f",
+    "engine/neuralweb/market_packet.py": "24a54041ee6b40834616ced140d339da05b54a5c0e65428c4fe9078cf6c1ce87",
+    "tests/test_regime_context.py": "1b84b9da0b297d1e91ea459d42178eccbc148dd15f48f39d28cf5e2d198848d3",
+    "tests/test_regime_native_degradation.py": "92e49e665a26063e61b0e6677adeb808dea9701691682668b29d0d9e85dd51d6",
+    "tests/test_regime_degradation_contract.py": "2031eaa98c13c0d3318b39ed1b5877d5b75be9e6b3fbb91ab0e095d8f961422e",
+    "tests/test_regime_context_entitled_block.py": "f8b51019310266566c6016a13bfc5ea547b187ae76b9cb463684c0b2d9414a74"
+  },
+  "test_summary_round_2": "315 passed in 1.80s",
+  "test_command_round_2": "python3 -m pytest tests/test_regime_context.py tests/test_regime_native_degradation.py tests/test_regime_degradation_contract.py tests/test_regime_context_entitled_block.py -q",
+  "round_3": {
+    "head": "ed4535f42f0c87520be09444e864df45e4a3119f",
+    "files_sha256": {
+      "engine/neuralweb/regime_context.py": "44ccf640ebfb0d292fd499604b6a4ef9c351b81768eec755cf2a12255e74509d",
+      "engine/neuralweb/market_packet.py": "27f210ea89ca453be160d7ef21ef1842c31398ca9d0602e54ca95decd65f8d12",
+      "tests/test_regime_context.py": "1b84b9da0b297d1e91ea459d42178eccbc148dd15f48f39d28cf5e2d198848d3",
+      "tests/test_regime_native_degradation.py": "92e49e665a26063e61b0e6677adeb808dea9701691682668b29d0d9e85dd51d6",
+      "tests/test_regime_degradation_contract.py": "2031eaa98c13c0d3318b39ed1b5877d5b75be9e6b3fbb91ab0e095d8f961422e",
+      "tests/test_regime_context_entitled_block.py": "f8b51019310266566c6016a13bfc5ea547b187ae76b9cb463684c0b2d9414a74",
+      "tests/test_regime_context_owner_vocabulary.py": "064e8ab607b442a0a71f0a7dd89bf5d85560a125569f3fe91d801f39e3fc0eed",
+      ".github/ci/legacy-jobs.yml": "1d9afa9699a00e4e453e3e450d1a05d655ceded53845358f1dc7688515690a19"
+    },
+    "regen_command": "python3 -c \"import hashlib; [print(f, hashlib.sha256(open(f,'rb').read()).hexdigest()) for f in ['engine/neuralweb/regime_context.py','engine/neuralweb/market_packet.py','tests/test_regime_context.py','tests/test_regime_native_degradation.py','tests/test_regime_degradation_contract.py','tests/test_regime_context_entitled_block.py','tests/test_regime_context_owner_vocabulary.py','.github/ci/legacy-jobs.yml']]\"",
+    "findings_closed": {
+      "F1": "broadening_state list now matches engine/theme_revisions.py: union of _accel_state (FLAT_LOW/RISING/ROLLING/MIXED) and no-history/proxy (INSUFFICIENT_HISTORY).",
+      "F2": "cohort_role routed through _choice with the producer's exact literal ('tracked_ai_hardware_damage_monitor', 34 chars).",
+      "F3": "every remaining _choice/_slug field read its producer and is correct (transition_state, owner_style, factor_leader, leadership state, economic_freshness, horizon_basis, membership_version).",
+      "F4": "new tests/test_regime_context_owner_vocabulary.py: fixture-census positive control + producer-set positive control per field, enrolled in the existing CI step in .github/ci/legacy-jobs.yml."
+    },
+    "nits_closed": {
+      "N1": "_render_regime_detail now threads REGIME_DETAIL_BLOCK_BUDGET explicitly to render_context; the rebudget fallback (market_packet.py:2033-2043) remains reachable whenever a dataset exceeds the budget.",
+      "N2": "cap corrected to 6201 (DEFAULT 4200 + REGIME_DETAIL_BLOCK_BUDGET 2000 + 1 newline splice), matching what the paid digest can actually reach.",
+      "N3": "REGIME_DETAIL removed from _RENDERERS (market_packet.py:1932) so has_any_base no longer silently includes the block in the base census; the elif branch at line 2011 is no longer reachable, so it was removed.",
+      "N4": "priority-tuple comment corrected (sort always reorders; unlisted keys are LEAST-droppable, popped LAST) AND code changed: `kept.sort(key=lambda kv: -pri.get(kv[0], float('inf')))` — default `-1` made unlisted sort to the END and drop FIRST, contradicting the comment; default `float('inf')` makes unlisted sort to the FRONT (popped LAST) and also honors the file-level 'MOST-DROPPABLE first' contract (PRIORITY[0] `options_cor3m` now at end of `kept`, popped first).",
+      "N5": "_token removed (regime_context.py:77); no callers and no tests import it."
+    }
+  },
+  "round_4": {
+    "base": "ed4535f42f0c87520be09444e864df45e4a3119f",
+    "findings_closed": {
+      "R3-1": "membership_version routed through the new dedicated validator _membership_version(regime_context.py), which fullmatches `^[a-z0-9_]+:(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?(?:\\|[a-z0-9_]+:(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?)*$` (cap 128) and treats '' and None as ABSENT, not unrecognized. The producer's 40-char literal 'finviz:2026-06-27|membership:2026-08-07' is accepted with no issue; the producer's empty sentinel-missing value '' returns None with no issue.",
+      "R3-2": "owner-vocabulary fixture (tests/test_regime_context_owner_vocabulary.py:117) now carries the literal 'finviz:2026-06-27|membership:2026-08-07' and the cited writer is scripts/build_ai_adjacency_tag.py:141-156. test_fixture_cleans_all_owner_rows asserts zero unrecognized_owner_value:* issues AND that the composed participation membership_version equals the literal. SCOPE NOTE (seat ruling, binding): tests/test_regime_context.py is NOT in this repair's owned files; its 'fixture-membership' value at :55 is rejected by the new validator but no assertion depends on that row being clean. G1 below proves this.",
+      "R3-3": "round_3.head replaced with the literal 'ed4535f42f0c87520be09444e864df45e4a3119f' (was 'PUSHED_HEAD_PLACEHOLDER')."
+    },
+    "supersedes": "round_3.findings_closed.F3 claim that membership_version was correct: _slug rejected the producer's 40-char finviz:...|membership:... value and the empty value",
+    "files_sha256": {
+      "engine/neuralweb/regime_context.py": "6db3626a34a4ea597b8849e21bc096ee0a54c46695e8a9f7a6ffd58504b6460b",
+      "engine/neuralweb/market_packet.py": "27f210ea89ca453be160d7ef21ef1842c31398ca9d0602e54ca95decd65f8d12",
+      "tests/test_regime_context.py": "1b84b9da0b297d1e91ea459d42178eccbc148dd15f48f39d28cf5e2d198848d3",
+      "tests/test_regime_native_degradation.py": "92e49e665a26063e61b0e6677adeb808dea9701691682668b29d0d9e85dd51d6",
+      "tests/test_regime_degradation_contract.py": "2031eaa98c13c0d3318b39ed1b5877d5b75be9e6b3fbb91ab0e095d8f961422e",
+      "tests/test_regime_context_entitled_block.py": "f8b51019310266566c6016a13bfc5ea547b187ae76b9cb463684c0b2d9414a74",
+      "tests/test_regime_context_owner_vocabulary.py": "6e1c87ebba7dda68e7a6fe397085f75025a8122e5d549ce4d28f1538e041b491",
+      ".github/ci/legacy-jobs.yml": "1d9afa9699a00e4e453e3e450d1a05d655ceded53845358f1dc7688515690a19"
+    },
+    "regen_command": "python3 -c \"import hashlib; [print(f, hashlib.sha256(open(f,'rb').read()).hexdigest()) for f in ['engine/neuralweb/regime_context.py','engine/neuralweb/market_packet.py','tests/test_regime_context.py','tests/test_regime_native_degradation.py','tests/test_regime_degradation_contract.py','tests/test_regime_context_entitled_block.py','tests/test_regime_context_owner_vocabulary.py','.github/ci/legacy-jobs.yml']]\"",
+    "test_summary": "1 failed, 514 passed in 2.62s",
+    "head": "c2201c452b156ea3f6d1f0af882048151cb83175"
+  },
+  "round_5": {
+    "base": "c2201c452b156ea3f6d1f0af882048151cb83175",
+    "defect": "ci-pack-9 / unrun-brain-gateway on the r4 merge ref: both chat loops passed include_regime_detail= to _grounding_digest unconditionally, so main's tests/test_brain_gateway.py stubs of the two-argument shape (lambda root, lang=\"en\": \"\" at :6718, :6782, :6901) raised TypeError on free turns (test_brain_loop_injects_ontology_owner_digest_for_ontology_page, test_ontology_exact_selection_sync_stream_permission_parity[2-True-*]). Own red: include_regime_detail has zero occurrences on origin/main.",
+    "fix": "_regime_detail_kwargs(user_id, root) returns {\"include_regime_detail\": True} only when _regime_context_allowed grants it, else {}; both call sites splat it, so a free/anonymous turn calls _grounding_digest(root, lang=...) exactly as main does. New test test_free_turns_call_grounding_digest_in_the_legacy_two_argument_shape pins the helper and, by AST, that no call site spells the keyword literally and both chat loops route through the helper.",
+    "files_sha256": {
+      "engine/neuralweb/brain_gateway.py": "9289cc7aca86bd0bf1d6598e486527f9f5bfbb13bd52b3b84e5c8d2337642870",
+      "tests/test_regime_context_entitled_block.py": "94f33c6607af2f7571977307e3e353204ba38a7f650cea53a778d13c42b07d0c"
+    },
+    "test_summary": "six-suite gate in the sparse repair worktree: 1 failed (data/-dependent committed-artifact test, sparse tree), 515 passed in 2.39s (r4: 514 passed); merge-ref proof: the r5 engine+test bytes (files_sha256 above) really merged with origin/main 9a2f00a560 (merge commit 70ed3a7d, rc=0, no conflicts, -X no-renames) in a sparse verify worktree: tests/test_brain_gateway.py -k 'ontology_owner_digest_for_ontology_page or sync_stream_permission_parity' -> 9 passed (the r4 reds); tests/test_brain_gateway.py + test_brain_evidence_coverage.py + test_brain_tool_economics.py + test_regime_context_entitled_block.py -> 501 passed in 2.83s (python venv with fastapi 0.142.2; the lane host's system python has no fastapi and fails the same selection identically on pure origin/main, so earlier overlay/system-python counts were environmental)",
+    "head": "PUSHED_HEAD_PLACEHOLDER"
+  },
+  "entitled_block": {
+    "fixture": "tests/test_regime_context_entitled_block.py:_populate_root",
+    "free_user": {
+      "base_sections": [
+        "HEADER",
+        "SHOCK WINDOW",
+        "DRIVERS",
+        "RATES DESK",
+        "VOL",
+        "BREADTH",
+        "LEADERS",
+        "CROSS-ASSET",
+        "DESK READ"
+      ],
+      "digest_length": 3908,
+      "block_present": false
+    },
+    "paid_user": {
+      "base_sections": [
+        "HEADER",
+        "SHOCK WINDOW",
+        "DRIVERS",
+        "RATES DESK",
+        "VOL",
+        "BREADTH",
+        "LEADERS",
+        "CROSS-ASSET",
+        "DESK READ",
+        "REGIME DETAIL"
+      ],
+      "digest_length": 5850,
+      "block_present": true
+    },
+    "base_sections_identical": true
+  },
+  "read_date_matrix": {
+    "fixture": "tests/test_regime_degradation_contract.py:_full_sources via _render_at(read_offset_days)",
+    "T+0": {
+      "rendered_length": 1935,
+      "budget_omitted_axes": 0,
+      "stale_rows": 0
+    },
+    "T+2": {
+      "rendered_length": 1941,
+      "budget_omitted_axes": 0,
+      "stale_rows": 0
+    },
+    "T+5": {
+      "rendered_length": 1941,
+      "budget_omitted_axes": 0,
+      "stale_rows": 0
+    },
+    "T+6": {
+      "rendered_length": 1974,
+      "budget_omitted_axes": 0,
+      "stale_rows": 1
+    }
+  },
+  "budget_invariant": {
+    "DEFAULT_CHAR_BUDGET": 4200,
+    "REGIME_DETAIL_BLOCK_BUDGET": 2000,
+    "cap": "DEFAULT_CHAR_BUDGET + REGIME_DETAIL_BLOCK_BUDGET + 1 newline splice = 6201",
+    "enforced_by": "tests/test_regime_context_entitled_block.py:test_paid_digest_within_composed_budget"
+  },
+  "generated_by_round_2": "cd ~/lanes/repos/macro/.claude/worktrees/gri-8257-z1 && python3 -c \"import sys, tempfile, re, hashlib; sys.path.insert(0,'.'); from pathlib import Path; from engine.neuralweb import market_packet as mp; from engine.neuralweb import regime_context as rc; from tests.test_regime_context_entitled_block import _populate_root, _strip_block, REGIME_DETAIL_MARKER; from tests.test_regime_degradation_contract import _full_sources; from datetime import datetime, timedelta, timezone; import tempfile; NOW0=datetime(2026,10,1,23,0,tzinfo=timezone.utc); with tempfile.TemporaryDirectory() as td: root=Path(td); _populate_root(root); free=mp.digest(root); paid=mp.digest(root, include_regime_detail=True); free_base=_strip_block(free); paid_base=_strip_block(paid); sec_re=re.compile(r'^(?:\\[)?([A-Z][A-Z][A-Z \\\\-]+?)(?=\\\\s\\(|:|\\]|\\\\s*$)'); def names(t): s=[];\\n for line in t.split('\\\\n'): line=line.strip();\\n if line.startswith('[CURRENT DASHBOARD STATE'): s.append('HEADER'); continue;\\n m=sec_re.match(line);\\n if m and m.group(1).strip() not in s: s.append(m.group(1).strip())\\n return s; print('FREE_SECTIONS',names(free_base)); print('PAID_SECTIONS',names(paid_base)); print('FREE_LEN',len(free)); print('PAID_LEN',len(paid)); print('BASE_IDENTICAL',free_base==paid_base);\\n for off in [0,2,5,6]: dt=NOW0+timedelta(days=off); ctx=rc.compose_context(_full_sources(),now=dt); text=rc.render_context(ctx); om=[];\\n if 'omitted from compact brief' in text.lower(): om=[x.strip() for x in text.split('Omitted from compact brief: ',1)[1].split('.',1)[0].split(',')];\\n st=sum(1 for d in ctx['dimensions'].values() if d.get('status')=='stale'); print(f'T+{off} len={len(text)} omitted={len(om)} stale={st}')",
+  "limits": "fixtures only; no production, served or live artifact was read; this receipt is not release proof"
+}
