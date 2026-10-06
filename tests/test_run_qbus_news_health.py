@@ -3,6 +3,9 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 import json
+from pathlib import Path
+import subprocess
+import sys
 
 from collectors import benzinga_news
 from engine import qbus_news_store as store_mod
@@ -282,3 +285,101 @@ def test_cli_run_rejects_present_but_unqualified_rights_receipt(monkeypatch, tmp
     payload = json.loads(out)
     assert payload["error"] == "activation_rights_unqualified"
     assert "DO-NOT-PRINT" not in out
+
+def test_runner_direct_script_check_only_is_executable_from_repo_root(monkeypatch):
+    root = Path(__file__).resolve().parents[1]
+    for name in (
+        "BENZINGA_API_KEY",
+        "MM_TICKER_NEWS_RIGHTS",
+        "MM_TICKER_NEWS_HEALTH",
+        "MM_TICKER_NEWS_UNIVERSE",
+        "MM_TICKER_NEWS_DB",
+    ):
+        monkeypatch.delenv(name, raising=False)
+
+    proc = subprocess.run(
+        [sys.executable, str(root / "scripts" / "run_qbus_news.py")],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+
+    assert proc.returncode == 0, proc.stderr
+    payload = json.loads(proc.stdout)
+    assert payload["schema"] == "qbus.news_runner_preflight.v1"
+    assert payload["run_requested"] is False
+    assert payload["token_present"] is False
+    assert "BENZINGA" not in proc.stderr
+
+def test_runner_stops_ingestion_when_admission_guard_revokes(monkeypatch, tmp_path):
+    published = []
+    monkeypatch.setattr(
+        run_qbus_news,
+        "write_health_receipt",
+        lambda path, payload: published.append(dict(payload)),
+    )
+    allowed = {"value": True}
+
+    with store_mod.NewsStore(tmp_path / "q.sqlite3", source_key="benzinga-rest") as store:
+        original_commit = store.commit_observations
+
+        def commit_then_revoke(revisions):
+            receipt = original_commit(revisions)
+            allowed["value"] = False
+            return receipt
+
+        monkeypatch.setattr(store, "commit_observations", commit_then_revoke)
+        runner = run_qbus_news.NewsIngestRunner(
+            token="TOKEN",
+            store=store,
+            universe_provider=_universe,
+            direct_client=Client(),
+            connect=Connect(WS([_frame(10), _frame(11)])),
+            clock=lambda: T0,
+            monotonic=lambda: 0.0,
+            wait=lambda _: None,
+            health_path=tmp_path / "health.json",
+            admission_guard=lambda: allowed["value"],
+        )
+        stats = runner.run(max_connections=1)
+        counts = store.counts()
+
+    assert stats.stream_events == 1
+    assert counts["revisions"] == 1
+    assert counts["states"] == 1
+    assert published[-1]["state"] == "unavailable"
+
+
+def test_runner_treats_admission_guard_error_as_denial(monkeypatch, tmp_path):
+    published = []
+    monkeypatch.setattr(
+        run_qbus_news,
+        "write_health_receipt",
+        lambda path, payload: published.append(dict(payload)),
+    )
+
+    def broken_guard():
+        raise OSError("rights store unavailable")
+
+    with store_mod.NewsStore(tmp_path / "q.sqlite3", source_key="benzinga-rest") as store:
+        runner = run_qbus_news.NewsIngestRunner(
+            token="TOKEN",
+            store=store,
+            universe_provider=_universe,
+            direct_client=Client(),
+            connect=Connect(WS([_frame(12)])),
+            clock=lambda: T0,
+            monotonic=lambda: 0.0,
+            wait=lambda _: None,
+            health_path=tmp_path / "health.json",
+            admission_guard=broken_guard,
+        )
+        stats = runner.run(max_connections=1)
+        counts = store.counts()
+
+    assert stats.connect_attempts == 0
+    assert stats.stream_events == 0
+    assert counts["revisions"] == 0
+    assert published[-1]["state"] == "unavailable"
