@@ -206,6 +206,7 @@ unresolved:
   - "Current PR head must clear exact-head ci + fences after the first prospective-accrual checkpoint."
   - "The bounded Reuters-led source census is sufficient for this frozen cohort but is not a universal population-completeness claim; timing-frequency population claims remain blocked."
   - "The target transfer question is blocked until a post-Oct-5 U.S. session is observed and the entire corresponding UTC source day is complete, allowing next controls to become terminal before HSI access."
+  - "The first 10-row prospective source file is not a complete census: two qualifying Oct-3/Oct-4 rows were recovered after U.S. exposure. Pooled n>=10 descriptive review remains blocked until enough future source-first evaluable events accrue."
 next_actions:
   - "Consume exact-head ci/fences for the first prospective-accrual checkpoint; repair only new branch-owned failures."
   - "Preserve PR #8012 as the DRAFT frozen development/prospective carrier and do no further development predictor search."
@@ -225,6 +226,7 @@ do_not_redo:
   - "Do not certify the source-completeness cutoff's own UTC calendar date as a control day; the full date is incomplete until the next UTC midnight."
   - "Do not open HSI for the 10-event prospective cohort while any next control is PENDING; the current earliest lawful re-freeze boundary is 2026-10-07T00:00:00Z after the Oct-6 U.S. session/source day."
   - "Do not re-run the first event-U.S. or Sept-25 prior-control measurements: immutable artifacts 11389043137 and 11389625739 are provenance-matched to their frozen inputs."
+  - "Do not backfill the Oct-3 Zelenskiy or Oct-4 Russian-intensification late-source rows into the clean prospective denominator or measure them to rescue n; retain them as late-source discoveries with zero clean prospective credit."
   - "Do not promote the Sep-26 Saudi/Houthi interception into V1 or V1.1; its exact first disclosure at 01:00Z predates both protocol freezes and its market outcomes remain uninspected."
 danger_areas:
   - "A later positive Hong Kong move must not overwrite CAUSAL_REJECTED, CONFLICTED, or DATA_GAP evidence states."
@@ -985,6 +987,32 @@ Cleanup is complete:
 
 No new credential store, data plane, or persistent vendor-bar store was created.
 
+### Source-admission completeness correction
+
+A later source-only sweep found two qualifying policy/operational events that were missing from the
+first 10-row source file:
+
+- 2026-10-03T16:02:00Z — Zelenskiy says Ukraine will double down on Russian refinery strikes in
+  response to Moscow's new air-strike doctrine;
+- 2026-10-04T11:10:00Z — Russia says it will intensify strikes on Kyiv and elsewhere in response.
+
+They are durably retained in
+`research/CROSS_SESSION_PROSPECTIVE_LATE_SOURCE_RECOVERY_2026-10-06.json`, commit
+`e93aa4967ea290ede9f43ab54973f9053365efcb`.
+
+Integrity ruling:
+- both were recovered **after** the first 10-event U.S. measurement artifact had been opened;
+- neither row's own U.S. return has been read;
+- no HSI outcome has been read;
+- neither receives clean prospective evaluation credit;
+- the first 10-row source file remains an immutable historical receipt, not a complete-census claim;
+- the n>=10 pooled descriptive review is **blocked** because source admission was incomplete;
+- both dates were already excluded by other admitted events, so matched-control dates do not change;
+- do not measure the late rows to rescue or pad the prospective sample.
+
+This is a source-admission completeness defect, not a target-outcome leak. Future evaluable rows must
+again be admitted source-first before their U.S. legs are opened.
+
 ### Current hard gate
 
 The target endpoint is **not readable yet**.
@@ -1003,6 +1031,8 @@ Until step 6, **no HSI outcome read is permitted**.
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
 
-Bounded source/U.S./prior-control accrual is proven; the parent pattern-analysis mission remains open
-at a real time/source-completeness gate rather than an implementation gap.
+Bounded source/U.S./prior-control accrual is proven, but the first source census is now explicitly
+SOURCE_ADMISSION_INCOMPLETE_AFTER_US_EXPOSURE and cannot support the n>=10 pooled review. The parent
+pattern-analysis mission remains open at a real time/source-completeness gate rather than an
+implementation gap.
 
