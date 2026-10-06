@@ -229,17 +229,145 @@ def test_collectors_noop_without_token(monkeypatch):
 
 # ---- CIE-12 public-fund portfolio prospective accrual ----------------------- #
 
-def _fund_portfolio_frame(*, ann_date="20261003", mkv=1000000.0):
+def _fund_portfolio_frame(
+    *, ann_date="20261003", mkv=1000000.0, symbol="600519.SH"
+):
     return pd.DataFrame([{
         "ts_code": "001753.OF",
         "ann_date": ann_date,
         "end_date": "20260930",
-        "symbol": "600519.SH",
+        "symbol": symbol,
         "mkv": mkv,
         "amount": 500.0,
         "stk_mkv_ratio": 4.5,
         "stk_float_ratio": 0.01,
     }])
+
+
+
+@pytest.mark.parametrize(
+    ("source_symbol", "ticker", "security_id", "source_exchange"),
+    [
+        ("600519.SH", "600519.SS", "CN-XSHG-600519", "SSE"),
+        ("000001.SZ", "000001.SZ", "CN-XSHE-000001", "SZSE"),
+        ("430047.BJ", "430047.BJ", "CN-XBSE-430047", "BSE"),
+    ],
+)
+def test_fund_portfolio_uses_data_os_canonical_a_share_identity(
+    source_symbol, ticker, security_id, source_exchange
+):
+    from collectors import tushare_fund_portfolio as fp
+
+    normalized, excluded = fp._normalize_frame(
+        _fund_portfolio_frame(symbol=source_symbol),
+        queried_ann_date="20261003",
+        observed_at="2026-10-03T12:00:00+00:00",
+    )
+
+    assert excluded == []
+    assert len(normalized) == 1
+    row = normalized.iloc[0]
+    assert row["source_symbol"] == source_symbol
+    assert row["symbol"] == ticker
+    assert row["security_id"] == security_id
+    assert row["source_exchange"] == source_exchange
+
+
+def test_fund_portfolio_types_and_counts_noncanonical_or_offvenue_source_rows(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setenv("TUSHARE_TOKEN", "synthetic-test-token")
+    from collectors import tushare_fund_portfolio as fp
+    monkeypatch.setattr(fp.config, "data_dir", lambda: tmp_path)
+
+    source = pd.concat([
+        _fund_portfolio_frame(symbol="600519.SH"),
+        _fund_portfolio_frame(symbol="600519"),
+        _fund_portfolio_frame(symbol="BAD"),
+        _fund_portfolio_frame(symbol="0700.HK"),
+    ], ignore_index=True)
+
+    n = fp.refresh(
+        query_fn=lambda *a, **k: source,
+        now=datetime(2026, 10, 3, 12, tzinfo=timezone.utc),
+        lookback_days=1,
+    )
+
+    assert n == 1
+    tape = pd.read_parquet(tmp_path / "tushare" / "fund_portfolio.parquet")
+    assert len(tape) == 1
+    row = tape.iloc[0]
+    assert row["source_symbol"] == "600519.SH"
+    assert row["symbol"] == "600519.SS"
+    assert row["security_id"] == "CN-XSHG-600519"
+    assert row["source_exchange"] == "SSE"
+
+    health = json.loads(
+        (tmp_path / "tushare" / "fund_portfolio_health.json").read_text()
+    )
+    identity = health["identity_accounting"]
+    assert health["request_window"]["state"] == "observed_with_identity_exclusions"
+    assert health["request_window"]["successful_empty_ann_dates"] == []
+    assert identity["state"] == "PARTIAL_IDENTITY_EXCLUSIONS"
+    assert identity["source_rows_observed"] == 4
+    assert identity["accepted_a_share_rows"] == 1
+    assert identity["excluded_identity_rows"] == 3
+    assert identity["excluded_reasons"] == {
+        "unresolved_or_offscope_a_share_identity": 3
+    }
+    assert identity["identity_owner"] == \
+        "collectors.china_tushare_spine.canonical_identity"
+
+
+def test_fund_portfolio_all_identity_excluded_is_not_vendor_empty(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setenv("TUSHARE_TOKEN", "synthetic-test-token")
+    from collectors import tushare_fund_portfolio as fp
+    monkeypatch.setattr(fp.config, "data_dir", lambda: tmp_path)
+
+    n = fp.refresh(
+        query_fn=lambda *a, **k: _fund_portfolio_frame(symbol="0700.HK"),
+        now=datetime(2026, 10, 3, 12, tzinfo=timezone.utc),
+        lookback_days=1,
+    )
+
+    assert n == 0
+    assert not (tmp_path / "tushare" / "fund_portfolio.parquet").exists()
+    health = json.loads(
+        (tmp_path / "tushare" / "fund_portfolio_health.json").read_text()
+    )
+    assert health["request_window"]["successful_ann_dates"] == ["20261003"]
+    assert health["request_window"]["successful_empty_ann_dates"] == []
+    assert health["request_window"]["state"] == "observed_with_identity_exclusions"
+    assert health["identity_accounting"]["state"] == \
+        "ALL_SOURCE_ROWS_IDENTITY_EXCLUDED"
+    assert health["identity_accounting"]["source_rows_observed"] == 1
+    assert health["identity_accounting"]["accepted_a_share_rows"] == 0
+    assert health["identity_accounting"]["excluded_identity_rows"] == 1
+
+
+def test_fund_portfolio_conflicting_payloads_at_same_observation_fail_closed():
+    from collectors import tushare_fund_portfolio as fp
+
+    observed_at = "2026-10-03T12:00:00+00:00"
+    first, first_excluded = fp._normalize_frame(
+        _fund_portfolio_frame(mkv=1_000_000.0),
+        queried_ann_date="20261003",
+        observed_at=observed_at,
+    )
+    second, second_excluded = fp._normalize_frame(
+        _fund_portfolio_frame(mkv=1_200_000.0),
+        queried_ann_date="20261003",
+        observed_at=observed_at,
+    )
+    assert first_excluded == second_excluded == []
+
+    with pytest.raises(
+        ValueError,
+        match="conflicting payloads share one observation instant",
+    ):
+        fp._with_lineage(pd.concat([first, second], ignore_index=True))
 
 
 def test_fund_portfolio_is_registered_in_existing_gated_plane():
