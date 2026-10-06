@@ -82,9 +82,9 @@
     },
     {
       "path": "14_DATA_SOURCE_COST_RIGHTS.csv",
-      "bytes": 46177,
-      "sha256": "00ac39a0f762d8d355c6b1fedc2e8cc0e5973ecdb306e23cb6dc7fe9a3d1d784",
-      "git_blob_sha1": "2f65143949c48b7b167118440e91d0ce6c02d5a0"
+      "bytes": 46139,
+      "sha256": "6b1937aa9aaa637ac420b9923c74e672bf3b37df9b6d9e80f5778c700c6b52c8",
+      "git_blob_sha1": "642a61953ea1e0bfb37ebfbe3b0d27dcd19d271d"
     },
     {
       "path": "14_DATA_SOURCE_COST_RIGHTS.md",
@@ -94,9 +94,9 @@
     },
     {
       "path": "15_FEATURE_HYPOTHESIS_CATALOG.csv",
-      "bytes": 56573,
-      "sha256": "da0d853a35fa096c5c6cb70e4fd81ddad363797cb659ad184d077d024706d192",
-      "git_blob_sha1": "76f98d795f12e32f882a1860ce7c444385f36ad3"
+      "bytes": 56500,
+      "sha256": "4b05b255162946c57e2e55ae094c53c30f8cf8bf12fad554286d56c857276ffd",
+      "git_blob_sha1": "7ef8efdad0b628d015b809bfd8e87e0fd1e9d1d9"
     },
     {
       "path": "15_FEATURE_HYPOTHESIS_CATALOG.md",
@@ -136,9 +136,9 @@
     },
     {
       "path": "CLAIM_EVIDENCE_LEDGER.csv",
-      "bytes": 192244,
-      "sha256": "174514e41732d4b08a2b9110027a2596431ea4fac026a7f01a2cef7ad2c75057",
-      "git_blob_sha1": "194e166f56cad8db5298764303d1879de454f72b"
+      "bytes": 192075,
+      "sha256": "fb66c00f9c8f28e33249314d559e76631f692081493558d1bb8c1b6f346cb41c",
+      "git_blob_sha1": "8af4539fdee3cb471a89e2ef1cef06454424c182"
     },
     {
       "path": "COMPLETION_ACCEPTANCE.md",
@@ -160,9 +160,9 @@
     },
     {
       "path": "SOURCE_REGISTER.csv",
-      "bytes": 122151,
-      "sha256": "a508f6b9a1ba09c70080667237bb8e8366e36d89a13e9f57707b20b2e21f2338",
-      "git_blob_sha1": "6b5f3ea31265f3d178be65ec0dbb06e625794fca"
+      "bytes": 121890,
+      "sha256": "0955eb6d5084317a0adf9eb8c5163a558b3917732e7e2a2a6752d350dab4343f",
+      "git_blob_sha1": "dc39ae8d045ecf196284b4754950e7259e85ace0"
     },
     {
       "path": "SOURCE_REGISTER.json",
