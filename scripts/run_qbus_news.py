@@ -329,7 +329,17 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--rights-receipt", type=Path)
     p.add_argument("--health-path", type=Path)
     p.add_argument("--token-env", default="BENZINGA_API_KEY")
-    p.add_argument("--run", action="store_true", help="explicitly enter the live service loop")
+    mode = p.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--check-activation",
+        action="store_true",
+        help="qualify token, rights, and universe without network or state writes",
+    )
+    mode.add_argument(
+        "--run",
+        action="store_true",
+        help="explicitly enter the live service loop",
+    )
     return p
 
 
@@ -348,6 +358,7 @@ def main(argv=None) -> int:
     report = {
         "schema": "qbus.news_runner_preflight.v1",
         "run_requested": bool(args.run),
+        "check_requested": bool(args.check_activation),
         "token_present": bool(token),
         "universe_present": bool(
             args.universe_snapshot and args.universe_snapshot.is_file()
@@ -357,18 +368,23 @@ def main(argv=None) -> int:
         "database": str(args.database),
         "stream": STREAM_LOG_LABEL,
     }
-    if not args.run:
+    if not args.run and not args.check_activation:
         print(json.dumps(report, sort_keys=True))
         return 0
     if (
         not token
-        or args.universe_snapshot is None
+        or not args.universe_snapshot.is_file()
         or rights_path is None
+        or not rights_path.is_file()
         or health_path is None
     ):
         print(
             json.dumps(
-                {**report, "error": "activation_prerequisite_missing"},
+                {
+                    **report,
+                    "activation_qualified": False,
+                    "error": "activation_prerequisite_missing",
+                },
                 sort_keys=True,
             )
         )
@@ -382,11 +398,40 @@ def main(argv=None) -> int:
     ) is None:
         print(
             json.dumps(
-                {**report, "error": "activation_rights_unqualified"},
+                {
+                    **report,
+                    "activation_qualified": False,
+                    "error": "activation_rights_unqualified",
+                },
                 sort_keys=True,
             )
         )
         return 2
+
+    try:
+        universe = load_universe_snapshot(args.universe_snapshot, asof=now)
+    except RuntimeError:
+        print(
+            json.dumps(
+                {
+                    **report,
+                    "activation_qualified": False,
+                    "error": "activation_universe_unqualified",
+                },
+                sort_keys=True,
+            )
+        )
+        return 2
+
+    qualified_report = {
+        **report,
+        "activation_qualified": True,
+        "universe_count": universe.count,
+        "universe_revision": universe.revision,
+    }
+    if args.check_activation:
+        print(json.dumps(qualified_report, sort_keys=True))
+        return 0
 
     def rights_admitted() -> bool:
         return load_rights_receipt(
@@ -399,7 +444,6 @@ def main(argv=None) -> int:
     for sig in (signal.SIGINT, signal.SIGTERM):
         signal.signal(sig, lambda *_args: stop.set())
 
-    universe = load_universe_snapshot(args.universe_snapshot, asof=now)
     client = benzinga_news.BenzingaNewsClient(token=token)
     with NewsStore(args.database, source_key="benzinga-rest") as store:
         runner = NewsIngestRunner(
