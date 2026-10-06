@@ -21,14 +21,13 @@ waves:
     title: Consume higher-level repairs and deliver accepted scoped changes
     status: in_progress
 next_action: >-
-  Restore and verify the git-gated Pine PR835 deployment at its merged revision; consume
-  the exact Brain freshness prototype-key repair. Preserve accepted drawing validation
-  evidence and partial heatmap browser proof without promoting them to production claims.
-  Return owner-bound proposals through their incumbent carriers; PR597 owner identification
-  remains unresolved.
+  Consume the bounded drawing transaction repair and execute it against the existing
+  disposable PostgreSQL fixture. Incorporate the tested Brain contribution through exact
+  owner PR8526, without a competing writer. PR597 owner identification remains unresolved.
 owns_paths: []
 artifacts:
   - research/TERMINAL_AUDIT20_REVIEW_2026-10-06.json
+  - research/terminal_audit20/A08_PR8526/README.md
 landmines:
   - Incumbent holds and migration reservations remain in force; this record claims no source paths.
   - Retired MiMo model errors and host admission refusals are capability evidence, not source-quality verdicts.
@@ -52,3 +51,12 @@ Terminal PR836 is merged and deployed at `69dfda2e8901bfa3201e929025220e692d9cd8
 The intended authenticated account downloaded JSON and CSV; the native JSON preview
 confirmed saved scripts and chart layouts alongside existing account collections.
 A complete archive of every originally declared kind is still unproven.
+
+Terminal PR835 is merged and deployed at `8f3d04f1c7b2d26a90623497b30f0901160d03a2`.
+The git-gated build, service health and public release identity agree; the intended Chrome
+profile rendered the daily chart shell. The actual weekly Pine editor journey is unproven.
+
+The Brain freshness contribution passed 20 checks and five actual widget fixture cases
+against exact owner PR8526 head `53a1fc4cc47b4b9240fad828d0ef2161346aaacc`.
+The contribution is preserved under `research/terminal_audit20/A08_PR8526`; owner
+incorporation, CI and live delivery remain outstanding.

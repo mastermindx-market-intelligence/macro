@@ -1,0 +1,23 @@
+{
+  "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+  "owner_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/8526",
+  "exact_owner_head": "53a1fc4cc47b4b9240fad828d0ef2161346aaacc",
+  "source_writer": false,
+  "owning_Git_carrier_mutated": false,
+  "preserved": "existing 44px mobile targets and delayed-focus guard untouched",
+  "loader_version": "e3bc0580",
+  "preimage_sha256": {
+    "site/mm_brain.js": "cee6c1d65883c064e4ecfbb7a5c5f6ece27c0ff22ad6f0d3fbb295f72b7098e2",
+    "templates/mm_brain.js": "cee6c1d65883c064e4ecfbb7a5c5f6ece27c0ff22ad6f0d3fbb295f72b7098e2",
+    "site/theme.js": "9c5be9cd4b66145da0c893f1586e857c78b52acfa121c873a38f3ff9725da0b7"
+  },
+  "candidate_sha256": {
+    "site/mm_brain.js": "e3bc058057220af801fd43b9733416ae8be5e300fb4303a465b2d85c7cfea2e8",
+    "templates/mm_brain.js": "e3bc058057220af801fd43b9733416ae8be5e300fb4303a465b2d85c7cfea2e8",
+    "site/theme.js": "5d96774b56541d67fea2a17d162a3086dfa7fa1f0f5e30050efe0b3b1f5af35c"
+  },
+  "patch_sha256": "edb472e1e24857d7e0ba5785c3dbd612a5ba3ad3d2f25c43890586a723cfc1e3",
+  "integration_live_and_owner_acceptance": "owed",
+  "qualification_harness_sha256": "ada96b2f0d35cf8028f4f502b014405ecbfef7504268e9e0e520d1526f8a19d2",
+  "qualification_baseline": "exact owner head53a1fc4cc47b4b9240fad828d0ef2161346aaacc"
+}

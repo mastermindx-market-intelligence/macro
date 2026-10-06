@@ -11,8 +11,8 @@
       "outcome": "Pine request.security: eliminate silent symbol substitution and future-data leakage",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "SCOPED_PINE_HISTORY_MERGED; PRODUCTION_DEPLOY_IN_FLIGHT",
-      "evidence_summary": "PR835 exactb6adc839 requiredCI37482089627 allgreen incldesktop/tablet/mobile; merged8f3d04f1 at15:25:22. VPS old69df healthy; exactargv read showsnobuild; git-gated target8f3 deployment started once. Restore/readback/live user-path owed; wholeA01 notaccepted."
+      "review_status": "SCOPED_PINE_HISTORY_DEPLOYED; LIVE_SHELL_VERIFIED",
+      "evidence_summary": "PR835 exactb6adc839 passed required CI37482089627, merged8f3d04f1; git-gated deploy exited0. Source, deployment marker, public HTML/scripts agree8f3; Terminal/QuoteHub active. Intended Chrome profile15 visible canvases. Weekly editor/customer journey and broader Pine parity remain unproven."
     },
     {
       "mission": "A02",
@@ -35,8 +35,8 @@
       "outcome": "Drawing persistence: transactional replacement, conflict detection and unknown-outcome recovery",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "PARENT_LAST_RESORT_VALIDATION_PROTOTYPE_33_POSTGRES_CASES_PASS",
-      "evidence_summary": "Fabric SQL r2/r3 timedout; no executableSQL returned, false r2 planned-proof claims rejected. Parent standalone direct-input guard actualPostgres17.11 fixture33pass0skip/psql0; numeric1e400, Unicode duplicate/blank andUTF16 boundary counterexamples repaired, containerremoved. LiveDB17.6 no DDL; transactionalRPC/client/source/migration/fullA04 owed."
+      "review_status": "VALIDATION_33_POSTGRES_CASES_PASS; BOUNDED_TRANSACTION_REPAIR_ADMITTED",
+      "evidence_summary": "Accepted standalone guard33 actualPG17.11 cases0skip/containerremoved; production17.6 untouched. New bounded GLM5.3 Mini2 rs_20261006T162201Z_15783 admitted for atomic existing-table transaction and replay artifacts. Admission is not START/return/acceptance. Client/source/migration/live/fullA04 remain owed."
     },
     {
       "mission": "A05",
@@ -67,8 +67,8 @@
       "outcome": "A08 \u2014 Copilot evidence integrity: unknown freshness, mixed GEX snapshots and truncation",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "ACTIVE_UI_PROTOTYPE_KEY_REPAIR_R5_DISPATCHED_VIA_AUTOMATIC_GLM",
-      "evidence_summary": "Fresh Macro main3d6d0b00 active widget repairr4 returned17asset/5realDOM cases. Parent inherited-key counterexamples rejected. Automatic picker admitted Mini2 glm-codex glm5.3 newr5 rs_20261006T153815Z_23083; source proposal only, no raw/native fallback or sourcecustody transfer. Awaiting exact return; parent Ubuntu actual-widget verification will follow."
+      "review_status": "SCOPED_EXACT_OWNER_PR8526_PROPOSAL_ACCEPTED; OWNER_INTEGRATION_OWED",
+      "evidence_summary": "Automatic GLM5.3 Mini2 r5 consumed; minimal inherited-key repair accepted after parent actual widget proof. Exact PR8526 head53a contribution preserves mobile/focus changes;20 asset/source checks and5 browser cases passed0skip. Widget SHAe3bc0580/loader digestmatch. Synthetic SSE fixture stopped. No owner branch/source writer/live acceptance; canonical contribution research/terminal_audit20/A08_PR8526."
     },
     {
       "mission": "A09",
@@ -172,6 +172,10 @@
     "A04_regressions_sha256": "745f8f01814880c276e8cf9fe4f34abad99f2bbbfdac015644bee7aa9d83ef8f",
     "A04_proof": "33 actual PostgreSQL17.11 fixture cases, not production17.6, not transactional replacement",
     "A09_helper_sha256": "9d328a64212e923d773b45627abce2a67ef52ef54dd2fcab0f36fe6136542383",
-    "A15_proof": "24 unit + full TSC +7/11 actual browser cases; full matrix failed/incomplete"
-  }
+    "A15_proof": "24 unit + full TSC +7/11 actual browser cases; full matrix failed/incomplete",
+    "A08_owner_widget_sha256": "e3bc058057220af801fd43b9733416ae8be5e300fb4303a465b2d85c7cfea2e8",
+    "A08_owner_head": "53a1fc4cc47b4b9240fad828d0ef2161346aaacc"
+  },
+  "updated_at": "2026-10-06T16:24:44.119137+00:00",
+  "current_terminal_deployment": "8f3d04f1c7b2d26a90623497b30f0901160d03a2"
 }
