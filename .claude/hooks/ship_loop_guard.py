@@ -22,20 +22,19 @@ green on the other lane). Ownership is parsed from both workflows at Stop time �
 ``_render_lane_filters`` — never transcribed here, so the guard cannot drift from
 the split.
 
-ARMING ``merge-on-green`` IS NOT AN EXIT (operator ruling 2026-08-12). The label
-still works and the sweeper may still perform the merge — that is a convenience,
-not a transfer of ownership. A session owns its work through
-commit -> push -> PR -> CI -> squash-merge -> live verification, so ``unmerged``
-is satisfied by an actually-merged pull request and by nothing else. The earlier
-rule released a session the moment its pull request carried the label with no
-concluded red; in the field that turned an unfinished job into a reported-complete
-one — a session stopped on a label while its pull request sat ``merge-blocked`` on
-a red check, and the work had to be reopened by hand. What the armed pull request
-still buys is a better BLOCK: ``_armed_pull_status`` names the reds the sweeper
-will refuse, so the session is told what to fix instead of merely that it may not
-leave. The merge-on-CONCLUDED-checks law is unchanged — a pending check is not a
-pass, and an ``--admin`` merge mid-flight destroyed the pull request's own proof
-run (#3867).
+ARMING ``merge-on-green`` BY ITSELF IS NOT AN EXIT (operator ruling
+2026-08-12). A label on a red or unproven pull request must never let a session
+call unfinished work done. The account-side controller has since become a durable
+workflow-run-triggered reconciler whose own contract says the session arms and
+stops rather than spending 20-60 minutes polling CI. The current boundary therefore
+requires BOTH facts: ``_armed_pull_status`` must prove this is an externally owned
+wait (checks are actually running/complete, or the red is proven inherited), and
+the session must explicitly declare ``SESSION END: DURABLE_EXECUTION_RUNNING``.
+A PR-owned red, missing proof, stale/mismatched head, or unarmed pull request still
+blocks exactly as before. This preserves the 2026-08-12 safety fix while restoring
+the durable controller's purpose. The merge-on-CONCLUDED-checks law is unchanged —
+a pending check is not a pass and cannot be merged by hand, and an ``--admin``
+merge mid-flight destroyed the pull request's own proof run (#3867).
 
 THE GUARD MAY NOT WEDGE THE TREE IT IS JUDGING. Its own ``git status`` used to be
 run under a plain ``subprocess`` timeout, whose expiry is a SIGKILL git cannot
@@ -103,10 +102,19 @@ GITHUB_API_HOST = "api.github.com"
 GITHUB_API_CACHE_TTL_SECONDS = 30
 GITHUB_RATE_LIMIT_RESERVE = 300
 GITHUB_RATE_LIMIT_REFRESH_SECONDS = 60
-# The label that lets `.github/workflows/merge-on-green.yml` PERFORM the merge.
-# It is a backstop, never an exit: a session that arms it still owns the pull
-# request until the merge actually lands (see the module docstring).
+# The label that hands merge execution to the repository's durable
+# `.github/workflows/merge-on-green.yml` reconciler. A label alone is never enough
+# to release a session: the head still has to be proven free of a PR-owned red, and
+# the session must explicitly classify its stop as DURABLE_EXECUTION_RUNNING. That
+# combination is the current account-side wait contract; see the workflow's own
+# header and the durable-wait handling in `_stop`.
 MERGE_ON_GREEN_LABEL = "merge-on-green"
+# Private marker between `_armed_pull_status` and `_stop`. The public block code
+# remains `unmerged`; this prefix only says the current unmerged shape has a real
+# durable external owner (running/passed proof plus the merge reconciler), so a
+# truthful DURABLE_EXECUTION_RUNNING declaration may end the interactive session.
+# It is stripped before any user-visible block text.
+_DURABLE_MERGE_WAIT_PREFIX = "__SHIP_LOOP_DURABLE_MERGE_WAIT__ "
 # A CONCLUDED check outside this set is a genuine red. `neutral` and `skipped` are
 # not failures, but they are not proof either (#4779). Kept as a literal here — a
 # hook may not reach into the application import graph to learn it, and an empty
@@ -2270,14 +2278,30 @@ def _base_red_block(number: Any, excused: dict[str, str], pending: list[str]) ->
         "DESTRUCTIVE over a live baseline — preflight `gh run list --workflow ci.yml "
         "--branch main --json databaseId,status --jq '[.[]|select(.status!=\"completed\")]'` "
         "and WATCH an in-flight run (`gh run watch <id> --interval 60`) instead of "
-        "re-dispatching over it. You still own this pull request until the merge lands."
+        "re-dispatching over it. The durable merge controller owns the wait once the "
+        "session declares DURABLE_EXECUTION_RUNNING."
     )
 
 
-def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[str, str]:
-    """Diagnose this branch's OPEN armed pull request. NEVER releases the session.
+def _mark_durable_merge_wait(detail: str) -> str:
+    """Tag an unmerged detail whose wait has a real durable external owner."""
+    return _DURABLE_MERGE_WAIT_PREFIX + detail
 
-    Returns ``(code, detail)``. ``code`` is ``none`` when there is nothing useful
+
+def _split_durable_merge_wait(detail: str) -> tuple[bool, str]:
+    """Return (is_durable_wait, user_visible_detail) without leaking the marker."""
+    if detail.startswith(_DURABLE_MERGE_WAIT_PREFIX):
+        return True, detail[len(_DURABLE_MERGE_WAIT_PREFIX) :]
+    return False, detail
+
+
+def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[str, str]:
+    """Diagnose this branch's OPEN armed pull request without deciding Stop itself.
+
+    Returns ``(code, detail)``. Safe externally owned waits retain the public
+    ``unmerged`` code but carry a private durable-wait marker in ``detail``; only
+    ``_stop`` may consume that marker, and only with an explicit
+    DURABLE_EXECUTION_RUNNING declaration. ``code`` is ``none`` when there is nothing useful
     to say — no open pull request, no `merge-on-green` label, or an armed head that
     is not the local HEAD — and the caller then files its ordinary `unmerged`
     block. Otherwise it is the block code to file:
@@ -2377,18 +2401,18 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
                 else ""
             )
             if inherited:
-                return "unmerged", (
+                return "unmerged", _mark_durable_merge_wait(
                     f"Pull request #{number} is armed and NOT merged. Its exact-base "
                     f"semantic failure is inherited: {inherited}. ci-pack-N is transport "
                     f"only; the sweeper still applies ProofFreshness before merging.{waiting}"
                 )
             if semantic_pending:
-                return "unmerged", (
+                return "unmerged", _mark_durable_merge_wait(
                     f"Pull request #{number} has clear semantic evidence but remains "
                     f"unmerged while checks run: {', '.join(semantic_pending[:8])}."
                 )
             if semantic_passed:
-                return "unmerged", (
+                return "unmerged", _mark_durable_merge_wait(
                     f"Pull request #{number} has complete clear semantic evidence and "
                     "is still armed; the next sweep owns ProofFreshness and merge."
                 )
@@ -2419,7 +2443,9 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
             f"{name} ({conclusion})" for name, conclusion in pairs if name not in excused
         ]
         if not mine:
-            return "unmerged", _base_red_block(number, excused, pending)
+            return "unmerged", _mark_durable_merge_wait(
+                _base_red_block(number, excused, pending)
+            )
         detail = (
             f"Failing CI on pull request #{number}: {', '.join(mine[:8])}. It carries "
             f"`{MERGE_ON_GREEN_LABEL}`, but the sweeper never merges a red pull request, "
@@ -2433,6 +2459,16 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
         if unavailable:
             detail = f"{detail} (Base-side evidence unavailable: {'; '.join(unavailable)}.)"
         return CI_FAILED_UNMERGED, detail
+    # A random third-party pending check is not proof that the repository's durable
+    # controller owns this wait. At least one repository proof anchor must be running,
+    # or the full anchor verdict must already be clean/pending. This keeps an unrelated
+    # preview check from turning a dropped ci.yml webhook into a false durable exit.
+    anchor_verdict, anchor_names = _proof_anchor_verdict(runs)
+    proof_anchors = _proof_anchor_runs(runs)
+    pending_proof_anchors = sorted(
+        name for name, run in proof_anchors.items() if run.get("status") != "completed"
+    )
+    durable_wait = anchor_verdict in {"pending", "clean"} or bool(pending_proof_anchors)
     if pending:
         state = "still running: " + ", ".join(pending[:8])
     else:
@@ -2440,7 +2476,6 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
         # in its concurrency group has published none (#7969), so "nothing pending,
         # something passed" is not the sweeper's clean. Ask its anchor question of the
         # same rollup instead: no extra REST call.
-        anchor_verdict, anchor_names = _proof_anchor_verdict(runs)
         probe = f"`gh run list --workflow ci.yml --branch {branch} --limit 3`"
         if anchor_verdict == "clean":
             state = "every check has concluded clean; the next sweep should merge it"
@@ -2460,15 +2495,19 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
                 "dropped webhook, `[skip ci]`), no sweep will ever merge it — push a "
                 "change CI can see"
             )
-    return "unmerged", (
+    detail = (
         f"Pull request #{number} is armed with `{MERGE_ON_GREEN_LABEL}` but is NOT merged "
-        f"yet — {state}. Arming the label buys a merge you do not have to perform; it does "
-        "not end this session. You own this work through commit -> push -> PR -> CI -> "
-        "squash-merge -> live verification, so stay with it until the merge lands. Watch "
-        "on ONE slow watcher (`gh run watch <id> --interval 60`; a run here takes 30-34 "
-        "minutes) and preflight `gh api rate_limit` — the 5,000/hr REST pool is shared "
-        "with every other session and with this hook, which fails closed when it is spent."
+        f"yet — {state}. The durable merge-on-green reconciler owns a proven wait; the "
+        "interactive session must not poll it. A genuine PR-owned red is still blocking "
+        "and never receives this durable-wait marker."
+        if durable_wait
+        else (
+            f"Pull request #{number} is armed with `{MERGE_ON_GREEN_LABEL}` but is NOT merged "
+            f"yet — {state}. The durable controller is not yet proven to own this wait, so "
+            "the session must repair or establish the missing proof rather than stopping."
+        )
     )
+    return "unmerged", _mark_durable_merge_wait(detail) if durable_wait else detail
 
 
 def _failing_ci_message(display: list[str]) -> str:
@@ -4161,6 +4200,20 @@ def declared_session_end_state(text: str) -> str:
     return found[-1]
 
 
+def _durable_execution_declared(payload: dict[str, Any], declared: str = "") -> bool:
+    """Whether this Stop explicitly hands its remaining wait to durable machinery.
+
+    The cheap payload declaration is preferred. Only an already-expensive external
+    wait path calls this helper, so a harness that omitted ``last_assistant_message``
+    may fall back to the bounded transcript reader without adding transcript I/O to
+    ordinary clean Stops.
+    """
+    state = declared
+    if not state:
+        state = declared_session_end_state(_transcript_final_message(payload))
+    return state == "DURABLE_EXECUTION_RUNNING"
+
+
 def strongest_delivery_claim(text: str) -> str:
     """Return the highest delivery rung a final message asserts, or ""."""
     best = ""
@@ -4252,12 +4305,12 @@ def _block(
     exactly as they were. `total_blocks` and `external_blocks` are cumulative and
     are NEVER reset within a session, so a ping-pong cannot erase them.
 
-    The ladders are a LAST resort, not the intended exit. The release valves
-    upstream of them — the stand-down exemption and the deferred render — exist so
-    a healthy session reaches a clean stop and never counts toward a ceiling at
-    all. There is deliberately no valve for `unmerged` or `ci_failed_unmerged`: a
-    session owns its pull request until the merge lands, and the internal ceiling
-    is the only thing that can end that wait early.
+    The ladders are a LAST resort, not the intended exit. Release valves
+    upstream of them — stand-down, deferred render, and `_stop`'s narrowly proven
+    durable merge/live waits — keep a healthy session from counting an external
+    wait as repeated failure. Residual `unmerged` and every `ci_failed_unmerged`
+    remain internal here: if `_stop` could not prove durable ownership (or the PR
+    owns a red), only the high any-code loop breaker can release the block.
 
     A RATIFIED ladder exit is REMEMBERED for the exact frozen state it excused
     (2026-08-19, operator complaint). ``exit_key`` names one evaluated state —
@@ -4681,17 +4734,17 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     `_block` can count, and every gate that proved something durable stores a
     proof so a later Stop turn does not re-poll GitHub for it.
 
-    ONE gate releases a session for machinery it does not own: a DEFERRED render —
-    an in-flight covering run, satisfied rather than waited on (see
-    `_render_status`). The VPS pulls main every 3 minutes, so that merge is live
-    regardless, and house law forbids a waiting session from touching the lane.
+    External machinery can release the interactive session only when this guard
+    can prove a real durable owner and the session declares
+    `DURABLE_EXECUTION_RUNNING`: an armed merge-on-green head with a running/clean
+    or inherited proof state, or a merged pull-only publication waiting on the VPS
+    checkout loop. A DEFERRED covering render is likewise treated as satisfied
+    because its shared lane already owns the re-bake.
 
-    THE MERGE ITSELF IS NOT SUCH A GATE. An open pull request carrying
-    `merge-on-green` used to release the session here; the operator removed that
-    on 2026-08-12 after it reported an unfinished job as complete. The label lets
-    the sweeper PERFORM the merge — it does not transfer ownership — so the
-    `if not pull:` branch now always blocks, and only chooses which block to file
-    (see `_armed_pull_status`).
+    The 2026-08-12 safety boundary remains load-bearing: the `merge-on-green` label
+    alone is never an exit. A PR-owned red, missing proof, mismatched head, or other
+    unproven shape blocks. `_armed_pull_status` marks only the externally owned wait
+    shapes; `_stop` consumes that mark only with the explicit terminal declaration.
     """
     state = _load(path)
     # Hooks can be installed during an already-running session. Fail open once so
@@ -4904,22 +4957,31 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
             }
             _remember_proof(path, state, "merged_pull", pull_key, pull)
     if not pull:
-        # There is no merged pull request, so this session is NOT done — arming
-        # `merge-on-green` is a merge convenience, never an exit (operator ruling
-        # 2026-08-12; see the module docstring). The only question left is which
-        # block to file: an armed head with concluded reds gets `ci_failed` and the
-        # names, because "your sweeper will refuse this" is the fact the old
-        # release path used to hide.
+        # There is no merged pull request. An armed head is either:
+        #   * a genuine PR-owned red / missing proof, which this session still owns; or
+        #   * a proven external wait (checks running/clean, inherited red handled by
+        #     the reconciler) that the durable merge-on-green controller owns.
         #
-        # Fail-closed in every direction: a probe that raises, a pull request
-        # without the label, or a head that does not match the local HEAD all fall
-        # through to the ordinary block below. The escape ladder in `_block` covers
-        # a persistently failing API.
+        # The second shape may release ONLY when the session explicitly declares
+        # DURABLE_EXECUTION_RUNNING. That preserves the 2026-08-12 regression fix:
+        # a red PR can never call itself done merely because the label exists.
+        # Fail-closed in every direction: a probe that raises, a pull request without
+        # the label, or a head that does not match local HEAD falls through to the
+        # ordinary block below.
         try:
             armed_code, armed_detail = _armed_pull_status(owner, repo, branch, head)
         except Exception:
             armed_code, armed_detail = "none", ""
         if armed_code != "none":
+            durable_wait, armed_detail = _split_durable_merge_wait(armed_detail)
+            if durable_wait and _durable_execution_declared(payload, declared):
+                return
+            if durable_wait:
+                armed_detail += (
+                    " Durable execution is available now: do not poll this wait. "
+                    "If no useful independent lane remains, finish with "
+                    "`SESSION END: DURABLE_EXECUTION_RUNNING`."
+                )
             _block(path, state, payload, armed_code, armed_detail)
             return
 
@@ -5043,13 +5105,25 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
         return
     live_ok, live_detail = _live_gate(root, merge_sha, start_head, head, health)
     if not live_ok:
-        _block(
-            path,
-            state,
-            payload,
-            "live_stale",
-            f"Production does not yet contain the merge: {live_detail}",
+        # Pull-only publication is an external deterministic wait: /opt/macro's
+        # existing checkout loop advances every few minutes and this session has no
+        # lawful action that makes it faster. An API-code merge is different — it
+        # requires a restarted process and remains blocking until that effect is
+        # actually proven. Release only the pull-only shape, and only on the explicit
+        # durable-execution declaration.
+        pull_only_wait = _live_health_fields(root, merge_sha, start_head, head) != (
+            _LIVE_PROCESS_FIELD,
         )
+        if pull_only_wait and _durable_execution_declared(payload, declared):
+            return
+        reason = f"Production does not yet contain the merge: {live_detail}"
+        if pull_only_wait:
+            reason += (
+                ". The VPS checkout loop is the durable owner of this catch-up; "
+                "do not poll it. If no useful independent lane remains, finish with "
+                "`SESSION END: DURABLE_EXECUTION_RUNNING`."
+            )
+        _block(path, state, payload, "live_stale", reason)
         return
 
     audit: list[str] = []

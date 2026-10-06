@@ -2547,6 +2547,61 @@ def test_stop_reuses_render_proof_while_production_catches_up(monkeypatch, tmp_p
     assert set(proofs) >= {"merged_pull", "ci", "origin_main", "render"}
 
 
+def test_pull_only_live_catchup_releases_as_durable_execution(
+    monkeypatch, tmp_path, capsys
+):
+    """A merge waiting only on the VPS checkout loop must not hold Claude open."""
+    repo, state_path = _session_repo(tmp_path)
+    monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
+    monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: _MERGED_PR)
+    monkeypatch.setattr(GUARD, "_check_ci", lambda *_a, **_k: (True, ""))
+    monkeypatch.setattr(GUARD, "_needs_render", lambda *_a: False)
+    monkeypatch.setattr(GUARD, "_needs_public_render", lambda *_a: False)
+    monkeypatch.setattr(GUARD, "_needs_api_restart", lambda *_a: False)
+    monkeypatch.setattr(GUARD, "_get_json", lambda _url: {})
+    _stub_remote_git(monkeypatch)
+
+    GUARD._stop(
+        repo,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_api_restart_live_stale_cannot_fake_durable_execution(
+    monkeypatch, tmp_path, capsys
+):
+    """An API-code merge still needs a restarted process even with the declaration."""
+    repo, state_path = _session_repo(tmp_path)
+    monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
+    monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: _MERGED_PR)
+    monkeypatch.setattr(GUARD, "_check_ci", lambda *_a, **_k: (True, ""))
+    monkeypatch.setattr(GUARD, "_needs_render", lambda *_a: False)
+    monkeypatch.setattr(GUARD, "_needs_public_render", lambda *_a: False)
+    monkeypatch.setattr(GUARD, "_needs_api_restart", lambda *_a: True)
+    monkeypatch.setattr(GUARD, "_get_json", lambda _url: {})
+    _stub_remote_git(monkeypatch)
+
+    GUARD._stop(
+        repo,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    emitted = json.loads(capsys.readouterr().out.strip())
+    assert emitted["decision"] == "block"
+    assert "SHIP LOOP live_stale" in emitted["reason"]
+    assert "RESTARTED API" in emitted["reason"]
+
+
 def test_stop_defers_an_in_flight_render_and_proceeds_to_the_live_gate(
     monkeypatch, tmp_path, capsys
 ):
@@ -4054,19 +4109,15 @@ def test_guard_error_falls_back_to_a_plain_block_when_state_cannot_load(monkeypa
     assert "guard_error" in emitted["reason"] and "boom" in emitted["reason"]
 
 
-# --- an armed pull request is NOT an exit (operator ruling 2026-08-12) ---
+# --- label alone is NOT an exit; a proven durable wait can be one ---
 #
-# From 2026-07-28 to 2026-08-12 an open pull request carrying `merge-on-green`
-# RELEASED the session at this gate: the sweeper owned the merge from there, and
-# the worker printed a terminal marker and stopped. The operator removed the rule
-# after it reported an unfinished job as complete — a session emitted the marker
-# and declared itself done while its pull request sat `merge-blocked` on a red
-# check, and the work had to be reopened by hand.
-#
-# The label still works and the sweeper may still perform the merge. What it can
-# no longer do is end a session. `unmerged` is satisfied by an actually-merged
-# pull request and by nothing else, so every test below asserts a BLOCK; the only
-# question the armed pull request answers now is WHICH block, and with what detail.
+# The 2026-08-12 incident removed the unsafe rule that any `merge-on-green` label
+# released a session: a red PR was reported done while the sweeper correctly refused
+# to merge it. The durable merge controller now owns the opposite shape explicitly:
+# a matching armed head whose checks are genuinely running/complete or inherited.
+# That externally owned wait may release only when the session itself declares
+# `SESSION END: DURABLE_EXECUTION_RUNNING`. PR-owned reds, incomplete proof, stale
+# heads and unarmed pulls stay blocked. The tests below pin both halves.
 
 
 def _pushed_unmerged_session(tmp_path: Path) -> tuple[Path, Path, str]:
@@ -4093,6 +4144,12 @@ def _armed_pr(head_sha: str, *, number=4242, labels=(GUARD.MERGE_ON_GREEN_LABEL,
 
 def _run_stub(name: str, status: str = "completed", conclusion=None) -> dict:
     return {"name": name, "status": status, "conclusion": conclusion}
+
+
+def _actions_run_stub(name: str, status: str = "completed", conclusion=None) -> dict:
+    run = _run_stub(name, status, conclusion)
+    run.update({"id": 1, "app": {"slug": "github-actions"}})
+    return run
 
 
 #: Every check-run shape whose classification anyone has ever gotten wrong here,
@@ -4172,19 +4229,18 @@ def test_split_head_runs_classifies_every_shape_that_has_ever_been_wrong(runs, e
 def test_an_armed_pull_request_with_checks_pending_does_NOT_release_the_session(
     monkeypatch, tmp_path, capsys
 ):
-    """THE NEW LAW, pinned. This test used to assert the exact opposite.
+    """A proven wait still needs the explicit durable-execution declaration.
 
-    Arming `merge-on-green` buys a merge the session does not have to perform. It
-    does not end the session: until the pull request is MERGED, the work is not
-    shipped, and a session that stops here reports an unfinished job as complete —
-    measured, and the reason the release path was removed.
+    The label plus a pending proof establishes an external owner, but silence is
+    not a transfer. Without `SESSION END: DURABLE_EXECUTION_RUNNING` the Stop hook
+    blocks once and tells the session how to classify the real wait.
     """
     repo, state_path, head = _pushed_unmerged_session(tmp_path)
     monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
     monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: None)
     monkeypatch.setattr(GUARD, "_open_pull", lambda *_a: _armed_pr(head))
     monkeypatch.setattr(
-        GUARD, "_head_check_runs", lambda *_a: [_run_stub("ci-pack-1", "in_progress")]
+        GUARD, "_head_check_runs", lambda *_a: [_actions_run_stub("ci-pack-1", "in_progress")]
     )
 
     GUARD._stop(repo, state_path, {"hook_event_name": "Stop"})
@@ -4200,16 +4256,97 @@ def test_an_armed_pull_request_with_checks_pending_does_NOT_release_the_session(
     assert state_path.exists(), "a blocked session keeps its state file"
     # The old release path's machine receipt must not survive anywhere.
     assert "CI_HANDOFF" not in reason
+    assert GUARD._DURABLE_MERGE_WAIT_PREFIX not in reason
 
 
-def test_an_armed_pull_request_with_every_check_green_still_blocks(
+def test_an_armed_pull_request_with_checks_pending_releases_as_durable_execution(
     monkeypatch, tmp_path, capsys
 ):
-    """Not even a clean head is an exit. The merge is the exit.
+    """The reconciler owns a proven wait; the interactive turn must not poll it."""
+    repo, state_path, head = _pushed_unmerged_session(tmp_path)
+    monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
+    monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: None)
+    monkeypatch.setattr(GUARD, "_open_pull", lambda *_a: _armed_pr(head))
+    monkeypatch.setattr(
+        GUARD, "_head_check_runs", lambda *_a: [_actions_run_stub("ci-pack-1", "in_progress")]
+    )
 
-    A concluded-green armed head is precisely when the sweep is about to merge —
-    which is exactly when leaving costs the least and proves the least. The session
-    waits the one sweep out and verifies the merge.
+    GUARD._stop(
+        repo,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "Waiting is durably owned.\nSESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_an_armed_pull_request_with_missing_proof_cannot_fake_durable_execution(
+    monkeypatch, tmp_path, capsys
+):
+    """A label plus an incomplete proof is not durable execution."""
+    repo, state_path, head = _pushed_unmerged_session(tmp_path)
+    monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
+    monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: None)
+    monkeypatch.setattr(GUARD, "_open_pull", lambda *_a: _armed_pr(head))
+    monkeypatch.setattr(
+        GUARD,
+        "_head_check_runs",
+        lambda *_a: [_run_stub("ci-pack-1", conclusion="success")],
+    )
+
+    GUARD._stop(
+        repo,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    emitted = json.loads(capsys.readouterr().out.strip())
+    assert emitted["decision"] == "block"
+    assert "unmerged" in emitted["reason"]
+    assert "not yet proven to own this wait" in emitted["reason"]
+
+
+def test_unrelated_pending_check_cannot_fake_durable_merge_ownership(
+    monkeypatch, tmp_path, capsys
+):
+    """A preview wait is not evidence that ci.yml or the merge reconciler owns the PR."""
+    repo, state_path, head = _pushed_unmerged_session(tmp_path)
+    monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
+    monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: None)
+    monkeypatch.setattr(GUARD, "_open_pull", lambda *_a: _armed_pr(head))
+    monkeypatch.setattr(
+        GUARD, "_head_check_runs", lambda *_a: [_run_stub("Supabase Preview", "in_progress")]
+    )
+
+    GUARD._stop(
+        repo,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    emitted = json.loads(capsys.readouterr().out.strip())
+    assert emitted["decision"] == "block"
+    assert "unmerged" in emitted["reason"]
+    assert "not yet proven to own this wait" in emitted["reason"]
+
+
+def test_an_armed_pull_request_with_green_but_incomplete_proof_still_blocks(
+    monkeypatch, tmp_path, capsys
+):
+    """A green fragment is not the sweeper's complete proof anchor.
+
+    This fixture carries only one successful pack, not the required proof anchor,
+    so even DURABLE_EXECUTION_RUNNING would be false until a real running/clean
+    durable wait is observable.
     """
     repo, state_path, head = _pushed_unmerged_session(tmp_path)
     monkeypatch.setattr(
@@ -4247,7 +4384,14 @@ def test_an_armed_pull_request_with_a_genuine_red_blocks_as_ci_failed(
     monkeypatch.setattr(GUARD, "_github_slug", lambda _root: ("acme", "widgets"))
     monkeypatch.setattr(GUARD, "_latest_merged_pr", lambda *_a: None)
     monkeypatch.setattr(GUARD, "_open_pull", lambda *_a: _armed_pr(head))
-    GUARD._stop(repo, state_path, {"hook_event_name": "Stop"})
+    GUARD._stop(
+        repo,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
     emitted = json.loads(capsys.readouterr().out.strip())
     assert emitted["decision"] == "block"
     code = emitted["reason"].split(":", 1)[0].split()[-1]
