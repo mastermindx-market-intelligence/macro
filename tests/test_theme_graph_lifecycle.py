@@ -929,3 +929,549 @@ def test_guard_merged_node_with_open_member_edge_breaches(tmp_path):
         d / "node_lifecycle.parquet", index=False)
     b, _ = guard.audit(d, identity.breaks_path())
     assert any("retired-like" in x for x in b)
+
+
+# ---------------------------------------------------------------------------
+# duplicate_mint hostile matrix (META-CEO r2) — additions only
+# ---------------------------------------------------------------------------
+
+_VALID_DUP_ROW = {
+    "node_id": "co:us:AAA",
+    "merged_into": "co:us:BBB",
+    "effective": "2026-08-18",
+    "ratified_at": "2026-10-06",
+    "evidence": "fixture evidence",
+    "ratified_by": "DEC:TEST",
+}
+
+
+def _dup_yml_text(rows: list[dict]) -> str:
+    lines = ["duplicate_mints:"]
+    for r in rows:
+        lines.append(f"  - node_id: {r['node_id']}")
+        lines.append(f"    merged_into: {r['merged_into']}")
+        lines.append(f"    effective: '{r['effective']}'")
+        lines.append(f"    ratified_at: '{r['ratified_at']}'")
+        lines.append(f"    evidence: {r['evidence']}")
+        lines.append(f"    ratified_by: {r['ratified_by']}")
+    return "\n".join(lines) + "\n"
+
+
+def _company_node(node_id: str, **over) -> dict:
+    row = {
+        "node_id": node_id,
+        "kind": "company",
+        "identity_epoch": 1,
+        "external_ids": "{}",
+        "name_en": None,
+        "name_zh": None,
+        "market_scope": "us",
+        "tier": None,
+        "status": "canonical",
+        "merged_into": None,
+        "birth_date": None,
+        "retire_date": None,
+        "provenance": "fixture",
+        "computed_at": STAMP_A,
+        "engine_version": store.ENGINE_VERSION,
+        "source_meta": None,
+    }
+    row.update(over)
+    return row
+
+
+def _member_of_edge(src: str, dst: str = "basket:baskets:demo", **over) -> dict:
+    row = {
+        "edge_id": f"member_of:{src}->{dst}@2023-05-09",
+        "type": "MEMBER_OF",
+        "src": src,
+        "dst": dst,
+        "valid_from": "2023-05-09",
+        "valid_to": None,
+        "belief_time": "2026-09-04",
+        "computed_at": "2026-09-04T00:00:00Z",
+        "evidence_refs": ["ev:fixture1"],
+        "era": "observed",
+        "source_class": "curated",
+        "date_provenance": "membership_pit",
+        "engine_version": store.ENGINE_VERSION,
+    }
+    row.update(over)
+    return row
+
+
+def _evidence_fixture() -> dict:
+    return {
+        "evidence_id": "ev:fixture1",
+        "kind": "operator_curation",
+        "published_at": "2026-10-06",
+        "effective_at": None,
+        "source_ref": "fixture://x",
+        "licensing_internal_ok": True,
+        "licensing_display_ok": True,
+        "licensing_redistribution_ok": True,
+        "retention": None,
+        "computed_at": STAMP_A,
+        "provider": None,
+        "claim_type": "membership",
+    }
+
+
+def _write_guard_store(
+    store_dir: Path,
+    *,
+    nodes: list[dict],
+    lifecycle: list[dict] | None = None,
+    edges: list[dict] | None = None,
+    evidence: list[dict] | None = None,
+) -> None:
+    store_dir.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(nodes).reindex(columns=list(store.NODE_COLUMNS)).to_parquet(
+        store_dir / "nodes.parquet", index=False
+    )
+    edge_rows = edges or []
+    pd.DataFrame(edge_rows).reindex(columns=list(store.EDGE_COLUMNS)).to_parquet(
+        store_dir / "edges.parquet", index=False
+    )
+    ev_rows = evidence if evidence is not None else ([_evidence_fixture()] if edge_rows else [])
+    pd.DataFrame(ev_rows).reindex(columns=list(store.EVIDENCE_COLUMNS)).to_parquet(
+        store_dir / "evidence.parquet", index=False
+    )
+    lc_rows = lifecycle or []
+    pd.DataFrame(lc_rows).reindex(columns=list(store.NODE_LIFECYCLE_COLUMNS)).to_parquet(
+        store_dir / "node_lifecycle.parquet", index=False
+    )
+
+
+def _breaks_and_dup_files(cfg_dir: Path, dup_rows: list[dict], breaks_yaml: str = "breaks: []\n") -> Path:
+    cfg_dir.mkdir(parents=True, exist_ok=True)
+    breaks_file = cfg_dir / "theme_graph_identity_breaks.yml"
+    breaks_file.write_text(breaks_yaml, encoding="utf-8")
+    (cfg_dir / "theme_graph_duplicate_mints.yml").write_text(
+        _dup_yml_text(dup_rows), encoding="utf-8"
+    )
+    return breaks_file
+
+
+def _vmrk_eqr_dup_row() -> dict:
+    return {
+        "node_id": "co:us:VMRK",
+        "merged_into": "co:us:EQR",
+        "effective": "2026-08-18",
+        "ratified_at": "2026-10-06",
+        "evidence": "VMRK rename re-mint into EQR",
+        "ratified_by": "DEC:TEST",
+    }
+
+
+def _vmrk_eqr_fixture_frames():
+    nodes_df = pd.DataFrame([
+        _company_node("co:us:VMRK"),
+        _company_node("co:us:EQR"),
+    ])
+    idres = pd.DataFrame([
+        {"node_id": "co:us:VMRK", "security_id": "SEC:US-XNYS-EQR"},
+        {"node_id": "co:us:EQR", "security_id": "SEC:US-XNYS-EQR"},
+    ])
+    live_edges = pd.DataFrame([_member_of_edge("co:us:VMRK")])
+    return nodes_df, idres, live_edges, [_vmrk_eqr_dup_row()]
+
+
+# --- A: _load_duplicate_mint_rows fail-closed --------------------------------
+
+def test_load_duplicate_mint_rows_fail_closed_missing_required_key(tmp_path):
+    """A1 — row missing merged_into raises."""
+    p = tmp_path / "dup.yml"
+    p.write_text(
+        "duplicate_mints:\n"
+        "  - node_id: co:us:AAA\n"
+        "    effective: '2026-08-18'\n    ratified_at: '2026-10-06'\n"
+        "    evidence: x\n    ratified_by: DEC:TEST\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="missing required key"):
+        corr._load_duplicate_mint_rows(p)
+
+
+@pytest.mark.parametrize("bad_node_id", ["VMRK", "co:us:"])
+def test_load_duplicate_mint_rows_fail_closed_node_id_grammar(tmp_path, bad_node_id):
+    """A2 — node_id outside company grammar raises."""
+    p = tmp_path / "dup.yml"
+    p.write_text(
+        "duplicate_mints:\n"
+        f"  - node_id: '{bad_node_id}'\n    merged_into: co:us:BBB\n"
+        "    effective: '2026-08-18'\n    ratified_at: '2026-10-06'\n"
+        "    evidence: x\n    ratified_by: DEC:TEST\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="outside grammar"):
+        corr._load_duplicate_mint_rows(p)
+
+
+def test_load_duplicate_mint_rows_fail_closed_unparseable_effective(tmp_path):
+    """A3 — unparseable effective date raises."""
+    p = tmp_path / "dup.yml"
+    p.write_text(_dup_yml_text([{**_VALID_DUP_ROW, "effective": "not-a-date"}]), encoding="utf-8")
+    with pytest.raises(ValueError, match="not a parseable date"):
+        corr._load_duplicate_mint_rows(p)
+
+
+def test_load_duplicate_mint_rows_fail_closed_unparseable_ratified_at(tmp_path):
+    """A4 — unparseable ratified_at raises."""
+    p = tmp_path / "dup.yml"
+    p.write_text(_dup_yml_text([{**_VALID_DUP_ROW, "ratified_at": "bogus"}]), encoding="utf-8")
+    with pytest.raises(ValueError, match="not a parseable date"):
+        corr._load_duplicate_mint_rows(p)
+
+
+def test_load_duplicate_mint_rows_missing_file_matches_breaks_loader(tmp_path):
+    """A5 — absent registry file returns [] like _load_breaks_rows."""
+    missing = tmp_path / "no_such_duplicate_mints.yml"
+    assert not missing.exists()
+    assert corr._load_duplicate_mint_rows(missing) == []
+    missing_breaks = tmp_path / "no_such_breaks.yml"
+    assert corr._load_breaks_rows(missing_breaks) == []
+
+
+# --- B: duplicate_mint_targets fail-closed -----------------------------------
+
+def test_duplicate_mint_targets_fail_closed_non_company_kind():
+    """B1 — duplicate node kind != company raises."""
+    nodes_df = pd.DataFrame([{"node_id": "co:us:AAA", "kind": "etf"}])
+    with pytest.raises(ValueError, match="not a company node"):
+        corr.duplicate_mint_targets(
+            nodes_df, [_VALID_DUP_ROW], lifecycle_latest=pd.DataFrame(), idres_latest=pd.DataFrame())
+
+
+def test_duplicate_mint_targets_fail_closed_merged_into_absent_from_nodes():
+    """B2 — merged_into not in nodes.parquet raises."""
+    nodes_df = pd.DataFrame([{"node_id": "co:us:AAA", "kind": "company"}])
+    with pytest.raises(ValueError, match="absent from nodes.parquet"):
+        corr.duplicate_mint_targets(
+            nodes_df, [_VALID_DUP_ROW], lifecycle_latest=pd.DataFrame(), idres_latest=pd.DataFrame())
+
+
+@pytest.mark.parametrize("target_status", ["retired", "merged"])
+def test_duplicate_mint_targets_fail_closed_merged_into_retired_like(target_status):
+    """B3 — merged_into retired-like in lifecycle_latest raises."""
+    nodes_df = pd.DataFrame([
+        {"node_id": "co:us:AAA", "kind": "company"},
+        {"node_id": "co:us:BBB", "kind": "company"},
+    ])
+    idres = pd.DataFrame([
+        {"node_id": "co:us:AAA", "security_id": "SEC:US-XNYS-X"},
+        {"node_id": "co:us:BBB", "security_id": "SEC:US-XNYS-X"},
+    ])
+    lifecycle_latest = pd.DataFrame([
+        _lifecycle_row(node_id="co:us:BBB", status=target_status, reason="identity_break"),
+    ])
+    with pytest.raises(ValueError, match="is retired-like in the current lifecycle view"):
+        corr.duplicate_mint_targets(
+            nodes_df, [_VALID_DUP_ROW], lifecycle_latest=lifecycle_latest, idres_latest=idres)
+
+
+@pytest.mark.parametrize("drop_node", ["co:us:AAA", "co:us:BBB"])
+def test_duplicate_mint_targets_fail_closed_missing_identity_resolution(drop_node):
+    """B4 — missing security_id for duplicate or incumbent raises."""
+    nodes_df = pd.DataFrame([
+        {"node_id": "co:us:AAA", "kind": "company"},
+        {"node_id": "co:us:BBB", "kind": "company"},
+    ])
+    idres = pd.DataFrame([
+        {"node_id": "co:us:AAA", "security_id": "SEC:US-XNYS-X"},
+        {"node_id": "co:us:BBB", "security_id": "SEC:US-XNYS-X"},
+    ])
+    idres = idres[idres["node_id"] != drop_node]
+    with pytest.raises(ValueError, match="identity_resolution missing"):
+        corr.duplicate_mint_targets(
+            nodes_df, [_VALID_DUP_ROW], lifecycle_latest=pd.DataFrame(), idres_latest=idres)
+
+
+def test_duplicate_mint_targets_skips_registry_row_when_node_absent_from_nodes():
+    """B5 — registry row for unknown node_id is skipped (returns [])."""
+    nodes_df = pd.DataFrame([{"node_id": "co:us:OTHER", "kind": "company"}])
+    out = corr.duplicate_mint_targets(
+        nodes_df, [_VALID_DUP_ROW], lifecycle_latest=pd.DataFrame(), idres_latest=pd.DataFrame())
+    assert out == []
+
+
+# --- C: idempotency ----------------------------------------------------------
+
+def test_duplicate_mint_compute_idempotent_when_duplicate_already_retired():
+    """C — second run with node in already_retired emits zero rows."""
+    nodes_df, idres, live_edges, dup_rows = _vmrk_eqr_fixture_frames()
+    lc, edges, ev, receipt = corr.compute_correction(
+        nodes_df=nodes_df,
+        live_edges=live_edges,
+        breaks_rows=[],
+        dup_rows=dup_rows,
+        lifecycle_latest=pd.DataFrame(),
+        idres_latest=idres,
+        already_retired={"co:us:VMRK"},
+        today="2026-10-06",
+        computed_at="2026-10-06T12:00:00Z",
+    )
+    assert lc == [] and edges == [] and ev == []
+    assert "co:us:VMRK" in receipt["skipped_already_retired"]
+
+
+def test_duplicate_mint_compute_first_run_one_lifecycle_edge_evidence():
+    """C — fresh VMRK-shaped fixture returns exactly 1 lifecycle, 1 edge, 1 evidence."""
+    nodes_df, idres, live_edges, dup_rows = _vmrk_eqr_fixture_frames()
+    lc, edges, ev, _receipt = corr.compute_correction(
+        nodes_df=nodes_df,
+        live_edges=live_edges,
+        breaks_rows=[],
+        dup_rows=dup_rows,
+        lifecycle_latest=pd.DataFrame(),
+        idres_latest=idres,
+        already_retired=set(),
+        today="2026-10-06",
+        computed_at="2026-10-06T12:00:00Z",
+    )
+    assert len(lc) == 1 and len(edges) == 1 and len(ev) == 1
+
+
+# --- D: guard invariants duplicate_mint (hermetic tmp_path) ------------------
+
+def test_guard_duplicate_mint_valid_fixture_zero_breaches(tmp_path):
+    """D0 — positive control: lawful merged duplicate_mint store has no dup-mint breaches."""
+    dup = _VALID_DUP_ROW
+    dup_node, canon = dup["node_id"], dup["merged_into"]
+    store_dir = tmp_path / "store"
+    cfg = tmp_path / "cfg"
+    breaks_file = _breaks_and_dup_files(cfg, [dup])
+    _write_guard_store(
+        store_dir,
+        nodes=[_company_node(dup_node), _company_node(canon)],
+        lifecycle=[
+            _lifecycle_row(
+                node_id=dup_node,
+                status="merged",
+                merged_into=canon,
+                reason="duplicate_mint",
+                retire_date="2026-10-06",
+                computed_at="2026-10-06T12:00:00Z",
+            )
+        ],
+        edges=[
+            _member_of_edge(dup_node, valid_to="2023-05-09"),
+            _member_of_edge(canon),
+        ],
+    )
+    breaches, _ = guard.audit(store_dir, breaks_file)
+    dup_related = [b for b in breaches if "duplicate_mint" in b or "retired-like" in b]
+    assert dup_related == []
+
+
+def test_guard_duplicate_mint_invariant_i_status_retired_not_merged(tmp_path):
+    """D1 — status retired + reason duplicate_mint -> must have status=merged."""
+    dup = dict(_VALID_DUP_ROW)
+    store_dir = tmp_path / "store"
+    breaks_file = _breaks_and_dup_files(tmp_path / "cfg", [dup])
+    _write_guard_store(
+        store_dir,
+        nodes=[_company_node(dup["node_id"]), _company_node(dup["merged_into"])],
+        lifecycle=[
+            _lifecycle_row(
+                node_id=dup["node_id"],
+                status="retired",
+                reason="duplicate_mint",
+                merged_into=dup["merged_into"],
+                retire_date="2026-10-06",
+                computed_at="2026-10-06T12:00:00Z",
+            )
+        ],
+    )
+    breaches, _ = guard.audit(store_dir, breaks_file)
+    assert any("must have status=merged" in b for b in breaches)
+
+
+@pytest.mark.parametrize("merged_into", [None, "co:us:AAA"])
+def test_guard_duplicate_mint_invariant_i_merged_into_distinct(tmp_path, merged_into):
+    """D1 — merged_into null or self -> distinct from node_id."""
+    dup = dict(_VALID_DUP_ROW)
+    store_dir = tmp_path / "store"
+    breaks_file = _breaks_and_dup_files(tmp_path / "cfg", [dup])
+    _write_guard_store(
+        store_dir,
+        nodes=[_company_node(dup["node_id"]), _company_node(dup["merged_into"])],
+        lifecycle=[
+            _lifecycle_row(
+                node_id=dup["node_id"],
+                status="merged",
+                reason="duplicate_mint",
+                merged_into=merged_into,
+                retire_date="2026-10-06",
+                computed_at="2026-10-06T12:00:00Z",
+            )
+        ],
+    )
+    breaches, _ = guard.audit(store_dir, breaks_file)
+    assert any("distinct from node_id" in b for b in breaches)
+
+
+def test_guard_duplicate_mint_invariant_i_merged_into_not_company(tmp_path):
+    """D1 — merged_into absent / non-company -> is not a company node."""
+    dup = dict(_VALID_DUP_ROW)
+    store_dir = tmp_path / "store"
+    breaks_file = _breaks_and_dup_files(tmp_path / "cfg", [dup])
+    _write_guard_store(
+        store_dir,
+        nodes=[
+            _company_node(dup["node_id"]),
+            _company_node("basket:baskets:demo", kind="basket"),
+        ],
+        lifecycle=[
+            _lifecycle_row(
+                node_id=dup["node_id"],
+                status="merged",
+                reason="duplicate_mint",
+                merged_into="basket:baskets:demo",
+                retire_date="2026-10-06",
+                computed_at="2026-10-06T12:00:00Z",
+            )
+        ],
+    )
+    breaches, _ = guard.audit(store_dir, breaks_file)
+    assert any("is not a company node" in b for b in breaches)
+
+
+def test_guard_duplicate_mint_invariant_i_merged_into_retired_like(tmp_path):
+    """D1 — merged_into target retired-like -> is retired-like in the current lifecycle view."""
+    dup = dict(_VALID_DUP_ROW)
+    canon = dup["merged_into"]
+    store_dir = tmp_path / "store"
+    breaks_file = _breaks_and_dup_files(tmp_path / "cfg", [dup])
+    _write_guard_store(
+        store_dir,
+        nodes=[_company_node(dup["node_id"]), _company_node(canon)],
+        lifecycle=[
+            _lifecycle_row(
+                node_id=canon,
+                status="retired",
+                reason="identity_break",
+                retire_date="2026-01-01",
+                computed_at=STAMP_A,
+            ),
+            _lifecycle_row(
+                node_id=dup["node_id"],
+                status="merged",
+                reason="duplicate_mint",
+                merged_into=canon,
+                retire_date="2026-10-06",
+                computed_at="2026-10-06T12:00:00Z",
+            ),
+        ],
+    )
+    breaches, _ = guard.audit(store_dir, breaks_file)
+    assert any("is retired-like in the current lifecycle view" in b for b in breaches)
+
+
+def test_guard_duplicate_mint_invariant_ii_no_matching_registry_row(tmp_path):
+    """D2 — lifecycle duplicate_mint with no registry row -> cites no matching row."""
+    dup = dict(_VALID_DUP_ROW)
+    store_dir = tmp_path / "store"
+    cfg = tmp_path / "cfg"
+    cfg.mkdir(parents=True, exist_ok=True)
+    breaks_file = cfg / "theme_graph_identity_breaks.yml"
+    breaks_file.write_text("breaks: []\n", encoding="utf-8")
+    _write_guard_store(
+        store_dir,
+        nodes=[_company_node(dup["node_id"]), _company_node(dup["merged_into"])],
+        lifecycle=[
+            _lifecycle_row(
+                node_id=dup["node_id"],
+                status="merged",
+                reason="duplicate_mint",
+                merged_into=dup["merged_into"],
+                retire_date="2026-10-06",
+                computed_at="2026-10-06T12:00:00Z",
+            )
+        ],
+    )
+    breaches, _ = guard.audit(store_dir, breaks_file)
+    assert any("cites no matching row" in b for b in breaches)
+
+
+def test_guard_duplicate_mint_invariant_ii_merged_into_differs_from_registry(tmp_path):
+    """D2 — lifecycle merged_into != registry -> != registry."""
+    dup = dict(_VALID_DUP_ROW)
+    store_dir = tmp_path / "store"
+    breaks_file = _breaks_and_dup_files(tmp_path / "cfg", [dup])
+    _write_guard_store(
+        store_dir,
+        nodes=[_company_node(dup["node_id"]), _company_node(dup["merged_into"])],
+        lifecycle=[
+            _lifecycle_row(
+                node_id=dup["node_id"],
+                status="merged",
+                reason="duplicate_mint",
+                merged_into="co:us:OTHER",
+                retire_date="2026-10-06",
+                computed_at="2026-10-06T12:00:00Z",
+            )
+        ],
+    )
+    breaches, _ = guard.audit(store_dir, breaks_file)
+    assert any("!= registry" in b for b in breaches)
+
+
+def test_guard_duplicate_mint_invariant_ii_computed_at_predates_ratified_at(tmp_path):
+    """D2 — computed_at before registry ratified_at -> predates its cited duplicate_mints."""
+    dup = dict(_VALID_DUP_ROW)
+    store_dir = tmp_path / "store"
+    breaks_file = _breaks_and_dup_files(tmp_path / "cfg", [dup])
+    _write_guard_store(
+        store_dir,
+        nodes=[_company_node(dup["node_id"]), _company_node(dup["merged_into"])],
+        lifecycle=[
+            _lifecycle_row(
+                node_id=dup["node_id"],
+                status="merged",
+                reason="duplicate_mint",
+                merged_into=dup["merged_into"],
+                retire_date="2026-10-06",
+                computed_at="2026-01-01T00:00:00Z",
+            )
+        ],
+    )
+    breaches, _ = guard.audit(store_dir, breaks_file)
+    assert any("predates its cited duplicate_mints" in b for b in breaches)
+
+
+def test_guard_duplicate_mint_invariant_iii_registry_without_merged_lifecycle(tmp_path):
+    """D3 — registry row in nodes but no merged lifecycle -> with no merged row."""
+    dup = dict(_VALID_DUP_ROW)
+    store_dir = tmp_path / "store"
+    breaks_file = _breaks_and_dup_files(tmp_path / "cfg", [dup])
+    _write_guard_store(
+        store_dir,
+        nodes=[_company_node(dup["node_id"]), _company_node(dup["merged_into"])],
+        lifecycle=[],
+    )
+    breaches, _ = guard.audit(store_dir, breaks_file)
+    assert any("with no merged row in the current node_lifecycle view" in b for b in breaches)
+
+
+def test_guard_duplicate_mint_invariant_iii_lifecycle_merged_into_mismatch(tmp_path):
+    """D3 — lifecycle merged_into differs from registry -> expects merged_into."""
+    dup = dict(_VALID_DUP_ROW)
+    store_dir = tmp_path / "store"
+    breaks_file = _breaks_and_dup_files(tmp_path / "cfg", [dup])
+    _write_guard_store(
+        store_dir,
+        nodes=[_company_node(dup["node_id"]), _company_node(dup["merged_into"])],
+        lifecycle=[
+            _lifecycle_row(
+                node_id=dup["node_id"],
+                status="merged",
+                reason="duplicate_mint",
+                merged_into="co:us:WRONG",
+                retire_date="2026-10-06",
+                computed_at="2026-10-06T12:00:00Z",
+            )
+        ],
+    )
+    breaches, _ = guard.audit(store_dir, breaks_file)
+    assert any("expects merged_into" in b for b in breaches)
