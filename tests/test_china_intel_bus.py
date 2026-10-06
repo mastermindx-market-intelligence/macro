@@ -842,7 +842,7 @@ def test_visit_discovery_unclocked_post_receipt_source_stays_visible_but_blocks_
     assert snap["global_negative_authority_blocker"] == \
         "row_source_after_health_receipt_without_observation_clock"
     assert snap["examples"][0]["first_seen_state"] == \
-        "unknown_owner_clock_order_invalid"
+        "observation_clock_unavailable"
     assert snap["examples"][0]["baseline_state"] == \
         "blocked_owner_clock_order_invalid"
     assert snap["n_first_observed_recent"] == 0
