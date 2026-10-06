@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import re
 import shutil
 import subprocess
@@ -109,6 +110,127 @@ def test_full_bonds_template_renders_with_existing_owner_fixture() -> None:
     assert repr(context['vm']) == before
     assert 'id="real"' in html and 'id="stress"' in html and 'id="corpcredit"' in html
     assert html.index('data-duration-open') < html.index('id="stress"')
+
+
+def test_explanation_consumer_uses_owner_artifacts_and_stale_contract(tmp_path) -> None:
+    from scripts import build_bonds as BB
+
+    data = tmp_path / "data"
+    (data / "transmission").mkdir(parents=True)
+    (data / "regime").mkdir(parents=True)
+    (data / "transmission" / "latest.json").write_text(json.dumps({
+        "asof": "2026-10-02",
+        "yield_curve": {
+            "momentum": {
+                "real10y_speed_bp": 58.0,
+                "front2y_speed_bp": 59.0,
+                "nom10y_speed_bp": 69.0,
+                "window_d": 63,
+            },
+            "recession": {"risk": "low", "n_flags": 0, "ntfs": 1.03},
+            "regime": {"term_premium_chg_bp": 27.0, "window_d": 21},
+            "slopes": {
+                "2s10s": {"chg_63d_bp": 9.0},
+                "3m10y": {"chg_63d_bp": 40.0},
+            },
+        },
+        "breakeven_decomp": {
+            "as_of": "2026-10-02",
+            "velocity_bp": {"chg_63d_bp": 11.0},
+        },
+    }))
+    (data / "regime" / "latest.json").write_text(json.dumps({
+        "asof": "2026-10-02",
+        "conditions": {
+            "stale_inputs": ["recession_risk"],
+            "systemic_stress": {
+                "state": "calm",
+                "trend": "rising",
+                "ofr_fsi": -2.349,
+                "functional": {"funding": -0.153},
+            },
+        },
+    }))
+    bond = {
+        "as_of": "2026-10-02",
+        "pillars": {
+            "credit": {
+                "direction": "widening",
+                "distress_band": "normal",
+                "hy_oas": 3.24,
+                "ig_oas": 0.80,
+            },
+            "stress": {
+                "move_band": "normal",
+                "move_pctile": 0.976,
+                "move": 110.0,
+                "repo_stress": False,
+                "reserve_scarcity": False,
+                "sofr_iorb_bp": 0.0,
+            },
+        },
+    }
+    view = BB.build_bonds_explanation_vm(
+        bond, {"implied_bp_12m": 50.0}, data_root=data
+    )
+
+    assert view is not None
+    assert view["schema"] == "mastermind.bonds_explanation_view.v1"
+    assert len(view["mechanisms"]) == 5
+    growth = next(row for row in view["mechanisms"] if row["key"] == "growth_cuts")
+    assert growth["state"] == "insufficient"
+    assert any(item["family"] == "recession" for item in growth["missing"])
+    assert "fed_path" not in bond
+
+
+def test_explanation_view_is_one_object_for_page_and_machine_snapshot(tmp_path) -> None:
+    from scripts import build_bonds as BB
+
+    data = tmp_path / "data"
+    (data / "transmission").mkdir(parents=True)
+    (data / "regime").mkdir(parents=True)
+    (data / "transmission" / "latest.json").write_text(json.dumps({
+        "asof": "2026-10-02",
+        "yield_curve": {
+            "momentum": {"real10y_speed_bp": 10.0, "front2y_speed_bp": 5.0, "nom10y_speed_bp": 15.0, "window_d": 63},
+            "recession": {"risk": "low", "n_flags": 0, "ntfs": 0.5},
+            "regime": {"term_premium_chg_bp": 5.0, "window_d": 21},
+            "slopes": {"2s10s": {"chg_63d_bp": 2.0}, "3m10y": {"chg_63d_bp": 3.0}},
+        },
+        "breakeven_decomp": {"as_of": "2026-10-02", "velocity_bp": {"chg_63d_bp": 2.0}},
+    }))
+    (data / "regime" / "latest.json").write_text(json.dumps({
+        "asof": "2026-10-02",
+        "conditions": {"systemic_stress": {"state": "calm", "trend": "flat", "functional": {}}},
+    }))
+    bond = {
+        "as_of": "2026-10-02",
+        "pillars": {
+            "credit": {"direction": "tightening", "distress_band": "normal"},
+            "stress": {"move_band": "normal", "repo_stress": False, "reserve_scarcity": False},
+        },
+    }
+    view = BB.build_bonds_explanation_vm(bond, {"implied_bp_12m": 25.0}, data_root=data)
+    assert view is not None
+
+    fixture_path = ROOT / "tests" / "test_bonds_divergence_gate.py"
+    spec = importlib.util.spec_from_file_location("bonds_explanation_route_fixture", fixture_path)
+    fixture = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fixture)
+    context = fixture._base_ctx()
+    context["explanation_view"] = view
+    env = Environment(loader=FileSystemLoader(TEMPLATES), autoescape=True)
+    html = env.get_template("bonds.html.j2").render(**context)
+
+    assert html.count('id="bond-explanations"') == 1
+    assert "Competing explanations" in html
+    for row in view["mechanisms"]:
+        assert row["label"]["en"] in html
+
+    source = (ROOT / "scripts" / "build_bonds.py").read_text(encoding="utf-8")
+    assert source.count("build_bonds_explanation_vm(snap, fed_path)") == 1
+    assert "explanation_view=explanation_view" in source
+    assert 'snap["explanation"] = explanation_view' in source
 
 
 def test_slider_does_not_round_a_valid_fractional_text_shock() -> None:
