@@ -8,9 +8,9 @@ GEN (Phase 1): `2026-10-06T08:07:45Z` / DATA_COMMIT (P1): `f7dd82910f315e82f3761
 GEN2: `2026-10-06T13:27:04Z` nightly / observed / belief_time `2026-10-06`  
 DATA_COMMIT (natural): `f9ccad3e50f671499893f8113ba96ae2910ab5e7`  
 RUN_ID: `37404125352` / ENGINE_JOB_ID: `112118780036` / TRIGGER_COMPUTED_AT: `2026-10-06T13:27:04Z`  
-lane host/model (pin3/pin3r): Cursor bounded fabric builder (ubuntu1, composer-2.5) — META-CEO commission rounds pin3, pin3r  
-written-at UTC: `2026-10-06T18:16:10Z`  
-repair round: `r1d` (Phase 1 harness); `r2` (Phase 2 natural receipt + PIT readers at PIN2); `r2b` (N5 probe + verdict composition); `r2c` (P3 review fixes); `pin3` (PIN3 re-measure); `pin3r` (numbered repair list after review)
+lane host/model (pin3/pin3r/pin3s): Cursor bounded fabric builder (ubuntu1, composer-2.5) — META-CEO commission rounds pin3, pin3r, pin3s  
+written-at UTC: `2026-10-06T18:30:06Z`  
+repair round: `r1d` (Phase 1 harness); `r2` (Phase 2 natural receipt + PIT readers at PIN2); `r2b` (N5 probe + verdict composition); `r2c` (P3 review fixes); `pin3` (PIN3 re-measure); `pin3r` (numbered repair list after review); `pin3s` (R0.2 literal + Appendix C anchors + closed heredocs)
 
 **Round r1b (repair) — harness corrections by orchestrator E:** D1 materializes `data/reference/security_master.parquet` so R1.B/R2 are not run against a degraded guard. D5 moves MarketOntology half-B docket tests to non-gating R1.X and limits R1.F to theme-graph rights tests. D6 censuses `evidence.source_ref` only via `family_for_source_ref`. D7 treats `site/factordata/us_standouts.json` as intentionally unmapped (PASS when `None`).
 
@@ -22,6 +22,8 @@ repair round: `r1d` (Phase 1 harness); `r2` (Phase 2 natural receipt + PIT reade
 **Round pin3 (re-measure) — harness corrections by seat orchestrator E:** D11 pin3: re-measure at PIN3 ebe35dc9 (#8544); R0.2 mirrors -> #8543 527243be; C6 /rows restored to GEN1 truth; §6 recomposed (PHASE-2 PENDING:GEN3).
 
 **Round pin3r (repair) — harness corrections by seat orchestrator E:** D12 pin3r: exact PIN3 command per row + verbatim PIN3 probes in Appendix C (m1); R1.A delta lifecycle detail + canonical rule (m2); md D11 (m3); header PIN3/#8543/lane/written-at (m4); rows_pin3 R1.A stale PIN1 failure fields removed (review MAJOR 1); C6 PIN3 owner/repair/gate (review minor 5); §6.C GEN3 must-show made literal (review minor 6).
+
+**Round pin3s (repair) — harness corrections by seat orchestrator E:** D13 pin3s: R0.2 exact command and literal output (the 40-char-sha grep printed no WS line; the WS record cites 12-char shas at :58/:70/:82); every Appendix C anchor referenced from §6.A / command_ref resolves (§-headers); the four verbatim probe heredocs are closed (copy-paste runnable).
 
 **Round r2c (repair) — harness corrections by seat orchestrator E:** D10 P3 adversarial review fixes — B1 GEN1 capability generations 53; B2 phase-2 V2/V3 re-measured at GEN2; B3 R1.D CN-panel hydration artifact; M1 R1.A-CI is gate: data (data-health.yml), not a ci.yml pack; M2 pin/head note; m1–m4.
 
@@ -37,7 +39,7 @@ ROUTED (non-gating): R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger
 | id | gate | clause / source | command (short; full text in Appendix A) | output tail (≤3 lines, verbatim) | verdict | owner | smallest repair packet |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | R0.1 | Predecessor ancestry | commission §1 | `git merge-base --is-ancestor` ×3 | `0b1fe887 rc=0`<br>`79b566f5 rc=0`<br>`192a46de rc=0` | PASS | — | — |
-| R0.2 | Agent OS acceptance trace | commission §1 | `git grep` agentos D2C/D2D accept | at PIN1 no line cited both (HOLD); satisfied by #8543 merge 527243be5c03c79c016d8731179307f6ff03bf1d (2026-10-06T11:54:25Z): WS-GMI-THEME-GRAPH.md:82 D2C MERGED 0b1fe88730547207475ad3c04118d2e771a9b949; :82 D2D MERGED 79b566f5c0ccba878ab963084a239993d3116aa9 | PASS | — | — |
+| R0.2 | Agent OS acceptance trace | commission §1 | `git grep` agentos D2C/D2D accept | at PIN1 no line cited both (HOLD); satisfied by #8543 merge 527243be5c03c79c016d8731179307f6ff03bf1d (2026-10-06T11:54:25Z): WS-GMI-THEME-GRAPH.md:58 D2C squash 0b1fe8873054, :70 D2D squash 79b566f5c0cc, :82 "D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc)"; #8543 merge is an ancestor of PIN3 (rc=0) | PASS | — | — |
 | R0.3 | No overlapping D2E carrier | commission §2 | `gh pr list --search D2E` | Open hit #8324 blueprint only (not D2E acceptance) | PASS | — | — |
 | R0.4 | Owner-action authority #8507 | commission §2 | `gh pr view 8507`; `git grep OWNER_ACTION…` | `state=MERGED`; mergeCommit=`cbfa20a45d8401f1cf1cc9fc48155455f1d612fb`; grep≥1 | PASS | — | — |
 | R1.A | D2A identity resolution | D2A | `pytest` identity_resolution + identity | `3 failed, 118 passed in 5.09s`<br>`tests/test_theme_graph_identity_resolution.py::test_the_committed_graph_carries_exactly_2806_company_nodes`<br>`E       assert 2807 == 2806`<br>`tests/test_theme_graph_identity_resolution.py::test_every_company_node_gets_a_row`<br>`E       assert 2807 == 2806`<br>`tests/test_theme_graph_identity_resolution.py::test_r1_section_6_1_the_four_sidecar_assertions_against_the_committed_parquet`<br>`E       AssertionError: assert 'co:us:VMRK' not in {...}` | FAIL | seat (PR #8544) | PR #8544 (branch claude/gmi-vmrk-duplicate-mint-20261006; seat-accepted frozen P-R1A: merge rename re-mint co:us:VMRK into co:us:EQR + D2A re-pin under DEC-THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE) — seat merges #8544, then ONE #8540 re-measure round at PIN3 = origin/main after #8544 re-runs R1.A, R3.2, R1.B–F, R2, C1–C7 |
@@ -142,7 +144,7 @@ None refs (verbatim): `gmi:entity_type_conflict:co:us:IBIT` (`evidence_id=ev:4d8
 | id | gate | clause / source | command | output tail | verdict | owner | smallest repair packet |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | R0.1 | Predecessor ancestry | commission §1 | `git merge-base --is-ancestor` ×5 (exact: App. C §PROBE_R0_1) | PIN3: 0b1fe88730547207475ad3c04118d2e771a9b949 rc=0; 79b566f5c0ccba878ab963084a239993d3116aa9 rc=0; 192a46de8be8c694e47a1f2ab60b396d7dbb4f7f rc=0; 527243be5c03c79c016d8731179307f6ff03bf1d rc=0; ebe35dc916de5aae556371a5aa963c6692175c9c rc=0 | PASS | — | — |
-| R0.2 | Agent OS acceptance trace | commission §1 | `git grep` WS + #8543 merge (exact: App. C §PROBE_R0_2) | PIN3: at PIN1 no line cited both (HOLD); satisfied by #8543 merge 527243be5c03c79c016d8731179307f6ff03bf1d (2026-10-06T11:54:25Z): WS-GMI-THEME-GRAPH.md:82 D2C MERGED 0b1fe88730547207475ad3c04118d2e771a9b949; :82 D2D MERGED 79b566f5c0ccba878ab963084a239993d3116aa9 | PASS | — | — |
+| R0.2 | Agent OS acceptance trace | commission §1 | `git grep` WS + #8543 merge (exact: App. C §PROBE_R0_2) | PIN3: agentos/workstreams/WS-GMI-THEME-GRAPH.md:58: MERGED 2026-10-06T09:50:19Z as squash 0b1fe8873054 at head f5b9a42b91fb, under Sol's | agentos/workstreams/WS-GMI-THEME-GRAPH.md:70: MERGED 2026-10-06T10:42:10Z as squash 79b566f5c0cc at head 69a1aa7d90cb (ci.yml | agentos/workstreams/WS-GMI-THEME-GRAPH.md:82: D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc), so acceptance is live as a | 527243be_rc=0 — reading: at PIN1 no line cited both (HOLD); satisfied by #8543 merge 527243be5c03c79c016d8731179307f6ff03bf1d (2026-10-06T11:54:25Z): WS-GMI-THEME-GRAPH.md:58 D2C squash 0b1fe8873054, :70 D2D squash 79b566f5c0cc, :82 "D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc)"; #8543 merge is an ancestor of PIN3 (rc=0) | PASS | — | — |
 | R0.3 | No overlapping D2E carrier | commission §2 | `gh pr list --search D2E` (exact: App. C §PROBE_R0_3) | PIN3: open #8540 (D2E acceptance carrier) + blueprint #8324 only | PASS | — | — |
 | R0.4 | Owner-action authority #8507 | commission §2 | `gh pr view 8507`; grep (exact: App. C §PROBE_R0_4) | PIN3: state=MERGED mergeCommit=cbfa20a45d8401f1cf1cc9fc48155455f1d612fb; OWNER_ACTION grep matches=5 | PASS | — | — |
 | R1.A | D2A identity resolution | D2A | `pytest` identity_resolution + identity (exact: App. C §PROBE_R1_A) | PIN3: 121 passed in 5.22s; tests/test_theme_graph_identity_resolution.py: 56 passed in 5.17s; tests/test_theme_graph_identity.py: 65 passed in 0.57s | PASS | — | — |
@@ -570,187 +572,194 @@ newest cells security_id == SEC:US-XNYS-VMRK: 0
 
 **PIN3 worktree:** `git worktree add --detach ../mo-ext-pin3m-8540 ebe35dc916de5aae556371a5aa963c6692175c9c`; hydrate tracked `data/theme_graph/*`, `data/reference/security_master.parquet`, `data/china_search/closes.parquet`, `data/theme_graph/probation/*` from git bytes when sparse.
 
-**R0.1** — command:
+**§PROBE_R0_1 — R0.1** — command:
 ```
 for c in 0b1fe88730547207475ad3c04118d2e771a9b949 79b566f5c0ccba878ab963084a239993d3116aa9 192a46de8be8c694e47a1f2ab60b396d7dbb4f7f 527243be5c03c79c016d8731179307f6ff03bf1d ebe35dc916de5aae556371a5aa963c6692175c9c; do git merge-base --is-ancestor "$c" HEAD; echo "$c rc=$?"; done
 ```
 output: `PIN3: 0b1fe88730547207475ad3c04118d2e771a9b949 rc=0; 79b566f5c0ccba878ab963084a239993d3116aa9 rc=0; 192a46de8be8c694e47a1f2ab60b396d7dbb4f7f rc=0; 527243be5c03c79c016d8731179307f6ff03bf1d rc=0; ebe35dc916de5aae556371a5aa963c6692175c9c rc=0`
 
-**R0.2** — command:
+**§PROBE_R0_2 — R0.2** — command:
 ```
-git grep -n -E 'D2C|D2D' agentos/workstreams/WS-GMI-THEME-GRAPH.md | grep -E '0b1fe88730547207475ad3c04118d2e771a9b949|79b566f5c0ccba878ab963084a239993d3116aa9'; git merge-base --is-ancestor 527243be5c03c79c016d8731179307f6ff03bf1d HEAD; echo 527243be_rc=$?
+git grep -n -E '0b1fe887|79b566f5' agentos/workstreams/WS-GMI-THEME-GRAPH.md | grep -F MERGED; git merge-base --is-ancestor 527243be5c03c79c016d8731179307f6ff03bf1d HEAD; echo 527243be_rc=$?
 ```
-output: `PIN3: at PIN1 no line cited both (HOLD); satisfied by #8543 merge 527243be5c03c79c016d8731179307f6ff03bf1d (2026-10-06T11:54:25Z): WS-GMI-THEME-GRAPH.md:82 D2C MERGED 0b1fe88730547207475ad3c04118d2e771a9b949; :82 D2D MERGED 79b566f5c0ccba878ab963084a239993d3116aa9`
+output (literal at PIN3 worktree):
+```
+agentos/workstreams/WS-GMI-THEME-GRAPH.md:58:      MERGED 2026-10-06T09:50:19Z as squash 0b1fe8873054 at head f5b9a42b91fb, under Sol's
+agentos/workstreams/WS-GMI-THEME-GRAPH.md:70:      MERGED 2026-10-06T10:42:10Z as squash 79b566f5c0cc at head 69a1aa7d90cb (ci.yml
+agentos/workstreams/WS-GMI-THEME-GRAPH.md:82:      D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc), so acceptance is live as a
+527243be_rc=0
+```
+recorded tail: `PIN3: agentos/workstreams/WS-GMI-THEME-GRAPH.md:58: MERGED 2026-10-06T09:50:19Z as squash 0b1fe8873054 at head f5b9a42b91fb, under Sol's | agentos/workstreams/WS-GMI-THEME-GRAPH.md:70: MERGED 2026-10-06T10:42:10Z as squash 79b566f5c0cc at head 69a1aa7d90cb (ci.yml | agentos/workstreams/WS-GMI-THEME-GRAPH.md:82: D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc), so acceptance is live as a | 527243be_rc=0` — reading: at PIN1 no line cited both (HOLD); satisfied by #8543 merge 527243be5c03c79c016d8731179307f6ff03bf1d (2026-10-06T11:54:25Z): WS-GMI-THEME-GRAPH.md:58 D2C squash 0b1fe8873054, :70 D2D squash 79b566f5c0cc, :82 "D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc)"; #8543 merge is an ancestor of PIN3 (rc=0)
 
-**R0.3** — command:
+**§PROBE_R0_3 — R0.3** — command:
 ```
 gh pr list -R mastermindx-market-intelligence/macro --state open --search "D2E" --json number,title,headRefName --limit 20
 ```
 output: `PIN3: open #8540 (D2E acceptance carrier) + blueprint #8324 only`
 
-**R0.4** — command:
+**§PROBE_R0_4 — R0.4** — command:
 ```
 gh pr view 8507 -R mastermindx-market-intelligence/macro --json state,mergeCommit; git grep -c OWNER_ACTION_AUTHORITY_UNAVAILABLE HEAD -- engine scripts tests
 ```
 output: `PIN3: state=MERGED mergeCommit=cbfa20a45d8401f1cf1cc9fc48155455f1d612fb; OWNER_ACTION grep matches=5`
 
-**R1.A** — command:
+**§PROBE_R1_A — R1.A** — command:
 ```
 TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_identity_resolution.py tests/test_theme_graph_identity.py
 ```
 output: `PIN3: 121 passed in 5.22s; tests/test_theme_graph_identity_resolution.py: 56 passed in 5.17s; tests/test_theme_graph_identity.py: 65 passed in 0.57s`
 
-**R1.A-CI** — command:
+**§PROBE_R1_A_CI — R1.A-CI** — command:
 ```
 gh run list -R mastermindx-market-intelligence/macro --workflow data-health.yml --branch main -L 5 --json databaseId,headSha,conclusion,status
 ```
 output: `PIN3: no data-health.yml run on a head containing PIN3 yet`
 
-**R1.B** — command:
+**§PROBE_R1_B — R1.B** — command:
 ```
 TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_lifecycle.py
 ```
 output: `PIN3: 57 passed in 2.96s`
 
-**R1.C** — command:
+**§PROBE_R1_C — R1.C** — command:
 ```
 TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_basket_membership_pit.py tests/test_us_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_gmi_history_integrity.py
 ```
 output: `PIN3: 143 passed, 14 warnings in 3.16s`
 
-**R1.D** — command:
+**§PROBE_R1_D — R1.D** — command:
 ```
 unset GMI_STATE_OWNER_WORKSPACE; TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_crosswalk.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_structural_owner_binding.py tests/test_market_ontology_exposure_map.py
 ```
 output: `PIN3: 576 passed in 10.58s`
 
-**R1.E** — command:
+**§PROBE_R1_E — R1.E** — command:
 ```
 TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_materialize.py tests/test_theme_graph_contracts.py
 ```
 output: `PIN3: 132 passed in 7.01s`
 
-**R1.F** — command:
+**§PROBE_R1_F — R1.F** — command:
 ```
 TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_rights_use.py tests/test_theme_sources_registry.py
 ```
 output: `PIN3: 31 passed in 0.75s`
 
-**R1.X** — command:
+**§PROBE_R1_X — R1.X** — command:
 ```
 TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_market_ontology_half_b_rights_docket.py
 ```
 output: `PIN3: 3 failed, 16 passed in 0.53s`
 
-**R2** — command:
+**§PROBE_R2 — R2** — command:
 ```
 TZ=UTC /home/longr/lanes/tmp/d2e-venv/bin/python -m scripts.check_theme_graph_contracts --selftest; TZ=UTC /home/longr/lanes/tmp/d2e-venv/bin/python -m scripts.check_theme_graph_contracts --strict
 ```
 output: `PIN3: selftest rc=0; strict rc=0`
 
-**C1** — command:
+**§PROBE_C1 — C1** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_D2B3'
 ```
 output: `PIN3: co:us:GOLD retired 2025-12-02 identity_break; co:us:IBIT retired 2026-08-22 entity_type_conflict; co:us:VMRK merged_into co:us:EQR`
 
-**C2** — command:
+**§PROBE_C2 — C2** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_D2B3'
 ```
 output: `PIN3: GOLD belief_rows 2; open gold_miners 12 GOLD_in False`
 
-**C3** — command:
+**§PROBE_C3 — C3** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_D2B3'
 ```
 output: `PIN3: IBIT MEMBER_OF annulled valid_from=valid_to=2023-05-09; IBIT refusal 1; live co:us:IBIT MEMBER_OF 0`
 
-**C4** — command:
+**§PROBE_C4 — C4** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_D2B3'
 ```
 output: `PIN3: violations: 0 (7797 live MEMBER_OF edges, 3 retired-like/merged nodes, 0 offenders)`
 
-**C5** — command:
+**§PROBE_C5 — C5** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_D2B3'
 ```
 output: `PIN3: US 1237 RESOLVED=1211 NOT_IN_MASTER=25 DEFERRED=1 ENTITY_TYPE_CONFLICT=0; RESOLVED share 0.978981; NEWEST sum=2805`
 
-**C6** — command:
+**§PROBE_C6 — C6** — command:
 ```
 git log -4 --oneline -- data/theme_graph/_meta.json; git log f9ccad3e50f671499893f8113ba96ae2910ab5e7..HEAD --oneline -- data/theme_graph; for c in 0b1fe88730547207475ad3c04118d2e771a9b949 79b566f5c0ccba878ab963084a239993d3116aa9; do git merge-base --is-ancestor "$c" 640e3e237eede62351b6f657c8e13ad20274585c; echo "$c vs engine rc=$?"; done
 ```
 output: `PIN3: GEN2 natural generation f9ccad3e50f671499893f8113ba96ae2910ab5e7 (2026-10-06T13:27:04Z) + #8544 correction rows; D2C/D2D ancestry rc=0 vs engine 640e3e237eede62351b6f657c8e13ad20274585c; sole post-GEN2 data/theme_graph commit ebe35dc916de5aae556371a5aa963c6692175c9c (#8544)`
 
-**C7** — command:
+**§PROBE_C7 — C7** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_C7'
 ```
 output: `PIN3: 5/5 _meta commits carry node_lifecycle>=2 and IBIT refusal`
 
-**R3.1** — command:
+**§PROBE_R3_1 — R3.1** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'
 ```
 output: `PIN3: finviz_themes/ths_concepts internal_only; all families rights_class set`
 
-**R3.2** — command:
+**§PROBE_R3_2 — R3.2** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'
 ```
 output: `PIN3: 23 rows / 18 distinct refs; ths_concepts 12; mastermind_curated 9; finviz_themes 2; None 0`
 
-**R3.3** — command:
+**§PROBE_R3_3 — R3.3** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'
 ```
 output: `PIN3: probation → mastermind_curated; site/factordata/us_standouts.json → None (intentional)`
 
-**V1** — command:
+**§PROBE_V1 — V1** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'
 ```
 output: `PIN3: total=3882; co:us=1239; co:cn=1021; ltheme=644; basket=358`
 
-**V2** — command:
+**§PROBE_V2 — V2** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'
 ```
 output: `PIN3: read_capability=644; file 34704 rows / 54 generations; newest gen 643 rows`
 
-**V3** — command:
+**§PROBE_V3 — V3** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'
 ```
 output: `PIN3: NEWEST=2805; latest-per-node=2807; _meta.counts.identity_resolution=2807; file 157075 rows / 56 gens`
 
-**V4** — command:
+**§PROBE_V4 — V4** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'
 ```
 output: `PIN3: ths concepts=375; mapped 61 + unknown 0; unmapped_concept_count=314`
 
-**V5** — command:
+**§PROBE_V5 — V5** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'
 ```
 output: `PIN3: proposals lines=236 proposed=234 rejected=2`
 
-**V6** — command:
+**§PROBE_V6 — V6** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'
 ```
 output: `PIN3: edges observed=12424 reconstruction=12677 (reconstruction not observed proof)`
 
-**V7** — command:
+**§PROBE_V7 — V7** — command:
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'
 ```
 output: `PIN3: company_mint_refusals=1; NOT_IN_MASTER=195; UNSUPPORTED_MARKET=233`
 
-**PROBE_D2B3 (verbatim)** — C1–C5 (shared)
+**§PROBE_D2B3 (verbatim)** — C1–C5 (shared)
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_D2B3'
 import json
@@ -807,9 +816,10 @@ print("C5 NEWEST computed_at", mx)
 print("US", len(us), dict(sorted(vc.items())))
 print("RESOLVED share", round(vc.get("RESOLVED", 0) / len(us), 6))
 print("NEWEST sum", len(nw))
+PROBE_D2B3
 ```
 
-**PROBE_R1A_DELTA (verbatim)** — §6.B delta
+**§PROBE_R1A_DELTA (verbatim)** — §6.B delta
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R1A_DELTA'
 import json
@@ -835,9 +845,10 @@ for nid in ["co:us:VMRK"]:
     merged_into = str(row.get("merged_into"))
     target_live = merged_into in set(canonical["node_id"].astype(str))
     print("VMRK", row["status"], "merged_into", merged_into, "ratified_by", row.get("ratified_by"), "computed_at", row.get("computed_at"), "merged_into_is_live_company", target_live)
+PROBE_R1A_DELTA
 ```
 
-**PROBE_R3V (verbatim)** — R3.1–R3.3, V1–V7 (shared)
+**§PROBE_R3V (verbatim)** — R3.1–R3.3, V1–V7 (shared)
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_R3V'
 import json, yaml
@@ -895,9 +906,10 @@ edges = pd.read_parquet("data/theme_graph/edges.parquet")
 print("V6 edges observed", int((edges["era"]=="observed").sum()), "reconstruction", int((edges["era"]=="reconstruction").sum()))
 isc = meta.get("identity_resolution_state_counts",{})
 print("V7 refusals", len(meta.get("company_mint_refusals",[])), "NOT_IN_MASTER", isc.get("NOT_IN_MASTER"), "UNSUPPORTED", isc.get("UNSUPPORTED_MARKET"))
+PROBE_R3V
 ```
 
-**PROBE_C7 (verbatim)** — C7
+**§PROBE_C7 (verbatim)** — C7
 ```
 /home/longr/lanes/tmp/d2e-venv/bin/python - <<'PROBE_C7'
 import json, subprocess
@@ -911,9 +923,10 @@ for sha in shas:
     if lc>=2 and ref:
         ok+=1
 print("C7", ok, "/", len(shas))
+PROBE_C7
 ```
 
-**PROBE_R1_A** — per-file pytest (PIN3 worktree `ebe35dc916de5aae556371a5aa963c6692175c9c`):
+**§PROBE_R1_A_FILES** — per-file pytest (PIN3 worktree `ebe35dc916de5aae556371a5aa963c6692175c9c`):
 ```
 TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_identity_resolution.py
 56 passed in 5.17s
