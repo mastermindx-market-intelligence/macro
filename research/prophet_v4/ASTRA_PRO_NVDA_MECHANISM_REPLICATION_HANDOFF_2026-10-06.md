@@ -71,6 +71,38 @@ A recommendation system that detects a winner early but cannot publish a provena
 
 Do not weaken the clock-provenance validator. Investigate and reduce the upstream source-freshness lag and align freshness semantics across alert, board and plan surfaces.
 
+
+### Latest frozen prospective hypothesis
+
+Read `research/prophet_v4/PROPHET_IGNITION_CONVERGENCE_PREREG_2026-10-06.md` after the Pro re-audit.
+
+The research frontier is now narrower than “T2 + news”:
+
+> **H-IGNITION-CONVERGENCE:** a fresh T2 second-timescale acceptance event may have materially higher H5 follow-through when at least two independent, PIT-valid rerating evidence families are concurrently active.
+
+Historical support is discovery-only:
+
+- first-T2-per-ticker T2 + two evidence legs: 5/5 positive vs SPY and sector, 4/5 positive absolute;
+- T1 + two-leg and generic multi-leg convergence do **not** reproduce the result;
+- same-date T2 controls were worse on all 7 observed dates, average mean-excess gap ~+4.19 pp;
+- exploratory Fisher p values are post-selection and confer no authority.
+
+The prospective pre-registration freezes:
+
+- unique T2 episode as unit of account;
+- H5 SPY-relative follow-through as primary, with absolute/sector/MFE/MAE companions;
+- only directionally/PIT-valid evidence families;
+- NVDA and all historical observations as discovery/golden-case evidence, never confirmation;
+- separate detection, Entry Availability, plan publication and executable-price clocks.
+
+Do not alter this frozen primary exposure after reading future outcomes.
+
+### Persistence frontier
+
+Among 134 first-T2 episodes with both H5/H10 grades, 55 were SPY-positive at H5 and 35/55 (63.6%) remained positive at H10; only 9/79 H5 non-responders became H10 winners.
+
+Treat this as architectural evidence that durability should be studied as **P(persistence | ignition has already been accepted)**, with a dynamic post-ignition survival update, not as proof of any current persistence feature.
+
 ## Established facts — do not waste the run rediscovering them
 
 ### NVDA decision transition
