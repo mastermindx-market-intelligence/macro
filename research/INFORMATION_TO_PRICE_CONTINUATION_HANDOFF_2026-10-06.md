@@ -138,3 +138,76 @@ GLM probe **refused** this wave (mini2 below 50 GiB `min_free_gb`); fabric lanes
 3. Run D17 queue with post-#8312 patches and `args_itp_d17_enrol_*.json`, one merge at a time.
 4. Release #8522 / #8521 when queue and upstream gates allow; blob-verify after each merge.
 5. Chairman-only gates unchanged from §4 item 5.
+
+## Wave 3 repair round 1 delta (2026-10-06)
+
+**Scope:** Seat ledger D36–D40 (D38 absent in seat delta — gap preserved), authoritative D17 queue wording,
+W3-D delivery and fabric facts (supplements §6 without amending prior lines), and #8522 W3-A status. All five
+merges below were gated `gh pr merge --squash --match-head-commit <head>` with post-merge blob verification
+(missing=0) under Chairman ruling D34; zero merge-on-green arms; reversal for each = `git revert <squash>`.
+verified (orchestrator, 07:5xZ): `git fetch origin main` then `git merge-base --is-ancestor <squash> origin/main`
+true for all five squashes on main `eae8baa8d3d4`; GraphQL read shows each PR MERGED with exactly the
+headRefOid → mergeCommit pairs below.
+
+### 11. Seat ledger (D36–D37, D39–D40; D38 gap)
+
+| Id | PR | Head | Squash | Release comment | Notes |
+|---|---|---|---|---|---|
+| D36 | #8505 | `ab77f792ee91c95825fe9faca8647dc3d91ac502` | `999e43f1` | 6011669970 | R1 census records MERGED (D34 order after #8312). |
+| D37 | #8514 | `9f0b775415e6cadf4e3250ab5b1d51a42f706771` | `1bd2813b` | 6011673427 | R1 completion spec MERGED. |
+| D38 | — | — | — | — | **Intentional gap** — not in this seat delta; do not invent or renumber. |
+| D39 | #8394 | `0f6fd5b286be` | `96422cf6` | 6011777769 | A7; stale CHANGES_REQUESTED review **5404446368** DISMISSED with evidence. |
+| D40 | #8467 | `056e596e6efe` | `ab63a77e` | 6011782121 | A8; stale review **5411174554** DISMISSED. |
+
+(D35 #8312 squash `0f575e51469fc66fa9fd326022ac2d7eee814926`, release comment **6011558025**, recorded in §5.)
+
+### 12. D17 manifest queue (authoritative)
+
+**Order:** #8422 -> #8337 -> #8461 -> #8463 — **one manifest writer in flight at a time.**
+
+#8337 uses the after-#8312 patch variant **`fd677a71`** (content-identical to the orchestrator's post-#8312
+re-derivation **`47ae5768`** — only the git `index` header line differs; verified hunk-for-hunk). Both #8461 and
+#8463 post-#8312 patches and the #8337 patch apply alone **and** stacked on main `eae8baa8` (`git apply --check`,
+rc 0/0/0). Main's `.github/ci/legacy-jobs.yml` is **unchanged** between `e95e32d4` and `eae8baa8`.
+
+### 13. Wave-3 fabric and W3-D delivery (supplements §6)
+
+| Lane | Fabric | Delivery note |
+|---|---|---|
+| W3-A | grok on local m2 | #8522 — see §14 |
+| W3-B | grok on local m2 | #8521 DELIVERED on branch (unchanged) |
+| W3-C | grok on local m2 | seat-held scratch (unchanged) |
+| W3-D | cursor/composer-2.5 on ubuntu1 | **DELIVERED** as PR **#8525** round-0 head `cb31edb8be80a12dd4d15cd8f700a7f1360580f1` (opened DRAFT by lane driver; ordinary PR, no hold — seat runs `gh pr ready` and arms merge-on-green after this repair's checks conclude). Two no-effect local admission refusals before ubuntu1 run: load1 **42.6** at **07:28:57Z**, **21.81** at **07:49:18Z** vs gate **16.8**. |
+
+### 14. #8522 (W3-A) — OPEN + DRAFT (not MERGED)
+
+Head `a14846336932a2579bd3cdec707362d13ec94c56`. Seat re-ran validator from `refs/remotes/pr/8522`:
+`ok stages=6 ran=6`, rc=0. Merge-tree clean vs main `eae8baa8`. Seat **releases** #8522 once its last pending
+check concludes; remains **OPEN + DRAFT** until then — never describe as merged.
+
+### 15. Still OPEN + DRAFT (orchestrator verified on main `eae8baa8d3d4`)
+
+| PR | headRefOid (prefix) |
+|---|---|
+| #8422 | `314ddae3` |
+| #8337 | `13910854` |
+| #8461 | `3bf903fa` |
+| #8463 | `02fe6b51` |
+| #8521 | `ad498bdd` |
+| #8522 | `a1484633` |
+
+### 16. Ladder updates (post D36–D40)
+
+| Artifact | Squash / head | Rung |
+|---|---|---|
+| #8505 census | squash `999e43f1` | **MERGED** (D36) |
+| #8514 R1 completion | squash `1bd2813b` | **MERGED** (D37) |
+| #8394 A7 | squash `96422cf6` | **MERGED** (D39) |
+| #8467 A8 | squash `ab63a77e` | **MERGED** (D40) |
+
+### 17. NEXT (repair round 1)
+
+1. Land W3-D repair on #8525; seat `gh pr ready` + merge-on-green after checks conclude.
+2. Run D17 queue per §12 (post-#8312 patches on main `eae8baa8`), one PR at a time.
+3. Release #8522 / #8521 when queue and gates allow; blob-verify each merge.
+4. Chairman-only gates unchanged from §4 item 5.
