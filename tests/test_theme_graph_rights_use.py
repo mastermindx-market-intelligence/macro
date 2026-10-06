@@ -308,3 +308,38 @@ def test_authorize_protocol_end_to_end(reg_path):
     bad["purpose"] = "wrong"
     with pytest.raises(Exception):
         _authorize(cap, bad)
+
+
+# Chairman gate #2 (2026-10-06, PR #8324 comment 6009724772): vendor families internal-only, no display rights granted.
+
+
+@pytest.mark.parametrize(
+    "source_ref,family,auth_class",
+    [
+        ("finviz_themes/chunk.json", "finviz_themes", "keyless_public"),
+        ("data/baskets_china_ths/concepts.json", "ths_concepts", "receipted_scrape"),
+    ],
+)
+def test_gate2_real_registry_vendor_families_allow_internal_capture(
+    source_ref, family, auth_class
+):
+    v = current_use_verdict(_valid_request(source_ref=source_ref), path=REAL_REGISTRY)
+    assert v["verdict"] == "ALLOWED"
+    assert v["reason_codes"] == []
+    assert v["source_family"] == family
+    assert v["rights_class"] == "internal_only"
+    assert v["auth_class"] == auth_class
+    assert set(v) == _FROZEN_VERDICT_KEYS
+
+
+def test_gate2_real_registry_vendor_families_still_refuse_public_emission_and_redistribution():
+    for fam in ("finviz_themes", "ths_concepts"):
+        assert rights.rights_class(fam) == "internal_only"
+        with pytest.raises(Exception):
+            rights.assert_public_emission_allowed(fam)
+        assert rights.licensing_for_family(fam) == (True, False, False)
+    v = current_use_verdict(
+        _valid_request(source_ref="site/factordata/us_standouts.json"),
+        path=REAL_REGISTRY,
+    )
+    assert v["verdict"] == "REFUSED"
