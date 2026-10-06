@@ -4934,3 +4934,8 @@
 {"date":"2026-10-05","ticker":"PINS","departed":true,"left_desk":"2026-10-05","last_rank":null,"last_score":13}
 {"date":"2026-10-05","ticker":"TSM","departed":true,"left_desk":"2026-10-05","last_rank":29,"last_score":29}
 {"date":"2026-10-05","ticker":"URI","departed":true,"left_desk":"2026-10-05","last_rank":30,"last_score":29}
+{"date":"2026-10-05","ticker":"PWR","rank":19,"score":37,"lean":1,"broken":false}
+{"date":"2026-10-05","ticker":"REBN","rank":21,"score":36,"lean":1,"broken":false}
+{"date":"2026-10-05","ticker":"TSM","rank":29,"score":30,"lean":1,"broken":false}
+{"date":"2026-10-05","ticker":"NOW","rank":30,"score":30,"lean":1,"broken":false}
+{"date":"2026-10-05","ticker":"GE","rank":null,"score":23,"lean":1,"broken":true}
