@@ -131,6 +131,9 @@ _CIE18_FORBIDDEN_RESULT_KEYS = frozenset({
     "results", "holdout_results", "point_estimates", "p_values",
     "observed_effect", "observed_alpha", "promotion_decision",
     "final_disposition", "winning_variant",
+    # Derived admission/read fields may never be supplied by the prereg itself.
+    "admitted_for_outcome_read", "outcome_read_eligible",
+    "structurally_admissible_for_runner_binding", "outcome_read_blockers",
 })
 
 _CIE18_COMMON_FIELDS = (
@@ -311,7 +314,14 @@ def cie18_prereg_digest(record: dict) -> str:
         raise ValueError("CIE-18 prereg must be a dict")
     payload = {
         k: v for k, v in record.items()
-        if k not in {"prereg_digest", "validation_errors", "admitted_for_outcome_read"}
+        if k not in {
+            "prereg_digest",
+            "validation_errors",
+            "admitted_for_outcome_read",
+            "outcome_read_eligible",
+            "outcome_read_blockers",
+            "structurally_admissible_for_runner_binding",
+        }
     }
     blob = json.dumps(payload, ensure_ascii=False, sort_keys=True,
                       separators=(",", ":"), default=str)
@@ -335,7 +345,9 @@ def validate_cie18_prereg(record: dict) -> dict:
     if not isinstance(record, dict):
         return {
             "schema": CIE18_PREREG_SCHEMA,
-            "admitted_for_outcome_read": False,
+            "structurally_admissible_for_runner_binding": False,
+            "outcome_read_eligible": False,
+            "outcome_read_blockers": ["prereg_structural_validation_failed"],
             "validation_errors": ["record_not_mapping"],
             "disposition_if_incomplete": "ACCRUAL_GATED",
             "prereg_digest": None,
@@ -454,15 +466,43 @@ def validate_cie18_prereg(record: dict) -> dict:
             errors.append(f"{field}_must_be_nonempty_list")
 
     errors = sorted(set(errors))
-    digest = cie18_prereg_digest(record) if not errors else None
+    structurally_ready = not errors
+    digest = cie18_prereg_digest(record) if structurally_ready else None
+
+    # This pure structural guard NEVER grants outcome access. Upstream acceptance
+    # receipts are canonical-owner facts and cannot be supplied as arbitrary
+    # prereg prose. A later owner-bound gate may consume this structural receipt,
+    # but the holdout remains sealed here.
+    outcome_read_blockers: list[str] = []
+    if not structurally_ready:
+        outcome_read_blockers.append("prereg_structural_validation_failed")
+    else:
+        if track == "O":
+            outcome_read_blockers.append(
+                "cie02_serving_fill_acceptance_required"
+            )
+        outcome_read_blockers.extend([
+            "cie03_outcome_baseline_acceptance_required",
+            "accepted_family_consumer_receipt_required",
+            "canonical_outcome_access_gate_not_bound",
+        ])
+
     return {
         "schema": CIE18_PREREG_SCHEMA,
         "track": track or None,
         "experiment_id": record.get("experiment_id"),
         "version": record.get("version"),
-        "admitted_for_outcome_read": not errors,
+        "structurally_admissible_for_runner_binding": structurally_ready,
+        "outcome_read_eligible": False,
+        "outcome_read_blockers": outcome_read_blockers,
         "validation_errors": errors,
-        "disposition_if_incomplete": None if not errors else "ACCRUAL_GATED",
+        "disposition_if_incomplete": (
+            None if structurally_ready else "ACCRUAL_GATED"
+        ),
+        "scientific_state": (
+            "STRUCTURALLY_PREREGISTERED_OUTCOME_SEALED"
+            if structurally_ready else "ACCRUAL_GATED"
+        ),
         "prereg_digest": digest,
         "trial_family": record.get("trial_family"),
         "declared_trial_budget": record.get("declared_trial_budget"),
@@ -477,8 +517,8 @@ def register_cie18_trial_budget(record: dict, ledger) -> dict:
     pass the canonical TrialLedger owner they are already using.
     """
     receipt = validate_cie18_prereg(record)
-    if not receipt["admitted_for_outcome_read"]:
-        raise ValueError("CIE-18 prereg is not admitted: " + "; ".join(
+    if not receipt["structurally_admissible_for_runner_binding"]:
+        raise ValueError("CIE-18 prereg is not structurally admissible: " + "; ".join(
             receipt["validation_errors"]
         ))
     if ledger is None or not all(
