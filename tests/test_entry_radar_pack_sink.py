@@ -486,3 +486,158 @@ def test_FU5_load_compact_duplicate_ticker_listed_twice(tmp_path):
     digest = hashlib.sha256(dup_path.read_bytes()).hexdigest()
     with pytest.raises(ps.CompactStateError, match="listed twice"):
         ps.load_compact(dup_path, expected_sha256=digest)
+
+
+# ---------------------------------------------------------------------------
+# R — the verified-once receipt (#8546 stage timings, 2026-10-06): production
+# ``load_pack`` spent 207–228 s of every 5-minute pass re-fingerprinting the same
+# 250 × 9,230-row pack.  The receipt lets the SECOND load of unchanged bytes skip
+# the per-name loop; every other property of the loader must be byte-identical.
+# ---------------------------------------------------------------------------
+
+
+def _saved_pack(tmp_path):
+    """The SPOOL shape — the one production writes (``substrate.parquet`` + its
+    sidecar) and the only branch the receipt covers; the legacy flat parquet
+    keeps verifying every load and reports ``n/a``."""
+    from engine.entry_radar.pack_spool import ParquetSpoolSink
+
+    spool = tmp_path / "spool"
+    spool.mkdir(parents=True, exist_ok=True)
+    pack = build(sink=ParquetSpoolSink(spool / "substrate_spool.parquet"))
+    lp.save_pack(pack.with_proof(lp.build_inversion_proof(pack)), tmp_path)
+    assert (lp.pack_root(tmp_path) / pack.as_of / "substrate.parquet.sidecar.json").is_file()
+    return pack
+
+
+def _count_fingerprints(monkeypatch):
+    calls = {"n": 0}
+    real = lp.substrate_fingerprint
+
+    def counting(*args, **kwargs):
+        calls["n"] += 1
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(lp, "substrate_fingerprint", counting)
+    return calls
+
+
+def test_R1_second_load_of_unchanged_bytes_hits_the_receipt_and_skips_the_loop(
+        tmp_path, monkeypatch):
+    saved = _saved_pack(tmp_path)
+    calls = _count_fingerprints(monkeypatch)
+    first: dict = {}
+    loaded_1 = lp.load_pack(tmp_path, receipt=first)
+    assert first["state"] == "written", first
+    assert calls["n"] == len(saved.names), "the first load verifies every name"
+    receipt_path = lp.pack_root(tmp_path) / saved.as_of / "verified.json"
+    assert receipt_path.is_file()
+    body = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert body["schema"] == lp.RECEIPT_SCHEMA and body["n_names"] == len(saved.names)
+    for field in ("manifest_sha256", "substrate_sha256", "sidecar_sha256"):
+        assert len(body[field]) == 64, field
+
+    calls["n"] = 0
+    second: dict = {}
+    loaded_2 = lp.load_pack(tmp_path, receipt=second)
+    assert second["state"] == "hit", second
+    assert calls["n"] == 0, "a hit must not re-derive a single fingerprint"
+    assert isinstance(second["digest_s"], float)
+    assert loaded_2.pack_hash == loaded_1.pack_hash == saved.pack_hash
+    assert loaded_2.names == loaded_1.names
+    for ticker in sorted(saved.substrate):
+        pd.testing.assert_frame_equal(loaded_2.substrate[ticker], loaded_1.substrate[ticker])
+
+
+def test_R2_CONTROL_without_a_receipt_dict_the_loader_is_unchanged(tmp_path, monkeypatch):
+    saved = _saved_pack(tmp_path)
+    calls = _count_fingerprints(monkeypatch)
+    lp.load_pack(tmp_path)
+    lp.load_pack(tmp_path)
+    assert calls["n"] == 2 * len(saved.names), "every default load still verifies"
+    assert not (lp.pack_root(tmp_path) / saved.as_of / "verified.json").exists()
+    # And the legacy FLAT parquet (in-memory sink) is outside the receipt entirely.
+    flat_state = tmp_path / "flat"
+    flat_pack = build()
+    lp.save_pack(flat_pack.with_proof(lp.build_inversion_proof(flat_pack)), flat_state)
+    receipt: dict = {}
+    assert lp.load_pack(flat_state, receipt=receipt) is not None
+    assert receipt == {}, receipt
+
+
+def test_R3_a_receipt_never_excuses_changed_bytes(tmp_path):
+    """The receipt pins bytes, not names: the same manifest, the same tickers,
+    the same fingerprints — only the parquet row-group mapping swapped.  T4a's
+    refusal must survive the receipt written for the honest bytes."""
+    saved = _saved_pack(tmp_path)
+    assert lp.load_pack(tmp_path, receipt={}) is not None
+    sidecar = lp.pack_root(tmp_path) / saved.as_of / "substrate.parquet.sidecar.json"
+    body = json.loads(sidecar.read_text(encoding="utf-8"))
+    a, b = sorted(body["row_groups"])[:2]
+    body["row_groups"][a], body["row_groups"][b] = body["row_groups"][b], body["row_groups"][a]
+    sidecar.write_text(json.dumps(body), encoding="utf-8")
+    receipt: dict = {}
+    with pytest.raises(lp.LivePackError, match="does not match the manifest"):
+        lp.load_pack(tmp_path, receipt=receipt)
+    assert receipt["state"] == "miss", receipt
+    # A one-row manifest edit under a receipt written for the honest bytes.
+    tmp2 = tmp_path / "second"
+    saved2 = _saved_pack(tmp2)
+    lp.load_pack(tmp2, receipt={})
+    manifest_path = lp.pack_root(tmp2) / saved2.as_of / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["names"][0]["substrate_fingerprint"] = "0" * 16
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    receipt2: dict = {}
+    with pytest.raises(lp.LivePackError, match="does not match the manifest"):
+        lp.load_pack(tmp2, receipt=receipt2)
+    assert receipt2["state"] == "miss", receipt2
+
+
+@pytest.mark.parametrize("garbage", [
+    "not json", json.dumps([1, 2, 3]), json.dumps({"schema": "someone.else.v9"}),
+    json.dumps({"schema": lp.RECEIPT_SCHEMA}),  # partial: digests absent
+])
+def test_R4_a_foreign_or_corrupt_receipt_is_a_miss_that_gets_overwritten(
+        tmp_path, monkeypatch, garbage):
+    saved = _saved_pack(tmp_path)
+    receipt_path = lp.pack_root(tmp_path) / saved.as_of / "verified.json"
+    receipt_path.write_text(garbage, encoding="utf-8")
+    calls = _count_fingerprints(monkeypatch)
+    receipt: dict = {}
+    assert lp.load_pack(tmp_path, receipt=receipt) is not None
+    assert receipt["state"] == "written", receipt
+    assert calls["n"] == len(saved.names), "a miss pays the full verification"
+    body = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert body["schema"] == lp.RECEIPT_SCHEMA and len(body["substrate_sha256"]) == 64
+
+
+def test_R4b_a_fingerprint_version_bump_misses_on_its_own(tmp_path, monkeypatch):
+    saved = _saved_pack(tmp_path)
+    lp.load_pack(tmp_path, receipt={})
+    receipt_path = lp.pack_root(tmp_path) / saved.as_of / "verified.json"
+    body = json.loads(receipt_path.read_text(encoding="utf-8"))
+    body["fingerprint_version"] = lp.SUBSTRATE_FINGERPRINT_VERSION + 1
+    receipt_path.write_text(json.dumps(body), encoding="utf-8")
+    calls = _count_fingerprints(monkeypatch)
+    receipt: dict = {}
+    lp.load_pack(tmp_path, receipt=receipt)
+    assert receipt["state"] == "written" and calls["n"] == len(saved.names)
+
+
+def test_R5_a_receipt_write_failure_is_reported_and_the_pack_still_loads(
+        tmp_path, monkeypatch):
+    saved = _saved_pack(tmp_path)
+
+    def refuse(src, dst):
+        raise PermissionError("injected: read-only state dir")
+
+    monkeypatch.setattr(lp.os, "replace", refuse)
+    receipt: dict = {}
+    loaded = lp.load_pack(tmp_path, receipt=receipt)
+    assert loaded is not None and loaded.pack_hash == saved.pack_hash
+    assert receipt["state"] == "write_failed:PermissionError", receipt
+    session_dir = lp.pack_root(tmp_path) / saved.as_of
+    assert not (session_dir / "verified.json").exists()
+    assert not [p for p in session_dir.iterdir() if p.name.startswith(".verified.json")], \
+        "the temp file must not be left behind"
