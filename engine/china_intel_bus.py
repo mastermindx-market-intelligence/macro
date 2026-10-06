@@ -533,6 +533,39 @@ def _visit_discovery_snapshot(
         for row in unscoped_positive_rows[:8]
     ]
 
+    # The owner store is keep-FIRST on announcement_id but does not reject a
+    # hostile/corrupt duplicate that assigns the same source event to two
+    # different nonblank company identities. Such a conflict is not a second
+    # event and neither assignment may erase the other; surface it as unresolved
+    # raw evidence and remove all negative-history authority.
+    identity_by_announcement: dict[str, set[tuple[str, str]]] = {}
+    for row in raw_rows:
+        aid = _visit_text(row.get("announcement_id"))
+        code = _visit_text(row.get("sec_code"))
+        if not aid or not code:
+            continue
+        exchange = _visit_text(row.get("exchange")).lower()
+        identity_by_announcement.setdefault(aid, set()).add((exchange, code))
+    identity_conflicts = {
+        aid: sorted(identities)
+        for aid, identities in identity_by_announcement.items()
+        if len(identities) > 1
+    }
+    identity_conflict_evidence = [
+        {
+            "announcement_id": aid,
+            "observed_identities": [
+                {"exchange": exchange or None, "sec_code": code}
+                for exchange, code in identities
+            ],
+            "coverage_state": "unknown_company_identity_conflict",
+            "company_identity_state": "conflicting_duplicate_natural_key",
+            "may_rank": False,
+            "may_trade": False,
+        }
+        for aid, identities in sorted(identity_conflicts.items())[:8]
+    ]
+
     # Positive rows may be written before the owner health receipt is updated.
     # If any persisted observation is newer than the latest valid attempt/success
     # receipt, the positive remains visible but first-seen and absence authority
@@ -706,11 +739,13 @@ def _visit_discovery_snapshot(
             and exception_status_valid
             and not has_unscoped_open
             and not unscoped_positive_rows
+            and not identity_conflicts
         ),
         "global_negative_authority_blocker": (
             "coverage_exception_ledger_unreadable" if not exception_ledger_readable
             else "coverage_exception_status_unknown" if not exception_status_valid
             else "unscoped_coverage_exception" if has_unscoped_open
+            else "visit_company_identity_conflict" if identity_conflicts
             else "visit_company_identity_unresolved" if unscoped_positive_rows
             else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
             else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
@@ -748,6 +783,11 @@ def _visit_discovery_snapshot(
         "unscoped_positive_evidence": unscoped_positive_evidence,
         "unscoped_positive_evidence_truncated": (
             len(unscoped_positive_rows) > len(unscoped_positive_evidence)
+        ),
+        "n_identity_conflict_announcements": len(identity_conflicts),
+        "identity_conflict_evidence": identity_conflict_evidence,
+        "identity_conflict_evidence_truncated": (
+            len(identity_conflicts) > len(identity_conflict_evidence)
         ),
         "n_recent_companies": 0,
         "n_first_observed_recent": 0,
@@ -829,6 +869,8 @@ def _visit_discovery_snapshot(
             baseline_state = "blocked_exception_status_unknown"
         elif has_unscoped_open:
             baseline_state = "blocked_unscoped_coverage_exception"
+        elif identity_conflicts:
+            baseline_state = "blocked_conflicting_company_identity"
         elif unscoped_positive_rows:
             baseline_state = "blocked_unresolved_company_identity"
         elif company_exception:
@@ -873,6 +915,8 @@ def _visit_discovery_snapshot(
             first_seen_state = "unknown_exception_status"
         elif has_unscoped_open:
             first_seen_state = "unknown_unscoped_coverage_exception"
+        elif identity_conflicts:
+            first_seen_state = "unknown_conflicting_company_identity"
         elif unscoped_positive_rows:
             first_seen_state = "unknown_unresolved_company_identity"
         elif not health_clock_order_valid:

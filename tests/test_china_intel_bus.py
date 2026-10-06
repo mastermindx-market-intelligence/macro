@@ -297,6 +297,57 @@ def test_visit_discovery_unscoped_positive_is_preserved_and_blocks_global_absenc
     assert unknown[0]["may_trade"] is False
 
 
+def test_visit_discovery_conflicting_duplicate_company_identity_fails_closed():
+    first = _visit_row(
+        "A-conflicting-company", "000033", "2026-07-01T09:00:00+08:00",
+        recorded="2026-07-01T02:00:00+00:00",
+    )
+    conflicting = dict(first)
+    conflicting["sec_code"] = "600000"
+    conflicting["exchange"] = "SS"
+    conflicting["sec_name"] = "另一家公司"
+    recent = _visit_row(
+        "A-recent-company", "000033", "2026-10-02T09:00:00+08:00",
+        recorded="2026-10-02T02:00:00+00:00",
+    )
+
+    snap = bus._visit_discovery_snapshot(
+        [first, conflicting, recent],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    # The known keep-FIRST presentation remains stable.
+    assert snap["n_rows_observed"] == 2
+    assert snap["n_recent_companies"] == 1
+    assert snap["examples"][0]["sec_code"] == "000033"
+    assert snap["examples"][0]["recent_count"] == 1
+
+    # The contradictory raw identity cannot be silently discarded.
+    assert snap["n_identity_conflict_announcements"] == 1
+    conflict = snap["identity_conflict_evidence"][0]
+    assert conflict["announcement_id"] == "A-conflicting-company"
+    assert conflict["company_identity_state"] ==         "conflicting_duplicate_natural_key"
+    assert conflict["observed_identities"] == [
+        {"exchange": "ss", "sec_code": "600000"},
+        {"exchange": "sz", "sec_code": "000033"},
+    ]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] ==         "visit_company_identity_conflict"
+    assert snap["n_measured_baselines"] == 0
+    assert snap["n_first_observed_recent"] == 0
+    assert snap["examples"][0]["baseline_state"] ==         "blocked_conflicting_company_identity"
+    assert snap["examples"][0]["first_seen_state"] ==         "unknown_conflicting_company_identity"
+
+
 def test_visit_discovery_unscoped_duplicate_blocks_authority_before_dedup():
     known = _visit_row(
         "A-dup-identity", "000032", "2026-07-01T09:00:00+08:00",
