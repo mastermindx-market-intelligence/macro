@@ -11976,9 +11976,10 @@
       "as_of": "2026-07-30",
       "direction": 1,
       "horizon": "63.0",
-      "n_confirming_raw": 2,
-      "n_independent_confirming": 2.0,
+      "n_confirming_raw": 3,
+      "n_independent_confirming": 3.0,
       "engines": [
+        "altdata",
         "radar",
         "track_record"
       ],
@@ -12372,6 +12373,19 @@
       "as_of": "2026-07-31",
       "direction": 1,
       "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "track_record"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "KVUE",
+      "as_of": "2026-07-31",
+      "direction": 1,
+      "horizon": "63.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -24986,19 +25000,6 @@
       "regime_bucket": "Q2"
     },
     {
-      "subject": "ANET",
-      "as_of": "2026-09-25",
-      "direction": 1,
-      "horizon": "21.0",
-      "n_confirming_raw": 2,
-      "n_independent_confirming": 2.0,
-      "engines": [
-        "intel_hub",
-        "track_record"
-      ],
-      "regime_bucket": "Q2"
-    },
-    {
       "subject": "CAT",
       "as_of": "2026-09-25",
       "direction": 1,
@@ -25051,19 +25052,6 @@
       "regime_bucket": "Q2"
     },
     {
-      "subject": "LRCX",
-      "as_of": "2026-09-25",
-      "direction": 1,
-      "horizon": "21.0",
-      "n_confirming_raw": 2,
-      "n_independent_confirming": 2.0,
-      "engines": [
-        "intel_hub",
-        "track_record"
-      ],
-      "regime_bucket": "Q2"
-    },
-    {
       "subject": "MSFT",
       "as_of": "2026-09-25",
       "direction": 1,
@@ -25077,23 +25065,36 @@
       "regime_bucket": "Q2"
     },
     {
-      "subject": "MSFT",
+      "subject": "NVDA",
       "as_of": "2026-09-25",
       "direction": 1,
-      "horizon": "21.0",
+      "horizon": "5.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
         "intel_hub",
-        "track_record"
+        "stock_desk"
+      ],
+      "regime_bucket": "Q2"
+    },
+    {
+      "subject": "LRCX",
+      "as_of": "2026-09-26",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "stock_desk"
       ],
       "regime_bucket": "Q2"
     },
     {
       "subject": "NVDA",
-      "as_of": "2026-09-25",
+      "as_of": "2026-09-26",
       "direction": 1,
-      "horizon": "21.0",
+      "horizon": "5.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -26737,6 +26738,6 @@
     "confluence_strength: no clusters in lobes block — no discount"
   ],
   "produced_by": "engine/neuralweb/confluence_strength.py",
-  "produced_at": "2026-10-04T09:27:51Z",
+  "produced_at": "2026-10-06T14:14:25Z",
   "authority_check": []
 }

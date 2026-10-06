@@ -1,0 +1,327 @@
+{
+  "schema": "prophet.public_profitability_descriptive_result/v1",
+  "protocol_sha256": "3e931f5a98e3b1002971e4ef2b36378bb50654b37037b4032dcfdbdc6833c2bd",
+  "source": {
+    "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/25_Portfolios_ME_OP_5x5_CSV.zip",
+    "sha256": "b365749f6f1bfad2484b8f539197d3fc8874863bf49067ffb70c7fe8ec9bfafc",
+    "bytes": 384492,
+    "table": "FIRST_MONTHLY_VALUE_WEIGHTED_RETURNS",
+    "columns": [
+      "SMALL LoOP",
+      "ME1 OP2",
+      "ME1 OP3",
+      "ME1 OP4",
+      "SMALL HiOP",
+      "ME2 OP1",
+      "ME2 OP2",
+      "ME2 OP3",
+      "ME2 OP4",
+      "ME2 OP5",
+      "ME3 OP1",
+      "ME3 OP2",
+      "ME3 OP3",
+      "ME3 OP4",
+      "ME3 OP5",
+      "ME4 OP1",
+      "ME4 OP2",
+      "ME4 OP3",
+      "ME4 OP4",
+      "ME4 OP5",
+      "BIG LoOP",
+      "ME5 OP2",
+      "ME5 OP3",
+      "ME5 OP4",
+      "BIG HiOP"
+    ],
+    "first_available": "1963-07",
+    "last_available": "2026-08"
+  },
+  "sample": {
+    "first": "1963-07",
+    "last": "2026-08",
+    "months": 758
+  },
+  "results": [
+    {
+      "era": "ALL",
+      "portfolio": "LOW_OP",
+      "months": 758,
+      "cagr": 0.09438267016287072,
+      "annualized_mean": 0.113708545646438,
+      "annualized_monthly_volatility": 0.21401957877195718,
+      "max_monthly_observed_drawdown": -0.7110673451474301,
+      "worst_month": -0.3018746,
+      "worst_5pct_mean": -0.1334014
+    },
+    {
+      "era": "ALL",
+      "portfolio": "MIDDLE_OP",
+      "months": 758,
+      "cagr": 0.1285304495018027,
+      "annualized_mean": 0.13547970237467016,
+      "annualized_monthly_volatility": 0.16612664063242555,
+      "max_monthly_observed_drawdown": -0.5041382543130586,
+      "worst_month": -0.24458380000000002,
+      "worst_5pct_mean": -0.10446969473684212
+    },
+    {
+      "era": "ALL",
+      "portfolio": "HIGH_OP",
+      "months": 758,
+      "cagr": 0.13157806540270944,
+      "annualized_mean": 0.1423586279683377,
+      "annualized_monthly_volatility": 0.1890933260580465,
+      "max_monthly_observed_drawdown": -0.5944167098876223,
+      "worst_month": -0.2775616,
+      "worst_5pct_mean": -0.11690261052631581
+    },
+    {
+      "era": "1963-07_1989-12",
+      "portfolio": "LOW_OP",
+      "months": 318,
+      "cagr": 0.11471747522063747,
+      "annualized_mean": 0.12915641509433962,
+      "annualized_monthly_volatility": 0.1989427975471572,
+      "max_monthly_observed_drawdown": -0.49947399517710767,
+      "worst_month": -0.3018746,
+      "worst_5pct_mean": -0.12113225
+    },
+    {
+      "era": "1963-07_1989-12",
+      "portfolio": "MIDDLE_OP",
+      "months": 318,
+      "cagr": 0.1349937297580719,
+      "annualized_mean": 0.1421542716981132,
+      "annualized_monthly_volatility": 0.17169538551694502,
+      "max_monthly_observed_drawdown": -0.44706855399592815,
+      "worst_month": -0.24458380000000002,
+      "worst_5pct_mean": -0.10478838750000001
+    },
+    {
+      "era": "1963-07_1989-12",
+      "portfolio": "HIGH_OP",
+      "months": 318,
+      "cagr": 0.1386810855720797,
+      "annualized_mean": 0.15145887547169812,
+      "annualized_monthly_volatility": 0.20315007144391473,
+      "max_monthly_observed_drawdown": -0.5944167098876223,
+      "worst_month": -0.2775616,
+      "worst_5pct_mean": -0.1236140375
+    },
+    {
+      "era": "1990-01_2009-12",
+      "portfolio": "LOW_OP",
+      "months": 240,
+      "cagr": 0.04886694054282015,
+      "annualized_mean": 0.07580094999999998,
+      "annualized_monthly_volatility": 0.23483450704623027,
+      "max_monthly_observed_drawdown": -0.7110673451474303,
+      "worst_month": -0.23706999999999998,
+      "worst_5pct_mean": -0.15353925000000002
+    },
+    {
+      "era": "1990-01_2009-12",
+      "portfolio": "MIDDLE_OP",
+      "months": 240,
+      "cagr": 0.11092236623479668,
+      "annualized_mean": 0.11768569000000001,
+      "annualized_monthly_volatility": 0.15387193233122556,
+      "max_monthly_observed_drawdown": -0.5041382543130586,
+      "worst_month": -0.17607239999999996,
+      "worst_5pct_mean": -0.1081242
+    },
+    {
+      "era": "1990-01_2009-12",
+      "portfolio": "HIGH_OP",
+      "months": 240,
+      "cagr": 0.12838507993226678,
+      "annualized_mean": 0.13631153999999998,
+      "annualized_monthly_volatility": 0.17139130137343425,
+      "max_monthly_observed_drawdown": -0.48464933291162793,
+      "worst_month": -0.1959646,
+      "worst_5pct_mean": -0.11440306666666666
+    },
+    {
+      "era": "2010-01_2026-08",
+      "portfolio": "LOW_OP",
+      "months": 200,
+      "cagr": 0.11839385441296502,
+      "annualized_mean": 0.134635548,
+      "annualized_monthly_volatility": 0.21153970606042774,
+      "max_monthly_observed_drawdown": -0.42205979185967324,
+      "worst_month": -0.17633479999999999,
+      "worst_5pct_mean": -0.11946306000000002
+    },
+    {
+      "era": "2010-01_2026-08",
+      "portfolio": "MIDDLE_OP",
+      "months": 200,
+      "cagr": 0.13963368956500832,
+      "annualized_mean": 0.14621995200000001,
+      "annualized_monthly_volatility": 0.1718749091606366,
+      "max_monthly_observed_drawdown": -0.31361247640792767,
+      "worst_month": -0.2141476,
+      "worst_5pct_mean": -0.09828081999999999
+    },
+    {
+      "era": "2010-01_2026-08",
+      "portfolio": "HIGH_OP",
+      "months": 200,
+      "cagr": 0.12418084439602617,
+      "annualized_mean": 0.13514574000000001,
+      "annualized_monthly_volatility": 0.1870227060750396,
+      "max_monthly_observed_drawdown": -0.34533149358610427,
+      "worst_month": -0.2359728,
+      "worst_5pct_mean": -0.10913808
+    }
+  ],
+  "matched_size_results": [
+    {
+      "size_quintile": 1,
+      "high_minus_low_annualized_mean": 0.027815857519788913,
+      "high_op": {
+        "months": 758,
+        "cagr": 0.11848203913622513,
+        "annualized_mean": 0.14076208970976253,
+        "annualized_monthly_volatility": 0.23589543659782372,
+        "max_monthly_observed_drawdown": -0.7443102172850748,
+        "worst_month": -0.326825,
+        "worst_5pct_mean": -0.14285749999999997
+      },
+      "low_op": {
+        "months": 758,
+        "cagr": 0.08434032210387032,
+        "annualized_mean": 0.11294623218997361,
+        "annualized_monthly_volatility": 0.2523120907216797,
+        "max_monthly_observed_drawdown": -0.7024824212520464,
+        "worst_month": -0.325573,
+        "worst_5pct_mean": -0.15148321052631578
+      }
+    },
+    {
+      "size_quintile": 2,
+      "high_minus_low_annualized_mean": 0.035093081794195256,
+      "high_op": {
+        "months": 758,
+        "cagr": 0.1414908595818547,
+        "annualized_mean": 0.15801110817941952,
+        "annualized_monthly_volatility": 0.22161847989135125,
+        "max_monthly_observed_drawdown": -0.6289714360013292,
+        "worst_month": -0.328563,
+        "worst_5pct_mean": -0.13652581578947368
+      },
+      "low_op": {
+        "months": 758,
+        "cagr": 0.09712099859085521,
+        "annualized_mean": 0.12291802638522427,
+        "annualized_monthly_volatility": 0.24299848705213842,
+        "max_monthly_observed_drawdown": -0.7172550419730408,
+        "worst_month": -0.33094700000000005,
+        "worst_5pct_mean": -0.14905394736842104
+      }
+    },
+    {
+      "size_quintile": 3,
+      "high_minus_low_annualized_mean": 0.03788596306068602,
+      "high_op": {
+        "months": 758,
+        "cagr": 0.13637464914903386,
+        "annualized_mean": 0.14978950923482848,
+        "annualized_monthly_volatility": 0.20487049583357492,
+        "max_monthly_observed_drawdown": -0.621531946203275,
+        "worst_month": -0.277793,
+        "worst_5pct_mean": -0.1277243157894737
+      },
+      "low_op": {
+        "months": 758,
+        "cagr": 0.08904465565416708,
+        "annualized_mean": 0.11190354617414247,
+        "annualized_monthly_volatility": 0.22788271047754227,
+        "max_monthly_observed_drawdown": -0.784044355853962,
+        "worst_month": -0.336355,
+        "worst_5pct_mean": -0.1410877105263158
+      }
+    },
+    {
+      "size_quintile": 4,
+      "high_minus_low_annualized_mean": 0.01746227968337731,
+      "high_op": {
+        "months": 758,
+        "cagr": 0.13097435472673236,
+        "annualized_mean": 0.14079202638522426,
+        "annualized_monthly_volatility": 0.1841189221234124,
+        "max_monthly_observed_drawdown": -0.6129334146904277,
+        "worst_month": -0.25166,
+        "worst_5pct_mean": -0.11013368421052631
+      },
+      "low_op": {
+        "months": 758,
+        "cagr": 0.10518977683591779,
+        "annualized_mean": 0.12332974670184696,
+        "annualized_monthly_volatility": 0.213242223402485,
+        "max_monthly_observed_drawdown": -0.7257291886033634,
+        "worst_month": -0.267613,
+        "worst_5pct_mean": -0.13189136842105265
+      }
+    },
+    {
+      "size_quintile": 5,
+      "high_minus_low_annualized_mean": 0.024993229551451196,
+      "high_op": {
+        "months": 758,
+        "cagr": 0.11681165095967394,
+        "annualized_mean": 0.12243840633245381,
+        "annualized_monthly_volatility": 0.15110388128162092,
+        "max_monthly_observed_drawdown": -0.4854285022027509,
+        "worst_month": -0.223974,
+        "worst_5pct_mean": -0.09019655263157894
+      },
+      "low_op": {
+        "months": 758,
+        "cagr": 0.08042827329483027,
+        "annualized_mean": 0.09744517678100262,
+        "annualized_monthly_volatility": 0.19815022809435032,
+        "max_monthly_observed_drawdown": -0.8539230356237602,
+        "worst_month": -0.27539,
+        "worst_5pct_mean": -0.12508818421052634
+      }
+    }
+  ],
+  "high_minus_low": {
+    "annualized_arithmetic_mean": 0.028650082321899743,
+    "exploratory_95pct_moving_block_interval": [
+      0.001672267203166235,
+      0.0616767620580475
+    ],
+    "block_months": 12,
+    "resamples": 4000,
+    "seed": 20260930,
+    "positive_spread_month_fraction": 0.5474934036939314
+  },
+  "checks": {
+    "all_25_named_cells_resolved": true,
+    "complete_fixed_month_sample": true,
+    "no_missing_or_imputed_returns": true,
+    "identical_size_weights_in_all_arms": true,
+    "column_order_invariance": true,
+    "no_outcome_fit_or_parameter_search": true
+  },
+  "environment": {
+    "python": "3.12.13",
+    "numpy": "2.5.1",
+    "pandas": "3.0.5"
+  },
+  "limits": [
+    "Current revised vintage is not historical ingestion proof.",
+    "Source OP is operating profitability/book equity, not gross profits/assets or margin growth.",
+    "Negative book-equity firms and source-ineligible accounting cases are excluded by dataset construction.",
+    "Monthly drawdowns miss intramonth paths.",
+    "Equal weights across size cells are not the market cap-weighted market.",
+    "This does not validate Prophet stock-level earnings signals, calibrated conviction, event study or risk restrictions.",
+    "No private H1/Cycle outcomes or prior refused trend-frequency experiment are read or rerun.",
+    "Gross research-portfolio returns, no fees, capacity, implementation or underlying annual-reconstitution cost model. Aggregation is theoretical monthly rebalancing among source portfolios; no fund or executable broker strategy is claimed."
+  ],
+  "state": "EXPLORATORY_PUBLIC_RESEARCH_NOT_NATIVE_PROMOTION",
+  "rank_authority": false,
+  "entry_authority": false
+}

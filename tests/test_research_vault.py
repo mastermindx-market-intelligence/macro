@@ -1436,10 +1436,68 @@ def test_build_store_env_local(tmp_path, monkeypatch):
     assert isinstance(store, LocalStore)
 
 
+def _clear_research_store_env(monkeypatch):
+    for name in (
+        "RESEARCH_LOCAL_STORE",
+        "R2_RESEARCH_ENDPOINT",
+        "R2_RESEARCH_ACCESS_KEY_ID",
+        "R2_RESEARCH_SECRET_ACCESS_KEY",
+        "R2_RESEARCH_BUCKET",
+        "R2_ENDPOINT",
+        "R2_ACCESS_KEY_ID",
+        "R2_SECRET_ACCESS_KEY",
+        "R2_BUCKET",
+    ):
+        monkeypatch.delenv(name, raising=False)
+
+
 def test_build_store_none_without_creds(monkeypatch):
-    monkeypatch.delenv("RESEARCH_LOCAL_STORE", raising=False)
-    monkeypatch.delenv("R2_RESEARCH_BUCKET", raising=False)
+    _clear_research_store_env(monkeypatch)
     assert build_store() is None
+
+
+def test_build_store_does_not_inherit_shared_r2_credentials(monkeypatch):
+    """A private research bucket is not allowed to borrow the public/shared
+    delivery-plane credential namespace merely because those variables exist."""
+    _clear_research_store_env(monkeypatch)
+    monkeypatch.setenv("R2_ENDPOINT", "https://shared.example.com")
+    monkeypatch.setenv("R2_ACCESS_KEY_ID", "shared-ak")
+    monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "shared-sk")
+    monkeypatch.setenv("R2_BUCKET", "mastermindx-public")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx-research")
+
+    assert build_store() is None
+
+
+def test_build_store_refuses_partial_research_config_even_with_shared_values(
+        monkeypatch, caplog):
+    """One dedicated variable plus generic fallbacks is still partial config."""
+    _clear_research_store_env(monkeypatch)
+    monkeypatch.setenv("R2_ENDPOINT", "https://shared.example.com")
+    monkeypatch.setenv("R2_ACCESS_KEY_ID", "shared-ak")
+    monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "shared-sk")
+    monkeypatch.setenv("R2_BUCKET", "mastermindx-public")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx-research")
+    monkeypatch.setenv("R2_RESEARCH_ENDPOINT", "https://research.example.com")
+
+    assert build_store() is None
+    assert "shared-ak" not in caplog.text
+    assert "shared-sk" not in caplog.text
+
+
+def test_build_store_refuses_shared_bucket_alias_before_client_construction(
+        monkeypatch, caplog):
+    """Even complete research credentials cannot make the public bucket private."""
+    _clear_research_store_env(monkeypatch)
+    monkeypatch.setenv("R2_BUCKET", "mastermindx")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx")
+    monkeypatch.setenv("R2_RESEARCH_ENDPOINT", "https://research.example.com")
+    monkeypatch.setenv("R2_RESEARCH_ACCESS_KEY_ID", "research-ak")
+    monkeypatch.setenv("R2_RESEARCH_SECRET_ACCESS_KEY", "research-sk")
+
+    assert build_store() is None
+    assert "aliases shared R2_BUCKET" in caplog.text
+    assert "research-sk" not in caplog.text
 
 
 def test_local_store_rejects_traversal(tmp_path):
@@ -1466,24 +1524,57 @@ def test_local_store_list_prefix(tmp_path):
     assert "research_vault/a.pdf" not in inbox
 
 
-def test_r2_client_prefers_research_account_creds(monkeypatch):
-    """R2_RESEARCH_* (a separate Cloudflare account) is preferred over the shared
-    R2_* creds, and each falls back to R2_* when unset. Skipped where boto3 is
-    absent (the minimal CI lane); client construction is offline (creds aren't
-    validated until a call), so we can assert the resolved endpoint."""
+def test_r2_client_requires_explicit_research_credentials(monkeypatch):
+    """Generic R2 credentials never substitute for the private research family."""
     import pytest as _pytest
     _pytest.importorskip("boto3")
     from engine.research_vault import r2_store as rs
+
+    _clear_research_store_env(monkeypatch)
     monkeypatch.setenv("R2_ENDPOINT", "https://shared.example.com")
     monkeypatch.setenv("R2_ACCESS_KEY_ID", "shared-ak")
     monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "shared-sk")
+    assert rs._r2_client() is None
+
     monkeypatch.setenv("R2_RESEARCH_ENDPOINT", "https://research.example.com")
     monkeypatch.setenv("R2_RESEARCH_ACCESS_KEY_ID", "research-ak")
     monkeypatch.setenv("R2_RESEARCH_SECRET_ACCESS_KEY", "research-sk")
     assert rs._r2_client().meta.endpoint_url == "https://research.example.com"
-    for _k in ("R2_RESEARCH_ENDPOINT", "R2_RESEARCH_ACCESS_KEY_ID", "R2_RESEARCH_SECRET_ACCESS_KEY"):
-        monkeypatch.delenv(_k, raising=False)
-    assert rs._r2_client().meta.endpoint_url == "https://shared.example.com"
+
+    # Same-account credentials remain possible only when the research namespace
+    # is populated explicitly; deleting one member never falls through to shared.
+    monkeypatch.setenv("R2_RESEARCH_ACCESS_KEY_ID", "shared-ak")
+    monkeypatch.setenv("R2_RESEARCH_SECRET_ACCESS_KEY", "shared-sk")
+    monkeypatch.delenv("R2_RESEARCH_ENDPOINT")
+    assert rs._r2_client() is None
+
+
+def test_build_store_allows_explicit_same_account_credentials_on_distinct_bucket(
+        monkeypatch):
+    """Value equality is not implicit inheritance: dedicated names + distinct
+    bucket express an intentional same-account configuration."""
+    import pytest as _pytest
+    _pytest.importorskip("boto3")
+    from engine.research_vault import r2_store as rs
+
+    _clear_research_store_env(monkeypatch)
+    for name, value in (
+        ("R2_ENDPOINT", "https://same-account.example.com"),
+        ("R2_ACCESS_KEY_ID", "same-ak"),
+        ("R2_SECRET_ACCESS_KEY", "same-sk"),
+        ("R2_RESEARCH_ENDPOINT", "https://same-account.example.com"),
+        ("R2_RESEARCH_ACCESS_KEY_ID", "same-ak"),
+        ("R2_RESEARCH_SECRET_ACCESS_KEY", "same-sk"),
+    ):
+        monkeypatch.setenv(name, value)
+    monkeypatch.setenv("R2_BUCKET", "mastermindx-public")
+    monkeypatch.setenv("R2_RESEARCH_BUCKET", "mastermindx-research")
+
+    store = build_store()
+    assert isinstance(store, rs.R2Store)
+    assert store.available is True
+    assert store.bucket == "mastermindx-research"
+    assert store._s3.meta.endpoint_url == "https://same-account.example.com"
 
 
 # ===========================================================================

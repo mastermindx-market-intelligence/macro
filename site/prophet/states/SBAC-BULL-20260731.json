@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SBAC-BULL-20260731",
-  "asof": "2026-10-04",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 10.4,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -49.6,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "asof": "2026-10-06",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 18.6,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -41.4,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.0,
+    "validity": 2.3,
     "progress": 0.0,
-    "pace": 0.0,
+    "pace": 10.0,
     "retention": 0.0,
-    "overlay": 56.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.03,
+    "dist_to_stop_r": 0.105,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 128.9,
-    "p1": -0.6866,
-    "p2": -0.3433,
+    "horizon_pct_used": 133.3,
+    "p1": -0.597,
+    "p2": -0.2985,
     "p3": null,
-    "move_r": -1.03,
+    "move_r": -0.895,
     "mfe_r": 0.281,
     "mae_r": -1.03
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 58,
-  "tau": 1.2889
+  "days_elapsed": 60,
+  "tau": 1.3333
 }
