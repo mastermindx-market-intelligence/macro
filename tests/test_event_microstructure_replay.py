@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from datetime import date, datetime, timezone
 
 import pytest
@@ -1093,3 +1094,117 @@ def test_capture_epoch2_source_day_requires_channel_evidence_receipt():
             candidate_dispositions=[],
         )
 
+
+
+def _epoch2_integrity_chain():
+    admission = _capture_admission("2026-10-06T13:45:00Z")
+    census = _epoch2_source_day()
+    sealed = capture.seal_epoch2_admission(admission, census)
+    controls = capture.freeze_matched_controls(
+        sealed,
+        observed_session_dates=["2026-10-05", "2026-10-06", "2026-10-07"],
+        admitted_event_dates=["2026-10-06"],
+        source_coverage_complete_through="2026-10-08T00:00:00Z",
+    )
+
+    calls = []
+    bases = {"SPY": 100.0, "QQQ": 200.0, "SMH": 300.0}
+
+    def vendor_transport(path, params):
+        symbol = path.split("/")[4]
+        day = path.rsplit("/", 1)[-1]
+        calls.append((symbol, day))
+        base = bases[symbol]
+        return [
+            _vendor_row(f"{day}T13:50:00Z", base),
+            _vendor_row(f"{day}T14:20:00Z", base * 1.01),
+        ]
+
+    event_us = capture.measure_us_response(sealed, transport=vendor_transport)
+    prior_us = capture.measure_control_us_response(
+        sealed, controls, side="prior", transport=vendor_transport
+    )
+    next_us = capture.measure_control_us_response(
+        sealed, controls, side="next", transport=vendor_transport
+    )
+    return sealed, census, controls, event_us, prior_us, next_us, calls, vendor_transport
+
+
+def test_capture_epoch2_rejects_mutated_certified_census_before_sealing():
+    admission = _capture_admission("2026-10-06T13:45:00Z")
+    census = _epoch2_source_day()
+    census["admitted_event_ids"].append("injected-after-certification")
+    census["candidate_dispositions"].append(
+        {
+            "candidate_id": "injected-after-certification",
+            "event_class": "official_policy_or_operational_change",
+            "disposition": "ADMIT",
+            "available_at": "2026-10-06T14:00:00Z",
+            "parent_cluster_id": "tampered-cluster",
+            "reason": None,
+        }
+    )
+    with pytest.raises(capture.CaptureContractError, match="source-day census digest mismatch"):
+        capture.seal_epoch2_admission(admission, census)
+
+
+def test_capture_epoch2_rejects_mutated_sealed_admission_before_us_transport():
+    admission = _capture_admission("2026-10-06T13:45:00Z")
+    sealed = capture.seal_epoch2_admission(admission, _epoch2_source_day())
+    sealed["parent_cluster_id"] = "mutated-after-seal"
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="sealed admission digest mismatch"):
+        capture.measure_us_response(sealed, transport=transport)
+    assert calls == []
+
+
+def test_capture_epoch2_rejects_mutated_control_selection_before_control_transport():
+    sealed, _, controls, *_ = _epoch2_integrity_chain()
+    tampered = copy.deepcopy(controls)
+    tampered["prior"]["control_date"] = "2026-10-04"
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="control selection digest mismatch"):
+        capture.measure_control_us_response(
+            sealed, tampered, side="prior", transport=transport
+        )
+    assert calls == []
+
+
+@pytest.mark.parametrize("target", ["event", "prior_control"])
+def test_capture_epoch2_rejects_mutated_us_receipt_before_hsi_transport(target):
+    sealed, _, controls, event_us, prior_us, next_us, *_ = _epoch2_integrity_chain()
+    event_us = copy.deepcopy(event_us)
+    prior_us = copy.deepcopy(prior_us)
+    if target == "event":
+        event_us["primary_v1"]["return_bps"] = -9999.0
+        pattern = "event U.S. measurement digest mismatch"
+    else:
+        prior_us["primary_v1"]["return_bps"] = -9999.0
+        pattern = "prior control measurement digest mismatch"
+
+    hsi_calls = []
+
+    def hsi_transport(start, end):
+        hsi_calls.append((start, end))
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match=pattern):
+        capture.score_hsi_outcome(
+            sealed,
+            controls,
+            event_us,
+            prior_control_measurement=prior_us,
+            next_control_measurement=next_us,
+            transport=hsi_transport,
+        )
+    assert hsi_calls == []

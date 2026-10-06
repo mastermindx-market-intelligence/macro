@@ -198,6 +198,37 @@ def _payload_digest(value: Any) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def _receipt_payload(receipt: Mapping[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in receipt.items() if key != "sha256"}
+
+
+def _seal_receipt(receipt: Mapping[str, Any]) -> dict[str, Any]:
+    sealed = dict(receipt)
+    sealed["sha256"] = _payload_digest(_receipt_payload(sealed))
+    return sealed
+
+
+def _verify_receipt(receipt: Mapping[str, Any], label: str) -> str:
+    claimed = str(receipt.get("sha256") or "").strip()
+    if not claimed:
+        raise CaptureContractError(f"{label} digest is missing")
+    actual = _payload_digest(_receipt_payload(receipt))
+    if claimed != actual:
+        raise CaptureContractError(f"{label} digest mismatch")
+    return actual
+
+
+def _integrity_chain_required(admission: Mapping[str, Any]) -> bool:
+    available = _utc(str(admission.get("available_at") or ""), "admission.available_at")
+    return available > EPOCH2_ACTIVATION_AT or admission.get("source_epoch") == "EPOCH_2"
+
+
+def _admission_digest(admission: Mapping[str, Any]) -> str:
+    if _integrity_chain_required(admission):
+        return _verify_receipt(admission, "sealed admission")
+    return _payload_digest(_receipt_payload(admission))
+
+
 def certify_source_day(
     *,
     source_date: str,
@@ -367,7 +398,7 @@ def certify_source_day(
         "candidate_dispositions": candidates,
         "admitted_event_ids": sorted(admitted_ids),
     }
-    return {
+    return _seal_receipt({
         "schema": SCHEMA_SOURCE_DAY,
         "authority": dict(AUTHORITY),
         "state": "COMPLETE",
@@ -375,10 +406,9 @@ def certify_source_day(
         "epoch2_activation_commit": EPOCH2_ACTIVATION_COMMIT,
         "epoch2_activation_at": _iso(EPOCH2_ACTIVATION_AT),
         **core,
-        "sha256": _payload_digest(core),
         "hk_outcome_state": "NOT_READ",
         "persistence": "none_stdout_only",
-    }
+    })
 
 
 def seal_epoch2_admission(
@@ -404,6 +434,7 @@ def seal_epoch2_admission(
         raise CaptureContractError("source-day census is not complete")
     if source_day_census.get("epoch") != "EPOCH_2":
         raise CaptureContractError("source-day census epoch mismatch")
+    source_day_sha256 = _verify_receipt(source_day_census, "source-day census")
     if str(source_day_census.get("source_date") or "") != available.date().isoformat():
         raise CaptureContractError("source-day census date mismatch")
     admitted_ids = source_day_census.get("admitted_event_ids")
@@ -434,12 +465,12 @@ def seal_epoch2_admission(
         "source_coverage_complete_through": source_day_census.get(
             "source_coverage_complete_through"
         ),
-        "sha256": source_day_census.get("sha256"),
+        "sha256": source_day_sha256,
         "admitted_event_ids": list(admitted_ids),
         "epoch2_activation_commit": EPOCH2_ACTIVATION_COMMIT,
         "epoch2_activation_at": _iso(EPOCH2_ACTIVATION_AT),
     }
-    return sealed
+    return _seal_receipt(sealed)
 
 
 def _validate_measurement_admission(admission: Mapping[str, Any]) -> None:
@@ -495,6 +526,7 @@ def _validate_measurement_admission(admission: Mapping[str, Any]) -> None:
         raise CaptureContractError("Epoch-2 admitted_event_ids receipt is malformed")
     if event_id not in admitted_ids:
         raise CaptureContractError("Epoch-2 event is absent from its source-day receipt")
+    _verify_receipt(admission, "sealed admission")
 
 
 def admit_source_event(
@@ -760,9 +792,10 @@ def freeze_matched_controls(
     )
 
     covered_sessions = [day for day in sessions if day <= coverage]
-    return {
+    return _seal_receipt({
         "schema": SCHEMA_CONTROLS,
         "authority": dict(AUTHORITY),
+        "admission_sha256": _admission_digest(admission),
         "state": state,
         "event_id": str(admission.get("event_id") or ""),
         "event_available_at": _iso(available),
@@ -791,7 +824,7 @@ def freeze_matched_controls(
         "next": next_,
         "outcome_state": "NOT_READ",
         "persistence": "none_stdout_only",
-    }
+    })
 
 
 def _window_return(points: Sequence[Mapping[str, Any]], *, anchor: datetime) -> float | None:
@@ -859,9 +892,10 @@ def measure_us_response(
         transport=transport,
     )
 
-    return {
+    return _seal_receipt({
         "schema": SCHEMA_US,
         "authority": dict(AUTHORITY),
+        "admission_sha256": _admission_digest(admission),
         "event_id": str(admission.get("event_id") or ""),
         "available_at": _iso(available),
         "session": session.isoformat(),
@@ -897,7 +931,7 @@ def measure_us_response(
         "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
         "matched_control_state": "NOT_SELECTED_BY_THIS_HARNESS",
         "persistence": "none_stdout_only",
-    }
+    })
 
 
 def measure_control_us_response(
@@ -915,6 +949,12 @@ def measure_control_us_response(
         raise CaptureContractError("control selection schema mismatch")
     if str(control_selection.get("event_id") or "") != str(admission.get("event_id") or ""):
         raise CaptureContractError("control selection event_id mismatch")
+    if _integrity_chain_required(admission):
+        controls_sha256 = _verify_receipt(control_selection, "control selection")
+        if str(control_selection.get("admission_sha256") or "") != _admission_digest(admission):
+            raise CaptureContractError("control selection admission digest mismatch")
+    else:
+        controls_sha256 = _payload_digest(_receipt_payload(control_selection))
     if admission.get("outcome_state") != "NOT_READ":
         raise CaptureContractError("control measurement is forbidden after outcome read")
     if side not in {"prior", "next"}:
@@ -937,9 +977,11 @@ def measure_control_us_response(
         transport=transport,
     )
 
-    return {
+    return _seal_receipt({
         "schema": SCHEMA_CONTROL_US,
         "authority": dict(AUTHORITY),
+        "admission_sha256": _admission_digest(admission),
+        "control_selection_sha256": controls_sha256,
         "event_id": str(admission.get("event_id") or ""),
         "control_side": side,
         "control_date": control_date.isoformat(),
@@ -976,7 +1018,7 @@ def measure_control_us_response(
         },
         "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
         "persistence": "none_stdout_only",
-    }
+    })
 
 
 def _validate_event_us_measurement(
@@ -991,6 +1033,10 @@ def _validate_event_us_measurement(
         raise CaptureContractError("event U.S. measurement clock mismatch")
     if us_measurement.get("hk_outcome_state") != "NOT_READ_BY_THIS_HARNESS":
         raise CaptureContractError("event U.S. measurement does not preserve HK outcome firewall")
+    if _integrity_chain_required(admission):
+        _verify_receipt(us_measurement, "event U.S. measurement")
+        if str(us_measurement.get("admission_sha256") or "") != _admission_digest(admission):
+            raise CaptureContractError("event U.S. measurement admission digest mismatch")
 
 
 def _validate_control_receipt(
@@ -1021,6 +1067,13 @@ def _validate_control_receipt(
             raise CaptureContractError(f"{side} control measurement clock mismatch")
         if receipt.get("hk_outcome_state") != "NOT_READ_BY_THIS_HARNESS":
             raise CaptureContractError(f"{side} control measurement violates HK outcome firewall")
+        if _integrity_chain_required(admission):
+            _verify_receipt(receipt, f"{side} control measurement")
+            controls_sha256 = _verify_receipt(controls, "control selection")
+            if str(receipt.get("admission_sha256") or "") != _admission_digest(admission):
+                raise CaptureContractError(f"{side} control measurement admission digest mismatch")
+            if str(receipt.get("control_selection_sha256") or "") != controls_sha256:
+                raise CaptureContractError(f"{side} control measurement selection digest mismatch")
         return {
             "status": status,
             "control_date": selected.get("control_date"),
@@ -1062,6 +1115,10 @@ def gate_hk_outcome_read(
         raise CaptureContractError("control selection does not preserve outcome firewall")
     if controls.get("state") == "PENDING":
         raise CaptureContractError("matched controls are still pending")
+    if _integrity_chain_required(admission):
+        _verify_receipt(controls, "control selection")
+        if str(controls.get("admission_sha256") or "") != _admission_digest(admission):
+            raise CaptureContractError("control selection admission digest mismatch")
 
     _validate_event_us_measurement(admission, us_measurement)
     prior = _validate_control_receipt(
