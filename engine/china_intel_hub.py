@@ -1068,6 +1068,12 @@ def _evidence_recognition_block(evidence: list[dict] | None) -> dict:
             _recognition_token(row.get("kind")),
             _recognition_token(row.get("title")),
             _recognition_token(row.get("source_published_at")),
+            # Exact source identity may not silently collapse contradictory
+            # owner semantics. Explicit higher-order linkage IDs are part of
+            # the source-event consistency signature, not inferred joins.
+            _recognition_token(row.get("syndication_id")),
+            _recognition_token(row.get("economic_event_id")),
+            _recognition_token(row.get("economic_actor_id")),
         ))
         address = _recognition_token(row.get("source_url"))
         if address:
@@ -1098,6 +1104,15 @@ def _evidence_recognition_block(evidence: list[dict] | None) -> dict:
     syndication_groups = _explicit_dependency_groups(rows, "syndication_id")
     economic_event_groups = _explicit_dependency_groups(rows, "economic_event_id")
     economic_actor_groups = _explicit_dependency_groups(rows, "economic_actor_id")
+    missing_syndication = sum(
+        1 for row in rows if not _recognition_token(row.get("syndication_id"))
+    )
+    missing_economic_event = sum(
+        1 for row in rows if not _recognition_token(row.get("economic_event_id"))
+    )
+    missing_economic_actor = sum(
+        1 for row in rows if not _recognition_token(row.get("economic_actor_id"))
+    )
 
     cross_source_economic = any(g["source_count"] > 1 for g in economic_event_groups)
     cross_source_syndication = any(g["source_count"] > 1 for g in syndication_groups)
@@ -1120,11 +1135,11 @@ def _evidence_recognition_block(evidence: list[dict] | None) -> dict:
     unresolved: list[str] = []
     if missing_source_identity:
         unresolved.append("source_event_identity_missing")
-    if len(rows) > 1 and not economic_event_groups:
+    if len(rows) > 1 and missing_economic_event:
         unresolved.append("economic_event_linkage_unresolved")
-    if len(rows) > 1 and not syndication_groups:
+    if len(rows) > 1 and missing_syndication:
         unresolved.append("syndication_linkage_unresolved")
-    if rows and not economic_actor_groups:
+    if rows and missing_economic_actor:
         unresolved.append("economic_actor_linkage_unresolved")
 
     return {
