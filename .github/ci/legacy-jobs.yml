@@ -4963,6 +4963,9 @@ jobs:
       - "scripts/sparse_guard.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      # EXP1 deterministic expectation query and hermetic consumer tests.
+      - "scripts/query_k3e_expectation_surface.py"
+      - "tests/test_k3e_expectation_surface.py"
       - "contracts/theme_graph/probation_proposal.v1.schema.json"
       - "contracts/theme_graph/theme_state.v1.schema.json"
       - "contracts/theme_graph/theme_state.v2.schema.json"
@@ -5007,6 +5010,11 @@ jobs:
         run: python -m pytest tests/test_output_health.py -q
       - name: "SRC-A1 native lineage, failure preservation and legacy compatibility"
         run: python -m pytest --noconftest tests/test_equity_revisions_src_a1_acceptance.py -q
+
+      - name: "EXP1 deterministic K3E expectation query consumer"
+        run: |
+          python scripts/query_k3e_expectation_surface.py --help
+          python -m pytest --noconftest tests/test_k3e_expectation_surface.py -q
 
   neural-web-core:
     if: ${{ false }}
