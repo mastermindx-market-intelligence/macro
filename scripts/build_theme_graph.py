@@ -105,6 +105,11 @@ def run(*, backfill: bool, force_backfill: bool,
         allow_source_shrink: tuple[str, ...] = ()) -> int:
     lane = store.collect_lane()
     era = "reconstruction" if backfill else "observed"
+    try:
+        store.preflight_existing_stores()
+    except store.GraphIntegrityError as exc:
+        log.error("theme graph prior-state integrity refusal: %s", exc)
+        return 1
     stored = store.read_edges(latest_belief=True)
 
     if backfill and not stored.empty and not force_backfill:

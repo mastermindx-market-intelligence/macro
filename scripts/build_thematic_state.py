@@ -62,68 +62,65 @@ def _atomic_write_json(path: Path, payload: dict) -> None:
     tmp_path.replace(path)
 
 
-def build(root: Path) -> int:
-    """Build thematic state artifacts.  Returns exit code (always 0)."""
-    t0 = time.perf_counter()
-
-    # ── Compose ───────────────────────────────────────────────────────────
+def build(root: Path, *, mode: str = "LEGACY", bundle=None,
+          generated_at: str | None = None) -> int:
+    """Sole producer; legacy default, read-only shadow, held successor delivery."""
+    from datetime import datetime, timezone
+    from engine.neuralweb import theme_state_generation as generation
+    root = Path(root)
     try:
-        artifact = compose(root=root)
-    except Exception as exc:  # noqa: BLE001
-        log.error("compose() failed unexpectedly: %s", exc)
-        # Minimal null artifact — keeps the file present and parseable
-        from datetime import datetime, timezone
-        artifact = {
-            "schema": "neuralweb.theme_state.v1",
-            "as_of": datetime.now(tz=timezone.utc).strftime("%Y-%m-%d"),
-            "generated_at": datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "authority": {
-                "is_context_only": True, "may_rank": False, "may_gate": False,
-                "may_size": False, "may_escalate": False,
-            },
-            "themes": [],
-            "stale_legs": [f"compose exception: {exc}"],
-        }
+        if mode not in {"LEGACY", "SHADOW", "SUCCESSOR"}:
+            raise generation.GenerationUnavailable("UNKNOWN_SOURCE_MODE")
+        # Immutable entry preflight before ANY directory, temporary or output.
+        entry = generation.entry_preflight(root, legacy_api=True)
+        if mode != "LEGACY":
+            from engine.neuralweb import theme_state_adapter as adapter
+            now = generated_at or datetime.now(timezone.utc).isoformat()
+            if bundle is None:
+                bundle = adapter.capture_owner_bundle(root, effective_at=now[:10], known_at=now)
+            if mode == "SHADOW":
+                result = adapter.compose_production_from_owner_bundle(bundle, generated_at=now)
+                log.info("controlled same-input shadow: %s", result["shadow"]["production_binding"])
+                return 0
+            plan = generation.prepare_generation(bundle, root=root, generated_at=now,
+                activation_at=now, entry=entry)
+            # No CLI/caller mode injects a rights grant or the fixture-only verifier.
+            generation.publish_generation(root, plan)
+            return 0
 
-    elapsed_compose = time.perf_counter() - t0
-    n_themes = len(artifact.get("themes", []))
-    n_stale = len(artifact.get("stale_legs", []))
-    log.info("compose done in %.2fs — %d themes, %d stale_legs", elapsed_compose, n_themes, n_stale)
-    print(f"[thematic_state] compose {elapsed_compose:.2f}s — themes={n_themes} stale_legs={n_stale}", flush=True)
-
-    # ── Stamp with envelope ───────────────────────────────────────────────
-    try:
-        artifact = stamp(artifact, artifact_id=_ARTIFACT_ID)
-    except Exception as exc:  # noqa: BLE001
-        log.warning("envelope stamp failed (non-fatal): %s", exc)
-
-    # ── Write data artifact (atomic) ──────────────────────────────────────
-    data_path = root / _DATA_PATH
-    try:
-        _atomic_write_json(data_path, artifact)
-        log.info("wrote %s", data_path)
-    except Exception as exc:  # noqa: BLE001
-        log.error("data write failed: %s", exc)
-
-    # ── Write site mirror (atomic) ─────────────────────────────────────────
-    site_path = root / _SITE_PATH
-    try:
-        _atomic_write_json(site_path, artifact)
-        log.info("wrote %s", site_path)
-    except Exception as exc:  # noqa: BLE001
-        log.error("site write failed: %s", exc)
-
-    # ── Append PIT tape ───────────────────────────────────────────────────
-    try:
-        n_rows = append_phase_history(root, artifact)
-        log.info("phase_history +%d rows", n_rows)
-        print(f"[thematic_state] phase_history +{n_rows} rows", flush=True)
-    except Exception as exc:  # noqa: BLE001
-        log.warning("phase_history append failed (non-fatal): %s", exc)
-
-    total = time.perf_counter() - t0
-    print(f"[thematic_state] total {total:.2f}s", flush=True)
-    return 0
+        try:
+            artifact = compose(root=root)
+        except Exception as exc:  # legacy source fail-open remains, prior bytes do not
+            log.error("compose() failed unexpectedly: %s", exc)
+            artifact = {
+                "schema": "neuralweb.theme_state.v1",
+                "as_of": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "authority": {"is_context_only": True, "may_rank": False, "may_gate": False,
+                              "may_size": False, "may_escalate": False},
+                "themes": [], "stale_legs": [f"compose exception: {exc}"],
+            }
+        try:
+            artifact = stamp(artifact, artifact_id=_ARTIFACT_ID)
+        except Exception as exc:
+            log.warning("envelope stamp failed (legacy non-fatal): %s", exc)
+        now = datetime.now(timezone.utc).isoformat()
+        tail, n_rows = generation.plan_phase_history(artifact, entry["history"], recorded_at=now)
+        raw = json.dumps(artifact, ensure_ascii=False, indent=2, default=str, allow_nan=False).encode("utf-8")
+        with generation.family_lock(root):
+            generation.cas_entry(root, entry)
+            if entry["current"] is not None:
+                raise generation.GenerationUnavailable("ACCEPTED_GENERATION_REQUIRES_SUCCESSOR")
+            generation.write_atomic(root, _DATA_PATH, raw)
+            generation.write_atomic(root, _SITE_PATH, raw)
+            from engine.neuralweb.thematic_state import _ledger_advance_enabled
+            if _ledger_advance_enabled() and (tail or not entry["history_exists"]):
+                generation.write_atomic(root, _HISTORY_PATH, entry["history"].raw + tail)
+        print(f"[thematic_state] legacy accepted; phase_history +{n_rows if _ledger_advance_enabled() else 0}", flush=True)
+        return 0
+    except Exception as exc:
+        log.error("ThemeState unaccepted: %s", exc)
+        return 1
 
 
 # ── Optional TIL stages (W1/W2/W3) — auto-discovered, tolerant ────────────
@@ -168,10 +165,12 @@ def main() -> None:
         "--root", default=None,
         help="Repo root path (default: inferred from script location)",
     )
+    parser.add_argument("--mode", choices=("LEGACY", "SHADOW", "SUCCESSOR"), default="LEGACY")
     args = parser.parse_args()
     root = Path(args.root).resolve() if args.root else _REPO_ROOT
-    code = build(root)
-    run_optional_stages(root)
+    code = build(root, mode=args.mode)
+    if code == 0 and args.mode == "LEGACY":
+        run_optional_stages(root)
     sys.exit(code)
 
 

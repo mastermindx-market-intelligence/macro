@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
   "asof": "2026-10-02",
-  "built": "2026-10-03 18:01 UTC",
+  "built": "2026-10-05 07:40 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -506,7 +506,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 4.929,
+              "value": -1.703,
               "op": "gt",
               "threshold": 25,
               "passed": false
@@ -514,7 +514,7 @@
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": 0.951,
+              "value": 1.0962,
               "op": "gt",
               "threshold": 0,
               "passed": true
@@ -823,7 +823,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 20,
-              "value": -5.143,
+              "value": -11.573,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -832,7 +832,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 4.929,
+              "value": -1.703,
               "op": "lt",
               "threshold": -18,
               "passed": false
@@ -840,7 +840,7 @@
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": 0.951,
+              "value": 1.0962,
               "op": "lt",
               "threshold": 0,
               "passed": false
@@ -1078,10 +1078,10 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": 9.888,
+              "value": 12.325,
               "op": "gt",
               "threshold": 10,
-              "passed": false
+              "passed": true
             }
           ],
           "base_rate": {
@@ -1146,16 +1146,16 @@
         {
           "id": "btc_bid",
           "resolved": true,
-          "confirmed": false,
+          "confirmed": true,
           "receipts": [
             {
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": 9.888,
+              "value": 12.325,
               "op": "gt",
               "threshold": 10,
-              "passed": false
+              "passed": true
             }
           ]
         }
@@ -1347,7 +1347,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -6.886,
+              "value": -5.67,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -1417,7 +1417,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -6.886,
+              "value": -5.67,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -2465,7 +2465,7 @@
     "universe": 2946,
     "substrate_asof": {
       "min": "2026-05-07",
-      "max": "2026-10-03"
+      "max": "2026-10-05"
     }
   }
 }

@@ -134,11 +134,11 @@ def compute_all_events(fr: pd.DataFrame, cfg: dict | None = None) -> list[dict]:
             out.append(_ev("credit", "credit_band", ts, sev,
                            f"HY credit {'widened to' if worse else 'narrowed to'} {to}",
                            f"High-yield OAS crossed into the {to} band at {oas:.2f}% "
-                           f"({'wider' if worse else 'tighter'} from {frm}). Credit leads equity drawdowns.",
+                           f"({'wider' if worse else 'tighter'} from {frm}). Credit widening is an associated risk signal; this alert does not establish a lead over equities.",
                            {"hy_oas": round(float(oas), 2) if pd.notna(oas) else None}, to,
                            headline_zh=f"高收益信用{'走阔至' if worse else '收窄至'}{ZH.get(to,to)}",
                            detail_zh=f"高收益OAS进入{ZH.get(to,to)}区间，报 {oas:.2f}%"
-                                     f"（较{ZH.get(frm,frm)}{'走阔' if worse else '收窄'}）。信用领先股票回撤。"))
+                                     f"（较{ZH.get(frm,frm)}{'走阔' if worse else '收窄'}）。信用走阔是相关风险信号；本提醒不证明其领先股票。"))
 
     # MOVE rates-vol BAND crossing -----------------------------------------------
     if "move" in fr.columns:

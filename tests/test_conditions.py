@@ -150,14 +150,17 @@ def test_sahm_is_fallback_when_claims_feed_absent() -> None:
     assert "sahm" in comp
 
 
-def test_term_premium_adjusted_curve_flags_false_inversion() -> None:
-    # raw curve inverted but a big term premium lifts the adjusted slope positive
+def test_legacy_tp10_curve_disagreement_does_not_claim_causal_explanation() -> None:
+    # Raw 2s10s and the compatibility TP10 heuristic can disagree in sign; that
+    # disagreement does not identify why the curve is inverted.
     f = _frame()
     f["spread_2s10s"] = -0.3
     f["term_premium_10y"] = 0.6
     f["curve_tp_adj"] = f["spread_2s10s"] + f["term_premium_10y"]
     note = conditions_snapshot(f)["recession"]["curve_note"]
-    assert "not a recession signal" in note
+    assert "legacy TP10 heuristic is positive" in note
+    assert "without identifying the cause" in note
+    assert "not a recession signal" not in note
 
 
 def test_vol_target_scalar_bounded() -> None:

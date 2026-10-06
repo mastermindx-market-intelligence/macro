@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-10-03",
+  "as_of": "2026-10-05",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -28,7 +28,7 @@
       "family": "real_rate_shock",
       "driver": "real_rate_shock",
       "pathway_role": "primary",
-      "as_of": "2026-10-03",
+      "as_of": "2026-10-05",
       "direction_en": "Rates / inflation shock",
       "direction_zh": "利率/通胀冲击",
       "confidence_ceiling": "context_only",
@@ -38,7 +38,7 @@
       "nodes": [
         {
           "node_id": "driver_real_rate_shock",
-          "as_of": "2026-10-03",
+          "as_of": "2026-10-05",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "real_rate_shock",
@@ -58,7 +58,7 @@
         },
         {
           "node_id": "transmission_real_rate_order1",
-          "as_of": "2026-10-03",
+          "as_of": "2026-10-05",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -78,7 +78,7 @@
         },
         {
           "node_id": "transmission_real_rate_order2",
-          "as_of": "2026-10-03",
+          "as_of": "2026-10-05",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -98,7 +98,7 @@
         },
         {
           "node_id": "transmission_real_rate_order3",
-          "as_of": "2026-10-03",
+          "as_of": "2026-10-05",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -163,7 +163,7 @@
       "family": "credit",
       "driver": "credit_stress",
       "pathway_role": "alternate",
-      "as_of": "2026-10-03",
+      "as_of": "2026-10-05",
       "direction_en": "credit spreads widening — stress",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
@@ -173,7 +173,7 @@
       "nodes": [
         {
           "node_id": "driver_credit_stress",
-          "as_of": "2026-10-03",
+          "as_of": "2026-10-05",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "credit_stress",
@@ -199,7 +199,7 @@
       "family": "fx",
       "driver": "usd_shock",
       "pathway_role": "alternate",
-      "as_of": "2026-10-03",
+      "as_of": "2026-10-05",
       "direction_en": "dollar surging — squeeze, commodities & EM pressured",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
@@ -209,7 +209,7 @@
       "nodes": [
         {
           "node_id": "driver_usd_shock",
-          "as_of": "2026-10-03",
+          "as_of": "2026-10-05",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "usd_shock",

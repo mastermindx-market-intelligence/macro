@@ -144,6 +144,76 @@ def test_measured_beta_sign():
     assert b["corr"] < 0
 
 
+def test_xasset_copy_does_not_promote_contemporaneous_beta_to_causality():
+    stories = {row["key"]: row["story_en"].lower() for row in BX._ASSETS}
+    assert "contemporaneous" in stories["spx"]
+    assert "proven lead" in stories["spx"]
+    assert "leads equity drawdowns" not in stories["spx"]
+    assert "does not observe bank net interest margins" in stories["fins"]
+    assert "lifts net interest margins" not in stories["fins"]
+
+    root = Path(__file__).resolve().parent.parent
+    inputs_source = (root / "engine" / "inputs.py").read_text(encoding="utf-8")
+    assert 'f["curve_tp_adj"] = f["spread_2s10s"] + f["term_premium_10y"]' in inputs_source
+    assert 'f["term_premium_10y"].fillna(0)' not in inputs_source
+
+    bonds_template = (root / "templates" / "bonds.html.j2").read_text(encoding="utf-8")
+    assert "TP10 curve heuristic" in bonds_template
+    assert "matched-maturity expectations-only" in bonds_template
+    assert "does not isolate expectations" in bonds_template
+    assert "removes low-term-premium noise" not in bonds_template
+    assert "below zero = inverted" not in bonds_template
+    assert "TP-adjusted" not in bonds_template
+
+    brain_source = (root / "engine" / "neuralweb" / "brain_curve.py").read_text(encoding="utf-8")
+    assert "legacy TP10 curve heuristic" in brain_source
+    assert "matched-maturity expectations-only" in brain_source
+
+    conditions_source = (root / "engine" / "conditions.py").read_text(encoding="utf-8")
+    assert "legacy TP10 curve heuristic" in conditions_source
+    assert "not a recession signal" not in conditions_source
+
+    bonds_source = (root / "engine" / "bonds.py").read_text(encoding="utf-8")
+    assert "Legacy TP10 curve heuristic is below zero" in bonds_source
+    assert "Term-premium-adjusted curve inverted" not in bonds_source
+
+    playbook_source = (root / "engine" / "playbook.py").read_text(encoding="utf-8")
+    assert "legacy TP10 curve heuristic" in playbook_source
+    assert "term-premium-adjusted curve" not in playbook_source
+
+    pit_source = (root / "scripts" / "calibrate_spvector_pit.py").read_text(encoding="utf-8")
+    assert 'f_pit["curve_tp_adj"] = f_pit["spread_2s10s"] + f_pit["term_premium_10y"]' in pit_source
+    assert 'f_pit["term_premium_10y"].fillna(0)' not in pit_source
+
+    calibration_source = (root / "scripts" / "calibrate_rate_inflation.py").read_text(encoding="utf-8")
+    assert "Legacy TP10 curve heuristic" in calibration_source
+    assert "TP-adjusted curve inversion" not in calibration_source
+
+
+    alerts_source = (root / "engine" / "bonds_alerts.py").read_text(encoding="utf-8")
+    assert "Credit leads equity drawdowns" not in alerts_source
+    assert "does not establish a lead over equities" in alerts_source
+
+    transmission_source = (root / "engine" / "rate_inflation_transmission.py").read_text(encoding="utf-8")
+    assert "Legacy TP10 curve heuristic" in transmission_source
+    assert "TP-adjusted 2s10s curve" not in transmission_source
+
+    build_site_source = (root / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    assert "2s10s + TP10 heuristic" in build_site_source
+    assert "TP-adjusted line strips" not in build_site_source
+
+    dashboard_template = (root / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    assert "legacy TP10 heuristic" in dashboard_template
+    assert "matched-maturity expectations-only decomposition" in dashboard_template
+    assert "TP-adjusted line strips" not in dashboard_template
+
+    transmission_template = (root / "templates" / "transmission.html.j2").read_text(encoding="utf-8")
+    assert "Legacy TP10 heuristic" in transmission_template
+    assert "TP-adjusted 2s10s" not in transmission_template
+
+    assert "canary that leads equity drawdowns" not in bonds_source
+
+
 def test_xasset_snapshot_real_or_skip():
     """Real-data smoke: the transmission map must produce signed betas with sane fields."""
     try:
@@ -161,7 +231,7 @@ def test_xasset_snapshot_real_or_skip():
         assert a["verdict"] in ("tailwind", "headwind", "neutral")
         assert -1.0 <= (a["corr"] or 0) <= 1.0
         assert a["beta_disp"]
-    # the S&P↔HY-OAS relationship should be measured negative (credit canary)
+    # the contemporaneous S&P↔HY-OAS association should be measured negative
     spx = next((a for a in snap["assets"] if a["key"] == "spx"), None)
     if spx and spx["corr"] is not None:
         assert spx["corr"] < 0, f"S&P↔HY-OAS corr should be negative, got {spx['corr']}"
