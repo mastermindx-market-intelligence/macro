@@ -5759,6 +5759,11 @@ jobs:
       # zero jobs, uncancellable. The budget test reds growth before the cap.
       - name: workflow file size stays under GitHub's silent processing cap
         run: python -m pytest tests/test_workflow_file_size.py -q
+      # Gate #8 (seat ruling G1-RC1, 2026-10-06): the GMI graph shadow theme_state
+      # step stays in oracle_offrender (off-render, bounded, continue-on-error) and
+      # never moves into the engine job's render budget.
+      - name: GMI graph shadow-state step pin (oracle_offrender)
+        run: python -m pytest tests/test_daily_graph_shadow_state_step.py -q
       # Same incident, other half. The size guard stops daily.yml being stranded
       # AGAIN; this one notices when the nightly stops producing runs for ANY
       # reason — strand, cancellation, or a green run that never advances the
@@ -9450,6 +9455,7 @@ jobs:
       - "tests/test_theme_state_generation_reader.py"
       - "tests/test_theme_state_owner_adapter.py"
       - "tests/test_theme_state_production.py"
+      - "tests/test_build_thematic_state_shadow_graph_state.py"
       - "site/basketdata/baskets.json"
       - "site/basketdata/narrative_emergence.json"
       - "site/basketdata/radar.json"
@@ -9545,7 +9551,7 @@ jobs:
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
-        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
+        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
         run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py -k 'not live_theme_inputs' -q
       - name: L3 leadership receipt (theme_state freshness + descriptive rows)
