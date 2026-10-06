@@ -40,9 +40,11 @@ SCHEMA_KEYS = {
 }
 
 BANNED = re.compile(
-    r"\b(intraday|validated|falsif|refut|signal|probability|forecast)\b",
+    r"\b(intraday|validated|falsif\w*|refut\w*|signals?|probabilit\w*|forecast\w*)",
     re.I,
 )
+
+ROW_KEYS = ["interval", "benchmark", "measure", "sample", "freshness", "authority"]
 
 
 def _base_basket(**perf20) -> dict:
@@ -203,6 +205,56 @@ class TestS8Matrix:
         assert r["state"] == "leading"
 
 
+def _assert_no_banned(text: str) -> None:
+    if "not a forecast" in text.lower() or "不是预测" in text:
+        return
+    assert not BANNED.search(text), text
+
+
+def _receipts_for_budget_matrix(tmp_path: Path) -> list[dict]:
+    site = tmp_path / "site"
+    out: list[dict] = []
+    out.append(build_receipt(_base_basket(rel_20d=0.012), _theme(), _theme_intel(), "us", site))
+    out.append(build_receipt(_base_basket(rel_20d=-0.03), _theme(), _theme_intel(), "us", site))
+    out.append(build_receipt(_base_basket(rel_20d=0.004), _theme(), _theme_intel(), "us", site))
+    b = _base_basket()
+    b["perf"]["20d"] = {"rel": None}
+    out.append(build_receipt(b, _theme(), _theme_intel(), "us", site))
+    b = _base_basket()
+    b["observation"]["status"] = "partial"
+    out.append(build_receipt(b, _theme(), _theme_intel(), "us", site))
+    b = _base_basket()
+    b["observation"]["aggregate_eligible"] = False
+    out.append(build_receipt(b, _theme(), _theme_intel(), "us", site))
+    b = _base_basket()
+    b["observation"]["coverage"] = 0.5
+    b["observation"]["min_coverage"] = 0.6
+    out.append(build_receipt(b, _theme(), _theme_intel(), "us", site))
+    _theme_state_file(site, as_of="2026-10-08")
+    out.append(
+        build_receipt(
+            _base_basket(),
+            _theme(),
+            _theme_intel(as_of="2026-10-10"),
+            "us",
+            site,
+        )
+    )
+    _theme_state_file(site, as_of="2026-10-01")
+    out.append(
+        build_receipt(
+            _base_basket(),
+            _theme(),
+            _theme_intel(as_of="2026-10-10"),
+            "us",
+            site,
+        )
+    )
+    out.append(build_receipt(_base_basket(), _theme(), _theme_intel(), "us", site))
+    out.append(build_receipt(_base_basket(), _theme(), _theme_intel(), "china", site))
+    return out
+
+
 def _all_user_strings(receipt: dict) -> list[str]:
     out = [
         receipt.get("stance_en") or "",
@@ -223,18 +275,36 @@ def _all_user_strings(receipt: dict) -> list[str]:
 
 
 class TestCopyBudgets:
+    def test_banned_regex_positive_control(self):
+        assert BANNED.search("falsified")
+        assert BANNED.search("signals")
+
     def test_budgets_and_banned_words(self, tmp_path: Path):
+        for r in _receipts_for_budget_matrix(tmp_path):
+            assert len((r["stance_en"] or "").split()) <= 14
+            for row in r["rows"]:
+                assert len((row["label_en"] or "").split()) <= 4
+                assert len((row["text_en"] or "").split()) <= 40
+            for text in _all_user_strings(r):
+                _assert_no_banned(text)
+
+
+class TestSixRowContract:
+    def test_row_keys_available_and_unavailable(self, tmp_path: Path):
         site = tmp_path / "site"
         _theme_state_file(site)
-        r = build_receipt(_base_basket(), _theme(), _theme_intel(), "us", site)
-        assert len((r["stance_en"] or "").split()) <= 14
-        for row in r["rows"]:
-            assert len((row["label_en"] or "").split()) <= 4
-            assert len((row["text_en"] or "").split()) <= 40
-        for text in _all_user_strings(r):
-            if "not a forecast" in text.lower() or "不是预测" in text:
-                continue
-            assert not BANNED.search(text), text
+        r_ok = build_receipt(_base_basket(), _theme(), _theme_intel(), "us", site)
+        assert [row["key"] for row in r_ok["rows"]] == ROW_KEYS
+        b = _base_basket()
+        b["perf"]["20d"] = {"rel": None}
+        r_bad = build_receipt(b, _theme(), _theme_intel(), "us", site)
+        assert [row["key"] for row in r_bad["rows"]] == ROW_KEYS
+
+    def test_receipt_error_six_rows(self):
+        r = build_receipt({"perf": "x"}, {}, {}, "us", None)
+        assert r["state"] == "unavailable"
+        assert r["reason_en"] == "receipt_error"
+        assert [row["key"] for row in r["rows"]] == ROW_KEYS
 
 
 class TestSchema:
@@ -262,6 +332,22 @@ class TestTemplate:
         css_block = text.split(".lrc {", 1)[1].split(".tlabel {", 1)[0]
         hex_colors = re.findall(r"#[0-9a-fA-F]{3,8}", css_block)
         assert not hex_colors
+        grep = subprocess.run(
+            [
+                "grep",
+                "-nE",
+                r"^ *[^{]*\.lrc[^{]*\{[^}]*(--ink-up|--ink-down|var\(--up\)|var\(--down\))",
+                str(TEMPLATE),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        lines = [ln.split(":", 1)[1] for ln in grep.stdout.strip().splitlines()]
+        assert lines == [
+            "  .lrc-figure.up { color:var(--ink-up, var(--up)); }",
+            "  .lrc-figure.down { color:var(--ink-down, var(--down)); }",
+        ]
 
 
 class TestParity:

@@ -349,7 +349,95 @@ def build_receipt(
     try:
         return _build_receipt_core(basket, theme, theme_intel, region, site)
     except Exception:  # noqa: BLE001 — display tier must not break the page
-        return _unavailable_receipt("receipt_error", "收据生成错误")
+        rec = _unavailable_receipt("receipt_error", "收据生成错误")
+        ts = {
+            "status": "missing",
+            "as_of": None,
+            "stale_legs_n": 0,
+            "quadrant": None,
+        }
+        try:
+            rec["benchmark"] = {"label": "S&P 500", "label_zh": "标普500"}
+            rec["as_of"] = "—"
+            rec["theme_state"] = ts
+            rec["rows"] = _build_rows(
+                as_of="—",
+                bench_en="S&P 500",
+                bench_zh="标普500",
+                obs={},
+                ts=ts,
+            )
+        except Exception:  # noqa: BLE001
+            rec["rows"] = [
+                {
+                    "key": "interval",
+                    "label_en": "Observation interval",
+                    "label_zh": "观察区间",
+                    "text_en": "Daily close-to-close returns over 5, 20 and 60 sessions, as of —.",
+                    "text_zh": "按日收盘价计算的5、20、60个交易日收益，截至—。",
+                },
+                {
+                    "key": "benchmark",
+                    "label_en": "Benchmark",
+                    "label_zh": "基准",
+                    "text_en": (
+                        "S&P 500, cap-weighted. The basket is equal-weight and rebalanced "
+                        "monthly, so part of any gap is weighting, not stock selection."
+                    ),
+                    "text_zh": (
+                        "标普500，市值加权。篮子为等权、按月再平衡，"
+                        "因此差距有一部分来自权重而非选股。"
+                    ),
+                },
+                {
+                    "key": "measure",
+                    "label_en": "Raw, not normalized",
+                    "label_zh": "原始值，未标准化",
+                    "text_en": (
+                        "Raw excess return: basket return minus benchmark return, in percentage "
+                        "points. Not volatility- or beta-adjusted."
+                    ),
+                    "text_zh": (
+                        "原始超额收益：篮子收益减基准收益，以百分点计。"
+                        "未按波动率或贝塔调整。"
+                    ),
+                },
+                {
+                    "key": "sample",
+                    "label_en": "Sample and roster",
+                    "label_zh": "样本与成分",
+                    "text_en": (
+                        "— of — members observed (coverage —) at —. Roster is today's; "
+                        "history before a member's curation date is context, not a track record. "
+                        "Names are never backfilled into past memberships."
+                    ),
+                    "text_zh": (
+                        "截至—观察到—个成分中的—个（覆盖率—）。"
+                        "成分为当前名单；成分纳入日之前的历史仅作背景，不是业绩记录。"
+                        "不会把今天的名字回填进过去的成分。"
+                    ),
+                },
+                {
+                    "key": "freshness",
+                    "label_en": "Freshness and coverage",
+                    "label_zh": "新鲜度与覆盖",
+                    "text_en": "Theme state not available for this basket today.",
+                    "text_zh": "今日该篮子无可用主题状态。",
+                },
+                {
+                    "key": "authority",
+                    "label_en": "Diagnostic authority",
+                    "label_zh": "判读权限",
+                    "text_en": (
+                        "Display-only context. It never ranks, sizes, gates or escalates, "
+                        "and it is not a forecast."
+                    ),
+                    "text_zh": (
+                        "仅作展示背景。不排序、不定仓位、不设门槛、不升级，也不是预测。"
+                    ),
+                },
+            ]
+        return rec
 
 
 def _build_receipt_core(

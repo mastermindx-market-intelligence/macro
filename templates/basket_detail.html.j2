@@ -63,7 +63,7 @@
   .lrc-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
   .lrc-chip { font-size:10px; font-weight:600; padding:3px 8px; border-radius:var(--r-ctl,8px); background:var(--panel2); border:1px solid var(--line); color:var(--muted); }
   html[data-theme="light"] .lrc-chip { background:var(--panel2); }
-  .lrc-chip.state-fresh { color:var(--ink-up, var(--up)); }
+  .lrc-chip.state-fresh { color:var(--text); }
   .lrc-chip.state-stale { color:var(--muted); }
   .lrc-sowhat { font-size:11px; color:var(--muted); margin-bottom:6px; max-width:48ch; }
   .lrc-receipt summary { cursor:pointer; font-size:11px; font-weight:650; color:var(--muted); margin-top:4px; }
@@ -74,7 +74,7 @@
   .lrc-ledger-text { font-size:12px; line-height:1.45; font-variant-numeric:tabular-nums; }
   @media (max-width:720px) {
     .lrc-ledger { grid-template-columns:1fr; }
-    .lrc-ledger-label { padding-bottom:2px; border-bottom:none; }
+    .lrc-ledger-row > .lrc-ledger-label { padding-bottom:2px; border-bottom:none; }
   }
   .tlabel { font-size:11px; font-weight:700; letter-spacing:.05em; padding:3px 9px; border-radius:7px; text-transform:uppercase; }
   .treco { font-size:12px; font-weight:700; padding:3px 11px; border-radius:8px; }
