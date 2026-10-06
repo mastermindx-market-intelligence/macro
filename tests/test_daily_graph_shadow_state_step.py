@@ -43,9 +43,10 @@ def test_step_lives_only_in_oracle_offrender_between_tripwire_and_commit():
 def test_step_bounds_and_command():
     step = next(s for s in _jobs()["oracle_offrender"]["steps"] if s.get("name") == STEP)
     assert step["run"].strip() == RUN
-    assert step["timeout-minutes"] == 8
+    assert step["timeout-minutes"] == 12
     assert step["continue-on-error"] is True
-    assert step["if"] == "needs.engine.result == 'success'"
+    # RC1-R1: ungated on engine.result (engine ends red on the post-commit OIP PIT marker).
+    assert "if" not in step
     assert step["env"] == {"COLLECT_LANE": "nightly"}
 
 

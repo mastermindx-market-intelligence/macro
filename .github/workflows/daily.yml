@@ -5175,8 +5175,8 @@ jobs:
           PY
       - name: GMI graph shadow theme state (gate 8 — off-render, non-fatal)
         # Seat ruling G1-RC1: state-only compose; writes data/theme_graph/shadow_theme_state.v1.json only.
-        if: needs.engine.result == 'success'
-        timeout-minutes: 8
+        # RC1-R1: no engine.result gate — engine ends red on the post-commit OIP PIT fail-closed marker after its commit.
+        timeout-minutes: 12
         continue-on-error: true
         env:
           COLLECT_LANE: nightly
