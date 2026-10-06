@@ -269,6 +269,9 @@ May modify:
 1. `scripts/ci/daily_engine_regime_dashboard.sh` — one non-fatal call after the existing `scripts.build_site` line, guarded by `nightly_advance_enabled()`.
 2. The single existing append-only file named by the answer to §8 question 1 — append a line, or leave the bytes unchanged on an idempotent re-run. The lane may not create this file.
 3. `tests/test_r5_prospective_consumer.py` — the §4 checks that can run hermetically (G-DEGRADE, G-CORRECT, G-REPLAY, G-CONTEXT, and the absence path). G-PROD stays an observation of `origin/main` and is not a unit-test substitute.
+4. `.github/ci/legacy-jobs.yml` — exactly one new step in the existing `signal-contract` job (`.github/ci/legacy-jobs.yml:791` on `origin/main` is that job's key), running `python -m pytest tests/test_r5_prospective_consumer.py -q`. Insert that step beside the K3E A9 coupling step that PR #8461's enrolment adds. Change no other line in the manifest. Precondition: PR #8312 and the D17 manifest-enrolment queue (#8461, #8463, #8337 enrolments) have landed on main first, because every one of them edits that file. The builder must run `for i in $(seq 0 11); do python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --pack-index $i --pack-count 12 --validate-only; done` and see exit code 0 on every iteration, and must run `python3 -c "import sys;sys.path.insert(0,'.');from scripts.audit_unrun_tests import gated_unrun_suites;print(gated_unrun_suites())"` and see a list that does not contain `tests/test_r5_prospective_consumer.py`.
+
+May-modify item 1, `scripts/ci/daily_engine_regime_dashboard.sh`, is inside the CI-authority inventory: `scripts/ci_authority_paths.py:36` lists `"scripts/**"`. The R5-BUILD pull request is therefore authority-changing. Its own candidate-era evidence cannot excuse a red. A merged-head red clears only through a green `ci.yml` run on a main descendant of the merge (`DEC:AUTHORITY-FREEZE-CLEARS-ON-DESCENDANT-BASELINE`, file `agentos/decisions/DEC-AUTHORITY-FREEZE-CLEARS-ON-DESCENDANT-BASELINE.md`). The build lane must not move the shell call into a non-authority file to avoid that consequence.
 
 May not modify, create, or delete:
 
@@ -281,7 +284,7 @@ May not modify, create, or delete:
 - `research/F07_EVENT_ASSUMPTION_PROPOSAL_CONTRACT_V1.md`
 - `engine/ledger_lane.py` (call it; do not fork a second gate)
 - EVAL-0 files: `research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json`, `eval0_activation_receipt.v1.json`, and `contracts/research/k3e_expectation_market_dynamics_evaluation_prereg.v1.schema.json`
-- PR #8312 paths: `research/alpha_intelligence/expectation_market_dynamics/INFORMATION_TO_PRICE_PROGRAM_2026-10-03.md`, `CURRENT_CAPABILITY_LEDGER.md`, `SRC_A1_*_2026-10-03.*`, `information_to_price_audit.py`, `agentos/*` records, `.github/ci/legacy-jobs.yml`, `tests/test_equity_revisions_src_a1_acceptance.py`
+- PR #8312 paths: `research/alpha_intelligence/expectation_market_dynamics/INFORMATION_TO_PRICE_PROGRAM_2026-10-03.md`, `CURRENT_CAPABILITY_LEDGER.md`, `SRC_A1_*_2026-10-03.*`, `information_to_price_audit.py`, `agentos/*` records, `.github/ci/legacy-jobs.yml` except the single step in May-modify item 4, `tests/test_equity_revisions_src_a1_acceptance.py`
 - `config/compiled_kill_registry.yml` and `config/signal_foundry_blocklist.yml`
 - anything under `data/` other than the one named append target, and anything under `site/`
 - a new queue, daemon, scheduler, store, schema file, score, or scenario module
