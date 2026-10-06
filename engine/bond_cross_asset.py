@@ -1,15 +1,14 @@
 """Bonds → Everything — the quantitative cross-asset transmission map.
 
-ADDITIVE / leaf module, DISPLAY-ONLY. Bonds are the discount rate, the growth
-signal and the risk gate for every other market; this leaf MEASURES, from the data
-already in the frame, how each downstream asset moves with the cleanest bond driver,
-and reads the CURRENT headwind / tailwind from the live driver impulse.
+ADDITIVE / leaf module, DISPLAY-ONLY. This leaf MEASURES, from the data already
+in the frame, how each downstream asset co-moves contemporaneously with a named
+bond-side measure, and combines that descriptive beta with the current driver impulse.
 
 It is bond-DRIVER-centric and so complements (does not duplicate) the rate+inflation
 STATE-centric transmission page (engine.rate_inflation_transmission / transmission.html):
 that page runs split-half forward-IC chains and scenarios across 14 assets; this one
-answers "what are bonds doing TO each market right now?" and adds the channels that
-page is thin on — credit (HY OAS) as the equity canary, the rate-DIFFERENTIAL → USD,
+answers "how is each market co-moving with a named bond-side measure right now?" and adds the channels that
+page is thin on — the credit (HY OAS) association with equities, the rate-DIFFERENTIAL → USD,
 and MOVE as the cross-asset risk gate.
 
 For each asset it fits a simple contemporaneous OLS of the asset's WEEKLY return on the
@@ -107,14 +106,14 @@ def _drivers(f: pd.DataFrame) -> dict:
 # asset roster -> primary bond driver + the economic story. icon for the UI.
 _ASSETS = [
     {"key": "spx", "src": ("f", "SPY"), "icon": "📈", "en": "S&P 500", "zh": "标普500",
-     "driver": "hy_oas", "story_en": "Credit (HY OAS) is the canary that leads equity drawdowns; widening = headwind.",
-     "story_zh": "信用利差是领先股票回撤的预警；走阔=逆风。"},
+     "driver": "hy_oas", "story_en": "HY OAS and S&P returns co-move inversely in this contemporaneous panel; widening is an associated headwind, not a proven lead.",
+     "story_zh": "本同步面板中，高收益利差与标普回报呈反向共变；利差走阔对应逆风，但并非已证明的领先关系。"},
     {"key": "ndx", "src": ("f", "QQQ"), "icon": "💻", "en": "Nasdaq 100", "zh": "纳斯达克100",
      "driver": "real_10y", "story_en": "Long-duration growth de-rates as the real discount rate rises.",
      "story_zh": "实际贴现率上升时，长久期成长股估值下移。"},
     {"key": "fins", "src": ("y", "XLF"), "icon": "🏦", "en": "Financials (XLF)", "zh": "金融（XLF）",
-     "driver": "slope", "story_en": "Banks earn the curve — a steeper slope lifts net interest margins.",
-     "story_zh": "银行赚取曲线利差——曲线越陡，净息差越高。"},
+     "driver": "slope", "story_en": "Curve slope and XLF returns can co-move, but this panel does not observe bank net interest margins or prove a causal margin channel.",
+     "story_zh": "曲线斜率与XLF回报可能同步共变，但本面板不观测银行净息差，也不证明因果性的息差通道。"},
     {"key": "reit", "src": ("y", "XLRE"), "icon": "🏢", "en": "REITs (XLRE)", "zh": "房地产（XLRE）",
      "driver": "real_10y", "story_en": "Rate-sensitive long-duration cash flows; rising real yields are a headwind.",
      "story_zh": "对利率敏感的长久期现金流；实际利率上行为逆风。"},
@@ -211,7 +210,7 @@ def snapshot(f: pd.DataFrame) -> dict | None:
         "move": _r(_f(f, "move").iloc[-1] if _f(f, "move") is not None else None, 0),
     }
 
-    snap = {"as_of": str(f.index[-1].date()), "drivers_now": drv_now, "assets": assets}
+    snap = {"as_of": str(f.index[-1].date()), "drivers_now": drv_now, "assets": assets,\n            "interpretation_scope": "contemporaneous_association_not_lead_or_causal_effect"}
     snap["verdict_en"], snap["verdict_zh"] = _verdict(snap)
     return snap
 
@@ -222,8 +221,8 @@ def _verdict(s: dict) -> tuple[str, str]:
     dn = s["drivers_now"]
     en = (f"Real-10y {dn.get('real_10y')}% ({dn.get('real_chg_bp'):+.0f}bp/3m), curve {dn.get('slope')}pp, "
           f"HY OAS {dn.get('hy_oas')}%. ") if dn.get('real_10y') is not None else ""
-    en += f"{len(tail)} markets with a bond tailwind, {len(head)} with a headwind right now."
+    en += f"{len(tail)} markets with a bond-associated tailwind, {len(head)} with a bond-associated headwind right now."
     zh = (f"10年实际利率 {dn.get('real_10y')}%（{dn.get('real_chg_bp'):+.0f}基点/3月），曲线 {dn.get('slope')}pp，"
           f"高收益利差 {dn.get('hy_oas')}%。") if dn.get('real_10y') is not None else ""
-    zh += f"当前 {len(tail)} 个市场受债券顺风，{len(head)} 个受逆风。"
+    zh += f"当前 {len(tail)} 个市场呈与债券指标相关的顺风，{len(head)} 个呈相关逆风。"
     return en, zh
