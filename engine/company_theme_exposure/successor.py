@@ -667,3 +667,384 @@ def compose_shadow_bundle(
     validate_manifest_v2(manifest, allow_unmaterialized_files=True,
                          exposures=exposures, state_artifact=state_artifact)
     return exposures, manifest
+
+
+# Production-state consumption is a separate closed, in-memory shadow contract.
+# Existing CTE v1/v2 APIs and the diagnostic graph-state schema remain unchanged.
+PRODUCTION_EXPOSURE_SCHEMA = "company_theme_exposure.v3"
+PRODUCTION_MANIFEST_SCHEMA = "company_theme_exposure_manifest.v3"
+PRODUCTION_BINDING_SCHEMA = "company_theme_exposure.production_generation_binding.v3"
+PRODUCTION_BUILDER = "company_theme_exposure.v3.shadow"
+_PRODUCTION_EXPOSURE_KEYS = (_EXPOSURE_KEYS - {"theme_state"}) | {"production_generation", "materialization_allowed"}
+_PRODUCTION_MANIFEST_KEYS = (_MANIFEST_KEYS - set()) | {"production_coverage", "materialization_allowed"}
+_PRODUCTION_SOURCE_KEYS = (_SOURCE_KEYS - {"theme_state"}) | {"production_generation"}
+_PRODUCTION_WARNING = {
+    "MISSING": "production_generation_absent",
+    "UNAVAILABLE": "production_generation_unavailable",
+    "PENDING": "production_generation_pending",
+    "STALE": "production_generation_stale",
+}
+
+
+def _production_same(actual, expected, label):
+    # Canonical bytes distinguish false/0, retain exact order and reject nonfinite values.
+    if canonical_json_bytes(actual) != canonical_json_bytes(expected):
+        raise ContractError(label + " mismatch")
+
+
+def _production_caps(value):
+    from engine.theme_graph import theme_state_production as production
+    _production_same(value, production.FLAGS, "production capability ceiling")
+
+
+def _production_source(receipt, publication_plan):
+    """Validate the existing owner's receipt; no source read or rights resolver."""
+    from engine.neuralweb import theme_state_generation as generation
+    from engine.neuralweb import theme_state_generation_reader as reader
+    validators = {reader.SCHEMA: reader.validate_read_receipt,
+                  reader.USE_SCHEMA: reader.validate_read_receipt_at_use}
+    schema = receipt.get("schema") if isinstance(receipt, Mapping) else None
+    if not isinstance(schema, str) or schema not in validators:
+        raise ContractError("unsupported production generation read schema")
+    if receipt.get("status") == "INVALID":
+        raise ContractError("invalid production generation receipt")
+    try:
+        validators[receipt["schema"]](receipt, publication_plan=publication_plan)
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, generation.GenerationUnavailable) as exc:
+        raise ContractError("production generation receipt/witness invalid") from exc
+    return receipt
+
+
+def _production_binding(receipt, nodes):
+    """Bind descriptive production reads, never diagnostic graph read content."""
+    from engine.theme_graph import theme_state_production as production
+    if any(not isinstance(node, str) or not node for node in nodes):
+        raise ContractError("production subject identity invalid")
+    if receipt["state"] is None and nodes:
+        raise ContractError("unavailable source cannot contain production subject reads")
+    from engine.neuralweb import theme_state_generation_reader as generation_reader
+    reads = []
+    if receipt["state"] is not None:
+        for node in sorted(set(nodes)):
+            if receipt["schema"] == generation_reader.USE_SCHEMA:
+                from engine.theme_graph.theme_state_use_reader import read_subject_at_use
+                value = read_subject_at_use(receipt["state"], node_id=node, **receipt["query"],
+                                             purpose=receipt["purpose"], use_at=receipt["use_at"])
+            else:
+                value = production.read_subject(receipt["state"], node_id=node, **receipt["query"],
+                                                purpose=receipt["purpose"])
+            reads.append(value)
+    compatibility = receipt["compatibility"]
+    return {"schema": PRODUCTION_BINDING_SCHEMA, "source_read_schema": receipt["schema"],
+            "status": receipt["status"],
+            "reason_codes": copy.deepcopy(receipt["reason_codes"]),
+            "query": copy.deepcopy(receipt["query"]), "use_at": receipt["use_at"],
+            "purpose": receipt["purpose"], "publication": copy.deepcopy(receipt["publication"]),
+            "state_identity": copy.deepcopy(receipt["state_identity"]),
+            "compatibility_digests": None if compatibility is None else {
+                key: compatibility[key] for key in ("raw_sha256", "canonical_sha256", "unstamped_sha256")},
+            "history": copy.deepcopy(receipt["history"]), "subject_reads": reads,
+            "authority_caps": copy.deepcopy(production.FLAGS), "materialization_allowed": False}
+
+
+def _production_local(ticker, identity_read, inverse_read, receipt):
+    """Retain incumbent identity/inverse and actual forward-roster validation."""
+    def unavailable(reasons):
+        return {"status": "UNAVAILABLE", "declared_count": None, "observed_count": None,
+                "state_available_count": None, "reason_codes": sorted(set(reasons))}
+    state = receipt["state"]
+    if state is None:
+        return None, None, [], unavailable(receipt["reason_codes"])
+    graph = state["diagnostic_graph_state"]
+    # This metadata frame is ONLY for validating identity/membership receipts.
+    # It is never returned and no graph QUALIFIED status is used as state data.
+    metadata = {"status": "AVAILABLE", "graph_generation_id": graph["graph_generation_id"],
+                "owner_generations": graph["owner_generations"], **receipt["query"], "reads": []}
+    identity_value, inverse_value = copy.deepcopy(identity_read), copy.deepcopy(inverse_read)
+    rows, coverage = _local_projection(ticker, identity_value, inverse_value, metadata)
+    if rows:
+        subjects = {subject["node_id"]: subject for subject in graph["subjects"]}
+        for row in rows:
+            subject = subjects.get(row["node_id"])
+            forward = None if subject is None else subject["owner_receipts"]["membership"]
+            if forward is None or forward["availability"] == "UNAVAILABLE":
+                return identity_value, inverse_value, [], unavailable(["FORWARD_MEMBERSHIP_UNPROVEN"])
+            _owner_read(forward, "membership", metadata, subject_id=row["node_id"])
+            if (_owner_reasons(forward, metadata)
+                    or forward["query"]["effective_at"] != metadata["effective_at"]
+                    or not state_owner._proven_by(forward["query"]["known_at"], metadata["known_at"])
+                    or not isinstance(forward["payload"], Mapping)
+                    or not isinstance(forward["payload"].get("members"), list)):
+                return identity_value, inverse_value, [], unavailable(["FORWARD_MEMBERSHIP_UNPROVEN"])
+        # No reader result is fabricated here. The actual source artifact backs
+        # the existing check; missing/unproved forward rows were handled above.
+        _check_forward_membership(ticker, rows, identity_value, inverse_value, metadata,
+                                  state_artifact=graph)
+    return identity_value, inverse_value, rows, coverage
+
+
+def _production_local_with_reads(ticker, identity_read, inverse_read, receipt, canonical_nodes):
+    identity_value, inverse_value, rows, coverage = _production_local(ticker, identity_read, inverse_read, receipt)
+    related = set(canonical_nodes) | {row["node_id"] for row in rows} if receipt["state"] is not None else set()
+    binding = _production_binding(receipt, related)
+    usable = {read["subject_id"]: read for read in binding["subject_reads"] if read["status"] != "UNAVAILABLE"}
+    for row in rows:
+        read = usable.get(row["node_id"])
+        if read is not None:
+            subject = read["subject"]
+            if (subject["kind"], subject["source_family"], subject["native_id"]) != (
+                    "local_theme", row["source_family"], row["native_id"]):
+                raise ContractError("production state/local native identity mismatch")
+    if coverage["status"] != "UNAVAILABLE":
+        coverage["state_available_count"] = sum(row["node_id"] in usable for row in rows)
+        if any(row["node_id"] not in usable for row in rows):
+            coverage["reason_codes"] = ["STATE_CONTEXT_UNAVAILABLE"]
+    return identity_value, inverse_value, rows, coverage, binding
+
+
+def _production_warnings(binding, *, local_unavailable=False, unmapped=False, manifest=False):
+    warnings = []
+    if binding["status"] in _PRODUCTION_WARNING:
+        warnings.append(_PRODUCTION_WARNING[binding["status"]])
+    if any(row["status"] == "UNAVAILABLE" for row in binding["subject_reads"]):
+        warnings.append("production_subject_unavailable")
+    if local_unavailable:
+        warnings.append("local_membership_unavailable")
+    if unmapped:
+        warnings.append("active_memberships_unmapped" if manifest else "active_membership_unmapped")
+    return sorted(warnings)
+
+
+def _production_coverage(binding):
+    reads = binding["subject_reads"]
+    descriptive = sum(row["status"] == "DESCRIPTIVE" for row in reads)
+    return {"status": binding["status"], "reason_codes": copy.deepcopy(binding["reason_codes"]),
+            "subject_read_count": len(reads), "descriptive_subject_count": descriptive,
+            "unavailable_subject_count": len(reads) - descriptive}
+
+
+def _validate_production_exposure(item, receipt, company_context=None):
+    canonical_json_bytes(item)
+    _closed(item, _PRODUCTION_EXPOSURE_KEYS, "production exposure")
+    if (item["schema"] != PRODUCTION_EXPOSURE_SCHEMA or item["mode"] != "shadow"
+            or item["authority"] != "context_only" or item["materialization_allowed"] is not False):
+        raise ContractError("production CTE remains nonmaterialized context-only shadow")
+    _production_caps(item["authority_caps"])
+    if item["canonical_membership_qualification"] != CANONICAL_QUALIFICATION:
+        raise ContractError("canonical membership meaning changed")
+    if not isinstance(item["generation_id"], str) or not _GEN.fullmatch(item["generation_id"]):
+        raise ContractError("CTE semantic generation invalid")
+    if item["generated_at"] != receipt["query"]["known_at"]:
+        raise ContractError("knowledge query must bind pinned CI generation clock")
+    _clock(item["generated_at"], "production CTE generated", precise=True)
+    old = {key: copy.deepcopy(item[key]) for key in (
+        "authority", "generated_at", "generation_id", "company", "company_intelligence", "exposures", "coverage")}
+    old.update(schema="company_theme_exposure.v1", theme_state={"status": "missing", "as_of": None, "sha256": None},
+               warnings=sorted(["theme_state_missing"] + (
+                   ["active_membership_unmapped"] if item["coverage"].get("unmapped_basket_count") else [])),
+               status="partial")
+    validate_exposure_v1(old)
+    ticker = safe_ticker(item["company"]["ticker"])
+    nodes = {theme_node_id(row["theme_id"]) for row in item["exposures"]}
+    identity_value, inverse_value, rows, coverage, binding = _production_local_with_reads(
+        ticker, item["company_identity"], item["local_membership"], receipt, nodes)
+    for key, value in [("company_identity", identity_value), ("local_membership", inverse_value),
+                       ("local_memberships", rows), ("local_coverage", coverage), ("production_generation", binding)]:
+        _production_same(item[key], value, key)
+    warnings = _production_warnings(binding, local_unavailable=coverage["status"] == "UNAVAILABLE",
+                                     unmapped=bool(item["coverage"]["unmapped_basket_count"]))
+    _production_same(item["warnings"], warnings, "production warning")
+    if item["status"] != ("partial" if warnings else "ready"):
+        raise ContractError("production status/warnings mismatch")
+    if company_context is not None:
+        validate_context(company_context)
+        latest = company_context["latest_event"]
+        expected = {"generation_id": company_context["generation_id"],
+                    "context_sha256": canonical_json_sha256(company_context),
+                    "latest_event_id": latest["event_id"] if latest else None,
+                    "latest_event_call_date": latest["call_date"] if latest else None}
+        _production_same(item["company_intelligence"], expected, "production parent/latest-event pin")
+        if company_context["company"]["ticker"] != ticker:
+            raise ContractError("production parent company mismatch")
+
+
+def validate_production_exposure(payload, *, generation_read_receipt, publication_plan, company_context=None):
+    """Exact v3 shadow structure and supplied owner equality, not authentication."""
+    receipt = _production_source(generation_read_receipt, publication_plan)
+    _validate_production_exposure(payload, receipt, company_context)
+
+
+def validate_production_manifest(manifest, *, generation_read_receipt, publication_plan, exposures=None):
+    """Validate shadow identity and union coverage; files stay unmaterialized."""
+    from engine.company_theme_exposure.contracts import validate_manifest as validate_legacy_manifest
+    receipt = _production_source(generation_read_receipt, publication_plan)
+    canonical_json_bytes(manifest)
+    item = _closed(manifest, _PRODUCTION_MANIFEST_KEYS, "production manifest")
+    if (item["schema"] != PRODUCTION_MANIFEST_SCHEMA or item["mode"] != "shadow"
+            or item["materialization_allowed"] is not False or item["files"] != {}):
+        raise ContractError("production manifest remains unmaterialized shadow")
+    _production_caps(item["authority_caps"])
+    if item["generated_at"] != receipt["query"]["known_at"]:
+        raise ContractError("manifest knowledge query/parent clock mismatch")
+    _clock(item["generated_at"], "manifest generated", precise=True)
+    for key in ("company_count", "exposure_count", "local_membership_count"):
+        _count(item[key], key)
+    if not isinstance(item["generation_id"], str) or not _GEN.fullmatch(item["generation_id"]):
+        raise ContractError("production manifest generation invalid")
+    source = _closed(item["source"], _PRODUCTION_SOURCE_KEYS, "production manifest source")
+    pin = _closed(source["company_intelligence"], {"generation_id", "sha256"}, "CI source")
+    _hash(pin["sha256"], "CI source hash")
+    for key in ("membership", "crosswalk", "company_identity_reads", "local_membership_reads"):
+        _closed(source[key], {"canonical_json_sha256"}, key)
+        _hash(source[key]["canonical_json_sha256"], key)
+    if source["builder"] != PRODUCTION_BUILDER:
+        raise ContractError("production builder identity mismatch")
+    # The old closed canonical-coverage arithmetic is retained, not copied.
+    legacy = {key: copy.deepcopy(item[key]) for key in (
+        "generation_id", "generated_at", "company_count", "exposure_count", "coverage", "files")}
+    legacy.update(schema="company_theme_exposure_manifest.v1", source={
+        "company_intelligence": copy.deepcopy(pin),
+        "membership": {"sha256": source["membership"]["canonical_json_sha256"]},
+        "crosswalk": {"sha256": source["crosswalk"]["canonical_json_sha256"]},
+        "theme_state": {"status": "missing", "as_of": None, "sha256": None},
+        "builder": "company_theme_exposure.v1"},
+        warnings=sorted(["theme_state_missing"] + (["active_memberships_unmapped"]
+            if item["coverage"].get("unmapped_membership_count") else [])),
+        status="partial" if item["company_count"] else "empty")
+    validate_legacy_manifest(legacy, allow_unmaterialized_files=True)
+    local_keys = {"available_company_count", "valid_empty_company_count", "unavailable_company_count"}
+    local = _closed(item["local_coverage"], local_keys, "production local coverage")
+    for value in local.values():
+        _count(value, "production local company count")
+    if sum(local.values()) != item["company_count"]:
+        raise ContractError("production local company denominator mismatch")
+    supplied_binding = source["production_generation"]
+    if not isinstance(supplied_binding, Mapping) or not isinstance(supplied_binding.get("subject_reads"), list):
+        raise ContractError("production source binding invalid")
+    try:
+        node_ids = [row["subject_id"] for row in supplied_binding["subject_reads"]]
+    except (TypeError, KeyError) as exc:
+        raise ContractError("production subject list invalid") from exc
+    binding = _production_binding(receipt, node_ids)
+    _production_same(supplied_binding, binding, "manifest production binding")
+    _production_same(item["production_coverage"], _production_coverage(binding), "production coverage")
+    warnings = _production_warnings(binding, local_unavailable=bool(local["unavailable_company_count"]),
+                                     unmapped=bool(item["coverage"]["unmapped_membership_count"]), manifest=True)
+    _production_same(item["warnings"], warnings, "manifest warnings")
+    if item["status"] != ("empty" if not item["company_count"] else "partial" if warnings else "ready"):
+        raise ContractError("manifest status mismatch")
+    if not item["company_count"] and (item["exposure_count"] or item["local_membership_count"] or binding["subject_reads"]):
+        raise ContractError("empty company set cannot contain projected content")
+    if exposures is not None:
+        if not isinstance(exposures, Mapping):
+            raise ContractError("exposures must be a company mapping")
+        union, local_counts = {}, dict.fromkeys(local_keys, 0)
+        for ticker, exposure in exposures.items():
+            _validate_production_exposure(exposure, receipt)
+            if ticker != exposure["company"]["ticker"]:
+                raise ContractError("exposure company key mismatch")
+            if (exposure["generation_id"] != item["generation_id"]
+                    or exposure["company_intelligence"]["generation_id"] != pin["generation_id"]):
+                raise ContractError("manifest/company generation mismatch")
+            for row in exposure["production_generation"]["subject_reads"]:
+                if row["subject_id"] in union:
+                    _production_same(row, union[row["subject_id"]], "shared production read")
+                union[row["subject_id"]] = row
+            key = {"AVAILABLE": "available_company_count", "VALID_EMPTY": "valid_empty_company_count",
+                   "UNAVAILABLE": "unavailable_company_count"}[exposure["local_coverage"]["status"]]
+            local_counts[key] += 1
+        expected = {"company_count": len(exposures),
+                    "exposure_count": sum(len(x["exposures"]) for x in exposures.values()),
+                    "local_membership_count": sum(len(x["local_memberships"]) for x in exposures.values()),
+                    "local_coverage": local_counts}
+        for key, value in expected.items():
+            _production_same(item[key], value, "manifest " + key)
+        _production_same(binding["subject_reads"], [union[node] for node in sorted(union)], "manifest subject union")
+        if derive_generation_id(exposures, item) != item["generation_id"]:
+            raise ContractError("production CTE semantic generation mismatch")
+
+
+def compose_production_shadow_bundle(contexts, *, company_manifest, membership, crosswalk,
+                                    generation_read_receipt, publication_plan,
+                                    company_identity_reads, local_membership_reads):
+    """Consume one actual production-generation receipt within the existing CTE owner.
+
+    No read-generation call, publication, current-use resolver or output path.
+    A valid supplied receipt proves consistency only; caller provenance and live
+    rights remain externally owned gates. The diagnostic graph is validation
+    metadata for roster receipts, never the source of emitted state eligibility.
+    """
+    from engine.theme_graph import theme_state_production as production
+    receipt = _production_source(generation_read_receipt, publication_plan)
+    validate_company_manifest(company_manifest)
+    query = receipt["query"]
+    if query["known_at"] != company_manifest["generated_at"]:
+        raise ContractError("knowledge query must equal pinned CI generated_at")
+    _clock(query["known_at"], "knowledge query", precise=True)
+    _clock(query["effective_at"], "effective query")
+    if state_owner._definitely_after(query["effective_at"], query["known_at"]):
+        raise ContractError("effective query exceeds parent knowledge cutoff")
+    if not isinstance(company_identity_reads, Mapping) or not isinstance(local_membership_reads, Mapping):
+        raise ContractError("injected owner reads must be mappings")
+    if (set(company_identity_reads) | set(local_membership_reads)) - set(contexts):
+        raise ContractError("foreign company owner receipt")
+    if set(company_manifest["files"]) != {company_filename(ticker) for ticker in contexts}:
+        raise ContractError("parent tree does not exactly cover contexts")
+    for ticker, context in contexts.items():
+        validate_context(context)
+        if context["generation_id"] != company_manifest["generation_id"] or context["company"]["ticker"] != ticker:
+            raise ContractError("context/parent company generation mismatch")
+        source = company_manifest["files"][company_filename(ticker)]
+        raw = canonical_json_bytes(context)
+        if source["sha256"] != canonical_json_sha256(context) or source["bytes"] != len(raw):
+            raise ContractError("parent canonical writer bytes/context mismatch")
+    legacy, old_manifest = build_legacy_bundle(contexts, company_manifest=company_manifest,
+        membership=membership, crosswalk=crosswalk, theme_state=None,
+        as_of=date.fromisoformat(query["effective_at"][:10]))
+    exposures, union = {}, {}
+    counts = {"available_company_count": 0, "valid_empty_company_count": 0, "unavailable_company_count": 0}
+    for ticker, old in sorted(legacy.items()):
+        nodes = {theme_node_id(row["theme_id"]) for row in old["exposures"]}
+        identity_read, inverse_read, rows, coverage, binding = _production_local_with_reads(
+            ticker, company_identity_reads.get(ticker), local_membership_reads.get(ticker), receipt, nodes)
+        item = {key: copy.deepcopy(old[key]) for key in (
+            "authority", "generated_at", "company", "company_intelligence", "exposures", "coverage")}
+        item.update(schema=PRODUCTION_EXPOSURE_SCHEMA, mode="shadow", authority_caps=copy.deepcopy(production.FLAGS),
+                    materialization_allowed=False, generation_id="0" * 24,
+                    canonical_membership_qualification=CANONICAL_QUALIFICATION,
+                    company_identity=identity_read, local_membership=inverse_read, local_memberships=rows,
+                    local_coverage=coverage, production_generation=binding)
+        item["warnings"] = _production_warnings(binding, local_unavailable=coverage["status"] == "UNAVAILABLE",
+                                                  unmapped=bool(item["coverage"]["unmapped_basket_count"]))
+        item["status"] = "partial" if item["warnings"] else "ready"
+        exposures[ticker] = item
+        for row in binding["subject_reads"]:
+            union[row["subject_id"]] = row
+        counts[{"AVAILABLE": "available_company_count", "VALID_EMPTY": "valid_empty_company_count",
+                "UNAVAILABLE": "unavailable_company_count"}[coverage["status"]]] += 1
+    binding = _production_binding(receipt, union)
+    warnings = _production_warnings(binding, local_unavailable=bool(counts["unavailable_company_count"]),
+                                     unmapped=bool(old_manifest["coverage"]["unmapped_membership_count"]), manifest=True)
+    result = {"schema": PRODUCTION_MANIFEST_SCHEMA, "mode": "shadow", "authority_caps": copy.deepcopy(production.FLAGS),
+              "materialization_allowed": False, "generation_id": "0" * 24, "generated_at": company_manifest["generated_at"],
+              "company_count": len(exposures), "exposure_count": sum(len(x["exposures"]) for x in exposures.values()),
+              "local_membership_count": sum(len(x["local_memberships"]) for x in exposures.values()),
+              "coverage": copy.deepcopy(old_manifest["coverage"]), "local_coverage": counts,
+              "production_coverage": _production_coverage(binding),
+              "source": {"company_intelligence": {"generation_id": company_manifest["generation_id"],
+                          "sha256": canonical_json_sha256(company_manifest)},
+                         "membership": {"canonical_json_sha256": canonical_json_sha256(membership)},
+                         "crosswalk": {"canonical_json_sha256": canonical_json_sha256(crosswalk)},
+                         "production_generation": binding,
+                         "company_identity_reads": {"canonical_json_sha256": canonical_json_sha256(company_identity_reads)},
+                         "local_membership_reads": {"canonical_json_sha256": canonical_json_sha256(local_membership_reads)},
+                         "builder": PRODUCTION_BUILDER},
+              "files": {}, "status": "empty" if not exposures else "partial" if warnings else "ready", "warnings": warnings}
+    generation_id = derive_generation_id(exposures, result)
+    result["generation_id"] = generation_id
+    for ticker, item in exposures.items():
+        item["generation_id"] = generation_id
+        _validate_production_exposure(item, receipt, contexts[ticker])
+    validate_production_manifest(result, generation_read_receipt=receipt, publication_plan=publication_plan,
+                                 exposures=exposures)
+    return exposures, result

@@ -3234,7 +3234,12 @@ def _compose_thematic_state(root: "Path | str | None" = None) -> dict:
     state_path = repo / "data" / "neuralweb" / "theme_state.json"
     thesis_path = repo / "site" / "neuralwebdata" / "theme_thesis.json"
 
-    _null: dict = {"available": False, "display_only": True}
+    _null: dict = {"available": False, "display_only": True, "is_context_only": True}
+
+    from .theme_state_generation_reader import legacy_consumer_barrier
+    barrier = legacy_consumer_barrier(repo)
+    if barrier is not None:
+        return barrier
 
     if not state_path.exists():
         log.info("thematic_state: artifact absent (%s) — null block", state_path)
@@ -3309,7 +3314,7 @@ def _compose_thematic_state(root: "Path | str | None" = None) -> dict:
                     "stage": _clean(stage_key),
                 })
 
-        return {
+        return legacy_consumer_barrier(repo) or {
             "available": True,
             "as_of": _clean(raw_state.get("as_of")),
             "n_themes": _clean(raw_state.get("n_themes") or len(themes)),
@@ -4500,7 +4505,10 @@ def build_world_state(
         thematic_state_block.get("as_of")
         if thematic_state_block.get("available") else None
     )
-    if not _theme_state_path.exists():
+    if thematic_state_block.get("generation_status"):
+        gaps.append("thematic_state: " + ", ".join(
+            thematic_state_block.get("reason_codes", ["CURRENT_USE_AUTHORITY_UNAVAILABLE"])))
+    elif not _theme_state_path.exists():
         gaps.append(
             "data/neuralweb/theme_state.json: absent "
             "(run scripts/build_thematic_state.py to populate)"
