@@ -2974,6 +2974,290 @@ def test_a_session_that_never_moved_head_may_still_stop(monkeypatch, tmp_path, c
     assert capsys.readouterr().out.strip() == ""
 
 
+def _main_sync_session(tmp_path: Path) -> tuple[Path, Path, Path]:
+    """A session whose checkout IS `main` — the shape of the designated local root.
+
+    Repository law makes that root a checkout of `main` and requires
+    `git fetch origin && git merge --ff-only origin/main` at session start. A real
+    bare origin stands behind it, and a second clone (`other`) plays the rest of
+    the fleet landing work there. Returns (repo, state_path, other).
+    """
+    repo = _repo(tmp_path)
+    bare = tmp_path / "origin.git"
+    subprocess.run(
+        ("git", "init", "--bare", "-b", "main", str(bare)), check=True, capture_output=True
+    )
+    _git(repo, "remote", "add", "origin", str(bare))
+    _git(repo, "push", "origin", "main")
+    _git(repo, "fetch", "origin")
+    other = tmp_path / "other"
+    _git(tmp_path, "clone", str(bare), str(other))
+    _git(other, "config", "user.name", "Fleet")
+    _git(other, "config", "user.email", "fleet@example.com")
+    state_path = tmp_path / "state.json"
+    GUARD._save(state_path, {
+        "root": str(repo),
+        "start_head": _git(repo, "rev-parse", "HEAD"),
+        "baseline": GUARD._fingerprint(repo),
+        "last_blocker": "",
+        "blocker_count": 0,
+    })
+    return repo, state_path, other
+
+
+def _land_elsewhere(other: Path, rel: str) -> str:
+    """Another session's work reaching origin/main — what a sync then follows."""
+    _git(other, "pull", "--no-rebase", "--ff-only", "origin", "main")
+    sha = _commit(other, rel, f"{rel}\n", f"other: {rel}")
+    _git(other, "push", "origin", "main")
+    return sha
+
+
+def _sync_main(repo: Path) -> None:
+    """The session-start sync the workspace law mandates on the local root."""
+    _git(repo, "fetch", "origin")
+    _git(repo, "merge", "--ff-only", "origin/main")
+
+
+def _reflog_window(repo: Path, start_head: str) -> list[str]:
+    """HEAD-reflog subjects strictly newer than start_head's OLDEST entry, newest first."""
+    lines = subprocess.run(
+        ("git", "reflog", "show", "--format=%H%x09%gs", "HEAD"),
+        cwd=repo, text=True, capture_output=True, check=True,
+    ).stdout.splitlines()
+    entries = [line.partition("\t") for line in lines]
+    starts = [index for index, (sha, _t, _s) in enumerate(entries) if sha == start_head]
+    assert starts, "precondition: start_head is in the reflog"
+    return [subject for _sha, _t, subject in entries[: starts[-1]]]
+
+
+def _rewrite_start(state_path: Path, repo: Path, start_head: str) -> None:
+    state = GUARD._load(state_path)
+    state["start_head"] = start_head
+    state["baseline"] = GUARD._fingerprint(repo)
+    GUARD._save(state_path, state)
+
+
+def _refuse_github(monkeypatch) -> None:
+    for name in ("_github_slug", "_latest_merged_pr", "_open_pull", "_check_ci"):
+        monkeypatch.setattr(
+            GUARD, name, lambda *_a, _n=name: pytest.fail(f"a sync-only main asked GitHub ({_n})")
+        )
+
+
+def test_a_main_checkout_moved_only_by_fast_forward_syncs_may_stop(monkeypatch, tmp_path, capsys):
+    """T1 — the measured false positive, reproduced and cleared.
+
+    Seat session 0e657eec (2026-10-06) sat on the designated local root, which is
+    `main`, and ran the mandated `merge --ff-only origin/main` twice. HEAD moved
+    off start_head with zero session commits, the no-op exemption stopped
+    matching, and the branch gate filed `unsafe_branch` 31 times. Its reflog
+    window was exactly two fast-forward entries — the shape built here. Nothing
+    shipped, so GitHub must not even be consulted.
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    _land_elsewhere(other, "first.txt")
+    _sync_main(repo)
+    _land_elsewhere(other, "second.txt")
+    _sync_main(repo)
+
+    assert _git(repo, "rev-parse", "HEAD") != start_head
+    assert _reflog_window(repo, start_head) == ["merge origin/main: Fast-forward"] * 2
+    _refuse_github(monkeypatch)
+
+    GUARD._stop(repo, state_path, {"hook_event_name": "Stop"})
+
+    assert capsys.readouterr().out.strip() == ""
+    state = GUARD._load(state_path)
+    assert state["last_blocker"] == ""
+    assert state["blocker_count"] == 0
+
+
+def test_a_main_commit_pushed_to_origin_still_blocks_after_syncs(monkeypatch, tmp_path, capsys):
+    """T2 — authorship survives a sync on either side of it.
+
+    The session syncs, commits on main, pushes straight to origin/main, and syncs
+    again after the fleet lands more work, so HEAD is origin's tip with a zero
+    ahead-count: POSITION says exempt. The `commit:` entry in the reflog window is
+    the only thing that says otherwise, and it must — work pushed to main really
+    shipped, so exempting it would skip the render and live gates (fail-open).
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    _land_elsewhere(other, "first.txt")
+    _sync_main(repo)
+    _commit(repo, "hotfix.txt", "straight to main\n", "fix: pushed without a PR")
+    _git(repo, "push", "origin", "main")
+    _land_elsewhere(other, "later.txt")
+    _sync_main(repo)
+
+    head = _git(repo, "rev-parse", "HEAD")
+    assert head == _git(repo, "rev-parse", "origin/main")
+    assert GUARD._fast_forwarded_onto_main(repo), "precondition: position alone would exempt"
+    assert "commit: fix: pushed without a PR" in _reflog_window(repo, start_head)
+    assert GUARD._head_moved_only_by_sync(repo, start_head, head) is False
+
+    verdict = _stop_verdict(monkeypatch, capsys, repo, state_path, merged_pr=None)
+    assert verdict == "unsafe_branch"
+
+
+def test_a_main_checkout_moved_only_by_a_reset_to_origin_main_may_stop(
+    monkeypatch, tmp_path, capsys
+):
+    """T3 — `git reset --hard origin/main` is a sync too, and is exempt."""
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    _land_elsewhere(other, "fix.txt")
+    _git(repo, "fetch", "origin")
+    _git(repo, "reset", "--hard", "origin/main")
+
+    assert _reflog_window(repo, start_head) == ["reset: moving to origin/main"]
+    _refuse_github(monkeypatch)
+
+    GUARD._stop(repo, state_path, {"hook_event_name": "Stop"})
+
+    assert capsys.readouterr().out.strip() == ""
+
+
+@pytest.mark.parametrize("absence", ("never_held", "fabricated", "expired"))
+def test_a_start_head_missing_from_the_reflog_fails_closed(
+    monkeypatch, tmp_path, capsys, absence
+):
+    """T4 — no start_head entry, no proof, the old block.
+
+    Three ways the entry goes missing: a real origin/main ancestor HEAD jumped
+    over and so never logged (`never_held`), a sha that names nothing
+    (`fabricated`), and reflog expiry pruning the entry under a real start_head
+    (`expired`). In every case the window's own entries are pure syncs and
+    POSITION would exempt — so the decline below is the missing anchor alone.
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    skipped = _land_elsewhere(other, "skipped.txt")
+    _land_elsewhere(other, "landed.txt")
+    if absence == "expired":
+        _git(repo, "reflog", "expire", "--expire=now", "--expire-unreachable=now", "--all")
+    _sync_main(repo)
+    if absence == "never_held":
+        start_head = skipped
+    elif absence == "fabricated":
+        start_head = "1" * 40
+    _rewrite_start(state_path, repo, start_head)
+
+    head = _git(repo, "rev-parse", "HEAD")
+    reflog = _git(repo, "reflog", "show", "--format=%H", "HEAD").splitlines()
+    assert start_head not in reflog, "precondition: start_head has no reflog entry"
+    assert reflog[0] == head
+    assert GUARD._fast_forwarded_onto_main(repo), "precondition: position alone would exempt"
+    assert GUARD._head_moved_only_by_sync(repo, start_head, head) is False
+
+    verdict = _stop_verdict(monkeypatch, capsys, repo, state_path, merged_pr=None)
+    assert verdict == "unsafe_branch"
+
+
+def test_a_sol_branch_fast_forwarded_onto_main_still_blocks(monkeypatch, tmp_path, capsys):
+    """T5 — the exemption is `main` exactly; a sol/* sync is still unsafe_branch.
+
+    The session starts on sol/x (state recorded after the checkout, so the window
+    holds only the sync) and fast-forwards onto origin/main. Both the position
+    and the reflog tests WOULD exempt it — asserted below — so the block is the
+    branch name alone. Sol authority branches are the hold wrapper's to judge.
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    _git(repo, "checkout", "-b", "sol/x")
+    _land_elsewhere(other, "first.txt")
+    _sync_main(repo)
+    start_head = _git(repo, "rev-parse", "HEAD")
+    _rewrite_start(state_path, repo, start_head)
+    _land_elsewhere(other, "second.txt")
+    _sync_main(repo)
+
+    head = _git(repo, "rev-parse", "HEAD")
+    assert GUARD._fast_forwarded_onto_main(repo), "precondition: position alone would exempt"
+    assert GUARD._head_moved_only_by_sync(repo, start_head, head), (
+        "precondition: the reflog alone would exempt"
+    )
+
+    verdict = _stop_verdict(monkeypatch, capsys, repo, state_path, merged_pr=None)
+    assert verdict == "unsafe_branch"
+
+
+def test_a_detached_head_at_the_origin_main_tip_still_blocks(monkeypatch, tmp_path, capsys):
+    """T6 — a detached HEAD is not `main`, wherever it points (unchanged)."""
+    repo, state_path, other = _main_sync_session(tmp_path)
+    _land_elsewhere(other, "fix.txt")
+    _git(repo, "fetch", "origin")
+    _git(repo, "checkout", "--detach", "origin/main")
+
+    assert _git(repo, "branch", "--show-current") == ""
+    assert GUARD._fast_forwarded_onto_main(repo), "precondition: position alone would exempt"
+
+    GUARD._stop(repo, state_path, {"hook_event_name": "Stop"})
+
+    emitted = json.loads(capsys.readouterr().out.strip())
+    assert "SHIP LOOP unsafe_branch" in emitted["reason"]
+    assert "detached HEAD" in emitted["reason"]
+
+
+def _sync_by_ff_merge(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _sync_main(repo)
+
+
+def _sync_by_ff_pull(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "pull", "--no-rebase", "--ff-only", "origin", "main")
+
+
+def _sync_by_reset(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "fetch", "origin")
+    _git(repo, "reset", "--hard", "origin/main")
+
+
+def _author_and_push(repo: Path, other: Path) -> None:
+    _commit(repo, "mine.txt", "session work\n", "feat: authored on main")
+    _git(repo, "push", "origin", "main")
+
+
+def _merge_without_fast_forward(repo: Path, other: Path) -> None:
+    _land_elsewhere(other, "landed.txt")
+    _git(repo, "fetch", "origin")
+    _git(repo, "merge", "--no-ff", "--no-edit", "origin/main")
+    _git(repo, "push", "origin", "main")
+
+
+@pytest.mark.parametrize(
+    ("move", "subject", "exempt"),
+    (
+        (_sync_by_ff_merge, r"merge origin/main: Fast-forward", True),
+        (_sync_by_ff_pull, r"pull --no-rebase --ff-only origin main: Fast-forward", True),
+        (_sync_by_reset, r"reset: moving to origin/main", True),
+        (_author_and_push, r"commit: feat: authored on main", False),
+        (_merge_without_fast_forward, r"merge origin/main: Merge made by the '\w+' strategy\.", False),
+    ),
+    ids=("ff-merge", "ff-pull", "reset-origin-main", "commit", "non-ff-merge"),
+)
+def test_head_moved_only_by_sync_accepts_exactly_the_sync_subjects(tmp_path, move, subject, exempt):
+    """The sync-only subject set, pinned against git's OWN reflog wording.
+
+    Every case ends with HEAD an ancestor of origin/main (the authored ones push
+    first), so the ancestry clause is satisfied throughout and the verdict is the
+    reflog SUBJECT alone: fast-forward merge, fast-forward pull and a reset to
+    origin/main are syncs; a commit and a non-fast-forward merge are authorship.
+    """
+    repo, state_path, other = _main_sync_session(tmp_path)
+    start_head = GUARD._load(state_path)["start_head"]
+    move(repo, other)
+    head = _git(repo, "rev-parse", "HEAD")
+
+    window = _reflog_window(repo, start_head)
+    assert len(window) == 1 and re.fullmatch(subject, window[0]), window
+    _git(repo, "merge-base", "--is-ancestor", head, "origin/main")
+    assert GUARD._head_moved_only_by_sync(repo, start_head, head) is exempt
+
+
 def _pushed_session_repo(tmp_path: Path) -> tuple[Path, Path]:
     """A session that committed and PUSHED its branch, with a real origin.
 
