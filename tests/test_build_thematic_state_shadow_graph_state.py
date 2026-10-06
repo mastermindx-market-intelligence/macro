@@ -4,6 +4,7 @@ from __future__ import annotations
 import ast
 import datetime as dt
 import json
+import sys
 from datetime import timezone
 from pathlib import Path
 
@@ -67,7 +68,7 @@ def test_t2_legacy_bytes_unchanged_when_shadow_skipped(production_world, monkeyp
 
     root_full = production_world.parent / "t2-full"
     shutil.copytree(production_world, root_full)
-    monkeypatch.setattr(builder, "_compose_shadow_graph_state", lambda *a, **kw: None)
+    monkeypatch.setattr(builder, "_write_shadow_graph_state", lambda *a, **kw: False)
     monkeypatch.setattr(builder, "compose", lambda **kw: artifact())
     rc_skip = builder.build(production_world, mode="LEGACY", generated_at=EMITTED)
     primary_skip = (production_world / PRIMARY).read_bytes()
@@ -79,19 +80,92 @@ def test_t2_legacy_bytes_unchanged_when_shadow_skipped(production_world, monkeyp
     assert (root_full / MIRROR).read_bytes() == mirror_skip
 
 
-def test_t3_capture_failure_no_shadow_warning(production_world, monkeypatch, capsys):
+@pytest.mark.parametrize("case", ["injected", "both_null", "capture_unavailable"])
+def test_t3_single_fail_open_harness(production_world, monkeypatch, capsys, case):
     from engine.neuralweb import theme_state_adapter as adapter
     from lib import config
 
-    monkeypatch.setattr(config, "data_dir", lambda: production_world.parent / "else" / "data")
+    nodes_path = production_world / "data/theme_graph/nodes.parquet"
+    if case == "both_null":
+        nodes = pd.read_parquet(nodes_path)
+        nodes.loc[nodes["node_id"] == "ltheme:finviz:power_grid", "name_en"] = float("nan")
+        nodes.loc[nodes["node_id"] == "ltheme:finviz:power_grid", "name_zh"] = float("nan")
+        nodes.to_parquet(nodes_path, index=False)
+
+    primary_path = production_world / PRIMARY
+    mirror_path = production_world / MIRROR
+    real_capture = adapter.capture_owner_bundle
+    capture_calls = []
+
+    def capture_spy(root, **kwargs):
+        assert primary_path.is_file()
+        assert mirror_path.is_file()
+        capture_calls.append((primary_path.read_bytes(), mirror_path.read_bytes()))
+        if case == "injected":
+            raise RuntimeError("injected\nsecond line")
+        return real_capture(root, **kwargs)
+
+    if case == "capture_unavailable":
+        monkeypatch.setattr(config, "data_dir", lambda: production_world.parent / "else" / "data")
+    monkeypatch.setattr(builder, "compose", lambda **kw: artifact())
+    monkeypatch.setattr(builder, "run_optional_stages", lambda root: None)
+    monkeypatch.setattr(adapter, "capture_owner_bundle", capture_spy)
+    monkeypatch.setattr(sys, "argv", ["build_thematic_state.py", "--root", str(production_world)])
+
+    with pytest.raises(SystemExit) as caught:
+        builder.main()
+    out = capsys.readouterr().out
+    lines = out.splitlines()
+    warnings = [line for line in lines if line.startswith("::warning title=gmi-shadow-graph-state::")]
+    timing_lines = [line for line in lines if line.startswith("[thematic_state] shadow_graph_state timing ")]
+
+    assert caught.value.code == 0
+    assert len(capture_calls) == 1
+    assert primary_path.read_bytes() == capture_calls[0][0]
+    assert mirror_path.read_bytes() == capture_calls[0][1]
+    assert not (production_world / SHADOW).exists()
+    assert "shadow_graph_state=skipped" in out
+    assert len(warnings) == 1
+    assert all("second line" not in line for line in lines)
+    assert len(timing_lines) == 1
+
+    if case == "injected":
+        assert warnings[0].startswith("::warning title=gmi-shadow-graph-state::RuntimeError: injected")
+        assert timing_lines[0].endswith("capture_s=na compose_s=na serialize_s=na bytes=na")
+    elif case == "both_null":
+        assert warnings[0].startswith("::warning title=gmi-shadow-graph-state::ValueError:")
+        assert "ltheme:finviz:power_grid" in warnings[0]
+        assert "capture_s=" in timing_lines[0]
+        assert "compose_s=na" in timing_lines[0]
+    else:
+        assert len(warnings) == 1
+
+    if case == "capture_unavailable":
+        assert "SOURCE_MISSING" in warnings[0] or "configured owner data root" in warnings[0]
+
+
+def test_t14_timing_line_shape_and_order(production_world, monkeypatch, capsys):
+    import re
+
     monkeypatch.setattr(builder, "compose", lambda **kw: artifact())
     rc = builder.build(production_world, mode="LEGACY", generated_at=EMITTED)
+    out = capsys.readouterr().out
+    lines = out.splitlines()
+    timing_lines = [line for line in lines if line.startswith("[thematic_state] shadow_graph_state timing ")]
+    legacy_lines = [line for line in lines if line.startswith("[thematic_state] legacy accepted;")]
+
     assert rc == 0
-    assert not (production_world / SHADOW).exists()
-    assert (production_world / PRIMARY).is_file()
-    warnings = [line for line in capsys.readouterr().out.splitlines()
-                if line.startswith("::warning title=gmi-shadow-graph-state::")]
-    assert len(warnings) == 1
+    assert len(timing_lines) == 1
+    assert len(legacy_lines) == 1
+    assert lines.index(legacy_lines[0]) < lines.index(timing_lines[0])
+    assert re.fullmatch(
+        r"\[thematic_state\] shadow_graph_state timing capture_s=\d+\.\d{3} "
+        r"compose_s=\d+\.\d{3} serialize_s=\d+\.\d{3} bytes=\d+",
+        timing_lines[0],
+    )
+    shadow_path = production_world / SHADOW
+    assert int(timing_lines[0].rsplit("bytes=", 1)[1]) == shadow_path.stat().st_size
+    assert not any(line.startswith("::warning title=gmi-shadow-graph-state::") for line in lines)
 
 
 def test_t4_validation_failure_no_shadow(production_world, monkeypatch):
@@ -111,15 +185,18 @@ def test_t4_validation_failure_no_shadow(production_world, monkeypatch):
     assert not (production_world / SHADOW).exists()
 
 
-def test_t5_prior_shadow_preserved_on_failure(production_world, monkeypatch):
+def test_t5_prior_shadow_preserved_on_failure(production_world, monkeypatch, capsys):
     prior = b'{"schema":"theme_state/v1","prior":"fixture"}\n'
     shadow_path = production_world / SHADOW
     shadow_path.parent.mkdir(parents=True, exist_ok=True)
     shadow_path.write_bytes(prior)
-    monkeypatch.setattr(builder, "_compose_shadow_graph_state", lambda *a, **kw: None)
-    rc = _legacy_build(production_world, monkeypatch)
+    monkeypatch.setattr(builder, "_write_shadow_graph_state", lambda *a, **kw: False)
+    monkeypatch.setattr(builder, "compose", lambda **kw: artifact())
+    rc = builder.build(production_world, mode="LEGACY", generated_at=EMITTED)
+    out = capsys.readouterr().out
     assert rc == 0
     assert shadow_path.read_bytes() == prior
+    assert "shadow_graph_state=skipped" in out
 
 
 def test_t6a_accepted_generation_refuses_shadow(production_world, monkeypatch):
@@ -181,8 +258,21 @@ def test_t9_source_shape():
     assert text.count("write_atomic(root, _SHADOW_GRAPH_STATE_PATH") == 1
     expected_path = "data/theme_graph/" + selection_cohort_reads.STATE_ARTIFACT_NAME
     assert builder._SHADOW_GRAPH_STATE_PATH == expected_path
-
     tree = ast.parse(text)
+    warning_calls = [
+        node for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and getattr(node.func, "id", None) == "print"
+        and node.args
+        and isinstance(node.args[0], ast.JoinedStr)
+        and any(
+            isinstance(value, ast.Constant)
+            and "::warning title=gmi-shadow-graph-state::" in value.value
+            for value in node.args[0].values
+        )
+        and any(keyword.arg == "flush" for keyword in node.keywords)
+    ]
+    assert len(warning_calls) == 1
     allowed = {
         "argparse", "json", "logging", "sys", "tempfile", "time", "pathlib",
         "datetime", "importlib",
@@ -268,11 +358,14 @@ def test_t10_production_clock_path_writes_shadow(production_world, monkeypatch, 
     assert "shadow_graph_state=written" in out
 
 
-def test_t11_native_null_labels_write_shadow(production_world, monkeypatch, capsys):
+def test_t11_bilingual_label_fallback_writes_shadow(production_world, monkeypatch, capsys):
+    both_node_id = "theme:grid"
     nodes_path = production_world / "data/theme_graph/nodes.parquet"
     nodes = pd.read_parquet(nodes_path)
+    native_pair = ("Grid", "电网")
     nodes.loc[nodes["node_id"] == "ltheme:finviz:power_grid", "name_zh"] = float("nan")
     nodes.loc[nodes["node_id"] == "ltheme:ths:900001", "name_en"] = pd.NA
+    nodes.loc[nodes["node_id"] == "ltheme:finviz:power_grid", "name_en"] = "Power Grid"
     nodes.to_parquet(nodes_path, index=False)
 
     monkeypatch.setattr(builder, "compose", lambda **kw: artifact())
@@ -285,21 +378,79 @@ def test_t11_native_null_labels_write_shadow(production_world, monkeypatch, caps
     loaded = json.loads(shadow_path.read_bytes())
     theme_state.validate_state(loaded)
     assert "shadow_graph_state=written" in out
+    assert len(loaded["subjects"]) == len(nodes)
 
     subjects = {subject["node_id"]: subject for subject in loaded["subjects"]}
-    assert subjects["ltheme:finviz:power_grid"]["name_zh"] is None
-    assert subjects["ltheme:finviz:power_grid"]["name_en"] == "ltheme:finviz:power_grid"
-    assert subjects["ltheme:ths:900001"]["name_en"] is None
+    assert subjects["ltheme:finviz:power_grid"]["name_en"] == "Power Grid"
+    assert subjects["ltheme:finviz:power_grid"]["name_zh"] == "Power Grid"
+    assert subjects["ltheme:ths:900001"]["name_en"] == "测试"
     assert subjects["ltheme:ths:900001"]["name_zh"] == "测试"
+    assert (subjects[both_node_id]["name_en"], subjects[both_node_id]["name_zh"]) == native_pair
 
 
-def test_t12_captured_label_contract():
-    from engine.neuralweb.theme_state_adapter import _captured_label
+def test_t12_assembled_labels_contract():
+    from engine.neuralweb.theme_state_adapter import _assembled_labels
 
-    assert _captured_label(None) is None
-    assert _captured_label("x") == "x"
-    assert _captured_label({"native_null": "NaN"}) is None
-    assert _captured_label({"native_null": "NaTType"}) is None
-    for value in (1.5, {"native_null": "NaN", "x": 1}, ["a"]):
-        with pytest.raises(ValueError):
-            _captured_label(value)
+    assert _assembled_labels("node", "x", "y") == ("x", "y")
+    assert _assembled_labels("node", "  x ", "y") == ("  x ", "y")
+    assert _assembled_labels("node", None, "y") == ("y", "y")
+    assert _assembled_labels("node", "x", None) == ("x", "x")
+    assert _assembled_labels("node", {"native_null": "NaN"}, "y") == ("y", "y")
+    assert _assembled_labels("node", {"native_null": "NaTType"}, "y") == ("y", "y")
+    assert _assembled_labels("node", "", "y") == ("y", "y")
+    assert _assembled_labels("node", "x", "   ") == ("x", "x")
+    for raw_en, raw_zh in ((None, None), ("", {"native_null": "NaN"}), ("  ", "\t")):
+        with pytest.raises(ValueError, match="theme subject node:"):
+            _assembled_labels("node", raw_en, raw_zh)
+    for raw_en, raw_zh in ((1.5, "y"), ({"native_null": "NaN", "x": 1}, "y"), (["a"], "y")):
+        with pytest.raises(ValueError, match="invalid captured subject label"):
+            _assembled_labels("node", raw_en, raw_zh)
+
+
+def _wall_clock_masked(payload_json):
+    import re
+
+    payload_json = re.sub(r'"observed_at":"[^"]*"', '"observed_at":""', payload_json)
+    return re.sub(r'"computed_at":"[0-9T:Z-]*"', '"computed_at":""', payload_json)
+
+
+def test_t15_capture_memo_reads_each_owner_frame_once_bundle_unchanged(production_world, monkeypatch):
+    """RULING_G1_render_cost r4: one owner read per frame per capture; bundle bytes unchanged."""
+    from engine.neuralweb import theme_state_adapter as adapter
+    from engine.theme_graph import ontology
+    from tests.test_theme_state_production import EFFECTIVE
+
+    calls = []
+    incumbent = ontology.RepositoryStore
+
+    class Counting(incumbent):
+        def read_nodes(self):
+            calls.append("read_nodes")
+            return super().read_nodes()
+
+        def read_node_lifecycle(self):
+            calls.append("read_node_lifecycle")
+            return super().read_node_lifecycle()
+
+        def read_edges(self):
+            calls.append("read_edges")
+            return super().read_edges()
+
+        def read_proposals(self):
+            calls.append("read_proposals")
+            return super().read_proposals()
+
+    monkeypatch.setattr(ontology, "RepositoryStore", Counting)
+    memo = adapter.capture_owner_bundle(production_world, effective_at=EFFECTIVE, known_at=KNOWN)
+    memo_calls, calls[:] = list(calls), []
+    monkeypatch.setattr(adapter, "_CaptureStoreView", lambda inner: inner)
+    direct = adapter.capture_owner_bundle(production_world, effective_at=EFFECTIVE, known_at=KNOWN)
+
+    subjects = json.loads(direct.payload_json)["subjects"]
+    assert len(subjects) >= 2
+    assert all(s["native_reads"]["ontology"]["availability"] == "AVAILABLE" for s in subjects.values())
+    # The adapter's own node census read stays; compose's four frames are read once.
+    assert {name: memo_calls.count(name) for name in set(memo_calls)} == {
+        "read_nodes": 2, "read_node_lifecycle": 1, "read_edges": 1, "read_proposals": 1}
+    assert calls.count("read_edges") == len(subjects)
+    assert _wall_clock_masked(memo.payload_json) == _wall_clock_masked(direct.payload_json)
