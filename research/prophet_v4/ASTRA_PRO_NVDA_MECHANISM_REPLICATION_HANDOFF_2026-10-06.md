@@ -25,12 +25,15 @@ Your job is to determine how much of the NVDA success is a reproducible mechanis
 
 The Chairman added four material hypotheses after the first census. Treat these as **research priors to adjudicate**, not conclusions to assume:
 
-1. **July confluence-era intelligence maturity may be materially lower than v3.** Repository history shows major intelligence substrate was still being built during July:
+1. **July confluence-era intelligence maturity may be materially lower than v3, and the Prophet product itself had not yet reached the later US architecture.** Repository history shows:
    - 2026-07-07: stock flow-to-price / 13F + short-flow work (#1833);
    - 2026-07-10: verified smart-money roster/backfill (#2191) and Ownership Intelligence Desk (#2192);
    - 2026-07-10: narrative-flare witness engine (#2147);
-   - 2026-07-30: Intelligence Desk V2 (#4006).
-   Therefore an unchanged `T2 + news_burst` cross-era comparison may mix **feature semantics / coverage / maturity drift** with true predictive drift.
+   - 2026-07-30: Intelligence Desk V2 (#4006);
+   - 2026-08-02: `us_prophet_v1` priority engine + unified US pick surface (#4331);
+   - 2026-08-09: Prophet US ANTICIPATION program / patience-first architecture (#4972/#4976);
+   - 2026-08-15: C1 evidence-family fusion becomes canonical `us_prophet_v3` (#5753).
+   Therefore July's `confluence` era is **not an old sample of the same v3 product**. An unchanged `T2 + news_burst` comparison can mix product-definition drift, candidate-population drift, feature semantics / coverage / maturity drift, and true predictive drift.
 
 2. **June–July 2026 was a materially different semiconductor/AI-hardware regime.** Do not call it a broad-market crash without evidence. External and internal market data should adjudicate whether the correct label is semiconductor correction, AI-capex/growth scare, rate-pressure rotation, value-over-growth rotation, or some combination. The observed July selloff in semiconductors/memory makes regime comparability a first-class question.
 
@@ -251,6 +254,8 @@ Build an era-by-era matrix for every evidence leg used in the comparison:
 - whether the feature was actually consumed by Prophet at that time.
 
 At minimum audit `news_burst`, attention, smart-money/13F, SUE/catalyst, analyst revisions, options/flow, theme evidence and the candidate universe.
+
+Also produce a **Prophet-definition timeline** from July `confluence` -> `us_prophet_v1` -> ANTICIPATION -> `us_prophet_v3`, naming which population, gate, rank, and evidence semantics changed at each break.
 
 Explicitly determine whether July has a **measurement-comparability failure**. If a v3 feature did not exist, was sparse, had different semantics, or had materially weaker source coverage, the cross-era outcome is “not comparable on this dimension,” not “the mechanism failed.”
 
