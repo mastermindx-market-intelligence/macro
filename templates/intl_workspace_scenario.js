@@ -62,6 +62,55 @@
     };
   }
 
+  // Every finite binary64 number is an integer multiple of 2^-1074.
+  // Exact integer evaluation avoids cancellation at either loss boundary and
+  // overflow of intermediates whose final percentage is still representable.
+  var BINARY_SCALE = 1n << 1074n;
+  var HUNDRED_SCALED = 100n * BINARY_SCALE;
+  var RESULT_DENOMINATOR = 100n * BINARY_SCALE * BINARY_SCALE;
+
+  function binaryUnits(value) {
+    var bits = new DataView(new ArrayBuffer(8));
+    bits.setFloat64(0, value);
+    var hi = bits.getUint32(0);
+    var lo = bits.getUint32(4);
+    var exponent = (hi >>> 20) & 2047;
+    var mantissa = (BigInt(hi & 1048575) << 32n) | BigInt(lo);
+    if (exponent !== 0) {
+      mantissa = ((1n << 52n) | mantissa) << BigInt(exponent - 1);
+    }
+    return hi >>> 31 ? -mantissa : mantissa;
+  }
+
+  // Round the exact rational once to nearest binary64, ties to even. This is
+  // representation rounding, not decimal/display rounding. Integers are bounded
+  // by the binary64 input format (under 4,210 bits), independent of input text.
+  function percentageNumber(numerator) {
+    if (numerator === 0n) return 0;
+    var negative = numerator < 0n;
+    var n = negative ? -numerator : numerator;
+    var d = RESULT_DENOMINATOR;
+    var exponent = n.toString(2).length - d.toString(2).length;
+    if (exponent >= 0 ? n < (d << BigInt(exponent)) :
+        (n << BigInt(-exponent)) < d) {
+      exponent -= 1;
+    }
+    if (exponent > 1023) return negative ? -Infinity : Infinity;
+    var shift = exponent < -1022 ? 1074 : 52 - exponent;
+    if (shift >= 0) n <<= BigInt(shift);
+    else d <<= BigInt(-shift);
+    var significand = n / d;
+    var remainder = n % d;
+    var twiceRemainder = remainder * 2n;
+    if (twiceRemainder > d ||
+        (twiceRemainder === d && (significand & 1n) !== 0n)) {
+      significand += 1n;
+    }
+    var value = Number(significand) *
+      (exponent < -1022 ? Number.MIN_VALUE : Math.pow(2, exponent - 52));
+    return negative ? -value : value;
+  }
+
   function calculateScenario(localPercent, fxPercent) {
     if (!isFiniteNumber(localPercent) || !isFiniteNumber(fxPercent)) {
       return invalidScenario("non_finite_input");
@@ -73,10 +122,12 @@
       return invalidScenario("fx_nonpositive_endpoint");
     }
 
-    var local = localPercent / 100;
-    var fx = fxPercent / 100;
-    var usdPercent = 100 * ((1 + local) * (1 + fx) - 1);
-    var fxContributionPp = 100 * (1 + local) * fx;
+    var local = binaryUnits(localPercent);
+    var fx = binaryUnits(fxPercent);
+    var localEndpoint = HUNDRED_SCALED + local;
+    var usdPercent = percentageNumber(localEndpoint * (HUNDRED_SCALED + fx) -
+      HUNDRED_SCALED * HUNDRED_SCALED);
+    var fxContributionPp = percentageNumber(localEndpoint * fx);
     if (!isFiniteNumber(usdPercent) || !isFiniteNumber(fxContributionPp)) {
       return invalidScenario("overflow");
     }

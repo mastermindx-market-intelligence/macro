@@ -71,6 +71,43 @@
         "verification/verify_packet.py": "0a993d198435a005934b7fd33e56f459445d790c06fee8c917fbfb2391415b9f",
         "INTEGRITY.json": "a39b60e37ec6dc8faccefe1be3d70406f9d5e214c240637b5b4b2f01fad14f61"
       }
+    },
+    "inputs/wave3.zip": {
+      "sha256": "6442237dcdf11f224af08c4bdf5f2e01a75206065e75c49694348008e740a1a9",
+      "original_filename": "Mastermind_Paper_Census_Build_Handoffs_Wave_3.zip",
+      "files": {
+        "BUILD_MANIFEST.json": "067b9db29d91a9ce38ce6598d2f50c6f05ffe6a40fd166e51c77dda2f3b34263",
+        "CONTINUATION.md": "12ec8c86717ad3749eb8ffd07fa2ccd9d39ddcec77a97c412e2b362dd40e2ca8",
+        "DESIGN_ACCESS.md": "51e9d24663041a0dd83d2e12039fb38317930c202469c4a2667f7e390b1f5e9a",
+        "INTEGRITY.json": "89dd6bc1f36c283a35cd5ce5e3427830d80d0ac0f15d70af96ff4814f8191d82",
+        "READINESS.md": "5679905e498101682d15a43e6628b8c41ac976eb4a131eb4b849ef823e8225b6",
+        "README.md": "65b394f50dc45544315a572c426a45f417ded53ffae7320f83e66a8c8c94b7a1",
+        "SHA256SUMS": "e29dcf72cba9c8e5865c087b12a4d6f135884335350c93231625eb599ad008ea",
+        "SOURCE_AUDIT_WAVE3.md": "dfc629436e4548bae14d86428db06f7c1965b6c0ee3e2e7924f86cfe6d15c8f9",
+        "census/CENSUS_WAVE3.md": "eeddc0acac4d3f4ccfd79a71793fb0a42b194a292ea64dba8360df628c2a6886",
+        "census/PAPER_REVIEW_MANIFEST.json": "4d229e447a6528d81214a0ab6689682c18c9d364ad7f74ab575afe515b14a60a",
+        "contracts/LIBRARY_AND_SAVED_CONTRACT.md": "e6150ee1391d0af41e54f93924ef45448aa60e152adf54eadecd3804cff552c3",
+        "contracts/TOOL_BINDINGS.json": "3d6d6923ccb968aecc983e19c3654c447f24be588828e774af086579fa0941e5",
+        "evidence/INPUT_LINEAGE.json": "a9e89a175fa6527857c984b180f465333fb96adc8d7596b3616b145b53df86bf",
+        "evidence/PARENT_LINEAGE.json": "a27d4c392d0d1ba6dd50318a42f165de48738593be8da002f598c21738dc1027",
+        "evidence/SOURCE_PROBES.json": "4156769299eb540135050fb630a9ab5a500c04f9d41c985ecc5a97648be5d497",
+        "handoffs/IM-07_LIBRARY_SEARCH.md": "410474da70503fd10adbaee40af875fa2706087a3889e7cd269ab16fdf7c1a99",
+        "handoffs/IM-08_INVESTIGATION_ADAPTER.md": "0085aa347483b9cb0a2dcb8a9f9732bd16642cec7f3ce55aa5db39f12461f1f2",
+        "handoffs/IM-09_SAVED_WORKSPACE.md": "1dda987c7712200162a98b7d3c793dae1fe7044fad671667757d8ab37a03f238",
+        "handoffs/IM-10_POLICY_COMPARISON.md": "02b1253aafd8c16af6a8ec8e8e6fe85bd4e93022d1c36e10df4713b8598375f1",
+        "index.html": "f4c77fb3833992146631565417adfdfef69c3d233245c447904098e037a49742",
+        "inputs/W1_FEATURE_PRESERVATION.csv": "c2f012d05779eca21b428c4ca97fe9dae48df8db54f3c5feb9cd0a6f67671a83",
+        "inputs/W1_IM-00_FOUNDATION.md": "e059e1e4a2352b744ff7176e9112bc9c7952433e002abe6554d686ccef7b1765",
+        "inputs/W1_INTERNATIONAL_VIEW_CONTRACT.md": "43dcac4b53e4701f42c893cf0ec8e39130c4c0e814ae8ec707abe685445fab7b",
+        "orchestration/ASTRA_WAVE3_ADDENDUM.md": "c6d862f97abe5265cef2aa7a2313081841ffd1cd200e6440921e5f71a86914ba",
+        "verification/VALIDATION_REPORT.md": "cb5971be1969229759307e8d05c120615142b4fe2a4e5d2258e29c30da1b293a",
+        "verification/contract_examples.py": "1e7cd1e8b500ecd24022f4e6ef2cb1223240265e9283aad42b7487883329a8f8",
+        "verification/example_green.txt": "6a0fa5d2890aad4636ec54d89b8ae0708f7071aebfebd5588d6e0aca4bd2cdb2",
+        "verification/example_red.txt": "b66a0ca0700afc7b9da4b4a8aaadbc775c8ee5b472f4ab253a68fb24b72af9ae",
+        "verification/packet_check.json": "2da6a6c235aea342d6418214c0148bdafe65e69f818757e81bcefe1ec73a3643",
+        "verification/test_contract_examples.py": "476f0ac292bcd1bf842a5b3bf7c27ee4b9a9d29b4fa7ef48b9026b0d2c03a0b9",
+        "verification/verify_packet.py": "fe2b73e14c6b1dd8381a9473d22662c76652a3961df6d09720f300e83c9644e4"
+      }
     }
   }
 }

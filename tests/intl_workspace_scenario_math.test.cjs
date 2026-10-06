@@ -287,9 +287,86 @@ describe("calculateScenario arithmetic", () => {
   });
 
   it("does not round inside the core formulas", () => {
-    const r = calculateScenario(5, -3);
+    // 5 / -3 is exactly 1.85: binary noise is not evidence of retained
+    // precision. Use an answer with actual digits beyond display precision.
+    const r = calculateScenario(-1.8, -0.8);
     assert.notEqual(r.usdPercent, Number(r.usdPercent.toFixed(2)));
-    closeToDecimal(r.usdPercent, "1.85");
+    closeToDecimal(r.usdPercent, "-2.5856");
+  });
+});
+
+describe("exact-input numerical stability", () => {
+  // References are Decimal.from_float on BOTH inputs, precision 1000;
+  // they are not decimal-string reinterpretations of binary64 inputs.
+  it("preserves the positive FX endpoint immediately above total loss", () => {
+    const r = calculateScenario(1e20, -99.99999999999999);
+    assert.equal(r.status, "valid");
+    closeToDecimal(r.usdPercent, "14110.8547152020037316333400667645037174224853515625");
+    closeToDecimal(r.fxContributionPp, "-99999999999999985789.1452847979962825775146484375");
+  });
+
+  it("preserves the local endpoint immediately above total loss", () => {
+    const r = calculateScenario(-99.99999999999999, 1e20);
+    assert.equal(r.status, "valid");
+    closeToDecimal(r.usdPercent, "14110.8547152020037316333400667645037174224853515625");
+    closeToDecimal(r.fxContributionPp, "14210.8547152020037174224853515625");
+  });
+
+  it("retains a small residual after large cancelling assumptions", () => {
+    const r = calculateScenario(1e10, -99.99999900000002);
+    assert.equal(r.status, "valid");
+    closeToDecimal(r.usdPercent, "-0.0000006735612174679773");
+    closeToDecimal(r.fxContributionPp, "-10000000000");
+  });
+
+  it("keeps tiny assumptions and subnormal results instead of cancelling them to zero", () => {
+    const tiny = calculateScenario(1e-20, 1e-20);
+    assert.equal(tiny.status, "valid");
+    assert.equal(tiny.usdPercent, 2e-20);
+    assert.equal(tiny.fxContributionPp, 1e-20);
+    const subnormal = calculateScenario(Number.MIN_VALUE, Number.MIN_VALUE);
+    assert.equal(subnormal.status, "valid");
+    assert.equal(subnormal.usdPercent, 2 * Number.MIN_VALUE);
+    assert.equal(subnormal.fxContributionPp, Number.MIN_VALUE);
+  });
+
+  it("rounds exact halfway results to the even binary significand", () => {
+    // At local=1, contribution=(101/100)*FX. These exact dyadic FX
+    // inputs put USD halfway between 50/51 and 151/152 ulps above 1.
+    assert.equal(calculateScenario(1, 25 * Math.pow(2, -51)).usdPercent,
+      1 + 50 * Number.EPSILON);
+    assert.equal(calculateScenario(1, 75 * Math.pow(2, -51)).usdPercent,
+      1 + 152 * Number.EPSILON);
+  });
+
+  it("evaluates finite results even when unscaled endpoint products overflow", () => {
+    assert.equal(Number.isFinite((100 + 1e308) * (100 - 50)), false);
+    const r = calculateScenario(1e308, -50);
+    assert.equal(r.status, "valid");
+    closeToDecimal(r.usdPercent, "5e307");
+    closeToDecimal(r.fxContributionPp, "-5e307");
+    const loss = calculateScenario(-100, Number.MAX_VALUE);
+    assert.equal(loss.status, "valid");
+    assert.equal(loss.usdPercent, -100);
+    assert.equal(loss.fxContributionPp, 0);
+  });
+
+  it("keeps rounded finite endpoints while withholding genuine overflow and all sensitivity rows", () => {
+    const finite = calculateScenario(Number.MAX_VALUE, Number.MIN_VALUE);
+    assert.equal(finite.status, "valid");
+    assert.equal(finite.usdPercent, Number.MAX_VALUE);
+    assertInvalidScenario(calculateScenario(Number.MAX_VALUE, 3), "overflow");
+    assert.deepEqual(sensitivityCases(Number.MAX_VALUE, Number.MIN_VALUE), []);
+    assert.deepEqual(sensitivityCases(1e200, 1e200), []);
+  });
+
+  it("uses the accurate boundary result in sensitivity without approximate deduplication", () => {
+    const rows = sensitivityCases(1e20, -99.99999999999999);
+    assert.equal(rows.length, 3);
+    assert.equal(rows[0].kind, "current");
+    closeToDecimal(rows[0].usdPercent, "14110.854715202004");
+    assert.equal(sensitivityCases(5, -0).length, 2);
+    assert.equal(sensitivityCases(5, 3.0000000000000004).length, 3);
   });
 });
 
