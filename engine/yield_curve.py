@@ -417,7 +417,11 @@ def slopes(f: pd.DataFrame) -> dict:
                            "inverted": False}
     if _col(f, "curve_tp_adj") is not None:
         tp = f["curve_tp_adj"]
-        out["tp_adj"] = {"label": _bil("TP-adjusted 2s10s", "期限溢价调整2-10年"),
+        out["tp_adj"] = {"label": _bil("Legacy TP10 curve heuristic", "旧版TP10曲线启发式"),
+                         "method_note": _bil(
+                             "2s10s plus the 10y term-premium model estimate; context only, not a matched-maturity expectations-only decomposition.",
+                             "2年/10年利差加10年期限溢价模型估计；仅作背景，并非期限匹配的纯预期分解。",
+                         ),
                          "value": round(_last(tp), 2) if _last(tp) is not None else None,
                          "pctile": _pctile(tp),
                          "chg_63d_bp": round(_chg(tp) * 100, 0) if _chg(tp) is not None else None,
@@ -534,7 +538,7 @@ def regime(f: pd.DataFrame) -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# 4) RECESSION dashboard — NTFS + NY-Fed probit + un-inversion + TP-adjusted
+# 4) RECESSION dashboard — NTFS + NY-Fed probit + un-inversion + legacy TP10 heuristic
 # --------------------------------------------------------------------------- #
 def recession(f: pd.DataFrame) -> dict:
     bcfg = config.load().get("bonds", {}).get("curve", {})
