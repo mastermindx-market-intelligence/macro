@@ -41,9 +41,14 @@ already delegated. Delegated authority never leaks outside its stated scope.
   second worker: route/reconcile through the canonical owner. A bounded worker may
   return BLOCKED to its parent; only a genuinely external final boundary may terminate
   the seat as `EXACT_HUMAN_GATE`, `PLATFORM_FAILURE`, or `EFFECT_UNKNOWN`.
-- `WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; do
-  not burn principal capacity polling`. A Stop-hook block during a wait is satisfied
-  by a one-line hold note, never by a fresh poll.
+- `WAITING EXTERNAL -> one asynchronous watcher/owner; immediately do useful parallel
+  principal work; do not burn principal capacity polling`. Pending CI/release freezes only
+  that PR lane. Never run `gh run watch` synchronously in the principal turn and never
+  re-read unchanged pending state to satisfy a Stop hook. Bind exactly one watcher to the
+  exact PR/head/run; its terminal green/merge, genuine red, conflict, or failure event is
+  what returns the owner to that lane. If independent authorized work remains, continue
+  that work immediately; only after useful independent work is genuinely exhausted does
+  the existing external-wait/escape boundary become relevant.
 - `2 equivalent no-delta cycles -> change tactic/lane/owner`.
 - `accepted work -> DO_NOT_REDO unless materially invalidated`. The material
   invalidator is new contradicting evidence, a changed contract, or an explicit
@@ -53,6 +58,20 @@ already delegated. Delegated authority never leaks outside its stated scope.
 - `EFFECT_UNKNOWN -> same-carrier reconciliation; never blind retry/failover`. An act
   whose effect cannot be observed is reconciled on the same carrier that performed
   it; a blind retry or a failover is how one irreversible act becomes two.
+
+## Execution-cycle granularity
+
+**A tool call or Stop-hook re-entry is not a new execution cycle.** Re-run bootstrap,
+carrier/lane census, ownership or permission preflight, planning, watcher reconciliation,
+and full-ledger reconstruction only on a material invalidator: a new user/ruling/carrier
+edge, a worker or watcher return, phase/deliverable completion, candidate-head or contract
+change, a real tool/effect failure, or recovery after restart/compaction. Otherwise resume
+from the exact verified frontier and execute. Targeted fresh checks already required before
+push/merge/release/authority or another irreversible effect still bind; this removes repeated
+administrative ceremony, not safety gates. Persist compact deltas at material milestones
+instead of rewriting unchanged state every turn.
+
+**Verified healthy CI/sweeper wait is a turn-yield boundary, not completion:** `async_unmerged` is allowed only when the exact armed head has the sweeper's required proof anchors genuinely pending or already clean; missing/unpublished proof and `ci_failed_unmerged` remain internal; ownership, merge/live proof and acceptance stay open.
 
 ## The delivery ladder
 

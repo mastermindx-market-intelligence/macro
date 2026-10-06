@@ -25,9 +25,12 @@ the split.
 ARMING ``merge-on-green`` IS NOT AN EXIT (operator ruling 2026-08-12). The label
 still works and the sweeper may still perform the merge — that is a convenience,
 not a transfer of ownership. A session owns its work through
-commit -> push -> PR -> CI -> squash-merge -> live verification, so ``unmerged``
-is satisfied by an actually-merged pull request and by nothing else. The earlier
-rule released a session the moment its pull request carried the label with no
+commit -> push -> PR -> CI -> squash-merge -> live verification, so completion of
+the ``unmerged`` gate still requires an actually-merged pull request. A verified
+healthy CI/sweeper wait may use the short external Stop-loop boundary under
+``ASYNC_UNMERGED``, but that is only a turn-yield classification: it never reports
+the PR as merged, live, delivered, or accepted. The earlier rule released a
+session the moment its pull request carried the label with no
 concluded red; in the field that turned an unfinished job into a reported-complete
 one — a session stopped on a label while its pull request sat ``merge-blocked`` on
 a red check, and the work had to be reopened by hand. What the armed pull request
@@ -125,10 +128,12 @@ SEMANTIC_ARTIFACT_PREFIX = "ci-semantic-evidence-"
 SEMANTIC_ARTIFACT_FILE = "ci-semantic-evidence.json"
 SEMANTIC_RUN_LOOKBACK = 12
 SEMANTIC_ARTIFACT_MAX_BYTES = 8 * 1024 * 1024
+ASYNC_UNMERGED = "async_unmerged"
 EXTERNAL_BLOCKERS = {
     "github_unreachable",
     "github_rate_limited",
     "ci_failed",
+    ASYNC_UNMERGED,
     "render_pending",
     "render_failed",
     "live_unreachable",
@@ -146,10 +151,15 @@ EXTERNAL_BLOCKERS = {
 # this whole change exists to prevent being reported as done: the session is alive,
 # the pull request is armed, the sweeper will NEVER merge a red, and the head is
 # still pushable. Leaving there is what put a `merge-blocked` pull request in front
-# of the operator with "worker done" attached. Routed through EXTERNAL_BLOCKERS it
-# would have been the CHEAPEST state in the guard to leave — cheaper than the
-# benign `unmerged` wait, which is internal and costs 10 consecutive / 15 total.
-# So it is internal, and the ladder now matches the severity of the state.
+# of the operator with "worker done" attached. It therefore stays INTERNAL at the
+# 10-consecutive / 15-total loop-breaker.
+#
+# A healthy armed head with check runs genuinely pending, or with the sweeper's
+# proof anchors already clean and only the merge sweep left, is different: the
+# existing CI/sweeper machinery owns the next state transition and another Stop
+# re-entry cannot accelerate it. Those exact shapes use ASYNC_UNMERGED and the
+# external 2-consecutive / 3-cumulative boundary. This is a TURN boundary only:
+# ownership, red repair, merge/live proof and acceptance remain with the operation.
 CI_FAILED_UNMERGED = "ci_failed_unmerged"
 # Roots holding OTHER agent sessions' checkouts. A repository serving several
 # fleets accumulates dozens of them side by side — measured 2026-07-30 in the
@@ -1920,6 +1930,11 @@ PROOF_CI_GATE_ANCHOR = "ci-gate"
 PROOF_FENCE_ANCHOR = "fence-pack"
 PROOF_FORK_FENCE_ANCHORS = frozenset({"self-mod-fence", "capability-broker", "grader-manifest"})
 PROOF_CI_PACK_ANCHORS = frozenset(f"ci-pack-{index}" for index in range(12))
+# Check names emitted by the required ci.yml workflow before its terminal ci-gate.
+# Seeing one of these as a GitHub-Actions check in a non-completed state proves that
+# the long CI lane actually exists and external machinery owns the next transition;
+# unlike an arbitrary fast-lint check, it cannot be mistaken for a dropped ci.yml run.
+PROOF_CI_PROGRESS_ANCHORS = PROOF_CI_PACK_ANCHORS | {PROOF_CI_GATE_ANCHOR}
 _PROOF_PACK_RE = re.compile(r"^ci-pack-\d+$")
 #: The sweeper's `{"success"} | CLEAN_CONCLUSIONS | INCOMPLETE_CONCLUSIONS`. An
 #: anchor concluding anything else is `blocked`, not merely unproven.
@@ -1947,6 +1962,26 @@ def _proof_anchor_runs(runs: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
         if previous is None or int(run.get("id") or 0) >= int(previous.get("id") or 0):
             anchors[name] = run
     return anchors
+
+
+def _pending_required_ci_workflow(runs: list[dict[str, Any]]) -> list[str]:
+    """Required ci.yml work that is visibly alive before terminal proof exists.
+
+    ``ci-gate`` is deliberately a terminal anchor, so it often does not exist during
+    the expensive part of a healthy run. A real GitHub-Actions ``ci-pack-N`` in a
+    non-completed state is enough to prove that a required merge proof is already
+    running and owns the next transition. Arbitrary
+    fast checks are excluded so a dropped ci.yml webhook cannot masquerade as a safe
+    external wait.
+    """
+    names = {
+        str(run.get("name") or "")
+        for run in runs
+        if str(run.get("name") or "") in PROOF_CI_PROGRESS_ANCHORS
+        and _is_actions_check(run)
+        and str(run.get("status") or "") != "completed"
+    }
+    return sorted(names)
 
 
 def _proof_anchor_verdict(runs: list[dict[str, Any]]) -> tuple[str, list[str]]:
@@ -2214,8 +2249,10 @@ def _base_red_block(number: Any, excused: dict[str, str], pending: list[str]) ->
         "is proven again; the lever is `gh workflow run ci.yml --ref main`, and it is "
         "DESTRUCTIVE over a live baseline — preflight `gh run list --workflow ci.yml "
         "--branch main --json databaseId,status --jq '[.[]|select(.status!=\"completed\")]'` "
-        "and WATCH an in-flight run (`gh run watch <id> --interval 60`) instead of "
-        "re-dispatching over it. You still own this pull request until the merge lands."
+        "and bind ONE asynchronous background/native watcher to the in-flight run instead "
+        "of re-dispatching or foreground-waiting. You still own this pull request until "
+        "the merge lands, but ownership is accountability, not a reason to idle the "
+        "principal turn; advance another independent authorized lane while the watcher runs."
     )
 
 
@@ -2235,14 +2272,15 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
         whole value of answering here rather than falling through. The code is
         internal ON PURPOSE — see `CI_FAILED_UNMERGED` — so the state this guard
         exists to prevent is not also the cheapest one to leave.
-      ``unmerged`` — armed and not merged, with nothing red that is THIS head's:
-        checks pending, all clean, nothing non-spurious at all, or every red
-        provably inherited from main (`_base_side_pre_merge`). "All clean" means
-        the sweeper's proof anchors are satisfied (`_proof_anchor_verdict`), not
-        merely that every check in the rollup concluded: before ci.yml starts, the
-        rollup holds only the fast workflows (#7969). The label means the
-        sweeper MAY perform the merge; it does not mean this session has finished.
-        Stay with the pull request until the merge lands.
+      ``async_unmerged`` — this exact armed head has a genuinely external
+        next transition: binding checks are currently pending, or the sweeper's
+        proof anchors are already clean and the next sweep owns the merge. This
+        is an external WAIT for Stop-loop purposes only, never delivery completion.
+      ``unmerged`` — armed and not merged but the hook still needs principal
+        diagnosis/action before it can prove the wait is external: proof anchors
+        are incomplete/not yet published, nothing non-spurious exists, or every
+        red is inherited from main and needs the base-side recovery path. The
+        label still never means the session has finished.
 
     The head sha must equal the LOCAL HEAD. An armed pull request whose head is
     older than the worktree means the session's latest work is not what would be
@@ -2328,14 +2366,17 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
                     f"only; the sweeper still applies ProofFreshness before merging.{waiting}"
                 )
             if semantic_pending:
-                return "unmerged", (
+                return ASYNC_UNMERGED, (
                     f"Pull request #{number} has clear semantic evidence but remains "
-                    f"unmerged while checks run: {', '.join(semantic_pending[:8])}."
+                    f"unmerged while checks run: {', '.join(semantic_pending[:8])}. "
+                    "This is a verified external CI wait; the operation remains "
+                    "accountable for merge/live proof after the event."
                 )
             if semantic_passed:
-                return "unmerged", (
+                return ASYNC_UNMERGED, (
                     f"Pull request #{number} has complete clear semantic evidence and "
-                    "is still armed; the next sweep owns ProofFreshness and merge."
+                    "is still armed; the next sweep owns ProofFreshness and merge. "
+                    "This is a verified external sweeper wait, not completion."
                 )
         pairs = _red_pairs(runs)
         # Only `failure` is base-side excludable, for `_check_ci`'s reason: a
@@ -2378,41 +2419,70 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
         if unavailable:
             detail = f"{detail} (Base-side evidence unavailable: {'; '.join(unavailable)}.)"
         return CI_FAILED_UNMERGED, detail
-    if pending:
-        state = "still running: " + ", ".join(pending[:8])
+    # "A check is pending" is not enough to prove this is an external wait.
+    # Fast/light workflows can be pending while the required ci.yml proof lane was
+    # never scheduled at all (#7969). A live GitHub-Actions ci-pack-N/ci-gate
+    # proves that a required merge-proof anchor really exists even
+    # before terminal ci-gate is published; a clean proof-anchor verdict means only
+    # the merge sweep remains. Everything else stays internal for one bounded
+    # run-list diagnosis.
+    anchor_verdict, anchor_names = _proof_anchor_verdict(runs)
+    proof_pending = _pending_required_ci_workflow(runs)
+    async_wait = bool(proof_pending) or anchor_verdict == "clean"
+    probe = f"`gh run list --workflow ci.yml --branch {branch} --limit 3`"
+    if proof_pending:
+        state = (
+            "required ci.yml workflow is genuinely running: "
+            + ", ".join(proof_pending[:8])
+            + (f"; other pending checks: {', '.join(pending[:8])}" if pending else "")
+        )
+    elif anchor_verdict == "clean":
+        state = "every check has concluded clean; the next sweep should merge it"
+    elif pending:
+        state = (
+            f"{_proof_anchor_gap(runs, anchor_names)}. Other checks are still running "
+            f"({', '.join(pending[:8])}), but that does not prove the required ci.yml "
+            f"lane exists. Diagnose once with {probe}; do not foreground-watch it."
+        )
+    elif passed:
+        state = (
+            f"{_proof_anchor_gap(runs, anchor_names)}. The checks that have concluded "
+            "are not the whole proof, so this head is NOT concluded-green: never merge "
+            "it by hand before the missing proof concludes (CLAUDE.md 'Merge on "
+            "CONCLUDED checks, never mid-flight', #3867). A queued ci.yml run shows in "
+            f"{probe}, not in the rollup"
+        )
     else:
-        # The buckets above only sort check runs that EXIST. A ci.yml run still queued
-        # in its concurrency group has published none (#7969), so "nothing pending,
-        # something passed" is not the sweeper's clean. Ask its anchor question of the
-        # same rollup instead: no extra REST call.
-        anchor_verdict, anchor_names = _proof_anchor_verdict(runs)
-        probe = f"`gh run list --workflow ci.yml --branch {branch} --limit 3`"
-        if anchor_verdict == "clean":
-            state = "every check has concluded clean; the next sweep should merge it"
-        elif passed:
-            state = (
-                f"{_proof_anchor_gap(runs, anchor_names)}. The checks that have concluded "
-                "are not the whole proof, so this head is NOT concluded-green: never merge "
-                "it by hand before the missing proof concludes (CLAUDE.md 'Merge on "
-                "CONCLUDED checks, never mid-flight', #3867). A queued ci.yml run shows in "
-                f"{probe}, not in the rollup"
-            )
-        else:
-            state = (
-                f"{_proof_anchor_gap(runs, anchor_names)}. No non-spurious check has "
-                f"passed on this head, and an absence of red is not a pass: if {probe} "
-                "shows its ci.yml run queued, wait for it; if none was ever scheduled (a "
-                "dropped webhook, `[skip ci]`), no sweep will ever merge it — push a "
-                "change CI can see"
-            )
-    return "unmerged", (
+        state = (
+            f"{_proof_anchor_gap(runs, anchor_names)}. No non-spurious check has "
+            f"passed on this head, and an absence of red is not a pass: if {probe} "
+            "shows its ci.yml run queued, wait for it; if none was ever scheduled (a "
+            "dropped webhook, `[skip ci]`), no sweep will ever merge it — push a "
+            "change CI can see"
+        )
+    if async_wait:
+        continuation = (
+            "The next transition is already owned by existing CI/sweeper machinery, so this "
+            "is an ASYNC release lane and external wait, not a foreground reasoning phase. Keep accountability "
+            "for this PR; use the existing merge sweeper or exactly one background/native "
+            "watcher for observation. NEVER run `gh run watch` synchronously in the principal "
+            "turn; immediately advance the next independent authorized project lane, and "
+            "return only on a terminal green/merge event, genuine red, "
+            "conflict, or watcher failure/staleness. The Stop hook firing again is not a "
+            "request to re-check CI."
+        )
+    else:
+        continuation = (
+            "The hook cannot yet prove an external owner for the next transition. Perform "
+            "the single bounded diagnosis named above; if a CI run exists, bind one watcher "
+            "and let its event be the next observation, while a missing run/proof remains an "
+            "owned repair. Do not convert this uncertainty into repeated status reads or a "
+            "foreground watch."
+        )
+    return (ASYNC_UNMERGED if async_wait else "unmerged"), (
         f"Pull request #{number} is armed with `{MERGE_ON_GREEN_LABEL}` but is NOT merged "
         f"yet — {state}. Arming the label buys a merge you do not have to perform; it does "
-        "not end this session. You own this work through commit -> push -> PR -> CI -> "
-        "squash-merge -> live verification, so stay with it until the merge lands. Watch "
-        "on ONE slow watcher (`gh run watch <id> --interval 60`; a run here takes 30-34 "
-        "minutes) and preflight `gh api rate_limit` — the 5,000/hr REST pool is shared "
-        "with every other session and with this hook, which fails closed when it is spent."
+        f"not make the PR complete. {continuation}"
     )
 
 
@@ -2901,11 +2971,12 @@ def _check_ci(
                         "itself, never candidate-era evidence). Preflight for an "
                         "in-flight baseline (`gh run list --workflow ci.yml "
                         "--branch main --json databaseId,status --jq "
-                        "'[.[]|select(.status!=\"completed\")]'`) and WATCH it "
-                        "(`gh run watch <id> --interval 60`) rather than "
-                        "re-dispatching over it; dispatch `gh workflow run ci.yml "
-                        "--ref main` only over a clear field. The next Stop "
-                        "re-reads the result."
+                        "'[.[]|select(.status!=\"completed\")]'`) and bind one "
+                        "asynchronous watcher to it (for Bash, `gh run watch <id> "
+                        "--interval 150` with `run_in_background=true`) rather than "
+                        "re-dispatching or foreground-waiting; dispatch `gh workflow run "
+                        "ci.yml --ref main` only over a clear field. The watcher event, "
+                        "not the next Stop cycle, is the next CI observation."
                     )
                 if pending:
                     return False, "CI still running: " + ", ".join(pending[:8])
@@ -4070,6 +4141,7 @@ _PROVEN_STAGE_BY_BLOCKER = {
     "unpushed": "RUNNING",
     MORE_WORK_EXISTS: "RUNNING",
     "unmerged": "CI",
+    ASYNC_UNMERGED: "CI",
     CI_FAILED_UNMERGED: "CI",
     "ci_failed": "MERGED",
     "render_pending": "MERGED",
@@ -4081,7 +4153,13 @@ _PROVEN_STAGE_BY_BLOCKER = {
 # render lane, the merge sweeper, GitHub's own rate window. Re-reading them cannot
 # change them, which is the whole content of the shape 7 incident.
 WAITING_BLOCKERS = frozenset(
-    {"unmerged", "ci_failed", CI_FAILED_UNMERGED, "render_pending", "live_stale", "github_rate_limited"}
+    {
+        ASYNC_UNMERGED,
+        "ci_failed",
+        "render_pending",
+        "live_stale",
+        "github_rate_limited",
+    }
 )
 
 
@@ -4142,13 +4220,20 @@ def continuation_directive(code: str, repeat: int, claimed: str = "") -> str:
     """
     parts = [
         "Freeze the blocked lane only. Independent authorized lanes continue, and a "
-        "blocker in one lane is never a finished mission."
+        "blocker in one lane is never a finished mission.",
+        "This Stop re-entry is not a new execution cycle: resume the exact verified "
+        "frontier. Do not restart bootstrap, re-census unchanged lanes, rewrite the "
+        "plan/ledger, or repeat ownership/permission preflight unless a material "
+        "invalidator actually changed."
     ]
     if code in WAITING_BLOCKERS:
         parts.append(
             "This block is a WAIT owned outside this session. Re-reading it cannot "
-            "change it and does not answer this block; a one-line hold note does. "
-            "Spend the interval on an independent lane, never on the queue."
+            "change it and does not answer this block. Check independent authorized "
+            "lanes now: if any remain, continue one immediately; never spend the turn "
+            "polling or foreground-waiting on the queue. If useful independent work is "
+            "genuinely exhausted and a verified watcher owns the wait, use the existing "
+            "external-wait/escape boundary rather than manufacturing hold-note turns."
         )
     if repeat >= 2:
         parts.append(
@@ -4260,7 +4345,22 @@ def _block(
     # stays impossible — on a first Stop total_blocks is 1 and no arm can fire.
     reentrant = bool(payload.get("stop_hook_active")) or total_blocks >= 2
     reported = reentrant and final.startswith("SHIP LOOP BLOCKED:")
-    external_escape = code in EXTERNAL_BLOCKERS and (count >= 2 or external_blocks >= 3)
+    declared_end = declared_session_end_state(final)
+    # A healthy unmerged CI/sweeper wait is external OBSERVATION, not permission to
+    # end a principal that still has other useful project work. The short external
+    # boundary therefore requires the session to explicitly classify the truthful
+    # terminal condition ACTIVE_EXECUTION permits for this shape: real durable
+    # execution owns the sole remaining wait and local continuation would add no
+    # useful work. The hook does not infer lanes; it only requires the auditable
+    # self-declaration instead of silently turning "CI pending" into "turn done".
+    async_unmerged_terminal = (
+        code != ASYNC_UNMERGED or declared_end == "DURABLE_EXECUTION_RUNNING"
+    )
+    external_escape = (
+        code in EXTERNAL_BLOCKERS
+        and async_unmerged_terminal
+        and (count >= 2 or external_blocks >= 3)
+    )
     any_code_escape = count >= 10 or total_blocks >= 15
     if reported and (external_escape or any_code_escape):
         if exit_key:
@@ -4291,6 +4391,14 @@ def _block(
             " If the same genuine blocker persists after another attempt, "
             "finish with `SHIP LOOP BLOCKED:` and the specific evidence."
         )
+        if code == ASYNC_UNMERGED:
+            body += (
+                " For this healthy async CI/sweeper wait, the short yield boundary "
+                "is valid only after every useful independent in-scope lane is "
+                "exhausted and the verified external owner/return path is the sole "
+                "remaining wait; declare `SESSION END: DURABLE_EXECUTION_RUNNING` "
+                "in that evidence report. Otherwise continue the project."
+            )
     _emit({"decision": "block", "reason": body})
 
 
@@ -4326,8 +4434,11 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
                     "execution may continue; a delegation surface being unavailable "
                     "is not a reason to stop. A wait on external machinery is handed "
                     "to a durable watcher or owner while you do parallel work - never "
-                    "spend principal capacity polling. Two equivalent no-delta cycles "
-                    "means change tactic, lane, or owner. Accepted work is "
+                    "spend principal capacity polling. A tool call or Stop-hook re-entry "
+                    "is not a new execution cycle: resume the exact verified frontier instead "
+                    "of restarting bootstrap, census, planning, watcher reconciliation or full "
+                    "ledger reconstruction without a material invalidator. Two equivalent "
+                    "no-delta cycles means change tactic, lane, or owner. Accepted work is "
                     "DO_NOT_REDO unless materially invalidated. EFFECT_UNKNOWN is "
                     "reconciled on the same carrier, never by blind retry or "
                     "failover. ACK, QUEUED, START, RUNNING, DELIVERED, CI, MERGED, "
@@ -4647,10 +4758,12 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
             }
             _remember_proof(path, state, "merged_pull", pull_key, pull)
     if not pull:
-        # There is no merged pull request, so this session is NOT done — arming
-        # `merge-on-green` is a merge convenience, never an exit (operator ruling
-        # 2026-08-12; see the module docstring). The only question left is which
-        # block to file: an armed head with concluded reds gets `ci_failed` and the
+        # There is no merged pull request, so the work is NOT done — arming
+        # `merge-on-green` is a merge convenience, never a DELIVERY/completion exit
+        # (operator ruling 2026-08-12; see the module docstring). A verified healthy
+        # CI/sweeper wait may yield the TURN as `async_unmerged`; missing proof and
+        # genuine red remain internal. The next question is which block to file:
+        # an armed head with concluded own-reds gets `ci_failed_unmerged` and the
         # names, because "your sweeper will refuse this" is the fact the old
         # release path used to hide.
         #

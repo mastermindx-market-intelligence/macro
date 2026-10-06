@@ -251,24 +251,139 @@ def test_case_2_a_wait_owned_outside_the_session_is_never_answered_by_polling(tm
         reason = _block_reason(tmp_path, capsys, code)
         assert "WAIT owned outside this session" in reason, code
         assert "does not answer this block" in reason, code
-        assert "one-line hold note" in reason, code
-        assert "never on the queue" in reason, code
+        assert "Check independent authorized lanes now" in reason, code
+        assert "continue one immediately" in reason, code
+        assert "polling or foreground-waiting" in reason, code
+        assert "external-wait/escape boundary" in reason, code
 
     # A block the session itself must act on is NOT a wait: telling it to go do
     # something else would be the opposite error.
-    for code in ("uncommitted", "unpushed", "unsafe_branch", "render_failed"):
+    for code in (
+        "uncommitted",
+        "unpushed",
+        "unsafe_branch",
+        "unmerged",
+        GUARD.CI_FAILED_UNMERGED,
+        "render_failed",
+    ):
         assert "WAIT owned outside" not in _block_reason(tmp_path, capsys, code), code
 
     _on_every_surface(
-        "WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; "
-        "do not burn principal capacity polling",
-        "satisfied by a one-line hold note, never by a fresh poll",
+        "WAITING EXTERNAL -> one asynchronous watcher/owner; immediately do useful "
+        "parallel principal work; do not burn principal capacity polling",
+        "Pending CI/release freezes only that",
+        "continue that work immediately",
+        "external-wait/escape boundary",
     )
+
+
+def test_case_2b_async_unmerged_is_a_turn_boundary_not_a_delivery_exit():
+    """Only a proven healthy CI/sweeper wait gets the short external Stop boundary."""
+    assert GUARD.ASYNC_UNMERGED in GUARD.EXTERNAL_BLOCKERS
+    assert "unmerged" not in GUARD.EXTERNAL_BLOCKERS
+    assert GUARD.CI_FAILED_UNMERGED not in GUARD.EXTERNAL_BLOCKERS
+    _on_every_surface(
+        "Verified healthy CI/sweeper wait is a turn-yield boundary, not completion",
+        "async_unmerged",
+        "the sweeper's required proof anchors genuinely pending or already clean",
+        "missing/unpublished proof and ci_failed_unmerged remain internal",
+        "ownership, merge/live proof and acceptance stay open",
+    )
+
+
+def test_fable_wait_doctrine_and_fallback_match_async_continuation():
+    """A seat must not relearn foreground waiting from its doctrine or fallback prompt."""
+    sources = (
+        ".claude/skills/fable-mode/SKILL.md",
+        ".claude/skills/fable-mode/references/long-horizon.md",
+        ".claude/skills/fable-mode/references/harness-adapters.md",
+        "config/fable_mode_core.md",
+    )
+    for relative in sources:
+        source = (ROOT / relative).read_text(encoding="utf-8").lower()
+        assert "independent" in source, relative
+        assert "watcher" in source, relative
+        assert "one-line hold note" not in source, relative
+
+    harness = (ROOT / ".claude/skills/fable-mode/references/harness-adapters.md").read_text(
+        encoding="utf-8"
+    )
+    assert "Never run a blocking `gh run watch`" in harness
+    assert "run_in_background=true" in harness
+
+    fallback = (ROOT / "config/fable_mode_core.md").read_text(encoding="utf-8")
+    assert "accountability is not foreground" in fallback
+    assert "sole remaining" in fallback
+    assert "Execution cadence is event/phase-scoped, not tool/turn-scoped" in fallback
+    assert "Stop-hook re-entry" in fallback
+    assert "resume the verified frontier instead of replaying bootstrap, census" in fallback
+    assert "The Pre-Yield Gate" in fallback
+    assert "**not** an after-every-tool" in fallback
+    assert "never rewrite unchanged ledger/program state" in fallback
+    assert "async_unmerged" in fallback
+    assert "The Pre-Send Gate (run before ending every turn)" not in fallback
 
 
 # --------------------------------------------------------------------------------------
 # Case 3 — delegated Fable program CEO vs ordinary Claude worker.
 # --------------------------------------------------------------------------------------
+
+
+def test_orchestrator_workflows_cannot_busy_wait_on_ci_or_deploy():
+    """Any executable workflow prompt must preserve async CI/deploy continuation."""
+    workflow_paths = tuple(
+        sorted((ROOT / ".claude" / "workflows").glob("*.js"))
+    )
+    assert workflow_paths, "workflow regression gate found no JavaScript workflows"
+
+    banned = (
+        "Repeat across multiple such calls",
+        "sleep 170",
+        "for (let k = 2; k <= 5 && ship",
+        "SHIP ATTEMPT",
+        "gh run watch",
+        "gh pr checks --watch",
+        "poll https://",
+    )
+    foreground_ci_loop = re.compile(
+        r"(?im)(?:for|while|until)[^\n]{0,900}\bdo\b[^\n]{0,900}"
+        r"\bgh\s+(?:pr\s+checks|api[^\n]*(?:actions/runs|check-runs))"
+        r"[^\n]{0,900}\bsleep\s+\d+"
+    )
+    for path in workflow_paths:
+        relative = str(path.relative_to(ROOT))
+        source = path.read_text(encoding="utf-8")
+        for phrase in banned:
+            assert phrase not in source, f"{relative} reintroduced foreground wait: {phrase}"
+        assert not foreground_ci_loop.search(source), (
+            f"{relative} reintroduced a foreground CI sleep/poll loop"
+        )
+        if path.name in {
+            "marketontology_release_held_pr.js",
+            "marketontology_vertical_build.js",
+        }:
+            assert "Read check state ONCE" in source, relative
+            assert "do not poll" in source.lower(), relative
+            assert "continue" in source.lower(), relative
+            assert "merge-on-green" in source, relative
+
+
+def test_vertical_build_does_not_arm_merge_before_independent_review():
+    """The builder may create a Draft, but the reviewed ship stage owns merge arming."""
+    source = (
+        ROOT / ".claude/workflows/marketontology_vertical_build.js"
+    ).read_text(encoding="utf-8")
+    build_start = source.index("const buildPrompt")
+    review_start = source.index("const reviewPrompt")
+    ship_start = source.index("const shipPrompt")
+    pipeline_start = source.index("// Pipeline:")
+    build_prompt = source[build_start:review_start]
+    ship_prompt = source[ship_start:pipeline_start]
+    assert "--draft" in build_prompt
+    assert "--add-label merge-on-green" not in build_prompt
+    assert "Do NOT arm merge-on-green in the build stage" in build_prompt
+    assert "--add-label merge-on-green" in ship_prompt
+    assert "review verdict PASS" in ship_prompt
 
 
 def test_case_3_chairman_delegation_outranks_the_default_role_inside_its_scope():
@@ -425,6 +540,125 @@ def test_case_7b_all_scoped_lanes_blocked_is_a_diagnostic_not_an_exit(
     assert "'Not my lane'" in emitted["reason"]
 
 
+def test_case_7c_turns_do_not_restart_administrative_bootstrap():
+    """HOOK + LAW + Fable doctrine.
+
+    The observed slow-orchestrator failure is not only CI polling: a seat can restart
+    boot/census/plan/ledger ceremony on each model turn and spend the whole session
+    governing itself. A material cycle is event/phase scoped; Stop re-entry is not one.
+    """
+    _on_every_surface(
+        "A tool call or Stop-hook re-entry is not a new execution cycle",
+        "resume from the exact verified frontier",
+        "this removes repeated administrative ceremony, not safety gates",
+    )
+    directive = GUARD.continuation_directive("unmerged", 1)
+    assert "Stop re-entry is not a new execution cycle" in directive
+    assert "resume the exact verified frontier" in directive
+    assert "Do not restart bootstrap" in directive
+
+    fable = _law_text(".claude/skills/fable-mode/SKILL.md")
+    for clause in (
+        "a cycle is event/phase-scoped, not turn-scoped",
+        "a tool call, a Stop-hook re-entry, a progress nudge",
+        "running it after every tool call turns governance into the work and starves the project",
+    ):
+        assert _clause(clause) in fable
+
+
+def test_case_7d_ceo_continuation_is_front_loaded_for_bounded_project_docs():
+    """Critical CEO continuation must survive clients that bound a long AGENTS file.
+
+    This is a source-layout invariant, not a claim about any permanent platform byte
+    limit. Keep the compact mirror near the top and leave the detailed law canonical.
+    """
+    raw = (ROOT / "AGENTS.md").read_text(encoding="utf-8")[:24000]
+    early = " ".join(_MARKUP.sub("", raw).split()).lower()
+    for clause in (
+        "CEO/orchestrator fast path",
+        "CEO cycle is event/phase-scoped",
+        "Administrative motion is not capability progress",
+        "Pending CI/release freezes that lane, not the mission",
+        "A checkpoint is a save, not a stop",
+        "A watcher owns observation, never the outcome",
+        "This fast path removes repeated ceremony",
+    ):
+        assert _clause(clause) in early, f"critical front-loaded clause drifted late: {clause}"
+
+
+def test_case_7e_fable_checkpoint_and_wait_language_cannot_reintroduce_stops():
+    fable = _law_text(".claude/skills/fable-mode/SKILL.md")
+    for required in (
+        "Checkpoint, reassess the parent mission, then continue or yield lawfully",
+        "A checkpoint is a save, not a stop",
+        "the watcher owns the next observation; immediately advance another useful lane",
+    ):
+        assert _clause(required) in fable
+    for stale in (
+        "S.8 Checkpoint, then go quiet",
+        "one hold note, then quiet",
+    ):
+        assert _clause(stale) not in fable
+
+
+def test_case_7f_fable_quality_gate_runs_only_on_real_yield():
+    """The output-quality checklist must not become per-tool administrative work."""
+    core = _law_text(".claude/skills/fable-mode/SKILL.md")
+    engineering = _law_text(".claude/skills/fable-mode/references/engineering.md")
+    adapters = _law_text(".claude/skills/fable-mode/references/harness-adapters.md")
+
+    for clause in (
+        "pre-yield gate",
+        "only when actually yielding",
+        "after-every-tool",
+        "Stop-hook re-entry",
+    ):
+        assert _clause(clause) in core
+    assert _clause("do not repeatedly reload it as ceremony") in core
+    assert _clause(
+        "never rewrite unchanged program/ledger state merely because another turn occurred"
+    ) in core
+
+    assert _clause("do not run it after every tool call") in engineering
+    assert _clause("only when actually yielding/finalizing") in adapters
+    assert _clause("internal continuation carries no fake end token") in adapters
+
+
+def test_case_7g_fable_freshness_checks_are_material_not_per_tool():
+    """Freshness and anti-drift checks must protect effects without becoming ceremony."""
+    core = _law_text(".claude/skills/fable-mode/SKILL.md")
+    engineering = _law_text(".claude/skills/fable-mode/references/engineering.md")
+    adapters = _law_text(".claude/skills/fable-mode/references/harness-adapters.md")
+
+    for clause in (
+        "once at the start of a material cycle",
+        "Do not re-read the carrier before ordinary local reads, edits, tests, or each tool call",
+        "carrier-mutating / irreversible outward act",
+        "watcher/owner, not the principal reasoning loop",
+        "The principal does not spend model turns running repeated sleep/read/status calls",
+    ):
+        assert _clause(clause) in adapters
+
+    for clause in (
+        "do not rewrite an unchanged ledger because another tool call",
+        "at material recovery-risk boundaries",
+        "not after every small phase",
+        "Re-anchor when scope risk changes, not at every small phase",
+        "Completing an ordinary subtask or tool batch is not a reason to reload the full request",
+    ):
+        assert _clause(clause) in engineering
+
+    assert _clause("Do not run the full catalog after every small phase") in core
+    assert _clause("Re-run only when the material risk changes") in core
+    for clause in (
+        "do not re-read the unchanged carrier before ordinary local reads, edits, tests, or tool calls",
+        "Read it again on a new counterpart event/material cycle",
+        "Persist the material ledger delta before a new material decision",
+        "never rewrite unchanged ledger state because a tool call or small phase ended",
+    ):
+        assert _clause(clause) in core
+
+
 # --------------------------------------------------------------------------------------
 # Case 8 — ACK/QUEUED mistaken for START/RUNNING (and every other rung confusion).
 # --------------------------------------------------------------------------------------
@@ -571,6 +805,8 @@ def test_the_session_start_injection_actually_carries_the_law(tmp_path, capsys):
         "independent authorized lanes",
         "bounded direct execution may continue",
         "never spend principal capacity polling",
+        "A tool call or Stop-hook re-entry is not a new execution cycle",
+        "resume the exact verified frontier",
         "no-delta cycles",
         "DO_NOT_REDO unless materially invalidated",
         "reconciled on the same carrier",

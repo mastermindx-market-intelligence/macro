@@ -58,13 +58,13 @@ Accepted, merged, or ratified work is reopened only on a **material invalidator*
 
 ## 7. Waiting and quiet — L.8
 
-**Hand the wait off.** A watcher (a bounded shell loop keyed on the sentinel, a cron, a merge sweeper, a harness monitor) owns the wait. Register it in the lane matrix with its cadence. One watcher per endpoint; a second buys nothing and doubles the cost.
+**Hand the wait off.** Bind exactly one asynchronous watcher to the exact artifact identity (for CI: PR + head + run). A watcher may be a background shell task, cron, merge sweeper, harness monitor, or another verified native return path. Register it in the lane matrix with its cadence/identity. One watcher per endpoint; a second buys nothing and doubles the cost. The watcher event is the next observation — the principal does not foreground-wait for it.
 
-**Harness pressure is not a demand for a poll.** A stop-hook block, a "still waiting?" nudge, a scheduled wake-up: these are the harness asking for a *state*, not for fresh evidence. Answer with one line — what is being waited on, which watcher owns it, what re-invokes you — never with a re-read. The tell that you have crossed into waste: three identical status readings in a row.
+**Harness pressure is not a demand for a poll.** A stop-hook block, a "still waiting?" nudge, or a scheduled wake-up is asking for a state transition, not permission to re-read unchanged external state. If independent authorized work remains, immediately continue that work. Never run a native blocking watch synchronously in the principal turn and never re-read unchanged pending state merely to satisfy the hook. The first bounded read is diagnosis; the watcher owns the wait.
 
-**A hold note does not end the pressure — the ladder does.** In a harness with a Stop hook, a hold note satisfies the quota rule but the hook blocks again seconds later, and a seat that answers every block with another note types near-identical notes in a billed loop for hours. The lawful sequence in this fleet: hold notes while the block count climbs; at the counted threshold (any code: 10 consecutive or 15 total blocks) end the turn ONCE with the literal `SHIP LOOP BLOCKED:` evidence report — the PR, the exact head, the check state, the watcher and its cadence, and the continuation path — and then stay quiet: no per-block notes, no tailing your own watcher between its ticks. Real events (a watcher exit, a task notification, a counterpart post, an operator message) re-invoke you; nothing else should. Waiting on CI never qualifies as a blocker for the ladder in its own right — the report is about the *wait being lawfully owned*, not about CI being slow.
+**The ladder is only for a wait that has become the sole remaining lane.** In a harness with a Stop hook, first exhaust useful independent work while the watcher owns the external wait. Only when no useful in-scope lane remains may the existing counted escape boundary be used; then end the turn ONCE with the literal `SHIP LOOP BLOCKED:` evidence report naming the PR, exact head, check state, watcher identity/cadence, and continuation path, and stay quiet. Real events (watcher exit, task notification, counterpart post, operator message) re-invoke you. Waiting on CI is not itself a defect and never justifies repeated hold-note turns.
 
-**Parallel work during a wait.** A wait is the moment to work an independent lane, write the program file, or run the pre-mortem for the next wave — anything except reading the same status again.
+**Parallel work during a wait.** A wait is the moment to execute the next independent lane, prepare the next bounded phase, or consume another ready return — anything except reading the same status again.
 
 ## 8. Session end — L.9
 
@@ -75,7 +75,7 @@ Accepted, merged, or ratified work is reopened only on a **material invalidator*
 | `EFFECT_UNKNOWN` | an act's effect could not be reconciled on its carrier | you did not try the carrier |
 | `PLATFORM_FAILURE` | a required external platform/substrate is proven unavailable, no safe internal resolver or independent lane remains | an internal repo/owner/PR dependency or an unprobed capability |
 | `ALL_SCOPED_LANES_BLOCKED` | diagnostic only: every current lane is listed; convert internal blockers into owned actions | **never a valid stopping state** |
-| `DURABLE_EXECUTION_RUNNING` | real external execution owns the wait; the program file is current; real events re-invoke you | you are about to poll — or a change you opened is unmerged or not yet proven live: that wait is yours to the end (O.14), and the state does not excuse it |
+| `DURABLE_EXECUTION_RUNNING` | real external execution owns the sole remaining wait; the program file is current; a verified return path re-invokes you; useful independent in-scope work is exhausted | you are about to poll, foreground-wait, or still have another runnable lane. An unmerged/not-yet-live change remains your accountability through completion, but its watcher owns observation while you advance other work |
 | `MORE_WORK_EXISTS` | diagnostic only | **never a valid stopping state** |
 
 A session that reaches the outcome or the exact human gate in ten minutes is complete; a session that stops with authorized work remaining is not, however long it ran.

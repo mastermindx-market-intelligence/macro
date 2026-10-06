@@ -4,10 +4,10 @@ export const meta = {
   whenToUse: 'One Meta-CEO half runs one wave batch (<=6 packets). args = {ceo:"A"|"B", wave:"A1", packets:[{id, lane, title, repo, kind, ledger_rows, spec_sources, owned_paths, entry_points, acceptance, live_url}]}',
   phases: [
     { title: 'Spec', detail: 'designer (ui) or analyst (engine/data/records) freezes the packet into an implementable spec' },
-    { title: 'Build', detail: 'builder implements in an isolated sparse worktree, tests, pushes, opens the PR, arms merge-on-green' },
+    { title: 'Build', detail: 'builder implements in an isolated sparse worktree, tests, pushes, opens the PR as Draft; review must pass before merge-on-green is armed' },
     { title: 'Review', detail: 'opus reviewer attacks the diff against fresh origin/main' },
     { title: 'Fix', detail: 'builder repairs blockers/majors on the same branch' },
-    { title: 'Ship', detail: 'wait for CONCLUDED checks, squash-merge, live-verify, return proof' },
+    { title: 'Ship', detail: 'arm merge-on-green after review, hand pending CI/render to one async owner, reconcile merge/live proof on a material event' },
   ],
 }
 
@@ -184,8 +184,8 @@ PROCEDURE (fleet law, CLAUDE.md):
 1. You are in an isolated sparse worktree. Run: git fetch origin ${defaultBranchOf(p)} && git checkout -B ${branchOf(p)} origin/${defaultBranchOf(p)}. If the packet touches site/ or templates/ or a paired plain-copy asset in macro, run: python3 scripts/worktree_sparse.py add site (then data if needed).
 2. Implement. For macro template edits that have paired site copies run: python -m scripts.check_template_site_sync --fix. For UI: python3 scripts/check_design_system.py --mode enforce-added, python3 scripts/check_runtime_style_injection.py, python3 scripts/check_ui_visual_evidence.py (read their usage first); produce the evidence crops (dark/light x EN/ZH x 1440/390) with headless Chrome into a scratch dir and reference them in the PR body. Bilingual EN/ZH; no translated text in title= attributes; GitHub annotations start the line.
 3. Run the touched tests: python -m pytest <files> -q (macro) — never the full suite in a sparse tree.
-4. Commit (message ends with "Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"), push -u origin ${branchOf(p)}, then: gh pr create -R ${repoOf(p)} --base ${defaultBranchOf(p)} --title "[MO-${CEO}${WAVE}] ${p.id}: ${p.title}" --body-file <file> (body: what/why, ledger rows, acceptance evidence per gate, crops, tests, live URL, and the line "Generated with Claude Code"), then gh pr edit <n> --add-label merge-on-green.
-5. Preflight gh quota before any watch (gh api rate_limit --jq .resources.core.remaining); never gh run watch under --interval 60; never --paginate check-runs.
+4. Commit (message ends with "Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"), push -u origin ${branchOf(p)}, then: gh pr create -R ${repoOf(p)} --base ${defaultBranchOf(p)} --draft --title "[MO-${CEO}${WAVE}] ${p.id}: ${p.title}" --body-file <file> (body: what/why, ledger rows, acceptance evidence per gate, crops, tests, live URL, and the line "Generated with Claude Code"). Do NOT arm merge-on-green in the build stage; review has not accepted the PR yet.
+5. Do not watch CI in the build stage. CI ownership begins only after the ship stage marks the reviewed PR Ready and arms merge-on-green.
 NOT DONE UNLESS: PR exists as Draft, tests pass locally, the PR body carries the acceptance evidence, and every acceptance line is addressed or listed in GAPS. It must NOT be armed with merge-on-green yet.
 ${RETURN_LINE}`
 
@@ -218,7 +218,7 @@ ${RETURN_LINE}`
 
 const shipPrompt = (p, build) => `ROUTE: build
 MISSION: Take PR #${build.pr_number} (${build.pr_url}) to MERGED and LIVE-VERIFIED, returning proof.
-${BUDGET(20, 'Checking checks is a bounded poll loop (see step 2), not a single long watch call.')}
+${BUDGET(20, 'Never spend this stage polling pending CI. One bounded state read is enough; merge-on-green/native watcher owns the wait while the Meta-CEO advances other packets.')}
 WHY: DONE for a packet is merged + live (fleet law); an open PR is abandoned work.
 SCOPE: waiting on checks, merging, live verification, proof.
 OUT OF SCOPE: code changes (if a check is genuinely red on this head, return BLOCKED with the failing job name and log excerpt so the Meta-CEO can commission a fix).
@@ -226,11 +226,11 @@ FROZEN SPEC: n/a. OWNED FILES: none. TESTS: none to write.
 ${PACKET_BLOCK(p)}
 PROCEDURE:
 1. Preflight: gh api rate_limit --jq .resources.core.remaining (stop and return BLOCKED if < 300). This stage runs only after review verdict PASS: mark the PR Ready (gh pr ready ${build.pr_number} -R ${repoOf(p)} if it is still Draft) and arm the sweeper now: gh pr edit ${build.pr_number} -R ${repoOf(p)} --add-label merge-on-green.
-2. A Bash call is capped at 10 minutes, so \`gh pr checks --watch\` on a 30-45 min macro ci.yml run will be killed before it concludes: do NOT use a single foreground watch. Instead poll in bounded rounds, each its own Bash call (each \`sleep\` >=90s to satisfy quota law): \`for i in $(seq 1 3); do gh pr checks ${build.pr_number} -R ${repoOf(p)} --json name,state,conclusion --jq '.[] | [.name,.state,.conclusion] | @tsv'; sleep 170; done\`. Repeat across multiple such calls until every check has CONCLUDED ("Workers Builds: macro" red is known-spurious and ignorable; PENDING/QUEUED is not a pass). If checks are still pending when this stage's budget wall is reached, return PARTIAL naming the armed merge-on-green sweeper as the eventual merge performer and live verification as still owed.
+2. Read check state ONCE: \`gh pr checks ${build.pr_number} -R ${repoOf(p)} --json name,state,conclusion --jq '.[] | [.name,.state,.conclusion] | @tsv'\`. If any binding check is PENDING/QUEUED, do not poll, sleep, or launch a foreground watch. The armed merge-on-green sweeper is the single durable CI owner for this legacy workflow. Return PARTIAL immediately with merged=false, merge_sha="", checks_summary naming the pending checks + exact head, live_verified=false, live_proof="pending CI; merge-on-green sweeper owns the wait", and a gap stating that the next material event/invocation must resume from fresh PR state. The Meta-CEO must continue other packets instead of respawning this ship stage. If a genuine non-spurious red is already concluded, return BLOCKED with its job name + bounded log excerpt. If every binding check is concluded green (known-spurious "Workers Builds: macro" excluded), continue to step 3.
 3. Fresh-read state: gh pr view ${build.pr_number} -R ${repoOf(p)} --json state,mergedAt,mergeCommit,headRefOid,labels,isDraft,reviewDecision. If the merge-on-green sweeper already merged it, record the sha. Otherwise, on all-concluded-green: gh pr merge ${build.pr_number} -R ${repoOf(p)} --squash --delete-branch. If merge-blocked by a conflict: return BLOCKED naming the conflicting paths.
 4. Live verification (${p.repo}): ${p.repo === 'terminal'
-    ? 'merge to master triggers /opt/terminal/terminal-build.sh; poll https://app.mastermind-x.com (curl -sI, then curl -s the packet route) every 120s up to 20 min until the new build serves the change (a markup/text marker from the diff); record HTTP status and the matched marker.'
-    : 'a template/engine change needs the shared render lane: gh run list -R mastermindx-market-intelligence/macro --workflow render.yml --branch main --limit 3 --json databaseId,status,conclusion,headSha,createdAt; watch the run whose head is at/after the merge sha with gh run watch <id> --interval 120 (never cancel or re-run it). The VPS pulls main every 3 min. Then curl -s the live URL and grep a marker from the diff; also curl -sI for the HTTP status. Paired plain-copy assets are live after the VPS pull without a render.'}
+    ? 'merge to master triggers /opt/terminal/terminal-build.sh. Read the live URL once (curl -sI, then curl -s the packet route). If the expected marker is not served yet, do not poll or sleep: return PARTIAL with merged=true, the exact merge sha, live_verified=false, and live_proof="terminal deployment not served yet; resume verification on a later material event/invocation". If served, record HTTP status and the matched marker.'
+    : 'a template/engine change needs the shared render lane: gh run list -R mastermindx-market-intelligence/macro --workflow render.yml --branch main --limit 3 --json databaseId,status,conclusion,headSha,createdAt. Read the covering render run once. If it is pending, do not foreground-watch or poll it: return PARTIAL with merged=true, the exact merge sha, live_verified=false, and live_proof naming the covering render run id/status so a later material event/invocation resumes verification. If it is concluded success, curl -s the live URL and grep a marker from the diff; also curl -sI for the HTTP status. Paired plain-copy assets are live after the VPS pull without a render.'}
 5. Never dispatch or cancel production workflows; never close/reopen the PR; never rename the branch.
 NOT DONE UNLESS: merged is true with the exact merge sha, and live_verified is true with a URL + status + marker (or the packet is records-only and no live surface exists: say so).
 ${RETURN_LINE}`
@@ -260,8 +260,9 @@ const results = await pipeline(
     })
     // Continuation: a builder cut by the 30-call cap returns PARTIAL with remaining_steps; resume on the same branch (max 3 times).
     for (let k = 1; k <= 3 && (!build || !build.evidence || !build.evidence.pr_number || (build.status === 'PARTIAL' && build.evidence.remaining_steps && build.evidence.remaining_steps.length)); k++) {
-      log(`${p.id}: build continuation ${k} (${build.evidence.remaining_steps.length} steps left)`)
       const hadEvidence = build && build.evidence
+      const remainingCount = hadEvidence && Array.isArray(build.evidence.remaining_steps) ? build.evidence.remaining_steps.length : 'unknown'
+      log(`${p.id}: build continuation ${k} (${remainingCount} steps left)`)
       const salvage = hadEvidence
         ? `a previous builder already pushed WIP to branch ${branchOf(pp)} (head ${build.evidence.head_sha}, PR ${build.evidence.pr_url || 'not yet opened'})`
         : `the previous builder returned no result (likely cut off at the 30-call cap with NO StructuredOutput). Before doing anything else, probe for salvage: git ls-remote --heads origin ${branchOf(pp)} (does the branch exist on origin?) and gh pr list -R ${repoOf(pp)} --head ${branchOf(pp)} --json number,url,state (was a PR already opened?). If the branch exists, check it out and continue from its actual state; if it does not, start the packet from scratch`
@@ -306,13 +307,10 @@ const results = await pipeline(
     let ship = await agent(shipPrompt(p, build.evidence), {
       label: `ship:${p.id}`, phase: 'Ship', schema: SHIP_SCHEMA, agentType: 'builder', effort: 'low',
     })
-    // A ship agent that hits its budget while checks are pending returns PARTIAL; re-spawn (each attempt waits up to ~45 min).
-    for (let k = 2; k <= 5 && ship && ship.status === 'PARTIAL' && !(ship.evidence && ship.evidence.merged && ship.evidence.live_verified); k++) {
-      log(`${p.id}: ship attempt ${k}`)
-      ship = await agent(`SHIP ATTEMPT ${k}: a previous ship agent already ran (result: ${String(ship.result).slice(0, 400)}; merged=${ship.evidence && ship.evidence.merged}). Do not repeat completed steps; resume from the first incomplete one.\n\n` + shipPrompt(p, build.evidence), {
-        label: `ship${k}:${p.id}`, phase: 'Ship', schema: SHIP_SCHEMA, agentType: 'builder', effort: 'low',
-      })
-    }
+    // Pending CI/render is asynchronous. Never immediately respawn the same ship stage;
+    // that merely converts a durable external wait into repeated model turns.
+    // Let the sweeper/run own the wait while other packets continue. A later material
+    // event or invocation reconciles this packet from fresh PR state.
     return { ...ctx, ship }
   },
 )
