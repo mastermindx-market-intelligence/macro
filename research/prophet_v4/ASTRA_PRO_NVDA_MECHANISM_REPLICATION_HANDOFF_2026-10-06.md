@@ -103,6 +103,64 @@ Among 134 first-T2 episodes with both H5/H10 grades, 55 were SPY-positive at H5 
 
 Treat this as architectural evidence that durability should be studied as **P(persistence | ignition has already been accepted)**, with a dynamic post-ignition survival update, not as proof of any current persistence feature.
 
+
+## Architecture reuse / owner routing discovered by the Pro re-audit
+
+Do **not** create a new candidate-memory, lifecycle, evidence, or all-candidate plane.
+
+Current main already has the required substrate:
+
+- `prophet.candidate_episode/v1` B1 is PROVEN_LIVE.
+- B1 intake already consumes TURN WATCH, the full candidate store, Prophet Doors, and Entry Radar observations.
+- `engine/us_candidate_lanes.py` already owns the lossless all-candidate partition and preserves off-board/forming candidates without changing rank/gate authority.
+- R6 B03 is explicitly chartered to **deliver the lossless searchable opportunity field** over that plane.
+- R6 B04 owns the episode evidence dossier and already has active/draft carriers (#7869, #8004). Do not spawn a competing dossier implementation.
+
+Important measured live limitation from the Oct-04 B1 reconciliation receipt (current HEAD generation `peg:2303e8ef44ff...`):
+
+- candidate input: 4,543;
+- candidate mapped to canonical episodes: 1,005;
+- candidate suppressed: 3,538;
+- TURN WATCH input: 374;
+- TURN WATCH mapped: 9;
+- TURN WATCH suppressed: 365.
+
+The reason is architectural, not mysterious: unanchored candidate/door/radar observations may attach to an already-active canonical episode, but when no active episode exists they fail closed with `MISSING_STRUCTURAL_ANCHOR`. Today only registered structural anchors may open a B1 episode.
+
+R6 B02 already ruled that B03/B04 do **not** need a new anchor species for their first version. Preserve that ruling.
+
+Therefore:
+
+1. **Emergence / Research Attention product projection belongs in B03 / the existing all-candidate field**, not in a new episode identity plane.
+2. Where a canonical B1 episode exists, attach typed evidence/read-model state to that episode through existing B04/D5 interfaces.
+3. Where no B1 episode exists, keep the candidate visible in the lossless B03 field with honest “no canonical episode yet” semantics. Do not fabricate a ticker/date episode or widen anchor vocabulary merely to make the row fit.
+4. A future new anchor species requires its own existing R6/D02/B02 custody and evidence gate; this research does not authorize one.
+5. Entry Availability remains independent and deterministic.
+
+Current implementation-carrier check at the time of this re-audit:
+
+- no open B03 implementation PR was found;
+- B04 has active/draft work on #7869 and #8004;
+- route any bounded product implementation through the existing R6 B03 owner/carrier after exact-head/custody reconciliation.
+
+## New prospective freeze
+
+Read and preserve:
+
+- `research/prophet_v4/PROPHET_EMERGENCE_CONVERSION_PREREG_2026-10-06.md`
+
+It freezes H-EMERGENCE-CONVERSION with a **12 observed board-session** primary conversion endpoint.
+
+Historical result motivating the freeze (discovery only):
+
+- raw preserved >=2-evidence unresolved watch states: ~23% T1/T2 conversion by 11–12 observed board sessions;
+- mean same-date ordinary-watch control conversion: ~6–7%;
+- NVDA first preserved >=2-evidence watch snapshot: Sep-04;
+- NVDA T1 `buy_now`: Sep-23, 11 observed board sessions later.
+
+Do not optimize this head on H5 return. Its intended job is early research attention + continuity while entry remains closed.
+
+
 ## Established facts — do not waste the run rediscovering them
 
 ### NVDA decision transition
