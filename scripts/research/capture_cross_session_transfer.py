@@ -7,6 +7,8 @@ Stage 1: admit_source_event freezes first-disclosure source facts and protocol
 eligibility only. Optional source resolution: amend_source_state can attach a
 later corroboration/confirmation receipt to that same event, but may not move
 the first-disclosure clock, change cohort eligibility, or mint a second event.
+Stage 1.5: certify_source_day + seal_epoch2_admission require a completed UTC
+source-day census (Reuters/wire + UKMTO) before any post-activation U.S. leg.
 Stage 2: freeze_matched_controls deterministically selects the frozen prior/next
 same-clock controls from completed observed SMH sessions plus admitted-event dates.
 It requires an exact source-completeness cutoff and refuses to certify the cutoff's
@@ -51,6 +53,7 @@ from scripts.research import replay_event_microstructure as replay  # noqa: E402
 
 SCHEMA_ADMISSION = "research.cross_session_transfer_admission.v1"
 SCHEMA_SOURCE_AMENDMENT = "research.cross_session_transfer_source_amendment.v1"
+SCHEMA_SOURCE_DAY = "research.cross_session_transfer_source_day_census.v1"
 SCHEMA_CONTROLS = "research.cross_session_transfer_matched_controls.v1"
 SCHEMA_US = "research.cross_session_transfer_us_measurement.v1"
 SCHEMA_CONTROL_US = "research.cross_session_transfer_control_us_measurement.v1"
@@ -61,6 +64,8 @@ V1_PROTOCOL_COMMIT = "0f9d4d88cf78b06ab9985d32be9df5c2bc929fd2"
 V1_PROTOCOL_FROZEN_AT = datetime(2026, 9, 26, 11, 16, 23, tzinfo=timezone.utc)
 V1_1_AMENDMENT_COMMIT = "d45af4450a31425a207866c33fc88a311713f7a4"
 V1_1_CHALLENGER_FROZEN_AT = datetime(2026, 9, 26, 21, 41, 1, tzinfo=timezone.utc)
+EPOCH2_ACTIVATION_COMMIT = "41c08c218efa8261d4750dd923c5b3d3c2ff3a79"
+EPOCH2_ACTIVATION_AT = datetime(2026, 10, 6, 4, 31, 47, tzinfo=timezone.utc)
 
 SOURCE_STATES = frozenset({"SOURCE_RESOLVED", "SOURCE_CONFOUNDED", "SOURCE_UNRESOLVED"})
 EVENT_CLASSES = frozenset(
@@ -76,6 +81,30 @@ END_OFFSET_MINUTES = 35
 BAR_TOLERANCE_MINUTES = 2
 MAX_CONTROL_SESSION_DISTANCE = 10
 HK_LOOKAHEAD_CALENDAR_DAYS = 21
+SOURCE_DAY_REQUIRED_CHANNELS = frozenset({"reuters_wire", "ukmto"})
+SOURCE_DAY_CHANNEL_STATES = frozenset({"COMPLETE"})
+SOURCE_DAY_DISPOSITIONS = frozenset({"ADMIT", "EXCLUDE", "UNRESOLVED_CLOCK"})
+EPOCH1_QUARANTINED_EVENT_IDS = frozenset(
+    {
+        "2026-09-28-russia-jet-drone-escalation-kyiv-dnipro",
+        "2026-09-29-israel-kills-north-gaza-hamas-armed-wing-chief",
+        "2026-09-30-russia-launches-heavy-ukraine-energy-grid-assault",
+        "2026-10-01-three-hormuz-tankers-hit-by-projectiles",
+        "2026-10-01-saudi-coalition-intercepts-four-drones-two-missiles",
+        "2026-10-02-yemen-government-twenty-taiz-strikes",
+        "2026-10-02-saudi-plans-houthi-offensive-red-sea",
+        "2026-10-03-riyadh-aramco-fire-houthi-claim",
+        "2026-10-04-yemen-government-major-offensive-launch",
+        "2026-10-05-yemen-forces-seize-bab-el-mandeb-positions",
+    }
+)
+LATE_NON_EVALUABLE_EVENT_IDS = frozenset(
+    {
+        "2026-09-30-final-us-forces-withdraw-iraq",
+        "2026-10-03-zelenskiy-doubles-russian-refinery-strikes",
+        "2026-10-04-russia-announces-intensified-ukraine-strikes",
+    }
+)
 
 AUTHORITY = {
     "tier": "research",
@@ -153,6 +182,286 @@ def _anchor_on_day(day: date, source_clock: datetime) -> datetime:
         source_clock.microsecond,
         tzinfo=timezone.utc,
     )
+
+
+def _payload_digest(value: Any) -> str:
+    payload = json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def certify_source_day(
+    *,
+    source_date: str,
+    source_coverage_complete_through: str,
+    channel_receipts: Sequence[Mapping[str, Any]],
+    candidate_dispositions: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Seal one completed UTC source day without touching market outcomes."""
+    day = _day(source_date, "source_date")
+    cutoff = _utc(
+        source_coverage_complete_through,
+        "source_coverage_complete_through",
+    )
+    next_midnight = datetime(
+        day.year,
+        day.month,
+        day.day,
+        tzinfo=timezone.utc,
+    ) + timedelta(days=1)
+    if cutoff < next_midnight:
+        raise CaptureContractError(
+            "source-day census cannot certify before the next UTC midnight"
+        )
+    if isinstance(channel_receipts, (str, bytes)) or not isinstance(
+        channel_receipts, Sequence
+    ):
+        raise CaptureContractError("channel_receipts must be an array")
+    channels: dict[str, dict[str, Any]] = {}
+    for idx, raw in enumerate(channel_receipts):
+        if not isinstance(raw, Mapping):
+            raise CaptureContractError(f"channel_receipts[{idx}] must be an object")
+        channel = str(raw.get("channel") or "").strip()
+        if not channel:
+            raise CaptureContractError(f"channel_receipts[{idx}].channel is required")
+        if channel in channels:
+            raise CaptureContractError(f"duplicate source-day channel: {channel}")
+        status = str(raw.get("status") or "").strip()
+        if status not in SOURCE_DAY_CHANNEL_STATES:
+            raise CaptureContractError(
+                f"source-day channel {channel} is not complete"
+            )
+        swept_through = _utc(
+            str(raw.get("swept_through") or ""),
+            f"channel_receipts[{idx}].swept_through",
+        )
+        if swept_through < next_midnight:
+            raise CaptureContractError(
+                f"source-day channel {channel} does not cover the full UTC day"
+            )
+        channels[channel] = {
+            "channel": channel,
+            "status": status,
+            "swept_through": _iso(swept_through),
+            "receipt": str(raw.get("receipt") or "").strip() or None,
+        }
+
+    missing = sorted(SOURCE_DAY_REQUIRED_CHANNELS - set(channels))
+    if missing:
+        raise CaptureContractError(
+            "missing required source-day channel(s): " + ", ".join(missing)
+        )
+
+    if isinstance(candidate_dispositions, (str, bytes)) or not isinstance(
+        candidate_dispositions, Sequence
+    ):
+        raise CaptureContractError("candidate_dispositions must be an array")
+
+    candidates: list[dict[str, Any]] = []
+    admitted_ids: list[str] = []
+    seen: set[str] = set()
+    for idx, raw in enumerate(candidate_dispositions):
+        if not isinstance(raw, Mapping):
+            raise CaptureContractError(
+                f"candidate_dispositions[{idx}] must be an object"
+            )
+        candidate_id = str(raw.get("candidate_id") or "").strip()
+        if not candidate_id:
+            raise CaptureContractError(
+                f"candidate_dispositions[{idx}].candidate_id is required"
+            )
+        if candidate_id in seen:
+            raise CaptureContractError(f"duplicate source candidate: {candidate_id}")
+        seen.add(candidate_id)
+        disposition = str(raw.get("disposition") or "").strip()
+        if disposition not in SOURCE_DAY_DISPOSITIONS:
+            raise CaptureContractError(
+                f"unsupported candidate disposition: {disposition}"
+            )
+        event_class = str(raw.get("event_class") or "").strip()
+        if event_class not in EVENT_CLASSES:
+            raise CaptureContractError(
+                f"unsupported candidate event_class: {event_class}"
+            )
+        parent_cluster_id = str(raw.get("parent_cluster_id") or "").strip()
+        reason = str(raw.get("reason") or "").strip()
+        available_raw = str(raw.get("available_at") or "").strip()
+        available_iso = None
+        if available_raw:
+            available = _utc(
+                available_raw,
+                f"candidate_dispositions[{idx}].available_at",
+            )
+            available_iso = _iso(available)
+            if available.date() != day:
+                raise CaptureContractError(
+                    f"candidate {candidate_id} clock is outside source_date"
+                )
+        if disposition == "ADMIT":
+            if available_iso is None:
+                raise CaptureContractError(
+                    f"admitted candidate {candidate_id} requires exact available_at"
+                )
+            if not parent_cluster_id:
+                raise CaptureContractError(
+                    f"admitted candidate {candidate_id} requires parent_cluster_id"
+                )
+            admitted_ids.append(candidate_id)
+        elif not reason:
+            raise CaptureContractError(
+                f"{disposition} candidate {candidate_id} requires reason"
+            )
+        candidates.append(
+            {
+                "candidate_id": candidate_id,
+                "event_class": event_class,
+                "disposition": disposition,
+                "available_at": available_iso,
+                "parent_cluster_id": parent_cluster_id or None,
+                "reason": reason or None,
+            }
+        )
+
+    core = {
+        "source_date": day.isoformat(),
+        "source_coverage_complete_through": _iso(cutoff),
+        "required_channels": sorted(SOURCE_DAY_REQUIRED_CHANNELS),
+        "channels": [channels[key] for key in sorted(channels)],
+        "candidate_dispositions": candidates,
+        "admitted_event_ids": sorted(admitted_ids),
+    }
+    return {
+        "schema": SCHEMA_SOURCE_DAY,
+        "authority": dict(AUTHORITY),
+        "state": "COMPLETE",
+        "epoch": "EPOCH_2",
+        "epoch2_activation_commit": EPOCH2_ACTIVATION_COMMIT,
+        "epoch2_activation_at": _iso(EPOCH2_ACTIVATION_AT),
+        **core,
+        "sha256": _payload_digest(core),
+        "hk_outcome_state": "NOT_READ",
+        "persistence": "none_stdout_only",
+    }
+
+
+def seal_epoch2_admission(
+    admission: Mapping[str, Any],
+    source_day_census: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Bind an admission to its completed Epoch-2 source-day census."""
+    if admission.get("schema") != SCHEMA_ADMISSION:
+        raise CaptureContractError("admission schema mismatch")
+    if admission.get("outcome_state") != "NOT_READ":
+        raise CaptureContractError("cannot seal Epoch-2 admission after outcome read")
+    available = _utc(
+        str(admission.get("available_at") or ""),
+        "admission.available_at",
+    )
+    if available <= EPOCH2_ACTIVATION_AT:
+        raise CaptureContractError(
+            "event does not postdate the Epoch-2 activation boundary"
+        )
+    if source_day_census.get("schema") != SCHEMA_SOURCE_DAY:
+        raise CaptureContractError("source-day census schema mismatch")
+    if source_day_census.get("state") != "COMPLETE":
+        raise CaptureContractError("source-day census is not complete")
+    if source_day_census.get("epoch") != "EPOCH_2":
+        raise CaptureContractError("source-day census epoch mismatch")
+    if str(source_day_census.get("source_date") or "") != available.date().isoformat():
+        raise CaptureContractError("source-day census date mismatch")
+    admitted_ids = source_day_census.get("admitted_event_ids")
+    if not isinstance(admitted_ids, Sequence) or isinstance(admitted_ids, (str, bytes)):
+        raise CaptureContractError("source-day admitted_event_ids is malformed")
+    event_id = str(admission.get("event_id") or "")
+    if event_id not in admitted_ids:
+        raise CaptureContractError("event is not admitted by the source-day census")
+
+    matched = None
+    for candidate in source_day_census.get("candidate_dispositions") or []:
+        if isinstance(candidate, Mapping) and candidate.get("candidate_id") == event_id:
+            matched = candidate
+            break
+    if not isinstance(matched, Mapping) or matched.get("disposition") != "ADMIT":
+        raise CaptureContractError("event lacks ADMIT disposition in source-day census")
+    if str(matched.get("available_at") or "") != _iso(available):
+        raise CaptureContractError("source-day candidate clock mismatch")
+
+    sealed = dict(admission)
+    sealed["source_epoch"] = "EPOCH_2"
+    sealed["source_admission_integrity"] = "SOURCE_DAY_COMPLETE"
+    sealed["parent_cluster_id"] = matched.get("parent_cluster_id")
+    sealed["source_day_census_receipt"] = {
+        "schema": SCHEMA_SOURCE_DAY,
+        "state": "COMPLETE",
+        "source_date": source_day_census.get("source_date"),
+        "source_coverage_complete_through": source_day_census.get(
+            "source_coverage_complete_through"
+        ),
+        "sha256": source_day_census.get("sha256"),
+        "admitted_event_ids": list(admitted_ids),
+        "epoch2_activation_commit": EPOCH2_ACTIVATION_COMMIT,
+        "epoch2_activation_at": _iso(EPOCH2_ACTIVATION_AT),
+    }
+    return sealed
+
+
+def _validate_measurement_admission(admission: Mapping[str, Any]) -> None:
+    """Fail before transport when source-admission integrity is not measurement-safe."""
+    event_id = str(admission.get("event_id") or "")
+    if event_id in EPOCH1_QUARANTINED_EVENT_IDS:
+        raise CaptureContractError("Epoch-1 event is quarantined from further measurement/HSI")
+    if event_id in LATE_NON_EVALUABLE_EVENT_IDS:
+        raise CaptureContractError("late-recovered event is non-evaluable and may not be measured")
+
+    available = _utc(
+        str(admission.get("available_at") or ""),
+        "admission.available_at",
+    )
+    observed = _utc(
+        str(admission.get("observed_at") or ""),
+        "admission.observed_at",
+    )
+    if available <= EPOCH2_ACTIVATION_AT and observed > EPOCH2_ACTIVATION_AT:
+        raise CaptureContractError(
+            "pre-activation event discovered after Epoch-2 activation is late/non-evaluable"
+        )
+    if available <= EPOCH2_ACTIVATION_AT:
+        return
+
+    if admission.get("source_epoch") != "EPOCH_2":
+        raise CaptureContractError(
+            "Epoch-2 event requires sealed complete source-day census before measurement"
+        )
+    if admission.get("source_admission_integrity") != "SOURCE_DAY_COMPLETE":
+        raise CaptureContractError("Epoch-2 source-day admission is not complete")
+    receipt = admission.get("source_day_census_receipt")
+    if not isinstance(receipt, Mapping):
+        raise CaptureContractError("Epoch-2 source-day census receipt is missing")
+    if receipt.get("schema") != SCHEMA_SOURCE_DAY or receipt.get("state") != "COMPLETE":
+        raise CaptureContractError("Epoch-2 source-day census receipt is invalid")
+    if str(receipt.get("source_date") or "") != available.date().isoformat():
+        raise CaptureContractError("Epoch-2 source-day receipt date mismatch")
+    cutoff = _utc(
+        str(receipt.get("source_coverage_complete_through") or ""),
+        "source_day_census_receipt.source_coverage_complete_through",
+    )
+    next_midnight = datetime(
+        available.year,
+        available.month,
+        available.day,
+        tzinfo=timezone.utc,
+    ) + timedelta(days=1)
+    if cutoff < next_midnight:
+        raise CaptureContractError("Epoch-2 source-day census does not cover the full UTC day")
+    admitted_ids = receipt.get("admitted_event_ids")
+    if not isinstance(admitted_ids, Sequence) or isinstance(admitted_ids, (str, bytes)):
+        raise CaptureContractError("Epoch-2 admitted_event_ids receipt is malformed")
+    if event_id not in admitted_ids:
+        raise CaptureContractError("Epoch-2 event is absent from its source-day receipt")
 
 
 def admit_source_event(
@@ -361,6 +670,7 @@ def freeze_matched_controls(
         raise CaptureContractError("event predates the V1 prospective boundary")
     if admission.get("outcome_state") != "NOT_READ":
         raise CaptureContractError("matched-control freeze is forbidden after outcome read")
+    _validate_measurement_admission(admission)
 
     available = _utc(str(admission.get("available_at") or ""), "admission.available_at")
     event_date = available.date()
@@ -505,6 +815,7 @@ def measure_us_response(
         raise CaptureContractError("admission schema mismatch")
     if admission.get("primary_v1_eligible") is not True:
         raise CaptureContractError("event predates the V1 prospective boundary")
+    _validate_measurement_admission(admission)
 
     available = _utc(str(admission.get("available_at") or ""), "admission.available_at")
     session = available.date()
@@ -566,6 +877,7 @@ def measure_control_us_response(
     """Measure one frozen same-clock U.S. control and never read HK outcomes."""
     if admission.get("schema") != SCHEMA_ADMISSION:
         raise CaptureContractError("admission schema mismatch")
+    _validate_measurement_admission(admission)
     if control_selection.get("schema") != SCHEMA_CONTROLS:
         raise CaptureContractError("control selection schema mismatch")
     if str(control_selection.get("event_id") or "") != str(admission.get("event_id") or ""):
@@ -706,6 +1018,7 @@ def gate_hk_outcome_read(
     """Return a readiness receipt only after every pre-HK prerequisite is frozen."""
     if admission.get("schema") != SCHEMA_ADMISSION:
         raise CaptureContractError("admission schema mismatch")
+    _validate_measurement_admission(admission)
     if admission.get("outcome_state") != "NOT_READ":
         raise CaptureContractError("HK outcome gate cannot run after outcome read")
     if controls.get("schema") != SCHEMA_CONTROLS:
@@ -1008,6 +1321,22 @@ def _parser() -> argparse.ArgumentParser:
     amend.add_argument("--source-ref", required=True)
     amend.add_argument("--headline", required=True)
 
+    certify_day = sub.add_parser(
+        "certify-source-day",
+        help="seal a completed Epoch-2 UTC source-day census before U.S. measurement",
+    )
+    certify_day.add_argument("--source-date", required=True)
+    certify_day.add_argument("--source-coverage-complete-through", required=True)
+    certify_day.add_argument("--channel-receipts-file", required=True)
+    certify_day.add_argument("--candidate-dispositions-file", required=True)
+
+    seal = sub.add_parser(
+        "seal-epoch2-admission",
+        help="bind one admission to its completed Epoch-2 source-day census",
+    )
+    seal.add_argument("--admission-file", required=True)
+    seal.add_argument("--source-day-census-file", required=True)
+
     controls = sub.add_parser(
         "freeze-controls",
         help="freeze calendar-only matched controls before any HK outcome read",
@@ -1077,6 +1406,33 @@ def main(argv: Sequence[str] | None = None) -> int:
                 source_ref=args.source_ref,
                 headline=args.headline,
             )
+        elif args.command == "certify-source-day":
+            with Path(args.channel_receipts_file).open("r", encoding="utf-8") as fh:
+                channel_payload = json.load(fh)
+            with Path(args.candidate_dispositions_file).open("r", encoding="utf-8") as fh:
+                candidate_payload = json.load(fh)
+            channels = (
+                channel_payload.get("channels")
+                if isinstance(channel_payload, Mapping)
+                else channel_payload
+            )
+            candidates = (
+                candidate_payload.get("candidates")
+                if isinstance(candidate_payload, Mapping)
+                else candidate_payload
+            )
+            result = certify_source_day(
+                source_date=args.source_date,
+                source_coverage_complete_through=args.source_coverage_complete_through,
+                channel_receipts=channels,
+                candidate_dispositions=candidates,
+            )
+        elif args.command == "seal-epoch2-admission":
+            with Path(args.admission_file).open("r", encoding="utf-8") as fh:
+                admission = json.load(fh)
+            with Path(args.source_day_census_file).open("r", encoding="utf-8") as fh:
+                source_day_census = json.load(fh)
+            result = seal_epoch2_admission(admission, source_day_census)
         elif args.command == "freeze-controls":
             with Path(args.admission_file).open("r", encoding="utf-8") as fh:
                 admission = json.load(fh)

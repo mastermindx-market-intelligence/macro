@@ -890,3 +890,149 @@ def test_capture_freeze_controls_requires_full_event_date_source_coverage():
             source_coverage_complete_through="2026-09-29T23:59:59Z",
         )
 
+def _epoch2_source_day(
+    *,
+    candidate_id="evt-prospective",
+    available_at="2026-10-06T13:45:00Z",
+    source_date="2026-10-06",
+):
+    return capture.certify_source_day(
+        source_date=source_date,
+        source_coverage_complete_through="2026-10-07T00:00:00Z",
+        channel_receipts=[
+            {
+                "channel": "reuters_wire",
+                "status": "COMPLETE",
+                "swept_through": "2026-10-07T00:00:00Z",
+                "receipt": "wire-sweep:oct6",
+            },
+            {
+                "channel": "ukmto",
+                "status": "COMPLETE",
+                "swept_through": "2026-10-07T00:00:00Z",
+                "receipt": "ukmto-sweep:oct6",
+            },
+        ],
+        candidate_dispositions=[
+            {
+                "candidate_id": candidate_id,
+                "event_class": "ceasefire_deescalation_or_escalation",
+                "disposition": "ADMIT",
+                "available_at": available_at,
+                "parent_cluster_id": "cluster-oct6",
+            }
+        ],
+    )
+
+
+def test_capture_epoch2_source_day_refuses_partial_utc_day():
+    with pytest.raises(capture.CaptureContractError, match="next UTC midnight"):
+        capture.certify_source_day(
+            source_date="2026-10-06",
+            source_coverage_complete_through="2026-10-06T23:59:59Z",
+            channel_receipts=[
+                {
+                    "channel": "reuters_wire",
+                    "status": "COMPLETE",
+                    "swept_through": "2026-10-07T00:00:00Z",
+                },
+                {
+                    "channel": "ukmto",
+                    "status": "COMPLETE",
+                    "swept_through": "2026-10-07T00:00:00Z",
+                },
+            ],
+            candidate_dispositions=[],
+        )
+
+
+def test_capture_epoch2_source_day_requires_reuters_and_ukmto():
+    with pytest.raises(capture.CaptureContractError, match="ukmto"):
+        capture.certify_source_day(
+            source_date="2026-10-06",
+            source_coverage_complete_through="2026-10-07T00:00:00Z",
+            channel_receipts=[
+                {
+                    "channel": "reuters_wire",
+                    "status": "COMPLETE",
+                    "swept_through": "2026-10-07T00:00:00Z",
+                }
+            ],
+            candidate_dispositions=[],
+        )
+
+
+def test_capture_epoch2_measurement_refuses_unsealed_admission_before_transport():
+    admission = _capture_admission("2026-10-06T13:45:00Z")
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="sealed complete source-day"):
+        capture.measure_us_response(admission, transport=transport)
+    assert calls == []
+
+
+def test_capture_epoch2_sealed_admission_allows_us_measurement():
+    admission = _capture_admission("2026-10-06T13:45:00Z")
+    sealed = capture.seal_epoch2_admission(admission, _epoch2_source_day())
+    calls = []
+    fixtures = {
+        "SPY": [
+            _vendor_row("2026-10-06T13:50:00Z", 100.0),
+            _vendor_row("2026-10-06T14:20:00Z", 101.0),
+        ],
+        "QQQ": [
+            _vendor_row("2026-10-06T13:50:00Z", 200.0),
+            _vendor_row("2026-10-06T14:20:00Z", 204.0),
+        ],
+        "SMH": [
+            _vendor_row("2026-10-06T13:50:00Z", 300.0),
+            _vendor_row("2026-10-06T14:20:00Z", 309.0),
+        ],
+    }
+
+    def transport(path, params):
+        symbol = path.split("/")[4]
+        calls.append(symbol)
+        return fixtures[symbol]
+
+    out = capture.measure_us_response(sealed, transport=transport)
+    assert calls == ["SPY", "QQQ", "SMH"]
+    assert sealed["source_epoch"] == "EPOCH_2"
+    assert sealed["source_admission_integrity"] == "SOURCE_DAY_COMPLETE"
+    assert sealed["parent_cluster_id"] == "cluster-oct6"
+    assert out["primary_v1"]["return_bps"] == pytest.approx(100.0)
+    assert out["challenger_v1_1"]["return_bps"] == pytest.approx(100.0)
+
+
+def test_capture_epoch1_quarantined_event_refuses_hsi_gate():
+    admission = _capture_admission("2026-09-28T13:55:00Z")
+    admission["event_id"] = "2026-09-28-russia-jet-drone-escalation-kyiv-dnipro"
+    with pytest.raises(capture.CaptureContractError, match="Epoch-1 event is quarantined"):
+        capture.gate_hk_outcome_read(admission, {}, {})
+
+
+def test_capture_late_recovered_event_refuses_us_measurement_before_transport():
+    admission = _capture_admission("2026-09-30T00:02:00Z")
+    admission["event_id"] = "2026-09-30-final-us-forces-withdraw-iraq"
+    admission["observed_at"] = "2026-10-06T05:00:00Z"
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="non-evaluable"):
+        capture.measure_us_response(admission, transport=transport)
+    assert calls == []
+
+
+def test_capture_epoch2_seal_requires_candidate_admit_disposition():
+    admission = _capture_admission("2026-10-06T13:45:00Z")
+    census = _epoch2_source_day(candidate_id="other-event")
+    with pytest.raises(capture.CaptureContractError, match="not admitted"):
+        capture.seal_epoch2_admission(admission, census)
+
