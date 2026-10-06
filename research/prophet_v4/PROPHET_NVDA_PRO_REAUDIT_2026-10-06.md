@@ -885,7 +885,7 @@ These are descriptive only and too small for promotion.
 
 Among the 55 H5-positive first-T2 episodes:
 
-- persistent-to-H10 group had higher mean C1 score (~31.1 vs ~26.5);
+- persistent-to-H10 group had higher mean **conviction score** (~31.1 vs ~26.5);
 - residual alpha was less negative (~-0.22 vs ~-0.40);
 - evidence-count mean was higher (~0.29 vs ~0.15);
 - `confluence_k` was higher (~0.34 vs ~0.10);
@@ -986,7 +986,7 @@ Across the v3 H5 watch lane:
 - only 27.3% positive excess vs SPY;
 - mean excess -1.59%.
 
-Simple refinements such as near-high, C1 score >=50 or nonnegative alpha did not rescue the cohort.
+Simple refinements such as near-high, **conviction score >=50**, or nonnegative alpha did not rescue the cohort.
 
 Therefore:
 
@@ -1096,6 +1096,91 @@ After ignition has occurred, update the probability that relative leadership wil
 This is the post-ignition survival problem described in §14.
 
 These should not be one model.
+
+
+---
+
+# 19. Current C1 cannot solve the early-attention problem by itself
+
+The production builder applies:
+
+> `us_board_rank.score_rows(wide["buy"], ...)`
+
+only to the **buy** lane.
+
+The watch / leaders / laggards lanes receive theme/context stamps and signal-age metadata, but they do not receive the same C1 fusion rank pass.
+
+This is a structural reason Prophet can be good at **prioritizing already-admitted names** while still being weaker at preserving earlier unresolved opportunities.
+
+A world-class Emergence head therefore cannot simply be “raise C1's weight.”
+
+It needs an **all-candidate research projection** owned by the existing candidate/evaluation plane, while leaving the canonical buy ranking and Entry Availability untouched until evidence is earned.
+
+Important owner boundary:
+
+- do not create a second production ranker;
+- do not let an emergence score admit a trade;
+- project the research-attention read onto existing candidate episodes / watch surfaces;
+- only the existing admission and Entry Availability owners determine whether a name becomes actionable.
+
+---
+
+# 20. Early attention -> later confirmation: preliminary conversion census
+
+The H5 grade ledger ends Sep-17, so it is censored for later state transitions. A raw-board state-only continuation through Sep-25 was used to avoid mistaking that censoring for “no conversion.”
+
+Starting from the **11 unique tickers** whose first v3 watch-lane observation carried two-or-more legacy evidence legs:
+
+- AMAT
+- AMG
+- BAC
+- COCO
+- FORM
+- GOOG
+- HUBG
+- INDV
+- MPWR
+- NVDA
+- PWR
+
+By Sep-25:
+
+- **AMAT** later carried a T2 technical tier while remaining on watch / `bounce_wait`;
+- **COCO** reached buy-lane T2 / `bounce_wait`;
+- **FORM** reached buy-lane T1;
+- **MPWR** reached buy-lane T2 / `bounce_wait`;
+- **NVDA** progressed watch -> T1 `buy_now` -> T3 extended -> T2 partial;
+- **PWR** reached buy-lane T1.
+
+Thus at least:
+
+- **6/11** later produced a T1/T2 technical confirmation in the observed state window;
+- **5/11** reached a buy-lane T1/T2 state.
+
+This is a tiny, selected, right-censored sample. It is not a conversion-rate estimate for production.
+
+But it is enough to establish a useful research question:
+
+> **Can an emergence system identify unresolved candidates whose later probability of valid technical confirmation is unusually high?**
+
+That is a much better objective for early research attention than five-day return from the first watch stamp.
+
+## 20.1 NVDA is the strongest golden transition
+
+NVDA's raw-board progression after the early watch state was:
+
+- Sep-18: watch / await_confluence / HOLD;
+- Sep-21: watch / await_confluence / FRESH BUY;
+- Sep-22: watch / await_confluence / FRESH BUY;
+- Sep-23: **buy / T1 / buy_now**;
+- Sep-24: watch / T3 / extended;
+- Sep-25: **buy / T2 / partial**.
+
+This demonstrates why a durable opportunity episode should not disappear when one nightly gate changes.
+
+The candidate's **importance state** and its **entry state** need separate continuity.
+
+That continuity must be implemented through existing candidate-episode ownership, not a new memory/lifecycle plane.
 
 
 # Final ruling
