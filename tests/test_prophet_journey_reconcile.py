@@ -2175,3 +2175,21 @@ def test_input_integrity_boolean_source_string_is_not_a_substring(source, shown)
                                         ("来源原文", "来源原文")])
 def test_input_integrity_boolean_source_string_remains_verbatim(source, shown):
     assert _integrity_field("signal.above200", source, shown) == []
+
+
+def test_j12_fail_alert_with_plans_only_source_population():
+    soup = BeautifulSoup(_full_page(ticker="TEST1", has_alert=True), _pjr.HTML_PARSER)
+    su = _standouts_payload(ticker="TEST1", in_buy=False)
+    su["buy"] = []
+    su["watch"] = []
+    ix = _index_payload(with_plan=True)
+    chk = _pjr._check_j12(soup, ix, su, "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
+
+
+def test_j12_fail_alert_with_buy_only_source_population():
+    soup = BeautifulSoup(_full_page(ticker="TEST1", has_alert=True), _pjr.HTML_PARSER)
+    su = _standouts_payload(ticker="TEST1", in_buy=True)
+    ix = _index_payload(with_plan=False)
+    chk = _pjr._check_j12(soup, ix, su, "TEST1", [])
+    assert chk["status"] == "FAIL", chk

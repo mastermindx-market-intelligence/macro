@@ -1555,7 +1555,7 @@ def _check_j12(soup: BeautifulSoup, index: dict[str, Any],
             alerts.append(el.get_text(" ", strip=True))
     plans_nonempty = bool(index.get("plans"))
     buy_nonempty = bool(standouts.get("buy"))
-    if alerts and plans_nonempty and buy_nonempty:
+    if alerts and (plans_nonempty or buy_nonempty):
         return _check_status(
             "FAIL",
             "tracking-unavailable alert absent when sources populated",
