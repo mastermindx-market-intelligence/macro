@@ -249,6 +249,82 @@ def test_visit_discovery_ok_health_missing_attempt_is_incomplete_receipt():
     assert snap["n_first_observed_recent"] == 0
 
 
+def test_visit_discovery_unscoped_positive_is_preserved_and_blocks_global_absence():
+    row = _visit_row(
+        "A-unscoped", "", "2026-10-02T09:00:00+08:00",
+        recorded="2026-10-02T02:00:00+00:00",
+    )
+    snap = bus._visit_discovery_snapshot(
+        [row],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    assert snap["n_rows_observed"] == 1
+    assert snap["n_unscoped_positive_rows"] == 1
+    assert snap["n_recent_companies"] == 0
+    assert snap["examples"] == []
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == \
+        "visit_company_identity_unresolved"
+
+    unknown = snap["unscoped_positive_evidence"]
+    assert len(unknown) == 1
+    assert unknown[0]["announcement_id"] == "A-unscoped"
+    assert unknown[0]["coverage_state"] == "unknown_company_identity"
+    assert unknown[0]["company_identity_state"] == "unresolved"
+    assert unknown[0]["source_published_at"] == "2026-10-02T09:00:00+08:00"
+    assert unknown[0]["system_recorded_at"] == "2026-10-02T02:00:00+00:00"
+    assert unknown[0]["may_rank"] is False
+    assert unknown[0]["may_trade"] is False
+
+
+def test_visit_discovery_unscoped_positive_blocks_other_company_baseline_and_first_seen():
+    visits = [
+        _visit_row(
+            "A-known", "000029", "2026-10-02T09:00:00+08:00",
+            recorded="2026-10-02T02:00:00+00:00",
+        ),
+        _visit_row(
+            "A-unknown", "", "2026-10-02T10:00:00+08:00",
+            recorded="2026-10-02T03:00:00+00:00",
+        ),
+    ]
+    snap = bus._visit_discovery_snapshot(
+        visits,
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    assert snap["n_unscoped_positive_rows"] == 1
+    assert snap["n_recent_companies"] == 1
+    known = snap["examples"][0]
+    assert known["sec_code"] == "000029"
+    assert known["recent_count"] == 1
+    assert known["baseline_state"] == "blocked_unresolved_company_identity"
+    assert known["first_seen_state"] == "unknown_unresolved_company_identity"
+    assert snap["n_measured_baselines"] == 0
+    assert snap["n_first_observed_recent"] == 0
+
+
+
+
 def test_visit_discovery_unusable_source_clock_preserves_explicit_unknown_company():
     row = _visit_row(
         "A-badsource", "000027", "2026-10-02T09:00:00+08:00",
