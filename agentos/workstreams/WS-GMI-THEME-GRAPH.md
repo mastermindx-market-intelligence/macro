@@ -34,6 +34,7 @@ discoveries:
   - DSC:A-STACKED-PR-ON-A-NON-MAIN-BASE-GETS-NO-PULL-REQUEST-CI
   - DSC:GMI-D1-SEAMS-IMPORT-WAVE-C-RIGHTS-USE
   - DSC:GMI-D2C-AND-D2D-CARRIERS-CONFLICT-IN-LEGACY-JOBS-YML
+  - DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION
 waves:
   - id: W0
     title: Graph scaffolding
@@ -51,73 +52,80 @@ waves:
     pr: 5718
   - id: D2C
     title: "PIT vintage completion — gmi-theme-pit-d2c-20260827-sol-001"
-    status: in_progress
+    status: done
     pr: 8432
     next_action: >
-      Delivered on PR #8432 (DRAFT, HOLD-FOR-SOL, head 54d17ebcb1c1, +2281/-71 over 12 files,
-      ci.yml 37206291268 green on head). Wave E qualification 2026-10-05: git merge-tree against
-      origin/main 20eb503a09 is CLEAN with zero path movement since the pin; no cosmetic ancestry
-      join was made. Release is Sol's (one HOLD-RELEASED line on the carrier); never ready, arm or
-      merge it from a worker seat. The ontology-action authority resolver stays UNWIRED per the
-      carrier body (Chairman gate). Composition note: #8432 and #8435 conflict in
-      .github/ci/legacy-jobs.yml — whichever lands second rebases its CI block
-      (DSC:GMI-D2C-AND-D2D-CARRIERS-CONFLICT-IN-LEGACY-JOBS-YML).
+      MERGED 2026-10-06T09:50:19Z as squash 0b1fe8873054 at head f5b9a42b91fb, under Sol's
+      HOLD-RELEASED (#8324 comment 6009049466; landing order #8417 -> #8486 -> #8455 ->
+      #8432/#8435) on concluded checks: exact-head merge with --match-head-commit, then a bare
+      git fetch origin main and a per-path blob comparison. Its CI block
+      (tests/test_theme_graph_membership_lifecycle.py) is wired in main's
+      .github/ci/legacy-jobs.yml. The ontology-action authority resolver is Chairman gate #5,
+      carried separately by #8507 (wave G5). DO_NOT_REDO.
   - id: D2D
     title: "Ontology + probation breadth — gmi-theme-ontology-d2d-20260827-sol-001"
-    status: in_progress
+    status: done
     pr: 8435
     next_action: >
-      Delivered on PR #8435 (DRAFT, HOLD-FOR-SOL, head 7429a3e5f6da, +5858/-43 over 6 files
-      including tests/test_theme_graph_structural_owner_binding.py and its CI step; ci.yml
-      37242875242 green on head). Wave E qualification 2026-10-05: merge-tree against origin/main
-      CLEAN, zero path movement. Release is Sol's. It CONFLICTS with #8432 in
-      .github/ci/legacy-jobs.yml (merge-base 4294fd498e8c, one content conflict, verified with
-      git merge-tree --write-tree on 2026-10-05): the second carrier to land must rebase its
-      legacy-jobs block, and a pack is one check so the heal is never split across two PRs.
+      MERGED 2026-10-06T10:42:10Z as squash 79b566f5c0cc at head 69a1aa7d90cb (ci.yml
+      37447308219 success), second of the pair, so its legacy-jobs.yml block was composed over
+      #8432's in the same carrier: both tests/test_theme_graph_membership_lifecycle.py and
+      tests/test_theme_graph_structural_owner_binding.py are wired on main
+      (DSC:GMI-D2C-AND-D2D-CARRIERS-CONFLICT-IN-LEGACY-JOBS-YML). Same HOLD-RELEASED,
+      exact-head merge and blob verification as D2C. DO_NOT_REDO.
   - id: D2E
     title: "Rights / coverage / D2 acceptance — gmi-theme-accept-d2e-20260827-sol-001"
-    status: todo
+    status: in_progress
     pr: 8488
     depends_on: [D2C, D2D]
     next_action: >
-      Pre-acceptance census DELIVERED and seat-accepted on PR #8488
-      (research/theme_graph/D2E_PRE_ACCEPTANCE_CENSUS_2026-10-05.md + d2e_precensus_2026-10-05.json):
-      main+#8432 composition slice 524 passed / 1 skipped; #8435 could not be composed because of the
-      legacy-jobs.yml conflict; contracts guard --selftest OK; natural store on main computed_at
-      2026-10-05T07:55:06Z lane nightly, 3,882 nodes, 505 measurement_candidate / 138 semantic_only.
-      D2B3 natural-proof reconciliation was NOT executed. Five DECISIONS REQUIRED are carried in
-      research/GMI_THEME_GRAPH_CONTINUATION_HANDOFF_2026-10-05.md section 3 (finviz_themes and
-      ths_concepts rights class, us_standouts.json family or exclusion, probation relation_events
-      source_ref prefix, D2E release after Sol accepts #8432+#8435). The census PR #8488 is MERGED
-      (squash 192a46de8be8). Acceptance closes only after D2C and D2D land and the D2B3
-      clause is reconciled against the then-current nightly receipt.
+      D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc), so acceptance is live as a
+      seat-commissioned lane in three phases: P1 acceptance against current main; P2
+      reconciliation of the D2B3 natural-proof clause against the 2026-10-07 nightly receipt
+      (daily.yml crons 30 22 and 30 23 UTC); P3 an independent read-only review. Acceptance
+      closes only on P2 natural evidence; the merged census #8488 (192a46de8be8) and green PRs
+      are inputs, not acceptance. Gate #2 (rights class) is closed by #8509 (wave G2); gate #5
+      (ontology-action authority) is #8507 (wave G5).
   - id: W3B
     title: "Sole local + canonical ThemeState — gmi-theme-state-w3b-20260827-sol-001"
-    status: todo
+    status: in_progress
     depends_on: [D2E]
     next_action: >
-      Held until accepted D2. Eligibility precedes state; named legs only; reconcile the
-      existing Neural Web thematic-state lineage so one owner producer/truth remains.
+      Substrate landed without a third producer: #8455 (731a23fb64b9) recovered the sealed
+      state owner and the accepted-generation reader. In flight: #8539 (gate #8 G1, DRAFT)
+      makes the existing LEGACY publish also write the validated graph theme_state/v1 shadow
+      through generation.write_atomic inside generation.family_lock, because the production
+      nightly never calls publish_generation
+      (DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION). Legacy
+      neuralweb.theme_state.v1 and CTE consumers stay compatible during migration (gate #8
+      ruling). W3B is accepted only after D2E acceptance and a nightly receipt showing the
+      shadow state written.
   - id: W3C
     title: "Selection Cohort Intelligence — gmi-theme-cohort-w3c-20260827-sol-001"
-    status: todo
+    status: in_progress
     depends_on: [W3B]
     next_action: >
-      Held until W3B. Read already-finalized U.S./China selections unchanged and attach
-      PIT local memberships, ThemeState, canonical relations and descriptive overlap.
-      Zero upstream selection/ranking authority.
+      Seams landed: #8417 (ef1f7db98cff, CTE state successor and W3C finalized-cohort
+      readers), #8486 (072475fe21c2, selection-clock qualified_reads), #8524 (f255148cf9c7,
+      gate #8 lane A read-only US/CN selection-cohort product projection), #8538
+      (accd1db56f8d, gate #8 phase 2, qualified_reads wired into the US W3C read through a
+      3-key adapter). In flight: #8539 (G1 shadow write), a reads-owner repair from the Wave G
+      pass-1 audit (M1: a typed OWNER_UNAVAILABLE row instead of a raise; M2:
+      instant-precision PIT visibility, so a fact computed after known_at stays invisible) and
+      the Terminal US projection (gate #8 lane B on ubuntu1, per gate #6). Then a Wave G
+      pass-2 read-only integrator audit over the landed tree, and production proof on the
+      first nightly after the last landing. Invariant: source order and reasons preserved and
+      the six authority flags in engine/theme_graph/selection_cohort.py stay False
+      (authority_ceiling research_internal_only); no candidate insertion, ranking, readiness,
+      sizing or board mutation.
   - id: W-A
     title: "ThemeState owner adapter + CTE-v3 lineage on the state carrier (#8455)"
-    status: in_progress
+    status: done
     pr: 8455
     next_action: >
-      Wave A 2026-10-05: lineage merge d3195488ef6 plus the data/site integrity remedy 61ed68e2078
-      pushed as an ordinary merge onto #8455 (029fe5b17f0f), then the round-2 repair 4b38f2501a3b
-      (legacy-jobs.yml path widenings for regime-outlook-mapping and nw-lobe-unfreeze, the
-      contract-delta remedy). ci.yml 37307906336 on 4b38f2501a3b completed/success 12:45Z; the
-      earlier reds are classified on the carrier (ci-pack-0 q06 inherited, healed by #8484;
-      contract-delta own, closed). PARKED: Sol-held DRAFT, never ready/arm/merge; next act is Sol's
-      release ruling. Never push the stale local lineage branch over the current head.
+      MERGED 2026-10-06T08:32:36Z as squash 731a23fb64b9 at head 615489e95d0f under Sol's
+      HOLD-RELEASED; exact-head merge, blob-verified. DO_NOT_REDO; never push the stale local
+      lineage branch anywhere.
   - id: W-C
     title: "Current-use rights capture engine/theme_graph/rights_use.py (#8485)"
     status: done
@@ -129,25 +137,20 @@ waves:
       (DSC:GMI-D1-SEAMS-IMPORT-WAVE-C-RIGHTS-USE).
   - id: W-D1
     title: "W3C seams on the CTE successor — selection cohort publication (#8417)"
-    status: in_progress
+    status: done
     pr: 8417
     next_action: >
-      Lane result ACCEPTED at d02ebf451f1d. After #8485 merged, the seat re-read the carrier and
-      pushed a plain merge of origin/main fd2552813811 (head 65ee41785e1c, no file edits; local
-      test_first_party_import_names 15 passed); one seat comment classifies both prior reds
-      (ci-pack-0 q06 inherited → #8484; ci-pack-10 import dependency → #8485). CI on 65ee41785e1c
-      and on the path-widening repair head bddb73d9cb9e: ci.yml 37320358321 in flight at record time (expected: ci-pack-0 + contract-delta green; ci-pack-2 inherits main's readiness red until this PR lands, then a plain merge-of-main re-proof); seat classification comment 5995904316. PARKED: Sol-held DRAFT, never ready/arm/merge; release order
-      #8417 → #8486. Never vendor rights_use into #8417.
+      MERGED 2026-10-06T05:59:40Z as squash ef1f7db98cff at head d6ee81d9f536, first in Sol's
+      landing order (HOLD-RELEASED 6009049466); blob-verified. DO_NOT_REDO; rights_use stays
+      imported from main, never vendored.
   - id: W-D2
     title: "Selection-clock qualified reads engine/theme_graph/selection_cohort_reads.py (#8486)"
-    status: in_progress
+    status: done
     pr: 8486
     next_action: >
-      Lane result ACCEPTED at head 2e2bcd75ca62 (192 passed / 56 skipped locally; owner reads via
-      store/identity_resolution/rights/theme_state/ontology). Stacked on #8417's branch, so it is
-      PARKED by inheritance and carries a structural ci-authority unsupported_base_ref red with no
-      pull_request ci/fences runs (DSC:A-STACKED-PR-ON-A-NON-MAIN-BASE-GETS-NO-PULL-REQUEST-CI).
-      Do not retarget to main before #8417 lands. Release order: #8485 -> #8417 -> #8486.
+      MERGED 2026-10-06T07:30:55Z as squash 072475fe21c2 at head 7e18a73bbdd4, after #8417 in
+      the landing order; blob-verified. DO_NOT_REDO. The Wave G pass-1 M1/M2 findings against
+      selection_cohort_reads.py are carried by the W3C repair, not by reopening this wave.
   - id: W-G
     title: "Independent completion-ruler audit (#8487)"
     status: done
@@ -169,6 +172,28 @@ waves:
       exact head); both census paths blob-verified on origin/main. DO_NOT_REDO.
       The v2/cohort Terminal consumer is a Sol/Chairman product decision,
       not a lane to spawn; re-census only if the Terminal pin or the C0 writer moves.
+  - id: G2
+    title: "Chairman gate #2: finviz_themes and ths_concepts retained internal_only (#8509)"
+    status: done
+    pr: 8509
+    next_action: >
+      MERGED 2026-10-06T05:57:12Z as squash 89f520972733. Ruling: both vendor families are
+      internal-only, and an internal-only vendor input may never launder restricted structure
+      into a house-owned output. DO_NOT_REDO.
+  - id: G5
+    title: "Chairman gate #5: read-only relation-action owner resolver in the probation owner (#8507)"
+    status: done
+    pr: 8507
+    next_action: >
+      MERGED 2026-10-06T11:28:40Z as squash cbfa20a45d84 at exact head 6d01445b12c1 after the
+      stacking dependency on #8432 was met (#8432 merged as 0b1fe8873054). The seat that set
+      the hold released it in comment 6015282302. All binding checks concluded green,
+      including ci.yml run 37452837827. Scope landed as ruled: a READ-ONLY resolver inside the
+      existing probation owner, typed OWNER_ACTION_AUTHORITY_UNAVAILABLE, with no new store,
+      queue, lifecycle, curator, graph, rank, gate, size or trade authority, and no
+      auto-ratification. tests/test_theme_graph_relation_action_resolver.py is wired in main's
+      legacy-jobs.yml. Its first natural exercise is the 10-07 nightly theme-graph build,
+      which the D2E acceptance reads.
   - id: TRANSMISSION-FOLD
     title: "Legacy Transmission/Contagion frontier folded into current owners"
     status: done
@@ -224,19 +249,21 @@ landmines:
     Watchers and Slack are attention/transport only. Once a lawful receiver/communication
     path exists, every watcher-enabled child requires explicit CONTINUE/STOP semantics;
     terminal STOP disarms both temporary watchers and does not authorize the next child.
+  - >-
+    The production nightly runs scripts/build_thematic_state.py with no --mode, so LEGACY never
+    calls publish_generation: any state that must reach production is written through
+    generation.write_atomic inside generation.family_lock in the LEGACY branch, and an audit
+    that expects publish_generation there will mis-judge it
+    (DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION).
 next_action: >
-  Seat 6f14c2da (Fable Meta-CEO, Chairman handoff 2026-10-05 on PR #8324 comment 5991777960)
-  carries the program; resume from research/GMI_THEME_GRAPH_CONTINUATION_HANDOFF_2026-10-05.md
-  section 4. Order: land #8485 on concluded green and blob-verify; re-prove #8417 against main
-  after a freshness re-read (one comment, never merge); one result comment on #8455; seat
-  checkpoint on #8324 (own fence >5991959730); Wave F macro-side CTE/R2 contract census (read-only,
-  no Terminal writes; m1 Terminal host auth is refused and is a Chairman gate); then hand the
-  section 3 gate list to Sol/Chairman last. D2C #8432 and D2D #8435 are delivered, CI-green and
-  qualified against main; their release and composition order (legacy-jobs.yml conflict) is Sol's.
-  D2E acceptance, W3B and W3C remain dependency-held behind those releases. The Terra /
-  WAITING_CAPACITY placement text that stood here from 2026-08-28 is superseded: the children were
-  placed and delivered through the subagent fabric (cursor composer-2.5 on ubuntu1/ubuntu2 with
-  seat review; GLM host mini2 is disk-blocked, an operator act).
+  Seat 6f14c2da (Meta-CEO, Chairman handoff on #8324 comment 5991777960) carries the program;
+  resume from agentos/handoffs/GMI-THEME-GRAPH-2026-10-06.md. Landed 2026-10-06: #8509, #8417,
+  #8486, #8455, #8524, #8432, #8435, #8538, #8507. Next, in order: land #8539 (gate #8 G1) on
+  concluded green at its exact head; land the reads-owner repair (Wave G pass-1 M1/M2) and the
+  Terminal US projection (gate #8 lane B); run the Wave G pass-2 read-only integrator audit over
+  that tree; then read the 2026-10-07 nightly as the natural receipt for D2E acceptance P2, the G1
+  shadow state and the projection artifact. W3B and W3C close only on that production evidence.
+  Remaining operator acts (mini4 credential install, mini2 disk) are never seat work.
 ---
 
 ## Current production substrate
@@ -245,7 +272,8 @@ Natural GMI receipt at current reconciliation (D2E pre-acceptance census, 2026-1
 origin/main 20eb503a09): data/theme_graph/_meta.json computed_at 2026-10-05T07:55:06Z, lane
 nightly, 3,882 nodes, 505 measurement-candidate and 138 semantic-only local capability rows.
 Rights families on main: mastermind_curated = direct_display_ok (emission yes); finviz_themes and
-ths_concepts = unresolved (emission no). Two provenance strings have no SOURCE_PREFIX_FAMILY
+ths_concepts = internal_only since #8509
+(2026-10-06, emission no). Two provenance strings have no SOURCE_PREFIX_FAMILY
 mapping (data/theme_graph/probation/relation_events.v2.jsonl# and site/factordata/us_standouts.json).
 The earlier reconciliation (belief_time 2026-08-27, 3,881 nodes, 18 canonical themes with 61 THS
 mappings and 314 unmapped concepts) is predecessor context.
