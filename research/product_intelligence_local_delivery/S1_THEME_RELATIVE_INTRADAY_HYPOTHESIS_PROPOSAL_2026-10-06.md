@@ -120,6 +120,10 @@ Each row closes the S0 §Q6 pin or fills the named GAP. No value is justified by
 | 10 | Costs | Signal Foundry battery declares **8 bps** for **excess_return / absolute_return + single_series** cost-aware evaluations (`engine/signal_foundry/harness.py:13-14`) — a **declared assumption**, not estimated from outcomes, and **not** an intraday round-trip cost; **no** cost applied to the §1 descriptive Spearman statistic; optional display-tier sensitivity only | INHERITED | Accurate harness scope | S0 §Q6 costs GAP |
 | 11 | Coverage | **Session-validity:** if fewer than **80%** of scheduled constituent×hour cells in the forward window are present, **exclude** that session from the matured sample (not a thesis rejection); universe = tickers under existing hourly accrual (`.github/workflows/intraday.yml:55-60`) | STATED + INHERITED | Package S coverage on existing keys; validity separate from §1 interval rules | S0 §Q5 estate gap |
 
+**Stale-print note:** sessions flagged for **repeated** identical closes are excluded before maturity accrual (row 6).
+
+**Dividend note:** same-session windows omit overnight ex-date jumps; vendor **dividend** handling inside `adjusted: true` bars is row 7.
+
 **Bar alignment (collector, MAIN_PIN):** `scripts/build_polygon_intraday.py:262-263` requests Polygon aggregates with `adjusted: true` and **no RTH/session filter at write**; bars are clock-aligned UTC timestamps. The **09:00–10:00 ET** bar **mixes pre-market and RTH** under clock alignment — **ASSUMED** “first full RTH hourly bar” means the bar **ending 10:00 ET** until an **interval/alignment audit** (Package S / TOI W2) positively recovers RTH-only hourly labels (**S2 prerequisite**).
 
 **Clock owner consumption:** S1 follows **Technical Opportunity’s** U.S. equity clock/session ownership (`agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md:101`) and **does not** adopt `4H-CLOCK` or `195M-RTH` session partitions from `research/prophet_v4/astra_regime_indicator_handoff_20261004/02_SOURCE_CENSUS_AND_REUSE_MAP.md:116` until positively recovered.
