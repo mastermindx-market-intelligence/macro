@@ -54,6 +54,7 @@ def _canonical_json_digest(raw: bytes) -> str:
 def _git_env() -> dict[str, str]:
     env = dict(os.environ)
     env["GIT_NO_LAZY_FETCH"] = "1"
+    env["GIT_TERMINAL_PROMPT"] = "0"
     return env
 
 
@@ -83,17 +84,6 @@ def _rev_parse(repo: Path, ref: str) -> str | None:
         return None
     value = proc.stdout.strip()
     return value if _HEX40.fullmatch(value) is not None else None
-
-
-def _is_ancestor(repo: Path, ancestor: str, descendant: str) -> bool:
-    proc = subprocess.run(
-        ["git", "-C", str(repo), "merge-base", "--is-ancestor", ancestor, descendant],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=False,
-        env=_git_env(),
-    )
-    return proc.returncode == 0
 
 
 def _commit_time(repo: Path, commit: str) -> datetime | None:
@@ -128,6 +118,91 @@ def _first_nyse_session_open_strictly_after(moment: datetime) -> date | None:
     return None
 
 
+def _first_parent_commits(repo: Path, ref: str, path: str) -> list[str] | None:
+    """First-parent order on main is the only introduction order."""
+    proc = subprocess.run(
+        [
+            "git", "-C", str(repo), "--no-pager", "log",
+            "--first-parent", "--reverse", "--format=%H", ref, "--", path,
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+        text=True,
+        env=_git_env(),
+    )
+    if proc.returncode != 0:
+        return None
+    commits: list[str] = []
+    for line in proc.stdout.splitlines():
+        sha = line.strip()
+        if _HEX40.fullmatch(sha):
+            commits.append(sha)
+    return commits
+
+
+def _introduction_commit(repo: Path, ref: str, path: str, registration_digest: str) -> str | None:
+    commits = _first_parent_commits(repo, ref, path)
+    if commits is None:
+        return None
+    for sha in commits:
+        blob = _git_show(repo, sha, path)
+        if blob is None:
+            continue
+        try:
+            digest = _canonical_json_digest(blob)
+        except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
+            continue
+        if digest == registration_digest:
+            return sha
+    return None
+
+
+def _raw_bytes_introduction(repo: Path, ref: str, path: str, raw_sha256: str) -> str | None:
+    commits = _first_parent_commits(repo, ref, path)
+    if commits is None:
+        return None
+    for sha in commits:
+        blob = _git_show(repo, sha, path)
+        if blob is not None and hashlib.sha256(blob).hexdigest() == raw_sha256:
+            return sha
+    return None
+
+
+def _prove_main_freshness(repo: Path, local_sha: str) -> tuple[dict[str, Any], str | None]:
+    freshness: dict[str, Any] = {"local": local_sha, "remote": None, "proven": False}
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(repo), "ls-remote", "--exit-code", "origin", "refs/heads/main"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+            text=True,
+            timeout=30,
+            env=_git_env(),
+        )
+    except subprocess.TimeoutExpired:
+        return freshness, "git ls-remote timed out after 30s"
+    except Exception as exc:
+        return freshness, f"{type(exc).__name__}: {exc}"
+    if proc.returncode != 0:
+        reason = (proc.stderr or proc.stdout or "").strip() or f"git ls-remote exited {proc.returncode}"
+        return freshness, reason
+    remote_sha = None
+    for line in proc.stdout.splitlines():
+        parts = line.split()
+        if len(parts) >= 2 and parts[1] == "refs/heads/main" and _HEX40.fullmatch(parts[0]):
+            remote_sha = parts[0]
+            break
+    freshness["remote"] = remote_sha
+    if remote_sha is None:
+        return freshness, "git ls-remote returned no refs/heads/main sha"
+    if remote_sha != local_sha:
+        return freshness, f"local {local_sha} does not equal remote {remote_sha}"
+    freshness["proven"] = True
+    return freshness, None
+
+
 def _load_json(raw: bytes | None) -> dict[str, Any] | None:
     if raw is None:
         return None
@@ -143,8 +218,10 @@ def _result(
     reasons: list[str],
     eval0_preserved: bool,
     source_main_commit: str | None,
+    detail: dict[str, Any] | None = None,
+    main_freshness: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    return {
+    payload: dict[str, Any] = {
         "schema": "k3e.eval1_source_admission/v1",
         "admitted": False,
         "outcome_access_allowed": False,
@@ -156,14 +233,20 @@ def _result(
             "preserved": eval0_preserved,
         },
     }
+    if detail is not None:
+        payload["detail"] = detail
+    if main_freshness is not None:
+        payload["main_freshness"] = main_freshness
+    return payload
 
 
 def _admitted_result(
     *,
     registration_digest: str,
-    source_commit: str,
+    introduction_commit: str,
     boundary: str,
     source_main_commit: str,
+    main_freshness: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "schema": "k3e.eval1_source_admission/v1",
@@ -172,8 +255,11 @@ def _admitted_result(
         "reasons": [],
         "source_main_commit": source_main_commit,
         "registration_digest": registration_digest,
-        "registration_source_commit": source_commit,
+        "registration_source_commit": introduction_commit,
+        "introduction_commit": introduction_commit,
         "resolved_first_eligible_session": boundary,
+        "boundary": boundary,
+        "main_freshness": main_freshness,
         "eval0": {
             "registration_id": EVAL0_REGISTRATION_ID,
             "canonical_digest": EVAL0_CANONICAL_DIGEST,
@@ -241,8 +327,16 @@ def _registration_reason(registration: dict[str, Any]) -> str | None:
     return None
 
 
-def inspect_eval1_admission(repo_root: str | Path, *, as_of_date: date) -> dict[str, Any]:
-    """Inspect one immutable accepted-main K3E EVAL source snapshot without outcomes."""
+def inspect_eval1_admission(
+    repo_root: str | Path,
+    *,
+    as_of_date: date | None = None,
+) -> dict[str, Any]:
+    """Inspect one immutable accepted-main K3E EVAL source snapshot without outcomes.
+
+    ``as_of_date`` is a refusal-only clock. It cannot grant admission. The main-state
+    rule is the activation receipt's own introduction time on first-parent main.
+    """
     repo = Path(repo_root)
     source_main_commit = _rev_parse(repo, MAIN_REF)
     if source_main_commit is None:
@@ -252,11 +346,19 @@ def inspect_eval1_admission(repo_root: str | Path, *, as_of_date: date) -> dict[
             source_main_commit=None,
         )
 
-    def refuse(reason: str, *, eval0_preserved: bool) -> dict[str, Any]:
+    def refuse(
+        reason: str,
+        *,
+        eval0_preserved: bool,
+        detail: dict[str, Any] | None = None,
+        main_freshness: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         return _result(
             reasons=[reason],
             eval0_preserved=eval0_preserved,
             source_main_commit=source_main_commit,
+            detail=detail,
+            main_freshness=main_freshness,
         )
 
     eval0_raw = _git_show(repo, source_main_commit, EVAL0_PATH)
@@ -305,19 +407,18 @@ def inspect_eval1_admission(repo_root: str | Path, *, as_of_date: date) -> dict[
     if owner.get("registration_digest_sha256") != registration_digest:
         return refuse("OWNER_ACCEPTANCE_DIGEST_MISMATCH", eval0_preserved=True)
 
-    if not _is_ancestor(repo, source_commit, source_main_commit):
-        return refuse("OWNER_ACCEPTANCE_SOURCE_UNBOUND", eval0_preserved=True)
-    source_registration = _git_show(repo, source_commit, EVAL1_PATH)
-    try:
-        source_digest = (
-            _canonical_json_digest(source_registration)
-            if source_registration is not None
-            else None
+    introduction = _introduction_commit(
+        repo, source_main_commit, EVAL1_PATH, registration_digest,
+    )
+    if introduction is None or source_commit != introduction:
+        return refuse(
+            "OWNER_ACCEPTANCE_SOURCE_NOT_INTRODUCTION",
+            eval0_preserved=True,
+            detail={
+                "registration_source_commit": source_commit,
+                "introduction_commit": introduction,
+            },
         )
-    except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
-        source_digest = None
-    if source_digest != registration_digest:
-        return refuse("OWNER_ACCEPTANCE_SOURCE_UNBOUND", eval0_preserved=True)
 
     activation_raw = _git_show(repo, source_main_commit, ACTIVATION_PATH)
     if activation_raw is None:
@@ -329,10 +430,19 @@ def inspect_eval1_admission(repo_root: str | Path, *, as_of_date: date) -> dict[
         activation.get("schema") != "k3e.eval1_activation_receipt/v1"
         or activation.get("registration_id") != EVAL1_REGISTRATION_ID
         or activation.get("canonical_registration_digest_sha256") != registration_digest
-        or activation.get("registration_source_commit") != source_commit
         or activation.get("freeze_boundary_rule") != FREEZE_BOUNDARY_RULE
     ):
         return refuse("EVAL1_ACTIVATION_INVALID", eval0_preserved=True)
+    activation_source = activation.get("registration_source_commit")
+    if activation_source != introduction:
+        return refuse(
+            "OWNER_ACCEPTANCE_SOURCE_NOT_INTRODUCTION",
+            eval0_preserved=True,
+            detail={
+                "registration_source_commit": activation_source,
+                "introduction_commit": introduction,
+            },
+        )
 
     boundary = activation.get("resolved_first_eligible_session")
     if not isinstance(boundary, str):
@@ -342,20 +452,61 @@ def inspect_eval1_admission(repo_root: str | Path, *, as_of_date: date) -> dict[
     except ValueError:
         return refuse("EVAL1_ACTIVATION_INVALID", eval0_preserved=True)
 
-    source_time = _commit_time(repo, source_commit)
+    introduction_time = _commit_time(repo, introduction)
     expected_boundary = (
-        _first_nyse_session_open_strictly_after(source_time)
-        if source_time is not None
+        _first_nyse_session_open_strictly_after(introduction_time)
+        if introduction_time is not None
         else None
     )
     if expected_boundary is None or boundary_date != expected_boundary:
         return refuse("EVAL1_ACTIVATION_BOUNDARY_INVALID", eval0_preserved=True)
-    if as_of_date < boundary_date:
-        return refuse("FORWARD_BOUNDARY_NOT_REACHED", eval0_preserved=True)
+
+    boundary_at = datetime.combine(boundary_date, _NYSE_OPEN, tzinfo=ET)
+    activation_introduction = _raw_bytes_introduction(
+        repo,
+        source_main_commit,
+        ACTIVATION_PATH,
+        hashlib.sha256(activation_raw).hexdigest(),
+    )
+    activation_time = (
+        _commit_time(repo, activation_introduction)
+        if activation_introduction is not None
+        else None
+    )
+    if activation_time is None or activation_time < boundary_at:
+        return refuse(
+            "FORWARD_BOUNDARY_NOT_REACHED",
+            eval0_preserved=True,
+            detail={
+                "activation_introduced_at": (
+                    None if activation_time is None else activation_time.isoformat()
+                ),
+                "boundary_at": boundary_at.isoformat(),
+            },
+        )
+    if as_of_date is not None and as_of_date < boundary_date:
+        return refuse(
+            "FORWARD_BOUNDARY_NOT_REACHED",
+            eval0_preserved=True,
+            detail={
+                "as_of_date": as_of_date.isoformat(),
+                "boundary_date": boundary_date.isoformat(),
+            },
+        )
+
+    main_freshness, freshness_reason = _prove_main_freshness(repo, source_main_commit)
+    if freshness_reason is not None:
+        return refuse(
+            "MAIN_REF_FRESHNESS_UNPROVEN",
+            eval0_preserved=True,
+            detail={"freshness_reason": freshness_reason},
+            main_freshness=main_freshness,
+        )
 
     return _admitted_result(
         registration_digest=registration_digest,
-        source_commit=source_commit,
-        boundary=boundary,
+        introduction_commit=introduction,
+        boundary=boundary_date.isoformat(),
         source_main_commit=source_main_commit,
+        main_freshness=main_freshness,
     )
