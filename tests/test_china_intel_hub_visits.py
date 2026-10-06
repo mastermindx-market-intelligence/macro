@@ -499,6 +499,37 @@ class TestCIE14RecognitionComposition:
         assert rec["conviction_multiplier"] is None
         assert rec["authority"]["may_multiply_conviction"] is False
 
+    def test_same_source_identity_conflicting_owner_linkage_ids_is_conflict(self):
+        rows = [
+            {
+                "kind": "issuer_contract_filing",
+                "source": "CNInfo",
+                "source_id": "A14-LINK-CONFLICT",
+                "title": "同一公告",
+                "source_published_at": "2026-10-01T09:00:00+08:00",
+                "economic_event_id": "event:one",
+                "syndication_id": "synd:one",
+                "economic_actor_id": "actor:one",
+            },
+            {
+                "kind": "issuer_contract_filing",
+                "source": "CNInfo",
+                "source_id": "A14-LINK-CONFLICT",
+                "title": "同一公告",
+                "source_published_at": "2026-10-01T09:00:00+08:00",
+                "economic_event_id": "event:two",
+                "syndication_id": "synd:two",
+                "economic_actor_id": "actor:two",
+            },
+        ]
+        rec = hub._evidence_recognition_block(rows)
+        assert rec["state"] == "source_event_conflict"
+        assert rec["source_event_groups"][0]["state"] == "source_identity_conflict"
+        assert rec["source_event_conflicts"] == ["CNInfo:A14-LINK-CONFLICT"]
+        assert rec["independent_event_count"] is None
+        assert rec["conviction_multiplier"] is None
+        assert rec["authority"]["may_multiply_conviction"] is False
+
     def test_cross_source_economic_event_links_only_with_explicit_owner_id(self):
         rows = [
             {
@@ -542,6 +573,45 @@ class TestCIE14RecognitionComposition:
         assert rec["economic_event_groups"] == []
         assert "syndication_linkage_unresolved" in rec["unresolved_dependencies"]
         assert "economic_event_linkage_unresolved" in rec["unresolved_dependencies"]
+
+    def test_partial_explicit_linkage_stays_linked_and_unresolved_per_axis(self):
+        rows = [
+            {
+                "kind": "procurement_notice",
+                "source": "CSG",
+                "source_id": "P-1",
+                "economic_event_id": "event:grid-1",
+                "syndication_id": "synd:grid-1",
+                "economic_actor_id": "actor:grid-owner",
+            },
+            {
+                "kind": "issuer_contract_filing",
+                "source": "CNInfo",
+                "source_id": "F-1",
+                "economic_event_id": "event:grid-1",
+                "syndication_id": "synd:grid-1",
+                "economic_actor_id": "actor:grid-owner",
+            },
+            {
+                "kind": "issuer_contract_filing",
+                "source": "CNInfo",
+                "source_id": "F-2",
+                # This observation is real positive evidence but its higher-order
+                # linkage is not yet resolved by the owning identity/event planes.
+            },
+        ]
+        rec = hub._evidence_recognition_block(rows)
+
+        assert rec["state"] == "cross_source_economic_event_linked"
+        assert rec["economic_event_groups"][0]["source_count"] == 2
+        assert rec["syndication_groups"][0]["source_count"] == 2
+        assert rec["economic_actor_groups"][0]["source_count"] == 2
+        assert "economic_event_linkage_unresolved" in rec["unresolved_dependencies"]
+        assert "syndication_linkage_unresolved" in rec["unresolved_dependencies"]
+        assert "economic_actor_linkage_unresolved" in rec["unresolved_dependencies"]
+        assert rec["independent_event_count"] is None
+        assert rec["conviction_multiplier"] is None
+        assert rec["authority"]["may_multiply_conviction"] is False
 
     def test_explicit_syndication_groups_cross_source_copy_without_event_claim(self):
         rows = [
