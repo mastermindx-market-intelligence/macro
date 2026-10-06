@@ -2193,3 +2193,24 @@ def test_j12_fail_alert_with_buy_only_source_population():
     ix = _index_payload(with_plan=False)
     chk = _pjr._check_j12(soup, ix, su, "TEST1", [])
     assert chk["status"] == "FAIL", chk
+
+
+@pytest.mark.parametrize("check_name", ["_check_j2", "_check_j3"])
+def test_candidate_link_integrity_rejects_wrong_page_with_matching_fragment(check_name):
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
+    row = soup.select_one('#us-candidate-pool [data-ticker="TEST1"]')
+    assert row is not None
+    link = row.select_one("a[href]")
+    assert link is not None
+    link["href"] = "other.html#TEST1"
+    check = getattr(_pjr, check_name)
+    result = check(soup, "TEST1", _standouts_payload(ticker="TEST1"))
+    assert result["status"] == "FAIL", result
+
+
+@pytest.mark.parametrize("check_name", ["_check_j2", "_check_j3"])
+def test_candidate_link_integrity_accepts_exact_stock_href(check_name):
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
+    check = getattr(_pjr, check_name)
+    result = check(soup, "TEST1", _standouts_payload(ticker="TEST1"))
+    assert result["status"] == "PASS", result

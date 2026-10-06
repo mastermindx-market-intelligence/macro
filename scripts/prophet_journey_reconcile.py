@@ -127,6 +127,7 @@ import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 if os.environ.get("PYTHONPATH"):
@@ -333,6 +334,14 @@ def _hrefs(node: Tag) -> list[str]:
             if isinstance(a, Tag) and a.get("href")]
 
 
+def _stock_href_matches(href: str, ticker: str) -> bool:
+    """Match the exact relative stock route emitted by the candidate template."""
+    prefix = "stock.html#"
+    if not href.startswith(prefix):
+        return False
+    return unquote(href[len(prefix):]).upper() == ticker.upper()
+
+
 def _data_mkts(node: Tag) -> list[str]:
     out: list[str] = []
     own = node.get("data-mkt")
@@ -465,7 +474,7 @@ def _check_j2(soup: BeautifulSoup, ticker: str | None,
                                 for r in (standouts.get("buy") or [])
                                 if isinstance(r, dict)}
     expected_off = "false" if in_buy else "true"
-    href_ok = any(h.endswith(f"#{ticker}") for h in _hrefs(row))
+    href_ok = any(_stock_href_matches(h, ticker) for h in _hrefs(row))
     if off_board == expected_off and href_ok:
         return _check_status(
             "PASS",
@@ -504,7 +513,7 @@ def _check_j3(soup: BeautifulSoup, ticker: str | None,
                                 for r in (standouts.get("buy") or [])
                                 if isinstance(r, dict)}
     expected_off = "false" if in_buy else "true"
-    href_ok = any(h.endswith(f"#{ticker}") for h in _hrefs(row))
+    href_ok = any(_stock_href_matches(h, ticker) for h in _hrefs(row))
     if off_board == expected_off and href_ok:
         return _check_status(
             "PASS",
