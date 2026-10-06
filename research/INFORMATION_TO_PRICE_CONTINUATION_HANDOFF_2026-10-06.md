@@ -334,3 +334,144 @@ deployment authority; every merged artifact is descriptive/diagnostic or a froze
    P1-2/P1-5 custody; R1 source-owner receipts G1–G5 (UNOWNED).
 3. Science lanes R4 (predictive admission) and R5 (prospective consumer proof) stay closed until
    R1 identity/basis/rights completion and lawful EVAL-1 admission; nothing in this round opens them.
+
+## Final round delta (2026-10-06, D50–D54; program build-out closed)
+
+Append-only. This section supersedes §20, §21 and §24 above. Authority is unchanged: Chairman
+handoff #8480 and the Chairman's 10-06 administrative-override ruling
+(`DEC:ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06`). At ~09:05Z the
+Chairman switched this seat's session to Opus 5.5 orchestration; same seat, same duties.
+
+### 25. Seat ledger D50–D54
+
+| D | PR | Rung | Squash | Exact head | Release comment | Note |
+|---|---|---|---|---|---|---|
+| D50 | #8337 EXP-1 declared-capture inspector + enrolment | **MERGED** 09:17:56Z | `a9f815e1` | `95280c15e3429f48374fce2a640f59b30f476e04` | 6013193171 | ci.yml run 37437949027 success; needle `query_k3e_expectation_surface` on main = 2; see §26 for the manifest compare |
+| D51 | #8532 release-round records (§18–§24) | **MERGED** | `4d470120` | `a2962511` | ordinary chain (no hold) | see §26 for the WS-record compare |
+| D52 | #8402 Commission-2 PIT analyst-expectations hardened audit | **MERGED** | `0f9bc8e8` | `5b622d661da68a39e4d750c787181a7c6c978a5b` | 6013367403 | released as administrative; see §27 |
+| D53 | #8534 synthetic PIT sample conformance harness recovery + enrolment | **MERGED** | `960cb183` | `5760d97238252ea96d791f47281b18e53832cf31` | ordinary chain; hand-merged under D54 (comment 6014098651) | recovered under L.7; see §28 and §28a |
+
+### 26. Post-merge compares that reported MISSING were false alarms
+
+The chains' per-path blob compare reported `missing=1` on D50 and on D51. Both were the same
+benign shape: a later PR edited the same file after this PR's merge base, so main's blob can
+never equal the PR head's blob. The lawful check is a hunk compare, `git diff
+$(git merge-base <head> <squash>^) <head> -- <path>` against `git diff <squash>^ <squash> --
+<path>`.
+
+- D50: `.github/ci/legacy-jobs.yml`, also edited by #8463 after the base. The PR's 8 manifest
+  lines equal the squash's 8 lines.
+- D51: `agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md`, also edited by #8337. The PR's
+  25 lines equal the squash's 25 lines. The other three paths are blob-identical.
+
+### 27. D52 — #8402 released as administrative
+
+- Sol's comment 5990874275 accepted the research semantics and current-base compatibility.
+  The PR carries approved review 5409767415.
+- The only remaining gate was the fleet-wide Source Continuity census cap (569 open PRs > 490,
+  Mastermind #974). That cap counts the whole fleet's open PRs. It is not a property of this
+  PR, so the Chairman's 10-06 ruling classes it as administrative.
+- The seat ran the collision check directly. The PR adds one file, absent on main, and
+  `git merge-tree` is clean.
+- Update-branch moved the head from `63208615` to `5b622d66` (main parent `82804283`). The diff
+  against main is the single added file.
+- Release followed the D34 form on concluded checks. Reversal is `git revert <squash>`.
+
+### 28. D53 — PIT conformance harness recovered; PID 8688 inert
+
+- The precheck block named in §24 (`TYPED_GIT_PRECHECK_REFUSED` on Sol's PIT-conformance
+  workspace) had one cause: three verified files with no CI owner.
+- The seat copied the three files byte-identically from the Sol workspace (read only) into
+  `research/alpha_intelligence/expectation_market_dynamics/`. The sha256 prefixes match the
+  handoff: `pit_sample_conformance.py` f789ab25, `test_pit_sample_conformance.py` 594bcfb2,
+  `PIT_SAMPLE_CONFORMANCE_IMPLEMENTATION_2026-10-04.md` 4ee8ac33.
+- One CI step in `unrun-factor-research`, placed after SRC-A1, names the CLI with `--help` and
+  runs the 24-test suite. That enrolment is the owner the precheck asked for.
+- This was bounded principal work under L.7. No worker had started on it, the seat held
+  lawful tools, no other owner was on the artifact, and nothing was EFFECT_UNKNOWN. The harness
+  is synthetic and grants no data, rank, or capital authority.
+- PID 8688 is classed INERT. Its only possible effect is unreferenced common-store tree objects
+  from a timed-out `git write-tree`. No ref, index or worktree moved, and gc prunes such
+  objects. DO_NOT_REPLAY stands. It is no longer a gate.
+- mini2 had 68 GB free at 09:2xZ, above the 50 GB `STORAGE_GUARD_LOW_SPACE` floor, so the GLM
+  tier gate in §24 is resolved.
+
+### 28a. D54 — #8534 hand-merged on a fleet-flake red
+
+- The ordinary chain skipped the merge twice. The only red was `ci-pack-7`, with `ci-gate`
+  failing as a consequence. Its sole failed job was `unrun-brain-gateway`, failing on
+  `tests/test_brain_history_widget.py::test_composer_controls_keep_touch_targets_and_reflow`
+  ("Locator expected to be focused"). It failed at `[2-zh-390]` on attempt 1, then at
+  `[1-zh-320]` and `[2-zh-320]` on the single `--failed` rerun of run 37442173953.
+- The red is the fleet's, not this head's:
+  - Sibling PR #8533 is red on the same test (run 37441583018, job 112197541444, `[1-zh-320]`).
+  - Main's proof run 37442227387 passed its packs.
+  - The PR's diff is three new `research/` files plus one `legacy-jobs.yml` step.
+  - The test belongs to #8473's lane, which this seat may not touch.
+- A third rerun was banned by L.4. The seat posted comment 6014098651 naming the Chairman 10-06
+  authority, then squash-merged exact head `5760d972` as `960cb183` at 10:14:14Z.
+- On fresh `origin/main` the squash is an ancestor, all three new files are blob-identical, and
+  the `pit_sample_conformance` manifest needle reads 2.
+- Reversal is `git revert 960cb183`.
+- The flaky focus assertion is #8473's to fix. It is now red on at least three independent PRs
+  today, so a successor that meets it should check a sibling before rerunning.
+
+### 29. Ladder (final)
+
+| Artifact | Squash | Rung |
+|---|---|---|
+| #8312 SRC-A1 source integration | `0f575e51` | MERGED (D35) |
+| #8505 R1 census · #8514 R1 completion spec | `999e43f1` · `1bd2813b` | MERGED (D36, D37) |
+| #8394 A7 · #8467 A8 | `96422cf6` · `ab63a77e` | MERGED (D39, D40) |
+| #8522 R4 dry-run receipt · #8521 R5 spec | `8c3d0f60` · `f8ce27bf` | MERGED (D41, D45) |
+| #8504 EVAL-1 hardening r1 | `cab92332` | MERGED (D44) |
+| #8525 · #8532 records | `42107c53` · `4d470120` | MERGED (D46, D51) |
+| #8461 A9 · #8463 A10 | `77fc9b1c` · `fbd63e4f` | MERGED (D47, D48) |
+| #8422 MKT-1 | `d0ede600` | MERGED (D49, inherited red) |
+| #8337 EXP-1 | `a9f815e1` | MERGED (D50) |
+| #8402 Commission-2 audit | `0f9bc8e8` | MERGED (D52) |
+| #8534 PIT conformance harness | `960cb183` | MERGED (D53) |
+| EVAL-1 positive outcome access (P1-2 / P1-5) | — | with `WS:EVAL-OS-MEASUREMENT-LAW` owner (blinding control) |
+| R1 gaps G1–G5 | — | owner receipts required; paths UNOWNED; Chairman owner designation |
+
+No merge above grants consumer wiring, Market OS UI, rank, gate, size, trade, capital or
+deployment authority. Every merged artifact is descriptive, diagnostic, synthetic, or a frozen
+spec. No artifact reached PRODUCTION_PROOF or ACCEPTANCE as a product capability, because none
+is wired to a served surface.
+
+### 30. Remaining gates are real, not administrative
+
+1. **R1 G1–G5 owner designation.** Program §8 R1 and the completion spec require owner-issued
+   receipts. No workstream `owns_paths` covers `data/reference/`, `data/symbol_directory/`,
+   `data/revisions/` or `collectors/equity_revisions.py`. The rights vocabulary (G4) belongs to
+   the shared-base owner (#7870), so this seat may not mint it. Only the Chairman can designate
+   owners. After that, each owner issues receipts or a labeled absence per the spec's degraded
+   path.
+2. **EVAL-1 positive outcome custody (P1-2 / P1-5).** `WS:EVAL-OS-MEASUREMENT-LAW` holds it as
+   a blinding control. A seat that unblinds its own outcomes defeats the control, so this stays
+   with that owner.
+3. **Vendor PIT procurement** (SAMPLE_REQUIRED) is a purchase.
+4. **Capital and rank authority** is reserved to the Chairman.
+
+R4 predictive admission and R5 prospective-consumer proof stay closed until gates 1 and 2 clear.
+
+### 31. do_not_redo and danger_areas (final round)
+
+- Do not re-release, re-merge or re-verify #8337, #8532, #8402 or #8534; their squashes are
+  above. Reversal is `git revert <squash>`.
+- Do not re-copy the PIT harness from Sol's workspace. Do not replay PID 8688.
+- Do not open R4/R5 lanes, consumer wiring or an issuer/rights build before gate 1 clears.
+- A post-merge blob compare reports MISSING whenever another PR touched the same file after the
+  merge base. Run the hunk compare in §26 before believing it.
+- Worktrees `…/itp-8337-conflict-20261006-8d244c76a11dd2b0`,
+  `…/itp-records-20261006-ca7fc15125af3f91` and `…/itp-pit-conformance-20261006-972a780901f55ce3`
+  are landed and reclaimable once their PRs read MERGED.
+
+### 32. NEXT
+
+1. The Chairman decides gate 1: name owner workstreams for the four R1 paths, or rule R1 stays
+   in labeled-absence form.
+2. After gates 1 and 2 clear, a seat commissions R4 predictive admission against the R4 dry-run
+   receipt (#8522) and then R5 against its frozen spec (#8521).
+3. Until then this program has no open build lane. A successor's first act is to read this
+   section and the Chairman's carrier, not to re-census.
