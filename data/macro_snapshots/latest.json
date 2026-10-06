@@ -2,12 +2,12 @@
   "schema": "macro_snapshot.v1.2",
   "asof": "2026-10-06",
   "oldest_component_asof": "2026-09-30",
-  "macro_context_id": "7c7ca424404f58e2",
+  "macro_context_id": "6e2373e2030d1fab",
   "labels": {
     "us": {
       "us_quad": "Q2",
       "us_transition_state": "TRANSITIONING",
-      "us_fused_risk": "elevated",
+      "us_fused_risk": "caution",
       "us_vol_regime": "normalizing",
       "us_risk_radar": "caution",
       "us_rate_pressure": "panic",

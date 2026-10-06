@@ -1,9 +1,9 @@
 {
   "schema": "altdata.mastermind.v1",
   "as_of": "2026-10-06",
-  "generated_utc": "2026-10-06T11:21:16.254985+00:00",
+  "generated_utc": "2026-10-06T14:17:00.960179+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
-  "regime_read": "Convergence is concentrated in semiconductors, enterprise AI infrastructure, and federal technology demand, but several popular names carry sentiment-heavy or mixed signals. With no completed track-record observations, conviction remains modest and extended leaders should not be chased.",
+  "regime_read": "The strongest measured convergence sits in semiconductors, enterprise AI and federal-technology exposure, but several popular names are near or beyond chase thresholds. With no completed track-record observations, conviction remains modest and preference goes to non-extended names with genuinely independent demand, government and innovation signals.",
   "brain_present": true,
   "brain_usable": true,
   "article3": {
@@ -11,17 +11,17 @@
     "lift_lb": null,
     "reason": "insufficient-n: n=17 < min_n=25",
     "evidence_asof": "2026-10-06",
-    "evaluated_at": "2026-10-06T10:01:09+00:00"
+    "evaluated_at": "2026-10-06T14:15:37+00:00"
   },
   "is_context_only": true,
   "calibration": {
     "n_scored": 0,
     "hit_rate": null,
-    "open": 28,
+    "open": 29,
     "note": "No theses scored yet \u2014 the track record begins once the first check-by dates pass. Keep conviction modest until it does."
   },
-  "n_signals": 81,
-  "n_broken": 41,
+  "n_signals": 83,
+  "n_broken": 40,
   "signals": [
     {
       "ticker": "MU",
@@ -57,13 +57,13 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": "The pack's broadest non-extended convergence combines accelerating government grants, strongly positive insider balance, a substantial patent cluster, and supportive public sentiment [gov_grant] [insider_mspr] [patent_cluster] [stocktwits_bull]. Ro Khanna's disclosed affiliation adds a policy-network signal [actor:Ro Khanna], while modest relative strength leaves room for the thesis to develop without chasing.",
+      "thesis": "MU has the pack's broadest convergence without price extension: accelerating government grants, uniformly positive measured insider activity and a large patent cluster align with external attention and bullish retail sentiment [gov_grant] [insider_mspr] [patent_cluster] [cnbc_pick] [stocktwits_bull]. The disclosed Ro Khanna affiliation adds policy-network relevance, although it is qualitative rather than transactional evidence [actor:Ro Khanna].",
       "second_order": [
-        "Semiconductor-equipment theme \u2014 stronger memory investment would support fabrication-tool demand",
-        "AI-server memory theme \u2014 expanding AI infrastructure increases demand for high-bandwidth memory and related components"
+        "AMAT \u2014 memory-capacity investment would support semiconductor-equipment demand, while its own congressional and patent signals provide partial confirmation",
+        "Semiconductor equipment \u2014 stronger memory investment would flow through to fabrication and process-tool suppliers"
       ],
       "falsifier": {
-        "text": "Government support stops accelerating and insider transaction balance turns negative while patent momentum weakens.",
+        "text": "Government-grant momentum reverses and measured insider activity turns negative while patent activity loses momentum.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "MU",
@@ -133,20 +133,21 @@
         }
       ],
       "n_affiliated_actors": 6,
-      "thesis": "Developer and model-download momentum aligns with patents, unanimous analyst sentiment in the pack, and disclosed holdings by several politicians [github_momentum] [patent_cluster] [analyst_upgrade_cluster] [actor:Nancy Pelosi] [actor:Marjorie Taylor Greene] [actor:Michael McCaul]. The actor network is unusually broad, but retail buzz and influencer attention reduce signal purity [retail_buzz] [actor:Jim Cramer].",
+      "thesis": "NVDA shows alignment across developer adoption, patent activity and uniformly bullish analyst revisions, with disclosed holdings by several politicians adding a separate positioning signal [github_momentum] [patent_cluster] [analyst_upgrade_cluster] [actor:Nancy Pelosi] [actor:Marjorie Taylor Greene] [actor:Michael McCaul]. Retail attention is supportive but crowded, and the actor links are holdings rather than evidence of future operating performance [retail_buzz].",
       "second_order": [
-        "AI-server supply chain \u2014 sustained accelerator adoption supports networking, memory, cooling, and power components",
-        "Data-center power infrastructure \u2014 greater compute deployment raises electricity and grid-interconnection requirements"
+        "AMAT \u2014 sustained accelerator demand would support upstream semiconductor-capacity investment",
+        "CEG \u2014 expanding AI compute demand raises the strategic value of reliable power generation",
+        "AI networking and data-center infrastructure \u2014 accelerator deployment requires connectivity, cooling and power investment"
       ],
       "falsifier": {
-        "text": "Developer activity and model downloads roll over while analyst sentiment deteriorates.",
+        "text": "Developer momentum and patent activity weaken while major customers slow AI infrastructure spending.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "NVDA",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 45
+          "horizon_d": 60
         }
       },
       "clamped": null
@@ -154,10 +155,10 @@
     {
       "ticker": "MSFT",
       "signal_score": 74,
-      "conviction": "high",
+      "conviction": "low",
       "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
+      "direction": "long",
+      "source": "brain",
       "weighted_score": 2.1,
       "convergence_score": 5,
       "channels": [
@@ -189,65 +190,53 @@
         }
       ],
       "n_affiliated_actors": 2,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "PLTR",
-      "signal_score": 59,
-      "conviction": "low",
-      "action": "WATCH",
-      "direction": "long",
-      "source": "brain",
-      "weighted_score": 2.05,
-      "convergence_score": 5,
-      "channels": [
-        "affiliation",
-        "analyst_upgrade_cluster",
-        "gov_contract_accel",
-        "retail_buzz",
-        "stocktwits_bull"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": 46.5,
-      "no_price_data": false,
-      "extended": true,
-      "rolling_over": false,
-      "off_high_252": -8.6,
-      "ret_20d": 8.6,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Marjorie Taylor Greene",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Cathie Wood",
-          "rel": "AFFILIATES_WITH",
-          "kind": "fund"
-        }
-      ],
-      "n_affiliated_actors": 2,
-      "thesis": "Government-contract acceleration aligns with analyst upgrades and disclosed political and fund relationships [gov_contract_accel] [analyst_upgrade_cluster] [actor:Marjorie Taylor Greene] [actor:Cathie Wood]. Federal fraud-enforcement and information-sharing proposals could reinforce the demand theme [bill:HRES1530] [bill:HR10326], but retail and Stocktwits enthusiasm are crowded signals and the stock is already extended [retail_buzz] [stocktwits_bull].",
+      "thesis": "MSFT's app demand, developer momentum and patent activity support a durable ecosystem read, reinforced by its factual partnership with Sam Altman [app_demand] [github_momentum] [patent_cluster] [actor:Sam Altman]. However, the Trump-linked signal is explicitly on the sell side and relative strength is only narrowly below the extension threshold, making the current entry unattractive [trump].",
       "second_order": [
-        "Government data-integration theme \u2014 stronger fraud enforcement requires cross-agency analytics and information sharing",
-        "Federal cybersecurity theme \u2014 expanded law-enforcement data exchange increases security and identity-management needs"
+        "NVDA \u2014 continued cloud and AI-service demand supports accelerator utilization",
+        "Enterprise AI software \u2014 strong application and developer activity implies broader deployment demand",
+        "Data-center power infrastructure \u2014 expanding cloud workloads require additional generation and grid capacity"
       ],
       "falsifier": {
-        "text": "Federal contract acceleration falls below prior-period growth and analyst sentiment turns negative.",
+        "text": "App demand and developer activity roll over while the negative policy-linked positioning persists.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "PLTR",
+          "subject_ticker": "MSFT",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
           "horizon_d": 45
         }
       },
+      "clamped": null
+    },
+    {
+      "ticker": "AMAT",
+      "signal_score": 55,
+      "conviction": "high",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.85,
+      "convergence_score": 3,
+      "channels": [
+        "congress_cluster",
+        "patent_cluster",
+        "unusual_options"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -12.8,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -24.9,
+      "ret_20d": 19.3,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
       "clamped": null
     },
     {
@@ -334,6 +323,61 @@
       "clamped": null
     },
     {
+      "ticker": "PLTR",
+      "signal_score": 53,
+      "conviction": "low",
+      "action": "WATCH",
+      "direction": "long",
+      "source": "brain",
+      "weighted_score": 1.7,
+      "convergence_score": 4,
+      "channels": [
+        "affiliation",
+        "gov_contract_accel",
+        "retail_buzz",
+        "stocktwits_bull"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": 46.5,
+      "no_price_data": false,
+      "extended": true,
+      "rolling_over": false,
+      "off_high_252": -8.6,
+      "ret_20d": 8.6,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Marjorie Taylor Greene",
+          "rel": "HOLDS_STAKE",
+          "kind": "politician"
+        },
+        {
+          "actor": "Cathie Wood",
+          "rel": "AFFILIATES_WITH",
+          "kind": "fund"
+        }
+      ],
+      "n_affiliated_actors": 2,
+      "thesis": "PLTR's accelerating government contracts align with a fully bullish analyst cluster and disclosed political and fund connections [gov_contract_accel] [analyst_upgrade_cluster] [actor:Marjorie Taylor Greene] [actor:Cathie Wood]. Retail and Stocktwits enthusiasm reinforce momentum but also indicate crowding [retail_buzz] [stocktwits_bull]. At 46.5 percentage points of 60-day relative outperformance and explicitly flagged extended, the entry has passed.",
+      "second_order": [
+        "IBM \u2014 stronger federal software procurement could extend to adjacent modernization and integration vendors",
+        "Government data analytics \u2014 proposed fraud-enforcement and information-sharing measures could increase demand for investigative platforms"
+      ],
+      "falsifier": {
+        "text": "Government contract growth decelerates materially while analyst revisions and retail sentiment turn negative.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "PLTR",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 60
+        }
+      },
+      "clamped": null
+    },
+    {
       "ticker": "AAPL",
       "signal_score": 51,
       "conviction": "medium",
@@ -410,13 +454,13 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
-      "thesis": "Institutional additions, congressional buying, a favorable Trump-linked signal, and analyst upgrades align across four channels [13f_add] [congress_buy] [trump] [analyst_upgrade_cluster]. However, the stock is extended after substantial relative outperformance, so the evidence supports monitoring for a reset rather than initiating exposure.",
+      "thesis": "CRWD has independent institutional, congressional and analyst support, plus a positive Trump-linked signal [13f_add] [congress_buy] [analyst_upgrade_cluster] [trump]. That is a coherent positioning cluster, but it lacks a direct operating-demand channel in this pack and the stock is explicitly extended after 42.8 percentage points of relative outperformance.",
       "second_order": [
-        "Cybersecurity-platform theme \u2014 institutional demand implies continued consolidation around scaled security vendors",
-        "Identity and cloud-security theme \u2014 stronger platform spending can extend into adjacent access-control and workload-protection categories"
+        "Cybersecurity platforms \u2014 institutional and policy-linked interest may reflect sustained security-budget priority",
+        "Federal cyber contractors \u2014 stronger security spending could spread from endpoint protection into identity and managed services"
       ],
       "falsifier": {
-        "text": "Institutional filings show net reductions and congressional buying reverses while analyst sentiment weakens.",
+        "text": "Institutional additions reverse and congressional buying stops while analyst sentiment deteriorates.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "CRWD",
@@ -707,36 +751,6 @@
       "rolling_over": false,
       "off_high_252": -20.2,
       "ret_20d": 4.2,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "PWR",
-      "signal_score": 37,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.15,
-      "convergence_score": 3,
-      "channels": [
-        "analyst_upgrade_cluster",
-        "cnbc_pick",
-        "insider_mspr"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": 0.9,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -13.0,
-      "ret_20d": 9.5,
       "above_50dma": true,
       "entry_tier": null,
       "affiliations": [],
@@ -1165,11 +1179,11 @@
   "broken_signals": [
     {
       "ticker": "CEG",
-      "signal_score": 59,
-      "conviction": "low",
-      "action": "ACCUMULATE",
-      "direction": "long",
-      "source": "brain",
+      "signal_score": 51,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
       "weighted_score": 1.55,
       "convergence_score": 3,
       "channels": [
@@ -1184,50 +1198,6 @@
       "rolling_over": true,
       "off_high_252": -33.4,
       "ret_20d": -10.5,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": "Positive insider balance and a pro-buy Trump-linked signal point in the same direction [insider_mspr] [trump], while government grants provide a third channel [gov_grant]. The read is tentative because grant acceleration is below one and the clean-energy resolution is expressive rather than a spending authorization.",
-      "second_order": [
-        "Nuclear-generation theme \u2014 stronger power demand can improve the strategic value of reliable baseload generation",
-        "Grid and transmission theme \u2014 large-load growth requires additional interconnection and network investment"
-      ],
-      "falsifier": {
-        "text": "Insider balance turns negative and large-load power demand weakens as grant support continues to decelerate.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "CEG",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 60
-        }
-      },
-      "clamped": null
-    },
-    {
-      "ticker": "AZN",
-      "signal_score": 56,
-      "conviction": "high",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.9,
-      "convergence_score": 4,
-      "channels": [
-        "clinical_phase3_start",
-        "fda_approval",
-        "fda_label_expansion",
-        "special_situation"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -11.7,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -25.0,
-      "ret_20d": -3.8,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],
@@ -1497,35 +1467,6 @@
       "clamped": null
     },
     {
-      "ticker": "RTX",
-      "signal_score": 29,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.0,
-      "convergence_score": 2,
-      "channels": [
-        "analyst_upgrade_cluster",
-        "unusual_options"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -8.5,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -18.3,
-      "ret_20d": -8.2,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
       "ticker": "BAC",
       "signal_score": 27,
       "conviction": "medium",
@@ -1559,6 +1500,50 @@
       "second_order": [],
       "falsifier": null,
       "clamped": null
+    },
+    {
+      "ticker": "AZN",
+      "signal_score": 26,
+      "conviction": "low",
+      "action": "AVOID",
+      "direction": "short",
+      "source": "brain",
+      "weighted_score": 1.9,
+      "convergence_score": 4,
+      "channels": [
+        "clinical_phase3_start",
+        "fda_approval",
+        "fda_label_expansion",
+        "special_situation"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -11.7,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -25.0,
+      "ret_20d": -3.8,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": "AZN's numerous Phase 3 starts align with FDA approval and label-expansion activity, creating a pipeline-plus-commercialization convergence rather than a sentiment trade [clinical_phase3_start] [fda_approval] [fda_label_expansion] [special_situation]. One clinical halt and the absence of actor or capital-flow confirmation keep conviction low.",
+      "second_order": [
+        "Clinical-research services \u2014 a broad Phase 3 pipeline supports trial-management and data-service demand",
+        "Drug manufacturing capacity \u2014 approvals and label expansions can raise downstream production requirements"
+      ],
+      "falsifier": {
+        "text": "Clinical halts increase or key late-stage programs fail to progress toward approval and label expansion.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "AZN",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 90
+        }
+      },
+      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); action 'ACCUMULATE' \u2192 'AVOID' (deterministic ceiling)"
     },
     {
       "ticker": "EL",
@@ -1767,13 +1752,13 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
-      "thesis": "Federal-contract acceleration aligns with insider buying, developer momentum, model-download activity, and the largest patent cluster in the pack [gov_contract_accel] [insider_mspr] [github_momentum] [patent_cluster]. Material underperformance versus SPY means this is a potential catch-up setup rather than a momentum chase, although earnings in 15 days create near-term event risk.",
+      "thesis": "IBM combines a sharp federal-contract acceleration with positive measured insider activity, substantial patent output and developer momentum [gov_contract_accel] [insider_mspr] [patent_cluster] [github_momentum]. Its material relative underperformance leaves room for rerating if contract momentum translates into results, but earnings in 15 days create near-term event risk.",
       "second_order": [
-        "Federal IT-modernization theme \u2014 contract acceleration implies continued agency technology spending",
-        "Enterprise AI-software theme \u2014 developer adoption can pull through consulting, infrastructure, and integration demand"
+        "Enterprise AI infrastructure \u2014 federal adoption could broaden demand for integration, hybrid-cloud and model-serving systems",
+        "Government IT services \u2014 IBM's contract acceleration may indicate a wider federal modernization cycle"
       ],
       "falsifier": {
-        "text": "Federal contract awards normalize sharply and the next earnings report shows no corresponding improvement in enterprise demand.",
+        "text": "Federal contract activity normalizes without corresponding revenue or backlog improvement at the next reported results.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "IBM",
@@ -2101,6 +2086,35 @@
       "rolling_over": true,
       "off_high_252": -31.1,
       "ret_20d": -5.7,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "PINS",
+      "signal_score": 15,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.6,
+      "convergence_score": 2,
+      "channels": [
+        "activist_13d",
+        "app_demand"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -13.8,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -43.1,
+      "ret_20d": -1.7,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],
