@@ -549,6 +549,37 @@ def test_visit_discovery_observation_before_source_fails_closed_but_keeps_positi
     assert snap["n_first_observed_recent"] == 0
 
 
+def test_visit_discovery_date_only_source_cannot_follow_an_earlier_observation():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row(
+            "A-date-only-order", "000028", "2026-10-03",
+            recorded="2026-10-02T23:59:00+00:00",
+        )],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    assert snap["n_recent_companies"] == 1
+    assert "row_observation_before_source" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == \
+        "row_observation_before_source"
+    row = snap["examples"][0]
+    assert row["recent_count"] == 1
+    assert row["first_seen_state"] == "unknown_owner_clock_order_invalid"
+    assert row["baseline_state"] == "blocked_owner_clock_order_invalid"
+    assert snap["n_first_observed_recent"] == 0
+
+
+
 def test_visit_discovery_ok_health_requires_equal_attempt_and_success_receipts():
     snap = bus._visit_discovery_snapshot(
         [_visit_row(
@@ -863,6 +894,47 @@ def test_visit_discovery_unreadable_exception_ledger_preserves_positive_rows(mon
         "coverage_exception_ledger_unreadable"
     assert out["examples"][0]["baseline_state"] == \
         "blocked_exception_ledger_unreadable"
+
+
+def test_visit_discovery_unknown_exception_status_blocks_absence_authority(monkeypatch):
+    from collectors import china_visits as cv
+
+    today = bus.date.today().isoformat()
+    row = _visit_row(
+        "LEDGER-STATUS", "000078", f"{today}T09:00:00+08:00",
+        recorded=f"{today}T10:00:00+00:00",
+    )
+    monkeypatch.setattr(cv, "read_visits_strict", lambda: [row])
+    monkeypatch.setattr(cv, "read_coverage_exceptions_strict", lambda: [{
+        "observation_fingerprint": "obsfp1:unknown-status",
+        "sec_code": "000078",
+        "status": None,
+    }])
+    monkeypatch.setattr(cv, "read_health", lambda: {
+        "status": "ok",
+        "last_success_utc": f"{today}T11:00:00+00:00",
+        "last_attempt_utc": f"{today}T11:00:00+00:00",
+    })
+    monkeypatch.setattr(cv, "read_coverage_start", lambda: "2026-01-01")
+
+    out = bus._visit_discovery_block()
+
+    assert out is not None
+    assert out["exception_ledger_readable"] is True
+    assert out["exception_status_valid"] is False
+    assert out["unknown_exception_status_count"] == 1
+    assert out["n_recent_companies"] == 1
+    assert out["examples"][0]["sec_code"] == "000078"
+    assert out["examples"][0]["recent_count"] == 1
+    assert out["global_negative_authority"] is False
+    assert out["global_negative_authority_blocker"] == \
+        "coverage_exception_status_unknown"
+    assert out["examples"][0]["baseline_state"] == \
+        "blocked_exception_status_unknown"
+    assert out["examples"][0]["first_seen_state"] == \
+        "unknown_exception_status"
+    assert out["n_first_observed_recent"] == 0
+
 
 
 def test_briefing_exposes_visit_discovery_as_context_surface_only(monkeypatch):
