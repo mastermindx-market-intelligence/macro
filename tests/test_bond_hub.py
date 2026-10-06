@@ -190,6 +190,30 @@ def test_xasset_copy_does_not_promote_contemporaneous_beta_to_causality():
     assert "TP-adjusted curve inversion" not in calibration_source
 
 
+    alerts_source = (root / "engine" / "bonds_alerts.py").read_text(encoding="utf-8")
+    assert "Credit leads equity drawdowns" not in alerts_source
+    assert "does not establish a lead over equities" in alerts_source
+
+    transmission_source = (root / "engine" / "rate_inflation_transmission.py").read_text(encoding="utf-8")
+    assert "Legacy TP10 curve heuristic" in transmission_source
+    assert "TP-adjusted 2s10s curve" not in transmission_source
+
+    build_site_source = (root / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    assert "2s10s + TP10 heuristic" in build_site_source
+    assert "TP-adjusted line strips" not in build_site_source
+
+    dashboard_template = (root / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    assert "legacy TP10 heuristic" in dashboard_template
+    assert "matched-maturity expectations-only decomposition" in dashboard_template
+    assert "TP-adjusted line strips" not in dashboard_template
+
+    transmission_template = (root / "templates" / "transmission.html.j2").read_text(encoding="utf-8")
+    assert "Legacy TP10 heuristic" in transmission_template
+    assert "TP-adjusted 2s10s" not in transmission_template
+
+    assert "canary that leads equity drawdowns" not in bonds_source
+
+
 def test_xasset_snapshot_real_or_skip():
     """Real-data smoke: the transmission map must produce signed betas with sane fields."""
     try:
