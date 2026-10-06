@@ -1,0 +1,44 @@
+{
+  "scope": "IM06-T2 source artifact only",
+  "mission_complete": false,
+  "state": "PARTIAL",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "base": "e95e32d4418f12c9670a6a4321498d2c641158fd",
+  "worker": {
+    "run": "rs_20261006T073746Z_70350",
+    "host": "ubuntu2",
+    "requested_model": "grok-4.6",
+    "returncode": 0,
+    "cleanup_proven": true,
+    "residual_count": 0,
+    "output_complete": true,
+    "usage_tokens": null,
+    "initial_tests": 45,
+    "accepted_first_pass": false
+  },
+  "review": {
+    "parent_finding": "Object prototype keys bypassed supported-locale and editing-token sets",
+    "negative_control": "47 tests:45 pass/2 fail on original worker bytes",
+    "repair": "Object.hasOwn on both closed membership sets",
+    "repaired_tests": 47,
+    "failures": 0,
+    "skipped": 0,
+    "independent_disposition": "NOT_RUN",
+    "independent_route_receipt": "pool pick review --subject-pool grok --host auto -> NONE reason=no_pool_available"
+  },
+  "source_sha256": {
+    "templates/intl_workspace_scenario.js": "b03164d4872d2fee34024533430f780fe469b32f02dcbfd19b15f84074543898",
+    "tests/intl_workspace_scenario_math.test.cjs": "8489d1edf288bce498d487c9f7e556011ca039fc024d2a75592cb0013ca7524e"
+  },
+  "not_proven": [
+    "Sol6.1 hierarchy",
+    "route integration",
+    "CI execution of scenario tests",
+    "browser",
+    "authenticated rights",
+    "merge",
+    "deployment",
+    "subsequent normal publication"
+  ],
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f"
+}
