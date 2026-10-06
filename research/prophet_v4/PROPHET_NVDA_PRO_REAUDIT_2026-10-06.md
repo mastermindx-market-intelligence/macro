@@ -720,6 +720,206 @@ The registered fold law still has zero usable fitted folds.
 
 ---
 
+---
+
+# 13. New interaction census — T2 × independent-evidence convergence
+
+The broader rerating OR is not the mechanism. The interaction becomes materially more interesting only when **fresh T2 technical acceptance** and **multiple independent evidence legs** coincide.
+
+For this exploratory read, the three presently measurable evidence legs were:
+
+- `news_burst` — attention / information arrival, direction-neutral;
+- `sue_fresh` — legacy earnings-evidence proxy, with the semantic caveat documented above;
+- `smartmoney_add` — A/B-grade `new` / `add` ownership evidence, stale by 13F cadence.
+
+`insider_cluster` was excluded from the convergence count because the serving path is stale/dead and it is not a clean current signal.
+
+## 13.1 H=5 tier × evidence-count map
+
+Within the `us_prophet_v3` buy lane:
+
+### T1
+
+- zero evidence legs: n=242, 40.1% SPY-positive, mean excess -0.87%;
+- one leg: n=43, 37.2%, mean -2.39%;
+- two legs: n=5, 40.0%, mean -1.18%.
+
+There is no positive convergence pattern here.
+
+### T2
+
+- zero legs: n=265, 37.4% SPY-positive, mean -0.60%;
+- one leg: n=50, 30.0%, mean -1.19%;
+- **two legs: n=11, 81.8%, mean +2.60%;**
+- three legs: n=1, positive, +3.62%;
+- **two-or-more: n=12, 83.3%, mean +2.69%.**
+
+### T3
+
+The available cells are tiny and poor; no positive convergence claim is supported.
+
+## 13.2 Issuer-deduplicated T2 result
+
+Using the **first T2 observation per ticker**:
+
+- T2 + zero legs: n=89, 42.7% SPY-positive, mean +0.06%;
+- T2 + one leg: n=17, 29.4%, mean -1.74%;
+- **T2 + two legs: n=5, 5/5 positive vs SPY, 5/5 positive vs sector, 4/5 positive absolute, mean SPY excess +3.66%.**
+
+The five issuers were:
+
+- TSLA — news + smart-money;
+- ADM — SUE + smart-money;
+- PRIM — news + smart-money;
+- INTC — news + smart-money;
+- ISRG — SUE + smart-money.
+
+This should **not** be read as a 100% expected hit rate. It is five discovered issuers.
+
+## 13.3 Convergence without T2 does not reproduce the result
+
+The specificity matters.
+
+First-ticker observations with two evidence legs across **all tiers** were only:
+
+- n=11;
+- 63.6% SPY-positive;
+- mean SPY excess approximately flat.
+
+First-ticker T1 + two legs was:
+
+- n=2;
+- 0/2 SPY-positive;
+- mean SPY excess -2.54%.
+
+Thus the current evidence does **not** support “more evidence is always better.”
+
+The plausible object is the interaction:
+
+> **independent evidence convergence × a specific fresh T2 acceptance state**
+
+not an additive catalyst count.
+
+## 13.4 Same-date controls
+
+On every one of the seven dates where a T2 + two-or-more-leg row existed, that subgroup had higher mean five-session SPY excess than same-date T2 rows with fewer than two legs.
+
+Mean date-level excess advantage: about **+4.19 percentage points**.
+
+Observed date-level differences:
+
+- Aug-21: +5.12 pp;
+- Sep-03: +2.66 pp;
+- Sep-04: +3.62 pp;
+- Sep-08: +3.73 pp;
+- Sep-09: +4.55 pp;
+- Sep-10: +4.85 pp;
+- Sep-14: +4.77 pp.
+
+Exploratory Fisher tests:
+
+- repeated nightly rows: OR ~8.82, one-sided p ~0.00146;
+- first-T2-per-ticker: 5/5 vs 56/138 control successes, one-sided p ~0.0128.
+
+These are **post-selection discovery statistics**. The interaction was not preregistered before the outcomes were inspected. They establish research priority, not score or trade authority.
+
+## 13.5 Mechanistic interpretation of T2
+
+T2 is not a generic green technical badge.
+
+Its construction requires:
+
+1. a 3D StochRSI turn has already crossed recently;
+2. the 2D RSI-MACD then freshly crosses;
+3. the longer-timescale state remains constructive;
+4. RSI is below the buy ceiling;
+5. the setup is not topped / bear-crossed;
+6. the cross remains inside a short freshness window.
+
+That is naturally interpretable as a **second-timescale price acceptance event**:
+
+> the initial turn exists first, then a slower momentum layer confirms that the move is being accepted rather than immediately rejected.
+
+The current best zero-authority hypothesis is therefore:
+
+> **new independent evidence converges around the name, and price subsequently confirms that rerating on a second timescale.**
+
+That is substantially more specific than “T2 + news.”
+
+---
+
+# 14. Persistence should be conditioned on ignition, not treated as one day-zero scalar
+
+A first-T2 episode study provides a useful architectural clue.
+
+Among first-T2 episodes with both H=5 and H=10 grades:
+
+- 134 episodes total;
+- 55 were SPY-positive at H=5;
+- **35/55 = 63.6% of those H5 responders remained SPY-positive at H=10**;
+- among 79 H5 non-responders, only **9** became H10 SPY-positive.
+
+So the observed path is asymmetric:
+
+- early successful ignition often continues;
+- failed early ignition rarely repairs itself by day 10.
+
+This suggests the leadership-persistence system should likely be a **conditional update after ignition**, not one monolithic 60-day forecast made at the original signal cut.
+
+A future product can maintain two separate probabilities:
+
+1. **ex-ante durability prior** at detection / ignition;
+2. **post-ignition survival update** as 1–5 sessions of acceptance, breadth, revisions and dip behavior arrive.
+
+That is compatible with the Chairman's desired state:
+
+> “This is an unusually important emerging ignition candidate. Entry is not open yet.”
+
+and later:
+
+> “Ignition has now been accepted; persistence probability is rising/falling.”
+
+## 14.1 Exploratory persistence correlates among H5 responders
+
+These are descriptive only and too small for promotion.
+
+Among the 55 H5-positive first-T2 episodes:
+
+- persistent-to-H10 group had higher mean C1 score (~31.1 vs ~26.5);
+- residual alpha was less negative (~-0.22 vs ~-0.40);
+- evidence-count mean was higher (~0.29 vs ~0.15);
+- `confluence_k` was higher (~0.34 vs ~0.10);
+- `TURN SIGNALED` states persisted 7/9 to H10;
+- smart-money-positive H5 responders persisted 7/8, versus ~60% without it.
+
+These are small and confounded. The smart-money read is also stale by 13F cadence.
+
+The useful conclusion is architectural, not parametric:
+
+> **persistence should consume the path after ignition and update with new evidence, rather than trying to squeeze durability out of the same entry score.**
+
+---
+
+# 15. Updated research priority
+
+The strongest research target after the Pro re-audit is now:
+
+## H-IGNITION-CONVERGENCE
+
+> A fresh T2 acceptance event has materially higher short-horizon follow-through when at least two **independent, point-in-time-valid rerating evidence families** are concurrently active.
+
+This is a **prospective research hypothesis**, not a production rule.
+
+The legacy historical legs used to discover it are not yet suitable as the final serving definition:
+
+- `news_burst` needs explicit information-arrival semantics and provenance;
+- earnings evidence must use directionally correct positive-relative semantics;
+- ownership evidence must expose knowable date / staleness;
+- future analyst / peer / sector rerating species must be registered, not silently added after outcomes.
+
+The next study should freeze the hypothesis before reading future outcomes and accrue episode-level observations through the existing Conditional Fusion evaluation owner.
+
+
 # Final ruling
 
 NVDA remains a valuable golden case, but its real lesson is more subtle than “Prophet picked a winner.”
