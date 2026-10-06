@@ -27,3 +27,10 @@ Early checked findings: the parent ignition table needs a control-denominator co
 Confirmed effects: this research branch and its documentation only. No production path edits. No pending uncertain mutation. Do not modify the #8495 branch.
 
 Next action: complete frozen analyses and row-level admissibility checks; integrate deterministic scripts and compact result tables under this directory. No giant derived Parquet inputs will be committed.
+
+
+## Verified intermediate findings
+
+The operational census and reproduction script are now preserved in this carrier. September NVDA had 32h 48m 32s between alert generation and first Git plan preservation; 1h 12m 41.5s of that follows the first preserved clean-source witness. Reader-visible and canonical executable-entry clocks remain unknown. Across six precisely clocked successful receipts, source witness to origination ranges 42.79–109.10 minutes (median 81.04); this selected subset is not a system SLA.
+
+Emergence and ignition lanes are completing their source-version and outcome robustness checks. The candidate pool is lossless over cascade-eligible names, not all early watch observations; a pool-only B03 projection misses most reconstructed emergence baselines. Final dispositions will replace this checkpoint after the evidence-family, identity, and matched-study artifacts are reconciled.
