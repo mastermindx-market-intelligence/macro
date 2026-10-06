@@ -335,6 +335,20 @@ def qualified_reads(
         )
 
 
+COMPOSE_KEYS = ("identity_reads", "membership_reads", "state_reads")
+
+
+def publication_reads(selection: Mapping, *, data_dir=None, rights_path=None) -> dict:
+    """compose_selection_cohort kwargs for selection_cohort_publication (drops unqualified/selection_clock/owners)."""
+    try:
+        reads = qualified_reads(selection, data_dir=data_dir, rights_path=rights_path)
+    except (OSError, ValueError, TypeError, KeyError):
+        raise
+    except Exception as exc:  # owner failure must stay inside the publication's honest-unavailable tuple
+        raise ValueError(f"QUALIFIED_READS_OWNER_FAILURE:{type(exc).__name__}") from exc
+    return {key: reads[key] for key in COMPOSE_KEYS}
+
+
 def _qualified_reads_inner(
     selection: Mapping,
     *,
