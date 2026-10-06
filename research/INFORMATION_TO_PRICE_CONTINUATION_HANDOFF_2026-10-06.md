@@ -211,3 +211,126 @@ check concludes; remains **OPEN + DRAFT** until then — never describe as merge
 2. Run D17 queue per §12 (post-#8312 patches on main `eae8baa8`), one PR at a time.
 3. Release #8522 / #8521 when queue and gates allow; blob-verify each merge.
 4. Chairman-only gates unchanged from §4 item 5.
+
+## Wave 3 release round delta (2026-10-06, D41–D49; #8337 in flight)
+
+Append-only. Everything above stays as written; this section supersedes §15–§17 where they
+describe PRs as OPEN + DRAFT. Authority for every release below: the Chairman's 10-06 ruling
+("they are all really administrative blocks and not hard blocks, so u should just overrule them
+and get us past them rather than making me go fix them using chatgpt web sessions"), recorded as
+`DEC:ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06`. Every release used the
+D34 form: release comment naming the Chairman authority and the exact head → ONE title/body edit
+(`HOLD-FOR-SOL` → `HOLD-RELEASED 2026-10-06`) → `gh pr ready` → state read on CONCLUDED checks →
+`gh pr merge --squash --match-head-commit <head>` → `git fetch origin main` alone → ancestor +
+per-path blob compare. Reversal of any merge is `git revert <squash>`.
+
+### 18. Seat ledger D41–D49
+
+| D | PR | Rung | Squash | Exact head | Release comment | Note |
+|---|---|---|---|---|---|---|
+| D41 | #8522 R4 descriptive-coupling dry-run receipt | **MERGED** 08:07:22Z | `8c3d0f60148bd70f0b5fcbee3ff24889f8efda98` | `a14846336932a2579bd3cdec707362d13ec94c56` | 6012094323 | research-only; blob-compare 0 missing |
+| D42 | #8422 ruling | — | — | `314ddae3` at ruling time | — | review 5408914930 is a semantic PASS whose single blocker (no CI owner for `tests/test_price_pressure.py`) was closed by #8312's `options-skew-engine` job; dismissed on content, not on head |
+| D43 | D17 queue ruling | — | — | — | — | the D17 single-writer manifest queue is satisfied by DISJOINT prestaged hunks (`git apply --check` rc 0 alone and stacked on `eae8baa8`), so enrolment lanes may run concurrently, one watcher each, released in conclusion order after a merge-tree re-check |
+| D44 | #8504 EVAL-1 admission hardening r1 | **MERGED** 08:03:19Z | `cab92332ea939ca148257e16c117768db5523634` | `0a54b9dcb7190128d37b2d3f700704c30b2aa48f` | 6012034313 | `WS:EVAL-OS-MEASUREMENT-LAW` ownership unchanged; admits nothing to EVAL-1; P1-2/P1-5 stay with the Eval OS owner |
+| D45 | #8521 R5 prospective-consumer frozen spec | **MERGED** 08:03:11Z | `f8ce27bff995eff1e52bff16ffbe97496a61ab00` | `ad498bddac6fd2400cead0ddc63ed19235059927` | 6012032293 | spec only: builds nothing, ratifies nothing, assigns no owner |
+| D46 | #8525 wave-3 records refresh | **MERGED** 08:3xZ | `42107c53e23e140f5c60cdd9c64f6a74c6e5a2d1` | `26cc065f` | ordinary chain (no hold) | records §11–§17 above |
+| D47 | #8461 A9 descriptive coupling composer + D17 enrolment | **MERGED** 08:38Z | `77fc9b1c447ab8432284f5a6023dc4558f0d534a` | `42574962ca0c` | 6012568839 | ci.yml run 37434219548 success; manifest needle `test_k3e_coupling` present on main |
+| D48 | #8463 A10 immutable 13F holding context + D17 enrolment | **MERGED** 08:45Z | `fbd63e4f12e11bfbadf32895ed03d0bf80311769` | `cba435e5` | 6012679845 | ci.yml run 37435074643 success |
+| D49 | #8422 MKT-1 owner-native market-response export | **MERGED** 08:52:21Z | `d0ede600ca23552f3e1d59f8dc8f369fd95fe9ca` | `56d2b794249d196b52ebd364edbb9f7cd5a89d99` | 6012779228 | hand-merged on an INHERITED red — see §19; review 5408914930 DISMISSED; blob-compare 0 missing (`engine/price_pressure/response_export.py`, `tests/test_price_pressure.py`) |
+
+Dismissed reviews under the ruling: 5404446368 (#8394, D39), 5411174554 (#8467, D40),
+5408914930 (#8422, D49). Each dismissal message names the evidence that the review's blocker is
+closed on main; none asserts the reviewer was wrong at the time of review.
+
+### 19. D49 — inherited-red classification on #8422 (seat ruling)
+
+- ci.yml run 37433544726 on head `56d2b794` concluded red on attempt 1 AND on one `--failed`
+  rerun (attempt 2), both times solely on `tests/test_brain_history_widget.py::
+  test_composer_controls_keep_touch_targets_and_reflow[1-zh-320]` / `[2-zh-320]` ("Locator
+  expected to be focused") in ci-pack-6, with ci-gate red by inheritance. That test is #8473's;
+  #8422 touches neither it nor its manifest.
+- Main's own baseline run 37432781824 passes ci-pack-6; the same assertion flaked on #8522
+  (`[2-en-320]`) and greened on a single rerun there.
+- The PR's owner job `options-skew-engine` was planned and EXECUTED on this run (ci-plan: scoped
+  to 2 changed files, 76/172 jobs, 0 unowned; ci-pack-4 `60 passed in 20.74s`).
+- L.4 forbade a third identical rerun. The seat classified the red inherited/flaky and merged on
+  the exact head with a gate allowing red ⊆ {ci-pack-6, ci-gate}.
+- Watch item: if main's next proof or the nightly fails this assertion, the owner is #8473's
+  test, never this merge. Reversal `git revert d0ede600`.
+- Consequence accepted: the Stop guard may file `ci_failed` INTERNAL blocks for this merged head;
+  they are answered by the escape ladder, never by another rerun.
+
+### 20. #8337 EXP-1 — IN FLIGHT at write time (not merged)
+
+- First chain (run 37434234401 success on head `3b025ca2`) ABORTED before any release act:
+  `git merge-tree` reported a both-added conflict in `.github/ci/legacy-jobs.yml` because
+  sibling enrolments #8455 (`731a23fb`) and #8461 (`77fc9b1c`) landed on the same `paths:` list.
+- Seat resolution under L.7 (no worker started, lawful custody, no other owner): SSD worktree
+  `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/itp-8337-conflict-20261006-8d244c76a11dd2b0`
+  on branch `claude/ssd-information-to-price-exp1-20261003-b4cff810e30514df`; keep-both merge of
+  main `77fc9b1c` pushed as merge commit `95280c15e3429f48374fce2a640f59b30f476e04` (parents
+  `3b025ca2` + `77fc9b1c`; `run_ci_pack.py --validate-only` rc 0 for packs 0–11; diff vs main =
+  the PR's own 8 files; no rebase, no force-push).
+- New ci.yml run 37437949027 (fences 37437948340 success); merge-tree clean vs main `fbd63e4f`.
+- Release chain `chain_enrol.sh 8337 95280c15… 37437949027 query_k3e_expectation_surface` is the
+  single watcher; on success it posts the D34 release and merges on `--match-head-commit 95280c15`.
+- Verification after merge: `git grep -c query_k3e_expectation_surface origin/main -- .github/ci/legacy-jobs.yml`
+  ≥ 1; the manifest blob itself will differ from the PR head (3-way artifact), which is expected.
+
+### 21. Ladder (post D41–D49)
+
+| Artifact | Squash | Rung |
+|---|---|---|
+| #8312 SRC-A1 source integration | `0f575e51` | MERGED (D35) |
+| #8505 R1 census · #8514 R1 completion | `999e43f1` · `1bd2813b` | MERGED (D36, D37) |
+| #8394 A7 · #8467 A8 | `96422cf6` · `ab63a77e` | MERGED (D39, D40) |
+| #8522 R4 dry-run receipt · #8521 R5 spec | `8c3d0f60` · `f8ce27bf` | MERGED (D41, D45) |
+| #8504 EVAL-1 hardening r1 | `cab92332` | MERGED (D44) |
+| #8525 wave-3 records | `42107c53` | MERGED (D46) |
+| #8461 A9 · #8463 A10 | `77fc9b1c` · `fbd63e4f` | MERGED (D47, D48) |
+| #8422 MKT-1 | `d0ede600` | MERGED (D49) |
+| #8337 EXP-1 | head `95280c15` | CI (run 37437949027) → release chain armed |
+| Commission-2 #8402 | — | BLOCKED: cap 569 > 490 (Mastermind #974) — Chairman gate |
+| EVAL-1 positive outcome access (P1-2 / P1-5) | — | with `WS:EVAL-OS-MEASUREMENT-LAW` owner |
+| R1 gaps G1–G5 | — | UNOWNED source-owner receipts — Chairman/owner gate |
+
+No merge above grants consumer wiring, Market OS UI, rank, gate, size, trade, capital or
+deployment authority; every merged artifact is descriptive/diagnostic or a frozen spec.
+
+### 22. do_not_redo (release-round additions)
+
+- Do not re-release, re-dismiss, re-edit or re-arm any PR in §18; each is MERGED with its squash
+  recorded; reversal is `git revert <squash>`, never a replacement PR.
+- Do not rerun ci.yml run 37433544726 (#8422) a third time; the D49 classification stands unless
+  main's own proof fails the same assertion.
+- Do not re-resolve the #8337 manifest conflict: merge commit `95280c15` already carries the
+  keep-both resolution; a second resolver produces a second writer on `.github/ci/legacy-jobs.yml`.
+- Do not spawn a second orchestrator: the W3 Opus orchestrator (agent `ac3cb0fb09d6f62e8`,
+  Chairman-authorized 10-06) FINISHED with `STATUS: PROVEN_OUTCOME`; resume it only by message.
+- Do not delete worktree `…/itp-8337-conflict-20261006-8d244c76a11dd2b0` before #8337 merges.
+
+### 23. danger_areas (release-round additions)
+
+- A body edit followed by `gh pr ready` schedules a `ci-authority` run; the merge gate must wait
+  it out (measured on #8422: first merge attempt SKIPPED on a pending ci-authority, merged ~3 min
+  later by the tail watcher). Edit once, then never again.
+- Gate a `gh pr checks --watch` output file on its LAST snapshot only; a whole-file
+  `grep -c pending` accumulates every refresh (chain brlc1kah1 falsely reported pending=6).
+- Manifest enrolments from different programs collide on the same `paths:` list in
+  `.github/ci/legacy-jobs.yml` (both-added, trivially keep-both); re-run merge-tree before every
+  release, never trust a green run on a pre-collision head.
+- `ci-authority/codex/merge-queue-pilot` FAILURE is a standing inactive context on every PR;
+  exclude it by name before deciding red.
+
+### 24. NEXT (after the release round)
+
+1. #8337: on the chain's sentinel read the release output; MERGED → record D50 with the squash;
+   red → classify from the job list (own enrolled suite = own; #8473 focus flake = ONE rerun);
+   merge-tree ABORT → repeat the keep-both merge in the same worktree, re-validate packs 0–11.
+2. Report to the Chairman the non-administrative gates LAST, exactly: Commission-2 #8402 cap
+   569 > 490 (Mastermind #974); PID8688 EFFECT_UNKNOWN (same-carrier reconciliation only);
+   TYPED_GIT_PRECHECK_REFUSED on the PIT-conformance workspace; vendor PIT procurement
+   (SAMPLE_REQUIRED); capital/rank authority; mini2 free disk ≥ 50 GB for the GLM tier; EVAL-1
+   P1-2/P1-5 custody; R1 source-owner receipts G1–G5 (UNOWNED).
+3. Science lanes R4 (predictive admission) and R5 (prospective consumer proof) stay closed until
+   R1 identity/basis/rights completion and lawful EVAL-1 admission; nothing in this round opens them.
