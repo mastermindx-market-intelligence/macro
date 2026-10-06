@@ -546,6 +546,46 @@ def test_visit_discovery_next_day_post_receipt_positive_stays_visible_without_au
 
 
 
+def test_visit_discovery_duplicate_clock_defect_blocks_authority_before_dedup():
+    baseline = _visit_row(
+        "A-dup-clock", "000031", "2026-07-01T09:00:00+08:00",
+        recorded="2026-07-01T02:00:00+00:00",
+    )
+    hidden_defect = dict(baseline)
+    hidden_defect["system_recorded_at"] = None
+    recent = _visit_row(
+        "A-recent", "000031", "2026-10-02T09:00:00+08:00",
+        recorded="2026-10-02T02:00:00+00:00",
+    )
+
+    snap = bus._visit_discovery_snapshot(
+        [baseline, hidden_defect, recent],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    # Keep-FIRST still controls descriptive counting/display.
+    assert snap["n_rows_observed"] == 2
+    assert snap["n_recent_companies"] == 1
+    assert snap["examples"][0]["recent_count"] == 1
+
+    # Authority checks, however, must see every persisted raw row.
+    assert "row_observation_clock_invalid" in snap["owner_clock_errors"]
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] == "row_observation_clock_invalid"
+    assert snap["n_measured_baselines"] == 0
+    assert snap["examples"][0]["baseline_state"] == "blocked_owner_clock_order_invalid"
+    assert snap["examples"][0]["first_seen_state"] == "unknown_owner_clock_order_invalid"
+
+
 def test_visit_discovery_unclocked_post_receipt_source_stays_visible_but_blocks_authority():
     row = _visit_row(
         "A-unclocked-late", "000022", "2026-10-03T09:00:00+00:00",

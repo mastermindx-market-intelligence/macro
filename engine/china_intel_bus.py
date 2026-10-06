@@ -487,12 +487,17 @@ def _visit_discovery_snapshot(
     ):
         source_status = "stale"
 
+    # Authority-bearing integrity checks run over the raw persisted rows BEFORE
+    # presentation/count dedup. A hostile duplicate with a malformed clock must
+    # not disappear behind keep-FIRST and silently restore absence authority.
+    raw_rows = list(visits or [])
+
     # Defensive natural-key dedup. The owner already enforces keep-FIRST on
     # announcement_id; this prevents a malformed fixture/consumer from turning
     # one filing into apparent recurrence.
     deduped: list[dict] = []
     seen_ids: set[str] = set()
-    for row in visits or []:
+    for row in raw_rows:
         aid = _visit_text(row.get("announcement_id"))
         if aid:
             if aid in seen_ids:
@@ -529,14 +534,14 @@ def _visit_discovery_snapshot(
     # receipt, the positive remains visible but first-seen and absence authority
     # are unknown until health catches up.
     health_receipt_instant = last_attempt_instant or last_success_instant
-    row_observation_instants = [
-        _visit_observed_instant(r.get("system_recorded_at")) for r in deduped
+    authority_row_observation_instants = [
+        _visit_observed_instant(r.get("system_recorded_at")) for r in raw_rows
     ]
-    row_source_instants = [
-        _visit_observed_instant(r.get("source_published_at")) for r in deduped
+    authority_row_source_instants = [
+        _visit_observed_instant(r.get("source_published_at")) for r in raw_rows
     ]
-    row_source_days = [
-        _visit_source_day(r.get("source_published_at")) for r in deduped
+    authority_row_source_days = [
+        _visit_source_day(r.get("source_published_at")) for r in raw_rows
     ]
     # system_recorded_at is the owner/write clock. Any keyed persisted row whose
     # observation clock is absent or malformed makes receipt coverage unknown:
@@ -545,12 +550,12 @@ def _visit_discovery_snapshot(
     # baseline authority.
     if any(
         _visit_text(r.get("sec_code")) and observed is None
-        for r, observed in zip(deduped, row_observation_instants)
+        for r, observed in zip(raw_rows, authority_row_observation_instants)
     ):
         clock_errors.append("row_observation_clock_invalid")
     if any(
         _visit_text(r.get("sec_code")) and source_day is None
-        for r, source_day in zip(deduped, row_source_days)
+        for r, source_day in zip(raw_rows, authority_row_source_days)
     ):
         clock_errors.append("row_source_clock_invalid")
     if any(
@@ -564,7 +569,9 @@ def _visit_discovery_snapshot(
             )
         )
         for observed, source, source_day in zip(
-            row_observation_instants, row_source_instants, row_source_days
+            authority_row_observation_instants,
+            authority_row_source_instants,
+            authority_row_source_days,
         )
     ):
         # Full timestamps compare as instants. Accepted date-only source clocks
@@ -574,7 +581,7 @@ def _visit_discovery_snapshot(
     if health_receipt_instant is not None:
         if any(
             inst is not None and inst > health_receipt_instant
-            for inst in row_observation_instants
+            for inst in authority_row_observation_instants
         ):
             clock_errors.append("row_observation_after_health_receipt")
 
@@ -582,7 +589,9 @@ def _visit_discovery_snapshot(
         # health receipt when its source event itself occurred later. Preserve
         # the positive, but refuse absence/baseline/first-seen authority: the
         # receipt cannot possibly cover an event that had not happened yet.
-        for row, observed_instant in zip(deduped, row_observation_instants):
+        for row, observed_instant in zip(
+            raw_rows, authority_row_observation_instants
+        ):
             if observed_instant is not None:
                 continue
             source_instant = _visit_observed_instant(row.get("source_published_at"))
@@ -602,7 +611,9 @@ def _visit_discovery_snapshot(
     owner_clock_order_valid = not clock_errors
 
     source_event_days = [
-        d for d in row_source_days
+        d for d in (
+            _visit_source_day(r.get("source_published_at")) for r in deduped
+        )
         if d is not None and d <= reference_day
     ]
     system_observed_days = [
@@ -702,6 +713,8 @@ def _visit_discovery_snapshot(
             else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
             else "ok_health_receipt_incomplete" if "ok_health_receipt_incomplete" in clock_errors
             else "row_source_clock_invalid" if "row_source_clock_invalid" in clock_errors
+            else "row_source_after_health_receipt_without_observation_clock"
+                if "row_source_after_health_receipt_without_observation_clock" in clock_errors
             else "row_observation_clock_invalid" if "row_observation_clock_invalid" in clock_errors
             else "row_observation_before_source" if "row_observation_before_source" in clock_errors
             # Coverage/future/order defects are more fundamental than the
@@ -723,7 +736,6 @@ def _visit_discovery_snapshot(
             else "coverage_start_unavailable" if coverage_day is None
             else "last_success_clock_unavailable" if last_success_day is None
             else "row_observation_after_health_receipt" if "row_observation_after_health_receipt" in clock_errors
-            else "row_source_after_health_receipt_without_observation_clock" if "row_source_after_health_receipt_without_observation_clock" in clock_errors
             else "owner_clock_order_invalid" if not owner_clock_order_valid
             else None
         ),
