@@ -1,65 +1,65 @@
 {
   "schema": "mastermind.s1_hypothesis_proposal.v1",
-  "main_pin": "1e3299d7b75202be9a951d0b877388d243cd5ba5",
+  "main_pin": "77fc9b1c447ab8432284f5a6023dc4558f0d534a",
   "hypothesis": {
-    "value": "Theme-constituent trailing-beta residual sum over five hourly RTH bars after frozen decision_at; descriptive only",
+    "value": "Mean across matured sessions of cross-sectional Spearman correlations between pre-decision (first full RTH bar through 11:00 ET) and same-session forward (K=5 hourly RTH bars ending by 16:00 ET) theme-relative trailing-beta residuals; support when 95% two-sided t-interval on session correlations excludes 0; rejection when that interval lies entirely in [-0.05,0.05]; inconclusive otherwise or before maturity",
     "basis_label": "STATED",
-    "basis": "Package S theme-relative intraday descriptive strength commission text"
+    "basis": "Package S theme-relative intraday descriptive strength with testable session-level statistic and interval rules fixed at proposal time"
   },
   "decision_time": {
-    "value": "Offset-aware ISO decision_at at last completed hourly RTH bar ending by 16:00 America/New_York",
-    "basis_label": "INHERITED",
-    "basis": "engine/prophet_entry_policy.py:86-95 offset-aware decision_at contract"
+    "value": "11:00 America/New_York bar-end decision clock; K=5 forward hourly RTH bars with ends <=16:00 ET same session (11:00+5h<=16:00)",
+    "basis_label": "ASSUMED",
+    "basis": "Wall-clock and K frozen before any S1 data examination; arithmetic ties forward window to regular close"
   },
   "sessions": {
-    "value": "US RTH 09:30-16:00 America/New_York only; early-close dates per prophet_entry_policy",
+    "value": "US RTH 09:30-16:00 America/New_York; exclude early-close dates per engine/prophet_entry_policy.py:58-66; exclude session years outside _SUPPORTED_SESSION_YEARS until policy owner extends",
     "basis_label": "INHERITED",
-    "basis": "engine/prophet_entry_policy.py:58-66 RTH open/close constants"
+    "basis": "engine/prophet_entry_policy.py:58-66 and explicit 2026-only supported-year frozenset at line 62"
   },
   "estimation": {
-    "value": "63 completed RTH sessions daily returns strictly before decision session; trailing-only OLS beta and vol",
+    "value": "63 completed daily RTH sessions strictly before decision session for OLS beta vs theme benchmark; beta applied to hourly residuals; vol from same daily pre-decision window",
     "basis_label": "ASSUMED",
-    "basis": "A-priori window chosen before any S1 data examination"
+    "basis": "63-session length cites engine/us_board_rank.py:1954 as return-window charter only; daily beta on hourly bars is slow-factor approximation chosen before data read"
   },
   "benchmark_overlap": {
-    "value": "Equal-weight theme benchmark on same hourly bar; residual return vs beta-scaled benchmark",
+    "value": "Equal-weight theme benchmark on same hourly bar; residual return vs beta-scaled benchmark; departs from engine/residual_alpha.py daily sector-neutral construction",
     "basis_label": "STATED",
-    "basis": "Package S requires frozen benchmark overlap for theme-relative descriptive strength"
+    "basis": "Package S frozen benchmark overlap for hourly theme-relative descriptives"
   },
   "self_inclusion": {
     "value": "Constituent excluded from theme benchmark weights on every bar",
-    "basis_label": "ASSUMED",
-    "basis": "Standard theme-relative bookkeeping chosen before data read"
+    "basis_label": "PHYSICS",
+    "basis": "Self-inclusion at weight 1/N mechanically correlates residual with own return"
   },
   "stale_zero_rule": {
-    "value": "Omit missing or zero-volume hourly cells; corrupt per-ticker parquet treated as absent",
+    "value": "Omit missing or zero-volume cells; omit zero-return positive-volume cells; exclude session after three consecutive identical closes on positive volume; corrupt parquet absent",
     "basis_label": "INHERITED",
-    "basis": "scripts/build_polygon_intraday.py:171-185 tolerant read semantics extended to study cells"
+    "basis": "scripts/build_polygon_intraday.py:171-185 tolerant read plus ASSUMED stale-print and zero-return guards"
   },
   "halts_corporate_actions": {
-    "value": "Split-adjusted hourly OHLCV only; sessions without post-delay RTH bars omitted",
+    "value": "Split-adjusted hourly OHLCV (adjusted=true); dividend policy vendor-defined inside adjusted aggregates (S2 audit); same-session window excludes overnight ex-date jumps",
     "basis_label": "INHERITED",
-    "basis": "scripts/build_polygon_intraday.py:135-136 adjusted=true receipt fields"
+    "basis": "scripts/build_polygon_intraday.py:135-136 receipt fields; vendor ASSUMED for dividend inside adjusted series"
   },
   "membership_cutoff": {
-    "value": "PIT theme membership from data/baskets/membership.json as of prior completed US daily session",
+    "value": "engine/basket_membership_pit.py members_asof suite=baskets; exclude sessions with pit=False; S2 records membership.json blob sha at registration when needed",
     "basis_label": "INHERITED",
-    "basis": "scripts/build_intraday_flow.py:324-325 membership.json resolution"
+    "basis": "engine/basket_membership_pit.py:694-705 canonical US PIT reader"
   },
   "baselines": {
-    "value": "Raw hourly RTH simple return and trailing-beta residual vs theme benchmark",
+    "value": "Raw hourly RTH simple return and trailing-beta residual vs theme benchmark; departs from engine/residual_momentum.py daily multi-window table",
     "basis_label": "STATED",
-    "basis": "Package S requires raw and residual baselines distinguished"
+    "basis": "Package S requires raw and residual baselines distinguished at hourly grain"
   },
   "coverage": {
-    "value": "Existing POLYGON_API_KEY and MASSIVE_API_KEY hourly accrual universe only",
-    "basis_label": "INHERITED",
-    "basis": ".github/workflows/intraday.yml:55-60 scheduled accrual on existing secrets"
+    "value": "Session-validity exclusion when forward-window constituent-hour coverage below 80 percent; universe from existing hourly accrual keys only",
+    "basis_label": "STATED",
+    "basis": "Coverage floor is validity not thesis verdict; existing POLYGON/MASSIVE hourly accrual per intraday workflow"
   },
   "costs": {
-    "value": "8 basis points per assumed round-trip for optional display-tier tradability sensitivity",
+    "value": "No cost on descriptive Spearman statistic; Signal Foundry declares 8 bps for excess_return/absolute_return single-series evaluations only",
     "basis_label": "INHERITED",
-    "basis": "engine/signal_foundry/harness.py:14 documents 8 bps vs declared baseline for optional sensitivity tables"
+    "basis": "engine/signal_foundry/harness.py:13-14 single-series declared 8 bps assumption; not intraday round-trip"
   },
   "registration": {
     "start_rule": {
@@ -68,19 +68,19 @@
       "basis": "Package S prospective registration on untouched future formation dates"
     },
     "maturity_rule": {
-      "value": "120 distinct decision sessions with per-session coverage at or above 80 percent",
+      "value": "120 valid decision sessions after session-validity exclusions",
       "basis_label": "ASSUMED",
-      "basis": "Pre-declared sample size before any outcome examination"
+      "basis": "Pre-declared n=120 with ASSUMED per-session sigma for interval precision; no outcome tuning"
     },
     "rejection_rule": {
-      "value": "Below 80 percent constituent-hour cell coverage in the five-bar forward window yields session reject",
-      "basis_label": "STATED",
-      "basis": "S1 section 1 rejection rule fixed at proposal time"
+      "value": "After maturity, 95% two-sided t-interval on per-session Spearman mean lies entirely within [-0.05,0.05]",
+      "basis_label": "ASSUMED",
+      "basis": "Equivalence band delta=0.05 chosen a priori as negligible rank association"
     },
     "inconclusive_rule": {
-      "value": "Coverage from 50 percent up to 80 percent yields session inconclusive",
+      "value": "Interval neither supports nor rejects per band rules, or maturity not met",
       "basis_label": "STATED",
-      "basis": "S1 section 1 inconclusive band fixed at proposal time"
+      "basis": "Fixed three-way partition on the session-mean Spearman statistic"
     },
     "accounting_owner_path": {
       "value": "engine/trial_ledger.py:126-151",
@@ -91,7 +91,7 @@
   "distinctness": [
     {
       "key": "DEC-TREND-PERSISTENCE-STOPS-AT-WAVE-C",
-      "why_distinct": "Closed eleven-sector daily 20/60-session persistence family; S1 is hourly theme residual descriptives"
+      "why_distinct": "Closed eleven-sector daily 20/60-session persistence family; S1 is hourly theme Spearman continuity"
     },
     {
       "key": "KILL-TREND-PERSISTENCE-SECTOR-GROUP-PERSISTENCE",
@@ -106,12 +106,16 @@
       "why_distinct": "Forbids chronicle lane writes; S1 uses price-bar accrual only"
     },
     {
-      "key": "S0 section Q3 daily strength",
-      "why_distinct": "Listed modules use daily closes; none score hourly theme-relative residuals"
+      "key": "DEC-D-LANE-PARKED-AS-FORWARD-STUDY",
+      "why_distinct": "Parks retrospective Prophet theme conditioning; S1 is intraday descriptive registration not lane D outcomes"
     },
     {
-      "key": "S0 section Q2 Prophet session policy",
-      "why_distinct": "Prophet entry policy is execution law; S1 does not extend Prophet regime promotion"
+      "key": "S0 section Q3 daily strength",
+      "why_distinct": "Daily narrative_rotation and us_board_rank windows; none score hourly theme-relative residuals"
+    },
+    {
+      "key": "WS-PROPHET-REGIME-TIMEFRAME-RESEARCH",
+      "why_distinct": "Wave-1 closed; further theme persistence requires new prereg such as C1-W2; S1 is not that construction"
     }
   ],
   "forbidden": [

@@ -1,6 +1,6 @@
 # S1 — Theme-relative intraday descriptive strength (hypothesis proposal + registration draft)
 
-**MAIN_PIN:** `1e3299d7b75202be9a951d0b877388d243cd5ba5` (`git rev-parse origin/main` after `git fetch origin main` on 2026-10-06).  
+**MAIN_PIN:** `77fc9b1c447ab8432284f5a6023dc4558f0d534a` (`git rev-parse origin/main` after `git fetch origin main` on 2026-10-06).  
 **Label:** `mi_s1_hypothesis_proposal_r1` · **Branch:** `claude/mi-s1-intraday-hypothesis-proposal-20261006`  
 **Inputs (read-only on MAIN_PIN):** `research/product_intelligence_local_delivery/S0_INTRADAY_ESTATE_CENSUS_2026-10-06.md` + `.json` (CONFIRMED_GAP, §Q6 skeleton).
 
@@ -30,11 +30,15 @@ Use a new prospective registration for genuinely new theme/intraday hypotheses, 
 
 ## §1 H-S1 (testable descriptive hypothesis)
 
-**H-S1 (one sentence):** For each live theme constituent versus its equal-weight theme benchmark (with the constituent excluded from that benchmark’s weights), **descriptive strength** is the sum of trailing-beta **residual** hourly returns on **RTH** bars over the **five** completed hourly bars immediately after the frozen decision timestamp (the last completed hourly bar whose end is no later than 16:00 America/New_York on the decision session), using **trailing-only** beta and volatility estimated only from completed sessions strictly before the decision session — **descriptive only**, with no promise of tradable edge.
+**H-S1 (one sentence):** On each **decision session** (unit of independence), for live theme constituents versus an equal-weight theme benchmark with the constituent excluded, compute trailing-beta **hourly RTH residual returns** at the frozen **11:00 America/New_York** decision clock on clock-aligned vendor hourly bars; the study statistic is the **mean across matured sessions** of the **cross-sectional Spearman rank correlation** between (i) each constituent’s cumulative theme-relative residual return from the **first full RTH hourly bar** through the decision bar and (ii) its cumulative theme-relative residual over **K = 5** completed hourly RTH bars on the **same session** that **end at or before 16:00 America/New_York** (arithmetic: 11:00 + 5 h ≤ 16:00; overnight and next-session bars are out of scope) — **descriptive only**, no tradable-edge promise.
 
-**Rejection rule (a-priori):** For a formation session, if fewer than **80%** of the scheduled constituent×hour cells in that five-bar forward window have non-missing split-adjusted hourly RTH returns on existing store keys, assign session verdict **reject** for that date.
+**Null (two-sided):** the mean session-level Spearman correlation equals zero (no systematic rank continuity from pre-decision to same-session forward residual strength).
 
-**Inconclusive rule (a-priori):** If coverage is at least **50%** but below **80%** of those cells, assign session verdict **inconclusive** for that date; otherwise proceed to descriptive scoring when maturity is met (§5).
+**Support rule (a-priori):** the **95% two-sided one-sample t-interval** on the per-session Spearman values **excludes 0** (level **ASSUMED** conventional two-sided 95%; method **ASSUMED** session-level t-interval on independent sessions).
+
+**Rejection rule (a-priori):** after maturity, the **same 95% t-interval lies entirely inside** the equivalence band **[−δ, +δ]** with **δ = 0.05** (**ASSUMED** magnitude floor: |ρ| < 0.05 is negligible rank association for cross-sectional theme baskets).
+
+**Inconclusive rule (a-priori):** any other outcome for the interval (including overlap of 0 and the band edges) **or** maturity not met (§5); **session-validity exclusions** (coverage below floor) do not count as rejection.
 
 ---
 
@@ -48,7 +52,7 @@ Use a new prospective registration for genuinely new theme/intraday hypotheses, 
 
 **DNR:KILL-TREND-PERSISTENCE-PATH-FEATURE-PROFILE** — `research/DO_NOT_REBUILD.md:133` closes path-shape drawdown-profile constructions (Wave B2 null).
 
-**S1 difference:** Dynamic **theme** baskets, **hourly RTH** decision clock, **descriptive intraday residual strength** — no sector-group persistence cells and no pre-registered 20/60-session SPY-relative outcome family.
+**S1 difference:** Dynamic **theme** baskets, **hourly RTH** decision clock, **descriptive intraday residual rank-continuity statistic** — no sector-group persistence cells and no pre-registered 20/60-session SPY-relative outcome family.
 
 ### DNR:KILL-INTRADAY-CHRONICLE
 
@@ -58,21 +62,43 @@ Use a new prospective registration for genuinely new theme/intraday hypotheses, 
 
 ### Daily multi-window strength (S0 §Q3)
 
-**Pin:** S0 §Q3 — `engine/narrative_rotation.py:851-854` builds **10-session daily** basket `r10` after daily `allocate()`; `engine/us_board_rank.py:1954-1977` uses **63-session daily** trailing return z-scores — none consume hourly equity bars for theme-relative research.
+**Bounded absence (MAIN_PIN):** `git show origin/main:research/DO_NOT_REBUILD.md | grep -nE 'narrative_rotation|us_board_rank'` returns only `us_board_rank` inside unrelated kill-row text (line 126); **no** DNR key names `narrative_rotation` or daily multi-window intraday strength.
 
-**S1 difference:** **Hourly RTH** residual strength after a **frozen intraday decision time**, not daily close/session windows.
+**Pins (display context only, not outcome basis):** `engine/narrative_rotation.py:851-854` daily basket `r10`; `engine/us_board_rank.py:1954-1977` **63-session daily total-return** z-scores for the leaders lane — neither scores hourly theme-relative residuals.
+
+**S1 difference:** **Hourly RTH** same-session rank-continuity after **11:00 America/New_York**, not daily close/session windows.
 
 ### Prophet regime studies
 
-**Pin:** S0 §Q2 — `engine/prophet_entry_policy.py:58-66` governs US RTH execution policy for Prophet entry surfaces; regime studies remain **daily** strength/rotation tables in S0 §Q3.
+**Key line (MAIN_PIN):** `agentos/workstreams/WS-PROPHET-REGIME-TIMEFRAME-RESEARCH.md:46` — “Any further theme-persistence work is a NEW pre-registration (09 §2 C1-W2 construction), never a re-run.”
 
-**S1 difference:** Optional **intraday descriptive** feature for themes; does not extend Prophet regime verdict machinery or grant new promotion authority.
+**DEC:D-LANE-PARKED-AS-FORWARD-STUDY** — `agentos/decisions/DEC-D-LANE-PARKED-AS-FORWARD-STUDY.md:8-12` parks retrospective theme-conditioned Prophet conditioning; forward study only with honest membership floors.
+
+**Handoff pins:** `research/prophet_v4/astra_regime_indicator_handoff_20261004/09_WAVE1_SYNTHESIS_AND_PRODUCT_IMPLICATION.md:24` names **C1-W2** as a **different state-variable construction** (63/126-session rank-stability candidates) against a frozen control; `:43` lists **D forward study** under `DEC:D-LANE-PARKED-AS-FORWARD-STUDY` — not intraday theme residuals.
+
+**Session fact (not a regime study):** `engine/prophet_entry_policy.py:58-66` holds US RTH open/close and bounded **2026** early-close table only.
+
+**S1 difference:** S1 is **not** C1-W2 rotation-state construction, **not** a Prophet timeframe-transposition study, and **not** lane-D theme-conditioned event outcomes; it is a **standalone intraday descriptive** registration on hourly theme residuals.
+
+### Daily residual momentum owners (`engine/residual_alpha.py`, `engine/residual_momentum.py`)
+
+**Key lines (MAIN_PIN):** `engine/residual_alpha.py:1-8` — **daily** sector-neutral residual momentum, medium horizon, wired to leaders context; `engine/residual_momentum.py:1-8` — **multi-window daily** multi-factor generalization. Docstrings record which horizons reversed or worked historically; **S1 does not import those findings** as direction or thresholds.
+
+**S1 difference:** S1 uses **hourly RTH** theme-equal-weight residuals with **daily-estimated trailing beta** (§3 row 3) for a **same-session descriptive correlation**; it does **not** inherit sector-neutral daily ranking scores or multi-window factor tables as the hypothesis statistic.
+
+### WS:TEMPORAL-GRAIN-INTELLIGENCE (active)
+
+**Key line (MAIN_PIN):** `agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md:101` — Technical Opportunity owns U.S.-equity **data/clock/session**; this workstream **consumes** rather than duplicates it.
+
+**Reuse map:** `research/prophet_v4/astra_regime_indicator_handoff_20261004/02_SOURCE_CENSUS_AND_REUSE_MAP.md:116` requires distinct **`4H-CLOCK`** vs **`195M-RTH`** definitions; no pooling across constructions.
+
+**S1 difference:** S1 **fixes one grain** — **Polygon clock-aligned hourly bars** filtered to RTH in the study layer — and does **not** select among signal grains or session partitions; alignment with TOI clocks is an **S2 audit**, not an S1 claim.
 
 ### DNR:KILL-OFFHORIZON-VERDICTS (forbidden overlap)
 
 **Key line (MAIN_PIN):** `research/DO_NOT_REBUILD.md:46` — verdicts only at registered `horizon_role` rulers.
 
-**S1 difference:** Prospective registration fixes **one** forward window (five hourly RTH bars) before any scoring; no ad-hoc horizon ladder.
+**S1 difference:** Prospective registration fixes **one** same-session forward window (five hourly RTH bars ending by 16:00 ET) before any scoring; no ad-hoc horizon ladder.
 
 ---
 
@@ -82,17 +108,21 @@ Each row closes the S0 §Q6 pin or fills the named GAP. No value is justified by
 
 | # | Field | Frozen value | Basis label | Basis (one line) | Closes |
 |---|--------|--------------|-------------|------------------|--------|
-| 1 | Decision time | Offset-aware ISO `decision_at` at the end of the last **completed** hourly RTH bar on the decision session, with no bar ending after 16:00 America/New_York | INHERITED | `engine/prophet_entry_policy.py:86-95` requires canonical offset-aware `decision_at`; session law `engine/prophet_entry_policy.py:58-66` | S0 §Q6 decision-time GAP |
-| 2 | Session boundaries | **RTH only:** 09:30–16:00 America/New_York on US equity session dates; early-close dates in `engine/prophet_entry_policy.py:58-66`; **no** extended-hours bars in scope | INHERITED | `engine/prophet_entry_policy.py:58-66` + calendar existence via `lib/nyse_calendar.py:10-13` (early-close split acknowledged in S0 §Q2) | S0 §Q6 session pin |
-| 3 | Trailing-only beta/volatility | **63** completed RTH sessions of daily returns strictly before the decision session; OLS beta of constituent vs theme benchmark; vol from the same pre-decision window only | ASSUMED | Chosen before any S1 data read; no peek at decision-day or forward-window returns | S0 §Q6 trailing beta/vol GAP |
-| 4 | Benchmark overlap | Theme benchmark = equal-weight return of live theme members on the same hourly bar; residual = constituent return minus beta×benchmark return on that bar | STATED | Package S requires benchmark overlap frozen; descriptive theme-relative residual, not SPY group persistence | S0 §Q6 benchmark overlap GAP |
-| 5 | Constituent self-inclusion | Constituent **excluded** from its theme benchmark weight on every bar | ASSUMED | Standard theme-relative bookkeeping chosen a priori | S0 §Q6 self-inclusion GAP |
-| 6 | Stale/missing/zero-return | Missing hourly bar → omit cell; **zero-volume** bar → omit; per-ticker corrupt store → tolerate as absent file per collector (`scripts/build_polygon_intraday.py:171-185`) | INHERITED | `scripts/build_polygon_intraday.py:171-185` fail-soft read; study rule extends GAP honestly | S0 §Q6 stale/missing GAP |
-| 7 | Halts/corporate actions | **Split-adjusted** hourly OHLCV only (`adjusted: true`); no separate halt tape — sessions with no RTH bars after vendor delay are omitted | INHERITED | `scripts/build_polygon_intraday.py:135-136` adjusted flag; halt handling GAP closed as “omit session” rule | S0 §Q6 halts GAP |
-| 8 | Membership cutoff | Theme membership from `data/baskets/membership.json` resolved PIT as of the last completed US **daily** session before `decision_at` (`scripts/build_intraday_flow.py:324-325`) | INHERITED | `scripts/build_intraday_flow.py:324-325` membership.json load path | S0 §Q6 membership pin |
-| 9 | Raw and residual baselines | **Raw:** hourly RTH simple return; **Residual:** trailing-beta-adjusted vs theme benchmark per row 4 | STATED | Package S requires raw and residual baselines distinguished | S0 §Q6 baselines GAP |
-| 10 | Costs | **8** basis points applied once per full round-trip turnover assumption for any optional tradability sensitivity table (display-tier only) | INHERITED | `engine/signal_foundry/harness.py:14` documents 8 bps vs declared baseline as a house convention | S0 §Q6 costs GAP |
-| 11 | Coverage | Universe = tickers already accreted under existing `POLYGON_API_KEY` / `MASSIVE_API_KEY` hourly job (`.github/workflows/intraday.yml:55-60`); no new vendor keys | INHERITED | S0 CONFIRMED_GAP: only runner-local hourly store; coverage honest on existing keys only | S0 §Q5 estate gap |
+| 1 | Decision time | **11:00 America/New_York** on an hourly bar boundary; `decision_at` offset-aware ISO at the **end** of the completed 10:00–11:00 ET hourly bar; forward **K = 5** same-session RTH bars with bar **ends** ≤ 16:00 ET (**11:00 + 5 h ≤ 16:00**) | ASSUMED | Wall-clock chosen before data read; matches Package S “freeze the decision time” | S0 §Q6 decision-time GAP |
+| 2 | Session boundaries | **RTH only** 09:30–16:00 America/New_York; **exclude** early-close sessions per `engine/prophet_entry_policy.py:58-66` (`_RTH_EARLY_CLOSE_ET`, `_EARLY_CLOSE_DATES`, `_SUPPORTED_SESSION_YEARS = frozenset({2026})` at line 62) because the forward window cannot complete before **13:00** ET; **exclude** any session year **not** in `_SUPPORTED_SESSION_YEARS` until the policy owner extends that frozenset (**INHERITED** explicit policy mutation rule at lines 64–65); `lib/nyse_calendar.py:10-13` does **not** model early closes | INHERITED + PHYSICS | Prophet entry policy + physics of shortened RTH; calendar module gap acknowledged | S0 §Q6 session pin |
+| 3 | Trailing-only beta/volatility | **63** completed **daily** RTH sessions of returns strictly before the decision session; OLS beta vs theme benchmark on **daily** returns; apply that beta to **hourly** bar residuals (slow-moving exposure); vol from same pre-decision daily window only | ASSUMED + INHERITED | **63** names `engine/us_board_rank.py:1954` `LEADERS_MOMENTUM_SESSIONS` as a **trailing-return** window, **not** a beta window — S1 borrows the **length** only; daily beta on hourly residuals is an a-priori slow-factor approximation | S0 §Q6 trailing beta/vol GAP |
+| 4 | Benchmark overlap | Theme benchmark = equal-weight return of live theme members on the same hourly bar; residual = constituent return minus beta×benchmark return on that bar; **departs** from `engine/residual_alpha.py` sector-neutral daily construction (§2) | STATED | Package S benchmark overlap; hourly theme scope | S0 §Q6 benchmark overlap GAP |
+| 5 | Constituent self-inclusion | Constituent **excluded** from its theme benchmark weights on every bar | PHYSICS | Including the name in its own equal-weight benchmark mechanically correlates the residual with its own return at weight **1/N** | S0 §Q6 self-inclusion GAP |
+| 6 | Stale/missing/zero-return | Missing hourly bar → omit cell; **zero-volume** bar → omit; **zero return with positive volume** → omit cell (**ASSUMED** bad tick); **three or more consecutive identical closes** on positive volume → **exclude session** (**ASSUMED** stale-print guard); corrupt per-ticker store → absent per `scripts/build_polygon_intraday.py:171-185` | INHERITED + ASSUMED | Collector fail-soft read plus explicit stale/zero rules | S0 §Q6 stale/missing GAP |
+| 7 | Halts/corporate actions | **Split-adjusted** hourly OHLCV (`adjusted: true` at `scripts/build_polygon_intraday.py:135-136`); **dividends** follow vendor split-adjusted policy (**ASSUMED** vendor-defined inside adjusted aggregates — **S2 audit**); same-session window **excludes overnight ex-date jumps**; sessions with no post-delay RTH bars omitted | INHERITED + ASSUMED + PHYSICS | Receipt fields + session physics | S0 §Q6 halts GAP |
+| 8 | Membership cutoff | At each formation date, `engine/basket_membership_pit.py:694-705` `members_asof(..., suite="baskets")`; **exclude** sessions where `pit=False`; S2 records git blob sha of `data/baskets/membership.json` at registration metadata when needed | INHERITED | Canonical US PIT reader; `scripts/build_intraday_flow.py:324-325` is load path only | S0 §Q6 membership pin |
+| 9 | Raw and residual baselines | **Raw:** hourly RTH simple return; **Residual:** trailing-beta-adjusted vs theme benchmark per rows 4–5; **departs** from daily `engine/residual_momentum.py` multi-window factor table | STATED | Package S raw vs residual; not daily residual-momentum scores | S0 §Q6 baselines GAP |
+| 10 | Costs | Signal Foundry battery declares **8 bps** for **excess_return / absolute_return + single_series** cost-aware evaluations (`engine/signal_foundry/harness.py:13-14`) — a **declared assumption**, not estimated from outcomes, and **not** an intraday round-trip cost; **no** cost applied to the §1 descriptive Spearman statistic; optional display-tier sensitivity only | INHERITED | Accurate harness scope | S0 §Q6 costs GAP |
+| 11 | Coverage | **Session-validity:** if fewer than **80%** of scheduled constituent×hour cells in the forward window are present, **exclude** that session from the matured sample (not a thesis rejection); universe = tickers under existing hourly accrual (`.github/workflows/intraday.yml:55-60`) | STATED + INHERITED | Package S coverage on existing keys; validity separate from §1 interval rules | S0 §Q5 estate gap |
+
+**Bar alignment (collector, MAIN_PIN):** `scripts/build_polygon_intraday.py:262-263` requests Polygon aggregates with `adjusted: true` and **no RTH/session filter at write**; bars are clock-aligned UTC timestamps. The **09:00–10:00 ET** bar **mixes pre-market and RTH** under clock alignment — **ASSUMED** “first full RTH hourly bar” means the bar **ending 10:00 ET** until an **interval/alignment audit** (Package S / TOI W2) positively recovers RTH-only hourly labels (**S2 prerequisite**).
+
+**Clock owner consumption:** S1 follows **Technical Opportunity’s** U.S. equity clock/session ownership (`agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md:101`) and **does not** adopt `4H-CLOCK` or `195M-RTH` session partitions from `research/prophet_v4/astra_regime_indicator_handoff_20261004/02_SOURCE_CENSUS_AND_REUSE_MAP.md:116` until positively recovered.
 
 ---
 
@@ -111,6 +141,8 @@ Each row closes the S0 §Q6 pin or fills the named GAP. No value is justified by
 
 **Forbidden data actions for S2 until registered:** reading `data/intraday/*.parquet` bytes for threshold tuning; any vendor API call beyond existing scheduled accrual.
 
+**PIT membership search (bounded, MAIN_PIN):** `git ls-tree -r origin/main --name-only data/baskets/` lists `membership.json` and `membership_history.parquet`; `git grep -l membership_history origin/main -- scripts/ engine/` includes `engine/basket_membership_pit.py` (canonical `members_asof` reader).
+
 ---
 
 ## §5 Prospective registration plan (draft)
@@ -118,11 +150,22 @@ Each row closes the S0 §Q6 pin or fills the named GAP. No value is justified by
 | Element | Rule |
 |---------|------|
 | Start | First formation `decision_at` date **strictly after** product-owner acceptance timestamp recorded in the S2 registration commit |
-| Maturity | **120** distinct decision sessions with per-session coverage ≥ **80%** (reject rule in §1) |
-| Rejection | §1 **80%** coverage floor → session **reject** |
-| Inconclusive | §1 **50%–80%** band → session **inconclusive** |
-| Accounting | All configs and declared budgets logged through **`engine/trial_ledger.py:126-151`** (`log_trial` / `log_declared_budget` append to `data/trial_ledger.jsonl`) **before** any forward descriptive scoring job runs (same discipline as `engine/signal_foundry/harness.py:9-14`) |
+| Maturity | **120** distinct **valid** decision sessions (after session-validity exclusions) |
+| Support / rejection / inconclusive | §1 interval rules on the mean session Spearman statistic |
+| Session validity | Forward-window constituent×hour coverage **≥ 80%** — otherwise **exclude** session from sample |
+| Accounting | All configs and declared budgets logged through **`engine/trial_ledger.py:126-151`** before any forward descriptive scoring job runs |
 | Outcome scan | **Forbidden** before registration merge; no rank/gate/size promotion |
+
+**A-priori parameter table (§1 + §5 numbers):**
+
+| Parameter | Value | Basis label | A-priori reason |
+|-----------|-------|-------------|-----------------|
+| Decision clock | 11:00 America/New_York | ASSUMED | Freeze one intraday clock before data read |
+| Forward bars K | 5 | STATED | Same-session window ending at regular close (11:00+5h≤16:00) |
+| Coverage validity floor | 80% cells | ASSUMED | Conventional minimum usable panel per session |
+| Interval level | 95% two-sided | ASSUMED | Standard reporting convention |
+| Equivalence δ | 0.05 Spearman | ASSUMED | |ρ|<0.05 treated as negligible rank association |
+| Maturity sessions | 120 valid sessions | ASSUMED | With **ASSUMED** per-session σ≈0.25, SE≈0.023, 95% half-width ≈0.045 separates 0 from δ without outcome tuning |
 
 **Trial-accounting owner (canonical):** `engine/trial_ledger.py:126-151` — `TrialLedger.log_trial` performs append-only deduplicated writes to the consolidated JSONL ledger.
 
@@ -167,6 +210,32 @@ JS=research/product_intelligence_local_delivery/S1_THEME_RELATIVE_INTRADAY_HYPOT
 W="valid""ated|已验""证|fal""sif|ref""ut|证""伪"; grep -ciE "$W" "$MD"
 python3 -c "import json;json.load(open('$JS'));print('json ok')"; echo rc=$?
 python3 - <<'PY'
+import re,subprocess
+md=open('research/product_intelligence_local_delivery/S1_THEME_RELATIVE_INTRADAY_HYPOTHESIS_PROPOSAL_2026-10-06.md',encoding='utf-8').read()
+cites=sorted(set(c for c in re.findall(r'([A-Za-z0-9_./-]+):(\d+)(?:-(\d+))?',md) if ('/' in c[0] or '.' in c[0]) and re.search('[A-Za-z]',c[0])))
+miss=0
+for p,a,b in cites:
+    r=subprocess.run(['git','show','origin/main:'+p],capture_output=True,text=True)
+    if r.returncode!=0: print('MISS-PATH',p,a,b); miss+=1; continue
+    L=r.stdout.splitlines(); lo=int(a); hi=int(b or a)
+    if lo<1 or hi<lo or hi>len(L) or not any(x.strip() for x in L[lo-1:hi]): print('MISS-LINE',p,a,b,'len',len(L)); miss+=1
+    else: print('OK',p+':'+a+('-'+b if b else ''),'|',L[lo-1].strip()[:90])
+print('CITES',len(cites),'MISS',miss)
+PY
+python3 - <<'PY2'
+import re,subprocess
+MD='research/product_intelligence_local_delivery/S1_THEME_RELATIVE_INTRADAY_HYPOTHESIS_PROPOSAL_2026-10-06.md'
+t=open(MD,encoding='utf-8').read()+open(MD[:-3]+'.json',encoding='utf-8').read()
+ks=set(re.findall(r'\b((?:KILL|LAW|HOLD)-[A-Z0-9]+(?:-[A-Z0-9]+)*)',t))|{'DEC-'+m for m in re.findall(r'\bDEC[-:]([A-Z0-9]+(?:-[A-Z0-9]+)*)',t)}
+dnr=subprocess.run(['git','show','origin/main:research/DO_NOT_REBUILD.md'],capture_output=True,text=True).stdout
+dec=subprocess.run(['git','ls-tree','--name-only','origin/main','agentos/decisions/'],capture_output=True,text=True).stdout.split()
+ab=0
+for k in sorted(ks):
+    ok=('agentos/decisions/'+k+'.md' in dec) if k.startswith('DEC-') else ('| '+k+' |' in dnr)
+    print('FOUND' if ok else 'ABSENT',k); ab+=0 if ok else 1
+print('KEYS',len(ks),'ABSENT',ab)
+PY2
+python3 - <<'PY'
 import json,re
 d=json.load(open('research/product_intelligence_local_delivery/S1_THEME_RELATIVE_INTRADAY_HYPOTHESIS_PROPOSAL_2026-10-06.json',encoding='utf-8'))
 L={'STATED','PHYSICS','INHERITED','ASSUMED'}
@@ -180,5 +249,3 @@ print('schema',d.get('schema'),'distinctness',len(d.get('distinctness',[])),'for
 print('PARAMS',len(objs),'BAD',len(bad),'OUTCOME_BASIS',len(ob))
 PY
 ```
-
-(Machine resolver loops for G2/G3 are run at delivery; see seat VERIFY block.)
