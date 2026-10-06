@@ -163,6 +163,61 @@ def test_funding_proxies_are_not_independent_votes_and_direct_basis_stays_missin
     assert got["funding_interpretation"] == "proxy_context_only"
 
 
+def test_owner_stamped_direct_basis_receipt_is_consumed_without_local_date_admission():
+    receipt = {
+        "value_bps": 0.0,
+        "asof": "2026-10-02",
+        "source": "qualified-direct-owner",
+        "date_status": "known",
+    }
+    got = _mod().collect_funding_context(
+        lambda *_: None, {}, {}, direct_basis_receipt=receipt
+    )
+    direct = got["direct_usd_xccy_basis"]
+    assert direct == {
+        "status": "available",
+        "value_bp": 0.0,
+        "unit": "basis_points",
+        "asof": "2026-10-02",
+        "source": "qualified-direct-owner",
+        "date_status": "known",
+        "source_family": "direct_usd_xccy_basis",
+    }
+
+    view = _mod().project_carry_funding(_pairs(), _regime(), got)
+    assert view["funding"]["direct_usd_xccy_basis"]["status"] == "available"
+    assert view["funding"]["direct_usd_xccy_basis"]["value_bp"] == 0.0
+    assert view["funding"]["state"] == "partial"
+    assert "direct_usd_cross_currency_basis_unavailable" not in view["limitations"]
+
+
+def test_direct_basis_without_owner_admission_stamp_stays_unavailable():
+    receipt = {
+        "value_bps": -12.5,
+        "asof": "2026-10-02",
+        "source": "looks-valid-but-not-owner-admitted",
+    }
+    got = _mod().collect_funding_context(
+        lambda *_: None, {}, {}, direct_basis_receipt=receipt
+    )
+    direct = got["direct_usd_xccy_basis"]
+    assert direct["status"] == "unavailable"
+    assert direct["reason"] == "owner_receipt_not_admitted"
+
+    # The consumer trusts the owner's admission stamp instead of duplicating
+    # calendar-date parsing here. A malformed date with no stamp must still fail closed.
+    malformed = _mod().collect_funding_context(
+        lambda *_: None, {}, {},
+        direct_basis_receipt={
+            "value_bps": -9.0,
+            "asof": "not-a-date",
+            "source": "unadmitted",
+        },
+    )["direct_usd_xccy_basis"]
+    assert malformed["status"] == "unavailable"
+    assert malformed["reason"] == "owner_receipt_not_admitted"
+
+
 def test_missing_funding_never_changes_carry_scenario_state():
     regime = _regime(active=True, n_fired=3, min_legs=3)
     for i, leg in enumerate(regime["scenarios"][0]["fired_legs"], start=1):
@@ -273,6 +328,33 @@ def test_template_is_read_only_bilingual_and_never_says_funding_is_normal():
     assert "<input" not in html and "<button" not in html
 
 
+def test_template_renders_owner_qualified_direct_basis_without_proxy_substitution():
+    from bs4 import BeautifulSoup
+
+    funding = _funding()
+    funding["direct_usd_xccy_basis"] = {
+        "status": "available",
+        "value_bp": 0.0,
+        "unit": "basis_points",
+        "asof": "2026-10-02",
+        "source": "qualified-direct-owner",
+        "date_status": "known",
+        "source_family": "direct_usd_xccy_basis",
+    }
+    view = _mod().project_carry_funding(_pairs(), _regime(), funding)
+    html = _render(view)
+    visible = BeautifulSoup(html, "html.parser").get_text(" ", strip=True)
+
+    assert "Direct USD cross-currency basis" in visible
+    assert "0.0 bp" in visible
+    assert "qualified-direct-owner" in visible
+    assert "2026-10-02" in visible
+    assert "owner-qualified direct receipt" in visible
+    assert "Direct USD cross-currency basis · Unavailable" not in visible
+    assert "funding is normal" not in visible.lower()
+    assert "direct_usd_cross_currency_basis_unavailable" not in view["limitations"]
+
+
 def test_template_withholds_frequency_when_sample_is_insufficient():
     view = _mod().project_carry_funding(_pairs(), _regime(status="insufficient"), _funding())
     html = _render(view)
@@ -300,6 +382,15 @@ def test_parent_forex_route_includes_exactly_one_carry_funding_component():
     assert source.count('{% include "_forex_carry_funding.html.j2" %}') == 1
     assert source.index('{% include "_forex_movement_evidence.html.j2" %}') < source.index('{% include "_forex_carry_funding.html.j2" %}')
     assert source.index('{% include "_forex_carry_funding.html.j2" %}') < source.index("§4 — The pairs")
+
+
+def test_forex_builder_does_not_import_macro_context_as_a_second_basis_admission_owner():
+    source = (ROOT / "scripts" / "build_forex.py").read_text()
+    assert "build_macro_context" not in source
+    assert "_direct_usd_xccy_basis" not in source
+    # No receipt is supplied today because no admitted direct-basis producer exists.
+    # The default remains honestly unavailable until an owner-native caller provides one.
+    assert "direct_basis_receipt=" not in source
 
 
 def test_builder_exposes_same_projection_to_page_and_machine_snapshot_without_recomputing_contagion():
