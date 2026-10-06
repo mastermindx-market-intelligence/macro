@@ -145,6 +145,29 @@ def test_refused_source_family_unresolved_real_registry():
     assert v["source_family"] is None
 
 
+def test_us_standouts_selection_provenance_is_explicitly_not_a_gmi_source():
+    ref = "site/factordata/us_standouts.json#buy"
+    assert rights.family_for_source_ref(ref) is None
+    v = current_use_verdict(_valid_request(source_ref=ref), path=REAL_REGISTRY)
+    assert v["verdict"] == "REFUSED"
+    assert v["reason_codes"] == ["SOURCE_FAMILY_UNRESOLVED"]
+    assert v["source_family"] is None
+
+
+def test_relation_event_source_prefix_maps_only_accepted_v2_artifact():
+    accepted = (
+        "data/theme_graph/probation/relation_events.v2.jsonl#"
+        "relation-event:" + "a" * 64
+    )
+    assert rights.family_for_source_ref(accepted) == "mastermind_curated"
+    assert rights.family_for_source_ref(
+        "data/theme_graph/probation/proposals.jsonl#prop:any"
+    ) is None
+    assert rights.family_for_source_ref(
+        "data/theme_graph/probation/relation_events.v2.jsonl"
+    ) is None
+
+
 def test_registry_missing_between_phases(tmp_path):
     p = _write_registry(tmp_path, _registry_bytes())
     cap = capture_capability(path=p)
