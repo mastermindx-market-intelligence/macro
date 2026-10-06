@@ -32,6 +32,11 @@ verified:
   - claim: "D36–D40 squashes are ancestors of origin/main eae8baa8d3d4."
     command: "git fetch origin main && git merge-base --is-ancestor <squash> origin/main (each of 999e43f1, 1bd2813b, 96422cf6, ab63a77e, 0f575e51)"
     result: "true for all five per orchestrator 07:5xZ receipt."
+  - claim: "Seat delta headRefOid prefixes match GraphQL (merged and still-open)."
+    command: "gh pr view (orchestrator GraphQL read 07:5xZ)"
+    result: >
+      Merged heads: #8312 94fc9825, #8505 ab77f792, #8514 9f0b7754, #8394 0f6fd5b2, #8467 056e596e.
+      Still OPEN + DRAFT: #8422 314ddae3, #8337 13910854, #8461 3bf903fa, #8463 02fe6b51, #8521 ad498bdd, #8522 a1484633.
 unverified:
   - claim: "Every orchestrator verified command in W3-A (r4_dryrun_receipt_check) still exits 0 on origin/main."
     what_would_verify: "Checkout W3-A head on a full tree and run research/alpha_intelligence/expectation_market_dynamics/r4_dryrun_receipt_check.py --check on the receipt JSON (files live only on PR #8522 branch until released)."
