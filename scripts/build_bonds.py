@@ -1818,6 +1818,35 @@ def _key_levels(f: pd.DataFrame, vm: dict) -> list[dict]:
     return rows
 
 
+def _load_optional_json(path: Path) -> dict:
+    """Read an existing owner artifact; missing/malformed input stays unknown."""
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        return payload if isinstance(payload, dict) else {}
+    except Exception:  # noqa: BLE001 — explanation evidence is additive
+        return {}
+
+
+def build_bonds_explanation_vm(
+    bond_snapshot: dict,
+    fed_path: dict | None = None,
+    data_root: Path | None = None,
+) -> dict | None:
+    """Project existing Bonds/transmission/regime owners into competing explanations."""
+    root = data_root or config.data_dir()
+    bond_input = dict(bond_snapshot or {})
+    if fed_path is not None:
+        bond_input["fed_path"] = fed_path
+    transmission = _load_optional_json(root / "transmission" / "latest.json")
+    regime = _load_optional_json(root / "regime" / "latest.json")
+    try:
+        from lib.bonds_explanation_view import build_bonds_explanation_view
+        return build_bonds_explanation_view(bond_input, transmission, regime)
+    except Exception as e:  # noqa: BLE001 — additive, never break Bonds
+        log.warning("bonds explanation projection failed: %s", e)
+        return None
+
+
 # --------------------------------------------------------------------------- #
 # main
 # --------------------------------------------------------------------------- #
@@ -1979,6 +2008,8 @@ def main() -> int:
         log.warning("corp_credit vm build failed (%s); using empty accruing state", e)
         cc_vm = build_corp_credit_vm(data_root=None)
 
+    explanation_view = build_bonds_explanation_vm(snap, fed_path)
+
     from engine.i18n import tr, td
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     env.globals.update(tr=tr, td=td)
@@ -1990,6 +2021,7 @@ def main() -> int:
         C=C, as_of=as_of_disp, as_of_zh=as_of_zh, as_of_iso=as_of, built=built, span=span, vm=vm, charts=charts,
         credit_cycle=credit_cycle,
         fed_path=fed_path, treasury_supply=treasury_supply, usd_link=usd_link,
+        explanation_view=explanation_view,
         intl=intl, compass=compass, xasset=xasset, xasset_vm=xasset_vm,
         timeline=timeline, timeline_days=acfg["timeline_days"], n_alerts=len(recent),
         cc_vm=cc_vm, glance=_glance(vm), key_levels=_key_levels(f, vm),
@@ -2020,6 +2052,8 @@ def main() -> int:
         snap["bond_compass"] = compass         # directional duration / curve lean (display-only)
     if xasset is not None:
         snap["bond_cross_asset"] = xasset      # measured bond→asset transmission betas
+    if explanation_view is not None:
+        snap["explanation"] = explanation_view  # same display-only evidence object used by the page
 
     # IRD-W2: additive `intl` namespace — fail-open; existing keys untouched when absent
     try:
