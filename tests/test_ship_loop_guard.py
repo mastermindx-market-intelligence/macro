@@ -5057,6 +5057,12 @@ def test_settings_wire_session_start_and_stop():
     assert "Stop" in hooks
     commands = json.dumps(hooks)
     assert "ship_loop_guard.py" in commands
+    # Claude Code defaults to overriding a Stop hook after the ninth consecutive
+    # block (default cap 8, override when count > cap). Our evidence-gated ladder
+    # intentionally needs as many as 15 total blocks in a mixed internal cycle.
+    # Let the repository's own explicit SHIP LOOP BLOCKED escape decide first
+    # instead of the provider silently forcing the turn to end one block early.
+    assert settings["env"]["CLAUDE_CODE_STOP_HOOK_BLOCK_CAP"] == "15"
 
 
 def test_ui_contract_separates_scores_from_axis_labels():
