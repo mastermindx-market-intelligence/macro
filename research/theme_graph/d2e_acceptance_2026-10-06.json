@@ -1,7 +1,27 @@
 {
   "operation": "gmi-theme-accept-d2e-20260827-sol-001",
   "phase": 1,
+  "round": "r1b",
   "pin": "cbfa20a45d8401f1cf1cc9fc48155455f1d612fb",
+  "head": "58640b01db0d501a7c704f77314d169dd135140e",
+  "harness_corrections": [
+    {
+      "id": "D1",
+      "reason": "Round r1 ran R1.B/R2 without data/reference/security_master.parquet, which degraded check (f) and produced a false 1168-row biconditional breach."
+    },
+    {
+      "id": "D5",
+      "reason": "MarketOntology half-B docket tests are not a D2 rights gate; moved to non-gating R1.X and R1.F scoped to theme-graph rights tests only."
+    },
+    {
+      "id": "D6",
+      "reason": "R3.2 census is bound to evidence.source_ref via family_for_source_ref, not non-reference node/edge metadata columns."
+    },
+    {
+      "id": "D7",
+      "reason": "site/factordata/us_standouts.json is intentionally unmapped (fail-closed); PASS requires None, not a registry family."
+    }
+  ],
   "generation": {
     "computed_at": "2026-10-06T08:07:45Z",
     "data_commit": "f7dd82910f315e82f376144388f2b38490c94ffe",
@@ -13,6 +33,7 @@
   "rows": [
     {
       "id": "R0.1",
+      "gating": true,
       "gate": "Predecessor ancestry",
       "command": "git merge-base --is-ancestor {0b1fe887,79b566f5,192a46de} HEAD",
       "rc": 0,
@@ -23,6 +44,7 @@
     },
     {
       "id": "R0.2",
+      "gating": true,
       "gate": "Agent OS acceptance trace",
       "command": "git grep D2C|D2D accept|merged in agentos/",
       "rc": 3,
@@ -33,6 +55,7 @@
     },
     {
       "id": "R0.3",
+      "gating": true,
       "gate": "No overlapping D2E carrier",
       "command": "gh pr list --search D2E",
       "rc": 0,
@@ -43,6 +66,7 @@
     },
     {
       "id": "R0.4",
+      "gating": true,
       "gate": "Owner-action authority #8507",
       "command": "gh pr view 8507; git grep OWNER_ACTION...",
       "rc": 0,
@@ -53,86 +77,106 @@
     },
     {
       "id": "R1.A",
+      "gating": true,
       "gate": "D2A identity resolution",
       "command": "pytest tests/test_theme_graph_identity*.py",
+      "rc": 1,
+      "output_tail": "3 failed, 118 passed in 5.16s\ntests/test_theme_graph_identity_resolution.py::test_the_committed_graph_carries_exactly_2806_company_nodes\nE       assert 2807 == 2806",
+      "verdict": "FAIL",
+      "owner": "D2A identity owner",
+      "repair_packet": "reconcile committed nodes/sidecar with D2A \u00a79 pinned 2806 company count (EQR/VMRK same-security set); re-run TZ=UTC COLLECT_LANE=nightly PY -m pytest -p no:cacheprovider -q -rfEs tests/test_theme_graph_identity_resolution.py tests/test_theme_graph_identity.py"
+    },
+    {
+      "id": "R1.B",
+      "gating": true,
+      "gate": "D2B lifecycle hostile matrix",
+      "command": "pytest tests/test_theme_graph_lifecycle.py",
       "rc": 0,
-      "output_tail": "65 passed, 56 skipped in 0.81s",
+      "output_tail": "26 passed in 2.43s",
       "verdict": "PASS",
       "owner": "\u2014",
       "repair_packet": "\u2014"
     },
     {
-      "id": "R1.B",
-      "gate": "D2B lifecycle hostile matrix",
-      "command": "pytest tests/test_theme_graph_lifecycle.py",
-      "rc": 2,
-      "output_tail": "1 failed, 25 passed in 2.34s\ntests/test_theme_graph_lifecycle.py:802: 1168 identity_resolution biconditional breach",
-      "verdict": "FAIL",
-      "owner": "D2B identity owner",
-      "repair_packet": "repair through the existing owner, re-run TZ=UTC COLLECT_LANE=nightly PY -m pytest -p no:cacheprovider -q -rs tests/test_theme_graph_lifecycle.py"
-    },
-    {
       "id": "R1.C",
+      "gating": true,
       "gate": "D2C PIT vintage",
       "command": "pytest basket_membership_pit + gmi_history...",
       "rc": 0,
-      "output_tail": "143 passed, 14 warnings in 2.88s",
+      "output_tail": "143 passed, 14 warnings in 2.98s",
       "verdict": "PASS",
       "owner": "\u2014",
       "repair_packet": "\u2014"
     },
     {
       "id": "R1.D",
+      "gating": true,
       "gate": "D2D ontology/probation",
       "command": "pytest crosswalk/local_plane/structural/exposure",
       "rc": 0,
-      "output_tail": "575 passed, 1 skipped in 10.29s",
+      "output_tail": "575 passed, 1 skipped in 10.40s; skips: 1 (reasons in Appendix A)",
       "verdict": "PASS",
       "owner": "\u2014",
       "repair_packet": "\u2014"
     },
     {
       "id": "R1.E",
+      "gating": true,
       "gate": "Materialize + contracts",
       "command": "pytest materialize + contracts",
       "rc": 0,
-      "output_tail": "132 passed in 6.84s",
+      "output_tail": "132 passed in 6.65s",
       "verdict": "PASS",
       "owner": "\u2014",
       "repair_packet": "\u2014"
     },
     {
       "id": "R1.F",
-      "gate": "Rights tests",
-      "command": "pytest rights_use + theme_sources + half_b docket",
-      "rc": 2,
-      "output_tail": "3 failed, 46 passed in 1.03s\ntests/test_market_ontology_half_b_rights_docket.py:140",
-      "verdict": "FAIL",
-      "owner": "rights registry owner (seat \u2192 Chairman ruling)",
-      "repair_packet": "repair through the existing owner, re-run TZ=UTC COLLECT_LANE=nightly PY -m pytest -p no:cacheprovider -q -rs tests/test_theme_graph_rights_use.py tests/test_theme_sources_registry.py tests/test_market_ontology_half_b_rights_docket.py"
+      "gating": true,
+      "gate": "Rights tests (theme graph)",
+      "command": "pytest tests/test_theme_graph_rights_use.py tests/test_theme_sources_registry.py",
+      "rc": 0,
+      "output_tail": "30 passed in 0.72s",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
+    },
+    {
+      "id": "R1.X",
+      "gating": false,
+      "gate": "MarketOntology half-B rights docket (INFORMATIONAL)",
+      "command": "pytest tests/test_market_ontology_half_b_rights_docket.py",
+      "rc": 1,
+      "output_tail": "3 failed, 16 passed in 0.53s\ntests/test_market_ontology_half_b_rights_docket.py::test_blocked_on_quotes_the_ledger_verbatim\nE           AssertionError: MO-PAID-019: 'one issuer page joining >=2 module streams...' not in '- **Blocked on (verbatim from the ledger):** `unified capital-markets tape journey...`'",
+      "verdict": "FAIL-INFO",
+      "owner": "MarketOntology CEO A (F00C closure-ledger writer; ledger last changed by #8425/#8465/#8496)",
+      "repair_packet": "reconcile tests/test_market_ontology_half_b_rights_docket.py (EXPECTED_DISPOSITION_CENSUS, docket rows) with the F00C closure ledger CSV as amended by records waves #8425/#8465/#8496, or restore those ledger rows; re-run TZ=UTC PY -m pytest -q tests/test_market_ontology_half_b_rights_docket.py"
     },
     {
       "id": "R2",
+      "gating": true,
       "gate": "Strict contract guard",
       "command": "check_theme_graph_contracts --selftest; --strict",
-      "rc": 2,
-      "output_tail": "selftest rc=0\nstrict rc=0\n::warning title=theme graph contract breach::1168 identity_resolution...",
-      "verdict": "FAIL",
-      "owner": "D2B identity owner",
-      "repair_packet": "repair identity_resolution biconditional on committed store; re-run PY -m scripts.check_theme_graph_contracts --strict"
+      "rc": 0,
+      "output_tail": "selftest rc=0\nstrict rc=0\n(no breach lines; identity resolution census notice only). Round r1 recorded rc=0 for a breaching --strict run in a tree without data/reference; that value was not the guard's exit status and is superseded.",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
     },
     {
       "id": "C1",
+      "gating": true,
       "gate": "GOLD/IBIT lifecycle standing",
       "command": "pandas node_lifecycle.parquet probe",
       "rc": 0,
-      "output_tail": "GOLD retired 2025-12-02 identity_break; IBIT retired entity_type_conflict",
+      "output_tail": "GOLD retired 2025-12-02 identity_break; IBIT retired 2026-08-22 entity_type_conflict",
       "verdict": "PASS",
       "owner": "\u2014",
       "repair_packet": "\u2014"
     },
     {
       "id": "C2",
+      "gating": true,
       "gate": "GOLD edge closure",
       "command": "pandas edges GOLD MEMBER_OF probe",
       "rc": 0,
@@ -143,6 +187,7 @@
     },
     {
       "id": "C3",
+      "gating": true,
       "gate": "IBIT refusal fence",
       "command": "pandas IBIT + _meta refusals",
       "rc": 0,
@@ -153,26 +198,29 @@
     },
     {
       "id": "C4",
+      "gating": true,
       "gate": "Retired-consistency",
       "command": "latest-belief MEMBER_OF vs retired lifecycle",
       "rc": 0,
-      "output_tail": "violations=0/retired-src live edges as-of 2026-10-06T08:07:45Z",
+      "output_tail": "violations: 0",
       "verdict": "PASS",
       "owner": "\u2014",
       "repair_packet": "\u2014"
     },
     {
       "id": "C5",
+      "gating": true,
       "gate": "Identity sidecar R-A2",
       "command": "identity_resolution.parquet NEWEST us-scope",
       "rc": 0,
-      "output_tail": "US total=1237 RESOLVED=1211 DEFERRED={B} ENTITY_TYPE_CONFLICT=0; all-scope matches _meta counts",
+      "output_tail": "US total=1239 RESOLVED=1211 NOT_IN_MASTER=25 DEFERRED=2 ENTITY_TYPE_CONFLICT=1; all-scope NEWEST sum=2807; _meta file-total counts unchanged",
       "verdict": "PASS",
       "owner": "\u2014",
       "repair_packet": "\u2014"
     },
     {
       "id": "C6",
+      "gating": true,
       "gate": "Generation provenance P1",
       "command": "merge-base vs DATA_COMMIT f7dd829...",
       "rc": 3,
@@ -183,6 +231,7 @@
     },
     {
       "id": "C7",
+      "gating": true,
       "gate": "Nightly _meta history",
       "command": "git log -5 _meta.json",
       "rc": 0,
@@ -193,6 +242,7 @@
     },
     {
       "id": "R3.1",
+      "gating": true,
       "gate": "theme_sources.yml registry",
       "command": "python yaml families",
       "rc": 0,
@@ -203,26 +253,29 @@
     },
     {
       "id": "R3.2",
-      "gate": "Source-ref census",
-      "command": "family_for_source_ref over censused columns",
+      "gating": true,
+      "gate": "Source-ref census (evidence.source_ref)",
+      "command": "family_for_source_ref over evidence.parquet source_ref",
       "rc": 2,
-      "output_tail": "distinct=5900/5900 none=5885/5900 (as-of 2026-10-06T08:07:45Z)",
+      "output_tail": "22 rows / 17 distinct refs; ths_concepts 12; mastermind_curated 6; finviz_themes 2; None 2 (gmi:entity_type_conflict:co:us:IBIT; config/theme_graph_identity_breaks.yml#us:GOLD)",
       "verdict": "FAIL",
       "owner": "rights registry owner (seat \u2192 Chairman ruling)",
-      "repair_packet": "mint registry family rows / SOURCE_PREFIX_FAMILY entries for unmapped prefixes (do not edit registry in this lane)"
+      "repair_packet": "for each None ref prefix: SOURCE_PREFIX_FAMILY entry in engine/theme_graph/rights.py or recorded seat/Chairman ruling that it is intentionally fail-closed like site/factordata/us_standouts.json \u2014 no registry edit in this PR"
     },
     {
       "id": "R3.3",
+      "gating": true,
       "gate": "Spot checks",
       "command": "family_for_source_ref spot refs",
-      "rc": 2,
-      "output_tail": "probation jsonl#x \u2192 mastermind_curated; site/factordata/us_standouts.json \u2192 None",
-      "verdict": "FAIL",
-      "owner": "rights registry owner (seat \u2192 Chairman ruling)",
-      "repair_packet": "mint a registry family row / SOURCE_PREFIX_FAMILY entry for site/factordata/us_standouts.json"
+      "rc": 0,
+      "output_tail": "probation jsonl#x \u2192 mastermind_curated; site/factordata/us_standouts.json \u2192 None (intentional, rights.py 70-72)",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
     },
     {
       "id": "V1",
+      "gating": true,
       "gate": "Node prefix census",
       "command": "nodes.parquet distinct prefixes",
       "rc": 0,
@@ -233,26 +286,29 @@
     },
     {
       "id": "V2",
+      "gating": true,
       "gate": "Capability generations",
-      "command": "capability.parquet by computed_at",
-      "rc": 3,
-      "output_tail": "NEWEST gen 643 rows (505+138); _meta counts.capability=644 vs capability_counts sum=643 (+1 unexplained)",
-      "verdict": "HOLD",
-      "owner": "seat",
-      "repair_packet": "reconcile counts.capability 644 vs newest-generation 643 and capability_counts sum 643"
+      "command": "store.read_capability vs newest generation",
+      "rc": 0,
+      "output_tail": "read_capability=644; newest gen rows=643; carried ltheme:ths:309263 semantic_only @ 2026-08-22T04:50:43Z; in nodes.parquet",
+      "verdict": "PASS",
+      "owner": "\u2014",
+      "repair_packet": "\u2014"
     },
     {
       "id": "V3",
+      "gating": true,
       "gate": "Identity generations",
       "command": "identity_resolution NEWEST vs _meta",
       "rc": 0,
-      "output_tail": "NEWEST rows=2805 sum states=2805; file total _meta counts.identity_resolution=2807 (+2 prior-generation rows)",
+      "output_tail": "NEWEST rows=2807 sum states=2807; file total _meta counts.identity_resolution=2807 (+0 prior-gen rows in NEWEST view)",
       "verdict": "PASS",
       "owner": "\u2014",
       "repair_packet": "\u2014"
     },
     {
       "id": "V4",
+      "gating": true,
       "gate": "THS mapping arithmetic",
       "command": "_meta local_plane + crosswalk",
       "rc": 0,
@@ -263,16 +319,18 @@
     },
     {
       "id": "V5",
+      "gating": true,
       "gate": "Probation proposals",
       "command": "proposals.jsonl status field",
       "rc": 0,
-      "output_tail": "lines=130; status counts recorded in \u00a75",
+      "output_tail": "lines=236; status counts recorded in \u00a75",
       "verdict": "PASS",
       "owner": "\u2014",
       "repair_packet": "\u2014"
     },
     {
       "id": "V6",
+      "gating": true,
       "gate": "PIT vintage + edge era",
       "command": "_meta per_suite + edges.parquet era",
       "rc": 0,
@@ -283,6 +341,7 @@
     },
     {
       "id": "V7",
+      "gating": true,
       "gate": "Refusal/negative categories",
       "command": "_meta negative buckets",
       "rc": 0,
@@ -312,17 +371,18 @@
       "retired_live_member_of_violations": 0
     },
     "C5": {
-      "us_total": 1237,
+      "us_total": 1239,
       "RESOLVED": 1211,
-      "DEFERRED_symbols": [
-        "B"
-      ],
-      "ENTITY_TYPE_CONFLICT": 0
+      "NOT_IN_MASTER": 25,
+      "DEFERRED_count": 2,
+      "ENTITY_TYPE_CONFLICT": 1,
+      "all_scope_newest_sum": 2807
     }
   },
   "rights": {
-    "R3.2_none_count": 5885,
-    "R3.2_distinct": 5900,
+    "R3.2_none_rows": 2,
+    "R3.2_distinct_refs": 17,
+    "R3.2_evidence_rows": 22,
     "R3.3_probation": "mastermind_curated",
     "R3.3_us_standouts": null
   },
@@ -330,12 +390,14 @@
     "V1_total_nodes": 3882,
     "V2_meta_capability": 644,
     "V2_newest_rows": 643,
+    "V2_carried_node": "ltheme:ths:309263",
     "V5_proposals_lines": 236,
     "V5_status": {"proposed": 234, "rejected": 2},
     "V6_edges_era": {"observed": 12423, "reconstruction": 12677}
   },
-  "phase1_verdict": "HOLD:seat:multiple gate rows not PASS (see matrix)",
-  "d2e_verdict": "HOLD:D2B identity owner:1168 identity_resolution biconditional breach on committed store",
+  "phase1_verdict": "HOLD:seat:R0.2 Agent OS acceptance trace not recorded",
+  "d2e_verdict": "HOLD:D2A identity owner:R1.A committed D2A tests fail with materialized master (2807 company nodes; VMRK sidecar)",
+  "routed_non_gating": "R1.X FAIL-INFO -> MarketOntology CEO A (F00C closure-ledger writer; ledger last changed by #8425/#8465/#8496)",
   "phase2": {
     "status": "PENDING"
   }
