@@ -21,9 +21,11 @@ waves:
     title: Consume higher-level repairs and deliver accepted scoped changes
     status: in_progress
 next_action: >-
-  Consume the portfolio per-claim repair on its original root, finish the heatmap source
-  qualification, and consume the approved exact-head CI for Terminal PR835. Return owner-bound
-  proposals through their incumbent carriers; PR597 owner identification remains unresolved.
+  Restore and verify the git-gated Pine PR835 deployment at its merged revision; consume
+  the exact Brain freshness prototype-key repair. Preserve accepted drawing validation
+  evidence and partial heatmap browser proof without promoting them to production claims.
+  Return owner-bound proposals through their incumbent carriers; PR597 owner identification
+  remains unresolved.
 owns_paths: []
 artifacts:
   - research/TERMINAL_AUDIT20_REVIEW_2026-10-06.json

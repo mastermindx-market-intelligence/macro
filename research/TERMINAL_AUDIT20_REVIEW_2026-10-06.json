@@ -11,8 +11,8 @@
       "outcome": "Pine request.security: eliminate silent symbol substitution and future-data leakage",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "INTEGRATED_SCOPED_HISTORY_REPAIR_WITH_BROWSER_WORKER_PROOF",
-      "evidence_summary": "PR835 head35be0023 Pine source unchanged from448; same-head dispatchedCI37464421604 all requiredjobs+responsive succeeded. Bot PRrun37464432413 awaited approval; same-carrier POST approval succeeded and run in progress. Auto-merge armed; no merge/live claim."
+      "review_status": "SCOPED_PINE_HISTORY_MERGED; PRODUCTION_DEPLOY_IN_FLIGHT",
+      "evidence_summary": "PR835 exactb6adc839 requiredCI37482089627 allgreen incldesktop/tablet/mobile; merged8f3d04f1 at15:25:22. VPS old69df healthy; exactargv read showsnobuild; git-gated target8f3 deployment started once. Restore/readback/live user-path owed; wholeA01 notaccepted."
     },
     {
       "mission": "A02",
@@ -35,8 +35,8 @@
       "outcome": "Drawing persistence: transactional replacement, conflict detection and unknown-outcome recovery",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "CONTRACT_REPAIR_REQUIRED",
-      "evidence_summary": "Atomic existing-drawings store only; invalid Postgres chr(0), direct RPC validation and migration gate unresolved"
+      "review_status": "PARENT_LAST_RESORT_VALIDATION_PROTOTYPE_33_POSTGRES_CASES_PASS",
+      "evidence_summary": "Fabric SQL r2/r3 timedout; no executableSQL returned, false r2 planned-proof claims rejected. Parent standalone direct-input guard actualPostgres17.11 fixture33pass0skip/psql0; numeric1e400, Unicode duplicate/blank andUTF16 boundary counterexamples repaired, containerremoved. LiveDB17.6 no DDL; transactionalRPC/client/source/migration/fullA04 owed."
     },
     {
       "mission": "A05",
@@ -64,27 +64,27 @@
     },
     {
       "mission": "A08",
-      "outcome": "A08 — Copilot evidence integrity: unknown freshness, mixed GEX snapshots and truncation",
+      "outcome": "A08 \u2014 Copilot evidence integrity: unknown freshness, mixed GEX snapshots and truncation",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "SOURCE_BOUNDARY_REPAIR_REQUIRED",
-      "evidence_summary": "Draft833; 6 actual boundary failures; actual Brain Macro source differs from deprecated copilot router"
+      "review_status": "ACTIVE_UI_PROTOTYPE_KEY_REPAIR_R5_DISPATCHED_VIA_AUTOMATIC_GLM",
+      "evidence_summary": "Fresh Macro main3d6d0b00 active widget repairr4 returned17asset/5realDOM cases. Parent inherited-key counterexamples rejected. Automatic picker admitted Mini2 glm-codex glm5.3 newr5 rs_20261006T153815Z_23083; source proposal only, no raw/native fallback or sourcecustody transfer. Awaiting exact return; parent Ubuntu actual-widget verification will follow."
     },
     {
       "mission": "A09",
       "outcome": "Portfolio monetary integrity: currency-aware cost, value and exposure",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "FOUR_FILE_PROPOSAL_REQUEST_REPAIR_TWO_ACTUAL_COUNTEREXAMPLES",
-      "evidence_summary": "Grok r2 STARTtrue timeout124 cleanuptrue; parent26pass0skip, actualmonetary reporting-unit mismatch and omitted unknown nonzero cost lot found. Exact2case r3 repair prepared; no sourcewriter/schema/live effects. Qualified repair r3 rs_20261006T140344Z_4488 reached verified START; awaiting exact return, no acceptance claim."
+      "review_status": "SCOPED_PER_CLAIM_REPAIR_ACCEPTED_WITH_28_CAUSAL_TESTS",
+      "evidence_summary": "Grok r3 rs_20261006T140344Z_4488 rc0/STARTtrue/cleanuptrue/residual0; parent28pass0skip. Explicit different report unit needs verified conversion, unknown nonzero-cost lot blocks whole-book concentration. Pure proposal only; runtime consumers/schema/source/live owed."
     },
     {
       "mission": "A10",
-      "outcome": "Account portability: export the user’s actual research and chart work",
+      "outcome": "Account portability: export the user\u2019s actual research and chart work",
       "original_started": true,
       "whole_mission_accepted": false,
       "review_status": "SCOPED_EXPORT_DEPLOYED_AND_AUTHENTICATED_DOWNLOAD_VERIFIED",
-      "evidence_summary": "PR836 merged69dfda2e and git-gated VPS deploy/healthy public marker69df; authenticated JSON+CSV completed. Native JSON schema/146watchlist rows/13positions/2scripts/2layouts read; filesystem byte hash unavailable. Whole declared archive scope remains partial."
+      "evidence_summary": "PR836 merged69dfda2e and git-gated VPS deploy/healthy public marker69df; authenticated JSON+CSV completed. Native JSON schema and populated four existing collections verified; CSV content and filesystem byte hash unverified. Whole declared archive scope remains partial."
     },
     {
       "mission": "A11",
@@ -123,8 +123,8 @@
       "outcome": "Heatmap economic sizing: propagate genuine capitalization and disclose coverage",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "SCOPED_SOURCE_PASS_ACTUAL_BROWSER_QUALIFICATION_READY",
-      "evidence_summary": "Grok r4 parent24pass0skip + actual fullsource TSC0 after typed fixtures and ingest closure. Completed source read confirms DiscoverWorkspace mounts HeatmapPageRoot for heatmap tab; browser actual sizing/disclosure proof pending. Existing770 separate denied source operations/610 strings preserved. Browser repair r5 rs_20261006T140334Z_4127 reached verified START. Parent removed unsupported saved-view retention promise; source copy proof updated, browser fixture proof remains separate."
+      "review_status": "SCOPED_SOURCE_AND_7_REAL_BROWSER_CASES_ACCEPTED; FULL_MATRIX_BLOCKED",
+      "evidence_summary": "Parent single test helper correction, no productwrites: actual11cases7pass4fail0skip. 100xSVG ratio, volume invariance, missing/zero exclusion, native keyboard and31/601 missing-name coverage verified; dev initialization/Chinese andresponsive matrix incomplete. Remote3345 restored free. No new sourcewriter/CI/live candidate accepted."
     },
     {
       "mission": "A16",
@@ -166,5 +166,12 @@
       "review_status": "SCOPED_STOPPED_OUTCOME_REPAIR_ACCEPTED_FOR_INCUMBENT_582",
       "evidence_summary": "C3 Grok r4 STARTtrue/timeout124/cleanuptrue; parent68pass0skip across5files. Existing failed terminal/null clock preserves prior timeout receipt; actual API count verified. Incumbent582/0026/recipient live gates remain."
     }
-  ]
+  ],
+  "accepted_validation_artifacts": {
+    "A04_guard_sha256": "1b9d5472005a585beb231e44b4f20cfcb107411df6731f54f28a1ca894bdfcf1",
+    "A04_regressions_sha256": "745f8f01814880c276e8cf9fe4f34abad99f2bbbfdac015644bee7aa9d83ef8f",
+    "A04_proof": "33 actual PostgreSQL17.11 fixture cases, not production17.6, not transactional replacement",
+    "A09_helper_sha256": "9d328a64212e923d773b45627abce2a67ef52ef54dd2fcab0f36fe6136542383",
+    "A15_proof": "24 unit + full TSC +7/11 actual browser cases; full matrix failed/incomplete"
+  }
 }
