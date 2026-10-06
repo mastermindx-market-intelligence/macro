@@ -501,13 +501,13 @@
         "stress_oas_z"
       ],
       "present": true,
-      "value": 1,
+      "value": 1.0,
       "decides": [
         "R.liquidity_quality.label",
         "R.liquidity_quality.stress_overlay.confirming_stress"
       ],
       "birth_present": true,
-      "birth_value": 1
+      "birth_value": 1.0
     },
     {
       "file": "config.yml",
@@ -518,12 +518,12 @@
         "claims_yoy_warn_pct"
       ],
       "present": true,
-      "value": 10,
+      "value": 10.0,
       "decides": [
         "R.conditions.labor_nowcast.read"
       ],
       "birth_present": true,
-      "birth_value": 10
+      "birth_value": 10.0
     },
     {
       "file": "config.yml",
@@ -534,12 +534,12 @@
         "indeed_chg_warn_pct"
       ],
       "present": true,
-      "value": -5,
+      "value": -5.0,
       "decides": [
         "R.conditions.labor_nowcast.read"
       ],
       "birth_present": true,
-      "birth_value": -5
+      "birth_value": -5.0
     },
     {
       "file": "config.yml",
