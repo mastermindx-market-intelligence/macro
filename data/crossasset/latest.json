@@ -287,7 +287,7 @@
     "confirm": {
       "verdict": "diverge",
       "agree_pct": 0,
-      "n_blind_flags": 2,
+      "n_blind_flags": 3,
       "flags_top": [
         {
           "key": "credit",
@@ -306,9 +306,18 @@
           "owner": "bonds",
           "lead": "coincident",
           "equity_blind": true
+        },
+        {
+          "key": "fx_risk_off",
+          "en": "Dollar-smile in risk-off (haven bid for USD/JPY/CHF) \u2014 FX positioning defensive (a coincident global-risk-off read, not a forecaster).",
+          "zh": "\u7f8e\u5143\u5fae\u7b11\u5904\u4e8e\u907f\u9669\u4fa7\uff08\u7f8e\u5143/\u65e5\u5143/\u745e\u90ce\u907f\u9669\u4e70\u76d8\uff09\u2014 \u5916\u6c47\u4ed3\u4f4d\u9632\u5fa1\uff08\u540c\u6b65\u7684\u5168\u7403\u907f\u9669\u8bfb\u6570\uff0c\u975e\u9884\u6d4b\uff09\u3002",
+          "severity": "medium",
+          "owner": "fx",
+          "lead": "coincident",
+          "equity_blind": true
         }
       ],
-      "asof": "2026-10-02"
+      "asof": "2026-10-05"
     },
     "dollar": {
       "usd_dir": "flat",

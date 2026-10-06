@@ -17889,3 +17889,4 @@
 {"date":"2026-10-05","kind":"ticker","subject":"TEM","ticker":"TEM","edge_score":0,"state":"CONFIRMED_UP","era":2,"source":"basket_attributed"}
 {"date":"2026-10-05","kind":"ticker","subject":"ALHC","ticker":"ALHC","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
 {"date":"2026-10-05","kind":"ticker","subject":"UNH","ticker":"UNH","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
+{"date":"2026-10-05","kind":"ticker","subject":"PWR","ticker":"PWR","edge_score":3,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"basket_attributed"}

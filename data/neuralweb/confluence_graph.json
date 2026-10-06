@@ -19,7 +19,7 @@
       "type": "engine",
       "label": "altdata_conv",
       "meta": {
-        "n_spine_rows": 19
+        "n_spine_rows": 23
       }
     },
     {
@@ -99,7 +99,7 @@
       "type": "engine",
       "label": "desk:narrative_brain",
       "meta": {
-        "n_spine_rows": 38
+        "n_spine_rows": 41
       }
     },
     {
@@ -115,7 +115,7 @@
       "type": "engine",
       "label": "desk:radar",
       "meta": {
-        "n_spine_rows": 105
+        "n_spine_rows": 112
       }
     },
     {
@@ -219,7 +219,7 @@
       "type": "engine",
       "label": "reflex.options_flow_attention",
       "meta": {
-        "n_spine_rows": 977
+        "n_spine_rows": 995
       }
     },
     {
@@ -259,7 +259,7 @@
       "type": "engine",
       "label": "thematic_desk",
       "meta": {
-        "n_spine_rows": 63
+        "n_spine_rows": 64
       }
     },
     {
@@ -267,7 +267,7 @@
       "type": "engine",
       "label": "track_record",
       "meta": {
-        "n_spine_rows": 302625
+        "n_spine_rows": 302830
       }
     },
     {
@@ -3829,10 +3829,10 @@
       "label": "FX / Dollar",
       "meta": {
         "subtype": "fx_dollar",
-        "regime": "Global reflation",
+        "regime": "Risk-off haven bid",
         "risk": "risk-off",
-        "usd_trend": "mixed",
-        "asof": "2026-10-05",
+        "usd_trend": "up",
+        "asof": "2026-10-06",
         "display_only": true,
         "source_lobe": "fx_dollar",
         "smile_regime": "safety-driven",
@@ -3840,7 +3840,7 @@
         "regime_radar_dominant": "dollar_wrecking_ball",
         "stance_word": "Get ready",
         "dominant_scenario": "dollar_wrecking_ball",
-        "days_in_regime": 35
+        "days_in_regime": 2
       }
     },
     {
@@ -3851,20 +3851,20 @@
         "subtype": "rates_transmission",
         "state": {
           "rates": {
-            "real_10y": 2.88,
+            "real_10y": 2.92,
             "real_10y_pctile": 1.0,
-            "real_10y_chg_63d_bp": 58.0,
-            "nominal_10y": 5.24,
-            "curve_2s10s": 0.45,
-            "curve_tp_adj": 1.47,
-            "policy_gap": 0.9,
+            "real_10y_chg_63d_bp": 61.0,
+            "nominal_10y": 5.28,
+            "curve_2s10s": 0.47,
+            "curve_tp_adj": 0.47,
+            "policy_gap": 0.95,
             "regime": "restrictive",
             "direction": "rising",
-            "real_10y_chg_22d_bp": 43.0,
+            "real_10y_chg_22d_bp": 50.0,
             "turn_watch": "extreme_watch",
             "label": {
-              "en": "Real 10y 2.88% (restrictive, rising — at a 5y extreme)",
-              "zh": "实际10年期 2.88%（偏紧，处于5年极值）"
+              "en": "Real 10y 2.92% (restrictive, rising — at a 5y extreme)",
+              "zh": "实际10年期 2.92%（偏紧，处于5年极值）"
             }
           },
           "inflation": {
@@ -3884,14 +3884,14 @@
           },
           "expectations": {
             "breakeven_10y": 2.36,
-            "breakeven_5y5y": 2.35,
+            "breakeven_5y5y": 2.36,
             "model_5y": 2.58,
             "survey_1y": 4.0,
-            "market_minus_model_bp": -23.0,
+            "market_minus_model_bp": -22.0,
             "anchoring": "anchored",
             "label": {
-              "en": "5y5y breakeven 2.35% vs model 2.58% (anchored)",
-              "zh": "5年5年盈亏平衡 2.35% vs 模型 2.58%（锚定）"
+              "en": "5y5y breakeven 2.36% vs model 2.58% (anchored)",
+              "zh": "5年5年盈亏平衡 2.36% vs 模型 2.58%（锚定）"
             }
           }
         },
@@ -3900,7 +3900,7 @@
           "zh": "仅供展示。可计分腿检验：没有任何利率/通胀腿通过前瞻回撤门槛并满足清洗交叉验证稳健性（详见校准报告）。"
         },
         "yield_curve_regime": "bear_steepener",
-        "asof": "2026-10-02",
+        "asof": "2026-10-05",
         "display_only": true,
         "source_lobe": "rates_transmission"
       }
@@ -3914,7 +3914,7 @@
         "health_label": "healthy",
         "cycle_phase": "recession",
         "recession_risk": 0.17714285714285716,
-        "asof": "2026-10-02",
+        "asof": "2026-10-05",
         "display_only": true,
         "source_lobe": "rates_credit"
       }
@@ -3931,7 +3931,7 @@
           "Oil · WTI",
           "Silver"
         ],
-        "asof": "2026-10-04",
+        "asof": "2026-10-05",
         "display_only": true,
         "source_lobe": "commodity_context"
       }
@@ -3946,7 +3946,7 @@
         "regime": "mixed / no clear trend",
         "correlation_verdict": "diversified",
         "state_text": "mixed / no clear trend",
-        "asof": "2026-10-05",
+        "asof": "2026-10-06",
         "display_only": true,
         "source_lobe": "cross_asset_flows"
       }
@@ -3961,7 +3961,7 @@
         "quad_name": "Reflation",
         "cycle_tag": "mid",
         "stale": false,
-        "asof": "2026-10-02",
+        "asof": "2026-10-05",
         "display_only": true,
         "source_lobe": "global_regimes"
       }
@@ -3991,7 +3991,7 @@
         "quad_name": "Growth-scare",
         "cycle_tag": "mid",
         "stale": false,
-        "asof": "2026-10-02",
+        "asof": "2026-10-05",
         "display_only": true,
         "source_lobe": "global_regimes"
       }
@@ -4006,7 +4006,7 @@
         "quad_name": "Reflation",
         "cycle_tag": "mid",
         "stale": false,
-        "asof": "2026-10-02",
+        "asof": "2026-10-05",
         "display_only": true,
         "source_lobe": "global_regimes"
       }
@@ -4029,9 +4029,9 @@
       "meta": {
         "subtype": "market_structure",
         "regime": "long",
-        "agreement": "split",
+        "agreement": "aligned_adding",
         "cor1m_regime": "dispersion",
-        "asof": "2026-10-02",
+        "asof": "2026-10-05",
         "display_only": true,
         "source_lobe": "world_state.market_structure"
       }
@@ -22419,16 +22419,6 @@
       "note": "structural: data/price_pressure/events.parquet consumed by scripts/build_price_pressure.py"
     },
     {
-      "src": "data/regime/latest.json:regime_vector",
-      "dst": "data/regime/latest.json:risk_radar",
-      "edge_type": "contradicts",
-      "n": null,
-      "stable": null,
-      "display_only": true,
-      "regime": null,
-      "note": "pair_id=regime_vector-vs-risk_radar kind=label-tension severity=note a=quad=Q2 growth_score=0.133 b=state=caution dominant_scare=rates"
-    },
-    {
       "src": "site/intelligence/by_ticker.json (demand/tape)",
       "dst": "site/intelligence/briefing.json",
       "edge_type": "contradicts",
@@ -22436,7 +22426,7 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "pair_id=briefing-divergences kind=directional-opposition severity=tension a=29 ticker-level demand-vs-supply divergences b=n_divergences=29, top tickers=['TENB', 'TGT', 'NOVT', 'CRCL'"
+      "note": "pair_id=briefing-divergences kind=directional-opposition severity=tension a=25 ticker-level demand-vs-supply divergences b=n_divergences=25, top tickers=['TRMB', 'PH', 'NOVT', 'CRCL',"
     },
     {
       "src": "data/regime/latest.json:cross_asset_confirm (bonds/FX)",
@@ -22749,7 +22739,7 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "rates headwind: asset=XLB net=-0.475 verdict=headwind source_lobe=rates_transmission asof=2026-10-02"
+      "note": "rates headwind: asset=XLB net=-0.418 verdict=headwind source_lobe=rates_transmission asof=2026-10-05"
     },
     {
       "src": "macro:rates_transmission",
@@ -22759,17 +22749,17 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "rates headwind: asset=XLK net=-0.372 verdict=headwind source_lobe=rates_transmission asof=2026-10-02"
+      "note": "rates headwind: asset=XLK net=-0.39 verdict=headwind source_lobe=rates_transmission asof=2026-10-05"
     },
     {
       "src": "macro:rates_transmission",
-      "dst": "sector:xlf",
+      "dst": "sector:xlp",
       "edge_type": "headwind",
       "n": null,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "rates headwind: asset=XLF net=-0.368 verdict=headwind source_lobe=rates_transmission asof=2026-10-02"
+      "note": "rates headwind: asset=XLP net=-0.272 verdict=headwind source_lobe=rates_transmission asof=2026-10-05"
     },
     {
       "src": "macro:fx_dollar",
@@ -22779,7 +22769,7 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "cross_asset diverge: fx_dollar contradicts regime:Q2 asof=2026-10-02 source_lobe=contradictions/cross_asset_confirm"
+      "note": "cross_asset diverge: fx_dollar contradicts regime:Q2 asof=2026-10-05 source_lobe=contradictions/cross_asset_confirm"
     },
     {
       "src": "macro:rates_credit",
@@ -22789,52 +22779,34 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "cross_asset diverge: rates_credit contradicts regime:Q2 asof=2026-10-02 source_lobe=contradictions/cross_asset_confirm"
+      "note": "cross_asset diverge: rates_credit contradicts regime:Q2 asof=2026-10-05 source_lobe=contradictions/cross_asset_confirm"
     }
   ],
   "contradiction_summary": {
-    "n": 3,
+    "n": 2,
     "by_severity": {
-      "note": 1,
       "tension": 2
     },
     "top_pair_ids": [
-      "regime_vector-vs-risk_radar",
       "briefing-divergences",
       "cross_asset_confirm-diverge"
     ]
   },
   "contradiction_records": [
     {
-      "pair_id": "regime_vector-vs-risk_radar",
-      "a": {
-        "artifact": "data/regime/latest.json:regime_vector",
-        "reading": "quad=Q2 growth_score=0.133"
-      },
-      "b": {
-        "artifact": "data/regime/latest.json:risk_radar",
-        "reading": "state=caution dominant_scare=rates"
-      },
-      "kind": "label-tension",
-      "severity": "note",
-      "as_of": "2026-10-02",
-      "note": "Rising growth regime (Q2) while risk_radar elevated with dominant scare=rates.  Non-growth scare alongside positive growth vector is possible in a diverging-risk environment.  Display-only context.",
-      "display_only": true
-    },
-    {
       "pair_id": "briefing-divergences",
       "a": {
         "artifact": "site/intelligence/by_ticker.json (demand/tape)",
-        "reading": "29 ticker-level demand-vs-supply divergences"
+        "reading": "25 ticker-level demand-vs-supply divergences"
       },
       "b": {
         "artifact": "site/intelligence/briefing.json",
-        "reading": "n_divergences=29, top tickers=['TENB', 'TGT', 'NOVT', 'CRCL', 'UCTT']"
+        "reading": "n_divergences=25, top tickers=['TRMB', 'PH', 'NOVT', 'CRCL', 'UCTT']"
       },
       "kind": "directional-opposition",
       "severity": "tension",
       "as_of": "2026-10-06",
-      "note": "29 ticker-level demand (news_dir) vs supply (alt+radar) direction disagreements detected by engine/briefing.py.  Top 5: TENB, TGT, NOVT, CRCL, UCTT.  These are pre-computed; no recomputation here.  Display-only context (news_dir×supply_dir sign-product < 0 or early_edge/crowded_top labels).",
+      "note": "25 ticker-level demand (news_dir) vs supply (alt+radar) direction disagreements detected by engine/briefing.py.  Top 5: TRMB, PH, NOVT, CRCL, UCTT.  These are pre-computed; no recomputation here.  Display-only context (news_dir×supply_dir sign-product < 0 or early_edge/crowded_top labels).",
       "display_only": true
     },
     {
@@ -22850,7 +22822,7 @@
       "kind": "directional-opposition",
       "severity": "tension",
       "as_of": "2026-10-05",
-      "note": "cross_asset_confirm signals 'diverge': bonds/FX and equity readings disagree.  Bonds/FX diverge from the equity read — fast-family caution the equity gauges don't yet show (credit, sovereign).  Note: MOVE-vs-VIX, dollar/EM-FX, FX carry are COINCIDENT not leading (engine/cross_asset_confirm.py:15-20).  Display-only macro context.",
+      "note": "cross_asset_confirm signals 'diverge': bonds/FX and equity readings disagree.  Bonds/FX diverge from the equity read — fast-family caution the equity gauges don't yet show (credit, sovereign, fx_risk_off).  Note: MOVE-vs-VIX, dollar/EM-FX, FX carry are COINCIDENT not leading (engine/cross_asset_confirm.py:15-20).  Display-only macro context.",
       "display_only": true
     }
   ],
@@ -22872,7 +22844,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/confluence.py",
-  "produced_at": "2026-10-06T10:00:04Z",
-  "inputs_hash": "sha256:7f56bc290b4eee093e5c108ad9fde983e775aa145ebcc485f717b632cd3d4d67",
+  "produced_at": "2026-10-06T14:14:25Z",
+  "inputs_hash": "sha256:3d46029c16693a95ca6714a602fc270f28126967899aae0dfc398ed3dad396b4",
   "tier": "display"
 }

@@ -380,10 +380,12 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "financial_conditions-US-be2cf28e34b8deb0"
+    "changed_fingerprints": [
+      "vol_regime:vol_regime_risk_score:8ec633d234e61f66"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native source values changed: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "financial_conditions-US-f9bd8a76fbe84cbc"
   },
   "drivers": {
     "balance_sheet": [
@@ -427,7 +429,7 @@
         "note": "signed push = (standardized-50)*weight toward tighter; standardized=0.0, weight=0.6",
         "owner_field": "vol_regime.risk_score",
         "unit": "ratio_0_1",
-        "value": -0.148
+        "value": -0.091
       },
       {
         "coverage_state": "PRESENT",
@@ -504,11 +506,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-06T06:04:23Z",
+    "built_at": "2026-10-06T11:28:26Z",
     "calculation_as_of": "2026-10-05",
-    "code_version": "7db649d66e54835ad3dc1b324725251489128215",
-    "content_sha256": "f9bd8a76fbe84cbc4234f293794c522f6a6ccf36db437a429478ea222bdc4cbd",
-    "generation_id": "financial_conditions-US-f9bd8a76fbe84cbc",
+    "code_version": "640e3e237eede62351b6f657c8e13ad20274585c",
+    "content_sha256": "036190568b8fe187f13a11cd18def244b73b1631a673e23f85f79eeff6addc7d",
+    "generation_id": "financial_conditions-US-036190568b8fe187",
     "producer": "engine.market_os.macro_workspaces.financial_conditions",
     "rendered_at": null
   },
@@ -1181,7 +1183,7 @@
           "value": null
         },
         "unit": "ratio_0_1",
-        "value": -0.148,
+        "value": -0.091,
         "value_type": "ratio"
       },
       {
@@ -1253,7 +1255,7 @@
           "value": null
         },
         "unit": "score",
-        "value": 60.0,
+        "value": 47.1,
         "value_type": "score_0_100"
       },
       {
