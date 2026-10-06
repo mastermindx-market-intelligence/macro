@@ -14084,6 +14084,13 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py --help
           python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_information_to_price_audit.py -q
+      # Synthetic PIT sample conformance harness (recovered from Sol op
+      # information-to-price-pit-conformance-20261004-sol-001). Name its CLI
+      # as well as its suite for the same sibling-import reason as SRC-A1.
+      - name: information-to-price synthetic PIT sample conformance
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/pit_sample_conformance.py --help
+          python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_pit_sample_conformance.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
