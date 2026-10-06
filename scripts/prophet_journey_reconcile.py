@@ -907,6 +907,22 @@ def _check_j6(soup: BeautifulSoup, standouts: dict[str, Any],
     normalized_template = (template_serializations[0]
                            if template_serializations
                            else displayed_serializations[0])
+    differing_template = next(
+        ((index, serialization) for index, serialization in
+         enumerate(template_serializations[1:], 2)
+         if serialization != normalized_template),
+        None,
+    )
+    if differing_template is not None:
+        index, serialization = differing_template
+        first_difference = _first_html_difference(serialization, normalized_template)
+        return _check_status(
+            "FAIL",
+            "every template body equals the first template by normalized HTML",
+            {"template_index": index, "first_difference": first_difference,
+             "template": serialization, "baseline": normalized_template},
+            where,
+        )
     differing_body = next(
         ((index, serialization) for index, serialization in
          enumerate(displayed_serializations, 1)

@@ -2365,3 +2365,20 @@ def test_j9_fail_plan_book_visible_dates_disagree_bilingually():
         soup, _index_payload(), _standouts_payload(), _runtime_payload(),
         ticker="TEST1")
     assert result["status"] == "FAIL", result
+
+
+def test_j6_fail_second_template_with_stale_source_field():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    wrapper = soup.select_one('[data-setup-ticker="TEST1"]')
+    assert wrapper is not None
+    original_template = wrapper.select_one("template.pvs-body-source")
+    assert original_template is not None
+    second = BeautifulSoup(str(original_template), _pjr.HTML_PARSER).select_one(
+        "template.pvs-body-source")
+    assert second is not None
+    field = second.select_one('[data-source-field="price"] dd')
+    assert field is not None
+    field.string = "$999.99"
+    original_template.insert_after(second)
+    result = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
+    assert result["status"] == "FAIL", result
