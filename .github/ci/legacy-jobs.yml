@@ -2091,6 +2091,7 @@ jobs:
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
       - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/selection_cohort_publication.py
+      - engine/theme_graph/selection_cohort_projection.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8467,6 +8468,7 @@ jobs:
       - config/theme_graph_identity_breaks.yml
       - config/theme_sources.yml
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
+      - contracts/theme_graph/selection_cohort_projection.v1.schema.json
       - contracts/theme_graph/probation_proposal.v1.schema.json
       - contracts/theme_graph/theme_state.v1.schema.json
       - engine/__init__.py
@@ -8496,6 +8498,7 @@ jobs:
       - engine/theme_graph/ontology.py
       - engine/theme_graph/probation.py
       - engine/theme_graph/selection_cohort_reads.py
+      - engine/theme_graph/selection_cohort_projection.py
       - engine/theme_graph/store.py
       - engine/theme_graph/theme_state.py
       - lib/__init__.py
@@ -15527,6 +15530,7 @@ jobs:
     # unknown. 12 minutes covers fusion + board-read + era + stage-analysis.
       - engine/theme_graph/selection_cohort.py
       - engine/theme_graph/selection_cohort_publication.py
+      - engine/theme_graph/selection_cohort_projection.py
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
