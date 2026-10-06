@@ -415,7 +415,7 @@
       ]
     },
     "altdata_conv": {
-      "n_recent_fires": 19,
+      "n_recent_fires": 23,
       "n_hostile_regime": 0,
       "n_breadth_unconfirmed": 16,
       "n_repeat_fire": 0,
@@ -2742,12 +2742,37 @@
       ]
     },
     "desk:narrative_brain": {
-      "n_recent_fires": 38,
+      "n_recent_fires": 41,
       "n_hostile_regime": 9,
-      "n_breadth_unconfirmed": 23,
-      "n_repeat_fire": 13,
+      "n_breadth_unconfirmed": 24,
+      "n_repeat_fire": 16,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
+        {
+          "engine": "desk:narrative_brain",
+          "symbol": "semicap_equipment",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed",
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "desk:narrative_brain",
+          "symbol": "semicap_equipment",
+          "as_of": "2026-10-04",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "desk:narrative_brain",
+          "symbol": "silver_miners",
+          "as_of": "2026-10-04",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
         {
           "engine": "desk:narrative_brain",
           "symbol": "big_pharma",
@@ -3111,12 +3136,74 @@
       ]
     },
     "desk:radar": {
-      "n_recent_fires": 105,
+      "n_recent_fires": 112,
       "n_hostile_regime": 54,
-      "n_breadth_unconfirmed": 105,
-      "n_repeat_fire": 64,
+      "n_breadth_unconfirmed": 112,
+      "n_repeat_fire": 70,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
+        {
+          "engine": "desk:radar",
+          "symbol": "crypto_rails",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "desk:radar",
+          "symbol": "defensives",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed",
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "desk:radar",
+          "symbol": "housing",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed",
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "desk:radar",
+          "symbol": "mag7",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed",
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "desk:radar",
+          "symbol": "payments_fintech",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed",
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "desk:radar",
+          "symbol": "retail",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed",
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "desk:radar",
+          "symbol": "us_sector_discretionary",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed",
+            "repeat_fire"
+          ]
+        },
         {
           "engine": "desk:radar",
           "symbol": "ai_agents",
@@ -3497,68 +3584,6 @@
           "flags": [
             "breadth_unconfirmed",
             "repeat_fire"
-          ]
-        },
-        {
-          "engine": "desk:radar",
-          "symbol": "housing",
-          "as_of": "2026-09-25",
-          "flags": [
-            "breadth_unconfirmed",
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "desk:radar",
-          "symbol": "mag7",
-          "as_of": "2026-09-25",
-          "flags": [
-            "breadth_unconfirmed",
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "desk:radar",
-          "symbol": "non_ai_software",
-          "as_of": "2026-09-25",
-          "flags": [
-            "breadth_unconfirmed",
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "desk:radar",
-          "symbol": "payments_fintech",
-          "as_of": "2026-09-25",
-          "flags": [
-            "breadth_unconfirmed",
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "desk:radar",
-          "symbol": "reshoring",
-          "as_of": "2026-09-25",
-          "flags": [
-            "breadth_unconfirmed",
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "desk:radar",
-          "symbol": "retail",
-          "as_of": "2026-09-25",
-          "flags": [
-            "breadth_unconfirmed",
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "desk:radar",
-          "symbol": "us_sector_discretionary",
-          "as_of": "2026-09-25",
-          "flags": [
-            "breadth_unconfirmed"
           ]
         }
       ]
@@ -6672,12 +6697,20 @@
       ]
     },
     "reflex.options_flow_attention": {
-      "n_recent_fires": 779,
+      "n_recent_fires": 797,
       "n_hostile_regime": 0,
       "n_breadth_unconfirmed": 10,
-      "n_repeat_fire": 42,
+      "n_repeat_fire": 43,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
+        {
+          "engine": "reflex.options_flow_attention",
+          "symbol": "CL",
+          "as_of": "2026-08-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
         {
           "engine": "reflex.options_flow_attention",
           "symbol": "CL",
@@ -7065,14 +7098,6 @@
         {
           "engine": "reflex.options_flow_attention",
           "symbol": "FIX",
-          "as_of": "2026-08-11",
-          "flags": [
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "reflex.options_flow_attention",
-          "symbol": "H",
           "as_of": "2026-08-11",
           "flags": [
             "breadth_unconfirmed"
@@ -7928,15 +7953,23 @@
       ]
     },
     "thematic_desk": {
-      "n_recent_fires": 63,
+      "n_recent_fires": 64,
       "n_hostile_regime": 30,
       "n_breadth_unconfirmed": 46,
-      "n_repeat_fire": 38,
+      "n_repeat_fire": 39,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
         {
           "engine": "thematic_desk",
           "symbol": "SIL",
+          "as_of": "2026-10-06",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "thematic_desk",
+          "symbol": "SMH",
           "as_of": "2026-10-06",
           "flags": [
             "repeat_fire"
@@ -8380,23 +8413,13 @@
             "hostile_regime",
             "breadth_unconfirmed"
           ]
-        },
-        {
-          "engine": "thematic_desk",
-          "symbol": "GDX",
-          "as_of": "2026-09-09",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed",
-            "repeat_fire"
-          ]
         }
       ]
     },
     "track_record": {
-      "n_recent_fires": 1650,
+      "n_recent_fires": 1670,
       "n_hostile_regime": 480,
-      "n_breadth_unconfirmed": 1360,
+      "n_breadth_unconfirmed": 1380,
       "n_repeat_fire": 115,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
@@ -8607,6 +8630,46 @@
         },
         {
           "engine": "track_record",
+          "symbol": "TMO",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "track_record",
+          "symbol": "TMO",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "track_record",
+          "symbol": "TMO",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "track_record",
+          "symbol": "TMO",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "track_record",
+          "symbol": "TMO",
+          "as_of": "2026-10-05",
+          "flags": [
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "track_record",
           "symbol": "TT",
           "as_of": "2026-10-05",
           "flags": [
@@ -8760,46 +8823,6 @@
         {
           "engine": "track_record",
           "symbol": "ANET",
-          "as_of": "2026-09-30",
-          "flags": [
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "track_record",
-          "symbol": "APP",
-          "as_of": "2026-09-30",
-          "flags": [
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "track_record",
-          "symbol": "APP",
-          "as_of": "2026-09-30",
-          "flags": [
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "track_record",
-          "symbol": "APP",
-          "as_of": "2026-09-30",
-          "flags": [
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "track_record",
-          "symbol": "APP",
-          "as_of": "2026-09-30",
-          "flags": [
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "track_record",
-          "symbol": "APP",
           "as_of": "2026-09-30",
           "flags": [
             "breadth_unconfirmed"
@@ -10642,7 +10665,7 @@
   "gaps": [],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/lagging.py",
-  "produced_at": "2026-10-06T09:59:57Z",
-  "inputs_hash": "sha256:ab8f706b60b2f136c84c8006784ce02e31721c7e705f5d642bb546e932224073",
+  "produced_at": "2026-10-06T14:14:18Z",
+  "inputs_hash": "sha256:3bc4f9d8aae087b7e6340425f8ab373facb1eceaf23262f06a7aae2a2794171c",
   "tier": "infrastructure"
 }

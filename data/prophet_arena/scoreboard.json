@@ -71,62 +71,8 @@
   "standing_line_zh": "\u5f71\u5b50\u8bb0\u5f55 \u2014 \u5b9e\u76d8\u7b56\u7565\u4ec5\u5728\u64cd\u4f5c\u8005\u6279\u51c6\u540e\u624d\u4f1a\u66f4\u6539",
   "headline_min_closed": 20,
   "harness_validity": {
-    "c0_plan_ids": [
-      "AMG-BULL-20261005",
-      "AZZ-BULL-20261005",
-      "BURL-BULL-20261005",
-      "CCOI-BULL-20261005",
-      "CRI-BULL-20261005",
-      "DOCS-BULL-20260305",
-      "EXTR-BULL-20261005",
-      "FG-BULL-20261005",
-      "HCC-BULL-20260807",
-      "HMN-BULL-20261005",
-      "INGR-BULL-20261005",
-      "MCK-BULL-20261005",
-      "MSFT-BULL-20260930",
-      "MTUS-BULL-20261005",
-      "NI-BULL-20261005",
-      "OLN-BULL-20261005",
-      "OMC-BULL-20261005",
-      "PLUS-BULL-20260909",
-      "RYAN-BULL-20261005",
-      "SEZL-BULL-20261005",
-      "TDY-BULL-20261005",
-      "URI-BULL-20261005",
-      "VSXY-BULL-20261005",
-      "WWD-BULL-20261005",
-      "XOM-BULL-20261005",
-      "YELP-BULL-20261005"
-    ],
-    "live_plan_ids": [
-      "AMG-BULL-20261005",
-      "AZZ-BULL-20261005",
-      "BURL-BULL-20261005",
-      "CCOI-BULL-20261005",
-      "CRI-BULL-20261005",
-      "DOCS-BULL-20260305",
-      "EXTR-BULL-20261005",
-      "FG-BULL-20261005",
-      "HCC-BULL-20260807",
-      "HMN-BULL-20261005",
-      "INGR-BULL-20261005",
-      "MCK-BULL-20261005",
-      "MSFT-BULL-20260930",
-      "MTUS-BULL-20261005",
-      "NI-BULL-20261005",
-      "OLN-BULL-20261005",
-      "OMC-BULL-20261005",
-      "PLUS-BULL-20260909",
-      "RYAN-BULL-20261005",
-      "SEZL-BULL-20261005",
-      "TDY-BULL-20261005",
-      "URI-BULL-20261005",
-      "VSXY-BULL-20261005",
-      "WWD-BULL-20261005",
-      "XOM-BULL-20261005",
-      "YELP-BULL-20261005"
-    ],
+    "c0_plan_ids": [],
+    "live_plan_ids": [],
     "c0_mismatch_count": 0,
     "missing_from_mirror": [],
     "extra_in_mirror": [],
@@ -368,7 +314,7 @@
     "asof": "2026-10-06",
     "standouts_as_of": "2026-10-05",
     "price_through": "2026-10-05",
-    "observed_at_utc": "2026-10-06T06:04:25.227389+00:00",
+    "observed_at_utc": "2026-10-06T11:28:28.430838+00:00",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
@@ -406,7 +352,7 @@
           "2B",
           "3B"
         ],
-        "runtime_s": 19.7
+        "runtime_s": 20.5
       }
     },
     "policies": {
@@ -431,8 +377,8 @@
           "HCC",
           "VST",
           "YOU",
-          "HMN",
           "BURL",
+          "HMN",
           "DBD",
           "XOM",
           "PAHC",
@@ -444,12 +390,12 @@
           "WWD",
           "NOVT",
           "IDXX",
-          "CRI",
           "MCK",
+          "CRI",
           "OLN",
           "FG",
-          "CCOI",
           "TDY",
+          "CCOI",
           "NI",
           "COST",
           "INGR",
@@ -458,35 +404,8 @@
           "YELP",
           "DKS"
         ],
-        "plan_ids": [
-          "AMG-BULL-20261005",
-          "AZZ-BULL-20261005",
-          "BURL-BULL-20261005",
-          "CCOI-BULL-20261005",
-          "CRI-BULL-20261005",
-          "DOCS-BULL-20260305",
-          "EXTR-BULL-20261005",
-          "FG-BULL-20261005",
-          "HCC-BULL-20260807",
-          "HMN-BULL-20261005",
-          "INGR-BULL-20261005",
-          "MCK-BULL-20261005",
-          "MSFT-BULL-20260930",
-          "MTUS-BULL-20261005",
-          "NI-BULL-20261005",
-          "OLN-BULL-20261005",
-          "OMC-BULL-20261005",
-          "PLUS-BULL-20260909",
-          "RYAN-BULL-20261005",
-          "SEZL-BULL-20261005",
-          "TDY-BULL-20261005",
-          "URI-BULL-20261005",
-          "VSXY-BULL-20261005",
-          "WWD-BULL-20261005",
-          "XOM-BULL-20261005",
-          "YELP-BULL-20261005"
-        ],
-        "n_plans": 26,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 45,
           "cap": null,
@@ -496,7 +415,7 @@
         },
         "origination": {
           "offered": 45,
-          "skipped_duplicate_id": 5,
+          "skipped_duplicate_id": 31,
           "skipped_open_plan": 4,
           "skipped_clock_provenance": 10,
           "skipped_no_spot": 0,
@@ -587,11 +506,11 @@
               ]
             }
           ],
-          "originated": 26,
+          "originated": 0,
           "validation_failed": 10
         },
-        "ledger_rows_appended": 26,
-        "ledger_closures_appended": 24
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C1_buy_soon_first": {
         "selected_tickers": [
@@ -608,15 +527,8 @@
           "LECO",
           "MTUS"
         ],
-        "plan_ids": [
-          "AMG-BULL-20261005",
-          "MSFT-BULL-20260930",
-          "MTUS-BULL-20261005",
-          "OMC-BULL-20261005",
-          "PLUS-BULL-20260909",
-          "VSXY-BULL-20261005"
-        ],
-        "n_plans": 6,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 45,
           "cap": 12,
@@ -626,7 +538,7 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 0,
+          "skipped_duplicate_id": 6,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 5,
           "skipped_no_spot": 0,
@@ -677,11 +589,11 @@
               ]
             }
           ],
-          "originated": 6,
+          "originated": 0,
           "validation_failed": 5
         },
-        "ledger_rows_appended": 6,
-        "ledger_closures_appended": 6
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C3_door_w_union": {
         "selected_tickers": [
@@ -699,15 +611,11 @@
           "KMT"
         ],
         "plan_ids": [
-          "AMG-BULL-20261005",
           "ECHO-BULL-20261005",
-          "MSFT-BULL-20260930",
-          "OMC-BULL-20261005",
           "RKLB-BULL-20261005",
-          "VSXY-BULL-20261005",
           "WMT-BULL-20261005"
         ],
-        "n_plans": 7,
+        "n_plans": 3,
         "selection": {
           "admitted": 45,
           "cap": 12,
@@ -720,7 +628,7 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 0,
+          "skipped_duplicate_id": 4,
           "skipped_open_plan": 2,
           "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
@@ -755,11 +663,11 @@
               ]
             }
           ],
-          "originated": 7,
+          "originated": 3,
           "validation_failed": 3
         },
-        "ledger_rows_appended": 7,
-        "ledger_closures_appended": 14
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C4_dispersion_cap": {
         "selected_tickers": [
@@ -770,13 +678,8 @@
           "VSXY",
           "MSFT"
         ],
-        "plan_ids": [
-          "AMG-BULL-20261005",
-          "MSFT-BULL-20260930",
-          "OMC-BULL-20261005",
-          "VSXY-BULL-20261005"
-        ],
-        "n_plans": 4,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 45,
           "cap": 6,
@@ -784,7 +687,7 @@
         },
         "origination": {
           "offered": 6,
-          "skipped_duplicate_id": 0,
+          "skipped_duplicate_id": 4,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 1,
           "skipped_no_spot": 0,
@@ -803,11 +706,11 @@
               ]
             }
           ],
-          "originated": 4,
+          "originated": 0,
           "validation_failed": 1
         },
-        "ledger_rows_appended": 4,
-        "ledger_closures_appended": 6
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C5_align2_gate": {
         "selected_tickers": [
@@ -818,14 +721,8 @@
           "PAHC",
           "MCK"
         ],
-        "plan_ids": [
-          "DOCS-BULL-20260305",
-          "MCK-BULL-20261005",
-          "MSFT-BULL-20260930",
-          "PLUS-BULL-20260909",
-          "XOM-BULL-20261005"
-        ],
-        "n_plans": 5,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 45,
           "cap": 12,
@@ -842,7 +739,7 @@
         },
         "origination": {
           "offered": 6,
-          "skipped_duplicate_id": 1,
+          "skipped_duplicate_id": 6,
           "skipped_open_plan": 0,
           "skipped_clock_provenance": 0,
           "skipped_no_spot": 0,
@@ -852,11 +749,11 @@
           "price_basis_date": "2026-10-05",
           "clock_errors": [],
           "validation_failures": [],
-          "originated": 5,
+          "originated": 0,
           "validation_failed": 0
         },
-        "ledger_rows_appended": 5,
-        "ledger_closures_appended": 9
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C6_time_stop_21": {
         "selected_tickers": [
@@ -879,8 +776,8 @@
           "HCC",
           "VST",
           "YOU",
-          "HMN",
           "BURL",
+          "HMN",
           "DBD",
           "XOM",
           "PAHC",
@@ -892,12 +789,12 @@
           "WWD",
           "NOVT",
           "IDXX",
-          "CRI",
           "MCK",
+          "CRI",
           "OLN",
           "FG",
-          "CCOI",
           "TDY",
+          "CCOI",
           "NI",
           "COST",
           "INGR",
@@ -906,35 +803,8 @@
           "YELP",
           "DKS"
         ],
-        "plan_ids": [
-          "AMG-BULL-20261005",
-          "AZZ-BULL-20261005",
-          "BURL-BULL-20261005",
-          "CCOI-BULL-20261005",
-          "CRI-BULL-20261005",
-          "DOCS-BULL-20260305",
-          "EXTR-BULL-20261005",
-          "FG-BULL-20261005",
-          "HCC-BULL-20260807",
-          "HMN-BULL-20261005",
-          "INGR-BULL-20261005",
-          "MCK-BULL-20261005",
-          "MSFT-BULL-20260930",
-          "MTUS-BULL-20261005",
-          "NI-BULL-20261005",
-          "OLN-BULL-20261005",
-          "OMC-BULL-20261005",
-          "PLUS-BULL-20260909",
-          "RYAN-BULL-20261005",
-          "SEZL-BULL-20261005",
-          "TDY-BULL-20261005",
-          "URI-BULL-20261005",
-          "VSXY-BULL-20261005",
-          "WWD-BULL-20261005",
-          "XOM-BULL-20261005",
-          "YELP-BULL-20261005"
-        ],
-        "n_plans": 26,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 45,
           "cap": null,
@@ -944,7 +814,7 @@
         },
         "origination": {
           "offered": 45,
-          "skipped_duplicate_id": 5,
+          "skipped_duplicate_id": 31,
           "skipped_open_plan": 4,
           "skipped_clock_provenance": 10,
           "skipped_no_spot": 0,
@@ -1035,11 +905,11 @@
               ]
             }
           ],
-          "originated": 26,
+          "originated": 0,
           "validation_failed": 10
         },
-        "ledger_rows_appended": 26,
-        "ledger_closures_appended": 10
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C7_buy_soon_admitted": {
         "selected_tickers": [
@@ -1056,15 +926,8 @@
           "LECO",
           "MTUS"
         ],
-        "plan_ids": [
-          "AMG-BULL-20261005",
-          "MSFT-BULL-20260930",
-          "MTUS-BULL-20261005",
-          "OMC-BULL-20261005",
-          "PLUS-BULL-20260909",
-          "VSXY-BULL-20261005"
-        ],
-        "n_plans": 6,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 45,
           "cap": 12,
@@ -1077,7 +940,7 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 0,
+          "skipped_duplicate_id": 6,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 5,
           "skipped_no_spot": 0,
@@ -1128,11 +991,11 @@
               ]
             }
           ],
-          "originated": 6,
+          "originated": 0,
           "validation_failed": 5
         },
-        "ledger_rows_appended": 6,
-        "ledger_closures_appended": 6
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       }
     }
   },

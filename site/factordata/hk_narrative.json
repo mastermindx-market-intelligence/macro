@@ -2,8 +2,8 @@
   "display_only": true,
   "organ": "hk_narrative",
   "as_of": "2026-10-06",
-  "generated_utc": "2026-10-06T10:59:37+00:00",
-  "freshness": "stale",
+  "generated_utc": "2026-10-06T15:09:12+00:00",
+  "freshness": "degraded",
   "entities": [
     {
       "slug": "alibaba",
@@ -25,15 +25,15 @@
       "ticker": "0700.HK",
       "name_en": "Tencent",
       "name_zh": "\u817e\u8baf",
-      "attention_shock_z": -1.464,
+      "attention_shock_z": -2.693,
       "tone_pctile": null,
-      "narrative_state": "quiet",
+      "narrative_state": "attention_spike",
       "young": false,
       "n_obs": 80,
-      "as_of_date": "2026-10-02",
+      "as_of_date": "2026-10-06",
       "no_data_reason": null,
-      "state_en": "quiet",
-      "state_zh": "\u5e73\u9759"
+      "state_en": "in the news",
+      "state_zh": "\u65b0\u95fb\u70ed\u5ea6"
     },
     {
       "slug": "meituan",
@@ -135,15 +135,15 @@
       "ticker": "0700.HK",
       "name_en": "Tencent",
       "name_zh": "\u817e\u8baf",
-      "attention_shock_z": -1.464,
+      "attention_shock_z": -2.693,
       "tone_pctile": null,
-      "narrative_state": "quiet",
+      "narrative_state": "attention_spike",
       "young": false,
       "n_obs": 80,
-      "as_of_date": "2026-10-02",
+      "as_of_date": "2026-10-06",
       "no_data_reason": null,
-      "state_en": "quiet",
-      "state_zh": "\u5e73\u9759"
+      "state_en": "in the news",
+      "state_zh": "\u65b0\u95fb\u70ed\u5ea6"
     },
     {
       "slug": "baidu",

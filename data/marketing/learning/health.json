@@ -67,8 +67,8 @@
         "engagement_trend": {
           "metric": "engagement_trend",
           "n_baseline": 25,
-          "n_recent": 2,
-          "reason": "recent n=2, baseline n=25 — need 5 of each",
+          "n_recent": 3,
+          "reason": "recent n=3, baseline n=25 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -97,7 +97,7 @@
           "verdict": "null"
         }
       },
-      "n_rows": 103,
+      "n_rows": 104,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
@@ -225,8 +225,8 @@
         "engagement_trend": {
           "metric": "engagement_trend",
           "n_baseline": 30,
-          "n_recent": 4,
-          "reason": "recent n=4, baseline n=30 — need 5 of each",
+          "n_recent": 11,
+          "reason": "baseline median is zero — a ratio against zero engagement is undefined, not infinite",
           "value": null,
           "verdict": "null"
         },
@@ -234,18 +234,18 @@
           "metric": "last_nine",
           "n": 9,
           "problems": [
-            "7/9 posts have no measurement yet (ceiling 6)",
-            "6 near-repeat(s) in the visible grid"
+            "only 0/9 of the visible grid carries a receipt (floor 3)",
+            "8 near-repeat(s) in the visible grid"
           ],
-          "repeats": 6,
+          "repeats": 8,
           "thresholds": {
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
           },
-          "unmeasured": 7,
+          "unmeasured": 6,
           "value": 9,
           "verdict": "warn",
-          "with_receipt": 4
+          "with_receipt": 0
         },
         "rejection_reason_mix": {
           "metric": "rejection_reason_mix",
@@ -256,7 +256,7 @@
           "verdict": "null"
         }
       },
-      "n_rows": 85,
+      "n_rows": 92,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
@@ -377,7 +377,7 @@
     }
   ],
   "apply_halts": true,
-  "as_of": "2026-10-05T10:32:10Z",
+  "as_of": "2026-10-06T13:19:45Z",
   "halted": [],
   "metrics": [
     "approval_rate",

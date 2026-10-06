@@ -1,6 +1,6 @@
 {
   "schema": "winner_autopsy_panel.v1",
-  "generated_at": "2026-10-06T10:17:59Z",
+  "generated_at": "2026-10-06T14:33:58Z",
   "display_only": true,
   "horizon_role": "hold_thesis",
   "census": {
@@ -34067,7 +34067,7 @@
         }
       },
       {
-        "ticker": "FOXO",
+        "ticker": "FOXOD",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -34084,7 +34084,7 @@
         }
       },
       {
-        "ticker": "FOXOD",
+        "ticker": "FOXO",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -35580,23 +35580,6 @@
         }
       },
       {
-        "ticker": "TSEOQ",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": -0.46,
-        "excess_42d_pp": 549.1,
-        "new_high_63d": true,
-        "dollar_vol_z21": null,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
         "ticker": "LIPO",
         "sector": "",
         "benchmark": "SPY",
@@ -35614,14 +35597,14 @@
         }
       },
       {
-        "ticker": "SLNCF",
+        "ticker": "ZSTK",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -0.46,
-        "excess_42d_pp": 165.76,
+        "excess_42d_pp": 158.24,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.22,
+        "dollar_vol_z21": -0.7,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -35631,14 +35614,14 @@
         }
       },
       {
-        "ticker": "SND",
+        "ticker": "TSEOQ",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -0.46,
-        "excess_42d_pp": 27.09,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.46,
+        "excess_42d_pp": 549.1,
+        "new_high_63d": true,
+        "dollar_vol_z21": null,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -35665,14 +35648,31 @@
         }
       },
       {
-        "ticker": "ZSTK",
+        "ticker": "SND",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -0.46,
-        "excess_42d_pp": 158.24,
+        "excess_42d_pp": 27.09,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.7,
+        "dollar_vol_z21": -0.46,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "SLNCF",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": -0.46,
+        "excess_42d_pp": 165.76,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.22,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -35869,6 +35869,23 @@
         }
       },
       {
+        "ticker": "SYANY",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": -0.84,
+        "excess_42d_pp": 32.03,
+        "new_high_63d": false,
+        "dollar_vol_z21": null,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
         "ticker": "JCDXY",
         "sector": "",
         "benchmark": "SPY",
@@ -35893,23 +35910,6 @@
         "excess_21d_pp": -0.84,
         "excess_42d_pp": 26.3,
         "new_high_63d": true,
-        "dollar_vol_z21": null,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "SYANY",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": -0.84,
-        "excess_42d_pp": 32.03,
-        "new_high_63d": false,
         "dollar_vol_z21": null,
         "days_in_state": 0,
         "gex_state": null,
@@ -42652,14 +42652,14 @@
         }
       },
       {
-        "ticker": "BNBX",
+        "ticker": "SGMOQ",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -18.11,
-        "excess_42d_pp": 26.37,
+        "excess_42d_pp": 39.1,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.45,
+        "dollar_vol_z21": -1.32,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -42669,14 +42669,14 @@
         }
       },
       {
-        "ticker": "SGMOQ",
+        "ticker": "BNBX",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -18.11,
-        "excess_42d_pp": 39.1,
+        "excess_42d_pp": 26.37,
         "new_high_63d": false,
-        "dollar_vol_z21": -1.32,
+        "dollar_vol_z21": -0.45,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],

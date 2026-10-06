@@ -1,7 +1,7 @@
 {
   "schema": "china_validation.v1",
   "is_context_only": true,
-  "generated_utc": "2026-10-05T14:57:56.635795+00:00",
+  "generated_utc": "2026-10-06T15:12:57.710026+00:00",
   "fdr_alpha": 0.1,
   "horizons": [
     5,
@@ -15,25 +15,25 @@
       "status": "validated",
       "tier": "confirmer",
       "proven": false,
-      "n_obs": 18,
+      "n_obs": 17,
       "n_weeks": 5,
       "n_indep": 2,
       "by_horizon": {
         "5": {
-          "mean_ic": 0.2656,
-          "ic_ir": 0.798,
-          "t_hac": 2.603,
-          "p_hac": 0.0092,
-          "hit": 0.778,
-          "n": 18,
+          "mean_ic": 0.2524,
+          "ic_ir": 0.746,
+          "t_hac": 2.298,
+          "p_hac": 0.0216,
+          "hit": 0.765,
+          "n": 17,
           "n_weeks": 6,
           "n_indep": 6,
           "sampling_step_td": 1.0,
           "hac_lags": 5,
           "overlap_ratio": 5.0,
           "incremental": {
-            "surviving_frac": 0.617,
-            "ic_delta": -0.1017
+            "surviving_frac": 0.603,
+            "ic_delta": -0.1001
           }
         },
         "10": {

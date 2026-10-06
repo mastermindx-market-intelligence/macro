@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
   "as_of": "2026-10-06",
-  "generated_at": "2026-10-06T10:18:03Z",
+  "generated_at": "2026-10-06T14:34:01Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -956,7 +956,7 @@
       "name_en": "Space & Satellites",
       "name_zh": "太空与卫星",
       "foresight": {
-        "stage": "RE-RATING",
+        "stage": "BROADENING (text)",
         "tier": "P",
         "score": 50.0,
         "entry_ready": false,
@@ -1233,9 +1233,9 @@
       "name_en": "Medical Devices",
       "name_zh": "医疗器械",
       "foresight": {
-        "stage": "PRECIPICE (fingerprint)",
+        "stage": "BROADENING (fingerprint)",
         "tier": "P",
-        "score": 60.0,
+        "score": 59.9,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1408,7 +1408,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-06T10:18:03Z",
-  "inputs_hash": "sha256:3fda1691768840de84c7c41cde541967b2f08421fd54ab1de76866b5b5269055",
+  "produced_at": "2026-10-06T14:34:02Z",
+  "inputs_hash": "sha256:6035902579ba6846d1e41705d51dc0c23a4c7d994cae1562d3f45b173994214c",
   "tier": "display"
 }
