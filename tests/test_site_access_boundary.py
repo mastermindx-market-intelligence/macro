@@ -77,6 +77,23 @@ def _caddy_public_exclusions() -> set[str]:
     return set(shlex.split(match.group(1)))
 
 
+def _caddy_site_block(host: str) -> str:
+    match = re.search(rf"^{re.escape(host)} \\{{\\n(.*?)^\\}}", CADDY, flags=re.S | re.M)
+    assert match, f"Caddy site block missing for {host}"
+    return match.group(1)
+
+
+@pytest.mark.parametrize("host", ["www.mastermind-x.com", "mastermind-x.com"])
+def test_flagship_origin_tls_stays_browser_trusted(host):
+    """Public flagship origins must never expose Caddy's private local CA."""
+    body = _caddy_site_block(host)
+    assert "tls internal" not in body, (
+        f"{host} can be reached if the CDN is bypassed or DNS is stale; "
+        "tls internal exposes Caddy Local Authority and causes "
+        "NET::ERR_CERT_AUTHORITY_INVALID"
+    )
+
+
 def test_caddy_public_boundary_matches_policy_exactly():
     expected = set(NON_POLICY_ROUTES) | {"*.html"}
     expected.update(POLICY["public"]["exact"])
