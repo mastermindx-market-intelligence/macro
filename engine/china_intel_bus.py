@@ -632,11 +632,21 @@ def _visit_discovery_snapshot(
             else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
             else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
             else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
-            else "ok_health_receipt_mismatch" if "ok_health_receipt_mismatch" in clock_errors
             else "row_observation_before_source" if "row_observation_before_source" in clock_errors
-            # Health/coverage chronology is the more fundamental diagnosis and
-            # must not be masked by a downstream row-vs-receipt inconsistency.
-            else "owner_clock_order_invalid" if not health_clock_order_valid
+            # Coverage/future/order defects are more fundamental than the
+            # secondary invariant that successful attempt/success clocks match.
+            else "owner_clock_order_invalid" if any(
+                err in {
+                    "coverage_start_after_reference",
+                    "last_success_after_reference",
+                    "last_success_before_coverage_start",
+                    "last_attempt_after_reference",
+                    "last_attempt_before_coverage_start",
+                    "last_attempt_before_last_success",
+                }
+                for err in clock_errors
+            )
+            else "ok_health_receipt_mismatch" if "ok_health_receipt_mismatch" in clock_errors
             else "source_stale" if source_status == "stale"
             else "source_health_not_ok" if source_status != "ok"
             else "coverage_start_unavailable" if coverage_day is None
@@ -669,7 +679,7 @@ def _visit_discovery_snapshot(
             continue
         exchange = _visit_text(row.get("exchange"))
         key = f"{exchange}:{code}" if exchange else code
-        source_day = _visit_day(row.get("source_published_at"))
+        source_day = _visit_source_day(row.get("source_published_at"))
         if source_day is None:
             continue
         observed_day = _visit_observed_day(row.get("system_recorded_at"))
