@@ -20,7 +20,8 @@
     "market_outcomes_inspected_before_admission": false,
     "hsi_outcomes_inspected": false,
     "later_source_confirmation_may_move_clock": false,
-    "note": "These rows were admitted by scripts/research/capture_cross_session_transfer.py before any target HSI outcome read in this continuation."
+    "note": "These rows were admitted by scripts/research/capture_cross_session_transfer.py before any target HSI outcome read in this continuation.",
+    "clock_corrections_before_market_measurement": true
   },
   "events": [
     {
@@ -158,14 +159,14 @@
       },
       "state": "PROSPECTIVE_V1_1",
       "event_id": "2026-10-04-yemen-government-major-offensive-launch",
-      "event_time": "2026-10-04T12:46:00Z",
-      "available_at": "2026-10-04T12:46:00Z",
+      "event_time": "2026-10-04T12:11:00Z",
+      "available_at": "2026-10-04T12:11:00Z",
       "event_class": "official_policy_or_operational_change",
       "source_state": "SOURCE_RESOLVED",
       "source_name": "Reuters / Yemeni President Rashad al-Alimi televised address",
-      "source_ref": "https://www.timesofisrael.com/liveblog_entry/yemen-leader-announces-major-military-operations-against-iran-backed-houthis/",
+      "source_ref": "https://www.marketscreener.com/news/head-of-yemen-s-presidential-council-announces-military-operations-to-retake-territory-ce785ddbdc8ff622",
       "headline": "Yemeni president announces major military operations to retake Houthi-held territory",
-      "clock_basis": "Reuters live update recovered at 4 Oct 2026 08:46 EDT / 12:46Z; statement attributed directly to President Rashad al-Alimi's televised address.",
+      "clock_basis": "Earliest recovered Reuters publication: 4 Oct 2026 08:11 EDT = 12:11Z. Corrected before any U.S. minute transport or HSI outcome read.",
       "clean_primary_eligible": true,
       "observed_at": "2026-10-06T03:40:25Z",
       "primary_v1_eligible": true,
@@ -178,7 +179,17 @@
       },
       "outcome_state": "NOT_READ",
       "hk_outcome_read": false,
-      "persistence": "source_receipt_committed_only"
+      "persistence": "source_receipt_committed_only",
+      "source_clock_correction": {
+        "corrected_at": "2026-10-06T03:40:25Z",
+        "prior": {
+          "event_time": "2026-10-04T12:46:00Z",
+          "available_at": "2026-10-04T12:46:00Z",
+          "source_ref": "https://www.timesofisrael.com/liveblog_entry/yemen-leader-announces-major-military-operations-against-iran-backed-houthis/",
+          "clock_basis": "Reuters live update recovered at 4 Oct 2026 08:46 EDT / 12:46Z; statement attributed directly to President Rashad al-Alimi's televised address."
+        },
+        "reason": "Earlier Reuters first-publication timestamp recovered after source admission; no market outcome had been opened."
+      }
     },
     {
       "schema": "research.cross_session_transfer_admission.v1",
