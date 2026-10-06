@@ -7,6 +7,10 @@ objective: >-
   their existing source owners with exact CI and production evidence. Whole-mission acceptance
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: blocked
+blocked_by:
+  - Exact active Terminal PR597 source-owner binding is unresolved for shared startup, editor and drawing caller hunks.
+  - Macro PR8526 incumbent incorporation, owning CI and live delivery of the reviewed Brain contribution are unaccepted.
+  - Existing holds and drawing bootstrap/schema, financial source-unit, private identity and recipient contracts remain unclosed.
 program: terminal-charting
 repos: [terminal, macro]
 owner: ceo-sol
