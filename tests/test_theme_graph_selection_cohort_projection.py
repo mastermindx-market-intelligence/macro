@@ -6,6 +6,7 @@ from pathlib import Path
 
 import jsonschema
 import pytest
+import yaml
 
 from engine.theme_graph.selection_cohort import (
     FLAGS,
@@ -180,6 +181,78 @@ def test_t4_rights_fail_closed_counts_and_no_withheld_leakage():
     assert row0["n_concepts"] == 3
     assert row0["concepts_display"] == []
     assert row0["n_concepts_withheld"] == 3
+
+
+def test_t4b_displayable_concept_via_rights_path(tmp_path):
+    reg = yaml.safe_load(rights.registry_path().read_text())
+    reg["families"]["finviz_themes"]["rights_class"] = "derived_display_ok"
+    reg_path = tmp_path / "theme_sources.yml"
+    reg_path.write_text(yaml.safe_dump(reg))
+    assert rights.licensing_for_family("finviz_themes", path=reg_path)[1] is True
+
+    kw = inputs(3)
+    kw["membership_reads"]["owner-row-0"]["memberships"] = [
+        member(0, "ltheme:ths:battery"),
+        _finviz_member(0),
+        _canonical_theme_member(0),
+    ]
+    kw["membership_reads"]["owner-row-2"]["memberships"] = [_finviz_member(2)]
+    kw["state_reads"]["ltheme:finviz:ai"] = state("ltheme:finviz:ai")
+    packet = compose_selection_cohort(selection(3), **kw)
+    validate_selection_cohort(packet)
+
+    out = project_selection_cohort_for_product(_wrapper(packet), rights_path=reg_path)
+    _schema_validator().validate(out)
+
+    concept_rights = out["concept_rights"]
+    assert concept_rights == {
+        "n_concepts_total": 3,
+        "n_concepts_displayable": 1,
+        "n_concepts_withheld": 2,
+        "withheld_reasons": {
+            "RIGHTS_INTERNAL_ONLY": 1,
+            "RIGHTS_FAMILY_UNRESOLVED": 1,
+        },
+    }
+    row0, row1, row2 = out["selected"]
+    assert row0["n_concepts"] == 3
+    assert json.dumps(row0["concepts_display"]) == json.dumps(
+        [{"node_id": "ltheme:finviz:ai", "kind": "local_theme"}]
+    )
+    assert row0["n_concepts_withheld"] == 2
+    assert row1["n_concepts"] == 1
+    assert row1["concepts_display"] == []
+    assert row1["n_concepts_withheld"] == 1
+    assert row2["n_concepts"] == 1
+    assert json.dumps(row2["concepts_display"]) == json.dumps(
+        [{"node_id": "ltheme:finviz:ai", "kind": "local_theme"}]
+    )
+    assert row2["n_concepts_withheld"] == 0
+
+    dumped = json.dumps(out, sort_keys=True)
+    assert "ltheme:ths:battery" not in dumped
+    assert "theme:canonical" not in dumped
+    for concept in packet["concepts"]:
+        if concept["node_id"] == "ltheme:ths:battery":
+            assert concept.get("native_id") not in dumped
+            for cid in concept.get("canonical_node_ids") or []:
+                if cid:
+                    assert cid not in dumped
+    for item in row0["concepts_display"] + row2["concepts_display"]:
+        assert set(item.keys()) == {"node_id", "kind"}
+
+    out_no_rights = project_selection_cohort_for_product(_wrapper(packet))
+    assert out_no_rights["concept_rights"]["n_concepts_displayable"] == 0
+
+    reg_bad = yaml.safe_load(rights.registry_path().read_text())
+    reg_bad["families"]["finviz_themes"]["rights_class"] = "bogus_class"
+    reg_bad_path = tmp_path / "theme_sources_bogus.yml"
+    reg_bad_path.write_text(yaml.safe_dump(reg_bad))
+    out_bogus = project_selection_cohort_for_product(
+        _wrapper(packet), rights_path=reg_bad_path
+    )
+    assert out_bogus["concept_rights"]["n_concepts_displayable"] == 0
+    assert out_bogus["concept_rights"]["withheld_reasons"]["RIGHTS_INTERNAL_ONLY"] == 2
 
 
 def test_t5_honest_unavailable_paths():
