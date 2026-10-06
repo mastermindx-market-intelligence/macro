@@ -1,15 +1,15 @@
 {
   "date": "2026-10-05",
-  "generated_utc": "2026-10-06 10:37",
+  "generated_utc": "2026-10-06 12:14",
   "business_cycle": {
     "available": true,
     "asof": "2026-10-31",
     "tiers": {
       "leading": {
         "asof": "2026-10-31",
-        "index": 95.2367882843323,
+        "index": 95.23678828433232,
         "mom6": 0.6263455252673822,
-        "trend": 0.7934991058146902,
+        "trend": 0.7934991058146906,
         "diffusion": 66.66666666666667,
         "n_legs": 3,
         "direction": "rising",
@@ -1138,9 +1138,9 @@
       },
       "coincident": {
         "asof": "2026-08-31",
-        "index": 36.180262362461924,
+        "index": 36.18026236246195,
         "mom6": -0.011709533365944935,
-        "trend": -0.07254167131860809,
+        "trend": -0.07254167131860807,
         "diffusion": 100.0,
         "n_legs": 3,
         "direction": "falling",
@@ -2269,9 +2269,9 @@
       },
       "lagging": {
         "asof": "2026-09-30",
-        "index": 92.77618714483731,
+        "index": 92.77618714483728,
         "mom6": 0.2552629586944306,
-        "trend": 0.2815421329859876,
+        "trend": 0.28154213298598607,
         "diffusion": 50.0,
         "n_legs": 2,
         "direction": "rising",
@@ -3399,7 +3399,7 @@
         ]
       }
     },
-    "cl_ratio_mom6": -0.3203993870845423,
+    "cl_ratio_mom6": -0.3203993870845281,
     "recession_signal": {
       "available": true,
       "state": "off",
@@ -4090,16 +4090,15 @@
         "cadence_days": 5
       },
       "recession_risk": {
-        "asof": "2026-09-03",
-        "age_days": 32,
-        "stale": true,
+        "asof": "2026-10-05",
+        "age_days": 0,
+        "stale": false,
         "label": "Recession-risk composite",
         "cadence_days": 7
       }
     },
     "stale_inputs": [
-      "ebp",
-      "recession_risk"
+      "ebp"
     ],
     "financial_conditions": {
       "nfci": -0.548,
@@ -4143,19 +4142,17 @@
       "evidence": "OFR Financial Stress Index: a daily 33-variable global stress gauge with functional (credit / equity valuation / safe assets / funding / volatility) and regional (US / other-advanced / EM) decomposition. A coincident gauge \u2014 it names the stress CHANNEL when markets move as one; display + an optional risk-OFF gate, never cross-sectional alpha."
     },
     "recession": {
-      "score": 0.17714285714285716,
+      "score": 0.27555555555555555,
       "label": "low",
       "components": {
         "prob": 0.62,
-        "curve": 0.0,
         "claims": 0.0
       },
       "curve_raw": 0.47,
-      "curve_tp_adjusted": 0.47,
+      "curve_tp_adjusted": null,
       "sahm": 0.0,
       "ebp": -0.319112793,
-      "ny_fed_prob": 0.62,
-      "curve_note": "raw and term-premium-adjusted curve agree"
+      "ny_fed_prob": 0.62
     },
     "growth_nowcast": {
       "wei": 2.93,
@@ -4166,7 +4163,7 @@
       "initial_claims_4wk": 200000.0,
       "continued_claims": 1701000.0,
       "claims_yoy_pct": -11.012235817575089,
-      "claims_z": -1.94553639615894,
+      "claims_z": -1.9455363961587475,
       "claims_trend": "falling",
       "indeed_postings": 103.45,
       "indeed_chg_3m_pct": 2.2435263886143364,
@@ -4199,26 +4196,26 @@
       "read": "persistent (sticky-led)"
     },
     "risk_appetite": {
-      "vrp": 5.2563527963387155,
+      "vrp": 5.25635279633876,
       "vrp_pctile": 0.49603174603174605,
       "vrp_state": "normal",
-      "realized_vol": 10.263647661424956,
+      "realized_vol": 10.263647661424912,
       "vix_term": 0.8622222476535373,
       "vix_term_state": "contango (calm)",
       "vix_term_lead_lag": "coincident",
       "skew": 143.04,
       "skew_pctile": 0.35714285714285715,
-      "stock_bond_corr": 0.5087186451773001,
+      "stock_bond_corr": 0.5087186451772993,
       "stock_bond_regime": "breakdown (bonds not hedging)",
-      "roro": 0.09623618222469739,
+      "roro": 0.0962361822246555,
       "roro_state": "neutral",
-      "vol_target_scalar": 1.1691749751992146,
+      "vol_target_scalar": 1.1691749751992195,
       "news_sentiment": 0.05506381392478943,
-      "news_sentiment_z": 1.165090209580152,
+      "news_sentiment_z": 1.1650902095801474,
       "news_sentiment_state": "optimistic"
     },
     "drawdown_risk": {
-      "score": 13.19796954314721,
+      "score": 12.828795569912321,
       "band": "low",
       "dd10_prob_pct": null,
       "base_rate_pct": 19,
@@ -4354,7 +4351,7 @@
   "fear_euphoria": {
     "fe_score": 51,
     "band": "Neutral",
-    "roro": 0.09623618222469739,
+    "roro": 0.0962361822246555,
     "roro_state": "neutral",
     "legs": [
       {
@@ -5329,7 +5326,7 @@
     ],
     "n_legs_qualifying": 11,
     "as_of": "2026-10-05",
-    "generated_utc": "2026-10-06T07:55:36Z",
+    "generated_utc": "2026-10-06T11:00:10Z",
     "disclaimer_en": "Sentiment context only \u2014 display-only composite of public market indicators. Never scored, never feeds the regime engine, no forward claim. Greed/fear readings are not contrarian signals without regime context.",
     "disclaimer_zh": "\u4ec5\u4e3a\u60c5\u7eea\u53c2\u8003 \u2014 \u516c\u5f00\u5e02\u573a\u6307\u6807\u7684\u4ec5\u5c55\u793a\u5408\u6210\u3002\u4e0d\u8ba1\u5206\uff0c\u4e0d\u8fdb\u5165\u5468\u671f\u5f15\u64ce\uff0c\u65e0\u524d\u77bb\u6027\u5224\u65ad\u3002\u8d2a\u5a6a/\u6050\u60e7\u8bfb\u6570\u82e5\u65e0\u5468\u671f\u80cc\u666f\uff0c\u4e0d\u6784\u6210\u53cd\u5411\u4fe1\u53f7\u3002"
   },
@@ -5950,7 +5947,7 @@
       }
     ],
     "as_of": "2026-10-05",
-    "generated_utc": "2026-10-06T07:55:37Z",
+    "generated_utc": "2026-10-06T11:00:11Z",
     "n_young": 0,
     "disclaimer_en": "Display-only context \u2014 volatility surface indicators from public CBOE / Yahoo data. Never scored, no forward claim. These chips describe the current vol environment; they do not predict direction.",
     "disclaimer_zh": "\u4ec5\u4f9b\u5c55\u793a\u7684\u80cc\u666f \u2014 \u6765\u81ea\u516c\u5f00 CBOE / Yahoo \u6570\u636e\u7684\u6ce2\u52a8\u7387\u66f2\u9762\u6307\u6807\u3002\u4e0d\u8ba1\u5206\uff0c\u65e0\u524d\u77bb\u5224\u65ad\u3002\u8fd9\u4e9b\u82af\u7247\u63cf\u8ff0\u5f53\u524d\u6ce2\u52a8\u7387\u73af\u5883\uff0c\u4e0d\u9884\u6d4b\u65b9\u5411\u3002"
