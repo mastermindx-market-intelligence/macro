@@ -1,6 +1,6 @@
 {
   "schema": "research.cross_session_prospective_late_source_recovery.v1",
-  "generated_at": "2026-10-06T04:00:00Z",
+  "generated_at": "2026-10-06T04:29:57Z",
   "operation": "geopolitical-relief-event-study-20260924-sol-001",
   "carrier": {
     "repository": "mastermindx-market-intelligence/macro",
@@ -9,22 +9,27 @@
     "parent_head": "511bd6a3ff5f5c449e8e4bc5056df993ee8e6e49"
   },
   "protected_procedure": {
-    "master_pin": "d1594f3c7ae750db3f14b4eebf0de3460f84267a",
-    "index_blob": "4b0189a75d559d963365097485e8509a49c70e23"
+    "master_pin": "877b1e7f275da0b6d3558d2667778b32d628bf67",
+    "index_blob": "38a18571229e487f525b1c9780f7993220a5da93",
+    "active_execution_blob": "413b1ce8b5cf6feaea33ab53434acfad1e8956c8",
+    "session_reliability_enrolled": true
   },
-  "integrity_state": "SOURCE_ADMISSION_INCOMPLETE_AFTER_US_EXPOSURE",
+  "integrity_state": "SOURCE_ADMISSION_SYSTEMICALLY_INCOMPLETE_AFTER_US_EXPOSURE",
   "target_state": {
     "hsi_outcomes_read": false,
-    "missing_event_us_returns_read": false,
-    "note": "The two recovered rows were found through a source-only Reuters sweep after the first 10-event U.S. measurement artifact had been opened. Their own U.S. returns and all HSI outcomes remain unread."
+    "newly_recovered_rows_us_returns_read": false,
+    "epoch1_hsi_open_allowed": false,
+    "note": "Source-only recovery exposed omitted qualifying events and an invalid aggregated Hormuz clock/granularity after the first Epoch-1 U.S. artifact was opened. No HSI target has been opened. Recovered rows are not measured to rescue the epoch."
   },
   "consequence": {
     "retain_in_prospective_source_log": true,
-    "evaluation_credit": "NO_CLEAN_PROSPECTIVE_CREDIT",
-    "clean_primary_eligible": false,
+    "evaluation_credit": "NO_CLEAN_PROSPECTIVE_CREDIT_FOR_LATE_ROWS",
     "pooled_n10_review_allowed": false,
-    "control_date_effect": "none — both recovered dates (Oct 3 and Oct 4) were already excluded by admitted events on those dates",
-    "repair_law": "Do not backfill these rows into the clean cohort or measure them to rescue the sample. Preserve as late-source discoveries and require future source-first accrual for additional evaluable observations."
+    "epoch1_pooled_or_promotion_credit": false,
+    "epoch1_hsi_open_allowed": false,
+    "no_backfill_to_rescue_sample": true,
+    "control_date_effect": "none for current frozen controls: every recovered source date is already among the initial admitted event dates 2026-09-28 through 2026-10-05",
+    "repair_law": "Preserve immutable Epoch-1 receipts and U.S. diagnostics. Do not silently retime, split, backfill, measure recovered rows, or open Epoch-1 HSI. Clean target validation restarts only under the source-admission safeguard activated after this recovery."
   },
   "events": [
     {
@@ -58,11 +63,185 @@
       "hsi_outcome_read": false,
       "clean_primary_eligible": false,
       "evaluation_eligible": false
+    },
+    {
+      "event_id": "2026-09-30-final-us-forces-withdraw-iraq",
+      "available_at": "2026-09-30T00:02:00Z",
+      "event_time": "2026-09-30T00:02:00Z",
+      "event_class": "official_policy_or_operational_change",
+      "source_state": "SOURCE_RESOLVED",
+      "source_name": "Reuters",
+      "source_ref": "https://www.marketscreener.com/news/us-forces-exit-iraq-emboldening-iran-s-proxies-and-islamic-state-ce785ad2db8bf62c",
+      "headline": "Final U.S. forces leave Iraq, ending the long-running military mission and shifting the regional balance around Iran-backed groups",
+      "clock_basis": "Earliest recovered Reuters completion report published 29 Sep 2026 20:02 EDT = 30 Sep 00:02Z; an earlier Reuters report described the final pullout as imminent but not yet complete.",
+      "admission_timing_state": "LATE_SOURCE_RECOVERY_AFTER_US_EXPOSURE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false,
+      "clean_primary_eligible": false,
+      "evaluation_eligible": false,
+      "disposition": "QUALIFYING_LATE_NON_EVALUABLE"
     }
   ],
   "bounded_oct6_source_sweep": {
-    "through": "2026-10-06T04:00:00Z",
+    "through": "2026-10-06T04:29:57Z",
     "same_day_qualifying_event_identified": false,
-    "note": "Results surfaced Oct-5 continuation and commentary, but no new Oct-6 qualifying material event at this checkpoint. The Oct-6 source day remains open and uncertified."
+    "full_day_certified": false,
+    "note": "Oct 6 remains open. This is not a completeness claim and no Oct-6 market measurement is authorized from this checkpoint."
+  },
+  "initial_row_integrity_corrections": [
+    {
+      "event_id": "2026-10-01-three-hormuz-tankers-hit-by-projectiles",
+      "original_available_at": "2026-10-01T06:17:00Z",
+      "original_source": "Reuters / Marisks shipping intelligence",
+      "correction_state": "SOURCE_CLOCK_AND_EVENT_GRANULARITY_INVALID_AFTER_US_EXPOSURE",
+      "evidence": "UKMTO warnings 144-26, 145-26 and 146-26 were publicly issued on 2026-09-30 for three separate tanker attacks that occurred on 2026-09-29. The later Reuters/Marisks row aggregated those separate incidents and therefore is not the earliest exact decision-eligible source representation.",
+      "original_receipt_mutated": false,
+      "original_us_receipt_preserved_as_historical_diagnostic": true,
+      "own_hsi_outcome_read": false,
+      "clean_primary_credit": false,
+      "evaluation_eligible": false,
+      "repair": "Do not retime or split this already-exposed row into evaluable observations. Preserve the immutable receipt and recover the official maritime incidents only as late/non-evaluable source evidence."
+    }
+  ],
+  "maritime_source_recovery": [
+    {
+      "source_key": "UKMTO-144-26",
+      "issue_date": "2026-09-30",
+      "incident_date": "2026-09-29",
+      "event_class": "physical_energy_shipping_security",
+      "summary": "Crude-oil tanker struck on port side by an unknown projectile in the Strait of Hormuz.",
+      "public_clock_state": "EARLIEST_PUBLIC_CLOCK_UNRESOLVED_AFTER_US_EXPOSURE",
+      "source_ref": "https://www.ukmto.org/",
+      "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false
+    },
+    {
+      "source_key": "UKMTO-145-26",
+      "issue_date": "2026-09-30",
+      "incident_date": "2026-09-29",
+      "event_class": "physical_energy_shipping_security",
+      "summary": "Inbound tanker struck by an unknown projectile in the Strait of Hormuz.",
+      "public_clock_state": "EARLIEST_PUBLIC_CLOCK_UNRESOLVED_AFTER_US_EXPOSURE",
+      "source_ref": "https://www.ukmto.org/",
+      "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false
+    },
+    {
+      "source_key": "UKMTO-146-26",
+      "issue_date": "2026-09-30",
+      "incident_date": "2026-09-29",
+      "event_class": "physical_energy_shipping_security",
+      "summary": "Tanker struck by an unknown projectile in the Strait of Hormuz.",
+      "public_clock_state": "EARLIEST_PUBLIC_CLOCK_UNRESOLVED_AFTER_US_EXPOSURE",
+      "source_ref": "https://www.ukmto.org/",
+      "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false
+    },
+    {
+      "source_key": "UKMTO-147-26",
+      "issue_date": "2026-10-01",
+      "incident_time_recovered": "approximately 2026-10-01T17:50:00Z",
+      "event_class": "physical_energy_shipping_security",
+      "summary": "Tanker struck by an unknown projectile while transiting Hormuz, causing a fire.",
+      "public_clock_state": "EARLIEST_PUBLIC_CLOCK_UNRESOLVED_AFTER_US_EXPOSURE",
+      "source_ref": "https://www.ukmto.org/recent-incidents",
+      "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false
+    },
+    {
+      "source_key": "UKMTO-148-26",
+      "available_at": "2026-10-02T11:22:00Z",
+      "issue_date": "2026-10-02",
+      "event_class": "physical_energy_shipping_security",
+      "summary": "Outbound tanker struck by an unknown projectile in Hormuz, causing a small fire and blackout.",
+      "public_clock_state": "EXACT_UKMTO_WARNING_REPORT_TIME",
+      "source_ref": "https://www.ukmto.org/recent-incidents",
+      "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false
+    },
+    {
+      "source_key": "UKMTO-149-26",
+      "issue_date": "2026-10-02",
+      "event_class": "physical_energy_shipping_security",
+      "summary": "Crude-oil tanker struck by an unknown projectile four nautical miles east of Oman.",
+      "public_clock_state": "EARLIEST_PUBLIC_CLOCK_UNRESOLVED_AFTER_US_EXPOSURE",
+      "source_ref": "https://www.ukmto.org/recent-incidents",
+      "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false
+    },
+    {
+      "source_key": "UKMTO-150-26",
+      "issue_date": "2026-10-04",
+      "event_class": "physical_energy_shipping_security",
+      "summary": "Tanker struck by an unknown projectile with engine-room damage; report date/time marked TBC by UKMTO.",
+      "public_clock_state": "EARLIEST_PUBLIC_CLOCK_UNRESOLVED_AFTER_US_EXPOSURE",
+      "source_ref": "https://www.ukmto.org/recent-incidents",
+      "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false
+    },
+    {
+      "source_key": "UKMTO-151-26",
+      "issue_date": "2026-10-04",
+      "event_class": "physical_energy_shipping_security",
+      "source_state": "SOURCE_CONFOUNDED",
+      "summary": "Tanker reported multiple explosions in close proximity 60NM south of Al Mukha, Yemen.",
+      "public_clock_state": "EARLIEST_PUBLIC_CLOCK_UNRESOLVED_AFTER_US_EXPOSURE",
+      "source_ref": "https://www.ukmto.org/recent-incidents",
+      "disposition": "LATE_SOURCE_CONFOUNDED_NON_EVALUABLE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false
+    },
+    {
+      "source_key": "UKMTO-152-26",
+      "issue_date": "2026-10-05",
+      "incident_time_recovered": "2026-10-05T08:27:00Z",
+      "event_class": "physical_energy_shipping_security",
+      "summary": "Inbound tanker north of Khasab was hailed by the IRGC and instructed to turn back or be targeted; master complied.",
+      "public_clock_state": "EARLIEST_PUBLIC_CLOCK_UNRESOLVED_AFTER_US_EXPOSURE",
+      "source_ref": "https://www.ukmto.org/recent-incidents",
+      "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false
+    },
+    {
+      "source_key": "UKMTO-154-26",
+      "issue_date": "2026-10-04",
+      "incident_time_recovered": "2026-10-04T19:07:00Z",
+      "event_class": "physical_energy_shipping_security",
+      "summary": "Crude-oil tanker struck by unknown projectiles in Hormuz; UKMTO describes the report as time-late.",
+      "public_clock_state": "EARLIEST_PUBLIC_CLOCK_UNRESOLVED_AFTER_US_EXPOSURE",
+      "source_ref": "https://www.ukmto.org/",
+      "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false
+    },
+    {
+      "source_key": "UKMTO-156-26",
+      "issue_date": "2026-10-05",
+      "incident_time_recovered": "2026-10-05T16:37:00Z",
+      "event_class": "physical_energy_shipping_security",
+      "summary": "Tanker struck by an unknown projectile in Hormuz, causing an engine-room fire.",
+      "public_clock_state": "EARLIEST_PUBLIC_CLOCK_UNRESOLVED_AFTER_US_EXPOSURE",
+      "source_ref": "https://www.ukmto.org/",
+      "disposition": "QUALIFYING_LATE_NON_EVALUABLE",
+      "own_us_return_read": false,
+      "hsi_outcome_read": false
+    }
+  ],
+  "source_recall_root_cause": {
+    "state": "MISSING_SPECIALIZED_MARITIME_SOURCE_CHANNEL",
+    "detail": "The first bounded census relied heavily on Reuters/wire retrieval and did not systematically sweep UKMTO, the official maritime-security warning owner. This caused separate Hormuz incidents to be omitted or aggregated under a later secondary clock.",
+    "source_channels_added_for_future_admission": [
+      "Reuters/wire search",
+      "UKMTO warnings/advisories for physical shipping-security family"
+    ],
+    "new_event_rail_created": false
   }
 }

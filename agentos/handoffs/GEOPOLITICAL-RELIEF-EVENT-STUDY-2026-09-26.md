@@ -1059,3 +1059,41 @@ It binds the immutable initial-admission and late-recovery blobs, keeps HSI unre
 Oct 6 remains an open UTC source day. No Oct 6 qualifying event was identified in the bounded audit at
 this checkpoint, but the day is not certified complete until the next UTC midnight. The next-control
 and HSI gates therefore remain closed.
+
+## 2026-10-06 continuation addendum — Epoch 1 quarantined before HSI; source-first Epoch 2 frozen
+
+A deeper date-by-date source audit supersedes the earlier two-row completeness estimate. The defect is
+**systemic source recall**, not merely two omitted Reuters rows:
+
+- final U.S. withdrawal from Iraq was a qualifying regional operational change recovered only after
+  the Epoch-1 U.S. artifact was opened;
+- UKMTO, the official maritime-security warning owner, had issued multiple distinct Hormuz tanker
+  warnings from Sep 30 through Oct 5 that the first Reuters-led census did not enumerate;
+- UKMTO 144-146 show that the original Oct-1 Reuters/Marisks "three tankers" row used a later aggregate
+  representation after separate public warnings already existed. That immutable row is therefore
+  `SOURCE_CLOCK_AND_EVENT_GRANULARITY_INVALID_AFTER_US_EXPOSURE` and receives no evaluation credit.
+
+No HSI outcome has been read. Newly recovered rows' U.S. legs remain unread. The original receipts are
+not rewritten or backfilled.
+
+Updated durable receipts:
+- `research/CROSS_SESSION_PROSPECTIVE_LATE_SOURCE_RECOVERY_2026-10-06.json`;
+- `research/CROSS_SESSION_PROSPECTIVE_SOURCE_INTEGRITY_AUDIT_2026-10-06.json`.
+
+Scientific ruling: **Epoch 1 is quarantined and its HSI target will remain unopened.** Its already
+measured U.S. legs are retained only as diagnostic/process evidence; no pooled n>=10 review, promotion,
+or target-validation credit is allowed.
+
+A clean second epoch is preregistered in
+`research/CROSS_SESSION_TRANSFER_SOURCE_ADMISSION_SAFEGUARD_V1_2_2026-10-06.md`.
+It changes no V1/V1.1 predictor, target, event-family definition, geometry, threshold or authority.
+The first commit introducing that file is the immutable Epoch-2 activation boundary. Only later
+first-disclosure events can earn clean Epoch-2 credit.
+
+Epoch-2 operational gate: complete and persist each **full UTC source day** before opening any admitted
+row's U.S. leg; sweep Reuters/wire plus family-specific official sources, with UKMTO mandatory for
+physical shipping-security; unresolved clocks stay unmeasured; parent cluster/family is frozen before
+HSI read. A repeated late-source failure quarantines the affected epoch rather than being backfilled.
+
+Oct 6 remains open and uncertified. HSI remains unread across the program.
+
