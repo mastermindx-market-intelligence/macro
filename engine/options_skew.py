@@ -1451,6 +1451,11 @@ _COMPARE_DEFAULT_UNIVERSE = (
     "AMD", "AVGO", "NFLX", "COIN", "MSTR", "MU", "INTC",
     "JPM", "LLY", "ORCL", "PLTR", "ARM", "LRCX", "AMAT", "V", "CAT",
 )
+# Exchange/index option roots are not user-facing equity/ETF tickers in this
+# comparison. Their ETF proxies already sit in the default bellwether set.
+_COMPARE_EXCLUDED_ROOTS = frozenset({
+    "SPX", "SPXW", "XSP", "NDX", "NDXP", "RUT", "RUTW", "VIX", "VIXW",
+})
 
 
 def _compare_finite(value):
@@ -1662,7 +1667,11 @@ def build_compare_payload(
     selected_names = {row["ticker"] for row in selected}
     if len(selected) < max_names:
         fallback = sorted(
-            (row for row in candidates if row["ticker"] not in selected_names),
+            (
+                row for row in candidates
+                if row["ticker"] not in selected_names
+                and row["ticker"] not in _COMPARE_EXCLUDED_ROOTS
+            ),
             key=lambda row: (-int(row.get("n_strikes") or 0), row["ticker"]),
         )
         selected.extend(fallback[: max_names - len(selected)])
