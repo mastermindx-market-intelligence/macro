@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HAFC-BULL-20260917",
-  "asof": "2026-10-06",
+  "asof": "2026-10-07",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 55.0,
@@ -10,21 +10,21 @@
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 74.2,
+    "validity": 79.7,
     "progress": 0.0,
-    "pace": 29.9,
+    "pace": 24.9,
     "retention": 50.0,
-    "overlay": 47.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.802,
+    "dist_to_stop_r": 0.845,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 40.0,
-    "p1": -0.132,
-    "p2": -0.066,
+    "horizon_pct_used": 42.2,
+    "p1": -0.1031,
+    "p2": -0.0515,
     "p3": null,
-    "move_r": -0.198,
+    "move_r": -0.155,
     "mfe_r": 0.0,
     "mae_r": -0.343
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 18,
-  "tau": 0.4
+  "days_elapsed": 19,
+  "tau": 0.4222
 }

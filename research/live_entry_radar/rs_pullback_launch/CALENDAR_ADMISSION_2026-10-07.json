@@ -6,7 +6,7 @@
     "can_rank": false,
     "can_size": false
   },
-  "base_revision": "c43c991e5e9cb79e2df819f2a7f756ef404025ea",
+  "base_revision": "96261883beec41fb1a11881ad9b32b3a31cd5f52",
   "calendar_component": "PROSPECTIVE_SOURCE_BOUND",
   "calendar_refusal_repair": {
     "after_repair_calendar_gate": {
@@ -54,8 +54,59 @@
     "end": "2028-12-31",
     "start": "2016-01-01"
   },
+  "delivery_ci_repair": {
+    "after_validation": {
+      "differential_contract_gate": {
+        "base_revision": "96261883beec41fb1a11881ad9b32b3a31cd5f52",
+        "content_probe": {
+          "ceilings": [
+            132,
+            5600,
+            10
+          ],
+          "equal_to_base": true,
+          "packs": 10,
+          "selected_jobs": 132,
+          "weight_seconds": 5415
+        },
+        "exit_code": 0,
+        "inherited_findings": 0,
+        "introduced_findings": 0,
+        "process_id": 30417
+      },
+      "source_tests": {
+        "exit_code": 0,
+        "inherited_cleanup_warnings": 8,
+        "process_id": 30292,
+        "subtests_passed": 85,
+        "tests_passed": 130
+      }
+    },
+    "before": {
+      "failure": "Calendar real-CLI subprocess widened research-price-panel onto scripts/build_free_content.py: 133 selected jobs over unchanged ceiling 132.",
+      "head": "cd242b1c8f2c453ab2c6908a67a93656c6e3a78e",
+      "inherited_findings": 0,
+      "introduced_findings": 1,
+      "job_id": 112679900365,
+      "run_id": 37587175860
+    },
+    "independent_review": {
+      "all_inferred_paths_select_new_job": true,
+      "ceilings_and_planner_unchanged": true,
+      "content_probe_does_not_select_new_job": true,
+      "declared_paths": 15,
+      "inferred_literal_paths": 9,
+      "manifest_sha256": "2e86b89706af170cc493b4ff1d9dcc8b295b7697549310990c2d53a090ee496b",
+      "prior_manifest_minus_new_job_equals_main": true,
+      "process_id": 46495,
+      "source_tests_and_original_capsule_unchanged": true,
+      "status": "PASS_FOR_DELIVERY_DELTA",
+      "subprocess_ambiguity": "Oracle retains roots=lib,research,scripts; independent review resolved exact literal temporary-input CLI execution and imports. Not an ambiguity-free oracle claim."
+    },
+    "repair": "Isolate the calendar suite in entry-radar-rs-pullback-calendar, gate code, scope exclusive, with all 9 inferred literal closure files and 6 actual package/conftest dependencies. Existing price-panel/PTSE command restored to fresh main."
+  },
   "implementation_sha256": {
-    ".github/ci/legacy-jobs.yml": "2e554aa32c1c2ffd741bb74a296999ddd191ec43445414b654286e6a9637360c",
+    ".github/ci/legacy-jobs.yml": "2e86b89706af170cc493b4ff1d9dcc8b295b7697549310990c2d53a090ee496b",
     "engine/entry_radar/replay/rs_pullback_launch_data.py": "be195231ef8c37d238d8cfa09f309e245746308f3447c0013c63b7c91c7cf0f8",
     "scripts/entry_radar_rs_pullback_phase1.py": "d57c05f4a75e0f53f9da7448a2d3ee37789a978165731104cb8a30a276818806",
     "tests/test_entry_radar_rs_pullback_calendar.py": "e6059a3931732f667d4be297f7a2b6f7c2f4fec5a378ad23bfe3df5ce8cf5fee"
@@ -77,16 +128,29 @@
     "status": "PASS_FOR_DELIVERY"
   },
   "integration": {
-    "ci_delta": "Preserve fresh-main manifest and apply exactly the reviewed one-line calendar-suite addition.",
-    "integrated_base_revision": "c43c991e5e9cb79e2df819f2a7f756ef404025ea",
-    "observed_at": "2026-10-07T07:18:35.078576Z",
-    "reviewed_base_revision": "36f61afb71657279fb6b85f9ea64f99f7e09093a",
+    "ci_delta": "Preserve concurrent PTSE and other main-manifest changes; move calendar suite into an exclusive code job covering its literal import/input closure and package markers. No packing ceiling changes.",
+    "integrated_base_revision": "96261883beec41fb1a11881ad9b32b3a31cd5f52",
+    "observed_at": "2026-10-07T07:52:18.561176Z",
+    "previous_delivery_head": "cd242b1c8f2c453ab2c6908a67a93656c6e3a78e",
     "semantic_source_files_unchanged": [
       "engine/entry_radar/replay/rs_pullback_launch_data.py",
       "scripts/entry_radar_rs_pullback_phase1.py",
       "tests/test_entry_radar_rs_pullback_calendar.py"
     ]
   },
+  "integration_history": [
+    {
+      "ci_delta": "Preserve fresh-main manifest and apply exactly the reviewed one-line calendar-suite addition.",
+      "integrated_base_revision": "c43c991e5e9cb79e2df819f2a7f756ef404025ea",
+      "observed_at": "2026-10-07T07:18:35.078576Z",
+      "reviewed_base_revision": "36f61afb71657279fb6b85f9ea64f99f7e09093a",
+      "semantic_source_files_unchanged": [
+        "engine/entry_radar/replay/rs_pullback_launch_data.py",
+        "scripts/entry_radar_rs_pullback_phase1.py",
+        "tests/test_entry_radar_rs_pullback_calendar.py"
+      ]
+    }
+  ],
   "limitations": [
     "Read receipt proves consistency and current acquisition, not authenticity or historical availability.",
     "Replay requires the exact retained original input bundle and calendar_source_snapshot; a later path replacement cannot reconstruct it.",
@@ -124,7 +188,7 @@
     },
     "replay_input": "Valid ASCII JSON containing an escaped unpaired surrogate in projection_json."
   },
-  "proof_sha256": "14e42a2a5b0dbf75996566f74086461cac766a1efcb73af5a5465e289e19f937",
+  "proof_sha256": "c9f67cd786bef8977d529ac9fa67a6a19d2cb585821b5a67175cf68557ff7608",
   "protected_law_revision": "ee120e80f5d5e0344c453dd7cbf4108b9c429b38",
   "provider_calls": 0,
   "schema": "mastermind.rs_pullback_launch.calendar_admission.v1",
