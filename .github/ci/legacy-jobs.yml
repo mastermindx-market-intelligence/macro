@@ -14444,7 +14444,7 @@ jobs:
       # suite is stdlib-only and subprocess-free (every command is faked at the
       # _sh seam), so it costs the lane nothing and rides the same install line.
       - name: evening close-pass provisional board lane (W-L1a, #5154; host clock PR-B)
-        run: python -m pytest tests/test_close_pass_lane.py tests/test_close_pass_massive_close.py tests/test_close_pass_host_runner.py -q
+        run: python -m pytest tests/test_close_pass_lane.py tests/test_close_pass_massive_close.py tests/test_close_pass_split_evidence.py tests/test_close_pass_host_runner.py -q
 
   # ── P1 UNRUN-SUITE CENSUS JOBS (2026-07-26) ────────────────────────────────
   # Thirteen lanes covering the 138 wired P1 suites: unrun by any workflow, but on a
