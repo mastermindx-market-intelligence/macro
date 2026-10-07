@@ -2365,6 +2365,12 @@ try:
 except Exception as _capital_structure_exc:  # noqa: BLE001
     log.warning("capital structure router not mounted: %r", _capital_structure_exc)
 
+try:
+    from app.integrated_answer import router as integrated_answer_router  # noqa: E402
+    app.include_router(integrated_answer_router)
+except Exception as _integrated_answer_exc:  # noqa: BLE001
+    log.warning("integrated answer router not mounted: %r", _integrated_answer_exc)
+
 # Warm the SHARED corpus cache off the request path (Analyst OS W4). The chat
 # tool's mode="report" and the vault routes now read one process-wide copy
 # (engine/research_vault/corpus.py); without this, the first report call in a

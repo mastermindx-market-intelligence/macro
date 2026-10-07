@@ -80,3 +80,16 @@ seat does not mint one, under the no-new-store law and owner ruling 6029837568.
 Lineage applies only to newly collected rows, so historical supersedes links in the committed corpus are not
 rewritten. The implementing lane reports how many existing links join rows whose non-null unit, currency or basis
 differ. If that count is non-zero, a K3E-side refusal for those historical links is a separate follow-up.
+
+## Correction note (2026-10-07, same seat)
+
+The statements above that GAP-E-ALIAS e_a #1 "stays strict-xfail until the Data OS identity owner issues a clocked
+crosswalk", and the rejected alternative's reason "No owner issues such a crosswalk", rest on a false premise. The
+Data OS identity owner already publishes a clocked crosswalk: `data/reference/vendor_aliases.parquet`, with an
+non-null `ingested_at` knowledge clock (re-stamps only move it later) and a nullable `valid_from`, read via `lib/dataos/identity.VendorAliasTable`.
+Orchestrator A's A5 census found it on 2026-10-07. DEC:ITP-K3E-ALIAS-CLOCK-BOUNDED-IDENTITY-2026-10-07 records how
+the surface reads it and converts e_a #1.
+
+The BASIS ruling and the e_a #2 fixture correction in this record are unaffected and stand. This note corrects one
+premise only and is not a supersession. The answer and alternatives fields above are left as written, so the
+record of what was decided at the time stays intact.
