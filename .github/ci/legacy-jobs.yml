@@ -18015,7 +18015,7 @@ jobs:
       # RS Pullback Phase 1 adds synthetic first-seen/PIT input admission here:
       # gate: code makes it a PR check; signal-contract is data-plane only.
       - name: frozen price panel + RS pullback admission, retained observations and temporal conformance
-        run: python -m pytest tests/test_research_price_panel.py tests/test_entry_radar_rs_pullback_phase1.py tests/test_entry_radar_terminal_minute_observations.py -q
+        run: python -m pytest tests/test_research_price_panel.py tests/test_entry_radar_rs_pullback_phase1.py tests/test_entry_radar_rs_pullback_calendar.py tests/test_entry_radar_terminal_minute_observations.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
