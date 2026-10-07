@@ -10505,8 +10505,13 @@ jobs:
         # until a call), so the test stays hermetic. This install line had exactly
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
+      # RV F3 blank-text typing (test_research_vault_blank_text.py): same LocalStore +
+      # seeded-PDF helpers as the backfill suite; its own step so the shared run line
+      # below stays a single-writer edit point for concurrent research-vault PRs.
+      - name: research vault blank-text typing (F3)
+        run: python -m pytest tests/test_research_vault_blank_text.py -q
       - name: research vault ingestion-spine + page unit tests
-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py -q
+        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py -q
 
 
   research-vault-source-lineage:
@@ -18057,8 +18062,32 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       # RS Pullback Phase 1 adds synthetic first-seen/PIT input admission here:
       # gate: code makes it a PR check; signal-contract is data-plane only.
+      # PTSE source-only research contracts are fixture-only: no live source/store
+      # or provider reads and no publication authority. Register every suite here,
+      # alongside the existing frozen/PIT research contracts, in this CODE gate.
       - name: frozen price panel + RS pullback admission, retained observations and temporal conformance
-        run: python -m pytest tests/test_research_price_panel.py tests/test_entry_radar_rs_pullback_phase1.py tests/test_entry_radar_terminal_minute_observations.py -q
+        run: >-
+          python -m pytest
+          tests/test_research_price_panel.py
+          tests/test_entry_radar_rs_pullback_phase1.py
+          tests/test_entry_radar_terminal_minute_observations.py
+          tests/test_ptse_action_context.py
+          tests/test_ptse_baseline.py
+          tests/test_ptse_breadth_observation.py
+          tests/test_ptse_candidate_relation.py
+          tests/test_ptse_contract.py
+          tests/test_ptse_event_observation.py
+          tests/test_ptse_new_entry_context.py
+          tests/test_ptse_options_observation.py
+          tests/test_ptse_owner_observation.py
+          tests/test_ptse_plan_relation.py
+          tests/test_ptse_post_entry_context.py
+          tests/test_ptse_prospective_readiness.py
+          tests/test_ptse_pullback_buy_context.py
+          tests/test_ptse_shadow_enrollment.py
+          tests/test_ptse_shadow_integrity.py
+          tests/test_ptse_shadow_outcome.py
+          tests/test_ptse_w3_publication.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
@@ -20069,3 +20098,49 @@ jobs:
           git diff --exit-code docs/HOUSE_LAW_CI_GUARD_SUITE.md
       - name: house-law registry tests (idempotency + integration)
         run: python -m pytest tests/test_house_law_registry.py -q
+
+  pb-d-event-quality:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/pb_d_cohort.py"
+      - "engine/pb_d_evaluation.py"
+      - "engine/company_intelligence/**"
+      - "engine/earnings_narrative/**"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/identity.py"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/theme_graph_identity_breaks.yml"
+      - "lib/dataos/identity.py"
+      - "contracts/company_intelligence/**"
+      - "contracts/earnings_narrative/**"
+      - "contracts/evidence_foundation/**"
+      - "lib/__init__.py"
+      - "lib/evidence_foundation.py"
+      - "scripts/__init__.py"
+      - "scripts/query_pb_d_event_quality.py"
+      - "tests/test_pb_d_quality.py"
+      - "tests/test_pb_d_cohort.py"
+      - "tests/test_pb_d_evaluation.py"
+      - "tests/test_pb_d_consumer.py"
+      - "tests/fixtures/pb_d/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install PB-D research test dependencies
+        run: pip install pytest numpy==2.3.5 pyyaml jsonschema==4.26.0
+      - name: PB-D quality, cohort, evaluation and executable consumer
+        run: python -m pytest tests/test_pb_d_quality.py tests/test_pb_d_cohort.py tests/test_pb_d_evaluation.py tests/test_pb_d_consumer.py -q
