@@ -24,6 +24,11 @@ from pathlib import Path
 import sys
 from typing import Any, Mapping
 
+# File-path execution must select this checkout before installed or
+# caller-provided modules, even if this root is already later on sys.path.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 from engine.company_intelligence.pb_d_quality import build_quality_receipt
 from engine.pb_d_cohort import freeze_cohort, rematch_omission, verify_manifest
 from engine.pb_d_evaluation import EvaluationContext, FrozenPair, OmissionSensitivity, Outcome, evaluate_pb_d

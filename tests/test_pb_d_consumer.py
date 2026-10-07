@@ -1,7 +1,10 @@
 """Real owner imports and executable PB-D joins over fictional market inputs."""
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
@@ -193,3 +196,24 @@ def test_nonfinite_json_is_refused_before_receipt_generation(tmp_path, capsys):
     source.write_text('{"x": NaN}')
     assert main(["run", "--input", str(source)]) == 2
     assert "nonfinite JSON" in capsys.readouterr().err
+
+
+def test_file_path_cli_pins_its_checkout_before_a_foreign_pythonpath(tmp_path):
+    root = Path(__file__).resolve().parent.parent
+    poison = tmp_path / "foreign-imports"
+    package = poison / "engine"
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text('raise RuntimeError("foreign engine must not load")\n')
+    output = tmp_path / "file-path-report.json"
+    result = subprocess.run(
+        [sys.executable, str(root / "scripts" / "query_pb_d_event_quality.py"),
+         "run", "--input", str(FIXTURE.resolve()), "--output", str(output)],
+        cwd=tmp_path,
+        env={**os.environ, "PYTHONPATH": os.pathsep.join((str(poison), str(root))),
+             "PYTHONDONTWRITEBYTECODE": "1"},
+        capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    report = json.loads(output.read_text())
+    assert report["state"] == "FROZEN_DESIGN_NOT_ENROLLED"
+    assert report["evaluation"]["primary"]["equal_date_mean_increment_pp"] == 4.0
