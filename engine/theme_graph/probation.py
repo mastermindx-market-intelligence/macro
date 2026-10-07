@@ -710,7 +710,11 @@ def read_relation_events(path: Path, *, source_path: Path,
             if row["source_receipt"] != source:
                 raise RelationEventRefusal("relation event curation revision mismatch")
             prior = row["prior_relation"]
-            expected = f"expresses:{prior['src']}->{prior['dst']}@{prior['valid_from']}"
+            if prior["type"] == "PARENT_OF" and row["action"] == "DESTINATION_CHANGE":
+                raise RelationEventRefusal(
+                    "PARENT_OF_DESTINATION_CHANGE_REFUSED: curated hierarchy edges are "
+                    "withdrawn, never re-pointed")
+            expected = f"{prior['type'].lower()}:{prior['src']}->{prior['dst']}@{prior['valid_from']}"
             if prior["edge_id"] != expected:
                 raise RelationEventRefusal("relation identity mismatch")
             datetime.strptime(prior["valid_from"], "%Y-%m-%d")
