@@ -180,14 +180,71 @@ def test_parent_of_two_cycle_breaches(tmp_path, breaks):
     assert any("adjacency" in x for x in bs)
 
 
+def test_parent_of_empty_evidence_refs_breaches(tmp_path, breaks):
+    nodes, edges, ev = _hierarchy_chain_nodes_edges()
+    edges[0]["evidence_refs"] = []
+    root = _write_store(tmp_path / "empty_ev_refs", nodes=nodes, edges=edges, evidence=ev)
+    assert any(
+        "carries no evidence_refs" in x for x in _hierarchy_breaches(root, breaks))
+
+
+def test_parent_of_dangling_evidence_ref_breaches(tmp_path, breaks):
+    nodes, edges, ev = _hierarchy_chain_nodes_edges()
+    good_ref = edges[0]["evidence_refs"][0]
+    edges[0]["evidence_refs"] = [good_ref, "ev:doesnotexist999"]
+    root = _write_store(tmp_path / "dangling_ev", nodes=nodes, edges=edges, evidence=ev)
+    bs = _hierarchy_breaches(root, breaks)
+    assert any("does not resolve" in x for x in bs)
+    assert not any(good_ref in x for x in bs)
+
+
+def test_nodes_without_tier_column_breach(tmp_path, breaks):
+    nodes, edges, ev = _hierarchy_chain_nodes_edges()
+    root = tmp_path / "no_tier_col"
+    root.mkdir(parents=True, exist_ok=True)
+    node_cols = [c for c in store.NODE_COLUMNS if c != "tier"]
+    pd.DataFrame(nodes).reindex(columns=node_cols).to_parquet(
+        root / "nodes.parquet", index=False)
+    pd.DataFrame(edges).reindex(columns=list(store.EDGE_COLUMNS)).to_parquet(
+        root / "edges.parquet", index=False)
+    pd.DataFrame(ev).reindex(columns=list(store.EVIDENCE_COLUMNS)).to_parquet(
+        root / "evidence.parquet", index=False)
+    theme_ids = {n["node_id"] for n in nodes if n.get("kind") == "theme"}
+    bs = _hierarchy_breaches(root, breaks)
+    tier_breaches = [x for x in bs if "requires tier" in x]
+    assert len(tier_breaches) == len(theme_ids)
+    for nid in theme_ids:
+        assert any(nid in x for x in tier_breaches)
+
+
+def test_mastermind_curated_emission_disallowed_breaches(tmp_path, breaks, monkeypatch):
+    monkeypatch.setattr(
+        guard.rights, "emission_allowed", lambda fam: fam != "mastermind_curated")
+    nodes, edges, ev = _hierarchy_chain_nodes_edges()
+    root = _write_store(tmp_path / "emission_off", nodes=nodes, edges=edges, evidence=ev)
+    assert any(
+        "emission_allowed('mastermind_curated') is false" in x
+        for x in _hierarchy_breaches(root, breaks))
+
+
 def test_four_parents_breaches(tmp_path, breaks):
     nodes, edges, ev = _hierarchy_chain_nodes_edges()
-    for i in range(4):
+    for i in range(3):
         cid = f"theme:cat_{i}"
         nodes.append(_theme_node(cid, "macro_category"))
         edges.append(_parent_of(cid, "theme:mid_h", valid_from=f"2024-01-{10+i:02d}"))
     root = _write_store(tmp_path / "four_parents", nodes=nodes, edges=edges, evidence=ev)
-    assert any("open parents" in x for x in _hierarchy_breaches(root, breaks))
+    assert any("has 4 open parents" in x for x in _hierarchy_breaches(root, breaks))
+
+
+def test_three_parents_no_cap_breach(tmp_path, breaks):
+    nodes, edges, ev = _hierarchy_chain_nodes_edges()
+    for i in range(2):
+        cid = f"theme:cat_{i}"
+        nodes.append(_theme_node(cid, "macro_category"))
+        edges.append(_parent_of(cid, "theme:mid_h", valid_from=f"2024-01-{10+i:02d}"))
+    root = _write_store(tmp_path / "three_parents", nodes=nodes, edges=edges, evidence=ev)
+    assert not any("open parents" in x for x in _hierarchy_breaches(root, breaks))
 
 
 def test_parent_of_scrape_source_class_breaches(tmp_path, breaks):

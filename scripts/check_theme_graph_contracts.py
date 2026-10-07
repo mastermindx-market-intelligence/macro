@@ -1209,6 +1209,9 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
                 for ref in refs:
                     sref = evidence_by_id.get(ref)
                     if sref is None:
+                        breaches.append(
+                            f"hierarchy: PARENT_OF edge {eid!r} evidence {ref!r} "
+                            f"does not resolve to an evidence row")
                         continue
                     fam = rights.family_for_source_ref(sref)
                     if fam != "mastermind_curated":
