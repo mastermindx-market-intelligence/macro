@@ -1,88 +1,150 @@
 ---
 key: LANE-KIT-BOUNDED-WORKERS-USE-ADAPTIVE-DEADLINES-AND-NATIVE-CONTEXT
 claim: >
-  The account-local Meta-CEO external-worker kit previously imposed several independent
-  premature limits on bounded subagents: standalone Grok used a fixed 1800 second owned-process
-  timeout, native remote workers used an approximately 200 second child window with a 600 second
-  native-admission maximum, provider leases were fixed at 900 seconds, and Claude-harness MiniMax,
-  GLM, and Go-Claude paths forced CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000. On 2026-10-06 these were
-  repaired without removing the custody/recovery fuse: standalone Grok now defaults to 3600 seconds
-  and admits an explicit 60-7200 second bound; native remote workers default to 3600 seconds and are
-  hard-capped at 7200; non-native remote workers retain the 7200 second default; the special short
-  go-codex profile remains bounded separately; provider lease TTL is derived from the owned child
-  deadline plus settlement headroom; and the forced 200k context ceiling was removed in favor of
-  provider/client native capacity with an explicit caller-supplied context ceiling when needed.
+  The account-local Meta-CEO external-worker kit used several independent premature worker limits:
+  standalone Grok had a fixed 1800 second owned-process timeout, native remote work could be reduced
+  to an approximately 200 second child window with a 600 second native-admission ceiling, provider
+  leases were fixed at 900 seconds, stale callers could still force complex work back to 240-600
+  seconds, Claude-harness MiniMax/GLM/Go-Claude paths had an unconditional 200k context ceiling,
+  and the OpenCode-free wrapper still carried a separate 900 second inner alarm. The live kit now
+  treats deadlines as custody/recovery fuses rather than productivity targets: long bounded work is
+  allowed up to a two-hour hard ceiling, complex/frontier classifications receive runtime floors,
+  provider leases cover the owned child plus settlement headroom, slot-owned provider sessions are
+  reconciled through the canonical process-census owner, qualified large-context Claude-Code-backed
+  workers use their qualified window with late native client compaction, and no second fabric
+  transcript/memory plane is introduced.
 falsifier: >
-  `K=~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08; grep -nE 'timeout=1800|REMOTE_SUB_MAX_SECS:-210.*NATIVE|assert 1 <= timeout <= 600|CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000' "$K"/ext/sub.sh "$K"/ext/remote_sub.sh "$K"/ext/native_remote.py`
-  returning an active regression, or the installed pool-controller dry-run with
-  `REMOTE_SUB_MAX_SECS=7200` no longer deriving a provider lease TTL near the owned-worker deadline,
-  falsifies this record.
+  `K=~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08; grep -nE 'timeout=1800|REMOTE_SUB_MAX_SECS:-210.*NATIVE|assert 1 <= timeout <= 600|CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000|OC_FREE_TIMEOUT:-900' "$K"/ext/sub.sh "$K"/ext/remote_sub.sh "$K"/ext/native_remote.py "$K"/ext/oc_free_exec.sh`
+  returning an active regression, a C2/C3 remote request being reduced below its reviewed floor, a
+  slot timeout leaving a descendant process alive, or a 7200-second remote dry-run no longer deriving
+  a provider lease TTL near the owned-worker deadline falsifies this record.
 so_what: >
-  A subagent timeout is a fabric safety/custody boundary, not evidence that the model cannot do long
-  work. Long but bounded commissions can now receive useful runtime while preserving exact-process
-  cleanup, one-carrier reconciliation, and a hard upper fuse. The fabric deliberately does not add a
-  second transcript-compaction or memory plane for fresh bounded workers: large-context inexpensive
-  models may retain task-local evidence up to their provider/client capacity, while packets remain
-  bounded and unrelated cross-job history is not retained merely because a large context window exists.
+  A timed-out worker is not evidence that the model was incapable of the task. Long but bounded
+  commissions can now finish without old controller ceilings silently killing useful work, while
+  hung CLIs still cannot retain scarce slots indefinitely. Context-window size is separated from
+  task scope: inexpensive large-context workers may retain relevant evidence for their current
+  bounded commission, but unrelated cross-job history is not injected or preserved merely because
+  the model supports a large window.
 kind: runtime
-verified_at: 2026-10-06
+verified_at: 2026-10-07
 verified_by: >
-  Sol implementation on m2studio against the installed ~/.local/bin/pool carrier and account-local
-  kit. Protected Mastermind procedure pin a6d40ff648671b03bd4d829d84dd066b58ea8c3f. Post-change
-  SHA-256: ext/sub.sh 2ca8cb8515a99ee43cbb528519b2d0705b530c9f849e983466ed5b556f4cf36e;
-  ext/remote_sub.sh 8fc4c8a4e2aa2832157d5eaee019e97ae0255475501dfba5f1f03173ca1187d2;
-  ext/native_remote.py 59b9faac90ea2b96886e819b9d75396b26546827ec1d2c2971739c5a2ccb0d6c;
-  ext/lane2.py 568617902bba8b6e410b2974a236c95501c4a50c2dc5ae517ce6ab0f470bd921.
-  Syntax/compile plus targeted regression verification passed 117 tests and 7 subtests. Installed
-  pool-wrapper dry-run canaries derived provider TTL 3890 for the 3600-second native default and
-  7490 for REMOTE_SUB_MAX_SECS=7200, without acquiring a real provider lease.
+  Sol red-team continuation on m2studio against the installed ~/.local/bin/pool carrier and
+  account-local kit. Protected Mastermind procedure pin
+  1fc040f7343dde73fec3556dd3bf9bc8c1b18129, Skillpack v1.0.1. Current live SHA-256:
+  ext/sub.sh ea56fe81c19527450717a2f17f4ad29f35b58bef07dfaa4906b8d23b87868005;
+  ext/remote_sub.sh d3d909877c03e79d53d5d25852c11221e3580dde0381a160050c9afc7e02c30a;
+  ext/native_remote.py 3821d9d11684e97622103416ffd88f6f9955df3121389183af8eb6f5ac931e36;
+  ext/remote_sub_exec.py e3d583218f16995315005469d0f4aa11f0221eec2d30823f7e4f3360dada917d;
+  ext/lane_runtime.py 0a49c645d72824a57d6c1b68304abc13c410513cc45a2968a599d2aba1cf9796;
+  ext/lane2.py f41ecae0fb0c797f28a953a679f2218b764e342c8041dfcef734e98be6fb9412;
+  ext/slot.py 37b334366d90e22076add744714488b1b86f51185d5d34d43dfd16131c7d53f4;
+  ext/oc_free_exec.sh 0024fbfaf2ce4b9d80e029e219ac43c791f3d80b5bcd10a5526c4a3c99ec6a21.
+  The last directly observed focused runtime/context/remote regression run before the final static-only
+  OpenCode-free edit passed 121 tests plus 7 subtests; earlier installed-pool dry-runs proved adaptive
+  lease TTLs of 3890 seconds at the native 3600-second default and 7490 seconds at the 7200-second max.
 scope: [macro, fleet-lane-hosts, meta-ceo-kit, executive-capacity-fabric]
-confidence: verified
+confidence: partial
 ---
 
-## Detail
+## Current implementation
 
 The executable kit is account-local at
 `~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08`;
 it is not tracked in this repository. This discovery is the durable Agent OS continuity/evidence
-record for the live implementation and does not itself arm, route, schedule, compact, or grant a
+record for the live implementation. It does not itself arm, route, schedule, compact, or grant a
 worker.
 
-### Runtime policy after the repair
+### Runtime and lease policy
 
-- Standalone local Grok: default 3600 seconds. `POOL_CHILD_TIMEOUT_SECONDS` may set 60-7200.
-- Native remote modes other than the special go-codex profile: default 3600 seconds, maximum 7200.
-- Non-native remote modes: existing 7200 second default retained.
-- go-codex: its deliberately short profile and child ceiling remain intact.
-- Provider lease TTL: `child_timeout + 300` seconds, bounded to 900-7500, so lease custody covers
-  the worker and settlement/reconciliation headroom.
-- Native admission accepts a matching deadline up to 7200 seconds. Timeout still follows the
-  existing owned-process process-group cleanup and typed receipt path; a timeout is never evidence
-  that a modifying effect did not occur.
+- Standalone local Grok defaults to 3600 seconds and admits an explicit
+  `POOL_CHILD_TIMEOUT_SECONDS` from 60 through 7200.
+- Native remote work defaults to 3600 seconds; non-native remote work retains a 7200-second default.
+  The universal normal remote hard ceiling is 7200 seconds.
+- `C2_COMPLEX_BOUNDED` receives a 3600-second floor and `C3_FRONTIER_JUDGMENT` a 7200-second
+  floor. Legacy unclassified non-go-codex callers also receive a 3600-second floor, preventing old
+  300/600-second launch overrides from silently truncating real worker labor. C0/C1 may still choose
+  short bounded probes deliberately.
+- The special go-codex profile remains intentionally short and separately bounded; this repair does
+  not silently widen that different product contract.
+- Provider lease TTL is derived as owned-child timeout plus 300 seconds of settlement/reconciliation
+  headroom, bounded to 900-7500 seconds. Native admission verifies that the held lease covers the
+  requested worker window plus settlement margin.
+- Lane2 validates fix/review deadlines before creating lane state: fix defaults to 3600, review to
+  2400, both accept 60-7200, and their C2/C3 task classifications apply the same floors.
 
-### Context policy after the repair
+Historical lane evidence is why the floors exist rather than merely changing defaults. On 2026-10-06
+multiple useful GLM workers ended `rc=124 signal=timeout reason=owned_child_timeout` under stale
+300-600 second outer budgets, including `rs_20261006T121443Z_48029`,
+`rs_20261006T205642Z_47176`, `rs_20261006T211612Z_90859`, and
+`rs_20261006T212744Z_18957`. A C2 GLM-5.3 review was also observed under a 240-second outer budget.
+The repaired policy therefore protects classified long work from stale callers while retaining a
+hard upper fuse.
 
-The fabric does **not** implement its own automatic transcript compactor. Workers are commissioned
-with fresh, bounded task-local contexts. Within a commission, active MiniMax/GLM/Go-Claude launch
-paths no longer impose the old unconditional 200k ceiling. `POOL_MAX_CONTEXT_TOKENS` can explicitly
-bound Claude-harness workers for a particular commission, and lane2 also accepts
-`LANE_MAX_CONTEXT_TOKENS`.
+### Slot/process red-team result
 
-This is intentional: context-window size and task scope are separate controls. A large model context
-can preserve relevant task evidence during a difficult bounded job, but it is not a reason to inject
-unrelated prior jobs or keep a worker alive indefinitely. If a future persistent/multi-phase worker
-requires semantic context reduction, that should reuse the canonical checkpoint/continuation owners
-and be justified by observed context pressure rather than introducing a parallel memory/session plane.
+A first attempt at slot-level wall-clock enforcement exposed an orphan hazard: terminating only the
+direct wrapper PID could leave a background grandchild alive. The current slot implementation no
+longer owns ad-hoc descendant cleanup. It creates the provider wrapper as an exact process session and
+delegates timeout, lease-loss, parent-signal, and normal-exit reconciliation to
+`lane_runtime.settle_owned_process_session`, which reuses the incumbent verified process-census /
+termination owner.
+
+Hermetic tests prove timeout returns rc=124 with the descendant gone and prove a wrapper that exits 7
+cannot leave a background descendant behind. An additional parent-SIGTERM regression was added after
+the last executable regression pack; because the subsequent local validation call was refused by the
+tool surface before dispatch, that newest test remains source-present but not execution-proven in this
+record. No retry or alternate carrier was used to evade that refusal.
+
+### Context and compaction policy
+
+The fabric does not create a second transcript or memory authority. Workers receive fresh bounded
+task-local packets. For qualified Claude-Code-backed MiniMax M3 and GLM 5.3 workers the current kit
+sets a 1,000,000-token context window and lets the existing Claude Code client compact late, defaulting
+its native auto-compact window to 900,000 tokens. MiniMax M3 / GLM Flash get a larger default
+Claude-worker turn fuse of 240; the general Claude-backed default is 120 and the explicit hard maximum
+is 400.
+
+`POOL_MAX_CONTEXT_TOKENS`, `POOL_AUTO_COMPACT_WINDOW_TOKENS`, and `POOL_MAX_TURNS` may tighten
+one commission; lane-local equivalents exist where applicable. Context overrides above the currently
+qualified 1M window fail closed. A compaction override must be within 100K-1M and cannot exceed its
+known context window. The remote launcher forwards these controls. MiniMax lane settings are applied
+to a copied child environment rather than mutating the long-lived lane driver, preventing provider
+context/auth settings from leaking into a later reviewer.
+
+The installed Claude Code 2.1.287 binary recognizes both `CLAUDE_CODE_MAX_CONTEXT_TOKENS` and
+`CLAUDE_CODE_AUTO_COMPACT_WINDOW`; this policy therefore uses the provider client's existing
+compaction facility rather than adding a fabric transcript store or summarization lifecycle.
+
+### Additional stale inner ceiling found
+
+The OpenCode-free wrapper still had `OC_FREE_TIMEOUT:-900`, which could terminate a useful worker
+after 15 minutes even though slot custody allowed substantially longer bounded work. The live source
+now defaults that inner call fuse to 3600 seconds, defaults C3 frontier work to 7200 seconds, and
+accepts only explicit integer values from 60 through 7200 before slot admission. Source tests for the
+legacy-default removal and invalid-value refusal are present.
+
+This last OpenCode-free change is deliberately recorded as **BUILT_NOT_PROVEN by executable
+post-edit test**: the bounded local validation call was explicitly blocked by the tool surface before
+dispatch. Static source readback and hashes are current, but this record does not manufacture an
+execution receipt or retry through another carrier. The already-proven core timeout, lease,
+process-cleanup and context changes remain independently valid.
 
 ### Verification boundary
 
-The changed-path regression set is green: 117 tests plus 7 subtests, in addition to shell syntax and
-Python compile checks. A wider account-local kit run completed 1467 passes with 33 failures in
-unrelated/current-fixture-policy areas; it is therefore not claimed as globally green. One
-remote_sub_exec timeout test was red under the loaded broad run but green in the targeted regression
-set, consistent with host-load sensitivity already covered by the owned-process cleanup tests.
+Directly observed green evidence before that final static-only edit:
 
-No paid provider canary was used for this policy change because current host admission did not expose
-an automatically eligible Grok remote target. The installed `pool` wrapper was nevertheless exercised
-through its real controller in `--dry-run` mode, proving the live timeout-to-lease calculations without
-creating a provider effect.
+- Python compile plus the focused runtime/context/native-lease pack:
+  **121 passed, 7 subtests passed** (only unrelated pytest temp-cleanup warnings).
+- Earlier timeout/context/native regression:
+  **117 passed, 7 subtests passed**.
+- Installed `pool` dry-run lease calculations:
+  **3890** seconds at the native 3600-second default and **7490** at the 7200-second maximum,
+  without acquiring a real provider lease.
+
+A wider legacy kit run previously reached 1467 passes with 33 failures in other fixture/policy areas;
+it is not evidence that the entire kit is globally green.
+
+The exact next verification action is to execute the newest parent-SIGTERM and OpenCode-free timeout
+tests on the original m2studio carrier once that tool surface permits the already-defined bounded
+validation. Until then the truthful overall state is partial hardening: the core repair is verified,
+the final OpenCode-free removal is source-installed but not executable-post-edit-proven.
