@@ -1189,6 +1189,19 @@ def test_wc8_ancestors_point_in_time():
     assert "ancestors" not in to_json(before_effective)["themes"][0]
     assert "ancestors" not in to_json(before_belief)["themes"][0]
     assert "ancestors" in to_json(current)["themes"][0]
+    effective_only_store = _wc8_theme_fixture(
+        parent_valid_from="2026-03-01", parent_belief="2026-01-01",
+    )
+    before_effective_one_clock = _compose(
+        effective_only_store, _spec(["theme:t"]), asof="2026-02-01",
+        hierarchy_reader=hierarchy_paths,
+    )
+    after_effective_one_clock = _compose(
+        effective_only_store, _spec(["theme:t"]), asof="2026-06-01",
+        hierarchy_reader=hierarchy_paths,
+    )
+    assert "ancestors" not in to_json(before_effective_one_clock)["themes"][0]
+    assert "ancestors" in to_json(after_effective_one_clock)["themes"][0]
 
 
 def test_wc8_refused_hierarchy_is_fail_soft():
@@ -1212,6 +1225,92 @@ def test_wc8_refused_hierarchy_is_fail_soft():
     assert refusal["detail"].startswith("hierarchy_paths: refused PARENT_OF")
     assert _without_abstentions(refused) == _without_abstentions(baseline)
     jsonschema.validate(refused, _schema())
+
+
+def test_wc8_hierarchy_edges_never_change_existing_rows():
+    asof = "2026-06-01"
+    base_nodes = [
+        _hierarchy_node("theme:gold", "theme"),
+        _hierarchy_node("theme:lonely", "theme"),
+    ]
+    base_edges = [
+        edge("g1", "MEMBER_OF", "co:us:A", "theme:gold"),
+        edge("g2", "MEMBER_OF", "co:us:B", "theme:gold"),
+    ]
+    category = _hierarchy_node("theme:test_cat_f0", "macro_category")
+    micro = _hierarchy_node("theme:test_micro_f0", "micro_theme")
+    p1 = _parent_of("theme:test_cat_f0", "theme:lonely")
+    p2 = _parent_of("theme:lonely", "theme:test_micro_f0")
+    p3 = _parent_of("theme:test_cat_f0", "theme:gold", belief_time="2026-07-01")
+    p4 = dict(
+        _parent_of("theme:test_cat_f0", "theme:lonely"),
+        edge_id="p4",
+        belief_time=None,
+    )
+    spec = _spec(["theme:gold", "theme:lonely"])
+
+    def base_store():
+        return HierarchyStore(base_nodes, base_edges)
+
+    def overlay_store(edges):
+        return HierarchyStore(base_nodes + [category, micro], edges)
+
+    for knowledge_cutoff in (None, "2026-05-01"):
+        kwargs = {} if knowledge_cutoff is None else {"knowledge_cutoff": knowledge_cutoff}
+        baseline = json.dumps(
+            to_json(_compose(base_store(), spec, asof=asof, **kwargs)),
+            sort_keys=True,
+        )
+        overlay = json.dumps(
+            to_json(
+                _compose(
+                    overlay_store(base_edges + [p1, p2, p3, p4]),
+                    spec, asof=asof, **kwargs,
+                )
+            ),
+            sort_keys=True,
+        )
+        assert overlay == baseline
+        overlay_rows = json.loads(overlay)["themes"]
+        by_id = {row["theme_node_id"]: row for row in overlay_rows}
+        assert by_id["theme:lonely"]["state"] == "NO_THEME_EDGES"
+        assert not any(
+            abstention["code"] in {
+                "BELIEF_AFTER_ASOF",
+                "BELIEF_AFTER_KNOWLEDGE_CUTOFF",
+                "BELIEF_TIME_UNKNOWN",
+                "EDGE_ID_MISSING",
+            }
+            for row in overlay_rows
+            for abstention in row["abstentions"]
+        )
+
+    reader_base = to_json(
+        _compose(base_store(), spec, hierarchy_reader=hierarchy_paths)
+    )
+    reader_overlay = to_json(
+        _compose(
+            overlay_store(base_edges + [p1, p2]),
+            spec,
+            hierarchy_reader=hierarchy_paths,
+        )
+    )
+    base_by_id = {row["theme_node_id"]: row for row in reader_base["themes"]}
+    overlay_by_id = {row["theme_node_id"]: row for row in reader_overlay["themes"]}
+    for theme_id, row in overlay_by_id.items():
+        expected = dict(base_by_id[theme_id])
+        expected.pop("ancestors", None)
+        assert {key: value for key, value in row.items() if key != "ancestors"} == expected
+    assert overlay_by_id["theme:lonely"]["state"] == "NO_THEME_EDGES"
+    assert overlay_by_id["theme:lonely"]["ancestors"] == [{
+        "chain": [{
+            "node_id": "theme:test_cat_f0",
+            "tier": "macro_category",
+            "name": {"en": category["name_en"], "zh": None},
+            "rights_family": family_for_source_ref("config/theme_crosswalk.yml"),
+        }],
+        "parent_of_edge_ids": [p1["edge_id"]],
+    }]
 
 
 def test_wc8_ineligible_rows_never_call_reader():

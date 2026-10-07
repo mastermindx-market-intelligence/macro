@@ -42,6 +42,8 @@ AUTHORITY_CEILING = "research_display_only"
 _EDGE_READER = "engine.theme_graph.store.read_edges(latest_belief=False)"
 _IDENTITY_READER = "engine.theme_graph.store.read_identity_resolution(latest=True)"
 _CHAIN_READER = "engine.transmission_chains.load_chains()"
+# Hierarchy edges are navigation-only (W-C8 F0): they never make a theme have edges, never enter the walk, and never attach clock abstentions to exposure rows; the injected hierarchy_reader is their only consumer.
+_HIERARCHY_EDGE_TYPES = frozenset({"PARENT_OF"})
 _BELIEF_COLLAPSE = (
     "max belief_time <= knowledge_cutoff per edge_id "
     "(null belief_time never eligible); ties on computed_at then src then dst; "
@@ -1062,8 +1064,9 @@ def compose_exposure_map(
             provenance=provenance,
         )
 
+    walk_edges = [row for row in raw_edges if str(row.get("type") or "") not in _HIERARCHY_EDGE_TYPES]
     edges_by_id, clock_abstentions = _collapse_and_filter_edges(
-        raw_edges, asof_date,
+        walk_edges, asof_date,
         None if knowledge_cutoff is None else knowledge_cutoff_date,
     )
     member_of_by_dst = _index_by_dst(edges_by_id, "MEMBER_OF")

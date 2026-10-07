@@ -25,3 +25,7 @@ MO-DELTA-004 remains PARTIAL. The F00C ledger CSV is not edited because F04 clos
 ## Known limitation
 
 The default store view exposes no node-lifecycle reader, so node visibility relies on `computed_at` and `birth_date` plus the belief time of each `PARENT_OF` edge. Callers with lifecycle rows can supply a snapshot-capable store view, but F04 itself does not add that reader.
+
+## F0 — hierarchy edges excluded from the walk
+
+`PARENT_OF` rows are dropped from the exposure walk before edge collapse. They cannot make a theme count as having edges, change a row state, or attach a clock abstention. The injected hierarchy reader still receives every hierarchy row. A production hierarchy must leave every existing exposure_map output byte-identical; the regression test proves that boundary.
