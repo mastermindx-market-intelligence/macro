@@ -1525,6 +1525,13 @@ def build_compare_payload(
         "minimum_sessions": int(min_obs),
         "max_names": int(max_names),
         "source_stale_days": None,
+        "history_basis": {
+            "kind": "same_source_as_current_session",
+            "detail": (
+                "percentiles and trails use only observations from the current "
+                "session's source; cross-source history is excluded"
+            ),
+        },
         "selection": {
             "kind": "macro_bellwethers_then_selected_expiry_coverage",
             "detail": (
@@ -1607,8 +1614,17 @@ def build_compare_payload(
                 "spot": _compare_finite(rec.get("spot")),
                 "tenor_days": _compare_finite(rec.get("tenor_days")),
                 "n_strikes": _compare_int(rec.get("n_strikes")),
-                "source": str(rec.get("source") or "").strip() or None,
+                "source": _source_of(rec.get("source")),
             })
+        if not observations or observations[-1]["date"] != as_of:
+            continue
+        # Do not percentile-rank across the historical Polygon→ThetaData source
+        # boundary. The parity audit found material methodology disagreement;
+        # apples-to-apples history is the current session's source only.
+        current_source = observations[-1]["source"]
+        observations = [
+            row for row in observations if row["source"] == current_source
+        ]
         if len(observations) < min_obs or observations[-1]["date"] != as_of:
             continue
 
