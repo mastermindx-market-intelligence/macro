@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.confluence_sequence.v1",
   "artifact_id": "confluence-sequence",
-  "asof": "2026-10-06",
+  "asof": "2026-10-07",
   "tier": "display",
   "is_context_only": true,
   "display_only": true,
@@ -507,10 +507,10 @@
       "direction": 1,
       "horizon": "5.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-06-22",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-09-25",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -1783,10 +1783,10 @@
       "direction": 1,
       "horizon": "21.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-07-04",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -2236,8 +2236,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-09-26",
-      "n_sessions_in_tape": 25,
+      "last_as_of": "2026-09-28",
+      "n_sessions_in_tape": 26,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -2721,7 +2721,7 @@
       "strength_slope": 0.0,
       "state": "gone",
       "last_as_of": "2026-09-11",
-      "n_sessions_in_tape": 11,
+      "n_sessions_in_tape": 12,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -3072,8 +3072,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-07-20",
-      "n_sessions_in_tape": 2,
+      "last_as_of": "2026-09-25",
+      "n_sessions_in_tape": 3,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -3579,7 +3579,7 @@
       "strength_slope": 0.0,
       "state": "gone",
       "last_as_of": "2026-09-30",
-      "n_sessions_in_tape": 20,
+      "n_sessions_in_tape": 21,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -4007,8 +4007,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-26",
-      "n_sessions_in_tape": 11,
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 12,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -5239,8 +5239,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-24",
-      "n_sessions_in_tape": 2,
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 3,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -7756,10 +7756,10 @@
       "direction": 1,
       "horizon": "5.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-26",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-09-25",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -7923,8 +7923,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-31",
-      "n_sessions_in_tape": 3,
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 4,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -7956,8 +7956,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-09-26",
-      "n_sessions_in_tape": 4,
+      "last_as_of": "2026-09-28",
+      "n_sessions_in_tape": 5,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -8162,6 +8162,17 @@
       "subject": "CMG",
       "direction": 1,
       "horizon": "5.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
+      "subject": "CMG",
+      "direction": 1,
+      "horizon": "21.0",
       "persistence_streak": 0,
       "strength_slope": null,
       "state": "gone",
@@ -8632,6 +8643,17 @@
       "n_independent_confirming_latest": 2.0
     },
     {
+      "subject": "CAT",
+      "direction": 1,
+      "horizon": "5.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-09-25",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
       "subject": "HLT",
       "direction": 1,
       "horizon": "63.0",
@@ -8660,16 +8682,16 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-10-05",
-      "n_sessions_in_tape": 30
+      "last_as_of": "2026-10-06",
+      "n_sessions_in_tape": 31
     },
     {
       "pair_id": "briefing-divergences",
-      "persistence_streak": 5,
+      "persistence_streak": 6,
       "strength_slope": 0.0,
       "state": "stable",
-      "last_as_of": "2026-10-06",
-      "n_sessions_in_tape": 59
+      "last_as_of": "2026-10-07",
+      "n_sessions_in_tape": 60
     },
     {
       "pair_id": "regime_vector-vs-risk_radar",
@@ -8704,9 +8726,9 @@
       "n_sessions_in_tape": 3
     }
   ],
-  "n_tape_rows": 2215,
+  "n_tape_rows": 2230,
   "gaps": [],
   "produced_by": "engine/neuralweb/confluence_sequence.py",
-  "produced_at": "2026-10-06T14:15:36Z",
+  "produced_at": "2026-10-07T09:54:37Z",
   "authority_check": []
 }

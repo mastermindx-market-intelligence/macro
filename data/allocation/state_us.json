@@ -3,6 +3,7 @@
   "crash": false,
   "eligible": [
     "ai_infra",
+    "ai_neoclouds",
     "ai_semiconductors",
     "ai_software",
     "big_pharma",
@@ -25,9 +26,9 @@
   ],
   "held": [
     "ai_infra",
-    "memory_storage",
     "cybersecurity",
-    "energy_complex"
+    "semicap_equipment",
+    "non_ai_tech"
   ],
   "leader": "ai_infra",
   "names": {
