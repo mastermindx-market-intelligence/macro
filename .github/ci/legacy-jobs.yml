@@ -13372,6 +13372,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_lifecycle.py -q
       - name: theme graph — crosswalk v3 additive integrity
         run: TZ=UTC python -m pytest tests/test_theme_graph_crosswalk.py -q
+      - name: theme graph — hierarchy producer (curated PARENT_OF from the crosswalk)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy.py -q
       - name: theme graph — V4-D2A identity-resolution bridge (hostile fixtures, two-clock law, reproducibility)
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity_resolution.py -q
       - name: theme graph — W3A local-theme plane (hostile tests D-M, capability sidecar, rights gate)
@@ -13399,6 +13401,8 @@ jobs:
       # rest of this job; nothing in the suite is clock-dependent by construction.
       - name: theme exposure probe — beta/causal shift, share denominator, coverage floor, era
         run: TZ=UTC python -m pytest tests/test_theme_exposure_probe.py -q
+      - name: theme graph — W-C6 hierarchy_paths read-time composition (as-of, rights receipts, vendor-parent refusal)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_paths.py -q
       # The guard on the COMMITTED store, not only on its fixtures: --selftest proves it
       # can still see each incident, --strict proves the store shipped in this repo
       # satisfies the contract. A guard that only ever runs against its own fixtures is

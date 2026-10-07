@@ -920,3 +920,422 @@ def test_t14_ast_forbids_network_and_app_imports():
     for node in ast.walk(tree):
         if isinstance(node, ast.Attribute) and node.attr == "environ":
             raise AssertionError("os.environ must not appear")
+
+
+import engine.research_vault.read_service as read_service_module
+from engine.research_vault import read_port
+
+
+def _find_evidence(tmp_path, text, query):
+    published = (NOW - timedelta(hours=1)).isoformat()
+    items = [_item("alpha-report", "Alpha Note", published)]
+    record = _extracted("alpha-report", text=text)
+    svc, *_ = _service(
+        tmp_path,
+        items=items,
+        extracted={"alpha-report": record},
+        digest=PDF_SHA,
+        preview=["alpha-report"],
+    )
+    result = svc.find_evidence(
+        caller_context=_ctx(),
+        report_id="alpha-report",
+        query=query,
+        max_passages=3,
+    )
+    return result, record
+
+
+def _install_passage_hits(monkeypatch, hits):
+    def fake(document, query, *, limit=3, window_chars=900):
+        return {"status": "matched", "passages": list(hits)}
+
+    monkeypatch.setattr(
+        read_service_module.corpus_mod, "find_evidence_passages", fake
+    )
+
+
+def test_find_evidence_passages_carry_absolute_char_match_locator(tmp_path):
+    text = CANONICAL + "\n" + ("研究" * 400) + " tail hyperscaler-tail-sentinel zeta"
+    query = "zeta"
+    result, record = _find_evidence(tmp_path, text, query)
+    assert result["ok"] is True
+    assert len(result["passages"]) == 1
+    passage = result["passages"][0]
+    assert query in passage["match_text"].casefold()
+    assert passage["start_char"] > 800
+    assert passage["start_char"] != passage["start_byte"]
+    assert text[passage["start_char"]:passage["end_char"]] == passage["text"]
+    assert text[passage["match_start_char"]:passage["match_end_char"]] == passage["match_text"]
+    direct = corpus_mod.find_evidence_passages(
+        {
+            "body": text,
+            "char_count": len(text),
+            "content_sha256": record["extracted_text_sha256"],
+            "text_layer": record["text_layer_state"],
+            "pages": record["page_count"],
+        },
+        query,
+        limit=3,
+    )
+    hit = direct["passages"][0]
+    assert passage["start_char"] == hit["locator"]["start_char"]
+    assert passage["end_char"] == hit["locator"]["end_char"]
+    assert passage["match_start_char"] == hit["locator"]["match_start_char"]
+    assert passage["match_end_char"] == hit["locator"]["match_end_char"]
+    assert passage["match_text"] == hit["match_text"]
+    assert passage["matched_terms"] == hit["matched_terms"]
+    assert record["text_layer_state"] == "full"
+
+
+def test_build_passages_bounds_matched_terms_from_port_constants(tmp_path, monkeypatch):
+    text = "prefix MATCH suffix"
+    cap = read_port.EVIDENCE_MATCHED_TERM_MAX_CHARS
+    over_cap = "H" * 121
+    at_cap = "W" * cap
+    terms = [over_cap, at_cap] + [f"term{i:02d}" for i in range(18)]
+    assert len(terms) == 20
+    assert len(over_cap) == 121
+    match_start = text.index("MATCH")
+    match_end = match_start + len("MATCH")
+    hit = {
+        "text": text,
+        "match_text": text[match_start:match_end],
+        "matched_terms": terms,
+        "locator": {
+            "kind": "text_span",
+            "start_char": 0,
+            "end_char": len(text),
+            "match_start_char": match_start,
+            "match_end_char": match_end,
+        },
+    }
+    _install_passage_hits(monkeypatch, [hit])
+    result, _record = _find_evidence(tmp_path, text, "MATCH")
+    assert len(result["passages"]) == 1
+    matched = result["passages"][0]["matched_terms"]
+    assert len(matched) == read_port.EVIDENCE_MATCHED_TERMS_MAX
+    assert all(len(term) <= cap for term in matched)
+    assert matched[0] == over_cap[:cap]
+    assert matched[1] == at_cap
+    assert len(matched[1]) == cap
+
+
+def test_build_passages_legacy_hit_without_match_fields_has_no_match_block(tmp_path, monkeypatch):
+    text = "prefix MATCH suffix"
+    hit = {
+        "text": text,
+        "locator": {"kind": "text_span", "start_char": 0, "end_char": len(text)},
+    }
+    _install_passage_hits(monkeypatch, [hit])
+    result, _record = _find_evidence(tmp_path, text, "MATCH")
+    assert len(result["passages"]) == 1
+    passage = result["passages"][0]
+    for key in read_port.EVIDENCE_MATCH_FIELDS:
+        assert key not in passage
+
+
+def test_build_passages_partial_match_hit_is_dropped_fail_closed(tmp_path, monkeypatch):
+    text = "alpha MATCH omega\nbeta OTHER zeta"
+    split = text.index("\n")
+    a_start, a_end = 0, split
+    b_start, b_end = split + 1, len(text)
+    a_match = text.index("MATCH")
+    b_match = text.index("OTHER")
+    hit_a = {
+        "text": text[a_start:a_end],
+        "match_text": text[a_match:a_match + len("MATCH")],
+        "matched_terms": ["match"],
+        "locator": {
+            "kind": "text_span",
+            "start_char": a_start,
+            "end_char": a_end,
+            "match_start_char": a_match,
+            "match_end_char": a_match + len("MATCH"),
+        },
+    }
+    hit_b = {
+        "text": text[b_start:b_end],
+        "matched_terms": ["other"],
+        "locator": {
+            "kind": "text_span",
+            "start_char": b_start,
+            "end_char": b_end,
+            "match_start_char": b_match,
+            "match_end_char": b_match + len("OTHER"),
+        },
+    }
+    _install_passage_hits(monkeypatch, [hit_a, hit_b])
+    result, _record = _find_evidence(tmp_path, text, "MATCH")
+    assert len(result["passages"]) == 1
+    assert result["passages"][0]["start_char"] == a_start
+
+
+_SCOPE_KEYS = ("searched_char_count", "text_layer_state", "page_count")
+
+
+def _assert_no_search_scope(result):
+    assert result["ok"] is True
+    for key in _SCOPE_KEYS:
+        assert key not in result
+
+
+def _corpus_document(record):
+    text = record["text"]
+    return {
+        "body": text,
+        "char_count": len(text),
+        "content_sha256": record["extracted_text_sha256"],
+        "text_layer": record["text_layer_state"],
+        "pages": record["page_count"],
+    }
+
+
+def _assert_copied_search_scope(result, record, query):
+    direct = corpus_mod.find_evidence_passages(
+        _corpus_document(record),
+        query,
+        limit=3,
+    )
+    binding = direct["source_binding"]
+    assert result["coverage_state"] == "FULL_TEXT"
+    assert result["searched_char_count"] == len(record["text"])
+    assert result["searched_char_count"] == binding["stored_char_count"]
+    assert result["text_layer_state"] == record["text_layer_state"]
+    assert result["text_layer_state"] == binding["text_layer"]
+    assert result["page_count"] == record["page_count"]
+    assert result["page_count"] == binding["page_count"]
+    assert list(result)[-4:] == [
+        "passages",
+        "searched_char_count",
+        "text_layer_state",
+        "page_count",
+    ]
+
+
+def test_find_evidence_not_found_carries_search_scope(tmp_path):
+    text = "alpha beta gamma"
+    query = "zzznomatchtoken"
+    result, record = _find_evidence(tmp_path, text, query)
+    assert result["evidence_state"] == "NOT_FOUND"
+    assert result["passages"] == []
+    _assert_copied_search_scope(result, record, query)
+
+
+def test_find_evidence_found_carries_search_scope(tmp_path):
+    query = "hyperscaler"
+    result, record = _find_evidence(tmp_path, CANONICAL, query)
+    assert result["evidence_state"] == "FOUND"
+    assert result["passages"]
+    _assert_copied_search_scope(result, record, query)
+
+
+def test_find_evidence_keeps_search_scope_when_passages_dropped(tmp_path, monkeypatch):
+    text = "M" * 25_000
+    binding = {
+        "stored_char_count": len(text),
+        "text_layer": "full",
+        "page_count": 1,
+    }
+
+    def fake(document, query, *, limit=3, window_chars=900):
+        return {
+            "status": "matched",
+            "passages": [
+                {
+                    "text": text,
+                    "match_text": "MM",
+                    "matched_terms": ["mm"],
+                    "locator": {
+                        "kind": "text_span",
+                        "start_char": 0,
+                        "end_char": len(text),
+                        "match_start_char": 0,
+                        "match_end_char": 2,
+                    },
+                }
+            ],
+            "source_binding": binding,
+        }
+
+    monkeypatch.setattr(
+        read_service_module.corpus_mod, "find_evidence_passages", fake
+    )
+    result, _record = _find_evidence(tmp_path, text, "MM")
+    assert result["passages"] == []
+    assert result["evidence_state"] == "NOT_FOUND"
+    assert "FULL_TEXT_PARTIAL" in result["source"]["known_degradation"]
+    assert result["searched_char_count"] == binding["stored_char_count"]
+    assert result["text_layer_state"] == binding["text_layer"]
+    assert result["page_count"] == binding["page_count"]
+
+
+def test_find_evidence_unavailable_omits_search_scope(tmp_path, monkeypatch):
+    published = (NOW - timedelta(hours=1)).isoformat()
+    items = [_item("alpha-report", "Alpha Note", published)]
+
+    catalog_gone, *_ = _service(
+        tmp_path / "catalog-gone",
+        items=items,
+        generated_at=NOW + timedelta(hours=1),
+        extracted={"alpha-report": _extracted("alpha-report")},
+        digest=PDF_SHA,
+        preview=["alpha-report"],
+    )
+    missing_catalog = catalog_gone.find_evidence(
+        caller_context=_ctx(),
+        report_id="alpha-report",
+        query="hyperscaler",
+        max_passages=3,
+    )
+    assert missing_catalog["evidence_state"] == "UNAVAILABLE"
+    _assert_no_search_scope(missing_catalog)
+
+    no_text = _extracted("alpha-report", text="", layer="none")
+    no_layer, *_ = _service(
+        tmp_path / "no-text",
+        items=items,
+        extracted={"alpha-report": no_text},
+        digest=PDF_SHA,
+        preview=["alpha-report"],
+    )
+    no_layer_result = no_layer.find_evidence(
+        caller_context=_ctx(),
+        report_id="alpha-report",
+        query="hyperscaler",
+        max_passages=3,
+    )
+    assert no_layer_result["evidence_state"] == "UNAVAILABLE"
+    assert no_layer_result["coverage_state"] == "NO_TEXT_LAYER"
+    _assert_no_search_scope(no_layer_result)
+
+    unavailable = _extracted("alpha-report", text=None, layer="unavailable")
+    extraction, *_ = _service(
+        tmp_path / "extraction",
+        items=items,
+        extracted={"alpha-report": unavailable},
+        digest=PDF_SHA,
+        preview=["alpha-report"],
+    )
+    extraction_result = extraction.find_evidence(
+        caller_context=_ctx(),
+        report_id="alpha-report",
+        query="hyperscaler",
+        max_passages=3,
+    )
+    assert extraction_result["evidence_state"] == "UNAVAILABLE"
+    assert extraction_result["coverage_state"] == "EXTRACTION_UNAVAILABLE"
+    _assert_no_search_scope(extraction_result)
+
+    def body_unavailable(document, query, *, limit=3, window_chars=900):
+        return {
+            "status": "body_unavailable",
+            "passages": [],
+            "source_binding": {
+                "stored_char_count": len(document.get("body") or ""),
+                "text_layer": "full",
+                "page_count": 1,
+            },
+        }
+
+    monkeypatch.setattr(
+        read_service_module.corpus_mod, "find_evidence_passages", body_unavailable
+    )
+    body_result, _record = _find_evidence(tmp_path / "body", "alpha beta gamma", "alpha")
+    assert body_result["evidence_state"] == "UNAVAILABLE"
+    assert body_result["coverage_state"] == "EXTRACTION_UNAVAILABLE"
+    _assert_no_search_scope(body_result)
+
+
+def test_find_evidence_omits_scope_when_stored_binding_fails_port_rule(tmp_path, monkeypatch):
+    text = "alpha beta gamma"
+    published = (NOW - timedelta(hours=1)).isoformat()
+    items = [_item("alpha-report", "Alpha Note", published)]
+    for index, pages in enumerate((None, 0)):
+        record = fulltext.build_extracted_text(
+            report_id="alpha-report",
+            source_pdf_sha256=PDF_SHA,
+            text=text,
+            extractor_name="pdftotext",
+            extractor_version="poppler-layout-v1",
+            page_count=pages,
+            text_layer_state="full",
+        )
+        svc, *_ = _service(
+            tmp_path / f"pages-{index}",
+            items=items,
+            extracted={"alpha-report": record},
+            digest=PDF_SHA,
+            preview=["alpha-report"],
+        )
+        result = svc.find_evidence(
+            caller_context=_ctx(),
+            report_id="alpha-report",
+            query="alpha",
+            max_passages=3,
+        )
+        assert result["evidence_state"] == "FOUND"
+        assert result["passages"]
+        _assert_no_search_scope(result)
+
+    real = read_service_module.corpus_mod.find_evidence_passages
+
+    def bad_layer(document, query, *, limit=3, window_chars=900):
+        found = dict(real(document, query, limit=limit, window_chars=window_chars))
+        binding = dict(found["source_binding"])
+        binding["text_layer"] = "not-a-layer"
+        found["source_binding"] = binding
+        return found
+
+    monkeypatch.setattr(
+        read_service_module.corpus_mod, "find_evidence_passages", bad_layer
+    )
+    layer_result, _record = _find_evidence(tmp_path / "bad-layer", text, "alpha")
+    assert layer_result["evidence_state"] == "FOUND"
+    _assert_no_search_scope(layer_result)
+
+    def bad_pages(document, query, *, limit=3, window_chars=900):
+        found = dict(real(document, query, limit=limit, window_chars=window_chars))
+        binding = dict(found["source_binding"])
+        binding["page_count"] = 0
+        found["source_binding"] = binding
+        return found
+
+    monkeypatch.setattr(
+        read_service_module.corpus_mod, "find_evidence_passages", bad_pages
+    )
+    pages_result, _record = _find_evidence(tmp_path / "bad-pages", text, "alpha")
+    assert pages_result["evidence_state"] == "FOUND"
+    _assert_no_search_scope(pages_result)
+
+
+def test_find_evidence_query_too_short_status_omits_search_scope(tmp_path, monkeypatch):
+    text = "alpha beta gamma"
+    binding = {
+        "stored_char_count": len(text),
+        "text_layer": "full",
+        "page_count": 1,
+    }
+
+    def fake(document, query, *, limit=3, window_chars=900):
+        return {
+            "status": "query_too_short",
+            "passages": [],
+            "source_binding": binding,
+        }
+
+    monkeypatch.setattr(
+        read_service_module.corpus_mod, "find_evidence_passages", fake
+    )
+    result, _record = _find_evidence(tmp_path, text, "alpha")
+    assert result["evidence_state"] == "NOT_FOUND"
+    assert result["coverage_state"] == "FULL_TEXT"
+    _assert_no_search_scope(result)
+
+
+def test_build_passages_keeps_100_char_zh_atom(tmp_path):
+    atom = "研" * 100
+    text = "前缀" + atom + "后缀"
+    result, _record = _find_evidence(tmp_path, text, atom)
+    assert result["evidence_state"] == "FOUND"
+    assert result["passages"][0]["matched_terms"] == [atom]

@@ -155,3 +155,20 @@ def test_the_unmapped_concepts_are_not_enumerated_in_this_file():
     assert "ths_unmapped_concept_count" in block["unmapped_note"]
     assert not any(isinstance(v, list) for v in block.values()), (
         "the policy block must stay prose + pointers — no enumerated concept list")
+
+
+# ---------------------------------------------------------------------------
+# The hierarchy block
+# ---------------------------------------------------------------------------
+
+
+def test_production_crosswalk_hierarchy_is_an_empty_frozen_block():
+    from engine.theme_graph.materialize import HIERARCHY_EPOCH, validate_theme_hierarchy
+
+    assert DOC["version"] == 3
+    assert DOC["date"] == "2026-07-09"
+    assert DOC["hierarchy"] == {
+        "categories": [], "micro_themes": [], "parents": []}
+    validated = validate_theme_hierarchy(DOC)
+    assert validated == DOC["hierarchy"]
+    assert HIERARCHY_EPOCH == "2026-10-07"
