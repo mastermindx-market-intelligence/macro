@@ -560,65 +560,22 @@ def hierarchy_paths(store_view, node_id, asof, *, knowledge_cutoff=None, rights_
     """Read-time hierarchy paths (display-tier only).
 
     Composes macro_category → theme → micro_theme chains at query time from PARENT_OF
-    edges and basket/theme membership; paths are never stored per ticker. Vendor and
-    internal-only basket hops are never followed (Gate #2). Any live PARENT_OF edge that
-    violates the house hierarchy contract raises ValueError (fail closed).
+    edges and basket/theme membership; paths are never stored per ticker. PARENT_OF
+    liveness is the incumbent ``_collapse_relevant_edges`` over PARENT_OF rows only.
+    Vendor and internal-only basket hops are never followed (Gate #2). Any live
+    PARENT_OF edge that violates the house hierarchy contract raises ValueError (fail closed).
     """
-    import datetime as dt
     from engine.theme_graph import rights
     from engine.theme_graph.ontology import (
-        _clock_date,
-        _clock_instant,
         _collapse_relevant_edges,
         _is_null,
         _nodes_as_known,
         _parse_date,
         _records,
-        _visible_by_instant,
     )
 
     _CROSSWALK_PROVENANCE = "crosswalk:config/theme_crosswalk.yml"
     _VALID_ADJACENCY = {("macro_category", "theme"), ("theme", "micro_theme")}
-
-    def _collapse_all_live(rows, *, asof_date, cutoff):
-        instant = isinstance(cutoff, dt.datetime)
-        if instant:
-            cutoff = _clock_instant(cutoff, "knowledge_cutoff")
-        eligible: list[tuple[dt.date, str, int, dict]] = []
-        for index, original in enumerate(rows):
-            row = dict(original)
-            edge_id = str(row.get("edge_id") or "")
-            type_ = str(row.get("type") or "")
-            src = str(row.get("src") or "")
-            dst = str(row.get("dst") or "")
-            if not edge_id or not type_ or not src or not dst:
-                continue
-            if instant:
-                if not _visible_by_instant(row.get("belief_time"), "belief_time", cutoff):
-                    continue
-                belief = _clock_date(row.get("belief_time"), "belief_time")
-            else:
-                belief = _parse_date(row.get("belief_time"), "belief_time")
-                if belief > cutoff:
-                    continue
-            eligible.append((belief, str(row.get("computed_at") or ""), index, row))
-        latest: dict[str, tuple] = {}
-        for candidate in eligible:
-            eid = str(candidate[3]["edge_id"])
-            if eid not in latest or candidate[:3] > latest[eid][:3]:
-                latest[eid] = candidate
-        live: list[dict] = []
-        for _belief, _computed_at, _index, row in latest.values():
-            valid_from = _parse_date(row.get("valid_from"), "valid_from")
-            raw_valid_to = row.get("valid_to")
-            valid_to = (
-                None
-                if _is_null(raw_valid_to) or str(raw_valid_to).strip() == ""
-                else _parse_date(raw_valid_to, "valid_to")
-            )
-            if valid_from <= asof_date and (valid_to is None or asof_date < valid_to):
-                live.append(row)
-        return live
 
     def _theme_rights():
         family = rights.family_for_source_ref("config/theme_crosswalk.yml")
@@ -680,8 +637,18 @@ def hierarchy_paths(store_view, node_id, asof, *, knowledge_cutoff=None, rights_
     )
 
     raw_edges = _records(store_view.read_edges())
-    all_live = _collapse_all_live(raw_edges, asof_date=asof_date, cutoff=cutoff_date)
-    parent_edges = [row for row in all_live if str(row.get("type") or "") == "PARENT_OF"]
+    parent_rows = [row for row in raw_edges if str(row.get("type") or "") == "PARENT_OF"]
+    endpoint_ids = sorted(
+        {str(r.get(k) or "") for r in parent_rows for k in ("src", "dst")} - {""}
+    )
+    live_by_id: dict[str, dict] = {}
+    for endpoint in endpoint_ids:
+        live, _future = _collapse_relevant_edges(
+            parent_rows, node_id=endpoint, asof=asof_date, knowledge_cutoff=cutoff_date
+        )
+        for row in live:
+            live_by_id[str(row["edge_id"])] = row
+    parent_edges = [live_by_id[eid] for eid in sorted(live_by_id)]
 
     theme_rights_payload = _theme_rights()
     for row in parent_edges:

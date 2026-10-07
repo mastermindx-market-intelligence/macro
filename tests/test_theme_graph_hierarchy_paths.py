@@ -429,3 +429,48 @@ def test_record_shape_has_no_weights_and_is_deterministic():
                 assert not any(b in key.lower() for b in banned)
         for hop in rec["via"]:
             assert set(hop) == {"type", "edge_id", "node"}
+
+
+def test_malformed_parent_of_row_fails_closed():
+    nodes = [
+        _theme("theme:cat", "macro_category"),
+        _theme("theme:t", "theme"),
+    ]
+    bad = _parent_of("theme:cat", "theme:t")
+    bad["src"] = ""
+    sv = FakeStore(nodes, [bad])
+    with pytest.raises(ValueError, match="missing edge_id/type/src/dst"):
+        _hp(sv, "theme:t")
+
+
+def test_parent_of_liveness_follows_latest_belief():
+    nodes = [
+        _theme("theme:cat", "macro_category"),
+        _theme("theme:t", "theme"),
+    ]
+    edge_id = "parent_of:theme:cat->theme:t@2024-01-01"
+    belief_a = _parent_of(
+        "theme:cat",
+        "theme:t",
+        belief_time="2024-01-01",
+        valid_from="2024-01-01",
+        valid_to=None,
+    )
+    belief_a["edge_id"] = edge_id
+    belief_b = _parent_of(
+        "theme:cat",
+        "theme:t",
+        belief_time="2024-08-01",
+        valid_from="2024-01-01",
+        valid_to="2024-08-01",
+    )
+    belief_b["edge_id"] = edge_id
+    asof = "2024-09-01"
+
+    def assert_belief_order(edges):
+        sv = FakeStore(nodes, edges)
+        assert len(_hp(sv, "theme:t", asof=asof, knowledge_cutoff="2024-07-01")) == 1
+        assert _hp(sv, "theme:t", asof=asof, knowledge_cutoff="2024-09-01") == []
+
+    assert_belief_order([belief_a, belief_b])
+    assert_belief_order([belief_b, belief_a])
