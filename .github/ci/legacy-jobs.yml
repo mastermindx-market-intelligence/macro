@@ -5777,7 +5777,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyyaml
+        run: pip install pytest pandas numpy pyyaml pyarrow requests
       # tsx_calendar joins its NYSE sibling here (2026-08-17): same subject — an
       # exchange calendar sitting under a freshness SLA — same stdlib-only, hermetic
       # shape, and the same reason. It is the session reference
