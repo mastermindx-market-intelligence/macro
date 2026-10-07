@@ -266,6 +266,14 @@ def test_withdrawal_after_cutoff_preserves_history_but_refuses_current_baseline(
     before = _payload(prior_rows, prior_attempts, as_of="2026-10-02T11:00:00Z")
     assert before["last_structurally_supported_snapshot"]["snapshot"] is not None
     assert before["normalized_baseline"]["expectation_state"] == "CURRENT"
+    # A state whose clock is after the cutoff was not knowable at the cutoff.
+    snap = before["latest_captured_snapshot"]["snapshot"]
+    assert snap["expectation_state"] == "CURRENT"
+    assert snap["expectation_state_as_of"] is None
+    assert snap["expectation_state_age_seconds"] is None
+    assert snap["selected_observation"]["expectation_state"] is None
+    assert snap["selected_observation"]["expectation_state_as_of"] is None
+    assert "11:30" not in repr(before)
 
     after_rows, after_attempts = _state_rows(
         "withdrawn", "WITHDRAWN", "2026-10-02T11:30:00Z", "2026-10-02T10:00:00Z")
@@ -280,6 +288,44 @@ def test_withdrawal_after_cutoff_preserves_history_but_refuses_current_baseline(
     assert baseline["expectation_state"] == "WITHDRAWN"
     assert baseline["status"] == "WITHDRAWN_UNAVAILABLE"
     assert baseline["value"] is None
+    assert "EXPECTATION_WITHDRAWN_AT_CUTOFF" in baseline["reasons"]
+
+
+def _current_rows(label: str, time: str):
+    return [_observation(label, time=time), _count_row(label, time)], [_attempt(label, time=time)]
+
+
+def test_newer_current_snapshot_supersedes_older_withdrawal():
+    """E2-D: the governing state is the latest captured snapshot's, not any snapshot's."""
+    old_rows, old_attempts = _state_rows(
+        "old", "WITHDRAWN", "2026-10-02T10:30:00Z", "2026-10-02T10:00:00Z")
+    new_rows, new_attempts = _current_rows("new", "2026-10-02T11:00:00Z")
+    result = _payload(old_rows + new_rows, old_attempts + new_attempts)
+    assert result["latest_captured_snapshot"]["snapshot"]["expectation_state"] == "CURRENT"
+    baseline = result["normalized_baseline"]
+    assert baseline["expectation_state"] == "CURRENT"
+    assert baseline["status"] not in {"WITHDRAWN_UNAVAILABLE", "STALE_UNAVAILABLE"}
+    assert "EXPECTATION_WITHDRAWN_AT_CUTOFF" not in baseline["reasons"]
+    supported = result["last_structurally_supported_snapshot"]
+    assert supported["status"] == "AVAILABLE"
+    assert supported["snapshot"]["identity"]["collection_session_id"] == "new"
+    assert supported["snapshot"]["selected_observation"]["observation_id"] == "new-average"
+
+
+def test_newer_withdrawal_refuses_baseline_without_prior_substitution():
+    """E2-D: a later visible withdrawal refuses the baseline and never falls back."""
+    old_rows, old_attempts = _current_rows("old", "2026-10-02T10:00:00Z")
+    new_rows, new_attempts = _state_rows(
+        "new", "WITHDRAWN", "2026-10-02T11:30:00Z", "2026-10-02T11:00:00Z")
+    result = _payload(old_rows + new_rows, old_attempts + new_attempts)
+    assert result["latest_captured_snapshot"]["snapshot"]["expectation_state"] == "WITHDRAWN"
+    assert result["last_structurally_supported_snapshot"] == {
+        "status": "UNAVAILABLE", "snapshot": None, "candidates": []}
+    baseline = result["normalized_baseline"]
+    assert baseline["expectation_state"] == "WITHDRAWN"
+    assert baseline["status"] == "WITHDRAWN_UNAVAILABLE"
+    assert baseline["value"] is None
+    assert baseline["candidate_observation_id"] is None
     assert "EXPECTATION_WITHDRAWN_AT_CUTOFF" in baseline["reasons"]
 
 

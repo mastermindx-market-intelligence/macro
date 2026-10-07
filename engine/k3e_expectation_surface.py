@@ -84,8 +84,13 @@ def _count(value):
     return _number(value) and value >= 0 and int(value) == value
 
 
-def _raw(row):
-    return {key: row.get(key) for key in RAW_FIELDS}
+def _raw(row, mask_state=False):
+    raw = {key: row.get(key) for key in RAW_FIELDS}
+    if mask_state:
+        # A state whose clock is after the query cutoff was not knowable then.
+        raw["expectation_state"] = None
+        raw["expectation_state_as_of"] = None
+    return raw
 
 
 def _latest(items, clock_key):
@@ -209,8 +214,6 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
         if len(entries) > 1:
             reasons["DUPLICATE_ATTEMPT_ID"] += len(entries)
     attempt_views = eligible_attempts + pending_attempts + invalid_attempts
-    if provider_family_mismatches:
-        reasons["PROVIDER_FAMILY_UNRESOLVED"] += provider_family_mismatches
 
     relevant = []
     # Establish the whole declared temporal boundary before reading observation
@@ -247,6 +250,8 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
             reasons["SOURCE_PUBLISHED_AFTER_CUTOFF"] += 1
             continue
         relevant.append((row, captures))
+    if provider_family_mismatches:
+        reasons["PROVIDER_FAMILY_UNRESOLVED"] += provider_family_mismatches
     ids = Counter(row.get("observation_id") for row, _ in relevant)
     groups = defaultdict(list)
     excluded = 0
@@ -346,10 +351,10 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
                         and _number(chosen.get("value"))
                         and chosen.get("missingness_reason") is None
                         and coverage_valid and coverage["value"] > 0)
+        contributor_fault = (
+            chosen is not None and chosen.get("aggregation_level") == "single_contributor"
+            and not (isinstance(chosen.get("contributor_id"), str) and chosen["contributor_id"]))
         state_faults = []
-        if chosen is not None and chosen.get("aggregation_level") == "single_contributor" and not (
-                isinstance(chosen.get("contributor_id"), str) and chosen["contributor_id"]):
-            state_faults.append("CONTRIBUTOR_IDENTITY_UNAVAILABLE")
         state = (chosen.get("expectation_state") if chosen is not None else None) or "CURRENT"
         state_clock_value = (chosen.get("expectation_state_as_of")
                              if state != "CURRENT" else None)
@@ -361,7 +366,16 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
             state_faults.append("INVALID_EXPECTATION_STATE")
         elif state != "CURRENT" and state_clock is None:
             state_faults.append("INVALID_EXPECTATION_STATE_CLOCK")
+        # Only a state whose own clock is at or before the cutoff is visible.
+        state_visible = (state not in {"WITHDRAWN", "STALE"} or state_clock is None
+                         or state_clock <= cutoff)
+        public_state = state if state_visible else "CURRENT"
+        public_state_clock = state_clock if state_visible else None
         support_reasons = []
+        if contributor_fault:
+            support_reasons.append("CONTRIBUTOR_IDENTITY_UNAVAILABLE")
+            reasons["CONTRIBUTOR_IDENTITY_UNAVAILABLE"] += 1
+            is_supported = False
         if state_faults:
             support_reasons.append("INVALID_EXPECTATION_STATE_ENVELOPE")
             reasons.update(state_faults)
@@ -385,19 +399,21 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
                   "derived_capture_availability_rule":
                       "max(system_observed_at,provider_observed_at,linked_attempt_completed_at)",
                   "age_seconds": (cutoff - availability).total_seconds(),
-                  "expectation_state": state,
-                  "expectation_state_as_of": _iso(state_clock) if state_clock else None,
+                  "expectation_state": public_state,
+                  "expectation_state_as_of": _iso(public_state_clock) if public_state_clock else None,
                   "expectation_state_age_seconds": (
-                      (cutoff - state_clock).total_seconds()
-                      if state_clock and state_clock <= cutoff else None),
-                  "selected_raw_field": "average", "selected_observation": _raw(chosen) if chosen else None,
+                      (cutoff - public_state_clock).total_seconds()
+                      if public_state_clock else None),
+                  "selected_raw_field": "average",
+                  "selected_observation": _raw(chosen, not state_visible) if chosen else None,
                   "provider_reported_covering_analyst_count":
                       coverage["value"] if coverage_valid else None,
-                  "covering_count_observation": _raw(coverage) if coverage else None,
+                  "covering_count_observation": _raw(coverage, not state_visible) if coverage else None,
                   "structurally_supported": is_supported, "support_reasons": support_reasons,
                   "attempt_status": attempt["status"], "attempted_at": attempt["attempted_at"],
                   "completed_at": attempt["completed_at"],
-                  "raw_fields": {name: _raw(items[0]) for name, items in sorted(fields.items())},
+                  "raw_fields": {name: _raw(items[0], not state_visible)
+                                 for name, items in sorted(fields.items())},
                   "evidence_use": "RAW_CAPTURE_INSPECTION_ONLY"}
         item = {"time": availability, "identity": identity, "public": public}
         snapshots.append(item)
@@ -411,6 +427,17 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
     latest_capture = _latest(snapshots, "time")
     last_supported = _latest(supported, "time")
     latest_attempt = _latest(attempt_views, "time")
+    # The governing state is the cutoff-visible state of the LATEST captured
+    # snapshot; a superseded historical withdrawal does not poison the surface.
+    # Equal-clock ties fail closed: any tied WITHDRAWN/STALE state governs.
+    newest_capture = max((item["time"] for item in snapshots), default=None)
+    governing_states = {item["public"]["expectation_state"] for item in snapshots
+                        if item["time"] == newest_capture
+                        and item["public"]["expectation_state_age_seconds"] is not None}
+    withdrawn_now = "WITHDRAWN" in governing_states
+    stale_now = "STALE" in governing_states
+    if withdrawn_now or stale_now:
+        last_supported = {"status": "UNAVAILABLE", "snapshot": None, "candidates": []}
     current = latest_capture["snapshot"]
     previous = last_supported["snapshot"]
     current_anchor = current["selected_observation"].get("period_end") if current and current["selected_observation"] else None
@@ -421,13 +448,6 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
     raw_rights = sorted({row.get("rights_class") or "UNKNOWN" for row, _ in relevant})
     rights_blocked = (any(right in BLOCKED_RIGHTS for right in raw_rights)
                       or any(right in DISPLAY_ONLY_RIGHTS for right in raw_rights))
-    active_states = [snapshot["public"]["expectation_state"] for snapshot in snapshots
-                     if snapshot["public"]["expectation_state_age_seconds"] is not None
-                     and snapshot["public"]["expectation_state"] in {"WITHDRAWN", "STALE"}]
-    withdrawn_now = "WITHDRAWN" in active_states
-    stale_now = "STALE" in active_states
-    if withdrawn_now or stale_now:
-        last_supported = {"status": "UNAVAILABLE", "snapshot": None, "candidates": []}
     expectation_state = ("WITHDRAWN" if withdrawn_now else
                          "STALE" if stale_now else "CURRENT")
     baseline_reasons = ["NORMALIZED_CONSUMER_ADMISSION_NOT_GRANTED"]

@@ -278,9 +278,26 @@ def test_provider_mismatch_excludes_value_and_names_family_reason():
     rows, attempts = _pair("yahoo-row", provider="yahoo")
     result = _payload(rows, attempts, provider="yfinance")
     assert result["denominators"]["capture_clock_bounded_relevant_records"] == 0
-    assert result["denominators"]["reason_counts"]["PROVIDER_FAMILY_UNRESOLVED"] == 1
+    # One mismatched attempt row plus both mismatched observation rows.
+    assert result["denominators"]["reason_counts"]["PROVIDER_FAMILY_UNRESOLVED"] == 3
     assert result["latest_captured_snapshot"]["snapshot"] is None
     assert result["last_structurally_supported_snapshot"]["snapshot"] is None
+
+
+def test_observation_only_provider_mismatch_is_counted_and_never_selected():
+    """E2-A: mismatched observation rows are reasoned even with no mismatched attempt."""
+    rows, attempts = _pair("yf-row")
+    other = [_observation("yahoo-row", provider="yahoo", value=9.75),
+             _count_row("yahoo-row", provider="yahoo")]
+    result = _payload(rows + other, attempts, provider="yfinance")
+    assert result["denominators"]["reason_counts"]["PROVIDER_FAMILY_UNRESOLVED"] == 2
+    for key in ("latest_captured_snapshot", "last_structurally_supported_snapshot"):
+        snap = result[key]["snapshot"]
+        assert snap is not None
+        assert snap["identity"]["provider"] == "yfinance"
+        assert snap["selected_observation"]["value"] == 2.5
+    assert "yahoo-row" not in repr(result)
+    assert "9.75" not in repr(result)
 
 
 def test_source_publication_visibility_is_bounded_by_query_cutoff():
@@ -338,3 +355,6 @@ def test_missing_contributor_identity_is_refused_and_reasoned():
     assert result["denominators"]["reason_counts"]["CONTRIBUTOR_IDENTITY_UNAVAILABLE"] == 1
     assert result["last_structurally_supported_snapshot"]["snapshot"] is None
     assert result["normalized_baseline"]["value"] is None
+    support = result["latest_captured_snapshot"]["snapshot"]["support_reasons"]
+    assert "CONTRIBUTOR_IDENTITY_UNAVAILABLE" in support
+    assert "INVALID_EXPECTATION_STATE_ENVELOPE" not in support
