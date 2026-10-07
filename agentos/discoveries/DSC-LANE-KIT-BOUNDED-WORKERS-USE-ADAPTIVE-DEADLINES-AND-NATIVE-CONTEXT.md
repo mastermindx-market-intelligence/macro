@@ -38,7 +38,9 @@ verified_by: >
   ext/lane_runtime.py 0a49c645d72824a57d6c1b68304abc13c410513cc45a2968a599d2aba1cf9796;
   ext/lane2.py f41ecae0fb0c797f28a953a679f2218b764e342c8041dfcef734e98be6fb9412;
   ext/slot.py 37b334366d90e22076add744714488b1b86f51185d5d34d43dfd16131c7d53f4;
-  ext/oc_free_exec.sh 0024fbfaf2ce4b9d80e029e219ac43c791f3d80b5bcd10a5526c4a3c99ec6a21.
+  ext/oc_free_exec.sh 0024fbfaf2ce4b9d80e029e219ac43c791f3d80b5bcd10a5526c4a3c99ec6a21;
+  ext/codex_glm/config.toml 811b8f5bafc2e97ddfe53ad617a8ef1f9588a80528b9d0ed93792317b23cbf64;
+  ext/codex_minimax/config.toml 7bde4dac1c9773c27395db513006055e6dc9605f93adf8141c7de6186dded8aa.
   The last directly observed focused runtime/context/remote regression run before the final static-only
   OpenCode-free edit passed 121 tests plus 7 subtests; earlier installed-pool dry-runs proved adaptive
   lease TTLs of 3890 seconds at the native 3600-second default and 7490 seconds at the 7200-second max.
@@ -115,6 +117,15 @@ The installed Claude Code 2.1.287 binary recognizes both `CLAUDE_CODE_MAX_CONTEX
 `CLAUDE_CODE_AUTO_COMPACT_WINDOW`; this policy therefore uses the provider client's existing
 compaction facility rather than adding a fabric transcript store or summarization lifecycle.
 
+The Codex-backed MiniMax/GLM routes needed the same treatment. MiniMax-M3 and GLM-5.3 are absent from
+Codex CLI 0.159.3's 11-model bundled catalog, while the binary exposes the top-level
+`model_context_window` and `model_auto_compact_token_limit` configuration keys. The live
+`codex_minimax/config.toml` and `codex_glm/config.toml` now bind the qualified 1,000,000-token
+window and 900,000-token late-compaction limit explicitly. Both wrappers copy those configs into their
+private scratch CODEX_HOME before `codex exec`, so the policy is task-local. Redacted `codex doctor
+--json` readback reports `config.load status=ok` for both profiles with the intended custom model
+and provider; no inference/provider dispatch was needed for that proof.
+
 ### Additional stale inner ceiling found
 
 The OpenCode-free wrapper still had `OC_FREE_TIMEOUT:-900`, which could terminate a useful worker
@@ -140,6 +151,9 @@ Directly observed green evidence before that final static-only edit:
 - Installed `pool` dry-run lease calculations:
   **3890** seconds at the native 3600-second default and **7490** at the 7200-second maximum,
   without acquiring a real provider lease.
+- Codex CLI 0.159.3 bundled-catalog inspection: **MiniMax-M3 absent, glm-5.3 absent, 11 bundled
+  models**; redacted doctor readback then reported **config.load=ok** for both custom profiles after
+  adding the explicit 1M/900K context policy.
 
 A wider legacy kit run previously reached 1467 passes with 33 failures in other fixture/policy areas;
 it is not evidence that the entire kit is globally green.
