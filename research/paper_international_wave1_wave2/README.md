@@ -169,3 +169,9 @@ execution. The wider initial parent run had146 passes and three failures that
 also reproduce with the exact old reader; they are not claimed repaired.
 `IM06_HISTORY_READER_EVIDENCE.json` records these limits. The History projection,
 manual-scenario mount and actual publication remain subsequent delivery work.
+
+## Accepted Macro field projection and ECB admission
+
+The pure Macro projection preserves every configured market, independent field permissions, original values and observation periods. Missing growth or inflation evidence leaves economic-cycle claims unavailable. Final independent review passed 50 author cases, 11 retained parent cases and 29 additional counterchecks. The reviewer reproduced 15 actual failures in the preceding candidate; a separate local negative run had import errors and is explicitly excluded from acceptance. `IM04_MACRO_LEAF_EVIDENCE.json` binds the exact accepted source.
+
+The ECB deposit-rate adapter admits only the existing official series and typed endpoint binding under a supplied trusted-caller publication decision. It preserves zero, rejects invalid or mismatched material, and withholds cyclic input without throwing. Final independent review passed 57 author cases, 19 new checks and 48 retained checks; 108 existing input regressions passed before the final two cyclic guards. `IM04_ECB_ADMISSION_EVIDENCE.json` records this source acceptance. Production byte acquisition, source notices, page composition and served acceptance remain separate gates; this commit issues no production permission.

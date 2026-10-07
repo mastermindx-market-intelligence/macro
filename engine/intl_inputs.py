@@ -25,6 +25,150 @@ _METRICS = ["yield_10y", "short_3m", "cpi_yoy", "unemployment", "gdp", "m2"]
 _EXTRAS = ["ez_depo_rate", "de_10y", "it_10y", "es_10y", "fr_10y", "us_10y", "us_2y"]
 
 
+def _ecb_withheld(quality="unknown", reason="disclosure_unknown", *, metadata="unknown",
+                  value_permission="unknown") -> dict:
+    """Closed field shape, containing no dynamic metadata or numeric value."""
+    return {
+        "quality": quality, "reason": reason, "metadata": metadata,
+        "value_permission": value_permission, "value": None, "unit": None,
+        "instrument": None, "period": None, "observation_at": None,
+        "calculation_at": None, "source_reference": None, "evidence_key": None,
+    }
+
+
+def admit_ecb_deposit_field(series: pd.Series | None, *, provenance,
+                            materialized_identity, evaluated_at,
+                            publication_decision) -> dict:
+    """Validate one supplied official ECB level and a caller-owned disclosure.
+
+    The existing composition owner must authenticate materialization and satisfy
+    the publication conditions in INTERNATIONAL_MACRO_DATA_CONTRACT. Matching
+    dictionaries alone cannot authenticate their issuer. This helper performs
+    no source/store/clock I/O and supplies no permission of its own.
+    """
+    import math
+    import re
+    from datetime import timezone
+
+    from engine.cb_desk import _STALE_DAYS
+
+    decision_keys = {"owner_ref", "policy_ref", "decision_ref", "metadata",
+                     "value_permission", "binding"}
+    binding_keys = {"market_id", "field", "instrument_id", "source_id",
+                    "artifact_sha256", "provenance_sha256", "observation_at",
+                    "value", "unit"}
+    permissions = {"allowed", "unknown", "denied"}
+    decision = publication_decision
+    # Validate plain builtins before calling any supplied container methods.
+    try:
+        plain_decision = _qualification_plain_json(decision)
+    except RecursionError:
+        return _ecb_withheld()
+    if not plain_decision or type(decision) is not dict:
+        return _ecb_withheld()
+    if set(decision) != decision_keys or type(decision["binding"]) is not dict:
+        return _ecb_withheld()
+    if (set(decision["binding"]) != binding_keys
+            or decision["owner_ref"] != "scripts/build_intl.py"
+            or decision["policy_ref"] != "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-ecb-deposit-level-admission"
+            or type(decision["decision_ref"]) is not str or not decision["decision_ref"].strip()
+            or type(decision["metadata"]) is not str or decision["metadata"] not in permissions
+            or type(decision["value_permission"]) is not str or decision["value_permission"] not in permissions):
+        return _ecb_withheld()
+    metadata, permission = decision["metadata"], decision["value_permission"]
+    if metadata != "allowed":
+        return _ecb_withheld(
+            "denied" if metadata == "denied" else "unknown",
+            "metadata_denied" if metadata == "denied" else "disclosure_unknown",
+            metadata=metadata, value_permission=permission,
+        )
+    if series is None or (type(series) is pd.Series and series.empty):
+        return _ecb_withheld("missing", "not_supplied")
+    provenance_keys = {"last_observation", "provider", "release_period_semantics",
+                       "requested_at", "source_id", "source_updated", "source_url",
+                       "status", "unit"}
+    source_id = "D.U2.EUR.4F.KR.DFR.LEV"
+    try:
+        if (not _qualification_plain_json(provenance)
+                or not _qualification_plain_json(materialized_identity)):
+            raise ValueError("source shape")
+        _qualification_require_closed(provenance, provenance_keys, "source shape")
+        _qualification_require_closed(
+            materialized_identity, {"artifact_sha256", "provenance_sha256", "column"}, "identity shape",
+        )
+        for key in ("artifact_sha256", "provenance_sha256"):
+            digest = materialized_identity[key]
+            if type(digest) is not str or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+                raise ValueError("source identity")
+        if materialized_identity["column"] != "ez_depo_rate":
+            raise ValueError("source column")
+        if (type(series) is not pd.Series or type(series.index) is not pd.DatetimeIndex
+                or type(series.name) is not str or series.name != "ez_depo_rate"
+                or series.index.hasnans or series.index.has_duplicates
+                or not series.index.is_monotonic_increasing
+                or (series.index.tz is not None and str(series.index.tz) != "UTC")
+                or not series.index.equals(series.index.normalize())):
+            raise ValueError("source geometry")
+        endpoint = series.iloc[-1]
+        if type(endpoint) in {int, float}:
+            numeric = endpoint
+        elif type(endpoint) in {np.int8, np.int16, np.int32, np.int64,
+                                np.uint8, np.uint16, np.uint32, np.uint64,
+                                np.float32, np.float64}:
+            numeric = endpoint.item()
+        else:
+            raise ValueError("source number")
+        if type(numeric) not in {int, float} or (type(numeric) is float and not math.isfinite(numeric)):
+            raise ValueError("source number")
+        observation = series.index[-1].date().isoformat()
+        if (provenance["provider"] != "ecb" or provenance["status"] != "official"
+                or provenance["source_id"] != source_id or provenance["unit"] != "PCPA"
+                or provenance["last_observation"] != observation
+                or provenance["source_updated"] != observation
+                or provenance["release_period_semantics"] != "Daily effective policy-rate observation"
+                or provenance["source_url"] != "https://data-api.ecb.europa.eu/service/data/FM/D.U2.EUR.4F.KR.DFR.LEV?format=csvdata&startPeriod=1999-01-01"):
+            raise ValueError("source join")
+        requested, _ = _qualification_parse_timestamp(provenance["requested_at"])
+        evaluated, _ = _qualification_parse_timestamp(evaluated_at)
+        if requested.tzinfo is None or evaluated.tzinfo is None:
+            raise ValueError("source clock")
+        age = (evaluated.astimezone(timezone.utc).date() - series.index[-1].date()).days
+        if age < 0:
+            raise ValueError("future observation")
+    except (ValueError, TypeError, KeyError, OverflowError, RecursionError):
+        return _ecb_withheld("failed", "source_failed")
+    expected = {
+        "market_id": "EZ", "field": "policy_rate", "instrument_id": "deposit_facility",
+        "source_id": source_id, "artifact_sha256": materialized_identity["artifact_sha256"],
+        "provenance_sha256": materialized_identity["provenance_sha256"],
+        "observation_at": observation, "value": numeric, "unit": "percent",
+    }
+    # Typed comparison keeps bool, integer/float identity and signed zero distinct.
+    if _qualification_typed(decision["binding"]) != _qualification_typed(expected):
+        return _ecb_withheld()
+    result = _ecb_withheld(metadata="allowed", value_permission=permission)
+    result.update({
+        "unit": "percent",
+        "instrument": {"kind": "official_policy", "id": "deposit_facility", "market_id": "EZ"},
+        "observation_at": observation,
+        "source_reference": (
+            "https://data.ecb.europa.eu/data/datasets/FM/FM." + source_id
+            + "#artifact=" + materialized_identity["artifact_sha256"]
+            + "&provenance=" + materialized_identity["provenance_sha256"]
+        ),
+        "evidence_key": "ecb-deposit:" + _qualification_typed_digest(
+            {"binding": expected, "evaluated_at": evaluated_at}),
+    })
+    if permission != "allowed":
+        result.update(quality="denied" if permission == "denied" else "unknown",
+                      reason="value_denied" if permission == "denied" else "disclosure_unknown")
+        return result
+    stale = age > _STALE_DAYS["daily"]
+    result.update(quality="stale" if stale else "qualified",
+                  reason="source_stale" if stale else None, value=numeric)
+    return result
+
+
 def countries() -> dict:
     return config.load()["intl"]["countries"]
 
