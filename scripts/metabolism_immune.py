@@ -954,6 +954,88 @@ def _fetch_runs_list() -> list[dict]:
     return []
 
 
+
+def _annotate_queue_health_runs(
+    runs: list[dict[str, Any]],
+    lane_cfg: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Attach child-job truth to actionable queued run projections.
+
+    Only runs old enough to cross the queue alert threshold but still younger
+    than GitHub's queue-lifetime grace cause a job-detail read. Ancient API
+    ghosts and fresh runs cost zero extra calls. A failed job-detail read leaves
+    the run unannotated so check_queue_stuck remains conservative.
+    NEVER raises.
+    """
+    from datetime import datetime, timezone  # noqa: PLC0415
+    from engine.metabolism.immune import (  # noqa: PLC0415
+        QUEUE_PROJECTION_STALE_AFTER_MINUTES,
+    )
+
+    try:
+        threshold_min = int(lane_cfg.get("queue_stuck_min") or 40)
+        now = datetime.now(timezone.utc)
+        annotated: list[dict[str, Any]] = []
+
+        for original in (runs or []):
+            run = dict(original)
+            annotated.append(run)
+            if str(run.get("status") or "").lower() != "queued":
+                continue
+
+            created_raw = run.get("created_at") or ""
+            try:
+                created = datetime.fromisoformat(created_raw.replace("Z", "+00:00"))
+                queued_min = (now - created).total_seconds() / 60.0
+            except Exception:  # noqa: BLE001
+                continue
+
+            if (
+                queued_min <= threshold_min
+                or queued_min > QUEUE_PROJECTION_STALE_AFTER_MINUTES
+            ):
+                continue
+
+            run_id = run.get("id")
+            if not run_id:
+                continue
+
+            jobs = _gh_json_list(
+                [
+                    "api",
+                    f"/repos/{{owner}}/{{repo}}/actions/runs/{run_id}/jobs?per_page=100",
+                    "--jq", ".jobs[]",
+                    "--paginate",
+                ],
+                timeout=60,
+            )
+            statuses = [
+                str(job.get("status") or "").lower()
+                for job in jobs
+                if isinstance(job, dict) and job.get("status")
+            ]
+            if not statuses:
+                continue
+
+            run["_queue_child_statuses"] = sorted(set(statuses))
+            # A genuinely queued child stays actionable even when a sibling is
+            # already running.  Prioritizing active_children first would hide a
+            # real queue wait behind unrelated in-progress work.
+            if "queued" in statuses:
+                run["_queue_projection_state"] = "queued_children"
+            elif "in_progress" in statuses:
+                run["_queue_projection_state"] = "active_children"
+            elif all(status == "completed" for status in statuses):
+                run["_queue_projection_state"] = "terminal_children"
+            # Any unknown mixed status is deliberately left without a state:
+            # the pure detector will keep treating it conservatively.
+
+        return annotated
+    except Exception as exc:  # noqa: BLE001
+        log.warning("immune._annotate_queue_health_runs: %s", exc)
+        return [dict(run) for run in (runs or [])]
+
+
 def _fetch_runners_list() -> list[dict]:
     """Fetch self-hosted runners from gh api.  NEVER raises."""
     try:
@@ -1112,6 +1194,7 @@ def run_lane_health_checks(
 
     try:
         runs = _fetch_runs_list()
+        queue_runs = _annotate_queue_health_runs(runs, lane_cfg)
         runners = _fetch_runners_list()
         key_ledger = _fetch_key_ledger(root)
 
@@ -1123,8 +1206,8 @@ def run_lane_health_checks(
             ),
             (
                 cooldown.get("queue_stuck_journal_key") or "immune.lane_health.queue_stuck",
-                check_queue_stuck(runs, lane_cfg),
-                "Actions queue saturation detected",
+                check_queue_stuck(queue_runs, lane_cfg),
+                "Actions queued work detected",
             ),
             (
                 cooldown.get("runner_offline_journal_key") or "immune.lane_health.runner_offline",
