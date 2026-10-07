@@ -4387,9 +4387,13 @@ def test_f3_nonzero_degraded_corpus_is_not_mistaken_for_empty_bootstrap(
     assert _w4_catalog_ids(store) == {"old-000001", "other-000002"}
     assert _w4_receipt_ids(store) == {"old-000001", "other-000002"}
     assert result["corpus_published"] is True
-    # This guard does not claim to backfill missing rows; it prevents a reset.
+    # The guard prevents a reset and never replays the receipted document
+    # (ingested == 0 and the receipts are unchanged above). The missing row is
+    # restored by the F3 catalog-gap backfill from the canonical vault PDF, not
+    # by re-ingestion.
+    assert result["backfill_rows"] == 1
     conn = corpus_mod.open_db(tmp_path / "third" / "corpus.sqlite")
-    assert conn.execute("SELECT COUNT(*) FROM documents").fetchone()[0] == 1
+    assert conn.execute("SELECT COUNT(*) FROM documents").fetchone()[0] == 2
     conn.close()
 
 
