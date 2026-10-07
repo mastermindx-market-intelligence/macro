@@ -339,3 +339,5 @@
 {"date": "2026-10-06", "ticker": "0700.HK", "slug": "tencent", "name_en": "Tencent", "attention_shock_z": -2.693, "tone_pctile": null, "narrative_state": "attention_spike", "asof_freshness": "degraded", "organ": "hk_narrative"}
 {"date": "2026-10-06", "ticker": "9888.HK", "slug": "baidu", "name_en": "Baidu", "attention_shock_z": -0.032, "tone_pctile": null, "narrative_state": "quiet", "asof_freshness": "degraded", "organ": "hk_narrative"}
 {"date": "2026-10-06", "ticker": "0981.HK", "slug": "smic", "name_en": "SMIC", "attention_shock_z": 3.882, "tone_pctile": null, "narrative_state": "attention_spike", "asof_freshness": "degraded", "organ": "hk_narrative"}
+{"date": "2026-10-07", "ticker": "0700.HK", "slug": "tencent", "name_en": "Tencent", "attention_shock_z": -2.693, "tone_pctile": null, "narrative_state": "attention_spike", "asof_freshness": "degraded", "organ": "hk_narrative"}
+{"date": "2026-10-07", "ticker": "0981.HK", "slug": "smic", "name_en": "SMIC", "attention_shock_z": 3.882, "tone_pctile": null, "narrative_state": "attention_spike", "asof_freshness": "degraded", "organ": "hk_narrative"}

@@ -321,7 +321,7 @@
   <script src="logo_config.js?v=b37d33d3" defer></script>
   <script src="stock-logos.js?v=cc29be53" defer></script>
   <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=4c6fe392" defer></script>
+  <script src="live.js?v=2464239d" defer></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -394,7 +394,7 @@
         <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
           <span class="l-en">LIVE</span><span class="l-zh">实时</span>
           <span id="ms-date" style="margin-left:4px">2026-09-30</span>
-          <span class="cnx-live-freshness"><span class="l-en">· 5/7 feeds</span><span class="l-zh">· 5/7 数据源</span></span>
+          <span class="cnx-live-freshness"><span class="l-en">· 4/7 feeds</span><span class="l-zh">· 4/7 数据源</span></span>
         </span>
       </div>
       
@@ -844,12 +844,12 @@
         </div>
         
         
-        <div class="mx5-mkt-tile up" data-sym="^HSI" data-mkt="hk">
+        <div class="mx5-mkt-tile dn" data-sym="^HSI" data-mkt="hk">
           <div class="mx5-mkt-ticker">HSI</div>
           <div class="mx5-mkt-sub"><span class="l-en">Hang Seng</span><span class="l-zh">恒生</span></div>
           
-          <div class="mx5-mkt-price nb-px" data-sym="^HSI" data-mkt="hk" data-bare>24,281</div>
-          <div class="mx5-mkt-delta nb-chg up" data-sym="^HSI" data-mkt="hk">+1.0%</div>
+          <div class="mx5-mkt-price nb-px" data-sym="^HSI" data-mkt="hk" data-bare>24,130</div>
+          <div class="mx5-mkt-delta nb-chg dn" data-sym="^HSI" data-mkt="hk">-0.6%</div>
           
         </div>
       </div>
@@ -1131,6 +1131,8 @@
       <div class="cnx-kv"><span class="k"><span class="l-en">Streak</span><span class="l-zh">连续</span></span><span class="v">18/20 <span class="l-en">days</span><span class="l-zh">天</span></span></div>
       
       
+      <div class="cnx-kv"><span class="k"><span class="l-en">Top buys</span><span class="l-zh">主要买入</span></span><span class="v">腾讯控股 · 腾讯控股 · 中国海洋石油</span></div>
+      
       <div class="cnx-foot"><span class="l-en">Mainland money supporting Hong Kong.</span><span class="l-zh">内地资金持续支撑香港。</span></div>
     </div>
 
@@ -1138,7 +1140,28 @@
     <div class="cnx-card">
       <div class="cnx-ctitle"><span class="l-en">Macro News</span><span class="l-zh">宏观新闻</span> <button type="button" class="cnx-ctitle-note" onclick="cnxOpenDlg('cnx-dlg-news')"><span class="l-en">What changed ↓</span><span class="l-zh">最近变化 ↓</span></button></div>
       
-      <div class="mx-empty"><span class="l-en">No material macro changes surfaced this session.</span><span class="l-zh">本会话暂无重大宏观变化。</span><span class="empty-why"><span class="l-en">News and alert sources are quiet or have not refreshed yet.</span><span class="l-zh">新闻与警报源当前安静，或尚未刷新。</span></span></div>
+      <div class="cnx-change-list">
+        
+        
+          
+          
+          <a class="cnx-change-row" href="china_news.html">
+            <span class="cnx-change-when">—</span>
+            <span class="cnx-change-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+            <span class="cnx-change-what"><span class="l-en">BofA strategist says bond bear market is mainly driven by term premium</span><span class="l-zh">美银策略师称债券熊市主要由期限溢价推动</span></span>
+          </a>
+          
+          
+          <a class="cnx-change-row" href="china_news.html">
+            <span class="cnx-change-when">—</span>
+            <span class="cnx-change-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+            <span class="cnx-change-what"><span class="l-en">Hong Kong SFC's optimized retail fund regulatory measures to take effect in November 2026</span><span class="l-zh">香港证监会零售基金监管优化措施将于2026年11月生效</span></span>
+          </a>
+          
+        
+        
+      </div>
+      <a class="cnx-view-all" href="china_news.html">24 <span class="l-en">of</span><span class="l-zh">/</span> 768 <span class="l-en">stories kept · full feed →</span><span class="l-zh">条新闻保留 · 完整新闻流 →</span></a>
       
     </div>
   </div>
@@ -1215,8 +1238,8 @@
   <div class="cnx-dh">
     <span class="d"></span>
     <b><span class="l-en">Data health</span><span class="l-zh">数据健康度</span></b> ·
-    <span class="l-en">5 of 7 feeds fresh</span>
-    <span class="l-zh">5/7 数据新鲜</span>
+    <span class="l-en">4 of 7 feeds fresh</span>
+    <span class="l-zh">4/7 数据新鲜</span>
     · <span class="l-en">updated</span><span class="l-zh">更新于</span> 2026-09-30
     <span style="margin-left:auto;opacity:.6">▾</span>
   </div>
@@ -1837,7 +1860,7 @@
           
           <div class="cnx-ihcard">
             <div class="t"><span class="l-en">HANG SENG</span><span class="l-zh">恒生指数</span></div>
-            <div class="p">24,281 <span class="cnx-tt-up" style="font-size:12px">+1.0%</span></div>
+            <div class="p">24,130 <span class="cnx-tt-dn" style="font-size:12px">-0.6%</span></div>
             <span class="cnx-nchip"><span class="l-en">live-patched intraday</span><span class="l-zh">盘中实时更新</span></span>
           </div>
           
@@ -2226,6 +2249,49 @@
           <div>
             <div class="cnx-eyebrow"><span class="l-en">Connect leaderboard</span><span class="l-zh">互联通龙虎榜</span> · 2026-09-30</div>
             
+            
+            <div class="cnx-lbl" style="margin-top:0"><span class="l-en">Northbound — most-active A-shares</span><span class="l-zh">北向 — 最活跃A股</span></div>
+            <table class="cnx-mt">
+              <tr><th><span class="l-en">Stock</span><span class="l-zh">股票</span></th><th class="r"><span class="l-en">Turnover亿</span><span class="l-zh">成交亿</span></th><th class="r"><span class="l-en">Day</span><span class="l-zh">当日</span></th></tr>
+              
+              <tr><td>宁德时代 <span style="color:var(--muted)">300750</span></td>
+                <td class="r">34.89</td>
+                <td class="r cnx-tt-up">+1.5%</td></tr>
+              
+              <tr><td>中际旭创 <span style="color:var(--muted)">300308</span></td>
+                <td class="r">30.38</td>
+                <td class="r cnx-tt-dn">-0.6%</td></tr>
+              
+              <tr><td>药明康德 <span style="color:var(--muted)">603259</span></td>
+                <td class="r">23.72</td>
+                <td class="r cnx-tt-up">+4.2%</td></tr>
+              
+              <tr><td>新易盛 <span style="color:var(--muted)">300502</span></td>
+                <td class="r">18.25</td>
+                <td class="r cnx-tt-dn">-1.0%</td></tr>
+              
+              <tr><td>兆易创新 <span style="color:var(--muted)">603986</span></td>
+                <td class="r">15.58</td>
+                <td class="r cnx-tt-dn">-3.7%</td></tr>
+              
+            </table>
+            
+            
+            <div class="cnx-lbl"><span class="l-en">Southbound — mainland net</span><span class="l-zh">南向 — 内地净买</span></div>
+            <table class="cnx-mt">
+              <tr><th><span class="l-en">Buys</span><span class="l-zh">买入</span></th><th class="r"><span class="l-en">Net亿</span><span class="l-zh">净亿</span></th></tr>
+              
+              <tr><td>腾讯控股</td><td class="r cnx-tt-up">+7.2</td></tr>
+              
+              <tr><td>腾讯控股</td><td class="r cnx-tt-up">+6.8</td></tr>
+              
+              <tr><td>中国海洋石油</td><td class="r cnx-tt-up">+3.4</td></tr>
+              
+              <tr><td>药明生物</td><td class="r cnx-tt-up">+2.8</td></tr>
+              
+            </table>
+            
+            
           </div>
         </div>
         <div class="cnx-receipt"><span class="l-en">A risk-appetite read, not a signal.</span><span class="l-zh">风险偏好读数，非交易信号。</span></div>
@@ -2389,6 +2455,79 @@ Hong Kong remains near a growth scare. Outflows and the firm dollar are the main
         <div class="cnx-eyebrow"><span class="l-en">Official tone — CCTV 新闻联播</span><span class="l-zh">官方基调 — 央视新闻联播</span></div>
         <div class="cnx-kv"><span class="k"><span class="l-en">Band</span><span class="l-zh">区间</span></span><span class="v"><span class="cnx-stword ok"><span class="l-en">cautious / risk-tilted lean</span><span class="l-zh">偏谨慎 / 防风险</span></span> — <span class="l-en">leaning easier</span><span class="l-zh">倾向宽松</span></span></div>
         <div class="cnx-sep"></div>
+        
+        
+        <div class="cnx-eyebrow"><span class="l-en">Today's feed</span><span class="l-zh">今日新闻</span> · 24 <span class="l-en">of</span><span class="l-zh">/</span> 768 <span class="l-en">stories kept</span><span class="l-zh">条保留</span></div>
+        
+        
+        <div class="cnx-row">
+          <span class="ic">🏦</span>
+          <div class="tx"><b>美银策略师称债券熊市主要由期限溢价推动</b>
+            <span class="sub"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span> · 华尔街见闻 · 82/100</span></div>
+        </div>
+        
+        
+        <div class="cnx-row">
+          <span class="ic">📰</span>
+          <div class="tx"><b>香港证监会零售基金监管优化措施将于2026年11月生效</b>
+            <span class="sub"><span class="l-en">Policy</span><span class="l-zh">政策</span> · 华尔街见闻 · 74/100</span></div>
+        </div>
+        
+        
+        <div class="cnx-row">
+          <span class="ic">🏦</span>
+          <div class="tx"><b>美债收益率连续9个月超预期 策略师仍预计未来一年逐步回落</b>
+            <span class="sub"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span> · 富途牛牛 · 68/100</span></div>
+        </div>
+        
+        
+        <div class="cnx-row">
+          <span class="ic">📰</span>
+          <div class="tx"><b>AI设备需求撑起全球贸易，物流巨头上调今年商品贸易增速至4.6%</b>
+            <span class="sub"><span class="l-en">Growth</span><span class="l-zh">增长</span> · 金十数据 · 68/100</span></div>
+        </div>
+        
+        
+        <div class="cnx-row">
+          <span class="ic">📰</span>
+          <div class="tx"><b>China seen doing ‘just enough’ with targeted fiscal support to defend GDP growth</b>
+            <span class="sub"><span class="l-en">Growth</span><span class="l-zh">增长</span> · SCMP - China Economy · 84/100</span></div>
+        </div>
+        
+        
+        <div class="cnx-row">
+          <span class="ic">📰</span>
+          <div class="tx"><b>重返扩张区间！9月制造业PMI升至50.1%</b>
+            <span class="sub"><span class="l-en">Growth</span><span class="l-zh">增长</span> · 上海证券报 · 74/100</span></div>
+        </div>
+        
+        
+        <div class="cnx-row">
+          <span class="ic">🏦</span>
+          <div class="tx"><b>乌克兰央行：截至九月底，乌克兰外汇储备为471亿美元</b>
+            <span class="sub"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span> · 富途牛牛 · 68/100</span></div>
+        </div>
+        
+        
+        <div class="cnx-row">
+          <span class="ic">📰</span>
+          <div class="tx"><b>Why Morgan Stanley sees more upside in Hong Kong offices than New York towers</b>
+            <span class="sub"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span> · SCMP - Business · 70/100</span></div>
+        </div>
+        
+        
+        <div class="cnx-row">
+          <span class="ic">📰</span>
+          <div class="tx"><b>楼市新风向：二手房业主不愿一再让价了 进入存量时代，房价走向掌握在千千万万二手房业主手里。</b>
+            <span class="sub"><span class="l-en">Policy</span><span class="l-zh">政策</span> · 第一财经 · 68/100</span></div>
+        </div>
+        
+        
+        <div class="cnx-row">
+          <span class="ic">🏦</span>
+          <div class="tx"><b>央行最新披露，已连续第23个月增持黄金</b>
+            <span class="sub"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span> · 证券时报 · 68/100</span></div>
+        </div>
         
         
         <div class="cnx-view-all"><a href="china_news.html"><span class="l-en">open full feed →</span><span class="l-zh">打开完整新闻流 →</span></a></div>
@@ -2570,7 +2709,7 @@ Hong Kong remains near a growth scare. Outflows and the firm dollar are the main
 </div>
 
 <div class="foot">
-  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-10-07 12:18 UTC<br>
+  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-10-07 13:36 UTC<br>
   <span class="made">© 2026 Mastermind Inc</span>
 </div>
 
@@ -2765,7 +2904,7 @@ window.__CHART_SWAP__ = {
   });
 })();
 </script>
-<script src="theme.js?v=a0fdddc2" defer></script>
+<script src="theme.js?v=a16c1bd5" defer></script>
 <script src="china_risk_state_live.js?v=73275593" defer></script>
 
 <script defer src="illus.js?v=8e0a3779"></script>
