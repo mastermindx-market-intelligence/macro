@@ -36,6 +36,7 @@ from lib.dataos.identity import (
     IdentityError,
     IssuerMaster,
     KNOWN_MICS,
+    ARCX,
     ListingKey,
     SecurityIssuerRow,
     VendorAliasTable,
@@ -64,8 +65,8 @@ TENCENT = ListingKey("HK", XHKG, "00700")
 
 
 # ── listing keys ─────────────────────────────────────────────────────────────
-def test_the_ten_venues_the_repo_actually_carries_are_all_known() -> None:
-    assert KNOWN_MICS == {BATS, XNYS, XNAS, XASE, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+def test_the_admitted_venues_are_all_known() -> None:
+    assert KNOWN_MICS == {BATS, XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
     assert ListingKey("US", BATS, "CBOE").render() == "US-BATS-CBOE"
 
 

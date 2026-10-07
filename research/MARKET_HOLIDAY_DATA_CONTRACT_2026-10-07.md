@@ -124,7 +124,6 @@ A local passing suite establishes implementation behavior. Release completion ad
 - [HKEX 2026 Connect calendar](https://www.hkex.com.hk/-/media/HKEX-Market/Mutual-Market/Stock-Connect/Reference-Materials/Trading-Hour,-Trading-and-Settlement-Calendar/2026-Calendar_pdf_e.pdf)
 - [NYSE holidays and hours](https://www.nyse.com/trade/hours-calendars)
 - [Nasdaq holiday schedule](https://www.nasdaq.com/market-activity/stock-market-holiday-schedule)
-- [TMX trading calendar](https://www.tsx.com/en/trading/calendars-and-trading-hours/calendar)
-- [TMX Christmas Eve trading notice](https://www.tsx.com/en/trading/toronto-stock-exchange/trading-notices?id=1187)
+- [TMX trading calendar, including the December 24 TSX/TSXV early close](https://www.tsx.com/en/trading/calendars-and-trading-hours/calendar)
 - [HKEX official 2021 calendar](https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2020/ce_SEHK_CT_038_2020.pdf)
 - [SSE 2021 Southbound arrangement, including December 28 reopening](https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20201224_5287208.shtml)
