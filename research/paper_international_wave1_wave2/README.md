@@ -114,3 +114,10 @@ The difficulty-selection fault is now repaired and installed after independent S
 
 
 The source-snapshot vertical is implemented in the existing input owner after a recorded no-eligible-worker exception. It preserves large integers, signed zero, missing-versus-absent observations and original nanosecond/timezone labels in a deterministic digest.47 new cases and190 tests in the affected foundation job pass. Independent final review passed both47 Python cases with further counterchecks and the Library focus delta; `IM00_SOURCE_SNAPSHOT_EVIDENCE.json` records that scoped acceptance. This addition issues no calendar, disclosure or freshness decision and is not yet wired into production.
+
+
+## Accepted Inspector projection
+
+IM03-T1 now consumes the actual qualification-aware Overview output to produce a detached selected-market read, three return-field evidence entries and resolved public research links. It preserves original values/windows and keeps calculation endpoints separate from contributing observations. Denied and absent selections share the same unavailable result; an unknown market cannot borrow another market's source reference. Missing clocks stay explicitly missing.
+
+The 44 new tests and 107 tests across immediate owner dependencies pass. Independent Grok review passed the same44 cases and124 additional counterchecks against actual record/Overview owners. `IM03_T1_EVIDENCE.json` binds the exact accepted source. This is a pure consumer only: the responsive shell, native disclosure fallback, controller integration and real-browser/dual-theme acceptance remain subsequent work. The source qualifier's first returned implementation was rejected on reproduced contract defects and is being repaired separately; it has not been wired into production.
