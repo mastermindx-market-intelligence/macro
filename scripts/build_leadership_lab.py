@@ -17,6 +17,9 @@ import sys
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_REPO_ROOT))
+
 from engine.leadership_lab.catalyst import attach_catalyst_readiness
 from engine.leadership_lab.context import compose_current_context
 from engine.leadership_lab.earnings import attach_earnings_evidence

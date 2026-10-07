@@ -216,7 +216,7 @@
     {% for label, source in view.sources.items() %}<div class="ll-receipt"><strong>{{ label }}</strong><code>{{ source.path|default('—') }}</code><small>SHA-256 {{ source.sha256|default('—') }}</small></div>{% endfor %}
     <h3>{{ t('New measurements stay separate', '新测量与历史口径分开') }}</h3><p>{{ t('The new benchmark function compounds price ratios over exact endpoints. A 252-session lookback with a 21-session skip contains 231 returns—not the legacy 252-return formation. Missing sessions are never filled.', '新基准函数按精确端点计算复合收益；回看252个交易日并跳过最近21日，对应231个收益观测，并非历史版本的252个。缺失交易日不会自动填充。') }}</p>
     <p>{{ t('The earnings bridge preserves the interaction: +20% EPS and +25% valuation multiple imply +50% price. This is illustrative arithmetic, not a forecast or proof of causation.', '盈利分解保留交互项：每股收益增长20%、估值倍数提高25%，对应股价上涨50%。这只是算术示例，并非预测或因果证明。') }}</p>
-    <h3>{{ t('Still unavailable', '仍未接入') }}</h3><p>{{ t('Calibrated continuation or catalyst probabilities; current earnings and guidance dossiers; institutionally sourced research synthesis; verified independent peer continuity; current entry approval; and production publication.', '经校准的延续或催化剂概率、当前盈利及指引档案、机构研究综合、经验证的独立同业持续性、当前买点许可，以及正式生产发布。') }}</p>
+    <h3>{{ t('Still unavailable', '仍未接入') }}</h3><p>{{ t('Calibrated continuation or catalyst probabilities; current earnings and guidance dossiers; institutionally sourced research synthesis; independent peer continuity evidence; current entry approval; and production publication.', '经校准的延续或催化剂概率、当前盈利及指引档案、机构研究综合、独立同业持续性证据、当前买点许可，以及正式生产发布。') }}</p>
     <ul>{% for gap in view.gaps %}<li><code>{{ gap }}</code></li>{% endfor %}</ul>
   </div>
 </details>
