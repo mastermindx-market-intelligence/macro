@@ -6,6 +6,8 @@ This is the reproducible research return for `PB-A-POLICY-BEHAVIOR-BASELINE-2026
 
 Read [PB_A_METHOD_AND_FINDINGS.md](PB_A_METHOD_AND_FINDINGS.md) first. The method names `M2` in the JSON **M2-min** in prose to distinguish minimal rate-decision persistence plus a conventional-floor assumption from the full commissioned actions/constraints/revealed-preference model.
 
+**Draft research return:** [Macro PR #8568](https://github.com/mastermindx-market-intelligence/macro/pull/8568). Complete analysis revision: `a447d120ed9528ae0639b195ec4bc290ef7fd78b`; publication metadata follows in `PB_A_RETURN_RECEIPT.json`.
+
 ## 1. Quick reproduction
 
 Use Python 3.9 or later with the IANA `America/New_York` timezone database available. This package was verified with Python 3.12. It uses only the standard library. No package install or internet connection is needed for the included data.

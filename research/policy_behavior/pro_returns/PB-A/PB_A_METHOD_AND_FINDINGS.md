@@ -1,6 +1,7 @@
 # PB-A — Policy behavior baseline: method and findings
 
 **Research date:** October 7, 2026  
+**Draft research return:** [Macro PR #8568](https://github.com/mastermindx-market-intelligence/macro/pull/8568)  
 **Operation:** `PB-A-POLICY-BEHAVIOR-BASELINE-20261007`  
 **Status:** Bounded PB-A research return complete; retrospective feasibility pilot; research authority only.  
 **Parent:** [Macro PR #8560](https://github.com/mastermindx-market-intelligence/macro/pull/8560). The broader W1 program and PB-G integration remain incomplete.

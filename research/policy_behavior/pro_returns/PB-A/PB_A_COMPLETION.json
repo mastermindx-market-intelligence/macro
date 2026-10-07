@@ -27,7 +27,8 @@
     "immutable_forecast_readback_verified": true,
     "final_publication_receipt": "PB_A_RETURN_RECEIPT.json",
     "no_merge_or_production_change": true,
-    "commission_scope_resolution": "Specific PB-A>=20 U.S. feasibility pilot completed; parent40–60cross-family W1 plus market-expectations requirements remain open."
+    "commission_scope_resolution": "Specific PB-A>=20 U.S. feasibility pilot completed; parent40–60cross-family W1 plus market-expectations requirements remain open.",
+    "return_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/8568"
   },
   "method_scope": {
     "study": "RETROSPECTIVE_FEASIBILITY_PILOT_NOT_UNSEEN_VALIDATION",
