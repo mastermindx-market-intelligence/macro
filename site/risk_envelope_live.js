@@ -175,12 +175,12 @@
         }).join(" ");
         svg.appendChild(ocSvg("polyline", {
           points:points,
-          "class":"ocmp-trail ocmp-trail--" +
+          "class":"ocmp-trail ocmp-trail-" +
             (row.zone === "fast" ? "fast" : "calm")
         }));
       }
       var group = ocSvg("g", {
-        "class":"ocmp-point ocmp-point--" +
+        "class":"ocmp-point ocmp-point-" +
           (row.zone === "fast" ? "fast" : "calm"),
         tabindex:"0", role:"button",
         "aria-label":row.ticker + ", options " +
@@ -209,11 +209,11 @@
     shell.appendChild(chartWrap);
 
     var legend = ocEl("div", "ocmp-legend");
-    var calmKey = ocEl("span", "ocmp-key ocmp-key--calm");
+    var calmKey = ocEl("span", "ocmp-key ocmp-key-calm");
     ocPair(calmKey, "Calm zone", "平稳区"); legend.appendChild(calmKey);
-    var fastKey = ocEl("span", "ocmp-key ocmp-key--fast");
+    var fastKey = ocEl("span", "ocmp-key ocmp-key-fast");
     ocPair(fastKey, "Fast zone", "快速区"); legend.appendChild(fastKey);
-    var trailKey = ocEl("span", "ocmp-key ocmp-key--trail");
+    var trailKey = ocEl("span", "ocmp-key ocmp-key-trail");
     ocPair(trailKey, "Last 5 sessions", "最近5个交易日");
     legend.appendChild(trailKey);
     shell.appendChild(legend);
@@ -262,7 +262,7 @@
       focusTicker.textContent = row.ticker;
       focusStateEn.textContent = row.zone === "fast" ? "FAST" : "CALM";
       focusStateZh.textContent = row.zone === "fast" ? "快速" : "平稳";
-      focusState.className = "ocmp-focus-state ocmp-focus-state--" +
+      focusState.className = "ocmp-focus-state ocmp-focus-state-" +
         (row.zone === "fast" ? "fast" : "calm");
 
       optionsMetric.nameEn.textContent = row.ticker + " options";
