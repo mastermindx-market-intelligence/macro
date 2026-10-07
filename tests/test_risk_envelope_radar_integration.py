@@ -456,3 +456,32 @@ def test_duration_context_does_not_mutate_envelope_or_replace_odds_evidence():
     assert "Risk pressure" in html and "5 issued sessions" in html
     assert "Odds evidence" in html and "n=300" in html
     assert e == before
+
+
+def test_options_compare_extends_existing_risk_detail_without_a_second_poller():
+    template_js = (ROOT / "templates" / "risk_envelope_live.js").read_text()
+    site_js = (ROOT / "site" / "risk_envelope_live.js").read_text()
+    css = (ROOT / "templates" / "_risk_envelope_band.css.j2").read_text()
+
+    assert template_js == site_js
+    assert 'var COMPARE_URL = "options_compare.json";' in template_js
+    assert "renderOptionsCompare" in template_js
+    assert 'link.href = "options.html#scanner"' in template_js
+    assert "Fast means one of the biggest five-session moves in this map" in template_js
+    assert "It is not bullish, bearish, or a trade signal." in template_js
+    assert template_js.count("setInterval(") == 1
+    assert "innerHTML" not in template_js
+
+    assert "#dlg-risk .riskdlg-options-compare" in css
+    assert "#dlg-risk .ocmp-chart" in css
+    assert "#dlg-risk .ocmp-metrics" in css
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node required for shipped JS")
+def test_options_compare_shipped_js_is_syntax_valid():
+    proc = subprocess.run(
+        ["node", "--check", str(ROOT / "templates" / "risk_envelope_live.js")],
+        capture_output=True, text=True, timeout=20,
+    )
+    assert proc.returncode == 0, proc.stderr
+
