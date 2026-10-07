@@ -4084,7 +4084,16 @@ def test_readonly_census_workflow_cannot_ingest_publish_or_cancel_ingest():
         if isinstance(step, dict)
     )
     assert "python -m scripts.research_vault_census" in runs
-    assert "missing required private R2 configuration name(s)" in runs
+    # Adjacent Python literals can split this message across source lines.
+    # Inspect compiler-folded constants instead of weakening the config guard
+    # or requiring a particular formatting of the workflow's heredoc.
+    import ast
+    constants = [
+        node.value for node in ast.walk(ast.parse(_census_preflight_python()))
+        if isinstance(node, ast.Constant) and isinstance(node.value, str)
+    ]
+    assert any("missing required private R2 configuration name(s)" in text
+               for text in constants)
     assert "research bucket aliases shared/public bucket" in runs
     for required_name in (
         "R2_BUCKET",
@@ -4238,3 +4247,192 @@ def test_market_cognition_belief_context_carries_no_market_authority():
     assert "Clients remain cautious after the rally." not in encoded
     assert "Consensus forecasts still assume slower growth." not in encoded
 
+
+
+# F3 recovery: a read failure or reset must never publish a fresh empty corpus
+# over mature, receipt-idempotent history. These stores contain synthetic PDFs.
+class _F3ReadFaultStore(LocalStore):
+    corpus_fault = ""
+
+    def __init__(self, root):
+        super().__init__(root)
+        self.published_keys = []
+
+    def get_bytes(self, key):
+        if key == ingest_mod.CORPUS_KEY and self.corpus_fault == "unavailable":
+            return None  # legacy R2 getter conflates outage with absent object
+        return super().get_bytes(key)
+
+    def get_bytes_strict(self, key):
+        if key == ingest_mod.CORPUS_KEY and self.corpus_fault == "unavailable":
+            raise RuntimeError("synthetic corpus read outage")
+        return super().get_bytes_strict(key)
+
+    def put_bytes(self, key, data, content_type="application/octet-stream"):
+        self.published_keys.append(key)
+        return super().put_bytes(key, data, content_type)
+
+
+def _f3_mature_store(tmp_path):
+    store = _F3ReadFaultStore(tmp_path / "store")
+    _w4_seed_pdf(store, "research_inbox/old.pdf", _w4_sidecar("old-000001"))
+    first = ingest_mod.run(store, tmp_path / "first" / "corpus.sqlite")
+    assert first["ingested"] == 1
+    assert _w4_receipt_ids(store) == {"old-000001"}
+    store.published_keys.clear()
+    return store
+
+
+def test_f3_corpus_outage_never_becomes_a_bootstrap(tmp_path, w4_canned_pdftotext):
+    store = _f3_mature_store(tmp_path)
+    original = store.get_bytes(ingest_mod.CORPUS_KEY)
+    local = tmp_path / "second" / "corpus.sqlite"
+    local.parent.mkdir()
+    local.write_bytes(b"preserve-local-until-authoritative-read")
+    store.corpus_fault = "unavailable"
+
+    result = ingest_mod.run(store, local)
+
+    assert result.get("error") == "corpus_restore_failed"
+    assert store.published_keys == []
+    assert local.read_bytes() == b"preserve-local-until-authoritative-read"
+    assert LocalStore.get_bytes(store, ingest_mod.CORPUS_KEY) == original
+    assert _w4_receipt_ids(store) == {"old-000001"}
+
+
+@pytest.mark.parametrize("reset", ["missing", "empty_database"])
+def test_f3_zero_row_corpus_cannot_replace_mature_history(
+        tmp_path, w4_canned_pdftotext, reset):
+    store = _f3_mature_store(tmp_path)
+    if reset == "missing":
+        store._p(ingest_mod.CORPUS_KEY).unlink()
+    else:
+        empty = tmp_path / "empty.sqlite"
+        db = corpus_mod.open_db(empty)
+        db.close()
+        store.put_bytes(ingest_mod.CORPUS_KEY, empty.read_bytes())
+    store.published_keys.clear()
+    catalog_before = store.get_bytes(catalog_mod.CATALOG_KEY)
+
+    result = ingest_mod.run(store, tmp_path / "second" / "corpus.sqlite")
+
+    assert result.get("error") == "corpus_history_unavailable"
+    assert store.published_keys == []
+    assert store.get_bytes(catalog_mod.CATALOG_KEY) == catalog_before
+    assert _w4_receipt_ids(store) == {"old-000001"}
+
+
+@pytest.mark.parametrize("bad_bytes", [b"", b"not a sqlite database"])
+def test_f3_invalid_corpus_bytes_fail_before_local_replacement(tmp_path, bad_bytes):
+    store = LocalStore(tmp_path / "store")
+    store.put_bytes(ingest_mod.CORPUS_KEY, bad_bytes)
+    local = tmp_path / "corpus.sqlite"
+    local.write_bytes(b"existing-local-recovery-copy")
+
+    assert ingest_mod._restore_corpus(store, local) == "error"
+    assert local.read_bytes() == b"existing-local-recovery-copy"
+
+
+def test_f3_restore_refuses_legacy_only_unknown_absence(tmp_path):
+    class LegacyOnly:
+        def get_bytes(self, key):
+            raise AssertionError("ambiguous legacy getter must not be consulted")
+
+    local = tmp_path / "corpus.sqlite"
+    local.write_bytes(b"preserve")
+    assert ingest_mod._restore_corpus(LegacyOnly(), local) == "error"
+    assert local.read_bytes() == b"preserve"
+
+
+def test_f3_real_empty_store_still_bootstraps(tmp_path, w4_canned_pdftotext):
+    store = _F3ReadFaultStore(tmp_path / "store")
+    _w4_seed_pdf(store, "research_inbox/new.pdf", _w4_sidecar("new-000001"))
+    result = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+    assert result.get("error") is None
+    assert result["ingested"] == 1
+    assert result["corpus_published"] is True
+    assert _w4_receipt_ids(store) == {"new-000001"}
+
+
+def test_f3_nonempty_catalog_alone_forbids_zero_row_republication(
+        tmp_path, w4_canned_pdftotext):
+    store = _f3_mature_store(tmp_path)
+    store._p(ingest_mod.CORPUS_KEY).unlink()
+    for key in store.list_prefix(ingest_mod.PROCESSED_PREFIX):
+        store._p(key).unlink()
+    store.published_keys.clear()
+    result = ingest_mod.run(store, tmp_path / "second" / "corpus.sqlite")
+    assert result.get("error") == "corpus_history_unavailable"
+    assert store.published_keys == []
+
+
+def test_f3_nonzero_degraded_corpus_is_not_mistaken_for_empty_bootstrap(
+        tmp_path, w4_canned_pdftotext):
+    store = _f3_mature_store(tmp_path)
+    _w4_seed_pdf(store, "research_inbox/other.pdf", _w4_sidecar("other-000002"))
+    local = tmp_path / "second" / "corpus.sqlite"
+    assert ingest_mod.run(store, local)["ingested"] == 1
+    conn = corpus_mod.open_db(local)
+    conn.execute("DELETE FROM documents WHERE doc_id=?", ("other-000002",))
+    conn.commit()
+    conn.close()
+    store.put_bytes(ingest_mod.CORPUS_KEY, local.read_bytes())
+    store.published_keys.clear()
+
+    result = ingest_mod.run(store, tmp_path / "third" / "corpus.sqlite")
+
+    assert result.get("error") is None
+    assert result["ingested"] == 0
+    assert result["skipped"] == 2
+    assert _w4_catalog_ids(store) == {"old-000001", "other-000002"}
+    assert _w4_receipt_ids(store) == {"old-000001", "other-000002"}
+    assert result["corpus_published"] is True
+    # This guard does not claim to backfill missing rows; it prevents a reset.
+    conn = corpus_mod.open_db(tmp_path / "third" / "corpus.sqlite")
+    assert conn.execute("SELECT COUNT(*) FROM documents").fetchone()[0] == 1
+    conn.close()
+
+
+def _census_preflight_python():
+    import yaml
+    workflow = yaml.safe_load((_W4_ROOT / ".github/workflows/research-vault-census.yml").read_text())
+    script = next(step["run"] for step in workflow["jobs"]["census"]["steps"]
+                  if step.get("name") == "Fail closed on private R2 configuration")
+    return script.split("<<'PY'\n", 1)[1].rsplit("\nPY", 1)[0]
+
+
+@pytest.mark.parametrize("case,expected", [
+    ("missing", 2), ("generic_only", 2), ("whitespace", 2),
+    ("aliased_bucket", 2), ("distinct_private", 0),
+])
+def test_census_private_config_guard_executes_fail_closed(case, expected):
+    import subprocess
+    # Only synthetic configuration enters this subprocess; no inherited secrets,
+    # network, store construction, ingestion, or shell command is involved.
+    env = {
+        "R2_BUCKET": "fixture-public",
+        "R2_RESEARCH_BUCKET": "fixture-private",
+        "R2_RESEARCH_ENDPOINT": "fixture-endpoint-no-network",
+        "R2_RESEARCH_ACCESS_KEY_ID": "fixture-private-access",
+        "R2_RESEARCH_SECRET_ACCESS_KEY": "fixture-private-secret",
+    }
+    if case == "missing":
+        env = {}
+    elif case == "generic_only":
+        env["R2_ENDPOINT"] = env.pop("R2_RESEARCH_ENDPOINT")
+    elif case == "whitespace":
+        env["R2_RESEARCH_ACCESS_KEY_ID"] = "  "
+    elif case == "aliased_bucket":
+        env["R2_RESEARCH_BUCKET"] = " fixture-public "
+    result = subprocess.run([sys.executable, "-I", "-c", _census_preflight_python()],
+                            env=env, capture_output=True, text=True, timeout=5)
+    assert result.returncode == expected, result.stderr
+    if case == "aliased_bucket":
+        assert "research bucket aliases shared/public bucket" in result.stdout
+    elif expected:
+        assert "missing required private R2 configuration name(s)" in result.stdout
+    else:
+        assert "bucket anti-alias passed" in result.stdout
+    for value in ("fixture-private-access", "fixture-private-secret",
+                  "fixture-endpoint-no-network"):
+        assert value not in result.stdout + result.stderr

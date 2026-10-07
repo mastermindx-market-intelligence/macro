@@ -359,7 +359,14 @@ def test_qualified_source_cannot_restamp_old_native_effective_clock(world):
         adapter.compose_from_owner_bundle(capture(world, owner_readers=QualifiedFixtureReader(world[0], change=change)), generated_at=EMITTED)
 
 
-def test_predecessor_optional_fields_envelopes_and_sources_survive(world):
+def test_predecessor_optional_fields_envelopes_and_sources_survive(world, monkeypatch):
+    # Pin the incumbent's staleness clock; its 5-day window otherwise ages the fixture legs on the wall clock.
+    instant = dt.datetime.fromisoformat(EMITTED.replace("Z", "+00:00"))
+    class Clock(dt.datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return instant if tz else instant.replace(tzinfo=None)
+    monkeypatch.setattr(legacy, "datetime", Clock)
     baseline = legacy.compose(world[0])
     baseline["schema_version"] = "1.0"
     baseline["produced_by"] = "incumbent"
@@ -528,7 +535,14 @@ def test_precise_same_day_and_date_only_clock_boundaries(world, native_clock, av
         assert fact["null_reason"] == "SOURCE_AFTER_CUTOFF"
 
 
-def test_list_optional_receipts_match_stable_identity_and_retired_records_are_disposed(world):
+def test_list_optional_receipts_match_stable_identity_and_retired_records_are_disposed(world, monkeypatch):
+    # Pin the incumbent's staleness clock; its 5-day window otherwise ages the fixture legs on the wall clock.
+    instant = dt.datetime.fromisoformat(EMITTED.replace("Z", "+00:00"))
+    class Clock(dt.datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return instant if tz else instant.replace(tzinfo=None)
+    monkeypatch.setattr(legacy, "datetime", Clock)
     previous = legacy.compose(world[0])
     old = next(t for t in previous["themes"] if t["basket_intel"])
     record = old["basket_intel"][0]
