@@ -10485,6 +10485,11 @@ jobs:
         # until a call), so the test stays hermetic. This install line had exactly
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
+      # RV F3 blank-text typing (test_research_vault_blank_text.py): same LocalStore +
+      # seeded-PDF helpers as the backfill suite; its own step so the shared run line
+      # below stays a single-writer edit point for concurrent research-vault PRs.
+      - name: research vault blank-text typing (F3)
+        run: python -m pytest tests/test_research_vault_blank_text.py -q
       - name: research vault ingestion-spine + page unit tests
         run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py -q
 
