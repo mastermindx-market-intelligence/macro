@@ -65,3 +65,65 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 
 #dlg-risk .gde-live-source-rows {white-space:pre-line; font-size:var(--fs-label); line-height:1.6; overflow-wrap:anywhere;}
 #dlg-risk #gde-live-sources[hidden] {display:none;}
+
+/* Options compare — compact display-only cross-name map inside Risk Detail.
+   It extends existing volatility depth instead of adding another dashboard panel. */
+#dlg-risk .riskdlg-options-compare {margin-top:12px;border-top:1px solid var(--line);padding-top:4px;}
+#dlg-risk .riskdlg-options-compare > summary {display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;cursor:pointer;font-size:var(--fs-sm);font-weight:650;color:var(--ink-1);}
+#dlg-risk .riskdlg-options-compare > summary:focus-visible {outline:2px solid var(--link);outline-offset:2px;border-radius:var(--r-ctl);}
+#dlg-risk .ocmp-summary-copy {display:flex;align-items:center;gap:6px;}
+#dlg-risk .ocmp-summary-badge {font-size:var(--fs-label);font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums;}
+#dlg-risk .ocmp-shell {padding:8px 0 2px;}
+#dlg-risk .ocmp-title {display:block;font-size:var(--fs-md);color:var(--ink-1);}
+#dlg-risk .ocmp-expl,#dlg-risk .ocmp-note,#dlg-risk .ocmp-meta,#dlg-risk .ocmp-receipt,#dlg-risk .ocmp-foot-copy {font-size:var(--fs-label);line-height:1.5;color:var(--ink-2);}
+#dlg-risk .ocmp-expl {margin:5px 0 0;max-width:760px;}
+#dlg-risk .ocmp-note {margin:4px 0 0;color:var(--ink-3);}
+#dlg-risk .ocmp-meta {margin:8px 0 0;color:var(--ink-3);font-variant-numeric:tabular-nums;}
+#dlg-risk .ocmp-chart-wrap {margin-top:10px;max-width:760px;overflow:hidden;border:1px solid var(--line);border-radius:var(--r-card);background:color-mix(in srgb,var(--panel2) 76%,var(--panel));}
+#dlg-risk .ocmp-chart {display:block;width:100%;height:auto;min-height:300px;}
+#dlg-risk .ocmp-grid {stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke;}
+#dlg-risk .ocmp-tick,#dlg-risk .ocmp-axis,#dlg-risk .ocmp-label {fill:var(--ink-3);font-family:var(--font-mono);font-size:10px;}
+#dlg-risk .ocmp-axis {font-size:11px;font-weight:650;fill:var(--ink-2);}
+#dlg-risk .ocmp-label {font-size:10px;fill:var(--ink-2);pointer-events:none;}
+#dlg-risk .ocmp-trail {fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke;opacity:.5;}
+#dlg-risk .ocmp-trail--calm {stroke:var(--link);}
+#dlg-risk .ocmp-trail--fast {stroke:var(--act);}
+#dlg-risk .ocmp-point {cursor:pointer;outline:none;}
+#dlg-risk .ocmp-point .ocmp-dot {stroke:var(--panel);stroke-width:2;vector-effect:non-scaling-stroke;transition:r .14s ease,stroke-width .14s ease;}
+#dlg-risk .ocmp-point--calm .ocmp-dot {fill:var(--link);}
+#dlg-risk .ocmp-point--fast .ocmp-dot {fill:var(--act);}
+#dlg-risk .ocmp-point:focus-visible .ocmp-dot,#dlg-risk .ocmp-point.is-selected .ocmp-dot {stroke:var(--ink-1);stroke-width:3;}
+#dlg-risk .ocmp-point.is-selected .ocmp-label {fill:var(--ink-1);font-weight:750;}
+#dlg-risk .ocmp-legend {display:flex;flex-wrap:wrap;gap:8px 16px;margin:9px 0 0;font-size:var(--fs-label);color:var(--ink-2);}
+#dlg-risk .ocmp-key {display:inline-flex;align-items:center;gap:6px;}
+#dlg-risk .ocmp-key::before {content:"";width:16px;height:2px;border-radius:2px;background:var(--line);}
+#dlg-risk .ocmp-key--calm::before {background:var(--link);}
+#dlg-risk .ocmp-key--fast::before {background:var(--act);}
+#dlg-risk .ocmp-key--trail::before {height:1px;background:color-mix(in srgb,var(--link) 52%,transparent);}
+#dlg-risk .ocmp-readout {margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--panel2);max-width:760px;}
+#dlg-risk .ocmp-focus-head {display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+#dlg-risk .ocmp-focus-ticker {font-family:var(--font-mono);font-size:var(--fs-md);color:var(--ink-1);}
+#dlg-risk .ocmp-focus-state {font-size:var(--fs-label);font-weight:750;letter-spacing:.06em;}
+#dlg-risk .ocmp-focus-state--calm {color:var(--link);}
+#dlg-risk .ocmp-focus-state--fast {color:var(--act);}
+#dlg-risk .ocmp-metrics {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+#dlg-risk .ocmp-metric {min-width:0;padding-top:8px;border-top:1px solid var(--line);}
+#dlg-risk .ocmp-metric-top {display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+#dlg-risk .ocmp-metric-name {font-size:var(--fs-sm);color:var(--ink-1);}
+#dlg-risk .ocmp-metric-value {font-family:var(--font-mono);font-size:var(--fs-lg);font-variant-numeric:tabular-nums;color:var(--ink-1);}
+#dlg-risk .ocmp-metric-copy {margin:4px 0 0;font-size:var(--fs-label);line-height:1.5;color:var(--ink-2);}
+#dlg-risk .ocmp-receipt {margin:8px 0 0;color:var(--ink-3);font-family:var(--font-mono);}
+#dlg-risk .ocmp-foot {display:flex;align-items:flex-start;justify-content:space-between;gap:14px;max-width:760px;margin-top:10px;}
+#dlg-risk .ocmp-link {font-size:var(--fs-label);font-weight:650;white-space:nowrap;color:var(--link);text-decoration:none;}
+#dlg-risk .ocmp-link:hover {text-decoration:underline;}
+html[data-theme="light"] #dlg-risk .ocmp-chart-wrap,html[data-theme="light"] #dlg-risk .ocmp-readout {background:color-mix(in srgb,var(--panel2) 64%,var(--panel));box-shadow:none;}
+@media(max-width:640px) {
+  #dlg-risk .riskdlg-options-compare > summary {align-items:flex-start;flex-direction:column;justify-content:center;gap:2px;padding:7px 0;}
+  #dlg-risk .ocmp-chart {min-height:250px;}
+  #dlg-risk .ocmp-metrics {grid-template-columns:1fr;}
+  #dlg-risk .ocmp-foot {flex-direction:column;gap:7px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  #dlg-risk .ocmp-point .ocmp-dot {transition:none;}
+}
+
