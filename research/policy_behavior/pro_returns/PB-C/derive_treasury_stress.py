@@ -112,7 +112,7 @@ def read_year(year, instrument, cache):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", default=str(Path(__file__).parent))
-    parser.add_argument("--protocol", default="/workspace/scratch/7a0bb715b184/pbc/PB_C_ANNOUNCEMENT_STUDY_PREREG.md")
+    parser.add_argument("--protocol", default=str(Path(__file__).parent / "PB_C_ANNOUNCEMENT_STUDY_PREREG.md"))
     args = parser.parse_args()
     out = Path(args.out)
     cache = out / "local_inputs"

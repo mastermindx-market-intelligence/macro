@@ -1,0 +1,202 @@
+{
+  "selection": "First 2025 real10y prior5 exposed date, then seven calendar days; alphabetically first two frozen issuers, fixed before archive inspection.",
+  "window": [
+    "2025-04-11",
+    "2025-04-17"
+  ],
+  "selection_log": "PB_C_PROTOCOL_AMENDMENTS.md A5",
+  "issuer_days": [
+    {
+      "issuer": "AAPL",
+      "date": "2025-04-11",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "COMPLETE_WITHIN_ENUMERATED_FRAME",
+      "item_count": 0,
+      "root_ids": [],
+      "no_items_within_frame": true,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": false
+    },
+    {
+      "issuer": "AAPL",
+      "date": "2025-04-12",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "COMPLETE_WITHIN_ENUMERATED_FRAME",
+      "item_count": 0,
+      "root_ids": [],
+      "no_items_within_frame": true,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": false
+    },
+    {
+      "issuer": "AAPL",
+      "date": "2025-04-13",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "COMPLETE_WITHIN_ENUMERATED_FRAME",
+      "item_count": 0,
+      "root_ids": [],
+      "no_items_within_frame": true,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": false
+    },
+    {
+      "issuer": "AAPL",
+      "date": "2025-04-14",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "COMPLETE_WITHIN_ENUMERATED_FRAME",
+      "item_count": 1,
+      "root_ids": [
+        "PBC-N-AAPL-20250414-WATCH"
+      ],
+      "no_items_within_frame": false,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": false
+    },
+    {
+      "issuer": "AAPL",
+      "date": "2025-04-15",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "COMPLETE_WITHIN_ENUMERATED_FRAME",
+      "item_count": 1,
+      "root_ids": [
+        "PBC-N-AAPL-20250415-FILMMAKERS"
+      ],
+      "no_items_within_frame": false,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": false
+    },
+    {
+      "issuer": "AAPL",
+      "date": "2025-04-16",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "COMPLETE_WITHIN_ENUMERATED_FRAME",
+      "item_count": 1,
+      "root_ids": [
+        "PBC-N-AAPL-20250416-ENVIRONMENT"
+      ],
+      "no_items_within_frame": false,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": true
+    },
+    {
+      "issuer": "AAPL",
+      "date": "2025-04-17",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "COMPLETE_WITHIN_ENUMERATED_FRAME",
+      "item_count": 0,
+      "root_ids": [],
+      "no_items_within_frame": true,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": false
+    },
+    {
+      "issuer": "ADBE",
+      "date": "2025-04-11",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "UNKNOWN",
+      "item_count": null,
+      "root_ids": [],
+      "no_items_within_frame": null,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": null
+    },
+    {
+      "issuer": "ADBE",
+      "date": "2025-04-12",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "UNKNOWN",
+      "item_count": null,
+      "root_ids": [],
+      "no_items_within_frame": null,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": null
+    },
+    {
+      "issuer": "ADBE",
+      "date": "2025-04-13",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "UNKNOWN",
+      "item_count": null,
+      "root_ids": [],
+      "no_items_within_frame": null,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": null
+    },
+    {
+      "issuer": "ADBE",
+      "date": "2025-04-14",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "UNKNOWN",
+      "item_count": null,
+      "root_ids": [],
+      "no_items_within_frame": null,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": null
+    },
+    {
+      "issuer": "ADBE",
+      "date": "2025-04-15",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "UNKNOWN",
+      "item_count": null,
+      "root_ids": [],
+      "no_items_within_frame": null,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": null
+    },
+    {
+      "issuer": "ADBE",
+      "date": "2025-04-16",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "UNKNOWN",
+      "item_count": null,
+      "root_ids": [],
+      "no_items_within_frame": null,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": null
+    },
+    {
+      "issuer": "ADBE",
+      "date": "2025-04-17",
+      "source_frame": "Global English issuer newsroom archive",
+      "coverage": "UNKNOWN",
+      "item_count": null,
+      "root_ids": [],
+      "no_items_within_frame": null,
+      "no_material_support_anywhere": "UNKNOWN",
+      "unresolved_materiality_root": null
+    }
+  ],
+  "source_frame_evidence": [
+    {
+      "url": "https://www.apple.com/newsroom/archive/?page=21",
+      "opened": true,
+      "web_ref": "turn68view0"
+    },
+    {
+      "url": "https://www.apple.com/newsroom/archive/?page=22",
+      "opened": true,
+      "web_ref": "turn70view0"
+    },
+    {
+      "url": "https://www.apple.com/newsroom/archive/?page=23",
+      "opened": true,
+      "web_ref": "turn70view1"
+    }
+  ],
+  "apple_status": "Three source-frame items; two attention/marketing and one unresolved supplier commitment. Four dates have no items in this frame only. No clean all-week global no-support conclusion.",
+  "adobe_status": "Public news page exposed dynamic archive configuration; no complete dated source census could be obtained. Seven days UNKNOWN. No zeros imputed.",
+  "adobe_access_checks": [
+    {
+      "url": "https://news.adobe.com/news",
+      "status": "OPENED_STATIC_PAGE_NO_COMPLETE_ARCHIVE",
+      "web_ref": "turn70view2"
+    },
+    {
+      "url": "https://news.adobe.com/sitemap.xml",
+      "status": "INACCESSIBLE",
+      "web_ref": "turn70view3"
+    }
+  ],
+  "global_no_support_issuer_days_certified": 0
+}
