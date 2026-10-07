@@ -22,6 +22,7 @@ import copy
 import hashlib
 import json
 import logging
+import posixpath
 import re
 from datetime import date, datetime, timezone
 from functools import lru_cache
@@ -84,8 +85,8 @@ def _parse_stamp(value: object, field: str) -> datetime:
     return stamp.astimezone(timezone.utc)
 
 
-def _nominated_from_errors(nominated_from: str) -> list[str]:
-    """Vendor nominator rule (W-C3); each error starts with its reason token."""
+def nominated_from_errors(nominated_from: str) -> list[str]:
+    """The single nominator rule; materialize imports it — never re-implement it."""
     value = str(nominated_from or "").strip()
     if not _NOMINATED_FROM_RE.fullmatch(value):
         return [f"NOMINATED_FROM_GRAMMAR: nominated_from {value!r} is malformed"]
@@ -111,6 +112,42 @@ def _nominated_from_errors(nominated_from: str) -> list[str]:
             return [
                 f"NOMINATOR_FAMILY_UNRESOLVED: nominated_from {value!r} "
                 f"does not resolve to a house basket family"
+            ]
+    if value.startswith("research:"):
+        raw = value[len("research:"):].split("#", 1)[0]
+        if (
+            not raw
+            or raw.startswith("/")
+            or "\\" in raw
+            or any(segment == ".." for segment in raw.split("/"))
+        ):
+            return [
+                "NOMINATOR_PATH_UNSAFE: nominated_from "
+                f"{value!r} is not a relative house path"
+            ]
+        norm = posixpath.normpath(raw)
+        if norm in ("", "."):
+            return [
+                "NOMINATOR_PATH_UNSAFE: nominated_from "
+                f"{value!r} is not a relative house path"
+            ]
+        from engine.theme_graph import rights
+
+        family = rights.family_for_source_ref(norm) or rights.family_for_source_ref(
+            norm + "/"
+        )
+        if family is not None and family != "mastermind_curated":
+            return [
+                "VENDOR_NOMINATOR: nominated_from "
+                f"{value!r} resolves to source family {family!r}"
+            ]
+        if family is None and not (
+            norm.startswith("config/") or norm.startswith("research/")
+        ):
+            return [
+                "NOMINATOR_UNREGISTERED_SOURCE: nominated_from "
+                f"{value!r} maps to no registered source family and is outside "
+                "the house roots config/ and research/"
             ]
     return []
 
@@ -166,7 +203,7 @@ def _validate_hierarchy_row(row: dict) -> list[str]:
                     f"HIERARCHY_EPOCH: proposed_asserted_on {asserted_on!r} "
                     f"predates {HIERARCHY_EPOCH.isoformat()}"
                 )
-    out.extend(_nominated_from_errors(nominated_from))
+    out.extend(nominated_from_errors(nominated_from))
     if (
         row.get("proposed_by") == "llm_proposed"
         and str(row.get("status") or "") == "ratified"

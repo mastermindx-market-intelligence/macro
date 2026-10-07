@@ -131,7 +131,7 @@
         "required": ["kind", "proposed_by"]
       },
       "then": {
-        "properties": {"status": {"enum": ["proposed", "rejected"]}}
+        "properties": {"status": {"not": {"const": "ratified", "$comment": "LLM_HIERARCHY_NOT_RATIFIABLE: llm_proposed hierarchy rows may not be ratified"}}}
       }
     }
   ]

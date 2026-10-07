@@ -8,6 +8,7 @@ from types import SimpleNamespace
 
 import jsonschema
 import pytest
+import yaml
 
 from engine.theme_graph import probation, proposal_worklist
 from engine.theme_graph import ontology
@@ -523,3 +524,94 @@ def test_ratified_hierarchy_not_materialized_when_parent_of_expired():
     store = _store(nodes=nodes, edges=[edge], proposals=[proposal])
     result = compose_neighborhood(store, node_id=parent, asof="2026-10-08")
     assert result["curation"]["state"] == "RATIFIED_NOT_MATERIALIZED"
+
+
+@pytest.mark.parametrize(
+    "nominated_from",
+    [
+        "research:data/themes_heatmap/us.json",
+        "research:./data/themes_heatmap/us.json",
+        "research:data/themes_heatmap",
+        "research:data/baskets_china_ths/x.json",
+    ],
+)
+def test_research_vendor_path_nominator_refused(nominated_from):
+    errors = probation.nominated_from_errors(nominated_from)
+    assert len(errors) == 1
+    assert errors[0].startswith("VENDOR_NOMINATOR: ")
+
+    row = _hierarchy_row(
+        subject=_hierarchy_subject(nominated_from=nominated_from)
+    )
+    assert any(
+        error.startswith("VENDOR_NOMINATOR: ")
+        for error in probation.validate(row)
+    )
+
+
+def test_unregistered_research_source_refused():
+    errors = probation.nominated_from_errors(
+        "research:data/unregistered_x/y.json"
+    )
+    assert len(errors) == 1
+    assert errors[0].startswith("NOMINATOR_UNREGISTERED_SOURCE: ")
+
+
+@pytest.mark.parametrize(
+    "nominated_from",
+    [
+        "research:config/../data/themes_heatmap/us.json",
+        "research:research/../data/x.json",
+        "research:/etc/hosts",
+        "research:data\\themes_heatmap\\us.json",
+    ],
+)
+def test_unsafe_research_path_refused(nominated_from):
+    errors = probation.nominated_from_errors(nominated_from)
+    assert len(errors) == 1
+    assert errors[0].startswith("NOMINATOR_PATH_UNSAFE: ")
+
+
+@pytest.mark.parametrize(
+    "nominated_from",
+    [
+        "research:config/theme_pathways.yml",
+        "research:config/theme_thesis_registry.yml",
+        "research:research/energy/x.md",
+        "research:data/baskets/x.json",
+        "research:config/theme_pathways.yml#section",
+    ],
+)
+def test_house_research_paths_accepted(nominated_from):
+    assert probation.nominated_from_errors(nominated_from) == []
+
+
+def test_hierarchy_block_v1_nominators_validate_clean():
+    content = yaml.safe_load(
+        (ROOT / "research/theme_graph/hierarchy_content/HIERARCHY_BLOCK_V1.yaml")
+        .read_text()
+    )
+    values = [
+        entry["nominated_from"]
+        for entry in content["hierarchy"]["micro_themes"]
+    ]
+    assert values
+    assert [
+        (value, probation.nominated_from_errors(value))
+        for value in values
+        if probation.nominated_from_errors(value)
+    ] == []
+
+
+def test_llm_ratified_schema_message_carries_token():
+    row = _hierarchy_row(
+        proposed_by="llm_proposed",
+        status="ratified",
+        ratified_by="bot",
+        adjudicated_at="2026-10-08T00:00:00Z",
+    )
+    messages = [error.message for error in _VALIDATOR.iter_errors(row)]
+    assert any(
+        "LLM_HIERARCHY_NOT_RATIFIABLE" in message
+        for message in messages
+    )
