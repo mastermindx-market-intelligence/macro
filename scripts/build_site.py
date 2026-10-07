@@ -2399,6 +2399,43 @@ def _fear_greed_view() -> dict | None:
         return None
 
 
+
+
+def _options_compare_view() -> dict | None:
+    """Build the Macro relative-options map from the committed skew ledger only.
+
+    Offline-safe and display-only: this reads the same options_skew parquet that
+    already powers options.html, never opens the ThetaData chain store, and never
+    promotes the comparison into ranking, alert, entry, or forecast authority.
+    """
+    try:
+        from engine import options_compare as _oc
+        from engine import options_skew as _osk
+
+        latest = _osk.emit_from_ledger()
+        payload = _oc.build_compare(_osk.load_history(), latest)
+        if not payload:
+            return None
+
+        # Embed one inert JSON receipt for the dialog. Escape HTML-significant
+        # characters before Jinja marks it safe so a future unusual ticker/source
+        # string cannot terminate the application/json element.
+        raw = json.dumps(
+            payload,
+            ensure_ascii=False,
+            allow_nan=False,
+            separators=(",", ":"),
+        )
+        payload["payload_json"] = (
+            raw.replace("&", "\\u0026")
+            .replace("<", "\\u003c")
+            .replace(">", "\\u003e")
+        )
+        return payload
+    except Exception as e:  # noqa: BLE001 - additive display surface, never fatal
+        log.warning("options compare view failed (%s)", e)
+        return None
+
 def _vol_weather_view() -> dict | None:
     """Load vol weather chips from site/basketdata/vol_weather.json (written by
     build_theme_addons). JSON-or-None only — never falls back to compute.
@@ -7137,6 +7174,7 @@ def main() -> int:
         froth_fragility=_froth_fragility_view(latest),  # euphoria + hidden-distribution top-risk gauge (display-only)
         fear_greed=_fear_greed_view(),    # Fear/Greed composite dial (display-only, P1.2)
         vol_weather=_vol_weather_view(),  # VSB W3: vol weather chips (display-only)
+        options_compare=_options_compare_view(),  # relative options pricing map (display-only)
         breadth_split=_breadth_split_view(),  # VSB W4: AI vs non-AI breadth (display-only)
         evw_snap=_evw_snapshot_view(),  # W4 EVW: event-window phase + collision states (display-only)
         sector_heat=_sector_heat_view(),  # compact sector-heat strip for macro.html (display-only)

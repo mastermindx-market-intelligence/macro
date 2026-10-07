@@ -1,0 +1,278 @@
+{% macro teaser(oc) -%}
+{% if oc %}
+<section class="oc-teaser" aria-labelledby="oc-teaser-title">
+  <div class="oc-teaser-copy">
+    <div class="oc-kicker"><span class="l-en">OPTIONS PRICING</span><span class="l-zh">期权定价</span></div>
+    <h3 id="oc-teaser-title"><span class="l-en">Compare ticker insurance</span><span class="l-zh">对比个股保险定价</span></h3>
+    <p>
+      <span class="l-en">See where near-month option volatility and downside protection sit versus each ticker's own history.</span>
+      <span class="l-zh">查看近月期权波动率与下行保护，相对每只股票自身历史处于什么位置。</span>
+    </p>
+    <div class="oc-teaser-meta">
+      <span class="oc-zone-mini is-fast">{{ oc.fast_count }} <span class="l-en">fast</span><span class="l-zh">快速</span></span>
+      <span class="oc-zone-mini">{{ oc.calm_count }} <span class="l-en">calm</span><span class="l-zh">平稳</span></span>
+      <span class="oc-asof">{{ oc.asof }}</span>
+    </div>
+    {% if oc.fast_names %}
+    <div class="oc-teaser-fast">
+      <span class="l-en">Fastest movers:</span><span class="l-zh">变化最快：</span>
+      <b>{{ oc.fast_names[:3] | join(', ') }}</b>{% if oc.fast_count > 3 %}<span> +{{ oc.fast_count - 3 }}</span>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+  <button class="oc-open" type="button" onclick="mx5OpenDlg('dlg-options-compare')" aria-haspopup="dialog" aria-controls="dlg-options-compare">
+    <span class="l-en">Compare tickers</span><span class="l-zh">对比个股</span><span aria-hidden="true">→</span>
+  </button>
+</section>
+{% endif %}
+{%- endmacro %}
+
+{% macro dialog(oc) -%}
+{% if oc %}
+<style>
+.oc-teaser{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:18px 0 8px;padding:17px 18px;border:1px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--panel2) 82%,transparent)}
+.oc-teaser-copy{min-width:0}.oc-kicker{font:700 var(--fs-label)/1.2 var(--font-mono);letter-spacing:.09em;color:var(--info);margin-bottom:6px}.oc-teaser h3{margin:0;color:var(--text);font:700 var(--fs-h2)/1.25 var(--font-ui)}.oc-teaser p{max-width:690px;margin:6px 0 0;color:var(--muted);font:400 var(--fs-sm)/1.5 var(--font-ui)}.oc-teaser-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}.oc-zone-mini,.oc-asof{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:var(--muted);font:600 var(--fs-micro)/1.1 var(--font-mono)}.oc-zone-mini.is-fast{color:var(--act);border-color:color-mix(in srgb,var(--act) 45%,var(--line))}.oc-teaser-fast{margin-top:8px;color:var(--muted);font:500 var(--fs-sm)/1.35 var(--font-ui)}.oc-teaser-fast b{color:var(--text);font-family:var(--font-mono)}.oc-open{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:9px 13px;border:1px solid color-mix(in srgb,var(--info) 55%,var(--line));border-radius:11px;background:color-mix(in srgb,var(--info) 12%,var(--panel));color:var(--text);font:700 var(--fs-sm)/1 var(--font-ui);cursor:pointer}.oc-open:hover{background:color-mix(in srgb,var(--info) 20%,var(--panel))}.oc-open:focus-visible,.oc-select:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+
+.oc-dlg-panel{width:min(1120px,calc(100vw - 28px));max-width:1120px}.oc-headline{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:18px}.oc-title-wrap{min-width:0}.oc-title-wrap h2{margin:2px 0 6px;color:var(--text);font:750 var(--fs-h1)/1.15 var(--font-ui)}.oc-title-wrap p{max-width:780px;margin:0;color:var(--muted);font:400 var(--fs-sm)/1.5 var(--font-ui)}.oc-select-wrap{display:flex;flex-direction:column;gap:6px;min-width:150px;color:var(--muted);font:600 var(--fs-micro)/1 var(--font-mono);letter-spacing:.04em}.oc-select{min-height:39px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--text);padding:7px 30px 7px 10px;font:700 var(--fs-sm)/1.1 var(--font-mono)}
+.oc-summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px}.oc-summary-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:var(--muted);font:600 var(--fs-micro)/1 var(--font-mono)}.oc-swatch{width:8px;height:8px;border-radius:50%;background:var(--info)}.oc-swatch.fast{background:var(--act)}.oc-swatch.trail{width:18px;height:2px;border-radius:0;background:linear-gradient(90deg,var(--info),var(--act));opacity:.55}
+.oc-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(290px,.72fr);gap:18px;align-items:start}.oc-chart-card,.oc-read-card{border:1px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--panel2) 82%,transparent)}.oc-chart-card{padding:14px}.oc-chart-copy{display:flex;justify-content:space-between;gap:14px;margin:0 3px 10px}.oc-chart-copy p{margin:0;color:var(--muted);font:400 var(--fs-sm)/1.45 var(--font-ui)}.oc-chart-copy b{color:var(--text);font-weight:650}.oc-chart-scroll{width:100%;overflow:hidden}.oc-chart{display:block;width:100%;height:auto;min-height:380px}.oc-chart .oc-gridline{stroke:var(--line);stroke-width:1;opacity:.56}.oc-chart .oc-axistext{fill:var(--muted);font:500 11px/1 var(--font-mono)}.oc-chart .oc-axislabel{fill:var(--muted);font:650 12px/1 var(--font-ui)}.oc-trail{fill:none;stroke-width:1.35;opacity:.13;pointer-events:none}.oc-trail[data-zone="calm"]{stroke:var(--info)}.oc-trail[data-zone="fast"]{stroke:var(--act);opacity:.25}.oc-dot{cursor:pointer;stroke:color-mix(in srgb,var(--panel) 85%,transparent);stroke-width:1}.oc-dot[data-zone="calm"]{fill:var(--info);opacity:.72}.oc-dot[data-zone="fast"]{fill:var(--act);opacity:.9}.oc-dot:hover{opacity:1;stroke:var(--text);stroke-width:1.5}.oc-selected-ring{fill:none;stroke:var(--text);stroke-width:2.4;pointer-events:none}.oc-selected-label{fill:var(--text);font:750 13px/1 var(--font-mono);paint-order:stroke;stroke:var(--panel);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
+.oc-side{display:grid;gap:12px}.oc-selected-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 2px 0}.oc-selected-name{font:800 var(--fs-num-lg)/1 var(--font-mono);color:var(--text)}.oc-zone{border:1px solid var(--line);border-radius:999px;padding:5px 8px;color:var(--info);font:700 var(--fs-micro)/1 var(--font-mono);text-transform:uppercase;letter-spacing:.06em}.oc-zone[data-zone="fast"]{color:var(--act);border-color:color-mix(in srgb,var(--act) 45%,var(--line))}
+.oc-read-card{padding:15px 16px}.oc-read-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}.oc-read-label{color:var(--text);font:700 var(--fs-md)/1.25 var(--font-ui)}.oc-read-value{color:var(--text);font:800 var(--fs-num-lg)/1 var(--font-mono)}.oc-read-card p{margin:8px 0 0;color:var(--muted);font:400 var(--fs-sm)/1.55 var(--font-ui)}.oc-read-metric{display:flex;gap:12px;flex-wrap:wrap;margin-top:11px}.oc-read-metric span{border-top:1px solid var(--line);padding-top:8px;color:var(--muted);font:600 var(--fs-micro)/1.25 var(--font-mono)}.oc-read-metric b{color:var(--text);font-weight:700}
+.oc-method{margin-top:16px;border-top:1px solid var(--line);padding-top:13px}.oc-method summary{cursor:pointer;color:var(--muted);font:650 var(--fs-sm)/1.3 var(--font-ui)}.oc-method p{max-width:900px;margin:9px 0 0;color:var(--muted);font:400 var(--fs-sm)/1.55 var(--font-ui)}.oc-source{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px;color:var(--muted);font:500 var(--fs-micro)/1.35 var(--font-mono)}.oc-source .warn{color:var(--warn)}
+@media(max-width:820px){.oc-layout{grid-template-columns:1fr}.oc-chart{min-height:310px}.oc-dlg-panel{width:min(100vw - 16px,1120px)}.oc-headline{align-items:stretch;flex-direction:column}.oc-select-wrap{width:100%}.oc-teaser{align-items:flex-start;flex-direction:column}.oc-open{width:100%;justify-content:center}}
+@media(max-width:520px){.oc-chart-card{padding:9px}.oc-chart{min-height:280px}.oc-title-wrap h2{font-size:var(--fs-num-lg)}.oc-summary{gap:6px}.oc-read-card{padding:13px}.oc-teaser{padding:14px}.oc-dlg-panel .mx5-dlg-body{padding-left:12px;padding-right:12px}}
+</style>
+
+<div class="mx5-dlg" id="dlg-options-compare" role="dialog" aria-modal="true" tabindex="-1">
+  <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
+  <div class="mx5-dlg-panel oc-dlg-panel">
+    <div class="mx5-dlg-header">
+      <span class="mx5-dlg-title"><span class="l-en">Options Pricing Map</span><span class="l-zh">期权定价地图</span> <span class="riskdlg-asof">{{ oc.asof }}</span></span>
+      <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
+    </div>
+    <div class="mx5-dlg-body">
+      <div class="oc-headline">
+        <div class="oc-title-wrap">
+          <div class="oc-kicker"><span class="l-en">COMPARE TICKERS</span><span class="l-zh">个股对比</span></div>
+          <h2><span class="l-en">What is expensive relative to its own history?</span><span class="l-zh">相对自身历史，哪些期权正在变贵？</span></h2>
+          <p>
+            <span class="l-en">Further right means selected near-month ATM implied volatility is richer than usual for that ticker. Higher means downside put skew is richer than usual. Tap a dot or choose a ticker for the exact read.</span>
+            <span class="l-zh">越靠右，表示该股票选定近月平值隐含波动率相对自身历史越贵；越靠上，表示下行看跌偏斜相对历史越贵。点选圆点或选择股票查看详情。</span>
+          </p>
+        </div>
+        <label class="oc-select-wrap" for="oc-ticker-select">
+          <span><span class="l-en">SELECT TICKER</span><span class="l-zh">选择股票</span></span>
+          <select class="oc-select" id="oc-ticker-select" aria-label="Select ticker"></select>
+        </label>
+      </div>
+
+      <div class="oc-summary" aria-label="Map legend">
+        <span class="oc-summary-pill"><i class="oc-swatch"></i>{{ oc.calm_count }} <span class="l-en">calm zone</span><span class="l-zh">平稳区</span></span>
+        <span class="oc-summary-pill"><i class="oc-swatch fast"></i>{{ oc.fast_count }} <span class="l-en">fast zone</span><span class="l-zh">快速区</span></span>
+        <span class="oc-summary-pill"><i class="oc-swatch trail"></i><span class="l-en">last {{ oc.trail_sessions }} readings</span><span class="l-zh">最近 {{ oc.trail_sessions }} 次读数</span></span>
+      </div>
+
+      <div class="oc-layout">
+        <section class="oc-chart-card" aria-labelledby="oc-chart-title">
+          <div class="oc-chart-copy">
+            <p id="oc-chart-title"><b><span class="l-en">Relative option pricing</span><span class="l-zh">相对期权定价</span></b><br><span class="l-en">Each axis compares a ticker only with itself.</span><span class="l-zh">每条轴都只与该股票自身历史比较。</span></p>
+          </div>
+          <div class="oc-chart-scroll">
+            <svg class="oc-chart" id="oc-options-chart" viewBox="0 0 760 520" role="img" aria-label="Scatter plot comparing option pricing and downside protection across tickers"></svg>
+          </div>
+          <noscript><p><span class="l-en">Enable JavaScript to use the interactive ticker map.</span><span class="l-zh">请启用 JavaScript 以使用交互式个股地图。</span></p></noscript>
+        </section>
+
+        <aside class="oc-side" aria-live="polite">
+          <div class="oc-selected-head">
+            <span class="oc-selected-name" data-oc-ticker>—</span>
+            <span class="oc-zone" data-oc-zone="calm"><span data-oc-zone-label>—</span></span>
+          </div>
+
+          <section class="oc-read-card">
+            <div class="oc-read-top">
+              <span class="oc-read-label"><span data-oc-ticker>—</span> <span class="l-en">options</span><span class="l-zh">期权</span></span>
+              <strong class="oc-read-value" data-oc-options>—</strong>
+            </div>
+            <p><span class="l-en" data-oc-options-copy-en></span><span class="l-zh" data-oc-options-copy-zh></span></p>
+            <div class="oc-read-metric">
+              <span><span class="l-en">ATM IV</span><span class="l-zh">平值 IV</span> <b data-oc-atm>—</b></span>
+              <span><span class="l-en">Implied move</span><span class="l-zh">隐含波动</span> <b data-oc-move>—</b></span>
+            </div>
+          </section>
+
+          <section class="oc-read-card">
+            <div class="oc-read-top">
+              <span class="oc-read-label"><span data-oc-ticker>—</span> <span class="l-en">protection</span><span class="l-zh">下行保护</span></span>
+              <strong class="oc-read-value" data-oc-protection>—</strong>
+            </div>
+            <p><span class="l-en" data-oc-protection-copy-en></span><span class="l-zh" data-oc-protection-copy-zh></span></p>
+            <div class="oc-read-metric">
+              <span><span class="l-en">Put skew</span><span class="l-zh">看跌偏斜</span> <b data-oc-skew>—</b></span>
+              <span><span class="l-en">History</span><span class="l-zh">历史窗口</span> <b data-oc-history>—</b></span>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <details class="oc-method">
+        <summary><span class="l-en">How this map is built</span><span class="l-zh">这张地图如何构建</span></summary>
+        <p>
+          <span class="l-en">The options axis uses the existing selected near-month ATM call IV. The protection axis uses the existing 25-delta put IV minus ATM call IV. Each reading is placed against up to {{ oc.window_sessions }} prior valid sessions for the same ticker; the current session never ranks against itself. Fast zone means the fastest tenth by movement across the two axes over the last {{ oc.trail_sessions }} valid readings. It is an activity label only, not a bullish/bearish call or expected-return forecast. The implied move is the selected annualized IV multiplied by the square root of calendar tenor over 365, shown as a one-standard-deviation pricing reference rather than a physical forecast.</span>
+          <span class="l-zh">期权横轴使用现有系统选定的近月平值看涨期权隐含波动率；保护纵轴使用现有的 25 Delta 看跌期权 IV 减去平值看涨 IV。每次读数只与同一股票此前最多 {{ oc.window_sessions }} 个有效交易日比较，当前交易日不会与自身比较。快速区表示最近 {{ oc.trail_sessions }} 次有效读数在两条轴上移动最快的十分之一股票，仅代表定价变化速度，不代表看多、看空或预期收益。隐含波动范围按选定年化 IV 乘以期限天数除以 365 的平方根计算，只是一个标准差的定价参考，并非真实世界预测。</span>
+        </p>
+      </details>
+
+      <div class="oc-source">
+        <span><span class="l-en">Source:</span><span class="l-zh">来源：</span> options_skew · {{ oc.history_sources | join(' + ') if oc.history_sources else 'ledger' }}</span>
+        <span>· {{ oc.n }} <span class="l-en">eligible names</span><span class="l-zh">只可用股票</span></span>
+        {% if oc.source_break and oc.source_break_date %}
+        <span class="warn">· <span class="l-en">history crosses a source handoff on {{ oc.source_break_date }}</span><span class="l-zh">历史序列在 {{ oc.source_break_date }} 跨越数据源切换</span></span>
+        {% endif %}
+        {% if oc.source_state and oc.source_state != 'ok' %}
+        <span class="warn">· {{ oc.source_state }}{% if oc.stale_days is not none %} · {{ oc.stale_days }}d{% endif %}</span>
+        {% endif %}
+        <span>· <span class="l-en">context only; no direction or return forecast</span><span class="l-zh">仅作背景信息；不预测方向或收益</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="options-compare-data">{{ oc.payload_json | safe }}</script>
+<script>
+(function(){
+  function initOptionsCompare(){
+    var raw = document.getElementById('options-compare-data');
+    var svg = document.getElementById('oc-options-chart');
+    var select = document.getElementById('oc-ticker-select');
+    if(!raw || !svg || !select || raw.dataset.ready === '1') return;
+    raw.dataset.ready = '1';
+
+    var data;
+    try { data = JSON.parse(raw.textContent || '{}'); } catch(e) { return; }
+    var names = data.names || {};
+    var tickers = Object.keys(names).sort();
+    if(!tickers.length) return;
+
+    var NS = 'http://www.w3.org/2000/svg';
+    var W = 760, H = 520, L = 62, R = 24, T = 22, B = 62;
+    var PW = W - L - R, PH = H - T - B;
+    function sx(v){ return L + Math.max(0, Math.min(100, Number(v) || 0)) / 100 * PW; }
+    function sy(v){ return T + (100 - Math.max(0, Math.min(100, Number(v) || 0))) / 100 * PH; }
+    function add(tag, attrs, text, parent){
+      var node = document.createElementNS(NS, tag);
+      Object.keys(attrs || {}).forEach(function(k){ node.setAttribute(k, String(attrs[k])); });
+      if(text !== undefined && text !== null) node.textContent = String(text);
+      (parent || svg).appendChild(node);
+      return node;
+    }
+    function pct(v){ return Math.round(Number(v) || 0) + '%'; }
+    function one(v){ return (Number(v) || 0).toFixed(1); }
+    function signed(v){
+      var n = Number(v) || 0;
+      return (n > 0 ? '+' : (n < 0 ? '−' : '')) + Math.abs(n).toFixed(2) + ' vol pts';
+    }
+    function setAll(selector, value){
+      document.querySelectorAll(selector).forEach(function(el){ el.textContent = value; });
+    }
+
+    [0,25,50,75,100].forEach(function(v){
+      add('line',{x1:sx(v),y1:T,x2:sx(v),y2:H-B,'class':'oc-gridline'});
+      add('line',{x1:L,y1:sy(v),x2:W-R,y2:sy(v),'class':'oc-gridline'});
+      if(v === 0 || v === 50 || v === 100){
+        add('text',{x:sx(v),y:H-B+21,'text-anchor':'middle','class':'oc-axistext'},v+'%');
+        add('text',{x:L-9,y:sy(v)+4,'text-anchor':'end','class':'oc-axistext'},v+'%');
+      }
+    });
+    add('text',{x:W-R,y:H-14,'text-anchor':'end','class':'oc-axislabel'},'Options pricier →');
+    var yl = add('text',{x:17,y:T,'text-anchor':'start','class':'oc-axislabel'},'Protection pricier →');
+    yl.setAttribute('transform','rotate(-90 17 '+T+') translate(-'+PH+' 0)');
+
+    var trails = add('g',{'aria-hidden':'true'});
+    tickers.forEach(function(ticker){
+      var row = names[ticker] || {};
+      var trail = row.trail || [];
+      if(trail.length < 2) return;
+      var pts = trail.map(function(p){ return sx(p.x)+','+sy(p.y); }).join(' ');
+      add('polyline',{points:pts,'class':'oc-trail','data-zone':row.zone || 'calm'},null,trails);
+    });
+
+    var points = add('g',{'aria-hidden':'true'});
+    tickers.forEach(function(ticker){
+      var row = names[ticker] || {};
+      var c = add('circle',{
+        cx:sx(row.options_pct),cy:sy(row.protection_pct),r:(row.zone === 'fast' ? 5.7 : 4.7),
+        'class':'oc-dot','data-zone':row.zone || 'calm','data-ticker':ticker
+      },null,points);
+      add('title',{},ticker+' · options '+pct(row.options_pct)+' · protection '+pct(row.protection_pct),c);
+      c.addEventListener('click',function(){ choose(ticker); });
+    });
+
+    var ring = add('circle',{r:9,'class':'oc-selected-ring','aria-hidden':'true'});
+    var label = add('text',{'class':'oc-selected-label','aria-hidden':'true'},'');
+
+    tickers.forEach(function(ticker){
+      var opt = document.createElement('option');
+      opt.value = ticker;
+      opt.textContent = ticker;
+      select.appendChild(opt);
+    });
+
+    function choose(ticker){
+      var row = names[ticker];
+      if(!row) return;
+      select.value = ticker;
+      setAll('[data-oc-ticker]',ticker);
+      setAll('[data-oc-options]',pct(row.options_pct));
+      setAll('[data-oc-protection]',pct(row.protection_pct));
+      setAll('[data-oc-atm]',(Number(row.atm_call_iv)*100).toFixed(1)+'%');
+      setAll('[data-oc-move]','±'+one(row.expected_move_pct)+'%');
+      setAll('[data-oc-skew]',signed(row.skew_vol_points));
+      setAll('[data-oc-history]',String(row.history_n)+' sessions');
+
+      var zone = document.querySelector('[data-oc-zone]');
+      var zoneLabel = document.querySelector('[data-oc-zone-label]');
+      if(zone){ zone.dataset.zone = row.zone || 'calm'; }
+      if(zoneLabel){ zoneLabel.textContent = (row.zone === 'fast' ? 'FAST' : 'CALM'); }
+
+      var trail = row.trail || [];
+      var prior = trail.length > 1 ? trail[0] : null;
+      var optEn = 'Near-month ATM option volatility sits above '+Math.round(row.options_pct)+'% of the prior '+row.history_n+' sessions.';
+      var optZh = '近月平值期权隐含波动率高于此前 '+row.history_n+' 个交易日中的 '+Math.round(row.options_pct)+'%。';
+      if(prior){
+        optEn += ' At the start of the '+data.trail_sessions+'-reading trail ('+prior.date+'), it was at '+Math.round(prior.x)+'%.';
+        optZh += ' 在这 '+data.trail_sessions+' 次读数轨迹起点（'+prior.date+'），该位置为 '+Math.round(prior.x)+'%。';
+      }
+      optEn += ' The selected '+Math.round(row.tenor_days)+'-day annualized IV implies about a '+one(row.expected_move_pct)+'% one-standard-deviation move through expiry.';
+      optZh += ' 当前选定 '+Math.round(row.tenor_days)+' 天年化 IV 对应到期前约 '+one(row.expected_move_pct)+'% 的一个标准差定价波动。';
+
+      var skew = Number(row.skew_vol_points) || 0;
+      var protEn = 'Downside protection sits above '+Math.round(row.protection_pct)+'% of the prior '+row.history_n+' sessions. The selected 25-delta put IV is '+Math.abs(skew).toFixed(2)+' vol points '+(skew >= 0 ? 'above' : 'below')+' ATM call IV.';
+      var protZh = '下行保护高于此前 '+row.history_n+' 个交易日中的 '+Math.round(row.protection_pct)+'%。选定的 25 Delta 看跌 IV 比平值看涨 IV '+(skew >= 0 ? '高' : '低')+' '+Math.abs(skew).toFixed(2)+' 个波动率点。';
+      setAll('[data-oc-options-copy-en]',optEn);
+      setAll('[data-oc-options-copy-zh]',optZh);
+      setAll('[data-oc-protection-copy-en]',protEn);
+      setAll('[data-oc-protection-copy-zh]',protZh);
+
+      var cx = sx(row.options_pct), cy = sy(row.protection_pct);
+      ring.setAttribute('cx',cx); ring.setAttribute('cy',cy);
+      label.textContent = ticker;
+      var rightSide = cx > W - 130;
+      label.setAttribute('x',rightSide ? cx - 11 : cx + 11);
+      label.setAttribute('y',Math.max(T+14,Math.min(H-B-5,cy-8)));
+      label.setAttribute('text-anchor',rightSide ? 'end' : 'start');
+    }
+
+    select.addEventListener('change',function(){ choose(select.value); });
+    choose((data.default_ticker && names[data.default_ticker]) ? data.default_ticker : tickers[0]);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded',initOptionsCompare,{once:true});
+  } else {
+    initOptionsCompare();
+  }
+})();
+</script>
+{% endif %}
+{%- endmacro %}
