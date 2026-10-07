@@ -1,47 +1,33 @@
 {
-  "appended": 3,
-  "asof": "2026-10-02",
+  "appended": 0,
+  "asof": "2026-10-05",
   "candidates": {
-    "R": 0,
-    "T": 5,
-    "W": 5
+    "R": 2,
+    "T": 8,
+    "W": 4
   },
   "deduped": {
-    "R": 0,
-    "T": 4,
-    "W": 3
+    "R": 2,
+    "T": 8,
+    "W": 4
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-10-02",
-      "consulted": true,
-      "n_keys": 27,
-      "n_themes": 18,
-      "ok": true,
-      "reason": null,
-      "source": "site/basketdata/foresight_cascade.json"
+      "consulted": false
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": true,
-      "null_reasons": {
-        "ohlcv_absent": 9
-      },
+      "consulted": false,
+      "null_reasons": {},
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {
-        "Industrial Automation": {
-          "theme_thrust_frac": 0.2857,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        }
-      },
+      "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 28,
-      "tickers_read": 37
+      "tickers_ok": 0,
+      "tickers_read": 0
     },
     "keys": [
       "relay_count_3d",
@@ -59,33 +45,17 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": true,
-      "high_lookback": 63,
-      "members_indexed": 122,
-      "n_covered": 0,
-      "reason": null,
-      "window_sessions": 21
+      "consulted": false
     },
     "turnover": {
-      "consulted": true,
-      "last_session": "2026-10-02",
-      "n_tickers": 1547,
-      "ok": true,
-      "reason": null,
-      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
-      "window_max": 60
+      "consulted": false
     }
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": true,
-      "direction": "bull",
-      "grid": "W",
-      "horizon": "13w",
-      "n_asked": 2,
-      "n_covered": 2,
-      "reason": null,
-      "source": "engine.event_atlas.receipt"
+      "consulted": false,
+      "n_asked": 0,
+      "n_covered": 0
     },
     "enabled": true,
     "keys": [
@@ -107,13 +77,8 @@
   },
   "flag_tickers": {
     "R": [],
-    "T": [
-      "HON"
-    ],
-    "W": [
-      "RKLB",
-      "KMT"
-    ]
+    "T": [],
+    "W": []
   },
   "n_universe": 1493,
   "overflow": {
@@ -121,41 +86,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-03 10:36:04",
-  "runtime_s": 106.6,
+  "run_utc": "2026-10-06 15:59:12",
+  "runtime_s": 101.9,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 0,
-    "asof": "2026-10-02",
-    "n_members": 122,
+    "age_days": -1,
+    "asof": "2026-10-06",
+    "n_members": 127,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.415,
+        "emerging_score": 3.009,
         "rank": 1,
-        "theme": "Semiconductors"
-      },
-      {
-        "emerging_score": 2.127,
-        "rank": 2,
-        "theme": "Industrial Automation"
-      },
-      {
-        "emerging_score": 1.744,
-        "rank": 3,
-        "theme": "Robotics"
-      },
-      {
-        "emerging_score": 1.587,
-        "rank": 4,
         "theme": "Biometrics"
       },
       {
-        "emerging_score": 1.587,
+        "emerging_score": 2.492,
+        "rank": 2,
+        "theme": "Semiconductors"
+      },
+      {
+        "emerging_score": 1.838,
+        "rank": 3,
+        "theme": "Industrial Automation"
+      },
+      {
+        "emerging_score": 1.552,
+        "rank": 4,
+        "theme": "Education Technology"
+      },
+      {
+        "emerging_score": 1.381,
         "rank": 5,
-        "theme": "Cybersecurity"
+        "theme": "Social Media"
       }
     ]
   },
@@ -164,16 +129,16 @@
       "2B",
       "3B"
     ],
-    "aligned": 5,
-    "asof_max": "2026-10-02",
+    "aligned": 4,
+    "asof_max": "2026-10-05",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-02",
+    "asof_run": "2026-10-05",
     "evaluated": 713,
     "fresh": 5,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 21.0,
+    "runtime_s": 19.3,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 61,

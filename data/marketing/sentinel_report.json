@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-10-03T10:18:02Z",
-  "as_of": "2026-10-03",
+  "produced_at": "2026-10-06T15:48:26Z",
+  "as_of": "2026-10-06",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 33,
-    "passed": 32,
+    "items": 36,
+    "passed": 35,
     "quarantined": 1,
     "quarantined_policy": 1,
     "quarantined_overflow": 0,
@@ -20,279 +20,303 @@
   },
   "quarantined": [
     {
-      "id": "post-theme-006",
-      "account": "cici",
-      "slot": "D1-S2",
-      "type": "theme_list",
-      "cashtag": "$OUST",
-      "headline": "Industrial Automation ripping, +1.7% avg on Friday",
+      "id": "post-founder-005",
+      "account": "founder",
+      "slot": "D1-S5",
+      "type": "signal",
+      "cashtag": "$CRI",
+      "headline": "",
       "class": "policy",
       "reasons": [
-        "near_dup:post-theme-003"
+        "near_dup:post-flagship-049"
       ]
     }
   ],
   "passed": [
     {
-      "id": "post-flagship-012",
+      "id": "post-flagship-010",
       "account": "flagship",
-      "slot": "D1-S12",
-      "type": "signal",
-      "cashtag": "$EGBN",
-      "headline": ""
+      "slot": "D1-S10",
+      "type": "receipt",
+      "cashtag": "$ATR",
+      "headline": "$ATR setup remains inactive"
     },
     {
-      "id": "post-flagship-013",
+      "id": "post-flagship-022",
       "account": "flagship",
-      "slot": "D1-S13",
-      "type": "signal",
-      "cashtag": "$KLAC",
-      "headline": "$KLAC is still inside its main volume range"
-    },
-    {
-      "id": "post-flagship-019",
-      "account": "flagship",
-      "slot": "D1-S19",
+      "slot": "D1-S22",
       "type": "chart",
-      "cashtag": "$PVH",
+      "cashtag": "$ECG",
+      "headline": "$ECG at the line."
+    },
+    {
+      "id": "post-flagship-025",
+      "account": "flagship",
+      "slot": "D1-S25",
+      "type": "signal",
+      "cashtag": "$AZZ",
       "headline": ""
     },
     {
-      "id": "post-flagship-024",
+      "id": "post-flagship-027",
       "account": "flagship",
-      "slot": "D1-S24",
+      "slot": "D1-S27",
       "type": "chart",
-      "cashtag": "$FIX",
+      "cashtag": "$SYF",
+      "headline": "$SYF's 4-week slide found 71"
+    },
+    {
+      "id": "post-flagship-035",
+      "account": "flagship",
+      "slot": "D1-S35",
+      "type": "signal",
+      "cashtag": "$PLUS",
       "headline": ""
+    },
+    {
+      "id": "post-flagship-039",
+      "account": "flagship",
+      "slot": "D1-S39",
+      "type": "signal",
+      "cashtag": "$BURL",
+      "headline": "$BURL at the bottom of its six-month volume range"
     },
     {
       "id": "post-flagship-049",
       "account": "flagship",
       "slot": "D1-S49",
       "type": "chart",
-      "cashtag": "$LMAT",
-      "headline": "$LMAT is back near its low"
+      "cashtag": "$CRI",
+      "headline": "$CRI is testing the floor of its six-month range"
     },
     {
       "id": "post-flagship-051",
       "account": "flagship",
       "slot": "D1-S51",
       "type": "signal",
-      "cashtag": "$ROK",
-      "headline": "$ROK buyers keep showing up at 432"
+      "cashtag": "$CENT",
+      "headline": "$CENT tests the same floor again"
     },
     {
       "id": "post-conf-flagship-001",
       "account": "flagship",
       "slot": "CONF-01",
       "type": "signal",
-      "cashtag": "$DVN",
-      "headline": "$DVN just lined up a pattern we track."
+      "cashtag": "$CTVA",
+      "headline": "$CTVA just lined up a pattern we track."
     },
     {
       "id": "post-theme-003",
       "account": "flagship",
       "slot": "D1-S2",
       "type": "theme_list",
-      "cashtag": "$WOLF",
-      "headline": "Semiconductors ripping, +2.7% avg on Friday"
+      "cashtag": "$PTC",
+      "headline": "Software ripping, +2.4% avg on Monday"
     },
     {
       "id": "post-congress-001",
       "account": "flagship",
       "slot": "D1-S9",
       "type": "congress",
-      "cashtag": "$MRSH",
+      "cashtag": "$JPM",
       "headline": ""
     },
     {
-      "id": "post-insider-008",
-      "account": "flagship",
-      "slot": "D1-S23",
-      "type": "insider",
-      "cashtag": "$GBR",
-      "headline": ""
+      "id": "post-founder-001",
+      "account": "founder",
+      "slot": "D1-S1",
+      "type": "chart",
+      "cashtag": "$MTUS",
+      "headline": "$MTUS retakes the August buyers"
     },
     {
-      "id": "post-founder-017",
+      "id": "post-founder-011",
       "account": "founder",
-      "slot": "D1-S17",
-      "type": "signal",
-      "cashtag": "$NTCT",
-      "headline": "$NTCT keeps defending the same cost basis"
-    },
-    {
-      "id": "post-founder-029",
-      "account": "founder",
-      "slot": "D1-S29",
-      "type": "signal",
-      "cashtag": "$MKSI",
-      "headline": ""
-    },
-    {
-      "id": "post-founder-032",
-      "account": "founder",
-      "slot": "D1-S32",
-      "type": "receipt",
-      "cashtag": "$ITW",
-      "headline": "$ITW prints its narrowest range in 7 sessions"
-    },
-    {
-      "id": "post-founder-037",
-      "account": "founder",
-      "slot": "D1-S37",
+      "slot": "D1-S11",
       "type": "watchlist",
-      "cashtag": "$LMAT",
-      "headline": "$LMAT is back just above its yearly low"
+      "cashtag": "$ACMR",
+      "headline": "Near-term trend broke while $ACMR's longer support held."
     },
     {
-      "id": "post-founder-041",
+      "id": "post-founder-018",
       "account": "founder",
-      "slot": "D1-S41",
-      "type": "signal",
-      "cashtag": "$DKS",
+      "slot": "D1-S18",
+      "type": "chart",
+      "cashtag": "$GAP",
       "headline": ""
     },
     {
-      "id": "post-founder-053",
-      "account": "founder",
-      "slot": "D1-S53",
-      "type": "signal",
-      "cashtag": "$OTTR",
-      "headline": ""
-    },
-    {
-      "id": "post-congress-002",
+      "id": "post-insider-002",
       "account": "founder",
       "slot": "D1-S19",
-      "type": "congress",
-      "cashtag": "$CR",
+      "type": "insider",
+      "cashtag": "$N",
       "headline": ""
     },
     {
-      "id": "post-meagan-004",
+      "id": "post-meagan-002",
       "account": "meagan",
-      "slot": "D1-S4",
+      "slot": "D1-S2",
       "type": "chart",
-      "cashtag": "$ROK",
+      "cashtag": "$HLNE",
       "headline": ""
     },
     {
-      "id": "post-meagan-024",
+      "id": "post-meagan-007",
       "account": "meagan",
-      "slot": "D1-S24",
-      "type": "chart",
-      "cashtag": "$ELF",
+      "slot": "D1-S7",
+      "type": "signal",
+      "cashtag": "$MTUS",
       "headline": ""
     },
     {
-      "id": "post-meagan-044",
+      "id": "post-meagan-013",
       "account": "meagan",
-      "slot": "D1-S44",
-      "type": "watchlist",
-      "cashtag": "$FTI",
+      "slot": "D1-S13",
+      "type": "macro",
+      "cashtag": "",
       "headline": ""
     },
     {
-      "id": "post-meagan-050",
+      "id": "post-theme-004",
       "account": "meagan",
-      "slot": "D1-S50",
-      "type": "chart",
-      "cashtag": "$GNRC",
-      "headline": "$GNRC keeps finding buyers at the same line"
+      "slot": "D1-S5",
+      "type": "theme_list",
+      "cashtag": "$XMTR",
+      "headline": "Industrial Automation ripping, +1.2% avg on Monday"
     },
     {
-      "id": "post-congress-003",
+      "id": "post-insider-003",
       "account": "meagan",
       "slot": "D1-S6",
-      "type": "congress",
-      "cashtag": "$PTC",
+      "type": "insider",
+      "cashtag": "$ACCV",
       "headline": ""
     },
     {
-      "id": "post-sophia-042",
+      "id": "post-sophia-012",
       "account": "sophia",
-      "slot": "D1-S42",
-      "type": "chart",
-      "cashtag": "$KLAC",
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
       "headline": ""
+    },
+    {
+      "id": "post-sophia-020",
+      "account": "sophia",
+      "slot": "D1-S20",
+      "type": "chart",
+      "cashtag": "$AMG",
+      "headline": "$AMG has one line left overhead"
+    },
+    {
+      "id": "post-sophia-026",
+      "account": "sophia",
+      "slot": "D1-S26",
+      "type": "receipt",
+      "cashtag": "$ATR",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-029",
+      "account": "sophia",
+      "slot": "D1-S29",
+      "type": "chart",
+      "cashtag": "$COHU",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-041",
+      "account": "sophia",
+      "slot": "D1-S41",
+      "type": "signal",
+      "cashtag": "$SYF",
+      "headline": "$SYF dipped back to 71 and held"
     },
     {
       "id": "post-sophia-043",
       "account": "sophia",
       "slot": "D1-S43",
       "type": "chart",
-      "cashtag": "$ELF",
-      "headline": "$ELF still has to clear 106"
-    },
-    {
-      "id": "post-sophia-050",
-      "account": "sophia",
-      "slot": "D1-S50",
-      "type": "chart",
-      "cashtag": "$EBAY",
+      "cashtag": "$MD",
       "headline": ""
     },
     {
-      "id": "post-congress-004",
+      "id": "post-sophia-047",
+      "account": "sophia",
+      "slot": "D1-S47",
+      "type": "chart",
+      "cashtag": "$BKE",
+      "headline": ""
+    },
+    {
+      "id": "post-mover-002",
+      "account": "sophia",
+      "slot": "D1-S16",
+      "type": "mover",
+      "cashtag": "$PAGS",
+      "headline": "$PAGS +21.4% on Monday"
+    },
+    {
+      "id": "post-insider-004",
       "account": "sophia",
       "slot": "D1-S21",
-      "type": "congress",
-      "cashtag": "$AIO",
+      "type": "insider",
+      "cashtag": "$VCIG",
       "headline": ""
     },
     {
-      "id": "post-kelly-040",
+      "id": "post-kelly-006",
       "account": "kelly",
-      "slot": "D1-S40",
+      "slot": "D1-S6",
       "type": "chart",
-      "cashtag": "$WABC",
+      "cashtag": "$UTHR",
       "headline": ""
     },
     {
-      "id": "post-theme-005",
+      "id": "post-kelly-044",
       "account": "kelly",
-      "slot": "D1-S3",
+      "slot": "D1-S44",
+      "type": "receipt",
+      "cashtag": "$ITW",
+      "headline": "$ITW is still inside the range where most shares traded over six months"
+    },
+    {
+      "id": "post-cici-016",
+      "account": "cici",
+      "slot": "D1-S16",
+      "type": "receipt",
+      "cashtag": "$WING",
+      "headline": "Wingstop, $WING, is back among today's most-talked-about names."
+    },
+    {
+      "id": "post-cici-033",
+      "account": "cici",
+      "slot": "D1-S33",
+      "type": "chart",
+      "cashtag": "$WS",
+      "headline": ""
+    },
+    {
+      "id": "post-cici-043",
+      "account": "cici",
+      "slot": "D1-S43",
+      "type": "chart",
+      "cashtag": "$LFUS",
+      "headline": ""
+    },
+    {
+      "id": "post-theme-006",
+      "account": "cici",
+      "slot": "D1-S2",
       "type": "theme_list",
-      "cashtag": "$TBCH",
-      "headline": "Hardware ripping, +1.1% avg on Friday"
-    },
-    {
-      "id": "post-cici-003",
-      "account": "cici",
-      "slot": "D1-S3",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "New York inherits a firmer US macro mix"
-    },
-    {
-      "id": "post-cici-013",
-      "account": "cici",
-      "slot": "D1-S13",
-      "type": "chart",
-      "cashtag": "$PVH",
-      "headline": ""
-    },
-    {
-      "id": "post-insider-006",
-      "account": "cici",
-      "slot": "D1-S17",
-      "type": "insider",
-      "cashtag": "$GME",
-      "headline": ""
-    },
-    {
-      "id": "post-insider-007",
-      "account": "mastermind_news",
-      "slot": "D1-S1",
-      "type": "insider",
-      "cashtag": "$ORCL",
-      "headline": ""
+      "cashtag": "$NU",
+      "headline": "FinTech ripping, +2.6% avg on Monday"
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 418,
+      "pairs_checked": 488,
       "hits": 1,
       "shared_media_hits": 0
     },
@@ -313,17 +337,12 @@
       "status": "run",
       "loss_tickers_in_window": [
         "AAP",
-        "AEP",
-        "ASTH",
-        "ATO",
         "ATR",
-        "CARR",
-        "CMS",
         "FIBK",
         "GL",
+        "GPI",
         "HBAN",
         "ITW",
-        "LZB",
         "MATW",
         "PNC",
         "SHW",
@@ -336,7 +355,7 @@
       "cherry_pick_detected": false
     },
     "stale_receipts": {
-      "age_days": 3,
+      "age_days": 1,
       "max": 7
     },
     "kill_switch": {
@@ -367,7 +386,7 @@
       "graduate_after_days": 21,
       "weeks_1_2_days": 5,
       "weeks_3_4_days": 10,
-      "as_of": "2026-10-03",
+      "as_of": "2026-10-06",
       "as_of_usable": true,
       "base": {
         "max_posts_per_account_per_day": null,
@@ -383,7 +402,7 @@
       "accounts": {
         "flagship": {
           "created": "2026-07-24",
-          "age_days": 71,
+          "age_days": 74,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -496,7 +515,7 @@
         },
         "founder": {
           "created": "2026-07-27",
-          "age_days": 68,
+          "age_days": 71,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -518,7 +537,7 @@
         },
         "meagan": {
           "created": "2026-07-28",
-          "age_days": 67,
+          "age_days": 70,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -540,7 +559,7 @@
         },
         "sophia": {
           "created": "2026-07-28",
-          "age_days": 67,
+          "age_days": 70,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -562,7 +581,7 @@
         },
         "kelly": {
           "created": "2026-07-28",
-          "age_days": 67,
+          "age_days": 70,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -584,7 +603,7 @@
         },
         "cici": {
           "created": "2026-07-28",
-          "age_days": 67,
+          "age_days": 70,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -606,7 +625,7 @@
         },
         "mastermind_news": {
           "created": "2026-08-02",
-          "age_days": 62,
+          "age_days": 65,
           "tier": "graduated",
           "enabled": true,
           "caps": {

@@ -183,6 +183,67 @@ def test_set_meta_overwrites(conn: sqlite3.Connection) -> None:
     assert db.get_meta(conn, "k") == "v2"
 
 
+def test_producer_auth_health_defaults_unknown(conn: sqlite3.Connection) -> None:
+    assert db.producer_auth_health(conn) == {
+        "state": db.AUTH_UNKNOWN,
+        "observed_at": "",
+        "required_at": "",
+        "reason": "",
+    }
+
+
+def test_producer_auth_required_preserves_first_required_timestamp(
+        conn: sqlite3.Connection) -> None:
+    first = db.set_producer_auth_health(
+        conn,
+        state=db.AUTH_REQUIRED,
+        observed_at="2026-09-24T09:35:00+00:00",
+        reason="NO_AUTHENTICATED_PROFILE",
+    )
+    second = db.set_producer_auth_health(
+        conn,
+        state=db.AUTH_REQUIRED,
+        observed_at="2026-09-24T10:05:00+00:00",
+        reason="NO_AUTHENTICATED_PROFILE",
+    )
+    assert first["required_at"] == "2026-09-24T09:35:00+00:00"
+    assert second == {
+        "state": db.AUTH_REQUIRED,
+        "observed_at": "2026-09-24T10:05:00+00:00",
+        "required_at": "2026-09-24T09:35:00+00:00",
+        "reason": "NO_AUTHENTICATED_PROFILE",
+    }
+
+
+def test_producer_auth_recovery_clears_required_state(conn: sqlite3.Connection) -> None:
+    db.set_producer_auth_health(
+        conn,
+        state=db.AUTH_REQUIRED,
+        observed_at="2026-09-24T09:35:00+00:00",
+        reason="SESSION_EXPIRED",
+    )
+    recovered = db.set_producer_auth_health(
+        conn,
+        state=db.AUTHENTICATED,
+        observed_at="2026-09-24T10:15:00+00:00",
+    )
+    assert recovered == {
+        "state": db.AUTHENTICATED,
+        "observed_at": "2026-09-24T10:15:00+00:00",
+        "required_at": "",
+        "reason": "",
+    }
+
+
+def test_producer_auth_rejects_unknown_state_value(conn: sqlite3.Connection) -> None:
+    with pytest.raises(ValueError):
+        db.set_producer_auth_health(
+            conn,
+            state="HEALTHY_ENOUGH",
+            observed_at="2026-09-24T10:15:00+00:00",
+        )
+
+
 # ---------------------------------------------------------------------------
 # counts_by_status
 # ---------------------------------------------------------------------------

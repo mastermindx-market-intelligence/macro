@@ -10,6 +10,7 @@ Usage: python -m scripts.build_china   (run after build_site, before build_vecto
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import sys
@@ -216,6 +217,59 @@ _PROPHET_OUTAGE_REASON = (
 _PROPHET_OUTAGE_REASON_ZH = (
     "今日榜单暂不可用，我们不会用另一套排序的榜单顶替。今日此处无可操作标的。"
 )
+
+
+def _cn_stock_json_name(ticker: str) -> str:
+    return ticker.replace("=", "_").replace("^", "_")
+
+
+def _compose_cn_w3c_reason_ancestry(*, library_doc, served_doc, site, library_handoff):
+    """Per-row reason receipts for served projections that differ from the library file."""
+    from engine.theme_graph.selection_cohort import content_sha256
+    from engine.theme_graph.selection_cohort_publication import REASONS
+
+    lib_rows = library_doc.get("buy")
+    srv_rows = served_doc.get("buy")
+    if not isinstance(lib_rows, list) or not isinstance(srv_rows, list):
+        return []
+    changed = {
+        i for i, (old, new) in enumerate(zip(lib_rows, srv_rows))
+        if content_sha256({k: old.get(k) for k in REASONS})
+        != content_sha256({k: new.get(k) for k in REASONS})
+    }
+    if not changed:
+        return []
+    if not isinstance(library_handoff, dict):
+        return []
+    generation_id = library_handoff.get("generation_id")
+    available_at = library_handoff.get("available_at")
+    if not generation_id or not available_at:
+        return []
+    stock_dir = site / "chinastockdata"
+    rows = []
+    for row_index in sorted(changed):
+        if row_index >= len(srv_rows):
+            continue
+        row = srv_rows[row_index]
+        ticker = row.get("ticker")
+        if not isinstance(ticker, str) or not ticker:
+            continue
+        path = stock_dir / f"{_cn_stock_json_name(ticker)}.json"
+        if not path.is_file():
+            continue
+        raw = path.read_bytes()
+        projection = {k: row.get(k) for k in REASONS}
+        rows.append(dict(
+            owner="build_china_library",
+            source_family="cn_per_stock_library",
+            source_ref=f"site/chinastockdata/{path.name}",
+            sha256=hashlib.sha256(raw).hexdigest(),
+            generation_id=generation_id,
+            available_at=available_at,
+            row_index=row_index,
+            reason_projection_sha256=content_sha256(projection),
+        ))
+    return rows
 
 
 def _prophet_outage_shell(reason: str = _PROPHET_OUTAGE_REASON,
@@ -1841,10 +1895,12 @@ def main() -> int:
             vm["scoreboard"] = None
 
         factordata = site / "factordata"
+        _w3c_cn_fallback = False
         if not _is_current_prophet_artifact(vm.get("setups")):
             fallback = _load_json(factordata / "china_standouts.json")
             if _is_current_prophet_artifact(fallback):
                 vm["setups"] = fallback
+                _w3c_cn_fallback = True
                 log.info(
                     "using persisted China Prophet v2 fallback (%d featured)",
                     len(fallback.get("buy") or []),
@@ -2097,6 +2153,47 @@ def main() -> int:
                 watch_definitions=_cn_watch_defs, log=log)
         except Exception as _bse:  # noqa: BLE001 — additive, never fatal
             log.warning("cn board_since stamp failed (%s)", _bse)
+
+        # ONE W3C finalization boundary, shared by BOTH existing renders. No early
+        # library FINALIZED rival, no fallback refresh, no public template expansion.
+        # Current source-specific mixed-vendor capture and per-stock reason capability
+        # are unavailable: typed refusal leaves the board and its reasons unchanged.
+        _cn_w3c_refusal = None
+        vm["cn_selection_cohort_internal"] = None
+        try:
+            from datetime import datetime as _w3c_dt, timezone as _w3c_tz
+            from engine.theme_graph.selection_cohort_publication import (
+                default_capture_capability, publish_cn_source)
+            _cn_served_bytes = json.dumps(
+                vm.get("setups"), separators=(",", ":"), default=str, allow_nan=False).encode()
+            _cn_library_bytes = (factordata / "china_standouts.json").read_bytes()
+            _cn_library_doc = json.loads(_cn_library_bytes)
+            _cn_served_doc = json.loads(_cn_served_bytes)
+            _cn_reason_ancestry = _compose_cn_w3c_reason_ancestry(
+                library_doc=_cn_library_doc,
+                served_doc=_cn_served_doc,
+                site=site,
+                library_handoff=_cn_library_doc.get("w3c_source"),
+            )
+            _cn_w3c = publish_cn_source(
+                _cn_served_bytes, library_bytes=_cn_library_bytes,
+                data_dir=config.data_dir(), finalized_at=_w3c_dt.now(_w3c_tz.utc).isoformat(),
+                reason_ancestry=_cn_reason_ancestry, fallback=_w3c_cn_fallback,
+                authorize_capture=default_capture_capability())
+            # Machine binding carries only a matching, rightful INTERNAL result.
+            if _cn_w3c["status"] == "AVAILABLE":
+                vm["cn_selection_cohort_internal"] = _cn_w3c
+            else:
+                _cn_w3c_refusal = _cn_w3c
+                log.info("W3C China source unavailable: %s", _cn_w3c["reason_codes"])
+        except Exception as _cn_w3c_e:  # noqa: BLE001 — preserve ordinary publication
+            log.warning("W3C China source unavailable (%s)", _cn_w3c_e)
+        try:
+            from engine.theme_graph.selection_cohort_projection import write_product_projection
+            # A typed refusal reaches only the product projection (gate #8: preserve reasons); the internal binding stays None.
+            write_product_projection(site, "cn", vm.get("cn_selection_cohort_internal") or _cn_w3c_refusal)
+        except Exception as _scp_e:  # noqa: BLE001 — projection never breaks ordinary rendering
+            log.warning("selection-cohort projection (cn) not written (%s)", _scp_e)
 
         env = Environment(loader=FileSystemLoader(
             str(Path(__file__).resolve().parent.parent / "templates")), autoescape=False)

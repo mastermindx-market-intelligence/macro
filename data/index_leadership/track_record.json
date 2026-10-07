@@ -1,18 +1,18 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-10-02",
-  "generated_at": "2026-10-03T17:39:50.709017+00:00",
+  "as_of": "2026-10-05",
+  "generated_at": "2026-10-06T12:54:56.576785+00:00",
   "is_context_only": true,
-  "n_snapshots": 1084,
-  "n_days": 37,
+  "n_snapshots": 1118,
+  "n_days": 38,
   "horizons": {
     "5": {
-      "n_matured": 976,
+      "n_matured": 1021,
       "by_stage": {
         "running": {
-          "n": 902,
-          "mean_fwd_rel": -0.0065,
-          "hit_rate": 0.417
+          "n": 947,
+          "mean_fwd_rel": -0.006,
+          "hit_rate": 0.421
         },
         "coiling": {
           "n": 36,
@@ -25,18 +25,18 @@
           "hit_rate": 0.579
         }
       },
-      "running_ic": -0.0132,
-      "running_ic_t_hac": -0.185,
+      "running_ic": 0.0092,
+      "running_ic_t_hac": 0.123,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 891,
+      "n_matured": 976,
       "by_stage": {
         "running": {
-          "n": 817,
-          "mean_fwd_rel": -0.0116,
-          "hit_rate": 0.368
+          "n": 902,
+          "mean_fwd_rel": -0.0107,
+          "hit_rate": 0.378
         },
         "coiling": {
           "n": 36,
@@ -49,8 +49,8 @@
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0263,
-      "running_ic_t_hac": -0.411,
+      "running_ic": -0.0074,
+      "running_ic_t_hac": -0.112,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -73,23 +73,23 @@
           "hit_rate": 0.605
         }
       },
-      "running_ic": -0.0007,
-      "running_ic_t_hac": -0.018,
+      "running_ic": -0.0005,
+      "running_ic_t_hac": -0.012,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 65,
+      "n_matured": 99,
       "by_stage": {
         "running": {
-          "n": 56,
-          "mean_fwd_rel": -0.0442,
-          "hit_rate": 0.339
+          "n": 89,
+          "mean_fwd_rel": -0.0456,
+          "hit_rate": 0.337
         },
         "coiling": {
-          "n": 8,
-          "mean_fwd_rel": -0.0796,
-          "hit_rate": 0.25
+          "n": 9,
+          "mean_fwd_rel": -0.0754,
+          "hit_rate": 0.222
         },
         "coiling_primed": {
           "n": 1,

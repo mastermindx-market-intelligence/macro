@@ -360,7 +360,7 @@ def _expectation_rows(
                     "missingness_reason": missingness,
                     "correction_state": "original",
                     "supersedes_observation_id": None,
-                    "rights_class": "UNKNOWN",
+                    "rights_class": "UNKNOWN",  # R1-OWNER-REFUSAL line 363: no rights class is assigned (owner refusal, labeled absence); DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07 WS:ALPHA-INTELLIGENCE-INTEGRATION
                     "provenance_note": f"yfinance_{record_class}_prospective_snapshot",
                 })
     return rows
