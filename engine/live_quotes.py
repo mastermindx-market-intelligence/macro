@@ -73,7 +73,7 @@ def _us_settle_window(now: datetime | None = None) -> bool:
     """
     from datetime import time as local_time
     from lib.exchange_holidays import early_close
-    from lib.nyse_calendar import is_session
+    from lib.us_cash_calendar import is_session
 
     instant = now or _now()
     if instant.tzinfo is None:
