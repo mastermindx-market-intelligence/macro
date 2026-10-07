@@ -18100,6 +18100,39 @@ jobs:
           tests/test_ptse_shadow_outcome.py
           tests/test_ptse_w3_publication.py -q
 
+  entry-radar-rs-pullback-calendar:
+    if: ${{ false }}
+    gate: code
+    # The real-CLI subprocess has a literal, reviewed input/import closure.
+    # Isolate it so calendar coverage does not widen unrelated content PRs.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/entry_radar/__init__.py"
+      - "engine/entry_radar/contracts.py"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/entry_radar/replay/rs_pullback_launch_data.py"
+      - "engine/session_digest.py"
+      - "lib/__init__.py"
+      - "lib/nyse_calendar.py"
+      - "research/live_entry_radar/rs_pullback_launch/CALENDAR_ADMISSION_2026-10-07.json"
+      - "scripts/__init__.py"
+      - "scripts/entry_radar_rs_pullback_phase1.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_entry_radar_rs_pullback_calendar.py"
+      - "tests/test_entry_radar_rs_pullback_phase1.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install calendar test dependencies
+        run: pip install pytest pyyaml
+      - name: observed calendar, candidate-local refusal and actual CLI replay
+        run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py -q
+
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
     # A native reader hears a TAX or CUSTOMS declaration (申报纳税, 海关申报) where
