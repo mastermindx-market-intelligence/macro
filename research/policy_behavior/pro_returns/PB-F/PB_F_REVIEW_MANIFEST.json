@@ -2,7 +2,7 @@
   "schema": "mastermind.pb_f_review_manifest.v1",
   "operation_key": "PB-F-POLICY-BEHAVIOR-REDTEAM-20261007",
   "scope": "Independent adversarial review of the five completed bounded research returns; no study rebuild, source-author branch modification, production action, merge or acceptance.",
-  "review_status": "IN_PROGRESS",
+  "review_status": "COMPLETE_BOUNDED_REVIEW",
   "research_only": true,
   "parent_program_complete": false,
   "current_procedure": {
@@ -34,7 +34,11 @@
     "repository": "mastermindx-market-intelligence/macro",
     "branch": "research/policy-behavior-pbf-redteam-20261007",
     "base_sha": "a146de40a8b3ba0475f17ddd87519187f17449a7",
-    "only_write_prefix": "research/policy_behavior/pro_returns/PB-F/"
+    "only_write_prefix": "research/policy_behavior/pro_returns/PB-F/",
+    "pr": 8575,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8575",
+    "input_freeze_commit": "a441c64ba842bae01b49cf34db330f44378a38ae",
+    "review_revision": "The containing Git commit is the exact review revision. Final published head and readback proof are recorded in the PR body and download export receipt; a self-referential commit SHA is not embedded here."
   },
   "inputs": [
     {
@@ -92,31 +96,116 @@
     "github_reads": "VERIFIED",
     "source_branch_write": "VERIFIED_BY_ACTUAL_REVIEW_BRANCH_CREATION",
     "unresolved_effects": [],
-    "source_reviews": "NOT_YET_COMPLETE",
-    "production_proof": "NOT_APPLICABLE"
+    "source_reviews": "COMPLETE_BOUNDED",
+    "production_proof": "NOT_APPLICABLE",
+    "local_claim_matrix_validation": "122 unique IDs; all required review-frame fields populated; disposition counts reconciled; immutable evidence links retained.",
+    "source_heads_final_check": [
+      {
+        "lane": "PB-A",
+        "pr": 8568,
+        "reviewed_sha": "a60c620b2761db74070929068c969aac8c2cee57",
+        "observed_sha": "a60c620b2761db74070929068c969aac8c2cee57",
+        "unchanged": true,
+        "draft": true,
+        "state": "open"
+      },
+      {
+        "lane": "PB-B",
+        "pr": 8573,
+        "reviewed_sha": "1604552006b7a91ed5d0fa89c785a983478866ea",
+        "observed_sha": "1604552006b7a91ed5d0fa89c785a983478866ea",
+        "unchanged": true,
+        "draft": true,
+        "state": "open"
+      },
+      {
+        "lane": "PB-C",
+        "pr": 8565,
+        "reviewed_sha": "83b46fa22a1d79af86b4311483850fcc31d9aa56",
+        "observed_sha": "83b46fa22a1d79af86b4311483850fcc31d9aa56",
+        "unchanged": true,
+        "draft": true,
+        "state": "open"
+      },
+      {
+        "lane": "PB-D",
+        "pr": 8574,
+        "reviewed_sha": "df2091915159dab94f316718caa9b2662098eae4",
+        "observed_sha": "df2091915159dab94f316718caa9b2662098eae4",
+        "unchanged": true,
+        "draft": true,
+        "state": "open"
+      },
+      {
+        "lane": "PB-E",
+        "pr": 8572,
+        "reviewed_sha": "4720504205a7307630efe249a79c4bb02e5560da",
+        "observed_sha": "4720504205a7307630efe249a79c4bb02e5560da",
+        "unchanged": true,
+        "draft": true,
+        "state": "open"
+      }
+    ],
+    "source_head_check_recorded_at_utc": "2026-10-07T05:15:31Z",
+    "primary_findings": "No material frozen arithmetic defect found in the executed scope. B03/B16 causal/ranking interpretation and C28 issuer-role shorthand require narrowing. Old parent independent-roots and neutral-sentiment wording rejected.",
+    "receipt_file": "PB_F_VERIFICATION.json",
+    "not_executed": [
+      "Full PB-D raw-Parquet reproduction",
+      "All raw market/source editions or every PB-E disclosure",
+      "Any production integration, model activation or live test"
+    ],
+    "source_prs_modified": false,
+    "source_prs_accepted_or_merged": false
   },
   "helper_tasks": [
     {
       "name": "audit_policy_a_b",
-      "scope": "PB-A and PB-B causal/method/clock review"
+      "scope": "PB-A and PB-B causal/method/clock review",
+      "status": "COMPLETE",
+      "result": "Bounded native research support returned and adjudicated by the root reviewer.",
+      "followup": "Independent count/attribution QA found B03 ambiguous wording; root changed it to accepted conditions remain unobserved."
     },
     {
       "name": "audit_announcements_c",
-      "scope": "PB-C selection/statistical/null review"
+      "scope": "PB-C selection/statistical/null review",
+      "status": "COMPLETE",
+      "result": "Bounded native research support returned and adjudicated by the root reviewer.",
+      "followup": "Qualified-claim review separated genuine C28 shorthand correction from already qualified findings; no changed-label outcome tests."
     },
     {
       "name": "audit_t2_d",
-      "scope": "PB-D reproduction/prospective-design review"
+      "scope": "PB-D reproduction/prospective-design review",
+      "status": "COMPLETE",
+      "result": "Bounded native research support returned and adjudicated by the root reviewer.",
+      "followup": "PB-E aggregate-coverage QA and PB_F_CONFOUNDERS.md completed; root inspected final content."
     }
   ],
   "helper_boundary": "Native in-session read-only research assistance. No Executive Job, M2 fabric dispatch, watcher, after-turn reasoning or external-message claim. Parent owns PB-E, cross-program judgment, adjudication and all GitHub writes.",
-  "next_action": "Complete claim-level source/clock/statistical review, reproduce discriminating calculations, adjudicate all material conclusions and publish bounded PB-G instructions.",
+  "next_action": "PB-G incorporates the dispositions and explicit wording repairs, then chooses a separately authorized, owner-bound evidence-admission proposal. Scientific missing-data and prospective gates remain; no next study or implementation is launched by PB-F.",
   "do_not_redo": [
     "Do not rerun PB-A..PB-E as new studies.",
     "Do not treat draft source or this draft review as protected law or production authority.",
     "Do not overwrite source returns.",
     "Preserve retrospective, prospective, identified and unmeasured distinctions.",
-    "Do not combine counts, horizons, source families, dollars or same-shock observations as independent evidence."
+    "Do not combine counts, horizons, source families, dollars or same-shock observations as independent evidence.",
+    "Do not reopen this bounded review solely because its scientific questions remain unmeasured. A changed source or new discriminating evidence is a new review input."
   ],
-  "finalization_classification": "MORE_WORK_EXISTS"
+  "finalization_classification": "PROVEN_OUTCOME",
+  "bounded_review_complete": true,
+  "claim_count": 122,
+  "disposition_counts": {
+    "SURVIVES": 95,
+    "WEAKEN": 5,
+    "REJECT": 13,
+    "NEEDS_MORE_DATA": 9
+  },
+  "actual_qualified_lane_claims_and_open_questions": {
+    "total": 106,
+    "SURVIVES": 94,
+    "WEAKEN": 3,
+    "REJECT": 0,
+    "NEEDS_MORE_DATA": 9
+  },
+  "review_date_utc": "2026-10-07",
+  "completion_scope": "The PB-F commission's stop condition is met: all material conclusions disposed, strongest confounders/clock risks documented, and bounded PB-G instructions complete. This is not parent-program completion or production authority."
 }
