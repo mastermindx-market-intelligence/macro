@@ -92,6 +92,10 @@ def normalize_source(s, packet):
     else:
         family = 'FEDERAL_RESERVE_SYSTEM'
     x['originator_family'] = family
+    x['originator_families'] = [family]
+    if sid == 'joint20230312':
+        x['originator_family'] = 'JOINT_FED_TREASURY_FDIC'
+        x['originator_families'] = ['FEDERAL_RESERVE_SYSTEM', 'US_TREASURY', 'FDIC']
     x['independence_note'] = 'Official issuer document; repeated URLs/attachments and statements of the same institution are correlated evidence, not independent corroboration.'
     c = s.get('publication_clock', s.get('clock', {}))
     timestamp = s.get('publication_timestamp_utc') or c.get('utc') or c.get('publication_utc')
@@ -245,6 +249,34 @@ def build():
         }
         audit = repair_weak_annotations(raw, decision)
         decision['institutional_rationale_basis'] = copy.deepcopy(decision['competing_hypotheses'][0])
+        for r in decision['rhetoric']:
+            r['source_ids'] = r.get('source_ids') or ([r['source_id']] if r.get('source_id') else [])
+            r['faithful_paraphrase'] = r.get('faithful_paraphrase', r.get('paraphrase'))
+            if eid == 'US_FED_TREASURY_20200409_FACILITIES' and r.get('source_id') == 'FED_MONETARY_20200409A':
+                r['faithful_paraphrase'] = r['paraphrase'] = 'Fed framed the facilities as relief and financial stability support through the pandemic.'
+            if eid == 'US_TREASURY_20240529_FIRST_LIQUIDITY_BUYBACK_RESULTS' and r.get('source_id') == 'TREASURY_JY2315':
+                r['faithful_paraphrase'] = r['paraphrase'] = 'May1 operational guidance announced intended scheduled liquidity-support buybacks with a temporary security cap; May29 reports allocations, not a new macroeconomic forecast.'
+            r['explicit_horizon'] = r.get('explicit_horizon', r.get('horizon', 'UNSPECIFIED'))
+            r['ambiguity_conditionality'] = r.get('ambiguity_conditionality') or r.get('conditionality') or r.get('ambiguity') or 'See faithful paraphrase; no unconditional calendar guarantee inferred.'
+            r['evidence_publication_clocks'] = [
+                {'source_id': sid, 'clock': catalog[sid]['canonical_clock']}
+                for sid in r.get('source_ids', [])]
+        for a in decision['actions']:
+            if 'target' not in a:
+                a['target'] = {'instrument_target': a.get('instrument'), 'counterparty_detail': 'See direct beneficiaries and source; no unobserved individual counterparty inferred.'}
+            if 'mechanical_transmission_channels' not in a:
+                a['mechanical_transmission_channels'] = [a.get('mechanical_transmission', 'Instrument changes authorized policy, funding or credit conditions as described; magnitude of realized transmission is not certified by this announcement.')]
+        for h in decision['competing_hypotheses']:
+            if 'new_observation_to_rerank' not in h:
+                h['new_observation_to_rerank'] = h.get('material_re_rank_observation', {'research_need': 'Observe evidence testing the following specified falsifiers; no such future evidence is used as an input.', 'observable_tests': h['falsifiers']})
+        decision['market_controls'] = {'pre_event_expectations': 'MISSING', 'rate_regime': regime, 'volatility': 'NOT_RECONSTRUCTED', 'market_sector_state': 'Qualitative source context only; no synchronized panel', 'prior_issuer_sector_momentum': 'NOT_APPLICABLE_TO_FOCAL_US_POLICY_ISSUER; no sector-return inference'}
+        decision['calendar_controls'] = copy.deepcopy(raw.get('calendar_controls', {'status': 'Documented policy/release dates only; exhaustive coincident-event control not reconstructed.'}))
+        decision['action_persistence_after_cost_visible'] = 'UNKNOWN'
+        decision['persistence_coding_limit'] = 'Sources may describe salient costs, but a comparable pre-cut adverse-cost and repeated-choice panel was not separately reconstructed. No predictive contribution from this field is claimed.'
+        decision['alternative_lower_cost_path_visible'] = 'UNKNOWN'
+        distribution = decision['strategic_distribution']
+        selective = distribution.get('selective_relief_present', distribution.get('selective_relief', 'UNKNOWN'))
+        decision['selective_relief_present'] = next((x for x in ['YES', 'NO'] if str(selective).startswith(x)), 'UNKNOWN')
         proposed_dir = proposed.get('rhetoric_direction', 'ABSTAIN')
         m0 = 'ABSTAIN' if eid == 'FED_20191011_RESERVE_MANAGEMENT' else proposed_dir
         if eid in EARLY_RATES:
@@ -270,6 +302,7 @@ def build():
             current_aligned = True  # current policy-rate stance/guidance while other instruments differ.
         tags = {'rhetoric_action_alignment': bool(current_aligned), 'rhetoric_action_divergence_or_tension': bool(descriptive.get('tension_present')), 'intent_unresolved': True, 'strong_institutional_explanation': True}
         decision['rhetoric_action_assessment'] = descriptive
+        decision['rhetoric_action_direction_relation'] = ('MIXED' if descriptive.get('tension_present') else 'ALIGNED' if current_aligned else 'NOT_COMPARABLE')
         decision['assessment_note'] = 'Alignment/tension labels may overlap across instruments and horizons; neither establishes honesty, deception, exclusive motive or causality.'
         # Admit only actual case sources plus explicitly referenced prior context, never every registered source.
         wanted = set(raw['source_ids']) | ids_in(decision) | set(old.get('prior_public_sources', []))
@@ -321,12 +354,19 @@ def build():
             'market_expectations_certified': False,
         }
         uncertainties = copy.deepcopy(raw.get('material_uncertainties', raw.get('limitations', old.get('uncertainties', []))))
+        if eid == 'FED_TREASURY_2023_03_12_BTFP':
+            uncertainties = [u for u in uncertainties if 'midnight cut permits' not in str(u)]
+            uncertainties.append('March13 midnight cut is retained as the frozen conservative episode cut; parent-linked term-sheet details remain excluded from the certified decision block. Promised depositor access has not been certified executed.')
         e = {'episode_id': eid, 'event_date': event_date, 'event_label': raw.get('event_label', eid.replace('_', ' ')),
              'episode_family': raw['episode_family'], 'actor_ids': raw['actor_ids'], 'institution_ids': raw['institution_ids'],
              'cohort': cohort, 'regime': regime, 'split': split, 'decision_cut_utc': cut,
+             'event_time_precision': certificate['first_public_evidence_precision'],
+             'first_public_evidence_utc': headline,
+             'pit_certified': True,
+             'pit_certification_scope': certificate['certificate_scope'],
              'source_clock_certificate': certificate,
              'source_lineage': {'admitted_document_ids': sorted({catalog[s]['canonical_document_id'] for s in admitted}),
-                                'originator_families': sorted({catalog[s]['originator_family'] for s in admitted}),
+                                'originator_families': sorted({f for s in admitted for f in catalog[s]['originator_families']}),
                                 'independence_warning': 'Multiple documents and joint agency announcements are not statistically independent sources.'},
              'selection_tags': tags,
              'decision_time': decision,
@@ -343,7 +383,7 @@ def build():
                'first_public_clock_primary': dict(Counter(e['source_clock_certificate']['first_public_evidence_precision'] for e in primary)),
                'cut_policy_primary': dict(Counter(e['source_clock_certificate']['cut_policy'] for e in primary)),
                'registered_source_records': len(all_sources), 'unique_url_documents': len(canonical_aliases),
-               'source_families': sorted({s['originator_family'] for s in all_sources}),
+               'source_families': sorted({f for s in all_sources for f in s['originator_families']}),
                'admitted_source_records_primary': len(set(s for e in primary for s in e['source_clock_certificate']['admitted_source_ids']))}
     casebook = {'schema': 'mastermind.pb_a_casebook.v1', 'operation_key': protocol['operation_key'],
                 'authority': 'RESEARCH_ONLY', 'protocol_freeze_commit': PROTOCOL_COMMIT,

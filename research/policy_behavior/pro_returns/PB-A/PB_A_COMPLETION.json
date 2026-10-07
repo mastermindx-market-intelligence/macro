@@ -1,0 +1,204 @@
+{
+  "schema": "mastermind.pb_a_completion.v1",
+  "operation_key": "PB-A-POLICY-BEHAVIOR-BASELINE-20261007",
+  "finalization_classification": "PROVEN_OUTCOME",
+  "mission_scope": "Bounded PB-A research return; full-model and target deficiencies explicitly allowed by the handoff stop condition are preserved.",
+  "PB_A_RESEARCH_RETURN_COMPLETE": true,
+  "PARENT_W1_COMPLETE": false,
+  "PB_G_INTEGRATION_COMPLETE": false,
+  "FULL_M2_FORECAST_VALIDATED": false,
+  "authority": "RESEARCH_ONLY",
+  "capability_delta": {
+    "before": "This commissioned source-time casebook, immutable baseline freeze and reproducible pilot did not exist on the PB-A branch.",
+    "after": "24 normalized historical documentary source-time-certified primary cases and one separate challenge, frozen predictions, matched scores and explicit target deficiencies are available for review."
+  },
+  "governance": {
+    "procedure_repository": "mastermindx-market-intelligence/Mastermind",
+    "procedure_sha": "9a24ef2c4b27ac95a4d1f72f5eae1073657cd7c2",
+    "commission_repository": "mastermindx-market-intelligence/macro",
+    "commission_sha": "7abc3dc596c5a6463effb37422bf9bd34bbdf1ba",
+    "parent_source_sha": "ee86db2c832c73a36837c1240df871700340d6da",
+    "parent_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/8560",
+    "branch": "research/pb-a-policy-behavior-baseline-20261007",
+    "main_base_sha": "309f88c6c209bdc9fb611de0018fb619d9351b37",
+    "only_write_prefix": "research/policy_behavior/pro_returns/PB-A/",
+    "protocol_commit": "99253212652ba7d1248a587c249da44ec6e3b9b6",
+    "forecast_commit_before_outcome_join": "8799d065178b7637bc91a0e69696df8b9ef763f6",
+    "immutable_forecast_readback_verified": true,
+    "final_publication_receipt": "PB_A_RETURN_RECEIPT.json",
+    "no_merge_or_production_change": true,
+    "commission_scope_resolution": "Specific PB-A>=20 U.S. feasibility pilot completed; parent40–60cross-family W1 plus market-expectations requirements remain open."
+  },
+  "method_scope": {
+    "study": "RETROSPECTIVE_FEASIBILITY_PILOT_NOT_UNSEEN_VALIDATION",
+    "full_M2_status": "BLOCKED_BY_NAMED_DATA_DEFICIENCIES",
+    "full_M2_missing": [
+      "Synchronized archived pre-cut market pricing",
+      "Comparable visible-cost and repeated-choice panel",
+      "Frozen richer constraints/alternatives model evaluated before later outcomes"
+    ],
+    "M2_alias": "Minimal new-rate-decision persistence plus conventional-floor rule; qualitative motive and distribution text excluded from predictor.",
+    "target_deficiencies": [
+      "Policy surprise versus expectations",
+      "DXY without an admitted series",
+      "Growth/inflation expectation vintages",
+      "Sector-relative exposure/matched-control mapping"
+    ],
+    "all_market_forecasts": "ABSTAIN",
+    "original_historical_served_bytes_available": false,
+    "source_certificate": "Historical documentary source-time only, at minute/date precision; five parent-linked attachments quarantined."
+  },
+  "verified_results": {
+    "primary_cases": 24,
+    "separate_challenge_cases": 1,
+    "primary_alignment_cases": 17,
+    "primary_tension_cases": 10,
+    "primary_unresolved_intent_cases": 24,
+    "primary_strong_institutional_competitor_cases": 24,
+    "primary_first_public_clock_counts": {
+      "MINUTE": 17,
+      "DATE_ONLY": 7
+    },
+    "primary_cut_counts": {
+      "INTRADAY": 15,
+      "NEXT_LOCAL_MIDNIGHT": 9
+    },
+    "source_url_records": 84,
+    "admitted_primary_source_records": 56,
+    "M0_M2_common_count": 8,
+    "M0_M2_equal_predictions_on_common": true,
+    "M0_M2_matched_correct_by_horizon": {
+      "1m": [
+        4,
+        4,
+        8
+      ],
+      "3m": [
+        7,
+        7,
+        8
+      ],
+      "6m": [
+        5,
+        5,
+        8
+      ]
+    },
+    "M1_primary_correct_by_horizon": {
+      "1m": [
+        0,
+        5
+      ],
+      "3m": [
+        0,
+        5
+      ],
+      "6m": [
+        0,
+        5
+      ]
+    },
+    "M1_scope_warning": "Five upward-guidance cases only, not representative rhetoric inversion.",
+    "M2_C0_matched_correct_by_horizon": {
+      "1m": [
+        6,
+        10,
+        11
+      ],
+      "3m": [
+        10,
+        6,
+        11
+      ],
+      "6m": [
+        7,
+        3,
+        11
+      ]
+    },
+    "challenge": "June14 2023: M2 wins1m; M0 wins3m/6m; M1 wins none. Excluded from all primary aggregates.",
+    "independent_anchor_checks": 24,
+    "independent_endpoint_checks": 72,
+    "primary_net_and_first_change_labels_coincide": true,
+    "post_score_endpoint_sensitivity": "Three label flips across±7days; matchedM0–M2 tie survives every horizon/shift; not additionalvalidation."
+  },
+  "validation": {
+    "status": "PASS",
+    "primary_episodes": 24,
+    "separate_challenges": 1,
+    "source_records": 84,
+    "first_public_clock_counts_primary": {
+      "MINUTE": 17,
+      "DATE_ONLY": 7
+    },
+    "immutable_forecast_sha256": "2204fc89a45fa6cb3234762316ae63ffdd9f60daae631c799e2d0d5ac55e246a",
+    "checks": [
+      "Frozen design/code/forecast identities",
+      "Source admission bounds and scoped certificates",
+      "No realized outcome keys in decision block",
+      "Required rhetoric/hypothesis fields",
+      "Joint source lineage",
+      "Allocation versus completed-settlement semantics",
+      "Forecast/outcome joins and source digests"
+    ],
+    "manifest_files_verified": 0,
+    "reproduction": [
+      "Forecast bytes identical with no outcome directory present",
+      "PB_A_OUTCOMES.json JSON content reproduced exactly",
+      "PB_A_BASELINE_PILOT.json JSON content reproduced exactly",
+      "Post-score endpoint diagnostic reproduced exactly",
+      "Casebook reconstruction and input identities reproduced exactly"
+    ],
+    "limits": "Verifies this research package, not historical served bytes, full M2, calibrated skill or production integration."
+  },
+  "post_freeze_annotation_and_format_changes": [
+    {
+      "change": "Add exact prereg schema aliases, source-specific rhetoric clock mappings and explicit missing controls; normalize singleton source_id and faithful paraphrase fields.",
+      "predictor_input_change": false
+    },
+    {
+      "change": "Preserve joint Fed/Treasury/FDIC origins; replace inherited BTFP wording suggesting midnight certifies attachment terms.",
+      "predictor_input_change": false
+    },
+    {
+      "change": "Clarify April9 speaker attribution and conditional buyback-plan wording; original helper text remains in raw source packets.",
+      "predictor_input_change": false
+    },
+    {
+      "change": "Attach frozen forecasts and outcomes after decision block; all frozen file identities retained.",
+      "predictor_input_change": false
+    },
+    {
+      "change": "Whitespace-compact large pilot JSON for publication; rerun exploratory diagnostic to record compact pilot byte hash.",
+      "numerical_change": false,
+      "original_pilot_sha256": "02dea7aef2b4bee65a55552e8195ae73ceef5c674c8041e91400e1f4169bd656",
+      "published_pilot_sha256": "13a608725989e95bd5775dfc21b1f67c4319a82a60bdf99255cfefdf839bc62f"
+    }
+  ],
+  "supersession": {
+    "original_protocol": "Unchanged and controlling.",
+    "raw_source_packets": "Preserved research annotations, not canonical admission. Normalized casebook fields govern clock qualification, quarantine and action semantics.",
+    "initial_casebook_at_forecast_commit": "Decision inputs preserved; final casebook adds documentation and outcomes without changing forecasts.",
+    "production_owners": "Parent census accepted as prior evidence, not a newly revalidated live system. No ownership changes."
+  },
+  "dialogue_closeout": {
+    "collaboration": "In-session bounded helpers only, no Executive dispatch claimed. All tasks returned; explicit ACCEPTED/STOP sent.",
+    "temporary_watchers_created": false,
+    "automatic_resume_claimed": false,
+    "external_person_directed_messages_sent": false
+  },
+  "primary_next_action": {
+    "owner": "PB-G integration/research owner under parent PR#8560",
+    "action": "Review the immutable PB-A return as context and source/action audit evidence.",
+    "gate": "Do not promote full M2 until archived pricing, adverse-cost/repeated-choice data and a separately frozen matched prospective evaluation exist."
+  },
+  "do_not_redo": [
+    "Do not treat rich M2 as validated by the minimal proxy.",
+    "Do not pool the deliberate challenge, horizons or different model coverage sets.",
+    "Do not promote parent-linked attachment terms to historical intraday certainty.",
+    "Do not credit already-public next-day policy implementation as forecast success.",
+    "Do not translate authorizations or buyback allocations into completed cash flows.",
+    "Do not overwrite the original forecast or protocol to improve historical results.",
+    "Do not absorb PB-B/PB-C/PB-D/PB-E or create a production score/store."
+  ]
+}
