@@ -20017,3 +20017,75 @@ jobs:
           git diff --exit-code docs/HOUSE_LAW_CI_GUARD_SUITE.md
       - name: house-law registry tests (idempotency + integration)
         run: python -m pytest tests/test_house_law_registry.py -q
+
+  prophet-w3-guardrail:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # Frozen W3 post-floor statistical guardrail reader (2026-10-02). The
+    # capture/status owner (US prophet grades/w3) stays data-gated; this is the
+    # merge-gate home for the reader, its synthetic suite, and the validation
+    # helper extensions (rank_ic min_names, newey_west unrounded). Do not
+    # reclassify that broad data job.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/confluence_tiers.py"
+      - "engine/cycles.py"
+      - "engine/earnings_blackout.py"
+      - "engine/earnings_catalyst.py"
+      - "engine/event_atlas.py"
+      - "engine/fundamental_forensics/context_projection.py"
+      - "engine/fundamental_forensics/private_state.py"
+      - "engine/grading.py"
+      - "engine/htf_durability.py"
+      - "engine/hysteresis.py"
+      - "engine/ignition_features.py"
+      - "engine/indicators.py"
+      - "engine/ledger_lane.py"
+      - "engine/mtf_upturn.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/context_api.py"
+      - "engine/neuralweb/sector_map.py"
+      - "engine/prophet_doors.py"
+      - "engine/research_vault/r2_store.py"
+      - "engine/session_anchor.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/stock_events.py"
+      - "engine/technicals.py"
+      - "engine/universe_history.py"
+      - "engine/us_board_rank.py"
+      - "engine/us_context_vector.py"
+      - "engine/us_prophet_fusion.py"
+      - "engine/us_prophet_grades.py"
+      - "engine/us_prophet_w3.py"
+      - "engine/validation.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/washout_turn.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/finra_knowable.py"
+      - "lib/nyse_calendar.py"
+      - "lib/store.py"
+      - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
+      - "scripts/report_us_prophet_w3_guardrail.py"
+      - "site/basketdata/fear_greed.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
+      - "tests/test_scorecard_primitives.py"
+      - "tests/test_us_prophet_w3_guardrail.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install w3 guardrail test dependencies
+        run: pip install pytest pandas numpy pyarrow scipy pyyaml
+      - name: W3 post-floor guardrail reader + validation helpers
+        run: python -m pytest tests/test_us_prophet_w3_guardrail.py tests/test_scorecard_primitives.py -q
