@@ -17,6 +17,7 @@ import sys
 import time
 from datetime import date, datetime, timezone
 from pathlib import Path
+from uuid import uuid4
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -26,6 +27,8 @@ from lib import config, site_assets  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from engine.intl_workspace_overview import build_workspace_overviews as _workspace_overviews  # noqa: E402
 from lib.intl_library_mount import render_international_pages  # noqa: E402
+from lib.intl_macro_mount import attach_macros  # noqa: E402
+from lib.intl_macro_publication import read_ecb_deposit_materialization  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_intl")
@@ -34,8 +37,102 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "dashboard-icons.js", "theme.js",
           "mtf.js", "chart_i18n.js", "charts.js",
           "tablesort.js", "stockdata.js", "stockview.js",
-          "intl_workspace.css", "intl_workspace_state.js",
+          "intl_workspace.css", "intl_workspace_macro.css", "intl_workspace_state.js",
           "intl_library_search.js", "intl_workspace.js", "intl_workspace_entry.js")
+
+
+def _ecb_publication_measure(materialized, *, evaluated_at, generation):
+    """Issue this owner's adopted, byte-bound ECB decision, then qualify it.
+
+    The reviewed purchase notices and per-access source notice are publication
+    conditions in INTERNATIONAL_MACRO_DATA_CONTRACT. This trusted build path is
+    their issuance owner; a supplied data object is never an approval service.
+    """
+    import math
+    import numpy as np
+    from engine.intl_inputs import admit_ecb_deposit_field
+
+    unavailable = {
+        "quality": "missing" if materialized["status"] == "missing" else "failed",
+        "reason": "not_supplied" if materialized["status"] == "missing" else "source_failed",
+        "metadata": "unknown", "value_permission": "unknown", "value": None,
+        "unit": None, "instrument": None, "period": None, "observation_at": None,
+        "calculation_at": None, "source_reference": None, "evidence_key": None,
+    }
+    if materialized["status"] != "ready":
+        return unavailable
+    try:
+        series = materialized["series"]
+        if series.empty:
+            return {**unavailable, "quality": "missing", "reason": "not_supplied"}
+        endpoint = series.iloc[-1]
+        if type(endpoint) in {np.int8, np.int16, np.int32, np.int64,
+                              np.uint8, np.uint16, np.uint32, np.uint64,
+                              np.float32, np.float64}:
+            endpoint = endpoint.item()
+        # An invalid scalar stays invalid in the original Series. Use a null
+        # binding so the helper can return its source-failure verdict without
+        # putting a non-JSON scalar in the decision envelope.
+        if type(endpoint) not in {int, float} or (type(endpoint) is float and not math.isfinite(endpoint)):
+            endpoint = None
+        identity = materialized["materialized_identity"]
+        decision = {
+            "owner_ref": "scripts/build_intl.py",
+            "policy_ref": "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-ecb-deposit-level-admission",
+            "decision_ref": generation + ":EZ.policy_rate",
+            "metadata": "allowed", "value_permission": "allowed",
+            "binding": {
+                "market_id": "EZ", "field": "policy_rate", "instrument_id": "deposit_facility",
+                "source_id": "D.U2.EUR.4F.KR.DFR.LEV",
+                "artifact_sha256": identity["artifact_sha256"],
+                "provenance_sha256": identity["provenance_sha256"],
+                "observation_at": series.index[-1].date().isoformat(),
+                "value": endpoint, "unit": "percent",
+            },
+        }
+        return admit_ecb_deposit_field(
+            series, provenance=materialized["provenance"],
+            materialized_identity=identity, evaluated_at=evaluated_at,
+            publication_decision=decision,
+        )
+    except Exception as exc:  # Keep a malformed owned snapshot out of the page.
+        log.error("International ECB evidence unavailable (%s)", type(exc).__name__)
+        return unavailable
+
+
+def _publication_workspace(closes, *, data_root, evaluated_at):
+    """Compose one normal publication without granting any equity evidence."""
+    from engine.intl_inputs import countries
+
+    generation = "im-workspace-generation:" + str(uuid4())
+    workspace = _workspace_overviews(closes, workspace_generation=generation)
+    if workspace is None:
+        return None
+    try:
+        registry = {
+            "markets": [{"market_id": cc, "name_en": row["name"], "name_zh": row["name_zh"]}
+                        for cc, row in countries().items()],
+            "horizons": workspace["config"]["horizons"],
+            "bases": workspace["config"]["bases"],
+        }
+        measure = _ecb_publication_measure(
+            read_ecb_deposit_materialization(data_root=data_root),
+            evaluated_at=evaluated_at, generation=generation,
+        )
+        mounted = attach_macros(
+            workspace, registry=registry, measures={"EZ.policy_rate": measure},
+            cycle_evidence={}, destinations={},
+            source_notice={
+                "market_id": "EZ", "field": "policy_rate", "instrument_id": "deposit_facility",
+                "origin_url": "https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV",
+            },
+        )
+        mounted["macro_registry"] = registry
+        return mounted
+    except Exception as exc:  # Macro failure must preserve the existing workspace.
+        log.error("International Macro panel unavailable (%s)", type(exc).__name__)
+        return workspace
+
 
 # quad colour keys (match the .q-Qn CSS) — uniform with the other verticals
 QUAD_MEANING = {
@@ -893,7 +990,10 @@ def main() -> int:
 
         workspace = None
         try:
-            workspace = _workspace_overviews(_wr_intl_raw)
+            workspace = _publication_workspace(
+                _wr_intl_raw, data_root=config.data_dir(),
+                evaluated_at=datetime.now(timezone.utc).isoformat(),
+            )
         except Exception as exc:  # Preserve all incumbent views on adapter failure.
             log.error("International workspace unavailable (%s)", type(exc).__name__)
 

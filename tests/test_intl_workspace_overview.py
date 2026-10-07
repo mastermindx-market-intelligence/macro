@@ -611,8 +611,29 @@ def test_supplied_envelope_is_closed_plain_data(mutate):
     with pytest.raises(ValueError): _production_workspace(frame, mutate(inputs))
 
 
-def test_generation_without_supplied_inputs_is_rejected():
-    with pytest.raises(ValueError): _production_workspace(None, None)
+def test_generation_without_equity_evidence_preserves_unknown_values(monkeypatch):
+    from engine import intl_inputs
+    from lib.intl_workspace_binding import binding_version
+    frame, _, _ = _production_fixture()
+    before = _MODULE.build_workspace_overviews(frame)
+    def forbidden(*args, **kwargs):
+        raise AssertionError('equity evidence evaluator must not run for presentation identity')
+    monkeypatch.setattr(intl_inputs, 'source_snapshot', forbidden)
+    monkeypatch.setattr(intl_inputs, 'qualify_return_records', forbidden)
+    result = _production_workspace(frame, None)
+    assert binding_version(result) == (2, _GENERATION)
+    assert [panel['overview'] for panel in result['panels']] == [panel['overview'] for panel in before['panels']]
+    assert all(panel['overview']['context']['source_reference'] is None for panel in result['panels'])
+    assert all(row['metric']['value'] is None for panel in result['panels'] for row in panel['overview']['rows'])
+    assert _GENERATION not in json.dumps([panel['overview'] for panel in result['panels']])
+
+
+@pytest.mark.parametrize('generation', ['', True, [], 'source:private',
+                                      'im-workspace-generation:'+'a'*64,
+                                      'im-workspace-generation:9e1a5667-47f3-1a69-a784-b971e3ba74ba'])
+def test_nonce_only_rejects_malformed_generation(generation):
+    with pytest.raises(ValueError):
+        _production_workspace(None, None, generation)
 
 
 @pytest.mark.parametrize('change', ['observation','basis','evidence_source','evidence_content','decision_source','decision_content','decision_horizon','decision_basis','decision_leg'])

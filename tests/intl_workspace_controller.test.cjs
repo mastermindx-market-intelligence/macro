@@ -1856,3 +1856,58 @@ test('failed rehydrate mode restore during pushState and replaceSource returns a
     assert.equal(out.afterReplace.enhancementHidden, true);
   });
 });
+
+function workspaceWithMacro() {
+  return workspaceMarkup().replace('</section>', `
+    <article data-im-panel data-view="macro" data-horizon="1m" data-basis="usd_unhedged" data-return-basis="price" data-source="fixture:v1" id="macro-panel">
+      <div data-im-macro-market="JP"><span>2.5</span><details><summary>Evidence</summary>Original observation</details></div>
+      <div data-im-macro-market="KR"><span>Unavailable</span></div>
+      <section data-im-workspace id="nested-macro"><div data-im-macro-market="JP" data-im-macro-selected="foreign">Nested</div></section>
+    </article></section>`);
+}
+
+test('Macro selection paints only owned attributes and destroy restores originals', async () => withPage(async page => {
+  const h = await mount(page, '', workspaceWithMacro());
+  const content = await page.locator('#macro-panel').innerHTML();
+  await page.evaluate(h => {h.dispatch({type:'pin',market_id:'KR'});h.dispatch({type:'set_view',view:'macro'});h.dispatch({type:'select_market',market_id:'JP'});}, h);
+  assert.equal(await page.locator('#macro-panel').getAttribute('data-im-macro-has-selection'),'true');
+  assert.equal(await page.locator('#macro-panel > [data-im-macro-market="JP"]').getAttribute('data-im-macro-selected'),'true');
+  assert.equal(await page.locator('#macro-panel > [data-im-macro-market="KR"]').getAttribute('data-im-macro-selected'),'false');
+  assert.equal(await page.locator('#nested-macro [data-im-macro-market]').getAttribute('data-im-macro-selected'),'foreign');
+  assert.deepEqual(await page.evaluate(h=>h.getState().compare_markets,h),['KR']);
+  await page.evaluate(h=>h.dispatch({type:'select_market',market_id:null}),h);
+  assert.equal(await page.locator('#macro-panel').getAttribute('data-im-macro-has-selection'),'false');
+  await page.evaluate(h=>h.destroy(),h);
+  assert.equal(await page.locator('#macro-panel').getAttribute('data-im-macro-has-selection'),null);
+  assert.equal(await page.locator('#macro-panel > [data-im-macro-market="JP"]').getAttribute('data-im-macro-selected'),null);
+  assert.equal(await page.locator('#nested-macro [data-im-macro-market]').getAttribute('data-im-macro-selected'),'foreign');
+  assert.equal(await page.locator('#macro-panel').innerHTML(), content.replaceAll(' data-im-macro-selected="false"',''));
+}));
+
+test('Macro failed history transaction restores selected row and leaves native evidence intact', async () => withPage(async page => {
+  const h = await mount(page, '', workspaceWithMacro());
+  await page.evaluate(h=>{h.dispatch({type:'set_view',view:'macro'});h.dispatch({type:'select_market',market_id:'JP'});document.querySelector('#macro-panel details').open=true;window.history.pushState=()=>{throw Error('fixture push refused')};},h);
+  const result = await page.evaluate(h=>h.dispatch({type:'select_market',market_id:'KR'}),h);
+  assert.equal(result.ok,false);
+  assert.equal(await page.evaluate(h=>h.getState().selected_market,h),'JP');
+  assert.equal(await page.locator('#macro-panel > [data-im-macro-market="JP"]').getAttribute('data-im-macro-selected'),'true');
+  assert.equal(await page.locator('#macro-panel > [data-im-macro-market="KR"]').getAttribute('data-im-macro-selected'),'false');
+  assert.equal(await page.locator('#macro-panel details').evaluate(n=>n.open),true);
+}));
+
+test('Macro v2 refuses non-price return basis even with the correct generation', async () => withPage(async page => {
+  await bootstrapPage(page,workspaceWithMacro());
+  const result=await page.evaluate(c=>{
+    const root=document.querySelector('[data-im-workspace]');
+    const generation='im-workspace-generation:9e1a5667-47f3-4a69-a784-b971e3ba74ba';
+    root.setAttribute('data-im-binding-version','2');
+    root.querySelectorAll('[data-im-panel]').forEach(n=>{n.setAttribute('data-im-generation',generation);n.setAttribute('data-return-basis','price');n.setAttribute('data-source','')});
+    document.querySelector('#macro-panel').setAttribute('data-return-basis','total_return');
+    const h=IntlWorkspace.mountIntlWorkspace(root,{...c,source_reference:generation});
+    return h.dispatch({type:'set_view',view:'macro'});
+  },config);
+  assert.equal(result.ok,false,JSON.stringify(result));
+  assert.equal(result.issues[0].code,'UNSUPPORTED_VIEW');
+  assert.equal(result.state.view,'overview');
+  assert.equal(await page.locator('#macro-panel').isHidden(),true);
+}));

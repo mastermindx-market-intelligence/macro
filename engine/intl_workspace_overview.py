@@ -605,19 +605,22 @@ def build_workspace_overviews(closes, *, production_inputs=None,
     only by the existing input owner. Version 2 keeps its caller-issued publication
     generation separate from each panel's nullable numerical source disclosure.
     The caller must replace its nonce on any content or disclosure change; this
-    pure function owns no cross-call publication ledger. V2 requires a matching
-    version-aware consumer before the builder can opt in.
+    pure function owns no cross-call publication ledger. A supplied generation
+    can bind independently admitted panels while equity evidence remains unknown.
+    V2 requires a matching version-aware consumer before the builder can opt in.
     """
     import pandas as pd
     from engine import intl_inputs
     from engine.intl_performance_records import build_return_records
 
     supplied = production_inputs is not None
+    version2 = workspace_generation is not None
     if supplied:
-        import uuid
         _require_plain(production_inputs, ValueError, 'invalid_production_inputs')
         _closed(production_inputs, ['adjustment_bases', 'source_evidence',
                                    'disclosure_decisions', 'policy_id'], ValueError)
+    if supplied or version2:
+        import uuid
         prefix = 'im-workspace-generation:'
         if type(workspace_generation) is not str or not workspace_generation.startswith(prefix):
             raise ValueError('invalid_workspace_generation')
@@ -628,8 +631,6 @@ def build_workspace_overviews(closes, *, production_inputs=None,
             raise ValueError('invalid_workspace_generation') from exc
         if parsed.version != 4 or str(parsed) != token:
             raise ValueError('invalid_workspace_generation')
-    elif workspace_generation is not None:
-        raise ValueError('generation_without_production_inputs')
 
     countries = intl_inputs.countries()
     roster = [{"market_id": cc, "name_en": row["name"], "name_zh": row["name_zh"]}
@@ -670,13 +671,13 @@ def build_workspace_overviews(closes, *, production_inputs=None,
             panels.append({"context_id": "im-overview-" + str(len(panels)),
                            "overview": build_overview(raw, roster=roster,
                                                        context=context, qualifications=qualifications[basis])})
-            if supplied:
+            if version2:
                 panels[-1]['generation'] = workspace_generation
     workspace = {"config": {"markets": list(countries), "horizons": horizons, "bases": bases,
                        "default_horizon": "1m" if "1m" in horizons else horizons[0],
                        "default_basis": "usd_unhedged", "source_reference": workspace_generation,
                        "anchor_ids": ["intl-legacy-research"], "library_group_ids": []},
             "panels": panels}
-    if supplied:
+    if version2:
         workspace['binding_version'] = 2
     return workspace

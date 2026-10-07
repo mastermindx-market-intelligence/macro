@@ -338,3 +338,23 @@ def test_every_composition_owner_rejects_mixed_generation_before_output(mount, m
     with pytest.raises(ValueError):
         call(workspace)
     assert workspace == before
+
+
+@pytest.mark.parametrize('mutation', ['v1_stray', 'v2_missing', 'v2_mixed', 'malformed_list'])
+def test_macro_sidecars_participate_in_shared_generation_validation(mutation):
+    from lib.intl_workspace_binding import binding_version
+    workspace = versioned(version=1) if mutation == 'v1_stray' else versioned()
+    workspace['macros'] = [{'context_id': 'macro-test', 'generation': GENERATION_REFERENCE}]
+    if mutation == 'v2_missing': workspace['macros'][0].pop('generation')
+    elif mutation == 'v2_mixed': workspace['macros'][0]['generation'] = 'im-workspace-generation:' + SECOND_GENERATION_UUID
+    elif mutation == 'malformed_list': workspace['macros'] = {}
+    with pytest.raises(ValueError): binding_version(workspace)
+
+
+def test_valid_macro_sidecars_do_not_replace_financial_provenance():
+    from lib.intl_workspace_binding import binding_version
+    workspace = versioned()
+    before = deepcopy(workspace['panels'])
+    workspace['macros'] = [{'context_id': 'macro-test', 'generation': GENERATION_REFERENCE}]
+    assert binding_version(workspace) == (2, GENERATION_REFERENCE)
+    assert workspace['panels'] == before
