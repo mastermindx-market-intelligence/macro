@@ -1,13 +1,13 @@
 {
-  "appended": 0,
-  "asof": "2026-10-05",
+  "appended": 3,
+  "asof": "2026-10-06",
   "candidates": {
-    "R": 2,
-    "T": 8,
+    "R": 1,
+    "T": 11,
     "W": 4
   },
   "deduped": {
-    "R": 2,
+    "R": 1,
     "T": 8,
     "W": 4
   },
@@ -15,19 +15,38 @@
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "consulted": false
+      "asof": "2026-10-06",
+      "consulted": true,
+      "n_keys": 27,
+      "n_themes": 18,
+      "ok": true,
+      "reason": null,
+      "source": "site/basketdata/foresight_cascade.json"
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": false,
-      "null_reasons": {},
+      "consulted": true,
+      "null_reasons": {
+        "ohlcv_absent": 10
+      },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {},
+      "themes_read": {
+        "Industrial Automation": {
+          "theme_thrust_frac": 0.2414,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Virtual & Augmented Reality": {
+          "theme_thrust_frac": 0.1429,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        }
+      },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 0,
-      "tickers_read": 0
+      "tickers_ok": 45,
+      "tickers_read": 55
     },
     "keys": [
       "relay_count_3d",
@@ -45,10 +64,21 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": false
+      "consulted": true,
+      "high_lookback": 63,
+      "members_indexed": 114,
+      "n_covered": 73,
+      "reason": null,
+      "window_sessions": 21
     },
     "turnover": {
-      "consulted": false
+      "consulted": true,
+      "last_session": "2026-10-06",
+      "n_tickers": 1547,
+      "ok": true,
+      "reason": null,
+      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
+      "window_max": 60
     }
   },
   "feature_source_w": {
@@ -77,7 +107,11 @@
   },
   "flag_tickers": {
     "R": [],
-    "T": [],
+    "T": [
+      "CSCO",
+      "PTC",
+      "TRMB"
+    ],
     "W": []
   },
   "n_universe": 1493,
@@ -86,41 +120,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-06 15:59:12",
-  "runtime_s": 101.9,
+  "run_utc": "2026-10-07 11:21:42",
+  "runtime_s": 107.3,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
-    "asof": "2026-10-06",
-    "n_members": 127,
+    "asof": "2026-10-07",
+    "n_members": 114,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.009,
+        "emerging_score": 1.975,
         "rank": 1,
-        "theme": "Biometrics"
-      },
-      {
-        "emerging_score": 2.492,
-        "rank": 2,
-        "theme": "Semiconductors"
-      },
-      {
-        "emerging_score": 1.838,
-        "rank": 3,
         "theme": "Industrial Automation"
       },
       {
-        "emerging_score": 1.552,
-        "rank": 4,
+        "emerging_score": 1.719,
+        "rank": 2,
+        "theme": "Space Tech"
+      },
+      {
+        "emerging_score": 1.52,
+        "rank": 3,
         "theme": "Education Technology"
       },
       {
-        "emerging_score": 1.381,
+        "emerging_score": 1.35,
+        "rank": 4,
+        "theme": "Virtual & Augmented Reality"
+      },
+      {
+        "emerging_score": 1.305,
         "rank": 5,
-        "theme": "Social Media"
+        "theme": "Internet of Things"
       }
     ]
   },
@@ -130,15 +164,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-10-05",
+    "asof_max": "2026-10-06",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-05",
+    "asof_run": "2026-10-06",
     "evaluated": 713,
     "fresh": 5,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 19.3,
+    "runtime_s": 19.8,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 61,

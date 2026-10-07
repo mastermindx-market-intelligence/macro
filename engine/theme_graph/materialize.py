@@ -1960,14 +1960,25 @@ def apply_relation_events(stored: pd.DataFrame, computed: list[dict], events: li
             raise ValueError("relation event conflicts with a prior closure")
         if not _is_date(_text(old.get("belief_time"))) or belief_time <= str(old["belief_time"]):
             raise ValueError("daily relation event must advance the stored belief")
-        live = [candidate for candidate in computed
-                if candidate.get("type") == "EXPRESSES"
-                and candidate.get("src") == prior["src"]
-                and str(candidate.get("dst", "")).startswith("theme:")
-                and _null(candidate.get("valid_to"))]
+        if prior["type"] == "EXPRESSES":
+            live = [candidate for candidate in computed
+                    if candidate.get("type") == "EXPRESSES"
+                    and candidate.get("src") == prior["src"]
+                    and str(candidate.get("dst", "")).startswith("theme:")
+                    and _null(candidate.get("valid_to"))]
+        else:
+            live = [candidate for candidate in computed
+                    if candidate.get("type") == prior["type"]
+                    and candidate.get("src") == prior["src"]
+                    and candidate.get("dst") == prior["dst"]
+                    and _null(candidate.get("valid_to"))]
         if any(candidate.get("dst") == prior["dst"] for candidate in live):
             raise ValueError("relation event contradicts the current curated mapping")
         if row["action"] == "DESTINATION_CHANGE":
+            if prior["type"] == "PARENT_OF":
+                raise ValueError(
+                    "PARENT_OF_DESTINATION_CHANGE_REFUSED: curated hierarchy edges are "
+                    "withdrawn, never re-pointed")
             matches = [candidate for candidate in live
                        if candidate.get("dst") == row["new_destination"]
                        and candidate.get("source_class") == "curated"
