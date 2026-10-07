@@ -49,111 +49,74 @@ _COUNTING = ("F_DEV", "F_VAL", "F_HOLD")
 def frozen_term_mismatches(registration: Mapping[str, Any]) -> list[str]:
     """Return sorted check names that fail against a parsed registration mapping."""
     failed: list[str] = []
-
-    def _check(name: str, ok: bool) -> None:
+    r = registration
+    checks: tuple[tuple[str, Any], ...] = (
+        ("registration_id", lambda reg: reg["registration_id"] == REGISTRATION_ID),
+        (
+            "primary_horizon_sessions",
+            lambda reg: reg["scientific_freeze"]["primary_horizon_sessions"]
+            == PRIMARY_HORIZON_SESSIONS,
+        ),
+        (
+            "effect_size_threshold",
+            lambda reg: reg["scientific_freeze"]["effect_size_threshold"]
+            == EFFECT_SIZE_THRESHOLD,
+        ),
+        ("by_q", lambda reg: reg["multiple_testing"]["q"] == BY_Q),
+        (
+            "by_procedure",
+            lambda reg: reg["multiple_testing"]["procedure"] == "benjamini_yekutieli",
+        ),
+        ("trial_count", lambda reg: reg["challenger"]["trial_count"] == 1),
+        (
+            "outer_window",
+            lambda reg: "cutoff+63 sessions"
+            in reg["scientific_freeze"]["censoring_rule"],
+        ),
+        (
+            "purge",
+            lambda reg: "next 63 NYSE sessions"
+            in reg["scientific_freeze"]["forward_partitions"],
+        ),
+        (
+            "episode_floor",
+            lambda reg: "at least 100 distinct issuer episodes"
+            in reg["scientific_freeze"]["forward_partitions"],
+        ),
+        (
+            "date_block",
+            lambda reg: "blocks of 63 NYSE sessions"
+            in reg["scientific_freeze"]["dependence_rule"],
+        ),
+        (
+            "replicates_and_seed_in_code",
+            lambda reg: "Bootstrap replicate count and seed are fixed in evaluator code"
+            in reg["scientific_freeze"]["dependence_rule"],
+        ),
+        (
+            "scored_fraction_floor",
+            lambda reg: "at least 0.60 of eligible rows are scored"
+            in reg["scientific_freeze"]["coverage_rule"],
+        ),
+        (
+            "case_coverage_floor",
+            lambda reg: "At least 0.60 of the four registered motivating cases"
+            in reg["scientific_freeze"]["coverage_rule"],
+        ),
+        (
+            "max_challenger_abstention",
+            lambda reg: "abstains on more than 0.40 of eligible rows"
+            in reg["scientific_freeze"]["coverage_rule"],
+        ),
+    )
+    for name, check in checks:
+        try:
+            ok = bool(check(r))
+        except (KeyError, TypeError):
+            ok = False
         if not ok:
             failed.append(name)
-
-    try:
-        _check(
-            "registration_id",
-            registration["registration_id"] == REGISTRATION_ID,
-        )
-    except (KeyError, TypeError):
-        failed.append("registration_id")
-
-    try:
-        sf = registration["scientific_freeze"]
-    except (KeyError, TypeError):
-        for key in (
-            "primary_horizon_sessions",
-            "effect_size_threshold",
-            "outer_window",
-            "purge",
-            "episode_floor",
-            "date_block",
-            "replicates_and_seed_in_code",
-            "scored_fraction_floor",
-            "case_coverage_floor",
-            "max_challenger_abstention",
-        ):
-            failed.append(key)
-        sf = None
-
-    if sf is not None:
-        try:
-            _check(
-                "primary_horizon_sessions",
-                sf["primary_horizon_sessions"] == PRIMARY_HORIZON_SESSIONS,
-            )
-        except (KeyError, TypeError):
-            failed.append("primary_horizon_sessions")
-        try:
-            _check(
-                "effect_size_threshold",
-                sf["effect_size_threshold"] == EFFECT_SIZE_THRESHOLD,
-            )
-        except (KeyError, TypeError):
-            failed.append("effect_size_threshold")
-        try:
-            cr = sf["censoring_rule"]
-            _check("outer_window", "cutoff+63 sessions" in cr)
-        except (KeyError, TypeError):
-            failed.append("outer_window")
-        try:
-            fp = sf["forward_partitions"]
-            _check("purge", "next 63 NYSE sessions" in fp)
-            _check(
-                "episode_floor",
-                "at least 100 distinct issuer episodes" in fp,
-            )
-        except (KeyError, TypeError):
-            failed.append("purge")
-            failed.append("episode_floor")
-        try:
-            dr = sf["dependence_rule"]
-            _check("date_block", "blocks of 63 NYSE sessions" in dr)
-            _check(
-                "replicates_and_seed_in_code",
-                "Bootstrap replicate count and seed are fixed in evaluator code"
-                in dr,
-            )
-        except (KeyError, TypeError):
-            failed.append("date_block")
-            failed.append("replicates_and_seed_in_code")
-        try:
-            cov = sf["coverage_rule"]
-            _check(
-                "scored_fraction_floor",
-                "at least 0.60 of eligible rows are scored" in cov,
-            )
-            _check(
-                "case_coverage_floor",
-                "At least 0.60 of the four registered motivating cases" in cov,
-            )
-            _check(
-                "max_challenger_abstention",
-                "abstains on more than 0.40 of eligible rows" in cov,
-            )
-        except (KeyError, TypeError):
-            failed.append("scored_fraction_floor")
-            failed.append("case_coverage_floor")
-            failed.append("max_challenger_abstention")
-
-    try:
-        mt = registration["multiple_testing"]
-        _check("by_q", mt["q"] == BY_Q)
-        _check("by_procedure", mt["procedure"] == "benjamini_yekutieli")
-    except (KeyError, TypeError):
-        failed.append("by_q")
-        failed.append("by_procedure")
-
-    try:
-        _check("trial_count", registration["challenger"]["trial_count"] == 1)
-    except (KeyError, TypeError):
-        failed.append("trial_count")
-
-    return sorted(set(failed))
+    return sorted(failed)
 
 
 def t1_label(
@@ -392,12 +355,11 @@ def cluster_bootstrap(
     keys = sorted(set(clusters))
     k = len(keys)
     key_to_idx = {key: i for i, key in enumerate(keys)}
-    sums = [0.0] * k
-    counts = [0.0] * k
+    members: list[list[float]] = [[] for _ in range(k)]
     for diff, cluster in zip(diffs, clusters):
-        idx = key_to_idx[cluster]
-        sums[idx] = math.fsum([sums[idx], float(diff)])
-        counts[idx] += 1.0
+        members[key_to_idx[cluster]].append(float(diff))
+    sums = [math.fsum(m) for m in members]
+    counts = [float(len(m)) for m in members]
 
     s = np.array(sums, dtype=np.float64)
     c = np.array(counts, dtype=np.float64)

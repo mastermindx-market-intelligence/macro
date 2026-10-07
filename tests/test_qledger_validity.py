@@ -1016,3 +1016,29 @@ def test_k3e_eval1_forward_t12_static_io_guard():
     )
     for needle in forbidden:
         assert needle not in source
+
+
+def test_k3e_eval1_forward_t7b_cluster_sum_is_exact_fsum():
+    out = k3e_fwd.cluster_bootstrap([1e16, 1.0, -1e16], ["a", "a", "a"], replicates=99)
+    assert out["mean"] == 1.0 / 3.0
+    assert out["ci_low"] == out["ci_high"] == 1.0 / 3.0
+
+
+def test_k3e_eval1_forward_t2b_one_try_per_check():
+    import copy
+
+    raw = (_K3E_ROOT / _K3E_EVAL1).read_bytes()
+    registration = json.loads(raw.decode("utf-8"))
+    bad_q = copy.deepcopy(registration)
+    del bad_q["multiple_testing"]["q"]
+    assert k3e_fwd.frozen_term_mismatches(bad_q) == ["by_q"]
+    bad_outer = copy.deepcopy(registration)
+    del bad_outer["scientific_freeze"]["censoring_rule"]
+    assert k3e_fwd.frozen_term_mismatches(bad_outer) == ["outer_window"]
+    bad_cov = copy.deepcopy(registration)
+    del bad_cov["scientific_freeze"]["coverage_rule"]
+    assert k3e_fwd.frozen_term_mismatches(bad_cov) == [
+        "case_coverage_floor",
+        "max_challenger_abstention",
+        "scored_fraction_floor",
+    ]
