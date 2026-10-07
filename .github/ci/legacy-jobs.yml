@@ -133,7 +133,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
       - name: integrated answer v0 composer
-        run: MACRO_REPO="${{ github.workspace }}" python -m pytest tests/test_integrated_answer_v0.py -q
+        run: python -m pytest tests/test_integrated_answer_v0.py -q
 
   inline-js:
     if: ${{ false }}
@@ -3071,7 +3071,12 @@ jobs:
     # greek math is checked against engine/greeks + engine/gex_engine (the EOD source it
     # mirrors), so numpy/pandas/scipy are needed (the greek engine is numpy-vectorized).
       - "engine/basket_membership_pit.py"
+      - "engine/company_theme_exposure/__init__.py"
+      - "engine/company_theme_exposure/contracts.py"
+      - "engine/k3e_expectation_surface.py"
+      - "engine/theme_context.py"
       - "scripts/build_thematic_state.py"
+      - "scripts/query_k3e_expectation_surface.py"
       - "site/basketdata/baskets.json"
       - "site/basketdata/foresight_cascade.json"
       - "site/basketdata/narrative_emergence.json"
@@ -11126,7 +11131,12 @@ jobs:
     # logical job.  Eight minutes is generous versus the serial profile while
     # still naming the responsible contract if this lane regresses.
       - "engine/basket_membership_pit.py"
+      - "engine/company_theme_exposure/__init__.py"
+      - "engine/company_theme_exposure/contracts.py"
+      - "engine/k3e_expectation_surface.py"
+      - "engine/theme_context.py"
       - "scripts/build_thematic_state.py"
+      - "scripts/query_k3e_expectation_surface.py"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 8
@@ -11603,8 +11613,13 @@ jobs:
     # projection.  This is deliberately independently bounded because its
     # repeated source-evidence verification is the heaviest validation family.
       - "engine/basket_membership_pit.py"
+      - "engine/company_theme_exposure/__init__.py"
+      - "engine/company_theme_exposure/contracts.py"
+      - "engine/k3e_expectation_surface.py"
+      - "engine/theme_context.py"
       - "scripts/__init__.py"
       - "scripts/build_thematic_state.py"
+      - "scripts/query_k3e_expectation_surface.py"
       - "site/basketdata/baskets.json"
       - "site/basketdata/foresight_cascade.json"
       - "site/basketdata/narrative_emergence.json"
@@ -13393,6 +13408,8 @@ jobs:
       - "engine/chronicle/**"
       - "engine/codex_lane/**"
       - "engine/company_intelligence/**"
+      - "engine/company_theme_exposure/__init__.py"
+      - "engine/company_theme_exposure/contracts.py"
       - "engine/context_index/**"
       - "engine/earnings_narrative/**"
       - "engine/earnings_release/**"
@@ -13477,6 +13494,7 @@ jobs:
     # are ~30s.
       - "scripts/__init__.py"
       - "scripts/build_thematic_state.py"
+      - "scripts/query_k3e_expectation_surface.py"
       - "site/marketdata/subsector_rotation.json"
       - "site/neuralwebdata/theme_state.json"
     timeout-minutes: 8
@@ -14118,7 +14136,12 @@ jobs:
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
       - "engine/basket_membership_pit.py"
+      - "engine/company_theme_exposure/__init__.py"
+      - "engine/company_theme_exposure/contracts.py"
+      - "engine/k3e_expectation_surface.py"
+      - "engine/theme_context.py"
       - "scripts/build_thematic_state.py"
+      - "scripts/query_k3e_expectation_surface.py"
       - "site/basketdata/baskets.json"
       - "site/basketdata/foresight_cascade.json"
       - "site/basketdata/narrative_emergence.json"
@@ -17967,7 +17990,12 @@ jobs:
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
       - "engine/basket_membership_pit.py"
+      - "engine/company_theme_exposure/__init__.py"
+      - "engine/company_theme_exposure/contracts.py"
+      - "engine/k3e_expectation_surface.py"
+      - "engine/theme_context.py"
       - "scripts/build_thematic_state.py"
+      - "scripts/query_k3e_expectation_surface.py"
       - "site/basketdata/baskets.json"
       - "site/basketdata/foresight_cascade.json"
       - "site/basketdata/narrative_emergence.json"
