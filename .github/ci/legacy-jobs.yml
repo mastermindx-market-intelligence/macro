@@ -7376,6 +7376,7 @@ jobs:
       - "site/index.html"
       - "site/leader_radar.html"
       - "site/macro.html"
+      - "site/risk_envelope_live.js"
       - "site/measurementdata/measurement_data.js"
       - "site/news.html"
       - "site/prophet/showcase.json"
@@ -15927,6 +15928,7 @@ jobs:
       # Risk Radar integration: direct suite selection plus its real read dependencies.
       - "tests/test_risk_envelope_radar_integration.py"
       - "tests/__init__.py"
+      - "templates/_risk_envelope_band.css.j2"
       - "templates/risk_envelope_live.js"
       - "site/risk_envelope_live.js"
       - "templates/_risk_envelope_band.html.j2"
