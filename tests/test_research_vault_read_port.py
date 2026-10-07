@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 
 import pytest
 
@@ -220,3 +221,202 @@ def test_source_degradation_is_closed_code_not_arbitrary_prose():
         known_degradation=["PRODUCER_STALE", "PARTIAL_CORPUS"],
     )
     assert source["known_degradation"] == ["PRODUCER_STALE", "PARTIAL_CORPUS"]
+
+
+_LEGACY_PASSAGE_KEYS = (
+    "schema",
+    "report_id",
+    "title",
+    "institution",
+    "published_at",
+    "source_pdf_sha256",
+    "extracted_text_sha256",
+    "extractor_name",
+    "extractor_version",
+    "segmenter_version",
+    "segment_index",
+    "page_start",
+    "page_end",
+    "start_byte",
+    "end_byte",
+    "passage_text_sha256",
+    "text",
+    "coverage_state",
+    "replay_state",
+    "open_source_ref",
+)
+
+
+def _match_kwargs(text="alpha MATCH omega", start=5000):
+    match_at = text.index("MATCH")
+    return {
+        "start_char": start,
+        "end_char": start + len(text),
+        "match_start_char": start + match_at,
+        "match_end_char": start + match_at + 5,
+        "match_text": "MATCH",
+        "matched_terms": ["match"],
+    }
+
+
+def _passage_with(text="literal source sentence", **kwargs):
+    raw = text.encode("utf-8")
+    return read_port.evidence_passage(
+        report_id="r1",
+        title="Institutional report",
+        institution="Example Bank",
+        published_at="2026-10-05T07:30:00Z",
+        source_pdf_sha256=PDF,
+        extracted_text_sha256=TEXT,
+        extractor_name="pdftotext",
+        extractor_version="poppler-layout-v1",
+        segmenter_version="page-byte-v1",
+        segment_index=2,
+        page_start=7,
+        page_end=7,
+        start_byte=1000,
+        end_byte=1000 + len(raw),
+        text=text,
+        coverage_state="FULL_TEXT",
+        **kwargs,
+    )
+
+
+def test_evidence_passage_without_match_fields_is_byte_identical_v1():
+    passage = _passage_with()
+    assert tuple(passage) == _LEGACY_PASSAGE_KEYS
+    assert len(_LEGACY_PASSAGE_KEYS) == 20
+    assert len(passage) == 20
+    assert passage == _passage()
+    dumped = json.dumps(passage, sort_keys=False)
+    assert "start_char" not in dumped
+    assert "matched_terms" not in dumped
+    assert read_port.EVIDENCE_SCHEMA == "research.evidence_passage.v1"
+
+
+def test_evidence_passage_round_trips_absolute_match_locator():
+    text = "alpha MATCH omega"
+    kwargs = _match_kwargs(text=text, start=5000)
+    passage = _passage_with(text, **kwargs)
+    for key in read_port.EVIDENCE_MATCH_FIELDS:
+        assert passage[key] == kwargs[key]
+    assert isinstance(passage["matched_terms"], list)
+    assert passage["matched_terms"] is not kwargs["matched_terms"]
+    assert list(passage)[-6:] == list(read_port.EVIDENCE_MATCH_FIELDS)
+    relative_start = passage["match_start_char"] - passage["start_char"]
+    relative_end = passage["match_end_char"] - passage["start_char"]
+    assert passage["text"][relative_start:relative_end] == passage["match_text"]
+    assert json.loads(json.dumps(passage)) == passage
+
+
+@pytest.mark.parametrize(
+    "dropped",
+    [*read_port.EVIDENCE_MATCH_FIELDS, "ONLY_MATCH_TEXT"],
+)
+def test_match_fields_partial_presence_is_value_error(dropped):
+    text = "alpha MATCH omega"
+    if dropped == "ONLY_MATCH_TEXT":
+        with pytest.raises(ValueError, match="all present or all absent"):
+            _passage_with(text, match_text="MATCH")
+        return
+    kwargs = _match_kwargs(text=text)
+    kwargs[dropped] = None
+    with pytest.raises(ValueError, match="all present or all absent"):
+        _passage_with(text, **kwargs)
+
+
+@pytest.mark.parametrize("field", read_port.EVIDENCE_MATCH_FIELDS[:4])
+@pytest.mark.parametrize("bad", [True, -1, 1.0, "5"])
+def test_match_offsets_refuse_bool_negative_and_non_int(field, bad):
+    text = "alpha MATCH omega"
+    kwargs = _match_kwargs(text=text)
+    kwargs[field] = bad
+    with pytest.raises(ValueError, match="nonnegative int"):
+        _passage_with(text, **kwargs)
+
+
+@pytest.mark.parametrize("mutate", ["before_start", "empty_match", "past_end"])
+def test_match_offsets_refuse_incoherent_order(mutate):
+    text = "alpha MATCH omega"
+    kwargs = _match_kwargs(text=text)
+    if mutate == "before_start":
+        kwargs["match_start_char"] = kwargs["start_char"] - 1
+        kwargs["match_end_char"] = kwargs["start_char"]
+        kwargs["match_text"] = ""
+    elif mutate == "empty_match":
+        kwargs["match_end_char"] = kwargs["match_start_char"]
+        kwargs["match_text"] = ""
+    else:
+        relative = kwargs["match_start_char"] - kwargs["start_char"]
+        kwargs["match_end_char"] = kwargs["end_char"] + 1
+        kwargs["match_text"] = text[relative:]
+    assert kwargs["end_char"] - kwargs["start_char"] == len(text)
+    with pytest.raises(ValueError, match="incoherent"):
+        _passage_with(text, **kwargs)
+
+
+def test_match_span_must_equal_text_length():
+    text = "alpha MATCH omega"
+    kwargs = _match_kwargs(text=text)
+    kwargs["end_char"] = kwargs["start_char"] + len(text) + 1
+    with pytest.raises(ValueError):
+        _passage_with(text, **kwargs)
+
+
+def test_match_text_must_equal_text_slice():
+    text = "alpha MATCH omega"
+    wrong = _match_kwargs(text=text)
+    wrong["match_text"] = "MATCX"
+    with pytest.raises(ValueError):
+        _passage_with(text, **wrong)
+    spaced = _match_kwargs(text=text)
+    spaced["match_text"] = " MATCH"
+    with pytest.raises(ValueError):
+        _passage_with(text, **spaced)
+
+
+@pytest.mark.parametrize(
+    ("terms", "accepted"),
+    [
+        (["term"] * (read_port.EVIDENCE_MATCHED_TERMS_MAX + 1), False),
+        (["a" * (read_port.EVIDENCE_MATCHED_TERM_MAX_CHARS + 1)], False),
+        ([""], False),
+        (
+            ["a" * read_port.EVIDENCE_MATCHED_TERM_MAX_CHARS]
+            * read_port.EVIDENCE_MATCHED_TERMS_MAX,
+            True,
+        ),
+    ],
+)
+def test_matched_terms_bounds(terms, accepted):
+    text = "alpha MATCH omega"
+    kwargs = _match_kwargs(text=text)
+    kwargs["matched_terms"] = terms
+    if accepted:
+        passage = _passage_with(text, **kwargs)
+        assert passage["matched_terms"] == list(terms)
+    else:
+        with pytest.raises(ValueError):
+            _passage_with(text, **kwargs)
+
+
+def test_matched_terms_refuse_string_and_non_str():
+    text = "alpha MATCH omega"
+    as_string = _match_kwargs(text=text)
+    as_string["matched_terms"] = "match"
+    with pytest.raises(ValueError):
+        _passage_with(text, **as_string)
+    mixed = _match_kwargs(text=text)
+    mixed["matched_terms"] = ["match", 7]
+    with pytest.raises(ValueError):
+        _passage_with(text, **mixed)
+    as_tuple = _match_kwargs(text=text)
+    as_tuple["matched_terms"] = ("match",)
+    passage = _passage_with(text, **as_tuple)
+    assert passage["matched_terms"] == ["match"]
+    assert isinstance(passage["matched_terms"], list)
+
+
+def test_match_bound_constants_are_pinned():
+    assert read_port.EVIDENCE_MATCHED_TERMS_MAX == 16
+    assert read_port.EVIDENCE_MATCHED_TERM_MAX_CHARS == 64

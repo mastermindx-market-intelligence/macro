@@ -84,6 +84,16 @@ DEGRADATION_CODES = frozenset({
 
 _MAX_TEXT_BYTES = 24_000
 _MAX_PASSAGES = 12
+EVIDENCE_MATCHED_TERMS_MAX = 16
+EVIDENCE_MATCHED_TERM_MAX_CHARS = 64
+EVIDENCE_MATCH_FIELDS = (
+    "start_char",
+    "end_char",
+    "match_start_char",
+    "match_end_char",
+    "match_text",
+    "matched_terms",
+)
 
 
 def _require_text(value: Any, name: str, *, max_len: int = 2000) -> str:
@@ -230,12 +240,22 @@ def evidence_passage(
     coverage_state: str,
     replay_state: str = "EXACT",
     open_source_ref: str | None = None,
+    start_char: int | None = None,
+    end_char: int | None = None,
+    match_start_char: int | None = None,
+    match_end_char: int | None = None,
+    match_text: str | None = None,
+    matched_terms: Sequence[str] | None = None,
 ) -> dict[str, Any]:
     """Construct one literal source-evidence passage.
 
     The text hash is computed here from exact UTF-8 bytes. This constructor does
     not claim the offsets are canonical; the Research Vault evidence owner must
     provide a passage already proven against the canonical segment/text artifact.
+
+    The match locator is optional and all-or-nothing. When present, its offsets
+    are absolute character indexes into the extracted text, copied from the
+    evidence owner's hit and never recomputed here.
     """
     if coverage_state not in COVERAGE_STATES:
         raise ValueError("unsupported coverage_state")
@@ -265,7 +285,49 @@ def evidence_passage(
         raise ValueError("evidence text exceeds byte bound")
     if len(raw) != end_byte - start_byte:
         raise ValueError("evidence byte range does not match UTF-8 text length")
-    return {
+    present_count = sum(
+        value is not None
+        for value in (
+            start_char,
+            end_char,
+            match_start_char,
+            match_end_char,
+            match_text,
+            matched_terms,
+        )
+    )
+    emitted_terms: list[str] | None = None
+    if present_count not in (0, 6):
+        raise ValueError("match locator fields must be all present or all absent")
+    if present_count == 6:
+        start_char = _nonnegative_int(start_char, "start_char")
+        end_char = _nonnegative_int(end_char, "end_char")
+        match_start_char = _nonnegative_int(match_start_char, "match_start_char")
+        match_end_char = _nonnegative_int(match_end_char, "match_end_char")
+        if not (start_char <= match_start_char < match_end_char <= end_char):
+            raise ValueError("match locator offsets are incoherent")
+        if end_char - start_char != len(text):
+            raise ValueError("match span does not equal text length")
+        if (
+            not isinstance(match_text, str)
+            or text[match_start_char - start_char:match_end_char - start_char]
+            != match_text
+        ):
+            raise ValueError("match_text does not equal the text slice")
+        if not isinstance(matched_terms, (list, tuple)):
+            raise ValueError("matched_terms must be a list or tuple")
+        if len(matched_terms) > EVIDENCE_MATCHED_TERMS_MAX:
+            raise ValueError("matched_terms exceeds count bound")
+        emitted_terms = []
+        for term in matched_terms:
+            if not isinstance(term, str):
+                raise ValueError("matched_terms element must be a string")
+            if len(term) < 1:
+                raise ValueError("matched_terms element must be nonempty")
+            if len(term) > EVIDENCE_MATCHED_TERM_MAX_CHARS:
+                raise ValueError("matched_terms element exceeds length bound")
+            emitted_terms.append(term)
+    passage = {
         "schema": EVIDENCE_SCHEMA,
         "report_id": _require_text(report_id, "report_id", max_len=240),
         "title": _require_text(title, "title", max_len=500),
@@ -295,6 +357,18 @@ def evidence_passage(
             open_source_ref, "open_source_ref", max_len=500
         ),
     }
+    if present_count == 6:
+        located = {
+            "start_char": start_char,
+            "end_char": end_char,
+            "match_start_char": match_start_char,
+            "match_end_char": match_end_char,
+            "match_text": match_text,
+            "matched_terms": emitted_terms,
+        }
+        for key in EVIDENCE_MATCH_FIELDS:
+            passage[key] = located[key]
+    return passage
 
 
 def evidence_result(

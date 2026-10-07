@@ -49,6 +49,17 @@ def _literal_int(value: Any) -> bool:
     return type(value) is int
 
 
+def _bounded_matched_terms(raw: Any) -> Any:
+    """Bound the corpus hit's matched_terms to the port's limits. Truncation only.
+
+    Never invents, reorders or normalizes a term. A non-list/tuple value, or a
+    non-str element, is passed through unchanged so the port refuses it."""
+    if not isinstance(raw, (list, tuple)):
+        return raw
+    cap = read_port.EVIDENCE_MATCHED_TERM_MAX_CHARS
+    return [t[:cap] if isinstance(t, str) else t for t in raw][: read_port.EVIDENCE_MATCHED_TERMS_MAX]
+
+
 @dataclass(frozen=True)
 class ServerReadContext(Mapping[str, Any]):
     """Trusted server-side caller context. Construction is server-side only."""
@@ -605,7 +616,26 @@ class ResearchReadService:
             page_start, page_end = self._pages_for_span(
                 extracted.get("page_boundaries"), start_byte, end_byte
             )
+            match_start_char = locator.get("match_start_char", row.get("match_start_char"))
+            match_end_char = locator.get("match_end_char", row.get("match_end_char"))
+            match_text = row.get("match_text")
+            matched_terms = row.get("matched_terms")
             try:
+                passage_kwargs: dict[str, Any] = {}
+                if not (
+                    match_start_char is None
+                    and match_end_char is None
+                    and match_text is None
+                    and matched_terms is None
+                ):
+                    passage_kwargs = {
+                        "start_char": start_char,
+                        "end_char": end_char,
+                        "match_start_char": match_start_char,
+                        "match_end_char": match_end_char,
+                        "match_text": match_text,
+                        "matched_terms": _bounded_matched_terms(matched_terms),
+                    }
                 built.append(
                     read_port.evidence_passage(
                         report_id=report_id,
@@ -625,6 +655,7 @@ class ResearchReadService:
                         text=passage_text,
                         coverage_state="FULL_TEXT",
                         open_source_ref=None,
+                        **passage_kwargs,
                     )
                 )
             except (ValueError, TypeError, KeyError):

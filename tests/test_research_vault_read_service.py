@@ -920,3 +920,147 @@ def test_t14_ast_forbids_network_and_app_imports():
     for node in ast.walk(tree):
         if isinstance(node, ast.Attribute) and node.attr == "environ":
             raise AssertionError("os.environ must not appear")
+
+
+import engine.research_vault.read_service as read_service_module
+from engine.research_vault import read_port
+
+
+def _find_evidence(tmp_path, text, query):
+    published = (NOW - timedelta(hours=1)).isoformat()
+    items = [_item("alpha-report", "Alpha Note", published)]
+    record = _extracted("alpha-report", text=text)
+    svc, *_ = _service(
+        tmp_path,
+        items=items,
+        extracted={"alpha-report": record},
+        digest=PDF_SHA,
+        preview=["alpha-report"],
+    )
+    result = svc.find_evidence(
+        caller_context=_ctx(),
+        report_id="alpha-report",
+        query=query,
+        max_passages=3,
+    )
+    return result, record
+
+
+def _install_passage_hits(monkeypatch, hits):
+    def fake(document, query, *, limit=3, window_chars=900):
+        return {"status": "matched", "passages": list(hits)}
+
+    monkeypatch.setattr(
+        read_service_module.corpus_mod, "find_evidence_passages", fake
+    )
+
+
+def test_find_evidence_passages_carry_absolute_char_match_locator(tmp_path):
+    text = CANONICAL + "\n" + ("研究" * 400) + " tail hyperscaler-tail-sentinel zeta"
+    query = "zeta"
+    result, record = _find_evidence(tmp_path, text, query)
+    assert result["ok"] is True
+    assert len(result["passages"]) == 1
+    passage = result["passages"][0]
+    assert query in passage["match_text"].casefold()
+    assert passage["start_char"] > 800
+    assert passage["start_char"] != passage["start_byte"]
+    assert text[passage["start_char"]:passage["end_char"]] == passage["text"]
+    assert text[passage["match_start_char"]:passage["match_end_char"]] == passage["match_text"]
+    direct = corpus_mod.find_evidence_passages(
+        {
+            "body": text,
+            "char_count": len(text),
+            "content_sha256": record["extracted_text_sha256"],
+            "text_layer": record["text_layer_state"],
+            "pages": record["page_count"],
+        },
+        query,
+        limit=3,
+    )
+    hit = direct["passages"][0]
+    assert passage["start_char"] == hit["locator"]["start_char"]
+    assert passage["end_char"] == hit["locator"]["end_char"]
+    assert passage["match_start_char"] == hit["locator"]["match_start_char"]
+    assert passage["match_end_char"] == hit["locator"]["match_end_char"]
+    assert passage["match_text"] == hit["match_text"]
+    assert passage["matched_terms"] == hit["matched_terms"]
+    assert record["text_layer_state"] == "full"
+
+
+def test_build_passages_bounds_matched_terms_from_port_constants(tmp_path, monkeypatch):
+    text = "prefix MATCH suffix"
+    long_term = "H" * 70
+    terms = [long_term] + [f"term{i:02d}" for i in range(19)]
+    assert len(terms) == 20
+    match_start = text.index("MATCH")
+    match_end = match_start + len("MATCH")
+    hit = {
+        "text": text,
+        "match_text": text[match_start:match_end],
+        "matched_terms": terms,
+        "locator": {
+            "kind": "text_span",
+            "start_char": 0,
+            "end_char": len(text),
+            "match_start_char": match_start,
+            "match_end_char": match_end,
+        },
+    }
+    _install_passage_hits(monkeypatch, [hit])
+    result, _record = _find_evidence(tmp_path, text, "MATCH")
+    assert len(result["passages"]) == 1
+    matched = result["passages"][0]["matched_terms"]
+    assert len(matched) == read_port.EVIDENCE_MATCHED_TERMS_MAX
+    assert all(len(term) <= read_port.EVIDENCE_MATCHED_TERM_MAX_CHARS for term in matched)
+    assert matched[0] == long_term[:read_port.EVIDENCE_MATCHED_TERM_MAX_CHARS]
+
+
+def test_build_passages_legacy_hit_without_match_fields_has_no_match_block(tmp_path, monkeypatch):
+    text = "prefix MATCH suffix"
+    hit = {
+        "text": text,
+        "locator": {"kind": "text_span", "start_char": 0, "end_char": len(text)},
+    }
+    _install_passage_hits(monkeypatch, [hit])
+    result, _record = _find_evidence(tmp_path, text, "MATCH")
+    assert len(result["passages"]) == 1
+    passage = result["passages"][0]
+    for key in read_port.EVIDENCE_MATCH_FIELDS:
+        assert key not in passage
+
+
+def test_build_passages_partial_match_hit_is_dropped_fail_closed(tmp_path, monkeypatch):
+    text = "alpha MATCH omega\nbeta OTHER zeta"
+    split = text.index("\n")
+    a_start, a_end = 0, split
+    b_start, b_end = split + 1, len(text)
+    a_match = text.index("MATCH")
+    b_match = text.index("OTHER")
+    hit_a = {
+        "text": text[a_start:a_end],
+        "match_text": text[a_match:a_match + len("MATCH")],
+        "matched_terms": ["match"],
+        "locator": {
+            "kind": "text_span",
+            "start_char": a_start,
+            "end_char": a_end,
+            "match_start_char": a_match,
+            "match_end_char": a_match + len("MATCH"),
+        },
+    }
+    hit_b = {
+        "text": text[b_start:b_end],
+        "matched_terms": ["other"],
+        "locator": {
+            "kind": "text_span",
+            "start_char": b_start,
+            "end_char": b_end,
+            "match_start_char": b_match,
+            "match_end_char": b_match + len("OTHER"),
+        },
+    }
+    _install_passage_hits(monkeypatch, [hit_a, hit_b])
+    result, _record = _find_evidence(tmp_path, text, "MATCH")
+    assert len(result["passages"]) == 1
+    assert result["passages"][0]["start_char"] == a_start
