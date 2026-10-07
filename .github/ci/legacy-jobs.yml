@@ -13278,6 +13278,8 @@ jobs:
       # TZ=UTC because these writers stamp UTC dates the tests read back.
       - name: theme graph — permanent node identity and ratified epochs
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity.py -q
+      - name: theme graph — W-C4 production hierarchy population (frozen R-C.3 table, PIT, rights, outputs unchanged)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_population.py -q
       - name: theme graph — bitemporal materialization from the membership documents
         run: TZ=UTC python -m pytest tests/test_theme_graph_materialize.py -q
       - name: theme graph — contract guard (incident fixtures + annotation shape)
