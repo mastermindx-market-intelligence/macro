@@ -18019,8 +18019,32 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       # RS Pullback Phase 1 adds synthetic first-seen/PIT input admission here:
       # gate: code makes it a PR check; signal-contract is data-plane only.
+      # PTSE source-only research contracts are fixture-only: no live source/store
+      # or provider reads and no publication authority. Register every suite here,
+      # alongside the existing frozen/PIT research contracts, in this CODE gate.
       - name: frozen price panel + RS pullback admission, retained observations and temporal conformance
-        run: python -m pytest tests/test_research_price_panel.py tests/test_entry_radar_rs_pullback_phase1.py tests/test_entry_radar_terminal_minute_observations.py -q
+        run: >-
+          python -m pytest
+          tests/test_research_price_panel.py
+          tests/test_entry_radar_rs_pullback_phase1.py
+          tests/test_entry_radar_terminal_minute_observations.py
+          tests/test_ptse_action_context.py
+          tests/test_ptse_baseline.py
+          tests/test_ptse_breadth_observation.py
+          tests/test_ptse_candidate_relation.py
+          tests/test_ptse_contract.py
+          tests/test_ptse_event_observation.py
+          tests/test_ptse_new_entry_context.py
+          tests/test_ptse_options_observation.py
+          tests/test_ptse_owner_observation.py
+          tests/test_ptse_plan_relation.py
+          tests/test_ptse_post_entry_context.py
+          tests/test_ptse_prospective_readiness.py
+          tests/test_ptse_pullback_buy_context.py
+          tests/test_ptse_shadow_enrollment.py
+          tests/test_ptse_shadow_integrity.py
+          tests/test_ptse_shadow_outcome.py
+          tests/test_ptse_w3_publication.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
