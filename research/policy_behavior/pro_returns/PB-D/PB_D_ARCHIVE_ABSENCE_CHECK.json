@@ -1,0 +1,203 @@
+{
+  "assertion": "Archive unavailable at the hypothetical cut and missing primary reviews cannot produce QFALSE or QTRUE.",
+  "check": "OFFLINE_ABSENCE_PROBE_NOT_A_HISTORICAL_LABEL",
+  "hypothetical_read_cut": "2026-09-17T13:15:00Z",
+  "receipt": {
+    "authority": "research_only",
+    "authority_flags": {
+      "can_gate": false,
+      "can_open_entry": false,
+      "can_originate": false,
+      "can_rank": false,
+      "can_size": false
+    },
+    "completed_at": null,
+    "correction_links": [],
+    "coverage_packet_sha256": "7056535c3bac8f2de61ade0c89b271c4670b29b6bf158c95fa204706eafb0774",
+    "decision_cut": "2026-09-17T13:15:00Z",
+    "decision_cut_new_york": "2026-09-17T09:15:00-04:00",
+    "display_anchor_event_id": null,
+    "enrolled": false,
+    "event_receipts": [],
+    "evidence_mode": "producer_supplied_receipts_unenrolled",
+    "freshness_start": "2026-09-14T13:15:00Z",
+    "input_packet": {
+      "coverage": {
+        "available_at": "2026-09-26T05:36:12.339572+00:00",
+        "candidate_event_ids": [],
+        "classifier_version": "UNAVAILABLE",
+        "covered_from": "2026-09-14T13:15:00Z",
+        "covered_through": "2026-09-25T23:59:59Z",
+        "issuer_id": "cik:0001045810",
+        "missing_sources": [
+          "NO_BY_CUT_CANDIDATE_REVIEW_OR_PRIMARY_SOURCE_RECEIPTS"
+        ],
+        "observed_at": "2026-09-26T05:36:12.339572+00:00",
+        "provider_receipt_ids": [
+          "archive-sha256:e990fe347375181b32e3efa7a36386ad91a69977905a41ae18d29e753070809e"
+        ],
+        "reviews": [],
+        "source_version": "financial_news.v1",
+        "status": "incomplete"
+      },
+      "events": [],
+      "source_documents": {}
+    },
+    "input_sha256": "bf40265edd174363f431484d0b9982f79a1b3880da568669badd9928f294f310",
+    "issuer_id": "cik:0001045810",
+    "operation_id": "PB-D-T2-EVENT-QUALITY-20261007",
+    "positive_event_ids": [],
+    "positive_tag_event_ids": {
+      "ATTENTION_ONLY": [],
+      "EXPECTATION_CHANGE": [],
+      "FINANCING_LINKED": [],
+      "GOVERNMENT_LINKED": [],
+      "INDEPENDENT_EVIDENCE_2PLUS": [],
+      "NO_MATERIAL_EVENT": [],
+      "STRATEGIC_OPTION": [],
+      "SYNDICATED_SINGLE_ROOT": [],
+      "VERIFIED_MATERIAL_EVENT": []
+    },
+    "q": "UNKNOWN",
+    "q_reasons": [
+      "coverage_incomplete",
+      "coverage_scope_mismatch",
+      "evidence_after_cut",
+      "review_missing"
+    ],
+    "raw_attention": null,
+    "receipt_sha256": "701f8bf2de3b42ec160c5cbb997c596df47ccf0f973a5d4adb9ea6f4d377e566",
+    "replayed_input_hashes": {
+      "source_bodies": {},
+      "source_segments": {}
+    },
+    "schema": "pb_d_quality.v1",
+    "spec_commit": "df2091915159dab94f316718caa9b2662098eae4",
+    "spec_version": "PB_D_EVENT_QUALITY_LABEL_SPEC/v1.0",
+    "tags": {
+      "ATTENTION_ONLY": {
+        "evidence_refs": [],
+        "reasons": [
+          "coverage_incomplete",
+          "coverage_scope_mismatch",
+          "evidence_after_cut",
+          "review_missing"
+        ],
+        "value": "UNKNOWN"
+      },
+      "EXPECTATION_CHANGE": {
+        "evidence_refs": [],
+        "reasons": [
+          "coverage_incomplete",
+          "coverage_scope_mismatch",
+          "evidence_after_cut",
+          "review_missing"
+        ],
+        "value": "UNKNOWN"
+      },
+      "FINANCING_LINKED": {
+        "evidence_refs": [],
+        "reasons": [
+          "coverage_incomplete",
+          "coverage_scope_mismatch",
+          "evidence_after_cut",
+          "review_missing"
+        ],
+        "value": "UNKNOWN"
+      },
+      "GOVERNMENT_LINKED": {
+        "evidence_refs": [],
+        "reasons": [
+          "coverage_incomplete",
+          "coverage_scope_mismatch",
+          "evidence_after_cut",
+          "review_missing"
+        ],
+        "value": "UNKNOWN"
+      },
+      "INDEPENDENT_EVIDENCE_2PLUS": {
+        "evidence_refs": [],
+        "reasons": [
+          "coverage_incomplete",
+          "coverage_scope_mismatch",
+          "evidence_after_cut",
+          "review_missing"
+        ],
+        "value": "UNKNOWN"
+      },
+      "NO_MATERIAL_EVENT": {
+        "evidence_refs": [],
+        "reasons": [
+          "coverage_incomplete",
+          "coverage_scope_mismatch",
+          "evidence_after_cut",
+          "review_missing"
+        ],
+        "value": "UNKNOWN"
+      },
+      "STRATEGIC_OPTION": {
+        "evidence_refs": [],
+        "reasons": [
+          "coverage_incomplete",
+          "coverage_scope_mismatch",
+          "evidence_after_cut",
+          "review_missing"
+        ],
+        "value": "UNKNOWN"
+      },
+      "SYNDICATED_SINGLE_ROOT": {
+        "evidence_refs": [],
+        "reasons": [
+          "coverage_incomplete",
+          "coverage_scope_mismatch",
+          "evidence_after_cut",
+          "review_missing"
+        ],
+        "value": "UNKNOWN"
+      },
+      "VERIFIED_MATERIAL_EVENT": {
+        "evidence_refs": [],
+        "reasons": [
+          "coverage_incomplete",
+          "coverage_scope_mismatch",
+          "evidence_after_cut",
+          "review_missing"
+        ],
+        "value": "UNKNOWN"
+      }
+    },
+    "ticker_at_cut": "NVDA"
+  },
+  "request": {
+    "coverage": {
+      "available_at": "2026-09-26T05:36:12.339572+00:00",
+      "candidate_event_ids": [],
+      "classifier_version": "UNAVAILABLE",
+      "covered_from": "2026-09-14T13:15:00Z",
+      "covered_through": "2026-09-25T23:59:59Z",
+      "issuer_id": "cik:0001045810",
+      "missing_sources": [
+        "NO_BY_CUT_CANDIDATE_REVIEW_OR_PRIMARY_SOURCE_RECEIPTS"
+      ],
+      "observed_at": "2026-09-26T05:36:12.339572+00:00",
+      "provider_receipt_ids": [
+        "archive-sha256:e990fe347375181b32e3efa7a36386ad91a69977905a41ae18d29e753070809e"
+      ],
+      "reviews": [],
+      "source_version": "financial_news.v1",
+      "status": "incomplete"
+    },
+    "decision_cut": "2026-09-17T13:15:00Z",
+    "events": [],
+    "freshness_start": "2026-09-14T13:15:00Z",
+    "issuer_id": "cik:0001045810",
+    "raw_attention": null,
+    "source_documents": {},
+    "synthetic": false,
+    "ticker_at_cut": "NVDA"
+  },
+  "source_archive_asof": "2026-09-25",
+  "source_archive_fetched_at": "2026-09-26T05:36:12.339572+00:00",
+  "source_archive_schema": "financial_news.v1",
+  "source_archive_sha256": "e990fe347375181b32e3efa7a36386ad91a69977905a41ae18d29e753070809e"
+}

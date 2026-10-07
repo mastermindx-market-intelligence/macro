@@ -10,6 +10,9 @@ pydantic>=2.0,<3.0
 # context router at API startup, so this is a serving-tier dependency rather
 # than a worker-only convenience.
 requests>=2.31,<3.0
+# Low-latency ticker-news runner (same VPS/runtime owner as the API) uses the
+# supported synchronous client API, websockets.sync.client.connect.
+websockets>=17.1,<18
 # Reviewed serving-boundary policy (config/site_access.yml). Imported at API
 # startup by app/paywall.py, so this is a hard serving-tier dependency.
 PyYAML>=6.0,<7.0

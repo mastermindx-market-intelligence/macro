@@ -409,6 +409,21 @@ def _apply_lineage(rows: list[dict[str, Any]], existing: pd.DataFrame) -> None:
         current_period_end = _json_scalar(row["period_end"])
         if prior_period_end is not None and current_period_end is not None and prior_period_end != current_period_end:
             continue
+        # Mutation gate 4: a unit, currency or basis change is noncomparable, not
+        # a revision (DEC:ITP-K3E-BASIS-CHANGE-IS-NONCOMPARABLE-2026-10-07).  When
+        # both the prior and the current row carry a real (non-null) value for
+        # any of unit, currency or basis and those differ, the two observations
+        # measure different things: leave the row a new original with no
+        # supersedes_observation_id, and never touch the prior row.  A null on
+        # either side (enrichment) falls through to the value comparison exactly
+        # as today.
+        if any(
+            _json_scalar(newest[field]) is not None
+            and _json_scalar(row[field]) is not None
+            and _json_scalar(newest[field]) != _json_scalar(row[field])
+            for field in ("unit", "currency", "basis")
+        ):
+            continue
         same_value = (
             _json_scalar(newest["value"]) == _json_scalar(row["value"])
             and _json_scalar(newest["unit"]) == _json_scalar(row["unit"])
