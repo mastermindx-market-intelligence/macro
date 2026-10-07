@@ -49,6 +49,7 @@ jobs:
     # reads by a joined path the resolver cannot derive.
     scope: exclusive
     paths:
+      - "lib/exchange_holidays.py"
       - "collectors/__init__.py"
       - "collectors/edgar.py"
       - "collectors/edgar_deadname_prices.py"
@@ -419,6 +420,7 @@ jobs:
     # is no longer the active reason — the path stays for parity.
     scope: exclusive
     paths:
+      - "lib/exchange_holidays.py"
       - "config.yml"
       - "config/market_reference.yml"
       - "config/sparse_worktree.json"
@@ -529,6 +531,7 @@ jobs:
     # import_closure fails the PR.
     scope: exclusive
     paths:
+      - "lib/exchange_holidays.py"
       # composer + transitive engine closure
       - "engine/__init__.py"
       - "engine/options_alpha_candidate_feed.py"
@@ -1498,6 +1501,10 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "lib/exchange_holidays.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
       - "tests/test_q06_sec_comparable_revenue_source_contract.py"
       - "research/prophet_v4/r6_program/wave3/verify_q06_sec_comparable_revenue_source_contract.py"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
@@ -4490,6 +4497,13 @@ jobs:
     # Opaque data traversals do not widen this code job into unrelated ownership.
     scope: exclusive
     paths:
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/tsx_calendar.py"
       - "collectors/__init__.py"
       - "collectors/_stock_ohlc.py"
       - "collectors/base.py"
@@ -4529,6 +4543,12 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/fred.py"
@@ -4813,6 +4833,10 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/exchange_holidays.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
       - "collectors/edgar_8k.py"
       - "collectors/edgar_dilution.py"
@@ -5167,6 +5191,11 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
       - "engine/**"
       - "scripts/**"
       - "collectors/**"
@@ -5264,6 +5293,7 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      - "lib/exchange_holidays.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
       - "scripts/run_ci_pack.py"
@@ -5740,7 +5770,7 @@ jobs:
       # so its rule arithmetic must not be UNRUN the way test_nyse_calendar.py was
       # until 2026-07-27.
       - name: nyse + tsx calendar rules, first-party imported-name resolution
-        run: python -m pytest tests/test_nyse_calendar.py tests/test_tsx_calendar.py tests/test_first_party_import_names.py -q
+        run: python -m pytest tests/test_nyse_calendar.py tests/test_tsx_calendar.py tests/test_cn_calendar.py tests/test_exchange_holiday_notices.py tests/test_market_session.py tests/test_first_party_import_names.py -q
       # SP1-B: restrict_to_nyse_sessions must refuse a weekend-contaminated
       # price index. Belongs HERE — the filter is session_rows + is_session,
       # which this job already owns. Hermetic (synthetic dates, no data/).
@@ -5884,6 +5914,12 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
       - "collectors/base.py"
       - "collectors/fred.py"
       - "config.yml"
@@ -6259,6 +6295,7 @@ jobs:
     # name — add it here.
     scope: exclusive
     paths:
+      - "lib/exchange_holidays.py"
       - "tests/test_build_options_catalyst_links.py"
       - "tests/test_options_catalyst_link.py"
       - "tests/test_options_catalyst_links_nightly_shape.py"
@@ -6318,6 +6355,7 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "lib/exchange_holidays.py"
       - "tests/test_options_payoff_lab_consumer.py"
       - "tests/test_options_skew_source_note.py"
       - "tests/test_build_options_command.py"
@@ -6376,6 +6414,7 @@ jobs:
     # named file selects this job without inference smear).
     scope: exclusive
     paths:
+      - "lib/exchange_holidays.py"
       - "engine/ledger_lane.py"
       - "engine/options_signal_campaign.py"
       - "engine/options_signal_episode_contract.py"
@@ -7274,6 +7313,12 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
       - "scripts/check_validated_claims.py"
       - "data/regime/validated_claims_allowlist.json"
       - "tests/test_validated_claims_*.py"
@@ -8425,11 +8470,33 @@ jobs:
         # full heavy profile — these tests import through scripts/build_hk.py
         # (jinja2 -> markupsafe, plotly, pillow, requests); verified in a scratch
         # venv against exactly this set.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests yfinance
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: hk robustness w5 tests
         run: python -m pytest tests/test_hk_robustness_w5.py tests/test_hk_freshness.py -q
       - name: HK macro fill budget + degraded-store preservation
         run: python -m pytest tests/test_hk_macro_ffill_budget.py tests/test_store_guard.py -q
+      - name: Exchange holiday data retention and existing live consumers
+        run: >-
+          python -m pytest
+          tests/test_market_holiday_collector_freshness.py
+          tests/test_store_holiday_retention.py
+          tests/test_live_holiday_overlay.py
+          tests/test_live_holiday_js.py
+          tests/test_hk_southbound_holiday_retention.py
+          tests/test_tushare_holiday_retention.py
+          tests/test_universe_holiday_retention.py
+          tests/test_live_overlay.py
+          tests/test_build_live_overlay.py
+          tests/test_live_quotes_settle_window.py
+          tests/test_tushare_freshness.py
+          -q
+      # Name the Node suite directly so test-only .mjs edits select this owner.
+      # Python subprocess references to peer tests are intentionally not owners.
+      - name: Holiday client quote and session receipt behavior
+        run: node --test tests/live_holiday.test.mjs
 
   hk-integration-seams:
     if: ${{ false }}
@@ -8614,6 +8681,13 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/tsx_calendar.py"
       - "collectors/base.py"
       - "collectors/ofac_sdn.py"
       - "config.yml"
@@ -8711,6 +8785,10 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/exchange_holidays.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
       - engine/close_pass/massive_split_evidence.py
       - engine/neuralweb/brain_analogues.py
       - engine/neuralweb/market_memory.py
@@ -10314,6 +10392,7 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "lib/exchange_holidays.py"
       - "config/regime_outlook_mapping_v2.json"
       - "engine/rates_command_outlook.py"
       # The coverage replay (slice E1r, rule R-I / SH-12) reads the mapping
@@ -15033,6 +15112,11 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
       - "engine/**"
       - "collectors/**"
       - "config/**"
@@ -18180,6 +18264,7 @@ jobs:
       - "engine/session_digest.py"
       - "lib/__init__.py"
       - "lib/nyse_calendar.py"
+      - "lib/exchange_holidays.py"
       - "research/live_entry_radar/rs_pullback_launch/CALENDAR_ADMISSION_2026-10-07.json"
       - "scripts/__init__.py"
       - "scripts/entry_radar_rs_pullback_phase1.py"
@@ -19690,11 +19775,14 @@ jobs:
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
       - "lib/evidence_foundation.py"
+      - "lib/exchange_holidays.py"
       - "lib/filing_value_units.py"
       - "lib/finra_knowable.py"
       - "lib/growth_registry.py"
       - "lib/help_directory.py"
       - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
       - "lib/mastermind_response_log.py"
       - "lib/nyse_calendar.py"
       - "lib/options_context.py"
@@ -19703,6 +19791,7 @@ jobs:
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
       - "lib/tiers.py"
+      - "lib/tsx_calendar.py"
       - "lib/user_prefs.py"
       - "research/DO_NOT_REBUILD.md"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
@@ -20219,6 +20308,12 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
       - "templates/markets.html.j2"
       - "templates/_market_regime_strip.html.j2"
       # Parity test reads the hero stance sentences from this partial.
@@ -20517,6 +20612,12 @@ jobs:
     # the nightly engine shell). No data/** fallback.
     scope: exclusive
     paths:
+      - "lib/cn_calendar.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
       - ".github/workflows/closing-bell.yml"
       - ".github/workflows/engine-render.yml"
       - ".github/workflows/render.yml"
@@ -20670,6 +20771,7 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      - "lib/exchange_holidays.py"
       - "ops/launchd/run_skew_accrual.sh"
       - "ops/launchd/run_with_env.sh"
       - "ops/launchd/com.macro.skewaccrual.plist"

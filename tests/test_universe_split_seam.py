@@ -168,7 +168,13 @@ def test_universe_merge_refreshed_failed_repull_never_fatal(cls):
     a = _adapter(cls, RuntimeError("yf down"), calls)
     merged = a._merge_refreshed(fresh, cached)               # must not raise
     assert calls == [(["AAA"], "1y")]
-    assert seam_suspects(None, None, merged) == ["AAA"]      # retried next run
+    if cls is CanadaUniverseAdapter:
+        # Failed rebasing retains the complete prior basis instead of a mixed seam.
+        pd.testing.assert_series_equal(merged.loc[cached.index, "AAA"], cached["AAA"])
+        assert merged.loc[merged.index.difference(cached.index), "AAA"].isna().all()
+        assert seam_suspects(None, None, merged) == []
+    else:
+        assert seam_suspects(None, None, merged) == ["AAA"]  # incumbent Intl retry behavior
 
 
 # --- china (_overwrite_overlap leaves the PRE-window rows stale) ---------------
