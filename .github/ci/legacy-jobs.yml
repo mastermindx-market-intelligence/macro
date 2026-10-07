@@ -20019,3 +20019,49 @@ jobs:
           git diff --exit-code docs/HOUSE_LAW_CI_GUARD_SUITE.md
       - name: house-law registry tests (idempotency + integration)
         run: python -m pytest tests/test_house_law_registry.py -q
+
+  pb-d-event-quality:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/pb_d_cohort.py"
+      - "engine/pb_d_evaluation.py"
+      - "engine/company_intelligence/**"
+      - "engine/earnings_narrative/**"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/identity.py"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/theme_graph_identity_breaks.yml"
+      - "lib/dataos/identity.py"
+      - "contracts/company_intelligence/**"
+      - "contracts/earnings_narrative/**"
+      - "contracts/evidence_foundation/**"
+      - "lib/__init__.py"
+      - "lib/evidence_foundation.py"
+      - "scripts/__init__.py"
+      - "scripts/query_pb_d_event_quality.py"
+      - "tests/test_pb_d_quality.py"
+      - "tests/test_pb_d_cohort.py"
+      - "tests/test_pb_d_evaluation.py"
+      - "tests/test_pb_d_consumer.py"
+      - "tests/fixtures/pb_d/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install PB-D research test dependencies
+        run: pip install pytest numpy==2.3.5 pyyaml jsonschema==4.26.0
+      - name: PB-D quality, cohort, evaluation and executable consumer
+        run: python -m pytest tests/test_pb_d_quality.py tests/test_pb_d_cohort.py tests/test_pb_d_evaluation.py tests/test_pb_d_consumer.py -q

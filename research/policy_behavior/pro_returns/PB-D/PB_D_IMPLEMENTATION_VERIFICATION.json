@@ -1,0 +1,274 @@
+{
+  "archive_absence_check": {
+    "file": "PB_D_ARCHIVE_ABSENCE_CHECK.json",
+    "q": "UNKNOWN",
+    "scope": "hypothetical earlier read cut using actual archived metadata, not a historical relabel",
+    "sha256": "0695d9bd7882674c45ad377cd1ba2dece326188a5ebcf86253b28a169fda2ede"
+  },
+  "ci_wiring": {
+    "direct_and_transitive_closure_paths": 50,
+    "elapsed_seconds": 12.404,
+    "job": "pb-d-event-quality",
+    "manifest": ".github/ci/legacy-jobs.yml",
+    "manifest_sha256": "8f41bb050dc1bed92b77375e2be3ce26f5abd2bb7795919823a8a738d82a03b9",
+    "method": "canonical infer_job_scopes plus curated_exclusive_closure_findings match predicate; all unchanged curated jobs had zero findings in prior complete scan",
+    "scope": "exclusive",
+    "suite_census": {
+      "elapsed_seconds": 19.955,
+      "missing_suites": [],
+      "unrun_pb_d_suites": []
+    },
+    "uncovered_paths": []
+  },
+  "evidence_recorded_utc": "2026-10-07",
+  "files": {
+    "engine/company_intelligence/pb_d_quality.py": {
+      "bytes": 67119,
+      "sha256": "efd4b236c8c760809048b475c672b888a55341be8aba8f57b48abb95493d5c63"
+    },
+    "engine/pb_d_cohort.py": {
+      "bytes": 44750,
+      "sha256": "9aa8f64017e48544f5b7de1d956e7008e5e09856d77c0f86302ca11dcd55289d"
+    },
+    "engine/pb_d_evaluation.py": {
+      "bytes": 61755,
+      "sha256": "d42697ac8d111fe3aca123063d5e89bef77b7df2311bd5426cfb8416b2c924af"
+    },
+    "scripts/query_pb_d_event_quality.py": {
+      "bytes": 21293,
+      "sha256": "96c9d92b5ba58c6965d85a08bdc3a8f96f3d436167f73a8815b09fe3f70c97d4"
+    },
+    "tests/fixtures/pb_d/research_packet.json": {
+      "bytes": 79310,
+      "sha256": "4a7b897ed14d1ee4fe279d439ce4450027203a16fd3ea79226a2eec54c5fcb0f"
+    },
+    "tests/test_pb_d_cohort.py": {
+      "bytes": 27709,
+      "sha256": "613ea688874fd7d6842aad420d06368fd8989bea151b0aed2c76236807b14440"
+    },
+    "tests/test_pb_d_consumer.py": {
+      "bytes": 9510,
+      "sha256": "bacb32c19b6f900ac7aa5e6b96fca0679ffb169e208e6675fddb360cfa74863a"
+    },
+    "tests/test_pb_d_evaluation.py": {
+      "bytes": 33110,
+      "sha256": "f5c68029e8ce9d8d630add62e229ae201e93d732c8b5028c76361e836ecdfcf5"
+    },
+    "tests/test_pb_d_quality.py": {
+      "bytes": 41130,
+      "sha256": "bc627ebfecd77cba18743bcc56a1ed7abc045d16242564778fbc82aa00ce79e3"
+    }
+  },
+  "implementation_base_commit": "a146de40a8b3ba0475f17ddd87519187f17449a7",
+  "implementation_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/8576",
+  "independent_review": [
+    {
+      "disposition": "PASS",
+      "method": "independent source/contract tracing; author harness counts are separate from reviewer execution",
+      "reviewer": "cohort_implementation",
+      "source_sha256": "efd4b236c8c760809048b475c672b888a55341be8aba8f57b48abb95493d5c63",
+      "subject": "final quality packet, verifier, window/missingness and source-map repair"
+    },
+    {
+      "disposition": "PASS_AFTER_REPAIRS",
+      "method": "source tracing and bounded synthetic mechanical probe with isolated quality wire; root owns native execution",
+      "reviewer": "methods_implementation",
+      "source_sha256": "96c9d92b5ba58c6965d85a08bdc3a8f96f3d436167f73a8815b09fe3f70c97d4",
+      "subject": "full-pool omission/outcome joins, correction chain, output preservation, INTC, all-first-T2 coverage denominators"
+    },
+    {
+      "disposition": "PASS",
+      "method": "independent source/contract tracing",
+      "reviewer": "cohort_implementation",
+      "source_sha256": "96c9d92b5ba58c6965d85a08bdc3a8f96f3d436167f73a8815b09fe3f70c97d4",
+      "subject": "DATE and SECTOR omissions select both original eligible pools, including unused controls"
+    },
+    {
+      "disposition": "PASS_AFTER_REPAIRS",
+      "method": "source review plus actual native combined test run",
+      "reviewer": "root",
+      "source_sha256": "d42697ac8d111fe3aca123063d5e89bef77b7df2311bd5426cfb8416b2c924af",
+      "subject": "primary bootstrap, secondary context gates, pre-cut OHLC calendar positions, cost scenarios and responder maturity"
+    },
+    {
+      "disposition": "THREE_WORDING_FINDINGS_REPAIRED_BY_ROOT",
+      "findings": [
+        "run state is command-specific",
+        "price adjustment authenticity is caller-owned",
+        "release evidence must remain pending until observed"
+      ],
+      "reviewer": "methods_implementation",
+      "subject": "implementation documentation"
+    }
+  ],
+  "integration": {
+    "authority_flags": {
+      "enroll": false,
+      "entry": false,
+      "promote": false,
+      "rank": false,
+      "size": false
+    },
+    "cohort_manifest_sha256": "1f2c762f67504a917cf5532d8ded162db25d6bc0d05f68535188aaf9831f07cf",
+    "command_exit_code": 0,
+    "cost_bps": [
+      10,
+      25,
+      50
+    ],
+    "elapsed_seconds": 0.456,
+    "fixture_sha256": "4a7b897ed14d1ee4fe279d439ce4450027203a16fd3ea79226a2eec54c5fcb0f",
+    "gate_statuses": {
+      "all_four_fixed_enrollment_quarters": "FAIL",
+      "complete_distinct_q1_q0_pairs": "FAIL",
+      "complete_pair_decision_dates": "FAIL",
+      "enrollment_complete": "FAIL",
+      "final_21_session_maturity_wait_complete": "UNKNOWN",
+      "fixed_252_session_exchange_calendar": "UNKNOWN",
+      "frozen_pre_outcome_matching": "PASS",
+      "h5_complete_pair_outcomes": "PASS",
+      "matched_support": "PASS",
+      "primary_exposure_coverage": "FAIL",
+      "prospective_activation": "UNKNOWN",
+      "timing_root_price_version_integrity": "UNKNOWN",
+      "valid_bootstrap_all_lengths": "FAIL"
+    },
+    "omission_kinds": [
+      "ISSUER",
+      "ISSUER",
+      "ISSUER",
+      "INTC",
+      "DATE",
+      "SECTOR"
+    ],
+    "primary": {
+      "bootstrap": {
+        "10": {
+          "block_length": 10,
+          "draw_count": 10000,
+          "inference_valid": false,
+          "interval_95_pp": [
+            4.0,
+            4.0
+          ],
+          "lower_bound_above_zero": true,
+          "no_active_date_draw_count": 3613,
+          "nonfinite_draw_count": 0,
+          "valid_draw_count": 6387
+        },
+        "21": {
+          "block_length": 21,
+          "draw_count": 10000,
+          "inference_valid": false,
+          "interval_95_pp": [
+            4.0,
+            4.0
+          ],
+          "lower_bound_above_zero": true,
+          "no_active_date_draw_count": 3557,
+          "nonfinite_draw_count": 0,
+          "valid_draw_count": 6443
+        },
+        "42": {
+          "block_length": 42,
+          "draw_count": 10000,
+          "inference_valid": false,
+          "interval_95_pp": [
+            4.0,
+            4.0
+          ],
+          "lower_bound_above_zero": true,
+          "no_active_date_draw_count": 3322,
+          "nonfinite_draw_count": 0,
+          "valid_draw_count": 6678
+        }
+      },
+      "complete_pair_count": 1,
+      "equal_date_mean_increment_pp": 4.0
+    },
+    "quality_q": {
+      "synthetic-observation/cik:0000000002": "FALSE",
+      "synthetic-observation/cik:0000000003": "FALSE",
+      "synthetic-observation/cik:0000000004": "UNKNOWN",
+      "synthetic-observation/cik:0000320193": "TRUE"
+    },
+    "report_sha256": "0d98a85d9932323e30975e2540a758b7f0ebd3898e3fcdbf43ee265e6049a593",
+    "state": "FROZEN_DESIGN_NOT_ENROLLED",
+    "status": "NOT_ENROLLED"
+  },
+  "native_tests": [
+    {
+      "command": "python -m pytest tests/test_pb_d_quality.py tests/test_pb_d_cohort.py tests/test_pb_d_evaluation.py tests/test_pb_d_consumer.py -q",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "junit_checks": 199,
+      "passed": 158,
+      "proof_scope": "actual repository and native owner imports; cohort unit tests intentionally isolate quality wire, while integrated consumer tests use actual quality builder",
+      "pytest_reported_seconds": 6.44,
+      "rerun_reason": "Test class renamed to the Test* convention required by the repository CI census; no test body or quality module changed.",
+      "skipped": 0,
+      "subtests_passed": 41
+    },
+    {
+      "command": "python -m pytest tests/test_company_intelligence_spine.py tests/test_company_intelligence_event_workspace.py tests/test_company_intelligence_workspace_chain.py tests/test_evidence_foundation_contract.py tests/test_k3e_expectation_surface.py tests/test_qledger_horizon_clock.py -q",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "passed": 491,
+      "proof_scope": "unchanged existing owner regressions",
+      "pytest_reported_seconds": 21.86,
+      "skipped": 0
+    }
+  ],
+  "not_claimed": [
+    "prospective enrollment",
+    "authentic human review or outcome blindness from self-asserted clocks",
+    "independently verified exchange calendar or price receipts",
+    "reconstructed historical materiality labels",
+    "cross-issuer frozen root graph",
+    "first-T1 comparator or repeated-episode analysis",
+    "measured execution costs",
+    "automatic promotion or changed rank/size/entry authority"
+  ],
+  "operation_id": "PB-D-EVENT-QUALITY-IMPLEMENTATION-20261007",
+  "prospective_state": "FROZEN_DESIGN_NOT_ENROLLED",
+  "research_design_commit": "df2091915159dab94f316718caa9b2662098eae4",
+  "runtime": {
+    "host": "m2studio",
+    "isolation": "operation-owned Python virtual environment",
+    "jsonschema": "4.26.0",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "pyarrow": "21.0.0",
+    "pytest": "9.1.1",
+    "python": "3.12.13"
+  },
+  "schema": "pb_d_implementation_verification.v1",
+  "setup_findings": [
+    {
+      "disposition": "installed existing owner test dependencies in isolated venv; full six-suite run then passed; no owner edits",
+      "finding": "isolated native owner regression imports lacked FastAPI"
+    },
+    {
+      "disposition": "new files staged explicitly before repeat",
+      "finding": "first CI scope inference preceded git tracking of new files"
+    },
+    {
+      "disposition": "CI path scope extended with the 13 exact uncovered dependency/config paths; final closure receipt follows",
+      "finding": "native Company Intelligence package imports extend beyond direct quality imports"
+    },
+    {
+      "disposition": "Renamed to TestQualityReceipts, repeated all four native PB-D suites, and verified all four are discovered and none are unrun.",
+      "finding": "CI census recognizes Test* class names; the executable unittest class was initially QualityReceiptTests"
+    }
+  ],
+  "state_at_publication": "LOCALLY_VERIFIED_CI_AND_MERGE_PENDING",
+  "subsequent_release_receipt_location": "Implementation PR body and GitHub concluded checks/merge identity",
+  "upstream_preflight": {
+    "changes_to_new_owned_code_or_native_owners": [],
+    "fresh_main": "bb7847a33c5fcaa3d2963e3c6be18d3628493966",
+    "integration": "pending normal merge into the isolated carrier before push",
+    "shared_ci_manifest_change": "Research Vault F3 adds its own test to the existing unrelated job; nonoverlapping with the appended PB-D job"
+  }
+}
