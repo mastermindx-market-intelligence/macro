@@ -26,6 +26,11 @@ from engine.entry_radar.contracts import AUTHORITY_BLOCK
 from engine.entry_radar.replay.rs_pullback_launch_data import InputContractError
 
 CAPTURE_SCHEMA = "mastermind.intraday_minute_capture.v1"
+CAPTURE_SCHEMA_V2 = "mastermind.intraday_minute_capture.v2"
+PAYLOAD_SCHEMA_V2 = "mastermind.intraday_minute_capture_payload.v2"
+RESPONSE_ADJUSTED_STATES = frozenset({
+    "TRUE", "FALSE", "MISSING", "NULL", "INVALID_TYPE", "UNPARSED", "AMBIGUOUS",
+})
 READ_RECEIPT_SCHEMA = "mastermind.entry_radar.terminal_minute_read.v1"
 DECODE_SCHEMA = "mastermind.entry_radar.terminal_minute_observations.v1"
 OBSERVER_ID = "terminal.backfill_intraday"
@@ -127,13 +132,14 @@ def _cutoff_ns(value: str) -> int:
             + delta.microseconds) * 1000
 
 
-def _captures(raw: bytes) -> list[dict[str, Any]]:
-    """Verify structural seals without parsing future event/value semantics."""
+def _captures(raw: bytes) -> tuple[str, list[dict[str, Any]]]:
+    """Verify whole-file integrity; payload versions await enrolled visibility."""
     if not isinstance(raw, bytes) or not 0 < len(raw) <= MAX_FILE_BYTES:
         raise InputContractError("snapshot is empty or exceeds the bounded file size")
     document = _json(raw)
     envelope = document.get("minute_capture") if isinstance(document, dict) else None
-    if not isinstance(envelope, dict) or envelope.get("schema") != CAPTURE_SCHEMA:
+    if not isinstance(envelope, dict) or not isinstance(envelope.get("schema"), str) \
+            or envelope["schema"] not in {CAPTURE_SCHEMA, CAPTURE_SCHEMA_V2}:
         raise InputContractError("versioned minute_capture is absent or unsupported")
     if envelope.get("observer_id") != OBSERVER_ID:
         raise InputContractError("unrecognized capture observer")
@@ -167,7 +173,7 @@ def _captures(raw: bytes) -> list[dict[str, Any]]:
         previous = record["capture_sha256"]
     if envelope.get("prefix_sha256") != previous:
         raise InputContractError("capture envelope prefix seal mismatch")
-    return records
+    return envelope["schema"], records
 
 
 @dataclass(frozen=True)
@@ -204,7 +210,7 @@ def read_terminal_minute_snapshot(
     _integer(started, "read start", 1)
     _integer(completed, "read completion", started)
     _known_at(completed)
-    records = _captures(raw)
+    _, records = _captures(raw)
     receipt = {
         "schema": READ_RECEIPT_SCHEMA,
         "read_id": uuid.uuid4().hex,
@@ -291,6 +297,11 @@ def _eligible_payload(
     record: dict[str, Any], receipt: dict[str, Any], symbol: str,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     payload = record["payload"]
+    v2 = payload.get("schema") == PAYLOAD_SCHEMA_V2
+    if v2 and type(payload.get("chart_eligible")) is not bool:
+        raise InputContractError("v2 capture requires a boolean chart declaration")
+    if not v2 and "chart_eligible" in payload:
+        raise InputContractError("v1 capture cannot assert a v2 chart declaration")
     if payload.get("symbol") != symbol or payload.get("timeframe") != "1m" \
             or payload.get("source") != "polygon":
         raise InputContractError("capture symbol/source/timeframe mismatch")
@@ -302,6 +313,8 @@ def _eligible_payload(
     if status not in {"complete", "partial", "failed"}:
         raise InputContractError("unknown capture outcome")
     if status != "complete":
+        if v2 and payload["chart_eligible"]:
+            raise InputContractError("incomplete capture cannot be chart eligible")
         return payload, []
     if payload.get("failure_kind") is not None:
         raise InputContractError("complete capture has a failure kind")
@@ -328,6 +341,7 @@ def _eligible_payload(
             or counts["finalized_rows"] + counts["forming_skipped"] != counts["rows_received"]:
         raise InputContractError("capture row accounting mismatch")
     for index, page in enumerate(pages):
+        _response_adjusted(payload, page)
         if not isinstance(page, dict) or type(page.get("page_index")) is not int \
                 or page["page_index"] != index or page.get("status") not in {"OK", "DELAYED"}:
             raise InputContractError("invalid complete capture page")
@@ -343,7 +357,27 @@ def _eligible_payload(
     if any(sum(page[name] for page in pages) != counts[name]
            for name in ("rows_received", "finalized_rows", "forming_skipped")):
         raise InputContractError("capture/page row accounting mismatch")
+    if v2 and payload["chart_eligible"] != all(
+            _response_adjusted(payload, page) == "TRUE" for page in pages):
+        raise InputContractError("chart eligibility disagrees with response declarations")
     return payload, observations
+
+
+def _response_adjusted(payload: Mapping[str, Any], page: Any) -> str:
+    """Resolve only the exact sealed page; legacy absence is not v2 MISSING."""
+    if not isinstance(page, Mapping):
+        raise InputContractError("invalid capture page")
+    if payload.get("schema") != PAYLOAD_SCHEMA_V2:
+        if "response_adjusted" in page:
+            raise InputContractError("v1 page cannot assert a v2 response declaration")
+        return "UNRECORDED"
+    declaration = page.get("response_adjusted")
+    if not isinstance(declaration, dict) or set(declaration) != {"state"} \
+            or not isinstance(declaration["state"], str) \
+            or declaration["state"] not in RESPONSE_ADJUSTED_STATES \
+            or (declaration["state"] == "UNPARSED" and page.get("status") != "INVALID"):
+        raise InputContractError("invalid response adjusted declaration")
+    return declaration["state"]
 
 
 def decode_terminal_minute_observations(
@@ -362,9 +396,10 @@ def decode_terminal_minute_observations(
     model decision: a later capture must not be parsed while preparing an earlier
     frame. The raw snapshot reader remains independent of any decision cutoff.
 
-    Caller metadata supplies labels from the existing identity/basis owner. This
-    decoder neither creates those receipts nor treats the source adjusted flag
-    as proof. Missing metadata stays missing. An empty receipt list deliberately
+    Caller metadata can supply the existing security identity. A scalar basis
+    label cannot bind a retained response to an adjustment vintage or action
+    factors: every emitted source row remains TERMINAL_BASIS_UNPROVEN. This
+    decoder creates no factor attestation. An empty receipt list deliberately
     means unavailable; the snapshot's own receipt is not silently enrolled.
 
     Every capture read for the first time together has the same known_at. A late
@@ -375,7 +410,7 @@ def decode_terminal_minute_observations(
     cutoff_ns = _cutoff_ns(cutoff)
     if not isinstance(snapshot, TerminalMinuteSnapshot):
         raise InputContractError("a bounded file-read snapshot is required")
-    records = _captures(snapshot.raw_bytes)
+    envelope_schema, records = _captures(snapshot.raw_bytes)
     own = _receipt(snapshot.receipt, records, reader_identity)
     expected_prefix = records[-1]["capture_sha256"] if records else ZERO_SHA256
     if own["file_sha256"] != hashlib.sha256(snapshot.raw_bytes).hexdigest() \
@@ -385,12 +420,9 @@ def decode_terminal_minute_observations(
         raise InputContractError("snapshot bytes do not match their owner read receipt")
     coverage = _coverage(records, read_receipts, reader_identity, own, cutoff_ns)
     meta = stream_metadata if isinstance(stream_metadata, Mapping) else {}
-    basis = meta.get("basis") if isinstance(meta.get("basis"), Mapping) else {}
-    security_id, basis_id = meta.get("security_id"), basis.get("basis_id")
+    security_id = meta.get("security_id")
     if security_id is not None:
         _identifier(security_id, "owner security_id")
-    if basis_id is not None:
-        _identifier(basis_id, "owner basis_id")
     minutes = []
     diagnostics: dict[str, Any] = {
         "snapshot_file_sha256": own["file_sha256"], "snapshot_file_bytes": own["file_bytes"],
@@ -399,13 +431,22 @@ def decode_terminal_minute_observations(
         "visible_capture_outcomes": {"complete": 0, "partial": 0, "failed": 0},
         "complete_captures_with_no_retained_observations": 0,
     }
+    v2_seen = False
     for record in records:
         receipt = coverage[record["sequence"]]
         if receipt is None:
             diagnostics["captures_without_visible_owner_receipt"] += 1
             continue
-        # Visibility is resolved before event or OHLCV parsing. Later corrupt
-        # semantic payloads cannot affect the earlier visible model prefix.
+        # Prefix receipts make coverage contiguous. Only this visible prefix
+        # determines supported payload versions and their upgrade order; intact
+        # unenrolled/future records cannot poison an earlier owner's replay.
+        version = record["payload"].get("schema")
+        if version == PAYLOAD_SCHEMA_V2:
+            if envelope_schema != CAPTURE_SCHEMA_V2:
+                raise InputContractError("v2 payload requires a v2 capture envelope")
+            v2_seen = True
+        elif "schema" in record["payload"] or v2_seen:
+            raise InputContractError("unsupported payload version or v1 after v2")
         payload, observations = _eligible_payload(record, receipt, symbol)
         diagnostics["visible_capture_outcomes"][payload["status"]] += 1
         if payload["status"] != "complete":
@@ -437,7 +478,8 @@ def decode_terminal_minute_observations(
                 raise InputContractError("retained minute violates the producer finality bound")
             completed = receipt["read_completed_at_utc_ns"]
             row = {
-                "stream": stream, "security_id": security_id, "basis_id": basis_id,
+                "stream": stream, "security_id": security_id, "basis_id": None,
+                "basis_refusals": ["TERMINAL_BASIS_UNPROVEN"],
                 "revision_id": f"{record['capture_id']}:{page_index}:{row_index}",
                 "start": _known_at(start * 1_000_000), "end": _known_at(end * 1_000_000),
                 "known_at": _known_at(completed),
@@ -453,6 +495,9 @@ def decode_terminal_minute_observations(
                     "owner_reader_identity": reader_identity,
                     "owner_read_completed_at_utc_ns": completed,
                     "request_adjusted": True,
+                    "response_adjusted": _response_adjusted(payload, page),
+                    "page_index": page_index, "row_index": row_index,
+                    "owner_read_receipt_sha256": receipt["receipt_sha256"],
                     "volume_state": "missing" if "v" not in raw else
                                     "null" if raw["v"] is None else "observed",
                 },

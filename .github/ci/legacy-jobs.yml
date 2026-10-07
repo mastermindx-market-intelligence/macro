@@ -18027,7 +18027,6 @@ jobs:
           python -m pytest
           tests/test_research_price_panel.py
           tests/test_entry_radar_rs_pullback_phase1.py
-          tests/test_entry_radar_terminal_minute_observations.py
           tests/test_ptse_action_context.py
           tests/test_ptse_baseline.py
           tests/test_ptse_breadth_observation.py
@@ -18049,8 +18048,8 @@ jobs:
   entry-radar-rs-pullback-calendar:
     if: ${{ false }}
     gate: code
-    # The real-CLI subprocess has a literal, reviewed input/import closure.
-    # Isolate it so calendar coverage does not widen unrelated content PRs.
+    # Both real-CLI suites have literal, reviewed input/import closures.
+    # Keep calendar and minute evidence off unrelated content PRs.
     scope: exclusive
     paths:
       - "engine/__init__.py"
@@ -18058,6 +18057,7 @@ jobs:
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/rs_pullback_launch_data.py"
+      - "engine/entry_radar/replay/terminal_minute_observations.py"
       - "engine/session_digest.py"
       - "lib/__init__.py"
       - "lib/nyse_calendar.py"
@@ -18068,6 +18068,7 @@ jobs:
       - "tests/conftest.py"
       - "tests/test_entry_radar_rs_pullback_calendar.py"
       - "tests/test_entry_radar_rs_pullback_phase1.py"
+      - "tests/test_entry_radar_terminal_minute_observations.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18076,8 +18077,8 @@ jobs:
           python-version: "3.12"
       - name: install calendar test dependencies
         run: pip install pytest pyyaml
-      - name: observed calendar, candidate-local refusal and actual CLI replay
-        run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py -q
+      - name: observed calendar, retained minute evidence and actual CLI replay
+        run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py tests/test_entry_radar_terminal_minute_observations.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.

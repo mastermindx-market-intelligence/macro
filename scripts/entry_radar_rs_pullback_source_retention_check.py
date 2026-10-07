@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cross-repository SYNTHETIC_CONFORMANCE proof for retained minute observations.
+"""Cross-repository SYNTHETIC_CONFORMANCE for source declarations and basis refusal.
 
 Runs the existing Terminal producer against an injected HTTP transport and
 temporary store, then reads those actual atomic files through the Macro bridge
@@ -35,6 +35,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine.entry_radar.replay.rs_pullback_launch_data import (  # noqa: E402
+    InputContractError,
     build_input_panel,
 )
 from engine.entry_radar.replay.terminal_minute_observations import (  # noqa: E402
@@ -94,6 +95,20 @@ def run(terminal_source: Path) -> dict:
         "PHASE1_ADMISSION_2026-10-07.json"
     )
     admission_before = digest(admission_path)
+    historical_path = admission_path.with_name("SOURCE_RETENTION_CONFORMANCE_2026-10-07.json")
+    historical_before = digest(historical_path)
+    # This is a separate direct-input control, never a source-basis attestation.
+    control = fixture.fixture([fixture.candidate(decision="2026-10-06T14:00:00Z")])
+    control_panel = build_input_panel(control)
+    control_bar = control_panel["frames"][0]["bars"]["stock"]["30"]
+    assert control_bar["availability"] == "available"
+    assert not any(control_panel["authority"].values())
+    selector_control = {
+        "input_kind": "SYNTHETIC_CONFORMANCE",
+        "source": "independent existing direct-input fixture; no Terminal rows",
+        "availability": control_bar["availability"],
+        "does_not_admit_source_basis": True,
+    }
     start_ms = int(fixture.clock("2026-10-06T13:30:00Z").timestamp()) * 1000
     base_rows = [
         {
@@ -116,6 +131,7 @@ def run(terminal_source: Path) -> dict:
     snapshots = []
     exit_codes = []
     frames = []
+    raw_closes = []
     logs = []
 
     def decoded(snapshot, owner_receipts, decision, reader=READER):
@@ -139,7 +155,7 @@ def run(terminal_source: Path) -> dict:
         bundle["terminal_read_receipts"] = copy.deepcopy(owner_receipts)
         return build_input_panel(bundle)["frames"][0]
 
-    def capture_and_read(store, rows, clock, *, partial=False):
+    def capture_and_read(store, rows, clock, *, partial=False, adjusted=True):
         base_ns = int(fixture.clock(clock).timestamp()) * 1_000_000_000
         ticks = itertools.count(base_ns, 1000)
         calls = 0
@@ -155,7 +171,7 @@ def run(terminal_source: Path) -> dict:
                     {},
                     None,
                 )
-            body = {"status": "OK", "results": rows}
+            body = {"status": "OK", "results": rows, "adjusted": adjusted}
             if partial:
                 request_url = urllib.parse.urlsplit(_request.full_url)
                 body["next_url"] = urllib.parse.urlunsplit((
@@ -186,7 +202,8 @@ def run(terminal_source: Path) -> dict:
             )
         logs.append(output.getvalue())
         exit_codes.append(result)
-        assert result == (producer.EXIT_STORE_FAILURES if partial else producer.EXIT_OK), (
+        expected_failure = partial or adjusted is not True
+        assert result == (producer.EXIT_STORE_FAILURES if expected_failure else producer.EXIT_OK), (
             result, output.getvalue()[-1800:]
         )
         assert calls > 1 if partial else calls == 1
@@ -205,20 +222,39 @@ def run(terminal_source: Path) -> dict:
             bridge = decoded(snapshot, receipts, decisions[index])
             frame = panel_frame(bridge["minutes"], decisions[index], receipts)
             frames.append(frame)
+            if index == 0:
+                original_raw_minutes = copy.deepcopy(bridge["minutes"])
+            raw_closes.append(bridge["minutes"][-1]["close"])
+            assert all(row["basis_id"] is None for row in bridge["minutes"])
+            assert all(row["basis_refusals"] == ["TERMINAL_BASIS_UNPROVEN"]
+                       for row in bridge["minutes"])
 
         latest_bridge = decoded(snapshots[-1], receipts, decisions[-1])
         earlier_bridge = decoded(snapshots[-1], receipts, decisions[0])
+        assert earlier_bridge["minutes"] == original_raw_minutes
+        changed_metadata = fixture.fixture()["streams"]["stock"]
+        changed_metadata["basis"]["basis_id"] = "SYNTHETIC_CONFORMANCE:arbitrary-new-vintage"
+        changed_metadata["basis"]["receipt_sha256"] = "f" * 64
+        changed_metadata["basis_bindings"] = [{"receipt_sha256": "e" * 64,
+                                               "capture_sha256": "d" * 64}]
+        relabeled = decode_terminal_minute_observations(
+            snapshots[-1], receipts, reader_identity=READER, symbol="SPY", stream="stock",
+            stream_metadata=changed_metadata, cutoff=decisions[-1],
+        )
+        assert relabeled["minutes"] == latest_bridge["minutes"]
         earlier_again = panel_frame(earlier_bridge["minutes"], decisions[0], receipts)
         assert fixture.frame_bytes(frames[0]) == fixture.frame_bytes(earlier_again)
-        closes = [item["bars"]["stock"]["30"]["ohlcv"]["close"] for item in frames]
-        assert closes[0] == closes[2] and closes[1] != closes[0], closes
+        assert raw_closes[0] == raw_closes[2] and raw_closes[1] != raw_closes[0], raw_closes
         for frame in frames:
-            assert frame["bars"]["stock"]["30"]["availability"] == "available"
+            assert frame["bars"]["stock"]["30"]["availability"] == "unavailable"
+            assert frame["bars"]["stock"]["30"]["ohlcv"] is None
+            assert "MINUTE_BASIS_MISMATCH" in frame["bars"]["stock"]["30"]["refusals"]
+            assert "TERMINAL_BASIS_UNPROVEN" in frame["bars"]["stock"]["30"]["refusals"]
             assert frame["bars"]["stock"]["15"]["availability"] == "unavailable"
             assert frame["availability"] == "unavailable"
             assert frame["condition_met"] is None
             assert not any(frame["authority"].values())
-        assert frames[0]["bars"]["stock"]["30"]["ohlcv"]["volume"] == 517.5
+        assert sum(row["volume"] for row in earlier_bridge["minutes"]) == 517.5
         final_document = json.loads(snapshots[-1].raw_bytes)
         assert sum(row[5] for row in final_document["bars"]) == 510
         captures = final_document["minute_capture"]["captures"]
@@ -332,24 +368,138 @@ def run(terminal_source: Path) -> dict:
         assert fixture.frame_bytes(mutation_frame) == fixture.frame_bytes(frames[0])
         try:
             decoded(mutation_snapshot, mutation_receipts, "2026-10-06T14:22:01Z")
-        except ValueError as error:
+        except InputContractError as error:
             assert "event start" in str(error)
         else:
             raise AssertionError("Visible malformed event start must be refused")
 
+        # Intact future payload versions are input semantics, not file-integrity
+        # failures. The real bounded reader must still produce an exact receipt.
+        for version_case, version in (("unknown", "mastermind.intraday_minute_capture_payload.v999"),
+                                      ("null", None), ("object", {}), ("downgrade", None)):
+            version_document = copy.deepcopy(mutation)
+            version_envelope = version_document["minute_capture"]
+            version_record = version_envelope["captures"][-1]
+            version_payload = version_record["payload"]
+            version_payload["observations"][0] = copy.deepcopy(captures[-1]["payload"]["observations"][0])
+            if version_case == "downgrade":
+                version_payload.pop("schema")
+                version_payload.pop("chart_eligible")
+                for page in version_payload["pages"]:
+                    page.pop("response_adjusted")
+            else:
+                version_payload["schema"] = version
+            version_record["payload_sha256"] = seal(version_payload)
+            version_record["capture_sha256"] = seal({key: value for key, value in version_record.items()
+                                                     if key != "capture_sha256"})
+            version_envelope["prefix_sha256"] = version_record["capture_sha256"]
+            version_path = Path(tmp) / f"future-version-{version_case}.json"
+            version_path.write_text(json.dumps(version_document))
+            with patch.object(producer.time, "time_ns", return_value=mutation_ns + 4000):
+                version_snapshot = read_terminal_minute_snapshot(version_path, reader_identity=READER)
+            assert decoded(version_snapshot, receipts,
+                           "2026-10-06T14:24:00Z")["minutes"] == latest_bridge["minutes"]
+            version_receipts = partial_receipts + [version_snapshot.receipt]
+            version_earlier = decoded(version_snapshot, version_receipts, decisions[0])["minutes"]
+            assert version_earlier == original_raw_minutes
+            assert fixture.frame_bytes(panel_frame(version_earlier, decisions[0], version_receipts)) \
+                == fixture.frame_bytes(frames[0])
+            try:
+                decoded(version_snapshot, version_receipts, "2026-10-06T14:22:01Z")
+            except InputContractError as error:
+                assert "payload version" in str(error)
+            else:
+                raise AssertionError("Visible unsupported/downgraded payload must be refused")
+
+        # Declaration changes are observation episodes even when raw bars agree.
+        declaration_store = Path(tmp) / "declarations"
+        declaration_receipts = []
+        for offset, state in enumerate((False, True, False, False)):
+            declaration_snapshot = capture_and_read(
+                declaration_store, base_rows, f"2026-10-06T14:{23 + offset}:00Z",
+                adjusted=state,
+            )
+            declaration_receipts.append(declaration_snapshot.receipt)
+        declaration_records = json.loads(declaration_snapshot.raw_bytes)["minute_capture"]["captures"]
+        retained_counts = [len(record["payload"]["observations"]) for record in declaration_records]
+        assert retained_counts == [30, 30, 30, 0], retained_counts
+        declaration_rows = decoded(declaration_snapshot, declaration_receipts,
+                                   "2026-10-06T14:27:00Z")["minutes"]
+        assert len(declaration_rows) == 90
+        assert len({row["revision_id"] for row in declaration_rows}) == 90
+        assert [declaration_rows[i]["source_observation"]["response_adjusted"]
+                for i in (0, 30, 60)] == ["FALSE", "TRUE", "FALSE"]
+        assert all(row["basis_id"] is None for row in declaration_rows)
+        declaration_control = {"states": ["FALSE", "TRUE", "FALSE", "FALSE"],
+                               "retained_counts": retained_counts,
+                               "basis_available": False}
+
+        # Construct a valid historical wire fixture, then let the actual producer
+        # upgrade it. No existing seal is rewritten by that producer operation.
+        legacy_store = Path(tmp) / "legacy"
+        legacy_store.mkdir()
+        legacy_document = json.loads(snapshots[0].raw_bytes)
+        legacy_envelope = legacy_document["minute_capture"]
+        legacy_envelope["schema"] = "mastermind.intraday_minute_capture.v1"
+        legacy_record = legacy_envelope["captures"][0]
+        legacy_payload = legacy_record["payload"]
+        legacy_payload.pop("schema")
+        legacy_payload.pop("chart_eligible")
+        for page in legacy_payload["pages"]:
+            page.pop("response_adjusted")
+        legacy_record["payload_sha256"] = seal(legacy_payload)
+        legacy_record["capture_sha256"] = seal({key: value for key, value in legacy_record.items()
+                                                if key != "capture_sha256"})
+        legacy_envelope["prefix_sha256"] = legacy_record["capture_sha256"]
+        legacy_path = legacy_store / "SPY.1m.json"
+        legacy_path.write_text(json.dumps(legacy_document))
+        legacy_ns = int(fixture.clock("2026-10-06T14:28:00Z").timestamp()) * 1_000_000_000
+        with patch.object(producer.time, "time_ns", return_value=legacy_ns):
+            legacy_snapshot = read_terminal_minute_snapshot(legacy_path, reader_identity=READER)
+        legacy_rows = decoded(legacy_snapshot, [legacy_snapshot.receipt],
+                              "2026-10-06T14:28:00Z")["minutes"]
+        upgraded = capture_and_read(legacy_store, base_rows, "2026-10-06T14:29:00Z")
+        upgraded_envelope = json.loads(upgraded.raw_bytes)["minute_capture"]
+        assert upgraded_envelope["schema"] == "mastermind.intraday_minute_capture.v2"
+        assert upgraded_envelope["captures"][0] == legacy_record
+        upgraded_receipts = [legacy_snapshot.receipt, upgraded.receipt]
+        assert decoded(upgraded, upgraded_receipts,
+                       "2026-10-06T14:28:00Z")["minutes"] == legacy_rows
+        upgraded_rows = decoded(upgraded, upgraded_receipts,
+                                "2026-10-06T14:30:00Z")["minutes"]
+        assert len(upgraded_rows) == 60
+        assert upgraded_rows[0]["source_observation"]["response_adjusted"] == "UNRECORDED"
+        assert upgraded_rows[30]["source_observation"]["response_adjusted"] == "TRUE"
+        legacy_control = {"original_record_unchanged": True,
+                          "original_read_receipt_replays": True,
+                          "unrecorded_to_recorded_retained_counts": [30, 30],
+                          "basis_available": False}
+
     assert digest(admission_path) == admission_before
+    assert digest(historical_path) == historical_before
     return {
-        "schema": "mastermind.rs_pullback_launch.source_retention_conformance.v1",
+        "schema": "mastermind.rs_pullback_launch.source_basis_declaration_conformance.v1",
         "input_kind": "SYNTHETIC_CONFORMANCE",
+        "operation": "rs-pullback-launch-basis-binding-20261007-sol-005",
+        "parent": "WS:LIVE-ENTRY-RADAR",
+        "phase1_admission": "NOT_ADMITTED",
+        "scientific_claims": {"H1": "NOT_TESTED", "H2": "NOT_TESTED", "H3": "NOT_TESTED"},
         "clock_basis": "injected source and reader clocks; no market availability claim",
         "result": "PASS",
         "transport": "injected urllib; no provider request",
         "checks": {
             "producer_atomic_store_reader_selector": True,
             "a_b_a_revision_sequence": True,
-            "earlier_complete_frame_byte_invariance": True,
+            "earlier_unavailable_frame_byte_invariance": True,
+            "raw_first_seen_and_revision_identity_preserved": True,
+            "scalar_basis_inheritance_removed": True,
+            "source_rows_remain_basis_unproven": True,
+            "untrusted_binding_claims_cannot_relabel": True,
+            "suppressed_capture_does_not_reexpand": True,
             "fractional_volume_preserved": True,
             "future_semantic_mutation_isolated": True,
+            "future_intact_payload_versions_isolated_before_enrollment_and_cutoff": True,
+            "visible_unsupported_and_downgraded_payload_versions_refused": True,
             "future_invalid_semantics_refused_when_visible": True,
             "late_first_read_conflict_preserved": True,
             "partial_failure_not_promoted": True,
@@ -360,8 +510,13 @@ def run(terminal_source: Path) -> dict:
         },
         "complete_captures": 3,
         "retained_complete_observation_episodes": retained_count,
-        "synthetic_30m_closes": closes,
-        "synthetic_30m_volume": 517.5,
+        "raw_episode_last_closes": raw_closes,
+        "raw_initial_volume_sum": 517.5,
+        "basis_admission": "UNAVAILABLE_EXISTING_OWNER_FACTOR_EVIDENCE_ABSENT",
+        "synthetic_selector_control": selector_control,
+        "declaration_episode_control": declaration_control,
+        "legacy_prefix_control": legacy_control,
+        "historical_conformance_sha256": historical_before,
         "producer_exit_codes": exit_codes,
         "phase1_admission_sha256": admission_before,
         "authority": frames[0]["authority"],
@@ -376,6 +531,9 @@ def run(terminal_source: Path) -> dict:
             ),
             "macro:scripts/entry_radar_rs_pullback_source_retention_check.py": digest(
                 Path(__file__)
+            ),
+            "macro:tests/test_entry_radar_terminal_minute_observations.py": digest(
+                ROOT / "tests/test_entry_radar_terminal_minute_observations.py"
             ),
             "macro:tests/test_entry_radar_rs_pullback_phase1.py": digest(
                 ROOT / "tests/test_entry_radar_rs_pullback_phase1.py"
