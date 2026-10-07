@@ -7,8 +7,8 @@
      partial newest D), walks backward through the missed sessions, and calls
      `backfill_from_store` on every date in that range. A ledger already caught
      up to the complete session backfills zero rows.
-  2. EMIT — site/options_skew/latest.json from that ledger (display-only context;
-     the gate stays closed until the panel is wide/long enough).
+  2. EMIT — site/options_skew/latest.json plus site/options_compare.json from that
+     SAME ledger (display-only context; no second chain reader or score plane).
   3. BACKFILL — recompute an inclusive date range from the ThetaData store into
      that ledger. A thetadata row replaces a polygon_gex row for the same date
      and name. Weekend dates are skipped, not moved onto a neighbouring session.
@@ -241,6 +241,17 @@ def emit(today=None, accrual_state: str = "ledger_only") -> dict:
     out.mkdir(parents=True, exist_ok=True)
     (out / "latest.json").write_text(
         json.dumps(payload, separators=(",", ":"), default=float)
+    )
+
+    # Macro Risk Detail consumes a read-model over this SAME canonical ledger.
+    # No second chain reader: its as-of is the complete session selected above.
+    compare = S.build_compare_payload(
+        S.load_history(),
+        as_of=payload.get("ledger_asof"),
+        today=today,
+    )
+    (config.site_dir() / "options_compare.json").write_text(
+        json.dumps(compare, separators=(",", ":"), default=float)
     )
     return payload
 
