@@ -13,6 +13,7 @@ from research.options_estate.ptse_post_entry_context import (
     build_unresolved_post_entry_context,
 )
 from research.options_estate.ptse_pullback_buy_context import (
+    PTSEPullbackContextError,
     build_pullback_buy_context,
 )
 from tests.test_ptse_new_entry_context import (
@@ -85,6 +86,15 @@ class PTSEActionContextTest(unittest.TestCase):
         direct = build_pullback_buy_context(**inputs)
         routed = build_action_context(action="PULLBACK_BUY", **inputs)
         self.assertEqual(routed.canonical_bytes, direct.canonical_bytes)
+
+    def test_pullback_dispatch_rejects_geometry_digest_substitution(self):
+        inputs = pullback_inputs()
+        inputs["geometry_ref"]["sha256"] = "f" * 64
+        with self.assertRaisesRegex(
+            PTSEPullbackContextError,
+            "GEOMETRY_REF_DIGEST_MISMATCH",
+        ):
+            build_action_context(action="PULLBACK_BUY", **inputs)
 
     def test_all_four_blocked_actions_dispatch_to_exact_unknown_adapter(self):
         base = build_new_entry_context(**new_entry_inputs())

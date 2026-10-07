@@ -162,6 +162,27 @@ class PTSEPullbackBuyContextTest(unittest.TestCase):
         ):
             build_pullback(gref=bad)
 
+    def test_geometry_digest_must_match_admitted_b4_receipt_identity(self):
+        bad = geometry_ref()
+        bad["sha256"] = "f" * 64
+        with self.assertRaisesRegex(
+            PTSEPullbackContextError,
+            "GEOMETRY_REF_DIGEST_MISMATCH",
+        ):
+            build_pullback(gref=bad)
+
+    def test_opaque_owner_geometry_receipt_remains_supported(self):
+        p = projection()
+        facts = b4_facts(price=43.40)
+        facts["geometry"]["source_receipt"] = "geometry:owner-v1"
+        a = availability(p, facts)
+        ref = geometry_ref()
+        ref["artifact_id"] = "geometry:owner-v1"
+        out = build_pullback(a=a, gref=ref).to_dict()["assessment"]
+        self.assertEqual(out["geometry_ref"], ref)
+        self.assertEqual(out["applicability"], "APPLICABLE")
+        self.assertFalse(any(out["authority"].values()))
+
     def test_options_context_remains_optional_and_zero_authority(self):
         without = build_pullback()
         with_opts = build_pullback(with_options=True)

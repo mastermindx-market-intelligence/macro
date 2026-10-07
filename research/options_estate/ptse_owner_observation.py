@@ -7,6 +7,12 @@ It translates already-admitted owner artifacts into the OwnerFact vocabulary
 defined by ptse_contract. The caller must supply exact artifact identity,
 availability, expiry, population and session metadata out-of-band.
 
+Artifact SHA256 binds the entire supplied Mapping serialized as UTF-8 JSON with
+sorted keys, compact separators, ensure_ascii=False and allow_nan=False, matching
+the event/breadth adapter convention. It is parsed JSON content identity, not
+raw source-file byte identity: this API receives no file bytes. Verifying that
+content digest does not authenticate the external owner or admit its receipt.
+
 Important boundary:
 - market_state.v1 is consumed as display-only owner context.
 - regime_vector is consumed as a thin owner-fact aggregation.
@@ -19,6 +25,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import copy
+import hashlib
+import json
 import math
 from typing import Any, Final, Mapping
 
@@ -186,6 +194,19 @@ def _ref_shape(ref: Mapping[str, Any]) -> dict[str, str]:
     ):
         _fail("EVIDENCE_REF_INVALID")
     return dict(ref)
+
+
+def _validate_payload_binding(payload: Mapping[str, Any], binding: OwnerArtifactBinding) -> None:
+    """Bind the complete parsed payload, including fields not projected to facts."""
+    try:
+        wire = json.dumps(
+            dict(payload), sort_keys=True, separators=(",", ":"),
+            ensure_ascii=False, allow_nan=False,
+        ).encode("utf-8")
+    except (TypeError, ValueError, RecursionError, UnicodeError) as exc:
+        raise PTSEOwnerAdapterError("OWNER_PAYLOAD_NOT_CANONICAL") from exc
+    if binding.artifact_ref["sha256"] != hashlib.sha256(wire).hexdigest():
+        _fail("OWNER_ARTIFACT_REF_MISMATCH")
 
 
 def _validate_binding(binding: OwnerArtifactBinding, *, decision_at: str) -> bool:
@@ -359,6 +380,7 @@ def adapt_market_state(
         _fail("MARKET_STATE_AUTHORITY_INVALID")
     if payload.get("asof") != market_session:
         _fail("MARKET_STATE_SESSION_MISMATCH")
+    _validate_payload_binding(payload, binding)
 
     facts: list[OwnerFact] = []
     adapter_limitations = (
@@ -400,6 +422,7 @@ def adapt_regime_vector(
         _fail("REGIME_VECTOR_SCHEMA_INVALID")
     if payload.get("asof") != market_session:
         _fail("REGIME_VECTOR_SESSION_MISMATCH")
+    _validate_payload_binding(payload, binding)
 
     # Refuse a future accidental extension that tries to include incumbent
     # directives in the passive mapping table.

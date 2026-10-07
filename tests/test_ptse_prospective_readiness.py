@@ -66,6 +66,37 @@ def prospective_new_entry(*, with_options=False):
 
 
 class PTSEProspectiveReadinessTest(unittest.TestCase):
+    def test_both_issuance_clocks_must_precede_exclusive_expiry(self):
+        from tests.test_ptse_contract import inputs
+        from research.options_estate.ptse_contract import build_context
+        for observation_issued, assessment_issued in (
+            ("2026-10-02T20:02:00Z", "2026-10-02T22:00:00Z"),
+            ("2026-10-02T20:02:00Z", "2026-10-02T21:00:00Z"),
+            ("2026-10-02T21:00:00Z", "2026-10-02T21:00:00Z"),
+        ):
+            with self.subTest(observation=observation_issued, assessment=assessment_issued):
+                observation, assessment = inputs()
+                observation["evidence_grade"] = "PROSPECTIVE_FIRST_SEEN"
+                observation["facts"][0]["evidence_grade"] = "PROSPECTIVE_FIRST_SEEN"
+                observation["issued_at"] = observation_issued
+                assessment["issued_at"] = assessment_issued
+                with self.assertRaisesRegex(
+                    PTSEProspectiveReadinessError, "ISSUED_AFTER_EXPIRY"
+                ):
+                    qualify_prospective_observation(build_context(observation, assessment))
+
+    def test_distinct_issuance_clocks_with_a_usable_window_remain_ready(self):
+        from tests.test_ptse_contract import inputs
+        from research.options_estate.ptse_contract import build_context
+        observation, assessment = inputs()
+        observation["evidence_grade"] = "PROSPECTIVE_FIRST_SEEN"
+        observation["facts"][0]["evidence_grade"] = "PROSPECTIVE_FIRST_SEEN"
+        observation["issued_at"] = "2026-10-02T20:02:00Z"
+        assessment["issued_at"] = "2026-10-02T20:03:00Z"
+        result = qualify_prospective_observation(build_context(observation, assessment))
+        self.assertEqual(result.status, "READY_FOR_EXISTING_PUBLICATION_OWNER")
+        self.assertFalse(result.publication_authority)
+
     def test_new_entry_prospective_context_is_ready_without_granting_authority(self):
         artifact = prospective_new_entry()
         result = qualify_prospective_observation(artifact)

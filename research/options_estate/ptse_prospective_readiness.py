@@ -84,10 +84,13 @@ def qualify_prospective_observation(
 
     decision_at = _time(observation.get("decision_at"), "prospective.decision_at")
     issued_at = _time(observation.get("issued_at"), "prospective.issued_at")
+    assessment_issued_at = _time(assessment.get("issued_at"), "prospective.assessment.issued_at")
     valid_until = _time(observation.get("valid_until"), "prospective.valid_until")
     if issued_at < decision_at:
         _fail("ISSUED_BEFORE_DECISION")
-    if issued_at > valid_until:
+    # The consumer expires context at now >= valid_until and cannot use it
+    # before assessment issuance. Both clocks must leave a nonempty interval.
+    if max(issued_at, assessment_issued_at) >= valid_until:
         _fail("ISSUED_AFTER_EXPIRY")
 
     facts = observation.get("facts")

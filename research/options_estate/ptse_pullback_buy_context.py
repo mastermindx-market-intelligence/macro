@@ -113,6 +113,12 @@ def build_pullback_buy_context(
             _fail("B4_SOURCE_RECEIPTS_INVALID")
         if owner_geometry_ref["artifact_id"] not in receipts:
             _fail("GEOMETRY_REF_NOT_IN_B4_RECEIPTS")
+        # Digest-form B4 receipt IDs already commit to their exact bytes. Opaque
+        # owner IDs remain externally admitted references; do not invent a new
+        # content-address requirement for the owner's other valid receipt forms.
+        artifact_id = owner_geometry_ref["artifact_id"]
+        if artifact_id.startswith("sha256:") and artifact_id != "sha256:" + owner_geometry_ref["sha256"]:
+            _fail("GEOMETRY_REF_DIGEST_MISMATCH")
 
     if applicability == "APPLICABLE" and owner_geometry_ref is None:
         _fail("GEOMETRY_REF_REQUIRED")

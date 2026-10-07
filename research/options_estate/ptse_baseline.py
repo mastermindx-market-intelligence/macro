@@ -336,6 +336,9 @@ def _row(row: B0Row, mode: str) -> B0Row:
             _fail("ROW_NONFINITE")
     if row.positive_trend_negative_momentum not in (0, 1, 0.0, 1.0):
         _fail("INDICATOR_INVALID")
+    expected_indicator = int(row.trend63 > 0 and row.momentum5 < 0)
+    if row.positive_trend_negative_momentum != expected_indicator:
+        _fail("INDICATOR_DERIVATION_MISMATCH")
     if row.y5 < 0:
         _fail("TARGET_NEGATIVE")
     return row
@@ -456,6 +459,10 @@ def run_b0(
         observed_test_origins = tuple(sorted(r.origin_id for r in test_window))
         if observed_test_origins != fold.expected_test_origin_ids:
             _fail("COHORT_IDENTITY_MISMATCH")
+        # Every frozen test origin constrains fit availability, including origins
+        # whose labels have not matured at evaluation time.
+        if any(fit_at > _time(r.decision_at) for r in test_window):
+            _fail("FIT_AFTER_TEST_DECISION")
         test = [
             r for r in test_window
             if _time(r.label_matured_at) <= eval_at

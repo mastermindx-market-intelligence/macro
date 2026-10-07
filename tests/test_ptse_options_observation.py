@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import copy
 import hashlib
+import json
 import unittest
 
 from research.options_estate.ptse_contract import build_context
@@ -39,10 +41,16 @@ ROOT_BINDING = OptionsRootBinding(
 )
 
 
-def binding(name: str, *, grade="SYNTHETIC", valid_until="2026-10-02T21:00:00Z"):
+def payload_sha(payload):
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                                     ensure_ascii=False, allow_nan=False).encode("utf-8")).hexdigest()
+
+
+def binding(name: str, *, grade="SYNTHETIC", valid_until="2026-10-02T21:00:00Z", payload=None):
+    payload = ({"vol": vol, "gex": gex}[name]() if payload is None else payload)
     return OwnerArtifactBinding(
         owner_ref="options-owner",
-        artifact_ref=ref(name, "options-owner"),
+        artifact_ref={**ref(name, "options-owner"), "sha256": payload_sha(payload)},
         known_at_earliest="2026-10-02T19:58:00Z",
         known_at_latest="2026-10-02T19:58:00Z",
         known_at_precision="EXACT",
@@ -108,6 +116,79 @@ def gex() -> dict:
 
 
 class PTSEOptionsObservationTest(unittest.TestCase):
+    def test_vol_and_gex_payload_changes_cannot_reuse_original_receipt(self):
+        for factory, name, field, value in (
+            (vol, "vol", "atm_iv", 99), (gex, "gex", "call_wall", 350),
+        ):
+            with self.subTest(source=name):
+                original = factory()
+                receipt = binding(name, payload=original)
+                changed = copy.deepcopy(original)
+                changed[field] = value
+                with self.assertRaisesRegex(PTSEOwnerAdapterError, "OWNER_ARTIFACT_REF_MISMATCH"):
+                    adapt_options_hub(market_session=SESSION, decision_at=DECISION,
+                                      root_binding=ROOT_BINDING,
+                                      **{name: changed, name + "_binding": receipt})
+                facts = adapt_options_hub(market_session=SESSION, decision_at=DECISION,
+                                          root_binding=ROOT_BINDING,
+                                          **{name: changed, name + "_binding": binding(name, payload=changed)})
+                self.assertEqual(facts[0]["source_artifact_ref"]["sha256"], payload_sha(changed))
+                self.assertEqual(receipt.artifact_ref["sha256"], payload_sha(original))
+
+    def test_full_options_payload_including_unprojected_arrays_is_bound(self):
+        for factory, name, field in ((vol, "vol", "term"), (gex, "gex", "by_strike")):
+            payload = factory()
+            receipt = binding(name, payload=payload)
+            payload[field] = []
+            with self.assertRaisesRegex(PTSEOwnerAdapterError, "OWNER_ARTIFACT_REF_MISMATCH"):
+                adapt_options_hub(market_session=SESSION, decision_at=DECISION,
+                                  root_binding=ROOT_BINDING,
+                                  **{name: payload, name + "_binding": receipt})
+
+    def test_options_payload_key_order_does_not_change_content_binding(self):
+        for factory, name in ((vol, "vol"), (gex, "gex")):
+            payload = factory()
+            reordered = {k: payload[k] for k in reversed(payload)}
+            receipt = binding(name, payload=payload)
+            kwargs = dict(market_session=SESSION, decision_at=DECISION,
+                          root_binding=ROOT_BINDING)
+            self.assertEqual(adapt_options_hub(**kwargs, **{name: payload, name + "_binding": receipt}),
+                             adapt_options_hub(**kwargs, **{name: reordered, name + "_binding": receipt}))
+
+    def test_annualized_volatility_percent_can_exceed_one_hundred(self):
+        payload = vol()
+        payload.update(atm_iv=150.0, rv20=125.0)
+        facts = adapt_options_hub(market_session=SESSION, decision_at=DECISION,
+                                  root_binding=ROOT_BINDING, vol=payload,
+                                  vol_binding=binding("vol", payload=payload))
+        by_id = {f["feature_id"]: f for f in facts}
+        self.assertEqual(by_id["options.vol.atm_iv"]["value"], 150.0)
+        self.assertEqual(by_id["options.vol.rv20"]["value"], 125.0)
+        self.assertEqual(by_id["options.vol.atm_iv"]["unit"], "PERCENT")
+        # Verify the field-specific domain also survives the canonical context
+        # contract; it must not merely pass this adapter in isolation.
+        from tests.test_ptse_owner_observation import observation, assessment
+        from research.options_estate.ptse_contract import validate_context
+        o = observation(facts)
+        o.update(decision_at=DECISION, issued_at="2026-10-02T20:01:00Z",
+                 valid_until="2026-10-02T21:00:00Z")
+        a = assessment("options.vol.atm_iv")
+        a.update(decision_at=DECISION, issued_at="2026-10-02T20:02:00Z")
+        artifact = build_context(o, a)
+        validate_context(artifact.canonical_bytes)
+        self.assertTrue(all(value is False for value in artifact.to_dict()["assessment"]["authority"].values()))
+
+    def test_volatility_stays_nonnegative_and_ranks_keep_their_upper_bound(self):
+        for field, value in (("atm_iv", -1.0), ("rv20", -1.0),
+                             ("iv_rank_252", 101), ("iv_rank_all", 101)):
+            payload = vol()
+            payload[field] = value
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(PTSEOwnerAdapterError, "OPTIONS_VALUE_RANGE_INVALID"):
+                    adapt_options_hub(market_session=SESSION, decision_at=DECISION,
+                                      root_binding=ROOT_BINDING, vol=payload,
+                                      vol_binding=binding("vol", payload=payload))
+
     def test_bounded_projection_omits_full_rows_and_research_effects(self):
         facts = adapt_options_hub(
             market_session=SESSION,
@@ -174,7 +255,7 @@ class PTSEOptionsObservationTest(unittest.TestCase):
             decision_at=DECISION,
             root_binding=ROOT_BINDING,
             vol=payload,
-            vol_binding=binding("vol"),
+            vol_binding=binding("vol", payload=payload),
         )
         row = {f["feature_id"]: f for f in facts}["options.vol.iv_rank_252"]
         self.assertEqual(row["status"], "UNAVAILABLE")
@@ -248,7 +329,7 @@ class PTSEOptionsObservationTest(unittest.TestCase):
                 decision_at=DECISION,
                 root_binding=ROOT_BINDING,
                 vol=payload,
-                vol_binding=binding("vol"),
+                vol_binding=binding("vol", payload=payload),
             )
         payload = gex()
         payload["asof"] = "2026-10-01"
@@ -258,7 +339,7 @@ class PTSEOptionsObservationTest(unittest.TestCase):
                 decision_at=DECISION,
                 root_binding=ROOT_BINDING,
                 gex=payload,
-                gex_binding=binding("gex"),
+                gex_binding=binding("gex", payload=payload),
             )
         payload = vol()
         payload["secret_chain"] = [{"contract": "forbidden"}]
@@ -268,7 +349,7 @@ class PTSEOptionsObservationTest(unittest.TestCase):
                 decision_at=DECISION,
                 root_binding=ROOT_BINDING,
                 vol=payload,
-                vol_binding=binding("vol"),
+                vol_binding=binding("vol", payload=payload),
             )
 
     def test_numeric_ranges_and_gex_convention_fail_closed(self):
@@ -280,7 +361,7 @@ class PTSEOptionsObservationTest(unittest.TestCase):
                 decision_at=DECISION,
                 root_binding=ROOT_BINDING,
                 vol=payload,
-                vol_binding=binding("vol"),
+                vol_binding=binding("vol", payload=payload),
             )
         payload = gex()
         payload["spot_ref"] = -1
@@ -290,7 +371,7 @@ class PTSEOptionsObservationTest(unittest.TestCase):
                 decision_at=DECISION,
                 root_binding=ROOT_BINDING,
                 gex=payload,
-                gex_binding=binding("gex"),
+                gex_binding=binding("gex", payload=payload),
             )
         payload = gex()
         payload["convention"] = "measured dealer inventory"
@@ -300,7 +381,7 @@ class PTSEOptionsObservationTest(unittest.TestCase):
                 decision_at=DECISION,
                 root_binding=ROOT_BINDING,
                 gex=payload,
-                gex_binding=binding("gex"),
+                gex_binding=binding("gex", payload=payload),
             )
 
     def test_payload_binding_pairs_and_at_least_one_options_source(self):

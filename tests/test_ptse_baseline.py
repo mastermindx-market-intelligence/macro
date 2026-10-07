@@ -232,6 +232,57 @@ class PTSEB0Test(unittest.TestCase):
         with self.assertRaisesRegex(B0ContractError, "LABEL_MATURITY_INVALID"):
             run_b0(protocol(), [FOLD], rows)
 
+    def test_late_fit_cannot_admit_labels_unavailable_at_test_decisions(self):
+        late_rows = [
+            replace(r, label_matured_at="2026-01-23T21:00:00Z")
+            if r.market_session <= "2026-01-08" else r
+            for r in ROWS
+        ]
+        with self.assertRaisesRegex(B0ContractError, "TRAIN_SUPPORT_INSUFFICIENT"):
+            run_b0(protocol(), [FOLD], late_rows)
+        late_fold = replace(FOLD, fit_cutoff_at="2026-01-28T22:00:00Z")
+        with self.assertRaisesRegex(B0ContractError, "FIT_AFTER_TEST_DECISION"):
+            run_b0(protocol(), [late_fold], late_rows)
+
+    def test_fit_clock_checks_even_an_immature_test_origin(self):
+        rows = list(ROWS)
+        rows[-2] = replace(rows[-2], label_matured_at="2026-02-01T21:00:00Z")
+        late_fold = replace(FOLD, fit_cutoff_at="2026-01-21T19:00:00Z")
+        with self.assertRaisesRegex(B0ContractError, "FIT_AFTER_TEST_DECISION"):
+            run_b0(protocol(), [late_fold], rows)
+
+    def test_fit_at_first_test_decision_is_allowed_in_equivalent_timezone(self):
+        result = run_b0(
+            protocol(),
+            [replace(FOLD, fit_cutoff_at="2026-01-20T15:00:00-05:00")],
+            ROWS,
+        )
+        self.assertEqual(result.fold_results[0].train_rows, 5)
+        self.assertEqual(result.fold_results[0].test_rows, 2)
+
+    def test_derived_indicator_must_match_frozen_strict_sign_condition(self):
+        for trend, momentum, expected in (
+            (0.2, -0.1, 1.0),
+            (0.0, -0.1, 0.0),
+            (0.2, 0.0, 0.0),
+            (-0.2, -0.1, 0.0),
+            (0.2, 0.1, 0.0),
+        ):
+            with self.subTest(trend=trend, momentum=momentum):
+                valid = list(ROWS)
+                valid[3] = replace(
+                    valid[3], trend63=trend, momentum5=momentum,
+                    positive_trend_negative_momentum=expected,
+                )
+                result = run_b0(protocol(), [FOLD], valid)
+                self.assertEqual(result.feature_names, FEATURE_NAMES)
+                invalid = list(valid)
+                invalid[3] = replace(
+                    invalid[3], positive_trend_negative_momentum=1.0 - expected,
+                )
+                with self.assertRaisesRegex(B0ContractError, "INDICATOR_DERIVATION_MISMATCH"):
+                    run_b0(protocol(), [FOLD], invalid)
+
     def test_immature_test_label_is_not_zero_filled(self):
         rows = list(ROWS)
         rows[-1] = replace(

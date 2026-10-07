@@ -7,6 +7,10 @@ It consumes only current options_hub.vol/v1 and options_hub.gex/v1 payloads
 after the caller supplies exact owner artifact identity, known-at clocks, expiry,
 evidence grade, and a separate root-to-security identity receipt.
 
+Each artifact digest binds its entire supplied Mapping using the owner adapter's
+canonical parsed-JSON convention, including unprojected arrays and metadata.
+This does not assert raw source-file byte identity or external owner admission.
+
 The October 2 Theta EOD 60-cell receipt is inherited as a LIMIT on claims:
 historical PIT is unproven, no contrast repeats a BH rejection across all three
 eras, GEX was tested against forward realized volatility rather than return,
@@ -27,6 +31,7 @@ from research.options_estate.ptse_owner_observation import (
     _path,
     _ref_shape,
     _validate_binding,
+    _validate_payload_binding,
 )
 
 
@@ -70,7 +75,7 @@ def _fail(code: str) -> None:
     raise PTSEOwnerAdapterError(code)
 
 
-def _validate_number(value: Any, unit: str) -> None:
+def _validate_number(value: Any, unit: str, feature_id: str) -> None:
     if unit == "COUNT":
         if type(value) is not int or value < 0:
             _fail("OPTIONS_VALUE_RANGE_INVALID")
@@ -78,8 +83,13 @@ def _validate_number(value: Any, unit: str) -> None:
     if type(value) not in (int, float) or not math.isfinite(float(value)):
         _fail("OPTIONS_VALUE_TYPE_INVALID")
     number = float(value)
-    if unit == "PERCENT" and not 0 <= number <= 100:
-        _fail("OPTIONS_VALUE_RANGE_INVALID")
+    if unit == "PERCENT":
+        # Incumbent options_hub emits annualized ATM IV and realized volatility
+        # in percent (decimal volatility * 100), not percentile ranks. These
+        # can exceed 100. Only the two empirical IV ranks have a 100 ceiling.
+        ranked = feature_id in {"options.vol.iv_rank_252", "options.vol.iv_rank_all"}
+        if number < 0 or (ranked and number > 100):
+            _fail("OPTIONS_VALUE_RANGE_INVALID")
     if unit == "POINTS" and number <= 0:
         _fail("OPTIONS_VALUE_RANGE_INVALID")
 
@@ -118,7 +128,7 @@ def _bounded_fact(
 ) -> OwnerFact:
     present = value is not None
     if present:
-        _validate_number(value, unit)
+        _validate_number(value, unit, feature_id)
         status = "STALE" if stale else "OBSERVED"
         known_at = {
             "earliest": binding.known_at_earliest,
@@ -198,6 +208,7 @@ def adapt_options_hub(
         if vol.get("schema") != "options_hub.vol/v1":
             _fail("OPTIONS_VOL_SCHEMA_INVALID")
         _validate_root(vol, vol_binding, root_binding, market_session=market_session)
+        _validate_payload_binding(vol, vol_binding)
         limits = (
             "Bounded scalar projection from options_hub.vol/v1; term, smile and history rows are not copied.",
             "Current Options volatility context is descriptive only and grants no PTSE prediction or decision authority.",
@@ -221,6 +232,7 @@ def adapt_options_hub(
         convention = gex.get("convention")
         if convention not in (None, "dealer-sign per engine/gex_model (long-call/short-put)"):
             _fail("OPTIONS_GEX_CONVENTION_INVALID")
+        _validate_payload_binding(gex, gex_binding)
         limits = (
             "Bounded scalar/geometry projection from options_hub.gex/v1; no strike, delta, expiry, profile or history rows are copied.",
             "GEX uses the incumbent long-call/short-put dealer-position scenario and is not measured whole-dealer inventory.",

@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import replace
 import copy
 import hashlib
+import json
 import unittest
 
 from research.options_estate.ptse_contract import (
@@ -32,10 +33,17 @@ def ref(name: str, owner: str) -> dict:
     }
 
 
-def binding(owner: str, name: str, *, grade="SYNTHETIC") -> OwnerArtifactBinding:
+def payload_sha(payload):
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                                     ensure_ascii=False, allow_nan=False).encode("utf-8")).hexdigest()
+
+
+def binding(owner: str, name: str, *, grade="SYNTHETIC", payload=None) -> OwnerArtifactBinding:
+    payload = ({"market-state": market_state, "regime-vector": regime_vector}[name]()
+               if payload is None else payload)
     return OwnerArtifactBinding(
         owner_ref=owner,
-        artifact_ref=ref(name, owner),
+        artifact_ref={**ref(name, owner), "sha256": payload_sha(payload)},
         known_at_earliest="2026-10-02T20:05:00Z",
         known_at_latest="2026-10-02T20:05:00Z",
         known_at_precision="EXACT",
@@ -164,6 +172,55 @@ def observation(facts: list[dict]) -> dict:
 
 
 class PTSEOwnerObservationTest(unittest.TestCase):
+    def test_market_and_regime_payload_changes_cannot_reuse_original_receipt(self):
+        for factory, adapter, owner, name, field, value in (
+            (market_state, adapt_market_state, "market-state-owner", "market-state", "raw_score", 99),
+            (regime_vector, adapt_regime_vector, "regime-vector-owner", "regime-vector", "breadth_pct_above_50", 99),
+        ):
+            with self.subTest(source=name):
+                original = factory()
+                receipt = binding(owner, name, payload=original)
+                changed = copy.deepcopy(original)
+                changed[field] = value
+                with self.assertRaisesRegex(PTSEOwnerAdapterError, "OWNER_ARTIFACT_REF_MISMATCH"):
+                    adapter(changed, receipt, market_session=SESSION, decision_at=DECISION)
+                # Bind the changed content explicitly: normal value validation
+                # and fact projection still operate under a new source digest.
+                facts = adapter(changed, binding(owner, name, payload=changed),
+                                market_session=SESSION, decision_at=DECISION)
+                self.assertEqual(receipt.artifact_ref["sha256"], payload_sha(original))
+                self.assertEqual(facts[0]["source_artifact_ref"]["sha256"], payload_sha(changed))
+
+    def test_whole_payload_receipt_includes_unprojected_fields(self):
+        for factory, adapter, owner, name in (
+            (market_state, adapt_market_state, "market-state-owner", "market-state"),
+            (regime_vector, adapt_regime_vector, "regime-vector-owner", "regime-vector"),
+        ):
+            payload = factory()
+            original_binding = binding(owner, name, payload=payload)
+            payload["unprojected_owner_metadata"] = "changed"
+            with self.assertRaisesRegex(PTSEOwnerAdapterError, "OWNER_ARTIFACT_REF_MISMATCH"):
+                adapter(payload, original_binding, market_session=SESSION, decision_at=DECISION)
+
+    def test_owner_payload_key_order_does_not_change_content_binding(self):
+        for factory, adapter, owner, name in (
+            (market_state, adapt_market_state, "market-state-owner", "market-state"),
+            (regime_vector, adapt_regime_vector, "regime-vector-owner", "regime-vector"),
+        ):
+            payload = factory()
+            receipt = binding(owner, name, payload=payload)
+            reordered = {k: payload[k] for k in reversed(payload)}
+            self.assertEqual(adapter(payload, receipt, market_session=SESSION, decision_at=DECISION),
+                             adapter(reordered, receipt, market_session=SESSION, decision_at=DECISION))
+
+    def test_noncanonical_owner_payload_is_typed_refusal(self):
+        for value in (float("nan"), object()):
+            payload = market_state()
+            payload["unprojected_owner_metadata"] = value
+            with self.assertRaisesRegex(PTSEOwnerAdapterError, "OWNER_PAYLOAD_NOT_CANONICAL"):
+                adapt_market_state(payload, binding("market-state-owner", "market-state"),
+                                   market_session=SESSION, decision_at=DECISION)
+
     def test_market_state_maps_only_passive_owner_fields(self):
         facts = adapt_market_state(
             market_state(),
@@ -205,7 +262,7 @@ class PTSEOwnerObservationTest(unittest.TestCase):
                 with self.assertRaisesRegex(PTSEOwnerAdapterError, code):
                     adapt_market_state(
                         payload,
-                        binding("market-state-owner", "market-state"),
+                        binding("market-state-owner", "market-state", payload=payload),
                         market_session=SESSION,
                         decision_at=DECISION,
                     )
@@ -215,7 +272,7 @@ class PTSEOwnerObservationTest(unittest.TestCase):
         del payload["participation_scope"]
         facts = adapt_market_state(
             payload,
-            binding("market-state-owner", "market-state"),
+            binding("market-state-owner", "market-state", payload=payload),
             market_session=SESSION,
             decision_at=DECISION,
         )
@@ -267,7 +324,7 @@ class PTSEOwnerObservationTest(unittest.TestCase):
         with self.assertRaisesRegex(PTSEOwnerAdapterError, "REGIME_VECTOR_SCHEMA_INVALID"):
             adapt_regime_vector(
                 payload,
-                binding("regime-vector-owner", "regime-vector"),
+                binding("regime-vector-owner", "regime-vector", payload=payload),
                 market_session=SESSION,
                 decision_at=DECISION,
             )
@@ -279,7 +336,7 @@ class PTSEOwnerObservationTest(unittest.TestCase):
         ):
             adapt_regime_vector(
                 payload,
-                binding("regime-vector-owner", "regime-vector"),
+                binding("regime-vector-owner", "regime-vector", payload=payload),
                 market_session=SESSION,
                 decision_at=DECISION,
             )
@@ -290,7 +347,7 @@ class PTSEOwnerObservationTest(unittest.TestCase):
         with self.assertRaisesRegex(PTSEOwnerAdapterError, "OWNER_VALUE_RANGE_INVALID"):
             adapt_market_state(
                 payload,
-                binding("market-state-owner", "market-state"),
+                binding("market-state-owner", "market-state", payload=payload),
                 market_session=SESSION,
                 decision_at=DECISION,
             )
@@ -299,7 +356,7 @@ class PTSEOwnerObservationTest(unittest.TestCase):
         with self.assertRaisesRegex(PTSEOwnerAdapterError, "OWNER_VALUE_TYPE_INVALID"):
             adapt_regime_vector(
                 payload,
-                binding("regime-vector-owner", "regime-vector"),
+                binding("regime-vector-owner", "regime-vector", payload=payload),
                 market_session=SESSION,
                 decision_at=DECISION,
             )

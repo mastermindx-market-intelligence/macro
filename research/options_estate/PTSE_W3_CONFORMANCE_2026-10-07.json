@@ -18,6 +18,7 @@
   "candidate_suite": {
     "errors": 0,
     "failures": 0,
+    "full_pr_review_regression_tests": 18,
     "new_integrity_tests": 12,
     "new_publication_tests": 19,
     "numpy": "2.3.5",
@@ -28,41 +29,108 @@
     "result": "PASS",
     "skips": 0,
     "syntax_compilation": "PASS",
-    "tests_run": 286
+    "tests_run": 304
   },
   "changed_source_files": [
     {
+      "bytes": 18539,
+      "git_blob": "c099bb53bb5b594e2ac5195a34e344953e2fb144",
+      "path": "research/options_estate/ptse_baseline.py",
+      "sha256": "e53ef6512c24c28110b65ad023ff7ca1cb1b415b20fc57b6ccbdc0324e8e2895"
+    },
+    {
+      "bytes": 10484,
+      "git_blob": "04ac1c7675426143a4d0fdda52a8083b431a554c",
+      "path": "research/options_estate/ptse_options_observation.py",
+      "sha256": "6037ad0cc21476ed266f27112133ad1e4843f053b4bfad3e77ee992691091817"
+    },
+    {
+      "bytes": 17110,
+      "git_blob": "a5f6ab9d3bf974efde70b31243b1d3c0d09b080f",
+      "path": "research/options_estate/ptse_owner_observation.py",
+      "sha256": "f6f16221132dd20069c050414035251193933586cbf20d7a205149333e11b83f"
+    },
+    {
+      "bytes": 5136,
+      "git_blob": "780252a70d38268d31717eebdacaf86e1e4f130e",
+      "path": "research/options_estate/ptse_prospective_readiness.py",
+      "sha256": "1f945b5d1b85fd9bb73066d24ed764fadac31a7052e235ead5a9bbad1c2c1eff"
+    },
+    {
+      "bytes": 6516,
+      "git_blob": "4d4f7fb6048038cd2a6e00df4c155d7de0dfdf83",
+      "path": "research/options_estate/ptse_pullback_buy_context.py",
+      "sha256": "c57c0e1a49f292adee2fb89ca1152ddf214a9a2a02f64cf0d19baad9e1b784df"
+    },
+    {
       "bytes": 10638,
       "git_blob": "b1c7c0396ab1c0e61cc608e0cae71a07daafc64f",
-      "kind": "modified",
       "path": "research/options_estate/ptse_shadow_enrollment.py",
       "sha256": "7eeb639638ac331d297cd88dd502933f05d026af9ca245de528e69e78cd7354f"
     },
     {
       "bytes": 9973,
       "git_blob": "2a7a974a8be445c77cc39227b52b082b308576f6",
-      "kind": "modified",
       "path": "research/options_estate/ptse_shadow_outcome.py",
       "sha256": "f898ceea59a210f09f0cced3260363b137b288a5de1a136404532985f5219fe1"
     },
     {
       "bytes": 19295,
       "git_blob": "1e1b1a050f63d3862b2a5aeecd339e08ba1259fe",
-      "kind": "added",
       "path": "research/options_estate/ptse_w3_publication.py",
       "sha256": "bd917feed936431fade8852a5b1e143bfc8c45ef1ea5582e5ec8a35bfc243817"
     },
     {
+      "bytes": 6655,
+      "git_blob": "b498dc0277fa862c23cbf6e4bb099cae45a01cc0",
+      "path": "tests/test_ptse_action_context.py",
+      "sha256": "20fe2929947c554552cb9108cf8cd1d67dd1bdace0de1ddbd6fc82145ce05f5d"
+    },
+    {
+      "bytes": 16985,
+      "git_blob": "ba4cbccfdfb2118628784970391435e9b80830db",
+      "path": "tests/test_ptse_baseline.py",
+      "sha256": "76698bb81f041093ad9b92c75ee5b59edee882f064eb54fe97e0184de21101ce"
+    },
+    {
+      "bytes": 23317,
+      "git_blob": "c7c8f5c35ced50e56e1f773ed318d9c6c134bba9",
+      "path": "tests/test_ptse_new_entry_context.py",
+      "sha256": "f7d89762fd2a283684b45a1412a5ed0ba67f68f05dc95609ed860a386cfccf7b"
+    },
+    {
+      "bytes": 16750,
+      "git_blob": "545e7ea5861a9602db257ec2fbb24c1343b40802",
+      "path": "tests/test_ptse_options_observation.py",
+      "sha256": "be8eff6457c962b43b7aaecf7bb77ad81ddda63d0745ad11af03d9dfb4e7a119"
+    },
+    {
+      "bytes": 18808,
+      "git_blob": "d265517417bf4d9f90e980e0b81304a429cc6b01",
+      "path": "tests/test_ptse_owner_observation.py",
+      "sha256": "ac229f71053f880fccc791837f710336dde2f32f914e281cfbe23320de63171c"
+    },
+    {
+      "bytes": 8238,
+      "git_blob": "073639749af53b3a151e5462444d332e2de2f655",
+      "path": "tests/test_ptse_prospective_readiness.py",
+      "sha256": "a69ac11cad123e0d8412eb2fef90e9685beb7175c2e116ed29b44753973bb668"
+    },
+    {
+      "bytes": 7982,
+      "git_blob": "dafd39b9c79f171129a636094c78e4885ed93dfa",
+      "path": "tests/test_ptse_pullback_buy_context.py",
+      "sha256": "ee073899bb64d1cc85744845c518a34d381e22ad72becd480e8be06b58b50920"
+    },
+    {
       "bytes": 8291,
       "git_blob": "cea79abb30faecd50133741480f9c001e373b088",
-      "kind": "added",
       "path": "tests/test_ptse_shadow_integrity.py",
       "sha256": "9c7704c9820467429ee95a43d72a5299d89edde3503b077989ac5adf7d39ffd4"
     },
     {
       "bytes": 17581,
       "git_blob": "e45b07eb34ed2a3ca2fe7bd32d4a567b672bc824",
-      "kind": "added",
       "path": "tests/test_ptse_w3_publication.py",
       "sha256": "aecf10cb5c35b72b0e461b1244c032e73682b325ff5d9c97f0523571ea52f2ab"
     }
@@ -73,6 +141,8 @@
     "consumer_deployed": false,
     "decision_authority": false,
     "formal_github_review": false,
+    "formal_github_review_required_for_source_only_merge": false,
+    "full_pr_independent_native_review": true,
     "mission_complete": false,
     "natural_prospective_issuance": false,
     "physical_w3_admission": false,
@@ -82,26 +152,311 @@
     "timing_forecast_qualified": false
   },
   "current_source_compatibility": {
-    "all_current_dependency_blobs_verified": true,
-    "candidate_remote_anchor": "22e217a3f5ce0c27a8ad0ea0a2a9a2c9f8074ffb",
+    "all_candidate_python_files_byte_equal_at_receipt": true,
+    "all_fetched_dependency_git_blobs_verified": true,
+    "artifacts": {
+      "_compat_snapshot_manifest.json": {
+        "bytes": 13332,
+        "git_blob_sha1": "b2f17391b09778d4b9b576a247c9ca9bb0f26b9f",
+        "sha256": "325e140fa8b51fbccf0dedae80771251d2764f9def3e8263cf7d74de6cfe245d"
+      },
+      "_current_base_ptse_tests.log": {
+        "bytes": 47642,
+        "git_blob_sha1": "690f0f3e46199cf7dcade3cafc81eecda62199cf",
+        "sha256": "0d6dfa6535db46ebe1e05b940e514413474093969dd27fd1a69a39b511e27d1d"
+      },
+      "_current_dependency_manifest.json": {
+        "bytes": 12381,
+        "git_blob_sha1": "6331e00d0133b1dc4e89b609feaadd39b20b8754",
+        "sha256": "aa41efd918acf90b7a808cd0fb2751a1f959c80ac655fa5345ca5045a439bb8d"
+      },
+      "_ptse_candidate_manifest.json": {
+        "bytes": 7254,
+        "git_blob_sha1": "33b22781014790bb6a1a3d1baef8e598c76b7660",
+        "sha256": "48ecc26077776a8ef7e067daffdba2c3c28b964d5c1432b1eb2e2e2c4cc676d7"
+      }
+    },
+    "candidate_directory": "/workspace/scratch/f085cc5024b5/ptse_integration",
+    "candidate_identity": "LOCAL_COMPLETED_PTSE_SOURCE_IDENTIFIED_BY_MANIFEST_NOT_A_PUBLISHED_HEAD",
     "changed_dependency_paths": [],
     "classification": "EQUIVALENT_CURRENT_SOURCE_DEPENDENCY_SNAPSHOT",
-    "current_main_ref": "bb7847a33c5fcaa3d2963e3c6be18d3628493966",
-    "dependency_manifest_sha256": "bd47e22a9e105adececc7dd8f88d7e9a93be0b9d333182f254b13681489f4796",
-    "exit_code": 0,
+    "command": "/workspace/scratch/f085cc5024b5/market_tide_recovery/test_env/bin/python -B -m unittest discover -s tests -p test_ptse*.py -v",
+    "dependency_count": 30,
+    "incumbent_source_ref": "36f61afb71657279fb6b85f9ea64f99f7e09093a",
     "limits": [
-      "Not full-repository merge-ref or latest hosted CI",
-      "Not deployed source/API/consumer proof",
-      "Not source qualification, actual market research, natural-time issuance, or parent completion",
-      "No production data, C1 source, provider request, or remote source write"
+      "NOT_FULL_REPOSITORY_MERGE_REF_CI",
+      "NOT_PRODUCTION_ACCEPTANCE",
+      "NO_SOURCE_QUALIFICATION_OR_SCIENTIFIC_RESULT",
+      "NO_C1_OR_PROTECTED_OUTCOME_READS"
     ],
-    "log_sha256": "4030a294f240943d8eaf80b68a4b421c28f758583a961da3339069b5626f8e8c",
-    "new_import_dependencies_required": [],
-    "snapshot_manifest_sha256": "5c8135f95ee9ed68dee729ac485bf1391e9e7b199d36a2154fade17ff01c9a67",
+    "original_candidate_ref": "22e217a3f5ce0c27a8ad0ea0a2a9a2c9f8074ffb",
+    "previous_incumbent_source_ref": "bb7847a33c5fcaa3d2963e3c6be18d3628493966",
+    "ptse_file_count": 33,
+    "runtime": {
+      "numpy": "2.3.5",
+      "pandas": "2.2.3",
+      "pyarrow": "25.0.1",
+      "python": "3.12.14"
+    },
+    "snapshot_directory": "/workspace/scratch/f085cc5024b5/ptse_current_base_compat_36f61a",
+    "snapshot_python_file_count": 63,
     "test_command": "python -B -m unittest discover -s tests -p test_ptse*.py -v",
-    "test_result": "PASS",
-    "tests_run": 286,
-    "verified_current_dependency_count": 30
+    "test_result": {
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 5.469,
+      "tests": 304
+    }
+  },
+  "earlier_w3_source_phase": {
+    "independent_review": {
+      "candidate_commit": "BOUND_BY_SOURCE_BLOBS_IN_THIS_RECEIPT",
+      "disposition": "NO_BLOCKING_SOURCE_FINDINGS_WITHIN_REVIEWED_SOURCE_ONLY_SCOPE",
+      "effects": {
+        "c1_access_or_test": false,
+        "canonical_host_source_mutation": false,
+        "formal_github_approval": false,
+        "promotion_or_production_acceptance": false,
+        "remote_write": false,
+        "source_modified": false
+      },
+      "focused_tests": {
+        "elapsed_seconds": 4.143,
+        "errors": 0,
+        "exit_code": 0,
+        "failures": 0,
+        "log_sha256": "073505b345c7fdbd93f8945e0a24aef71e7c6e00adc2b59e4161a43900969bb4",
+        "modules": [
+          "tests.test_ptse_shadow_enrollment",
+          "tests.test_ptse_shadow_outcome",
+          "tests.test_ptse_shadow_integrity",
+          "tests.test_ptse_w3_publication"
+        ],
+        "skips": 0,
+        "tests_run": 59
+      },
+      "independent_probes": {
+        "cases": 15,
+        "sha256": "c7a57a7f878be4f049bb3294d2378a0d2b8fb959f70dfce10a67a641bede715a"
+      },
+      "original_base_ref": "22e217a3f5ce0c27a8ad0ea0a2a9a2c9f8074ffb",
+      "packet_checks": [
+        "independent original-input and manifest-pin reconstruction",
+        "exact B1 material and generation binding",
+        "re-sealed previous-packet forgery rejection",
+        "preserved relation-refused and missing-context denominator rows",
+        "full byte comparison of reconstructed rows",
+        "first complete stamp retained across population/content changes",
+        "returned packet and retained contexts are immutable bytes",
+        "caller structures not modified; later caller mutation cannot mutate returned bundle"
+      ],
+      "prior_defects_closed": [
+        "strict false authority",
+        "typed candidate dates/text/content IDs and status/presence matrix",
+        "deterministic candidate source-key equality",
+        "candidate/context session equality",
+        "existing prospective readiness/expiry reused",
+        "malformed grade collections and source horizons typed before matching",
+        "finite grade overflow typed"
+      ],
+      "review_role": "nonauthor read-only technical review; not GitHub approval",
+      "reviewed_at": "2026-10-07T05:56:41.732025+00:00",
+      "schema": "ptse.independent_source_review/v1",
+      "scope_note": "An expired-issuance context on a RELATION_REFUSED row can be retained structurally. Its packet remains RELATION_REFUSED, never READY, and publication authority is false. This review does not classify that retained context as prospective-ready.",
+      "source_files": {
+        "research/options_estate/ptse_shadow_enrollment.py": {
+          "bytes": 10638,
+          "git_blob_sha1": "b1c7c0396ab1c0e61cc608e0cae71a07daafc64f",
+          "sha256": "7eeb639638ac331d297cd88dd502933f05d026af9ca245de528e69e78cd7354f"
+        },
+        "research/options_estate/ptse_shadow_outcome.py": {
+          "bytes": 9973,
+          "git_blob_sha1": "2a7a974a8be445c77cc39227b52b082b308576f6",
+          "sha256": "f898ceea59a210f09f0cced3260363b137b288a5de1a136404532985f5219fe1"
+        },
+        "research/options_estate/ptse_w3_publication.py": {
+          "bytes": 19295,
+          "git_blob_sha1": "1e1b1a050f63d3862b2a5aeecd339e08ba1259fe",
+          "sha256": "bd917feed936431fade8852a5b1e143bfc8c45ef1ea5582e5ec8a35bfc243817"
+        }
+      },
+      "unproven_by_design": [
+        "authenticity/admission of externally supplied source receipts",
+        "physical W3 ownership/admission",
+        "natural first-seen capture",
+        "production publication or consumer integration",
+        "research efficacy or forecast promotion"
+      ]
+    },
+    "source_commit": "7359e29812c57722fd729ecd7af6863155b7ec9d",
+    "tests_run": 286
+  },
+  "final_candidate_source_manifest": {
+    "research/options_estate/ptse_action_context.py": {
+      "bytes": 5619,
+      "git_blob": "097b355f93f7cec6db6c4353fa0692ef5880a878",
+      "sha256": "126de67e81311cd806612e54076099993eeed42201f0bd0db9a29465ed13741a"
+    },
+    "research/options_estate/ptse_baseline.py": {
+      "bytes": 18539,
+      "git_blob": "c099bb53bb5b594e2ac5195a34e344953e2fb144",
+      "sha256": "e53ef6512c24c28110b65ad023ff7ca1cb1b415b20fc57b6ccbdc0324e8e2895"
+    },
+    "research/options_estate/ptse_breadth_observation.py": {
+      "bytes": 14329,
+      "git_blob": "eb10a7c00b34c9cedbcccebf469ef00d06f17230",
+      "sha256": "5dccd3a80db7686ab17db195ffa14d58673cc97454953e4d87f6730b19e15576"
+    },
+    "research/options_estate/ptse_candidate_relation.py": {
+      "bytes": 3125,
+      "git_blob": "f32e1f62abb135bbe7f7b9cb3a883db5768b02e6",
+      "sha256": "8c79d3531fd4f25ad0993b5e6c7c87a345be2f118bf45c04456ff5b8cf5a0480"
+    },
+    "research/options_estate/ptse_contract.py": {
+      "bytes": 33872,
+      "git_blob": "13e7585332500069b7d5ea32a1bcd0b5afa7b45b",
+      "sha256": "e6b704f02298987e3ca2deee1e2a98e4c8a99e135c90cae76d7393f522e47b14"
+    },
+    "research/options_estate/ptse_event_observation.py": {
+      "bytes": 13328,
+      "git_blob": "73f2ed833377af29ac08cd0b69eefade1e99964c",
+      "sha256": "b059fc5aec6be4ab9ea347a14ad5b106b41364313193c723a24173c21c01f7bc"
+    },
+    "research/options_estate/ptse_new_entry_context.py": {
+      "bytes": 14878,
+      "git_blob": "fb147c75511d6f9d85f614cb339aaaef655eea42",
+      "sha256": "8299e4b6b5fd87fee67fbaae88141d59ede425ce88ff721cc61688721fdfa9b4"
+    },
+    "research/options_estate/ptse_options_observation.py": {
+      "bytes": 10484,
+      "git_blob": "04ac1c7675426143a4d0fdda52a8083b431a554c",
+      "sha256": "6037ad0cc21476ed266f27112133ad1e4843f053b4bfad3e77ee992691091817"
+    },
+    "research/options_estate/ptse_owner_observation.py": {
+      "bytes": 17110,
+      "git_blob": "a5f6ab9d3bf974efde70b31243b1d3c0d09b080f",
+      "sha256": "f6f16221132dd20069c050414035251193933586cbf20d7a205149333e11b83f"
+    },
+    "research/options_estate/ptse_plan_relation.py": {
+      "bytes": 7244,
+      "git_blob": "c944c93ab2f94be985c94d00ba3d690acf76e9d3",
+      "sha256": "7f8438beea3cb2a77464d31fe30c709b202755a88421460bce51568e0e73c543"
+    },
+    "research/options_estate/ptse_post_entry_context.py": {
+      "bytes": 4016,
+      "git_blob": "88fdce24f795a124eb4474a2b9106a76b6db289b",
+      "sha256": "6df672295cf46cee8189afe7c5c93c915a63aee00cc00842a3a1f05b9156ccfb"
+    },
+    "research/options_estate/ptse_prospective_readiness.py": {
+      "bytes": 5136,
+      "git_blob": "780252a70d38268d31717eebdacaf86e1e4f130e",
+      "sha256": "1f945b5d1b85fd9bb73066d24ed764fadac31a7052e235ead5a9bbad1c2c1eff"
+    },
+    "research/options_estate/ptse_pullback_buy_context.py": {
+      "bytes": 6516,
+      "git_blob": "4d4f7fb6048038cd2a6e00df4c155d7de0dfdf83",
+      "sha256": "c57c0e1a49f292adee2fb89ca1152ddf214a9a2a02f64cf0d19baad9e1b784df"
+    },
+    "research/options_estate/ptse_shadow_enrollment.py": {
+      "bytes": 10638,
+      "git_blob": "b1c7c0396ab1c0e61cc608e0cae71a07daafc64f",
+      "sha256": "7eeb639638ac331d297cd88dd502933f05d026af9ca245de528e69e78cd7354f"
+    },
+    "research/options_estate/ptse_shadow_outcome.py": {
+      "bytes": 9973,
+      "git_blob": "2a7a974a8be445c77cc39227b52b082b308576f6",
+      "sha256": "f898ceea59a210f09f0cced3260363b137b288a5de1a136404532985f5219fe1"
+    },
+    "research/options_estate/ptse_w3_publication.py": {
+      "bytes": 19295,
+      "git_blob": "1e1b1a050f63d3862b2a5aeecd339e08ba1259fe",
+      "sha256": "bd917feed936431fade8852a5b1e143bfc8c45ef1ea5582e5ec8a35bfc243817"
+    },
+    "tests/test_ptse_action_context.py": {
+      "bytes": 6655,
+      "git_blob": "b498dc0277fa862c23cbf6e4bb099cae45a01cc0",
+      "sha256": "20fe2929947c554552cb9108cf8cd1d67dd1bdace0de1ddbd6fc82145ce05f5d"
+    },
+    "tests/test_ptse_baseline.py": {
+      "bytes": 16985,
+      "git_blob": "ba4cbccfdfb2118628784970391435e9b80830db",
+      "sha256": "76698bb81f041093ad9b92c75ee5b59edee882f064eb54fe97e0184de21101ce"
+    },
+    "tests/test_ptse_breadth_observation.py": {
+      "bytes": 10465,
+      "git_blob": "d6d3bdf9170d4d0a5dd57df287f31f117acd59d8",
+      "sha256": "375abab4fa5007e2080362f95fde3c2cf178ca50998358c45b9026fa1208a62c"
+    },
+    "tests/test_ptse_candidate_relation.py": {
+      "bytes": 3323,
+      "git_blob": "4ba1e3fb831c6f02fac3d65b28462916676af008",
+      "sha256": "24215473c6efd039daf69222ff21408cd32e33ba2ce3df10d96f77ac34284fb8"
+    },
+    "tests/test_ptse_contract.py": {
+      "bytes": 41653,
+      "git_blob": "47c0df0a95e11929c0377725e3da6aa450347bf0",
+      "sha256": "8b41632ede99bc25adf1d81c4cdae4a9fd43271115303d9cb14f0a80fbdf5902"
+    },
+    "tests/test_ptse_event_observation.py": {
+      "bytes": 11142,
+      "git_blob": "84d7cd3e7a39f763645e7c09491237490dfdf0ae",
+      "sha256": "e292fafe0d53fd907c4d3ee209bab31d29cc23e7ecca400ec4dc1fae2e5d740d"
+    },
+    "tests/test_ptse_new_entry_context.py": {
+      "bytes": 23317,
+      "git_blob": "c7c8f5c35ced50e56e1f773ed318d9c6c134bba9",
+      "sha256": "f7d89762fd2a283684b45a1412a5ed0ba67f68f05dc95609ed860a386cfccf7b"
+    },
+    "tests/test_ptse_options_observation.py": {
+      "bytes": 16750,
+      "git_blob": "545e7ea5861a9602db257ec2fbb24c1343b40802",
+      "sha256": "be8eff6457c962b43b7aaecf7bb77ad81ddda63d0745ad11af03d9dfb4e7a119"
+    },
+    "tests/test_ptse_owner_observation.py": {
+      "bytes": 18808,
+      "git_blob": "d265517417bf4d9f90e980e0b81304a429cc6b01",
+      "sha256": "ac229f71053f880fccc791837f710336dde2f32f914e281cfbe23320de63171c"
+    },
+    "tests/test_ptse_plan_relation.py": {
+      "bytes": 7901,
+      "git_blob": "a4e4ba50d4ebc284566a72d55b66f59225704080",
+      "sha256": "90a463dc27a0867e819ce1251424f87e04197d1c77850ce1cbc221a8709bc8de"
+    },
+    "tests/test_ptse_post_entry_context.py": {
+      "bytes": 5442,
+      "git_blob": "89700ddb5e9ef240beace20eef482f9c5248532a",
+      "sha256": "2057ee70022aed8473d886b19399b787fdf107b19bae5b6ef0997820c61a1b8e"
+    },
+    "tests/test_ptse_prospective_readiness.py": {
+      "bytes": 8238,
+      "git_blob": "073639749af53b3a151e5462444d332e2de2f655",
+      "sha256": "a69ac11cad123e0d8412eb2fef90e9685beb7175c2e116ed29b44753973bb668"
+    },
+    "tests/test_ptse_pullback_buy_context.py": {
+      "bytes": 7982,
+      "git_blob": "dafd39b9c79f171129a636094c78e4885ed93dfa",
+      "sha256": "ee073899bb64d1cc85744845c518a34d381e22ad72becd480e8be06b58b50920"
+    },
+    "tests/test_ptse_shadow_enrollment.py": {
+      "bytes": 6507,
+      "git_blob": "6c832a5bd9ed891ffd42ba936b77197d1df9c7fd",
+      "sha256": "c639075a651d674e7bd8787ddb38a923b122ec8081bfdb957ef4a3f4859f6c20"
+    },
+    "tests/test_ptse_shadow_integrity.py": {
+      "bytes": 8291,
+      "git_blob": "cea79abb30faecd50133741480f9c001e373b088",
+      "sha256": "9c7704c9820467429ee95a43d72a5299d89edde3503b077989ac5adf7d39ffd4"
+    },
+    "tests/test_ptse_shadow_outcome.py": {
+      "bytes": 10348,
+      "git_blob": "a5e293682121fcc42e8d00e4bbea076de3b2ca15",
+      "sha256": "7ca81ce3595c70dd793fa7609d82e80e31018abed907db61e5ad1c28f1e204a5"
+    },
+    "tests/test_ptse_w3_publication.py": {
+      "bytes": 17581,
+      "git_blob": "e45b07eb34ed2a3ca2fe7bd32d4a567b672bc824",
+      "sha256": "aecf10cb5c35b72b0e461b1244c032e73682b325ff5d9c97f0523571ea52f2ab"
+    }
   },
   "hosted_ci": "PENDING_FOR_NEW_COMMIT; previous 22e217a3 CI37292207526 and fences37292206948 were successful; not inherited as new-head proof",
   "implementation_pr": 8364,
@@ -241,84 +596,50 @@
     }
   ],
   "independent_technical_review": {
-    "candidate_commit": "BOUND_BY_SOURCE_BLOBS_IN_THIS_RECEIPT",
-    "disposition": "NO_BLOCKING_SOURCE_FINDINGS_WITHIN_REVIEWED_SOURCE_ONLY_SCOPE",
-    "effects": {
-      "c1_access_or_test": false,
-      "canonical_host_source_mutation": false,
-      "formal_github_approval": false,
-      "promotion_or_production_acceptance": false,
-      "remote_write": false,
-      "source_modified": false
-    },
-    "focused_tests": {
-      "elapsed_seconds": 4.143,
-      "errors": 0,
-      "exit_code": 0,
-      "failures": 0,
-      "log_sha256": "073505b345c7fdbd93f8945e0a24aef71e7c6e00adc2b59e4161a43900969bb4",
-      "modules": [
-        "tests.test_ptse_shadow_enrollment",
-        "tests.test_ptse_shadow_outcome",
-        "tests.test_ptse_shadow_integrity",
-        "tests.test_ptse_w3_publication"
-      ],
-      "skips": 0,
-      "tests_run": 59
-    },
-    "independent_probes": {
-      "cases": 15,
-      "sha256": "c7a57a7f878be4f049bb3294d2378a0d2b8fb959f70dfce10a67a641bede715a"
-    },
-    "original_base_ref": "22e217a3f5ce0c27a8ad0ea0a2a9a2c9f8074ffb",
-    "packet_checks": [
-      "independent original-input and manifest-pin reconstruction",
-      "exact B1 material and generation binding",
-      "re-sealed previous-packet forgery rejection",
-      "preserved relation-refused and missing-context denominator rows",
-      "full byte comparison of reconstructed rows",
-      "first complete stamp retained across population/content changes",
-      "returned packet and retained contexts are immutable bytes",
-      "caller structures not modified; later caller mutation cannot mutate returned bundle"
-    ],
-    "prior_defects_closed": [
-      "strict false authority",
-      "typed candidate dates/text/content IDs and status/presence matrix",
-      "deterministic candidate source-key equality",
-      "candidate/context session equality",
-      "existing prospective readiness/expiry reused",
-      "malformed grade collections and source horizons typed before matching",
-      "finite grade overflow typed"
-    ],
-    "review_role": "nonauthor read-only technical review; not GitHub approval",
-    "reviewed_at": "2026-10-07T05:56:41.732025+00:00",
-    "schema": "ptse.independent_source_review/v1",
-    "scope_note": "An expired-issuance context on a RELATION_REFUSED row can be retained structurally. Its packet remains RELATION_REFUSED, never READY, and publication authority is false. This review does not classify that retained context as prospective-ready.",
-    "source_files": {
-      "research/options_estate/ptse_shadow_enrollment.py": {
-        "bytes": 10638,
-        "git_blob_sha1": "b1c7c0396ab1c0e61cc608e0cae71a07daafc64f",
-        "sha256": "7eeb639638ac331d297cd88dd502933f05d026af9ca245de528e69e78cd7354f"
-      },
-      "research/options_estate/ptse_shadow_outcome.py": {
-        "bytes": 9973,
-        "git_blob_sha1": "2a7a974a8be445c77cc39227b52b082b308576f6",
-        "sha256": "f898ceea59a210f09f0cced3260363b137b288a5de1a136404532985f5219fe1"
-      },
-      "research/options_estate/ptse_w3_publication.py": {
-        "bytes": 19295,
-        "git_blob_sha1": "1e1b1a050f63d3862b2a5aeecd339e08ba1259fe",
-        "sha256": "bd917feed936431fade8852a5b1e143bfc8c45ef1ea5582e5ec8a35bfc243817"
-      }
-    },
-    "unproven_by_design": [
-      "authenticity/admission of externally supplied source receipts",
-      "physical W3 ownership/admission",
-      "natural first-seen capture",
-      "production publication or consumer integration",
-      "research efficacy or forecast promotion"
-    ]
+    "formal_github_approval": false,
+    "module_count": 16,
+    "module_manifest_sha256": "7e4dd81fce500cd8f02dcfac289888006552f35401466029612425e1c7fd1c7d",
+    "receipt_path": "research/options_estate/PTSE_FULL_SOURCE_REVIEW_2026-10-07.json",
+    "receipt_sha256": "66b7f04cf431b6180f9af54dd2b6ef7ba022fc9cd153c02058a30403c7158c69",
+    "status": "PASS_SOURCE_ONLY_SCOPE"
   },
+  "initial_w3_changed_source_files": [
+    {
+      "bytes": 10638,
+      "git_blob": "b1c7c0396ab1c0e61cc608e0cae71a07daafc64f",
+      "kind": "modified",
+      "path": "research/options_estate/ptse_shadow_enrollment.py",
+      "sha256": "7eeb639638ac331d297cd88dd502933f05d026af9ca245de528e69e78cd7354f"
+    },
+    {
+      "bytes": 9973,
+      "git_blob": "2a7a974a8be445c77cc39227b52b082b308576f6",
+      "kind": "modified",
+      "path": "research/options_estate/ptse_shadow_outcome.py",
+      "sha256": "f898ceea59a210f09f0cced3260363b137b288a5de1a136404532985f5219fe1"
+    },
+    {
+      "bytes": 19295,
+      "git_blob": "1e1b1a050f63d3862b2a5aeecd339e08ba1259fe",
+      "kind": "added",
+      "path": "research/options_estate/ptse_w3_publication.py",
+      "sha256": "bd917feed936431fade8852a5b1e143bfc8c45ef1ea5582e5ec8a35bfc243817"
+    },
+    {
+      "bytes": 8291,
+      "git_blob": "cea79abb30faecd50133741480f9c001e373b088",
+      "kind": "added",
+      "path": "tests/test_ptse_shadow_integrity.py",
+      "sha256": "9c7704c9820467429ee95a43d72a5299d89edde3503b077989ac5adf7d39ffd4"
+    },
+    {
+      "bytes": 17581,
+      "git_blob": "e45b07eb34ed2a3ca2fe7bd32d4a567b672bc824",
+      "kind": "added",
+      "path": "tests/test_ptse_w3_publication.py",
+      "sha256": "aecf10cb5c35b72b0e461b1244c032e73682b325ff5d9c97f0523571ea52f2ab"
+    }
+  ],
   "operation_id": "market-tide-research-20260924-sol-001",
   "parent_issue": 7925,
   "procedure_pin": {
@@ -330,5 +651,6 @@
   },
   "recorded_at": "2026-10-07T05:59:13.528771+00:00",
   "schema": "ptse.w3_source_conformance/v1-research",
+  "source_acceptance_boundary": "Source-only review and normal current CI/merge are separate from physical W3, private consumer, B0 science, natural issuance and parent completion.",
   "source_parent_commit": "22e217a3f5ce0c27a8ad0ea0a2a9a2c9f8074ffb"
 }

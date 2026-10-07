@@ -73,14 +73,15 @@ populations cannot silently backfill or erase the first cohort.
 ## Verification
 
 The cumulative candidate contains 16 PTSE modules and 17 PTSE test files.
-**286 tests pass**: the original 255, 12 new integrity tests and 19 publication
-tests. All candidate Python source compiles. The isolated environment uses
+**304 tests pass**: the original 255, 12 new integrity tests, 19 publication
+tests and 18 additional regressions/controls from full-PR review. All candidate Python source compiles. The isolated environment uses
 Python 3.12.14, pandas 2.2.3, NumPy 2.3.5 and pyarrow 25.0.1; no source stubs were
 used and no frozen C1 module was imported or tested.
 
 All 30 incumbent dependency files were independently fetched at frozen current
-main `bb7847a33c5fcaa3d2963e3c6be18d3628493966` and Git-blob verified. They are
-unchanged from the PR dependency closure. The complete 286-test suite also passes
+main `36f61afb71657279fb6b85f9ea64f99f7e09093a` and Git-blob verified. They are
+unchanged from both the original PR dependency closure and the earlier
+`bb7847a33c5fcaa3d2963e3c6be18d3628493966` comparison. The complete 304-test suite passes
 against that equivalent current-source snapshot. This is a scoped dependency
 proof, not a full repository merge-ref run.
 
@@ -90,6 +91,59 @@ exact source blobs recorded in `PTSE_W3_CONFORMANCE_2026-10-07.json`. There are 
 blocking findings within this source-only scope. That review is not a formal
 GitHub approval and does not approve a physical writer, private endpoint or
 scientific protocol.
+
+### Full-PR independent review and additional repairs
+
+The review was extended across all 16 PTSE modules so that source-only acceptance
+does not rest solely on the latest publication delta. Every module was inspected
+by a reviewer who did not author that module; repaired code received separate
+verification. In addition to the shadow integrity repairs, this closed:
+
+- **Readiness with no usable interval:** both observation and assessment issuance
+  must precede the exclusive expiry clock. Issuance at expiry, or a later
+  assessment that cannot ever be consumed, is refused.
+- **Baseline training after test decisions:** a fold's fit clock cannot postdate
+  any frozen test-origin decision, including origins whose labels are still
+  immature. Equality at the decision clock remains permitted.
+- **Contradictory registered features:** the positive-trend/negative-momentum
+  indicator must equal its registered strict-sign derivation. It cannot be
+  changed independently while retaining the same feature identity.
+- **Unbound owner payloads:** market-state, regime-vector and Options vol/gex
+  adapters verify the SHA256 of the entire supplied canonical parsed-JSON
+  mapping, including unprojected fields. This is content identity, not raw-file
+  byte identity or external owner authentication. Synthetic fixtures now bind
+  their actual payloads.
+- **Conflicting geometry references:** a `sha256:` receipt ID must agree with
+  its reference digest. B4's supported opaque owner receipt IDs remain valid;
+  no new global digest-form requirement is imposed.
+- **Incorrect volatility ceiling:** IV ranks remain in [0,100], while annualized
+  ATM IV and realized volatility in percent can be finite, nonnegative values
+  above 100, matching the incumbent Options owner convention.
+
+The final independent review receipt records exact module hashes, original
+findings and post-repair probes in `PTSE_FULL_SOURCE_REVIEW_2026-10-07.json`.
+
+### Source-only acceptance is separate from production acceptance
+
+The W2 masterplan exit requires a reviewed contract and hermetic exact-head
+tests. The explicit W1 nonauthor C1 review and W11 scientific/code promotion
+reviews are separate scopes. Current Macro source rules and the observed
+repository ruleset do not impose a formal nonauthor GitHub approval for this
+inert research-software unit. Genuine independent native review, resolved source
+findings and normal current integration/CI checks can support its source-only
+merge. Earlier author checklists that coupled that merge to B0 or live API
+completion do not override the accepted scope.
+
+The observed ruleset 21813020 is in evaluate mode and specifies zero required
+approvals, no required reviewers, no code-owner review and no last-push approval.
+The normal branch response reports `protected:false`; the integration could not
+read classic protection detail (403), and that read was not retried elsewhere.
+GitHub's native merge operation and all applicable normal checks remain
+controlling. No ruleset, protection, reviewer or workflow is changed here.
+
+Merging these pure research modules would make the verified software available
+on main. It would not admit the occupied W3 writer or private consumer, qualify
+B0 source, capture a natural observation, enable a timing effect or complete #7925.
 
 The previous head's CI run 37292207526 and fences run 37292206948 succeeded.
 Hosted checks must be observed again on the published candidate; old green
@@ -212,8 +266,8 @@ do not establish position or exit ownership.
    local verification nor an earlier green run replaces that gate.
 2. Obtain the incumbent W3 sub-grain and Macro/Terminal consumer-custody ruling,
    then implement through those owners and normal repository release controls.
-   Formal independent source/science review remains separate from internal
-   technical probes.
+   Independent scientific/product acceptance remains separate from the completed
+   source-only technical review.
 3. Demonstrate real qualified owner source -> immutable context -> accepted
    persistence -> private API/BFF -> read-only consumer, including missing,
    stale, refusal, replay and kill-switch behavior.

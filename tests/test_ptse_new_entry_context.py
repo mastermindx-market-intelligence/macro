@@ -121,10 +121,12 @@ def availability(p=None, facts=None) -> dict:
     )
 
 
-def owner_binding(owner: str, name: str, *, grade="SYNTHETIC") -> OwnerArtifactBinding:
+def owner_binding(owner: str, name: str, *, grade="SYNTHETIC", payload=None) -> OwnerArtifactBinding:
+    payload = ({"market-state": market_state, "regime-vector": regime_vector}[name]()
+               if payload is None else payload)
     return OwnerArtifactBinding(
         owner_ref=owner,
-        artifact_ref=ref(name, owner),
+        artifact_ref=canonical_ref(payload, "fixture:" + name, owner),
         known_at_earliest="2026-09-18T19:29:50Z",
         known_at_latest="2026-09-18T19:29:50Z",
         known_at_precision="EXACT",
@@ -148,10 +150,11 @@ OPTIONS_ROOT_BINDING = OptionsRootBinding(
 )
 
 
-def options_binding(name: str, *, grade="SYNTHETIC") -> OwnerArtifactBinding:
+def options_binding(name: str, *, grade="SYNTHETIC", payload=None) -> OwnerArtifactBinding:
+    payload = ({"vol": options_vol, "gex": options_gex}[name]() if payload is None else payload)
     return OwnerArtifactBinding(
         owner_ref="options-owner",
-        artifact_ref=ref(name, "options-owner"),
+        artifact_ref=canonical_ref(payload, "fixture:" + name, "options-owner"),
         known_at_earliest="2026-09-18T19:29:50Z",
         known_at_latest="2026-09-18T19:29:50Z",
         known_at_precision="EXACT",
