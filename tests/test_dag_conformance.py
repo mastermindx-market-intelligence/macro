@@ -520,6 +520,39 @@ class TestLiveConformance:
             "difference is intentional), then re-run this test."
         )
 
+    def test_asia_communique_diff_runs_once_after_collect_commit_before_china_spine(self):
+        """CIE-09 production wiring consumes the settled corpus without refetching.
+
+        The official-policy collector is already part of ``scripts.collect --group
+        asia``. Communique Diff therefore runs once after the collection commit
+        and before the serial China spine, reusing the existing qbus/qledger/site
+        owners rather than creating a second collector or publication lane.
+        """
+        workflow = REPO_ROOT / ".github" / "workflows" / "asia-close.yml"
+        import yaml
+
+        doc = yaml.safe_load(workflow.read_text(encoding="utf-8"))
+        steps = doc["jobs"]["asia"]["steps"]
+        names = [step.get("name") for step in steps]
+        diff_name = "China Communiqué Diff — settled official-policy corpus (CIE-09)"
+
+        assert names.count(diff_name) == 1
+        diff_step = next(step for step in steps if step.get("name") == diff_name)
+        assert diff_step["run"] == "python -m scripts.build_communique_diff"
+        assert "--fetch" not in diff_step["run"]
+        assert diff_step.get("continue-on-error") is True
+        assert diff_step.get("timeout-minutes") == 5
+
+        collect_i = names.index(
+            "collect China/HK data (graceful degradation — never fails on one source)"
+        )
+        commit_i = names.index("commit collected asia data")
+        diff_i = names.index(diff_name)
+        spine_i = names.index(
+            "build china a-share dashboard (spine — serial head, every CN surface reads it)"
+        )
+        assert collect_i < commit_i < diff_i < spine_i
+
     def test_dag_yml_parses(self):
         """config/dag.yml must be valid YAML with the expected top-level keys."""
         dag_path = REPO_ROOT / "config" / "dag.yml"
