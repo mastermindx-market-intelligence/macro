@@ -1929,24 +1929,6 @@ def supersede_ths_canonical_expression_edges(
     return out
 
 
-def _hierarchy_relation_gate(prior: dict, *, action: str, computed: list[dict]) -> None:
-    if str(prior.get("type")) != "PARENT_OF":
-        return
-    if action == "DESTINATION_CHANGE":
-        raise ThemeHierarchyError(
-            "BLOCK_SHAPE", "curated PARENT_OF relations cannot change destination")
-    live = [candidate for candidate in computed
-            if candidate.get("type") == "PARENT_OF"
-            and candidate.get("src") == prior.get("src")
-            and candidate.get("dst") == prior.get("dst")
-            and _null(candidate.get("valid_to"))]
-    if live:
-        raise ThemeHierarchyError(
-            "BLOCK_SHAPE",
-            f"withdrawn parent relation remains in YAML: "
-            f"{prior.get('src')} -> {prior.get('dst')}")
-
-
 def apply_relation_events(stored: pd.DataFrame, computed: list[dict], events: list,
                           *, belief_time: str, era: str, computed_at: str
                           ) -> tuple[list[dict], list[dict]]:
@@ -1969,7 +1951,6 @@ def apply_relation_events(stored: pd.DataFrame, computed: list[dict], events: li
         if (old.get("source_class") != "curated"
                 or old.get("date_provenance") != "crosswalk"):
             raise ValueError("relation event prior is not a canonical curation relation")
-        _hierarchy_relation_gate(prior, action=row["action"], computed=computed)
         if prior["edge_id"] in acted:
             raise ValueError("multiple relation events for one prior relation")
         acted.add(prior["edge_id"])

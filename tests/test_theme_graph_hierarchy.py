@@ -353,39 +353,3 @@ def test_basket_nominator_rights(tree, monkeypatch):
     monkeypatch.setattr(rights_module, "family_for_node_id", lambda _value: None)
     _refuses(tree, "VENDOR_NOMINATOR",
              micro_themes=[micro(nominated_from="basket:baskets:x")])
-
-
-@pytest.mark.parametrize("action", ["RELATION_WITHDRAW", "DESTINATION_CHANGE"])
-def test_parent_of_relation_event_gates(tree, monkeypatch, action):
-    write_document(tree, hierarchy_doc(
-        categories=[category()],
-        parents=[parent()]))
-    root, source = tree
-    before = materialize.build(
-        era="reconstruction", belief_time=AFTER, computed_at=f"{AFTER}T00:00:00Z",
-        data_dir=root, crosswalk_path=source, raw_snapshot=(AFTER, {}),
-        ths_history=pd.DataFrame(
-            columns=["snapshot_date", "suite", "basket_id", "ticker", "source_shape"]))
-    parent_edge = next(row for row in before.edges if row["type"] == "PARENT_OF")
-    stored = pd.DataFrame([parent_edge])
-    if action == "RELATION_WITHDRAW":
-        doc = yaml.safe_load(source.read_text(encoding="utf-8"))
-        doc["hierarchy"]["parents"] = []
-        source.write_text(yaml.safe_dump(doc, allow_unicode=True, sort_keys=False),
-                          encoding="utf-8")
-        computed = materialize.build(
-            era="reconstruction", belief_time="2026-10-09",
-            computed_at=f"{AFTER}T01:00:00Z", data_dir=root, crosswalk_path=source,
-            raw_snapshot=(AFTER, {}), ths_history=pd.DataFrame(
-                columns=["snapshot_date", "suite", "basket_id", "ticker",
-                         "source_shape"])).edges
-        assert not any(row["type"] == "PARENT_OF" for row in computed)
-    else:
-        prior = {key: parent_edge[key] for key in
-                 ("edge_id", "type", "src", "dst", "valid_from")}
-        if action == "RELATION_WITHDRAW" and False:
-            pass
-        with pytest.raises(ThemeHierarchyError) as caught:
-            materialize._hierarchy_relation_gate(
-                prior, computed=[], action="DESTINATION_CHANGE")
-        assert caught.value.reason == "BLOCK_SHAPE"
