@@ -824,8 +824,8 @@ def _visit_discovery_snapshot(
             else "coverage_exception_status_unknown" if not exception_status_valid
             else "unscoped_coverage_exception" if has_unscoped_open
             else "visit_company_identity_conflict" if identity_conflicts
-            else "visit_company_identity_unresolved" if unscoped_positive_rows
             else "visit_event_identity_unresolved" if unkeyed_positive_rows
+            else "visit_company_identity_unresolved" if unscoped_positive_rows
             else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
             else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
             else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
@@ -964,10 +964,10 @@ def _visit_discovery_snapshot(
             baseline_state = "blocked_unscoped_coverage_exception"
         elif identity_conflicts:
             baseline_state = "blocked_conflicting_company_identity"
-        elif unscoped_positive_rows:
-            baseline_state = "blocked_unresolved_company_identity"
         elif unkeyed_positive_rows:
             baseline_state = "blocked_unresolved_event_identity"
+        elif unscoped_positive_rows:
+            baseline_state = "blocked_unresolved_company_identity"
         elif company_exception:
             baseline_state = "blocked_company_coverage_exception"
         elif not health_clock_order_valid:
@@ -1012,10 +1012,10 @@ def _visit_discovery_snapshot(
             first_seen_state = "unknown_unscoped_coverage_exception"
         elif identity_conflicts:
             first_seen_state = "unknown_conflicting_company_identity"
-        elif unscoped_positive_rows:
-            first_seen_state = "unknown_unresolved_company_identity"
         elif unkeyed_positive_rows:
             first_seen_state = "unknown_unresolved_event_identity"
+        elif unscoped_positive_rows:
+            first_seen_state = "unknown_unresolved_company_identity"
         elif not health_clock_order_valid:
             first_seen_state = "unknown_owner_clock_order_invalid"
         elif source_status != "ok":

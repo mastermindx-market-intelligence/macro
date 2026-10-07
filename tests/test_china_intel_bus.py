@@ -1232,6 +1232,47 @@ def test_visit_discovery_blank_event_keys_are_preserved_but_not_counted():
     assert snap["global_negative_authority_blocker"] ==         "visit_event_identity_unresolved"
 
 
+def test_visit_discovery_event_key_blocker_survives_missing_company_identity():
+    keyed = _visit_row(
+        "F-known", "000007", "2026-10-02T09:00:00+08:00",
+        recorded="2026-10-02T02:00:00+00:00",
+    )
+    unkeyed_unscoped = _visit_row(
+        "", "", "2026-10-02T10:00:00+08:00",
+        recorded="2026-10-02T03:00:00+00:00",
+    )
+
+    snap = bus._visit_discovery_snapshot(
+        [keyed, unkeyed_unscoped],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    # Both uncertainty dimensions remain observable in their evidence lanes.
+    assert snap["n_unkeyed_positive_rows"] == 1
+    assert snap["n_unscoped_positive_rows"] == 1
+    assert snap["unkeyed_positive_evidence"][0]["event_identity_state"] ==         "unresolved_natural_key"
+    assert snap["unscoped_positive_evidence"][0]["company_identity_state"] ==         "unresolved"
+
+    # The event-key blocker takes precedence for recurrence/frequency authority:
+    # repairing the company identity alone would still not make this countable.
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] ==         "visit_event_identity_unresolved"
+    known = snap["examples"][0]
+    assert known["baseline_state"] == "blocked_unresolved_event_identity"
+    assert known["first_seen_state"] == "unknown_unresolved_event_identity"
+    assert snap["n_measured_baselines"] == 0
+    assert snap["n_first_observed_recent"] == 0
+
+
 def test_visit_discovery_only_blank_event_keys_never_mint_frequency():
     row = _visit_row(
         "", "000006", "2026-10-02T09:00:00+08:00",
