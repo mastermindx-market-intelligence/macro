@@ -1,0 +1,557 @@
+{
+  "status": "PASS",
+  "scope": "Offline research artifact integrity and arithmetic; no production execution, live integration, legal completeness or independent audit of issuer claims.",
+  "counts": {
+    "cases": 15,
+    "edges": 112,
+    "source_records": 102,
+    "unique_source_urls": 100,
+    "source_lineage_groups": 84,
+    "research_display_nodes": 85,
+    "computed_metrics": 17
+  },
+  "checks_passed": 92,
+  "checks_total": 92,
+  "checks": [
+    {
+      "check": "15_expected_cases",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "unique_case_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "unique_edge_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "unique_source_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "all_edges_have_case",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "all_edge_sources_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "all_case_sources_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "all_sources_canonical_https",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "all_edge_types_defined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "all_required_edge_fields",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "all_edges_research_only",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "null_clock_does_not_pass_PIT",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "instrument_and_observation_clocks_separate",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "no_universal_score_or_aggregate_fabrication",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "authority_is_context_only",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "three_qualified_benign_controls",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "actual_cash_edges_do_not_include_revenue_or_guarantee_face",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "unknown_gross_customer_cash_not_zero",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "no_anonymous_Broadcom_named_edges",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "ASML_aggregate_not_backdated_to_program_announcement",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "ASML_distribution_month_not_invented_day",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "AMD_warrant_state_is_dated",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "Crane_zero_is_dated",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "Crane_guarantee_not_total_payment_cap",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "Ford_old_guarantee_released",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "Ford_assumption_not_new_cash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "Ford_historical_advances_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "GM_cash_updated",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "Meta_asset_in_and_cash_out_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "SoftBank_component_has_overlap",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "SoftBank_old_bridge_not_current_cash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "Anthropic_seriesH_component_overlaps_both_totals",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M01",
+      "passed": true,
+      "detail": {
+        "recomputed": 45,
+        "reported": 45,
+        "unit": "percent"
+      }
+    },
+    {
+      "check": "metric_sources_M01",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M01",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M02",
+      "passed": true,
+      "detail": {
+        "recomputed": 281250000000.0,
+        "reported": 281250000000,
+        "unit": "USD_approximate"
+      }
+    },
+    {
+      "check": "metric_sources_M02",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M02",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M03",
+      "passed": true,
+      "detail": {
+        "recomputed": 16.666666666666664,
+        "reported": 16.666666666666668,
+        "unit": "percent_of_GW"
+      }
+    },
+    {
+      "check": "metric_sources_M03",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M03",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M04",
+      "passed": true,
+      "detail": {
+        "recomputed": 1600000.0,
+        "reported": 1600000,
+        "unit": "USD_conditional"
+      }
+    },
+    {
+      "check": "metric_sources_M04",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M04",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M05",
+      "passed": true,
+      "detail": {
+        "recomputed": -10454000000,
+        "reported": -10454000000,
+        "unit": "USD_H1_2026"
+      }
+    },
+    {
+      "check": "metric_sources_M05",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M05",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M06",
+      "passed": true,
+      "detail": {
+        "recomputed": 25.94743925763264,
+        "reported": 25.94743925763264,
+        "unit": "percent"
+      }
+    },
+    {
+      "check": "metric_sources_M06",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M06",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M07",
+      "passed": true,
+      "detail": {
+        "recomputed": -19.81697696434206,
+        "reported": -19.81697696434206,
+        "unit": "percent_six_month_balance_change"
+      }
+    },
+    {
+      "check": "metric_sources_M07",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M07",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M08",
+      "passed": true,
+      "detail": {
+        "recomputed": 72,
+        "reported": 72,
+        "unit": "percent"
+      }
+    },
+    {
+      "check": "metric_sources_M08",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M08",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M09",
+      "passed": true,
+      "detail": {
+        "recomputed": 10597000000,
+        "reported": 10597000000,
+        "unit": "USD_principal"
+      }
+    },
+    {
+      "check": "metric_sources_M09",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M09",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M10",
+      "passed": true,
+      "detail": {
+        "recomputed": 61.37055837563452,
+        "reported": 61.37055837563452,
+        "unit": "percent"
+      }
+    },
+    {
+      "check": "metric_sources_M10",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M10",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M11",
+      "passed": true,
+      "detail": {
+        "recomputed": 0.0,
+        "reported": 0,
+        "unit": "percent"
+      }
+    },
+    {
+      "check": "metric_sources_M11",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M11",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M12",
+      "passed": true,
+      "detail": {
+        "recomputed": 198.00000000000006,
+        "reported": 198,
+        "unit": "basis_points"
+      }
+    },
+    {
+      "check": "metric_sources_M12",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M12",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M13",
+      "passed": true,
+      "detail": {
+        "recomputed": 204.0,
+        "reported": 204,
+        "unit": "basis_points"
+      }
+    },
+    {
+      "check": "metric_sources_M13",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M13",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M14",
+      "passed": true,
+      "detail": {
+        "recomputed": 213.0,
+        "reported": 213,
+        "unit": "basis_points"
+      }
+    },
+    {
+      "check": "metric_sources_M14",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M14",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M15",
+      "passed": true,
+      "detail": {
+        "recomputed": 80000000000,
+        "reported": 80000000000,
+        "unit": "USD_selected_gross_financing_ingress"
+      }
+    },
+    {
+      "check": "metric_sources_M15",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M15",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M16",
+      "passed": true,
+      "detail": {
+        "recomputed": 18000000000,
+        "reported": 18000000000,
+        "unit": "USD_cumulative"
+      }
+    },
+    {
+      "check": "metric_sources_M16",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M16",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_M17",
+      "passed": true,
+      "detail": {
+        "recomputed": 650000000,
+        "reported": 650000000,
+        "unit": "USD_2024"
+      }
+    },
+    {
+      "check": "metric_sources_M17",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "metric_edges_M17",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "all_15_casebook_sections_once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "casebook_source_tokens_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "required_file_PB_E_EXTERNAL_CASH_ANALYSIS.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "required_file_PB_E_SELECTIVE_PROTECTION.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "required_file_PB_E_FAILURE_MODES.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "required_file_PB_E_SOURCE_REGISTER.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "required_file_PB_E_INTEGRATION_HANDOFF.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "manifest_counts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "cutoff_observation_dates",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "sha256": {
+    "PB_E_EXTERNAL_CASH_ANALYSIS.md": "28d70de7a4228edd02ee2bf1b39e15621c34430be8697ff7590241ff0d537083",
+    "PB_E_FAILURE_MODES.md": "814ce59878950a7cd213fab5b616349be67b99edbe159b0fcb4b09c0e1c2e968",
+    "PB_E_INTEGRATION_HANDOFF.md": "16618b740ccd9b4754817cdc8b72f445b5397681ac35f915e19dfc9ce5b9243c",
+    "PB_E_NETWORK_CASEBOOK.md": "2fc161cead2edfb4ad272cca9214b84ee9e38686b1f465ee697033ccd1c5e302",
+    "PB_E_NETWORK_EDGES.json": "5f7ec7a66cc98f0c9f1152a194649b042e08383e62e24661ac293597409c5c2a",
+    "PB_E_REVIEW_LOG.md": "8aa9a309eee8b5071df697867319cd944f4724e159a6fb1d9e6eb8b146c889e3",
+    "PB_E_SELECTIVE_PROTECTION.md": "cfdf92508d87d02f3725294c6def538eb4f983254054e07608e77ff2ea1a487d",
+    "PB_E_SOURCE_REGISTER.md": "019f157e9cfea4de754d9ba5eb5cd8e42042bdefec06f54c50f99e40cd3c8a0c",
+    "README.md": "1e2c692a98617788f5fb5e1bcc91946b39fe5aba14c9be7949559991738359e8",
+    "validate_pb_e.py": "12fe592245cb38e331a895e8fd39edd96dc0a3337c5e2e11e99f3088c78d6629"
+  }
+}
