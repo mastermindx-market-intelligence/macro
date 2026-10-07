@@ -516,3 +516,9 @@ unmapped_baskets:
     reason: Equal-weight sector basket (GICS Real Estate). Not a theme.
   - id: us_sector_materials
     reason: Equal-weight sector basket (GICS Materials). Not a theme.
+
+# GMI theme hierarchy: DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK.
+hierarchy:
+  categories: []
+  micro_themes: []
+  parents: []
