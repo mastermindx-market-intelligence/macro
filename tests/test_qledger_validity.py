@@ -16,7 +16,12 @@ import subprocess
 
 import pytest
 
-from engine.k3e_eval_admission import EVAL0_CANONICAL_DIGEST, inspect_eval1_admission
+from engine.k3e_eval_admission import (
+    EVAL0_CANONICAL_DIGEST,
+    _canonical_json_digest,
+    _registration_reason,
+    inspect_eval1_admission,
+)
 from engine.qledger_validity import (
     SEVERITY_INVALID,
     SEVERITY_NOTE,
@@ -218,6 +223,7 @@ _K3E_ACTIVATION = _K3E_BASE / "eval1_activation_receipt.v1.json"
 
 _K3E_DEFAULT_WHEN = "2026-10-04T12:00:00-04:00"
 _K3E_AT_BOUNDARY = "2026-10-05T09:30:00-04:00"
+_K3E_EVAL1_COMMITTED_DIGEST = "1ca158a213fca3f90c5c4fdc1359d40bf9146f2400cb10d8caa202b18f293bd4"
 
 
 def _k3e_git(repo: Path, *args: str, when: str | None = None) -> str:
@@ -712,3 +718,30 @@ def test_k3e_eval1_t8_eval0_runs_first_and_calls_do_not_write(tmp_path: Path):
     after_admit = _k3e_snapshot(admitted_repo)
     assert admitted["admitted"] is True
     assert before_admit == after_admit
+
+
+def test_k3e_eval1_committed_preregistration_is_schema_valid_and_waits_for_owner_acceptance(
+    tmp_path: Path,
+):
+    raw = (_K3E_ROOT / _K3E_EVAL1).read_bytes()
+    payload = json.loads(raw.decode("utf-8"))
+    assert payload["registration_id"] == "K3E-EVAL-1-V1"
+    assert _registration_reason(payload) is None
+    assert _canonical_json_digest(raw) == _K3E_EVAL1_COMMITTED_DIGEST
+    assert payload["predecessor"]["canonical_digest_sha256"] == EVAL0_CANONICAL_DIGEST
+    assert payload["predecessor"]["prior_trial_budget_reset"] is False
+
+    repo = _k3e_source_repo(tmp_path)
+    target = repo / _K3E_EVAL1
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(raw)
+    _k3e_commit_main(repo, "freeze committed EVAL-1 preregistration bytes")
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 4))
+    assert result["admitted"] is False
+    assert result["outcome_access_allowed"] is False
+    assert result["reasons"] == ["OWNER_ACCEPTANCE_MISSING"]
+    assert result["eval0"] == {
+        "registration_id": "K3E-EVAL-0-V1",
+        "canonical_digest": EVAL0_CANONICAL_DIGEST,
+        "preserved": True,
+    }
