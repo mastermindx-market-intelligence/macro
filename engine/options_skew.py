@@ -1442,6 +1442,15 @@ _COMPARE_WINDOW_SESSIONS = 60
 _COMPARE_TRAIL_SESSIONS = 5
 _COMPARE_MIN_SESSIONS = 20
 _COMPARE_MAX_NAMES = 30
+# Macro Risk Detail default: liquid bellwethers spanning index beta, rates,
+# sectors, mega-cap, semis and high-beta leaders. Missing names simply fall out;
+# the remaining slots are filled by current selected-expiry chain coverage.
+_COMPARE_DEFAULT_UNIVERSE = (
+    "SPY", "QQQ", "IWM", "DIA", "TLT", "SMH", "XLF",
+    "NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA",
+    "AMD", "AVGO", "NFLX", "COIN", "MSTR", "MU", "INTC",
+    "JPM", "LLY", "ORCL", "PLTR", "ARM", "LRCX", "AMAT", "V", "CAT",
+)
 
 
 def _compare_finite(value):
@@ -1512,10 +1521,11 @@ def build_compare_payload(
         "max_names": int(max_names),
         "source_stale_days": None,
         "selection": {
-            "kind": "latest_session_selected_expiry_coverage",
+            "kind": "macro_bellwethers_then_selected_expiry_coverage",
             "detail": (
-                "up to max_names names with the largest current selected-expiry "
-                "chain row count; not a liquidity ranking"
+                "market-representative default bellwethers first; missing slots "
+                "filled by largest current selected-expiry chain row count; "
+                "fallback coverage is not a liquidity ranking"
             ),
         },
         "fast_rule": {
@@ -1643,10 +1653,19 @@ def build_compare_payload(
             "zone": "calm",
         })
 
-    candidates.sort(
-        key=lambda row: (-int(row.get("n_strikes") or 0), row["ticker"])
-    )
-    selected = candidates[:max_names]
+    by_ticker = {row["ticker"]: row for row in candidates}
+    selected = [
+        by_ticker[ticker]
+        for ticker in _COMPARE_DEFAULT_UNIVERSE
+        if ticker in by_ticker
+    ][:max_names]
+    selected_names = {row["ticker"] for row in selected}
+    if len(selected) < max_names:
+        fallback = sorted(
+            (row for row in candidates if row["ticker"] not in selected_names),
+            key=lambda row: (-int(row.get("n_strikes") or 0), row["ticker"]),
+        )
+        selected.extend(fallback[: max_names - len(selected)])
     movers = sorted(
         [row for row in selected if row["path_length"] > 0],
         key=lambda row: (-row["path_length"], row["ticker"]),
