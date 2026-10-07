@@ -1389,14 +1389,57 @@ def build_country_view(
     }
 
 
-def load_history(cc: str) -> pd.DataFrame | None:
-    path = config.data_dir() / "intl_regime" / f"{cc}_history.parquet"
-    if not path.exists():
-        return None
+def load_history_result(cc: str) -> dict[str, object]:
+    """Read the existing reconstruction once, retaining distinct failure states.
+
+    This internal receipt contains a DataFrame. Its acquisition clock and relative
+    artifact name are neither historical first-known times nor a source version
+    or disclosure grant. Public projections must apply their own admitted inputs.
+    """
+    result: dict[str, object] = {
+        "status": "failed", "market_id": None, "artifact_ref": None,
+        "read_at": datetime.now(timezone.utc).isoformat(),
+        "method_ref": None, "frame": None,
+    }
+    if (type(cc) is not str or len(cc) != 2 or not cc.isascii()
+            or not cc.isalpha() or not cc.isupper()):
+        result["status"] = "unsupported"
+        return result
     try:
-        return pd.read_parquet(path)
-    except Exception:  # noqa: BLE001 — a missing parquet engine/history degrades the chart
-        return None
+        countries = config.load()["intl"]["countries"]
+        if type(countries) is not dict:
+            return result
+        if cc not in countries:
+            result["status"] = "unsupported"
+            return result
+        result["market_id"] = cc
+        result["artifact_ref"] = f"intl_regime/{cc}_history.parquet"
+        path = config.data_dir() / "intl_regime" / f"{cc}_history.parquet"
+        try:
+            path.stat()
+        except FileNotFoundError:
+            result["status"] = "missing"
+            return result
+        frame = pd.read_parquet(path)
+        if (not isinstance(frame, pd.DataFrame)
+                or not isinstance(frame.index, pd.DatetimeIndex)
+                or frame.index.hasnans or frame.index.has_duplicates
+                or not frame.index.is_monotonic_increasing
+                or frame.columns.has_duplicates
+                or not {"growth_score", "inflation_score"}.issubset(frame.columns)):
+            result["status"] = "invalid"
+            return result
+        result["status"] = "empty" if frame.empty else "ready"
+        result["frame"] = frame
+    except Exception:  # noqa: BLE001 — fixed failure receipt, no private exception details
+        result["status"] = "failed"
+    return result
+
+
+def load_history(cc: str) -> pd.DataFrame | None:
+    """Compatibility wrapper for existing country dashboards."""
+    result = load_history_result(cc)
+    return result["frame"] if result["status"] in {"ready", "empty"} else None
 
 
 def validate_view(view: dict[str, Any]) -> None:

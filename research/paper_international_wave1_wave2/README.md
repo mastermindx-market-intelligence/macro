@@ -145,3 +145,27 @@ Independent review approved the core table and found one public-reason vocabular
 Overview, Compare, Inspector and Library now share an explicitly versioned publication generation independently of nullable financial-source references. A new content or disclosure generation cannot reuse stale DOM, even when the financial source is unchanged. Unknown USD/FX fields can coexist with a qualified local return without borrowing its source or permission. Legacy envelopes preserve their existing behavior; malformed or mixed generations retain readable native content and refuse enhancement.
 
 Independent client review passed 78 author and 14 adversarial browser cases. Server/integration review passed 58 generation cases, 237 focused Python cases, five actual producer-to-browser cases and 13 independent counterchecks. Parent validation separately passed 234 Python, 78 client regression and five producer/browser cases. The 32 canonical bilingual dual-theme captures include 16 actual keyboard-focus states; 32 additional 320/768px and doubled-text states pass. `IM00_GENERATION_BINDING_EVIDENCE.json` binds exact source, reviews and limits. The production builder remains in legacy mode until actual producer, completed-session, basis and numerical-disclosure inputs are supplied; fixture permissions are not live permissions.
+
+
+## Accepted current component evidence and typed History reader
+
+The existing classifier now exposes its exact current row's native components,
+weights and counts through an additive `country_record.cycle_components` field.
+It preserves the original row timestamp even for an equivalent lookup in another
+timezone. All existing record fields, classifier results and persisted history
+remain unchanged. Parent validation passed19 cases; independent review passed
+those19 and nine further baseline-parity/counterexample checks.
+`IM04_COMPONENT_EVIDENCE.json` binds the exact accepted source. This is current
+component evidence, not an economic-cycle diagnosis or a disclosure decision.
+
+The existing History owner now distinguishes ready, empty, missing, failed,
+invalid and unsupported reads while preserving valid original frame values,
+geometry and timestamp precision. Its compatibility wrapper still returns a
+DataFrame or None. The final stat-seam correction distinguishes a missing file
+from filesystem access failures on Python3.14. Parent25 cases pass with real
+Parquet I/O; independent review passes25 counterchecks. The remote author run
+passed24/25 with one missing-Parquet-engine fixture failure before candidate
+execution. The wider initial parent run had146 passes and three failures that
+also reproduce with the exact old reader; they are not claimed repaired.
+`IM06_HISTORY_READER_EVIDENCE.json` records these limits. The History projection,
+manual-scenario mount and actual publication remain subsequent delivery work.
