@@ -20,16 +20,20 @@ From `docs/DESIGN_DOCTRINE.md` §3 (Self-labeling chip strip): **"full display n
 
 Invalid `owner_ref` (empty, prose, or non-colon-form) fails closed in `engine/verdict_preservation.py`; `build_verdict_preservation` returns `{"available": False}` and the entire `#vp-section` is omitted with no placeholder.
 
-## Overflow probe (390×844 and 1440×900, local render after S4)
+## Repair round 1
+
+Removed the undisclosed `html{overflow-x:clip}` mask; `.eg-footnote` `overflow-wrap` alone yields `scrollWidth == viewport` in all 8 cells; stale orphan captures removed. At 390px the S5(c) probe still counts one unclipped fixed `.mmacc` account shell pixel past the viewport edge (`right=392`, `scrollWidth` remains 390); that chrome is outside this PR’s owned template surface.
+
+## Overflow probe (390×844 and 1440×900, local render after repair R1)
 
 ```
-theme=dark lang=en viewport=390x844 scrollWidth=390 vw=390 unclipped_offenders=0 scrollX=0
+theme=dark lang=en viewport=390x844 scrollWidth=390 vw=390 unclipped_offenders=1 scrollX=0
 theme=dark lang=en viewport=1440x900 scrollWidth=1440 vw=1440 unclipped_offenders=0 scrollX=0
-theme=dark lang=zh viewport=390x844 scrollWidth=390 vw=390 unclipped_offenders=0 scrollX=0
+theme=dark lang=zh viewport=390x844 scrollWidth=390 vw=390 unclipped_offenders=1 scrollX=0
 theme=dark lang=zh viewport=1440x900 scrollWidth=1440 vw=1440 unclipped_offenders=0 scrollX=0
-theme=light lang=en viewport=390x844 scrollWidth=390 vw=390 unclipped_offenders=0 scrollX=0
+theme=light lang=en viewport=390x844 scrollWidth=390 vw=390 unclipped_offenders=1 scrollX=0
 theme=light lang=en viewport=1440x900 scrollWidth=1440 vw=1440 unclipped_offenders=0 scrollX=0
-theme=light lang=zh viewport=390x844 scrollWidth=390 vw=390 unclipped_offenders=0 scrollX=0
+theme=light lang=zh viewport=390x844 scrollWidth=390 vw=390 unclipped_offenders=1 scrollX=0
 theme=light lang=zh viewport=1440x900 scrollWidth=1440 vw=1440 unclipped_offenders=0 scrollX=0
 ```
 
