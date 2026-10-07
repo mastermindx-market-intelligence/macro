@@ -147,6 +147,12 @@ def test_s2_freeze_writes_artifacts(tmp_path, monkeypatch):
         "scripts.research.freeze_mi_s2_theme_relative_intraday_registration.OUT_MD",
         out_md,
     )
+    # CI checkouts carry no origin/main ref; the base pin is exercised by the real
+    # freeze, not by this artifact-writing test.
+    monkeypatch.setattr(
+        "scripts.research.freeze_mi_s2_theme_relative_intraday_registration._base_pin",
+        lambda: "0" * 40,
+    )
     freeze(register_trial=False)
     assert out_json.exists()
     assert out_md.exists()
