@@ -419,4 +419,138 @@ def test_matched_terms_refuse_string_and_non_str():
 
 def test_match_bound_constants_are_pinned():
     assert read_port.EVIDENCE_MATCHED_TERMS_MAX == 16
-    assert read_port.EVIDENCE_MATCHED_TERM_MAX_CHARS == 64
+    assert read_port.EVIDENCE_MATCHED_TERM_MAX_CHARS == 120
+
+
+def _evidence_kwargs(**overrides):
+    payload = {
+        "report_id": "r1",
+        "evidence_state": "NOT_FOUND",
+        "coverage_state": "FULL_TEXT",
+        "source": _source(),
+        "passages": [],
+        "rio_state": "NOT_REQUESTED",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def test_evidence_result_absent_search_scope_is_byte_identical():
+    bare = read_port.evidence_result(**_evidence_kwargs())
+    explicit = read_port.evidence_result(
+        **_evidence_kwargs(
+            searched_char_count=None,
+            text_layer_state=None,
+            page_count=None,
+        )
+    )
+    assert json.dumps(bare) == json.dumps(explicit)
+    assert list(bare) == list(explicit)
+    assert list(bare) == [
+        "schema",
+        "ok",
+        "report_id",
+        "evidence_state",
+        "coverage_state",
+        "source",
+        "rio_state",
+        "passages",
+    ]
+
+
+@pytest.mark.parametrize(
+    ("searched", "layer", "pages"),
+    [
+        (0, "none", 1),
+        (12, "thin", 3),
+        (100, "full", 2),
+    ],
+)
+def test_evidence_result_search_scope_round_trip_and_key_order(searched, layer, pages):
+    result = read_port.evidence_result(
+        **_evidence_kwargs(
+            evidence_state="FOUND",
+            passages=[_passage()],
+            searched_char_count=searched,
+            text_layer_state=layer,
+            page_count=pages,
+        )
+    )
+    assert result["searched_char_count"] == searched
+    assert result["text_layer_state"] == layer
+    assert result["page_count"] == pages
+    assert list(result)[-4:] == [
+        "passages",
+        "searched_char_count",
+        "text_layer_state",
+        "page_count",
+    ]
+
+
+@pytest.mark.parametrize(
+    "coverage",
+    ["NO_TEXT_LAYER", "EXTRACTION_UNAVAILABLE", "PREFIX_ONLY_LEGACY"],
+)
+def test_search_scope_requires_full_text_coverage(coverage):
+    with pytest.raises(ValueError, match="FULL_TEXT"):
+        read_port.evidence_result(
+            **_evidence_kwargs(
+                evidence_state="UNAVAILABLE",
+                coverage_state=coverage,
+                searched_char_count=10,
+                text_layer_state="full",
+                page_count=1,
+            )
+        )
+
+
+@pytest.mark.parametrize("value", [True, -1, 1.0])
+def test_searched_char_count_refuses_non_literal_nonnegative(value):
+    with pytest.raises(ValueError):
+        read_port.evidence_result(
+            **_evidence_kwargs(
+                searched_char_count=value,
+                text_layer_state="full",
+                page_count=1,
+            )
+        )
+
+
+@pytest.mark.parametrize("layer", ["", "FULL", "unavailable", "bogus"])
+def test_search_scope_refuses_bad_text_layer(layer):
+    with pytest.raises(ValueError):
+        read_port.evidence_result(
+            **_evidence_kwargs(
+                searched_char_count=4,
+                text_layer_state=layer,
+                page_count=1,
+            )
+        )
+
+
+@pytest.mark.parametrize("pages", [0, True, None])
+def test_search_scope_refuses_bad_page_count(pages):
+    with pytest.raises(ValueError):
+        read_port.evidence_result(
+            **_evidence_kwargs(
+                searched_char_count=4,
+                text_layer_state="full",
+                page_count=pages,
+            )
+        )
+
+
+@pytest.mark.parametrize(
+    "present",
+    [
+        {"searched_char_count": 3},
+        {"text_layer_state": "full"},
+        {"page_count": 2},
+        {"searched_char_count": 3, "text_layer_state": "full"},
+        {"searched_char_count": 3, "page_count": 2},
+        {"text_layer_state": "thin", "page_count": 2},
+    ],
+)
+def test_search_scope_partial_blocks_are_refused(present):
+    with pytest.raises(ValueError, match="all present or all absent"):
+        read_port.evidence_result(**_evidence_kwargs(**present))

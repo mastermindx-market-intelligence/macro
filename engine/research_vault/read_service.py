@@ -60,6 +60,46 @@ def _bounded_matched_terms(raw: Any) -> Any:
     return [t[:cap] if isinstance(t, str) else t for t in raw][: read_port.EVIDENCE_MATCHED_TERMS_MAX]
 
 
+def _search_scope(hits: Any) -> dict[str, Any]:
+    """Copy corpus search scope onto a FULL_TEXT evidence result, or return {}.
+
+    Values are a projection of ``hits["source_binding"]``, never a recompute:
+    ``searched_char_count`` from ``stored_char_count``, ``text_layer_state``
+    from ``text_layer``, ``page_count`` from ``page_count``. A missing binding,
+    a non-dict binding, or any value that fails the port rule (wrong type,
+    layer outside ``EVIDENCE_TEXT_LAYER_STATES``, ``page_count`` None or < 1)
+    omits the block entirely. This never raises: a bad binding must not turn a
+    valid result into an error (Brain then reports coverage as unknown).
+
+    The block is still emitted when passages were dropped as
+    ``FULL_TEXT_PARTIAL``. The port reports what the corpus search covered;
+    that degradation stays on ``source.known_degradation``. F11's Brain treats
+    ``FULL_TEXT_PARTIAL`` as not-complete.
+    """
+    try:
+        if not isinstance(hits, Mapping):
+            return {}
+        binding = hits.get("source_binding")
+        if not isinstance(binding, dict):
+            return {}
+        searched = binding.get("stored_char_count")
+        layer = binding.get("text_layer")
+        pages = binding.get("page_count")
+        if type(searched) is not int or searched < 0:
+            return {}
+        if layer not in read_port.EVIDENCE_TEXT_LAYER_STATES:
+            return {}
+        if type(pages) is not int or pages < 1:
+            return {}
+        return {
+            "searched_char_count": searched,
+            "text_layer_state": layer,
+            "page_count": pages,
+        }
+    except Exception:
+        return {}
+
+
 @dataclass(frozen=True)
 class ServerReadContext(Mapping[str, Any]):
     """Trusted server-side caller context. Construction is server-side only."""
@@ -945,6 +985,11 @@ class ResearchReadService:
         else:
             evidence_state = "NOT_FOUND"
         source = self._with_degradation(catalog, now, extra)
+        # Search scope rides only a corpus search that actually ran. Passage
+        # drops (FULL_TEXT_PARTIAL) still emit it; see _search_scope.
+        scope: dict[str, Any] = {}
+        if hits.get("status") in {"matched", "no_matching_passage"}:
+            scope = _search_scope(hits)
         return read_port.evidence_result(
             report_id=checked,
             evidence_state=evidence_state,
@@ -952,4 +997,5 @@ class ResearchReadService:
             source=source,
             passages=passages,
             rio_state=rio_state,
+            **scope,
         )

@@ -85,7 +85,8 @@ DEGRADATION_CODES = frozenset({
 _MAX_TEXT_BYTES = 24_000
 _MAX_PASSAGES = 12
 EVIDENCE_MATCHED_TERMS_MAX = 16
-EVIDENCE_MATCHED_TERM_MAX_CHARS = 64
+EVIDENCE_MATCHED_TERM_MAX_CHARS = 120
+EVIDENCE_TEXT_LAYER_STATES = frozenset({"full", "thin", "none"})
 EVIDENCE_MATCH_FIELDS = (
     "start_char",
     "end_char",
@@ -379,8 +380,17 @@ def evidence_result(
     source: Mapping[str, Any],
     passages: Sequence[Mapping[str, Any]] = (),
     rio_state: str = "NOT_REQUESTED",
+    searched_char_count: int | None = None,
+    text_layer_state: str | None = None,
+    page_count: int | None = None,
 ) -> dict[str, Any]:
-    """Build the find_evidence result without allowing RIO to masquerade as evidence."""
+    """Build the find_evidence result without allowing RIO to masquerade as evidence.
+
+    The search-scope block (``searched_char_count``, ``text_layer_state``,
+    ``page_count``) is strictly all-or-none. All three absent leaves the result
+    byte-identical to a call that does not pass them. All three present is
+    allowed only when ``coverage_state`` is ``FULL_TEXT``.
+    """
     if evidence_state not in EVIDENCE_STATES:
         raise ValueError("unsupported evidence_state")
     if coverage_state not in COVERAGE_STATES:
@@ -391,6 +401,28 @@ def evidence_result(
         raise ValueError("source state is missing or unsupported")
     if len(passages) > _MAX_PASSAGES:
         raise ValueError("too many passages")
+    scope_present = sum(
+        value is not None
+        for value in (searched_char_count, text_layer_state, page_count)
+    )
+    emitted_scope: dict[str, Any] | None = None
+    if scope_present not in (0, 3):
+        raise ValueError("search scope fields must be all present or all absent")
+    if scope_present == 3:
+        if coverage_state != "FULL_TEXT":
+            raise ValueError("search scope requires coverage_state FULL_TEXT")
+        searched_char_count = _nonnegative_int(
+            searched_char_count, "searched_char_count"
+        )
+        if text_layer_state not in EVIDENCE_TEXT_LAYER_STATES:
+            raise ValueError("unsupported text_layer_state")
+        if type(page_count) is not int or page_count < 1:
+            raise ValueError("page_count must be an int >= 1")
+        emitted_scope = {
+            "searched_char_count": searched_char_count,
+            "text_layer_state": text_layer_state,
+            "page_count": page_count,
+        }
 
     rows: list[dict[str, Any]] = []
     for index, row in enumerate(passages):
@@ -409,7 +441,7 @@ def evidence_result(
     if evidence_state == "PARTIAL" and not rows:
         raise ValueError("PARTIAL requires the literal passages that were found")
 
-    return {
+    result = {
         "schema": EVIDENCE_RESULT_SCHEMA,
         "ok": True,
         "report_id": _require_text(report_id, "report_id", max_len=240),
@@ -419,6 +451,9 @@ def evidence_result(
         "rio_state": rio_state,
         "passages": rows,
     }
+    if emitted_scope is not None:
+        result.update(emitted_scope)
+    return result
 
 
 @runtime_checkable
