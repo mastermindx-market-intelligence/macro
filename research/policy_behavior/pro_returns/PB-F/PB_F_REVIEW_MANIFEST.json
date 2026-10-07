@@ -1,0 +1,122 @@
+{
+  "schema": "mastermind.pb_f_review_manifest.v1",
+  "operation_key": "PB-F-POLICY-BEHAVIOR-REDTEAM-20261007",
+  "scope": "Independent adversarial review of the five completed bounded research returns; no study rebuild, source-author branch modification, production action, merge or acceptance.",
+  "review_status": "IN_PROGRESS",
+  "research_only": true,
+  "parent_program_complete": false,
+  "current_procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "sha": "ee120e80f5d5e0344c453dd7cbf4108b9c429b38",
+    "schema": "mastermind.sol_skillpack.v1",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1,
+    "loaded": [
+      "INDEX.md",
+      "COLD_START.md",
+      "ACTIVE_EXECUTION.md",
+      "SESSION_RELIABILITY.md",
+      "WEB_CEO_DELEGATION.md",
+      "REVIEW_RETURN.md",
+      "CLOSEOUT.md",
+      "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md"
+    ]
+  },
+  "commission": {
+    "pr": 8560,
+    "head_sha": "7abc3dc596c5a6463effb37422bf9bd34bbdf1ba",
+    "path": "research/policy_behavior/handoffs/PB_F_ADVERSARIAL_REVIEW_PRO.md",
+    "historical_procedure_sha": "9a24ef2c4b27ac95a4d1f72f5eae1073657cd7c2",
+    "current_assignment": "Chris deliberately delivered the PB-F GitHub handoff to this session on 2026-10-07 UTC.",
+    "input_selection": "Exact five matching returned PRs recovered from GitHub under that assignment; completion records read at pinned heads."
+  },
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "branch": "research/policy-behavior-pbf-redteam-20261007",
+    "base_sha": "a146de40a8b3ba0475f17ddd87519187f17449a7",
+    "only_write_prefix": "research/policy_behavior/pro_returns/PB-F/"
+  },
+  "inputs": [
+    {
+      "lane": "PB-A",
+      "pr": 8568,
+      "head_sha": "a60c620b2761db74070929068c969aac8c2cee57",
+      "branch": "research/pb-a-policy-behavior-baseline-20261007",
+      "return_path": "research/policy_behavior/pro_returns/PB-A/",
+      "completion_record": "PB_A_COMPLETION.json",
+      "completion_observation": "Bounded research return complete; scientific deficiencies remain review inputs, not proof of parent completion.",
+      "changed_paths_within_lane": true
+    },
+    {
+      "lane": "PB-B",
+      "pr": 8573,
+      "head_sha": "1604552006b7a91ed5d0fa89c785a983478866ea",
+      "branch": "claude/pb-b-us-japan-constraint-20261007",
+      "return_path": "research/policy_behavior/pro_returns/PB-B/",
+      "completion_record": "PB_B_RETURN.md",
+      "completion_observation": "Bounded research return complete; scientific deficiencies remain review inputs, not proof of parent completion.",
+      "changed_paths_within_lane": true
+    },
+    {
+      "lane": "PB-C",
+      "pr": 8565,
+      "head_sha": "83b46fa22a1d79af86b4311483850fcc31d9aa56",
+      "branch": "research/pb-c-announcement-study-20261007",
+      "return_path": "research/policy_behavior/pro_returns/PB-C/",
+      "completion_record": "README.md",
+      "completion_observation": "Bounded research return complete; scientific deficiencies remain review inputs, not proof of parent completion.",
+      "changed_paths_within_lane": true
+    },
+    {
+      "lane": "PB-D",
+      "pr": 8574,
+      "head_sha": "df2091915159dab94f316718caa9b2662098eae4",
+      "branch": "research/pb-d-t2-event-quality-20261007",
+      "return_path": "research/policy_behavior/pro_returns/PB-D/",
+      "completion_record": "PB_D_ACCEPTANCE.md",
+      "completion_observation": "Bounded research return complete; scientific deficiencies remain review inputs, not proof of parent completion.",
+      "changed_paths_within_lane": true
+    },
+    {
+      "lane": "PB-E",
+      "pr": 8572,
+      "head_sha": "4720504205a7307630efe249a79c4bb02e5560da",
+      "branch": "research/pb-e-circular-financing-20261007",
+      "return_path": "research/policy_behavior/pro_returns/PB-E/",
+      "completion_record": "README.md",
+      "completion_observation": "Bounded research return complete; scientific deficiencies remain review inputs, not proof of parent completion.",
+      "changed_paths_within_lane": true
+    }
+  ],
+  "verification": {
+    "github_reads": "VERIFIED",
+    "source_branch_write": "VERIFIED_BY_ACTUAL_REVIEW_BRANCH_CREATION",
+    "unresolved_effects": [],
+    "source_reviews": "NOT_YET_COMPLETE",
+    "production_proof": "NOT_APPLICABLE"
+  },
+  "helper_tasks": [
+    {
+      "name": "audit_policy_a_b",
+      "scope": "PB-A and PB-B causal/method/clock review"
+    },
+    {
+      "name": "audit_announcements_c",
+      "scope": "PB-C selection/statistical/null review"
+    },
+    {
+      "name": "audit_t2_d",
+      "scope": "PB-D reproduction/prospective-design review"
+    }
+  ],
+  "helper_boundary": "Native in-session read-only research assistance. No Executive Job, M2 fabric dispatch, watcher, after-turn reasoning or external-message claim. Parent owns PB-E, cross-program judgment, adjudication and all GitHub writes.",
+  "next_action": "Complete claim-level source/clock/statistical review, reproduce discriminating calculations, adjudicate all material conclusions and publish bounded PB-G instructions.",
+  "do_not_redo": [
+    "Do not rerun PB-A..PB-E as new studies.",
+    "Do not treat draft source or this draft review as protected law or production authority.",
+    "Do not overwrite source returns.",
+    "Preserve retrospective, prospective, identified and unmeasured distinctions.",
+    "Do not combine counts, horizons, source families, dollars or same-shock observations as independent evidence."
+  ],
+  "finalization_classification": "MORE_WORK_EXISTS"
+}
