@@ -2,6 +2,41 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-07",
+      "tickers": [
+        "AAP",
+        "ACCV",
+        "APG",
+        "ASML",
+        "AZZ",
+        "CEG",
+        "CENT",
+        "CTVA",
+        "DKS",
+        "DOCS",
+        "EGBN",
+        "ESI",
+        "FAST",
+        "GPI",
+        "KMT",
+        "KRC",
+        "MATW",
+        "N",
+        "NXH",
+        "OMCL",
+        "PLUS",
+        "PSQ",
+        "RSP",
+        "SFM",
+        "ST",
+        "SYF",
+        "TRIP",
+        "VMI",
+        "WH",
+        "WWD"
+      ]
+    },
+    {
       "as_of": "2026-10-06",
       "tickers": [
         "ACCV",
@@ -166,31 +201,6 @@
         "UTHR",
         "WING",
         "XOM"
-      ]
-    },
-    {
-      "as_of": "2026-09-30",
-      "tickers": [
-        "ALGT",
-        "AMKR",
-        "CHRW",
-        "COHU",
-        "ELF",
-        "GAP",
-        "HBAN",
-        "LMAT",
-        "LUV",
-        "MAR",
-        "MIR",
-        "NVDA",
-        "PBH",
-        "REXR",
-        "STRL",
-        "TLN",
-        "TSN",
-        "TTMI",
-        "WHR",
-        "WS"
       ]
     }
   ]
