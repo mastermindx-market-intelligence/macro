@@ -35,7 +35,7 @@ affects:
 confidence: high
 reversibility: easy
 decided_by: chairman-chris
-decided_at: 2026-10-06
+decided_at: 2026-10-07
 ---
 
 The comparison remains display-only. "Fast" means unusually large five-session
