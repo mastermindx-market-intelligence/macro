@@ -13322,6 +13322,8 @@ jobs:
       # rest of this job; nothing in the suite is clock-dependent by construction.
       - name: theme exposure probe — beta/causal shift, share denominator, coverage floor, era
         run: TZ=UTC python -m pytest tests/test_theme_exposure_probe.py -q
+      - name: theme graph — W-C6 hierarchy_paths read-time composition (as-of, rights receipts, vendor-parent refusal)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_paths.py -q
       # The guard on the COMMITTED store, not only on its fixtures: --selftest proves it
       # can still see each incident, --strict proves the store shipped in this repo
       # satisfies the contract. A guard that only ever runs against its own fixtures is
