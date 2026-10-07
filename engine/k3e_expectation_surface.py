@@ -7,12 +7,14 @@ import math
 import re
 
 SCHEMA = "k3e.declared_capture_inspection.v1"
+EXPECTATION_STATES = {"CURRENT", "WITHDRAWN", "STALE"}
 OBSERVATIONS_PATH = "data/revisions/expectation_observations.parquet"
 ATTEMPTS_PATH = "data/revisions/expectation_attempts.parquet"
 STATUSES = {"success", "partial", "null", "http_401", "http_403",
             "http_429", "malformed", "error"}
 ESTIMATE_TYPES = {"average", "median", "high", "low", "growth", "year_ago"}
 BLOCKED_RIGHTS = {"RIGHTS_BLOCKED", "UNLICENSED", "PROHIBITED", "BLOCKED"}
+DISPLAY_ONLY_RIGHTS = {"DISPLAY_ONLY"}
 GROUP_FIELDS = ("collection_session_id", "attempt_id", "provider",
                 "provider_record_class", "provider_payload_hash",
                 "ticker_compat", "metric", "horizon_label_raw")
@@ -21,7 +23,8 @@ RAW_FIELDS = ("observation_id", "observation_type", "value", "missingness_reason
               "source_effective_at", "source_published_at", "provider_observed_at",
               "system_observed_at", "period_end", "fiscal_period", "fiscal_year",
               "unit", "currency", "basis", "issuer_ref", "security_ref",
-              "market_session", "aggregation_level", "contributor_id", "provenance_note")
+              "market_session", "aggregation_level", "contributor_id", "provenance_note",
+              "expectation_state", "expectation_state_as_of")
 ATTEMPT_FIELDS = ("attempt_id", "collection_session_id", "provider", "ticker_compat",
                   "attempted_at", "completed_at", "status", "http_status",
                   "latency_ms", "response_payload_hash", "safe_error_class",
@@ -57,6 +60,12 @@ def _clock(value):
         return None
 
 
+def _strict_clock(value):
+    if value is None:
+        return None
+    return parse_utc(value)
+
+
 def _iso(value):
     return value.isoformat().replace("+00:00", "Z")
 
@@ -75,8 +84,13 @@ def _count(value):
     return _number(value) and value >= 0 and int(value) == value
 
 
-def _raw(row):
-    return {key: row.get(key) for key in RAW_FIELDS}
+def _raw(row, mask_state=False):
+    raw = {key: row.get(key) for key in RAW_FIELDS}
+    if mask_state:
+        # A state whose clock is after the query cutoff was not knowable then.
+        raw["expectation_state"] = None
+        raw["expectation_state_as_of"] = None
+    return raw
 
 
 def _latest(items, clock_key):
@@ -145,10 +159,14 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
     pending_attempts = []
     invalid_attempts = []
     attempt_by_id = defaultdict(list)
+    provider_family_mismatches = 0
     # Start visibility and completion visibility are separate. No pending
     # classification may inspect the final outcome, including invalid labels.
     for row in att:
         if row.get("provider") != provider or row.get("ticker_compat") != ticker:
+            if (row.get("ticker_compat") == ticker
+                    and isinstance(row.get("provider"), str) and row["provider"] != provider):
+                provider_family_mismatches += 1
             continue
         start = _clock(row.get("attempted_at"))
         identity = row.get("attempt_id")
@@ -205,6 +223,12 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
     for row in obs:
         if any(row.get(key) != query[key] for key in
                ("provider", "ticker_compat", "metric", "horizon_label_raw")):
+            if (row.get("ticker_compat") == query["ticker_compat"]
+                    and row.get("metric") == query["metric"]
+                    and row.get("horizon_label_raw") == query["horizon_label_raw"]
+                    and isinstance(row.get("provider"), str)
+                    and row["provider"] != query["provider"]):
+                provider_family_mismatches += 1
             continue
         entries = attempt_by_id.get(row.get("attempt_id"), [])
         # Any pending receipt makes a reused attempt ID temporally ambiguous.
@@ -217,7 +241,17 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
         present = [clock for clock in captures if clock is not None]
         if not present or any(clock > cutoff for clock in present):
             continue
+        try:
+            published = _strict_clock(row.get("source_published_at"))
+        except QueryRefusal:
+            reasons["MALFORMED_SOURCE_PUBLISHED_AT"] += 1
+            continue
+        if published is not None and published > cutoff:
+            reasons["SOURCE_PUBLISHED_AFTER_CUTOFF"] += 1
+            continue
         relevant.append((row, captures))
+    if provider_family_mismatches:
+        reasons["PROVIDER_FAMILY_UNRESOLVED"] += provider_family_mismatches
     ids = Counter(row.get("observation_id") for row, _ in relevant)
     groups = defaultdict(list)
     excluded = 0
@@ -317,7 +351,38 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
                         and _number(chosen.get("value"))
                         and chosen.get("missingness_reason") is None
                         and coverage_valid and coverage["value"] > 0)
+        contributor_fault = (
+            chosen is not None and chosen.get("aggregation_level") == "single_contributor"
+            and not (isinstance(chosen.get("contributor_id"), str) and chosen["contributor_id"]))
+        state_faults = []
+        state = (chosen.get("expectation_state") if chosen is not None else None) or "CURRENT"
+        state_clock_value = (chosen.get("expectation_state_as_of")
+                             if state != "CURRENT" else None)
+        try:
+            state_clock = _strict_clock(state_clock_value)
+        except QueryRefusal:
+            state_clock = None
+        if state not in EXPECTATION_STATES:
+            state_faults.append("INVALID_EXPECTATION_STATE")
+        elif state != "CURRENT" and state_clock is None:
+            state_faults.append("INVALID_EXPECTATION_STATE_CLOCK")
+        # Only a state whose own clock is at or before the cutoff is visible.
+        state_visible = (state not in {"WITHDRAWN", "STALE"} or state_clock is None
+                         or state_clock <= cutoff)
+        public_state = state if state_visible else "CURRENT"
+        public_state_clock = state_clock if state_visible else None
         support_reasons = []
+        if contributor_fault:
+            support_reasons.append("CONTRIBUTOR_IDENTITY_UNAVAILABLE")
+            reasons["CONTRIBUTOR_IDENTITY_UNAVAILABLE"] += 1
+            is_supported = False
+        if state_faults:
+            support_reasons.append("INVALID_EXPECTATION_STATE_ENVELOPE")
+            reasons.update(state_faults)
+            is_supported = False
+        elif state in {"WITHDRAWN", "STALE"} and state_clock <= cutoff:
+            is_supported = False
+            support_reasons.append("EXPECTATION_STATE_UNAVAILABLE_AT_CUTOFF")
         if attempt["status"] != "success":
             support_reasons.append("ATTEMPT_NOT_SUCCESSFUL")
         if chosen is None:
@@ -334,14 +399,21 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
                   "derived_capture_availability_rule":
                       "max(system_observed_at,provider_observed_at,linked_attempt_completed_at)",
                   "age_seconds": (cutoff - availability).total_seconds(),
-                  "selected_raw_field": "average", "selected_observation": _raw(chosen) if chosen else None,
+                  "expectation_state": public_state,
+                  "expectation_state_as_of": _iso(public_state_clock) if public_state_clock else None,
+                  "expectation_state_age_seconds": (
+                      (cutoff - public_state_clock).total_seconds()
+                      if public_state_clock else None),
+                  "selected_raw_field": "average",
+                  "selected_observation": _raw(chosen, not state_visible) if chosen else None,
                   "provider_reported_covering_analyst_count":
                       coverage["value"] if coverage_valid else None,
-                  "covering_count_observation": _raw(coverage) if coverage else None,
+                  "covering_count_observation": _raw(coverage, not state_visible) if coverage else None,
                   "structurally_supported": is_supported, "support_reasons": support_reasons,
                   "attempt_status": attempt["status"], "attempted_at": attempt["attempted_at"],
                   "completed_at": attempt["completed_at"],
-                  "raw_fields": {name: _raw(items[0]) for name, items in sorted(fields.items())},
+                  "raw_fields": {name: _raw(items[0], not state_visible)
+                                 for name, items in sorted(fields.items())},
                   "evidence_use": "RAW_CAPTURE_INSPECTION_ONLY"}
         item = {"time": availability, "identity": identity, "public": public}
         snapshots.append(item)
@@ -355,6 +427,17 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
     latest_capture = _latest(snapshots, "time")
     last_supported = _latest(supported, "time")
     latest_attempt = _latest(attempt_views, "time")
+    # The governing state is the cutoff-visible state of the LATEST captured
+    # snapshot; a superseded historical withdrawal does not poison the surface.
+    # Equal-clock ties fail closed: any tied WITHDRAWN/STALE state governs.
+    newest_capture = max((item["time"] for item in snapshots), default=None)
+    governing_states = {item["public"]["expectation_state"] for item in snapshots
+                        if item["time"] == newest_capture
+                        and item["public"]["expectation_state_age_seconds"] is not None}
+    withdrawn_now = "WITHDRAWN" in governing_states
+    stale_now = "STALE" in governing_states
+    if withdrawn_now or stale_now:
+        last_supported = {"status": "UNAVAILABLE", "snapshot": None, "candidates": []}
     current = latest_capture["snapshot"]
     previous = last_supported["snapshot"]
     current_anchor = current["selected_observation"].get("period_end") if current and current["selected_observation"] else None
@@ -363,19 +446,30 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
                   "SAME_NATIVE_PERIOD" if current_anchor == previous_anchor else
                   "NATIVE_PERIOD_CHANGED_NO_REVISION_INFERENCE")
     raw_rights = sorted({row.get("rights_class") or "UNKNOWN" for row, _ in relevant})
-    rights_blocked = any(right in BLOCKED_RIGHTS for right in raw_rights)
+    rights_blocked = (any(right in BLOCKED_RIGHTS for right in raw_rights)
+                      or any(right in DISPLAY_ONLY_RIGHTS for right in raw_rights))
+    expectation_state = ("WITHDRAWN" if withdrawn_now else
+                         "STALE" if stale_now else "CURRENT")
     baseline_reasons = ["NORMALIZED_CONSUMER_ADMISSION_NOT_GRANTED"]
+    if withdrawn_now:
+        baseline_reasons.append("EXPECTATION_WITHDRAWN_AT_CUTOFF")
+    if stale_now:
+        baseline_reasons.append("EXPECTATION_STALE_AT_CUTOFF")
     if not rights_blocked:
         baseline_reasons.append("SOURCE_USE_RIGHTS_UNKNOWN")
     if rights_blocked:
         baseline_reasons.append("SOURCE_USE_RIGHTS_BLOCKED")
-    candidate = previous["selected_observation"] if previous else None
+        candidate = None
+    else:
+        candidate = previous["selected_observation"] if previous else None
     for field in ("issuer_ref", "security_ref", "unit", "currency", "basis", "period_end"):
         if candidate is None or candidate.get(field) is None:
             baseline_reasons.append("CANONICAL_" + field.upper() + "_UNAVAILABLE")
     if previous is None:
         baseline_reasons.append("NO_UNAMBIGUOUS_STRUCTURALLY_SUPPORTED_SNAPSHOT")
     baseline_status = ("RIGHTS_BLOCKED" if rights_blocked else
+                       "WITHDRAWN_UNAVAILABLE" if withdrawn_now else
+                       "STALE_UNAVAILABLE" if stale_now else
                        "UNESTIMABLE" if relevant else "UNAVAILABLE")
     payload = {"schema": SCHEMA, "query_identity": query_identity, "query": query,
                "source": provenance,
@@ -387,6 +481,7 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
                "latest_attempt": latest_attempt, "period_continuity": continuity,
                "freshness_policy": {"status": "UNAVAILABLE", "reason": "NO_ADMITTED_FRESHNESS_POLICY"},
                "normalized_baseline": {"value": None, "status": baseline_status,
+                                       "expectation_state": expectation_state,
                                        "rights_state": "RIGHTS_BLOCKED" if rights_blocked else "UNKNOWN",
                                        "source_declared_rights_labels": raw_rights,
                                        "reasons": baseline_reasons,

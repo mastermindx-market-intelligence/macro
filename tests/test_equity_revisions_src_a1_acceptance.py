@@ -47,7 +47,9 @@ def _lineage_row(session: str, minute: int) -> dict:
     ("currency", "EUR"),
     ("basis", "adjusted"),
 ])
-def test_populated_economic_fact_change_supersedes_without_mutating_prior(field, changed_fact):
+def test_populated_economic_fact_change_is_noncomparable_without_mutating_prior(field, changed_fact):
+    # DEC:ITP-K3E-BASIS-CHANGE-IS-NONCOMPARABLE-2026-10-07: a differing non-null
+    # unit, currency or basis is a new original, never a supersession.
     prior_row = _lineage_row("old", 0)
     prior = pd.DataFrame([prior_row], columns=revisions._OBSERVATION_COLUMNS)
     immutable_before = prior.copy(deep=True)
@@ -65,14 +67,35 @@ def test_populated_economic_fact_change_supersedes_without_mutating_prior(field,
     revisions._apply_lineage([changed], prior)
     assert changed["value"] == prior_row["value"]  # field-only discriminator
     assert changed[field] == changed_fact
-    assert changed["correction_state"] == "supersedes"
-    assert changed["supersedes_observation_id"] == prior_row["observation_id"]
+    assert changed["correction_state"] == "original"
+    assert not changed["supersedes_observation_id"]
     assert changed["observation_id"] == new_id
     assert new_id != prior_row["observation_id"]
     for other in {"unit", "currency", "basis"} - {field}:
         assert changed[other] == prior_row[other]
     pd.testing.assert_frame_equal(prior, immutable_before)
     assert prior.iloc[0][field] == prior_row[field]
+
+
+@pytest.mark.parametrize(("field", "enriched_fact"), [
+    ("unit", "USD/share"),
+    ("currency", "USD"),
+    ("basis", "GAAP"),
+])
+def test_null_to_value_economic_fact_enrichment_still_supersedes(field, enriched_fact):
+    # DEC:ITP-K3E-BASIS-CHANGE-IS-NONCOMPARABLE-2026-10-07 gates only a change
+    # between two non-null facts; a null prior enriched to a value still supersedes.
+    prior_row = _lineage_row("old", 0)
+    prior_row[field] = None
+    prior = pd.DataFrame([prior_row], columns=revisions._OBSERVATION_COLUMNS)
+    immutable_before = prior.copy(deep=True)
+
+    enriched = _lineage_row("enriched", 1)
+    enriched[field] = enriched_fact
+    revisions._apply_lineage([enriched], prior)
+    assert enriched["correction_state"] == "supersedes"
+    assert enriched["supersedes_observation_id"] == prior_row["observation_id"]
+    pd.testing.assert_frame_equal(prior, immutable_before)
 
 
 class _SourceClient:

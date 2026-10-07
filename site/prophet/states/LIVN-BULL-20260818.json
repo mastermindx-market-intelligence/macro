@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LIVN-BULL-20260818",
-  "asof": "2026-10-06",
-  "phase": "overtime",
-  "detection_phase": "overtime",
-  "management_confidence": 21.7,
-  "raw_confidence": 22.7,
-  "delta_vs_base": -38.3,
-  "recommended_action": "trim",
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "asof": "2026-10-07",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 10.1,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -49.9,
+  "recommended_action": "invalidated",
+  "human_state": "Invalidated",
   "components": {
     "validity": 0.0,
     "progress": 0.0,
-    "pace": 24.7,
+    "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.015,
+    "dist_to_stop_r": -0.416,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 108.9,
-    "p1": -0.6567,
-    "p2": -0.3284,
+    "horizon_pct_used": 111.1,
+    "p1": -0.9439,
+    "p2": -0.472,
     "p3": null,
-    "move_r": -0.985,
+    "move_r": -1.416,
     "mfe_r": 0.729,
-    "mae_r": -1.376
+    "mae_r": -1.416
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Phase: overtime \u2192 invalidated",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.540001525878907,
-  "_mae": -4.790000305175781,
+  "_mae": -4.929999694824218,
   "_max_p1": 0.4863294642488519,
   "_first_trigger_ts": "2026-08-18",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 49,
-  "tau": 1.0889
+  "days_elapsed": 50,
+  "tau": 1.1111
 }
