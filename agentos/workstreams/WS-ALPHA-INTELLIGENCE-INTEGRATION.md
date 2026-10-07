@@ -234,18 +234,23 @@ waves:
     status: todo
     depends_on: [k6]
 next_action: >
-  Information-to-Price build-out closed 2026-10-06 under the Chairman's administrative-override
-  ruling (DEC:ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06). Sixteen program
-  PRs are MERGED, the last four being #8337 EXP-1 (a9f815e1), records #8532 (4d470120),
-  Commission-2 #8402 (0f9bc8e8) and the PIT sample conformance harness #8534 (960cb183).
-  PID 8688 is inert and the GLM tier is available again. No build lane is open. Remaining gates
-  are real: (1) R1 G1-G5 owner-issued receipts; no workstream owns data/reference/,
-  data/symbol_directory/, data/revisions/ or collectors/equity_revisions.py, and the rights
-  vocabulary belongs to the shared-base owner, so the Chairman designates owners; (2) EVAL-1
-  positive outcome access P1-2/P1-5 stays with WS:EVAL-OS-MEASUREMENT-LAW; (3) vendor PIT
-  procurement; (4) capital and rank authority. R4 predictive admission and R5
-  prospective-consumer proof open only after (1) and (2). No K3-E merge authorizes consumer
-  wiring, Market OS UI, rank, gate, size, trade or deployment.
+  Information-to-Price build-out closed 2026-10-06; the seat is closing the remaining
+  owner gates itself under the Chairman's administrative-override ruling
+  (DEC:ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06). R1 is COMPLETE IN
+  DEGRADED FORM (#8582, 49741404; DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07): this workstream owns
+  data/reference/, data/symbol_directory/, data/openfigi/, the expectation revisions parquets and
+  collectors/equity_revisions.py, and every spec (e) exclusion stays in force. R5 is CLOSED-NOT-BUILT
+  (DEC:ITP-R5-NO-DURABLE-APPEND-2026-10-07): no existing data/ ledger admits a K3E receipt row and a
+  new store is excluded, so R5-BUILD does not open and the receipt stays reproducible on demand via
+  scripts/query_k3e_expectation_surface.py. In flight: EVAL-1 preregistration PR-1 (#8584, seat as
+  custodian under Chairman directive, never as Sol), then PR-2 owner acceptance + activation at or
+  after the first NYSE open after the PR-1 squash, then the forward evaluator; consuming the single
+  budgeted trial needs a separate seat ruling. Package E semantic/provider seams build under the
+  owner ruling on #8309, converting only the matching E1 xfails; GAP-E-RIGHTS stays with the #7870
+  rights-vocabulary owner unless an on-main vocabulary is reusable unchanged. Absolute gates: vendor
+  PIT procurement and capital/rank authority. No K3-E merge authorizes consumer wiring, Market OS UI,
+  rank, gate, size, trade or deployment; financial_influence, k3e_admissible and promotion_eligible
+  stay false.
 ---
 
 # Alpha Intelligence Expansion — integration workstream

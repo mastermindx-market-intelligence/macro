@@ -191,13 +191,6 @@ def test_e_b_family_mismatch_not_silently_merged():
     assert result["query"]["provider"] == "yfinance"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-FAMILY-SEAM: no explicit yfinance↔yahoo family seam refusal; rows are "
-        f"silently filtered at engine/k3e_expectation_surface.py:206-207 ({BASE_PIN})"
-    ),
-)
 def test_e_b_family_mismatch_surfaces_explicit_refusal():
     """E-B: family mismatch should surface a refusal reason, not only empty population."""
     rows, attempts = _pair("yahoo-row", provider="yahoo")
@@ -236,13 +229,6 @@ def test_e_c_coverage_denominator_includes_unresolved_and_null():
     assert resolved / attempted == 0.5
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-CLOCK: inclusion boundary uses provider_observed_at/system_observed_at only "
-        f"at engine/k3e_expectation_surface.py:215-218 ({BASE_PIN}), not source publication"
-    ),
-)
 def test_e_d_source_publication_after_cutoff_excluded_even_when_system_clock_before():
     """E-D: source clock after cutoff C excludes observation at C (system clock before C)."""
     rows, attempts = _pair(
@@ -269,13 +255,6 @@ def test_e_d_source_publication_before_cutoff_included_when_capture_clocks_befor
     assert snap is not None
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-RIGHTS: no rank-purpose rights field on observation seam; only rights_class "
-        f"labels at engine/k3e_expectation_surface.py:365-371 ({BASE_PIN})"
-    ),
-)
 def test_e_e_display_only_purpose_refused_for_rank_authority():
     """E-E: display-only purpose rights must refuse rank/authority consumption."""
     rows, attempts = _pair("display-only", rights_class="DISPLAY_ONLY")
@@ -285,13 +264,6 @@ def test_e_e_display_only_purpose_refused_for_rank_authority():
     assert baseline["status"] == "RIGHTS_BLOCKED"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-RIGHTS: contributor_id present on schema but not enforced at "
-        f"engine/k3e_expectation_surface.py:205-252 ({BASE_PIN})"
-    ),
-)
 def test_e_e_missing_contributor_identity_refused_or_flagged():
     """E-E: observations without contributor identity must be refused or flagged."""
     rows, attempts = _pair("no-contrib", contributor_id=None)
@@ -299,3 +271,90 @@ def test_e_e_missing_contributor_identity_refused_or_flagged():
     reasons = result["denominators"]["reason_counts"]
     assert any("CONTRIBUTOR" in key for key in reasons)
     assert result["last_structurally_supported_snapshot"]["snapshot"] is None
+
+
+def test_provider_mismatch_excludes_value_and_names_family_reason():
+    """E2-A: matching economics with a different provider stay ineligible but reasoned."""
+    rows, attempts = _pair("yahoo-row", provider="yahoo")
+    result = _payload(rows, attempts, provider="yfinance")
+    assert result["denominators"]["capture_clock_bounded_relevant_records"] == 0
+    # One mismatched attempt row plus both mismatched observation rows.
+    assert result["denominators"]["reason_counts"]["PROVIDER_FAMILY_UNRESOLVED"] == 3
+    assert result["latest_captured_snapshot"]["snapshot"] is None
+    assert result["last_structurally_supported_snapshot"]["snapshot"] is None
+
+
+def test_observation_only_provider_mismatch_is_counted_and_never_selected():
+    """E2-A: mismatched observation rows are reasoned even with no mismatched attempt."""
+    rows, attempts = _pair("yf-row")
+    other = [_observation("yahoo-row", provider="yahoo", value=9.75),
+             _count_row("yahoo-row", provider="yahoo")]
+    result = _payload(rows + other, attempts, provider="yfinance")
+    assert result["denominators"]["reason_counts"]["PROVIDER_FAMILY_UNRESOLVED"] == 2
+    for key in ("latest_captured_snapshot", "last_structurally_supported_snapshot"):
+        snap = result[key]["snapshot"]
+        assert snap is not None
+        assert snap["identity"]["provider"] == "yfinance"
+        assert snap["selected_observation"]["value"] == 2.5
+    assert "yahoo-row" not in repr(result)
+    assert "9.75" not in repr(result)
+
+
+def test_source_publication_visibility_is_bounded_by_query_cutoff():
+    """E2-B: late source publication is invisible; the same pre-cutoff mirror is visible."""
+    rows, attempts = _pair(
+        "late-source",
+        time="2026-10-02T10:00:00Z",
+        source_published_at="2026-10-02T13:00:00Z",
+        source_effective_at="2026-10-02T13:00:00Z",
+    )
+    late = _payload(rows, attempts, as_of=CUT)
+    assert late["denominators"]["capture_clock_bounded_relevant_records"] == 0
+    assert late["denominators"]["reason_counts"]["SOURCE_PUBLISHED_AFTER_CUTOFF"] == 2
+    assert late["last_structurally_supported_snapshot"]["snapshot"] is None
+
+    rows, attempts = _pair(
+        "timely-source",
+        time="2026-10-02T10:00:00Z",
+        source_published_at="2026-10-02T09:00:00Z",
+        source_effective_at="2026-10-02T09:00:00Z",
+    )
+    timely = _payload(rows, attempts, as_of=CUT)
+    assert timely["denominators"]["capture_clock_bounded_relevant_records"] == 2
+    assert timely["last_structurally_supported_snapshot"]["snapshot"] is not None
+
+
+def test_malformed_source_publication_clock_fails_closed():
+    """E2-B: a malformed publication clock cannot become earlier knowledge."""
+    rows, attempts = _pair("bad-clock", source_published_at="not-a-clock")
+    result = _payload(rows, attempts)
+    assert result["denominators"]["reason_counts"]["MALFORMED_SOURCE_PUBLISHED_AT"] == 2
+    assert result["latest_captured_snapshot"]["snapshot"] is None
+    assert result["last_structurally_supported_snapshot"]["snapshot"] is None
+
+
+def test_display_only_is_explicitly_refused_as_normalized_baseline():
+    """E2-C: display-only raw evidence cannot become rank/normalized authority."""
+    rows, attempts = _pair("display-only", rights_class="DISPLAY_ONLY")
+    result = _payload(rows, attempts)
+    baseline = result["normalized_baseline"]
+    assert baseline["value"] is None
+    assert baseline["status"] == "RIGHTS_BLOCKED"
+    assert baseline["rights_state"] == "RIGHTS_BLOCKED"
+    assert "SOURCE_USE_RIGHTS_BLOCKED" in baseline["reasons"]
+    assert result["last_structurally_supported_snapshot"]["snapshot"] is not None
+
+
+def test_missing_contributor_identity_is_refused_and_reasoned():
+    """E2-C: estimate identity is required even when a covering count is present."""
+    rows, attempts = _pair("no-contrib")
+    for row in rows:
+        if row["observation_type"] != "covering_analyst_count":
+            row["contributor_id"] = None
+    result = _payload(rows, attempts)
+    assert result["denominators"]["reason_counts"]["CONTRIBUTOR_IDENTITY_UNAVAILABLE"] == 1
+    assert result["last_structurally_supported_snapshot"]["snapshot"] is None
+    assert result["normalized_baseline"]["value"] is None
+    support = result["latest_captured_snapshot"]["snapshot"]["support_reasons"]
+    assert "CONTRIBUTOR_IDENTITY_UNAVAILABLE" in support
+    assert "INVALID_EXPECTATION_STATE_ENVELOPE" not in support

@@ -10486,7 +10486,7 @@ jobs:
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
       - name: research vault ingestion-spine + page unit tests
-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_read_port.py -q
+        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py -q
 
 
   research-vault-source-lineage:
@@ -14730,6 +14730,11 @@ jobs:
       # owner definition. This does not compute Availability or widen B1/B3 admission.
       - name: prophet strategy definition owner projection (B4 prerequisite only)
         run: python -m pytest tests/test_prophet_strategy_definition.py -q
+      # MI-S2 prospective registration binds the B4 session policy above (2026-2027
+      # era, early-close table) and freezes one TrialLedger config; it rides this
+      # code gate so a session-policy edit and the registration can red each other.
+      - name: MI-S2 theme-relative intraday registration (prospective; session-policy binding, one-trial ledger)
+        run: python -m pytest tests/test_mi_s2_theme_relative_intraday_registration.py -q
       - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
