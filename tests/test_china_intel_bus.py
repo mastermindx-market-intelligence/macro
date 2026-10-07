@@ -1192,6 +1192,75 @@ def test_visit_discovery_degraded_source_keeps_positive_evidence_but_no_quiet_ba
     assert snap["examples"][0]["baseline_state"] == "unavailable_source_health"
 
 
+def test_visit_discovery_blank_event_keys_are_preserved_but_not_counted():
+    keyed = _visit_row(
+        "F-keyed", "000005", "2026-10-01T09:00:00+08:00",
+        recorded="2026-10-01T02:00:00+00:00",
+    )
+    unkeyed = _visit_row(
+        "", "000005", "2026-10-01T09:00:00+08:00",
+        recorded="2026-10-01T02:00:00+00:00",
+    )
+    snap = bus._visit_discovery_snapshot(
+        [keyed, unkeyed, dict(unkeyed)],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    assert snap["n_persisted_rows"] == 3
+    assert snap["n_rows_observed"] == 1
+    assert snap["n_unkeyed_positive_rows"] == 2
+    assert len(snap["unkeyed_positive_evidence"]) == 2
+    assert snap["unkeyed_positive_evidence"][0]["sec_code"] == "000005"
+    assert snap["unkeyed_positive_evidence"][0]["event_identity_state"] ==         "unresolved_natural_key"
+
+    row = snap["examples"][0]
+    assert row["recent_count"] == 1
+    assert row["baseline_state"] == "blocked_unresolved_event_identity"
+    assert row["first_seen_state"] == "unknown_unresolved_event_identity"
+    assert snap["n_measured_baselines"] == 0
+    assert snap["n_first_observed_recent"] == 0
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] ==         "visit_event_identity_unresolved"
+
+
+def test_visit_discovery_only_blank_event_keys_never_mint_frequency():
+    row = _visit_row(
+        "", "000006", "2026-10-02T09:00:00+08:00",
+        recorded="2026-10-02T02:00:00+00:00",
+    )
+    snap = bus._visit_discovery_snapshot(
+        [row, dict(row)],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes=set(),
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+        reference_day=bus.date(2026, 10, 3),
+    )
+
+    assert snap["n_persisted_rows"] == 2
+    assert snap["n_rows_observed"] == 0
+    assert snap["n_unkeyed_positive_rows"] == 2
+    assert snap["n_recent_companies"] == 0
+    assert snap["examples"] == []
+    assert snap["n_measured_baselines"] == 0
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] ==         "visit_event_identity_unresolved"
+
+
 def test_visit_discovery_dedupes_announcement_identity_before_recurrence():
     same = _visit_row("F1", "000005", "2026-10-01T09:00:00+08:00")
     snap = bus._visit_discovery_snapshot(

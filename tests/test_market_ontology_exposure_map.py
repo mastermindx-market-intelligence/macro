@@ -15,7 +15,13 @@ from pathlib import Path
 import jsonschema
 import pytest
 
-from engine.market_ontology.exposure_map import ShockSpec, compose_exposure_map, to_json
+from engine.market_ontology.exposure_map import (
+    ShockSpec,
+    _STORE_META_PUBLIC_KEYS,
+    _public_store_meta,
+    compose_exposure_map,
+    to_json,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_PATH = REPO_ROOT / "contracts" / "market_ontology" / "exposure_map.v1.schema.json"
@@ -973,3 +979,65 @@ def test_reappearance_obeys_independent_knowledge_cutoff():
     assert before.themes[0].state == "NO_THEME_EDGES"
     assert after.themes[0].state == "OK"
     assert [c["company_node_id"] for c in after.themes[0].companies] == ["co:us:A"]
+
+
+def test_store_meta_provenance_is_an_allowlisted_projection():
+    LEAKY = {
+        "belief_time": "2026-01-15",
+        "computed_at": "2026-01-15T12:00:00Z",
+        "engine_version": "theme_graph.v1",
+        "era": "observed",
+        "lane": "daily",
+        "mode": "full",
+        "local_plane": {
+            "finviz": {"subthemes": 3, "member_edges": 9},
+            "ths": {"concepts": 5},
+        },
+        "unknown_ths_codes": ["885001"],
+        "unknown_ths_concepts": ["x"],
+        "ths_unmapped_concept_count": 314,
+        "per_suite": {"finviz_themes": {"rows": 1}},
+        "counts": {"edges": 1},
+        "company_mint_refusals": [{"symbol": "X"}],
+    }
+    m = _compose(FakeStore([], meta=LEAKY), _spec(["ltheme:finviz:nothing"]))
+    out = to_json(m)
+    store_meta = out["provenance"]["store_meta"]
+    assert set(store_meta) == set(_STORE_META_PUBLIC_KEYS)
+    for key in _STORE_META_PUBLIC_KEYS:
+        assert store_meta[key] == LEAKY[key]
+    for forbidden in (
+        "local_plane",
+        "unknown_ths_codes",
+        "unknown_ths_concepts",
+        "ths_unmapped_concept_count",
+        "per_suite",
+        "counts",
+        "company_mint_refusals",
+    ):
+        assert forbidden not in store_meta
+    prov_json = json.dumps(out["provenance"])
+    assert "local_plane" not in prov_json
+    assert "unknown_ths" not in prov_json
+    assert "per_suite" not in prov_json
+    assert "company_mint_refusals" not in prov_json
+    jsonschema.validate(out, _schema())
+
+
+def test_store_meta_projection_edge_cases():
+    assert _public_store_meta(None) is None
+    assert _public_store_meta(["a"]) is None
+    assert _public_store_meta("x") is None
+    assert _public_store_meta({"ok": True}) == {}
+    src = {"belief_time": "2026-01-01", "local_plane": {"finviz": {}}}
+    projected = _public_store_meta(src)
+    projected["belief_time"] = "mutated"
+    assert src["belief_time"] == "2026-01-01"
+
+    class MetaErrorStore(FakeStore):
+        def read_meta(self):
+            raise RuntimeError("meta unavailable")
+
+    m = _compose(MetaErrorStore([]), _spec(["ltheme:finviz:x"]))
+    assert m.provenance["store_meta"] is None
+    jsonschema.validate(to_json(m), _schema())

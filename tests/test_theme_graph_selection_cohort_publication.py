@@ -630,3 +630,212 @@ def test_cn_incomplete_reason_ancestry_refuses_without_archive(tmp_path):
     assert refused["reason_codes"] == ["REQUIRED_REASON_SOURCE_ANCESTRY_UNAVAILABLE"]
     assert list(tmp_path.rglob("*.json.gz")) == []
     assert json.loads(served) == served_before
+
+
+def test_actual_cn_typed_refusal_reaches_product_projection_only(tmp_path):
+    from types import SimpleNamespace
+
+    module = ast.parse((ROOT / "scripts/build_china.py").read_text())
+    target = None
+    for node in ast.walk(module):
+        if isinstance(node, ast.Try) and any(
+            isinstance(x, ast.ImportFrom) and x.module == "engine.theme_graph.selection_cohort_publication"
+            for x in node.body
+        ):
+            target = node
+    assert target is not None
+    writers = [
+        node
+        for node in ast.walk(module)
+        if isinstance(node, ast.Try)
+        and any(
+            isinstance(x, ast.ImportFrom) and x.module == "engine.theme_graph.selection_cohort_projection"
+            for x in node.body
+        )
+    ]
+    assert len(writers) == 1
+    writer = writers[0]
+    library, served = cn_documents()
+    site = tmp_path / "site"
+    factordata = site / "factordata"
+    factordata.mkdir(parents=True)
+    (factordata / "china_standouts.json").write_bytes(library)
+    vm = {"setups": json.loads(served), "cn_selection_cohort_internal": None}
+    namespace = dict(
+        vm=vm,
+        json=json,
+        site=site,
+        factordata=factordata,
+        _w3c_cn_fallback=False,
+        _cn_w3c_refusal=None,
+        _compose_cn_w3c_reason_ancestry=lambda **kwargs: [],
+        config=SimpleNamespace(data_dir=lambda: tmp_path / "internal"),
+        log=SimpleNamespace(warning=lambda *args: None, info=lambda *args: None),
+    )
+    exec(compile(ast.Module(body=[target], type_ignores=[]), "<actual CN shared finalization seam>", "exec"), namespace)
+    exec(compile(ast.Module(body=[writer], type_ignores=[]), "<actual CN product projection seam>", "exec"), namespace)
+    assert vm["cn_selection_cohort_internal"] is None
+    refusal = namespace["_cn_w3c_refusal"]
+    assert refusal["status"] == "UNAVAILABLE"
+    assert refusal["reason_codes"]
+    product_path = site / "neuralwebdata" / "selection_cohort" / "cn.json"
+    assert product_path.exists()
+    product = json.loads(product_path.read_text())
+    expected_reason = "SOURCE_UNAVAILABLE:" + ",".join(refusal["reason_codes"])
+    assert product["unavailable_reason"] == expected_reason
+    assert product["availability"] == {"status": "UNAVAILABLE", "overlap": "UNAVAILABLE"}
+    assert product["selected"] == [] and product["n_selected"] == 0
+    assert not (tmp_path / "internal").exists()
+
+
+def test_actual_us_typed_refusal_reaches_product_projection_only(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    monkeypatch.setattr(
+        api(),
+        "consume_us_source",
+        lambda *a, **k: api()._result("CAPTURE_RIGHTS_UNAVAILABLE"),
+    )
+    module = ast.parse((ROOT / "scripts/build_site.py").read_text())
+    first = None
+    fresh = None
+    for node in ast.walk(module):
+        if isinstance(node, ast.If) and ast.unparse(node.test) == "_us.exists()":
+            first = node
+        if (
+            isinstance(node, ast.Try)
+            and node.body
+            and isinstance(node.body[0], ast.Assign)
+            and ast.unparse(node.body[0]).startswith("_us_path =")
+        ):
+            fresh = node
+    assert first is not None and fresh is not None
+    log = SimpleNamespace(warning=lambda *args: None)
+    namespace = dict(
+        json=json,
+        site=tmp_path,
+        _us=tmp_path / "factordata/us_standouts.json",
+        us_standouts=None,
+        _us_w3c=None,
+        _us_w3c_refusal=None,
+        _us_w3c_binding=None,
+        log=log,
+        config=SimpleNamespace(data_dir=lambda: tmp_path / "internal"),
+        _attach_board_display_chips=lambda site, doc: doc,
+    )
+    (tmp_path / "factordata").mkdir()
+    (tmp_path / "factordata/us_standouts.json").write_bytes(raw())
+    exec(compile(ast.Module(body=[first], type_ignores=[]), "<actual first US source seam>", "exec"), namespace)
+    assert namespace["_us_w3c"] is None
+    assert namespace["_us_w3c_refusal"]["reason_codes"] == ["CAPTURE_RIGHTS_UNAVAILABLE"]
+    prefix = []
+    for node in fresh.body:
+        prefix.append(node)
+        if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "_fresh_su" for t in node.targets):
+            break
+    exec(compile(ast.Module(body=prefix, type_ignores=[]), "<actual fresh US source seam>", "exec"), namespace)
+    assert namespace["_fresh_w3c"] is None
+    assert namespace["_fresh_w3c_refusal"]["reason_codes"] == ["CAPTURE_RIGHTS_UNAVAILABLE"]
+    writers = [
+        node
+        for node in ast.walk(module)
+        if isinstance(node, ast.Try)
+        and any(
+            isinstance(x, ast.ImportFrom) and x.module == "engine.theme_graph.selection_cohort_projection"
+            for x in node.body
+        )
+    ]
+    assert len(writers) == 1
+    writer = writers[0]
+    us_product = tmp_path / "neuralwebdata" / "selection_cohort" / "us.json"
+    exec(
+        compile(ast.Module(body=[writer], type_ignores=[]), "<actual US product projection seam>", "exec"),
+        dict(
+            site=tmp_path,
+            vm={"us_selection_cohort_internal": None},
+            _us_w3c_refusal=namespace["_us_w3c_refusal"],
+            log=SimpleNamespace(warning=lambda *args: None),
+        ),
+    )
+    assert json.loads(us_product.read_text())["unavailable_reason"] == "SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE"
+    exec(
+        compile(ast.Module(body=[writer], type_ignores=[]), "<actual US product projection seam>", "exec"),
+        dict(
+            site=tmp_path,
+            vm={"us_selection_cohort_internal": None},
+            _us_w3c_refusal=None,
+            log=SimpleNamespace(warning=lambda *args: None),
+        ),
+    )
+    assert json.loads(us_product.read_text())["unavailable_reason"] == "WRAPPER_MISSING"
+
+
+def test_typed_refusal_never_enters_the_internal_binding():
+    site_src = (ROOT / "scripts/build_site.py").read_text()
+    cn_src = (ROOT / "scripts/build_china.py").read_text()
+    for path, tree in (
+        (ROOT / "scripts/build_site.py", ast.parse(site_src)),
+        (ROOT / "scripts/build_china.py", ast.parse(cn_src)),
+    ):
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if (
+                        isinstance(target, ast.Subscript)
+                        and isinstance(target.value, ast.Name)
+                        and target.value.id == "vm"
+                        and isinstance(node.value, ast.Name)
+                        and node.value.id.endswith("_refusal")
+                    ):
+                        pytest.fail(f"{path}: vm subscript assigned from refusal at line {node.lineno}")
+            if isinstance(node, ast.Call):
+                for kw in node.keywords:
+                    if kw.arg in ("us_selection_cohort_internal", "cn_selection_cohort_internal"):
+                        if isinstance(kw.value, ast.Name) and kw.value.id.endswith("_refusal"):
+                            pytest.fail(f"{path}: render kwarg from refusal at line {node.lineno}")
+    assert site_src.count('vm["us_selection_cohort_internal"] = _fresh_w3c\n') == 1
+    assert site_src.count("us_selection_cohort_internal=_us_w3c,") == 1
+    assert cn_src.count('vm["cn_selection_cohort_internal"] = _cn_w3c\n') == 1
+    assert cn_src.count('vm["cn_selection_cohort_internal"] = None\n') == 1
+    site_tree = ast.parse(site_src)
+    fresh_internal_assign = None
+    refresh_refusal_assign = None
+    stmt_parent_lists = {}
+
+    class _StmtParents(ast.NodeVisitor):
+        def generic_visit(self, node):
+            body = getattr(node, "body", None)
+            if isinstance(body, list):
+                for stmt in body:
+                    if isinstance(stmt, ast.stmt):
+                        stmt_parent_lists[stmt] = body
+            for field, value in ast.iter_fields(node):
+                if isinstance(value, list):
+                    for item in value:
+                        if isinstance(item, ast.AST):
+                            self.visit(item)
+                elif isinstance(value, ast.AST):
+                    self.visit(value)
+
+    _StmtParents().visit(site_tree)
+    refresh_refusal_count = 0
+    for node in ast.walk(site_tree):
+        if isinstance(node, ast.Assign) and any(
+            isinstance(t, ast.Subscript)
+            and isinstance(t.value, ast.Name)
+            and t.value.id == "vm"
+            and isinstance(t.slice, ast.Constant)
+            and t.slice.value == "us_selection_cohort_internal"
+            for t in node.targets
+        ):
+            if isinstance(node.value, ast.Name) and node.value.id == "_fresh_w3c":
+                fresh_internal_assign = node
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
+            target = node.targets[0]
+            if isinstance(target, ast.Name) and target.id == "_us_w3c_refusal":
+                if isinstance(node.value, ast.Name) and node.value.id == "_fresh_w3c_refusal":
+                    refresh_refusal_assign = node
+                    refresh_refusal_count += 1
+    assert refresh_refusal_count == 1
+    assert fresh_internal_assign is not None and refresh_refusal_assign is not None
+    assert stmt_parent_lists.get(fresh_internal_assign) is stmt_parent_lists.get(refresh_refusal_assign)

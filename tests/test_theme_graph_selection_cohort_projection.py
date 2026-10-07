@@ -310,7 +310,9 @@ def test_t7_writer_paths_market_guard_and_builder_seams(tmp_path):
         write_product_projection(tmp_path, "xx", None)
     us_src = (ROOT / "scripts/build_site.py").read_text()
     cn_src = (ROOT / "scripts/build_china.py").read_text()
-    assert us_src.count('write_product_projection(site, "us", vm.get("us_selection_cohort_internal"))') == 1
-    assert cn_src.count('write_product_projection(site, "cn", vm.get("cn_selection_cohort_internal"))') == 1
+    assert us_src.count('write_product_projection(site, "us", vm.get("us_selection_cohort_internal") or _us_w3c_refusal)') == 1
+    assert cn_src.count('write_product_projection(site, "cn", vm.get("cn_selection_cohort_internal") or _cn_w3c_refusal)') == 1
+    assert us_src.count('write_product_projection(site, "us", vm.get("us_selection_cohort_internal"))') == 0
+    assert cn_src.count('write_product_projection(site, "cn", vm.get("cn_selection_cohort_internal"))') == 0
     ast.parse(us_src)
     ast.parse(cn_src)

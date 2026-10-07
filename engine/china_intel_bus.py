@@ -525,17 +525,44 @@ def _visit_discovery_snapshot(
     # not disappear behind keep-FIRST and silently restore absence authority.
     raw_rows = list(visits or [])
 
+    # A missing natural event key is positive evidence but cannot authorize a
+    # visit count. Legacy/schema-drifted rows with blank announcement_id may be
+    # duplicates of one another or of a keyed observation, so preserve them in
+    # a bounded raw-evidence lane and exclude them from recurrence/frequency math.
+    unkeyed_positive_rows = [
+        row for row in raw_rows if not _visit_text(row.get("announcement_id"))
+    ]
+    unkeyed_positive_evidence = [
+        {
+            "announcement_id": None,
+            "sec_code": _visit_company_code(row.get("sec_code")) or None,
+            "sec_code_raw": _visit_text(row.get("sec_code")) or None,
+            "sec_name": _visit_text(row.get("sec_name")) or None,
+            "exchange": _visit_text(row.get("exchange")) or None,
+            "title": _visit_text(row.get("title")) or None,
+            "source_published_at": _visit_text(row.get("source_published_at")) or None,
+            "system_recorded_at": _visit_text(row.get("system_recorded_at")) or None,
+            "visitor_class": _visit_text(row.get("visitor_class")) or None,
+            "coverage_state": "unknown_event_identity",
+            "event_identity_state": "unresolved_natural_key",
+            "may_rank": False,
+            "may_trade": False,
+        }
+        for row in unkeyed_positive_rows[:8]
+    ]
+
     # Defensive natural-key dedup. The owner already enforces keep-FIRST on
-    # announcement_id; this prevents a malformed fixture/consumer from turning
-    # one filing into apparent recurrence.
+    # announcement_id; only rows with a usable event key enter countable
+    # recurrence/frequency state.
     deduped: list[dict] = []
     seen_ids: set[str] = set()
     for row in raw_rows:
         aid = _visit_text(row.get("announcement_id"))
-        if aid:
-            if aid in seen_ids:
-                continue
-            seen_ids.add(aid)
+        if not aid:
+            continue
+        if aid in seen_ids:
+            continue
+        seen_ids.add(aid)
         deduped.append(row)
 
     # A readable positive row without a canonical company key is evidence, not
@@ -790,6 +817,7 @@ def _visit_discovery_snapshot(
             and not has_unscoped_open
             and not unscoped_positive_rows
             and not identity_conflicts
+            and not unkeyed_positive_rows
         ),
         "global_negative_authority_blocker": (
             "coverage_exception_ledger_unreadable" if not exception_ledger_readable
@@ -797,6 +825,7 @@ def _visit_discovery_snapshot(
             else "unscoped_coverage_exception" if has_unscoped_open
             else "visit_company_identity_conflict" if identity_conflicts
             else "visit_company_identity_unresolved" if unscoped_positive_rows
+            else "visit_event_identity_unresolved" if unkeyed_positive_rows
             else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
             else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
             else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
@@ -828,7 +857,13 @@ def _visit_discovery_snapshot(
             else "owner_clock_order_invalid" if not owner_clock_order_valid
             else None
         ),
+        "n_persisted_rows": len(raw_rows),
         "n_rows_observed": len(deduped),
+        "n_unkeyed_positive_rows": len(unkeyed_positive_rows),
+        "unkeyed_positive_evidence": unkeyed_positive_evidence,
+        "unkeyed_positive_evidence_truncated": (
+            len(unkeyed_positive_rows) > len(unkeyed_positive_evidence)
+        ),
         "n_unscoped_positive_rows": len(unscoped_positive_rows),
         "unscoped_positive_evidence": unscoped_positive_evidence,
         "unscoped_positive_evidence_truncated": (
@@ -931,6 +966,8 @@ def _visit_discovery_snapshot(
             baseline_state = "blocked_conflicting_company_identity"
         elif unscoped_positive_rows:
             baseline_state = "blocked_unresolved_company_identity"
+        elif unkeyed_positive_rows:
+            baseline_state = "blocked_unresolved_event_identity"
         elif company_exception:
             baseline_state = "blocked_company_coverage_exception"
         elif not health_clock_order_valid:
@@ -977,6 +1014,8 @@ def _visit_discovery_snapshot(
             first_seen_state = "unknown_conflicting_company_identity"
         elif unscoped_positive_rows:
             first_seen_state = "unknown_unresolved_company_identity"
+        elif unkeyed_positive_rows:
+            first_seen_state = "unknown_unresolved_event_identity"
         elif not health_clock_order_valid:
             first_seen_state = "unknown_owner_clock_order_invalid"
         elif source_status != "ok":
