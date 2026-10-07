@@ -446,3 +446,14 @@ to that exact head, conclude CI, merge through the existing admission law,
 verify both served assets/page stamps plus fresh session receipts and actual
 retained-China-price witnesses, then write the final PR receipt explicitly
 superseding this historical pending-release state.
+
+
+## CI-definition freshness refresh — 2026-10-07T10:26Z
+
+Main `38f437d50f631ed8cb6e4fecd71d74d6a0402594` changed `.github/ci/legacy-jobs.yml` after candidate `243fd187b1656c3e411481950e8135188a31f8ab` began hosted proof. The canonical `ProofFreshness` rule marks any change under `.github/ci/` stale, so the earlier run cannot authorize this merge. Its archived observation at 10:27:44Z had ten of twelve packs successful, two still running, and the complete contract-delta gate successful; it is not claimed as concluded green.
+
+The root integrated pinned main with a normal conflict-free merge. The only shared owned file movement was the CI manifest: `unrun-factor-research` gained the existing R4 V2 receipt help/test steps, and `unrun-intl-libraries` gained the existing theme-graph probation hierarchy test. An independent read-only reviewer found no new holiday imports or feature overlap. A parsed three-way comparison verified all 248 job declarations and every field against the prior candidate plus exactly those two incoming step lists. The other 91 task-owned blobs remained byte-identical. The integrated manifest SHA256 is `75d68e86615ba8be412c0f04d1895b6edb64ba4569ff81ffcc1e5546b634ac3c`; its normal validate-only gate passes for all 176 code jobs.
+
+The holiday implementation, deployment restart boundary, accepted live/theme asset hashes, canonical HK/Canada browser receipts and historical fixture baseline are unchanged. Their existing proof remains applicable. New hosted CI is required on the refreshed immutable candidate because the CI definition changed. The old read-only observer is stopped before replacing its expected candidate; no GitHub job is manually cancelled and no proof assertion or merger rule is relaxed.
+
+This checkpoint remains **BUILT_NOT_PROVEN**. The parent remains the sole commit/push/merge/release owner and will complete concluded exact-candidate CI, fresh canonical admission, squash merge, served-source and asset verification, fresh session receipts and actual retained China price witnesses before issuing a release receipt.
