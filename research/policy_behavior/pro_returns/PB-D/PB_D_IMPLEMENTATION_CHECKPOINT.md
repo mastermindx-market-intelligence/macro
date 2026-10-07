@@ -98,7 +98,7 @@ The archive probe is an offline absence demonstration, **not a newly reconstruct
 
 Initial owner-regression collection exposed a missing FastAPI import in the isolated environment. Installing the existing owner's test dependencies resolved it; no owner code was changed. The first CI-scope check was attempted before new files were tracked and correctly refused to infer a closure. The files were then staged explicitly and the scope check repeated. The test census initially omitted the quality unittest class because its name did not start with `Test`; renaming the class to `TestQualityReceipts` made all four suites discoverable, and the full native PB-D run passed again. These are setup receipts, not suppressed test failures.
 
-A fresh upstream preflight resolved `origin/main` to `bb7847a33c5fcaa3d2963e3c6be18d3628493966`. No owned PB-D or native owner code changed upstream. The shared CI manifest adds an unrelated Research Vault F3 test; preserve it while integrating current main before pushing.
+A fresh upstream preflight resolved `origin/main` to `bb7847a33c5fcaa3d2963e3c6be18d3628493966`. No owned PB-D or native owner code changed upstream. The shared CI manifest adds an unrelated Research Vault F3 test. Normal merge commit `2421a8b062147d89d0ab35cd80e2dfbeff0755ad` preserves it. All reviewed PB-D file hashes remained unchanged; the native 158-test/41-subtest run and 50-path CI closure passed again on the integrated source tree.
 
 ## Release progress and next action
 
