@@ -100,11 +100,35 @@ Initial owner-regression collection exposed a missing FastAPI import in the isol
 
 A fresh upstream preflight resolved `origin/main` to `bb7847a33c5fcaa3d2963e3c6be18d3628493966`. No owned PB-D or native owner code changed upstream. The shared CI manifest adds an unrelated Research Vault F3 test. Normal merge commit `2421a8b062147d89d0ab35cd80e2dfbeff0755ad` preserves it. All reviewed PB-D file hashes remained unchanged; the native 158-test/41-subtest run and 50-path CI closure passed again on the integrated source tree.
 
+## CI findings, repairs and repeated verification
+
+The first complete implementation CI run, [37577805771](https://github.com/mastermindx-market-intelligence/macro/actions/runs/37577805771), tested candidate `8b7d4367a847c2d991511f4067e3ca9f01bdf5ac`. The PB-D job passed in pack 10, but the overall run failed in packs 0 and 6. These were candidate integration defects.
+
+- **Pack 6, import hygiene:** direct-file execution lacked the required repository-root pin. The exact-base replay passed. The repair inserts this checkout unconditionally before owner imports and adds a fresh-process regression that starts in another directory, with a raising foreign `engine` package ahead of the already-present repository on `PYTHONPATH`.
+- **Pack 0, control-plane contracts:** the new exclusive PB-D job was missing from the explicit curated registry. The repair adds its one membership entry and explanatory comment. Existing members, assertions, scope paths and packing ceilings remain intact. The original exact-base replay **timed out**; the remaining 14 semantic steps **were not run** in that failed job.
+
+Independent reviews accepted both bounded repairs. The registration review distinguishes the number of exclusive jobs in the CI plan from the measured PB-D dependency closure. The final integrated source has **50 concrete import/read paths and zero uncovered paths**; the full path listing and immutable source identity are retained in the verification JSON.
+
+| Repeated native check | Result |
+|---|---|
+| Entire import-hygiene logical job | 4 logging tests and 11 import-pinning tests passed |
+| All four PB-D suites, including the new subprocess regression | 159 tests and 41 subtests passed; 200 JUnit checks, zero failures, errors or skips |
+| PB-D repeat after current-main integration | 159 tests and 41 subtests passed in 6.27 seconds |
+| Entire CI control-plane logical job | All 16 semantic steps exited successfully, including the 14 previously unrun steps |
+| Native hosted-runner packing step | 590 passed, 2 skipped; the skips remain explicitly recorded |
+| Direct-file CLI replay from another directory | Exit 0; byte-identical synthetic report SHA-256 `0d98a85d9932323e30975e2540a758b7f0ebd3898e3fcdbf43ee265e6049a593` |
+
+Repair commit `e8ea7846905be85872780521c1b175778485f367` is integrated with main `36f61afb71657279fb6b85f9ea64f99f7e09093a` through source commit `7a8e8c5999935a886d4a13b9f1f53a953612f17e`, tree `4a19e26a410d762ddc714ff9ff9d5afb48114211`. Unrelated Research Vault F9 and Entry Radar CI additions are preserved. The quality, cohort and evaluation module bytes are unchanged. The integrated parent is derived from the immutable merge commit, because the common Git repository's `origin/main` ref can advance while other workspaces fetch.
+
+Original failure signatures, artifact identities, base-replay dispositions, successful original PB-D CI proof, new source hashes, independent reviews and all 16 native step commands/results are retained in `PB_D_IMPLEMENTATION_VERIFICATION.json`.
+
+The final publication preflight observed main `aa1ab61ee655e3750061258e7d77488e443c12c1`. Its only shared CI change adds an unrelated MI-S2 test to an existing job; no PB-D runtime/read dependency, curated registry file or control-plane job changed. The natively verified source remains pinned above. Hosted candidate CI will validate the combined PR merge tree with that upstream work.
+
 ## Release progress and next action
 
-PR #8576 currently carries the initial research checkpoint commit `401d51258afc44c9c5cbd21c04586e2c575024a2`. The full implementation is locally verified; publication, concluded CI and merge verification are still pending at this checkpoint. The PR is draft and unarmed during active edits.
+The repaired source and native verification are complete at this checkpoint. The enclosing Git revision records publication of these receipts. Concluded CI for that final candidate, normal merge and fresh-main replay remain pending; [PR #8576](https://github.com/mastermindx-market-intelligence/macro/pull/8576) will record the observed release result after it exists.
 
-Next: publish the complete reviewed implementation and research receipts, conclude exact-head CI, then complete the normal merge and fresh-main source verification. No result here enrolls the prospective study or supplies missing real review/price/calendar attestations.
+Next: publish this final repaired candidate, conclude its binding CI, complete the normal merge, then compare the released source and all 50 runtime/read dependencies with one immutable fresh-main snapshot and replay the direct-file CLI. No result here enrolls the prospective study or supplies missing real review, price or calendar attestations.
 
 `MISSION_COMPLETE: false`  
 `SESSION_STATE: MORE_WORK_EXISTS`  

@@ -30,6 +30,8 @@ python -m scripts.query_pb_d_event_quality run \
 
 Choose a new output pathname on every run. The consumer refuses to overwrite an existing file or replace its input; omitting `--output` prints JSON to stdout. Invalid JSON, unsupported fields, contradictory supplied outcome clocks and attempted activation return exit code 2 with a `REFUSED` reason.
 
+Direct file execution is also supported: invoke `python /absolute/path/to/macro/scripts/query_pb_d_event_quality.py run` from another working directory, using absolute `--input` and `--output` paths. The entry script locates its own checkout before importing repository code.
+
 The example is wholly fictional. It contains one Q1 issuer, two Q0 issuers, one unknown-exposure issuer, one original matched pair and an unused control. Its weekday schedule is explicitly labeled **not a real exchange calendar**. Its board, source bytes, reviewer receipts, prices, future outcomes and validation references are synthetic. The numeric primary increment is +4 percentage points; this is a known-number integration check, not a market observation or evidence for the investment hypothesis. Coverage is 3/4, and the study is not enrolled.
 
 When the matched control is omitted, the other original eligible control can enter the rematched sensitivity. Removing a control's outcome instead drops the original pair from the primary estimate without rematching. Those two cases deliberately exercise different rules.
