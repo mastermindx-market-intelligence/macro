@@ -761,7 +761,7 @@ def test_the_guard_catches_two_paths_that_disagree(world, tmp_path):
     _set_tree(world, {"aicompute": ["AAA"]})
     view = _build(world)
     nodes = [dict(n) for n in view.nodes]
-    nodes.append({**nodes[0], "node_id": "theme:other", "kind": "theme",
+    nodes.append({**nodes[0], "node_id": "theme:other", "kind": "theme", "tier": "theme",
                   "market_scope": "global", "source_meta": None})
     edges = [dict(e) for e in view.edges]
     concept = f"ltheme:ths:{KNOWN_CODE}"
@@ -782,7 +782,7 @@ def test_a_mapping_that_moved_is_not_a_disagreement_with_itself(world, tmp_path)
     _set_tree(world, {"aicompute": ["AAA"]})
     view = _build(world)
     nodes = [dict(n) for n in view.nodes]
-    nodes.append({**nodes[0], "node_id": "theme:old", "kind": "theme",
+    nodes.append({**nodes[0], "node_id": "theme:old", "kind": "theme", "tier": "theme",
                   "market_scope": "global", "source_meta": None})
     concept = f"ltheme:ths:{KNOWN_CODE}"
     basket = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"

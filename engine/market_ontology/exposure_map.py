@@ -150,6 +150,24 @@ def _str_or_none(value: Any) -> str | None:
     return None if _is_null(value) else str(value)
 
 
+def _non_theme_tier_for_theme_node(row: Mapping[str, Any] | None) -> str | None:
+    """Return a hierarchy tier when ``row`` is kind=theme but not tier theme.
+
+    Missing tier counts as 'theme' only for legacy fixtures — DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK.
+    """
+    if row is None:
+        return None
+    if row.get("kind") != "theme":
+        return None
+    tier = row.get("tier")
+    if _is_null(tier):
+        return None
+    tier_str = str(tier)
+    if tier_str == "theme":
+        return None
+    return tier_str
+
+
 # --- typed nulls (§4.5 / §4.6) ---------------------------------------------------
 
 _REASONS: dict[str, tuple[str, str]] = {
@@ -673,10 +691,22 @@ def _compose_theme(
             "etf_proxies": None, "abstentions": [],
         }
 
+    theme_node_row = node_names.get(theme_id)
+    non_theme_tier = _non_theme_tier_for_theme_node(theme_node_row)
+    if non_theme_tier is not None:
+        return {
+            "theme_node_id": theme_id, "theme_plane": None, "rights_family": None,
+            "name": {"en": None, "zh": None}, "state": "IDENTITY_UNRESOLVED",
+            "unavailable": _unavailable(
+                "IDENTITY_UNRESOLVED", subject_id=theme_id,
+                detail=f"non_theme_tier:{non_theme_tier}",
+            ),
+            "companies": None, "company_count": None, "distinct_security_count": None,
+            "etf_proxies": None, "abstentions": [],
+        }
+
     theme_plane = "local_theme" if _is_local_theme_id(theme_id) else "canonical_theme"
     theme_family = family_resolver(theme_id)
-
-    theme_node_row = node_names.get(theme_id)
     theme_name = {
         "en": _str_or_none(theme_node_row.get("name_en")) if theme_node_row else None,
         "zh": _str_or_none(theme_node_row.get("name_zh")) if theme_node_row else None,
@@ -966,6 +996,7 @@ def compose_exposure_map(
         raw_nodes = _records(store.read_nodes())
     except Exception:
         raw_nodes = []
+    # Full node rows (kind, tier, names) keyed by node_id for theme composition.
     node_names: dict[str, Mapping[str, Any]] = {}
     for row in raw_nodes:
         node_id = row.get("node_id")

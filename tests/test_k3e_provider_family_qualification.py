@@ -16,6 +16,10 @@ from engine.k3e_expectation_surface import (
 BASE_PIN = "13910854fbd652dcdf975301bdc8c6728c2e4767"
 
 ALIAS_KNOWN_AT = "2026-06-01T00:00:00Z"
+# A lawful post-alias as_of: on/after ALIAS_KNOWN_AT AND on/after the
+# 2026-06-02T10:00:00Z capture it queries
+# (DEC:ITP-K3E-BASIS-CHANGE-IS-NONCOMPARABLE-2026-10-07).
+POST_ALIAS_AS_OF = "2026-06-02T12:00:00Z"
 CUT = "2026-10-02T12:00:00Z"
 PROVENANCE = {
     "source_revision": "a" * 40,
@@ -137,7 +141,8 @@ def _payload(rows, attempts, **kwargs):
 @pytest.mark.xfail(
     strict=True,
     reason=(
-        "GAP-E-ALIAS: no ticker-P alias-as-of cutoff resolver; query uses ticker_compat "
+        "GAP-E-ALIAS: pending Data OS owner-issued as-of identity crosswalk "
+        "(DEC:ITP-K3E-BASIS-CHANGE-IS-NONCOMPARABLE-2026-10-07); query uses ticker_compat "
         f"equality only at engine/k3e_expectation_surface.py:206-207 ({BASE_PIN})"
     ),
 )
@@ -156,13 +161,6 @@ def test_e_a_alias_p_unresolved_before_alias_known_date():
     assert result["denominators"]["capture_clock_bounded_relevant_records"] >= 1
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-ALIAS: no ticker-P alias-as-of cutoff resolver; query uses ticker_compat "
-        f"equality only at engine/k3e_expectation_surface.py:206-207 ({BASE_PIN})"
-    ),
-)
 def test_e_a_alias_p_resolves_on_or_after_alias_known_date():
     """E-A on/after D: alias-known observations resolve for as_of >= D."""
     rows, attempts = _pair(
@@ -171,7 +169,8 @@ def test_e_a_alias_p_resolves_on_or_after_alias_known_date():
         security_ref="SEC:PALO-P",
         issuer_ref="ISS:PALO",
     )
-    result = _payload(rows, attempts, as_of=ALIAS_KNOWN_AT, ticker="P")
+    assert POST_ALIAS_AS_OF >= ALIAS_KNOWN_AT
+    result = _payload(rows, attempts, as_of=POST_ALIAS_AS_OF, ticker="P")
     snap = result["last_structurally_supported_snapshot"]["snapshot"]
     assert snap is not None
     assert snap["selected_observation"]["security_ref"] == "SEC:PALO-P"

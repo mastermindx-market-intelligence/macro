@@ -3107,8 +3107,8 @@ def test_receipt_carries_era_migrations_total_alongside_this_run(receipt: dict,
 def test_an_unresolved_name_mints_nothing() -> None:
     """A venue this repo cannot evidence produces a REPORT line, never a guessed id."""
     resolutions = [
-        BUILD.Resolution("CBOE", None, None, None, "fixture", None,
-                         "exchange code 'Z' has no MIC in KNOWN_MICS"),
+        BUILD.Resolution("FAKEZ", None, None, None, "fixture", None,
+                         "exchange code 'Q' has no MIC in KNOWN_MICS"),
     ]
     rows, ids, notes, refusals, pending, lost, exc_lost, gmi_refusals = BUILD.mint_master_rows(
         resolutions, [], "2026-08-13T00:00:00"
@@ -3446,14 +3446,23 @@ def test_gmi_us_preferred_refused_never_minted() -> None:
     assert [r["code"] for r in gmi_refusals] == ["not_common_equity_preferred"]
 
 
-# 4: unsupported venue — real committed data, single expected instance (CBOE/Z), and
-# the closed MIC list is asserted unchanged (widening it is out of scope, §4/§13).
-def test_gmi_us_unsupported_venue_real_data_cboe(receipt: dict) -> None:
-    assert BUILD.EXCHANGE_MIC == {"NASDAQ": "XNAS", "N": "XNYS", "A": "XASE"}
-    block = receipt["us_gmi_admission"]
-    cboe = [r for r in block["refusals_this_run"] if r["symbol"] == "CBOE"]
-    assert len(cboe) == 1
-    assert cboe[0]["code"] == "unsupported_venue"
+# 4: Cboe BZX (otherlisted exchange code Z) is a real US equities venue.  The
+# canonical identity seam maps it to ISO 10383 MIC BATS; CBOE must resolve rather
+# than remaining the one current S&P member with no security identity.
+def test_cboe_bzx_exchange_code_z_resolves_to_bats_mic() -> None:
+    assert BUILD.EXCHANGE_MIC["Z"] == "BATS"
+    rows = BUILD.resolve_universe(
+        {"CBOE": {}},
+        {},
+        {"CBOE": "Z"},
+        "2026-10-05",
+    )
+    assert len(rows) == 1
+    row = rows[0]
+    assert row.reason is None
+    assert row.venue_mapped is True
+    assert row.listing_key is not None
+    assert row.listing_key.render() == "US-BATS-CBOE"
 
 
 # 5: listing present, CIK absent -> no_registrant_cik (fixture — empirically zero
