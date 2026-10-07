@@ -167,11 +167,16 @@ waves:
 next_action: >
   Integrator on the XH chain (C3 integration/acceptance only, Sol issuecomment-5991567681): consume
   the Slack ceremony receipt against DEC:A2-SHARED-RELAY-RECEIPT-AND-INSTALL-FIRST (shared Executive Relay path by Chairman intent, Mastermind #1265 at 6a85e0d6; fields in Mastermind #1143 issuecomment-6028181298; the dedicated-path delta issuecomment-6027309991 applies only if the Chairman re-selects A0BUDHZ137A), and only after the install and the C1 rebind (#784 rebind-release, a new source dependency); consume
-  the install receipt of the Chairman-assigned release owner (Mastermind #1143 issuecomment-6027192883) for its ONE serialized exact-source install (the #1220 merge SHA while its hold stands, at or after protected 6a85e0d6 so it carries #1265 enroll-shared), with Gate B, receipt, acceptance and the live 1.5.0 / 12-tool census
-  and verify it read-only; one bounded watcher on #1143, #811, the terminal state of #1220
-  and mission-path master; no reviews or queue actions on #1220 while Sol owns its gate; no lane on the
-  host, the Slack app or service-control.sh; final acceptance at the XH-5 outcome; #811 parked;
-  no host act.
+  the install receipt for the exact-source install of the generation that contains the #784 merge (Mastermind #1143 issuecomment-6032388623).
+  Status on 2026-10-07: #1220 merged as ee120e80 and #811 merged as 1fc040f. A Sol session installed control 1fc040f on M2
+  (issuecomment-6032187810) before #784 merged. A read-only launchctl check shows C1 still on its own 4c148709 generation
+  and the network MCP still on 5b244a2b / 1.4.0.
+  #784's runbook runs rebind-release from the installed release tree it binds to, never from a source checkout,
+  so 1fc040f cannot host the rebind. Control and C1 stay unloaded from that install until the rebind completes.
+  Then verify read-only: Gate B, the receipt, and, after the network MCP release owner publishes V3 1.5, the live
+  1.5.0 / 12-tool census against v3-1.5-tool-census.json d7c5395e.
+  Keep one bounded watcher on #1143, the terminal state of #784 and mission-path master. No reviews or queue actions on
+  others' PRs, and no lane on the host, the Slack app or service-control.sh. Final acceptance at the XH-5 outcome. No host act.
 landmines:
   - Full Autonomy V1, multi-worker concurrency, consultation and session_summon are held by the Chairman convergence ruling (Mastermind #1143 issuecomment-5976964871) until the parenting loop is proven; a green PR or an installed release does not lift it.
   - "QUEUED is admission only; delivery is not ACK; ACK is not START; CI is not acceptance; merged is not installed; installed is not armed."
@@ -182,6 +187,7 @@ landmines:
   - "Never add channels:history to the Executive Relay app before C1 is rebound (#784 rebind-release) to an installed release at or after 6a85e0d6. The live C1 runs its own 4c148709 generation, which install.sh never rebinds. That generation refuses any scope set other than chat:write + groups:history at every start (C1_SLACK_IDENTITY_REFUSED), so SOL_STATE publication would stop at the next C1 start. Never enroll A2 by both the shared and the dedicated route (DEC:A2-SHARED-RELAY-RECEIPT-AND-INSTALL-FIRST)."
   - "The Slack-admin ceremony is a human/UI gate. On the current shared path it is: add channels:history to the existing Executive Relay app and reinstall, after the 6a85e0d6+ install and the C1 rebind. On a Chairman-re-selected dedicated path it is: app-level token deletion, two-scope reinstall, bot invite. The A2 enrollment (enroll-shared on the native host, or the bot token on stdin/native TTY for the dedicated path; --enable-w3c) and the ChatGPT Business app recreate+republish (or connecting the private mastermind-web-ceo plugin, if a fresh read ever shows it visible; it is UNVERIFIED after a NOT_FOUND metadata read, Mastermind #1143 issuecomment-6025513145) are human/UI gates; a Web or seat session stops before them and never routes around them."
 do_not_redo:
+  - "Do not re-post the C3 1fc040f readback (Mastermind #1143 issuecomment-6032388623); amend it in place only. Do not treat the 1fc040f control install as the C1-rebind install, and never run rebind-release from a source checkout."
   - "Do not re-post the #1219 C3 acceptance (Mastermind #1219 issuecomment-6025565788) the Slack receipt delta (Mastermind #1143 issuecomment-6027309991) or the shared-relay integration note (Mastermind #1143 issuecomment-6028181298); #1219 is merged as 760f51b5 and its controller hardening is not reopened."
   - "Do not reopen Mastermind #1191 (merged 2026-10-04T20:59Z as 5b244a2b) or #1227; the three convergence blockers are closed on master and installed."
   - "Do not repeat the receipt-criterion ruling (#1143 issuecomment-5985445813) or the writer liveness reconciliation (#1143 issuecomment-5979777147)."

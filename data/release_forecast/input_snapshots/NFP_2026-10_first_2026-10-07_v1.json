@@ -1,14 +1,14 @@
 {
-  "prediction_id": "NFP:2026-09:first:2026-09-06:v1",
-  "asof": "2026-09-06",
+  "prediction_id": "NFP:2026-10:first:2026-10-07:v1",
+  "asof": "2026-10-07",
   "features": {
-    "nfp_change_lag1": 217.0,
-    "nfp_change_lag2": -126.0,
-    "nfp_change_lag3": -17.0,
+    "nfp_change_lag1": -31.0,
+    "nfp_change_lag2": 217.0,
+    "nfp_change_lag3": -126.0,
     "claims_survey_week_icsa": null,
     "claims_survey_week_ccsa": null,
-    "withheld_tax_yoy": -19.12895514206535,
-    "awhman_mom": 0.0,
+    "withheld_tax_yoy": -7.8488958105229045,
+    "awhman_mom": 0.20000000000000284,
     "adp_change": null
   },
   "legs": {
@@ -21,5 +21,5 @@
     "nfp_change_lag3": "present",
     "withheld_tax_yoy": "unrevised"
   },
-  "inputs_hash": "8d9babb007f7aed52a90c1d25981d021c0f37614389a46295b03327bd607ba25"
+  "inputs_hash": "ec04ab24b20bc224b357688fae98b6681eca375107c2917039d48d1faf634f8a"
 }

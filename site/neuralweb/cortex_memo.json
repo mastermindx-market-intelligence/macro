@@ -1,33 +1,35 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-10-06T14:51:21+00:00",
-  "summary": "Context-only shadow deliberation: the US backdrop is mixed and transitional, with Q2 Reflation confidence only 0.04. The central tension is restrictive, rising real yields and contracting liquidity/credit stress versus intact leadership, calm volatility, long gamma, and systematic funds adding. Breadth remains weak (27.1% above 50DMA; 44.7% above 200DMA), but the risk radar is advisory rather than a calibrated downside edge: its caution-state measured 21-session pullback rate is 16.0% versus a 17.8% base rate. No signal, ranking, sizing, or trade conclusion is warranted.",
+  "as_of": "2026-10-07T10:22:47+00:00",
+  "summary": "Context-only committee read: the world state is mixed, with growth stress receding but no all-clear because the dominant rates/inflation pressure remains elevated. The confirmed Q2/Reflation label has only 0.02 confidence and its own raw axes point toward Q1; restrictive rising real yields, a bear steepener, confirmed credit stress, neutral-hollow liquidity, poor breadth and a safety-driven dollar conflict with the benign interpretation. Leadership remains intact, volatility is normalizing and the measured caution-state 21-day drawdown rate is not above base, so this is a contradiction-rich attention regime rather than a directional forecast. No signal, ranking, sizing instruction or trade is originated.",
   "what_fired": [
-    "Shadow attention: bonds/FX cross-asset readings contradict the displayed US Q2 equity regime; review until the divergence resolves for three consecutive sessions.",
-    "Shadow attention: rates scare 90.5 and credit scare 81.1 are loud, while the calibrated caution-state drawdown rate remains below base; preserve the distinction between warning intensity and demonstrated edge.",
-    "Shadow attention: two expired Long Treasuries theses remain open even though their stated adverse condition is present\u2014real 10-year yield 2.92% with a bear steepener.",
-    "Shadow attention: four expired semiconductor-underweight theses remain open while semiconductor momentum and AI/technology leadership are currently strong.",
-    "Registered hypothesis for forward grading: under Q2, bonds/FX divergence combined with contracting liquidity may be associated with breadth remaining weak over the next 10 sessions; hit-rate gate 0.60, minimum n=20, review date 2026-10-23."
+    "Rates/inflation scare remains elevated at 84.8; credit stress remains elevated at 80.7.",
+    "Breadth is weak: 29.3% of S&P 500 members are above the 50-day average, 47.3% above the 200-day average, and breadth divergence is present.",
+    "Cross-asset confirmation diverges from the equity regime; FX dollar and rates-credit both contradict Q2.",
+    "Real 10-year yield is 2.95%, rising and at a five-year extreme; the curve is bear-steepening.",
+    "Liquidity is neutral-hollow: RRP buffer is exhausted, composition is mechanical and stress confirmation remains present.",
+    "Factor panel is immature with only 11 dates; Pair G is dormant and no factor-attention history exists.",
+    "A conditional-regime hypothesis was submitted for formal metabolism testing: breadth below 30% with intact leadership and subsequent 21-day RSP-minus-SPY excess return."
   ],
-  "contradictions_review": "Five contradiction edges were present. The material macro pair is bonds/FX versus the equity Q2 regime, also represented separately by FX-dollar and rates-credit contradictions. The briefing contains 25 ticker-level demand-versus-supply divergences. An older options-skew contradiction set is display-only and dated 2026-09-17. Pair G factor contradictions are dormant because the panel has only 10 dates versus the required 60. Open-thesis review found direct conflicts for Long Treasuries and semiconductors; the thesis ledger also contains overdue items and duplicate thesis IDs, so these require operator reconciliation rather than inference by the cortex.",
+  "contradictions_review": "Five graph contradictions were reviewed. The central macro tension is that the low-confidence Q2/Reflation label conflicts with safety-driven dollar behavior and rates-credit evidence. Internally, weak participation and 32 demand-versus-supply ticker divergences coexist with intact leadership and concentrated technology strength. Options skew contradictions are old display-only context and cannot support a directional conclusion. Factor Pair G contains no records because the panel has not reached its 60-date activation floor. Open Master Brain theses are also inconsistent with current evidence: long-Treasury theses face their own real-yield/bear-steepener falsifier; semiconductor-underweight and growth-over-value-underweight theses conflict with current relative-strength evidence; China theses are mutually opposed while the China state is stale.",
   "decaying_families": [
-    "Factor intelligence is immature: only 10 panel dates, no factor-attention grades, no surviving scorecard factors, and the composite is non-tradeable.",
-    "Risk-radar attention has 43 graded observations but zero alerts and no precision estimate; its current caution cell is below the unconditional drawdown base rate.",
-    "Altdata is unarmed and negative across pooled 5-, 21-, and 63-day signed-excess estimates.",
-    "Narrative, radar, stock-desk, thematic-desk, policy, and policy-intent families show negative 63-day signed-excess estimates or vacuous/too-thin held-out tests; none is armed.",
-    "The raw spine query was capped at 200 of 363,660 rows and was dominated by unsigned-MFE Canadian-board records, so it does not support broad conclusions about directional accuracy."
+    "Altdata: negative shrunken IC across pooled 5-, 21- and 63-day horizons; held and unarmed.",
+    "Policy and policy-intent: negative signed excess estimates, thin samples and unarmed status.",
+    "Narrative, radar, stock-desk and thematic-desk 63-day families: negative signed-excess estimates and unarmed/vacuous validation states.",
+    "Factor composite: not tradeable; investment, low-vol, low-beta and composite legs have negative historical IC, with survivorship-biased evidence.",
+    "Risk Radar attention interpretation: 44 graded observations but no alerts and zero realized hits in logged caution/watch/calm rows; its present caution state is an early watch, not a measured edge."
   ],
   "deserves_operator": [
-    "Reconcile the current bonds/FX-versus-Q2 contradiction using the pre-committed three-session resolution criterion.",
-    "Keep rates/credit intensity separate from calibrated downside evidence; do not promote the current caution reading while its measured 21-day rate remains at or below base.",
-    "Review and close or rescore the two expired Long Treasuries theses whose stated adverse condition is currently met.",
-    "Review and close or rescore the four expired semiconductor-underweight theses that conflict with current semiconductor momentum and intact leadership.",
-    "Audit overdue open theses and duplicate thesis IDs in the Master Brain ledger; this is record hygiene and thesis reconciliation, not a new market claim.",
-    "Treat weak breadth as an observation under test, not an originated bearish signal; the newly registered hypothesis must accrue at least 20 qualified events before judgment."
+    "Reconcile the low-confidence Q2 label with current FX and rates-credit contradictions. Clear only after five sessions without cross-asset divergence and either real 10-year yield below 2.75% or HY OAS below 2.90%.",
+    "Score or close the overdue long-Treasury thesis: its registered falsifier appears met with real 10-year yield at 2.95% and a bear-steepening curve.",
+    "Score or close overdue semiconductor-underweight theses; current semiconductors/technology leadership conflicts with them. Clear the attention item only if SMH relative strength falls below its 20-day average and stays negative for five sessions.",
+    "Score or close overdue growth-over-value-underweight theses; IWF/IWD is currently +6.23% over 20 days. Clear only if that relative performance is non-positive for five sessions.",
+    "Reconcile mutually opposed and overdue China-equity theses after the China state refreshes within SLA; current dollar-to-EM pathway context remains adverse.",
+    "Treat weak breadth with intact leadership as a formal test candidate only; do not convert it into a signal before the pre-committed sample and excess-return gate are met."
   ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-10-05",
+    "as_of": "2026-10-06",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -39,8 +41,8 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 97,
-      "total_rows": 105
+      "ungradeable": 101,
+      "total_rows": 109
     },
     "is_context_only": true
   },
@@ -63,46 +65,6 @@
     "degradation_reason": null,
     "model_used": "claude-opus-4-8",
     "provider_attempts": [
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfmAuMMtZXqGHHxvayF9Q'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfmAvcC9LcKfB9bgkMtq9'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfmB1B3hPuzn3freEMota'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfmBEbKJyt1BnVyHpituN'}"
-      },
-      {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
-        "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
-      },
       {
         "provider": "codex",
         "model": "gpt-5.6-sol",
@@ -144,10 +106,10 @@
         "error_message": null
       }
     ],
-    "tool_call_batches": 5,
+    "tool_call_batches": 4,
     "individual_tool_calls": 11,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-10-06T14:31:37Z"
+    "context_as_of": "2026-10-07T10:11:04Z"
   }
 }
