@@ -35,12 +35,14 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import sys
 import tempfile
 from datetime import date, datetime, timezone
 from pathlib import Path
 
+import yaml
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -49,13 +51,70 @@ if str(ROOT) not in sys.path:
 
 from lib.dataos.identity import IssuerMaster, VendorAliasTable  # noqa: E402
 
-SCHEMA_VERSION = "r1-readiness-probe.v1"
+SCHEMA_VERSION = "r1-readiness-probe.v2"
 EXPECTED_UNIVERSE_SHA256 = (
     "441a942e97950e2fae5c6a015f38535058b0647a540f8ee1ac2342d02bd6ddc5"
 )
 CUTOFF = "2026-10-03T06:31:51Z"
 CUTOFF_DATE = date(2026, 10, 3)
 CUTOFF_TS = pd.Timestamp(CUTOFF)
+
+OWNER_RECEIPTS_PATH = (
+    "research/alpha_intelligence/expectation_market_dynamics/"
+    "R1_OWNER_RECEIPTS_2026-10-07.json"
+)
+OWNER_RECEIPTS_SCHEMA = "r1-owner-receipts.v1"
+OWNER_WS_KEY_RE = re.compile(r"^[A-Z0-9][A-Z0-9-]*$")
+RIGHTS_LITERAL_RE = re.compile(r'"rights_class"\s*:\s*"([^"]*)"')
+EXPECTED_RECEIPT_FORM = {
+    "G1": "DEGRADED_LABELED_ABSENCE",
+    "G2": "DEGRADED_LABELED_ABSENCE",
+    "G3": "DEGRADED_LABELED_ABSENCE",
+    "G4": "OWNER_REFUSAL_NO_CLASS",
+    "G5": "CAPTURE_CLOCK_ONLY",
+}
+REQUIRED_OWNER_PATHS = {
+    "G1": (
+        "data/reference/",
+        "data/reference/security_master.parquet",
+        "data/reference/vendor_aliases.parquet",
+        "data/reference/issuer_master.parquet",
+        "data/symbol_directory/",
+        "data/openfigi/",
+    ),
+    "G2": (
+        "data/reference/vendor_aliases.parquet",
+        "data/reference/issuer_migrations.parquet",
+        "data/reference/security_migrations.parquet",
+    ),
+    "G3": (
+        "data/reference/security_master.parquet",
+        "data/reference/issuer_master.parquet",
+        "data/revisions/expectation_observations.parquet",
+    ),
+    "G4": ("collectors/equity_revisions.py",),
+    "G5": (
+        "data/revisions/expectation_observations.parquet",
+        "data/revisions/expectation_attempts.parquet",
+        "collectors/equity_revisions.py",
+    ),
+}
+STABLE_COUNT_KEYS = {
+    "G1": ("issuer_id_resolved", "universe_names", "unresolved"),
+    "G2": (
+        "alias_rows_dated_le_cutoff",
+        "undated_alias_rows",
+        "prospective_from_undated_rows",
+    ),
+    "G3": (
+        "spine_columns_present",
+        "observation_currency_nonnull",
+        "observation_fiscal_year_nonnull",
+        "observation_basis_nonnull",
+    ),
+    "G4": ("literal", "line"),
+    "G5": ("source_effective_at_nonnull", "source_published_at_nonnull"),
+}
 
 CONSTITUENTS = (
     "data/breadth/constituents.parquet",
@@ -607,6 +666,167 @@ def gate_status(passed: bool, measurable: bool = True) -> str:
     return "CLOSED" if passed else "OPEN"
 
 
+def owns_path(owns_paths, required: str) -> bool:
+    if owns_paths is None:
+        return False
+    for entry in owns_paths:
+        if entry == required:
+            return True
+        if entry.endswith("/") and required.startswith(entry):
+            return True
+    return False
+
+
+def parse_front_matter(text: str) -> dict:
+    lines = text.splitlines()
+    if not lines or lines[0] != "---":
+        return {}
+    end = None
+    for index in range(1, len(lines)):
+        if lines[index] == "---":
+            end = index
+            break
+    if end is None:
+        return {}
+    body = "\n".join(lines[1:end])
+    try:
+        loaded = yaml.safe_load(body)
+    except yaml.YAMLError:
+        return {}
+    return loaded if isinstance(loaded, dict) else {}
+
+
+def rights_literal_of(text: str) -> str | None:
+    code = text.split("#", 1)[0]
+    match = RIGHTS_LITERAL_RE.search(code)
+    return match.group(1) if match else None
+
+
+def evaluate_owner_receipt(
+    gap_key: str,
+    gap: dict[str, object],
+    receipt_gap: dict[str, object] | None,
+    ws_front_matter: dict[str, object] | None,
+    rights_hits: list[dict[str, object]] | None = None,
+) -> dict[str, object]:
+    raw = str(gap["status"])
+    if receipt_gap is None or not isinstance(receipt_gap, dict):
+        block = {
+            "present": False,
+            "owner_ws": None,
+            "form_ok": False,
+            "cutoff_ok": False,
+            "ws_active": False,
+            "uncovered_paths": [],
+            "counts_match": False,
+            "mismatches": ["owner receipt missing"],
+        }
+        if raw == "CLOSED":
+            final = "CLOSED"
+        elif raw == "UNMEASURABLE":
+            final = "UNMEASURABLE"
+        else:
+            final = "OPEN"
+        return {"status": final, "owner_receipt": block}
+
+    mismatches: list[str] = []
+    owner_ws = receipt_gap.get("owner_ws")
+    owner_ws_valid = isinstance(owner_ws, str) and bool(OWNER_WS_KEY_RE.match(owner_ws))
+    if not owner_ws_valid:
+        mismatches.append("owner_ws invalid")
+
+    expected_form = EXPECTED_RECEIPT_FORM[gap_key]
+    got_form = receipt_gap.get("receipt_form")
+    form_ok = got_form == expected_form
+    if not form_ok:
+        mismatches.append(f"receipt_form {got_form} != {expected_form}")
+
+    cutoff_ok = receipt_gap.get("cutoff") == CUTOFF
+    if not cutoff_ok:
+        mismatches.append(f"cutoff {receipt_gap.get('cutoff')} != {CUTOFF}")
+
+    ws_active = isinstance(ws_front_matter, dict) and ws_front_matter.get("status") == "active"
+    if not ws_active:
+        mismatches.append("workstream not active or missing")
+
+    owns_paths_list = (
+        ws_front_matter.get("owns_paths")
+        if isinstance(ws_front_matter, dict)
+        else None
+    )
+    uncovered_paths = [
+        path
+        for path in REQUIRED_OWNER_PATHS[gap_key]
+        if not owns_path(owns_paths_list, path)
+    ]
+    for path in uncovered_paths:
+        mismatches.append(f"uncovered {path}")
+
+    counts_match = True
+    for key in STABLE_COUNT_KEYS[gap_key]:
+        receipt_val = receipt_gap.get("counts", {}).get(key)
+        probe_val = gap["value"].get(key)  # type: ignore[union-attr]
+        if isinstance(receipt_val, list) or isinstance(probe_val, list):
+            receipt_cmp = sorted(receipt_val or [])
+            probe_cmp = sorted(probe_val or [])
+            if receipt_cmp != probe_cmp:
+                counts_match = False
+                mismatches.append(f"count {key}: receipt {receipt_val} probe {probe_val}")
+        elif receipt_val != probe_val:
+            counts_match = False
+            mismatches.append(f"count {key}: receipt {receipt_val} probe {probe_val}")
+
+    if gap_key == "G4":
+        hits = rights_hits or []
+        refusal = receipt_gap.get("refusal") or {}
+        if len(hits) != 1:
+            mismatches.append("g4 refusal not on the literal's line")
+        elif hits[0]["line"] != refusal.get("line"):
+            mismatches.append("g4 refusal line mismatch")
+        else:
+            marker = refusal.get("same_line_marker")
+            if not isinstance(marker, str) or not marker or marker not in str(hits[0]["text"]):
+                mismatches.append("g4 refusal not on the literal's line")
+
+    block = {
+        "present": True,
+        "owner_ws": owner_ws if isinstance(owner_ws, str) else None,
+        "form_ok": form_ok,
+        "cutoff_ok": cutoff_ok,
+        "ws_active": ws_active,
+        "uncovered_paths": uncovered_paths,
+        "counts_match": counts_match,
+        "mismatches": mismatches,
+    }
+
+    if raw == "CLOSED":
+        final = "CLOSED"
+    elif raw == "UNMEASURABLE":
+        final = "UNMEASURABLE"
+    elif raw == "OPEN":
+        final = "DEGRADED_ACCEPTED" if not mismatches else "OPEN"
+    else:
+        final = raw
+
+    return {"status": final, "owner_receipt": block}
+
+
+def compute_r1_status(
+    gap_statuses: dict[str, str], headlines: list[str]
+) -> tuple[str, list[str]]:
+    reasons: list[str] = []
+    for key, status in gap_statuses.items():
+        if status not in {"CLOSED", "DEGRADED_ACCEPTED"}:
+            reasons.append(f"{key} {status}")
+    for headline in headlines:
+        reasons.append(f"headline: {headline}")
+    if reasons:
+        return ("INCOMPLETE", reasons)
+    if all(status == "CLOSED" for status in gap_statuses.values()):
+        return ("COMPLETE", [])
+    return ("COMPLETE_DEGRADED", [])
+
+
 def build_receipt(rev: str) -> tuple[dict[str, object], list[str]]:
     commands = [f"git rev-parse {rev}"]
     source_revision = git_text(["rev-parse", rev])
@@ -697,9 +917,13 @@ def build_receipt(rev: str) -> tuple[dict[str, object], list[str]]:
     rights_line = None
     if rights_hits:
         rights_line = int(rights_hits[0]["line"])
-        rights_literal = "UNKNOWN" if "UNKNOWN" in str(rights_hits[0]["text"]) else str(
-            rights_hits[0]["text"]
-        )
+        rights_literal = rights_literal_of(str(rights_hits[0]["text"]))
+        if rights_literal is None:
+            rights_literal = (
+                "UNKNOWN"
+                if "UNKNOWN" in str(rights_hits[0]["text"])
+                else str(rights_hits[0]["text"])
+            )
     spine_field_names = (
         "currency",
         "fiscal_year_end",
@@ -814,6 +1038,55 @@ def build_receipt(rev: str) -> tuple[dict[str, object], list[str]]:
         },
     }
 
+    receipts: dict[str, object] | None = None
+    receipts_present = False
+    receipts_schema: str | None = None
+    receipts_blob: str | None = None
+    show_receipts = f"git show {rev}:{OWNER_RECEIPTS_PATH}"
+    commands.append(show_receipts)
+    try:
+        receipts_raw = git_bytes(rev, OWNER_RECEIPTS_PATH)
+        receipts = json.loads(receipts_raw.decode("utf-8"))
+        receipts_present = True
+        receipts_schema = str(receipts.get("schema_version"))
+        receipts_blob = blob_sha(rev, OWNER_RECEIPTS_PATH)
+    except (ProbeError, ValueError, json.JSONDecodeError):
+        receipts = None
+
+    gap_statuses: dict[str, str] = {}
+    for key, gap in gaps.items():
+        receipt_gap = None
+        ws_front_matter: dict[str, object] | None = None
+        if (
+            receipts is not None
+            and receipts.get("schema_version") == OWNER_RECEIPTS_SCHEMA
+        ):
+            receipt_gap = receipts.get("gaps", {}).get(key)
+            owner_ws = (
+                receipt_gap.get("owner_ws")
+                if isinstance(receipt_gap, dict)
+                else None
+            )
+            if isinstance(owner_ws, str) and OWNER_WS_KEY_RE.match(owner_ws):
+                ws_path = f"agentos/workstreams/WS-{owner_ws}.md"
+                commands.append(f"git show {rev}:{ws_path}")
+                try:
+                    ws_text = git_bytes(rev, ws_path).decode("utf-8")
+                    ws_front_matter = parse_front_matter(ws_text)
+                except ProbeError:
+                    ws_front_matter = None
+        evaluated = evaluate_owner_receipt(
+            key,
+            gap,
+            receipt_gap if isinstance(receipt_gap, dict) else None,
+            ws_front_matter,
+            rights_hits if key == "G4" else None,
+        )
+        gap["gate_status"] = gap["status"]
+        gap["status"] = evaluated["status"]
+        gap["owner_receipt"] = evaluated["owner_receipt"]
+        gap_statuses[key] = str(evaluated["status"])
+
     receipt: dict[str, object] = {
         "schema_version": SCHEMA_VERSION,
         "as_of": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -845,6 +1118,12 @@ def build_receipt(rev: str) -> tuple[dict[str, object], list[str]]:
             "expectation_observations_clock_fields": clock_fields,
         },
         "gaps": gaps,
+        "owner_receipts": {
+            "path": OWNER_RECEIPTS_PATH,
+            "present": receipts_present,
+            "schema_version": receipts_schema,
+            "blob": receipts_blob,
+        },
         "cohorts": {
             "vocabulary": {
                 "unchanged": "natural unchanged witness",
@@ -865,6 +1144,9 @@ def build_receipt(rev: str) -> tuple[dict[str, object], list[str]]:
             f"got {digest} expected {EXPECTED_UNIVERSE_SHA256} "
             f"(names={len(names)})"
         )
+    r1_status, r1_status_reasons = compute_r1_status(gap_statuses, headlines)
+    receipt["r1_status"] = r1_status
+    receipt["r1_status_reasons"] = r1_status_reasons
     return receipt, headlines
 
 
@@ -944,7 +1226,8 @@ def summary_line(receipt: dict[str, object]) -> str:
         f"source_clocks {g5['source_effective_at_nonnull']}/"
         f"{g5['source_published_at_nonnull']} "
         f"attempts {attempts} success {status.get('success', 0)} "
-        f"partial {status.get('partial', 0)} null {status.get('null', 0)}"
+        f"partial {status.get('partial', 0)} null {status.get('null', 0)} "
+        f"r1_status {receipt['r1_status']}"
     )
 
 
