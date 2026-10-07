@@ -9,12 +9,11 @@ objective: >-
   Chairman-facing blocker list is the only remaining work.
 status: blocked
 blocked_by:
-  - "Package I build: H04/H06 acceptance records + an H05 artifact (owners WS:EARNINGS-INTELLIGENCE-OS, WS:FUNDAMENTAL-FORENSICS, WS:FINANCIAL-INTELLIGENCE-FABRIC) — DEC:MI-BUILDOUT-I-ROUTE-WAITS-FOR-ALL-FOUR-LEGS"
-  - "Package S2 registration: product-owner acceptance of the S1 proposal (delta=0.10, n=120, 2027 session-calendar extension first)"
-  - "Package F2: C19 original-request reconciliation (req-4a8daf76317cfe92f436991444c58281)"
-  - "Packages N / R / P: incumbent owners (Terminal #831, Vault seat 0e657eec, Chairman)"
-  - "Package E: K3E owner rulings on the provider-family seam (yfinance->yahoo, E0 #8502) and withdrawn/stale expectation semantics"
-  - "Package L history receipts: #8470 retained-history reader release (owner/Sol)"
+  - "Package I activation: the v0 route (#8596) is default-OFF. H05 capital_structure is held_unavailable and there is no H05/W2 natural proof, so turning it on is a Chairman decision."
+  - "Package N activation: provider source rights, the writer secret plus the armed macro-ticker-news.service, a canary and natural sessions, then TICKER_NEWS_RAIL=1 on Terminal Vercel. These are operator/Chairman acts (DEC:MI-BUILDOUT-N-MERGES-INERT-ACTIVATION-IS-AN-OPERATOR-FLAG)."
+  - "Package F2-F5: C19 original-request reconciliation (req-4a8daf76317cfe92f436991444c58281) and Executive OAuth. EXACT_HUMAN_GATE."
+  - "Package R: Research Vault custody is human-only under carrier #8438"
+  - "ITP GAP-E-BASIS / ALIAS: the K3E owner closes the basis/alias gaps (the nine strict-xfail GAP-E-* tests)"
 program: sector-rotation-intelligence
 repos: [macro, terminal, mastermind]
 owner: coo-fable
@@ -30,6 +29,7 @@ decisions:
   - DEC:MI-BUILDOUT-N-PACKAGE-OWNER-IS-TERMINAL-831
   - DEC:MI-BUILDOUT-I-ROUTE-WAITS-FOR-ALL-FOUR-LEGS
   - DEC:MI-BUILDOUT-I-COMPOSER-READS-PRODUCT-ARTIFACTS-BY-REFERENCE
+  - DEC:MI-BUILDOUT-N-MERGES-INERT-ACTIVATION-IS-AN-OPERATOR-FLAG
 discoveries:
   - DSC:KIT-HOST-QUEUE-GATE-IS-MACOS-ONLY
   - DSC:CONTRACT-DELTA-TRIPS-TWICE-ON-NEW-MODULE-PLUS-NEW-SUITE
@@ -64,15 +64,22 @@ waves:
     depends_on: [W4]
     next_action: "None: I1 spec #8517 f1cd5d9cbd5f, S1 proposal #8528 (head fd56364b7e9303ac11ad7548ce226e0b5cf34791, squash 52fcb1dc1b6e5bd8e7fb7a1e8a0e38863e516308) and V1 verdict preservation #8529 (head 56ad83f4c22045fe45f9c42c625b4becd17eba0a, squash 3af2f39752e7046a4a7996b21ea5467ab90b1192) MERGED and blob-verified; V1 rendered-page proof owed: after the covering render, site/measurement.html on origin/main carries id=\"vp-section\". Every remaining package is owner-gated (W6)."
   - id: W6
-    title: Owner-gated remainder — I build, S2 registration, F2, L history receipts, N/E/R/P handbacks
-    status: todo
+    title: "Owner-gated remainder, cleared under the Chairman's 2026-10-07 autonomy directive: S2 registration, E2 K3E refusal semantics, L reader follow-ups, V1 follow-ups"
+    status: done
+    pr: [8567, 8583, 8587, 8588]
     depends_on: [W5]
-    next_action: "Resume only on a named gate opening (blocked_by list); the Chairman blocker list in the program file section 8 names each gate and its owner."
+    next_action: "None: S2 #8567 aa1ab61ee655, E2 #8583 4f31830b99c3, #8587 c283c1ceaa6e and #8588 e3cb5b86a516 are MERGED and blob-verified (2026-10-07). The served measurement.html check for #8588 is owed to the next covering engine-render."
+  - id: W7
+    title: "Default-off product legs: Package I v0 composer route, Package N Macro writer/API + Terminal News rail, ticker-news secret mask heal"
+    status: done
+    pr: [8596, 8454, 8613, 8614, 8616]
+    depends_on: [W6]
+    next_action: "None for code. #8454 e3e3eff48cf4 (live, auth-gated, writer not armed), #8596 55e8cf84 (DEFAULT-OFF), #8613 643dcc3e, #8614 ca93b99f and Terminal #831 2cb3e164 (TICKER_NEWS_RAIL off) are MERGED. Activation is the blocked_by list."
     wait:
       kind: external_action
-      review_after: 2026-10-13
-      condition: "H04/H06 acceptance + H05 artifact; product-owner S1 acceptance; C19 reconciliation; #8470 release; incumbent-owner handbacks"
-next_action: "Seat-buildable scope is exhausted on today's main: deliver the Chairman blocker list (program file section 8), then resume W6 only when a blocked_by gate opens — never re-census, re-spec, or rebuild W1-W5."
+      review_after: 2026-10-14
+      condition: "Chairman: Package I flag, Package N rights + writer enable + TICKER_NEWS_RAIL, F2 C19 + OAuth, R ceremony, K3E basis/alias closure"
+next_action: "Everything this seat can build is merged dark (W1-W7). What remains is the blocked_by list of activation and rights gates, owned by the Chairman/operators. Two of the three pre-existing data-health reds (stale test anchors) are healed by #8616 f595967f. The third, the options-context auditor row boundary, needs the options owner's preregistration v2 (research/options_estate/OPTIONS_CONTEXT_AUDIT_LEDGER_BOUND_ADJUDICATION_2026-08-13.md)."
 landmines:
   - "Package N is owned by Terminal #831 (Astra, sol/web-ticker-news-r1-20261004-astra-001, DRAFT 'DO NOT MERGE yet', the lawful Macro #8454 child). Never relaunch a Terminal news server lane; #832 is closed superseded and kept only as a cherry-pick reference."
   - "E1's nine strict-xfail GAP-E-* tests (tests/test_k3e_provider_family_qualification.py, tests/test_k3e_semantic_seam_qualification.py, intelligence-registry job) go RED as a strict XPASS the moment an owner closes the matching gap: the PR that closes a gap flips its xfail in the same change; never relax strict."
@@ -86,6 +93,9 @@ landmines:
   - "The sweeper left five concluded-green armed PRs unmerged for 1-2.5 h on 2026-10-06; merge by hand on the exact head (gh pr merge --squash --match-head-commit) after a same-invocation state read + hold grep, and treat a hold-pattern hit inside your own ACCEPT comment quoting another PR as a false positive to re-judge, not a hold."
   - "A PR adding a new engine/*.py plus a new tests/test_*.py trips contract-delta TWICE: every scope: exclusive job whose inferred closure reaches the importer must declare the new module in paths:, AND the new suite must be named by a run: step (DSC:CONTRACT-DELTA-TRIPS-TWICE-ON-NEW-MODULE-PLUS-NEW-SUITE) — run python3 scripts/check_contract_delta.py --base origin/main (about 3.5 min) before READY; V1 #8529 fixed both before arming, L3 #8519 was armed RED for both."
   - "An armed PR whose checks already concluded can still go CONFLICTING when main edits an adjacent .github/ci/legacy-jobs.yml run line (#8519, 2026-10-06): heal with a keep-both merge of origin/main (never rebase/force), re-run contract-delta, then disarm comment -> push -> ls-remote verify -> re-arm comment -> label LAST."
+  - "app/deploy/update.sh's macro-api restart regex is one long alternation line. Concurrent PRs always conflict on it (#8454 vs #8596, 2026-10-07). Heal with a keep-both union merge of origin/main plus `bash -n`."
+  - "A new /etc/*.env secret must be masked (InaccessiblePaths=-) in every networked market-memory unit that lists secret masks. The deploy tests pin the full list only for options and technicals (#8613); #8614 masks it in the other 10 units."
+  - "gate: data legacy jobs (e.g. market-memory-contract) run only in data-health.yml. A red there never blocks PR CI and is easy to blame on the newest merge."
 do_not_redo:
   - "ACK on Mastermind #1202 exists once (comment 6009097528, 2026-10-06 04:05Z) — never re-ACK or re-START."
   - "N0/E0/L0/V0/I0/S0 censuses and the L2 review are ACCEPTED by artifact (seat re-showed every path:line claim on the pinned heads); do not re-census the same questions."
@@ -97,6 +107,7 @@ do_not_redo:
   - "L3 leadership receipt (#8519, head 0e7911f704ad7818236bee52425087c522cfdd87, squash 1f823f6c5bcc9aa232a7c7bc18cf63112f819a0f) is MERGED — engine/leadership_receipt.py + scripts/build_theme_detail.py attach + .lrc- panel in templates/basket_detail.html.j2 + tests/test_leadership_receipt.py; do not rebuild, re-spec, or re-wire."
   - "V1 verdict preservation (#8529, head 56ad83f4c22045fe45f9c42c625b4becd17eba0a, squash 3af2f39752e7046a4a7996b21ea5467ab90b1192) is MERGED — config/verdict_preservation_registry.json (8 rows, exactly one actual C2) + engine/verdict_preservation.py + #vp-section on the Calibration Lab; display tier only, Trend Persistence C1-NULL stays closed; do not rebuild or re-pin."
   - "S1 theme-relative intraday hypothesis proposal (#8528, head fd56364b7e9303ac11ad7548ce226e0b5cf34791, squash 52fcb1dc1b6e5bd8e7fb7a1e8a0e38863e516308) is MERGED — research only; S2 registration needs product-owner acceptance of its section 0 ask first; no outcome scan before registration."
+  - "W6/W7 PRs #8567/#8583/#8587/#8588/#8454/#8596/#8613/#8614 and Terminal #831 are MERGED. Never re-open, rebuild a second composer, writer, API or rail, or re-register S2. Activation is a flag and a service enable, not code (DEC:MI-BUILDOUT-N-MERGES-INERT-ACTIVATION-IS-AN-OPERATOR-FLAG)."
 artifacts:
   - research/product_intelligence_local_delivery/L0_LEADERSHIP_THEME_CONTEXT_RECONCILIATION_2026-10-06.md
   - research/product_intelligence_local_delivery/N0_TICKER_NEWS_TASK_MATRIX_2026-10-06.md

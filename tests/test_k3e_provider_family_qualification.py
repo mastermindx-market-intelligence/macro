@@ -8,14 +8,21 @@ import pytest
 
 from collectors import equity_revisions as er
 from engine.k3e_expectation_surface import (
+    ALIASES_PATH,
     ATTEMPTS_PATH,
     OBSERVATIONS_PATH,
     inspect_expectation_surface,
 )
 
-BASE_PIN = "13910854fbd652dcdf975301bdc8c6728c2e4767"
-
 ALIAS_KNOWN_AT = "2026-06-01T00:00:00Z"
+ALIAS_P = [dict(
+    vendor="yahoo", vendor_symbol="P", security_id="SEC:PALO-P",
+    valid_from=None, valid_to=None, ingested_at=ALIAS_KNOWN_AT,
+)]
+# A lawful post-alias as_of: on/after ALIAS_KNOWN_AT AND on/after the
+# 2026-06-02T10:00:00Z capture it queries
+# (DEC:ITP-K3E-BASIS-CHANGE-IS-NONCOMPARABLE-2026-10-07).
+POST_ALIAS_AS_OF = "2026-06-02T12:00:00Z"
 CUT = "2026-10-02T12:00:00Z"
 PROVENANCE = {
     "source_revision": "a" * 40,
@@ -23,6 +30,11 @@ PROVENANCE = {
         OBSERVATIONS_PATH: {"sha256": "1" * 64, "git_blob_id": "1" * 40},
         ATTEMPTS_PATH: {"sha256": "2" * 64, "git_blob_id": "2" * 40},
     },
+}
+ALIAS_PROVENANCE = deepcopy(PROVENANCE)
+ALIAS_PROVENANCE["inputs"][ALIASES_PATH] = {
+    "sha256": "3" * 64,
+    "git_blob_id": "3" * 40,
 }
 
 
@@ -134,13 +146,6 @@ def _payload(rows, attempts, **kwargs):
     return inspect_expectation_surface(rows, attempts, **params)["semantic_payload"]
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-ALIAS: no ticker-P alias-as-of cutoff resolver; query uses ticker_compat "
-        f"equality only at engine/k3e_expectation_surface.py:206-207 ({BASE_PIN})"
-    ),
-)
 def test_e_a_alias_p_unresolved_before_alias_known_date():
     """E-A before D: pre-alias observation must stay unresolved, not mis-attributed."""
     rows, attempts = _pair(
@@ -149,20 +154,19 @@ def test_e_a_alias_p_unresolved_before_alias_known_date():
         security_ref=None,
         issuer_ref=None,
     )
-    result = _payload(rows, attempts, as_of="2026-05-20T12:00:00Z", ticker="P")
+    result = _payload(
+        rows, attempts, as_of="2026-05-20T12:00:00Z", ticker="P",
+        identity_aliases=ALIAS_P, source_provenance=ALIAS_PROVENANCE,
+    )
     snap = result["last_structurally_supported_snapshot"]["snapshot"]
     assert snap is None
     assert result["normalized_baseline"]["status"] in {"UNAVAILABLE", "UNESTIMABLE"}
     assert result["denominators"]["capture_clock_bounded_relevant_records"] >= 1
+    assert result["identity_gate"]["status"] == "CHECKED"
+    assert result["denominators"]["identity_unresolved_records"] >= 1
+    assert result["denominators"]["reason_counts"]["SECURITY_IDENTITY_UNRESOLVED_AT_CUTOFF"] >= 1
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-ALIAS: no ticker-P alias-as-of cutoff resolver; query uses ticker_compat "
-        f"equality only at engine/k3e_expectation_surface.py:206-207 ({BASE_PIN})"
-    ),
-)
 def test_e_a_alias_p_resolves_on_or_after_alias_known_date():
     """E-A on/after D: alias-known observations resolve for as_of >= D."""
     rows, attempts = _pair(
@@ -171,10 +175,17 @@ def test_e_a_alias_p_resolves_on_or_after_alias_known_date():
         security_ref="SEC:PALO-P",
         issuer_ref="ISS:PALO",
     )
-    result = _payload(rows, attempts, as_of=ALIAS_KNOWN_AT, ticker="P")
+    assert POST_ALIAS_AS_OF >= ALIAS_KNOWN_AT
+    result = _payload(
+        rows, attempts, as_of=POST_ALIAS_AS_OF, ticker="P",
+        identity_aliases=ALIAS_P, source_provenance=ALIAS_PROVENANCE,
+    )
     snap = result["last_structurally_supported_snapshot"]["snapshot"]
     assert snap is not None
     assert snap["selected_observation"]["security_ref"] == "SEC:PALO-P"
+    assert result["identity_gate"]["status"] == "CHECKED"
+    assert result["identity_gate"]["query_security_id_at_cutoff"] == "SEC:PALO-P"
+    assert result["denominators"]["identity_resolved_records"] >= 1
 
 
 def test_e_b_provider_family_literal_emitted_by_collector():
