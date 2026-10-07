@@ -138,8 +138,11 @@ waves:
         criterion. UPDATE 2026-10-07 00:34Z: Mastermind #1265 merged as 6a85e0d6. By Chairman intent, A2 now
         reuses the existing Mastermind Executive Relay app, and DEC:A2-SHARED-RELAY-RECEIPT-AND-INSTALL-FIRST
         supersedes the dedicated-app criterion. The host owner installs a release at or after 6a85e0d6 first.
-        Then the Slack admin adds channels:history to the existing app and reinstalls it (C3 note #1143
-        issuecomment-6028181298). Then: host operator runs enroll-shared --expected-bot-user-id
+        Then it rebinds C1 to that generation with #784 rebind-release; the live C1 runs its own 4c148709
+        generation, and install.sh never rebinds it (#1143 issuecomment-6028474958; amended C3 note
+        issuecomment-6028181298). Then the Slack admin adds channels:history to the existing app and
+        reinstalls it. Then C1 verify. The Chairman confirmed the A0BUDHZ137A cleanup done (token revoked,
+        Socket Mode off, two scopes; release owner 6027192883 edit 00:52Z). Then: host operator runs enroll-shared --expected-bot-user-id
         U0BT71H4FQE --enable-w3c on the native host; it reads the enrolled C1 credential locally, so no
         token is typed → verify → start-agent-relay → target re-census (no summon) → one parenting
         canary on an EXISTING queued acceptance root (JOB-003 or JOB-013; never a new Job, never
@@ -163,7 +166,7 @@ waves:
       source review) → repair or null → aggregate.
 next_action: >
   Integrator on the XH chain (C3 integration/acceptance only, Sol issuecomment-5991567681): consume
-  the Slack ceremony receipt against DEC:A2-SHARED-RELAY-RECEIPT-AND-INSTALL-FIRST (shared Executive Relay path by Chairman intent, Mastermind #1265 at 6a85e0d6; fields in Mastermind #1143 issuecomment-6028181298; the dedicated-path delta issuecomment-6027309991 applies only if the Chairman re-selects A0BUDHZ137A), and only after the install; consume
+  the Slack ceremony receipt against DEC:A2-SHARED-RELAY-RECEIPT-AND-INSTALL-FIRST (shared Executive Relay path by Chairman intent, Mastermind #1265 at 6a85e0d6; fields in Mastermind #1143 issuecomment-6028181298; the dedicated-path delta issuecomment-6027309991 applies only if the Chairman re-selects A0BUDHZ137A), and only after the install and the C1 rebind (#784 rebind-release, a new source dependency); consume
   the install receipt of the Chairman-assigned release owner (Mastermind #1143 issuecomment-6027192883) for its ONE serialized exact-source install (the #1220 merge SHA while its hold stands, at or after protected 6a85e0d6 so it carries #1265 enroll-shared), with Gate B, receipt, acceptance and the live 1.5.0 / 12-tool census
   and verify it read-only; one bounded watcher on #1143, #811, the terminal state of #1220
   and mission-path master; no reviews or queue actions on #1220 while Sol owns its gate; no lane on the
@@ -176,8 +179,8 @@ landmines:
   - "autonomy-state-v1.json and ceo-submit-state-v1.json are host-owner receipts; the seat reads them and never writes, arms, disarms or restarts."
   - "Live Agent Relay activation (start-agent-relay) stays HELD: the Sol lifecycle lane merged as Mastermind #1257 (master 1df1367f, 2026-10-05T09:42Z) but is not installed; activation needs the host owner install of a generation at or after master 7c12c394 (or the #1219 merge SHA) plus the human ceremony and native-TTY enrollment. #1241/#1257 merged is not activation readiness."
   - "A release-SHA change never replays the CEO-submit arm; the host owner migrates the live config and arms canonically (autonomy-582e4c15d334 on 5b244a2b). Historical JOB-003/JOB-006 are preserved, never rewritten or replayed."
-  - "Never add channels:history to the Executive Relay app before a release at or after 6a85e0d6 is installed. Installed 5b244a2b C1 refuses any scope set other than chat:write + groups:history (C1_SLACK_IDENTITY_REFUSED), so live SOL_STATE publication would fail. Never enroll A2 by both the shared and the dedicated route (DEC:A2-SHARED-RELAY-RECEIPT-AND-INSTALL-FIRST)."
-  - "The Slack-admin ceremony is a human/UI gate. On the current shared path it is: add channels:history to the existing Executive Relay app and reinstall, after the 6a85e0d6+ install. On a Chairman-re-selected dedicated path it is: app-level token deletion, two-scope reinstall, bot invite. The A2 enrollment (enroll-shared on the native host, or the bot token on stdin/native TTY for the dedicated path; --enable-w3c) and the ChatGPT Business app recreate+republish (or connecting the private mastermind-web-ceo plugin, if a fresh read ever shows it visible; it is UNVERIFIED after a NOT_FOUND metadata read, Mastermind #1143 issuecomment-6025513145) are human/UI gates; a Web or seat session stops before them and never routes around them."
+  - "Never add channels:history to the Executive Relay app before C1 is rebound (#784 rebind-release) to an installed release at or after 6a85e0d6. The live C1 runs its own 4c148709 generation, which install.sh never rebinds. That generation refuses any scope set other than chat:write + groups:history at every start (C1_SLACK_IDENTITY_REFUSED), so SOL_STATE publication would stop at the next C1 start. Never enroll A2 by both the shared and the dedicated route (DEC:A2-SHARED-RELAY-RECEIPT-AND-INSTALL-FIRST)."
+  - "The Slack-admin ceremony is a human/UI gate. On the current shared path it is: add channels:history to the existing Executive Relay app and reinstall, after the 6a85e0d6+ install and the C1 rebind. On a Chairman-re-selected dedicated path it is: app-level token deletion, two-scope reinstall, bot invite. The A2 enrollment (enroll-shared on the native host, or the bot token on stdin/native TTY for the dedicated path; --enable-w3c) and the ChatGPT Business app recreate+republish (or connecting the private mastermind-web-ceo plugin, if a fresh read ever shows it visible; it is UNVERIFIED after a NOT_FOUND metadata read, Mastermind #1143 issuecomment-6025513145) are human/UI gates; a Web or seat session stops before them and never routes around them."
 do_not_redo:
   - "Do not re-post the #1219 C3 acceptance (Mastermind #1219 issuecomment-6025565788) the Slack receipt delta (Mastermind #1143 issuecomment-6027309991) or the shared-relay integration note (Mastermind #1143 issuecomment-6028181298); #1219 is merged as 760f51b5 and its controller hardening is not reopened."
   - "Do not reopen Mastermind #1191 (merged 2026-10-04T20:59Z as 5b244a2b) or #1227; the three convergence blockers are closed on master and installed."
