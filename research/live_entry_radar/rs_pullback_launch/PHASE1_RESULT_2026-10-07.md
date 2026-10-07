@@ -261,6 +261,15 @@ was added; the observed verdict and its 29 refusal reasons did not change.
 The first CI placement under signal-contract was found to be data-gate-only and therefore
 unreachable from ordinary code PR packs. The suite now joins the existing gate:code
 research-price-panel invocation. Original Entry Radar data-plane tests were left in place.
+
+The initial hosted unrun-import-hygiene job found that the CLI's conditional root pin could
+leave another engine package ahead of this repository on sys.path. The CLI now prepends its
+own root unconditionally before repository imports. All 11 existing import-pinning tests pass.
+A separate actual CLI invocation with a hostile engine decoy ahead of an already-present repo
+root returns the exact committed admission bytes; the decoy is not executed. No baseline or
+waiver was widened. The data adapter, its 30 tests, and the source verdict are unchanged by
+this import-precedence repair.
+
 Hosted CI and source-delivery state must be read from this branch's pull request; local passing
 tests and this engineering report do not claim a merge or production admission.
 

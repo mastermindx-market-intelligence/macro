@@ -15,6 +15,9 @@ changed:
   - path: research/live_entry_radar/rs_pullback_launch/PHASE1_ADMISSION_2026-10-07.json
     what: "Reproducible NOT_ADMITTED verdict with 29 named refusals."
 verified:
+  - claim: "The CLI binds imports to this repository even when a foreign package precedes an ambient root."
+    command: "python3 -m pytest tests/test_check_script_import_pinning.py -q; actual CLI invocation with hostile engine decoy and repo root later on PYTHONPATH"
+    result: "11 passed; decoy not executed; CLI admission output byte-identical. Conditional pin repaired without baseline or waiver changes."
   - claim: "The corrected code-CI step passes all 30 RS conformance tests and 27 existing frozen-panel tests."
     command: "python3 -m pytest tests/test_research_price_panel.py tests/test_entry_radar_rs_pullback_phase1.py -q"
     result: "57 passed, 85 subtests passed after six independent review findings were repaired; unrelated existing temporary-directory cleanup warnings."

@@ -13,8 +13,7 @@ from pathlib import Path
 import sys
 
 REPO = Path(__file__).resolve().parents[1]
-if str(REPO) not in sys.path:
-    sys.path.insert(0, str(REPO))
+sys.path.insert(0, str(REPO))
 
 from engine.entry_radar.replay.rs_pullback_launch_data import (  # noqa: E402
     InputContractError, assess_source_census, build_input_panel,
