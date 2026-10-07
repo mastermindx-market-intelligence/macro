@@ -113,13 +113,13 @@
     intro.appendChild(title);
     var expl = ocEl("p", "ocmp-expl");
     ocPair(expl,
-      "Right = roughly 30-day options are richer than usual for that name. Up = downside protection is richer. Trails show the last five available sessions.",
-      "越靠右＝该标的约30日期权相对自身历史更贵；越靠上＝下行保护更贵。轨迹显示最近五个可用交易日。");
+      "Right = roughly 30-day options are richer than usual for that name. Up = downside protection is richer. Trails show the last five available same-source sessions.",
+      "越靠右＝该标的约30日期权相对自身同源历史更贵；越靠上＝下行保护更贵。轨迹显示最近五个同源可用交易日。");
     intro.appendChild(expl);
     var note = ocEl("p", "ocmp-note");
     ocPair(note,
-      "Fast means one of the biggest five-session moves in this map. It is not bullish, bearish, or a trade signal.",
-      "“快速”仅表示该标的在此图中的五日移动幅度较大，不代表看多、看空或交易信号。");
+      "Fast means one of the biggest five-session moves in this map. Source breaks are excluded. It is not bullish, bearish, or a trade signal.",
+      "“快速”仅表示该标的在此图中的五日移动幅度较大；不同数据源的历史不会混算。它不代表看多、看空或交易信号。");
     intro.appendChild(note);
     shell.appendChild(intro);
 
