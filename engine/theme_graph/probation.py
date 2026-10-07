@@ -22,8 +22,9 @@ import copy
 import hashlib
 import json
 import logging
+import posixpath
 import re
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 
@@ -34,7 +35,27 @@ log = logging.getLogger(__name__)
 #: from the coverage-gap and overlap diagnostics.
 PROPOSAL_KINDS: frozenset[str] = frozenset({
     "new_theme", "merge", "split", "mapping", "key_rename", "identity_continuity",
+    "hierarchy",
 })
+
+HIERARCHY_EPOCH = date(2026, 10, 7)
+_THEME_ID_RE = re.compile(r"^theme:[a-z0-9][a-z0-9_]{1,62}$")
+_NOMINATED_FROM_RE = re.compile(
+    r"^(basket:\S+|vertical:[a-z0-9_]+:[a-z0-9_]+|research:\S+)$"
+)
+_HOUSE_PATH_CHARS_RE = re.compile(r"[A-Za-z0-9._/#-]+")
+_HOUSE_FRAGMENT_RE = re.compile(r"[A-Za-z0-9._-]+")
+_VENDOR_SUBSTRINGS = ("finviz_themes", "ths_concepts")
+_VENDOR_TOKENS = frozenset({"finviz", "ths"})
+_HIERARCHY_CHILD_TIERS = frozenset({"theme", "micro_theme"})
+_HIERARCHY_SUBJECT_REQUIRED: tuple[str, ...] = (
+    "parent_id",
+    "child_id",
+    "child_tier",
+    "proposed_asserted_on",
+    "nominated_from",
+)
+_ASSERTED_ON_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 PROPOSED_BY: frozenset[str] = frozenset({
     "coverage_gap", "overlap_stats", "refresh_identity", "llm_proposed",
@@ -64,6 +85,138 @@ def _parse_stamp(value: object, field: str) -> datetime:
     if stamp.tzinfo is None:
         stamp = stamp.replace(tzinfo=timezone.utc)
     return stamp.astimezone(timezone.utc)
+
+
+def nominated_from_errors(nominated_from: str) -> list[str]:
+    """The single nominator rule; materialize must import it — never re-implement it."""
+    value = str(nominated_from or "").strip()
+    if not _NOMINATED_FROM_RE.fullmatch(value):
+        return [f"NOMINATED_FROM_GRAMMAR: nominated_from {value!r} is malformed"]
+    for needle in _VENDOR_SUBSTRINGS:
+        if needle in value:
+            return [
+                f"VENDOR_NOMINATOR: nominated_from {value!r} names a vendor family"
+            ]
+    for token in re.split(r"[:/_.\-]", value.lower()):
+        if token in _VENDOR_TOKENS:
+            return [
+                f"VENDOR_NOMINATOR: nominated_from {value!r} names a vendor family"
+            ]
+    if value.startswith("basket:"):
+        from engine.theme_graph import rights
+
+        family = rights.family_for_node_id(value)
+        if family in {"finviz_themes", "ths_concepts"}:
+            return [
+                f"VENDOR_NOMINATOR: nominated_from {value!r} names a vendor family"
+            ]
+        if family != "mastermind_curated":
+            return [
+                f"NOMINATOR_FAMILY_UNRESOLVED: nominated_from {value!r} "
+                f"does not resolve to a house basket family"
+            ]
+    if value.startswith("research:"):
+        suffix = str(nominated_from or "").removeprefix("research:")
+        if not _HOUSE_PATH_CHARS_RE.fullmatch(suffix) or suffix.startswith(("/", "#")):
+            return [
+                "NOMINATOR_PATH_UNSAFE: nominated_from "
+                f"{value!r} is not a relative house path"
+            ]
+        raw, sep, fragment = suffix.partition("#")
+        if any(segment == ".." for segment in re.split(r"[/#]", suffix)) or (
+            sep and not _HOUSE_FRAGMENT_RE.fullmatch(fragment)
+        ):
+            return [
+                "NOMINATOR_PATH_UNSAFE: nominated_from "
+                f"{value!r} is not a relative house path"
+            ]
+        norm = posixpath.normpath(raw)
+        if norm in ("", "."):
+            return [
+                "NOMINATOR_PATH_UNSAFE: nominated_from "
+                f"{value!r} is not a relative house path"
+            ]
+        from engine.theme_graph import rights
+
+        family = rights.family_for_source_ref(norm) or rights.family_for_source_ref(
+            norm + "/"
+        )
+        if family is not None and family != "mastermind_curated":
+            return [
+                "VENDOR_NOMINATOR: nominated_from "
+                f"{value!r} resolves to source family {family!r}"
+            ]
+        if family is None and not (
+            norm.startswith("config/") or norm.startswith("research/")
+        ):
+            return [
+                "NOMINATOR_UNREGISTERED_SOURCE: nominated_from "
+                f"{value!r} maps to no registered source family and is outside "
+                "the house roots config/ and research/"
+            ]
+    return []
+
+
+def _validate_hierarchy_row(row: dict) -> list[str]:
+    out: list[str] = []
+    subject = row.get("subject")
+    if not isinstance(subject, dict):
+        out.append("HIERARCHY_SUBJECT_SHAPE: hierarchy subject must be an object")
+        return out
+    allowed = set(_HIERARCHY_SUBJECT_REQUIRED)
+    for key in sorted(_HIERARCHY_SUBJECT_REQUIRED):
+        if key not in subject:
+            out.append(f"HIERARCHY_SUBJECT_SHAPE: missing required key {key!r}")
+    for key in sorted(set(subject.keys()) - allowed):
+        out.append(f"HIERARCHY_SUBJECT_SHAPE: unexpected key {key!r}")
+    parent_id = str(subject.get("parent_id") or "")
+    child_id = str(subject.get("child_id") or "")
+    child_tier = str(subject.get("child_tier") or "")
+    asserted_on = str(subject.get("proposed_asserted_on") or "")
+    nominated_from = str(subject.get("nominated_from") or "")
+    if not _THEME_ID_RE.fullmatch(parent_id):
+        out.append(
+            f"HIERARCHY_ID_GRAMMAR: hierarchy parent_id {parent_id!r} is malformed"
+        )
+    if not _THEME_ID_RE.fullmatch(child_id):
+        out.append(
+            f"HIERARCHY_ID_GRAMMAR: hierarchy child_id {child_id!r} is malformed"
+        )
+    if child_tier not in _HIERARCHY_CHILD_TIERS:
+        out.append(
+            "HIERARCHY_CHILD_TIER: hierarchy child_tier "
+            f"{child_tier!r} is outside ['micro_theme', 'theme']"
+        )
+    if parent_id and child_id and parent_id == child_id:
+        out.append("HIERARCHY_SELF_EDGE: parent_id must differ from child_id")
+    if not _ASSERTED_ON_RE.fullmatch(asserted_on):
+        out.append(
+            "HIERARCHY_ASSERTED_ON_GRAMMAR: hierarchy proposed_asserted_on "
+            f"{asserted_on!r} is not a YYYY-MM-DD date"
+        )
+    else:
+        try:
+            parsed = date.fromisoformat(asserted_on)
+        except ValueError:
+            out.append(
+                "HIERARCHY_ASSERTED_ON_GRAMMAR: hierarchy proposed_asserted_on "
+                f"{asserted_on!r} is not a YYYY-MM-DD date"
+            )
+        else:
+            if parsed < HIERARCHY_EPOCH:
+                out.append(
+                    f"HIERARCHY_EPOCH: proposed_asserted_on {asserted_on!r} "
+                    f"predates {HIERARCHY_EPOCH.isoformat()}"
+                )
+    out.extend(nominated_from_errors(nominated_from))
+    if (
+        row.get("proposed_by") == "llm_proposed"
+        and str(row.get("status") or "") == "ratified"
+    ):
+        out.append(
+            "LLM_HIERARCHY_NOT_RATIFIABLE: llm_proposed hierarchy rows may not be ratified"
+        )
+    return out
 
 
 def proposal_id(kind: str, subject: dict) -> str:
@@ -150,6 +303,8 @@ def validate(row: dict) -> list[str]:
         and adjudicated_clock < created_clock
     ):
         out.append("adjudicated_at predates created")
+    if row.get("kind") == "hierarchy":
+        out.extend(_validate_hierarchy_row(row))
     return out
 
 
