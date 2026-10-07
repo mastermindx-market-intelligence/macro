@@ -7,7 +7,10 @@ on lapse/TTL and honor the re-fire lockout. Network-free.
 """
 from __future__ import annotations
 
+import json
+
 import pandas as pd
+import pytest
 
 from engine import rotation_events as re_
 
@@ -363,3 +366,227 @@ def test_label_index_spans_v1_legs_and_v2_series():
     assert idx["xlu_etf"] == ("Utilities", "公用事业")
     assert "unnamed" not in idx, "an unnamed leg must not enter the index"
     assert re_._label_index(None, None) == {}
+
+# ================================================================== W2 HISTORY ====
+
+def _history_created(*, pair_id="xlk:memory->mag7", asof="2026-07-01",
+                     ts="2026-07-02 01:02 UTC", replayed=None):
+    sector, legs = pair_id.split(":", 1)
+    from_key, to_key = legs.split("->", 1)
+    row = {
+        "ts": ts,
+        "event": "created",
+        "id": pair_id,
+        "sector": sector,
+        "from_leg": {"key": from_key, "name_en": from_key, "name_zh": from_key},
+        "to_leg": {"key": to_key, "name_en": to_key, "name_zh": to_key},
+        "started": asof,
+        "asof": asof,
+        "day_n": 1,
+        "severity": "standard",
+        "receipts": {},
+    }
+    if replayed is not None:
+        row["replayed"] = replayed
+    return row
+
+
+def _history_closed(*, pair_id="xlk:memory->mag7", started="2026-07-01",
+                    closed_asof="2026-07-08", ts="2026-07-09 01:02 UTC",
+                    replayed=None):
+    sector, legs = pair_id.split(":", 1)
+    from_key, to_key = legs.split("->", 1)
+    row = {
+        "ts": ts,
+        "event": "closed",
+        "pair_id": pair_id,
+        "sector": sector,
+        "from_leg": from_key,
+        "to_leg": to_key,
+        "started": started,
+        "closed_asof": closed_asof,
+        "reason": "conditions_lapsed",
+        "day_n": 5,
+    }
+    if replayed is not None:
+        row["replayed"] = replayed
+    return row
+
+
+def _write_history(path, rows):
+    path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows),
+                    encoding="utf-8")
+
+
+def test_read_ledger_history_preserves_native_rows_and_modes(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    replay = _history_created(replayed=True)
+    unmarked = _history_closed()
+    _write_history(ledger, [replay, unmarked])
+
+    all_result = re_.read_ledger_history(ledger)
+    assert all_result["status"] == "OK"
+    assert [entry["row"] for entry in all_result["rows"]] == [replay, unmarked]
+    assert [entry["mode"] for entry in all_result["rows"]] == [
+        "RECONSTRUCTED_REPLAY", "RETAINED_LEDGER_UNMARKED"
+    ]
+    assert [entry["observation_date"] for entry in all_result["rows"]] == [
+        "2026-07-01", "2026-07-08"
+    ]
+    assert [entry["native_id"] for entry in all_result["rows"]] == [
+        "xlk:memory->mag7", "xlk:memory->mag7"
+    ]
+    assert all_result["rows"][0]["lifecycle_id"] == "xlk:memory->mag7@2026-07-01"
+    assert all_result["rows"][1]["lifecycle_id"] == "xlk:memory->mag7@2026-07-01"
+    assert all_result["coverage"]["selected_rows"] == 2
+    assert all_result["coverage"]["event_counts"] == {"created": 1, "closed": 1}
+    assert all_result["coverage"]["mode_counts"] == {
+        "RECONSTRUCTED_REPLAY": 1,
+        "RETAINED_LEDGER_UNMARKED": 1,
+    }
+    assert len(all_result["source_sha256"]) == 64
+    assert all(len(entry["line_sha256"]) == 64 for entry in all_result["rows"])
+
+    replay_result = re_.read_ledger_history(ledger, mode="replay")
+    assert [entry["row"] for entry in replay_result["rows"]] == [replay]
+    unmarked_result = re_.read_ledger_history(ledger, mode="ledger_unmarked")
+    assert [entry["row"] for entry in unmarked_result["rows"]] == [unmarked]
+
+
+def test_read_ledger_history_through_stops_before_future_rows(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    boundary = _history_closed(closed_asof="2026-07-08", ts="2026-07-08 23:59 UTC")
+    future = _history_created(
+        pair_id="xlk:software->ai_semis", asof="2026-07-09",
+        ts="2026-07-09 01:00 UTC"
+    )
+    ledger.write_text(
+        json.dumps(boundary) + "\n" +
+        json.dumps(future) + "\n" +
+        "{malformed future content that must not be parsed\n",
+        encoding="utf-8",
+    )
+
+    result = re_.read_ledger_history(ledger, through="2026-07-08")
+    assert result["status"] == "OK"
+    assert [entry["row"] for entry in result["rows"]] == [boundary]
+    assert result["coverage"]["stopped_by"] == "through"
+    assert result["coverage"]["inspected_nonblank_lines"] == 2
+    assert result["coverage"]["first_uninspected_line"] == 3
+
+
+def test_read_ledger_history_malformed_before_cutoff_fails_closed(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    ledger.write_text(
+        json.dumps(_history_created()) + "\n" +
+        "{bad-json\n" +
+        json.dumps(_history_closed()) + "\n",
+        encoding="utf-8",
+    )
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "INVALID"
+    assert result["rows"] == []
+    assert result["error"] == {"code": "INVALID_JSON", "line": 2}
+    assert result["coverage"]["invalid_rows"] == 1
+
+
+@pytest.mark.parametrize(
+    ("mutator", "code"),
+    [
+        (lambda r: r.pop("id"), "MISSING_IDENTITY"),
+        (lambda r: r.pop("started"), "MISSING_STARTED"),
+        (lambda r: r["from_leg"].pop("key"), "MISSING_DIRECTION"),
+        (lambda r: r.pop("asof"), "MISSING_OBSERVATION_CLOCK"),
+        (lambda r: r.pop("ts"), "MISSING_RECORD_CLOCK"),
+        (lambda r: r.__setitem__("event", "mystery"), "INVALID_EVENT_KIND"),
+    ],
+)
+def test_read_ledger_history_invalid_created_rows_fail_closed(tmp_path, mutator, code):
+    ledger = tmp_path / "events.jsonl"
+    row = _history_created()
+    mutator(row)
+    _write_history(ledger, [row])
+
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "INVALID"
+    assert result["rows"] == []
+    assert result["error"] == {"code": code, "line": 1}
+
+
+def test_read_ledger_history_invalid_closed_observation_clock_fails_closed(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    row = _history_closed()
+    row.pop("closed_asof")
+    _write_history(ledger, [row])
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "INVALID"
+    assert result["error"] == {"code": "MISSING_OBSERVATION_CLOCK", "line": 1}
+
+
+def test_read_ledger_history_duplicate_lifecycle_rows_are_not_deduplicated(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    row = _history_created()
+    _write_history(ledger, [row, row])
+
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "OK"
+    assert len(result["rows"]) == 2
+    assert result["rows"][0]["lifecycle_id"] == result["rows"][1]["lifecycle_id"]
+    assert result["coverage"]["selected_rows"] == 2
+
+
+def test_read_ledger_history_limit_is_bounded_and_does_not_parse_later_rows(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    rows = [_history_created(), _history_closed()]
+    ledger.write_text(
+        json.dumps(rows[0]) + "\n" +
+        json.dumps(rows[1]) + "\n" +
+        "{malformed after limit\n",
+        encoding="utf-8",
+    )
+    result = re_.read_ledger_history(ledger, limit=2)
+    assert result["status"] == "OK"
+    assert len(result["rows"]) == 2
+    assert result["coverage"]["stopped_by"] == "limit"
+    assert result["coverage"]["inspected_nonblank_lines"] == 2
+    assert result["coverage"]["first_uninspected_line"] == 3
+
+
+def test_read_ledger_history_missing_and_empty_are_typed(tmp_path):
+    missing = tmp_path / "missing.jsonl"
+    result = re_.read_ledger_history(missing)
+    assert result["status"] == "MISSING"
+    assert result["rows"] == []
+    assert result["coverage"]["selected_rows"] == 0
+
+    empty = tmp_path / "empty.jsonl"
+    empty.write_text("\n\n", encoding="utf-8")
+    result = re_.read_ledger_history(empty)
+    assert result["status"] == "EMPTY"
+    assert result["rows"] == []
+    assert result["coverage"]["selected_rows"] == 0
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "match"),
+    [
+        ({"mode": "natural"}, "mode"),
+        ({"through": "07/08/2026"}, "through"),
+        ({"limit": 0}, "limit"),
+        ({"limit": True}, "limit"),
+    ],
+)
+def test_read_ledger_history_rejects_invalid_query_arguments(tmp_path, kwargs, match):
+    ledger = tmp_path / "events.jsonl"
+    _write_history(ledger, [_history_created()])
+    with pytest.raises(ValueError, match=match):
+        re_.read_ledger_history(ledger, **kwargs)
+
+
+def test_read_ledger_history_does_not_mutate_source_bytes(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    _write_history(ledger, [_history_created(), _history_closed()])
+    before = ledger.read_bytes()
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "OK"
+    assert ledger.read_bytes() == before
