@@ -4611,6 +4611,10 @@ CURATED_EXCLUSIVE = {
     # opaque code fallback, so every ordinary code PR selected it. The exact
     # closure is now declared; packing ceilings remain unchanged.
     "regime-outlook-mapping",
+    # 2026-10-05: the recovered Alpha/RS view owns its two new suites and
+    # legacy owner regressions. Exact dependencies are curated so unrelated
+    # dashboard/Prophet edits do not acquire another always-on job.
+    "leadership-lab-recovery",
 }
 
 

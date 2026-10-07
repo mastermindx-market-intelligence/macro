@@ -1,0 +1,261 @@
+{% macro t(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
+{% macro value(v, decimals=1) -%}{{ ('%.*f'|format(decimals, v)) if v is not none else '—' }}{%- endmacro %}
+{% set RADAR_EN = {'SUPPRESSED':'Rebuilding','QUIET_ACCUMULATION':'Quiet build','CATALYST_WINDOW':'Catalyst watch','BREAKAWAY':'Breaking out','LEADERSHIP':'Leading','CROWDED':'Crowded','FAILED':'Lost leadership','NONE':'No lifecycle read'} %}
+{% set RADAR_ZH = {'SUPPRESSED':'重建中','QUIET_ACCUMULATION':'悄然蓄势','CATALYST_WINDOW':'催化剂观察','BREAKAWAY':'正在突破','LEADERSHIP':'领先中','CROWDED':'拥挤','FAILED':'领先失效','NONE':'暂无生命周期判断'} %}
+{% set GAP_EN = {'QUALIFIED_PRE_RELEASE_EXPECTATION':'Pre-release expectation baseline','MATCHED_FORECAST_REVISIONS':'Matched analyst revisions','MATCHED_CONTRIBUTOR_REVISIONS':'Matched contributor revisions','ANALYST_CONSENSUS_COMPARISON':'Analyst consensus comparison','COMPARABLE_PROFITABILITY':'Comparable profitability','CURRENT_ENTRY_AND_MARKET_PERMISSION':'Current entry / market permission','CURRENT_MARKET_AND_PORTFOLIO_PERMISSION':'Current market / portfolio permission','PRICE_SENSITIVE_ENTRY_SCENARIO':'Price-sensitive entry scenario','MATCHED_PERIOD_CASH_FLOW_RECONCILIATION':'Matched-period cash-flow reconciliation'} %}
+{% set GAP_ZH = {'QUALIFIED_PRE_RELEASE_EXPECTATION':'财报前预期基准','MATCHED_FORECAST_REVISIONS':'同一分析师预期修正','MATCHED_CONTRIBUTOR_REVISIONS':'同一贡献者预期修正','ANALYST_CONSENSUS_COMPARISON':'分析师一致预期比较','COMPARABLE_PROFITABILITY':'可比盈利能力','CURRENT_ENTRY_AND_MARKET_PERMISSION':'当前买点 / 市场许可','CURRENT_MARKET_AND_PORTFOLIO_PERMISSION':'当前市场 / 组合许可','PRICE_SENSITIVE_ENTRY_SCENARIO':'价格敏感买点情景','MATCHED_PERIOD_CASH_FLOW_RECONCILIATION':'同期现金流对账'} %}
+{% macro radar_state(v) -%}{{ t(RADAR_EN.get(v, 'No lifecycle read'), RADAR_ZH.get(v, '暂无生命周期判断')) }}{%- endmacro %}
+{% macro gap_label(v) -%}{{ t(GAP_EN.get(v, v), GAP_ZH.get(v, v)) }}{%- endmacro %}
+{% macro yes_no_unknown(v) -%}{% if v is sameas true %}{{ t('Yes','是') }}{% elif v is sameas false %}{{ t('No','否') }}{% else %}{{ t('Unknown','未知') }}{% endif %}{%- endmacro %}
+<!doctype html>
+<html lang="en" data-theme="dark" data-lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Leadership Lab — Mastermind research preview</title>
+<style>{{ theme_css|safe }}</style>
+<style>{{ page_css|safe }}</style>
+</head>
+<body class="ll">
+<div class="ll-frame">
+<header class="ll-nav">
+  <a class="ll-brand" href="#main" aria-label="Mastermind Leadership Lab">MASTERMIND<span> / LAB</span></a>
+  <div class="ll-nav-tools">
+    <span class="ll-preview">{{ t('Research preview', '研究预览') }}</span>
+    <button id="ll-theme" type="button" aria-label="Toggle light and dark theme">{{ t('Light / dark', '浅色 / 深色') }}</button>
+    <button id="ll-language" type="button" aria-label="Switch English or Chinese">EN / 中文</button>
+  </div>
+</header>
+<main id="main">
+<section class="ll-hero">
+  <div>
+    <p class="ll-eyebrow">{{ t('ALPHA + RELATIVE STRENGTH', '超额表现 + 相对强度') }}</p>
+    <h1>{{ t('Leadership Lab', '领先股研究') }}</h1>
+    <p class="ll-subtitle">{{ t('Find enduring leaders—and the evidence that could support their next leg.', '寻找持续领先的企业，研究下一段行情所需的证据。') }}</p>
+    <p class="ll-source">{{ t('Recovered source', '恢复的数据') }} <strong>{{ view.source_session or '—' }}</strong> · {{ t('Not live', '非实时') }}</p>
+  </div>
+  <aside class="ll-hero-note">
+    <span class="ll-eyebrow">{{ t('THE STRATEGY', '策略方向') }}</span>
+    <h2>{{ t('Leadership first. Evidence next.', '先找领先者，再验证证据。') }}</h2>
+    <p>{{ t('Strength earns a closer look. Earnings, catalysts and an acceptable entry must earn the next decision.', '强势表现值得深入研究；盈利、催化剂和合理买点仍需分别验证。') }}</p>
+    <span class="ll-note">{{ t('Not a buy signal', '不是买入信号') }}</span>
+  </aside>
+</section>
+
+{% if view.status == 'UNAVAILABLE' %}
+<section class="ll-status ll-warning" role="status"><strong>{{ t('No eligible source snapshot', '没有符合条件的数据快照') }}</strong><p>{{ t('A missing or future-dated source cannot populate this view.', '缺失或晚于参考日期的数据不得填充此视图。') }}</p></section>
+{% elif view.status == 'STALE_RECOVERED_SNAPSHOT' %}
+<section class="ll-status ll-warning" role="status"><strong>{{ t('Older source snapshot', '较早的数据快照') }}</strong><p>{{ t('Historical context only. Rebuilding this page does not refresh its source.', '仅供历史研究。重新生成页面不会更新原始数据。') }} {{ t('Reference session', '参考交易日') }}: {{ view.reference_session }}</p></section>
+{% endif %}
+
+{% if view.current_context is defined %}
+<section class="ll-current-banner" aria-label="Current owner context">
+  <div>
+    <strong>{{ t('Current owner context', '当前系统背景') }}</strong>
+    <span>{{ t('Current context only', '仅代表当前背景') }} ·
+      {{ t('Radar price through', '雷达价格截至') }} {{ view.current_context.radar.as_of|default('—') }} ·
+      {{ t('Theme context', '主题背景') }} {{ view.current_context.theme_state.as_of|default('—') }}</span>
+  </div>
+  <p>{{ t('These owner reads were generated after the recovered Alpha snapshot and cannot be replayed as ' ~ view.source_session ~ ' evidence.', '这些系统背景生成于历史 Alpha 快照之后，不能当作 ' ~ view.source_session ~ ' 当时已知的证据。') }}</p>
+</section>
+{% endif %}
+
+<section class="ll-metrics" aria-label="Recovery coverage">
+  <div><span>{{ t('Stock records recovered', '恢复的证券记录') }}</span><strong>{{ '{:,}'.format(view.recovered_count) }}</strong><small>{{ t('Original population preserved', '保留原始样本总体') }}</small></div>
+  <div><span>{{ t('Existing theme baskets', '已有主题篮子') }}</span><strong>{{ view.groups|length }}</strong><small>{{ t('Current memberships—not historical proof', '当前成员关系，不代表历史可知') }}</small></div>
+  <div><span>{{ t('Next decision', '下一步判断') }}</span><strong class="ll-text-metric">{{ t('Investigate', '继续研究') }}</strong><small>{{ t('Entry evidence not connected', '尚未连接买点证据') }}</small></div>
+</section>
+
+<section class="ll-board">
+  <div class="ll-section-head"><div><p class="ll-eyebrow">{{ t('RECOVERED LEADERSHIP', '已恢复的领先表现') }}</p><h2>{{ t('Start with the leaders', '从领先者开始研究') }}</h2></div><span class="ll-count">{{ t((view.shortlist|length|string) ~ ' of ' ~ (view.recovered_count|string), '预览 ' ~ (view.shortlist|length|string) ~ ' / ' ~ (view.recovered_count|string)) }}</span></div>
+  <p class="ll-section-copy">{{ t('Ordered by legacy Alpha unless RS was selected at build time. Neither is a forecast.', '按历史 Alpha 排序，或按生成时选择的 RS 排序。两者均非预测概率。') }}</p>
+  <div class="ll-filters">
+    <label><span>{{ t('Filter this preview', '筛选当前预览') }}</span><input id="ll-search" type="search" placeholder="Ticker, company, theme…" aria-label="Filter this preview" autocomplete="off"></label>
+    <label><span>{{ t('Sector', '行业') }}</span><select id="ll-sector" aria-label="Sector filter"><option value="" data-label-en="All preview sectors" data-label-zh="预览内全部行业">All preview sectors</option>{% for sector in sectors %}<option value="{{ sector }}">{{ sector }}</option>{% endfor %}</select></label>
+    <span id="ll-visible" class="ll-filter-count" aria-live="polite"></span>
+  </div>
+  <div class="ll-table-wrap" tabindex="0" role="region" aria-label="Recovered Alpha and RS research table">
+  <table class="ll-table">
+    <thead><tr><th>{{ t('Company / research notes', '公司 / 研究详情') }}</th><th class="ll-number">{{ t('Legacy Alpha', '历史 Alpha') }}</th><th class="ll-number">{{ t('Legacy RS', '历史 RS') }}</th><th>{{ t('Theme context', '主题背景') }}</th></tr></thead>
+    <tbody>{% for row in view.shortlist %}
+    <tr data-leader-row="{{ row.ticker }}" data-sector="{{ row.sector }}" data-search="{{ row.ticker }} {{ row.name }} {{ row.sector }} {% for theme in row.themes %}{{ theme.name }} {% endfor %}">
+      <td><details class="ll-dossier"><summary><span class="ll-ticker">{{ row.ticker }}</span><span class="ll-company">{{ row.name }}</span></summary>
+        <div class="ll-dossier-content">
+          <p><strong>{{ t('What is known', '已知信息') }}</strong><br>{{ t('Historical stock-specific momentum and relative-strength context are recovered. This is not a current entry assessment.', '已恢复历史个股动量与相对强度信息，但并未形成当前买点判断。') }}</p>
+          <dl><div><dt>{{ t('Sector', '行业') }}</dt><dd>{{ row.sector }}</dd></div><div><dt>{{ t('RS: 3 / 6 / 12 months', 'RS：3 / 6 / 12 个月') }}</dt><dd>{{ value(row.legacy_rs3m,0) }} / {{ value(row.legacy_rs6m,0) }} / {{ value(row.legacy_rs12m,0) }}</dd></div><div><dt>{{ t('Available factor legs', '可用因子项') }}</dt><dd>{{ row.available_factor_legs }}</dd></div><div><dt>{{ t('Partial legacy blend', '部分恢复的历史综合分') }}</dt><dd>{{ value(row.legacy_top_score,2) }}</dd></div></dl>
+          <p class="ll-note">{{ t('Blend parity is unclaimed: the separate insider overlay is not joined. Different-horizon RS values do not prove an emerging-leader transition.', '尚未连接独立的内部人交易数据，不能声称完整复现原综合分。不同周期 RS 的差异也不能证明新晋领先。') }}</p>
+          {% if row.current_context is defined %}
+          <div class="ll-owner-context">
+            <strong>{{ t('Current owner context', '当前系统背景') }}</strong>
+            {% set rc = row.current_context.radar %}
+            <dl>
+              <div><dt>{{ t('Lifecycle', '生命周期') }}</dt><dd>{% if rc.status == 'AVAILABLE' %}{{ radar_state(rc.state) }}{% else %}{{ t('Unavailable','不可用') }}{% endif %}</dd></div>
+              <div><dt>{{ t('Entry permission', '买点许可') }}</dt><dd>{{ t('Not connected', '尚未连接') }}</dd></div>
+              {% if row.current_context.themes %}
+              {% set ct = row.current_context.themes[0] %}
+              <div><dt>{{ t('Current theme', '当前主题') }}</dt><dd>{{ t(ct.name_en, ct.name_zh) }}</dd></div>
+              <div><dt>{{ t('Theme rotation', '主题轮动') }}</dt><dd>{{ ct.rotation_quadrant|default('—') }}</dd></div>
+              {% if ct.subsectors %}
+              {% set sub = ct.subsectors[0] %}
+              <div><dt>{{ t('Subsector', '子行业') }}</dt><dd>{{ sub.key }}{% if sub.rs['1M'] is not none %} · 1M {{ '%+.1f'|format(sub.rs['1M']) }}{% endif %}</dd></div>
+              {% endif %}
+              {% endif %}
+            </dl>
+            {% set peers = row.current_context.peer_groups|default([]) %}
+            {% if peers %}
+            {% set pg = peers[0] %}
+            <div class="ll-peer-context">
+              <strong>{{ t('Independent peer read', '独立同业比较') }} · {{ pg.name }}</strong>
+              {% if pg.legacy_alpha.independence_status == 'AVAILABLE' %}
+              <span>{{ t('Clean issuer independence available', '发行人独立性完整') }}</span>
+              <p>{{ t('Alpha vs peer median', 'Alpha 相对同业中位数') }} {{ '%+.2f'|format(pg.legacy_alpha.focal_minus_peer_median) }} ·
+                 {{ t('RS vs peer median', 'RS 相对同业中位数') }} {{ '%+.1f'|format(pg.legacy_rs.focal_minus_peer_median) }}</p>
+              {% else %}
+              <span>{{ t('Clean issuer independence unavailable', '发行人独立性不完整') }}</span>
+              <p>{{ t('Unknown issuer identities:', '未知发行人身份：') }} {{ pg.legacy_alpha.unknown_peer_identity|length }} ·
+                 {{ t('observed independent peers', '已观察独立同业') }} {{ pg.legacy_alpha.observed_independent_peers }} / {{ pg.legacy_alpha.peer_denominator }}</p>
+              {% endif %}
+              <small>{{ t('Current membership; not historical PIT proof', '当前成员关系；不代表历史时点成员已验证') }}</small>
+              {% if peers|length > 1 %}<small>+{{ peers|length - 1 }} {{ t('other peer groups', '个其他同业组') }}</small>{% endif %}
+            </div>
+            {% endif %}
+            {% set ep = row.current_context.episode %}
+            {% if ep is defined and ep.status == 'AVAILABLE' %}
+            <div class="ll-episode">
+              <strong>{{ t('Current Prophet episode', '当前 Prophet 研究事件') }}</strong>
+              <span>{{ t('Active since ' ~ ep.opened_session, ep.opened_session ~ ' 起活跃') }} · {{ t('observed through', '观察截至') }} {{ ep.last_observed_at[:10] }}</span>
+              <code>{{ ep.security_id }} · {{ ep.company_id }}</code>
+              <small>{{ t('Current episode identity only—not historical identity proof', '仅为当前事件身份，不代表历史身份已经验证') }}</small>
+            </div>
+            {% endif %}
+            {% set earn = row.current_context.earnings|default(none) %}
+            {% if earn and earn.status == 'AVAILABLE' %}
+            <div class="ll-earnings">
+              <strong>{{ t('Business evidence', '业务证据') }}</strong>
+              <p>{{ earn.headline }}</p>
+              {% if earn.reported_changes %}
+              {% for change in earn.reported_changes[:3] %}
+              <span class="ll-evidence-chip">{{ change.metric }} · {{ '%+.1f%%'|format(change.change_pct) }} · {{ change.current_fiscal_period }} vs {{ change.prior_fiscal_period }}</span>
+              {% endfor %}
+              {% endif %}
+              {% if earn.brief %}
+                {% for fact in earn.brief.supporting_facts[:3] %}<p class="ll-evidence-fact">+ {{ fact.text }}</p>{% endfor %}
+                {% for fact in earn.brief.counterevidence[:3] %}<p class="ll-evidence-counter">– {{ fact.text }}</p>{% endfor %}
+              {% endif %}
+              {% if earn.not_established %}
+              <div class="ll-evidence-gaps"><strong>{{ t('Still not established', '仍未证实') }}</strong>
+                {% for gap in earn.not_established[:5] %}<span>{{ gap_label(gap) }}</span>{% endfor %}
+              </div>
+              {% endif %}
+              <small>{{ t('No continuation, catalyst, or re-rating probability is established.', '尚未建立延续、催化剂或重估概率。') }}</small>
+            </div>
+            {% endif %}
+            {% set catalyst = row.current_context.catalyst|default(none) %}
+            {% if catalyst %}
+            <div class="ll-catalyst">
+              <strong>{{ t('Catalyst coverage', '催化剂覆盖') }}</strong>
+              {% if catalyst.reason == 'LIVE_ENTRY_RADAR_LIVE_EPISODE_SOURCE_NOT_AVAILABLE' %}
+              <span>{{ t('Unavailable · Live Entry Radar is waiting for its live source', '不可用 · Live Entry Radar 正在等待实时来源') }}</span>
+              <small>{{ t('Missing coverage is not evidence that no catalyst exists. Prophet episode is not substituted for a Radar LiveEpisode.', '缺失覆盖并不代表不存在催化剂；不会用 Prophet 事件替代 Radar LiveEpisode。') }}</small>
+              {% else %}
+              <span>{{ t('Owner context not connected for this name', '该名称尚未连接催化剂所有者背景') }}</span>
+              <small>{{ t('No catalyst likelihood is inferred until the incumbent owner supplies the exact live context.', '在现有所有者提供精确实时背景前，不推断催化剂概率。') }}</small>
+              {% endif %}
+            </div>
+            {% endif %}
+            {% if row.current_context.rerating.status == 'AVAILABLE' %}
+            <p class="ll-context-line"><strong>{{ t('Re-rating watch', '重估观察') }}</strong> ·
+              {{ t('revisions', '预期上修') }} {{ yes_no_unknown(row.current_context.rerating.chips.revision_positive) }} ·
+              {{ t('broad revisions', '预期广度') }} {{ yes_no_unknown(row.current_context.rerating.chips.revision_breadth_60) }} ·
+              {{ t('compressed multiple', '估值压缩') }} {{ yes_no_unknown(row.current_context.rerating.chips.multiple_compressed) }}</p>
+            {% endif %}
+            <p class="ll-note">{{ t('Current context only; it does not change this recovered rank, create a continuation probability, or grant entry authority.', '仅为当前背景；不会改变历史排序，不产生延续概率，也不授予买点权限。') }}</p>
+          </div>
+          {% endif %}
+          <div class="ll-next"><strong>{{ t('Research next', '下一步研究') }}</strong><p>{{ t('Verify dated peer exposure, earnings revisions, guidance, the next catalyst and the existing entry owner’s decision.', '验证当时可知的同业敞口、盈利预期变化、业绩指引、后续催化剂，以及已有买点系统的判断。') }}</p></div>
+        </div>
+      </details></td>
+      <td class="ll-number"><strong>{{ value(row.legacy_alpha,2) }}</strong></td>
+      <td class="ll-number">{{ value(row.legacy_rs,0) }}<span class="ll-out-of"> / 99</span></td>
+      <td class="ll-themes">{% if row.themes %}{{ row.themes[0].name }}{% if row.themes|length > 1 %}<small>+{{ row.themes|length - 1 }} {{ t('other memberships', '个其他主题') }}</small>{% endif %}{% else %}<span class="ll-muted">{{ t('Not mapped here', '此处尚未映射') }}</span>{% endif %}</td>
+    </tr>{% endfor %}</tbody>
+  </table></div>
+  <p id="ll-empty" class="ll-empty" hidden>{{ t('No match in this bounded preview. The full population remains in the JSON export.', '当前预览中没有匹配项。完整样本仍保留在 JSON 导出中。') }}</p>
+  <footer class="ll-table-foot">{{ t('Legacy Alpha is a residual-momentum statistic; RS is an in-house percentile—not IBD’s proprietary score or a win probability.', '历史 Alpha 是残差动量统计量；RS 是内部百分位，并非 IBD 专有评分或胜率。') }}</footer>
+</section>
+
+<section class="ll-lower">
+  <article class="ll-panel"><p class="ll-eyebrow">{{ t('THE GROUP MAP', '主题地图') }}</p><h2>{{ t('Existing themes, preserved', '保留已有主题系统') }}</h2><p class="ll-section-copy">{{ t('Recovered leaders plus coverage. Peer independence is shown only when issuer identities are complete.', '展示已恢复领先者与数据覆盖；仅在发行人身份完整时显示独立同业比较。') }}</p>
+    <details class="ll-group-list"><summary>{{ t('Explore recovered theme coverage', '查看已恢复的主题覆盖') }} <span>{{ view.groups|length }}</span></summary>
+    <div>{% for group in view.groups %}
+      {% set ns = namespace(summary=none) %}
+      {% if view.current_context is defined %}
+        {% for item in view.current_context.group_leadership|default([]) %}{% if item.group_id == group.id %}{% set ns.summary = item %}{% endif %}{% endfor %}
+      {% endif %}
+      <div class="ll-group">
+        <strong>{{ group.name }}</strong><span>{{ group.observed_count }} / {{ group.member_count }}</span>
+        <small>{{ group.category }} · {{ t('members with Alpha', '有 Alpha 的成员') }}</small>
+        {% if ns.summary %}
+        <div class="ll-group-leaders">
+          <span><b>{{ t('Recovered Alpha leaders', '已恢复 Alpha 领先') }}</b>{% for lead in ns.summary.top_legacy_alpha[:3] %}<i>{{ lead.ticker }} · {{ '%+.2f'|format(lead.value) }}</i>{% endfor %}</span>
+          <span><b>{{ t('Recovered RS leaders', '已恢复 RS 领先') }}</b>{% for lead in ns.summary.top_legacy_rs[:3] %}<i>{{ lead.ticker }} · {{ '%.0f'|format(lead.value) }}</i>{% endfor %}</span>
+          <small>{{ t('Descriptive order only; no group conviction score or forecast.', '仅为描述性排序；没有主题确信度评分或预测。') }}</small>
+        </div>
+        {% endif %}
+      </div>
+    {% endfor %}</div></details>
+  </article>
+  <article class="ll-panel"><p class="ll-eyebrow">{{ t('THE NEXT LEG', '下一段机会') }}</p><h2>{{ t('What could sustain it?', '什么能支撑继续领先？') }}</h2><p class="ll-section-copy">{{ t('These evidence lanes are planned—not fabricated from the recovered scores.', '以下证据链仍需接入，不能从历史评分中臆造。') }}</p>
+    <ol class="ll-evidence"><li><strong>{{ t('Earnings improving?', '盈利是否改善？') }}</strong><span>{{ t('Constant-period EPS, revenue and margin revisions', '固定期间的盈利、收入及利润率预期变化') }}</span></li><li><strong>{{ t('A new catalyst?', '是否有新催化剂？') }}</strong><span>{{ t('Known event, expected baseline and disconfirming evidence', '已知事件、预期基准与反证') }}</span></li><li><strong>{{ t('Room to re-rate?', '是否仍有重估空间？') }}</strong><span>{{ t('Separate earnings growth from multiple expansion', '将盈利增长与估值倍数扩张分开') }}</span></li><li><strong>{{ t('An acceptable entry?', '是否存在合理买点？') }}</strong><span>{{ t('Read the incumbent entry and risk owners', '读取已有买点及风险系统的判断') }}</span></li></ol>
+  </article>
+</section>
+
+<details class="ll-method">
+  <summary>{{ t('Sources, measurement rules and remaining gaps', '数据来源、测量规则与待补足项') }}</summary>
+  <div class="ll-method-inner"><h3>{{ t('Exact recovery source', '精确恢复来源') }}</h3><code>{{ view.source_ref }}</code><p>{{ t('This Git snapshot does not attest historical availability, individual-stock source clocks, price adjustments or historical theme membership.', '该 Git 快照并不能证明历史可用性、个股数据时钟、价格复权口径或历史主题成员关系。') }}</p>
+    {% for label, source in view.sources.items() %}<div class="ll-receipt"><strong>{{ label }}</strong><code>{{ source.path|default('—') }}</code><small>SHA-256 {{ source.sha256|default('—') }}</small></div>{% endfor %}
+    <h3>{{ t('New measurements stay separate', '新测量与历史口径分开') }}</h3><p>{{ t('The new benchmark function compounds price ratios over exact endpoints. A 252-session lookback with a 21-session skip contains 231 returns—not the legacy 252-return formation. Missing sessions are never filled.', '新基准函数按精确端点计算复合收益；回看252个交易日并跳过最近21日，对应231个收益观测，并非历史版本的252个。缺失交易日不会自动填充。') }}</p>
+    <p>{{ t('The earnings bridge preserves the interaction: +20% EPS and +25% valuation multiple imply +50% price. This is illustrative arithmetic, not a forecast or proof of causation.', '盈利分解保留交互项：每股收益增长20%、估值倍数提高25%，对应股价上涨50%。这只是算术示例，并非预测或因果证明。') }}</p>
+    <h3>{{ t('Still unavailable', '仍未接入') }}</h3><p>{{ t('Calibrated continuation or catalyst probabilities; current earnings and guidance dossiers; institutionally sourced research synthesis; verified independent peer continuity; current entry approval; and production publication.', '经校准的延续或催化剂概率、当前盈利及指引档案、机构研究综合、经验证的独立同业持续性、当前买点许可，以及正式生产发布。') }}</p>
+    <ul>{% for gap in view.gaps %}<li><code>{{ gap }}</code></li>{% endfor %}</ul>
+  </div>
+</details>
+<footer class="ll-footer">{{ t('Recovered foundation. Uncalibrated research. Existing Prophet decisions and outcome ledgers remain unchanged.', '已恢复基础能力，尚属未校准研究；已有 Prophet 决策与结果账本保持不变。') }}</footer>
+</main>
+</div>
+<script>
+(function () {
+  'use strict';
+  const root = document.documentElement;
+  const search = document.getElementById('ll-search');
+  const sector = document.getElementById('ll-sector');
+  const rows = Array.from(document.querySelectorAll('[data-leader-row]'));
+  function filter() {
+    const query = search.value.trim().toLocaleLowerCase();
+    let count = 0;
+    rows.forEach(function (row) {
+      const show = (!query || row.dataset.search.toLocaleLowerCase().includes(query)) && (!sector.value || row.dataset.sector === sector.value);
+      row.hidden = !show;
+      if (show) count += 1;
+    });
+    document.getElementById('ll-visible').textContent = root.dataset.lang === 'zh' ? count + ' 项可见' : count + ' visible';
+    document.getElementById('ll-empty').hidden = count !== 0;
+  }
+  document.getElementById('ll-theme').addEventListener('click', function () {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  });
+  document.getElementById('ll-language').addEventListener('click', function () {
+    root.dataset.lang = root.dataset.lang === 'en' ? 'zh' : 'en';
+    root.lang = root.dataset.lang === 'zh' ? 'zh-CN' : 'en';
+    search.placeholder = root.dataset.lang === 'zh' ? '代码、公司、主题…' : 'Ticker, company, theme…';
+    const allSectors = sector.options[0];
+    allSectors.textContent = root.dataset.lang === 'zh' ? allSectors.dataset.labelZh : allSectors.dataset.labelEn;
+    filter();
+  });
+  search.addEventListener('input', filter);
+  sector.addEventListener('change', filter);
+  filter();
+}());
+</script>
+</body>
+</html>

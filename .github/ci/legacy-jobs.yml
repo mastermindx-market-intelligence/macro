@@ -20011,3 +20011,79 @@ jobs:
           git diff --exit-code docs/HOUSE_LAW_CI_GUARD_SUITE.md
       - name: house-law registry tests (idempotency + integration)
         run: python -m pytest tests/test_house_law_registry.py -q
+  leadership-lab-recovery:
+    if: ${{ false }}
+    gate: code
+    # Bounded exact-ref recovery and source-owner regressions. No global gate
+    # widening: unrelated macro/Prophet edits must not acquire another CI job.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/leadership_lab/**"
+      - "research/leadership_alpha_rs/evidence/.gitignore"
+      - "research/leadership_alpha_rs/evidence/browser_receipt_20261006.json"
+      - "engine/us_candidate_episode*.py"
+      - "engine/stock_identity/**"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/confluence_tiers.py"
+      - "engine/entry_primitives.py"
+      - "engine/hysteresis.py"
+      - "engine/ledger_lane.py"
+      - "engine/path_personality.py"
+      - "engine/path_risk_signals.py"
+      - "engine/session_anchor.py"
+      - "engine/session_digest.py"
+      - "engine/stock_technicals.py"
+      - "engine/technicals.py"
+      - "scripts/reconcile_us_candidate_episodes.py"
+      - "tests/test_leadership_lab_owner_binding.py"
+      - "tests/test_us_candidate_episode_reconciler.py"
+      - "tests/fixtures/us_candidate_episode/**"
+      - "collectors/edgar.py"
+      - "collectors/edgar_deadname_prices.py"
+      - "collectors/edgar_deadnames.py"
+      - "collectors/edgar_delisting.py"
+      - "collectors/edgar_eps.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "engine/residual_alpha.py"
+      - "engine/top_picks.py"
+      - "engine/equity_factors.py"
+      - "engine/baskets*.py"
+      - "engine/cross_asset.py"
+      - "engine/group_flow.py"
+      - "engine/indicators.py"
+      - "engine/validation.py"
+      - "engine/grading.py"
+      - "engine/name_score_grader.py"
+      - "engine/sue.py"
+      - "engine/universe_history.py"
+      - "lib/**"
+      - "data/**"
+      - "config.yml"
+      - "scripts/__init__.py"
+      - "scripts/build_leadership_lab.py"
+      - "templates/leadership_lab*"
+      - "templates/theme.css"
+      - "tests/conftest.py"
+      - "tests/test_leadership_lab.py"
+      - "tests/test_leadership_lab_catalyst.py"
+      - "tests/test_leadership_lab_context.py"
+      - "tests/test_leadership_lab_earnings.py"
+      - "tests/test_leadership_lab_groups.py"
+      - "tests/test_leadership_lab_peers.py"
+      - "tests/test_leadership_lab_page.py"
+      - "tests/test_residual_alpha.py"
+      - "tests/test_top_picks.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: install Leadership Lab test dependencies
+        run: pip install pytest pandas numpy jinja2 pyyaml pyarrow
+      - name: Leadership Lab and recovered source-owner contracts
+        run: python -m pytest tests/test_leadership_lab.py tests/test_leadership_lab_catalyst.py tests/test_leadership_lab_context.py tests/test_leadership_lab_earnings.py tests/test_leadership_lab_groups.py tests/test_leadership_lab_peers.py tests/test_leadership_lab_page.py tests/test_leadership_lab_owner_binding.py tests/test_residual_alpha.py tests/test_top_picks.py -q
