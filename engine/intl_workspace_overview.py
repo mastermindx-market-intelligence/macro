@@ -597,16 +597,39 @@ def build_overview(records, *, roster, context, qualifications=None):
     }
 
 
-def build_workspace_overviews(closes) -> dict | None:
+def build_workspace_overviews(closes, *, production_inputs=None,
+                              workspace_generation=None) -> dict | None:
     """Compose the new read-only view from supplied owner inputs, without a fetch.
 
-    The current source seam has no accepted per-leg qualification or generation
-    reference. Keep that absence explicit; dates and numerical availability do
-    not grant current ranking eligibility. The legacy views remain independent.
+    The legacy call retains unknown qualifications. Supplied evidence is evaluated
+    only by the existing input owner. Version 2 keeps its caller-issued publication
+    generation separate from each panel's nullable numerical source disclosure.
+    The caller must replace its nonce on any content or disclosure change; this
+    pure function owns no cross-call publication ledger. V2 requires a matching
+    version-aware consumer before the builder can opt in.
     """
     import pandas as pd
     from engine import intl_inputs
     from engine.intl_performance_records import build_return_records
+
+    supplied = production_inputs is not None
+    if supplied:
+        import uuid
+        _require_plain(production_inputs, ValueError, 'invalid_production_inputs')
+        _closed(production_inputs, ['adjustment_bases', 'source_evidence',
+                                   'disclosure_decisions', 'policy_id'], ValueError)
+        prefix = 'im-workspace-generation:'
+        if type(workspace_generation) is not str or not workspace_generation.startswith(prefix):
+            raise ValueError('invalid_workspace_generation')
+        token = workspace_generation[len(prefix):]
+        try:
+            parsed = uuid.UUID(token)
+        except (ValueError, AttributeError) as exc:
+            raise ValueError('invalid_workspace_generation') from exc
+        if parsed.version != 4 or str(parsed) != token:
+            raise ValueError('invalid_workspace_generation')
+    elif workspace_generation is not None:
+        raise ValueError('generation_without_production_inputs')
 
     countries = intl_inputs.countries()
     roster = [{"market_id": cc, "name_en": row["name"], "name_zh": row["name_zh"]}
@@ -615,21 +638,45 @@ def build_workspace_overviews(closes) -> dict | None:
         return None
     if closes is None:
         closes = pd.DataFrame(index=pd.DatetimeIndex([]))
-    raw = build_return_records(closes, market_ids=list(countries), source_reference=None)
+    source_reference = None
+    snapshot = None
+    if supplied:
+        snapshot = intl_inputs.source_snapshot(
+            closes, source_reference='intl-supplied-close:pending',
+            adjustment_bases=production_inputs['adjustment_bases'])
+        source_reference = 'intl-supplied-close:sha256:' + snapshot['content_sha256']
+        snapshot = intl_inputs.source_snapshot(
+            closes, source_reference=source_reference,
+            adjustment_bases=production_inputs['adjustment_bases'])
+    raw = build_return_records(closes, market_ids=list(countries), source_reference=source_reference)
     horizons = list(dict.fromkeys(row["horizon"] for row in raw["records"]))
     if not horizons:
         return None  # Invalid source geometry: retain the complete legacy page.
     bases = ["usd_unhedged", "local"]
+    qualifications = {basis: None for basis in bases}
+    if supplied:
+        for basis in bases:
+            result = intl_inputs.qualify_return_records(
+                raw, snapshot=snapshot,
+                source_evidence=production_inputs['source_evidence'],
+                disclosure_decisions=production_inputs['disclosure_decisions'],
+                policy_id=production_inputs['policy_id'], currency_basis=basis)
+            qualifications[basis] = result['qualifications']
     panels = []
     for horizon in horizons:
         for basis in bases:
             context = {"horizon": horizon, "currency_basis": basis,
-                       "return_basis": "price", "source_reference": None}
+                       "return_basis": "price", "source_reference": source_reference}
             panels.append({"context_id": "im-overview-" + str(len(panels)),
                            "overview": build_overview(raw, roster=roster,
-                                                       context=context, qualifications=None)})
-    return {"config": {"markets": list(countries), "horizons": horizons, "bases": bases,
+                                                       context=context, qualifications=qualifications[basis])})
+            if supplied:
+                panels[-1]['generation'] = workspace_generation
+    workspace = {"config": {"markets": list(countries), "horizons": horizons, "bases": bases,
                        "default_horizon": "1m" if "1m" in horizons else horizons[0],
-                       "default_basis": "usd_unhedged", "source_reference": None,
+                       "default_basis": "usd_unhedged", "source_reference": workspace_generation,
                        "anchor_ids": ["intl-legacy-research"], "library_group_ids": []},
             "panels": panels}
+    if supplied:
+        workspace['binding_version'] = 2
+    return workspace

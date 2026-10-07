@@ -515,3 +515,146 @@ def test_receipt_window_nanosecond_chronology_is_also_validated():
     window.update(start="2026-01-08T00:00:00.000000002", end="2026-01-08T00:00:00.000000001")
     window["endpoint_observations"] = {key: None for key in window["endpoint_observations"]}
     expect_error(ValueError, lambda: project(RAW, q), "invalid_qualification")
+
+
+# Optional production-input composition; the grants below are synthetic only.
+import pytest
+
+
+def _production_fixture():
+    from engine import intl_inputs
+    from engine.intl_performance_records import build_return_records
+    spec = importlib.util.spec_from_file_location(
+        'workspace_qualification_fixture', Path(__file__).with_name('test_intl_source_qualification.py'))
+    fixture = importlib.util.module_from_spec(spec); spec.loader.exec_module(fixture)
+    frame = fixture._frame().drop(columns=['USDJPY=X'])
+    bases = {series: 'synthetic-adjusted-close' for series in fixture.SERIES_IDS}
+    snapshot = intl_inputs.source_snapshot(frame, source_reference='pending', adjustment_bases=bases)
+    ref = 'intl-supplied-close:sha256:' + snapshot['content_sha256']
+    snapshot = intl_inputs.source_snapshot(frame, source_reference=ref, adjustment_bases=bases)
+    raw = build_return_records(frame, market_ids=list(intl_inputs.countries()), source_reference=ref)
+    evidence = fixture._evidence(snapshot)
+    evidence = [item for item in evidence if item['series_id'] == '^N225']
+    decisions = [item for item in fixture._decisions(raw, snapshot) if item['market_id'] == 'JP']
+    for item in evidence + decisions: item['source_reference'] = ref
+    inputs = dict(adjustment_bases=bases, source_evidence=evidence,
+                  disclosure_decisions=decisions, policy_id=fixture.POLICY_ID)
+    return frame, inputs, ref
+
+
+_GENERATION = 'im-workspace-generation:9e1a5667-47f3-4a69-a784-b971e3ba74ba'
+
+
+def _production_workspace(frame, inputs, generation=_GENERATION):
+    return _MODULE.build_workspace_overviews(frame, production_inputs=inputs,
+                                             workspace_generation=generation)
+
+
+def _production_panel(workspace, basis='local', horizon='1m'):
+    return next(p['overview'] for p in workspace['panels']
+                if p['overview']['context']['horizon'] == horizon
+                and p['overview']['context']['currency_basis'] == basis)
+
+
+def test_optional_supplied_inputs_preserve_legacy_unknown_mode():
+    frame, _, _ = _production_fixture()
+    old = _MODULE.build_workspace_overviews(frame)
+    assert old == _MODULE.build_workspace_overviews(frame, production_inputs=None, workspace_generation=None)
+    assert 'binding_version' not in old and old['config']['source_reference'] is None
+    assert all('generation' not in p for p in old['panels'])
+    assert all(r['metric']['value'] is None for p in old['panels'] for r in p['overview']['rows'])
+
+
+def test_supplied_local_only_evidence_keeps_partial_source_disclosure_and_original_inputs(monkeypatch):
+    import pandas as pd
+    from engine import intl_inputs
+    from lib import store
+    frame, inputs, ref = _production_fixture(); original = frame.copy(deep=True); before = copy.deepcopy(inputs)
+    def forbidden(*args, **kwargs): raise AssertionError('unexpected source I/O')
+    monkeypatch.setattr(intl_inputs, '_intl_closes', forbidden); monkeypatch.setattr(store, 'read', forbidden)
+    result = _production_workspace(frame, inputs)
+    assert result['binding_version'] == 2
+    assert result['config']['source_reference'] == _GENERATION
+    assert all(p['generation'] == _GENERATION for p in result['panels'])
+    local = _production_panel(result); usd = _production_panel(result, 'usd_unhedged')
+    jp = next(r for r in local['rows'] if r.get('market_id') == 'JP')
+    assert jp['metric']['quality'] == 'qualified' and jp['metric']['value'] is not None
+    assert local['context']['source_reference'] == ref
+    assert usd['context']['source_reference'] is None
+    assert all(r['metric']['value'] is None for r in usd['rows'])
+    assert _GENERATION not in json.dumps([p['overview'] for p in result['panels']])
+    assert not any(text in json.dumps(result) for text in ['synthetic-owner-decision','synthetic-disclosure-decision','qualification_context','source_evidence','adjustment_bases'])
+    pd.testing.assert_frame_equal(frame, original); assert inputs == before
+
+
+def test_publication_nonce_changes_only_replay_identity_not_source_or_values():
+    frame, inputs, _ = _production_fixture()
+    first = _production_workspace(frame, inputs)
+    second = _production_workspace(frame, inputs, 'im-workspace-generation:920e1ffa-2523-4621-8701-957792b362f0')
+    assert first['config']['source_reference'] != second['config']['source_reference']
+    assert [p['overview'] for p in first['panels']] == [p['overview'] for p in second['panels']]
+
+
+@pytest.mark.parametrize('generation', [None, '', 'source:private', 'im-workspace-generation:'+'a'*64,
+                                      'im-workspace-generation:9E1A5667-47F3-4A69-A784-B971E3BA74BA',
+                                      'im-workspace-generation:9e1a5667-47f3-1a69-a784-b971e3ba74ba'])
+def test_supplied_mode_requires_canonical_opaque_v4_publication_generation(generation):
+    frame, inputs, _ = _production_fixture()
+    with pytest.raises(ValueError): _production_workspace(frame, inputs, generation)
+
+
+@pytest.mark.parametrize('mutate', [lambda p: [], lambda p: {**p, 'extra': True},
+                                   lambda p: {k:v for k,v in p.items() if k != 'policy_id'},
+                                   lambda p: {**p, 'source_evidence': tuple(p['source_evidence'])}])
+def test_supplied_envelope_is_closed_plain_data(mutate):
+    frame, inputs, _ = _production_fixture()
+    with pytest.raises(ValueError): _production_workspace(frame, mutate(inputs))
+
+
+def test_generation_without_supplied_inputs_is_rejected():
+    with pytest.raises(ValueError): _production_workspace(None, None)
+
+
+@pytest.mark.parametrize('change', ['observation','basis','evidence_source','evidence_content','decision_source','decision_content','decision_horizon','decision_basis','decision_leg'])
+def test_old_or_mismatched_evidence_is_never_rebound_to_new_material(change):
+    frame, inputs, _ = _production_fixture()
+    inputs['disclosure_decisions'] = [item for item in inputs['disclosure_decisions'] if item['horizon'] == '1m']
+    if change == 'observation': frame.iloc[-1,0] += 1
+    elif change == 'basis': inputs['adjustment_bases']['^N225'] = 'synthetic-other-basis'
+    elif change.startswith('evidence_'):
+        key = 'source_reference' if change.endswith('source') else 'content_sha256'
+        inputs['source_evidence'][0][key] = 'wrong-source' if key == 'source_reference' else '0'*64
+    else:
+        key = {'source':'source_reference','content':'content_sha256','horizon':'horizon','basis':'currency_basis','leg':'leg'}[change.split('_')[1]]
+        for item in inputs['disclosure_decisions']:
+            item[key] = {'source_reference':'wrong-source','content_sha256':'0'*64,'horizon':'wrong-horizon','currency_basis':'usd_unhedged','leg':'usd'}[key]
+    result = _production_workspace(frame, inputs)
+    assert all(r.get('metric',{}).get('quality') != 'qualified' for p in result['panels'] for r in p['overview']['rows'])
+
+
+@pytest.mark.parametrize('state', ['missing_rights','metadata_denied','value_denied','session_unknown','basis_unknown'])
+def test_supplied_unknown_or_denied_decisions_remain_honest(state):
+    frame, inputs, _ = _production_fixture()
+    if state == 'missing_rights': inputs['disclosure_decisions'] = []
+    elif state == 'session_unknown': inputs['source_evidence'] = []
+    elif state == 'basis_unknown': inputs['source_evidence'][0]['basis_state'] = 'unknown'
+    else:
+        for item in inputs['disclosure_decisions']: item['metadata' if state == 'metadata_denied' else 'value'] = 'denied'
+    result = _production_workspace(frame, inputs); local = _production_panel(result)
+    if state == 'metadata_denied':
+        assert local['rows'][0] == {'slot':0,'quality':'denied','reason':'metadata_denied'}
+        assert local['context']['source_reference'] is None
+    else:
+        jp = next(r for r in local['rows'] if r.get('market_id') == 'JP')
+        assert jp['metric']['value'] is None
+
+
+def test_one_horizon_grant_does_not_disclose_source_in_other_contexts():
+    frame, inputs, ref = _production_fixture()
+    inputs['disclosure_decisions'] = [item for item in inputs['disclosure_decisions'] if item['horizon'] == '1m']
+    result = _production_workspace(frame, inputs)
+    for panel in result['panels']:
+        context = panel['overview']['context']
+        allowed = context['horizon'] == '1m' and context['currency_basis'] == 'local'
+        assert context['source_reference'] == (ref if allowed else None)
+        assert panel['generation'] == _GENERATION
