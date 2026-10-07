@@ -4621,7 +4621,7 @@ CURATED_EXCLUSIVE = {
     # PRs. paths: are the job's suite import closure; the cover-their-own-import-
     # closure test keeps that list honest as the tree moves.
     "ticker-news-qbus",
-    # 2026-10-07 RS source delivery: Register the reviewed calendar owner and its complete declared read closure.
+    # 2026-10-07 RS source delivery: retain the reviewed source-owner inventory.
     # Exact inventory only; scope audits and packing ceilings remain unchanged.
     "entry-radar-rs-pullback-calendar",
 }
