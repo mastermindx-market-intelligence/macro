@@ -4615,6 +4615,9 @@ CURATED_EXCLUSIVE = {
     # job owns all four PB-D suites. Its exclusive declaration covers the
     # measured 50-path import/read closure; packing ceilings stay unchanged.
     "pb-d-event-quality",
+    # 2026-10-07 RS source delivery: Register the reviewed native-reference owner and its complete declared read closure.
+    # Exact inventory only; scope audits and packing ceilings remain unchanged.
+    "dataos-prospective-reference",
 }
 
 
