@@ -1,0 +1,42 @@
+{
+  "schema": "pb_g_offline_verification.v1",
+  "status": "PASS",
+  "scope": "Offline claim/source integrity and frozen arithmetic only; no production or causal validation.",
+  "claim_count": 122,
+  "pb_f_matrix_git_blob_sha": "bcd2a2d44d02b7796484f1bdc549a684816cc577",
+  "original_claims_evidence_and_dispositions_preserved": true,
+  "pb_f_counts": {
+    "SURVIVES": 95,
+    "WEAKEN": 5,
+    "REJECT": 13,
+    "NEEDS_MORE_DATA": 9
+  },
+  "pb_g_counts": {
+    "RETAIN_AS_QUALIFIED": 95,
+    "UNRESOLVED": 9,
+    "REJECT_STRONG_FORM": 13,
+    "NARROW_AND_RETAIN": 5
+  },
+  "source_evidence_references_checked": 339,
+  "all_authority_and_pit_promotion_flags_false": true,
+  "next_falsifiers_all_nonempty_arrays": true,
+  "preferred_files_present": 7,
+  "future_briefs_unlaunched": 7,
+  "relative_markdown_file_links_checked": 60,
+  "owner_source_paths_pinned": 43,
+  "research_source_heads_unchanged": 6,
+  "source_files_git_blob_verified_by_reproduction": 18,
+  "supplied_own_score_groups_reproduced": 60,
+  "recomputed_output_byte_identical": true,
+  "recomputed_output_sha256": "5c9b534ae8e1fe1c78ad5bc432f1ba094fea4a8867b2e069116755960bd7e0e7",
+  "primary_episodes": 24,
+  "separate_challenge": 1,
+  "m0_m2_min_common": 8,
+  "all_three_common": 4,
+  "rich_m2_scored": 0,
+  "b_scored": 0,
+  "forty_to_sixty_comparable_baseline_complete": false,
+  "precise_insufficiency_verified": true,
+  "parent_program_complete": false,
+  "hosted_ci_or_production_proof_claimed": false
+}

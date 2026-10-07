@@ -1,52 +1,59 @@
-# PB-G integration checkpoint
+# PB-G — Cumulative research checkpoint and closeout
 
-## Mission and authority
+**Operation:** PB-G-POLICY-BEHAVIOR-INTEGRATION-20261007  
+**Finalization:** PROVEN_OUTCOME, scoped only to the commissioned bounded research/architecture return.  
+**PB-G mission complete:** true. **Parent scientific/program complete:** false.  
+**Carrier:** [macro#8580](https://github.com/mastermindx-market-intelligence/macro/pull/8580), draft / HOLD-FOR-SOL.  
+**Branch:** claude/pb-g-integration-synthesis-20261007.  
+**Fresh base:** c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05.  
+**Initial verified checkpoint:** f1faee0caee6278e814b5275ead9dde6d95e5ba3.  
+**Current packet revision:** exact branch head in the final GitHub readback/PR body; a file cannot self-embed its own commit identity.
 
-Operation: `PB-G-POLICY-BEHAVIOR-INTEGRATION-20261007`.
-Chris's current live instruction selected the PB-G GitHub handoff. The bounded commission is research and architecture only, including an evidence reconciliation, an explicit M0/M1/M2 result or demonstrated data insufficiency, a current-source architecture and bounded future handoffs.
+## Assignment and boundary
 
-Commission: Macro PR #8560 at `7abc3dc596c5a6463effb37422bf9bd34bbdf1ba`, `research/policy_behavior/handoffs/PB_G_INTEGRATION_SYNTHESIS_PRO.md`.
-Current protected procedure: Mastermind `ee120e80f5d5e0344c453dd7cbf4108b9c429b38`; `mastermind.sol_skillpack.v1`, version 1.0.1, bootstrap major 1. INDEX, COLD_START, ACTIVE_EXECUTION, SESSION_RELIABILITY, WEB_CEO_DELEGATION, REVIEW_RETURN, CLOSEOUT and the routing addendum were loaded at that commit. The historical procedure reference in the commission is evidence, not current law.
+The user directly delivered the [PB-G handoff at #8560](https://github.com/mastermindx-market-intelligence/macro/blob/7abc3dc596c5a6463effb37422bf9bd34bbdf1ba/research/policy_behavior/handoffs/PB_G_INTEGRATION_SYNTHESIS_PRO.md). It authorizes complete bounded research/architecture synthesis, written only under research/policy_behavior/pro_returns/PB-G/. It excludes production implementation, research-PR merging and future worker/Executive dispatch.
 
-The commissioned CROSS_SYSTEM_ARCHITECTURE Pro receipt remains the task profile. Actual served-model and billing details are not inferred from latency or tool availability. Native GitHub repository reads and branch creation were observed; no remote host, Executive Job, production mutation or external worker dispatch occurred.
+Current protected procedure was loaded at Mastermind ee120e80f5d5e0344c453dd7cbf4108b9c429b38, schema mastermind.sol_skillpack.v1 / 1.0.1. The commission historical pin was reconciled: identical index and loaded procedures text-equivalent after scratch-copy trailing-newline normalization. Final protected master remained unchanged.
 
-## Exact source returns
+## Exact inputs and source movement
 
-| Lane | PR | Frozen return |
-|---|---:|---|
-| PB-A | 8568 | a60c620b2761db74070929068c969aac8c2cee57 |
-| PB-B | 8573 | 1604552006b7a91ed5d0fa89c785a983478866ea |
-| PB-C | 8565 | 83b46fa22a1d79af86b4311483850fcc31d9aa56 |
-| PB-D | 8574 | df2091915159dab94f316718caa9b2662098eae4 |
-| PB-E | 8572 | 4720504205a7307630efe249a79c4bb02e5560da |
-| PB-F | 8575 | 7458a5d9b8e507de435136560a5cf86cebb839b9 |
+| Lane | PR | Reviewed and rechecked head |
+|---|---|---|
+| A | 8568 | a60c620b2761db74070929068c969aac8c2cee57 |
+| B | 8573 | 1604552006b7a91ed5d0fa89c785a983478866ea |
+| C | 8565 | 83b46fa22a1d79af86b4311483850fcc31d9aa56 |
+| D | 8574 | df2091915159dab94f316718caa9b2662098eae4 |
+| E | 8572 | 4720504205a7307630efe249a79c4bb02e5560da |
+| F | 8575 | 7458a5d9b8e507de435136560a5cf86cebb839b9 |
 
-A–E heads were independently re-read unchanged, open/draft with auto-merge null. PB-F's complete review and 122-unit claim matrix were read at the listed head. The launch gate is satisfied by returned artifacts; this does not accept or merge the source PRs.
+All six remained open, draft and unmerged with no auto-merge at final source check. PB-D implementation #8576 remains the separate incumbent at 401d51258afc44c9c5cbd21c04586e2c575024a2, still a checkpoint-only observed diff. No custody transfer occurred.
 
-## Carrier and scope
+Main advanced one commit to bb7847a33c5fcaa3d2963e3c6be18d3628493966, changing only engine/rotation_events.py and its test. Both paths are disjoint from the 43 inspected owner/source paths and this packet. No research redo or unrelated rebase was warranted. This is a bounded source-compatibility finding, not release integration proof.
 
-- Repository: `mastermindx-market-intelligence/macro`.
-- Branch: `claude/pb-g-integration-synthesis-20261007`.
-- Fresh main base and initial source census: `c6c0ab36cdbf31f74a20f5ebf9304dd3fd920b05`.
-- Only writable prefix: `research/policy_behavior/pro_returns/PB-G/`.
-- Current return state: IN_PROGRESS; parent program complete: false.
-- No source-return edits, PR #8560 overwrite, merge, auto-merge, production changes, data collection, prospective enrollment, ranking, sizing, entry or alert changes.
-- PR #8576 at observed head `401d51258afc44c9c5cbd21c04586e2c575024a2` is the separate incumbent PB-D implementation lane. It is not a PB-G ownership transfer. Its initial checkpoint claims work in progress, not implementation acceptance.
+## Completed capability
 
-The handoff's explicit research-only/no-merge boundary controls this return over generic repository delivery defaults. Organizational records outside this prefix are not modified; the incumbent parent may adopt the completed return through its existing owners.
+The [122-unit ledger](PB_G_CLAIM_LEDGER.json) preserves every original claim/evidence and PB-F disposition, with qualified confidence, sample/PIT limits, mechanism status, consumer relevance, zero authority and next falsifiers. Counts are 95 retained, five narrowed, 13 strong forms rejected and nine unresolved; they are not independent validated discoveries.
 
-## Evidence reconciliation frontier
+The [baseline](PB_G_POLICY_BEHAVIOR_BASELINE.md) verifies 18 source blobs and reproduces all 60 own-score groups. M0/M2-min tie on eight shared cases, all-three overlap is four, rich M2 is untested and PB-B scores none. The 40–60 comparable baseline is precisely insufficient; the larger scientific study remains incomplete.
 
-The five returns are not five independent confirmations. PB-F includes 95 SURVIVES, 5 WEAKEN, 13 REJECT and 9 NEEDS_MORE_DATA units; these are claim counts, including limitations, proposed safeguards and rejected extrapolations, not evidence weights or validated signals.
+The [findings](PB_G_INTEGRATED_FINDINGS.md) explicitly adjudicate all major hypotheses. The [architecture](PB_G_ARCHITECTURE_FREEZE.md) and [no-duplication map](PB_G_NO_DUPLICATION_MAP.md) identify the concrete lost policy-evidence vintage and retain existing owners and the current two-clock UI. The [roadmap](PB_G_BUILD_ROADMAP.md) and [seven briefs](PB_G_IMPLEMENTATION_HANDOFF_INDEX.md) name bounded capabilities, consumers, paths or exact admission gaps, failure cases, tests, real-path proof and stops. Every future brief is unlaunched.
 
-The source-qualified conclusion already preserved: PB-A's M0 and M2-min tie on eight shared cases; rich M2 is untested. Historical T2 categories are not certified independent economic roots. Archived NVDA 6/0/0 means unclassified sentiment, not measured neutral sentiment. Financing states and cash boundaries must remain typed.
+In-session scientific review passed after restrictive-regime, inevitable-unwind, Q-control and clock/design qualifiers were corrected. This is not parent/source-owner adoption or external scientific replication. [Acceptance](PB_G_ACCEPTANCE.md), [source manifest](PB_G_SOURCE_MANIFEST.json), [offline verification](PB_G_VERIFICATION.json) and [portable reproduction](scripts/reproduce_baseline.py) preserve recoverability.
 
-Three foreground analytical helpers are preparing: (1) exact baseline denominators and a forward-only evaluation amendment, (2) current owner/freshness census, and (3) C/D/E and untested-hypothesis reconciliation. They have no GitHub or production write scope in this assignment. Their returns remain advisory until integrated and verified by this session; no autonomous continuation after a turn is claimed.
+## Effects and authority
 
-## Next action and recovery
+Only this PB-G research branch/subtree was written in GitHub. No production file, source enrollment, scheduled job, model authority, scored vote, rank, entry, sizing, trading or live alert changed. No input PR merged. No external person was messaged or external worker/Executive Job launched.
 
-Finish the baseline/data-insufficiency proof, inspect the current source-clock/consumer contract, and map all 122 reviewed claim units into the PB-G ledger. Then produce the seven requested integration files, bounded future commission documents and verification evidence; publish on this same carrier and read back exact blobs.
+In-session analytical helpers completed bounded source/research/document assistance and review; no organizational child or watcher was armed. Root retained publication custody. No unresolved modifying effect or running source-writing child remains.
 
-Do not redo PB-F's full audit, relabel retrospective results as prospective, manufacture extra cases to meet 40–60, broaden into implementation, or displace PB-D's active writer.
+## Remaining work and exact next action
 
-Unresolved modifying effects: none at this checkpoint. The containing Git commit is the immutable checkpoint revision; final head and receipt belong in the PR/readback record, avoiding a self-referential commit hash.
+Parent/Sol should review/adopt or amend the complete return. A new current directive may admit PBG-01 source-clock retention/qualification. PBG-02 behavior display and PBG-03 financing/support dossier follow their dependencies. PB-D work remains with #8576.
+
+Later builders need current exact-path custody, contract admission and applicable release/consumer proof. Terminal receiver, Japan-specific producer and final incumbent evaluator interfaces remain explicit future admission gaps. Prospective studies require separately authorized frozen starts and mature evidence. No n-floor grants authority.
+
+## DO_NOT_REDO
+
+Do not pool A/B/E to manufacture the denominator, change historical inputs/forecasts/outcomes or PB-F dispositions, or repeat frozen arithmetic on an unchanged source set. Do not reclassify null sentiment as neutral, infer independent economic roots from legacy categories, broaden C's coded-issuer exclusion, sum incompatible cash/commitment/capacity/cap amounts, treat synthesis time as evidence freshness or duplicate an incumbent owner.
+
+Recover from this packet plus a bounded current source/custody delta. The requested PB-G research stop condition is satisfied; unlaunched implementation and the broader scientific program remain separate work.
