@@ -120,6 +120,11 @@ ISSUER_MIGRATIONS_NAME = "issuer_migrations.parquet"
 SECURITY_MIGRATIONS_NAME = "security_migrations.parquet"
 
 CONSTITUENTS = ROOT / "data" / "breadth" / "constituents.parquet"
+#: ITP A8 (DEC-ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07): the mid- and
+#: small-cap breadth constituents join the identity universe, read exactly like
+#: CONSTITUENTS (forward-only: no valid_from backdating, ingested_at = build time).
+MIDCAP_CONSTITUENTS = ROOT / "data" / "midcap_breadth" / "constituents.parquet"
+SMALLCAP_CONSTITUENTS = ROOT / "data" / "smallcap_breadth" / "constituents.parquet"
 MEMBERSHIP = ROOT / "data" / "baskets" / "membership.json"
 DELISTED_LEDGER = ROOT / "config" / "delisted_symbols.yml"
 CONFIG_YML = ROOT / "config.yml"
@@ -672,6 +677,16 @@ def load_universe() -> dict[str, dict]:
         frame = pd.read_parquet(CONSTITUENTS)
         for ticker in frame.index.astype(str):
             note(ticker.strip().upper(), "breadth.constituents", None)
+
+    if MIDCAP_CONSTITUENTS.exists():
+        frame = pd.read_parquet(MIDCAP_CONSTITUENTS)
+        for ticker in frame.index.astype(str):
+            note(ticker.strip().upper(), "midcap_breadth.constituents", None)
+
+    if SMALLCAP_CONSTITUENTS.exists():
+        frame = pd.read_parquet(SMALLCAP_CONSTITUENTS)
+        for ticker in frame.index.astype(str):
+            note(ticker.strip().upper(), "smallcap_breadth.constituents", None)
 
     if MEMBERSHIP.exists():
         payload = json.loads(MEMBERSHIP.read_text())
@@ -3313,8 +3328,8 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         "inputs": {
             **{
                 str(path.relative_to(ROOT)): _sha256(path)
-                for path in (CONSTITUENTS, MEMBERSHIP, DELISTED_LEDGER, CONFIG_YML,
-                            TICKER_ALIASES_PY)
+                for path in (CONSTITUENTS, MIDCAP_CONSTITUENTS, SMALLCAP_CONSTITUENTS,
+                            MEMBERSHIP, DELISTED_LEDGER, CONFIG_YML, TICKER_ALIASES_PY)
             },
             _relpath(SYMBOL_DIR_SNAPSHOTS): (
                 _sha256(snapshot_path) if snapshot_path is not None else None
@@ -3706,7 +3721,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
     ``notes`` and a success ``::notice`` — the false-freshness escape this law exists
     to close, on either rail.
     """
-    required = (CONSTITUENTS, MEMBERSHIP, DELISTED_LEDGER, CONFIG_YML, TICKER_ALIASES_PY)
+    required = (CONSTITUENTS, MIDCAP_CONSTITUENTS, SMALLCAP_CONSTITUENTS, MEMBERSHIP,
+                DELISTED_LEDGER, CONFIG_YML, TICKER_ALIASES_PY)
     missing = [
         str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p)
         for p in required if not p.exists()
