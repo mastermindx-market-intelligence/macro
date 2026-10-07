@@ -1,7 +1,7 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-10-05",
-  "generated_at": "2026-10-06T12:54:56.576785+00:00",
+  "generated_at": "2026-10-07T07:25:04.498152+00:00",
   "is_context_only": true,
   "n_snapshots": 1118,
   "n_days": 38,
@@ -21,12 +21,12 @@
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0114,
+          "mean_fwd_rel": 0.0117,
           "hit_rate": 0.579
         }
       },
-      "running_ic": 0.0092,
-      "running_ic_t_hac": 0.123,
+      "running_ic": 0.0083,
+      "running_ic_t_hac": 0.112,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -35,7 +35,7 @@
       "by_stage": {
         "running": {
           "n": 902,
-          "mean_fwd_rel": -0.0107,
+          "mean_fwd_rel": -0.0106,
           "hit_rate": 0.378
         },
         "coiling": {
@@ -45,12 +45,12 @@
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0142,
+          "mean_fwd_rel": 0.0148,
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0074,
-      "running_ic_t_hac": -0.112,
+      "running_ic": -0.0086,
+      "running_ic_t_hac": -0.131,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -59,7 +59,7 @@
       "by_stage": {
         "running": {
           "n": 640,
-          "mean_fwd_rel": -0.025,
+          "mean_fwd_rel": -0.0249,
           "hit_rate": 0.317
         },
         "coiling": {
@@ -69,12 +69,12 @@
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0183,
+          "mean_fwd_rel": 0.0197,
           "hit_rate": 0.605
         }
       },
-      "running_ic": -0.0005,
-      "running_ic_t_hac": -0.012,
+      "running_ic": -0.0004,
+      "running_ic_t_hac": -0.011,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -133,14 +133,6 @@
     },
     {
       "date": "2026-09-11",
-      "id": "russell:building-products-equipment",
-      "name": "Building Products & Equipment",
-      "stage": "coiling_primed",
-      "fwd_rel": -0.0811,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-11",
       "id": "russell:auto-truck-dealerships",
       "name": "Auto & Truck Dealerships",
       "stage": "running",
@@ -169,6 +161,14 @@
       "name": "Broadcasting",
       "stage": "running",
       "fwd_rel": -0.0724,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-11",
+      "id": "russell:building-products-equipment",
+      "name": "Building Products & Equipment",
+      "stage": "coiling_primed",
+      "fwd_rel": -0.0641,
       "horizon_d": 21
     },
     {

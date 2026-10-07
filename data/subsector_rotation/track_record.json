@@ -1,73 +1,73 @@
 {
   "schema": "subsector_rotation.track_record.v1",
-  "as_of": "2026-10-06",
-  "generated_at": "2026-10-06T11:33:30.571846+00:00",
+  "as_of": "2026-10-07",
+  "generated_at": "2026-10-07T05:45:32.341498+00:00",
   "is_context_only": true,
-  "n_snapshots": 13441,
-  "n_days": 50,
+  "n_snapshots": 13710,
+  "n_days": 51,
   "horizons": {
     "5": {
-      "n_matured": 12365,
-      "score_ic": -0.0313,
-      "score_ic_t_hac": -0.512,
-      "score_ic_t_gate": -0.512,
-      "score_ic_t_iid": -0.628,
+      "n_matured": 12634,
+      "score_ic": -0.0298,
+      "score_ic_t_hac": -0.495,
+      "score_ic_t_gate": -0.495,
+      "score_ic_t_iid": -0.611,
       "hac_anticonservative": false,
-      "ic_span_days": 94,
-      "indep_windows": 13.43,
+      "ic_span_days": 97,
+      "indep_windows": 13.86,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": -0.0313,
-        "ic_vol": 0.3381,
-        "ic_ir": -0.093,
-        "ic_ir_ann": -0.293,
-        "t_hac": -0.512,
-        "p_hac": 0.6089,
-        "hit": 0.435,
-        "n": 46,
+        "mean_ic": -0.0298,
+        "ic_vol": 0.3345,
+        "ic_ir": -0.089,
+        "ic_ir_ann": -0.282,
+        "t_hac": -0.495,
+        "p_hac": 0.6203,
+        "hit": 0.447,
+        "n": 47,
         "hac_lags": 5,
         "hac_lags_requested": 5,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-09-28",
-        "ic_span_days": 94,
-        "indep_windows": 13.43
+        "ic_last_date": "2026-10-01",
+        "ic_span_days": 97,
+        "indep_windows": 13.86
       },
       "by_stage": {
         "emerging": {
-          "n": 552,
+          "n": 564,
           "mean_fwd_rel": -0.0058,
-          "hit_rate": 0.435
+          "hit_rate": 0.434
         },
         "neutral": {
-          "n": 11261,
+          "n": 11506,
           "mean_fwd_rel": -0.0005,
           "hit_rate": null
         },
         "fading": {
-          "n": 552,
-          "mean_fwd_rel": 0.0056,
-          "hit_rate": 0.504
+          "n": 564,
+          "mean_fwd_rel": 0.0054,
+          "hit_rate": 0.505
         }
       },
       "v2": {
-        "n_matured": 6994,
-        "score_ic": -0.0374,
-        "score_ic_t_hac": -0.704,
+        "n_matured": 7263,
+        "score_ic": -0.0327,
+        "score_ic_t_hac": -0.617,
         "by_stage": {
           "emerging": {
-            "n": 678,
-            "mean_fwd_rel": -0.0064,
-            "hit_rate": 0.382
+            "n": 706,
+            "mean_fwd_rel": -0.0061,
+            "hit_rate": 0.385
           },
           "neutral": {
-            "n": 5561,
-            "mean_fwd_rel": -0.0014,
+            "n": 5780,
+            "mean_fwd_rel": -0.0013,
             "hit_rate": null
           },
           "fading": {
-            "n": 755,
-            "mean_fwd_rel": 0.0009,
-            "hit_rate": 0.559
+            "n": 777,
+            "mean_fwd_rel": 0.0007,
+            "hit_rate": 0.562
           }
         }
       }
@@ -88,7 +88,7 @@
         "ic_ir": -0.025,
         "ic_ir_ann": -0.113,
         "t_hac": -0.097,
-        "p_hac": 0.9227,
+        "p_hac": 0.9228,
         "hit": 0.444,
         "n": 45,
         "hac_lags": 10,
@@ -139,67 +139,67 @@
       }
     },
     "21": {
-      "n_matured": 10213,
-      "score_ic": -0.0031,
-      "score_ic_t_hac": -0.037,
-      "score_ic_t_gate": -0.037,
-      "score_ic_t_iid": -0.065,
+      "n_matured": 10482,
+      "score_ic": -0.0079,
+      "score_ic_t_hac": -0.096,
+      "score_ic_t_gate": -0.096,
+      "score_ic_t_iid": -0.169,
       "hac_anticonservative": false,
-      "ic_span_days": 77,
-      "indep_windows": 2.62,
+      "ic_span_days": 81,
+      "indep_windows": 2.76,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": -0.0031,
-        "ic_vol": 0.2943,
-        "ic_ir": -0.011,
-        "ic_ir_ann": -0.068,
-        "t_hac": -0.037,
-        "p_hac": 0.9701,
-        "hit": 0.447,
-        "n": 38,
+        "mean_ic": -0.0079,
+        "ic_vol": 0.2919,
+        "ic_ir": -0.027,
+        "ic_ir_ann": -0.175,
+        "t_hac": -0.096,
+        "p_hac": 0.9232,
+        "hit": 0.436,
+        "n": 39,
         "hac_lags": 21,
         "hac_lags_requested": 21,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-09-11",
-        "ic_span_days": 77,
-        "indep_windows": 2.62
+        "ic_last_date": "2026-09-15",
+        "ic_span_days": 81,
+        "indep_windows": 2.76
       },
       "by_stage": {
         "emerging": {
-          "n": 456,
-          "mean_fwd_rel": -0.0081,
-          "hit_rate": 0.445
+          "n": 468,
+          "mean_fwd_rel": -0.0082,
+          "hit_rate": 0.447
         },
         "neutral": {
-          "n": 9301,
-          "mean_fwd_rel": 0.0016,
+          "n": 9546,
+          "mean_fwd_rel": 0.0013,
           "hit_rate": null
         },
         "fading": {
-          "n": 456,
-          "mean_fwd_rel": 0.0114,
-          "hit_rate": 0.436
+          "n": 468,
+          "mean_fwd_rel": 0.0122,
+          "hit_rate": 0.432
         }
       },
       "v2": {
-        "n_matured": 4842,
-        "score_ic": -0.0192,
-        "score_ic_t_hac": -0.406,
+        "n_matured": 5111,
+        "score_ic": -0.0177,
+        "score_ic_t_hac": -0.397,
         "by_stage": {
           "emerging": {
-            "n": 518,
-            "mean_fwd_rel": -0.01,
-            "hit_rate": 0.361
+            "n": 530,
+            "mean_fwd_rel": -0.0114,
+            "hit_rate": 0.353
           },
           "neutral": {
-            "n": 3780,
-            "mean_fwd_rel": -0.0081,
+            "n": 4013,
+            "mean_fwd_rel": -0.008,
             "hit_rate": null
           },
           "fading": {
-            "n": 544,
-            "mean_fwd_rel": 0.0099,
-            "hit_rate": 0.474
+            "n": 568,
+            "mean_fwd_rel": 0.0086,
+            "hit_rate": 0.481
           }
         }
       }
@@ -285,88 +285,88 @@
   "note_zh": "\u6b63\u5728\u7d2f\u79ef\u524d\u77bb\u89c2\u6d4b\uff1b\u5c1a\u65e0\u5468\u671f\u901a\u8fc7 Newey-West \u663e\u8457\u6027\u68c0\u9a8c\u3002\u65e9\u671f\u6570\u636e\u4e3a\u6682\u5b9a\uff0c\u4ec5\u4f9b\u53c2\u8003\u3002",
   "recent_misses": [
     {
-      "date": "2026-09-11",
+      "date": "2026-09-15",
       "key": "healthcaregenomics",
       "name": "Genomics",
       "theme": "Healthcare & Biotech",
       "stage": "fading",
-      "fwd_rel": 0.2581,
+      "fwd_rel": 0.1397,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "key": "cybersecurityappsecurity",
-      "name": "App Security",
-      "theme": "Cybersecurity",
-      "stage": "fading",
-      "fwd_rel": 0.189,
+      "date": "2026-09-15",
+      "key": "energybaseoilproduction",
+      "name": "Oil Production",
+      "theme": "Energy Traditional",
+      "stage": "emerging",
+      "fwd_rel": -0.0976,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "key": "cybersecuritythreatops",
-      "name": "ThreatOps",
-      "theme": "Cybersecurity",
-      "stage": "fading",
-      "fwd_rel": 0.1793,
+      "date": "2026-09-15",
+      "key": "socialniche",
+      "name": "Niche",
+      "theme": "Social Media",
+      "stage": "emerging",
+      "fwd_rel": -0.0941,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "key": "iotsecurity",
-      "name": "Security",
-      "theme": "Internet of Things",
-      "stage": "fading",
-      "fwd_rel": 0.166,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-11",
-      "key": "cybersecurityzerotrust",
-      "name": "ZeroTrust",
-      "theme": "Cybersecurity",
-      "stage": "fading",
-      "fwd_rel": 0.1577,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-11",
-      "key": "cybersecurityendpoint",
-      "name": "Endpoint",
-      "theme": "Cybersecurity",
-      "stage": "fading",
-      "fwd_rel": 0.1552,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-11",
-      "key": "aisecurity",
-      "name": "Security",
+      "date": "2026-09-15",
+      "key": "ainetworking",
+      "name": "Networking",
       "theme": "Artificial Intelligence",
       "stage": "fading",
-      "fwd_rel": 0.1525,
+      "fwd_rel": 0.0937,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "key": "cybersecuritycloud",
-      "name": "Cloud",
-      "theme": "Cybersecurity",
+      "date": "2026-09-15",
+      "key": "hardwareservers",
+      "name": "Servers",
+      "theme": "Hardware",
       "stage": "fading",
-      "fwd_rel": 0.1419,
+      "fwd_rel": 0.0868,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-15",
+      "key": "commenergyoil",
+      "name": "Oil",
+      "theme": "Commodities Energy",
+      "stage": "emerging",
+      "fwd_rel": -0.0807,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-15",
+      "key": "energybasemajors",
+      "name": "Majors",
+      "theme": "Energy Traditional",
+      "stage": "emerging",
+      "fwd_rel": -0.0746,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-15",
+      "key": "varealityenterprise",
+      "name": "Enterprise",
+      "theme": "Virtual & Augmented Reality",
+      "stage": "fading",
+      "fwd_rel": 0.0682,
       "horizon_d": 21
     }
   ],
   "head_to_head": {
     "by_horizon": {
       "5": {
-        "n": 12365,
-        "n_v2": 6994,
-        "ic": -0.0313,
-        "ic_v2": -0.0374,
-        "gap": -0.0061,
-        "t_hac": -0.512,
-        "t_hac_v2": -0.704
+        "n": 12634,
+        "n_v2": 7263,
+        "ic": -0.0298,
+        "ic_v2": -0.0327,
+        "gap": -0.0029,
+        "t_hac": -0.495,
+        "t_hac_v2": -0.617
       },
       "10": {
         "n": 12096,
@@ -378,13 +378,13 @@
         "t_hac_v2": -0.165
       },
       "21": {
-        "n": 10213,
-        "n_v2": 4842,
-        "ic": -0.0031,
-        "ic_v2": -0.0192,
-        "gap": -0.0161,
-        "t_hac": -0.037,
-        "t_hac_v2": -0.406
+        "n": 10482,
+        "n_v2": 5111,
+        "ic": -0.0079,
+        "ic_v2": -0.0177,
+        "gap": -0.0098,
+        "t_hac": -0.096,
+        "t_hac_v2": -0.397
       },
       "63": {
         "n": 5640,
