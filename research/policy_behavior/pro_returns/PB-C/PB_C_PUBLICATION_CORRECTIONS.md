@@ -12,3 +12,7 @@ The initial independent numerical review refers to its recorded pre-normalizatio
 Original Treasury derivation receipts remain unchanged and correctly retain the working-copy protocol hash actually consumed at derivation time. That script used the file for provenance hashing; the recorded stress specifications and calculations are unchanged. This note explicitly relates that historical working-copy hash to the byte-exact canonical Git protocol.
 
 This is a publication/provenance normalization after analysis, not a retrospective amendment to the research choices or a new source of statistical evidence.
+
+## Treasury calendar serialization
+
+The final Git blob audit also found that ordinary text reading had normalized the CSV calendar's CRLF line endings to LF when preparing its Git write. The Git copy was repaired to preserve the original local CSV bytes, matching the frozen derivation receipt and analysis input digest. No calendar value, holiday, date ordering or computation changed. The final publication receipt compares all repository blob hashes with the delivered files.
