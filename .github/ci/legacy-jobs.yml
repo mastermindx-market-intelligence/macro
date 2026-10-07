@@ -5698,7 +5698,7 @@ jobs:
       # so its rule arithmetic must not be UNRUN the way test_nyse_calendar.py was
       # until 2026-07-27.
       - name: nyse + tsx calendar rules, first-party imported-name resolution
-        run: python -m pytest tests/test_nyse_calendar.py tests/test_tsx_calendar.py tests/test_first_party_import_names.py -q
+        run: python -m pytest tests/test_nyse_calendar.py tests/test_tsx_calendar.py tests/test_cn_calendar.py tests/test_exchange_holiday_notices.py tests/test_market_session.py tests/test_first_party_import_names.py -q
       # SP1-B: restrict_to_nyse_sessions must refuse a weekend-contaminated
       # price index. Belongs HERE — the filter is session_rows + is_session,
       # which this job already owns. Hermetic (synthetic dates, no data/).
@@ -8383,11 +8383,33 @@ jobs:
         # full heavy profile — these tests import through scripts/build_hk.py
         # (jinja2 -> markupsafe, plotly, pillow, requests); verified in a scratch
         # venv against exactly this set.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests yfinance
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: hk robustness w5 tests
         run: python -m pytest tests/test_hk_robustness_w5.py tests/test_hk_freshness.py -q
       - name: HK macro fill budget + degraded-store preservation
         run: python -m pytest tests/test_hk_macro_ffill_budget.py tests/test_store_guard.py -q
+      - name: Exchange holiday data retention and existing live consumers
+        run: >-
+          python -m pytest
+          tests/test_market_holiday_collector_freshness.py
+          tests/test_store_holiday_retention.py
+          tests/test_live_holiday_overlay.py
+          tests/test_live_holiday_js.py
+          tests/test_hk_southbound_holiday_retention.py
+          tests/test_tushare_holiday_retention.py
+          tests/test_universe_holiday_retention.py
+          tests/test_live_overlay.py
+          tests/test_build_live_overlay.py
+          tests/test_live_quotes_settle_window.py
+          tests/test_tushare_freshness.py
+          -q
+      # Name the Node suite directly so test-only .mjs edits select this owner.
+      # Python subprocess references to peer tests are intentionally not owners.
+      - name: Holiday client quote and session receipt behavior
+        run: node --test tests/live_holiday.test.mjs
 
   hk-integration-seams:
     if: ${{ false }}
