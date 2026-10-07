@@ -103,13 +103,21 @@ verified:
     forwarding respected. Later concurrent wrapper additions preserved.
 - claim: Library actual controller and composition preserve local search, context, legacy navigation and keyboard focus.
   command: NODE_PATH=/Users/mini2/node_modules INTL_TEST_PYTHON=/Users/mini2/lanes/venv/bin/python PLAYWRIGHT_CHROMIUM_CHANNEL=chrome node --test tests/intl_workspace_controller.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_page.test.cjs in exact staged closure.
-  result: 61 actual Chrome cases pass;18 specifically exercise Library, including two red-then-green focus repaint regressions. R2 independent review passed36 cases; final focus delta R3/R4 attempts timed out without verdict; independent acceptance remains pending.
+  result: 61 actual Chrome cases pass;18 specifically exercise Library, including two red-then-green focus repaint regressions. R2 independent review passed36 cases; final focus delta R3/R4 attempts timed out without verdict; final-delta-review-r1 later passed the exact complete source delta, bound by parent to the current file.
 - claim: Library evidence uses actual template and canonical assets, with explicit synthetic provenance.
   command: Run bound capture_library.py and capture_library_keyboard.py; inspect three committed manifests and fixture provenance.
   result: 48 captures across dark/light EN/ZH1440/390; no page horizontal overflow or console errors; final keyboard cells assert active focus-visible and2px outline. Not authenticated/live acceptance.
 - claim: Qwen snapshot dispatch failed before provider start and the unavailable host route is now held.
   command: fabric_task status/result paper-01a1101f-source-snapshot-r1; inspect owned-process receipt, key_names-only diagnostic and QWEN_MINI2_HOLD_RECEIPT.json.
   result: rc75,1.47seconds,residual0,no provider execution or source artifact. Mini2 expected local account configuration absent; only existing qwen qualification hold added, no credentials or limits changed.
+
+
+- claim: Pure supplied-close snapshot preserves original timestamp and numeric identity.
+  command: python3 -m pytest --rootdir . tests/test_intl_source_snapshot.py -q; run complete seven-suite foundation command in IM00_SOURCE_SNAPSHOT_EVIDENCE.json evidence logs.
+  result: 47 snapshot cases and190 affected foundation cases pass. Independent baseline review passed43 cases; parent exact-column/huge-integer amendments independently pass47 Linux cases and targeted counterchecks in final-delta-review-r1. No production qualification inferred.
+- claim: Explicit witnessed build escalation reaches the selected model and preserves its admission checks.
+  command: Run174 focused picker/adapter/regression tests; compare four installed SHA256 values with scoped Sol review and INSTALL_RECEIPT; installed pick build with requested full GLM, C2 and concrete witness.
+  result: 174 passed, Sol ACCEPT_SCOPED, installed hashes match and read-only selection returns glm-5.3. Occupied host capacity still refuses; no caps/holds/quality reset or immutable snapshot edit.
 
 unverified:
 - claim: Full programme and production acceptance.
@@ -121,11 +129,11 @@ unverified:
 unresolved:
 - Numerical currentness and disclosure still need actual completed-session, adjustment-basis and independent access-owner evidence. No guessed calendar or page-wide freshness threshold.
 - Four remaining research views and incumbent Investigation/Saved interfaces remain open; no duplicate store or migration takeover.
-- Source-snapshot pure extension awaits a qualified worker. Difficulty currently reaches launch guard but cannot explicitly select stronger build labor; Sol source-bound ruling freezes a repair preserving class and selected-model checks.
-- Final independent focus delta review, exact-head hosted checks, merge, normal publication and served acceptance remain distinct gates.
+- Source snapshot and final two edge repairs are independently source-reviewed. Authentic session/basis/disclosure inputs and pure qualifier implementation remain owed. Difficulty-selection repair is installed and verified.
+- Final source gates passed; exact-head hosted checks, merge, normal publication and served acceptance remain distinct gates.
 next_actions:
-- Continue original root and sole PR8527 carrier; obtain final focus-delta acceptance and publish mount/evidence, then continue source qualification.
-- Implement and independently review the narrow witnessed-model selector repair from fabric-stable-id/DIFFICULTY_RULING.json. Preserve model-specific quality floors, host/provider admission, role and original root.
+- Continue original root and sole PR8527 carrier; commit/push the accepted snapshot and focus-review evidence, then complete release gates while qualifier/Inspector work advances.
+- The exact snapshot precursor is accepted; qualification-extension/QUALIFIER_WORKER_R1_READY.md is released for admitted C2 build. Preserve original root and selected-model quality/capacity checks.
 - Consume original snapshot refusal; do not replay its durable ID or copy credentials. A newly scoped/admitted successor may proceed only after original effects are adjudicated.
 - Freeze International Investigation extension with incumbent Terminal804 before shared kernel or Saved writes.
 - Use existing Sol for consequential judgment; routine work stays on Fabric. No artificial one-leaf programme ceiling and no native grandchildren.

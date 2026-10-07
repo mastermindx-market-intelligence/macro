@@ -30,7 +30,7 @@
       "chrome_tests": 36,
       "scope": "prior controller before focus-stability amendment"
     },
-    "focus_delta_review": "R3 full GLM and R4 Grok both timed out with no verdict; pending independent acceptance, not a PASS",
+    "focus_delta_review": "Final-delta-review-r1 independently passed the exact complete delta after R3/R4 timed out without verdict; parent bound the reviewed delta and five functions to the final controller SHA.",
     "focused_library_python_tests": 68,
     "ci_manifest_jobs_validated": 247,
     "ci_inferred_uncovered_paths": {
@@ -52,11 +52,19 @@
     "parent_assessment": "Distinct dark luminance and light surface/elevation treatment, readable bilingual six-group catalogue at1440 and390. Final keyboard screenshot shows2px focused-link ring; no actual document horizontal overflow or console errors. Seven hidden inherited global elements exceed mobile viewport individually; no blanket element-width claim."
   },
   "limits": [
-    "Final focus-delta independent acceptance is pending; two settled timeout attempts produced no verdict",
+    "Final independent review covers source; actual-browser proof is the separate parent 61-case suite, not an independent browser rerun.",
     "Source metadata approval is not numerical disclosure/qualification",
     "Other four research views remain disabled until implemented",
     "No live/authenticated data proof or served publication",
     "Incumbent Saved interfaces and final source/CI/release gates remain separate"
   ],
-  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f"
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f",
+  "final_focus_review": {
+    "status": "PASS_SCOPED_PARENT_ACCEPTED",
+    "run_id": "paper-01a1101f-final-delta-review-r1",
+    "model": "grok-4.6",
+    "controller_sha256": "a36e5c93053e180e99c82c35b0ccaac50baf6bd1f1e5b6cd63eae26b77a1e046",
+    "scope": "Source-only review of complete delta from independently accepted R2 controller; all five provided functions bound verbatim to current file and exact entire diff checked by parent. Parent61Chrome tests remain separate.",
+    "acceptance_sha256": "2a0fb7bc469d1a816233261e25668467300ad05a8bb474b8f08d58daf61a4322"
+  }
 }

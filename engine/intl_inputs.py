@@ -233,3 +233,98 @@ def macro_freshness(cc: str, macro: pd.DataFrame | None = None) -> dict:
         s = macro[col].dropna() if (not macro.empty and col in macro.columns) else None
         out[metric] = str(s.index[-1].date())[:7] if (s is not None and not s.empty) else None
     return out
+
+
+def _snapshot_close_scalar(value) -> tuple[int | float | None, str | None]:
+    """Preserve numeric identity without DataFrame row coercion."""
+    import math
+
+    if value is None or value is pd.NA:
+        return None, None
+    if isinstance(value, (bool, np.bool_)):
+        raise ValueError("snapshot close cannot be boolean")
+    if isinstance(value, (int, np.integer)):
+        plain = int(value)
+        # Bounded decimal chunks avoid Python's process-wide integer-string
+        # digit limit without changing that global setting or capping inputs.
+        magnitude, chunks = abs(plain), []
+        while magnitude:
+            magnitude, remainder = divmod(magnitude, 1_000_000_000)
+            chunks.append(remainder)
+        decimal = (str(chunks[-1]) + "".join(f"{part:09d}" for part in reversed(chunks[:-1]))
+                   if chunks else "0")
+        return plain, "i:" + ("-" if plain < 0 else "") + decimal
+    if isinstance(value, (float, np.floating)):
+        plain = float(value)
+        if math.isnan(plain):
+            return None, None
+        if not math.isfinite(plain):
+            raise ValueError("snapshot close must be finite")
+        # Extended NumPy floats cannot silently lose bits in a plain float.
+        if isinstance(value, np.floating) and value != plain:
+            raise ValueError("snapshot close is not representable as a plain float")
+        return plain, "f:" + plain.hex()
+    raise ValueError("snapshot close must be numeric or missing")
+
+
+def source_snapshot(closes: pd.DataFrame, *, source_reference: str,
+                    adjustment_bases: dict[str, str]) -> dict:
+    """Fingerprint supplied primary-index/FX observations, without fetching.
+
+    This records content and the caller's explicit basis labels. It does not
+    attest freshness, calendar completion, source rights or financial fitness.
+    A missing series remains empty; an observed row with a missing cell remains
+    a dated null. Source-reference labels are outside the content digest.
+    """
+    import hashlib
+    import json
+
+    if type(source_reference) is not str or not source_reference.strip():
+        raise ValueError("snapshot requires a nonempty source reference")
+    if not isinstance(closes, pd.DataFrame):
+        raise ValueError("snapshot requires a DataFrame")
+    if not isinstance(closes.index, pd.DatetimeIndex):
+        raise ValueError("snapshot requires a DatetimeIndex")
+    if (closes.index.hasnans or not closes.index.is_unique
+            or not closes.index.is_monotonic_increasing):
+        raise ValueError("snapshot timestamps must be valid, unique and ascending")
+    if not closes.columns.is_unique:
+        raise ValueError("snapshot columns must be unique")
+
+    series_ids = []
+    for country in countries().values():
+        for series_id in (country["index"], country["fx"]):
+            if type(series_id) is not str or not series_id:
+                raise ValueError("snapshot configuration has an invalid series identity")
+            if series_id not in series_ids:
+                series_ids.append(series_id)
+    if (type(adjustment_bases) is not dict
+            or any(type(k) is not str for k in adjustment_bases)
+            or set(adjustment_bases) != set(series_ids)
+            or any(type(v) is not str or not v.strip() for v in adjustment_bases.values())):
+        raise ValueError("snapshot requires one explicit basis per configured series")
+
+    timestamps = [timestamp.isoformat() for timestamp in closes.index]
+    # Pandas MultiIndex membership permits partial-key matches. Only an exact
+    # configured string label names a series; structured extra columns do not.
+    positions = {label: position for position, label in enumerate(closes.columns)
+                 if type(label) is str}
+    series, digest_rows = [], []
+    for series_id in series_ids:
+        basis = adjustment_bases[series_id]
+        observations, digest_observations = [], []
+        if series_id in positions:
+            # Series.array retains nullable integer and NumPy scalar identity;
+            # iterrows() can instead coerce a large integer through a float.
+            for timestamp, scalar in zip(timestamps, closes.iloc[:, positions[series_id]].array):
+                value, token = _snapshot_close_scalar(scalar)
+                observations.append({"timestamp": timestamp, "value": value})
+                digest_observations.append([timestamp, token])
+        series.append({"series_id": series_id, "adjustment_basis": basis,
+                       "observations": observations})
+        digest_rows.append([series_id, basis, digest_observations])
+
+    encoded = json.dumps(digest_rows, ensure_ascii=False, separators=(",", ":"),
+                         allow_nan=False).encode("utf-8")
+    return {"source_reference": source_reference,
+            "content_sha256": hashlib.sha256(encoded).hexdigest(), "series": series}

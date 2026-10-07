@@ -53,8 +53,9 @@ waves:
 - id: IM00
   title: Shared performance, presentation and route foundation
   status: in_progress
-  next_action: Source adapters, Overview projection and DOM controller are reviewed and integrated. Existing input
-    owner must supply applicable source qualification; hosted exact-head CI remains required.
+  next_action: Source snapshot now passes47 cases and190 affected foundation tests with independent final review.
+    Build the pure qualifier under accepted derived-evaluation attribution. Authentic source/session/disclosure
+    inputs and hosted exact-head CI remain required.
 - id: IM01
   title: Overview
   status: in_progress
@@ -97,7 +98,7 @@ waves:
   title: Library and deterministic search
   status: in_progress
   next_action: Public catalogue and verified existing destinations are mounted through the sole controller. Parent
-    Chrome61 and render/source tests pass; consume independent current-controller review, then final CI/publication
+    Chrome61 and render/source tests plus independent final source review pass; complete final CI/publication
     and served acceptance.
   depends_on:
   - IM00
@@ -118,9 +119,9 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Consume exact Library controller review on the sole PR8527 carrier and complete its release checks.
-  Advance conservative source snapshot/session/disclosure qualification through the existing input owner; preserve
-  incumbent Saved boundaries.
+next_action: Final-delta review accepted the exact snapshot and Library focus delta on PR8527; integrate/push
+  the reviewed source vertical. Continue prepared pure qualifier and bounded Inspector
+  contract while respecting actual admission and incumbent Saved boundaries.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
