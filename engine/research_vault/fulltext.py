@@ -120,9 +120,9 @@ def build_extracted_text(
     canonical_text = "" if text is None else text
     if not isinstance(canonical_text, str):
         raise TypeError("text must be str or None")
-    if text is not None and canonical_text == "" and text_layer_state != "none":
+    if text is not None and canonical_text.strip() == "" and text_layer_state != "none":
         raise ValueError("empty extracted text requires text_layer_state=none")
-    if canonical_text and text_layer_state in {"none", "unavailable"}:
+    if canonical_text.strip() and text_layer_state in {"none", "unavailable"}:
         raise ValueError("nonempty extracted text conflicts with text_layer_state")
     encoded = canonical_text.encode("utf-8")
     boundaries = page_boundaries(canonical_text)
@@ -166,9 +166,9 @@ def _validate_extracted_text(artifact: dict[str, Any]) -> bytes:
     text = artifact.get("text")
     if not isinstance(text, str):
         raise ValueError("extracted-text artifact text must be str")
-    if text and state in {"none", "unavailable"}:
+    if text.strip() and state in {"none", "unavailable"}:
         raise ValueError("nonempty extracted text conflicts with text_layer_state")
-    if not text and state in {"full", "thin"}:
+    if not text.strip() and state in {"full", "thin"}:
         raise ValueError("empty extracted text conflicts with text_layer_state")
 
     encoded = text.encode("utf-8")
