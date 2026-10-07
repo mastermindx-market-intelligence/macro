@@ -1,6 +1,7 @@
 """Fixture-only proofs for crosswalk-owned theme hierarchy emission."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -13,7 +14,7 @@ from engine.theme_graph.materialize import ThemeHierarchyError
 
 EPOCH = materialize.HIERARCHY_EPOCH
 AFTER = "2026-10-08"
-VALID_NOMINATOR = "research:theme_notes/semis.md"
+VALID_NOMINATOR = "research:research/theme_notes/semis.md"
 
 
 
@@ -94,6 +95,10 @@ def write_hierarchy(tree, hierarchy):
     doc["hierarchy"] = hierarchy
     source.write_text(yaml.safe_dump(doc, allow_unicode=True, sort_keys=False),
                       encoding="utf-8")
+
+
+def tmp_path_of_tree(root: Path, name: str) -> Path:
+    return root.parent / name
 
 
 def nodes_by_id(view):
@@ -212,15 +217,45 @@ def test_new_tier_has_no_membership_or_expression_edges(populated_view):
                    if edge_type in {"EXPRESSES", "MEMBER_OF"})
 
 
-def test_populated_block_preserves_expresses_identity(tree, populated_view):
+def test_populated_block_preserves_expresses_identity(tree):
     root, source = tree
-    empty = materialize.build(
-        era="reconstruction", belief_time=AFTER, computed_at=f"{AFTER}T00:00:00Z",
-        data_dir=root, crosswalk_path=source, raw_snapshot=(AFTER, {}),
-        ths_history=pd.DataFrame(
-            columns=["snapshot_date", "suite", "basket_id", "ticker", "source_shape"]))
-    assert {row["edge_id"] for row in empty.edges if row["type"] == "EXPRESSES"} == {
-        row["edge_id"] for row in populated_view.edges if row["type"] == "EXPRESSES"}
+    (root / "baskets").mkdir(exist_ok=True)
+    (root / "baskets" / "membership.json").write_text(json.dumps({
+        "version": "2026-07-09", "seed_date": "2026-01-01",
+        "baskets": {"solar_us": {
+            "name": "Solar", "created": "2026-01-01", "etf_proxy": "TAN",
+            "members": [{"symbol": "AAA", "added": "2026-01-01", "removed": None,
+                         "name": "Alpha"}],
+        }},
+    }), encoding="utf-8")
+    documents = {}
+    for name, hierarchy in (
+            ("xwalk_empty.yml", None),
+            ("xwalk_populated.yml", hierarchy_doc(
+                categories=[category()],
+                micro_themes=[micro()],
+                parents=[parent(), parent("theme:solar", "theme:hierarchy_micro")]))):
+        document = yaml.safe_load(source.read_text(encoding="utf-8"))
+        if hierarchy is None:
+            document.pop("hierarchy", None)
+        else:
+            document["hierarchy"] = hierarchy
+        document["themes"][0]["basket_ids"] = ["solar_us"]
+        path = tmp_path_of_tree(root, name)
+        path.write_text(yaml.safe_dump(document, allow_unicode=True, sort_keys=False),
+                        encoding="utf-8")
+        documents[name] = materialize.build(
+            era="reconstruction", belief_time=AFTER, computed_at=f"{AFTER}T00:00:00Z",
+            data_dir=root, crosswalk_path=path, raw_snapshot=(AFTER, {}),
+            ths_history=pd.DataFrame(
+                columns=["snapshot_date", "suite", "basket_id", "ticker", "source_shape"]))
+    empty_ids = {row["edge_id"] for row in documents["xwalk_empty.yml"].edges
+                 if row["type"] == "EXPRESSES"}
+    populated_ids = {row["edge_id"] for row in documents["xwalk_populated.yml"].edges
+                     if row["type"] == "EXPRESSES"}
+    assert empty_ids == populated_ids
+    assert empty_ids
+    assert "expresses:basket:baskets:solar_us->theme:solar@2026-07-09" in empty_ids
 
 
 def test_future_dated_nodes_and_edges_are_pit_filtered(tree):
@@ -351,5 +386,95 @@ def test_basket_nominator_rights(tree, monkeypatch):
         materialize, "_validate_nominated_from", materialize._validate_nominated_from)
     from engine.theme_graph import rights as rights_module
     monkeypatch.setattr(rights_module, "family_for_node_id", lambda _value: None)
-    _refuses(tree, "VENDOR_NOMINATOR",
+    _refuses(tree, "NOMINATOR_FAMILY_UNRESOLVED",
              micro_themes=[micro(nominated_from="basket:baskets:x")])
+
+
+def test_research_vendor_path_refused_by_producer(tree):
+    _refuses(tree, "VENDOR_NOMINATOR",
+             micro_themes=[micro(nominated_from="research:data/themes_heatmap/us.json")])
+
+
+def test_unregistered_research_source_refused_by_producer(tree):
+    _refuses(tree, "NOMINATOR_UNREGISTERED_SOURCE",
+             micro_themes=[micro(nominated_from="research:data/unregistered_x/y.json")])
+
+
+def test_unsafe_research_path_refused_by_producer(tree):
+    _refuses(tree, "NOMINATOR_PATH_UNSAFE",
+             micro_themes=[micro(
+                 nominated_from="research:config/../data/themes_heatmap/us.json")])
+
+
+def test_producer_delegates_to_probation_rule(monkeypatch):
+    from engine.theme_graph import probation
+
+    monkeypatch.setattr(
+        probation, "nominated_from_errors", lambda value: ["SENTINEL_NOMINATOR: delegated"])
+    with pytest.raises(ThemeHierarchyError) as caught:
+        materialize._validate_nominated_from("research:research/x.md")
+    assert caught.value.reason == "SENTINEL_NOMINATOR"
+    assert str(caught.value) == "SENTINEL_NOMINATOR: delegated"
+
+    monkeypatch.setattr(probation, "nominated_from_errors", lambda value: [])
+    assert materialize._validate_nominated_from("research:finviz_themes") is None
+
+
+def test_producer_passes_raw_nominator_bytes():
+    from engine.theme_graph import probation
+
+    expected_reasons = {
+        "research:research/x.md ": "NOMINATOR_PATH_UNSAFE",
+        " research:research/x.md": "NOMINATOR_PATH_UNSAFE",
+        "research:": "NOMINATED_FROM_GRAMMAR",
+    }
+    for value, expected_reason in expected_reasons.items():
+        with pytest.raises(ThemeHierarchyError) as producer_error:
+            materialize._validate_nominated_from(value)
+        probation_reason = probation.nominated_from_errors(
+            value)[0].partition(": ")[0]
+        assert producer_error.value.reason == expected_reason
+        assert producer_error.value.reason == probation_reason
+
+
+def test_producer_does_not_reimplement_nominator_rule():
+    import inspect
+
+    assert not hasattr(materialize, "_NOMINATED_FROM_RE")
+    source = inspect.getsource(materialize._validate_nominated_from)
+    assert "nominated_from_errors" in source
+    for needle in ("finviz", "ths", "family_for", "fullmatch", "basket:", "research:"):
+        assert needle not in source
+
+
+def test_undated_crosswalk_emits_no_dangling_parent_edge(tree):
+    root, source = tree
+    document = yaml.safe_load(source.read_text(encoding="utf-8"))
+    document["date"] = "not-a-date"
+    document["hierarchy"] = hierarchy_doc(
+        categories=[category()], parents=[parent()])
+    source.write_text(yaml.safe_dump(document, allow_unicode=True, sort_keys=False),
+                      encoding="utf-8")
+    view = materialize.build(
+        era="reconstruction", belief_time=AFTER, computed_at=f"{AFTER}T00:00:00Z",
+        data_dir=root, crosswalk_path=source, raw_snapshot=(AFTER, {}),
+        ths_history=pd.DataFrame(
+            columns=["snapshot_date", "suite", "basket_id", "ticker", "source_shape"]))
+    nodes = nodes_by_id(view)
+    parent_edges = [row for row in view.edges if row["type"] == "PARENT_OF"]
+    assert all(row["src"] in nodes and row["dst"] in nodes for row in parent_edges)
+    assert ("PARENT_OF", "theme:hierarchy_cat", "theme:solar") not in {
+        (row["type"], row["src"], row["dst"]) for row in view.edges}
+
+
+def test_parent_edge_endpoints_are_minted_and_tier_typed(populated_view):
+    nodes = nodes_by_id(populated_view)
+    parent_edges = [row for row in populated_view.edges if row["type"] == "PARENT_OF"]
+    assert len(parent_edges) >= 2
+    for row in parent_edges:
+        source_node = nodes[row["src"]]
+        destination_node = nodes[row["dst"]]
+        assert source_node["kind"] == "theme"
+        assert destination_node["kind"] == "theme"
+        assert ((source_node["tier"], destination_node["tier"])
+                in {("macro_category", "theme"), ("theme", "micro_theme")})

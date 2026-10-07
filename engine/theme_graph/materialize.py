@@ -125,8 +125,8 @@ MATERIAL_EDGE_FIELDS: tuple[str, ...] = (
 HIERARCHY_EPOCH = "2026-10-07"
 _HIERARCHY_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_]{1,62}$")
 _HIERARCHY_FORBIDDEN_KEY_WORDS = ("weight", "share", "count", "score")
-_NOMINATED_FROM_RE = re.compile(
-    r"^(basket:\S+|vertical:[a-z0-9_]+:[a-z0-9_]+|research:\S+)$")
+_HIERARCHY_TIER_ADJACENCIES = frozenset({
+    ("macro_category", "theme"), ("theme", "micro_theme")})
 
 
 class ThemeHierarchyError(ValueError):
@@ -176,17 +176,13 @@ def _hierarchy_id(row: dict, context: str) -> str:
 
 
 def _validate_nominated_from(value: object) -> None:
-    text = _text(value)
-    if not text or not _NOMINATED_FROM_RE.fullmatch(text):
-        raise ThemeHierarchyError("NOMINATED_FROM_GRAMMAR", f"nominated_from {value!r}")
-    tokens = {token.lower() for token in re.split(r"[:/_.\-]", text)}
-    if "finviz_themes" in text or "ths_concepts" in text or tokens & {"finviz", "ths"}:
-        raise ThemeHierarchyError("VENDOR_NOMINATOR", f"nominated_from {text!r}")
-    if text.startswith("basket:"):
-        family = rights.family_for_node_id(text)
-        if family != "mastermind_curated":
-            raise ThemeHierarchyError("VENDOR_NOMINATOR",
-                                      f"basket nominator resolves to {family!r}")
+    """Delegate to the single nominator rule: probation.nominated_from_errors."""
+    from engine.theme_graph import probation
+
+    errors = probation.nominated_from_errors("" if value is None else str(value))
+    if errors:
+        reason, _, detail = errors[0].partition(": ")
+        raise ThemeHierarchyError(reason, detail)
 
 
 def _values(value: object) -> list[object]:
@@ -285,8 +281,7 @@ def validate_theme_hierarchy(doc: object) -> dict:
         child_tier = declared.get(row["child"], {}).get("tier", "theme")
         if row["parent"] == row["child"]:
             raise ThemeHierarchyError("CYCLE", row["parent"])
-        if (parent_tier, child_tier) not in {
-                ("macro_category", "theme"), ("theme", "micro_theme")}:
+        if (parent_tier, child_tier) not in _HIERARCHY_TIER_ADJACENCIES:
             raise ThemeHierarchyError("NON_ADJACENT_TIERS",
                                       f"{row['parent']} -> {row['child']}")
         children[row["parent"]].add(row["child"])
@@ -1378,13 +1373,15 @@ class _Builder:
         belief_date = self.belief_time[:10]
         evidence_cache: dict[str, str] = {}
 
-        def emitted(node_id: str, asserted_on: str) -> bool:
-            declaration = next((entry for entry in validated["categories"]
-                                + validated["micro_themes"]
-                                if entry["id"] == node_id), None)
-            if declaration:
-                return asserted_on <= belief_date
-            return True
+        def emittable(src: str, dst: str) -> bool:
+            source_node = self._nodes.get(src)
+            destination_node = self._nodes.get(dst)
+            if source_node is None or destination_node is None:
+                return False
+            return (source_node.get("kind") == "theme"
+                    and destination_node.get("kind") == "theme"
+                    and (source_node.get("tier"), destination_node.get("tier"))
+                    in _HIERARCHY_TIER_ADJACENCIES)
 
         for entry in validated["categories"] + validated["micro_themes"]:
             if entry["asserted_on"] > belief_date:
@@ -1401,8 +1398,7 @@ class _Builder:
         for row in validated["parents"]:
             if row["asserted_on"] > belief_date:
                 continue
-            if not (emitted(row["parent"], row["asserted_on"])
-                    and emitted(row["child"], row["asserted_on"])):
+            if not emittable(row["parent"], row["child"]):
                 continue
             published_at = row["asserted_on"]
             evidence_ref = evidence_cache.get(published_at)
