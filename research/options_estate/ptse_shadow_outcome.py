@@ -104,7 +104,10 @@ def _canon(value: Mapping[str, Any]) -> bytes:
 def _finite(value: Any, code: str) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         _fail(code)
-    number = float(value)
+    try:
+        number = float(value)
+    except (OverflowError, ValueError):
+        _fail(code)
     if not math.isfinite(number):
         _fail(code)
     return number
@@ -196,16 +199,34 @@ def project_shadow_outcome(
         _fail("HORIZON_INVALID")
     if horizon not in GRADE_HORIZONS:
         _fail("HORIZON_NOT_ADMITTED")
-    if not isinstance(grade_rows, Sequence) or isinstance(grade_rows, (str, bytes)):
+    if not isinstance(grade_rows, Sequence) or isinstance(grade_rows, (str, bytes, bytearray, memoryview)):
         _fail("GRADE_ROWS_INVALID")
+
+    # A malformed owner collection is not proof that a matching grade has not
+    # matured. Validate its keys before projecting absence as PENDING, and do
+    # not let Python's equality conflate a float or boolean with an integer
+    # registered horizon.
+    for row in grade_rows:
+        if not isinstance(row, Mapping):
+            _fail("GRADE_ROWS_INVALID")
+        _date(row.get("stamp_date"), "GRADE_STAMP_INVALID")
+        for key in ("ticker", "board_definition"):
+            value = row.get(key)
+            if (not isinstance(value, str) or not value
+                    or any(ord(ch) < 32 or ch.isspace() for ch in value)):
+                _fail("GRADE_KEY_INVALID")
+        row_horizon = row.get("horizon")
+        if type(row_horizon) is not int:
+            _fail("GRADE_HORIZON_INVALID")
+        if row_horizon not in GRADE_HORIZONS:
+            _fail("GRADE_HORIZON_NOT_ADMITTED")
 
     stamp = str(enrollment["stamp_date"])
     ticker = str(enrollment["ticker"])
     definition = str(enrollment["board_definition"])
     matches = [
         row for row in grade_rows
-        if isinstance(row, Mapping)
-        and _grade_matches(
+        if _grade_matches(
             row,
             stamp_date=stamp,
             ticker=ticker,

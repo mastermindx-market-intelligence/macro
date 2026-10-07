@@ -1,0 +1,324 @@
+{
+  "c1_preservation": {
+    "head": "e1a6524ecfcdfee0f0cad251e0d502f2660c32a7",
+    "pr": 7929,
+    "tested": false,
+    "touched": false
+  },
+  "candidate_suite": {
+    "errors": 0,
+    "failures": 0,
+    "new_integrity_tests": 12,
+    "new_publication_tests": 19,
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "previous_head_tests": 255,
+    "pyarrow": "25.0.1",
+    "python": "3.12.14",
+    "result": "PASS",
+    "skips": 0,
+    "syntax_compilation": "PASS",
+    "tests_run": 286
+  },
+  "changed_source_files": [
+    {
+      "bytes": 10638,
+      "git_blob": "b1c7c0396ab1c0e61cc608e0cae71a07daafc64f",
+      "kind": "modified",
+      "path": "research/options_estate/ptse_shadow_enrollment.py",
+      "sha256": "7eeb639638ac331d297cd88dd502933f05d026af9ca245de528e69e78cd7354f"
+    },
+    {
+      "bytes": 9973,
+      "git_blob": "2a7a974a8be445c77cc39227b52b082b308576f6",
+      "kind": "modified",
+      "path": "research/options_estate/ptse_shadow_outcome.py",
+      "sha256": "f898ceea59a210f09f0cced3260363b137b288a5de1a136404532985f5219fe1"
+    },
+    {
+      "bytes": 19295,
+      "git_blob": "1e1b1a050f63d3862b2a5aeecd339e08ba1259fe",
+      "kind": "added",
+      "path": "research/options_estate/ptse_w3_publication.py",
+      "sha256": "bd917feed936431fade8852a5b1e143bfc8c45ef1ea5582e5ec8a35bfc243817"
+    },
+    {
+      "bytes": 8291,
+      "git_blob": "cea79abb30faecd50133741480f9c001e373b088",
+      "kind": "added",
+      "path": "tests/test_ptse_shadow_integrity.py",
+      "sha256": "9c7704c9820467429ee95a43d72a5299d89edde3503b077989ac5adf7d39ffd4"
+    },
+    {
+      "bytes": 17581,
+      "git_blob": "e45b07eb34ed2a3ca2fe7bd32d4a567b672bc824",
+      "kind": "added",
+      "path": "tests/test_ptse_w3_publication.py",
+      "sha256": "aecf10cb5c35b72b0e461b1244c032e73682b325ff5d9c97f0523571ea52f2ab"
+    }
+  ],
+  "claims": {
+    "b0_protocol_ratified": false,
+    "b0_source_qualified": false,
+    "consumer_deployed": false,
+    "decision_authority": false,
+    "formal_github_review": false,
+    "mission_complete": false,
+    "natural_prospective_issuance": false,
+    "physical_w3_admission": false,
+    "publication_authority": false,
+    "source_authentication_established_by_module": false,
+    "source_only_preflight": true,
+    "timing_forecast_qualified": false
+  },
+  "current_source_compatibility": {
+    "all_current_dependency_blobs_verified": true,
+    "candidate_remote_anchor": "22e217a3f5ce0c27a8ad0ea0a2a9a2c9f8074ffb",
+    "changed_dependency_paths": [],
+    "classification": "EQUIVALENT_CURRENT_SOURCE_DEPENDENCY_SNAPSHOT",
+    "current_main_ref": "bb7847a33c5fcaa3d2963e3c6be18d3628493966",
+    "dependency_manifest_sha256": "bd47e22a9e105adececc7dd8f88d7e9a93be0b9d333182f254b13681489f4796",
+    "exit_code": 0,
+    "limits": [
+      "Not full-repository merge-ref or latest hosted CI",
+      "Not deployed source/API/consumer proof",
+      "Not source qualification, actual market research, natural-time issuance, or parent completion",
+      "No production data, C1 source, provider request, or remote source write"
+    ],
+    "log_sha256": "4030a294f240943d8eaf80b68a4b421c28f758583a961da3339069b5626f8e8c",
+    "new_import_dependencies_required": [],
+    "snapshot_manifest_sha256": "5c8135f95ee9ed68dee729ac485bf1391e9e7b199d36a2154fade17ff01c9a67",
+    "test_command": "python -B -m unittest discover -s tests -p test_ptse*.py -v",
+    "test_result": "PASS",
+    "tests_run": 286,
+    "verified_current_dependency_count": 30
+  },
+  "hosted_ci": "PENDING_FOR_NEW_COMMIT; previous 22e217a3 CI37292207526 and fences37292206948 were successful; not inherited as new-head proof",
+  "implementation_pr": 8364,
+  "independent_probe_results": [
+    {
+      "case": "control_complete_denominators",
+      "expected": "ACCEPTED",
+      "result": "ACCEPTED",
+      "value": {
+        "denominators": {
+          "attempted": 3,
+          "enrolled": 2,
+          "relation_refused": 1
+        },
+        "rows": [
+          [
+            "ENROLLED",
+            "OBSERVED_CONTEXT_ONLY"
+          ],
+          [
+            "ENROLLED",
+            "CONTEXT_MISSING"
+          ],
+          [
+            "RELATION_REFUSED",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "case": "resealed_drop_RELATION_REFUSED",
+      "error": "PACKET_SEMANTIC_REBUILD_MISMATCH",
+      "error_type": "PTSEPublicationError",
+      "expected": "REFUSED",
+      "result": "REFUSED"
+    },
+    {
+      "case": "resealed_drop_MISSING_CONTEXT",
+      "error": "PACKET_SEMANTIC_REBUILD_MISMATCH",
+      "error_type": "PTSEPublicationError",
+      "expected": "REFUSED",
+      "result": "REFUSED"
+    },
+    {
+      "case": "resealed_plausible_but_false_context_status",
+      "error": "PACKET_SEMANTIC_REBUILD_MISMATCH",
+      "error_type": "PTSEPublicationError",
+      "expected": "REFUSED",
+      "result": "REFUSED"
+    },
+    {
+      "case": "resealed_well_typed_wrong_security_relation",
+      "error": "PACKET_SEMANTIC_REBUILD_MISMATCH",
+      "error_type": "PTSEPublicationError",
+      "expected": "REFUSED",
+      "result": "REFUSED"
+    },
+    {
+      "case": "refusal_row_numeric_authority",
+      "error": "AUTHORITY_FORBIDDEN",
+      "error_type": "PTSEPublicationError",
+      "expected": "REFUSED",
+      "result": "REFUSED"
+    },
+    {
+      "case": "changed_b1_material_under_old_receipt",
+      "error": "B1_MATERIAL_RECEIPT_MISMATCH",
+      "error_type": "PTSEPublicationError",
+      "expected": "REFUSED",
+      "result": "REFUSED"
+    },
+    {
+      "case": "changed_generation_under_old_manifest",
+      "error": "MANIFEST_GENERATION_MISMATCH",
+      "error_type": "PTSEPublicationError",
+      "expected": "REFUSED",
+      "result": "REFUSED"
+    },
+    {
+      "case": "first_packet_survives_empty_replacement",
+      "expected": "ACCEPTED",
+      "result": "ACCEPTED",
+      "value": {
+        "first_preserved": true,
+        "reason": "CANDIDATES_OMITTED",
+        "status": "REVISION_REFUSED"
+      }
+    },
+    {
+      "case": "empty_first_is_not_silently_backfilled",
+      "expected": "ACCEPTED",
+      "result": "ACCEPTED",
+      "value": {
+        "first_preserved": true,
+        "reason": "CANDIDATES_ADDED",
+        "status": "REVISION_REFUSED"
+      }
+    },
+    {
+      "case": "builder_leaves_caller_structures_unchanged",
+      "expected": "ACCEPTED",
+      "result": "ACCEPTED",
+      "value": {
+        "unchanged": true
+      }
+    },
+    {
+      "case": "caller_mutation_cannot_change_returned_bundle",
+      "expected": "ACCEPTED",
+      "result": "ACCEPTED",
+      "value": {
+        "immutable_equal": true
+      }
+    },
+    {
+      "case": "expired_issuance_enrolled_context_refused",
+      "error": "ENROLLMENT_REBUILD_REFUSED",
+      "error_type": "PTSEPublicationError",
+      "expected": "REFUSED",
+      "result": "REFUSED"
+    },
+    {
+      "case": "expired_context_on_relation_refused_row",
+      "expected": "OBSERVATION",
+      "result": "ACCEPTED",
+      "value": {
+        "preflight_status": "RELATION_REFUSED"
+      }
+    },
+    {
+      "case": "deeply_nested_previous_packet",
+      "error": "PACKET_NOT_CANONICAL",
+      "error_type": "PTSEPublicationError",
+      "expected": "REFUSED",
+      "result": "REFUSED"
+    }
+  ],
+  "independent_technical_review": {
+    "candidate_commit": "BOUND_BY_SOURCE_BLOBS_IN_THIS_RECEIPT",
+    "disposition": "NO_BLOCKING_SOURCE_FINDINGS_WITHIN_REVIEWED_SOURCE_ONLY_SCOPE",
+    "effects": {
+      "c1_access_or_test": false,
+      "canonical_host_source_mutation": false,
+      "formal_github_approval": false,
+      "promotion_or_production_acceptance": false,
+      "remote_write": false,
+      "source_modified": false
+    },
+    "focused_tests": {
+      "elapsed_seconds": 4.143,
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "log_sha256": "073505b345c7fdbd93f8945e0a24aef71e7c6e00adc2b59e4161a43900969bb4",
+      "modules": [
+        "tests.test_ptse_shadow_enrollment",
+        "tests.test_ptse_shadow_outcome",
+        "tests.test_ptse_shadow_integrity",
+        "tests.test_ptse_w3_publication"
+      ],
+      "skips": 0,
+      "tests_run": 59
+    },
+    "independent_probes": {
+      "cases": 15,
+      "sha256": "c7a57a7f878be4f049bb3294d2378a0d2b8fb959f70dfce10a67a641bede715a"
+    },
+    "original_base_ref": "22e217a3f5ce0c27a8ad0ea0a2a9a2c9f8074ffb",
+    "packet_checks": [
+      "independent original-input and manifest-pin reconstruction",
+      "exact B1 material and generation binding",
+      "re-sealed previous-packet forgery rejection",
+      "preserved relation-refused and missing-context denominator rows",
+      "full byte comparison of reconstructed rows",
+      "first complete stamp retained across population/content changes",
+      "returned packet and retained contexts are immutable bytes",
+      "caller structures not modified; later caller mutation cannot mutate returned bundle"
+    ],
+    "prior_defects_closed": [
+      "strict false authority",
+      "typed candidate dates/text/content IDs and status/presence matrix",
+      "deterministic candidate source-key equality",
+      "candidate/context session equality",
+      "existing prospective readiness/expiry reused",
+      "malformed grade collections and source horizons typed before matching",
+      "finite grade overflow typed"
+    ],
+    "review_role": "nonauthor read-only technical review; not GitHub approval",
+    "reviewed_at": "2026-10-07T05:56:41.732025+00:00",
+    "schema": "ptse.independent_source_review/v1",
+    "scope_note": "An expired-issuance context on a RELATION_REFUSED row can be retained structurally. Its packet remains RELATION_REFUSED, never READY, and publication authority is false. This review does not classify that retained context as prospective-ready.",
+    "source_files": {
+      "research/options_estate/ptse_shadow_enrollment.py": {
+        "bytes": 10638,
+        "git_blob_sha1": "b1c7c0396ab1c0e61cc608e0cae71a07daafc64f",
+        "sha256": "7eeb639638ac331d297cd88dd502933f05d026af9ca245de528e69e78cd7354f"
+      },
+      "research/options_estate/ptse_shadow_outcome.py": {
+        "bytes": 9973,
+        "git_blob_sha1": "2a7a974a8be445c77cc39227b52b082b308576f6",
+        "sha256": "f898ceea59a210f09f0cced3260363b137b288a5de1a136404532985f5219fe1"
+      },
+      "research/options_estate/ptse_w3_publication.py": {
+        "bytes": 19295,
+        "git_blob_sha1": "1e1b1a050f63d3862b2a5aeecd339e08ba1259fe",
+        "sha256": "bd917feed936431fade8852a5b1e143bfc8c45ef1ea5582e5ec8a35bfc243817"
+      }
+    },
+    "unproven_by_design": [
+      "authenticity/admission of externally supplied source receipts",
+      "physical W3 ownership/admission",
+      "natural first-seen capture",
+      "production publication or consumer integration",
+      "research efficacy or forecast promotion"
+    ]
+  },
+  "operation_id": "market-tide-research-20260924-sol-001",
+  "parent_issue": 7925,
+  "procedure_pin": {
+    "bootstrap": 1,
+    "protected_branch": "master",
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "sha": "ee120e80f5d5e0344c453dd7cbf4108b9c429b38",
+    "skillpack": "1.0.1"
+  },
+  "recorded_at": "2026-10-07T05:59:13.528771+00:00",
+  "schema": "ptse.w3_source_conformance/v1-research",
+  "source_parent_commit": "22e217a3f5ce0c27a8ad0ea0a2a9a2c9f8074ffb"
+}
