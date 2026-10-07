@@ -68,7 +68,7 @@ from enum import Enum
 
 __all__ = [
     "IdentityError",
-    "XNYS", "XNAS", "XASE", "ARCX", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
+    "BATS", "XNYS", "XNAS", "XASE", "ARCX", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
     "KNOWN_MICS",
     "ListingKey",
     "parse_listing_key",
@@ -110,6 +110,7 @@ class IdentityError(ValueError):
 # Only the venues this repo actually carries.  The list is deliberately CLOSED:
 # minting an id on an unknown venue is a decision a human makes once, in a diff,
 # not something a normalizer guesses at 03:00 during a nightly.
+BATS = "BATS"   # Cboe BZX U.S. Equities Exchange (ISO 10383 segment MIC)
 XNYS = "XNYS"   # New York Stock Exchange
 XNAS = "XNAS"   # Nasdaq
 XASE = "XASE"   # NYSE American (ex-AMEX)
@@ -122,7 +123,7 @@ XTSE = "XTSE"   # Toronto Stock Exchange
 XTSX = "XTSX"   # TSX Venture Exchange
 
 KNOWN_MICS: frozenset[str] = frozenset(
-    {XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+    {BATS, XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
 )
 
 _COUNTRY_RE = re.compile(r"^[A-Z]{2}$")

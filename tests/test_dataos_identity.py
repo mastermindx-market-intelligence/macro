@@ -21,6 +21,7 @@ from decimal import Decimal
 import pytest
 
 from lib.dataos.identity import (
+    BATS,
     XASE,
     XBSE,
     XHKG,
@@ -65,7 +66,8 @@ TENCENT = ListingKey("HK", XHKG, "00700")
 
 # ── listing keys ─────────────────────────────────────────────────────────────
 def test_the_admitted_venues_are_all_known() -> None:
-    assert KNOWN_MICS == {XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+    assert KNOWN_MICS == {BATS, XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+    assert ListingKey("US", BATS, "CBOE").render() == "US-BATS-CBOE"
 
 
 @pytest.mark.parametrize(

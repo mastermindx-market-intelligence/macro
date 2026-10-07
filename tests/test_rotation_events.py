@@ -590,3 +590,136 @@ def test_read_ledger_history_does_not_mutate_source_bytes(tmp_path):
     result = re_.read_ledger_history(ledger)
     assert result["status"] == "OK"
     assert ledger.read_bytes() == before
+
+
+def test_read_ledger_history_replay_metadata_coverage_counts_absent_flag(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    rows = [
+        _history_created(pair_id="xlk:a->b", replayed=True),
+        _history_created(pair_id="xlk:c->d", replayed=False),
+        _history_created(pair_id="xlk:e->f", replayed=None),
+    ]
+    _write_history(ledger, rows)
+    result = re_.read_ledger_history(ledger, mode="all")
+    assert result["status"] == "OK"
+    meta = result["coverage"]["replay_metadata"]
+    assert meta["native_replayed_true_rows"] == 1
+    assert meta["native_replayed_other_rows"] == 1
+    assert meta["native_replayed_absent_rows"] == 1
+    assert (
+        meta["native_replayed_true_rows"]
+        + meta["native_replayed_other_rows"]
+        + meta["native_replayed_absent_rows"]
+        == result["coverage"]["selected_rows"]
+        == 3
+    )
+    assert meta["absent_means"] == "UNKNOWN_NOT_EVIDENCE_OF_NOT_REPLAYED"
+    omitted = next(e for e in result["rows"] if "replayed" not in e["row"])
+    assert omitted["mode"] == "RETAINED_LEDGER_UNMARKED"
+
+
+def test_read_ledger_history_clock_skew_reports_rows_recorded_after_through(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    created = _history_created()
+    closed = _history_closed(closed_asof="2026-07-08", ts="2026-07-09 01:02 UTC")
+    _write_history(ledger, [created, closed])
+    result = re_.read_ledger_history(ledger, mode="all", through="2026-07-08")
+    assert result["status"] == "OK"
+    assert any(e["row"]["event"] == "closed" for e in result["rows"])
+    skew = result["coverage"]["clock_skew"]
+    # record_date 2026-07-09 UTC > through 2026-07-08 for the closed row only
+    assert skew["recorded_after_through_rows"] == 1
+    assert skew["max_recorded_after_through_days"] == 1
+    closed_entry = next(e for e in result["rows"] if e["row"]["event"] == "closed")
+    assert skew["min_skew_days"] == 1
+    assert skew["max_skew_days"] == 1
+    assert closed_entry["observation_date"] == "2026-07-08"
+
+    no_through = re_.read_ledger_history(ledger, mode="all", through=None)
+    skew_none = no_through["coverage"]["clock_skew"]
+    assert skew_none["recorded_after_through_rows"] is None
+    assert skew_none["max_recorded_after_through_days"] is None
+
+
+def test_read_ledger_history_clock_skew_naive_and_before_observation(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    row = _history_created(asof="2026-07-01", ts="2026-06-30 12:00")
+    _write_history(ledger, [row])
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "OK"
+    skew = result["coverage"]["clock_skew"]
+    assert skew["naive_record_clock_rows"] == 1
+    assert skew["recorded_before_observation_rows"] == 1
+    assert skew["min_skew_days"] == -1
+
+
+def test_read_ledger_history_repeated_lifecycle_event_rows_is_a_diagnostic_not_dedup(
+    tmp_path,
+):
+    ledger = tmp_path / "events.jsonl"
+    first = _history_created()
+    second = _history_created(ts="2026-07-03 01:02 UTC")
+    closed = _history_closed()
+    _write_history(ledger, [first, second, closed])
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "OK"
+    assert result["coverage"]["repeated_lifecycle_event_rows"] == 1
+    assert result["coverage"]["selected_rows"] == 3
+    assert len(result["rows"]) == 3
+    assert result["coverage"]["event_counts"] == {"created": 2, "closed": 1}
+
+
+_EMPTY_DIAGNOSTIC_CLOCK = {
+    "basis": "RECORD_DATE_UTC_MINUS_OBSERVATION_DATE_DAYS",
+    "naive_record_clock_rows": 0,
+    "recorded_after_observation_rows": 0,
+    "recorded_before_observation_rows": 0,
+    "min_skew_days": None,
+    "max_skew_days": None,
+}
+
+
+def _empty_diagnostic_shape(through):
+    return {
+        "replay_metadata": {
+            "native_replayed_true_rows": 0,
+            "native_replayed_other_rows": 0,
+            "native_replayed_absent_rows": 0,
+            "absent_means": "UNKNOWN_NOT_EVIDENCE_OF_NOT_REPLAYED",
+        },
+        "clock_skew": {
+            **_EMPTY_DIAGNOSTIC_CLOCK,
+            "recorded_after_through_rows": 0 if through is not None else None,
+            "max_recorded_after_through_days": None,
+        },
+        "repeated_lifecycle_event_rows": 0,
+    }
+
+
+def test_read_ledger_history_non_ok_results_carry_diagnostic_shape(tmp_path):
+    missing = tmp_path / "missing.jsonl"
+    miss = re_.read_ledger_history(missing, through="2026-07-08")
+    assert miss["status"] == "MISSING"
+    for key, expected in _empty_diagnostic_shape("2026-07-08").items():
+        assert miss["coverage"][key] == expected
+    assert miss["coverage"]["clock_skew"]["recorded_after_through_rows"] == 0
+
+    empty = tmp_path / "empty.jsonl"
+    empty.write_text("\n", encoding="utf-8")
+    emp = re_.read_ledger_history(empty)
+    assert emp["status"] == "EMPTY"
+    for key, expected in _empty_diagnostic_shape(None).items():
+        assert emp["coverage"][key] == expected
+
+    bad = tmp_path / "bad.jsonl"
+    bad.write_text("{not json\n", encoding="utf-8")
+    inv = re_.read_ledger_history(bad)
+    assert inv["status"] == "INVALID"
+    for key, expected in _empty_diagnostic_shape(None).items():
+        assert inv["coverage"][key] == expected
+
+
+def test_read_ledger_history_docstring_states_non_claims():
+    doc = re_.read_ledger_history.__doc__ or ""
+    assert "consumer join" in doc
+    assert "not evidence" in doc
