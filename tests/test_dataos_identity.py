@@ -35,6 +35,7 @@ from lib.dataos.identity import (
     IdentityError,
     IssuerMaster,
     KNOWN_MICS,
+    ARCX,
     ListingKey,
     SecurityIssuerRow,
     VendorAliasTable,
@@ -63,8 +64,8 @@ TENCENT = ListingKey("HK", XHKG, "00700")
 
 
 # ── listing keys ─────────────────────────────────────────────────────────────
-def test_the_nine_venues_the_repo_actually_carries_are_all_known() -> None:
-    assert KNOWN_MICS == {XNYS, XNAS, XASE, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+def test_the_admitted_venues_are_all_known() -> None:
+    assert KNOWN_MICS == {XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
 
 
 @pytest.mark.parametrize(

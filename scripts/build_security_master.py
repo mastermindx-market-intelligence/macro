@@ -81,8 +81,11 @@ import hashlib
 import json
 import subprocess
 import sys
+import time
+import io
+import re
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -91,6 +94,8 @@ sys.path.insert(0, str(ROOT))
 from lib import config, ticker_aliases  # noqa: E402
 from lib.dataos.identity import (  # noqa: E402
     XASE,
+    ARCX,
+    alias_binding_sha256,
     XNAS,
     XNYS,
     AliasRow,
@@ -183,6 +188,9 @@ ALIAS_COLUMNS = (
     "valid_from",
     "valid_to",
     "ingested_at",
+    "known_at",
+    "evidence_sha256",
+    "binding_sha256",
 )
 #: ``reference.issuer_master`` — one row per distinct non-null issuer_id (spec §3).
 ISSUER_MASTER_COLUMNS = (
@@ -227,6 +235,7 @@ SECURITY_MIGRATIONS_COLUMNS = (
 #: That equality is what makes the builder idempotent rather than merely deterministic.
 MASTER_DTYPES = {"effective_at": "datetime", "ingested_at": "datetime",
                  "issuer_evidence_snapshot": "date"}
+REFERENCE_ALIAS_COLUMNS = frozenset({"known_at", "evidence_sha256", "binding_sha256"})
 ALIAS_DTYPES = {"valid_from": "date", "valid_to": "date", "ingested_at": "datetime"}
 ISSUER_MASTER_DTYPES = {"evidence_snapshot": "date", "n_securities": "int"}
 ISSUER_MIGRATIONS_DTYPES = {"evidence_snapshot": "date", "migrated_at": "datetime"}
@@ -994,6 +1003,7 @@ def resolve_universe(
     delisted: dict[str, dict],
     directory: dict[str, str],
     snapshot_date: str | None,
+    *, reference_probe_keys: frozenset[str] = frozenset(),
 ) -> list[Resolution]:
     """Resolve every seed key to a venue + inception code, or say why it could not be.
 
@@ -1052,6 +1062,8 @@ def resolve_universe(
                     continue
                 directory_symbol = candidate
                 mic = EXCHANGE_MIC.get(exchange)
+                if key in reference_probe_keys and key == "SPY" and exchange == "P":
+                    mic = ARCX
                 venue_source = (
                     f"data/symbol_directory/snapshots/{snapshot_date}.parquet:"
                     f"{candidate}.exchange={exchange}"
@@ -2730,6 +2742,7 @@ def _prune_stale_aliases(
         ex_row = AliasRow(
             str(ex["vendor"]), str(ex["vendor_symbol"]), str(ex["security_id"]),
             _as_bound_date(ex["valid_from"]), _as_bound_date(ex["valid_to"]),
+            ex.get("known_at"), ex.get("evidence_sha256"), ex.get("binding_sha256"),
         )
         candidates = (
             fresh_by_vendor_symbol.get((ex_row.vendor, ex_row.vendor_symbol), [])
@@ -2748,6 +2761,9 @@ def _prune_stale_aliases(
         if not overlaps:
             out.append(ex)
             continue
+
+        if ex_row.vendor == "polygon":
+            raise VendorAliasPruneConflict("prospective native alias revision is not admitted")
 
         # A different-security_id overlap is disqualifying on its own and is named
         # explicitly — it is never folded into the same-id predicate's reason.
@@ -2813,11 +2829,14 @@ def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> l
             "valid_from": key[3],
             "valid_to": key[4],
             "ingested_at": str(row["ingested_at"]),
+            **{c: row.get(c) for c in REFERENCE_ALIAS_COLUMNS},
         }
     for row in fresh:
         key = (row.vendor, row.vendor_symbol, row.security_id,
                _as_iso(row.valid_from), _as_iso(row.valid_to))
         if key in merged:
+            if row.vendor == "polygon" and merged[key].get("binding_sha256") != row.binding_sha256:
+                raise IdentityError("conflicting prospective native alias; revisions not admitted")
             continue
         merged[key] = {
             "vendor": key[0],
@@ -2826,6 +2845,9 @@ def merge_alias_rows(fresh: list[AliasRow], existing: list[dict], now: str) -> l
             "valid_from": key[3],
             "valid_to": key[4],
             "ingested_at": now,
+            "known_at": row.known_at.isoformat() if isinstance(row.known_at, datetime) else row.known_at,
+            "evidence_sha256": row.evidence_sha256,
+            "binding_sha256": row.binding_sha256,
         }
     return [merged[k] for k in sorted(merged, key=lambda k: (k[0], k[1], k[2], str(k[3]), str(k[4])))]
 
@@ -2938,7 +2960,262 @@ def _multi_security_issuer_groups(master_rows: list[dict]) -> list[dict]:
     ]
 
 
-def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = False) -> dict:
+# Prospective reference-only intake. These four probes are neither a collection
+# cohort nor a scientific population. Receipt evidence stays with the existing
+# canonical writer; this function performs no network or credential operation.
+REFERENCE_PROBES = {
+    "MU": ("NASDAQ", XNAS, "CS", False),
+    "SPY": ("P", ARCX, "ETF", True),
+    "QQQ": ("NASDAQ", XNAS, "ETF", True),
+    "SMH": ("NASDAQ", XNAS, "ETF", True),
+}
+REFERENCE_SCHEMA = "mastermind.prospective_reference.v1"
+_REFERENCE_MAX_BYTES = 2 * 1024 * 1024
+
+
+def _reference_digest(value: object) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
+                                    ensure_ascii=True, allow_nan=False).encode()).hexdigest()
+
+
+def _reference_json(path: Path) -> tuple[dict, str]:
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise IdentityError("duplicate reference JSON key")
+            result[key] = value
+        return result
+    with path.open("rb") as source:
+        raw = source.read(_REFERENCE_MAX_BYTES + 1)
+    if len(raw) > _REFERENCE_MAX_BYTES:
+        raise IdentityError("reference evidence exceeds byte bound")
+    try:
+        value = json.loads(raw, object_pairs_hook=pairs,
+                           parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
+    except (ValueError, UnicodeError) as exc:
+        raise IdentityError("invalid reference evidence JSON") from exc
+    if not isinstance(value, dict):
+        raise IdentityError("reference evidence must be an object")
+    return value, hashlib.sha256(raw).hexdigest()
+
+
+def _reference_ns(value: object, name: str) -> int:
+    if type(value) is not int or value <= 0:
+        raise IdentityError(f"invalid reference {name}")
+    return value
+
+
+def _reference_clock_ns(value: object) -> int:
+    try:
+        clock = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        if clock.tzinfo is None or clock.utcoffset() is None:
+            raise ValueError("naive")
+        delta = clock.astimezone(timezone.utc) - datetime(1970, 1, 1, tzinfo=timezone.utc)
+        return ((delta.days * 86400 + delta.seconds) * 1000000 + delta.microseconds) * 1000
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise IdentityError("invalid reference UTC clock") from exc
+
+
+def _reference_clock_iso(ns: int) -> str:
+    # Ceiling, never float rounding or truncation that advances availability.
+    return (datetime(1970, 1, 1, tzinfo=timezone.utc)
+            + timedelta(microseconds=(ns + 999) // 1000)).isoformat()
+
+
+def _load_reference_input(out_dir: Path, path: Path | None) -> dict | None:
+    previous = None
+    receipt_path = out_dir / RECEIPT_NAME
+    if receipt_path.exists():
+        previous = _reference_json(receipt_path)[0].get("prospective_reference")
+    if path is None and previous is None:
+        return None
+    if previous is not None and not isinstance(previous, dict):
+        raise IdentityError("invalid retained prospective reference receipt")
+    if path is not None:
+        bundle, file_sha = _reference_json(path)
+        if previous is not None and bundle != previous.get("input"):
+            raise IdentityError("conflicting prospective reference input; revisions not admitted")
+    else:
+        bundle = previous.get("input")
+        file_sha = previous.get("input_file_sha256")
+    if not isinstance(bundle, dict) or bundle.get("schema") != REFERENCE_SCHEMA:
+        raise IdentityError("unsupported prospective reference schema")
+    probes = bundle.get("probes")
+    if not isinstance(probes, dict) or set(probes) != set(REFERENCE_PROBES):
+        raise IdentityError("reference intake requires exactly MU/SPY/QQQ/SMH probes")
+    dates = {r.get("requested_date") for r in probes.values() if isinstance(r, dict)}
+    if len(dates) != 1 or len(probes) != sum(isinstance(r, dict) for r in probes.values()):
+        raise IdentityError("reference probes require one explicit observation date")
+    requested_date = next(iter(dates))
+    try:
+        on = date.fromisoformat(requested_date)
+    except (ValueError, TypeError) as exc:
+        raise IdentityError("invalid reference observation date") from exc
+    if on.isoformat() != requested_date:
+        raise IdentityError("noncanonical reference date")
+    snapshot = SYMBOL_DIR_SNAPSHOTS / f"{requested_date}.parquet"
+    receipt_file = SYMBOL_DIR_SNAPSHOTS.parent / "receipts" / "snapshots" / f"{requested_date}.json"
+    listing_receipt, listing_receipt_sha = _reference_json(receipt_file)
+    with snapshot.open("rb") as source:
+        snapshot_bytes = source.read(8 * 1024 * 1024 + 1)
+    if len(snapshot_bytes) > 8 * 1024 * 1024:
+        raise IdentityError("listing snapshot exceeds reference read bound")
+    snapshot_sha = hashlib.sha256(snapshot_bytes).hexdigest()
+    artifact = listing_receipt.get("artifact", {})
+    if (artifact.get("sha256") != snapshot_sha or artifact.get("bytes") != len(snapshot_bytes)
+            or artifact.get("key") != f"snapshots/{requested_date}.parquet"
+            or listing_receipt.get("observation_date") != requested_date
+            or listing_receipt.get("completeness", {}).get("status") != "complete"
+            or listing_receipt.get("completeness", {}).get("duplicate_key_count") != 0
+            or listing_receipt.get("authority", {}).get("listing_identity_observation_eligible") is not True):
+        raise IdentityError("listing source receipt does not bind a complete eligible snapshot")
+    import pandas as pd
+    listing_frame = pd.read_parquet(io.BytesIO(snapshot_bytes))
+    if len(listing_frame) != artifact.get("rows"):
+        raise IdentityError("listing source receipt row count mismatch")
+    listing_started = _reference_clock_ns(listing_receipt.get("clocks", {}).get("collector_started_at"))
+    listing_completed = _reference_clock_ns(listing_receipt.get("clocks", {}).get("collector_completed_at"))
+    mic = bundle.get("mic_evidence", {})
+    selected = mic.get("selected_row", {})
+    if (mic.get("http_status") != 200
+            or selected.get("MIC") != ARCX or selected.get("OPERATING MIC") != XNYS
+            or selected.get("STATUS") != "ACTIVE" or selected.get("OPRT/SGMT") != "SGMT"
+            or selected.get("ISO COUNTRY CODE (ISO 3166)") != "US"
+            or mic.get("source_url") != "https://www.iso20022.org/sites/default/files/ISO10383_MIC/ISO10383_MIC.csv"
+            or not re.fullmatch(r"[0-9a-f]{64}", str(mic.get("response_sha256", "")))):
+        raise IdentityError("invalid official ARCX MIC evidence")
+    mic_started = _reference_clock_ns(mic.get("request_started_at_utc"))
+    mic_completed = _reference_clock_ns(mic.get("response_read_completed_at_utc"))
+    read_completed = time.time_ns()
+    if previous is not None:
+        prior_clock = _reference_ns(previous.get("source_read_completed_at_utc_ns"), "retained read clock")
+        if prior_clock > read_completed:
+            raise IdentityError("retained reference read is in the future")
+        read_completed = prior_clock
+        if previous.get("input_sha256") != _reference_digest(bundle):
+            raise IdentityError("retained reference input seal mismatch")
+    if not (0 < listing_started <= listing_completed <= read_completed
+            and 0 < mic_started <= mic_completed <= read_completed):
+        raise IdentityError("inconsistent reference source clocks")
+    common = {
+        "listing_snapshot_sha256": snapshot_sha,
+        "listing_receipt_sha256": listing_receipt_sha,
+        "mic_evidence_sha256": _reference_digest(mic),
+        "source_read_completed_at_utc_ns": read_completed,
+    }
+    if previous is not None and previous.get("evidence") != common:
+        raise IdentityError("retained reference source evidence changed")
+    states = {}
+    for symbol, (exchange, venue, kind, etf) in REFERENCE_PROBES.items():
+        record = probes[symbol]
+        if (record.get("request_path") != f"/v3/reference/tickers/{symbol}"
+                or record.get("request_params") != {"date": requested_date}):
+            raise IdentityError("native reference request metadata mismatch")
+        started = _reference_ns(record.get("request_started_at_utc_ns"), "request clock")
+        observed = _reference_ns(record.get("decoded_payload_observed_at_utc_ns"), "decoded observation clock")
+        if not 0 < started <= observed <= read_completed:
+            raise IdentityError("inconsistent native reference observation clocks")
+        if _reference_clock_iso(started)[:10] != requested_date:
+            raise IdentityError("prospective request date must be the actual request UTC date")
+        payload = record.get("decoded_payload")
+        if record.get("decoded_payload_sha256") != _reference_digest(payload):
+            raise IdentityError("decoded native payload seal mismatch")
+        rows = listing_frame.loc[listing_frame["symbol"] == symbol]
+        reason = None
+        if len(rows) != 1:
+            reason = "official_listing_not_unique"
+        else:
+            row = rows.iloc[0]
+            if (str(row["exchange"]) != exchange or bool(row["etf"]) != etf
+                    or bool(row["test_issue"]) or bool(row["is_preferred"])):
+                reason = "official_listing_identity_conflict"
+        native = payload.get("results") if isinstance(payload, dict) else None
+        if reason is None and (not isinstance(payload, dict) or payload.get("status") != "OK"
+                               or not isinstance(native, dict)):
+            reason = "native_reference_unavailable"
+        expected = {"ticker": symbol, "market": "stocks", "locale": "us",
+                    "primary_exchange": venue, "type": kind, "active": True}
+        if reason is None and (native.get("active") is not True
+                               or any(native.get(k) != v for k, v in expected.items())):
+            reason = "native_reference_identity_conflict"
+        if reason is None and not re.fullmatch(r"BBG[A-Z0-9]{9}", str(native.get("composite_figi", ""))):
+            reason = "native_stable_identifier_missing"
+        known_at = _reference_clock_iso(max(observed, listing_completed, mic_completed, read_completed))
+        states[symbol] = {
+            "symbol": symbol, "status": "REFUSED" if reason else "EVIDENCE_READY",
+            "code": reason, "known_at": known_at,
+            "evidence_sha256": _reference_digest({"record": record, **common}),
+            "native_identity": ({k: native[k] for k in (*expected, "composite_figi")} if reason is None else None),
+        }
+        if previous is not None:
+            prior = previous.get("probes", {}).get(symbol)
+            if not isinstance(prior, dict) or prior.get("status") not in {"BOUND", "REFUSED"}:
+                raise IdentityError("invalid retained reference disposition")
+            for field in ("symbol", "known_at", "evidence_sha256", "native_identity"):
+                if prior.get(field) != states[symbol][field]:
+                    raise IdentityError("retained reference binding evidence changed")
+            if prior["status"] == "REFUSED":
+                owner_refusal = prior.get("code") in {
+                    "canonical_identity_refused", "canonical_listing_identity_conflict"}
+                if not ((owner_refusal and reason is None) or prior.get("code") == reason):
+                    raise IdentityError("invalid retained reference refusal")
+                # This is the original dated disposition, not a new mint attempt.
+                # A later owner change cannot upgrade old evidence at its old clock.
+                states[symbol] = dict(prior)
+    return {
+        "schema": REFERENCE_SCHEMA, "input": bundle, "input_sha256": _reference_digest(bundle),
+        "input_file_sha256": file_sha, "source_read_completed_at_utc_ns": read_completed,
+        "evidence": common, "probes": states,
+        "clock_semantics": "known_at observes binding evidence; not publication or Radar read availability",
+        "provider_date_semantics": "request date is not first-seen proof; filing-derived fields can include later-submitted filings and are unused",
+        "provider_reference_documentation": "https://massive.com/docs/rest/stocks/tickers/ticker-overview",
+        "consumer_requirement": "candidate input additionally requires actual native snapshot read receipt by cutoff",
+        "authority": {"research_admitted": False, "trading_authority": False},
+    }
+
+
+def _reference_aliases(state: dict | None, ids: dict, master_rows: list[dict],
+                       pending: list[dict], resurrection: list[dict]) -> list[AliasRow]:
+    if state is None:
+        return []
+    master = {r["security_id"]: r for r in master_rows}
+    aliases = []
+    for symbol, evidence in state["probes"].items():
+        if evidence["status"] == "REFUSED":
+            continue
+        sec = ids.get(symbol)
+        if sec is None or sec not in master or master[sec].get("security_state"):
+            refusals = [r for r in pending if r.get("symbol") == symbol]
+            refusals += [r for r in resurrection if r.get("key") == symbol]
+            evidence.update(status="REFUSED", code="canonical_identity_refused", owner_refusals=refusals)
+            continue
+        row = master[sec]
+        listing = parse_listing_key(row["listing_key"])
+        native = evidence["native_identity"]
+        # Compare the canonical owner row and its established current-symbol
+        # relationship, never the immutable security_id spelling. No venue
+        # continuity authority is introduced by this prospective source slice.
+        if (row.get("country") != "US" or row.get("mic") != native["primary_exchange"]
+                or listing.country != row.get("country") or listing.mic != row.get("mic")
+                or listing.code != row.get("inception_code")
+                or _current_symbol_of_row(row) != native["ticker"]):
+            evidence.update(status="REFUSED", code="canonical_listing_identity_conflict",
+                            canonical_listing_identity={k: row.get(k) for k in
+                                ("security_id", "listing_key", "country", "mic", "inception_code")})
+            continue
+        start = date.fromisoformat(state["input"]["probes"][symbol]["requested_date"])
+        seal = alias_binding_sha256("polygon", symbol, sec, start, None,
+                                    evidence["known_at"], evidence["evidence_sha256"])
+        aliases.append(AliasRow("polygon", symbol, sec, start, None,
+                                evidence["known_at"], evidence["evidence_sha256"], seal))
+        evidence.update(status="BOUND", code=None, security_id=sec,
+                        listing_key=master[sec]["listing_key"], binding_sha256=seal)
+    return aliases
+
+
+def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = False,
+          reference_evidence_path: Path | None = None) -> dict:
     """Do the whole build and return the receipt payload (written unless ``dry_run``).
 
     ``allow_missing_evidence`` (V4-D2B1 FIX 2 / B2 manual-path hardening): a missing or
@@ -2952,6 +3229,12 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     admission that no CIK evidence exists yet — the correct state on a genuinely bare
     checkout before the first weekly map lands.
     """
+    reference = _load_reference_input(out_dir, reference_evidence_path)
+    reference_keys = frozenset(
+        symbol for symbol, row in (reference["probes"].items() if reference else ())
+        if row["status"] == "EVIDENCE_READY"
+    )
+    reference_only_keys = frozenset({"SPY", "QQQ", "SMH"}) if reference else frozenset()
     universe = load_universe()
     delisted = load_delisted()
     directory, directory_flags, snapshot_date, snapshot_path = load_directory()
@@ -2965,6 +3248,9 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
             "anyway, e.g. on a bare checkout before the first weekly CIK map lands."
         )
 
+    # ETF trust CIKs are not an admitted ETF issuer grouping. This reference lane
+    # must not populate or merge their issuer axis, including on later reruns.
+    cik_map = {k: v for k, v in cik_map.items() if k not in reference_only_keys}
     now = _iso_now()
     master_path = out_dir / MASTER_NAME
     aliases_path = out_dir / ALIASES_NAME
@@ -3038,7 +3324,17 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         if "gmi_us_seed" not in _row["sources"]:
             _row["sources"].append("gmi_us_seed")
 
-    resolutions = resolve_universe(universe, delisted, directory, snapshot_date)
+    for code in sorted(reference_keys):
+        row = universe.setdefault(code, {"sources": [], "first_seen": None})
+        if "prospective_reference_probe" not in row["sources"]:
+            row["sources"].append("prospective_reference_probe")
+        if code in reference_only_keys:
+            row["first_seen"] = date.fromisoformat(reference["input"]["probes"][code]["requested_date"])
+    reference_directory = dict(directory)
+    for code in reference_keys:
+        reference_directory[code] = REFERENCE_PROBES[code][0]
+    resolutions = resolve_universe(universe, delisted, reference_directory, snapshot_date,
+                                   reference_probe_keys=reference_keys)
     legacy_resolutions = [r for r in resolutions if r.key in legacy_keys]
     resolved = [r for r in legacy_resolutions if r.listing_key is not None]
     unresolved = [r for r in legacy_resolutions if r.listing_key is None]
@@ -3065,7 +3361,7 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         cik_map=cik_map,
         delisted=delisted,
         snapshot_date=cik_snapshot_date,
-        gmi_admission_targets=gmi_us_only_targets,
+        gmi_admission_targets=gmi_us_only_targets - (reference_only_keys & reference_keys),
         directory_flags=directory_flags,
         ambiguous_tickers=ambiguous_tickers,
     )
@@ -3099,6 +3395,12 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     _resolved_not_rederivable_codes: set[str] = set()
     us_gmi_refusals_by_code: dict[str, dict] = {}
     for _code in gmi_us_all_targets:
+        if _code in reference_only_keys:
+            us_gmi_refusals_by_code[_code] = {
+                "code": "structural_etf",
+                "reason": "reference-only ETF identity is not GMI common-equity admission",
+            }
+            continue
         if _code in disclosed_exclusion_keys or _code in ids:
             continue
         _covering_sec = _active_us_security_by_root.get(_inception_code(_code, None))
@@ -3138,7 +3440,8 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
             del us_gmi_refusals_by_code[_dup]
 
     us_gmi_resolved_codes = sorted(
-        (c for c in gmi_us_all_targets if c in ids or c in _resolved_not_rederivable_codes)
+        (c for c in gmi_us_all_targets if c not in reference_only_keys
+         and (c in ids or c in _resolved_not_rederivable_codes))
     )
     us_gmi_missing = sorted(
         c for c in gmi_us_all_targets
@@ -3172,7 +3475,7 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     # here so a receipt reader can see which admissions relied on the exemption.
     us_gmi_exit_ledger_exempt = sorted(
         c for c in gmi_us_only_targets
-        if c in ids
+        if c in ids and c not in reference_only_keys
         and not _master_rows_by_security_for_gmi.get(ids[c], {}).get("_existed_before")
         and (_er2 := resolutions_by_key.get(c)) is not None
         and _er2.exchange_symbol is None
@@ -3230,9 +3533,14 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         master_rows, cik_map, cik_snapshot_date, now, ambiguous_tickers=ambiguous_tickers
     )
 
-    fresh_aliases = build_alias_rows(resolutions, ids) + cn_hk_alias_rows
+    native_aliases = _reference_aliases(reference, ids, master_rows,
+                                        pending_transition_refusals, resurrection_refusals)
+    fresh_aliases = build_alias_rows(
+        [r for r in resolutions if r.key not in reference_only_keys], ids
+    ) + cn_hk_alias_rows + native_aliases
     existing_aliases, alias_prunes = _prune_stale_aliases(
-        _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES),
+        _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
+                       allow_missing=REFERENCE_ALIAS_COLUMNS),
         fresh_aliases, superseded_ids,
     )
     # AMENDMENT ruling 6 (M5) / AMENDMENT §2 — every prune is receipted + a
@@ -3538,6 +3846,42 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
             ],
         },
     }
+
+    if reference is not None:
+        receipt["prospective_reference"] = reference
+    elif any(r.get("vendor") == "polygon" for r in alias_rows):
+        raise IdentityError("native aliases require retained prospective evidence")
+
+    if reference_evidence_path is not None:
+        def semantic(rows, columns):
+            return sorted(_reference_digest({
+                c: (int(row[c]) if c == "n_securities" and row.get(c) is not None else row.get(c))
+                for c in columns
+            }) for row in rows)
+        old_by_id = {r["security_id"]: r for r in existing_master_rows}
+        projected_existing = [r for r in master_rows if r["security_id"] in old_by_id]
+        if semantic(projected_existing, MASTER_COLUMNS) != semantic(existing_master_rows, MASTER_COLUMNS):
+            raise IdentityError("bounded reference intake would change an existing security row")
+        extras = [r for r in master_rows if r["security_id"] not in old_by_id]
+        if any(r["inception_code"] not in reference_only_keys for r in extras):
+            raise IdentityError("bounded reference intake would mint a non-probe security")
+        old_aliases = _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
+                                     allow_missing=REFERENCE_ALIAS_COLUMNS)
+        old_native = [r for r in old_aliases if r["vendor"] == "polygon"]
+        new_legacy = [r for r in alias_rows if r["vendor"] != "polygon"]
+        old_legacy = [r for r in old_aliases if r["vendor"] != "polygon"]
+        if semantic(new_legacy, ALIAS_COLUMNS) != semantic(old_legacy, ALIAS_COLUMNS):
+            raise IdentityError("bounded reference intake would change non-native aliases")
+        for old_native_row in old_native:
+            if old_native_row not in alias_rows:
+                raise IdentityError("bounded reference intake would replace a native alias")
+        for path_, columns_, dtypes_, rows_ in (
+            (issuer_master_path, ISSUER_MASTER_COLUMNS, ISSUER_MASTER_DTYPES, issuer_master_rows),
+            (issuer_migrations_path, ISSUER_MIGRATIONS_COLUMNS, ISSUER_MIGRATIONS_DTYPES, issuer_migration_rows),
+            (security_migrations_path, SECURITY_MIGRATIONS_COLUMNS, SECURITY_MIGRATIONS_DTYPES, security_migration_rows),
+        ):
+            if semantic(_read_existing(path_, columns_, dtypes_), columns_) != semantic(rows_, columns_):
+                raise IdentityError("bounded reference intake would change issuer or migration rows")
 
     if not dry_run:
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -3926,6 +4270,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="output directory (default: data/reference)")
     parser.add_argument("--dry-run", action="store_true",
                         help="build and report, write nothing")
+    parser.add_argument("--reference-evidence", type=Path,
+                        help="bounded prospective reference observations; no network calls")
     parser.add_argument("--report", action="store_true",
                         help="full census: row counts, rename events, input hashes")
     parser.add_argument(
@@ -3949,6 +4295,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
+    if args.nightly and args.reference_evidence is not None:
+        parser.error("--reference-evidence is an explicit intake, not a nightly fetch")
     if args.nightly:
         return run_nightly_refresh(Path(args.out))
 
@@ -3959,7 +4307,8 @@ def main(argv: list[str] | None = None) -> int:
             "NO_ISSUER_EVIDENCE", flush=True,
         )
     receipt = build(Path(args.out), dry_run=args.dry_run,
-                    allow_missing_evidence=args.allow_missing_evidence)
+                    allow_missing_evidence=args.allow_missing_evidence,
+                    reference_evidence_path=args.reference_evidence)
     _report(receipt, verbose=args.report)
     # A NOTE IS A FAILURE, not a warning (adversarial review, 2026-08-13).  `notes`
     # carries exactly two things, and neither may pass: a rename the repo's own maps

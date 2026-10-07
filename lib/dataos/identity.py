@@ -59,14 +59,16 @@ import to translate a ticker.
 from __future__ import annotations
 
 import re
+import hashlib
+import json
 from dataclasses import dataclass, replace
-from datetime import date
+from datetime import date, datetime, timezone, timedelta
 from decimal import Decimal, InvalidOperation
 from enum import Enum
 
 __all__ = [
     "IdentityError",
-    "XNYS", "XNAS", "XASE", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
+    "XNYS", "XNAS", "XASE", "ARCX", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
     "KNOWN_MICS",
     "ListingKey",
     "parse_listing_key",
@@ -111,6 +113,7 @@ class IdentityError(ValueError):
 XNYS = "XNYS"   # New York Stock Exchange
 XNAS = "XNAS"   # Nasdaq
 XASE = "XASE"   # NYSE American (ex-AMEX)
+ARCX = "ARCX"   # ISO 10383 NYSE Arca segment; reference-probe admission only
 XSHG = "XSHG"   # Shanghai Stock Exchange
 XSHE = "XSHE"   # Shenzhen Stock Exchange
 XBSE = "XBSE"   # Beijing Stock Exchange
@@ -119,7 +122,7 @@ XTSE = "XTSE"   # Toronto Stock Exchange
 XTSX = "XTSX"   # TSX Venture Exchange
 
 KNOWN_MICS: frozenset[str] = frozenset(
-    {XNYS, XNAS, XASE, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+    {XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
 )
 
 _COUNTRY_RE = re.compile(r"^[A-Z]{2}$")
@@ -623,6 +626,51 @@ def _as_date(value: date | str | None) -> date | None:
         raise IdentityError(f"alias validity bound must be an ISO date, got {value!r}") from exc
 
 
+# Native reference availability is a source-evidence clock, NOT a Radar read
+# receipt. Candidate input consumers must additionally bind their actual snapshot
+# read by the decision cutoff in the existing input bundle.
+NATIVE_REFERENCE_VENDOR = "polygon"
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+
+
+def _aware_utc(value: datetime | str | None, name: str) -> datetime:
+    if isinstance(value, str):
+        try:
+            # Accept one explicit ISO grammar so datetime.fromisoformat cannot
+            # silently truncate a fractional variant our ceiling did not inspect.
+            clock = re.fullmatch(
+                r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.(\d{1,9}))?(?:Z|[+-]\d{2}:\d{2})",
+                value,
+            )
+            if clock is None:
+                raise ValueError("unsupported clock grammar")
+            fraction = clock.group(1) or ""
+            round_up = name == "known_at" and any(c != "0" for c in fraction[6:])
+            value = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            if round_up:
+                value += timedelta(microseconds=1)
+        except (ValueError, OverflowError) as exc:
+            raise IdentityError(f"{name}: invalid UTC clock") from exc
+    if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
+        raise IdentityError(f"{name}: explicit aware decision/evidence clock required")
+    return value.astimezone(timezone.utc)
+
+
+def alias_binding_sha256(vendor: str, vendor_symbol: str, security_id_: str,
+                         valid_from: date | None, valid_to: date | None,
+                         known_at: datetime | str, evidence_sha256: str) -> str:
+    """Seal the exact semantic alias tuple and its retained evidence digest."""
+    value = {
+        "vendor": vendor, "vendor_symbol": vendor_symbol, "security_id": security_id_,
+        "valid_from": valid_from.isoformat() if valid_from else None,
+        "valid_to": valid_to.isoformat() if valid_to else None,
+        "known_at": _aware_utc(known_at, "known_at").isoformat(),
+        "evidence_sha256": evidence_sha256,
+    }
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
+                                     ensure_ascii=True, allow_nan=False).encode()).hexdigest()
+
+
 @dataclass(frozen=True, slots=True)
 class AliasRow:
     """One ``(vendor, vendor_symbol, security_id)`` binding, valid over a date range.
@@ -656,8 +704,34 @@ class AliasRow:
     security_id: str
     valid_from: date | None = None
     valid_to: date | None = None
+    known_at: datetime | str | None = None
+    evidence_sha256: str | None = None
+    binding_sha256: str | None = None
 
-    def covers(self, on: date) -> bool:
+    def __post_init__(self) -> None:
+        if self.vendor != NATIVE_REFERENCE_VENDOR:
+            return
+        clock = _aware_utc(self.known_at, "known_at")
+        object.__setattr__(self, "known_at", clock)
+        if self.valid_from is None or isinstance(self.valid_from, datetime):
+            raise IdentityError("polygon reference requires a dated valid_from")
+        if clock.date() < self.valid_from:
+            raise IdentityError("polygon evidence precedes its reference date")
+        if self.valid_to is not None and self.valid_to <= self.valid_from:
+            raise IdentityError("polygon invalid event-date bounds")
+        if not isinstance(self.evidence_sha256, str) or not _SHA256_RE.fullmatch(self.evidence_sha256):
+            raise IdentityError("polygon missing evidence digest")
+        expected = alias_binding_sha256(self.vendor, self.vendor_symbol, self.security_id,
+                                        self.valid_from, self.valid_to, clock,
+                                        self.evidence_sha256)
+        if self.binding_sha256 != expected:
+            raise IdentityError("polygon alias binding seal mismatch")
+
+    def covers(self, on: date, *, decision_at: datetime | str | None = None) -> bool:
+        if self.vendor == NATIVE_REFERENCE_VENDOR:
+            cutoff = _aware_utc(decision_at, "decision_at")
+            if cutoff < self.known_at or on > cutoff.date():
+                return False
         if self.valid_from is not None and on < self.valid_from:
             return False
         if self.valid_to is not None and on >= self.valid_to:
@@ -705,6 +779,9 @@ class VendorAliasTable:
                         security_id=str(rec["security_id"]),
                         valid_from=_as_date(rec.get("valid_from")),
                         valid_to=_as_date(rec.get("valid_to")),
+                        known_at=_null_to_none(rec.get("known_at")),
+                        evidence_sha256=_null_to_none(rec.get("evidence_sha256")),
+                        binding_sha256=_null_to_none(rec.get("binding_sha256")),
                     )
                 )
             except KeyError as exc:
@@ -730,17 +807,23 @@ class VendorAliasTable:
                                 f"{b.valid_from}..{b.valid_to}) — one of them needs a bound"
                             )
 
-    def resolve(self, vendor: str, vendor_symbol: str, on: date) -> str | None:
+    def resolve(self, vendor: str, vendor_symbol: str, on: date, *,
+                decision_at: datetime | str | None = None) -> str | None:
         """What security did *vendor* mean by *vendor_symbol* on *on*?  ``None`` = unmapped."""
+        if vendor == NATIVE_REFERENCE_VENDOR:
+            _aware_utc(decision_at, "decision_at")
         for row in self._rows:
-            if row.vendor == vendor and row.vendor_symbol == vendor_symbol and row.covers(on):
+            if row.vendor == vendor and row.vendor_symbol == vendor_symbol and row.covers(on, decision_at=decision_at):
                 return row.security_id
         return None
 
-    def vendor_symbol_for(self, vendor: str, security_id_: str, on: date) -> str | None:
+    def vendor_symbol_for(self, vendor: str, security_id_: str, on: date, *,
+                          decision_at: datetime | str | None = None) -> str | None:
         """What did *vendor* call *security_id_* on *on*?  ``None`` = the vendor had no name."""
+        if vendor == NATIVE_REFERENCE_VENDOR:
+            _aware_utc(decision_at, "decision_at")
         for row in self._rows:
-            if row.vendor == vendor and row.security_id == security_id_ and row.covers(on):
+            if row.vendor == vendor and row.security_id == security_id_ and row.covers(on, decision_at=decision_at):
                 return row.vendor_symbol
         return None
 

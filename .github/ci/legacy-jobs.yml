@@ -18717,6 +18717,48 @@ jobs:
       # job, no `paths:` needed -- runs on every PR.
       - name: XPV2-SC-R3A binding pack — fixture/routing/access mutation-armor
         run: python -m pytest tests/test_xpv2_sector_r3_fixture.py -q
+  dataos-prospective-reference:
+    if: ${{ false }}  # executed inside ci-pack; this is a required code gate.
+    gate: code
+    scope: exclusive
+    # Synthetic prospective-reference evidence and owner outputs live in tmp_path.
+    # The builder/alias/graph compatibility contract needs real Parquet bytes, so
+    # this has pandas/pyarrow while dataos-foundation keeps its thin stdlib gate.
+    # Explicit scope covers the transitive import closure; no vendor calls,
+    # runtime collection, outcome evaluation, or committed-artifact writes occur.
+    paths:
+      - .github/ci/legacy-jobs.yml
+      - config/dataset_registry.yml
+      - config/identity_seams.yml
+      - config/delisted_symbols.yml
+      - config/issuer_group_allowlist.yml
+      - config/theme_graph_identity_breaks.yml
+      - lib/__init__.py
+      - lib/config.py
+      - lib/dataos/**
+      - lib/delisted_symbols.py
+      - lib/ticker_aliases.py
+      - engine/theme_graph/__init__.py
+      - engine/theme_graph/identity.py
+      - engine/theme_graph/identity_resolution.py
+      - engine/theme_graph/store.py
+      - scripts/__init__.py
+      - scripts/build_security_master.py
+      - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
+      - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      - tests/test_dataos_prospective_reference.py
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: prospective reference clocks, refusals and consumer compatibility
+        run: python -m pytest tests/test_dataos_prospective_reference.py -q
+
   dataos-foundation:
     scope: exclusive
     # Mastermind Data OS foundation library (lib/dataos/**) — the canonical identity,

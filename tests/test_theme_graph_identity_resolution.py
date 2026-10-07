@@ -439,8 +439,9 @@ class TestMutations:
         MUST land NOT_IN_MASTER, never RESOLVED-by-coincidence."""
         bogus = "ZZZNOSUCHTICKERXYZ"
         assert bogus not in master_inputs.master_by_code
-        assert not any(master_inputs.alias_table.resolve(v, bogus, on=date(2026, 8, 14))
-                       for v in master_inputs.vendors)
+        assert not any(master_inputs.alias_table.resolve(
+            v, bogus, on=date(2026, 8, 14), decision_at="2026-08-14T23:59:59Z")
+            for v in master_inputs.vendors)
         row = _resolve(f"co:us:{bogus}", master_inputs, etf_symbols)
         assert row["resolution_state"] == "NOT_IN_MASTER"
         assert row["security_id"] is None
