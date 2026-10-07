@@ -36,6 +36,9 @@ do_not_redo:
   - "The F3 empty-corpus recurrence guard is MERGED as #8551 (squash bde684c6, cherry-pick -x of Astra 93e9b38b, authorship preserved); never re-carry it."
   - "The stop-guard repairs are MERGED: #8503 (610889a4, a sync-only fast-forward of macro-main no longer files unsafe_branch) and #8564 (481d67119c85, a quarantined session may repair itself with EnterWorktree). Never re-fix either."
   - "Never set the research-ingest source-freshness outage ACK to quiet the PRODUCER_STALE red; that red IS the F4 Mac13,1 human gate."
+  - "F9 #8579, F15 #8589, F3-TYPING #8593, F10 part 1 #8592 (the carry of #8477) and F10 part 2 #8610 are MERGED; never re-implement or re-open #8477."
+  - "F12 rulings M1-M10, Q-L0-2, F12-Q-L4-1 and F12-Q-L4-2 are settled: the MCP schema is a 1:1 projection of F10 and there is no F10 part 3."
+  - "Never add pdftotext to the VPS or extract on the request path; production text comes from the F5-M stored derivative written by the incumbent research-ingest producer."
 waves:
   - id: F1-F2
     title: Private-R2 isolation + read-only body-health census lane
@@ -71,30 +74,74 @@ waves:
     next_action: "MERGED e2be81444d4c; PRODUCTION_PROOF is the first consumer run (F10 #8477) that resolves subjects through engine/research_vault/subjects.py; record it on #8438 when observed."
   - id: F6-PUBCLOCK
     title: Validate the full publication timestamp before taking its date (accepted defect 6029030377)
-    status: in_progress
+    status: done
     pr: 8566
     depends_on: [F6]
-    next_action: "Seat-owned; must land before F10 #8477 activates a consumer. Armed merge-on-green; on merge, blob-verify engine/research_vault/subjects.py and tests/test_research_vault_subjects.py on origin/main."
   - id: F3-GUARD
     title: Empty-corpus recurrence guard (Astra 93e9b38b)
     status: done
     pr: 8551
   - id: F3
     title: Corpus repair - bounded in-run backfill of catalog rows missing from the corpus
-    status: in_progress
+    status: done
     pr: 8569
     depends_on: [F1-F2, F5, F3-GUARD]
     next_action: >
-      The in-run _backfill_missing_rows pass (cap 150 rows, 150 s budget, newest first, strict store,
-      never raises) runs after _reextract_bodies under not dry_run. On merge, PRODUCTION_PROOF is a
-      main research-ingest run whose summary shows backfill_rows > 0, the corpus count rising run over run
-      toward the 2,778-row catalog, and the excerpt guard no longer refusing. While the producer is stale
-      the job stays red on source-freshness only; that red is the F4 human gate, never ACKed.
+      MERGED c6c0ab36cdbf. Backfill drains in production (run 37589824682: 150 rows, derivable
+      excerpts 351 -> 500). PRODUCTION_PROOF closes when a main research-ingest summary shows
+      re-extract checked=0 and the excerpt snapshot writing again (excerpts >= 749). The
+      source-freshness red is the F4 human gate, never ACKed.
+  - id: F3-TYPING
+    title: Typed re-extract outcomes with their own CI step
+    status: done
+    pr: 8593
+  - id: F9
+    title: Deep-read vault head
+    status: done
+    pr: 8579
+  - id: F15
+    title: Retrieval benchmark fixture (committed catalog/excerpt text only)
+    status: done
+    pr: 8589
+  - id: F10
+    title: Governed ResearchReadService (part 1 read port = carry of #8477; part 2 service + Brain/MCP shims)
+    status: done
+    pr: [8592, 8610]
+    depends_on: [F5, F6]
+    next_action: "Part 1 MERGED 7f440521 and live. Part 2 #8610 MERGED bd6f27c8 and deployed (checkout bd6f27c8163); library only until F11."
+  - id: F5-M
+    title: Stored canonical-text derivative written by the incumbent research-ingest producer
+    status: in_progress
+    depends_on: [F5, F10]
+    next_action: >
+      Orchestrator lane. On merge, one research-ingest dispatch after an in-flight preflight, then
+      track fulltext_inventory coverage to >= 95%. Never extract on the request path.
+  - id: F11
+    title: Shared read_runtime composition root (zero-arg build_read_service in production)
+    status: todo
+    depends_on: [F5-M]
+    next_action: "Merges only at >= 95% F5-M coverage (ruling F12-Q-L4-2 (f))."
+  - id: F12
+    title: ChatGPT MCP read surface (Mastermind) - L1 contracts, L1.1 v1.1, L2 entitlement, L3 SDK app, L4 port adapter + runtime, L5 ops
+    status: in_progress
+    depends_on: [F10]
+    next_action: >
+      L1 Mastermind #1279 MERGED a2254b29 (merge queue). Phase C (v1.1 contracts) + L2/L3 run in one
+      Opus orchestrator lane; L4/L5 launch after them. Rulings M1-M10, Q-L0-2, F12-Q-L4-1/2 bind.
+  - id: F13-F14
+    title: Body exposure to ChatGPT / Deep Research canary and acceptance
+    status: todo
+    depends_on: [F12, F11]
+    next_action: "EXACT_HUMAN_GATE: Chairman H-00 rights ruling, then H-02..H-15 operator acts."
+    wait:
+      kind: external_action
+      review_after: 2026-10-10
+      condition: "Chairman H-00 rights ruling on copyrighted body exposure to ChatGPT; sessions never override it."
 next_action: >
-  Read #8438 forward from counterpart edge 6029030377 (last seat edge 6029985312) before any act.
-  Carry #8566 (F6 pub-clock) and the F3 backfill PR to merged with blob verification, then watch the
-  next main research-ingest summary for backfill_rows and a rising corpus count (F3 PRODUCTION_PROOF).
-  F4 production proof is the operator's Mac13,1 act. F6 production proof arrives with Astra's F10 #8477.
+  Read #8438 forward from the last counterpart edge before any act. Carry F12 Phase C + L2/L3
+  through the Mastermind merge queue, then launch L4/L5 from the frozen mission; carry F5-M to
+  merged and track fulltext coverage to >= 95% before F11 merges; record F3 PRODUCTION_PROOF
+  from the next main research-ingest summary. F4 and H-00 stay human gates.
 ---
 
 # Research Vault AI Intelligence Fabric

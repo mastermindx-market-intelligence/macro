@@ -1,12 +1,18 @@
 """EXP-1 declared-capture inspection; no normalized financial admission."""
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import hashlib
 import json
 import math
 import re
 
+from lib.dataos.identity import AliasRow, IdentityError, VendorAliasTable
+
 SCHEMA = "k3e.declared_capture_inspection.v1"
+ALIASES_PATH = "data/reference/vendor_aliases.parquet"
+PROVIDER_VENDOR_SPACE = {"yfinance": "yahoo"}
+IDENTITY_UNRESOLVED = "SECURITY_IDENTITY_UNRESOLVED_AT_CUTOFF"
+IDENTITY_GATE_CONTRACT = "k3e.identity_gate.v1"
 EXPECTATION_STATES = {"CURRENT", "WITHDRAWN", "STALE"}
 OBSERVATIONS_PATH = "data/revisions/expectation_observations.parquet"
 ATTEMPTS_PATH = "data/revisions/expectation_attempts.parquet"
@@ -127,9 +133,81 @@ def _validate_provenance(provenance):
             raise QueryRefusal("PAIRED_INPUT_HASHES_REQUIRED")
 
 
+def _knowledge_clock(value):
+    if isinstance(value, str):
+        return parse_utc(value)
+    if isinstance(value, datetime):
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        else:
+            value = value.astimezone(timezone.utc)
+        return datetime(value.year, value.month, value.day, value.hour, value.minute,
+                        value.second, value.microsecond, tzinfo=timezone.utc)
+    raise TypeError("invalid knowledge clock")
+
+
+def _window_date(value):
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if isinstance(value, str):
+        return date.fromisoformat(value)
+    raise TypeError("invalid window date")
+
+
+def _alias_pin(entry):
+    return (isinstance(entry, dict)
+            and isinstance(entry.get("sha256"), str)
+            and re.fullmatch(r"[0-9a-f]{64}", entry["sha256"])
+            and isinstance(entry.get("git_blob_id"), str)
+            and re.fullmatch(r"[0-9a-f]{40}", entry["git_blob_id"]))
+
+
+def _build_alias_index(records):
+    rows_for_table = []
+    index = defaultdict(list)
+    try:
+        for record in records:
+            if not isinstance(record, dict):
+                raise TypeError("alias record must be mapping")
+            vendor = record.get("vendor")
+            if vendor not in PROVIDER_VENDOR_SPACE.values():
+                continue
+            vendor_symbol = record.get("vendor_symbol")
+            security_id = record.get("security_id")
+            if not isinstance(vendor, str) or not vendor:
+                raise ValueError("invalid vendor")
+            if not isinstance(vendor_symbol, str) or not vendor_symbol:
+                raise ValueError("invalid vendor_symbol")
+            if not isinstance(security_id, str) or not security_id:
+                raise ValueError("invalid security_id")
+            valid_from = _window_date(record.get("valid_from"))
+            valid_to = _window_date(record.get("valid_to"))
+            ingested = _knowledge_clock(record.get("ingested_at"))
+            alias_row = AliasRow(vendor, vendor_symbol, security_id, valid_from, valid_to)
+            rows_for_table.append(alias_row)
+            index[(vendor, vendor_symbol)].append((alias_row, ingested))
+        VendorAliasTable(rows_for_table)
+    except (ValueError, TypeError, IdentityError):
+        return "ALIAS_TABLE_INVALID", {}
+    return "CHECKED", dict(index)
+
+
+def _resolve_security(index, space, symbol, on_date, known_at):
+    if space is None:
+        return None
+    found = {row.security_id for row, ingested in index.get((space, symbol), ())
+             if ingested <= known_at and row.covers(on_date)}
+    return next(iter(found)) if len(found) == 1 else None
+
+
 def inspect_expectation_surface(observations, attempts, *, source_provenance,
                                 ticker, metric, horizon, as_of,
-                                provider="yfinance", composed_at=None):
+                                provider="yfinance", composed_at=None,
+                                identity_aliases=None):
     """Read mappings without mutation; source clocks are declarations, not PIT proof.
 
     Callers must supply JSON-compatible mappings (including real nulls). The CLI
@@ -142,6 +220,37 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
             or metric not in {"EPS", "revenue"}):
         raise QueryRefusal("INVALID_QUERY_DIMENSIONS")
     _validate_provenance(source_provenance)
+    identity_status = "NOT_CHECKED"
+    alias_input = None
+    alias_index = {}
+    query_security = None
+    identity_resolved_records = None
+    identity_unresolved_records = None
+    if identity_aliases is None:
+        provenance_inputs = {
+            path: {key: source_provenance["inputs"][path][key]
+                   for key in ("sha256", "git_blob_id")}
+            for path in (OBSERVATIONS_PATH, ATTEMPTS_PATH)}
+    else:
+        if not isinstance(identity_aliases, (list, tuple)):
+            raise QueryRefusal("RECORD_MAPPINGS_REQUIRED")
+        if not all(isinstance(record, dict) for record in identity_aliases):
+            raise QueryRefusal("RECORD_MAPPINGS_REQUIRED")
+        entry = source_provenance["inputs"].get(ALIASES_PATH)
+        absent_marker = dict(absent_at_revision=True)
+        if _alias_pin(entry):
+            alias_input = {key: entry[key] for key in ("sha256", "git_blob_id")}
+            identity_status, alias_index = _build_alias_index(identity_aliases)
+        elif entry == absent_marker and not identity_aliases:
+            alias_input = absent_marker
+            identity_status = "ALIAS_PATH_ABSENT_AT_REVISION"
+        else:
+            raise QueryRefusal("ALIAS_PROVENANCE_REQUIRED")
+        provenance_inputs = {
+            path: {key: source_provenance["inputs"][path][key]
+                   for key in ("sha256", "git_blob_id")}
+            for path in (OBSERVATIONS_PATH, ATTEMPTS_PATH)}
+        provenance_inputs[ALIASES_PATH] = alias_input
     obs = list(observations)
     att = list(attempts)
     if not all(isinstance(row, dict) for row in obs + att):
@@ -150,10 +259,11 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
     query = {"provider": provider, "ticker_compat": ticker, "metric": metric,
              "horizon_label_raw": horizon, "as_of": _iso(cutoff)}
     provenance = {"source_revision": source_provenance["source_revision"],
-                  "inputs": {path: {key: source_provenance["inputs"][path][key]
-                                    for key in ("sha256", "git_blob_id")}
-                             for path in (OBSERVATIONS_PATH, ATTEMPTS_PATH)}}
+                  "inputs": provenance_inputs}
     query_identity = _digest({"schema": SCHEMA, "query": query, "source": provenance})
+    space = PROVIDER_VENDOR_SPACE.get(provider)
+    if identity_status == "CHECKED":
+        query_security = _resolve_security(alias_index, space, ticker, cutoff.date(), cutoff)
     reasons = Counter()
     eligible_attempts = []
     pending_attempts = []
@@ -256,7 +366,23 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
     groups = defaultdict(list)
     excluded = 0
     true_missing = 0
+    if identity_status != "NOT_CHECKED":
+        identity_resolved_records = 0
+        identity_unresolved_records = 0
     for row, captures in relevant:
+        capture_clock = min(clock for clock in captures if clock is not None)
+        known_at = min(capture_clock, cutoff)
+        if identity_status == "CHECKED":
+            row_security = _resolve_security(
+                alias_index, space, row["ticker_compat"], capture_clock.date(), known_at)
+            identity_resolved = (query_security is not None and row_security == query_security)
+        else:
+            identity_resolved = False
+        if identity_status != "NOT_CHECKED":
+            if identity_resolved:
+                identity_resolved_records += 1
+            else:
+                identity_unresolved_records += 1
         faults = []
         if None in captures:
             faults.append("MISSING_OR_MALFORMED_CAPTURE_CLOCK")
@@ -313,7 +439,8 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
                         if not faults else None)
         groups[tuple(row[key] for key in GROUP_FIELDS)].append(
             {"row": row, "availability": availability,
-             "receipt": receipt, "faults": faults})
+             "receipt": receipt, "faults": faults,
+             "identity_resolved": identity_resolved})
 
     snapshots = []
     supported = []
@@ -375,6 +502,11 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
         if contributor_fault:
             support_reasons.append("CONTRIBUTOR_IDENTITY_UNAVAILABLE")
             reasons["CONTRIBUTOR_IDENTITY_UNAVAILABLE"] += 1
+            is_supported = False
+        if (identity_status != "NOT_CHECKED"
+                and not all(item["identity_resolved"] for item in valid_members)):
+            support_reasons.append(IDENTITY_UNRESOLVED)
+            reasons[IDENTITY_UNRESOLVED] += 1
             is_supported = False
         if state_faults:
             support_reasons.append("INVALID_EXPECTATION_STATE_ENVELOPE")
@@ -471,8 +603,37 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
                        "WITHDRAWN_UNAVAILABLE" if withdrawn_now else
                        "STALE_UNAVAILABLE" if stale_now else
                        "UNESTIMABLE" if relevant else "UNAVAILABLE")
+    if identity_status == "NOT_CHECKED":
+        identity_gate = {
+            "contract": IDENTITY_GATE_CONTRACT,
+            "status": identity_status,
+            "alias_input": None,
+            "vendor_space": PROVIDER_VENDOR_SPACE.get(provider),
+            "provider_vendor_space_map": dict(PROVIDER_VENDOR_SPACE),
+            "query_security_id_at_cutoff": None,
+            "resolved_records": None,
+            "unresolved_records": None,
+            "reason_code": IDENTITY_UNRESOLVED,
+            "rule": "a relevant row is identity-resolved only if a vendor_aliases row in the provider vendor space for its ticker has ingested_at <= min(row capture clock, cutoff), its validity window (valid_from inclusive, valid_to exclusive, per lib/dataos/identity.AliasRow.covers; null bounds open) covers the capture date, and its security_id equals the query ticker security_id resolved at the cutoff under the same rule; undated rows are usable from ingested_at forward, never before; unresolved rows stay in denominators and are snapshot-ineligible",
+            "schema_note": "payload schema string unchanged (pinned by engine/k3e_coupling.py); identity_gate is an additive block, contract k3e.identity_gate.v1; receipts produced before this change reproduce only at their own code revision",
+        }
+    else:
+        identity_gate = {
+            "contract": IDENTITY_GATE_CONTRACT,
+            "status": identity_status,
+            "alias_input": alias_input,
+            "vendor_space": PROVIDER_VENDOR_SPACE.get(provider),
+            "provider_vendor_space_map": dict(PROVIDER_VENDOR_SPACE),
+            "query_security_id_at_cutoff": query_security,
+            "resolved_records": identity_resolved_records,
+            "unresolved_records": identity_unresolved_records,
+            "reason_code": IDENTITY_UNRESOLVED,
+            "rule": "a relevant row is identity-resolved only if a vendor_aliases row in the provider vendor space for its ticker has ingested_at <= min(row capture clock, cutoff), its validity window (valid_from inclusive, valid_to exclusive, per lib/dataos/identity.AliasRow.covers; null bounds open) covers the capture date, and its security_id equals the query ticker security_id resolved at the cutoff under the same rule; undated rows are usable from ingested_at forward, never before; unresolved rows stay in denominators and are snapshot-ineligible",
+            "schema_note": "payload schema string unchanged (pinned by engine/k3e_coupling.py); identity_gate is an additive block, contract k3e.identity_gate.v1; receipts produced before this change reproduce only at their own code revision",
+        }
     payload = {"schema": SCHEMA, "query_identity": query_identity, "query": query,
                "source": provenance,
+               "identity_gate": identity_gate,
                "replay_basis": "declared_capture_at_frozen_source_revision",
                "historical_public_availability_verified": False,
                "historical_repository_visibility_verified": False,
@@ -498,12 +659,15 @@ def inspect_expectation_surface(observations, attempts, *, source_provenance,
                    "unique_completed_valid_attempts_by_cutoff": len([item for item in eligible_attempts
                                                                     if len(attempt_by_id[item["identity"]["attempt_id"]]) == 1]),
                    "reason_counts": dict(sorted(reasons.items())),
+                   "identity_resolved_records": identity_resolved_records,
+                   "identity_unresolved_records": identity_unresolved_records,
                    "population_notes": {
                        "records": "query-dimension rows temporally available by cutoff, plus historically locatable missing/malformed receipts; explicitly pending linked captures excluded before all observation adjudication",
                        "support": "finite nonmissing estimate fields with a same-group positive integral covering count and successful completed linked attempt",
                        "true_missing": "null value with explicit missingness in capture-clock-bounded relevant records; may overlap excluded records",
                        "attempts": "provider/ticker attempts with valid attempted_at <= cutoff; not metric-specific",
-                       "reasons": "nonexclusive diagnostic counts; not additive partitions"}}}
+                       "reasons": "nonexclusive diagnostic counts; not additive partitions",
+                       "identity": "relevant records whose security identity resolved under identity_gate.rule; unresolved records stay in every other denominator"}}}
     return {"semantic_payload": payload, "semantic_digest": _digest(payload),
             "composition_time": _iso(composition),
             "input_provenance": {"full_input_observation_records": len(obs),
