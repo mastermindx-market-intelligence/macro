@@ -10,6 +10,7 @@ import logging
 
 from lib.intl_library_view import build_public_intl_library_view
 from lib.intl_inspector_mount import attach_inspectors
+from lib.intl_compare_mount import attach_compares
 
 
 _SECTIONS = {
@@ -122,6 +123,12 @@ def render_international_pages(template, vm, *, catalogue=None):
                             "target": {"page_id": "macro:intl_stocks", "route": "/intl_stocks.html", "region_id": None}})
             inspected = attach_inspectors(current, public_targets=targets)
             macro = template.render(**{**vm, "intl_workspace": inspected}, mode="macro")
+            current = inspected
         except (ValueError, KeyError, TypeError) as exc:
             logging.getLogger(__name__).error("International Inspector unavailable (%s)", type(exc).__name__)
+        try:
+            compared = attach_compares(current)
+            macro = template.render(**{**vm, "intl_workspace": compared}, mode="macro")
+        except (ValueError, KeyError, TypeError) as exc:
+            logging.getLogger(__name__).error("International Compare unavailable (%s)", type(exc).__name__)
     return macro, stocks

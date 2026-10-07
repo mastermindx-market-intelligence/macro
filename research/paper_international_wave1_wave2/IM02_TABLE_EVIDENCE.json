@@ -1,5 +1,5 @@
 {
-  "status": "CORE_REVIEWED_FINAL_REASON_DELTA_REVIEW_PENDING",
+  "status": "SCOPED_SOURCE_ACCEPTED",
   "source_hashes": {
     "lib/intl_compare_view.py": "e920390b4aa94262a61daf1372a39da58095abbba732c6feef51d69fbccc7324",
     "tests/test_intl_compare_view.py": "ae2c12fc8dcd22982805c0481baedeead943f3e7aea4d0dd6511d246543def10"
@@ -15,7 +15,13 @@
     "core": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_COMPARE_REVIEW_R1.json",
     "finding": "Three fixed public Overview reason keys were omitted. Parent added only these keys plus three actual-owner regressions.",
     "retained_final_run": "paper-01a1101f-compare-table-review-r2",
-    "final_verdict": "PENDING"
+    "final_verdict": "PASS_SCOPED",
+    "final_review": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_COMPARE_REVIEW_R2.json",
+    "final_review_sha256": "6d11f6cd12b67d478408102a33ef393059dd8fb94dbe60ac754314f561fbc514",
+    "final_counts": {
+      "author": 40,
+      "independent": 9
+    }
   },
   "negative_proof": {
     "log": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_COMPARE_REASON_KNOWN_BAD.log",

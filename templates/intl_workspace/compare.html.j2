@@ -1,0 +1,107 @@
+{# Pure rendering of the existing public Compare catalogue. #}
+{% macro words(en, zh) -%}
+<span class="l-en" lang="en">{{ en|e }}</span><span class="l-zh" lang="zh">{{ zh|e }}</span>
+{%- endmacro %}
+{% macro number(metric) -%}
+{% if metric.value is none %}{{ words('Unavailable', '不可用') }}
+{% else %}{% if metric.value is integer %}{{ '+' if metric.value > 0 else '' }}{{ metric.value|string|e }}{% else %}{{ '%+.2f'|format(metric.value) if metric.value > 0 else '%.2f'|format(metric.value) }}{% endif %}{% if metric.unit == 'percentage_points' %} {{ words('pp', '个百分点') }}{% else %}%{% endif %}
+{% endif %}
+{%- endmacro %}
+{% macro window_text(window) -%}
+<time datetime="{{ window.start|e }}">{{ window.start|e }}</time>–<time datetime="{{ window.end|e }}">{{ window.end|e }}</time>
+<span>{{ words('Calendar policy', '日历规则') }}: {{ window.calendar_policy|e }}</span>
+{%- endmacro %}
+{% set context = compare_catalogue.context %}
+{% set rows = compare_catalogue.rows %}
+{% set cohorts = compare_catalogue.cohorts %}
+{% set selected_leg = 'local' if context.currency_basis == 'local' else 'usd' %}
+{% set qualities = {
+  'qualified': ['Qualified', '符合条件'], 'stale': ['Stale data', '数据过期'],
+  'missing': ['Missing data', '数据缺失'], 'denied': ['Information withheld', '信息未披露'],
+  'failed': ['Calculation failed', '计算失败'], 'unsupported': ['Unsupported', '不支持'],
+  'unknown': ['Unavailable', '不可用']
+} %}
+{% set reasons = {
+  'value_denied': ['Value withheld', '数值未披露'],
+  'value_unknown': ['Value disclosure unknown', '数值披露状态未知'],
+  'numerical_unavailable': ['Numerical result unavailable', '计算结果不可用'],
+  'qualification_unknown': ['Qualification unknown', '适用条件未知'],
+  'binding_mismatch': ['Source binding unavailable', '来源绑定不可用'],
+  'missing_record': ['Record unavailable', '记录不可用'],
+  'not_disclosed': ['Information withheld', '信息未披露'],
+  'source_unknown': ['Source unknown', '来源未知']
+} %}
+{% set labels = {'local': ['Local currency return', '本币回报'],
+                 'usd': ['USD return · Unhedged', '美元回报 · 未对冲'],
+                 'fx_contribution': ['Currency contribution', '汇率贡献']} %}
+<section class="intl-compare" data-im-panel data-im-compare-panel data-view="compare" data-horizon="{{ context.horizon|e }}" data-basis="{{ context.currency_basis|e }}" data-return-basis="{{ context.return_basis|e }}" data-source="{{ (context.source_reference if context.source_reference is not none else '')|e }}" id="{{ context_id|e }}-compare" aria-labelledby="{{ context_id|e }}-compare-title">
+  <header class="intl-compare__header">
+    <h2 id="{{ context_id|e }}-compare-title">{{ words('Compare markets', '比较市场') }}</h2>
+    <p class="intl-compare__context">{{ context.horizon|e }} · {% if selected_leg == 'local' %}{{ words('Local currency', '本币') }}{% else %}{{ words('USD · Unhedged', '美元 · 未对冲') }}{% endif %} · {{ words('Price return', '价格回报') }}</p>
+    <p data-im-compare-status role="status" aria-live="polite">{{ words('Individual market facts. Select two to four markets to compare matching windows.', '单个市场事实。选择两到四个市场，以比较相同的计算区间。') }}</p>
+    {% if context.source_reference is not none %}<p class="intl-compare__source" data-im-compare-source>{{ words('Disclosed source', '已披露的来源') }}: {{ context.source_reference|e }}</p>{% else %}<p>{{ words('Source reference not supplied.', '未提供来源引用。') }}</p>{% endif %}
+  </header>
+  <div class="intl-compare__controls" data-im-compare-controls hidden>
+    <label for="{{ context_id|e }}-compare-pin">{{ words('Add market', '添加市场') }}</label>
+    <select id="{{ context_id|e }}-compare-pin" data-im-compare-pin>
+      <option value="" data-im-label-en="Choose a market" data-im-label-zh="选择市场">Choose a market</option>
+      {% for row in rows if row.get('quality') != 'denied' %}
+      <option value="{{ row.slot|e }}" data-im-label-en="{{ row.name_en|e }}" data-im-label-zh="{{ row.name_zh|e }}">{{ row.name_en|e }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <table class="intl-compare__table">
+    <thead><tr><th scope="col">{{ words('Market', '市场') }}</th><th scope="col">{{ words('Returns and evidence', '回报与依据') }}</th></tr></thead>
+    <tbody data-im-compare-rows>
+      {% for row in rows %}
+        {% set denied = row.get('quality') == 'denied' %}
+        <tr class="intl-compare__row" data-im-compare-slot="{{ row.slot|e }}"{% if not denied %} data-im-compare-cohort-id="{{ (row.cohort_id if row.cohort_id is not none else '')|e }}"{% endif %}>
+          <th class="intl-compare__market" scope="row">
+            {% if denied %}{{ words('Unavailable', '不可用') }}{% else %}
+              {{ words(row.name_en, row.name_zh) }}
+              {% if row.get('index_label') is not none %}<span class="intl-compare__index">{{ row.index_label|e }}</span>{% endif %}
+              {% if row.cohort_id is not none %}<a href="#{{ context_id|e }}-compare-{{ row.cohort_id|e }}">{{ words('Calculation window', '计算区间') }}</a>{% endif %}
+            {% endif %}
+            <button type="button" data-im-compare-remove="{{ row.slot|e }}" hidden>{{ words('Remove selection', '移除选择') }}</button>
+          </th>
+          <td>
+            {% if denied %}<p data-im-compare-quality="denied">{{ words('Information withheld', '信息未披露') }}</p>
+            {% else %}
+              {% set group = (cohorts|selectattr('id', 'equalto', row.cohort_id)|list|first) if row.cohort_id is not none else none %}
+              <dl class="intl-compare__metrics">
+                {% for leg in ['local', 'usd', 'fx_contribution'] %}
+                  {% set metric = row[leg] %}
+                  {% set quality_words = reasons.get(metric.reason, qualities.get(metric.quality, qualities['unknown'])) %}
+                  <div data-im-compare-metric="{{ leg|e }}">
+                    <dt>{{ words(labels[leg][0], labels[leg][1]) }}</dt>
+                    <dd data-im-compare-value>{{ number(metric) }}</dd>
+                    <dd class="intl-compare__quality" data-im-compare-quality="{{ metric.quality|e }}">{{ words(quality_words[0], quality_words[1]) }}</dd>
+                    {% if metric.window is not none and (group is none or metric.window.start != group.window.start or metric.window.end != group.window.end or metric.window.calendar_policy != group.window.calendar_policy) %}
+                      <dd><details class="intl-compare__interval"><summary>{{ words('Metric interval', '指标区间') }}</summary><p>{{ window_text(metric.window) }}</p></details></dd>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </dl>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if not rows %}<p>{{ words('No market records supplied.', '未提供市场记录。') }}</p>{% endif %}
+  {% if cohorts %}
+    <details class="intl-compare__cohorts">
+      <summary>{{ words('Calculation windows', '计算区间') }}</summary>
+      {% for cohort in cohorts %}
+        <section data-im-compare-cohort="{{ cohort.id|e }}" id="{{ context_id|e }}-compare-{{ cohort.id|e }}">
+          <h3>{{ words('Window', '区间') }} {{ loop.index }}</h3>
+          <p>{{ window_text(cohort.window) }}</p>
+        </section>
+      {% endfor %}
+    </details>
+  {% endif %}
+  <p>{{ words('Chart series and benchmark comparison are unavailable.', '图表序列与基准比较暂不可用。') }}</p>
+  {% set metadata_cohorts = namespace(value=[]) %}
+  {% for cohort in cohorts %}{% set metadata_cohorts.value = metadata_cohorts.value + [{'id': cohort.id, 'order_slots': cohort.order_slots}] %}{% endfor %}
+  <script type="application/json" data-im-compare-catalogue>{{ {'schema': compare_catalogue.schema, 'slot_order': compare_catalogue.slot_order, 'cohorts': metadata_cohorts.value}|tojson }}</script>
+</section>

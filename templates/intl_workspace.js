@@ -1031,13 +1031,144 @@
     inspectorBack(controller);
   }
 
+  // Compare consumes only a server-ordered, identity-free slot catalogue.
+  // Financial text and endpoint windows stay on their original DOM nodes.
+  function comparePlan(controller, panel, state) {
+    if (!panel || !panel.hasAttribute('data-im-compare-panel') || panel.getAttribute('data-return-basis') !== 'price') return null;
+    var all = function (selector) { return owned(controller.root, selector).filter(function (node) { return node.closest('[data-im-panel]') === panel; }); };
+    var one = function (selector) { var nodes = all(selector); return nodes.length === 1 ? nodes[0] : null; };
+    var script = one('script[data-im-compare-catalogue]'), body = one('tbody[data-im-compare-rows]');
+    var status = one('[data-im-compare-status]'), controls = one('[data-im-compare-controls]'), picker = one('select[data-im-compare-pin]');
+    if (!script || script.type !== 'application/json' || script.textContent.length > 65536 || !body || !status || !controls || !picker || !controls.contains(picker)) return null;
+    var data;
+    try { data = JSON.parse(script.textContent); } catch (_) { return null; }
+    var keys = function (value, expected) { return value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === expected.length && expected.every(function (k) { return Object.prototype.hasOwnProperty.call(value,k); }); };
+    var count = controller.config.markets.length;
+    if (!keys(data,['schema','slot_order','cohorts']) || data.schema !== 'intl-compare-catalogue.v1' ||
+        !Array.isArray(data.slot_order) || data.slot_order.length !== count || data.slot_order.some(function (slot,i) { return slot !== i; }) || !Array.isArray(data.cohorts)) return null;
+    var slotNumber = function (text) { return typeof text === 'string' && /^(0|[1-9][0-9]*)$/.test(text) && Number(text) < count ? Number(text) : null; };
+    var rows = new Map(), membership = new Map(), groups = new Map();
+    var rowNodes = all('tr[data-im-compare-slot]');
+    if (rowNodes.length !== count) return null;
+    for (var row of rowNodes) {
+      var slot = slotNumber(row.getAttribute('data-im-compare-slot'));
+      if (slot === null || rows.has(slot) || row.parentNode !== body) return null;
+      rows.set(slot,row);
+    }
+    for (var cohort of data.cohorts) {
+      if (!keys(cohort,['id','order_slots']) || typeof cohort.id !== 'string' || !/^c(0|[1-9][0-9]*)$/.test(cohort.id) || groups.has(cohort.id) || !Array.isArray(cohort.order_slots) || !cohort.order_slots.length) return null;
+      for (var member of cohort.order_slots) {
+        if (!Number.isInteger(member) || !rows.has(member) || membership.has(member)) return null;
+        membership.set(member,cohort.id);
+      }
+      groups.set(cohort.id,cohort.order_slots);
+    }
+    if (data.cohorts.length && !panel.getAttribute('data-source')) return null;
+    for (var pair of rows) {
+      if ((pair[1].getAttribute('data-im-compare-cohort-id') || null) !== (membership.get(pair[0]) || null)) return null;
+    }
+    var windows = all('[data-im-compare-cohort]'), windowIds = new Set();
+    for (var windowNode of windows) {
+      var id = windowNode.getAttribute('data-im-compare-cohort');
+      if (!groups.has(id) || windowIds.has(id)) return null;
+      windowIds.add(id);
+    }
+    if (windows.length !== groups.size) return null;
+    var removes = all('button[data-im-compare-remove]'), removeSlots = new Set();
+    for (var button of removes) {
+      var removeSlot = slotNumber(button.getAttribute('data-im-compare-remove'));
+      if (removeSlot === null || removeSlots.has(removeSlot) || button.closest('tr[data-im-compare-slot]') !== rows.get(removeSlot)) return null;
+      removeSlots.add(removeSlot);
+    }
+    if (removes.length !== count) return null;
+    var options = Array.from(picker.options), optionSlots = new Set(), empty = 0;
+    for (var option of options) {
+      if (option.parentNode !== picker || !option.hasAttribute('data-im-label-en') || !option.hasAttribute('data-im-label-zh')) return null;
+      if (option.value === '') { empty++; continue; }
+      var optionSlot = slotNumber(option.value);
+      if (optionSlot === null || optionSlots.has(optionSlot) || !rows.get(optionSlot).hasAttribute('data-im-compare-cohort-id')) return null;
+      optionSlots.add(optionSlot);
+    }
+    if (empty !== 1 || optionSlots.size !== rowNodes.filter(function (node) { return node.hasAttribute('data-im-compare-cohort-id'); }).length) return null;
+    var selected = state.compare_markets.map(function (market) { return controller.config.markets.indexOf(market); });
+    if (selected.some(function (slot) { return !rows.has(slot); })) return null;
+    var verdict = 'incomplete', reason = 'selection_incomplete', order = selected.length ? selected.slice() : data.slot_order.slice();
+    if (selected.length >= 2) {
+      var groupId = membership.get(selected[0]);
+      if (selected.some(function (slot) { return !membership.has(slot); })) reason = 'selection_unqualified';
+      else if (selected.some(function (slot) { return membership.get(slot) !== groupId; })) reason = 'unequal_windows';
+      else { verdict = 'comparable'; reason = ''; order = groups.get(groupId).filter(function (slot) { return selected.includes(slot); }); }
+      if (reason) verdict = 'incomparable';
+    }
+    return {panel:panel,body:body,rows:rows,status:status,controls:controls,picker:picker,options:options,removes:removes,windows:windows,membership:membership,selected:selected,order:order,verdict:verdict,reason:reason};
+  }
+
+  function compareFocus(root) {
+    var node = root.ownerDocument.activeElement;
+    return node && node.closest && node.closest('[data-im-workspace]') === root &&
+      node.closest('[data-im-compare-slot]') ? node : null;
+  }
+
+  function restoreCompareFocus(root, node) {
+    if (node && node.isConnected && node.closest('[data-im-workspace]') === root &&
+        !node.closest('[hidden]') && !node.matches(':disabled') && node.getClientRects().length &&
+        root.ownerDocument.activeElement !== node) node.focus({preventScroll:true});
+  }
+
+  function paintCompare(controller, plan) {
+    if (!plan) return;
+    var focused = compareFocus(controller.root);
+    var zh = normalLanguage(controller.root) === 'zh';
+    var messages = {
+      selection_incomplete: ['Select two to four markets to compare matching windows.', '选择两到四个市场，以比较相同的计算区间。'],
+      selection_unqualified: ['Some selected markets lack qualified evidence. All selections are retained.', '部分所选市场缺少符合条件的依据。全部选择已保留。'],
+      unequal_windows: ['Selected markets have different calculation windows. All selections are retained.', '所选市场的计算区间不同。全部选择已保留。'],
+      comparable: ['Matching calculation windows · ordered by return.', '相同计算区间 · 按回报排序。']
+    };
+    plan.panel.setAttribute('data-im-compare-state',plan.verdict);
+    plan.panel.setAttribute('data-im-compare-reason',plan.reason);
+    plan.status.textContent = messages[plan.reason || 'comparable'][zh ? 1 : 0];
+    var desired = plan.order.concat(Array.from(plan.rows.keys()).sort(function (a,b) { return a-b; }).filter(function (slot) { return !plan.order.includes(slot); }));
+    var current = Array.from(plan.body.children).filter(function (node) { return Array.from(plan.rows.values()).includes(node); });
+    if (desired.some(function (slot,i) { return current[i] !== plan.rows.get(slot); })) desired.forEach(function (slot) { plan.body.appendChild(plan.rows.get(slot)); });
+    plan.rows.forEach(function (row,slot) { row.hidden = !plan.order.includes(slot); });
+    plan.removes.forEach(function (button) { button.hidden = !plan.selected.includes(Number(button.getAttribute('data-im-compare-remove'))); });
+    plan.windows.forEach(function (node) { node.hidden = !!plan.selected.length && !plan.selected.some(function (slot) { return plan.membership.get(slot) === node.getAttribute('data-im-compare-cohort'); }); });
+    plan.options.forEach(function (option) { option.textContent = option.getAttribute(zh ? 'data-im-label-zh' : 'data-im-label-en'); option.disabled = option.value !== '' && plan.selected.includes(Number(option.value)); });
+    plan.picker.value = '';
+    plan.controls.hidden = false;
+    restoreCompareFocus(controller.root,focused);
+  }
+
+  function compareEvent(controller, event) {
+    var target = event.target;
+    if (!target || !target.closest || target.closest('[data-im-workspace]') !== controller.root) return false;
+    var button = event.type === 'click' ? target.closest('button[data-im-compare-remove]') : null;
+    var picker = event.type === 'change' && target.matches('select[data-im-compare-pin]') ? target : null;
+    if (!button && !picker) return false;
+    var matches = panelFor(controller,controller.state), panel = matches.length === 1 ? matches[0] : null;
+    var control = button || picker;
+    if (!panel || panel.hidden || !panel.contains(control) || control.disabled || control.closest('[hidden]')) return true;
+    var plan = comparePlan(controller,panel,controller.state);
+    if (!plan || (picker && picker !== plan.picker) || (button && !plan.removes.includes(button))) return true;
+    var value = button ? button.getAttribute('data-im-compare-remove') : picker.value;
+    if (value === '' || !/^(0|[1-9][0-9]*)$/.test(value)) return true;
+    var slot = Number(value);
+    if (!plan.rows.has(slot) || (button ? !plan.selected.includes(slot) : !plan.options.some(function (o) { return o.value === value && !o.disabled; }))) return true;
+    event.preventDefault();
+    var result = dispatch(controller,{type:button ? 'unpin' : 'pin',market_id:controller.config.markets[slot]});
+    if (result.ok && button) plan.picker.focus();
+    return true;
+  }
+
   function snapshotRoot(root) {
     var selector = '[data-im-heading],[data-im-issues],[data-im-unavailable],[data-im-panel],'+
       '[data-im-action],[data-im-expanded-region],[data-im-expansion-trigger] .l-en,[data-im-expansion-trigger] .l-zh,'+
       '[data-im-library-static],[data-im-library-search],[data-im-library-clear],[data-im-library-status],'+
       '[data-im-library-groups],[data-im-library-group],[data-im-library-results],[data-im-library-empty],[data-im-library-tool],'+
       '[data-im-inspector-origin],[data-im-inspector-payload],[data-im-inspector-enhancement],[data-im-inspector-page],'+
-      '[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-shell],[data-im-inspector-deeper-unavailable]';
+      '[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-shell],[data-im-inspector-deeper-unavailable],'+
+      '[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
       if (node === root) attrs.push('data-im-enhanced');
@@ -1057,9 +1188,15 @@
       if (node.matches('[data-im-inspector-origin],[data-im-inspector-enhancement],[data-im-inspector-page],[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-deeper-unavailable]')) attrs.push('hidden');
       if (node.matches('details[data-im-inspector-origin],details[data-im-inspector-ledger],details[data-im-inspector-field]')) attrs.push('open');
       if (node.matches('[data-im-inspector-shell]')) attrs.push('aria-labelledby','aria-label');
+      if (node.matches('[data-im-compare-panel]')) attrs.push('data-im-compare-state','data-im-compare-reason');
+      if (node.matches('[data-im-compare-slot],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove]')) attrs.push('hidden');
+      if (node.matches('[data-im-compare-status],[data-im-compare-pin] option')) text = true;
+      if (node.matches('[data-im-compare-pin] option')) attrs.push('disabled');
+      if (node.matches('[data-im-compare-pin]')) value = true;
       return {node:node, attrs:Array.from(new Set(attrs)).map(function (name) {return [name,node.getAttribute(name)];}),
         value:value ? node.value : null, children:text ? Array.from(node.childNodes) : null,
-        parent:node.matches('[data-im-library-tool],[data-im-inspector-payload]') ? node.parentNode : null, next:node.nextSibling};
+        compareFocus:node === root ? compareFocus(root) : null,
+        parent:node.matches('[data-im-library-tool],[data-im-inspector-payload],[data-im-compare-slot]') ? node.parentNode : null, next:node.nextSibling};
     });
   }
 
@@ -1081,6 +1218,7 @@
       if (entry.value !== null) node.value = entry.value;
       if (entry.children !== null) node.replaceChildren.apply(node, entry.children);
     });
+    restoreCompareFocus(root,snapshot[0] && snapshot[0].compareFocus);
   }
 
   function panelValid(panel, config, source) {
@@ -1126,6 +1264,11 @@
     }
     var panels = panelFor(controller, state);
     var panel = panels.length === 1 ? panels[0] : null;
+    var compare = null;
+    if (panel && panel.getAttribute('data-view') === 'compare') {
+      compare = comparePlan(controller,panel,state);
+      if (!compare) panel = null;
+    }
     var supported = structuralPanels(controller, state.source_reference);
     owned(root, '[data-im-action]').forEach(function (control) {
       var action = control.getAttribute('data-im-action');
@@ -1156,6 +1299,7 @@
       });
     }
     paintLibrary(controller,state);
+    paintCompare(controller,compare);
     paintInspectorFallbacks(controller,state);
     return reported;
   }
@@ -1278,6 +1422,7 @@
   }
 
   function clickOrChange(controller, event) {
+    if (compareEvent(controller,event)) return;
     if (inspectorEvent(controller,event)) return;
     if (libraryEvent(controller,event)) return;
     var action = actionFromEvent(controller, event);
@@ -1398,6 +1543,8 @@
       controller.observer = new window.MutationObserver(function () {
         repaintIssues(controller);
         paintLibrary(controller,controller.state);
+        var panels = panelFor(controller,controller.state);
+        if (panels.length === 1 && !panels[0].hidden) paintCompare(controller,comparePlan(controller,panels[0],controller.state));
         applyInspectorLanguage(controller);
         if (controller.inspector) applyInspectorMode(controller, controller.inspector.mode, controller.inspector.field, { focus: false });
         paintInspectorFallbacks(controller, controller.state);

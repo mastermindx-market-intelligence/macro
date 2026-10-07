@@ -72,7 +72,9 @@ for (const options of [{javaScriptEnabled:false},{broken:true}]) {
     await pageFixture(async page=>{
       assert.equal(await page.locator('[data-im-enhanced]').count(),0);
       assert.equal(await page.locator('[data-im-controls]').evaluate(n=>n.disabled),true);
-      assert.equal(await page.locator('[data-im-panel]:visible').count(),11);
+      assert.equal(await page.locator('[data-im-panel][data-view="overview"]:visible').count(),10);
+      assert.equal(await page.locator('[data-im-compare-panel]:visible').count(),10);
+      assert.equal(await page.locator('[data-im-panel][data-view="library"]:visible').count(),1);
       assert.equal(await page.locator('[data-im-market-unknown]:visible').count(),70);
       assert.equal(await page.locator('[data-im-expansion-trigger]:visible').count(),0);
       assert.equal(await page.locator('#fixture-owner-fragment').isVisible(),true);
