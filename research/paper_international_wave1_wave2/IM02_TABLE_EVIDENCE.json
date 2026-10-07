@@ -32,5 +32,7 @@
     "Structural validation is not source receipt authentication.",
     "No chart-series or benchmark grant; no automatic subset or clipping.",
     "Waves 1\u20133 remains incomplete."
-  ]
+  ],
+  "revision": "eea1cf4099a40785f6735b86ace968de865ab99e",
+  "additive_successor": "IM02_CATALOGUE_EVIDENCE.json"
 }

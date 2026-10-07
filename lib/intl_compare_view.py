@@ -97,3 +97,41 @@ def build_compare_view(overview, *, selected_slots):
                   order_slots=[row['slot'] for row in sorted(
                       selected, key=lambda row: (-row['metric']['value'], row['market_id']))])
     return result
+
+
+def build_compare_catalogue(overview):
+    """Publish one row per configured slot and server-owned endpoint cohorts.
+
+    The existing controller can classify its 0–4 pins and filter ``order_slots``
+    without receiving duplicate numerical JSON or computing financial rankings.
+    Slot position is the existing roster binding, including redacted slots.
+    """
+    by_slot = _validate_input(overview, [])
+    slot_order = list(range(len(by_slot)))
+    if set(by_slot) != set(slot_order):
+        raise ValueError('invalid_compare_input')
+    rows, groups = [], {}
+    for slot in slot_order:
+        original = by_slot[slot]
+        row = _row(original)
+        if row.get('quality') != 'denied':
+            row['cohort_id'] = None
+            if (overview['context']['source_reference'] is not None
+                    and original.get('metric', {}).get('quality') == 'qualified'):
+                metric = original['metric']
+                key = tuple(metric['window'][part] for part in _WINDOW)
+                if key not in groups:
+                    groups[key] = {'id': 'c' + str(len(groups)),
+                                   'window': dict(zip(_WINDOW, key)), 'order_slots': []}
+                group = groups[key]
+                group['order_slots'].append(slot)
+                row['cohort_id'] = group['id']
+        rows.append(row)
+    for group in groups.values():
+        group['order_slots'].sort(key=lambda slot: (
+            -by_slot[slot]['metric']['value'], by_slot[slot]['market_id']))
+    return {'schema': 'intl-compare-catalogue.v1',
+            'context': deepcopy(overview['context']), 'slot_order': slot_order,
+            'rows': rows, 'cohorts': list(groups.values()),
+            'chart': {'status': 'unavailable', 'reason': 'series_qualification_not_supplied'},
+            'benchmark': {'status': 'unavailable', 'reason': 'not_supplied'}}

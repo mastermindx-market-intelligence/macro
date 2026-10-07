@@ -184,3 +184,134 @@ def test_proxy_containers_are_rejected_without_invoking_methods(supplied):
         def items(self): raise AssertionError('user hook executed')
         def __getitem__(self, key): raise AssertionError('user hook executed')
     with pytest.raises(ValueError, match='^invalid_compare_input$'): compare(Hostile(supplied[0]()))
+
+
+def catalogue(view):
+    from lib import intl_compare_view
+    return intl_compare_view.build_compare_catalogue(view)
+
+
+def test_catalogue_is_one_detached_public_row_per_configured_slot(supplied):
+    view = supplied[0](); before = deepcopy(view)
+    result = catalogue(view)
+    assert set(result) == {'schema', 'context', 'slot_order', 'rows', 'cohorts', 'chart', 'benchmark'}
+    assert result['schema'] == 'intl-compare-catalogue.v1'
+    assert result['slot_order'] == [0, 1]
+    assert [row['slot'] for row in result['rows']] == [0, 1]
+    assert [row['cohort_id'] for row in result['rows']] == ['c0', 'c0']
+    expected = compare(view)
+    assert result['cohorts'] == [{'id': 'c0', 'window': expected['common_window'],
+                                  'order_slots': expected['order_slots']}]
+    assert result['chart'] == expected['chart'] and result['benchmark'] == expected['benchmark']
+    for row, selected in zip(result['rows'], expected['rows']):
+        assert {k: v for k, v in row.items() if k != 'cohort_id'} == selected
+    result['context']['source_reference'] = 'changed'
+    result['rows'][0]['usd']['window']['end'] = 'changed'
+    result['cohorts'][0]['window']['start'] = 'changed'
+    assert view == before
+    json.dumps(catalogue(view), allow_nan=False)
+
+
+def test_catalogue_every_ordered_zero_to_four_selection_matches_actual_table(supplied):
+    from itertools import permutations
+    view = supplied[0]()
+    # Four extra synthetic consumer rows preserve the actual owner's schema.
+    for slot in (2, 3):
+        row = deepcopy(view['rows'][0]); row.update(slot=slot, market_id='TEST'+str(slot))
+        row['usd']['window']['start'] = '2025-12-19T00:00:00'
+        row['metric'] = deepcopy(row['usd'])
+        view['rows'].append(row)
+    view['rows'].append({'slot': 4, 'quality': 'denied', 'reason': 'metadata_denied'})
+    unknown = deepcopy(supplied[0](decisions=False)['rows'][0])
+    unknown.update(slot=5, market_id='UNKNOWN')
+    view['rows'].append(unknown); view['configured_count'] = 6
+    result = catalogue(view)
+    rows = {row['slot']: row for row in result['rows']}
+    groups = {group['id']: group for group in result['cohorts']}
+    assert [group['id'] for group in result['cohorts']] == ['c0', 'c1']
+    assert rows[4] == view['rows'][4] and 'cohort_id' not in rows[4]
+    assert rows[5]['cohort_id'] is None
+    checked = 0
+    for size in range(5):
+        for selected in permutations(range(6), size):
+            table = compare(view, list(selected))
+            cohort_ids = [rows[slot].get('cohort_id') for slot in selected]
+            if size < 2:
+                status, reason, order, window = 'incomplete_selection', 'insufficient_selection', [], None
+            elif None in cohort_ids:
+                status, reason, order, window = 'withheld', 'selection_unqualified', [], None
+            elif len(set(cohort_ids)) != 1:
+                status, reason, order, window = 'withheld', 'unequal_windows', [], None
+            else:
+                group = groups[cohort_ids[0]]
+                status, reason, window = 'comparable', None, group['window']
+                order = [slot for slot in group['order_slots'] if slot in selected]
+            assert (status, reason, order, window) == (table['status'], table['reason'],
+                table['order_slots'], table['common_window']), selected
+            checked += 1
+    assert checked == 517
+
+
+def test_catalogue_slot_mapping_is_canonical_even_if_rows_are_reordered(supplied):
+    view = supplied[0](); expected = catalogue(view)
+    view['rows'].reverse()
+    assert catalogue(view) == expected
+
+
+@pytest.mark.parametrize('slots', [[1, 2], [0, 9], [0, 0], [True, 1]])
+def test_catalogue_refuses_noncanonical_slots_before_mapping_to_config(supplied, slots):
+    view = supplied[0]()
+    for row, slot in zip(view['rows'], slots): row['slot'] = slot
+    with pytest.raises(ValueError, match='^invalid_compare_input$'): catalogue(view)
+
+
+@pytest.mark.parametrize('values,order', [([0, 0], [1, 0]), ([-8, -9], [0, 1]),
+    ([1.000000000001, 1.000000000002], [1, 0]), ([10**350, 10**350+1], [1, 0])])
+def test_catalogue_keeps_unrounded_server_order(supplied, values, order):
+    view = supplied[0]()
+    for row, value in zip(view['rows'], values): row['usd']['value'] = row['metric']['value'] = value
+    result = catalogue(view)
+    assert result['cohorts'][0]['order_slots'] == order
+    assert [row['usd']['value'] for row in result['rows']] == values
+
+
+def test_catalogue_local_only_remains_useful_without_chart_grant(supplied):
+    frame = supplied[2].drop(columns=['USDJPY=X', 'GBPUSD=X'])
+    raw = build_return_records(frame, market_ids=['JP', 'GB'], source_reference='synthetic:local')
+    result = catalogue(supplied[0](basis='local', data=raw))
+    assert len(result['cohorts']) == 1
+    assert all(row['local']['value'] is not None and row['usd']['value'] is None for row in result['rows'])
+    assert result['chart']['status'] == 'unavailable'
+    assert catalogue(supplied[0](data=raw))['cohorts'] == []
+
+
+def test_catalogue_missing_source_does_not_create_qualified_cohorts(supplied):
+    view = supplied[0](); view['context']['source_reference'] = None
+    result = catalogue(view)
+    assert result['cohorts'] == []
+    assert all(row['cohort_id'] is None for row in result['rows'])
+
+
+def test_catalogue_denied_and_unknown_metadata_never_gain_identity(supplied):
+    def deny(receipts):
+        for receipt in receipts:
+            if receipt['binding']['market_id'] == 'JP': receipt['disclosure']['metadata'] = 'denied'
+    result = catalogue(supplied[0](edit=deny))
+    assert result['rows'][0] == {'slot': 0, 'quality': 'denied', 'reason': 'metadata_denied'}
+    assert result['cohorts'][0]['order_slots'] == [1]
+    assert 'JP' not in json.dumps(result) and 'Nikkei' not in json.dumps(result)
+    unknown = catalogue(supplied[0](decisions=False))
+    assert unknown['cohorts'] == []
+    assert all(row['local']['value'] is None for row in unknown['rows'])
+
+
+def test_catalogue_payload_is_linear_not_precomputed_selections(supplied):
+    view = supplied[0]()
+    for slot in range(2, 150):
+        row = deepcopy(view['rows'][slot % 2]); row.update(slot=slot, market_id='TEST'+str(slot))
+        view['rows'].append(row)
+    view['configured_count'] = 150
+    result = catalogue(view)
+    assert len(result['rows']) == len(result['slot_order']) == 150
+    assert sum(len(group['order_slots']) for group in result['cohorts']) == 150
+    assert len(result['cohorts']) == 1
