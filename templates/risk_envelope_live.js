@@ -321,8 +321,8 @@
     var foot = ocEl("div", "ocmp-foot");
     var footCopy = ocEl("span", "ocmp-foot-copy");
     ocPair(footCopy,
-      "Up to 30 names with the deepest selected-expiry chain coverage are shown; this is not a liquidity ranking.",
-      "最多显示30个所选到期日链覆盖最深的标的；这不是流动性排名。");
+      "The default view uses market bellwethers; if one is unavailable, a name with deeper selected-expiry chain coverage fills the slot. That fallback is not a liquidity ranking.",
+      "默认视图使用市场代表性标的；若某标的不可用，则以所选到期日链覆盖更深的标的补位。该补位并非流动性排名。");
     foot.appendChild(footCopy);
     var link = ocEl("a", "ocmp-link");
     link.href = "options.html#scanner";
