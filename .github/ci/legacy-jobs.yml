@@ -13216,6 +13216,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_materialize.py -q
       - name: theme graph — contract guard (incident fixtures + annotation shape)
         run: TZ=UTC python -m pytest tests/test_theme_graph_contracts.py -q
+      - name: theme graph — hierarchy contract (tier enum, PARENT_OF grammar, DAG + parent-cap guard)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_contract.py -q
       # V4-D2B3 — node lifecycle correction lineage: the append-only retirement
       # side-car, the resurrection-proof bake suppression (R-A1's two-day survival
       # tests), the §6 guard invariants, and the one-shot curated correction script
