@@ -11,7 +11,7 @@
   "output_checks": {
     "PB_C_ANALYSIS_RESULTS.json": {
       "byte_identical": true,
-      "sha256": "028d4c34a4dfe65cf741369334c98cabaf1f7b5f010d2a68388ad31a57335da5"
+      "sha256": "ac336dda9fea2fce4b0291835c97b2276beba730e87a72d7b2b4c35d3aefea07"
     },
     "PB_C_DESCRIPTIVE_AUDIT.json": {
       "byte_identical": true,
@@ -19,5 +19,10 @@
     }
   },
   "numerical_review": "PB_C_NUMERICAL_INTERPRETATION_REVIEW.md",
-  "publication_input_freeze_commit": "f856691e4578db7029646bba1c5e90949e009de5"
+  "publication_input_freeze_commit": "f856691e4578db7029646bba1c5e90949e009de5",
+  "protocol_publication_normalization": {
+    "numerical_and_definition_objects_unchanged": true,
+    "only_result_change": "canonical protocol byte digest restored to original Git file",
+    "details": "PB_C_PUBLICATION_CORRECTIONS.md"
+  }
 }

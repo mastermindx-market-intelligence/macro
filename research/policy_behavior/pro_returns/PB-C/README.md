@@ -18,7 +18,7 @@
 
 `PB_C_STRESS_WINDOWS.json` wraps the derived Treasury flags used by the analysis. `rates_sensitivity_stress_calendar.json` preserves the independent derivation's original serialized output; rows are semantically identical. `treasury_stress_manifest.json`, `treasury_stress_spec.json`, `treasury_derivation_checks.json`, and `nyse_calendar_2025.csv` preserve source/calendar identity and arithmetic checks. Raw Treasury XML and unrelated scratch diagnostics are excluded from the delivery.
 
-The original protocol and amendments remain separate. `PB_C_PANEL_FREEZE.md` records the accepted inputs before the first actual event test. The earlier execution checkpoint is historical, not the final completion state. Root/program, methods, internal-code and numerical-interpretation reviews are included; they are not PB-F independent program review.
+The original protocol and amendments remain separate. `PB_C_PUBLICATION_CORRECTIONS.md` documents restoration of an extra terminal newline to the canonical protocol, with all numerical results unchanged. `PB_C_PANEL_FREEZE.md` records the accepted inputs before the first actual event test. The earlier execution checkpoint is historical, not the final completion state. Root/program, methods, internal-code and numerical-interpretation reviews are included; they are not PB-F independent program review.
 
 ## Offline reproduction of the frozen calculations
 
