@@ -21,6 +21,12 @@ Environment=CODEX_ACCOUNT_HOMES=/var/lib/macro-codex:/var/lib/macro-codex-2:/var
 Environment=CODEX_PROVIDER_ENABLED=1
 Environment=BIOCATALYST_PUBLIC_ROOT=/var/lib/macro-biocatalyst/public
 Environment=MARKET_MEMORY_CONTEXT_STORE_DIR=/var/lib/macro-market-memory/public
+# Ticker News read plane. These are paths only; the provider credential remains
+# isolated in /etc/macro-ticker-news.env and is explicitly hidden below.
+Environment=MM_TICKER_NEWS_DB=/var/lib/macro-ticker-news/qbus.sqlite3
+Environment=MM_TICKER_NEWS_UNIVERSE=/var/lib/macro-ticker-news/news_universe.json
+Environment=MM_TICKER_NEWS_RIGHTS=/etc/macro-ticker-news-rights.json
+Environment=MM_TICKER_NEWS_HEALTH=/var/lib/macro-ticker-news/health.json
 StateDirectory=macro-codex macro-codex-2 macro-codex-3
 StateDirectoryMode=0700
 # ── Site Access Gate env (all optional; safe defaults apply when absent) ─────
@@ -84,6 +90,10 @@ ReadOnlyPaths=-/var/lib/macro-biocatalyst/public
 # update.sh provisions this root before restart, so the non-optional mount fails
 # closed rather than leaving a later-created context store writable by the API.
 ReadOnlyPaths=/var/lib/macro-market-memory/public
+# update/setup provision this even while the writer is dark, so the API can
+# never become a second writer to the qbus hot store.
+ReadOnlyPaths=-/var/lib/macro-ticker-news
+ReadOnlyPaths=-/etc/macro-ticker-news-rights.json
 InaccessiblePaths=-/var/lib/macro-biocatalyst/state
 InaccessiblePaths=-/var/lib/macro-biocatalyst/activation
 InaccessiblePaths=-/etc/macro-biocatalyst.env
@@ -96,6 +106,8 @@ InaccessiblePaths=/var/lib/macro-market-memory/state
 InaccessiblePaths=/var/lib/macro-market-memory-options
 InaccessiblePaths=/etc/macro-market-memory-options
 InaccessiblePaths=-/etc/macro-market-memory.env
+# Provider credentials belong only to macro-ticker-news.service.
+InaccessiblePaths=-/etc/macro-ticker-news.env
 
 [Install]
 WantedBy=multi-user.target

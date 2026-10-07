@@ -193,13 +193,6 @@ def test_e_h_correction_after_cutoff_visible_when_evaluated_later():
     assert latest["value"] == 9.0
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-BASIS: GAAP vs non-GAAP value change still yields supersedes at "
-        f"collectors/equity_revisions.py:412-421 ({BASE_PIN})"
-    ),
-)
 def test_e_i_incompatible_gaap_basis_produces_no_revision_delta():
     """E-I: GAAP vs non-GAAP observations are noncomparable — no revision event."""
     prior = _lineage_row(value=1.0, basis="GAAP")
@@ -209,13 +202,6 @@ def test_e_i_incompatible_gaap_basis_produces_no_revision_delta():
     assert current["supersedes_observation_id"] is None
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-BASIS: diluted vs basic EPS basis change still yields supersedes at "
-        f"collectors/equity_revisions.py:412-421 ({BASE_PIN})"
-    ),
-)
 def test_e_i_incompatible_eps_share_basis_produces_no_revision_delta():
     """E-I: diluted vs basic EPS must not produce a revision across the basis boundary."""
     prior = _lineage_row(value=1.0, basis="basic")
@@ -235,13 +221,6 @@ def test_e_i_missing_unit_or_currency_yields_refusal_not_substitution():
     assert "CANONICAL_CURRENCY_UNAVAILABLE" in reasons
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-BASIS: cross-currency observations are not refused at comparison seam "
-        f"collectors/equity_revisions.py:412-416 ({BASE_PIN})"
-    ),
-)
 def test_e_i_usd_estimate_never_silently_converted_against_foreign_price_currency():
     """E-I: USD estimate paired with foreign currency must refuse, never convert."""
     prior = _lineage_row(value=1.0, currency="USD", unit="USD/sh")
