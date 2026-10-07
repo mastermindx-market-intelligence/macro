@@ -32,6 +32,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -119,6 +120,222 @@ MATERIAL_EDGE_FIELDS: tuple[str, ...] = (
     "valid_to", "evidence_time", "source_class", "date_provenance",
     "evidence_refs", "confidence_basis",
 )
+
+
+HIERARCHY_EPOCH = "2026-10-07"
+_HIERARCHY_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_]{1,62}$")
+_HIERARCHY_FORBIDDEN_KEY_WORDS = ("weight", "share", "count", "score")
+_NOMINATED_FROM_RE = re.compile(
+    r"^(basket:\S+|vertical:[a-z0-9_]+:[a-z0-9_]+|research:\S+)$")
+
+
+class ThemeHierarchyError(ValueError):
+    """The crosswalk hierarchy block is structurally or semantically invalid."""
+
+    def __init__(self, reason: str, message: str) -> None:
+        super().__init__(f"{reason}: {message}")
+        self.reason = reason
+
+
+def _hierarchy_row(row: object, *, allowed: tuple[str, ...], required: tuple[str, ...],
+                   context: str) -> dict:
+    if not isinstance(row, dict):
+        raise ThemeHierarchyError("BLOCK_SHAPE", f"{context} row must be a mapping")
+    for key in sorted(set(row) - set(allowed)):
+        lowered = str(key).lower()
+        if any(word in lowered for word in _HIERARCHY_FORBIDDEN_KEY_WORDS):
+            raise ThemeHierarchyError("FORBIDDEN_KEY", f"{context} key {key!r}")
+        raise ThemeHierarchyError("BLOCK_SHAPE", f"unknown {context} key {key!r}")
+    missing = [key for key in required if _text(row.get(key)) is None]
+    if missing:
+        if "asserted_on" in missing:
+            raise ThemeHierarchyError("ASSERTED_ON_MISSING", context)
+        raise ThemeHierarchyError("BLOCK_SHAPE",
+                                  f"{context} missing required key {missing[0]!r}")
+    return row
+
+
+def _hierarchy_date(row: dict, context: str) -> str:
+    value = _text(row.get("asserted_on"))
+    if value is None or not _is_date(value):
+        raise ThemeHierarchyError("ASSERTED_ON_MISSING", context)
+    if value < HIERARCHY_EPOCH:
+        raise ThemeHierarchyError("ASSERTED_ON_PRE_EPOCH",
+                                  f"{context} asserted_on {value}")
+    return value
+
+
+def _hierarchy_id(row: dict, context: str) -> str:
+    value = _text(row.get("id"))
+    if not value or not value.startswith("theme:"):
+        raise ThemeHierarchyError("SLUG_GRAMMAR", f"{context} id {value!r}")
+    slug = value[len("theme:"):]
+    if not _HIERARCHY_SLUG_RE.fullmatch(slug):
+        raise ThemeHierarchyError("SLUG_GRAMMAR", f"{context} id {value!r}")
+    return value
+
+
+def _validate_nominated_from(value: object) -> None:
+    text = _text(value)
+    if not text or not _NOMINATED_FROM_RE.fullmatch(text):
+        raise ThemeHierarchyError("NOMINATED_FROM_GRAMMAR", f"nominated_from {value!r}")
+    tokens = {token.lower() for token in re.split(r"[:/_.\-]", text)}
+    if "finviz_themes" in text or "ths_concepts" in text or tokens & {"finviz", "ths"}:
+        raise ThemeHierarchyError("VENDOR_NOMINATOR", f"nominated_from {text!r}")
+    if text.startswith("basket:"):
+        family = rights.family_for_node_id(text)
+        if family != "mastermind_curated":
+            raise ThemeHierarchyError("VENDOR_NOMINATOR",
+                                      f"basket nominator resolves to {family!r}")
+
+
+def _values(value: object) -> list[object]:
+    if isinstance(value, dict):
+        return list(value.values())
+    if isinstance(value, list):
+        return value
+    return [value]
+
+
+def validate_theme_hierarchy(doc: object) -> dict:
+    """Validate the complete hierarchy block before any PIT filtering."""
+    hierarchy = (doc or {}).get("hierarchy") if isinstance(doc, dict) else None
+    if hierarchy is None:
+        return {"categories": [], "micro_themes": [], "parents": []}
+    if not isinstance(hierarchy, dict):
+        raise ThemeHierarchyError("BLOCK_SHAPE", "hierarchy must be a mapping")
+    unknown = set(hierarchy) - {"categories", "micro_themes", "parents"}
+    if unknown:
+        raise ThemeHierarchyError("BLOCK_SHAPE",
+                                  f"unknown hierarchy key {sorted(unknown)[0]!r}")
+    lists: dict[str, list] = {}
+    for key in ("categories", "micro_themes", "parents"):
+        value = hierarchy.get(key, [])
+        if not isinstance(value, list):
+            raise ThemeHierarchyError("BLOCK_SHAPE", f"hierarchy.{key} must be a list")
+        lists[key] = value
+
+    categories = []
+    for position, row in enumerate(lists["categories"], start=1):
+        context = f"category {position}"
+        row = _hierarchy_row(row, allowed=("id", "name_en", "name_zh", "asserted_on", "note"),
+                             required=("id", "name_en", "name_zh", "asserted_on"),
+                             context=context)
+        node_id = _hierarchy_id(row, context)
+        asserted_on = _hierarchy_date(row, context)
+        categories.append({"id": node_id, "tier": "macro_category",
+                           "asserted_on": asserted_on, "row": row})
+
+    micro_themes = []
+    for position, row in enumerate(lists["micro_themes"], start=1):
+        context = f"micro_theme {position}"
+        row = _hierarchy_row(
+            row,
+            allowed=("id", "name_en", "name_zh", "asserted_on", "nominated_from", "note"),
+            required=("id", "name_en", "name_zh", "asserted_on", "nominated_from"),
+            context=context)
+        node_id = _hierarchy_id(row, context)
+        asserted_on = _hierarchy_date(row, context)
+        micro_themes.append({"id": node_id, "tier": "micro_theme",
+                             "asserted_on": asserted_on, "row": row})
+
+    declared: dict[str, dict] = {}
+    for declaration in categories + micro_themes:
+        node_id = declaration["id"]
+        if node_id in declared:
+            raise ThemeHierarchyError("DUPLICATE_ID", node_id)
+        declared[node_id] = declaration
+    themes = doc.get("themes") if isinstance(doc.get("themes"), list) else []
+    for row in themes:
+        theme_id = _text(row.get("theme_node_id")) or identity.theme_node_id(_text(row.get("id")))
+        if theme_id in declared:
+            raise ThemeHierarchyError("CROSS_TIER_REUSE", theme_id)
+
+    parent_rows = []
+    for position, row in enumerate(lists["parents"], start=1):
+        context = f"parent {position}"
+        row = _hierarchy_row(row, allowed=("parent", "child", "asserted_on"),
+                             required=("parent", "child", "asserted_on"), context=context)
+        asserted_on = _hierarchy_date(row, context)
+        parent = _text(row.get("parent"))
+        child = _text(row.get("child"))
+        for role, endpoint in (("parent", parent), ("child", child)):
+            declaration = declared.get(endpoint)
+            if declaration is None and not any(
+                    (_text(theme.get("theme_node_id")) or identity.theme_node_id(
+                        _text(theme.get("id")))) == endpoint for theme in themes):
+                raise ThemeHierarchyError("UNDECLARED_ENDPOINT", f"{context} {endpoint!r}")
+            if declaration and asserted_on < declaration["asserted_on"]:
+                raise ThemeHierarchyError(
+                    "UNDECLARED_ENDPOINT",
+                    f"{context} precedes {endpoint!r} declaration")
+        parent_rows.append({"parent": parent, "child": child,
+                            "asserted_on": asserted_on})
+
+    theme_ids = {
+        _text(row.get("theme_node_id"))
+        or identity.theme_node_id(_text(row.get("id")))
+        for row in themes
+    }
+    children: dict[str, set[str]] = {
+        node_id: set() for node_id in set(declared) | theme_ids}
+    parent_count: dict[str, int] = {}
+    for row in parent_rows:
+        parent_tier = declared.get(row["parent"], {}).get("tier", "theme")
+        child_tier = declared.get(row["child"], {}).get("tier", "theme")
+        if row["parent"] == row["child"]:
+            raise ThemeHierarchyError("CYCLE", row["parent"])
+        if (parent_tier, child_tier) not in {
+                ("macro_category", "theme"), ("theme", "micro_theme")}:
+            raise ThemeHierarchyError("NON_ADJACENT_TIERS",
+                                      f"{row['parent']} -> {row['child']}")
+        children[row["parent"]].add(row["child"])
+        parent_count[row["child"]] = parent_count.get(row["child"], 0) + 1
+    if any(parent_count.get(node_id, 0) > 3
+           for node_id in set(declared) | theme_ids):
+        raise ThemeHierarchyError("TOO_MANY_PARENTS", "a hierarchy node has 4 parents")
+
+    state: dict[str, int] = {}
+
+    def visit(node_id: str) -> None:
+        if state.get(node_id) == 1:
+            raise ThemeHierarchyError("CYCLE", node_id)
+        if state.get(node_id) == 2:
+            return
+        state[node_id] = 1
+        for child in children[node_id]:
+            visit(child)
+        state[node_id] = 2
+
+    for node_id in declared:
+        visit(node_id)
+
+    new_tier_ids = set(declared)
+    for row in themes:
+        for value in (row.get("id"), row.get("theme_node_id")):
+            if _text(value) in new_tier_ids:
+                raise ThemeHierarchyError("NEW_TIER_IN_EXPRESSES_MAP", _text(value))
+
+    def contains_new_tier_id(value: object) -> bool:
+        if isinstance(value, dict):
+            return any(key in new_tier_ids or contains_new_tier_id(item)
+                       for key, item in value.items())
+        if isinstance(value, list):
+            return any(contains_new_tier_id(item) for item in value)
+        return _text(value) in new_tier_ids
+
+    for key, value in doc.items():
+        if key == "hierarchy":
+            continue
+        if key in new_tier_ids or contains_new_tier_id(value):
+            raise ThemeHierarchyError("NEW_TIER_IN_EXPRESSES_MAP",
+                                      key if key in new_tier_ids else "mapping value")
+
+    for row in micro_themes:
+        _validate_nominated_from(row["row"].get("nominated_from"))
+
+    return {"categories": categories, "micro_themes": micro_themes,
+            "parents": parent_rows}
 
 
 # ---------------------------------------------------------------------------
@@ -839,7 +1056,10 @@ class _Builder:
                     "parent_source_key": meta.parent_theme_key,
                     # The unlabelled layer above themes that the committed schema
                     # flattens: carried as METADATA, never resurrected as hierarchy
-                    # (PARENT_OF edges are W4's).
+                    # here. PARENT_OF is GMI-owned on the incumbent producer and is
+                    # emitted only from the crosswalk hierarchy block
+                    # (DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK; seat ruling 2026-10-07
+                    # retires standalone W4).
                     "supergroup_index": meta.supergroup_index,
                     "key_aliases": [],
                     "rights_family": FINVIZ_FAMILY,
@@ -1152,6 +1372,51 @@ class _Builder:
             "ths_codes_unknown": len(unknown),
         }
 
+    def build_hierarchy(self) -> None:
+        doc = yaml.safe_load(self.crosswalk_path.read_text(encoding="utf-8")) or {}
+        validated = validate_theme_hierarchy(doc)
+        belief_date = self.belief_time[:10]
+        evidence_cache: dict[str, str] = {}
+
+        def emitted(node_id: str, asserted_on: str) -> bool:
+            declaration = next((entry for entry in validated["categories"]
+                                + validated["micro_themes"]
+                                if entry["id"] == node_id), None)
+            if declaration:
+                return asserted_on <= belief_date
+            return True
+
+        for entry in validated["categories"] + validated["micro_themes"]:
+            if entry["asserted_on"] > belief_date:
+                continue
+            row = entry["row"]
+            self._node(
+                entry["id"], kind="theme", market_scope="global", tier=entry["tier"],
+                provenance="crosswalk:config/theme_crosswalk.yml",
+                name_en=row.get("name_en"), name_zh=row.get("name_zh"),
+                external_ids={}, birth_date=entry["asserted_on"],
+                source_meta={"nominated_from": row.get("nominated_from")}
+                if entry["tier"] == "micro_theme" else None)
+
+        for row in validated["parents"]:
+            if row["asserted_on"] > belief_date:
+                continue
+            if not (emitted(row["parent"], row["asserted_on"])
+                    and emitted(row["child"], row["asserted_on"])):
+                continue
+            published_at = row["asserted_on"]
+            evidence_ref = evidence_cache.get(published_at)
+            if evidence_ref is None:
+                evidence_ref = self._evidence_ref(
+                    kind="operator_curation", source_ref="config/theme_crosswalk.yml",
+                    published_at=published_at,
+                    licensing=_licensing("mastermind_curated"))
+                evidence_cache[published_at] = evidence_ref
+            self._edge(edge_type="PARENT_OF", src=row["parent"], dst=row["child"],
+                       valid_from=published_at, valid_to=None,
+                       evidence_time=published_at, source_class="curated",
+                       date_provenance="crosswalk", evidence_refs=[evidence_ref])
+
     # -- drive -------------------------------------------------------------
 
     def run(self) -> Materialization:
@@ -1181,6 +1446,7 @@ class _Builder:
                 log.warning("theme_graph: local plane %s failed (%s)", plane_name, exc)
                 self.out.local_plane[plane_name] = {"error": str(exc)}
         self.build_crosswalk()
+        self.build_hierarchy()
         self.out.nodes = [self._nodes[k] for k in sorted(self._nodes)]
         self.out.edges = [self._edges[k] for k in sorted(self._edges)]
         self.out.evidence = [self._evidence[k] for k in sorted(self._evidence)]
@@ -1663,6 +1929,24 @@ def supersede_ths_canonical_expression_edges(
     return out
 
 
+def _hierarchy_relation_gate(prior: dict, *, action: str, computed: list[dict]) -> None:
+    if str(prior.get("type")) != "PARENT_OF":
+        return
+    if action == "DESTINATION_CHANGE":
+        raise ThemeHierarchyError(
+            "BLOCK_SHAPE", "curated PARENT_OF relations cannot change destination")
+    live = [candidate for candidate in computed
+            if candidate.get("type") == "PARENT_OF"
+            and candidate.get("src") == prior.get("src")
+            and candidate.get("dst") == prior.get("dst")
+            and _null(candidate.get("valid_to"))]
+    if live:
+        raise ThemeHierarchyError(
+            "BLOCK_SHAPE",
+            f"withdrawn parent relation remains in YAML: "
+            f"{prior.get('src')} -> {prior.get('dst')}")
+
+
 def apply_relation_events(stored: pd.DataFrame, computed: list[dict], events: list,
                           *, belief_time: str, era: str, computed_at: str
                           ) -> tuple[list[dict], list[dict]]:
@@ -1685,6 +1969,7 @@ def apply_relation_events(stored: pd.DataFrame, computed: list[dict], events: li
         if (old.get("source_class") != "curated"
                 or old.get("date_provenance") != "crosswalk"):
             raise ValueError("relation event prior is not a canonical curation relation")
+        _hierarchy_relation_gate(prior, action=row["action"], computed=computed)
         if prior["edge_id"] in acted:
             raise ValueError("multiple relation events for one prior relation")
         acted.add(prior["edge_id"])
