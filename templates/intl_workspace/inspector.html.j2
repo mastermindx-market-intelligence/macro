@@ -23,9 +23,9 @@
     {% if inspector.market is none %}
       <p data-im-inspector-unavailable>{{ words('Market details unavailable for this selection.', '此选择暂无市场详情。') }}</p>
     {% else %}
-      <details class="intl-inspector-disclosure intl-inspector__fallback" data-im-inspector-origin data-im-inspector-context="{{ panel.context_id|e }}">
-        <summary data-im-inspector-trigger aria-controls="{{ payload_id|e }}">{{ words(inspector.market.name_en, inspector.market.name_zh) }} · {{ words('Read and evidence', '解读与依据') }}</summary>
-        <article class="intl-inspector" data-im-inspector-payload data-im-inspector-context="{{ panel.context_id|e }}" data-market-id="{{ inspector.market.market_id|e }}" data-horizon="{{ inspector.context.horizon|e }}" data-basis="{{ inspector.context.currency_basis|e }}" data-return-basis="{{ inspector.context.return_basis|e }}"{% if inspector.context.source_reference is not none %} data-source="{{ inspector.context.source_reference|e }}"{% endif %} id="{{ payload_id|e }}" aria-labelledby="{{ payload_id|e }}-title">
+      <details class="intl-inspector-disclosure intl-inspector__fallback" data-im-inspector-origin data-im-inspector-context="{{ panel.context_id|e }}"{% if panel.generation|default('') %} data-im-generation="{{ panel.generation|e }}"{% endif %}>
+        <summary data-im-inspector-trigger aria-controls="{{ payload_id|e }}"{% if panel.generation|default('') %} data-im-generation="{{ panel.generation|e }}"{% endif %}>{{ words(inspector.market.name_en, inspector.market.name_zh) }} · {{ words('Read and evidence', '解读与依据') }}</summary>
+        <article class="intl-inspector" data-im-inspector-payload data-im-inspector-context="{{ panel.context_id|e }}" data-market-id="{{ inspector.market.market_id|e }}" data-horizon="{{ inspector.context.horizon|e }}" data-basis="{{ inspector.context.currency_basis|e }}" data-return-basis="{{ inspector.context.return_basis|e }}"{% if inspector.context.source_reference is not none %} data-source="{{ inspector.context.source_reference|e }}"{% endif %}{% if panel.generation|default('') %} data-im-generation="{{ panel.generation|e }}"{% endif %} id="{{ payload_id|e }}" aria-labelledby="{{ payload_id|e }}-title">
           <header class="intl-inspector__header">
             <div class="intl-inspector__nav" data-im-inspector-enhancement hidden>
               <button type="button" data-im-inspector-action="back">{{ words('Back', '返回') }}</button>

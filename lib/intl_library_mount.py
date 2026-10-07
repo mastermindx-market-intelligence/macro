@@ -11,6 +11,7 @@ import logging
 from lib.intl_library_view import build_public_intl_library_view
 from lib.intl_inspector_mount import attach_inspectors
 from lib.intl_compare_mount import attach_compares
+from lib.intl_workspace_binding import binding_version
 
 
 _SECTIONS = {
@@ -51,6 +52,11 @@ def attach_public_library(workspace, *, catalogue, macro_html, stocks_rendered):
     """
     if workspace is None:
         return None
+    if (type(workspace) is not dict
+            or not {'config', 'panels'}.issubset(workspace)
+            or type(workspace['panels']) is not list):
+        raise ValueError('invalid Library workspace envelope')
+    version, generation = binding_version(workspace)
     if not isinstance(macro_html, str) or type(stocks_rendered) is not bool:
         raise ValueError("invalid rendered destination evidence")
     parser = _RenderedIds()
@@ -66,6 +72,8 @@ def attach_public_library(workspace, *, catalogue, macro_html, stocks_rendered):
         "return_basis": "price",
         "source_reference": config["source_reference"],
     }
+    if version == 2:
+        context["source_reference"] = None
     targets = {
         key: {"page_id": "macro:intl", "route": "/intl.html",
               "region_id": region, "verified": True}
@@ -81,6 +89,8 @@ def attach_public_library(workspace, *, catalogue, macro_html, stocks_rendered):
         route_bindings={"bindings": catalogue["bindings"], "targets": targets},
         public_copy_decision=catalogue["public_copy_decision"],
     )
+    if version == 2:
+        result["library_generation"] = generation
     result["library"] = view
     config["library_group_ids"] = [g["id"] for g in view["groups"] if "id" in g]
     config["anchor_ids"] = list(dict.fromkeys([

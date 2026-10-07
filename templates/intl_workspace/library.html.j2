@@ -3,7 +3,7 @@
 {% for tool in payload.tools %}
   {% if tool.get('presentation_key') is not none %}{% set _ = tool_map.update({tool.get('presentation_key'): tool}) %}{% endif %}
 {% endfor %}
-<section class="intl-library" data-im-panel data-view="library" data-im-library-static data-horizon="{{ payload.context.get('horizon', '')|e }}" data-basis="{{ payload.context.get('currency_basis', '')|e }}" data-source="{{ (payload.context.get('source_reference') or '')|e }}" data-im-library-generation="{{ payload.catalogue_generation|e }}" id="{{ context_id|e }}-library">
+<section class="intl-library" data-im-panel data-view="library" data-im-library-static data-horizon="{{ payload.context.get('horizon', '')|e }}" data-basis="{{ payload.context.get('currency_basis', '')|e }}" data-source="{{ (payload.context.get('source_reference') or '')|e }}" data-im-library-generation="{{ payload.catalogue_generation|e }}"{% if generation|default('') %} data-im-generation="{{ generation|e }}"{% endif %} id="{{ context_id|e }}-library">
   <h2 class="intl-library__heading" id="{{ context_id|e }}-library-heading"><span class="l-en">Library</span><span class="l-zh">工具库</span></h2>
   <p class="intl-library__intro" id="{{ context_id|e }}-library-intro"><span class="l-en">Find a research tool for your question.</span><span class="l-zh">按研究问题查找工具。</span></p>
   <form class="intl-library__search" data-im-library-search-form role="search" action="#">

@@ -3,6 +3,7 @@ from copy import deepcopy
 import re
 
 from lib.intl_inspector_view import INSPECTOR_COPY, build_inspector_view
+from lib.intl_workspace_binding import binding_version, panel_generation
 
 
 def attach_inspectors(workspace, *, public_targets=()):
@@ -14,6 +15,11 @@ def attach_inspectors(workspace, *, public_targets=()):
     """
     if workspace is None:
         return None
+    if (type(workspace) is not dict
+            or not {'config', 'panels'}.issubset(workspace)
+            or type(workspace['panels']) is not list):
+        raise ValueError('invalid Inspector workspace envelope')
+    version, generation = binding_version(workspace)
     result = deepcopy(workspace)
     contexts, panels = set(), []
     for panel in workspace["panels"]:
@@ -24,6 +30,7 @@ def attach_inspectors(workspace, *, public_targets=()):
             raise ValueError("invalid or duplicate Inspector context")
         contexts.add(context_id)
         overview = panel["overview"]
+        panel_generation(panel, generation) if version == 2 else None
         context = {key: overview["context"][key] for key in
                    ("horizon", "currency_basis", "return_basis", "source_reference")}
         for row in overview["rows"]:
@@ -36,6 +43,7 @@ def attach_inspectors(workspace, *, public_targets=()):
             )
             if inspector["market"] is not None:
                 panels.append({"context_id": context_id,
+                               **({"generation": panel["generation"]} if version == 2 else {}),
                                "binding": {**context, "market_id": market},
                                "inspector": inspector})
     result["inspectors"] = panels

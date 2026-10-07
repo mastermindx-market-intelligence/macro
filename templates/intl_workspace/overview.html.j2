@@ -21,7 +21,9 @@
   data-view="overview"
   data-horizon="{{ projection_context.context.horizon|e }}"
   data-basis="{{ projection_context.context.currency_basis|e }}"
+  data-return-basis="{{ projection_context.context.return_basis|e }}"
   data-source="{{ source_value|e }}"
+  {% if generation|default('') %}data-im-generation="{{ generation|e }}"{% endif %}
   id="{{ context_id|e }}-overview"
   aria-labelledby="{{ context_id|e }}-title"
 >

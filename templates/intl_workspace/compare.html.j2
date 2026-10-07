@@ -34,7 +34,7 @@
 {% set labels = {'local': ['Local currency return', '本币回报'],
                  'usd': ['USD return · Unhedged', '美元回报 · 未对冲'],
                  'fx_contribution': ['Currency contribution', '汇率贡献']} %}
-<section class="intl-compare" data-im-panel data-im-compare-panel data-view="compare" data-horizon="{{ context.horizon|e }}" data-basis="{{ context.currency_basis|e }}" data-return-basis="{{ context.return_basis|e }}" data-source="{{ (context.source_reference if context.source_reference is not none else '')|e }}" id="{{ context_id|e }}-compare" aria-labelledby="{{ context_id|e }}-compare-title">
+<section class="intl-compare" data-im-panel data-im-compare-panel data-view="compare" data-horizon="{{ context.horizon|e }}" data-basis="{{ context.currency_basis|e }}" data-return-basis="{{ context.return_basis|e }}" data-source="{{ (context.source_reference if context.source_reference is not none else '')|e }}"{% if generation|default('') %} data-im-generation="{{ generation|e }}"{% endif %} id="{{ context_id|e }}-compare" aria-labelledby="{{ context_id|e }}-compare-title">
   <header class="intl-compare__header">
     <h2 id="{{ context_id|e }}-compare-title">{{ words('Compare markets', '比较市场') }}</h2>
     <p class="intl-compare__context">{{ context.horizon|e }} · {% if selected_leg == 'local' %}{{ words('Local currency', '本币') }}{% else %}{{ words('USD · Unhedged', '美元 · 未对冲') }}{% endif %} · {{ words('Price return', '价格回报') }}</p>

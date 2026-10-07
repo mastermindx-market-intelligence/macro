@@ -1,4 +1,4 @@
-<section class="intl-workspace" data-im-workspace data-im-mode="macro" aria-labelledby="intl-workspace-title">
+<section class="intl-workspace" data-im-workspace{% if intl_workspace.binding_version is defined %} data-im-binding-version="{{ intl_workspace.binding_version|e }}"{% endif %} data-im-mode="macro" aria-labelledby="intl-workspace-title">
   <header>
     <h1 id="intl-workspace-title" data-im-heading>{{ t('International markets', '国际市场') }}</h1>
     <p>{{ t('Compare covered markets, understand currency effects and inspect the evidence.', '比较覆盖市场，了解汇率影响，并查看相关依据。') }}</p>
@@ -32,13 +32,13 @@
   <p data-im-issues role="status" aria-live="polite"></p>
   <p data-im-unavailable hidden>{{ t('Data unavailable for this selection. Try another horizon or use the detailed research below.', '此选择暂无可用数据。请尝试其他区间，或查看下方的详细研究。') }}</p>
   {% for panel in intl_workspace.panels %}
-    {% with overview=panel.overview, context_id=panel.context_id %}{% include 'intl_workspace/overview.html.j2' %}{% endwith %}
+    {% with overview=panel.overview, context_id=panel.context_id, generation=panel.generation|default('') %}{% include 'intl_workspace/overview.html.j2' %}{% endwith %}
   {% endfor %}
   {% for panel in intl_workspace.compares|default([]) %}
-    {% with compare_catalogue=panel.compare_catalogue, context_id=panel.context_id %}{% include 'intl_workspace/compare.html.j2' %}{% endwith %}
+    {% with compare_catalogue=panel.compare_catalogue, context_id=panel.context_id, generation=panel.generation|default('') %}{% include 'intl_workspace/compare.html.j2' %}{% endwith %}
   {% endfor %}
   {% if intl_workspace.library|default(none) %}
-    {% with payload=intl_workspace.library, context_id='im-catalogue' %}{% include 'intl_workspace/library.html.j2' %}{% endwith %}
+    {% with payload=intl_workspace.library, context_id='im-catalogue', generation=intl_workspace.library_generation|default('') %}{% include 'intl_workspace/library.html.j2' %}{% endwith %}
   {% endif %}
   {% if intl_workspace.inspectors|default(none) %}
     {% with inspector_panels=intl_workspace.inspectors, root_context_id='im-workspace', inspector_copy=intl_workspace.inspector_copy %}{% include 'intl_workspace/inspector.html.j2' %}{% endwith %}

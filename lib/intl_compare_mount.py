@@ -3,6 +3,7 @@ from copy import deepcopy
 import re
 
 from lib.intl_compare_view import build_compare_catalogue
+from lib.intl_workspace_binding import binding_version, panel_generation
 
 
 _CONTEXT = ('horizon', 'currency_basis', 'return_basis', 'source_reference')
@@ -49,7 +50,7 @@ def _validate_config(config):
             _fail()
 
 
-def _validate_panel(panel, config, contexts, tuples):
+def _validate_panel(panel, config, contexts, tuples, version, generation):
     if type(panel) is not dict or not {'context_id', 'overview'}.issubset(panel):
         _fail()
     context_id = panel['context_id']
@@ -71,8 +72,9 @@ def _validate_panel(panel, config, contexts, tuples):
         _fail()
     if context['return_basis'] != 'price':
         _fail()
-    if context['source_reference'] != config['source_reference']:
+    if version == 1 and context['source_reference'] != config['source_reference']:
         _fail()
+    panel_generation(panel, generation) if version == 2 else None
     binding = tuple(context[key] for key in _CONTEXT)
     if binding in tuples:
         _fail()
@@ -100,15 +102,17 @@ def attach_compares(workspace):
     if type(workspace) is not dict or not {'config', 'panels'}.issubset(workspace):
         _fail()
     _validate_config(workspace['config'])
+    version, generation = binding_version(workspace)
     panels = workspace['panels']
     if type(panels) is not list:
         _fail()
     contexts, tuples = set(), set()
-    catalogues = [_validate_panel(panel, workspace['config'], contexts, tuples)
+    catalogues = [_validate_panel(panel, workspace['config'], contexts, tuples, version, generation)
                   for panel in panels]
     result = deepcopy(workspace)
     result['compares'] = [{
         'context_id': panel['context_id'],
         'compare_catalogue': catalogue,
+        **({'generation': panel['generation']} if version == 2 else {}),
     } for panel, catalogue in zip(panels, catalogues, strict=True)]
     return result

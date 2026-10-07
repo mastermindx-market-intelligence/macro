@@ -230,6 +230,30 @@
     return value === '' ? null : value;
   }
 
+  function validGeneration(value) {
+    return typeof value === 'string' && /^im-workspace-generation:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(value);
+  }
+
+  function workspaceBinding(root, config) {
+    var marker = root.getAttribute('data-im-binding-version');
+    var version = marker === null || marker === '1' ? 1 : marker === '2' ? 2 : null;
+    var nodes = owned(root, '[data-im-panel], [data-im-inspector-payload], [data-im-inspector-origin], [data-im-inspector-trigger], [data-im-inspector-open]');
+    if (!version || (version === 2 && !validGeneration(config.source_reference)) || nodes.some(function (node) {
+      return version === 2 ? node.getAttribute('data-im-generation') !== config.source_reference : node.hasAttribute('data-im-generation');
+    })) throw new TypeError('Invalid International workspace publication binding');
+    return version;
+  }
+
+  function overviewMatchesArticle(controller, article, state) {
+    var matches = owned(controller.root, '[data-im-panel][data-view="overview"]').filter(function (panel) {
+      return panelValid(panel, controller.config, state.source_reference, controller.bindingVersion) &&
+        panel.getAttribute('data-horizon') === state.horizon && panel.getAttribute('data-basis') === state.currency_basis &&
+        overviewContextId(panel) === article.getAttribute('data-im-inspector-context') &&
+        articleSource(panel) === articleSource(article);
+    });
+    return matches.length === 1;
+  }
+
   function articleOwned(controller, node) {
     return !!(node && node.closest && node.closest('[data-im-workspace]') === controller.root);
   }
@@ -250,7 +274,9 @@
     return articleOwned(controller, article) &&
       article.getAttribute('data-market-id') === marketId &&
       articleMatchesTuple(article, controller.state) &&
-      articleSource(article) === expectedSource;
+      (controller.bindingVersion === 2 ?
+        article.getAttribute('data-im-generation') === expectedSource &&
+          overviewMatchesArticle(controller, article, controller.state) : articleSource(article) === expectedSource);
   }
 
   function matchingInspectorArticles(controller, marketId, expectedSource) {
@@ -432,6 +458,14 @@
       }
       if (!articleMatchesTuple(article, state)) {
         details.hidden = true;
+        return;
+      }
+      if (controller.bindingVersion === 2) {
+        var trigger = details.querySelector('[data-im-inspector-trigger]');
+        details.hidden = article.getAttribute('data-im-generation') !== state.source_reference ||
+          details.getAttribute('data-im-generation') !== state.source_reference ||
+          !trigger || trigger.getAttribute('data-im-generation') !== state.source_reference ||
+          !overviewMatchesArticle(controller, article, state);
         return;
       }
       var disclosed = articleSource(article);
@@ -958,7 +992,8 @@
     if (openBtn && articleOwned(controller, openBtn) && !openBtn.disabled) {
       event.preventDefault();
       controller.pendingInspectorTrigger = openBtn;
-      var sourceAttr = openBtn.hasAttribute('data-source') ? openBtn.getAttribute('data-source') : null;
+      var sourceAttr = controller.bindingVersion === 2 ? openBtn.getAttribute('data-im-generation') :
+        openBtn.hasAttribute('data-source') ? openBtn.getAttribute('data-source') : null;
       openInspector(controller, { market_id: openBtn.getAttribute('data-market-id'), expected_source: normalizeSource(sourceAttr) });
       controller.pendingInspectorTrigger = null;
       return true;
@@ -967,10 +1002,20 @@
     if (trigger && articleOwned(controller, trigger) && controller.inspectorHost.supported && !controller.inspectorHost.modalityFailed) {
       var origin = trigger.closest('[data-im-inspector-origin]');
       var article = origin && origin.querySelector('[data-im-inspector-payload]');
-      if (article && articleMatchesRequest(controller, article, article.getAttribute('data-market-id'), normalizeSource(controller.state.source_reference))) {
+      if (controller.bindingVersion === 2 && (!article ||
+          trigger.getAttribute('data-im-generation') !== controller.state.source_reference ||
+          origin.getAttribute('data-im-generation') !== controller.state.source_reference ||
+          !articleMatchesRequest(controller, article, article.getAttribute('data-market-id'), controller.state.source_reference))) {
+        event.preventDefault();
+        return true;
+      }
+      if (article && (controller.bindingVersion !== 2 ||
+          (controller.state.view === 'overview' && trigger.getAttribute('data-im-generation') === controller.state.source_reference &&
+           origin.getAttribute('data-im-generation') === controller.state.source_reference)) &&
+          articleMatchesRequest(controller, article, article.getAttribute('data-market-id'), normalizeSource(controller.state.source_reference))) {
         event.preventDefault();
         controller.pendingInspectorTrigger = trigger;
-        openInspector(controller, { market_id: article.getAttribute('data-market-id'), expected_source: articleSource(article) });
+        openInspector(controller, { market_id: article.getAttribute('data-market-id'), expected_source: controller.bindingVersion === 2 ? trigger.getAttribute('data-im-generation') : articleSource(article) });
         controller.pendingInspectorTrigger = null;
         return true;
       }
@@ -1221,11 +1266,14 @@
     restoreCompareFocus(root,snapshot[0] && snapshot[0].compareFocus);
   }
 
-  function panelValid(panel, config, source) {
+  function panelValid(panel, config, source, version) {
     if (!['overview', 'compare', 'macro', 'risk', 'history', 'library'].includes(panel.getAttribute('data-view')) ||
         !config.horizons.includes(panel.getAttribute('data-horizon')) ||
         !config.bases.includes(panel.getAttribute('data-basis')) ||
-        !panel.hasAttribute('data-source') || panel.getAttribute('data-source') !== (source === null ? '' : source)) return false;
+        !panel.hasAttribute('data-source') || (version === 2 ?
+          !validGeneration(source) || panel.getAttribute('data-im-generation') !== source ||
+            (['overview','compare'].includes(panel.getAttribute('data-view')) && panel.getAttribute('data-return-basis') !== 'price') :
+          panel.getAttribute('data-source') !== (source === null ? '' : source))) return false;
     if (panel.hasAttribute('data-market') && panel.getAttribute('data-market') !== '' &&
         !config.markets.includes(panel.getAttribute('data-market'))) return false;
     if (panel.hasAttribute('data-pins')) {
@@ -1240,7 +1288,7 @@
 
   function panelFor(controller, state) {
     return owned(controller.root, '[data-im-panel]').filter(function (panel) {
-      if (!panelValid(panel, controller.config, state.source_reference) ||
+      if (!panelValid(panel, controller.config, state.source_reference, controller.bindingVersion) ||
           panel.getAttribute('data-view') !== state.view ||
           panel.getAttribute('data-horizon') !== state.horizon ||
           panel.getAttribute('data-basis') !== state.currency_basis) return false;
@@ -1252,14 +1300,14 @@
 
   function structuralPanels(controller, source) {
     return new Set(owned(controller.root, '[data-im-panel]').filter(function (panel) {
-      return panelValid(panel, controller.config, source);
+      return panelValid(panel, controller.config, source, controller.bindingVersion);
     }).map(function (panel) { return panel.getAttribute('data-view'); }));
   }
 
   function paint(controller, state, issues) {
     var root = controller.root;
     var library = controller.library;
-    if (library && panelValid(library.panel,controller.config,state.source_reference)) {
+    if (library && panelValid(library.panel,controller.config,state.source_reference,controller.bindingVersion)) {
       library.panel.setAttribute('data-horizon',state.horizon); library.panel.setAttribute('data-basis',state.currency_basis);
     }
     var panels = panelFor(controller, state);
@@ -1445,6 +1493,7 @@
     if (!controller.live) return destroyedResult();
     if (arguments.length < 3 || expectedSource === undefined) return { ok: false, state: controller.state, issues: [{ code: 'EXPECTED_SOURCE_REQUIRED', field: 'expectedSource' }], intent: null };
     if (!controller.live || expectedSource !== controller.state.source_reference) return { ok: false, state: controller.state, issues: [{ code: 'STALE_SOURCE', field: 'expectedSource' }], intent: null };
+    if (controller.bindingVersion === 2 && !validGeneration(newSource)) return { ok: false, state: controller.state, issues: [{ code: 'INVALID_ACTION', field: 'source_reference' }], intent: null };
     var replacement = IntlWorkspaceState.createIntlWorkspaceState(controller.configWithSource(newSource));
     var parsed = replacement.parseQuery(controller.reducer.serializeQuery(controller.state).query);
     if (!parsed.ok) return { ok: false, state: controller.state, issues: parsed.issues, intent: null };
@@ -1499,6 +1548,7 @@
     if (!window || !window.history || !window.location || !window.MutationObserver) throw new Error('Workspace environment API is unavailable');
     var reducer = IntlWorkspaceState.createIntlWorkspaceState(config);
     config = JSON.parse(JSON.stringify(config));
+    var bindingVersion = workspaceBinding(root, config);
     var sourceConfig = config;
     var configWithSource = function (source) {
       var copy = {};
@@ -1507,7 +1557,7 @@
       return copy;
     };
     var controller = {
-      root: root, config: config, configWithSource: configWithSource, reducer: reducer, environment: { window: window },
+      root: root, config: config, bindingVersion: bindingVersion, configWithSource: configWithSource, reducer: reducer, environment: { window: window },
       state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null
     };
     controller.library = prepareLibrary(root,config);

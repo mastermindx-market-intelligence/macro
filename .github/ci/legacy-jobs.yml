@@ -3609,6 +3609,7 @@ jobs:
       - "lib/intl_inspector_view.py"
       - "lib/intl_inspector_mount.py"
       - "lib/intl_compare_mount.py"
+      - "lib/intl_workspace_binding.py"
       - "tests/test_intl_inspector_view.py"
       - "lib/intl_compare_view.py"
       - "tests/test_intl_compare_view.py"
@@ -3667,8 +3668,13 @@ jobs:
       - "lib/intl_inspector_view.py"
       - "lib/intl_inspector_mount.py"
       - "lib/intl_compare_mount.py"
+      - "lib/intl_workspace_binding.py"
       - "lib/intl_compare_view.py"
       - "tests/test_intl_compare_integration.py"
+      - "tests/test_intl_compare_mount.py"
+      - "tests/test_intl_workspace_generation_mount.py"
+      - "tests/test_intl_workspace_overview.py"
+      - "tests/test_intl_source_qualification.py"
       - "tests/test_intl_workspace_compare_render.py"
       - "tests/test_intl_inspector_view.py"
       - "tests/test_intl_inspector_mount.py"
@@ -3685,6 +3691,8 @@ jobs:
       - "tests/test_intl_workspace_integration.py"
       - "tests/intl_workspace_controller.test.cjs"
       - "tests/intl_workspace_compare_controller.test.cjs"
+      - "tests/intl_workspace_generation_controller.test.cjs"
+      - "tests/intl_workspace_generation_integration.test.cjs"
       - "tests/intl_workspace_inspector_integration.test.cjs"
       - "tests/intl_workspace_page.test.cjs"
       - "tests/intl_workspace_legacy_navigation.test.cjs"
@@ -3706,9 +3714,9 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.63.0
           npx playwright install --with-deps chromium
       - name: Actual International builder and template contracts
-        run: python -m pytest tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py -q
+        run: python -m pytest tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py -q
       - name: Actual DOM controller and page entry in Chromium
-        run: node --test tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs
+        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs
 
   stock-dashboard-first-frame:
     if: ${{ false }}
