@@ -1,0 +1,57 @@
+{
+  "admission_owner_decision_required": true,
+  "authority": {
+    "can_escalate": false,
+    "can_gate": false,
+    "can_originate_signal": false,
+    "can_rank": false,
+    "can_size": false
+  },
+  "census_sha256": "95830887b9505ffb57cd57c0593f78bb942e9e496b2d6730aaa25f58f4ed4eba",
+  "market_outcomes_read": false,
+  "refusals": [
+    "calendar_and_exceptional_sessions:NOT_PROVEN",
+    "catalyst_coverage_state:NOT_PROVEN",
+    "complete_pilot_population:NOT_PROVEN",
+    "faithful_incumbent_assessment:NOT_PROVEN",
+    "immutable_recoverable_inputs:NOT_PROVEN",
+    "pit_daily_leader_context:NOT_PROVEN",
+    "price_volume_corporate_action_basis:NOT_PROVEN",
+    "qqq:ADJUSTMENT_BASIS_UNRECORDED",
+    "qqq:AS_OBSERVED_AVAILABILITY_UNPROVEN",
+    "qqq:IMMUTABLE_INPUT_UNIDENTIFIED",
+    "qqq:INCOMPLETE_NOMINAL_GRID",
+    "qqq:NO_1M_HISTORY",
+    "revision_retention_and_first_seen:NOT_PROVEN",
+    "sector:ADJUSTMENT_BASIS_UNRECORDED",
+    "sector:AS_OBSERVED_AVAILABILITY_UNPROVEN",
+    "sector:IMMUTABLE_INPUT_UNIDENTIFIED",
+    "sector:INCOMPLETE_NOMINAL_GRID",
+    "sector:NO_1M_HISTORY",
+    "spy:ADJUSTMENT_BASIS_UNRECORDED",
+    "spy:AS_OBSERVED_AVAILABILITY_UNPROVEN",
+    "spy:IMMUTABLE_INPUT_UNIDENTIFIED",
+    "spy:INCOMPLETE_NOMINAL_GRID",
+    "spy:NO_1M_HISTORY",
+    "stable_security_identity:NOT_PROVEN",
+    "stock:ADJUSTMENT_BASIS_UNRECORDED",
+    "stock:AS_OBSERVED_AVAILABILITY_UNPROVEN",
+    "stock:IMMUTABLE_INPUT_UNIDENTIFIED",
+    "stock:INCOMPLETE_NOMINAL_GRID",
+    "stock:NO_1M_HISTORY"
+  ],
+  "required_symbols": {
+    "qqq": "QQQ",
+    "sector": "SMH",
+    "spy": "SPY",
+    "stock": "MU"
+  },
+  "schema": "mastermind.rs_pullback_launch.phase1_admission.v1",
+  "scientific_claims": {
+    "H1": "NOT_TESTED",
+    "H2": "NOT_TESTED",
+    "H3": "NOT_TESTED"
+  },
+  "technical_requirements_met": false,
+  "verdict": "NOT_ADMITTED"
+}

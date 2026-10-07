@@ -1,0 +1,988 @@
+{
+  "schema": "mastermind.rs_pullback_launch.phase1_census.v1",
+  "operation_key": "rs-pullback-launch-phase1-20261007-sol-001",
+  "workstream": "WS:LIVE-ENTRY-RADAR",
+  "commission_ref": "macro@21e7ece49b682d65a63f73ba6045853aded782f0",
+  "source_pins": {
+    "Mastermind": "9a24ef2c4b27ac95a4d1f72f5eae1073657cd7c2",
+    "Macro_census": "309f88c6c209bdc9fb611de0018fb619d9351b37",
+    "Macro_implementation_base": "007e0cccbd06f089605ba122efc658f406043dd3",
+    "Terminal": "ad36a332cd4b53af1d917a94f6fb3a10e27dad84"
+  },
+  "probe_scope": "Source-availability diagnostic, not a selected confirmatory population or historical signal experiment.",
+  "required_symbols": {
+    "stock": "MU",
+    "spy": "SPY",
+    "qqq": "QQQ",
+    "sector": "SMH"
+  },
+  "terminal_qualifier_owner": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ad36a332cd4b53af1d917a94f6fb3a10e27dad84/ingest/intraday_qualification.py",
+  "terminal_qualifier_args": {
+    "from_date": "2026-09-28",
+    "to_date": "2026-10-05",
+    "cutoff_utc": 1791244800,
+    "mode": "as_observed"
+  },
+  "terminal_qualifier_reports": [
+    {
+      "symbol": "SPY",
+      "timeframe": "1m",
+      "status": "missing",
+      "sha256": null,
+      "rows_total": 0,
+      "valid_rows": 0,
+      "window_rows": 0,
+      "knowledge_time": "not_recorded",
+      "price_adjustment": "not_recorded",
+      "volume_adjustment": "not_recorded",
+      "missing_bar_cause": "unknown_without_trade_or_quote_evidence",
+      "coverage": {
+        "expected_regular_sessions": 6,
+        "observed_regular_sessions": 0,
+        "latest_observed_regular_date": null,
+        "missing_regular_dates": [
+          "2026-09-28",
+          "2026-09-29",
+          "2026-09-30",
+          "2026-10-01",
+          "2026-10-02",
+          "2026-10-05"
+        ],
+        "window_complete_grid": false,
+        "meaning": "nominal_interval_occupancy_not_feed_completeness"
+      },
+      "cutoff": {
+        "mode": "as_observed",
+        "utc": 1791244800,
+        "count": 0,
+        "last_event_end_utc": null,
+        "pit_proven": false
+      }
+    },
+    {
+      "symbol": "QQQ",
+      "timeframe": "1m",
+      "status": "missing",
+      "sha256": null,
+      "rows_total": 0,
+      "valid_rows": 0,
+      "window_rows": 0,
+      "knowledge_time": "not_recorded",
+      "price_adjustment": "not_recorded",
+      "volume_adjustment": "not_recorded",
+      "missing_bar_cause": "unknown_without_trade_or_quote_evidence",
+      "coverage": {
+        "expected_regular_sessions": 6,
+        "observed_regular_sessions": 0,
+        "latest_observed_regular_date": null,
+        "missing_regular_dates": [
+          "2026-09-28",
+          "2026-09-29",
+          "2026-09-30",
+          "2026-10-01",
+          "2026-10-02",
+          "2026-10-05"
+        ],
+        "window_complete_grid": false,
+        "meaning": "nominal_interval_occupancy_not_feed_completeness"
+      },
+      "cutoff": {
+        "mode": "as_observed",
+        "utc": 1791244800,
+        "count": 0,
+        "last_event_end_utc": null,
+        "pit_proven": false
+      }
+    },
+    {
+      "symbol": "SMH",
+      "timeframe": "1m",
+      "status": "missing",
+      "sha256": null,
+      "rows_total": 0,
+      "valid_rows": 0,
+      "window_rows": 0,
+      "knowledge_time": "not_recorded",
+      "price_adjustment": "not_recorded",
+      "volume_adjustment": "not_recorded",
+      "missing_bar_cause": "unknown_without_trade_or_quote_evidence",
+      "coverage": {
+        "expected_regular_sessions": 6,
+        "observed_regular_sessions": 0,
+        "latest_observed_regular_date": null,
+        "missing_regular_dates": [
+          "2026-09-28",
+          "2026-09-29",
+          "2026-09-30",
+          "2026-10-01",
+          "2026-10-02",
+          "2026-10-05"
+        ],
+        "window_complete_grid": false,
+        "meaning": "nominal_interval_occupancy_not_feed_completeness"
+      },
+      "cutoff": {
+        "mode": "as_observed",
+        "utc": 1791244800,
+        "count": 0,
+        "last_event_end_utc": null,
+        "pit_proven": false
+      }
+    },
+    {
+      "symbol": "MU",
+      "timeframe": "1m",
+      "status": "missing",
+      "sha256": null,
+      "rows_total": 0,
+      "valid_rows": 0,
+      "window_rows": 0,
+      "knowledge_time": "not_recorded",
+      "price_adjustment": "not_recorded",
+      "volume_adjustment": "not_recorded",
+      "missing_bar_cause": "unknown_without_trade_or_quote_evidence",
+      "coverage": {
+        "expected_regular_sessions": 6,
+        "observed_regular_sessions": 0,
+        "latest_observed_regular_date": null,
+        "missing_regular_dates": [
+          "2026-09-28",
+          "2026-09-29",
+          "2026-09-30",
+          "2026-10-01",
+          "2026-10-02",
+          "2026-10-05"
+        ],
+        "window_complete_grid": false,
+        "meaning": "nominal_interval_occupancy_not_feed_completeness"
+      },
+      "cutoff": {
+        "mode": "as_observed",
+        "utc": 1791244800,
+        "count": 0,
+        "last_event_end_utc": null,
+        "pit_proven": false
+      }
+    },
+    {
+      "symbol": "SPY",
+      "timeframe": "5m",
+      "status": "available",
+      "sha256": "08b21a938c9ad0d3de921fc4ca910b977b4f83dbb978724fb06ca2adf9c83f23",
+      "rows_total": 60000,
+      "valid_rows": 60000,
+      "window_rows": 1149,
+      "knowledge_time": "not_recorded",
+      "price_adjustment": "not_recorded",
+      "volume_adjustment": "not_recorded",
+      "missing_bar_cause": "unknown_without_trade_or_quote_evidence",
+      "coverage": {
+        "expected_regular_sessions": 6,
+        "observed_regular_sessions": 6,
+        "latest_observed_regular_date": "2026-10-05",
+        "missing_regular_dates": [],
+        "window_complete_grid": true,
+        "meaning": "nominal_interval_occupancy_not_feed_completeness"
+      },
+      "cutoff": {
+        "mode": "as_observed",
+        "utc": 1791244800,
+        "count": 0,
+        "last_event_end_utc": null,
+        "pit_proven": false
+      }
+    }
+  ],
+  "terminal_inventory": [
+    {
+      "host": "ubuntu-s-mastermindx",
+      "system": "Linux"
+    },
+    {
+      "path": "/opt/terminal/terminal/public/data/intraday",
+      "exists": true,
+      "resolved": "/opt/terminal/terminal/public/data/intraday"
+    },
+    {
+      "file_count": 4830,
+      "timeframe_counts": {
+        "5m": 685,
+        "1h": 4145
+      },
+      "one_minute_symbols": [],
+      "db_files": []
+    },
+    {
+      "symbol": "SPY",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "QQQ",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "IWM",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "DIA",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "XLK",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "SMH",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "SOXX",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "XLF",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "XLE",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "XLV",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "XLY",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "XLP",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "XLI",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "XLB",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "XLU",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "XLRE",
+      "present_timeframes": [
+        "1h"
+      ]
+    },
+    {
+      "symbol": "XLC",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "AMD",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "NVDA",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "INTC",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "ARM",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "MU",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "AAPL",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    },
+    {
+      "symbol": "MSFT",
+      "present_timeframes": [
+        "5m",
+        "1h"
+      ]
+    }
+  ],
+  "terminal_observed_file_receipts": [
+    {
+      "observed_at_utc": "2026-10-07T03:01:09.730025+00:00",
+      "path": "/opt/terminal/terminal/public/data/intraday"
+    },
+    {
+      "directory_membership_sha256": "b876b63166e2cf40e9fe136eb9a5667a2f2e074a4ca04c47f0c3b5ad4f170df1",
+      "file_count": 4830
+    },
+    {
+      "symbol": "SPY",
+      "tf": "5m",
+      "rows": 60000,
+      "first_display_epoch": 1751896200,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-07-07T13:50:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "08b21a938c9ad0d3de921fc4ca910b977b4f83dbb978724fb06ca2adf9c83f23",
+      "bytes": 2836892,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "QQQ",
+      "tf": "5m",
+      "rows": 60000,
+      "first_display_epoch": 1751967000,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-07-08T09:30:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "e0d70269674c61e202b9d1ee65b1642bcbbffb72f05794da49310beabef45370",
+      "bytes": 2839070,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "IWM",
+      "tf": "5m",
+      "rows": 60000,
+      "first_display_epoch": 1750872600,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-06-25T17:30:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "095e306f497a74a80bc57041c73ce550eba26a860f8b2ae4f8c864a54199b579",
+      "bytes": 2814009,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "DIA",
+      "tf": "5m",
+      "rows": 48076,
+      "first_display_epoch": 1748836800,
+      "last_display_epoch": 1791229200,
+      "first_et_wall": "2025-06-02T04:00:00+00:00",
+      "last_et_wall": "2026-10-05T19:40:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "489230bc1da72476e726a44e5686fa0991b5deadc5f7866e6bf54b0544d4e675",
+      "bytes": 2226328,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "XLK",
+      "tf": "5m",
+      "rows": 44201,
+      "first_display_epoch": 1750049100,
+      "last_display_epoch": 1791229200,
+      "first_et_wall": "2025-06-16T04:45:00+00:00",
+      "last_et_wall": "2026-10-05T19:40:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "3de6c904cd4631b1d363e8f06a62212e7adfa3940af111c5cee24eed78e9055f",
+      "bytes": 2103913,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "SMH",
+      "tf": "5m",
+      "rows": 52423,
+      "first_display_epoch": 1750046400,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-06-16T04:00:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "46267abf146514e44bcedf80218e4f2b395b2fbadf430da40e0484cd87bbea04",
+      "bytes": 2404263,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "SOXX",
+      "tf": "5m",
+      "rows": 51875,
+      "first_display_epoch": 1750046400,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-06-16T04:00:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "e2e74a39f2074e2017521fe8f78d20c059740832e832e0dcd5b4cdd6b14acca0",
+      "bytes": 2379029,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "XLF",
+      "tf": "5m",
+      "rows": 47646,
+      "first_display_epoch": 1750046400,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-06-16T04:00:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "b8247529878871aca5aff5f24d06d9807b0d9d7e0d52a8ce70d6be82bed7ed1c",
+      "bytes": 2105542,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "XLRE",
+      "tf": "5m",
+      "state": "missing"
+    },
+    {
+      "symbol": "AMD",
+      "tf": "5m",
+      "rows": 60000,
+      "first_display_epoch": 1751050200,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-06-27T18:50:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "bc0159f62375a47fba830c0c0c742e617114db7e5e4ce83b1360416170bf2918",
+      "bytes": 2823846,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "NVDA",
+      "tf": "5m",
+      "rows": 60000,
+      "first_display_epoch": 1751991000,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-07-08T16:10:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "37e664893feb676b72fea9764b46cd9fdb3be0c24608e6f9dfdfa38383479154",
+      "bytes": 2903622,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "INTC",
+      "tf": "5m",
+      "rows": 60000,
+      "first_display_epoch": 1751952000,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-07-08T05:20:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "a04c188c501c9b71c8c66a1c4169afa50a4617ee5f3a15373ffc64f7b1ab7997",
+      "bytes": 2725380,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "ARM",
+      "tf": "5m",
+      "rows": 49853,
+      "first_display_epoch": 1748836800,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-06-02T04:00:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "a0067322425b2034d7a774cc4153bba781b179316c3cfd2e1f527e8299f1bae4",
+      "bytes": 2310710,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "MU",
+      "tf": "5m",
+      "rows": 60000,
+      "first_display_epoch": 1751001000,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-06-27T05:10:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "5e96dcf70c735d936d72d0ce2a7d63507140897e715d18233648e280ded95048",
+      "bytes": 2828861,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "AAPL",
+      "tf": "5m",
+      "rows": 60000,
+      "first_display_epoch": 1750656000,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-06-23T05:20:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "8bf5c6c8ddfc01bb115206aafd92a9843f98f5ae1e0c6cf23d6f277db1ae4a26",
+      "bytes": 2835783,
+      "stable_during_read": true
+    },
+    {
+      "symbol": "MSFT",
+      "tf": "5m",
+      "rows": 60000,
+      "first_display_epoch": 1749194100,
+      "last_display_epoch": 1791230100,
+      "first_et_wall": "2025-06-06T07:15:00+00:00",
+      "last_et_wall": "2026-10-05T19:55:00+00:00",
+      "keys": [
+        "asof",
+        "bar_quality",
+        "bars",
+        "src",
+        "t",
+        "tf"
+      ],
+      "src": "polygon",
+      "bar_quality": "real_ohlc",
+      "adjusted": null,
+      "has_first_seen": false,
+      "sha256": "c2dc74498ab4c737f737b450ceadac609d87cb650e8d073c01dde2be09e18233",
+      "bytes": 2804490,
+      "stable_during_read": true
+    },
+    {
+      "source": "/opt/terminal/ingest/backfill_intraday.py",
+      "exists": true,
+      "sha256": "af10300ed008d7384fba9fc8dbf37a4fefa94a18d2601676cc0e6e3e7f08a93c"
+    },
+    {
+      "source": "/opt/terminal/ingest/intraday_qualification.py",
+      "exists": true,
+      "sha256": "d4c5c99114ce80a01fa5dd3ea32b1b2cf688c772be25a21df7b5220d912cf8aa"
+    },
+    {
+      "source": "/opt/terminal/terminal/lib/usEquitySessionProjection.json",
+      "exists": true,
+      "sha256": "d803dc85fcf3318bc78392e1d645b7063881b86eec95cf06f51192e1d836de98"
+    },
+    {
+      "deployed_root_git_head": null,
+      "root_is_git_repo": false
+    }
+  ],
+  "terminal_deployed_source_receipts": [
+    {
+      "path": "/opt/terminal/ingest/backfill_intraday.py",
+      "git_blob_sha1": "e55c4ec2db53f328e5c40129fdfbcc55807fd92a",
+      "sha256": "af10300ed008d7384fba9fc8dbf37a4fefa94a18d2601676cc0e6e3e7f08a93c"
+    },
+    {
+      "path": "/opt/terminal/ingest/intraday_qualification.py",
+      "git_blob_sha1": "b66a99027e8d24b4fbb1b81dd1aeb4682030aa6b",
+      "sha256": "d4c5c99114ce80a01fa5dd3ea32b1b2cf688c772be25a21df7b5220d912cf8aa"
+    },
+    {
+      "path": "/opt/terminal/terminal/lib/usEquitySessionProjection.json",
+      "git_blob_sha1": "4daada1636c093fe22105e8fd791fc5c7a1135a0",
+      "sha256": "d803dc85fcf3318bc78392e1d645b7063881b86eec95cf06f51192e1d836de98"
+    }
+  ],
+  "production_receipt_processes": {
+    "inventory": 54831,
+    "file_receipts": 55618,
+    "qualifier": 61222,
+    "deployed_blobs": 63852
+  },
+  "observation_scope_limit": "Only the named canonical Terminal directory and cited Macro sources were inspected. No assertion is made that all stores or vendor entitlements lack 1m data. File hashes identify observed bytes, not guaranteed immutable archival retention.",
+  "daily_context_receipt": {
+    "source_ref": "https://github.com/mastermindx-market-intelligence/macro/blob/007e0cccbd06f089605ba122efc658f406043dd3/site/anticipationdata/us_leader_pullback.json",
+    "blob_sha": "45876c69e21c7f0b313cf48a5429eea366598bff",
+    "as_of": "2026-10-05",
+    "coverage": {
+      "universe": 697,
+      "graded": 686,
+      "skipped_short_history": 11,
+      "missing_store": 0,
+      "source_contract": {
+        "schema": "us_turn_watch.source_contract.v1",
+        "pass": true,
+        "universe_id": "us-turn-watch:anticipation-v1-2026-08-08:9f9daa60db10",
+        "selection_era": "anticipation-v1-2026-08-08",
+        "population_count": 697,
+        "tickers_sha256": "9f9daa60db10bce3edc65a8d4b8e02e79ee327c962bec46d2973d32791752282",
+        "source_commit": "c3eed6fcc15ae89799fe28454634c9d075897717",
+        "selected_count": 697,
+        "universe_limit": null,
+        "missing_store_count": 0,
+        "missing_store": [],
+        "graded": 686,
+        "selection_era_minimum_graded": 680,
+        "session_counts": {
+          "2026-05-07": 1,
+          "2026-05-13": 1,
+          "2026-08-10": 1,
+          "2026-10-02": 1,
+          "2026-10-05": 682
+        },
+        "modal_session": "2026-10-05",
+        "modal_count": 682,
+        "strict_majority": true,
+        "benchmark_session": "2026-10-05",
+        "benchmark_covers_session": true,
+        "freshness_reference": "lib.nyse_calendar.expected_last_session",
+        "expected_completed_session": "2026-10-05",
+        "completed_session_lag": 0,
+        "max_completed_session_lag": 0,
+        "freshness_ok": true
+      },
+      "min_bars": 260,
+      "store_ladder": [
+        "yahoo"
+      ],
+      "cross_section_names": 686,
+      "states_published": 686,
+      "state_counts": {
+        "LEADER": 58,
+        "NONE": 587,
+        "PULLBACK": 10,
+        "RESET_TURN": 15,
+        "RESUMED": 16
+      },
+      "null_counts": {},
+      "context_states": [
+        "PULLBACK",
+        "RESET_TURN"
+      ],
+      "universe_limit": null,
+      "publishable": true
+    },
+    "stale_examples": [
+      {
+        "ticker": "CTRA",
+        "asof": "2026-05-07",
+        "state": "PULLBACK"
+      },
+      {
+        "ticker": "EA",
+        "asof": "2026-08-10",
+        "state": "NONE"
+      },
+      {
+        "ticker": "HUBB",
+        "asof": "2026-10-02",
+        "state": "NONE"
+      },
+      {
+        "ticker": "TPH",
+        "asof": "2026-05-13",
+        "state": "LEADER"
+      }
+    ]
+  },
+  "requirements": {
+    "stable_security_identity": {
+      "status": "NOT_PROVEN",
+      "reason": "Ticker-only intraday files are not bound to point-in-time Data OS listing identity.",
+      "evidence_refs": [
+        "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ad36a332cd4b53af1d917a94f6fb3a10e27dad84/ingest/intraday_qualification.py",
+        "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ad36a332cd4b53af1d917a94f6fb3a10e27dad84/terminal/lib/intradayEvidence.ts"
+      ]
+    },
+    "price_volume_corporate_action_basis": {
+      "status": "NOT_PROVEN",
+      "reason": "Source requests adjusted history but archive omits price, volume and corporate-action vintage receipts.",
+      "evidence_refs": [
+        "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ad36a332cd4b53af1d917a94f6fb3a10e27dad84/ingest/backfill_intraday.py"
+      ]
+    },
+    "calendar_and_exceptional_sessions": {
+      "status": "PARTIAL",
+      "reason": "Existing owner projection and deployed file identity are proven; no actual 1m pilot rows or historical availability receipts bind them into this study.",
+      "evidence_refs": [
+        "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ad36a332cd4b53af1d917a94f6fb3a10e27dad84/terminal/lib/usEquitySessionProjection.json",
+        "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ad36a332cd4b53af1d917a94f6fb3a10e27dad84/ingest/intraday_qualification.py"
+      ]
+    },
+    "revision_retention_and_first_seen": {
+      "status": "NOT_PROVEN",
+      "reason": "as_observed excludes every selected archived row; current cache and archive overwrite corrections.",
+      "evidence_refs": [
+        "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ad36a332cd4b53af1d917a94f6fb3a10e27dad84/ingest/intraday_qualification.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/007e0cccbd06f089605ba122efc658f406043dd3/engine/entry_radar/vendor_minutes.py"
+      ]
+    },
+    "immutable_recoverable_inputs": {
+      "status": "NOT_PROVEN",
+      "reason": "Runtime file digests are recorded, but no immutable first-seen 1m input archive was established.",
+      "evidence_refs": [
+        "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/ad36a332cd4b53af1d917a94f6fb3a10e27dad84/ops/terminal-data"
+      ]
+    },
+    "pit_daily_leader_context": {
+      "status": "NOT_PROVEN",
+      "reason": "Latest cross-section has stale individual rows and is a selection-era population, not a historical first-seen leader panel.",
+      "evidence_refs": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/007e0cccbd06f089605ba122efc658f406043dd3/engine/us_leader_pullback_coverage.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/007e0cccbd06f089605ba122efc658f406043dd3/site/anticipationdata/us_leader_pullback.json"
+      ]
+    },
+    "faithful_incumbent_assessment": {
+      "status": "NOT_PROVEN",
+      "reason": "No per-decision actual engine.entry_signal.assess input/output receipt is bound to a pilot. W5 incumbent_fires is a different comparator.",
+      "evidence_refs": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/007e0cccbd06f089605ba122efc658f406043dd3/engine/entry_signal.py",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/007e0cccbd06f089605ba122efc658f406043dd3/engine/entry_radar/replay/episodes.py"
+      ]
+    },
+    "catalyst_coverage_state": {
+      "status": "NOT_PROVEN",
+      "reason": "Owner supports explicit UNKNOWN but no candidate-specific historical coverage receipt was admitted.",
+      "evidence_refs": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/007e0cccbd06f089605ba122efc658f406043dd3/engine/entry_radar/catalyst_context.py"
+      ]
+    },
+    "complete_pilot_population": {
+      "status": "NOT_PROVEN",
+      "reason": "No actual market pilot was constructed from unadmitted data. Synthetic conformance cases cannot satisfy this requirement.",
+      "evidence_refs": [
+        "agentos/handoffs/RS_PULLBACK_LAUNCH_SOL_IMPLEMENTATION_HANDOFF_2026-10-06.md"
+      ]
+    }
+  },
+  "disjoint_active_carriers": [
+    {
+      "repo": "macro",
+      "pr": 7274,
+      "head": "51bb68b2cf9680f9abf4546a602172a5e157a7e3",
+      "hold": "Tactical empirical study, shared TrialLedger; corrected-history exploratory NO_PROMOTION results already exist."
+    },
+    {
+      "repo": "macro",
+      "pr": 7275,
+      "head": "bf047bbf259d8f579ad8254f1ab3de80c5204299",
+      "hold": "Minute resolution, vendor_minutes and live evaluation; no changes here."
+    },
+    {
+      "repo": "macro",
+      "pr": 8547,
+      "head": "7546b4414f9ba49be2539f135f9e9efadf2376bd",
+      "hold": "Fable #784 live-pack performance."
+    },
+    {
+      "repo": "macro",
+      "pr": 8548,
+      "head": "0e9b8f043e62b54ac4accf7ed2827f6618371993",
+      "hold": "Fable #784 C3/four_hour performance."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "pr": 814,
+      "head": "15c2559780a1dce3d8f571b1d8ac047d3e777789",
+      "hold": "Intraday route and source contracts."
+    }
+  ]
+}
