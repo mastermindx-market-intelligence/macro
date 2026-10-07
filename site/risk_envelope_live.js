@@ -173,11 +173,13 @@
           return x(point.options_pct).toFixed(1) + "," +
             y(point.protection_pct).toFixed(1);
         }).join(" ");
-        svg.appendChild(ocSvg("polyline", {
+        var trailLine = ocSvg("polyline", {
           points:points,
           "class":"ocmp-trail ocmp-trail-" +
             (row.zone === "fast" ? "fast" : "calm")
-        }));
+        });
+        trailLine.setAttribute("data-ticker", row.ticker);
+        svg.appendChild(trailLine);
       }
       var group = ocSvg("g", {
         "class":"ocmp-point ocmp-point-" +
@@ -258,6 +260,11 @@
     function select(row) {
       Object.keys(groups).forEach(function (ticker) {
         groups[ticker].classList.toggle("is-selected", ticker === row.ticker);
+      });
+      svg.querySelectorAll(".ocmp-trail[data-ticker]").forEach(function (trailLine) {
+        trailLine.classList.toggle(
+          "is-selected", trailLine.getAttribute("data-ticker") === row.ticker
+        );
       });
       focusTicker.textContent = row.ticker;
       focusStateEn.textContent = row.zone === "fast" ? "FAST" : "CALM";
