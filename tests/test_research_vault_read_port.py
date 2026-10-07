@@ -163,7 +163,7 @@ def test_failure_is_closed_and_sanitized_shape():
         "schema": "research_vault.read_failure.v1",
         "ok": False,
         "code": "REPORT_NOT_ENTITLED",
-        "message": "report is not visible to this caller",
+        "message": "research report is not visible to this caller",
         "retryable": False,
     }
     assert "bucket" not in failure
