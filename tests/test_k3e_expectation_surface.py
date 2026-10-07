@@ -1,13 +1,16 @@
 """Discriminators for EXP-1 cutoff/coverage/refusal boundaries."""
 from copy import deepcopy
+from datetime import date
 import json
 from pathlib import Path
 import subprocess
 import sys
 
 import pytest
+from lib.dataos.identity import VendorAliasTable
 from engine.k3e_expectation_surface import (
-    ATTEMPTS_PATH, OBSERVATIONS_PATH, QueryRefusal, inspect_expectation_surface,
+    ALIASES_PATH, ATTEMPTS_PATH, OBSERVATIONS_PATH, QueryRefusal,
+    inspect_expectation_surface,
 )
 
 CUT = "2026-10-02T12:00:00Z"
@@ -15,14 +18,27 @@ PROVENANCE = {"source_revision": "a" * 40, "inputs": {
     OBSERVATIONS_PATH: {"sha256": "1" * 64, "git_blob_id": "1" * 40},
     ATTEMPTS_PATH: {"sha256": "2" * 64, "git_blob_id": "2" * 40},
 }}
+ALIAS_PROVENANCE = deepcopy(PROVENANCE)
+ALIAS_PROVENANCE["inputs"][ALIASES_PATH] = {
+    "sha256": "3" * 64,
+    "git_blob_id": "3" * 40,
+}
+
+
+def alias(symbol="V", security="SEC:V", ingested="2026-10-01T00:00:00Z",
+          valid_from=None, valid_to=None):
+    return dict(
+        vendor="yahoo", vendor_symbol=symbol, security_id=security,
+        valid_from=valid_from, valid_to=valid_to, ingested_at=ingested,
+    )
 
 
 def capture(label="one", time="2026-10-02T10:00:00Z", value=2.5,
-            count=10, status="success", period="2026-12-31"):
-    attempt = dict(attempt_id=label, collection_session_id=label, provider="yfinance",
+            count=10, status="success", period="2026-12-31", provider="yfinance"):
+    attempt = dict(attempt_id=label, collection_session_id=label, provider=provider,
                    ticker_compat="V", attempted_at=time, completed_at=time,
                    status=status, response_payload_hash=label, observation_count=2)
-    common = dict(collection_session_id=label, attempt_id=label, provider="yfinance",
+    common = dict(collection_session_id=label, attempt_id=label, provider=provider,
                   provider_record_class="earnings_estimate", provider_payload_hash=label,
                   ticker_compat="V", metric="EPS", horizon_label_raw="+1q",
                   period_end=period, provider_observed_at=time, system_observed_at=time,
@@ -248,14 +264,23 @@ def test_cli_fixture_reads_only_explicit_commit_and_refuses_moving_ref(tmp_path)
     repository = tmp_path / "fixture"
     repository.mkdir()
     rows, attempts = capture()
-    for path, records in ((OBSERVATIONS_PATH, rows), (ATTEMPTS_PATH, attempts)):
+    alias_records = [dict(
+        vendor="yahoo", vendor_symbol="V", security_id="SEC:V",
+        valid_from=None, valid_to=None,
+        ingested_at=pd.Timestamp("2026-10-01 00:00:00"),
+    )]
+    for path, records in (
+        (OBSERVATIONS_PATH, rows),
+        (ATTEMPTS_PATH, attempts),
+        (ALIASES_PATH, alias_records),
+    ):
         destination = repository / path
         destination.parent.mkdir(parents=True, exist_ok=True)
         pd.DataFrame(records).to_parquet(destination)
     def git(*args):
         return subprocess.check_output(["git", "-C", str(repository), *args], text=True).strip()
     git("init", "-q")
-    git("add", "data/revisions")
+    git("add", "data")
     git("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid",
         "commit", "-qm", "synthetic fixture")
     revision = git("rev-parse", "HEAD")
@@ -266,8 +291,13 @@ def test_cli_fixture_reads_only_explicit_commit_and_refuses_moving_ref(tmp_path)
     run = subprocess.run(args, capture_output=True, text=True)
     assert run.returncode == 0, run.stderr
     result = json.loads(run.stdout)
-    assert selected(result["semantic_payload"])["value"] == 2.5
-    assert result["semantic_payload"]["source"]["source_revision"] == revision
+    semantic = result["semantic_payload"]
+    assert selected(semantic)["value"] == 2.5
+    assert semantic["source"]["source_revision"] == revision
+    assert semantic["identity_gate"]["status"] == "CHECKED"
+    assert semantic["denominators"]["identity_resolved_records"] >= 1
+    expected_blob = git("rev-parse", f"{revision}:{ALIASES_PATH}")
+    assert semantic["source"]["inputs"][ALIASES_PATH]["git_blob_id"] == expected_blob
     assert git("status", "--porcelain") == ""
     args[args.index(revision)] = "HEAD"
     refusal = subprocess.run(args, capture_output=True, text=True)
@@ -483,3 +513,211 @@ def test_mixed_completed_pending_attempt_id_withholds_all_observation_facts(muta
     assert populations["unique_completed_valid_attempts_by_cutoff"] == 0
     assert populations["reason_counts"] == {"DUPLICATE_ATTEMPT_ID": 2}
     assert result["latest_attempt"]["snapshot"]["derived_query_state"] == "INCOMPLETE_AT_CUTOFF"
+
+
+def test_identity_gate_undated_alias_ingested_before_capture_supported():
+    rows, attempts = capture()
+    records = [alias(ingested="2026-10-01T00:00:00Z")]
+    result = payload(rows, attempts, identity_aliases=records, source_provenance=ALIAS_PROVENANCE)
+    assert result["identity_gate"]["status"] == "CHECKED"
+    assert selected(result) is not None
+    assert result["denominators"]["identity_resolved_records"] == (
+        result["denominators"]["capture_clock_bounded_relevant_records"])
+
+
+def test_identity_gate_undated_alias_ingested_after_capture_unresolved():
+    rows, attempts = capture()
+    records = [alias(ingested="2026-10-02T11:00:00Z")]
+    result = payload(rows, attempts, identity_aliases=records, source_provenance=ALIAS_PROVENANCE)
+    assert selected(result) is None
+    assert result["denominators"]["identity_unresolved_records"] >= 1
+    assert result["denominators"]["reason_counts"]["SECURITY_IDENTITY_UNRESOLVED_AT_CUTOFF"] >= 1
+
+
+def test_identity_gate_undated_alias_ingested_after_cutoff_unresolved():
+    rows, attempts = capture()
+    records = [alias(ingested="2026-10-02T13:00:00Z")]
+    result = payload(rows, attempts, identity_aliases=records, source_provenance=ALIAS_PROVENANCE)
+    assert result["denominators"]["identity_unresolved_records"] >= 1
+    assert result["identity_gate"]["query_security_id_at_cutoff"] is None
+
+
+def test_identity_gate_dated_window_boundaries():
+    rows, attempts = capture()
+    future_from = payload(
+        rows, attempts,
+        identity_aliases=[alias(valid_from="2026-10-03")],
+        source_provenance=ALIAS_PROVENANCE,
+    )
+    assert selected(future_from) is None
+    exclusive_to = payload(
+        rows, attempts,
+        identity_aliases=[alias(valid_to="2026-10-02")],
+        source_provenance=ALIAS_PROVENANCE,
+    )
+    assert selected(exclusive_to) is None
+    assert VendorAliasTable.from_records([{
+        "vendor": "yahoo", "vendor_symbol": "V", "security_id": "SEC:V",
+        "valid_from": "2026-10-02", "valid_to": "2026-10-02",
+    }]).resolve("yahoo", "V", date(2026, 10, 2)) is None
+    resolved = payload(
+        rows, attempts,
+        identity_aliases=[alias(valid_from="2026-10-01", valid_to="2026-10-03")],
+        source_provenance=ALIAS_PROVENANCE,
+    )
+    assert selected(resolved) is not None
+    from datetime import datetime as dt
+    resolved_dates = payload(
+        rows, attempts,
+        identity_aliases=[alias(
+            valid_from=date(2026, 10, 1), valid_to=date(2026, 10, 3),
+            ingested=dt(2026, 9, 1))],
+        source_provenance=ALIAS_PROVENANCE,
+    )
+    assert selected(resolved_dates) is not None
+
+
+def test_identity_gate_ticker_reassignment_unresolved_at_cutoff():
+    rows, attempts = capture(time="2026-09-30T10:00:00Z")
+    records = [
+        alias(security="SEC:OLD", valid_to="2026-10-01", ingested="2026-09-01T00:00:00Z"),
+        alias(security="SEC:NEW", valid_from="2026-10-01", ingested="2026-09-01T00:00:00Z"),
+    ]
+    result = payload(rows, attempts, identity_aliases=records, source_provenance=ALIAS_PROVENANCE)
+    assert result["identity_gate"]["query_security_id_at_cutoff"] == "SEC:NEW"
+    assert selected(result) is None
+    control = payload(rows, attempts)
+    assert selected(control) is not None
+
+
+def test_identity_gate_unmapped_provider_unresolved():
+    rows, attempts = capture(provider="other_vendor")
+    records = [alias()]
+    result = payload(
+        rows, attempts, provider="other_vendor",
+        identity_aliases=records, source_provenance=ALIAS_PROVENANCE,
+    )
+    assert result["identity_gate"]["vendor_space"] is None
+    assert result["denominators"]["identity_unresolved_records"] >= 1
+
+
+def test_identity_gate_none_discloses_not_checked():
+    rows, attempts = capture()
+    baseline = payload(rows, attempts)
+    assert baseline["identity_gate"]["status"] == "NOT_CHECKED"
+    assert baseline["identity_gate"]["alias_input"] is None
+    assert baseline["denominators"]["identity_resolved_records"] is None
+    assert baseline["denominators"]["identity_unresolved_records"] is None
+    assert selected(baseline) is not None
+    extra = deepcopy(PROVENANCE)
+    extra["inputs"][ALIASES_PATH] = {"sha256": "9" * 64, "git_blob_id": "9" * 40}
+    with_extra = payload(rows, attempts, source_provenance=extra)
+    assert with_extra["query_identity"] == baseline["query_identity"]
+
+
+def test_identity_gate_empty_aliases_with_pin_all_unresolved():
+    rows, attempts = capture()
+    result = payload(rows, attempts, identity_aliases=[], source_provenance=ALIAS_PROVENANCE)
+    assert result["identity_gate"]["status"] == "CHECKED"
+    assert result["denominators"]["identity_unresolved_records"] == (
+        result["denominators"]["capture_clock_bounded_relevant_records"])
+
+
+def test_identity_gate_provenance_refusals():
+    rows, attempts = capture()
+    with pytest.raises(QueryRefusal, match="ALIAS_PROVENANCE_REQUIRED"):
+        payload(rows, attempts, identity_aliases=[alias()])
+    bad = deepcopy(ALIAS_PROVENANCE)
+    bad["inputs"][ALIASES_PATH] = dict(absent_at_revision=True)
+    with pytest.raises(QueryRefusal, match="ALIAS_PROVENANCE_REQUIRED"):
+        payload(rows, attempts, identity_aliases=[alias()], source_provenance=bad)
+    with pytest.raises(QueryRefusal, match="RECORD_MAPPINGS_REQUIRED"):
+        payload(rows, attempts, identity_aliases="not-a-list", source_provenance=ALIAS_PROVENANCE)
+
+
+def test_identity_gate_ambiguous_table_invalid():
+    rows, attempts = capture()
+    records = [
+        alias(security="SEC:A", valid_from="2026-10-01", valid_to="2026-10-05"),
+        alias(security="SEC:B", valid_from="2026-10-02", valid_to="2026-10-06"),
+    ]
+    result = payload(rows, attempts, identity_aliases=records, source_provenance=ALIAS_PROVENANCE)
+    assert result["identity_gate"]["status"] == "ALIAS_TABLE_INVALID"
+    assert result["denominators"]["identity_unresolved_records"] == (
+        result["denominators"]["capture_clock_bounded_relevant_records"])
+
+
+def test_identity_gate_query_identity_depends_on_alias_pin():
+    rows, attempts = capture()
+    first = payload(rows, attempts, identity_aliases=[alias()], source_provenance=ALIAS_PROVENANCE)
+    second_prov = deepcopy(ALIAS_PROVENANCE)
+    second_prov["inputs"][ALIASES_PATH]["sha256"] = "4" * 64
+    second = payload(rows, attempts, identity_aliases=[alias()], source_provenance=second_prov)
+    assert first["query_identity"] != second["query_identity"]
+
+
+def test_cli_fixture_alias_path_absent(tmp_path):
+    pd = pytest.importorskip("pandas")
+    repository = tmp_path / "fixture"
+    repository.mkdir()
+    rows, attempts = capture()
+    for path, records in ((OBSERVATIONS_PATH, rows), (ATTEMPTS_PATH, attempts)):
+        destination = repository / path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(records).to_parquet(destination)
+
+    def git(*args):
+        return subprocess.check_output(["git", "-C", str(repository), *args], text=True).strip()
+
+    git("init", "-q")
+    git("add", "data/revisions")
+    git("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid",
+        "commit", "-qm", "synthetic fixture")
+    revision = git("rev-parse", "HEAD")
+    script = Path(__file__).resolve().parents[1] / "scripts/query_k3e_expectation_surface.py"
+    args = [sys.executable, "-B", str(script), "--repository", str(repository),
+            "--source-revision", revision, "--ticker", "V", "--metric", "EPS",
+            "--horizon", "+1q", "--as-of", CUT]
+    run = subprocess.run(args, capture_output=True, text=True)
+    assert run.returncode == 0, run.stderr
+    semantic = json.loads(run.stdout)["semantic_payload"]
+    assert semantic["identity_gate"]["status"] == "ALIAS_PATH_ABSENT_AT_REVISION"
+    assert semantic["source"]["inputs"][ALIASES_PATH] == dict(absent_at_revision=True)
+    assert selected(semantic) is None
+    assert semantic["denominators"]["identity_unresolved_records"] == (
+        semantic["denominators"]["capture_clock_bounded_relevant_records"])
+
+
+def test_cli_fixture_missing_alias_blob_refuses(tmp_path):
+    pd = pytest.importorskip("pandas")
+    repository = tmp_path / "fixture"
+    repository.mkdir()
+    rows, attempts = capture()
+    alias_records = [alias()]
+    for path, records in (
+        (OBSERVATIONS_PATH, rows),
+        (ATTEMPTS_PATH, attempts),
+        (ALIASES_PATH, alias_records),
+    ):
+        destination = repository / path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(records).to_parquet(destination)
+
+    def git(*args):
+        return subprocess.check_output(["git", "-C", str(repository), *args], text=True).strip()
+
+    git("init", "-q")
+    git("add", "data")
+    git("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid",
+        "commit", "-qm", "synthetic fixture")
+    revision = git("rev-parse", "HEAD")
+    blob = git("rev-parse", f"{revision}:{ALIASES_PATH}")
+    loose = repository / ".git" / "objects" / blob[:2] / blob[2:]
+    loose.unlink()
+    script = Path(__file__).resolve().parents[1] / "scripts/query_k3e_expectation_surface.py"
+    args = [sys.executable, "-B", str(script), "--repository", str(repository),
+            "--source-revision", revision, "--ticker", "V", "--metric", "EPS",
+            "--horizon", "+1q", "--as-of", CUT]
+    run = subprocess.run(args, capture_output=True, text=True)
+    assert run.returncode == 2
+    assert json.loads(run.stderr)["reason"] == "SOURCE_OBJECT_UNAVAILABLE_WITHOUT_FETCH"
