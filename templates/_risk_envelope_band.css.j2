@@ -85,9 +85,10 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 #dlg-risk .ocmp-tick,#dlg-risk .ocmp-axis,#dlg-risk .ocmp-label {fill:var(--ink-3);font-family:var(--font-mono);font-size:10px;}
 #dlg-risk .ocmp-axis {font-size:11px;font-weight:650;fill:var(--ink-2);}
 #dlg-risk .ocmp-label {font-size:10px;fill:var(--ink-2);pointer-events:none;}
-#dlg-risk .ocmp-trail {fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke;opacity:.5;}
+#dlg-risk .ocmp-trail {fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke;opacity:.12;}
 #dlg-risk .ocmp-trail-calm {stroke:var(--link);}
-#dlg-risk .ocmp-trail-fast {stroke:var(--act);}
+#dlg-risk .ocmp-trail-fast {stroke:var(--act);opacity:.32;}
+#dlg-risk .ocmp-trail.is-selected {opacity:.72;stroke-width:2;}
 #dlg-risk .ocmp-point {cursor:pointer;outline:none;}
 #dlg-risk .ocmp-point .ocmp-dot {stroke:var(--panel);stroke-width:2;vector-effect:non-scaling-stroke;transition:r .14s ease,stroke-width .14s ease;}
 #dlg-risk .ocmp-point-calm .ocmp-dot {fill:var(--link);}
