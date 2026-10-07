@@ -452,3 +452,37 @@ def test_t19_unknown_tool_and_non_mapping_arguments(tmp_path):
         mcp_env = mcp.call_tool("research_status", arguments, server_context=ctx)
         assert brain_env["result"] == expected
         assert mcp_env["structuredContent"] == expected
+
+
+def test_t16_unknown_and_forbidden_keys_refused_on_every_tool():
+    """Spec §4: any forbidden OR unknown argument key is refused on every tool, never silently ignored."""
+    spy = SpyPort()
+    brain, mcp = _adapters(spy)
+    ctx = _ctx("pro")
+    expected = port_failure("INVALID_REQUEST")
+    valid = {
+        "research_status": {},
+        "research_search": {"query": "hyperscaler"},
+        "research_fetch": {"report_id": "alpha-report"},
+        "research_find_evidence": {"report_id": "alpha-report", "query": "hyperscaler"},
+    }
+    assert set(valid) == set(TOOL_NAMES)
+    unknown = "debug"
+    assert unknown not in FORBIDDEN_ARGUMENT_KEYS
+    for tool, base in valid.items():
+        assert unknown not in ARGUMENT_SCHEMAS[tool]["properties"]
+        # Positive control: the valid base arguments DO reach the port through both adapters.
+        spy.calls = 0
+        assert brain.call(tool, dict(base), server_context=ctx)["result"] == {"ok": True, "schema": "spy"}
+        assert mcp.call_tool(tool, dict(base), server_context=ctx)["isError"] is False
+        assert spy.calls == 2
+        for extra in [unknown] + sorted(FORBIDDEN_ARGUMENT_KEYS):
+            arguments = dict(base)
+            arguments[extra] = True
+            spy.calls = 0
+            brain_env = brain.call(tool, arguments, server_context=ctx)
+            assert brain_env["result"] == expected, (tool, extra)
+            mcp_env = mcp.call_tool(tool, arguments, server_context=ctx)
+            assert mcp_env["structuredContent"] == expected, (tool, extra)
+            assert mcp_env["isError"] is True
+            assert spy.calls == 0, (tool, extra)
