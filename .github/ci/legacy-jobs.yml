@@ -15928,7 +15928,6 @@ jobs:
       # Risk Radar integration: direct suite selection plus its real read dependencies.
       - "tests/test_risk_envelope_radar_integration.py"
       - "tests/__init__.py"
-      - "templates/_risk_envelope_band.css.j2"
       - "templates/risk_envelope_live.js"
       - "site/risk_envelope_live.js"
       - "templates/_risk_envelope_band.html.j2"
@@ -19395,6 +19394,7 @@ jobs:
       - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
+      - "templates/_risk_envelope_band.css.j2"
       - "templates/risk_envelope_live.js"
       - "templates/support.html.j2"
       # Closure widening 2026-09-23 (contract-delta on the tested merge ref):
@@ -19406,6 +19406,8 @@ jobs:
       - "site/flowleaders/leaders.json"
       - "site/leaderradar/radar.json"
       - "site/macro.html"
+      - "site/risk_envelope_live.js"
+      - "site/assets/css/6f2cdcc1.css"
       - "site/marketdata/subsector_rotation.json"
       - "site/master_brief.json"
       - "site/qledger/track_record.json"
@@ -19555,6 +19557,7 @@ jobs:
       - "lib/config.py"
       - "lib/nyse_calendar.py"
       - "scripts/build_options_skew.py"
+      - "site/options_compare.json"
       - "scripts/ci/daily_engine_regional_desk_builders.sh"
       - "scripts/validate_options_skew.py"
       - "tests/test_options_skew.py"
