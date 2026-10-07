@@ -554,3 +554,333 @@ def render_markdown_v2(result):
     lines += ["Use: NOT_QUALIFIED; rights: OWNER_NOT_BOUND. Public, machine-qualified and predictive use: false.",
               "Subindustry: OWNER_NOT_BOUND.", *result["limitations"], ""]
     return "\n".join(lines)
+
+
+def hierarchy_paths(store_view, node_id, asof, *, knowledge_cutoff=None, rights_resolver=None):
+    """Read-time hierarchy paths (display-tier only).
+
+    Composes macro_category → theme → micro_theme chains at query time from PARENT_OF
+    edges and basket/theme membership; paths are never stored per ticker. Vendor and
+    internal-only basket hops are never followed (Gate #2). Any live PARENT_OF edge that
+    violates the house hierarchy contract raises ValueError (fail closed).
+    """
+    import datetime as dt
+    from engine.theme_graph import rights
+    from engine.theme_graph.ontology import (
+        _clock_date,
+        _clock_instant,
+        _collapse_relevant_edges,
+        _is_null,
+        _nodes_as_known,
+        _parse_date,
+        _records,
+        _visible_by_instant,
+    )
+
+    _CROSSWALK_PROVENANCE = "crosswalk:config/theme_crosswalk.yml"
+    _VALID_ADJACENCY = {("macro_category", "theme"), ("theme", "micro_theme")}
+
+    def _collapse_all_live(rows, *, asof_date, cutoff):
+        instant = isinstance(cutoff, dt.datetime)
+        if instant:
+            cutoff = _clock_instant(cutoff, "knowledge_cutoff")
+        eligible: list[tuple[dt.date, str, int, dict]] = []
+        for index, original in enumerate(rows):
+            row = dict(original)
+            edge_id = str(row.get("edge_id") or "")
+            type_ = str(row.get("type") or "")
+            src = str(row.get("src") or "")
+            dst = str(row.get("dst") or "")
+            if not edge_id or not type_ or not src or not dst:
+                continue
+            if instant:
+                if not _visible_by_instant(row.get("belief_time"), "belief_time", cutoff):
+                    continue
+                belief = _clock_date(row.get("belief_time"), "belief_time")
+            else:
+                belief = _parse_date(row.get("belief_time"), "belief_time")
+                if belief > cutoff:
+                    continue
+            eligible.append((belief, str(row.get("computed_at") or ""), index, row))
+        latest: dict[str, tuple] = {}
+        for candidate in eligible:
+            eid = str(candidate[3]["edge_id"])
+            if eid not in latest or candidate[:3] > latest[eid][:3]:
+                latest[eid] = candidate
+        live: list[dict] = []
+        for _belief, _computed_at, _index, row in latest.values():
+            valid_from = _parse_date(row.get("valid_from"), "valid_from")
+            raw_valid_to = row.get("valid_to")
+            valid_to = (
+                None
+                if _is_null(raw_valid_to) or str(raw_valid_to).strip() == ""
+                else _parse_date(raw_valid_to, "valid_to")
+            )
+            if valid_from <= asof_date and (valid_to is None or asof_date < valid_to):
+                live.append(row)
+        return live
+
+    def _theme_rights():
+        family = rights.family_for_source_ref("config/theme_crosswalk.yml")
+        return {
+            "family": family,
+            "rights_class": rights.rights_class(family),
+            "public_display_allowed": bool(rights.emission_allowed(family)),
+        }
+
+    def _element(node_row, rights_payload):
+        if rights_payload is None:
+            return None
+        tier = node_row.get("tier")
+        return {
+            "node_id": str(node_row["node_id"]),
+            "kind": str(node_row.get("kind") or ""),
+            "tier": tier if not _is_null(tier) else None,
+            "name_en": node_row.get("name_en"),
+            "name_zh": node_row.get("name_zh"),
+            "rights": {
+                "family": rights_payload["family"],
+                "rights_class": rights_payload["rights_class"],
+                "public_display_allowed": rights_payload["public_display_allowed"],
+            },
+        }
+
+    def _theme_element(node_row):
+        if str(node_row.get("kind") or "") != "theme":
+            return None
+        if str(node_row.get("provenance") or "") != _CROSSWALK_PROVENANCE:
+            return None
+        payload = _theme_rights()
+        if not payload["public_display_allowed"]:
+            return None
+        return _element(node_row, payload)
+
+    def _basket_element(node_row, resolver):
+        if str(node_row.get("kind") or "") != "basket":
+            return None
+        receipt = resolver(str(node_row["node_id"]))
+        if receipt is None or not receipt.get("public_display_allowed"):
+            return None
+        return _element(node_row, receipt)
+
+    exact_id = str(node_id or "").strip()
+    asof_date = _parse_date(asof, "asof")
+    cutoff_date = (
+        _parse_date(knowledge_cutoff, "knowledge_cutoff")
+        if knowledge_cutoff is not None
+        else asof_date
+    )
+    resolver = rights_resolver if rights_resolver is not None else _default_rights_resolver
+
+    nodes = _records(store_view.read_nodes())
+    lifecycle_reader = getattr(store_view, "read_node_lifecycle", None)
+    lifecycle = _records(lifecycle_reader()) if callable(lifecycle_reader) else []
+    node_map = _nodes_as_known(
+        nodes, lifecycle, asof=asof_date, knowledge_cutoff=cutoff_date
+    )
+
+    raw_edges = _records(store_view.read_edges())
+    all_live = _collapse_all_live(raw_edges, asof_date=asof_date, cutoff=cutoff_date)
+    parent_edges = [row for row in all_live if str(row.get("type") or "") == "PARENT_OF"]
+
+    theme_rights_payload = _theme_rights()
+    for row in parent_edges:
+        edge_id = str(row.get("edge_id") or "")
+        src_id = str(row.get("src") or "")
+        dst_id = str(row.get("dst") or "")
+        src_row = node_map.get(src_id)
+        dst_row = node_map.get(dst_id)
+        if src_row is None or dst_row is None:
+            raise ValueError(
+                f"hierarchy_paths: refused PARENT_OF {edge_id}: endpoint not as-known"
+            )
+        if str(src_row.get("kind") or "") != "theme" or str(dst_row.get("kind") or "") != "theme":
+            raise ValueError(
+                f"hierarchy_paths: refused PARENT_OF {edge_id}: endpoint kind must be theme"
+            )
+        src_tier = str(src_row.get("tier") or "")
+        dst_tier = str(dst_row.get("tier") or "")
+        if (src_tier, dst_tier) not in _VALID_ADJACENCY:
+            raise ValueError(
+                f"hierarchy_paths: refused PARENT_OF {edge_id}: invalid tier adjacency"
+            )
+        if (
+            str(src_row.get("provenance") or "") != _CROSSWALK_PROVENANCE
+            or str(dst_row.get("provenance") or "") != _CROSSWALK_PROVENANCE
+        ):
+            raise ValueError(
+                f"hierarchy_paths: refused PARENT_OF {edge_id}: provenance must be crosswalk"
+            )
+        if not theme_rights_payload["public_display_allowed"]:
+            raise ValueError(
+                f"hierarchy_paths: refused PARENT_OF {edge_id}: hierarchy family not emission-allowed"
+            )
+
+    parent_map: dict[str, list[tuple[str, str]]] = {}
+    child_map: dict[str, list[tuple[str, str]]] = {}
+    for row in parent_edges:
+        src_id = str(row["src"])
+        dst_id = str(row["dst"])
+        eid = str(row["edge_id"])
+        parent_map.setdefault(dst_id, []).append((src_id, eid))
+        child_map.setdefault(src_id, []).append((dst_id, eid))
+    for key in parent_map:
+        parent_map[key].sort()
+    for key in child_map:
+        child_map[key].sort()
+
+    def _paths_to_root(node):
+        parents = parent_map.get(node, [])
+        if not parents:
+            return [([node], [])]
+        combined: list[tuple[list[str], list[str]]] = []
+        for parent_id, edge_id in parents:
+            for prefix_nodes, prefix_edges in _paths_to_root(parent_id):
+                combined.append((prefix_nodes + [node], prefix_edges + [edge_id]))
+        return combined
+
+    def _paths_from(node):
+        children = child_map.get(node, [])
+        if not children:
+            return [([node], [])]
+        combined: list[tuple[list[str], list[str]]] = []
+        for child_id, edge_id in children:
+            for suffix_nodes, suffix_edges in _paths_from(child_id):
+                combined.append(([node] + suffix_nodes, [edge_id] + suffix_edges))
+        return combined
+
+    subject_row = node_map.get(exact_id)
+    if subject_row is None:
+        return []
+
+    subject_kind = str(subject_row.get("kind") or "")
+    anchors: list[tuple[str, list[dict]]] = []
+
+    if subject_kind == "theme":
+        anchors.append((exact_id, []))
+    elif subject_kind == "basket":
+        live_rows, _ = _collapse_relevant_edges(
+            raw_edges,
+            node_id=exact_id,
+            asof=asof_date,
+            knowledge_cutoff=cutoff_date,
+        )
+        receipt = resolver(exact_id)
+        if receipt is None or not receipt.get("public_display_allowed"):
+            return []
+        for row in live_rows:
+            if str(row.get("type") or "") != "EXPRESSES" or str(row.get("src") or "") != exact_id:
+                continue
+            dst_id = str(row.get("dst") or "")
+            dst_row = node_map.get(dst_id)
+            if dst_row is None or str(dst_row.get("kind") or "") != "theme":
+                continue
+            theme_el = _theme_element(dst_row)
+            if theme_el is None:
+                continue
+            hop = {"type": "EXPRESSES", "edge_id": str(row["edge_id"]), "node": theme_el}
+            anchors.append((dst_id, [hop]))
+    elif subject_kind == "company":
+        live_rows, _ = _collapse_relevant_edges(
+            raw_edges,
+            node_id=exact_id,
+            asof=asof_date,
+            knowledge_cutoff=cutoff_date,
+        )
+        member_edges = [
+            row
+            for row in live_rows
+            if str(row.get("type") or "") == "MEMBER_OF" and str(row.get("src") or "") == exact_id
+        ]
+        for mem in member_edges:
+            basket_id = str(mem.get("dst") or "")
+            basket_row = node_map.get(basket_id)
+            if basket_row is None or str(basket_row.get("kind") or "") != "basket":
+                continue
+            basket_el = _basket_element(basket_row, resolver)
+            if basket_el is None:
+                continue
+            basket_live, _ = _collapse_relevant_edges(
+                raw_edges,
+                node_id=basket_id,
+                asof=asof_date,
+                knowledge_cutoff=cutoff_date,
+            )
+            for ex in basket_live:
+                if str(ex.get("type") or "") != "EXPRESSES" or str(ex.get("src") or "") != basket_id:
+                    continue
+                theme_id = str(ex.get("dst") or "")
+                theme_row = node_map.get(theme_id)
+                if theme_row is None or str(theme_row.get("kind") or "") != "theme":
+                    continue
+                theme_el = _theme_element(theme_row)
+                if theme_el is None:
+                    continue
+                via = [
+                    {"type": "MEMBER_OF", "edge_id": str(mem["edge_id"]), "node": basket_el},
+                    {"type": "EXPRESSES", "edge_id": str(ex["edge_id"]), "node": theme_el},
+                ]
+                anchors.append((theme_id, via))
+    else:
+        return []
+
+    records: list[dict] = []
+    include_downward = subject_kind == "theme"
+
+    for anchor_id, via_hops in anchors:
+        up_paths = _paths_to_root(anchor_id)
+        if include_downward:
+            down_paths = _paths_from(anchor_id)
+        else:
+            down_paths = [([anchor_id], [])]
+
+        for up_nodes, up_edges in up_paths:
+            for down_nodes, down_edges in down_paths:
+                node_ids = up_nodes + down_nodes[1:]
+                edge_ids = up_edges + down_edges
+                if len(edge_ids) < 1:
+                    continue
+                path_elements: list[dict] = []
+                ok = True
+                for nid in node_ids:
+                    nrow = node_map.get(nid)
+                    if nrow is None:
+                        ok = False
+                        break
+                    el = _theme_element(nrow)
+                    if el is None:
+                        ok = False
+                        break
+                    path_elements.append(el)
+                if not ok or len(path_elements) != len(node_ids):
+                    continue
+                records.append(
+                    {
+                        "path": path_elements,
+                        "parent_of_edge_ids": edge_ids,
+                        "anchor_node_id": anchor_id,
+                        "via": via_hops,
+                    }
+                )
+
+    seen: set[tuple] = set()
+    unique: list[dict] = []
+    for rec in records:
+        key = (
+            rec["anchor_node_id"],
+            tuple(el["node_id"] for el in rec["path"]),
+            tuple(hop.get("edge_id", "") for hop in rec["via"]),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(rec)
+
+    unique.sort(
+        key=lambda rec: (
+            rec["anchor_node_id"],
+            tuple(el["node_id"] for el in rec["path"]),
+            tuple(hop.get("edge_id", "") for hop in rec["via"]),
+        )
+    )
+    return unique
