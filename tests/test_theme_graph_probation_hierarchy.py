@@ -615,3 +615,50 @@ def test_llm_ratified_schema_message_carries_token():
         "LLM_HIERARCHY_NOT_RATIFIABLE" in message
         for message in messages
     )
+
+
+@pytest.mark.parametrize(
+    "nominated_from,reason_token",
+    [
+        ("research:research/x.md#/../../data/themes_heatmap/us.json", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md#/../../../../../../etc/passwd", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/%2e%2e/data/themes_heatmap/us.json", "NOMINATOR_PATH_UNSAFE"),
+        ("research:config/%2e%2e/%2e%2e/%2e%2e/etc/passwd", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/\uff0e\uff0e/data/themes_heatmap/us.json", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md#..", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md%23/../../data/themes_heatmap/us.json", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x\u00a0y.md", "NOMINATED_FROM_GRAMMAR"),
+        ("research:/etc/passwd", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md#/etc/passwd", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x\x00.md", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md ", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/~x.md", "NOMINATOR_PATH_UNSAFE"),
+        ("research:#x", "NOMINATOR_PATH_UNSAFE"),
+        ("research:research/x.md#", "NOMINATOR_PATH_UNSAFE"),
+    ],
+)
+def test_research_path_laundering_refused(nominated_from, reason_token):
+    errors = probation.nominated_from_errors(nominated_from)
+    assert len(errors) == 1
+    assert errors[0].startswith(f"{reason_token}: ")
+
+    row = _hierarchy_row(subject=_hierarchy_subject(nominated_from=nominated_from))
+    validate_errors = probation.validate(row)
+    assert validate_errors
+    assert any(reason_token in error for error in validate_errors)
+
+
+@pytest.mark.parametrize(
+    "nominated_from",
+    [
+        "research:config/theme_pathways.yml",
+        "research:config/theme_thesis_registry.yml",
+        "research:config/trade_flow_codes.yml",
+        "research:research/defense_intelligence/D0R_DEFENSE_EQUITY_DRIVER_TAXONOMY.md",
+        "research:research/energy/nuclear_program/REG-PACKET-2026-09-25-nuclear_power.md",
+        "research:config/theme_pathways.yml#section",
+        "research:research/energy/x.md#part-2_a.b",
+    ],
+)
+def test_house_research_nominators_accepted(nominated_from):
+    assert probation.nominated_from_errors(nominated_from) == []

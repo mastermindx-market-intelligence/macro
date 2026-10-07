@@ -43,6 +43,8 @@ _THEME_ID_RE = re.compile(r"^theme:[a-z0-9][a-z0-9_]{1,62}$")
 _NOMINATED_FROM_RE = re.compile(
     r"^(basket:\S+|vertical:[a-z0-9_]+:[a-z0-9_]+|research:\S+)$"
 )
+_HOUSE_PATH_CHARS_RE = re.compile(r"[A-Za-z0-9._/#-]+")
+_HOUSE_FRAGMENT_RE = re.compile(r"[A-Za-z0-9._-]+")
 _VENDOR_SUBSTRINGS = ("finviz_themes", "ths_concepts")
 _VENDOR_TOKENS = frozenset({"finviz", "ths"})
 _HIERARCHY_CHILD_TIERS = frozenset({"theme", "micro_theme"})
@@ -86,7 +88,7 @@ def _parse_stamp(value: object, field: str) -> datetime:
 
 
 def nominated_from_errors(nominated_from: str) -> list[str]:
-    """The single nominator rule; materialize imports it — never re-implement it."""
+    """The single nominator rule; materialize must import it — never re-implement it."""
     value = str(nominated_from or "").strip()
     if not _NOMINATED_FROM_RE.fullmatch(value):
         return [f"NOMINATED_FROM_GRAMMAR: nominated_from {value!r} is malformed"]
@@ -114,12 +116,15 @@ def nominated_from_errors(nominated_from: str) -> list[str]:
                 f"does not resolve to a house basket family"
             ]
     if value.startswith("research:"):
-        raw = value[len("research:"):].split("#", 1)[0]
-        if (
-            not raw
-            or raw.startswith("/")
-            or "\\" in raw
-            or any(segment == ".." for segment in raw.split("/"))
+        suffix = str(nominated_from or "").removeprefix("research:")
+        if not _HOUSE_PATH_CHARS_RE.fullmatch(suffix) or suffix.startswith(("/", "#")):
+            return [
+                "NOMINATOR_PATH_UNSAFE: nominated_from "
+                f"{value!r} is not a relative house path"
+            ]
+        raw, sep, fragment = suffix.partition("#")
+        if any(segment == ".." for segment in re.split(r"[/#]", suffix)) or (
+            sep and not _HOUSE_FRAGMENT_RE.fullmatch(fragment)
         ):
             return [
                 "NOMINATOR_PATH_UNSAFE: nominated_from "
