@@ -120,6 +120,21 @@ jobs:
       - name: live-flow WAL/cycle-recovery + sibling suites
         run: python -m pytest tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py -q
 
+  integrated-answer-v0:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
+      - name: integrated answer v0 composer
+        run: MACRO_REPO="${{ github.workspace }}" python -m pytest tests/test_integrated_answer_v0.py -q
+
   inline-js:
     if: ${{ false }}
     gate: data
