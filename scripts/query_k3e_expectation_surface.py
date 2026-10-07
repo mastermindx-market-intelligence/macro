@@ -14,7 +14,8 @@ import sys
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from engine.k3e_expectation_surface import (
-    ATTEMPTS_PATH, OBSERVATIONS_PATH, QueryRefusal, inspect_expectation_surface, parse_utc,
+    ALIASES_PATH, ATTEMPTS_PATH, OBSERVATIONS_PATH, QueryRefusal,
+    inspect_expectation_surface, parse_utc,
 )
 
 
@@ -38,6 +39,22 @@ def _git(repository, *arguments):
     return result.stdout
 
 
+def _read_verified_blob(root, revision, path):
+    address = revision + ":" + path
+    blob = _git(root, "rev-parse", "--verify", address).strip().decode("ascii")
+    if not re.fullmatch(r"[0-9a-f]{40}", blob):
+        raise QueryRefusal("INVALID_SOURCE_BLOB_ID")
+    if _git(root, "cat-file", "-t", blob).strip() != b"blob":
+        raise QueryRefusal("SOURCE_INPUT_MUST_BE_BLOB")
+    raw = _git(root, "show", address)
+    actual_blob = hashlib.sha1(
+        b"blob " + str(len(raw)).encode() + b"\0" + raw
+    ).hexdigest()
+    if actual_blob != blob:
+        raise QueryRefusal("SOURCE_BLOB_BYTES_MISMATCH")
+    return raw, {"git_blob_id": blob, "sha256": hashlib.sha256(raw).hexdigest()}
+
+
 def load_frozen_source(repository, revision):
     if not re.fullmatch(r"[0-9a-f]{40}", revision or ""):
         raise QueryRefusal("FULL_IMMUTABLE_SOURCE_REVISION_REQUIRED")
@@ -53,20 +70,8 @@ def load_frozen_source(repository, revision):
     except ImportError as exc:
         raise QueryRefusal("PARQUET_READER_UNAVAILABLE") from exc
     for path in (OBSERVATIONS_PATH, ATTEMPTS_PATH):
-        address = revision + ":" + path
-        blob = _git(root, "rev-parse", "--verify", address).strip().decode("ascii")
-        if not re.fullmatch(r"[0-9a-f]{40}", blob):
-            raise QueryRefusal("INVALID_SOURCE_BLOB_ID")
-        if _git(root, "cat-file", "-t", blob).strip() != b"blob":
-            raise QueryRefusal("SOURCE_INPUT_MUST_BE_BLOB")
-        raw = _git(root, "show", address)
-        actual_blob = hashlib.sha1(
-            b"blob " + str(len(raw)).encode() + b"\0" + raw
-        ).hexdigest()
-        if actual_blob != blob:
-            raise QueryRefusal("SOURCE_BLOB_BYTES_MISMATCH")
-        inputs[path] = {"git_blob_id": blob,
-                        "sha256": hashlib.sha256(raw).hexdigest()}
+        raw, entry = _read_verified_blob(root, revision, path)
+        inputs[path] = entry
         try:
             frame = pd.read_parquet(io.BytesIO(raw))
             # Pandas nan/NA represent parquet nulls; convert them without
@@ -92,6 +97,28 @@ def load_frozen_source(repository, revision):
             {"source_revision": revision, "inputs": inputs})
 
 
+def load_frozen_aliases(repository, revision):
+    root = Path(repository)
+    listing = _git(root, "ls-tree", revision, "--", ALIASES_PATH).strip()
+    if not listing:
+        return [], dict(absent_at_revision=True)
+    try:
+        import pandas as pd
+    except ImportError as exc:
+        raise QueryRefusal("PARQUET_READER_UNAVAILABLE") from exc
+    raw, entry = _read_verified_blob(root, revision, ALIASES_PATH)
+    try:
+        frame = pd.read_parquet(io.BytesIO(raw))
+        frame = frame.astype(object).where(pd.notna(frame), None)
+    except Exception as exc:
+        raise QueryRefusal("INVALID_PARQUET_INPUT") from exc
+    required = {"vendor", "vendor_symbol", "security_id", "valid_from",
+                  "valid_to", "ingested_at"}
+    if not required.issubset(frame.columns):
+        raise QueryRefusal("SOURCE_SCHEMA_COLUMNS_MISSING")
+    return frame.to_dict("records"), entry
+
+
 class _Parser(argparse.ArgumentParser):
     def error(self, message):
         raise QueryRefusal("INVALID_CLI_ARGUMENTS")
@@ -111,10 +138,13 @@ def main(argv=None):
         parse_utc(args.as_of)
         observations, attempts, provenance = load_frozen_source(
             args.repository, args.source_revision)
+        records, entry = load_frozen_aliases(args.repository, args.source_revision)
+        provenance["inputs"][ALIASES_PATH] = entry
         result = inspect_expectation_surface(
             observations, attempts, source_provenance=provenance,
             ticker=args.ticker, metric=args.metric, horizon=args.horizon,
-            as_of=args.as_of, provider=args.provider)
+            as_of=args.as_of, provider=args.provider,
+            identity_aliases=records)
         print(json.dumps(result, sort_keys=True, allow_nan=False))
         return 0
     except QueryRefusal as exc:

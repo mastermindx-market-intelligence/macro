@@ -5008,3 +5008,8 @@
 {"date":"2026-10-06","ticker":"SNOW","departed":true,"left_desk":"2026-10-06","last_rank":26,"last_score":32}
 {"date":"2026-10-06","ticker":"AMAT","rank":4,"score":55,"lean":1,"broken":false}
 {"date":"2026-10-06","ticker":"PINS","rank":null,"score":15,"lean":1,"broken":true}
+{"date":"2026-10-06","ticker":"BMY","rank":21,"score":36,"lean":1,"broken":false}
+{"date":"2026-10-06","ticker":"IONQ","rank":25,"score":33,"lean":1,"broken":false}
+{"date":"2026-10-06","ticker":"EXLS","rank":null,"score":29,"lean":1,"broken":true}
+{"date":"2026-10-06","ticker":"BWXT","rank":null,"score":14,"lean":1,"broken":true}
+{"date":"2026-10-06","ticker":"NFLX","rank":null,"score":14,"lean":1,"broken":true}
