@@ -29,6 +29,12 @@ owns_paths:
   - lib/institutional_intelligence.py
   - tests/fixtures/institutional_intelligence/
   - tests/test_institutional_manager_intent_contract.py
+  - data/reference/
+  - data/symbol_directory/
+  - data/openfigi/
+  - data/revisions/expectation_observations.parquet
+  - data/revisions/expectation_attempts.parquet
+  - collectors/equity_revisions.py
 depends_on:
   - WS:PROPHET-US-V4-RECOVERY
   - WS:PROPHET-CONDITIONAL-FUSION
