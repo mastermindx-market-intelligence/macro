@@ -77,7 +77,8 @@ Unknown comparison-year coverage is explicitly unverified. It grants no holiday 
 
 | Existing owner | Change |
 |---|---|
-| Four `lib/*_calendar.py` modules | Use complete official annual slates and early-close completion buffers while preserving public APIs and historical compatibility |
+| `lib/cn_calendar.py`, `lib/hk_calendar.py`, `lib/tsx_calendar.py` and `lib/us_cash_calendar.py` | Use complete official annual slates and early-close completion buffers for current cash-market behavior |
+| `lib/nyse_calendar.py` | Preserve the exact immutable US calendar registered by existing W2C and RS Pullback research contracts |
 | `lib/market_session.py` | Pure shared session status, expiry, timezone, expected completed session, cash-symbol routing and observation freshness projection |
 | `lib/market_observations.py` | Shared actual-date acceptance, provider/query-date agreement and whole-adjusted-column acceptance helpers |
 | `collectors/base.py` and explicit cash adapters | Filter actual observations before persistence; grade retained observations by missed sessions; keep noncash cadence and provider failure behavior |
@@ -91,6 +92,14 @@ Unknown comparison-year coverage is explicitly unverified. It grants no holiday 
 The minute-by-minute quote snapshot is the around-the-clock status carrier. The existing full overlay only runs during US hours, so it cannot be the sole calendar publisher for Asia. The quote snapshot adds the same pure status projection without another provider request or timer. The client consumes those receipts and the overlay by their own checked-at time; an older overlay cannot undo a newer reopening.
 
 Regional historical readers reuse the existing stock stores and wide panels. They select the freshest complete adjusted series without stitching different adjustment bases. US and unrelated-asset readers retain their existing Yahoo-before-stocks precedence. Regional baseline metadata comes from the existing `chinastockdata`, `hkstockdata` and `canadastockdata` directories.
+
+## Registered research-calendar compatibility
+
+`lib/nyse_calendar.py` is an immutable input to existing W2C v1/v2 and RS Pullback research contracts. Its registered SHA-256 is `7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce`. Current cash-market holiday behavior uses the separate `lib/us_cash_calendar.py` adapter through `lib/market_session.py` and the live-quote settlement window. The adapter uses published US annual slates and the 14:00 ET completion buffer on announced 13:00 ET half sessions; historical fallback delegates to the unchanged legacy calendar.
+
+The adapter implements its dependent session arithmetic explicitly and does not patch the legacy module. Legacy consumers retain their registered semantics, including their original 17:00 ET completion buffer. Registration JSON, expected specs, owner hashes, activation records, credentials and terminal ledgers remain unchanged. The code-gated calendar suite exercises the actual distinct W2C v1/v2 loading interfaces, their returned owner bindings, a rejected altered temporary v1 owner, and isolation of legacy versus current half-session behavior.
+
+The original holiday release exposed this compatibility dependency when the production updater reported that the calendar owner bytes differed from the registration. That failure occurs before terminal-ledger authentication and is not evidence that the ledger itself is corrupt. Release proof for the adapter repair must include both the current cash-calendar behavior and the existing production updater/registration guard succeeding through their normal path.
 
 ## Failure and correction behavior
 

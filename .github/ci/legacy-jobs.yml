@@ -1501,6 +1501,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/market_observations.py"
       - "lib/market_session.py"
@@ -4497,6 +4498,7 @@ jobs:
     # Opaque data traversals do not widen this code job into unrelated ownership.
     scope: exclusive
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
@@ -4543,6 +4545,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
@@ -4833,6 +4836,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/market_observations.py"
       - "lib/market_session.py"
@@ -5191,6 +5195,7 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
       - "lib/market_observations.py"
@@ -5729,6 +5734,16 @@ jobs:
   nyse-calendar-freshness:
     if: ${{ false }}
     gate: code
+    # The v2 loader reads this registration dynamically; keep its real-load test reachable.
+    paths:
+      - "config/market_memory_spy_experience_registration.v2.json"
+      - "tests/test_nyse_calendar.py"
+      - "tests/test_tsx_calendar.py"
+      - "tests/test_cn_calendar.py"
+      - "tests/test_exchange_holiday_notices.py"
+      - "tests/test_market_session.py"
+      - "tests/test_first_party_import_names.py"
+      - "tests/test_sp1_trading_day_index.py"
     # lib/nyse_calendar.py — the exchange-calendar reference every freshness SLA
     # is built on (expected_last_session / sessions_behind), plus the import-name
     # tripwire.
@@ -5769,7 +5784,7 @@ jobs:
       # scripts/check_nightly_liveness.py check D grades the Canadian board against,
       # so its rule arithmetic must not be UNRUN the way test_nyse_calendar.py was
       # until 2026-07-27.
-      - name: nyse + tsx calendar rules, first-party imported-name resolution
+      - name: registered legacy + current cash calendars, real W2C bindings and import names
         run: python -m pytest tests/test_nyse_calendar.py tests/test_tsx_calendar.py tests/test_cn_calendar.py tests/test_exchange_holiday_notices.py tests/test_market_session.py tests/test_first_party_import_names.py -q
       # SP1-B: restrict_to_nyse_sessions must refuse a weekend-contaminated
       # price index. Belongs HERE — the filter is session_rows + is_session,
@@ -5914,6 +5929,7 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
@@ -7313,6 +7329,7 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
@@ -8681,6 +8698,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
@@ -8785,6 +8803,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/market_observations.py"
       - "lib/market_session.py"
@@ -15108,6 +15127,7 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
       - "lib/market_observations.py"
@@ -19169,6 +19189,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/us_cash_calendar.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/ci.yml"
       - "app/__init__.py"
@@ -20304,6 +20325,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"
@@ -20608,6 +20630,7 @@ jobs:
     # the nightly engine shell). No data/** fallback.
     scope: exclusive
     paths:
+      - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/hk_calendar.py"

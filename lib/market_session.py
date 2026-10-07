@@ -12,10 +12,10 @@ import re
 from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-from lib import cn_calendar, hk_calendar, nyse_calendar, tsx_calendar
+from lib import cn_calendar, hk_calendar, tsx_calendar, us_cash_calendar
 from lib.exchange_holidays import calendar_coverage, early_close, holiday_name
 
-_CALENDARS = {"CN": cn_calendar, "HK": hk_calendar, "US": nyse_calendar, "CA": tsx_calendar}
+_CALENDARS = {"CN": cn_calendar, "HK": hk_calendar, "US": us_cash_calendar, "CA": tsx_calendar}
 _ZONES = {"CN": "Asia/Shanghai", "HK": "Asia/Hong_Kong",
           "US": "America/New_York", "CA": "America/Toronto", "CONNECT": "Asia/Hong_Kong"}
 _CONNECT_SOURCE = (
