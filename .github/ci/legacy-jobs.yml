@@ -10460,6 +10460,8 @@ jobs:
     # projection. jinja2 (already a repo dep) is the only page-build need.
     # RV F6 subject/Data OS identity bridge (test_research_vault_subjects.py): stdlib +
     # lib.dataos.identity only, so it runs here with the install line unchanged (#8475).
+    # RV F3 corpus backfill (test_research_vault_backfill.py): LocalStore + the same
+    # seeded-PDF helpers as test_research_vault.py, so the install line is unchanged.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10484,7 +10486,7 @@ jobs:
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
       - name: research vault ingestion-spine + page unit tests
-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py -q
+        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py -q
 
 
   research-vault-source-lineage:
@@ -18010,8 +18012,10 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
-      - name: frozen price panel — write-once bytes + a reader that never falls back
-        run: python -m pytest tests/test_research_price_panel.py -q
+      # RS Pullback Phase 1 adds synthetic first-seen/PIT input admission here:
+      # gate: code makes it a PR check; signal-contract is data-plane only.
+      - name: frozen price panel + RS pullback input admission and temporal conformance
+        run: python -m pytest tests/test_research_price_panel.py tests/test_entry_radar_rs_pullback_phase1.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
