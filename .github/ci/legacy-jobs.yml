@@ -13226,6 +13226,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_local_plane.py -q
       - name: theme graph — W-C per-use rights verdict (fresh registry snapshot, revocation, ancestry)
         run: TZ=UTC python -m pytest tests/test_theme_graph_rights_use.py -q
+      - name: theme graph — hierarchy probation proposals + ontology tier filter
+        run: TZ=UTC python -m pytest tests/test_theme_graph_probation_hierarchy.py -q
       - name: theme graph — source-rights registry shape + F20 grandfather pin
         run: TZ=UTC python -m pytest tests/test_theme_sources_registry.py -q
       - name: market ontology — GMI exposure composer (shock->theme->company, rights + as-of + typed nulls)
