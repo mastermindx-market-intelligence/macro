@@ -14,10 +14,12 @@ falsifier: >
 so_what: >
   Diagnose navigation-to-first-chart dependency ordering before proposing another CDN
   or treating compression as missing. A future bounded repair should let required
-  bars establish first data readiness independently of optional slice enrichment,
-  while preserving current semantic generation/epoch ownership, cache inflight
-  deduplication, request-ownership guards, and empty/error outcomes. Reuse the existing
-  readiness event for any passive timing observer; do not invent another ready signal.
+  bars become usable independently of optional slice enrichment while preserving all
+  current readiness criteria, including indicator/render/coordinate checks. Emit the
+  existing semantic data-ready event only when those criteria are met; never equate
+  HTTP completion with readiness. Preserve current generation/epoch ownership, cache
+  inflight deduplication, request-ownership guards, and empty/error outcomes. Reuse the
+  existing readiness event for any passive timing observer; do not invent another signal.
 kind: architecture
 verified_at: 2026-10-07
 verified_by: >
@@ -58,7 +60,7 @@ or private-account traffic was measured.
 Times are navigation-relative, not module boottrace durations. The slice-delay
 ready event was NVDA/3D, generation 1, outcome data. Both arms reported empty page-error
 and readiness-diagnostic arrays. A prior attempt lacking the inlined fixture environment
-was rejected and is not evidence. The valid build used Node 26.5; the production server
+was rejected and is not evidence. The valid build used Node 26.5; the local next start fixture server
 and tests used Node 20.20.2. These two diagnostic cases demonstrate dependency ordering,
 not a measured speedup or a production performance distribution.
 
