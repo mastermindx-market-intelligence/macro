@@ -4814,6 +4814,8 @@ jobs:
       - "collectors/cboe.py"
       - "collectors/china_analyst.py"
       - "collectors/china_credit.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_visits.py"
       - "collectors/china_news.py"
       - "collectors/edgar.py"
       - "collectors/edgar_13f.py"
@@ -5134,6 +5136,7 @@ jobs:
       - "lib/cn_calendar.py"
       - "lib/config.py"
       - "lib/filing_value_units.py"
+      - "lib/dataos/identity.py"
       - "lib/nyse_calendar.py"
       - "lib/store.py"
       - "lib/ticker_aliases.py"
@@ -14578,6 +14581,8 @@ jobs:
       # test (renders china_intel.html.j2 through the real builder env).
       - name: china_intel_hub institutional-visit dossier block (P1)
         run: python -m pytest tests/test_china_intel_hub_visits.py tests/test_china_intel_visits_render.py -q
+      - name: China Intelligence visit-discovery metadata context (CIE-07)
+        run: python -m pytest tests/test_china_intel_bus.py -q
       - name: Intelligence Hub PIT scope + W0 measurement heals + ticker-shape gate
         run: python -m pytest tests/test_intel_hub_universe_scope.py tests/test_intel_hub_w0_heals.py tests/test_intelligence_hub_glance_copy.py tests/test_ticker_shape.py -q
       # R1A-M (2026-09-02): exact market pulse roster/markup (needs the same
@@ -14921,6 +14926,7 @@ jobs:
       - "lib/cn_calendar.py"
       - "lib/config.py"
       - "lib/filing_value_units.py"
+      - "lib/dataos/identity.py"
       - "lib/nyse_calendar.py"
       - "lib/store.py"
       - "lib/ticker_aliases.py"

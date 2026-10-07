@@ -17,6 +17,7 @@ blast_radius: reversible
 ambiguity: scoped
 owns_paths:
   - agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-05.md
+  - agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-07.md
   - agentos/workstreams/WS-RESEARCH-VAULT-AI-FABRIC.md
 discoveries:
   - "DSC:A-RERUN-REPLAYS-THE-STALE-MERGE-COMMIT-REFRESH-THE-BRANCH-INSTEAD"
@@ -26,11 +27,15 @@ discoveries:
 do_not_redo:
   - "F1 #8442, F2 #8443, RIO identity #8446, MarketDesk lineage split #8452 are MERGED and accepted; never re-implement."
   - "The F2 live census receipt is workflow run 37289367732 (MIXED: 2,425 missing corpus rows + 2 thin-body rows); never re-run the normal ingest workflow as read-only proof."
-  - "The three research-vault-source-lineage reds on #8472 are repaired at head 74bc480e1d6a (ACCEPT with recorded deviation, comment 5992497324); never re-repair or re-refresh SHA256SUMS/RELEASE_RECEIPT there."
-  - "Never run the Mac13,1 `marketdesk auth` ceremony on process presence or catalog staleness alone; the 2026-10-05 readback (comment 5992501774) shows a storage stall (EINTR on /Volumes/STORAGE, 31 GiB free vs 100 GiB floor) and 0 SessionExpired."
+  - "Never run the Mac13,1 `marketdesk auth` ceremony from a session; it is the operator's act, and process presence or catalog staleness alone never justifies it."
   - "Never merge #7354 / #7522 / #8090 wholesale; never reinterpret RIO v1 hash semantics; never expose raw R2 operations."
-  - "F6 #8475 is MERGED (squash e2be81444d4c, 2026-10-05 12:03:48Z; engine/research_vault/subjects.py, tests/test_research_vault_subjects.py and the research-vault legacy job blob-verified on origin/main); never re-implement the subject bridge or re-open the PR."
-  - "The ci-pack-0 red inherited by #8475 (Q06 JSON from #8069 missing in six curated exclusive scopes) is healed by #8484 (squash 20eb503a09ae); never re-widen those six paths: lists or re-run run 37293056579."
+  - "F6 #8475 is MERGED (squash e2be81444d4c); never re-implement the subject bridge or re-open the PR."
+  - "The ci-pack-0 red inherited by #8475 is healed by #8484 (squash 20eb503a09ae); never re-widen those six paths: lists or re-run run 37293056579."
+  - "F4 #8472 is MERGED (squash 0ae4fa250956, 2026-10-06 22:15:06Z, on concluded-green head 74bc480e after HOLD-RELEASED 6026434249); never re-repair the lineage tests or re-refresh SHA256SUMS/RELEASE_RECEIPT."
+  - "F5 #8453 is MERGED (squash a80e6ff8ff77, 2026-10-06 23:13:00Z, head bfef2c75 after seat HOLD-RELEASED 6027150323); the fulltext replay ends in canonical build_segments()[index] equality. Never re-open it."
+  - "The F3 empty-corpus recurrence guard is MERGED as #8551 (squash bde684c6, cherry-pick -x of Astra 93e9b38b, authorship preserved); never re-carry it."
+  - "The stop-guard repairs are MERGED: #8503 (610889a4, a sync-only fast-forward of macro-main no longer files unsafe_branch) and #8564 (481d67119c85, a quarantined session may repair itself with EnterWorktree). Never re-fix either."
+  - "Never set the research-ingest source-freshness outage ACK to quiet the PRODUCER_STALE red; that red IS the F4 Mac13,1 human gate."
 waves:
   - id: F1-F2
     title: Private-R2 isolation + read-only body-health census lane
@@ -42,19 +47,18 @@ waves:
     pr: [8446, 8452]
   - id: F4
     title: MarketDesk producer auth-health (hosted lineage tests repaired; Mac13,1 readback posted)
-    status: in_progress
+    status: done
     pr: 8472
     depends_on: [RIO-LINEAGE]
     next_action: >
-      CI concluded green on head 74bc480e1d6a (rung posted as #8472 comment 5992916802); the PR
-      stays DRAFT under the blocking review 5990516197 until the operator clears the Mac13,1
-      storage wedge and one natural report proves SOURCE_FRESH (EXACT_HUMAN_GATE). Nobody
-      readies, arms or merges it before that release.
+      MERGED 0ae4fa250956. PRODUCTION_PROOF is an EXACT_HUMAN_GATE: the operator clears the Mac13,1
+      storage wedge, re-authenticates only if the auth meta reads expired, and one natural report
+      proves SOURCE_FRESH through the incumbent path. Sessions never run the re-auth.
   - id: F5
-    title: Exact full-text/segment contract (ceded to Astra, #8453 / #8477)
-    status: in_progress
-    pr: [8453, 8477]
-    next_action: "Astra's lane; this seat never launches rv_f5_segment_* nor edits #8453/#8477."
+    title: Exact full-text/segment contract
+    status: done
+    pr: 8453
+    next_action: "MERGED a80e6ff8ff77. #8477 (F10 consumer activation) is Astra's lane: never touch it, never launch rv_f5_segment_*."
   - id: CI-PACK-0-HEAL
     title: Heal the inherited ci-pack-0 red (six curated exclusive scopes widened by #8069's Q06 JSON)
     status: done
@@ -64,18 +68,33 @@ waves:
     status: done
     pr: 8475
     depends_on: [RIO-LINEAGE, CI-PACK-0-HEAL]
-    next_action: "MERGED e2be81444d4c; PRODUCTION_PROOF is the first consumer run that resolves subjects through engine/research_vault/subjects.py (record it on #8438 when observed; do not claim it before)."
+    next_action: "MERGED e2be81444d4c; PRODUCTION_PROOF is the first consumer run (F10 #8477) that resolves subjects through engine/research_vault/subjects.py; record it on #8438 when observed."
+  - id: F6-PUBCLOCK
+    title: Validate the full publication timestamp before taking its date (accepted defect 6029030377)
+    status: in_progress
+    pr: 8566
+    depends_on: [F6]
+    next_action: "Seat-owned; must land before F10 #8477 activates a consumer. Armed merge-on-green; on merge, blob-verify engine/research_vault/subjects.py and tests/test_research_vault_subjects.py on origin/main."
+  - id: F3-GUARD
+    title: Empty-corpus recurrence guard (Astra 93e9b38b)
+    status: done
+    pr: 8551
   - id: F3
-    title: Corpus repair over the F2 census classification (bounded strict-ingest lane, single writer)
-    status: todo
-    depends_on: [F1-F2, F5]
-    next_action: "Wait for Astra's frozen F3 packet on #8438, then commission ONE fabric lane (never m1 while the storage hold stands)."
+    title: Corpus repair - bounded in-run backfill of catalog rows missing from the corpus
+    status: in_progress
+    pr: 8569
+    depends_on: [F1-F2, F5, F3-GUARD]
+    next_action: >
+      The in-run _backfill_missing_rows pass (cap 150 rows, 150 s budget, newest first, strict store,
+      never raises) runs after _reextract_bodies under not dry_run. On merge, PRODUCTION_PROOF is a
+      main research-ingest run whose summary shows backfill_rows > 0, the corpus count rising run over run
+      toward the 2,778-row catalog, and the excerpt guard no longer refusing. While the producer is stale
+      the job stays red on source-freshness only; that red is the F4 human gate, never ACKed.
 next_action: >
-  Consume #8438 from counterpart edge 5992482136 and #8472 from 5992352691 before any act.
-  F6 is merged and F4 is green-and-held, so the only open lanes are external: commission ONE
-  F3 fabric lane the moment Astra's corpus recurrence guard (93e9b38b, on no remote ref at
-  12:0xZ) is merged and the F3 packet is frozen on #8438; route the Mac13,1 storage recovery
-  to the operator as an exact human gate; record F6 PRODUCTION_PROOF on #8438 once observed.
+  Read #8438 forward from counterpart edge 6029030377 (last seat edge 6029985312) before any act.
+  Carry #8566 (F6 pub-clock) and the F3 backfill PR to merged with blob verification, then watch the
+  next main research-ingest summary for backfill_rows and a rising corpus count (F3 PRODUCTION_PROOF).
+  F4 production proof is the operator's Mac13,1 act. F6 production proof arrives with Astra's F10 #8477.
 ---
 
 # Research Vault AI Intelligence Fabric
@@ -85,4 +104,5 @@ holds the masterplan chapters, the 2026-10-04 Sol handoff and execution checkpoi
 record is the Agent OS pointer so that seat handoffs on main resolve to a workstream; the
 program narrative stays on the carrier.
 
-Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-05.md`.
+Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-07.md` (latest) and
+`agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-05.md`.
