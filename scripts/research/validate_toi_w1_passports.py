@@ -6,6 +6,7 @@ market outcomes.
 """
 from __future__ import annotations
 
+import ast
 import json
 import math
 from pathlib import Path
@@ -72,13 +73,92 @@ def _source_ids(path: Path = SOURCES) -> set[str]:
     return set(ids)
 
 
+def _safe_static_value(node: ast.AST, env: dict[str, Any]) -> Any:
+    if isinstance(node, ast.Constant):
+        return node.value
+    if isinstance(node, ast.Name) and node.id in env:
+        return env[node.id]
+    if isinstance(node, (ast.List, ast.Tuple)):
+        values = [_safe_static_value(item, env) for item in node.elts]
+        return values if isinstance(node, ast.List) else tuple(values)
+    if isinstance(node, ast.JoinedStr):
+        parts: list[str] = []
+        for item in node.values:
+            if isinstance(item, ast.Constant) and isinstance(item.value, str):
+                parts.append(item.value)
+            elif isinstance(item, ast.FormattedValue):
+                parts.append(str(_safe_static_value(item.value, env)))
+            else:
+                raise ValueError("unsupported f-string component")
+        return "".join(parts)
+    raise ValueError(f"unsupported static expression: {type(node).__name__}")
+
+
+def _bind_static_target(target: ast.AST, value: Any, env: dict[str, Any]) -> None:
+    if isinstance(target, ast.Name):
+        env[target.id] = value
+        return
+    if isinstance(target, (ast.Tuple, ast.List)):
+        if not isinstance(value, (tuple, list)) or len(target.elts) != len(value):
+            raise ValueError("static loop target/value mismatch")
+        for child, item in zip(target.elts, value):
+            _bind_static_target(child, item, env)
+        return
+    raise ValueError(f"unsupported static target: {type(target).__name__}")
+
+
+def _static_registered_signal_ids(text: str) -> set[str]:
+    tree = ast.parse(text)
+    env: dict[str, Any] = {}
+    found: set[str] = set()
+    for stmt in tree.body:
+        if isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+            value_node = stmt.value
+            if value_node is None:
+                continue
+            try:
+                value = _safe_static_value(value_node, env)
+            except ValueError:
+                continue
+            targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+            for target in targets:
+                if isinstance(target, ast.Name):
+                    env[target.id] = value
+        elif isinstance(stmt, ast.For):
+            try:
+                values = _safe_static_value(stmt.iter, env)
+            except ValueError:
+                continue
+            for value in values:
+                local = dict(env)
+                _bind_static_target(stmt.target, value, local)
+                for inner in stmt.body:
+                    if not isinstance(inner, ast.Assign):
+                        continue
+                    for target in inner.targets:
+                        if isinstance(target, ast.Name):
+                            try:
+                                local[target.id] = _safe_static_value(inner.value, local)
+                            except ValueError:
+                                pass
+                        elif isinstance(target, ast.Subscript):
+                            if isinstance(target.value, ast.Name) and target.value.id == "SIGNALS":
+                                try:
+                                    key = _safe_static_value(target.slice, local)
+                                except ValueError:
+                                    continue
+                                if isinstance(key, str):
+                                    found.add(key)
+    return found
+
+
 def _validate_exact_local_identity(mid: str, local: dict[str, Any]) -> None:
     """Prove an `exact` passport names real source paths and real signal identifiers.
 
-    This is intentionally source-text identity, not formula equivalence. It closes the
-    weaker failure mode where a passport could claim an exact local implementation by
-    naming a stale/nonexistent path or a signal id that is not present in the cited
-    source. Formula/source reproduction remains a separate W1 review gate.
+    This is intentionally static source/registry identity, not formula equivalence. It
+    accepts literal identifiers and keys that are provably materialized by simple
+    module-level SIGNALS registration loops, without importing or executing engine code.
+    Formula/source reproduction remains a separate W1 review gate.
     """
     paths = local["paths"]
     signal_ids = local["signal_ids"]
@@ -92,8 +172,13 @@ def _validate_exact_local_identity(mid: str, local: dict[str, Any]) -> None:
         if not candidate.is_file():
             raise ValueError(f"{mid}: exact local path missing: {rel}")
         texts.append((rel, candidate.read_text(encoding="utf-8")))
+    registry_ids = {
+        sid
+        for _, source_text in texts
+        for sid in _static_registered_signal_ids(source_text)
+    }
     for sid in signal_ids:
-        if not any(sid in text for _, text in texts):
+        if not any(sid in source_text for _, source_text in texts) and sid not in registry_ids:
             raise ValueError(f"{mid}: signal_id {sid!r} not found in cited local paths")
 
 

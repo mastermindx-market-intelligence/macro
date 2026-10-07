@@ -12,7 +12,7 @@ This carrier now provides:
 - **10 residual-family dispositions** that route or block the remaining method tail without expanding the first W3 trial family;
 - primary/official/creator source receipts and explicit rights classes;
 - alias/equivalence normalization separate from dependency clustering;
-- **26 exact local implementations, 1 explicit partial local implementation, and 5 missing implementations**;
+- **24 exact local implementations, 3 explicit partial local implementations, and 5 missing implementations**;
 - owner routing for Setup Species, CPI, Live Entry Radar, Terminal, breadth/universe, regime, and later-context path research;
 - fail-closed passport/source/equivalence/residual validators plus hostile tests;
 - a deterministic 20-passport independent-reproduction sample with no outcome-derived selection.
@@ -49,6 +49,17 @@ Repair:
 
 This keeps the P0 method scientifically available while preventing a false parity claim.
 
+### Grouped continuation hardening — numeric BandWidth, fakeout occurrence, and validator guard
+
+The later TOI continuation review found two additional exact-parity overclaims and one hostile-test routing defect. They are repaired in the same grouped records-only change rather than altering live indicator behavior:
+
+- `toi.bb_bandwidth` no longer points at Bollinger band-walk events. It now cites the actual numeric `engine.stock_technicals.bb_bandwidth` primitive and the full-history `bbwp_series` wrapper, but is `partial` because the current percentile wrapper includes the current observation and permits partial warm-up instead of the frozen strictly-prior/full-window reference.
+- `toi.donchian_fakeout` remains bound to `donch_fail_up/dn` but is `partial`: those helpers reset `last_break_idx`/boundary on a later breakout, while the W1/W3 method contract grades failure against the original breakout occurrence.
+- the hostile duplicate-equivalence fixture now preserves exactly one `first_class` member in the destination class, so it reaches the intended cross-class membership-mismatch guard instead of failing earlier on class shape.
+- the generated-ID validator repair remains static-AST-only; it never imports/executes engine modules merely to prove a registration key exists.
+
+These downgrades move current implementation truth from 26/1/5 to **24 exact / 3 partial / 5 missing** without adding a method, changing a signal, or reading outcomes.
+
 ## Active passport universe
 
 ### P0 — first-vertical core (12)
@@ -69,10 +80,10 @@ This keeps the P0 method scientifically available while preventing a false parit
 
 ## Local implementation truth
 
-- **26/32 exact local**.
-- **1/32 partial local:** `toi.rvol` because current local inclusive-window math does not exactly reproduce the source-defined prior-bar baseline.
+- **24/32 exact local**.
+- **3/32 partial local:** `toi.bb_bandwidth` (numeric primitive exists, but current BBWP percentile wrapper is not the frozen strictly-prior/full-window construction); `toi.donchian_fakeout` (current helper resets to the latest breakout rather than preserving original-occurrence failure memory); and `toi.rvol` (current inclusive-window denominator differs from the prior-20 baseline).
 - **5/32 missing:** causal support/resistance, round-level controls, short reversal, Fibonacci retracement, ordered-path/Elliott.
-- Priority/local reconciliation: P0 = 11 exact + 1 partial; P1 = 7 exact + 3 missing; P2 = 7 exact + 1 missing; archive = 1 exact + 1 missing.
+- Priority/local reconciliation: P0 = 9 exact + 3 partial; P1 = 7 exact + 3 missing; P2 = 7 exact + 1 missing; archive = 1 exact + 1 missing.
 - Missing or partial does not mean rejected and does not authorize W1 to implement the method.
 
 ## Residual-family disposition
@@ -108,7 +119,7 @@ No market outcomes were read. No model was fit. No W3 trial is registered. No Pr
 
 ## Remaining acceptance gates
 
-1. Obtain fresh **bounded independent verification of the two repaired findings** on the repaired immutable W1 head. The prior review child is terminal and cannot be silently continued.
+1. Obtain fresh **bounded independent verification of the grouped changed findings** on the repaired immutable W1 head. The prior review child is terminal and cannot be silently continued.
 2. Run `python3 scripts/agentos.py validate`, the W1 passport/source/equivalence validators, `pytest tests/test_toi_w1_census.py -q`, and `git diff --check` on that same immutable head.
 3. Reconcile the records-only CI waiver against current protected main if needed and obtain current-base merge/integration proof plus hosted checks.
 4. Return exact repaired head and proof to Sol for W1 acceptance.

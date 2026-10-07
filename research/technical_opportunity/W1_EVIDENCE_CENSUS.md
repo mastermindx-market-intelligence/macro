@@ -39,12 +39,12 @@ These are method representations, not claims of predictive edge.
 
 ## Local implementation truth
 
-- **26/32** passports are exact local implementations.
-- **1/32** is explicit `partial`: `toi.rvol`.
+- **24/32** passports are exact local implementations.
+- **3/32** are explicit `partial`: `toi.bb_bandwidth`, `toi.donchian_fakeout`, and `toi.rvol`.
 - **5/32** are `missing`: causal support/resistance, round-level controls, short reversal, Fibonacci retracement, ordered-path/Elliott.
-- P0 reconciles as 11 exact + 1 partial; P1 as 7 exact + 3 missing; P2 as 7 exact + 1 missing; archive as 1 exact + 1 missing.
+- P0 reconciles as 9 exact + 3 partial; P1 as 7 exact + 3 missing; P2 as 7 exact + 1 missing; archive as 1 exact + 1 missing.
 
-The RVOL partial state is deliberate. The source-defined method compares current volume with an average of prior completed bars, while the current local helper includes the current bar in its 20-bar denominator. W1 records that mismatch rather than calling it exact or changing live behavior inside a records-only wave.
+The three partial states are deliberate. `toi.bb_bandwidth` now binds the actual numeric BandWidth helper, but the current BBWP wrapper does not implement the frozen strictly-prior/full-window percentile. `toi.donchian_fakeout` binds the current failure helper, but that helper resets to the latest breakout instead of retaining original-occurrence failure memory. RVOL compares current volume with prior completed bars while the current local helper includes the current bar in its denominator. W1 records all three mismatches rather than changing live behavior inside a records-only wave.
 
 ## Source and rights truth
 
@@ -83,6 +83,8 @@ Both findings are repaired on the same W1 carrier:
 - RVOL now binds `SRC-STOCKCHARTS-RVOL`, freezes the source-defined prior-20-bar formula, and records the current local code as `partial` until a later implementation wave repairs or versions it.
 
 The original review child is terminal. A fresh bounded independent repair verification is required before Sol acceptance because the repaired semantic head is new.
+
+A later grouped continuation hardening also corrected current-source parity claims without changing live signals: BandWidth is `partial` against the actual numeric helper/percentile semantics; Donchian fakeout is `partial` because the local helper resets to the latest breakout; and the duplicate-equivalence hostile fixture now preserves per-class `first_class` validity so it reaches the intended cross-class membership guard. Current implementation truth is therefore **24 exact / 3 partial / 5 missing**.
 
 ## Equivalence and dependency
 
@@ -124,7 +126,7 @@ This preserves the cycle-forecasting thesis without letting it bypass the simple
 
 ## Remaining W1 gates
 
-- fresh independent verification limited to the two repaired findings on the new immutable head;
+- fresh independent verification limited to the grouped changed findings on the new immutable head;
 - exact Agent OS + passport/source/equivalence/residual + W1 pytest + diff-check battery;
 - current-base compatibility and hosted checks;
 - Sol acceptance.
