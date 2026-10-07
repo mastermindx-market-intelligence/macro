@@ -499,7 +499,7 @@ body{margin:0;padding-top:24px;background:var(--bg);color:var(--text)}
 .pm-truth-table td,.pm-truth-table th,
 .mh-gate-table td,.mh-exp-table td,.ac-table td,.eg-table td,.cm-table td,
 .nl-card,.mh-collin-block li,.pl-gap-meta,.pl-gap-note,.mh-prov-cell dd,
-.mh-eng-epoch,.pm-status-chip,.mh-note,.mh-loop-step{overflow-wrap:anywhere}
+.mh-eng-epoch,.pm-status-chip,.mh-note,.mh-loop-step,.eg-footnote{overflow-wrap:anywhere}
 
 /* ── Quality floor ───────────────────────────────────────────────────────── */
 .mh-tab:focus-visible,.mh-stand a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
