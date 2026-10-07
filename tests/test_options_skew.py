@@ -1835,6 +1835,32 @@ def test_options_compare_is_context_only_pit_and_uses_one_complete_session():
     assert all(row["asof"] == asof for row in before["rows"])
 
 
+def test_options_compare_excludes_cross_source_history_from_percentiles():
+    hist, dates = _compare_history(n_names=1, n_sessions=40)
+    cutoff = dates[15].date().isoformat()
+    old = hist["date"] < cutoff
+    hist.loc[old, "source"] = "polygon_gex"
+    # Make the old-source observations absurd so contamination is obvious.
+    hist.loc[old, "atm_call_iv"] = 9.0
+    hist.loc[old, "skew"] = 9.0
+
+    mixed = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
+    theta_only = S.build_compare_payload(
+        hist[hist["source"] == "thetadata"].copy(),
+        as_of=dates[-1].date().isoformat(),
+    )
+
+    assert mixed["history_basis"]["kind"] == "same_source_as_current_session"
+    assert len(mixed["rows"]) == 1
+    row = mixed["rows"][0]
+    clean = theta_only["rows"][0]
+    assert row["source"] == "thetadata"
+    assert row["history_n"] == 25
+    assert row["options_pct"] == clean["options_pct"]
+    assert row["protection_pct"] == clean["protection_pct"]
+    assert row["trail"] == clean["trail"]
+
+
 def test_options_compare_caps_at_30_and_fast_is_movement_only_top_decile():
     hist, dates = _compare_history(n_names=35)
     payload = S.build_compare_payload(hist, as_of=dates[-1].date().isoformat())
