@@ -2377,6 +2377,14 @@ lanes:
       - id: collect_asia
         module: scripts.collect
         args: [--group, asia]
+      - id: build_communique_diff
+        module: scripts.build_communique_diff
+        note: >
+          CIE-09 production wire. Reads the just-collected/committed official-policy
+          corpus without refetching, emits the existing Communiqué Diff source-event
+          receipts plus qbus/qledger salience context, and writes the existing
+          site/communique_diff/latest.json artifact before the serial China spine.
+          Descriptive/context only; no ranking, Prophet, trade or source authority.
       # build_china stays a SERIAL head (2026-07-14 band restructure): it writes the
       # china regime gate + regime_history, china_standouts.json and the risk_radar_intl
       # CN forward log/calibration — inputs read by nearly every builder in band A. Its
