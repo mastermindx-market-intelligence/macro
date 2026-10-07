@@ -1,0 +1,1034 @@
+{
+  "status": "DESCRIPTIVE_SELECTED_ROOTS_NOT_ISSUER_DAY_HAZARD",
+  "selection": "Same source-publication-date and trading-session eligibility as primary diagnostics.",
+  "material_timing_eligible_roots": 52,
+  "broad_timing_eligible_roots": 46,
+  "broad_distinct_issuers": 25,
+  "material_content_directions": {
+    "MIXED": 31,
+    "NEGATIVE": 5,
+    "POSITIVE": 15,
+    "UNKNOWN": 1
+  },
+  "broad_observed_disjoint_issuer_pairs_within3": [
+    {
+      "root_a": "PBC-TECH-MSFT-AI-CAPEX-20250103",
+      "date_a": "2025-01-03",
+      "root_b": "PBC-TECH-MU-SINGAPORE-HBM-20250108",
+      "date_b": "2025-01-08",
+      "session_distance": 3,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-D-VRT-20250303-TECOGEN",
+      "date_a": "2025-03-03",
+      "root_b": "PBC-TECH-TSM-US-EXPANSION-20250303",
+      "date_b": "2025-03-03",
+      "session_distance": 0,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-D-ADBE-20250318-PUBLICIS",
+      "date_a": "2025-03-18",
+      "root_b": "PBC-TECH-GOOG-WIZ-20250318",
+      "date_b": "2025-03-18",
+      "session_distance": 0,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-TECH-INTC-ALTERA-20250414",
+      "date_a": "2025-04-14",
+      "root_b": "PBC-TECH-NVDA-US-MANUFACTURING-20250414",
+      "date_b": "2025-04-14",
+      "session_distance": 0,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-D-CSCO-20250513-HUMAIN",
+      "date_a": "2025-05-13",
+      "root_b": "PBC-TECH-AMD-HUMAIN-20250513",
+      "date_b": "2025-05-13",
+      "session_distance": 0,
+      "shared_program_ids": [
+        "SAUDI_HUMAIN_2025_05_13"
+      ]
+    },
+    {
+      "root_a": "PBC-D-CSCO-20250513-HUMAIN",
+      "date_a": "2025-05-13",
+      "root_b": "PBC-TECH-AMZN-HUMAIN-20250513",
+      "date_b": "2025-05-13",
+      "session_distance": 0,
+      "shared_program_ids": [
+        "SAUDI_HUMAIN_2025_05_13"
+      ]
+    },
+    {
+      "root_a": "PBC-D-CSCO-20250513-HUMAIN",
+      "date_a": "2025-05-13",
+      "root_b": "PBC-TECH-NVDA-HUMAIN-20250513",
+      "date_b": "2025-05-13",
+      "session_distance": 0,
+      "shared_program_ids": [
+        "SAUDI_HUMAIN_2025_05_13"
+      ]
+    },
+    {
+      "root_a": "PBC-D-CSCO-20250513-HUMAIN",
+      "date_a": "2025-05-13",
+      "root_b": "PBC-TECH-AMD-BUYBACK-20250514",
+      "date_b": "2025-05-14",
+      "session_distance": 1,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-TECH-AMD-HUMAIN-20250513",
+      "date_a": "2025-05-13",
+      "root_b": "PBC-TECH-AMZN-HUMAIN-20250513",
+      "date_b": "2025-05-13",
+      "session_distance": 0,
+      "shared_program_ids": [
+        "SAUDI_HUMAIN_2025_05_13"
+      ]
+    },
+    {
+      "root_a": "PBC-TECH-AMD-HUMAIN-20250513",
+      "date_a": "2025-05-13",
+      "root_b": "PBC-TECH-NVDA-HUMAIN-20250513",
+      "date_b": "2025-05-13",
+      "session_distance": 0,
+      "shared_program_ids": [
+        "SAUDI_HUMAIN_2025_05_13"
+      ]
+    },
+    {
+      "root_a": "PBC-TECH-AMZN-HUMAIN-20250513",
+      "date_a": "2025-05-13",
+      "root_b": "PBC-TECH-NVDA-HUMAIN-20250513",
+      "date_b": "2025-05-13",
+      "session_distance": 0,
+      "shared_program_ids": [
+        "SAUDI_HUMAIN_2025_05_13"
+      ]
+    },
+    {
+      "root_a": "PBC-TECH-AMZN-HUMAIN-20250513",
+      "date_a": "2025-05-13",
+      "root_b": "PBC-TECH-AMD-BUYBACK-20250514",
+      "date_b": "2025-05-14",
+      "session_distance": 1,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-TECH-NVDA-HUMAIN-20250513",
+      "date_a": "2025-05-13",
+      "root_b": "PBC-TECH-AMD-BUYBACK-20250514",
+      "date_b": "2025-05-14",
+      "session_distance": 1,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-D-ETN-20250603-SIEMENS-ENERGY",
+      "date_a": "2025-06-03",
+      "root_b": "PBC-TECH-META-CONSTELLATION-20250603",
+      "date_b": "2025-06-03",
+      "session_distance": 0,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-TECH-QCOM-ALPHAWAVE-20250609",
+      "date_a": "2025-06-09",
+      "root_b": "PBC-TECH-MU-US-EXPANSION-20250612",
+      "date_b": "2025-06-12",
+      "session_distance": 3,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-D-VRT-20250722-OKLO",
+      "date_a": "2025-07-22",
+      "root_b": "PBC-TECH-ORCL-STARGATE-EXPANSION-20250722",
+      "date_b": "2025-07-22",
+      "session_distance": 0,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-TECH-AAPL-US-EXPANSION-20250806",
+      "date_a": "2025-08-06",
+      "root_b": "PBC-D-LITE-20250807-US-CAPACITY",
+      "date_b": "2025-08-07",
+      "session_distance": 1,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-D-COHR-20250813-ADVENT-DIVESTITURE",
+      "date_a": "2025-08-13",
+      "root_b": "PBC-TECH-INTC-SOFTBANK-20250818",
+      "date_b": "2025-08-18",
+      "session_distance": 3,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-TECH-INTC-SOFTBANK-20250818",
+      "date_a": "2025-08-18",
+      "root_b": "PBC-D-CAT-20250821-HUNT-POWER",
+      "date_b": "2025-08-21",
+      "session_distance": 3,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-D-CAT-20250821-HUNT-POWER",
+      "date_a": "2025-08-21",
+      "root_b": "PBC-TECH-INTC-USG-20250822",
+      "date_b": "2025-08-22",
+      "session_distance": 1,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-TECH-NVDA-INTC-20250918",
+      "date_a": "2025-09-18",
+      "root_b": "PBC-D-RTX-20250923-LTAMDS",
+      "date_b": "2025-09-23",
+      "session_distance": 3,
+      "shared_program_ids": []
+    },
+    {
+      "root_a": "PBC-TECH-NVDA-OPENAI-20250922",
+      "date_a": "2025-09-22",
+      "root_b": "PBC-D-RTX-20250923-LTAMDS",
+      "date_b": "2025-09-23",
+      "session_distance": 1,
+      "shared_program_ids": []
+    }
+  ],
+  "root_exposure_membership": [
+    {
+      "root_event_id": "PBC-TECH-MSFT-AI-CAPEX-20250103",
+      "date": "2025-01-03",
+      "primary_species": "CAPEX_CAPACITY",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 1
+    },
+    {
+      "root_event_id": "PBC-TECH-MU-SINGAPORE-HBM-20250108",
+      "date": "2025-01-08",
+      "primary_species": "CAPEX_CAPACITY",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-MSFT-OPENAI-20250121",
+      "date": "2025-01-21",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-ORCL-STARGATE-20250121",
+      "date": "2025-01-21",
+      "primary_species": "AI_COMMITMENT",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-HPE-20250130-DOJ-CHALLENGE",
+      "date": "2025-01-30",
+      "primary_species": "ADVERSE_LEGAL_ACTION",
+      "economic_direction": "NEGATIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-AAPL-US-INVESTMENT-20250224",
+      "date": "2025-02-24",
+      "primary_species": "CAPEX_CAPACITY",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-VRT-20250303-TECOGEN",
+      "date": "2025-03-03",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-TSM-US-EXPANSION-20250303",
+      "date": "2025-03-03",
+      "primary_species": "CAPEX_CAPACITY",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-ADBE-20250318-PUBLICIS",
+      "date": "2025-03-18",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-GOOG-WIZ-20250318",
+      "date": "2025-03-18",
+      "primary_species": "ACQUISITION",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-LMT-20250321-AIR-FORCE-LOSS",
+      "date": "2025-03-21",
+      "primary_species": "ADVERSE_PROCUREMENT_DECISION",
+      "economic_direction": "NEGATIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-AVGO-BUYBACK-20250407",
+      "date": "2025-04-07",
+      "primary_species": "BUYBACK",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-INTC-ALTERA-20250414",
+      "date": "2025-04-14",
+      "primary_species": "DIVESTITURE",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 1,
+      "nominal2y_prior10": 1,
+      "real10y_prior5": 1,
+      "real10y_prior10": 1
+    },
+    {
+      "root_event_id": "PBC-TECH-NVDA-US-MANUFACTURING-20250414",
+      "date": "2025-04-14",
+      "primary_species": "CAPEX_CAPACITY",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 1,
+      "nominal2y_prior10": 1,
+      "real10y_prior5": 1,
+      "real10y_prior10": 1
+    },
+    {
+      "root_event_id": "PBC-TECH-NVDA-H20-EXPORT-20250415",
+      "date": "2025-04-15",
+      "primary_species": "ADVERSE_EXPORT_RESTRICTION",
+      "economic_direction": "NEGATIVE",
+      "nominal2y_prior5": 1,
+      "nominal2y_prior10": 1,
+      "real10y_prior5": 1,
+      "real10y_prior10": 1
+    },
+    {
+      "root_event_id": "PBC-TECH-AMD-MI308-EXPORT-20250416",
+      "date": "2025-04-16",
+      "primary_species": "ADVERSE_EXPORT_RESTRICTION",
+      "economic_direction": "NEGATIVE",
+      "nominal2y_prior5": 1,
+      "nominal2y_prior10": 1,
+      "real10y_prior5": 1,
+      "real10y_prior10": 1
+    },
+    {
+      "root_event_id": "PBC-TECH-GOOG-ADTECH-RULING-20250417",
+      "date": "2025-04-17",
+      "primary_species": "ADVERSE_LEGAL_ACTION",
+      "economic_direction": "NEGATIVE",
+      "nominal2y_prior5": 1,
+      "nominal2y_prior10": 1,
+      "real10y_prior5": 1,
+      "real10y_prior10": 1
+    },
+    {
+      "root_event_id": "PBC-D-IBM-20250428-US-INVESTMENT-PLAN",
+      "date": "2025-04-28",
+      "primary_species": "CAPEX_CAPACITY",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 1,
+      "real10y_prior5": 0,
+      "real10y_prior10": 1
+    },
+    {
+      "root_event_id": "PBC-D-CSCO-20250513-HUMAIN",
+      "date": "2025-05-13",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-AMD-HUMAIN-20250513",
+      "date": "2025-05-13",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-AMZN-HUMAIN-20250513",
+      "date": "2025-05-13",
+      "primary_species": "AI_COMMITMENT",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-NVDA-HUMAIN-20250513",
+      "date": "2025-05-13",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-AMD-BUYBACK-20250514",
+      "date": "2025-05-14",
+      "primary_species": "BUYBACK",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-AMD-SANMINA-20250519",
+      "date": "2025-05-19",
+      "primary_species": "DIVESTITURE",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 1,
+      "nominal2y_prior10": 1,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-ETN-20250603-SIEMENS-ENERGY",
+      "date": "2025-06-03",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-META-CONSTELLATION-20250603",
+      "date": "2025-06-03",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-QCOM-ALPHAWAVE-20250609",
+      "date": "2025-06-09",
+      "primary_species": "ACQUISITION",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-MU-US-EXPANSION-20250612",
+      "date": "2025-06-12",
+      "primary_species": "CAPEX_CAPACITY",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-TXN-20250618-US-FABS",
+      "date": "2025-06-18",
+      "primary_species": "CAPEX_CAPACITY",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-MP-20250710-DOD-PACKAGE",
+      "date": "2025-07-10",
+      "primary_species": "SUBSIDY_FLOOR_OFFTAKE",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-AAPL-MP-20250715",
+      "date": "2025-07-15",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-MP-20250716-COMMON-OFFERING",
+      "date": "2025-07-16",
+      "primary_species": "FINANCING",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-VRT-20250722-OKLO",
+      "date": "2025-07-22",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-ORCL-STARGATE-EXPANSION-20250722",
+      "date": "2025-07-22",
+      "primary_species": "AI_COMMITMENT",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-ANET-20250730-INDIA-PLAN",
+      "date": "2025-07-30",
+      "primary_species": "CAPEX_CAPACITY",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-AAPL-US-EXPANSION-20250806",
+      "date": "2025-08-06",
+      "primary_species": "CAPEX_CAPACITY",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-LITE-20250807-US-CAPACITY",
+      "date": "2025-08-07",
+      "primary_species": "CAPEX_CAPACITY",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-COHR-20250813-ADVENT-DIVESTITURE",
+      "date": "2025-08-13",
+      "primary_species": "DIVESTITURE",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-INTC-SOFTBANK-20250818",
+      "date": "2025-08-18",
+      "primary_species": "FINANCING",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-CAT-20250821-HUNT-POWER",
+      "date": "2025-08-21",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-INTC-USG-20250822",
+      "date": "2025-08-22",
+      "primary_species": "OFFICIAL_GOVERNMENT_AGREEMENT",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-MSFT-OPENAI-20250911",
+      "date": "2025-09-11",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "UNKNOWN",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-NVDA-INTC-20250918",
+      "date": "2025-09-18",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-NVDA-OPENAI-20250922",
+      "date": "2025-09-22",
+      "primary_species": "AI_COMMITMENT",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-RTX-20250923-LTAMDS",
+      "date": "2025-09-23",
+      "primary_species": "GOVERNMENT_CONTRACT",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-AMD-OPENAI-20251006",
+      "date": "2025-10-06",
+      "primary_species": "AI_COMMITMENT",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-AVGO-OPENAI-20251013",
+      "date": "2025-10-13",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-META-HYPERION-JV-20251021",
+      "date": "2025-10-21",
+      "primary_species": "FINANCING",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-MSFT-OPENAI-20251028",
+      "date": "2025-10-28",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-AMZN-OPENAI-20251103",
+      "date": "2025-11-03",
+      "primary_species": "AI_COMMITMENT",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-D-ADBE-20251119-HUMAIN-QCOM",
+      "date": "2025-11-19",
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "economic_direction": "POSITIVE",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    },
+    {
+      "root_event_id": "PBC-TECH-MU-CRUCIAL-EXIT-20251203",
+      "date": "2025-12-03",
+      "primary_species": "BUSINESS_EXIT",
+      "economic_direction": "MIXED",
+      "nominal2y_prior5": 0,
+      "nominal2y_prior10": 0,
+      "real10y_prior5": 0,
+      "real10y_prior10": 0
+    }
+  ],
+  "same_species_exposed_and_unexposed_captured_events": [
+    {
+      "primary_species": "ACQUISITION",
+      "timing_eligible_captured_roots": 2,
+      "nominal2y_prior5": {
+        "exposed": 0,
+        "unexposed": 2
+      },
+      "nominal2y_prior10": {
+        "exposed": 0,
+        "unexposed": 2
+      },
+      "real10y_prior5": {
+        "exposed": 0,
+        "unexposed": 2
+      },
+      "real10y_prior10": {
+        "exposed": 0,
+        "unexposed": 2
+      }
+    },
+    {
+      "primary_species": "ADVERSE_EXPORT_RESTRICTION",
+      "timing_eligible_captured_roots": 2,
+      "nominal2y_prior5": {
+        "exposed": 2,
+        "unexposed": 0
+      },
+      "nominal2y_prior10": {
+        "exposed": 2,
+        "unexposed": 0
+      },
+      "real10y_prior5": {
+        "exposed": 2,
+        "unexposed": 0
+      },
+      "real10y_prior10": {
+        "exposed": 2,
+        "unexposed": 0
+      }
+    },
+    {
+      "primary_species": "ADVERSE_LEGAL_ACTION",
+      "timing_eligible_captured_roots": 2,
+      "nominal2y_prior5": {
+        "exposed": 1,
+        "unexposed": 1
+      },
+      "nominal2y_prior10": {
+        "exposed": 1,
+        "unexposed": 1
+      },
+      "real10y_prior5": {
+        "exposed": 1,
+        "unexposed": 1
+      },
+      "real10y_prior10": {
+        "exposed": 1,
+        "unexposed": 1
+      }
+    },
+    {
+      "primary_species": "ADVERSE_PROCUREMENT_DECISION",
+      "timing_eligible_captured_roots": 1,
+      "nominal2y_prior5": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "nominal2y_prior10": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "real10y_prior5": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "real10y_prior10": {
+        "exposed": 0,
+        "unexposed": 1
+      }
+    },
+    {
+      "primary_species": "AI_COMMITMENT",
+      "timing_eligible_captured_roots": 6,
+      "nominal2y_prior5": {
+        "exposed": 0,
+        "unexposed": 6
+      },
+      "nominal2y_prior10": {
+        "exposed": 0,
+        "unexposed": 6
+      },
+      "real10y_prior5": {
+        "exposed": 0,
+        "unexposed": 6
+      },
+      "real10y_prior10": {
+        "exposed": 0,
+        "unexposed": 6
+      }
+    },
+    {
+      "primary_species": "BUSINESS_EXIT",
+      "timing_eligible_captured_roots": 1,
+      "nominal2y_prior5": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "nominal2y_prior10": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "real10y_prior5": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "real10y_prior10": {
+        "exposed": 0,
+        "unexposed": 1
+      }
+    },
+    {
+      "primary_species": "BUYBACK",
+      "timing_eligible_captured_roots": 2,
+      "nominal2y_prior5": {
+        "exposed": 0,
+        "unexposed": 2
+      },
+      "nominal2y_prior10": {
+        "exposed": 0,
+        "unexposed": 2
+      },
+      "real10y_prior5": {
+        "exposed": 0,
+        "unexposed": 2
+      },
+      "real10y_prior10": {
+        "exposed": 0,
+        "unexposed": 2
+      }
+    },
+    {
+      "primary_species": "CAPEX_CAPACITY",
+      "timing_eligible_captured_roots": 11,
+      "nominal2y_prior5": {
+        "exposed": 1,
+        "unexposed": 10
+      },
+      "nominal2y_prior10": {
+        "exposed": 2,
+        "unexposed": 9
+      },
+      "real10y_prior5": {
+        "exposed": 1,
+        "unexposed": 10
+      },
+      "real10y_prior10": {
+        "exposed": 3,
+        "unexposed": 8
+      }
+    },
+    {
+      "primary_species": "DIVESTITURE",
+      "timing_eligible_captured_roots": 3,
+      "nominal2y_prior5": {
+        "exposed": 2,
+        "unexposed": 1
+      },
+      "nominal2y_prior10": {
+        "exposed": 2,
+        "unexposed": 1
+      },
+      "real10y_prior5": {
+        "exposed": 1,
+        "unexposed": 2
+      },
+      "real10y_prior10": {
+        "exposed": 1,
+        "unexposed": 2
+      }
+    },
+    {
+      "primary_species": "FINANCING",
+      "timing_eligible_captured_roots": 3,
+      "nominal2y_prior5": {
+        "exposed": 0,
+        "unexposed": 3
+      },
+      "nominal2y_prior10": {
+        "exposed": 0,
+        "unexposed": 3
+      },
+      "real10y_prior5": {
+        "exposed": 0,
+        "unexposed": 3
+      },
+      "real10y_prior10": {
+        "exposed": 0,
+        "unexposed": 3
+      }
+    },
+    {
+      "primary_species": "GOVERNMENT_CONTRACT",
+      "timing_eligible_captured_roots": 1,
+      "nominal2y_prior5": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "nominal2y_prior10": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "real10y_prior5": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "real10y_prior10": {
+        "exposed": 0,
+        "unexposed": 1
+      }
+    },
+    {
+      "primary_species": "OFFICIAL_GOVERNMENT_AGREEMENT",
+      "timing_eligible_captured_roots": 1,
+      "nominal2y_prior5": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "nominal2y_prior10": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "real10y_prior5": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "real10y_prior10": {
+        "exposed": 0,
+        "unexposed": 1
+      }
+    },
+    {
+      "primary_species": "STRATEGIC_PARTNERSHIP",
+      "timing_eligible_captured_roots": 16,
+      "nominal2y_prior5": {
+        "exposed": 0,
+        "unexposed": 16
+      },
+      "nominal2y_prior10": {
+        "exposed": 0,
+        "unexposed": 16
+      },
+      "real10y_prior5": {
+        "exposed": 0,
+        "unexposed": 16
+      },
+      "real10y_prior10": {
+        "exposed": 0,
+        "unexposed": 16
+      }
+    },
+    {
+      "primary_species": "SUBSIDY_FLOOR_OFFTAKE",
+      "timing_eligible_captured_roots": 1,
+      "nominal2y_prior5": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "nominal2y_prior10": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "real10y_prior5": {
+        "exposed": 0,
+        "unexposed": 1
+      },
+      "real10y_prior10": {
+        "exposed": 0,
+        "unexposed": 1
+      }
+    }
+  ],
+  "negative_exposed_roots": {
+    "nominal2y_prior5": [
+      "PBC-TECH-NVDA-H20-EXPORT-20250415",
+      "PBC-TECH-AMD-MI308-EXPORT-20250416",
+      "PBC-TECH-GOOG-ADTECH-RULING-20250417"
+    ],
+    "nominal2y_prior10": [
+      "PBC-TECH-NVDA-H20-EXPORT-20250415",
+      "PBC-TECH-AMD-MI308-EXPORT-20250416",
+      "PBC-TECH-GOOG-ADTECH-RULING-20250417"
+    ],
+    "real10y_prior5": [
+      "PBC-TECH-NVDA-H20-EXPORT-20250415",
+      "PBC-TECH-AMD-MI308-EXPORT-20250416",
+      "PBC-TECH-GOOG-ADTECH-RULING-20250417"
+    ],
+    "real10y_prior10": [
+      "PBC-TECH-NVDA-H20-EXPORT-20250415",
+      "PBC-TECH-AMD-MI308-EXPORT-20250416",
+      "PBC-TECH-GOOG-ADTECH-RULING-20250417"
+    ]
+  },
+  "input_sha256": {
+    "PB_C_EVENT_PANEL.json": "6daf5c3c12c42e949d262c2000383661f6893a0c75650604079d2a9f2bf84760",
+    "PB_C_STRESS_WINDOWS.json": "c6fed09ea274f987f4009fc2da41703d7ecc962f478f283e68724f3187d03341",
+    "nyse_calendar_2025.csv": "353fb01f959e10edd568e67c0b339c1ac5c4b33827e905bb59d996b6f830e396"
+  }
+}

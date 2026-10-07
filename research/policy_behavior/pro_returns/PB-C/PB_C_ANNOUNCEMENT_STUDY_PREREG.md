@@ -77,3 +77,4 @@ Disposition options: SURVIVES / WEAK / REJECT / PROSPECTIVE_ONLY, separately fro
 Current task: protocol freeze, then disjoint source extraction and lawful data acquisition.
 No market outcomes or event-date tests have been read/computed in this session before this freeze. General historical knowledge and upstream hypotheses are unblinded, so the retrospective pilot is not confirmatory.
 Native in-session methods helper: /root/statistical_design, advisory only. No external worker, Executive lifecycle, watcher or after-turn continuation is claimed.
+

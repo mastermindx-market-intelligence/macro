@@ -194,3 +194,18 @@ Parent to append, without altering the distinction between reviewed evidence and
 - Any subsequent verification evidence and its scope.
 
 This report records a bounded implementation review before the first actual event-panel analysis. It neither validates substantive effects nor establishes a complete source risk set, direct coordination, or causal intent.
+
+## Integration-owner resolution after the reviewed version
+
+The original findings above retain their original review scope. The accepted analysis code was subsequently frozen at Git commit `f856691e4578db7029646bba1c5e90949e009de5` before event tests. The delivered numerical review independently reconciles every observed case and saved tail-count calculation; it is still an internal review, not PB-F.
+
+- Empty samples and absent pairs return explicit NOT_ESTIMABLE states.
+- Constant sampled statistics equal to the observation suppress probabilities; rate cases with no structural exposure contrast have a separate status.
+- Root-specific SHA256 seeds and canonical ID order stabilize assignments across case/row order; a synthetic reversal check passed.
+- Dates, complete calendars, binary flags and issuer sets use explicit exceptions.
+- Program-representative probabilities are suppressed; direct multi-program memberships are preserved without transitive collapse.
+- Same-day proximity is unordered; exact source clocks are distinguished from earliest-public certification.
+- The Treasury script default protocol path is now relative to the delivered script. The original derivation receipts remain unchanged; fresh computation timestamps may differ.
+- An independent-directory offline rerun reproduced both analysis and descriptive JSON outputs byte for byte. See `PB_C_REPRODUCTION_RECEIPT.json`.
+
+No implementation check certifies source-frame completeness, causal identification, a complete calendar null, or an economic effect.

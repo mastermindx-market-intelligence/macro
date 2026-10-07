@@ -2,7 +2,7 @@
 
 **Status: PROPOSED DESIGN ONLY.** This document does not authorize collection, implementation, provider procurement, production changes, trading, or promotion of a signal. Numerical choices inherited from the retrospective protocol are candidates for prospective locking; none are validated operating thresholds. The integration owner must resolve the open decisions below before declaring a new observation period prospective.
 
-**Basis:** the PB-C commission as preserved in `PB_C_ANNOUNCEMENT_STUDY_PREREG.md`; `PB_C_METHODS_AND_DATA_REVIEW.md`; and the control extraction's `source_coverage_log.json`. Current limitations include partial announcement coverage, uncertain first-public clocks/scheduling, unresolved Nasdaq/VIX data admission, insufficient independently recurring stress variation, and unestablished matched controls. No additional source retrieval was performed for this design.
+**Basis:** the PB-C commission as preserved in `PB_C_ANNOUNCEMENT_STUDY_PREREG.md`; `PB_C_METHODS_AND_DATA_REVIEW.md`; and `PB_C_SOURCE_AND_COVERAGE_MANIFEST.json`. Current limitations include partial announcement coverage, uncertain first-public clocks/scheduling, unresolved Nasdaq/VIX data admission, insufficient independently recurring stress variation, and unestablished matched controls. No additional source retrieval was performed for this design.
 
 ## 1. Research object and release gates
 
@@ -65,7 +65,7 @@ One economic agreement is one root across issuer/counterparty mirrors. New miles
 
 Before seeing subsequent returns—and, where feasible, stress labels—code direction, materiality, attention content, and stage: plan, authorization, conditional commitment, definitive agreement, funding/closing, delivery or recognized revenue. Record amount/currency, horizon, incremental-versus-repackaged scope, conditions, cancellation rights, dilution, minimum volumes, price-floor/offtake terms and counterparties. Unknown terms remain null. Disputed coding requires adjudication or exclusion from the strict quality subset.
 
-A scheduled earnings release containing a discretionary business decision stays scheduled for announcement timing. `UNKNOWN` scheduling is excluded from the strict freely timed subset.
+A scheduled earnings release containing a discretionary business decision stays scheduled for announcement timing. `UNKNOWN` scheduling is excluded from the strict freely timed subset. The prospective owner should also lock an operational date-eligibility rule based on complete calendar capture and known disclosure constraints; that permits an explicitly named calendar-eligible-announcement estimand without pretending to observe management intent. Such a proxy must remain distinct from certified timing freedom, and its performance should be shown alongside the strict subset.
 
 ## 6. Episode feasibility is not power
 
