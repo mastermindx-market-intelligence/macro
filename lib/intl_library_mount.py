@@ -9,6 +9,7 @@ from html.parser import HTMLParser
 import logging
 
 from lib.intl_library_view import build_public_intl_library_view
+from lib.intl_inspector_mount import attach_inspectors
 
 
 _SECTIONS = {
@@ -93,6 +94,7 @@ def render_international_pages(template, vm, *, catalogue=None):
     """Render the incumbent destinations before advertising any Library link."""
     stocks = template.render(**vm, mode="stocks")
     macro = template.render(**vm, mode="macro")
+    current = vm.get("intl_workspace")
     if catalogue is not None and vm.get("intl_workspace") is not None:
         try:
             workspace = attach_public_library(
@@ -100,7 +102,26 @@ def render_international_pages(template, vm, *, catalogue=None):
                 macro_html=macro, stocks_rendered=True,
             )
             macro = template.render(**{**vm, "intl_workspace": workspace}, mode="macro")
+            current = workspace
         except (ValueError, KeyError, TypeError) as exc:
             # Keep the complete existing page if approved copy cannot be bound.
             logging.getLogger(__name__).error("International Library unavailable (%s)", type(exc).__name__)
+    if vm.get("intl_workspace") is not None:
+        try:
+            # Bind only to the destinations verified by this render. The stock
+            # route is generic; it must never imply an invented country filter.
+            parser = _RenderedIds()
+            parser.feed(macro)
+            targets = []
+            if parser.ids["lb-board"] == 1:
+                targets.append({"tool_key": "return_evidence", "label_en": "Performance and currency",
+                                "label_zh": "表现与汇率", "route_state": "available",
+                                "target": {"page_id": "macro:intl", "route": "/intl.html", "region_id": "lb-board"}})
+            targets.append({"tool_key": "international_stocks", "label_en": "International stocks",
+                            "label_zh": "国际股票", "route_state": "available",
+                            "target": {"page_id": "macro:intl_stocks", "route": "/intl_stocks.html", "region_id": None}})
+            inspected = attach_inspectors(current, public_targets=targets)
+            macro = template.render(**{**vm, "intl_workspace": inspected}, mode="macro")
+        except (ValueError, KeyError, TypeError) as exc:
+            logging.getLogger(__name__).error("International Inspector unavailable (%s)", type(exc).__name__)
     return macro, stocks

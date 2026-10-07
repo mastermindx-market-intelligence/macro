@@ -37,6 +37,9 @@
   {% if intl_workspace.library|default(none) %}
     {% with payload=intl_workspace.library, context_id='im-catalogue' %}{% include 'intl_workspace/library.html.j2' %}{% endwith %}
   {% endif %}
+  {% if intl_workspace.inspectors|default(none) %}
+    {% with inspector_panels=intl_workspace.inspectors, root_context_id='im-workspace', inspector_copy=intl_workspace.inspector_copy %}{% include 'intl_workspace/inspector.html.j2' %}{% endwith %}
+  {% endif %}
   <p><a href="#intl-legacy-research">{{ t('Detailed research and existing tools', '详细研究与现有工具') }}</a> · <a href="intl_stocks.html">{{ t('International stocks', '国际股票') }}</a></p>
   <script type="application/json" data-im-config>{{ intl_workspace.config|tojson }}</script>
 </section>
