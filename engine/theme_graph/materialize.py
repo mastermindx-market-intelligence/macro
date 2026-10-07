@@ -575,6 +575,20 @@ class _Builder:
                 else list(history or ()))
         membership_rows = [row for row in rows
                            if _text(row.get("source_shape")) == "membership"]
+        collection_rows = [row for row in membership_rows
+                           if row.get("record_kind") == "collection.v2"]
+        # A precise source receipt cannot be emitted as knowledge before it was
+        # known. Legacy daily rows have no fabricated intraday clock.
+        from engine import basket_membership_pit
+        for marker in collection_rows:
+            emitted = basket_membership_pit._collection_clock(self.computed_at)
+            receipt = json.loads(marker["collection_receipt"])
+            known = basket_membership_pit._collection_clock(receipt["known_at"])
+            if known > emitted or known.date().isoformat() > self.belief_time:
+                raise ValueError("collection known after graph knowledge/emission clock")
+            if (known.date().isoformat() == self.belief_time
+                    and known.time().isoformat() != "00:00:00"):
+                raise ValueError("DAILY_GRAPH_UNREPRESENTABLE: intraday collection knowledge")
         excluded_shapes = sorted({
             _text(row.get("source_shape")) or "unknown" for row in rows
             if _text(row.get("source_shape")) != "membership"
@@ -589,7 +603,8 @@ class _Builder:
 
         # Shape filter lives inside ths_membership_intervals (default membership-only).
         intervals = local_sources.ths_membership_intervals(rows)
-        basket_ids = sorted({iv.basket_id for iv in intervals})
+        basket_ids = sorted({iv.basket_id for iv in intervals}
+                            | {row["basket_id"] for row in collection_rows})
         companies: set[str] = set()
         n_closed = 0
         n_edges = 0
@@ -620,7 +635,8 @@ class _Builder:
             opening = self._evidence_ref(
                 kind="scrape",
                 source_ref=(f"data/{THS_SUITE}/membership_history.parquet@"
-                            f"{iv.valid_from}"),
+                            f"{iv.valid_from}"
+                            + (f"#{iv.opening_collection_id}" if iv.opening_collection_id else "")),
                 published_at=iv.valid_from, licensing=_licensing(THS_FAMILY),
             )
             refs = [opening]
@@ -628,7 +644,8 @@ class _Builder:
                 refs.append(self._evidence_ref(
                     kind="scrape",
                     source_ref=(f"data/{THS_SUITE}/membership_history.parquet@"
-                                f"{iv.closed_by}"),
+                                f"{iv.closed_by}"
+                                + (f"#{iv.closing_collection_id}" if iv.closing_collection_id else "")),
                     published_at=iv.closed_by, licensing=_licensing(THS_FAMILY),
                 ))
                 n_closed += 1
@@ -656,7 +673,9 @@ class _Builder:
         self.out.per_suite[THS_SUITE] = self._ths_per_suite(
             baskets=len(basket_ids), companies=len(companies),
             member_edges=n_edges, closed_member_edges=n_closed,
-            membership_pit_rows=len(membership_rows),
+            membership_pit_rows=len(membership_rows) - len(collection_rows),
+            collection_records=len(collection_rows),
+            collection_scope="PER_BASKET_ONLY",
             excluded_source_shapes=excluded_shapes,
             skipped_unidentifiable=skipped_unidentifiable,
             unlabelled_nodes=unlabelled,
@@ -1324,9 +1343,75 @@ def source_family_of(node_id: object) -> str | None:
     return rights.family_for_node_id(node_id)
 
 
+
+def _explained_ths_closures(computed: list[dict], history, stored=None) -> set[str]:
+    """Derive exact closure proofs from the same validated owner history.
+
+    No caller-provided exemption ids: a qualifying owner interval must match the
+    computed identity/window/evidence and only its own closure is explained.
+    """
+    if history is None:
+        return set()
+    intervals = local_sources.ths_membership_intervals(history)
+    expected = {}
+    for iv in intervals:
+        if iv.valid_to is None or iv.closure_basis not in {"complete_collection", "removed"}:
+            continue
+        src = identity.company_node_id(THS_SUITE, iv.ticker)
+        dst = identity.basket_node_id(THS_SUITE, iv.basket_id)
+        eid = edge_id_for("MEMBER_OF", src, dst, iv.valid_from)
+        ref = (f"data/{THS_SUITE}/membership_history.parquet@{iv.closed_by}"
+               + (f"#{iv.closing_collection_id}" if iv.closing_collection_id else ""))
+        evidence = evidence_id_for("scrape", ref, iv.closed_by)
+        expected[eid] = (src, dst, iv.valid_from, iv.valid_to, iv.closed_by, evidence)
+    explained = set()
+    for row in computed:
+        proof = expected.get(row.get("edge_id"))
+        if proof is None or row.get("confidence_basis") != "membership_pit.ths.v1":
+            continue
+        src, dst, start, end, known, evidence = proof
+        if (row.get("type") == "MEMBER_OF" and row.get("src") == src
+                and row.get("dst") == dst and row.get("valid_from") == start
+                and row.get("valid_to") == end and row.get("evidence_time") == known
+                and row.get("source_class") == "scrape"
+                and row.get("date_provenance") == "membership_pit"
+                and evidence in _normalize_evidence_refs(row.get("evidence_refs"))):
+            explained.add(row["edge_id"])
+    # Preserve accepted legacy-generation annulment, scoped to the exact pairs
+    # this owner actually observed. A cutover is not a family-wide exemption.
+    birth = ths_membership_pit_birth(history)
+    pairs = set()
+    for iv in intervals:
+        try:
+            pairs.add((identity.company_node_id(THS_SUITE, iv.ticker),
+                       identity.basket_node_id(THS_SUITE, iv.basket_id)))
+        except ValueError:
+            continue
+    cache = {}
+    if birth and stored is not None:
+        for row in computed:
+            if row.get("confidence_basis") != THS_MEMBERSHIP_DOC_BASIS:
+                continue
+            clock = (row.get("belief_time"), row.get("era"), row.get("computed_at"))
+            if clock not in cache:
+                cache[clock] = {r["edge_id"]: r for r in supersede_ths_membership_doc_edges(
+                    stored, valid_to=birth, belief_time=clock[0], era=clock[1],
+                    computed_at=clock[2], pit_pairs=pairs)}
+            expected_row = cache[clock].get(row.get("edge_id"))
+            fields = ("type", "src", "dst", "valid_from", "valid_to", "evidence_time",
+                      "confidence_basis", "source_class", "date_provenance")
+            if (expected_row is not None
+                    and all(row.get(k) == expected_row.get(k) for k in fields)
+                    and _normalize_evidence_refs(row.get("evidence_refs"))
+                    == _normalize_evidence_refs(expected_row.get("evidence_refs"))):
+                explained.add(row["edge_id"])
+    return explained
+
+
 def source_shrink_refusals(computed: list[dict], stored, *,
                            allow: frozenset[str] | set[str] | tuple[str, ...] = (),
-                           max_shrink: float = MAX_SOURCE_SHRINK) -> list[str]:
+                           max_shrink: float = MAX_SOURCE_SHRINK,
+                           owner_membership_history=None) -> list[str]:
     """Refusal messages for every family whose live memberships would shrink too far.
 
     Behind the refresh contract's own interlocks, and aimed at a different attacker: a
@@ -1354,8 +1439,14 @@ def source_shrink_refusals(computed: list[dict], stored, *,
     if not live_by_family:
         return []
 
+    try:
+        explained = _explained_ths_closures(computed, owner_membership_history, stored)
+    except ValueError as exc:
+        return [f"THS membership closure proof refused: {exc}"]
     closing_by_family: dict[str, int] = {}
     for row in computed:
+        if str(row.get("edge_id")) in explained:
+            continue
         if _null(row.get("valid_to")):
             continue
         family = source_family_of(row.get("dst"))
@@ -1570,6 +1661,89 @@ def supersede_ths_canonical_expression_edges(
         out.append(closed)
     out.sort(key=lambda row: str(row["edge_id"]))
     return out
+
+
+def apply_relation_events(stored: pd.DataFrame, computed: list[dict], events: list,
+                          *, belief_time: str, era: str, computed_at: str
+                          ) -> tuple[list[dict], list[dict]]:
+    """Consume only the probation owner's accepted events, never snapshot absence.
+
+    Precise event clocks stay on the evidence receipt. The daily graph refuses
+    any effect/knowledge cut it cannot represent, before any append occurs.
+    """
+    from engine.theme_graph import probation
+
+    prior_by_id = {str(row["edge_id"]): row for row in stored.to_dict("records")}
+    closings, evidence, acted = [], [], set()
+    for event in events:
+        row = probation.require_daily_relation_event(
+            event, belief_time=belief_time, emitted_at=computed_at)
+        prior = row["prior_relation"]
+        old = prior_by_id.get(prior["edge_id"])
+        if old is None or any(str(old.get(key)) != value for key, value in prior.items()):
+            raise ValueError("relation event prior scope is not the stored owner relation")
+        if (old.get("source_class") != "curated"
+                or old.get("date_provenance") != "crosswalk"):
+            raise ValueError("relation event prior is not a canonical curation relation")
+        if prior["edge_id"] in acted:
+            raise ValueError("multiple relation events for one prior relation")
+        acted.add(prior["edge_id"])
+        effective = probation._relation_clock(row["effective_at"]).date().isoformat()
+        source_ref = ("data/theme_graph/probation/relation_events.v2.jsonl#"
+                      + row["event_id"])
+        eid = evidence_id_for("operator_curation", source_ref, row["known_at"])
+        if not _null(old.get("valid_to")):
+            if str(old["valid_to"]) == effective and eid in _normalize_evidence_refs(old.get("evidence_refs")):
+                continue  # exact already-applied event; no rewriting history
+            raise ValueError("relation event conflicts with a prior closure")
+        if not _is_date(_text(old.get("belief_time"))) or belief_time <= str(old["belief_time"]):
+            raise ValueError("daily relation event must advance the stored belief")
+        live = [candidate for candidate in computed
+                if candidate.get("type") == "EXPRESSES"
+                and candidate.get("src") == prior["src"]
+                and str(candidate.get("dst", "")).startswith("theme:")
+                and _null(candidate.get("valid_to"))]
+        if any(candidate.get("dst") == prior["dst"] for candidate in live):
+            raise ValueError("relation event contradicts the current curated mapping")
+        if row["action"] == "DESTINATION_CHANGE":
+            matches = [candidate for candidate in live
+                       if candidate.get("dst") == row["new_destination"]
+                       and candidate.get("source_class") == "curated"
+                       and candidate.get("date_provenance") == "crosswalk"
+                       and candidate.get("valid_from") == effective]
+            if len(matches) != 1:
+                raise ValueError("destination change lacks the exact current owner mapping")
+        internal, display, redistribution = _licensing("mastermind_curated")
+        evidence.append({
+            "evidence_id": eid, "kind": "operator_curation",
+            "published_at": row["known_at"], "effective_at": row["effective_at"],
+            "source_ref": source_ref, "licensing_internal_ok": internal,
+            "licensing_display_ok": display,
+            "licensing_redistribution_ok": redistribution, "retention": None,
+            "computed_at": computed_at, "provider": None, "claim_type": None,
+        })
+        authority = event.authority_receipt
+        owner_eid = evidence_id_for("operator_curation", authority["receipt_ref"], authority["known_at"])
+        evidence.append({
+            "evidence_id": owner_eid, "kind": "operator_curation",
+            "published_at": authority["known_at"], "effective_at": authority["accepted_at"],
+            "source_ref": authority["receipt_ref"], "licensing_internal_ok": internal,
+            "licensing_display_ok": display, "licensing_redistribution_ok": redistribution,
+            "retention": None, "computed_at": computed_at, "provider": None, "claim_type": None,
+        })
+        closed = {field: old.get(field) for field in RESERVED_EDGE_FIELDS}
+        closed.update({
+            "edge_id": prior["edge_id"], "type": prior["type"],
+            "src": prior["src"], "dst": prior["dst"],
+            "valid_from": prior["valid_from"], "valid_to": effective,
+            "evidence_time": effective, "belief_time": belief_time, "era": era,
+            "source_class": "curated", "date_provenance": "crosswalk",
+            "evidence_refs": sorted(set(_normalize_evidence_refs(old.get("evidence_refs")) + [eid, owner_eid])),
+            "confidence_basis": old.get("confidence_basis") or CONFIDENCE_BASIS,
+            "computed_at": computed_at, "engine_version": ENGINE_VERSION,
+        })
+        closings.append(closed)
+    return closings, evidence
 
 
 # ---------------------------------------------------------------------------

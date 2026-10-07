@@ -1,0 +1,3945 @@
+{
+  "accepted_curation": {
+    "decision_clock": "2026-10-04T00:51:55.181207Z",
+    "decision_ids": [
+      "prop:de400c2bb566c04c",
+      "prop:a1b11d839c5d789d"
+    ],
+    "do_not_redo": true,
+    "pr": 8381,
+    "ratified_by": [
+      null,
+      null
+    ],
+    "rejects_mapping_not_grid_application": true,
+    "squash": "1b4edfb438f7ff7edca5097f0c90243a49207d1e"
+  },
+  "author": "/root/d2d_curation",
+  "authority_flags": {
+    "escalation": false,
+    "gate": false,
+    "insertion": false,
+    "origination": false,
+    "predictive_use": false,
+    "rank": false,
+    "size": false
+  },
+  "completion": {
+    "all_market_classification": false,
+    "d2e_rights_price_history_coverage": false,
+    "full_d2d": false,
+    "publication": false
+  },
+  "counts": {
+    "canonical_theme_nodes": 18,
+    "graph_local_nodes": 644,
+    "graph_mapped_local_nodes": 61,
+    "graph_unmapped_local_nodes": 583,
+    "locals_without_proposals": 497,
+    "native_proposed_records": 234,
+    "native_ratified_records": 0,
+    "native_rejected_records": 2,
+    "proposal_records": 236,
+    "proposed_local_nodes": 145,
+    "rejected_local_nodes": 2
+  },
+  "holds": [
+    {
+      "effect": "RETAIN_STABLE_GRAPH_IDENTITY",
+      "new_queue_status": false,
+      "state": "OWNER_DISPOSITION_UNKNOWN",
+      "subject": "ltheme:ths:309263"
+    },
+    {
+      "effect": "REMAIN_LOCAL_NO_INFERRED_MEMBER_ROSTER",
+      "new_queue_status": false,
+      "state": "EXACT_OWNER_BASKET_NOT_BOUND",
+      "subject": "ltheme:ths:300733"
+    },
+    {
+      "effect": "REMAIN_LOCAL_NO_INFERRED_MEMBER_ROSTER",
+      "new_queue_status": false,
+      "state": "EXACT_OWNER_BASKET_NOT_BOUND",
+      "subject": "ltheme:ths:307822"
+    },
+    {
+      "effect": "NO_MANUFACTURED_CANONICAL_MAPPING_DECISION",
+      "new_queue_status": false,
+      "state": "LOCAL_APPLICATION_SCOPE",
+      "subject": "ltheme:ths:308294"
+    }
+  ],
+  "independent_review_of_this_source": "PENDING_DIFFERENT_REVIEWER",
+  "inputs": [
+    {
+      "blob": "2dcac135e78cbf32c52c531488fd4a475f7c30cf",
+      "bytes": 137781,
+      "path": "data/theme_graph/nodes.parquet",
+      "sha256": "c93b4e840bf83b18b53343acd15ecb01c22f38d22d2ff979eea13a6f0910934b"
+    },
+    {
+      "blob": "4b53aafdd72970a3bf66914a7b2ab12a84b80658",
+      "bytes": 292939,
+      "path": "data/theme_graph/edges.parquet",
+      "sha256": "293380afc5de16a4ae67cf3aa281e730c022d58ad6296924c5840e6c10cc12fd"
+    },
+    {
+      "blob": "2a7219afc61d3d7154de7b261af115d4beeefe3e",
+      "bytes": 8049,
+      "path": "data/theme_graph/node_lifecycle.parquet",
+      "sha256": "efd6dc4b7730c8b955659780dc88b83d07f6790a0c24a1c0d453afe41606104f"
+    },
+    {
+      "blob": "dc2f9f35406aaa39bdaf2d2cc9ccf2e0641c3611",
+      "bytes": 3482,
+      "path": "data/theme_graph/_meta.json",
+      "sha256": "cb9ce5c637bbda67017fd48f7a5497ad4344c5705ee7445a8785a7e31903e198"
+    },
+    {
+      "blob": "58d8d8722d7834f30df55dd8b1e571ee20f7b773",
+      "bytes": 219615,
+      "path": "data/theme_graph/probation/proposals.jsonl",
+      "sha256": "fb7a55fb7abb27261e8541742d9e79c143a7d52d21bb26962ca1150e77e59c7e"
+    },
+    {
+      "blob": "782dbc519b7bb2d446af91c66c6fb9248722a8b9",
+      "bytes": 20846,
+      "path": "config/theme_crosswalk.yml",
+      "sha256": "43450b71f8663c4625d34940cdf15b5cab37eaa52061e118686f89c0d80ae909"
+    },
+    {
+      "blob": "b08b24cc1f7af56034cfd3898d180d26c44465af",
+      "bytes": 948104,
+      "path": "data/baskets_china_ths/membership.json",
+      "sha256": "846ba99a127c9d6144e765a75862c406c130465f598f5033e34b29b1858cb414"
+    },
+    {
+      "blob": "05dfdfd0fed60311895b0bf810a631e843e6963b",
+      "bytes": 9928,
+      "path": "data/baskets_china_ths/concept_map.json",
+      "sha256": "332333809511407e85a9621d56a03eccc7405de3f0bbb63c1f757b2b8afeb385"
+    }
+  ],
+  "natural_consumption": {
+    "ordinary_producer_receipt": null,
+    "ordinary_reader_receipt": null,
+    "state": "UNKNOWN_NOT_PROVEN_BY_SOURCE_OR_CONTROLLED_TESTS"
+  },
+  "original_queue_prefix": {
+    "bytes": 205671,
+    "preserved": true,
+    "rows": 234,
+    "sha256": "8ce0d428bb8d3d3164430da316f615e16bce1c188a0e4412ed3bcbca6c37632c"
+  },
+  "parent_admission": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5978883989",
+  "prior_accepted_census": {
+    "graph_local_nodes": 644,
+    "report_sha256": "855602c65d8abf7dfe19ac7ab511e7ea18dcf46727864a09412cc78fe2bef39c",
+    "source_finviz_local_nodes": 268,
+    "source_local_nodes": 643,
+    "source_ths_local_nodes": 375
+  },
+  "proposal_census": [
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4f5e710b2c995d2b",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_utilities",
+        "local_theme": "ltheme:finviz:energybaseutilities"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:53c81c8c5fdddb11",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:defense",
+        "local_theme": "ltheme:finviz:defenseaviation"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b5f68ccd90272964",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_health",
+        "local_theme": "ltheme:finviz:longevityhealthcare"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:cc7c48ef11836c6b",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:iothardware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:ecbfe502c6d1cc1d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:defense",
+        "local_theme": "ltheme:finviz:spacedefense"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:50b52901f9c9af22",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:quantum_computing",
+        "local_theme": "ltheme:finviz:quantumhardware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:a62d7e78ddc4d15d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:quantum_computing",
+        "local_theme": "ltheme:finviz:quantumsoftware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:9b3bd473b0411ec9",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:hardwareservers"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:fd4231be799d7255",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:hardwarestorage"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:5e29eb5f8f82adf0",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_financials",
+        "local_theme": "ltheme:finviz:blockchainpayments"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:d507dbeb498363c7",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:payments_fintech",
+        "local_theme": "ltheme:finviz:fintechlending"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:d162bbcfc6682517",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_comm",
+        "local_theme": "ltheme:finviz:telecomwireless"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:93196b08a5f0a1f3",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:memory_storage",
+        "local_theme": "ltheme:finviz:semismemory"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b4cafadae13e4161",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:softwareos"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:2f4dccc2064ea2eb",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_health",
+        "local_theme": "ltheme:finviz:healthcaredevices"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:6f7be0c9482a1337",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:cloudhardware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:873115a842566d86",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:hardwarepcsdevices"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:f5739823025c424f",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_utilities",
+        "local_theme": "ltheme:finviz:energycleanutilities"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:93f00256a118a522",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:cybersecurity",
+        "local_theme": "ltheme:finviz:softwaresecurity"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:04130c3fcca79f8c",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:ainetworking"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:e8814b2ecf177d34",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:defense",
+        "local_theme": "ltheme:finviz:defenseweapons"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:cd437041420a929d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:obesity_glp1",
+        "local_theme": "ltheme:finviz:healthcaremetabolic"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4b54e3c95909758e",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:quantum_computing",
+        "local_theme": "ltheme:finviz:quantumapplications"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:772099739d57a5d8",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:quantum_computing",
+        "local_theme": "ltheme:finviz:quantumcloud"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:83f50ae2abc7c592",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:defenseaviation"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:15e905d06f2cc0e6",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:defense",
+        "local_theme": "ltheme:finviz:defensemissiles"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:140ad06771c9f772",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:non_ai_tech",
+        "local_theme": "ltheme:finviz:semisanalog"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:ebd9fce28f06861f",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:defensemissiles"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:80c12f930cc724d8",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_realestate",
+        "local_theme": "ltheme:finviz:realestateittelecom"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:d663774fc968abe4",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:automationsoftware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:83ca50279f06cfba",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:cybersecuritysiem"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4436240c45f5b56a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:semisanalog"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:6148458a610f7101",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:softwareenterprise"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:08828a9e3aa44ef9",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:telecomg"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:023dd8e4d9b1b1ec",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:robotics_automation",
+        "local_theme": "ltheme:finviz:automationrobotics"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:631d7ff707e5cb4e",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:silver_miners",
+        "local_theme": "ltheme:finviz:commmetalssilver"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:79a143e78aaf38c2",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:semiswireless"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:d73a1bd0479c69de",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:aienterprise"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:042dad0ed116cb11",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:defense",
+        "local_theme": "ltheme:finviz:defensedrones"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:615ddc6a2288a6de",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:energy_complex",
+        "local_theme": "ltheme:finviz:commenergyoil"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:12b0c5811bc1eca3",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:power_grid",
+        "local_theme": "ltheme:finviz:energybasenuclear"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:95a770bcb24188da",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_energy",
+        "local_theme": "ltheme:finviz:commenergyoil"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:026c2a3e041112b5",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_energy",
+        "local_theme": "ltheme:finviz:energybaseoilproduction"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:a6f2b808e2ace950",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:smarthomevoiceai"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:eda06a1a1b5b83dd",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:semicap_equipment",
+        "local_theme": "ltheme:finviz:semislithography"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:1d850baeebae3011",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_financials",
+        "local_theme": "ltheme:finviz:blockchainplatforms"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4c5445755a47a8dc",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:semismemory"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:bc684251f0ea9b54",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:power_grid",
+        "local_theme": "ltheme:finviz:energybaseutilities"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:73d7243a9f708716",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:uranium_miners",
+        "local_theme": "ltheme:finviz:commenergyuranium"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:5c9f118afa8c8f86",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:wearablesimmersive"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:469d6ddd3e0fdff6",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:aicompute"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:0c2383feed596dc2",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:payments_fintech",
+        "local_theme": "ltheme:finviz:fintechpayments"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:a72ccada34853153",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_infra",
+        "local_theme": "ltheme:finviz:semiscompute"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:d760d53eba661fbf",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_semiconductors",
+        "local_theme": "ltheme:finviz:semiscompute"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:e62448d3f3a0cf7d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:cybersecurity",
+        "local_theme": "ltheme:finviz:cybersecurityappsecurity"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:03ada85a341668ef",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:cybersecurity",
+        "local_theme": "ltheme:finviz:cybersecurityzerotrust"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:5cb0d455ed71acf0",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:robotics_automation",
+        "local_theme": "ltheme:finviz:roboticsautomation"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4a8b7ac814d66662",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:travel",
+        "local_theme": "ltheme:finviz:transportationairtravel"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b2f27a343e59c95f",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:defenseweapons"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4e9e778e839dd494",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:cloudhybridcloud"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:7ace79d8982eb7a4",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:semiscompute"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:6aabeef342bb37a7",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:memory_storage",
+        "local_theme": "ltheme:finviz:bigdatainfrastructure"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:49eb43be7dcf9fd1",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:memory_storage",
+        "local_theme": "ltheme:finviz:hardwarestorage"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:d377ea046f55667d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:transportationaircargo"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:5cbe5909185ce6cb",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_realestate",
+        "local_theme": "ltheme:finviz:clouddatacenters"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:2a006163a22a6e9f",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:cybersecuritynetwork"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b1e7150a056b5a9a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_infra",
+        "local_theme": "ltheme:finviz:cloudhardware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:c5d8a0be196c0838",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:energy_complex",
+        "local_theme": "ltheme:finviz:energybaseoilrefining"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:0efc83eddb26683d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:varealityhardware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:e55eea115eccebfb",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:softwareenterprise"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:36363903148c428e",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:aiagi"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:db3a742f1701886c",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:aimodels"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:67810039c910c095",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:robotics_automation",
+        "local_theme": "ltheme:finviz:roboticslogistics"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:e30ccc49d68eeeb4",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_comm",
+        "local_theme": "ltheme:finviz:entertainmentvideo"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:6ac7aa73a3bfa7f2",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_financials",
+        "local_theme": "ltheme:finviz:fintechexchanges"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:a5618e2dd5b7f168",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:spacedefense"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:6dbd71bd945ca1aa",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:blockchainenterprise"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:16333cf639432759",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:hardwarenetworking"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:00c6fbf6c8d83816",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:cybersecurity",
+        "local_theme": "ltheme:finviz:cloudsecurity"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:443ded8a8be68e44",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:cybersecurity",
+        "local_theme": "ltheme:finviz:cybersecuritycloud"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:1eb60157e8891bb8",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:energy_complex",
+        "local_theme": "ltheme:finviz:energybaseoilproduction"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:44b6ebbc3e2e254b",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:aienterprise"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:3cde11ca11420ceb",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:iotsoftware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:268837c4f4cb5c5f",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_infra",
+        "local_theme": "ltheme:finviz:aicompute"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:5bbea8c18388a52d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_health",
+        "local_theme": "ltheme:finviz:nanotechmedicine"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:a6c952377ec474cc",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_neoclouds",
+        "local_theme": "ltheme:finviz:blockchainmining"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:6546d1018193902c",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:big_pharma",
+        "local_theme": "ltheme:finviz:healthcareoncology"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:ae5f01a05e8a5fa3",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:cybersecurity",
+        "local_theme": "ltheme:finviz:aisecurity"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:947604309a609c4b",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:cybersecurity",
+        "local_theme": "ltheme:finviz:iotsecurity"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4bb581baf33f68b2",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:defense",
+        "local_theme": "ltheme:finviz:autonomousdefense"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:6b6f10e0c8f42711",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:non_ai_tech",
+        "local_theme": "ltheme:finviz:wearablesimmersive"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:ef44f64861054f05",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:nuclear_power",
+        "local_theme": "ltheme:finviz:energybasenuclear"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:923044f10424ff57",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_health",
+        "local_theme": "ltheme:finviz:longevityagingpharma"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:de8589d463842f81",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:nanotechelectronics"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:c309b1a80022fe23",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:softwaredesign"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:967f92a1aba510c8",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:cloudhyperscalers"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:083dd51a18328eeb",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:cybersecurity",
+        "local_theme": "ltheme:finviz:cybersecurityendpoint"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:52933205cb0a2678",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:cybersecurity",
+        "local_theme": "ltheme:finviz:cybersecuritythreatops"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:0cb3a70ff04c6392",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:payments_fintech",
+        "local_theme": "ltheme:finviz:blockchainpayments"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:024e5501078d209f",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:reshoring",
+        "local_theme": "ltheme:finviz:automationautomation"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:0e12be957a7797fe",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:space_economy",
+        "local_theme": "ltheme:finviz:spacedataanalytics"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:bbc94a93fdc6de37",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:automationautomation"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:e93ebd627cb0f84f",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:transportationrail"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:12b86a0f8687605a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:cybersecurityendpoint"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:c7001070431ba97f",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:cybersecurityidentityiam"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:ce63b239b74f56a3",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:quantumenablingtech"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:8d3def2e54f94277",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:softwareos"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:7c153657f6ae1f24",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:wearablessmartwatches"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:7d0b1f98d0cceb8f",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:quantum_computing",
+        "local_theme": "ltheme:finviz:softwareos"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:f3f254d5c91da017",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:softwareos"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:585f7332515b971d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:defense",
+        "local_theme": "ltheme:finviz:defensemanufacturing"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:3d52d498f6bb7296",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:defense",
+        "local_theme": "ltheme:finviz:defensecyberdefense"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:11282bcc5388921f",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:entertainmentinfrastructure"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:575f4f2a61514aba",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:hardwaretelecom"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b9a71fbb9765584f",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:transportationinfrastructure"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:c7781b782be70ee2",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:bigdatainfrastructure"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:baad3f78caeb0602",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:clouddatabases"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:0099553b90312735",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_financials",
+        "local_theme": "ltheme:finviz:blockchaintokenization"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:940a8a5c36f4927b",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_health",
+        "local_theme": "ltheme:finviz:roboticsmedical"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:dd53c0bdfdb51c9d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:cybersecurityzerotrust"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:a906b3ffdc23bf18",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:evschips"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:0c3622b095fbddf3",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:hardwareelectronics"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:1efaab5d2bdccf24",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:varealityenterprise"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:49c6f9836b168451",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:cloudmulticloud"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:3eddc23dd20bfb70",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:iotsoftware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:bdf4f5d1af5e159d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:defensedrones"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:0d6e20d7c8b7e22d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:cloudmulticloud"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:a3e78da1424a2fb5",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_infra",
+        "local_theme": "ltheme:finviz:semislithography"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:6c23974042db61e7",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:socialvisualcontent"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:66ac13962bd271f5",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:wearablessoftware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:d3f81ce42283d77a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:payments_fintech",
+        "local_theme": "ltheme:finviz:blockchainplatforms"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:05a836389932f9d5",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:space_economy",
+        "local_theme": "ltheme:finviz:spaceinfrastructure"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:82cadabae4a76393",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:space_economy",
+        "local_theme": "ltheme:finviz:spacesatellites"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:878380d48fe546a3",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_materials",
+        "local_theme": "ltheme:finviz:commagrifertilizers"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:d402a56d83acf714",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:semislithography"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:694d578fea410f42",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_semiconductors",
+        "local_theme": "ltheme:finviz:aicompute"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:d7ec1c472f80d957",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:iotedgedevices"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:5774c6576baba9cf",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:softwarehsaas"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:04e8392b48f22600",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:non_ai_software",
+        "local_theme": "ltheme:finviz:cloudhsaas"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b5ef68f0acd99ef5",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:non_ai_software",
+        "local_theme": "ltheme:finviz:softwarehsaas"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:cac53cdf41070638",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:aiagi"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:779d60b6d60f2650",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:blockchainenterprise"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:296a2f94cca2892c",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:cloudserverless"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:284820610020b0fb",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:cybersecuritysiem"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:2f486dc26b269b3d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:crypto",
+        "local_theme": "ltheme:finviz:fintechblockchain"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:ee2da18a1a068f67",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:aiadssearch"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:69e070237bd1e8ff",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:aidata"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:1b453ff2e906e8dd",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:aienergy"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:2eada81f2b399e94",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:autonomoussoftware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:5313df263b7cd2f3",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:bigdataaiplatforms"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:e08d7886bb497c21",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:bigdatainfrastructure"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:28c006283e73bedc",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:biometricssoftware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:11e8f76dadc2f9d9",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:entertainmentinfrastructure"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:c4181133d7b7dead",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:quantumapplications"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:1627083d3b91ff36",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:quantumcloud"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b708caaa7cc07d4a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:varealityhardware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:37bfab611060e129",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:varealityinfrastructure"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:2ec06d5435bc557a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:varealitysoftware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:e3cca874d743c928",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:quantum_computing",
+        "local_theme": "ltheme:finviz:aiagi"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:2a907bd26aadca51",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_health",
+        "local_theme": "ltheme:finviz:wearablesmedical"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:536a792f2ddad2eb",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:aiagi"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:8e2dac972e1dc062",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_infra",
+        "local_theme": "ltheme:finviz:nanotechelectronics"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:c033db399b3247b3",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:aimodels"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:affe19920cb4b3fa",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:cloudpaas"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:43badcfb82cf4f05",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:big_pharma",
+        "local_theme": "ltheme:finviz:longevityagingpharma"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:aa63e3743a40f948",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:big_pharma",
+        "local_theme": "ltheme:finviz:nanotechmedicine"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:121a2f7470357239",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:power_grid",
+        "local_theme": "ltheme:finviz:energycleansmartgrid"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:c632eb159e9a0f92",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:retail",
+        "local_theme": "ltheme:finviz:ecommerceomnichannel"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:cd74649f889fb449",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_staples",
+        "local_theme": "ltheme:finviz:nutritionaltprotein"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b553452063b4748b",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:aisecurity"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:df9817ac98fb0813",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:iotsecurity"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:17bfbfffe4450c05",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_semiconductors",
+        "local_theme": "ltheme:finviz:cloudhardware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:a9b6325fb6119ece",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:gold_miners",
+        "local_theme": "ltheme:finviz:commmetalsgold"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:1111a525282d351a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:power_grid",
+        "local_theme": "ltheme:finviz:energycleanutilities"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:da396bf0c2e32a5d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_energy",
+        "local_theme": "ltheme:finviz:energybaseoilrefining"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:482561b51350c748",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:defensecyberdefense"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:504bff8a9d2e048d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:aicloud"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:e3839200143950d7",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:aiedge"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:2d9fd6d81b3190de",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:automationiot"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:839913441d296e98",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:bigdataaiplatforms"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:e86759689774bd96",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:bigdataanalyticsbi"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4189397a6e103ce8",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:roboticsmachinevision"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b0af5c92896c8b63",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_health",
+        "local_theme": "ltheme:finviz:healthcareoncology"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:0388c6c607fd75a0",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:aidata"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:20191835ccd21b9a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:softwaredataanalytics"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:8b256801a3205222",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:defensemanufacturing"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:80be3ffb558953b0",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:aidata"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:5058b14dad919c0a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:softwarehsaas"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:3771f7eedaf6c434",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:softwaresecurity"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:e65a3e845a421c61",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:robotics_automation",
+        "local_theme": "ltheme:finviz:airobotics"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:9a5d1a98f8ec1aea",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_financials",
+        "local_theme": "ltheme:finviz:fintechpayments"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:91a771e9e9ad2cee",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_staples",
+        "local_theme": "ltheme:finviz:consumerfood"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:5a2b6fb5cc54470b",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:hardwareindustrialiot"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:2b1833b23a9d5492",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_infra",
+        "local_theme": "ltheme:finviz:ainetworking"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:744084867020fe27",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_semiconductors",
+        "local_theme": "ltheme:finviz:ainetworking"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4f72c1cbcad34b60",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:cloudsecurity"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:435608bf4dc43e18",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:softwarecrm"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4ef40a6c0f126823",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:non_ai_software",
+        "local_theme": "ltheme:finviz:aienterprise"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4e3203b3074de80b",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:robotics_automation",
+        "local_theme": "ltheme:finviz:autonomousindustrial"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:531a65a541642731",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_industrials",
+        "local_theme": "ltheme:finviz:iotenterprise"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:7429270e5ac3ea02",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:autonomoussoftware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:85d23b2062cf345c",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:softwarecrm"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:dbb697a8bad8e41d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_infra",
+        "local_theme": "ltheme:finviz:iothardware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:72234ecc98aa2160",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_semiconductors",
+        "local_theme": "ltheme:finviz:iothardware"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:9208f818493bfb57",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:cloudhybridcloud"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:f25dcf24eb257af0",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:cybersecurityzerotrust"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:779bf16b787a6ba4",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:critical_minerals",
+        "local_theme": "ltheme:finviz:commmetalsrareearth"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:24bfca2ef4721dcd",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:non_ai_tech",
+        "local_theme": "ltheme:finviz:evschips"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:92b0e2b60c3446ab",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_health",
+        "local_theme": "ltheme:finviz:healthcaremetabolic"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:3c68bb621db397fc",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_realestate",
+        "local_theme": "ltheme:finviz:realestatehousing"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:06ecefc9219667be",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:cybersecurityappsecurity"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:31a8f8ea9d371f3a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:telecominfrastructure"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:347ec930b319b9b8",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_infra",
+        "local_theme": "ltheme:finviz:semiswireless"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:33bc26089631f81d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_semiconductors",
+        "local_theme": "ltheme:finviz:semiswireless"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b89a9674ef7ad6a1",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:cybersecurityendpoint"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:644ff7848cf074c0",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:cybersecuritythreatops"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4c193ba57cfb365d",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:ai_software",
+        "local_theme": "ltheme:finviz:socialnetworks"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:27af3e0868724859",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:cloudhyperscalers"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:6e5bb7ef667cb99a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:mag7",
+        "local_theme": "ltheme:finviz:socialnetworks"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:122a86282d44c757",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:payments_fintech",
+        "local_theme": "ltheme:finviz:fintechneobanks"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:8feb33286266946c",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:quantum_computing",
+        "local_theme": "ltheme:finviz:cloudhyperscalers"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:15baaa7b59648beb",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:quantum_computing",
+        "local_theme": "ltheme:finviz:quantumenablingtech"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:62bbde868f166f07",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:robotics_automation",
+        "local_theme": "ltheme:finviz:automationautomation"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b86420a587e96d98",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:semicap_equipment",
+        "local_theme": "ltheme:finviz:semispackaging"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:0cf89122b57ff777",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:space_economy",
+        "local_theme": "ltheme:finviz:telecomsatcom"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:b565d75a1ad243e7",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_staples",
+        "local_theme": "ltheme:finviz:nanotechproducts"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:103b1abe1b4d1913",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:automationrobotics"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:02fbec7657e1ef3a",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:cloudhyperscalers"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:4bac06ab01ff04b5",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:cybersecuritythreatops"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:0fac5656c503b637",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_tech",
+        "local_theme": "ltheme:finviz:semisdesigntools"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:da9070cf04bf16cd",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:cybersecurity",
+        "local_theme": "ltheme:finviz:cybersecuritynetwork"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:d81a754d2cb6e265",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:memory_storage",
+        "local_theme": "ltheme:finviz:hardwarepcsdevices"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:5b1f52833d21ccca",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_financials",
+        "local_theme": "ltheme:finviz:blockchaininfrastructure"
+      }
+    },
+    {
+      "adjudicated_at": null,
+      "adjudicated_at_present": false,
+      "created": "2026-08-15T02:03:50Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 0,
+      "kind": "mapping",
+      "native_status": "proposed",
+      "proposal_id": "prop:cf80930ea81ae665",
+      "ratified_by": null,
+      "rationale": "Overlap evidence alone supplies no semantic admission; retain native probation, remain local.",
+      "subject": {
+        "basket": "basket:baskets:us_sector_staples",
+        "local_theme": "ltheme:finviz:commagrigrains"
+      }
+    },
+    {
+      "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+      "adjudicated_at_present": true,
+      "created": "2026-10-04T00:51:55.181207Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 5,
+      "kind": "mapping",
+      "native_status": "rejected",
+      "proposal_id": "prop:de400c2bb566c04c",
+      "ratified_by": null,
+      "rationale": "Accepted mapping rejection is preserved; local application facts remain.",
+      "subject": {
+        "canonical_theme": "theme:grid_electrification",
+        "local_theme": "ltheme:ths:301096"
+      }
+    },
+    {
+      "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+      "adjudicated_at_present": true,
+      "created": "2026-10-04T00:51:55.181207Z",
+      "diagnostic_only": true,
+      "evidence_refs_count": 5,
+      "kind": "mapping",
+      "native_status": "rejected",
+      "proposal_id": "prop:a1b11d839c5d789d",
+      "ratified_by": null,
+      "rationale": "Accepted mapping rejection is preserved; local application facts remain.",
+      "subject": {
+        "canonical_theme": "theme:grid_electrification",
+        "local_theme": "ltheme:ths:301174"
+      }
+    }
+  ],
+  "purpose": "DISPOSABLE_SOURCE_CENSUS_AND_LIMITATIONS_NOT_IDENTITY_OR_APPROVAL_TRUTH",
+  "recorded_at": "2026-10-04T10:56:16.280884+00:00",
+  "rights_source_limit": {
+    "actual_scope": "owner_dynamic graph-node collections only",
+    "classification_label_internal_derived_is_grant": false,
+    "projector": "engine.intelligence_workspace.projection.ThemeRightsProjector",
+    "stage_relationship_audience_consumer_use_is_authorization": false,
+    "stage_relationship_per_use_or_revocation_api": "UNSUPPORTED"
+  },
+  "schema": "gmi.d2d_structural_owner_binding.preparation_receipt/v1",
+  "source_branch": "claude/gmi-d2d-structural-owner-binding-20261004-astra-001",
+  "source_head": "bf6e56f143c38fcad195aba7aa3755d1ad5fc335",
+  "source_tree": "307c45c60ffc2078fb59c5ee2eb7a73775455357",
+  "supported_owner_composition": {
+    "availability_may_be_positive": true,
+    "current_rights": "OWNER_NOT_BOUND",
+    "historical_classification_first_known": null,
+    "issuer_nullable": true,
+    "legacy_v1": "PRESERVED_DEFAULT",
+    "noncompany_aggregate_industry": "UNSUPPORTED",
+    "per_use_qualification": "NOT_QUALIFIED",
+    "scope": "CURRENT_US_SECURITY_INDUSTRY_ONLY",
+    "shared_issuer_does_not_collapse_security": true,
+    "subindustry": "OWNER_NOT_BOUND"
+  }
+}

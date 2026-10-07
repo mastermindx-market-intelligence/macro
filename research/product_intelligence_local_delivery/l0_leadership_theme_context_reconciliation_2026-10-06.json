@@ -1,0 +1,78 @@
+{
+  "pins": {
+    "main": "892157418ec6b8664d3a0d4ead12011826fc82b4",
+    "pr8470_head": "1537636f53cc24184a16e7a044f066d7e43f2ac4",
+    "pr8470_merge_base": "9a2f00a560ab93257a19f35cc62b4c287500a958",
+    "terminal": "e17622b1a05fc8891e44bc3bac2d2a178c1820d7",
+    "mastermind_overlay": "d1a8e672464d9a90dfe5b3608e071f8a730f3c95"
+  },
+  "gmi_prs": [
+    {"pr": 8485, "state": "MERGED", "sha": "fd2552813811c7e1003cc1a6cb7335e661660905", "capability": "rights_use current-use capture verdict (#8485)", "hold": null},
+    {"pr": 8487, "state": "MERGED", "sha": "625d0c71714d81be21a14278402e4436be0cb4db", "capability": "completion-ruler audit report", "hold": null},
+    {"pr": 8488, "state": "MERGED", "sha": "192a46de8be8c694e47a1f2ab60b396d7dbb4f7f", "capability": "D2E pre-acceptance census", "hold": null},
+    {"pr": 8489, "state": "MERGED", "sha": "c0f4a83ce974760840d7a3f798aae1a15d7a544e", "capability": "agentos GMI handoff records", "hold": null},
+    {"pr": 8490, "state": "MERGED", "sha": "d8f08cffd31998992202d38bb4a00c9fb6a82789", "capability": "Wave F Terminal/R2 consumer census", "hold": null},
+    {"pr": 8493, "state": "MERGED", "sha": "601f87f3992474bc9dbf92069e5a9b2588d39791", "capability": "agentos readiness exemplar heal", "hold": null},
+    {"pr": 8494, "state": "MERGED", "sha": "6fa88a734f889d5897a78d033d8bf02a96231e47", "capability": "agentos Wave F merge bookkeeping", "hold": null},
+    {"pr": 8417, "state": "HELD", "sha": "91bf290709102b2aeda09ada48961455900f6b76", "capability": "W3C selection cohort publication seams", "hold": "Sol HOLD / PARKED; HOLD-RELEASED comment 2026-10-06 — PR still OPEN unmerged"},
+    {"pr": 8486, "state": "HELD", "sha": "2e2bcd75ca62e10a12c99afc60707c32ee6895ad", "capability": "selection-clock qualified reads (stacked on #8417)", "hold": "PARKED by inheritance until #8417 lands on main"},
+    {"pr": 8455, "state": "HELD", "sha": "4b38f2501a32ebd22d152ddd470eea6de7dc5a28", "capability": "ThemeState owner adapter / CTE-v3 lineage", "hold": "Draft / HOLD-FOR-REVIEW. No auto-merge. Sol release ruling required"},
+    {"pr": 8432, "state": "HELD", "sha": "54d17ebcb1c11471fffbbdea6888f97db6c9fbbb", "capability": "D2C PIT vintage completion", "hold": "Sol HOLD; latest-base integration and action-time release pending"},
+    {"pr": 8435, "state": "HELD", "sha": "7429a3e5f6da9b66787ead24119a238a2a36858d", "capability": "D2D structural owner binding", "hold": "Sol HOLD; expected-head release and protected readback required"}
+  ],
+  "consumable_on_main": [
+    "engine/theme_context.py:589 compute_theme_context",
+    "engine/theme_context.py:891 read_context",
+    "engine/company_theme_exposure/views.py:259 build_bundle",
+    "engine/theme_graph/rights_use.py:140 current_use_verdict",
+    "engine/theme_graph/store.py:258 read_nodes (and sibling read_* readers)",
+    "engine/us_board_rank.py:2208 load_theme_context",
+    "engine/rotation_events.py:1085 closed_recent"
+  ],
+  "held_only_readers": [
+    "engine/rotation_events.py:1176 read_ledger_history @ 1537636f (#8470)",
+    "engine/theme_graph/selection_cohort_reads.py @ #8486/#8417 stack (absent on main)"
+  ],
+  "reader_review": [
+    {"case": "a_replay_vs_retained_unmarked", "verdict": "HANDLED", "evidence": "engine/rotation_events.py:1415-1418 @ 1537636f; tests/test_rotation_events.py::test_read_ledger_history_preserves_native_rows_and_modes"},
+    {"case": "b_malformed_before_boundary", "verdict": "HANDLED", "evidence": "engine/rotation_events.py:1143 _history_invalid; tests/test_rotation_events.py::test_read_ledger_history_malformed_before_cutoff_fails_closed"},
+    {"case": "c_backfill_attempt", "verdict": "HANDLED", "evidence": "read_ledger_history does not call backfill_leg_names; test_read_ledger_history_does_not_mutate_source_bytes @ 1537636f"},
+    {"case": "d_missing_through_boundary", "verdict": "HANDLED", "evidence": "test_read_ledger_history_missing_and_empty_are_typed; test_read_ledger_history_rejects_invalid_query_arguments @ 1537636f"},
+    {"case": "e_duplicate_row_publication", "verdict": "HANDLED", "evidence": "test_read_ledger_history_duplicate_lifecycle_rows_are_not_deduplicated @ 1537636f"},
+    {"case": "f_clock_skew_ts_vs_observation", "verdict": "UNKNOWN", "evidence": "Both clocks returned on rows; rg -i skew tests/test_rotation_events.py @ 1537636f — no matches"},
+    {"case": "L-A_gmi_multi_clock", "verdict": "UNHANDLED", "evidence": "Out of rotation reader; rights_use on main; cohort reads held #8486"},
+    {"case": "L-B_membership_cutoff", "verdict": "UNHANDLED", "evidence": "GMI graph PIT held #8432/#8435"},
+    {"case": "L-C_retained_unmarked_malformed", "verdict": "HANDLED", "evidence": "Overlaps a/b; Mastermind 05_ACCEPTANCE_AND_RED_TEAM.md:68 @ d1a8e672"},
+    {"case": "L-D_auc_ties", "verdict": "N/A", "evidence": "Mastermind #1194 perception lane"},
+    {"case": "L-E_residual_independence", "verdict": "N/A", "evidence": "Package S research; not #8470"},
+    {"case": "L-F_category_mislabel", "verdict": "N/A", "evidence": "Product surface law"},
+    {"case": "L-G_halted_stale_bars", "verdict": "N/A", "evidence": "Intraday study registration"}
+  ],
+  "attach_points": [
+    {"path": "engine/company_theme_exposure/views.py:32-65", "role": "theme_state receipt embedded in CTE"},
+    {"path": "terminal/app/api/company-theme-context/[symbol]/route.ts:9", "role": "Terminal BFF for CTE @ TERMINAL_PIN"},
+    {"path": "engine/theme_context.py:589", "role": "theme_context.v1 leadership health producer"},
+    {"path": "templates/sector_central.html.j2:2196", "role": "glance leadership from theme_context"},
+    {"path": "site/basketdata/theme_context.json", "role": "served theme_context.v1 artifact (ls-tree main)"}
+  ],
+  "terminal_collisions": [
+    {"pr": 796, "head": "0dfb1d8f73f82ebd83a5f57918ed4d0cdf5cec1b", "overlap": "docs/verification only on current head; no macro path overlap; CTE route unchanged on #796 file list"}
+  ],
+  "path_disjointness_8470": {
+    "shared_with_8412": ["tests/test_rotation_events.py"],
+    "shared_with_mastermind_1194": []
+  },
+  "carriers": [
+    {"carrier": "macro#8324", "comment_id": "IC_kwDOS4LjIs8AAAABZisRiQ", "at": "2026-10-06T04:01:30Z", "author": "mastermindx-2", "binds_L": "SOL RELEASE EDGE; #8417 HOLD RELEASED"},
+    {"carrier": "Mastermind#1194", "comment_id": "IC_kwDOTotz3c8AAAABZQLrWQ", "at": "2026-10-05T06:58:30Z", "author": "MastermindX1", "binds_L": "MISSION_COMPLETE false; W4 disposition"},
+    {"carrier": "macro#8412", "comment_id": "IC_kwDOS4LjIs8AAAABZOT9Nw", "at": "2026-10-05T03:41:02Z", "author": "MastermindX1", "binds_L": "Draft/HOLD; independent review only release blocker"},
+    {"carrier": "macro#8470", "comment_id": "IC_kwDOS4LjIs8AAAABZQaulA", "at": "2026-10-05T07:18:04Z", "author": "MastermindX1", "binds_L": "HOLD-FOR-INDEPENDENT-REVIEW; W2 proof on head 1537636f"}
+  ],
+  "gaps": [
+    "read_ledger_history not on main — #8470 unmerged",
+    "clock skew case (f) UNKNOWN — no test",
+    "L-A/L-B UNHANDLED at GMI cohort layer while #8486/#8432 held",
+    "Terminal v2/cohort consumer UNKNOWN per Wave F census",
+    "Terminal fetch: no origin/main ref; used origin/master for TERMINAL_PIN"
+  ]
+}

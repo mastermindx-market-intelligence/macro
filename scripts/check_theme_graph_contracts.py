@@ -180,7 +180,7 @@ IDENTITY_RESOLUTION_ENUMS: dict[str, set[str]] = {
 #: vocabulary since a future merge lineage reuses this same table.
 LIFECYCLE_ENUMS: dict[str, set[str]] = {
     "status": {"candidate", "canonical", "retired", "merged"},
-    "reason": {"identity_break", "entity_type_conflict"},
+    "reason": {"identity_break", "entity_type_conflict", "duplicate_mint"},
 }
 
 #: Which node kinds each edge type may connect. The pairing table is the structural
@@ -568,6 +568,16 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
                     str(r.get("symbol", "")).strip().upper())
             ratified.add(pair)
             ratified_at_by_pair[pair] = r.get("ratified_at")
+    dup_rows: list[dict] = []
+    dup_by_node: dict[str, dict] = {}
+    dup_mints_file = breaks_file.parent / "theme_graph_duplicate_mints.yml"
+    if dup_mints_file.exists():
+        dup_doc = yaml.safe_load(dup_mints_file.read_text(encoding="utf-8")) or {}
+        dup_rows = list(dup_doc.get("duplicate_mints") or [])
+        for r in dup_rows:
+            nid = str(r.get("node_id") or "").strip()
+            if nid:
+                dup_by_node[nid] = r
     if {"identity_epoch", "node_id"} <= set(nodes.columns):
         for row in nodes.to_dict("records"):
             try:
@@ -669,6 +679,35 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
                             f"retirement may not be backdated ahead of its own "
                             f"ratification (epoch-backdating attack, matrix 7)")
 
+            if {"node_id", "reason", "computed_at"} <= set(lifecycle_latest.columns):
+                for row in lifecycle_latest.to_dict("records"):
+                    if str(row.get("reason")) != "duplicate_mint":
+                        continue
+                    nid = str(row.get("node_id"))
+                    reg = dup_by_node.get(nid)
+                    if reg is None:
+                        breaches.append(
+                            f"node_lifecycle row {nid!r} (reason=duplicate_mint) "
+                            f"cites no matching row in {dup_mints_file.name}")
+                        continue
+                    if str(row.get("merged_into")) != str(reg.get("merged_into")):
+                        breaches.append(
+                            f"node_lifecycle row {nid!r} (reason=duplicate_mint) "
+                            f"merged_into {row.get('merged_into')!r} != registry "
+                            f"{reg.get('merged_into')!r}")
+                    r_at_dup = reg.get("ratified_at")
+                    if not _dated(r_at_dup):
+                        breaches.append(
+                            f"node_lifecycle row {nid!r} cites a duplicate_mints "
+                            f"row with no parseable ratified_at")
+                        continue
+                    computed_at = str(row.get("computed_at") or "")
+                    if computed_at[:10] < str(r_at_dup)[:10]:
+                        breaches.append(
+                            f"node_lifecycle row {nid!r}: computed_at "
+                            f"{computed_at!r} predates its cited duplicate_mints "
+                            f"ratified_at {r_at_dup!r} (matrix 7)")
+
     # --- V4-D2B3 §6 — break-retirement invariant: a ratified break whose prior node
     # EXISTS in nodes.parquet must show that node retired in the CURRENT lifecycle view.
     # Absent prior node passes (ABX shape, generality control) — checked against the RAW
@@ -688,13 +727,57 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
                     f"prior node with a ratified break is a breach (break-retirement "
                     f"invariant, §6)")
 
+    # --- duplicate_mint lifecycle shape (registry-driven merge corrections) ----------
+    if "status" in lifecycle_latest.columns and kinds:
+        merged_into_col = lifecycle_latest.get("merged_into", pd.Series(dtype=object))
+        for row in lifecycle_latest.to_dict("records"):
+            if str(row.get("reason")) != "duplicate_mint":
+                continue
+            nid = str(row.get("node_id"))
+            if str(row.get("status")) != "merged":
+                breaches.append(
+                    f"node_lifecycle row {nid!r} (reason=duplicate_mint) must have "
+                    f"status=merged (got {row.get('status')!r})")
+            mi = row.get("merged_into")
+            if _is_null(mi) or str(mi) == nid:
+                breaches.append(
+                    f"node_lifecycle row {nid!r} (reason=duplicate_mint) must carry a "
+                    f"merged_into company node distinct from node_id")
+                continue
+            if str(kinds.get(str(mi))) != "company":
+                breaches.append(
+                    f"node_lifecycle row {nid!r} (reason=duplicate_mint): merged_into "
+                    f"{mi!r} is not a company node")
+                continue
+            if str(mi) in {str(n) for n in lifecycle_latest.loc[
+                    lifecycle_latest["status"].isin(store.RETIRED_LIKE_STATUSES),
+                    "node_id"]}:
+                breaches.append(
+                    f"node_lifecycle row {nid!r} (reason=duplicate_mint): merged_into "
+                    f"{mi!r} is retired-like in the current lifecycle view")
+        for r in dup_rows:
+            prior = str(r.get("node_id") or "").strip()
+            target = str(r.get("merged_into") or "").strip()
+            if not prior or prior not in kinds:
+                continue
+            hit = lifecycle_latest[lifecycle_latest["node_id"].astype(str) == prior]
+            if hit.empty or str(hit.iloc[0].get("status")) != "merged":
+                breaches.append(
+                    f"duplicate_mints registry row for {prior!r} exists in nodes.parquet "
+                    f"with no merged row in the current node_lifecycle view")
+                continue
+            if str(hit.iloc[0].get("merged_into")) != target:
+                breaches.append(
+                    f"duplicate_mints registry row for {prior!r} expects merged_into "
+                    f"{target!r} but lifecycle shows {hit.iloc[0].get('merged_into')!r}")
+
     # --- V4-D2B3 §6 — retired-consistency invariant: a node whose latest lifecycle
-    # status is retired must not be the src of any latest-belief MEMBER_OF edge with an
+    # status is retired-like must not be the src of any latest-belief MEMBER_OF edge with an
     # open interval (valid_to null). ----------------------------------------------------
     if ("status" in lifecycle_latest.columns
             and {"type", "src", "valid_to", "belief_time"} <= set(edges.columns)):
         retired_now = {str(n) for n in lifecycle_latest.loc[
-            lifecycle_latest["status"] == "retired", "node_id"]}
+            lifecycle_latest["status"].isin(store.RETIRED_LIKE_STATUSES), "node_id"]}
         if retired_now:
             ordered = edges.sort_values(["edge_id", "belief_time", "computed_at"],
                                         kind="stable")
@@ -706,10 +789,10 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
                 {str(s) for s in live_member_of["src"]} & retired_now)
             if offenders:
                 breaches.append(
-                    f"{len(offenders)} retired node(s) are still the src of an open "
-                    f"latest-belief MEMBER_OF edge (first: {offenders[0]!r}) — a retired "
-                    f"company with a live membership is a breach (retired-consistency "
-                    f"invariant, §6)")
+                    f"{len(offenders)} retired-like node(s) are still the src of an open "
+                    f"latest-belief MEMBER_OF edge (first: {offenders[0]!r}) — a "
+                    f"retired/merged company with a live membership is a breach "
+                    f"(retired-consistency invariant, §6)")
 
     # --- V4-D2B3 (adjudicated fix, review 2026-08-22 FIX-3) — conflict-retirement
     # invariant: ANY company-kind node in RAW nodes.parquet whose symbol equals an

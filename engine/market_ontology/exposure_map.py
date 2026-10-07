@@ -48,6 +48,26 @@ _BELIEF_COLLAPSE = (
     "then valid_from <= asof < valid_to"
 )
 
+# Chairman gate #2 (PR #8324 comment 6009724772): run-identity stamps only.
+# data/theme_graph/_meta.json also carries internal-only vendor structure reports
+# (finviz_themes, ths_concepts) that must never ride emitted provenance.
+_STORE_META_PUBLIC_KEYS = (
+    "belief_time",
+    "computed_at",
+    "engine_version",
+    "era",
+    "lane",
+    "mode",
+)
+
+
+def _public_store_meta(meta):
+    """Return allowlisted run-identity stamps from store meta, or None if not a dict."""
+    if not isinstance(meta, dict):
+        return None
+    return {k: meta[k] for k in _STORE_META_PUBLIC_KEYS if k in meta}
+
+
 # --- §3.1 id grammars (closed allowlist) -----------------------------------------
 
 _COMPANY_ID_RE = re.compile(r"^co:(us|cn|hk|ca|intl):[A-Za-z0-9.\-]+(#[0-9]+)?$")
@@ -925,7 +945,7 @@ def compose_exposure_map(
             meta = store.read_meta()
         except Exception:
             meta = None
-        provenance = {**provenance, "store_meta": meta}
+        provenance = {**provenance, "store_meta": _public_store_meta(meta)}
     except Exception:
         return ExposureMap(
             schema=SCHEMA_ID, asof=asof_date,
