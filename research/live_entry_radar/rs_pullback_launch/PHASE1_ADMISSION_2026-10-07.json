@@ -7,7 +7,7 @@
     "can_rank": false,
     "can_size": false
   },
-  "census_sha256": "95830887b9505ffb57cd57c0593f78bb942e9e496b2d6730aaa25f58f4ed4eba",
+  "census_sha256": "fe367001c7f15e438759f212ca09f76443c907c5359751610f0cf1db50779e17",
   "market_outcomes_read": false,
   "refusals": [
     "calendar_and_exceptional_sessions:NOT_PROVEN",

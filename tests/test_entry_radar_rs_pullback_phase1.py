@@ -65,7 +65,7 @@ def fixture(candidates=None, session=SESSION, previous=PREVIOUS_SESSION,
         streams[role] = {
             "security_id": identity,
             "availability_basis": "observed_first_seen",
-            "identity": receipt(known_at=first_known, valid_from=previous),
+            "identity": receipt(security_id=identity, known_at=first_known, valid_from=previous),
             "basis": receipt(known_at=first_known, basis_id="fixture-unadjusted",
                              price_adjustment="unadjusted", volume_adjustment="unadjusted",
                              corporate_actions_sha256=SHA),
@@ -81,8 +81,10 @@ def fixture(candidates=None, session=SESSION, previous=PREVIOUS_SESSION,
                 open=price, high=price + .5, low=price - .5, close=price + .1,
                 volume=index + 1,
             ))
+    prior_close = clock(previous + "T20:00:00Z")
     contexts = [
-        receipt(kind="daily", security_id="SYNTHETIC:stock", known_at=first_known,
+        receipt(kind="daily", security_id="SYNTHETIC:stock",
+                known_at=iso(prior_close + timedelta(minutes=1)),
                 asof_session=previous,
                 payload={"is_leader": True, "controlled_pullback": True}),
         receipt(kind="incumbent", security_id="SYNTHETIC:stock", known_at=opening,
@@ -97,7 +99,9 @@ def fixture(candidates=None, session=SESSION, previous=PREVIOUS_SESSION,
     return {
         "schema": INPUT_SCHEMA, "input_kind": "SYNTHETIC_CONFORMANCE",
         "calendar": receipt(known_at=first_known,
-                            sessions={session: {"open": opening, "close": closing,
+                            sessions={previous: {"open": previous + "T13:30:00Z",
+                                                 "close": iso(prior_close)},
+                                      session: {"open": opening, "close": closing,
                                                 "previous_session": previous}}),
         "streams": streams, "minutes": minutes, "contexts": contexts,
         "candidates": candidates if candidates is not None else [candidate()],
@@ -107,11 +111,16 @@ def fixture(candidates=None, session=SESSION, previous=PREVIOUS_SESSION,
 def census():
     return {
         "schema": CENSUS_SCHEMA,
+        "terminal_qualifier_args": {"from_date": "2026-10-01", "to_date": "2026-10-06",
+                                    "cutoff_utc": 1791295200,
+                                    "mode": "as_observed"},
         "required_symbols": {"stock": "SYNTHETIC_STOCK", "spy": "SPY",
                              "qqq": "QQQ", "sector": "SYNTHETIC_SECTOR"},
         "terminal_qualifier_reports": [
             {"symbol": symbol, "timeframe": "1m", "status": "available", "valid_rows": 30,
-             "cutoff": {"mode": "as_observed", "pit_proven": True, "count": 30},
+             "cutoff": {"mode": "as_observed", "pit_proven": True, "count": 30,
+                        "utc": 1791295200},
+             "qualification_window": {"from_date": "2026-10-01", "to_date": "2026-10-06"},
              "price_adjustment": "unadjusted", "volume_adjustment": "unadjusted",
              "sha256": SHA, "coverage": {"window_complete_grid": True}}
             for symbol in ("SYNTHETIC_STOCK", "SPY", "QQQ", "SYNTHETIC_SECTOR")
@@ -179,6 +188,18 @@ class Phase1InputConformanceTests(unittest.TestCase):
                     row[key] += 50
                 row["volume"] *= 10
         self.assert_same_earlier_frame(original, changed)
+
+    def test_malformed_future_event_is_invisible_until_its_receipt_is_eligible(self):
+        original = fixture()
+        changed = copy.deepcopy(original)
+        future = copy.deepcopy(minute(changed, "2026-10-06T13:59:00Z"))
+        future.update(start="malformed-future-event", known_at="2026-10-06T15:11:00Z",
+                      revision_id="synthetic-future-malformed-event")
+        changed["minutes"].append(future)
+        self.assert_same_earlier_frame(original, changed)
+        future["known_at"] = "2026-10-06T14:00:00Z"
+        with self.assertRaises(InputContractError):
+            build_input_panel(changed)
 
     def test_later_half_of_unfinished_30m_does_not_change_full_earlier_frame(self):
         original = fixture([candidate(decision="2026-10-06T14:15:00Z")])
@@ -453,6 +474,95 @@ class Phase1InputConformanceTests(unittest.TestCase):
                     self.assertEqual(result["label_status"], "NOT_COMPUTED_PHASE1")
         self.assertEqual(retained_ids, expected_ids)
 
+    def test_identity_receipt_must_explicitly_bind_the_stream_security_id(self):
+        for bound_id in (None, "SYNTHETIC:other-security"):
+            with self.subTest(identity_security_id=bound_id):
+                bundle = fixture()
+                if bound_id is None:
+                    del bundle["streams"]["stock"]["identity"]["security_id"]
+                else:
+                    bundle["streams"]["stock"]["identity"]["security_id"] = bound_id
+                result = frame(bundle)
+                self.assertEqual(result["availability"], "unavailable")
+                self.assertIn("stock:IDENTITY_NOT_BOUND_AT_DECISION", result["refusals"])
+                self.assertIsNone(result["eligible"])
+
+    def test_daily_completion_requires_valid_prior_owner_session_clock(self):
+        for prior_law in (None, {}, {"close": "2026-10-06T13:30:00Z"},
+                          {"close": "2026-10-06T14:00:00Z"}):
+            with self.subTest(prior_calendar_law=prior_law):
+                bundle = fixture()
+                if prior_law is None:
+                    del bundle["calendar"]["sessions"][PREVIOUS_SESSION]
+                else:
+                    bundle["calendar"]["sessions"][PREVIOUS_SESSION] = prior_law
+                result = frame(bundle)
+                self.assertIn("daily:COMPLETION_CLOCK_UNPROVEN", result["refusals"])
+                self.assertEqual(result["availability"], "unavailable")
+                self.assertIsNone(result["daily_context"])
+                self.assertIsNone(result["eligible"])
+        # A stale individual asof is refused for staleness before consulting
+        # the prior completion clock; parent freshness does not repair it.
+        bundle = fixture()
+        bundle["contexts"][0]["asof_session"] = "2026-10-02"
+        del bundle["calendar"]["sessions"][PREVIOUS_SESSION]
+        result = frame(bundle)
+        self.assertEqual(result["refusals"], ["daily:STALE_ROW"])
+        self.assertEqual(result["availability"], "stale")
+
+    def test_daily_receipt_cannot_precede_prior_close_but_boundary_is_allowed(self):
+        prior_close = fixture()["calendar"]["sessions"][PREVIOUS_SESSION]["close"]
+        for instant in ("2026-10-05T13:00:00Z", "2026-10-05T19:59:59Z"):
+            with self.subTest(daily_known_at=instant):
+                bundle = fixture()
+                bundle["contexts"][0]["known_at"] = instant
+                result = frame(bundle)
+                self.assertIn("daily:RECEIPT_BEFORE_SESSION_CLOSE", result["refusals"])
+                self.assertEqual(result["availability"], "unavailable")
+                self.assertIsNone(result["daily_context"])
+                self.assertIsNone(result["eligible"])
+        bundle = fixture()
+        bundle["contexts"][0]["known_at"] = prior_close
+        self.assertEqual(frame(bundle)["availability"], "available")
+
+    def test_incumbent_requires_nonempty_mapping_and_bool_or_explicit_null_buyable(self):
+        for assessment in ({}, [], ["assessment"], "assessment", False, None):
+            with self.subTest(assessment=assessment):
+                bundle = fixture()
+                bundle["contexts"][1]["payload"]["assessment"] = assessment
+                result = frame(bundle)
+                self.assertIn("incumbent:FAITHFUL_OWNER_RECEIPT_MISSING", result["refusals"])
+                self.assertIsNone(result["incumbent_assessment"])
+                self.assertIsNone(result["eligible"])
+        for buyable in ("yes", "False", 0, 1, {}, []):
+            with self.subTest(buyable_input=buyable):
+                bundle = fixture()
+                bundle["contexts"][1]["payload"]["buyable_input"] = buyable
+                self.assertIn("incumbent:FAITHFUL_OWNER_RECEIPT_MISSING", frame(bundle)["refusals"])
+        for buyable in (True, False, None):
+            with self.subTest(valid_buyable_input=buyable):
+                bundle = fixture()
+                bundle["contexts"][1]["payload"]["buyable_input"] = buyable
+                result = frame(bundle)
+                self.assertEqual(result["availability"], "available")
+                self.assertIs(result["incumbent_assessment"]["payload"]["buyable_input"], buyable)
+                self.assertIs(result["eligible"], True)
+
+    def test_adjustment_labels_are_known_nonempty_strings_in_stream_and_census(self):
+        for value in (False, True, 0, 17, "", "   ", "UNKNOWN", "unknown"):
+            for key in ("price_adjustment", "volume_adjustment"):
+                with self.subTest(adjustment=key, value=value):
+                    bundle = fixture()
+                    bundle["streams"]["stock"]["basis"][key] = value
+                    result = frame(bundle)
+                    self.assertIn("stock:BASIS_NOT_BOUND_AT_DECISION", result["refusals"])
+                    self.assertIsNone(result["eligible"])
+                    value_census = census()
+                    value_census["terminal_qualifier_reports"][0][key] = value
+                    admission = assess_source_census(value_census)
+                    self.assertEqual(admission["verdict"], "NOT_ADMITTED")
+                    self.assertIn("stock:ADJUSTMENT_BASIS_UNRECORDED", admission["refusals"])
+
     def test_malformed_population_and_calendar_are_contract_errors(self):
         for candidates in ([], [candidate(), candidate()]):
             with self.subTest(candidates=candidates):
@@ -513,6 +623,33 @@ class Phase1SourceCensusTests(unittest.TestCase):
         self.assertFalse(result["market_outcomes_read"])
         self.assertEqual(result["scientific_claims"],
                          {"H1": "NOT_TESTED", "H2": "NOT_TESTED", "H3": "NOT_TESTED"})
+
+    def test_qualifier_report_is_bound_to_requested_cutoff_and_window(self):
+        for report_cutoff in (None, 1791295201, 1791208800, "2026-10-06T14:00:00Z"):
+            with self.subTest(report_cutoff=report_cutoff):
+                value = census()
+                cutoff = value["terminal_qualifier_reports"][0]["cutoff"]
+                if report_cutoff is None:
+                    del cutoff["utc"]
+                else:
+                    cutoff["utc"] = report_cutoff
+                result = assess_source_census(value)
+                self.assertEqual(result["verdict"], "NOT_ADMITTED")
+                self.assertIn("stock:QUALIFICATION_CUTOFF_MISMATCH", result["refusals"])
+        for window in (None, {"from_date": "2026-09-01", "to_date": "2026-10-06"},
+                       {"from_date": "2026-10-01", "to_date": "2026-10-05"}, {}):
+            with self.subTest(qualification_window=window):
+                value = census()
+                if window is None:
+                    del value["terminal_qualifier_reports"][0]["qualification_window"]
+                else:
+                    value["terminal_qualifier_reports"][0]["qualification_window"] = window
+                result = assess_source_census(value)
+                self.assertEqual(result["verdict"], "NOT_ADMITTED")
+                self.assertIn("stock:QUALIFICATION_WINDOW_MISMATCH", result["refusals"])
+        result = assess_source_census(census())
+        self.assertEqual(result["verdict"], "OWNER_REVIEW_REQUIRED")
+        self.assertEqual(result["refusals"], [])
 
     def test_duplicate_required_owner_report_and_missing_role_are_rejected(self):
         value = census()

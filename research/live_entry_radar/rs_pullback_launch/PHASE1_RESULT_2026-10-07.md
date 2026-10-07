@@ -8,7 +8,7 @@ information and H3 economic timing are all **NOT_TESTED**. This is a data verdic
 falsification of the trading hypothesis.
 
 **Engineering result:** an offline Entry Radar input adapter, source-census evaluator, bounded
-CLI and 23 conformance tests have been built. The tests pass on synthetic inputs. This is
+CLI and 30 conformance tests have been built. The tests pass on synthetic inputs. This is
 **BUILT_NOT_PROVEN for a real market pilot**. No detector, state machine, label estimator,
 probability, score or binding consumer was registered. The total program remains incomplete.
 
@@ -211,7 +211,9 @@ decision. No C4/F1 workaround was introduced.
 
 ## Verification and limits
 
-The first pytest run completed with **23 passed, 38 subtests passed**. Existing unrelated
+After independent review repairs, the exact code-CI test step completed with **57 passed,
+85 subtests passed**, including all **30 RS Pullback tests** and the existing 27 frozen-price-panel
+tests. Existing unrelated
 temporary-directory cleanup permissions produced warnings without failing the suite.
 Agent OS validation completed with zero errors; pre-existing warnings remain.
 
@@ -240,6 +242,28 @@ tests prove input-frame causality, not a real detector's full PIT behavior.
 The source census produces **29 named refusals**, all authority false and H1/H2/H3 NOT_TESTED.
 A hypothetical technically complete census returns OWNER_REVIEW_REQUIRED, never ADMITTED.
 
+### Independent review and code-CI placement
+
+Independent review of candidate 1c76e954f74a8cf74c3b8e7fce7a0d3b81f49d6a reproduced six
+bounded input-contract defects. The review did not overturn the observed data refusal. Repairs
+require the supplied prior-session close before daily receipt availability; bind every source
+report to the same cutoff and qualification window; reject null/empty incumbent assessments
+and malformed buyable inputs; bind identity receipts to their stream security IDs; reject
+boolean/unknown adjustment labels; and filter future receipts before parsing event payloads.
+Seven new regression methods preserve all original temporal mutation tests. Explicit incumbent
+buyable_input=null retains its owner-defined ungated meaning and is never converted to false.
+
+The source report's qualification_window is an explicitly identified caller invocation envelope
+from read-only process 61222. It is not misrepresented as an emitted qualifier field. The
+original owner-output fields remain unchanged. The source digest changed when this envelope
+was added; the observed verdict and its 29 refusal reasons did not change.
+
+The first CI placement under signal-contract was found to be data-gate-only and therefore
+unreachable from ordinary code PR packs. The suite now joins the existing gate:code
+research-price-panel invocation. Original Entry Radar data-plane tests were left in place.
+Hosted CI and source-delivery state must be read from this branch's pull request; local passing
+tests and this engineering report do not claim a merge or production admission.
+
 ## Reproduction
 
 From the repository root:
@@ -252,10 +276,10 @@ python3 scripts/agentos.py validate
 ~~~
 
 The CLI output must equal the committed PHASE1_ADMISSION_2026-10-07.json bytes.
-Initial admission-artifact SHA-256:
-**40c383cc08978877fec1fd6334df7ad9daf9c5d8e8fcd79bf7ff12f52d242809**.
+Current admission-artifact SHA-256:
+**a4e00a5c191917dc8c64fb74ca3348827ab9bd47d9ad8a03a1130a50fde36e9f**.
 Canonical census-content digest:
-**95830887b9505ffb57cd57c0593f78bb942e9e496b2d6730aaa25f58f4ed4eba**.
+**fe367001c7f15e438759f212ca09f76443c907c5359751610f0cf1db50779e17**.
 
 For a new owner-supplied immutable input bundle, use --input-panel. Synthetic input explicitly
 returns SYNTHETIC_CONFORMANCE_ONLY; observed input consistency returns
@@ -287,6 +311,15 @@ A historical backfill obtained now can be labeled corrected-history exploratory 
 cannot manufacture original first-seen times. A prospective lane must use actual observed
 arrival/correction receipts inside the incumbent data/event owners. No new store, scheduler,
 notifier, experimental ledger or source of authority is authorized by this result.
+
+A narrow continuation census found no currently available nonconflicting capture/export
+operation that removes this dependency. VendorMinuteReader returns raw minute tapes in memory
+but persists derived 4H buckets; the existing quote journal reconstructs point OHLC with zero
+volume; #7275 adds an in-memory arrival/hash receipt while explicitly retaining
+historical_availability_proven=false. Merging that draft unchanged would not recover discarded
+raw rows. The shared reader/live-evaluator paths must be reconciled with #7275 and #784 before
+an owner-integrated prospective retention change. This is a source-evidence and custody blocker,
+not a tool outage or a finding that the scientific hypothesis failed.
 
 Once those receipts exist, rerun the same admission gate and construct the complete observed
 pilot, including eligible nonfires and failures. Before reading market outcomes, register the

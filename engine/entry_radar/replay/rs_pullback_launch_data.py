@@ -12,7 +12,7 @@ import copy
 import hashlib
 import json
 import math
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Mapping
 
 from engine.entry_radar.contracts import AUTHORITY_BLOCK
@@ -67,6 +67,10 @@ def _has_receipt(value: Mapping[str, Any]) -> bool:
     return bool(value.get("source_ref")) and _sha(value.get("receipt_sha256"))
 
 
+def _known_label(value: Any) -> bool:
+    return isinstance(value, str) and value.strip().lower() not in UNKNOWN
+
+
 def assess_source_census(census: Mapping[str, Any]) -> dict[str, Any]:
     """Evaluate supplied source-owner evidence; never self-authorize admission.
 
@@ -79,6 +83,16 @@ def assess_source_census(census: Mapping[str, Any]) -> dict[str, Any]:
     required = census.get("required_symbols", {})
     if set(required) != set(ROLES) or any(not required[x] for x in ROLES):
         raise InputContractError("census must freeze stock, SPY, QQQ and sector roles")
+    args = census.get("terminal_qualifier_args", {})
+    try:
+        window = {key: args[key] for key in ("from_date", "to_date")}
+        if date.fromisoformat(window["from_date"]) > date.fromisoformat(window["to_date"]):
+            raise ValueError("reversed qualification window")
+        if type(args.get("cutoff_utc")) is not int or args["cutoff_utc"] <= 0 \
+                or args.get("mode") != "as_observed":
+            raise ValueError("invalid qualification cutoff")
+    except (KeyError, TypeError, ValueError) as exc:
+        raise InputContractError("freeze one valid owner qualification window and cutoff") from exc
     reports = census.get("terminal_qualifier_reports", [])
     refusals: list[str] = []
     for role in ROLES:
@@ -90,13 +104,17 @@ def assess_source_census(census: Mapping[str, Any]) -> dict[str, Any]:
             continue
         report = matches[0]
         cutoff = report.get("cutoff", {})
+        if cutoff.get("utc") != args["cutoff_utc"] or cutoff.get("mode") != args["mode"]:
+            refusals.append(f"{role}:QUALIFICATION_CUTOFF_MISMATCH")
+        if report.get("qualification_window") != window:
+            refusals.append(f"{role}:QUALIFICATION_WINDOW_MISMATCH")
         if report.get("status") != "available" or report.get("valid_rows", 0) <= 0:
             refusals.append(f"{role}:NO_1M_HISTORY")
         if cutoff.get("mode") != "as_observed" or cutoff.get("pit_proven") is not True \
                 or cutoff.get("count", 0) <= 0:
             refusals.append(f"{role}:AS_OBSERVED_AVAILABILITY_UNPROVEN")
-        if report.get("price_adjustment") in UNKNOWN \
-                or report.get("volume_adjustment") in UNKNOWN:
+        if not _known_label(report.get("price_adjustment")) \
+                or not _known_label(report.get("volume_adjustment")):
             refusals.append(f"{role}:ADJUSTMENT_BASIS_UNRECORDED")
         if not _sha(report.get("sha256")):
             refusals.append(f"{role}:IMMUTABLE_INPUT_UNIDENTIFIED")
@@ -156,7 +174,8 @@ def _latest_context(records: list[dict[str, Any]], kind: str, security_id: str,
 def _metadata_errors(meta: Mapping[str, Any], cutoff: datetime, session: str) -> list[str]:
     errors = []
     identity = meta.get("identity", {})
-    if not meta.get("security_id") or not _has_receipt(identity) \
+    if not meta.get("security_id") or identity.get("security_id") != meta.get("security_id") \
+            or not _has_receipt(identity) \
             or not identity.get("known_at") or _clock(identity["known_at"]) > cutoff \
             or identity.get("valid_from", "9999") > session \
             or (identity.get("valid_until") and session >= identity["valid_until"]):
@@ -164,8 +183,8 @@ def _metadata_errors(meta: Mapping[str, Any], cutoff: datetime, session: str) ->
     basis = meta.get("basis", {})
     if not _has_receipt(basis) or not basis.get("known_at") \
             or _clock(basis["known_at"]) > cutoff or not basis.get("basis_id") \
-            or basis.get("price_adjustment") in UNKNOWN \
-            or basis.get("volume_adjustment") in UNKNOWN \
+            or not _known_label(basis.get("price_adjustment")) \
+            or not _known_label(basis.get("volume_adjustment")) \
             or not _sha(basis.get("corporate_actions_sha256")):
         errors.append("BASIS_NOT_BOUND_AT_DECISION")
     if meta.get("availability_basis") != "observed_first_seen":
@@ -180,10 +199,12 @@ def _aggregate(rows: list[dict[str, Any]], stream: str, meta: Mapping[str, Any],
     for row in rows:
         if row.get("stream") != stream:
             continue
+        # Receipt visibility comes first: a future row's payload, even if
+        # malformed, cannot change the earlier decision prefix.
+        if not row.get("known_at") or _clock(row["known_at"]) > cutoff:
+            continue
         event_start = _clock(row["start"])
         if not start <= event_start < end:
-            continue
-        if not row.get("known_at") or _clock(row["known_at"]) > cutoff:
             continue
         groups.setdefault(event_start, []).append(row)
     expected = [start + timedelta(minutes=i) for i in range(int((end-start).total_seconds()/60))]
@@ -331,8 +352,14 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
         elif daily.get("asof_session") != law.get("previous_session"):
             errors.append("daily:STALE_ROW")
         else:
+            prior = calendar.get("sessions", {}).get(law.get("previous_session"), {})
+            prior_close = _clock(prior["close"]) if prior.get("close") else None
             payload = daily.get("payload", {})
-            if type(payload.get("is_leader")) is not bool \
+            if prior_close is None or prior_close >= opening:
+                errors.append("daily:COMPLETION_CLOCK_UNPROVEN")
+            elif _clock(daily["known_at"]) < prior_close:
+                errors.append("daily:RECEIPT_BEFORE_SESSION_CLOSE")
+            elif type(payload.get("is_leader")) is not bool \
                     or type(payload.get("controlled_pullback")) is not bool:
                 errors.append("daily:ELIGIBILITY_UNAVAILABLE")
             else:
@@ -348,7 +375,9 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
             payload = incumbent.get("payload", {})
             if payload.get("owner") != "engine.entry_signal.assess" \
                     or "buyable_input" not in payload or not _sha(payload.get("inputs_sha256")) \
-                    or not _sha(payload.get("code_sha"), 40) or "assessment" not in payload:
+                    or (payload["buyable_input"] is not None and type(payload["buyable_input"]) is not bool) \
+                    or not _sha(payload.get("code_sha"), 40) \
+                    or not isinstance(payload.get("assessment"), Mapping) or not payload["assessment"]:
                 errors.append("incumbent:FAITHFUL_OWNER_RECEIPT_MISSING")
             else:
                 frame["incumbent_assessment"] = incumbent

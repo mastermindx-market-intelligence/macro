@@ -15,9 +15,9 @@ changed:
   - path: research/live_entry_radar/rs_pullback_launch/PHASE1_ADMISSION_2026-10-07.json
     what: "Reproducible NOT_ADMITTED verdict with 29 named refusals."
 verified:
-  - claim: "The input adapter passes its initial conformance suite."
-    command: "python3 -m pytest tests/test_entry_radar_rs_pullback_phase1.py -q"
-    result: "23 passed, 38 subtests passed; unrelated existing temporary-directory cleanup warnings."
+  - claim: "The corrected code-CI step passes all 30 RS conformance tests and 27 existing frozen-panel tests."
+    command: "python3 -m pytest tests/test_research_price_panel.py tests/test_entry_radar_rs_pullback_phase1.py -q"
+    result: "57 passed, 85 subtests passed after six independent review findings were repaired; unrelated existing temporary-directory cleanup warnings."
   - claim: "The actual source census does not support the commissioned market pilot."
     command: "python3 scripts/entry_radar_rs_pullback_phase1.py --census research/live_entry_radar/rs_pullback_launch/PHASE1_SOURCE_CENSUS_2026-10-07.json"
     result: "NOT_ADMITTED; 29 refusals; H1/H2/H3 NOT_TESTED; all authority false."
@@ -29,8 +29,8 @@ unverified:
     what_would_verify: "Existing data owners supply retained 1m revisions with listing identity, basis, calendar and actual daily/incumbent receipts; rerun Phase 1."
   - claim: "Historical or prospective H1/H2/H3 edge."
     what_would_verify: "Admitted data, TrialLedger preregistration, strong B0 and controls/ablations, then prospective paired incumbent validation."
-  - claim: "Source delivery and hosted integration acceptance."
-    what_would_verify: "Exact candidate review and concluded required GitHub checks; this working checkpoint does not claim merge or production acceptance."
+  - claim: "Hosted source-delivery acceptance."
+    what_would_verify: "Concluded required checks and merge status on the pull request for this branch; local passing tests and this evidence checkpoint do not imply production or scientific admission."
 unresolved:
   - "Missing 1m archive and historical first-seen/revision lineage on the inspected canonical store."
   - "Per-row stale daily context and missing faithful historical Entry Engine input/output receipts."
@@ -60,6 +60,12 @@ is unchanged across that base movement. Terminal `ad36a332cd4b53af1d917a94f6fb3a
 
 **Phase-1 market-data verdict: NOT_ADMITTED. Parent MISSION_COMPLETE: false.**
 The new adapter produces input frames only. No detector or label implementation is claimed.
+Independent review of source candidate `1c76e954f74a8cf74c3b8e7fce7a0d3b81f49d6a` found
+six bounded receipt/causality defects; all were repaired with seven added regression methods.
+The exact code-CI step passes 57 tests (30 RS + 27 frozen-panel). The final source head and
+hosted checks belong to this branch's pull request; this checkpoint preserves the evidence
+frontier without claiming a future merge. The current immutable census includes an explicitly
+identified caller-bound qualification-window envelope, preserving original owner-output fields.
 The original research and proposed scientific gates below remain preserved; the current
 [Phase-1 result](../../research/live_entry_radar/rs_pullback_launch/PHASE1_RESULT_2026-10-07.md)
 owns the latest engineering/evidence disposition.

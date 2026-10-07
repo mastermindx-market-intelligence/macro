@@ -57,6 +57,10 @@
         "count": 0,
         "last_event_end_utc": null,
         "pit_proven": false
+      },
+      "qualification_window": {
+        "from_date": "2026-09-28",
+        "to_date": "2026-10-05"
       }
     },
     {
@@ -92,6 +96,10 @@
         "count": 0,
         "last_event_end_utc": null,
         "pit_proven": false
+      },
+      "qualification_window": {
+        "from_date": "2026-09-28",
+        "to_date": "2026-10-05"
       }
     },
     {
@@ -127,6 +135,10 @@
         "count": 0,
         "last_event_end_utc": null,
         "pit_proven": false
+      },
+      "qualification_window": {
+        "from_date": "2026-09-28",
+        "to_date": "2026-10-05"
       }
     },
     {
@@ -162,6 +174,10 @@
         "count": 0,
         "last_event_end_utc": null,
         "pit_proven": false
+      },
+      "qualification_window": {
+        "from_date": "2026-09-28",
+        "to_date": "2026-10-05"
       }
     },
     {
@@ -190,6 +206,10 @@
         "count": 0,
         "last_event_end_utc": null,
         "pit_proven": false
+      },
+      "qualification_window": {
+        "from_date": "2026-09-28",
+        "to_date": "2026-10-05"
       }
     }
   ],
@@ -984,5 +1004,6 @@
       "head": "15c2559780a1dce3d8f571b1d8ac047d3e777789",
       "hold": "Intraday route and source contracts."
     }
-  ]
+  ],
+  "terminal_qualifier_report_envelope_note": "qualification_window is the caller-bound execution window from the documented read-only qualifier invocation (process 61222), not a field emitted by the qualifier. All other report fields are retained owner outputs."
 }
