@@ -30,8 +30,7 @@ import time
 from typing import Sequence
 
 _ROOT = Path(__file__).resolve().parent.parent
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
+sys.path.insert(0, str(_ROOT))
 
 from engine.qbus_news_contract import normalize_news
 from engine.qbus_news_store import (

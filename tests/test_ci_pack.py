@@ -4611,6 +4611,12 @@ CURATED_EXCLUSIVE = {
     # opaque code fallback, so every ordinary code PR selected it. The exact
     # closure is now declared; packing ceilings remain unchanged.
     "regime-outlook-mapping",
+    # 2026-10-07 Package N #8454: Terminal per-ticker news qbus correctness kernel.
+    # gate:code home for the twenty-two ticker-news/qbus suites; scope: exclusive
+    # so inference does not smear the measured import closure across ordinary code
+    # PRs. paths: are the job's suite import closure; the cover-their-own-import-
+    # closure test keeps that list honest as the tree moves.
+    "ticker-news-qbus",
 }
 
 

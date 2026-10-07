@@ -25,8 +25,7 @@ from typing import Callable
 from urllib.parse import urlencode
 
 _ROOT = Path(__file__).resolve().parent.parent
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
+sys.path.insert(0, str(_ROOT))
 
 from collectors import benzinga_news
 from engine.qbus_news_receipts import (
