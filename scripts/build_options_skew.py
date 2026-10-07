@@ -245,9 +245,10 @@ def emit(today=None, accrual_state: str = "ledger_only") -> dict:
 
     # Macro Risk Detail consumes a read-model over this SAME canonical ledger.
     # No second chain reader: its as-of is the complete session selected above.
+    ledger_asof = payload.get("ledger_asof")
     compare = S.build_compare_payload(
-        S.load_history(),
-        as_of=payload.get("ledger_asof"),
+        S.load_history() if ledger_asof else None,
+        as_of=ledger_asof,
         today=today,
     )
     (config.site_dir() / "options_compare.json").write_text(
