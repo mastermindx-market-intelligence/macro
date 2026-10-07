@@ -167,7 +167,11 @@ def run(terminal_source: Path) -> dict:
         output = io.StringIO()
         with (
             patch.object(producer, "INTRADAY", store),
-            patch.object(producer.urllib.request, "urlopen", side_effect=transport),
+            patch.object(producer, "_open_capture_request", side_effect=transport),
+            patch.object(
+                producer.urllib.request, "urlopen",
+                side_effect=AssertionError("Synthetic proof must not use legacy/network transport"),
+            ),
             patch.object(producer.time, "time", return_value=base_ns / 1_000_000_000),
             patch.object(producer.time, "time_ns", side_effect=lambda: next(ticks)),
             patch.object(producer.time, "sleep", return_value=None),
