@@ -1040,6 +1040,51 @@ def test_visit_discovery_scoped_exception_blocks_company_baseline_not_positive_e
     assert snap["global_negative_authority"] is True
 
 
+def test_visit_discovery_scoped_exception_alias_uses_same_company_identity():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("C-alias", "600519", "2026-10-01T09:00:00+08:00")],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes={"600519.SH"},
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+    )
+
+    assert snap["n_company_exceptions"] == 1
+    assert len(snap["examples"]) == 1
+    row = snap["examples"][0]
+    assert row["company_key"] == "600519"
+    assert row["sec_code"] == "600519"
+    assert row["coverage_state"] == "unknown_company_exception"
+    assert row["baseline_state"] == "blocked_company_coverage_exception"
+    assert row["first_seen_state"] == "unknown_due_coverage_exception"
+
+
+def test_visit_discovery_malformed_scoped_exception_becomes_unscoped():
+    snap = bus._visit_discovery_snapshot(
+        [_visit_row("C-bad-exc", "600519", "2026-10-01T09:00:00+08:00")],
+        health={
+            "status": "ok",
+            "last_success_utc": "2026-10-03T01:00:00+00:00",
+            "last_attempt_utc": "2026-10-03T01:00:00+00:00",
+        },
+        coverage_start="2026-01-01",
+        open_scoped_codes={"BAD-CODE"},
+        has_unscoped_open=False,
+        kind_labeler=_kind_labeler,
+    )
+
+    assert snap["n_company_exceptions"] == 0
+    assert snap["global_negative_authority"] is False
+    assert snap["global_negative_authority_blocker"] ==         "unscoped_coverage_exception"
+    assert snap["examples"][0]["baseline_state"] ==         "blocked_unscoped_coverage_exception"
+    assert snap["examples"][0]["first_seen_state"] ==         "unknown_unscoped_coverage_exception"
+
+
 def test_visit_discovery_unscoped_exception_blocks_global_negative_authority():
     snap = bus._visit_discovery_snapshot(
         [_visit_row("D1", "000003", "2026-10-01T09:00:00+08:00")],

@@ -422,6 +422,21 @@ def _visit_discovery_snapshot(
     recent_days = max(int(recent_days), 1)
     baseline_days = max(int(baseline_days), 1)
     health = health if isinstance(health, dict) else {}
+
+    # Scoped coverage exceptions use the same Data OS company identity basis as
+    # visit rows. Accepted aliases (for example 600519.SH) must collapse onto
+    # the canonical bare company code, while a malformed/noncanonical exception
+    # becomes unscoped and blocks global absence authority rather than creating
+    # a phantom company bucket.
+    canonical_open_scoped_codes: set[str] = set()
+    for raw_code in open_scoped_codes or set():
+        canonical_code = _visit_company_code(raw_code)
+        if canonical_code:
+            canonical_open_scoped_codes.add(canonical_code)
+        else:
+            has_unscoped_open = True
+    open_scoped_codes = canonical_open_scoped_codes
+
     owner_health_status = _visit_text(health.get("status")) or "no_coverage"
     coverage_raw = _visit_text(coverage_start)
     last_success_raw = _visit_text(health.get("last_success_utc"))
@@ -1127,9 +1142,14 @@ def _visit_discovery_block() -> dict | None:
             if cv.is_unscoped_sec_code(code):
                 has_unscoped = True
             else:
-                norm = _visit_text(code)
+                norm = _visit_company_code(code)
                 if norm:
                     open_scoped_codes.add(norm)
+                else:
+                    # Nonblank-but-noncanonical identities are no more scoped
+                    # than blank ones. Preserve the exception as plane-wide
+                    # uncertainty until the existing identity owner resolves it.
+                    has_unscoped = True
 
         health = cv.read_health()
         coverage_start = cv.read_coverage_start()
