@@ -1,0 +1,56 @@
+{
+  "schema": "pb_d.pinned_sources.v1",
+  "repository": "mastermindx-market-intelligence/macro",
+  "status": "RESEARCH_ONLY",
+  "sources": [
+    {
+      "id": "retro_grades",
+      "filename": "retro_grades.parquet",
+      "commit": "2f2feec4851b45636f63a48ec61e6f0b02b8118a",
+      "path": "data/us_board_ledger/retro_grades.parquet",
+      "git_blob": "b0ee089e86269854b699f4667b47dd10a469374c",
+      "sha256": "61bb8cc6ff0f1cfd14f33ba50fc5ce17db4c93e800f74e307c70c5606ae4f9d7",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/2f2feec4851b45636f63a48ec61e6f0b02b8118a/data/us_board_ledger/retro_grades.parquet"
+    },
+    {
+      "id": "nvda_compact",
+      "filename": "nvda_compact.json",
+      "commit": "74e8f45060e815a2cb7c515ae09f258919ab9da2",
+      "path": "site/news/by_ticker.json",
+      "git_blob": "02e103c00ed04da1a7d91980147e9d07efc528e2",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/74e8f45060e815a2cb7c515ae09f258919ab9da2/site/news/by_ticker.json"
+    },
+    {
+      "id": "nvda_news",
+      "filename": "nvda_news.json",
+      "commit": "74e8f45060e815a2cb7c515ae09f258919ab9da2",
+      "path": "site/news/financial.json",
+      "git_blob": "224444b75cf08b24445d5ded3de881bae7836d23",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/74e8f45060e815a2cb7c515ae09f258919ab9da2/site/news/financial.json"
+    },
+    {
+      "id": "sep10_news",
+      "filename": "sep10_news.json",
+      "commit": "3119171478a7cd9cd851687cf24e8bf0c271cdc4",
+      "path": "site/news/financial.json",
+      "git_blob": "fc69e4c7d455d81cdca5d002ea554e492ca9e3cf",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/3119171478a7cd9cd851687cf24e8bf0c271cdc4/site/news/financial.json"
+    },
+    {
+      "id": "sep10_holdings",
+      "filename": "sep10_holdings.json",
+      "commit": "3119171478a7cd9cd851687cf24e8bf0c271cdc4",
+      "path": "site/factordata/smartmoney.json",
+      "git_blob": "d5e7e1441cbf91ffe026bd9cb2a629e73caaf80e",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/3119171478a7cd9cd851687cf24e8bf0c271cdc4/site/factordata/smartmoney.json"
+    },
+    {
+      "id": "oct_holdings",
+      "filename": "oct_holdings.json",
+      "commit": "2f2feec4851b45636f63a48ec61e6f0b02b8118a",
+      "path": "site/factordata/smartmoney.json",
+      "git_blob": "9408d4ff45cd135f802cf60d713dc239dbb94716",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/2f2feec4851b45636f63a48ec61e6f0b02b8118a/site/factordata/smartmoney.json"
+    }
+  ]
+}

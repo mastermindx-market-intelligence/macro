@@ -192,6 +192,8 @@ def analyse(d: pd.DataFrame):
                "first_all_then_t1_multileg":summary(first_all[first_all.tier_cascade.eq("T1") & first_all.leg_count.ge(2)]),
                "first_t1_then_multileg":summary(h[h.tier_cascade.eq("T1")].sort_values(["as_of","ticker"]).drop_duplicates("ticker").query("leg_count >= 2"))}
         out["population"][str(horizon)]={"asof_min":str(h.as_of.min()),"asof_max":str(h.as_of.max()),
+            "tier_observed":int(h.tier_cascade.notna().sum()),
+            "tier_missing":int(h.tier_cascade.isna().sum()),
             "source_price_basis":{str(k):int(n) for k,n in h.price_basis.value_counts(dropna=False).items()},
             "source_price_source":{str(k):int(n) for k,n in h.price_source.value_counts(dropna=False).items()}}
         for tier,g in h.groupby("tier_cascade",dropna=False):
@@ -208,6 +210,9 @@ def analyse(d: pd.DataFrame):
             b={"signal":summary(s),"control":summary(t2[control(t2,kind)]),
                "not_t2_signal":summary(h[~h.tier_cascade.eq("T2") & treated(h,kind)]),
                "not_t2_control":summary(h[~h.tier_cascade.eq("T2") & control(h,kind)]),
+               "not_t2_definition":"Outside T2, INCLUDING missing tier labels; not a certified non-T2 comparator.",
+               "not_t2_missing_tier_signal_n":int((h.tier_cascade.isna() & treated(h,kind)).sum()),
+               "not_t2_missing_tier_control_n":int((h.tier_cascade.isna() & control(h,kind)).sum()),
                "first_qualifying_per_issuer":summary(first_signal),
                "first_t2_per_issuer":summary(first_t2_signal),
                "first_t2_control":summary(first_t2[control(first_t2,kind)]),
@@ -254,10 +259,12 @@ def analyse(d: pd.DataFrame):
        "reproduced":round(m["matched"]["as_of"]["stratum_equal_mean_gap"]*100,2),
        "equal":round(m["matched"]["as_of"]["stratum_equal_mean_gap"]*100,2)==4.19})
     out["population_mismatch"]={"source_location":"PR8495 PROPHET_NVDA_PRO_REAUDIT §13.2 and §13.3",
-       "reported_first_t2_table_counts":[89,17,5], "first_any_tier_then_t2_counts":[89,17,5],
-       "actual_first_t2_then_group_counts":[118,20,5],
+       "reported_first_t2_table_counts":[89,17,5],
+       "first_any_tier_then_t2_counts":[sum(v["n"] for k,v in a["first_all_then_t2_leg_count"].items() if float(k)==c) for c in (0,1,2)],
+       "actual_first_t2_then_group_counts":[sum(v["n"] for k,v in a["first_t2_leg_count"].items() if float(k)==c) for c in (0,1,2)],
        "interpretation":"The manuscript table uses first ticker observation across all tiers THEN keeps T2; its Fisher denominator uses first T2 per ticker. Treated five coincide, comparator populations differ. Do not combine them.",
-       "t1_first_any_then_filter_multi":[0,2], "t1_first_t1_then_filter_multi":[1,3]}
+       "t1_first_any_then_filter_multi":[a["first_all_then_t1_multileg"]["excess_spy"]["positive"],a["first_all_then_t1_multileg"]["n"]],
+       "t1_first_t1_then_filter_multi":[a["first_t1_then_multileg"]["excess_spy"]["positive"],a["first_t1_then_multileg"]["n"]]}
     out["power"]=power_report()
     out["unavailable"]={"h1":"No H1 rows in source dataset.",
         "source_independent_event_labels":"No event-root or claim-lineage fields in grade dataset; legacy legs are not independence-certified.",
