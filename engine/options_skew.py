@@ -37,6 +37,7 @@ maintainer writes for `session_n_back(D, 1)`), with `<td>/_manifest.json`'s
 from __future__ import annotations
 
 import logging
+import math
 from datetime import date, datetime, timezone
 
 from lib import config
