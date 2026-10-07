@@ -1,6 +1,6 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-10-07T12:37:48+00:00",
+  "generated_at": "2026-10-07T13:54:01+00:00",
   "markets": {
     "us": {
       "asof_last_row": "2026-10-06",
@@ -484,14 +484,14 @@
       }
     },
     "hk": {
-      "asof_last_row": "2026-10-06",
+      "asof_last_row": "2026-10-07",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 19,
         "backlog_cutoff_bd": 28,
-        "graded_n": 22
+        "graded_n": 23
       },
       "windows": {
         "full": {
@@ -508,10 +508,10 @@
             "precursor_rate": 0.1
           },
           "calm": {
-            "n": 9,
-            "dd_missed": 1,
+            "n": 10,
+            "dd_missed": 2,
             "quiet": 8,
-            "quiet_rate": 0.889
+            "quiet_rate": 0.8
           },
           "by_scare": {
             "capital_flow": {
@@ -537,10 +537,10 @@
             "precursor_rate": 0.1
           },
           "calm": {
-            "n": 9,
-            "dd_missed": 1,
+            "n": 10,
+            "dd_missed": 2,
             "quiet": 8,
-            "quiet_rate": 0.889
+            "quiet_rate": 0.8
           },
           "by_scare": {
             "capital_flow": {
