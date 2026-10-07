@@ -14240,6 +14240,12 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/pit_sample_conformance.py --help
           python -m pytest research/alpha_intelligence/expectation_market_dynamics/test_pit_sample_conformance.py -q
+      # R4 V2 pre-boundary N-admission receipt (ITP B5). Name the validator
+      # CLI as well as its suite; the suite loads the validator by file path.
+      - name: information-to-price R4 V2 pre-boundary admission receipt
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/r4_v2_receipt_check.py --help
+          python -m pytest tests/test_r4_v2_receipt.py -q
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
