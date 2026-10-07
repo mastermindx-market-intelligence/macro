@@ -180,11 +180,864 @@
     return false;
   }
 
+  var INSPECTOR_FIELDS = ['local', 'usd', 'fx_contribution'];
+
+  function inspectorPublic(controller) {
+    if (!controller.inspector) return null;
+    return { market: controller.inspector.market, mode: controller.inspector.mode, field: controller.inspector.field };
+  }
+
+  function inspectorResult(controller, ok, issues) {
+    return { ok: ok, state: controller.state, issues: issues || [], intent: null, inspector: inspectorPublic(controller) };
+  }
+
+  function isPlainOwnObject(value) {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+    var prototype = Object.getPrototypeOf(value);
+    return prototype === Object.prototype || prototype === null;
+  }
+
+  function ownDataCopy(value, expectedKeys) {
+    if (!isPlainOwnObject(value)) return null;
+    if (Object.getOwnPropertySymbols(value).length !== 0) return null;
+    var names = Object.getOwnPropertyNames(value);
+    if (names.length !== expectedKeys.length) return null;
+    var copy = {};
+    for (var index = 0; index < expectedKeys.length; index += 1) {
+      var key = expectedKeys[index];
+      if (!Object.prototype.hasOwnProperty.call(value, key)) return null;
+      var descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (!descriptor || !('value' in descriptor) || descriptor.get || descriptor.set) return null;
+      var field = descriptor.value;
+      var fieldType = typeof field;
+      if (fieldType === 'function' || fieldType === 'symbol' || fieldType === 'undefined' || fieldType === 'bigint') return null;
+      if (fieldType === 'number' && !Number.isFinite(field)) return null;
+      if (fieldType === 'object' && field !== null) return null;
+      copy[key] = field;
+    }
+    return copy;
+  }
+
+  function normalizeSource(value) {
+    if (value === null || value === '') return null;
+    if (typeof value !== 'string') return undefined;
+    return value;
+  }
+
+  function articleSource(article) {
+    if (!article.hasAttribute('data-source')) return null;
+    var value = article.getAttribute('data-source');
+    return value === '' ? null : value;
+  }
+
+  function articleOwned(controller, node) {
+    return !!(node && node.closest && node.closest('[data-im-workspace]') === controller.root);
+  }
+
+  function inspectorShell(controller) {
+    var shells = owned(controller.root, 'dialog[data-im-inspector-shell]');
+    return shells.length === 1 ? shells[0] : null;
+  }
+
+  function articleMatchesTuple(article, state) {
+    return article.getAttribute('data-horizon') === state.horizon &&
+      article.getAttribute('data-basis') === state.currency_basis &&
+      article.getAttribute('data-return-basis') === state.return_basis &&
+      !article.hasAttribute('data-view');
+  }
+
+  function articleMatchesRequest(controller, article, marketId, expectedSource) {
+    return articleOwned(controller, article) &&
+      article.getAttribute('data-market-id') === marketId &&
+      articleMatchesTuple(article, controller.state) &&
+      articleSource(article) === expectedSource;
+  }
+
+  function matchingInspectorArticles(controller, marketId, expectedSource) {
+    return owned(controller.root, '[data-im-inspector-payload]').filter(function (article) {
+      return articleMatchesRequest(controller, article, marketId, expectedSource);
+    });
+  }
+
+  function overviewContextId(panel) {
+    if (!panel || typeof panel.id !== 'string') return null;
+    var suffix = '-overview';
+    if (panel.id.length <= suffix.length) return null;
+    if (panel.id.slice(panel.id.length - suffix.length) !== suffix) return null;
+    var contextId = panel.id.slice(0, panel.id.length - suffix.length);
+    return contextId || null;
+  }
+
+  function activeOverviewPanels(controller) {
+    if (!controller.state || controller.state.view !== 'overview') return [];
+    return panelFor(controller, controller.state).filter(function (panel) {
+      return panel.getAttribute('data-view') === 'overview';
+    });
+  }
+
+  function inspectorFingerprint(state) {
+    return JSON.stringify({
+      view: state.view,
+      horizon: state.horizon,
+      currency_basis: state.currency_basis,
+      return_basis: state.return_basis,
+      selected_market: state.selected_market,
+      pins: state.compare_markets,
+      source: state.source_reference
+    });
+  }
+
+  function appendWords(parent, en, zh) {
+    var enNode = parent.ownerDocument.createElement('span');
+    enNode.className = 'l-en';
+    enNode.textContent = en;
+    var zhNode = parent.ownerDocument.createElement('span');
+    zhNode.className = 'l-zh';
+    zhNode.setAttribute('lang', 'zh');
+    zhNode.textContent = zh;
+    parent.appendChild(enNode);
+    parent.appendChild(zhNode);
+  }
+
+  function makeInspectorButton(document, action, en, zh) {
+    var button = document.createElement('button');
+    button.setAttribute('type', 'button');
+    button.setAttribute('data-im-inspector-action', action);
+    appendWords(button, en, zh);
+    return button;
+  }
+
+  function captureScrollOffsets(controller, origin) {
+    var win = controller.environment.window;
+    var lists = [];
+    var node = origin;
+    while (node && node !== controller.root) {
+      if (node.nodeType === 1 && (node.scrollTop || node.scrollLeft)) {
+        lists.push({ node: node, top: node.scrollTop, left: node.scrollLeft });
+      }
+      node = node.parentNode;
+    }
+    return {
+      windowX: win.scrollX || win.pageXOffset || 0,
+      windowY: win.scrollY || win.pageYOffset || 0,
+      lists: lists
+    };
+  }
+
+  function restoreScrollOffsets(controller, scroll) {
+    if (!scroll) return;
+    var win = controller.environment.window;
+    if (typeof win.scrollTo === 'function') win.scrollTo(scroll.windowX, scroll.windowY);
+    scroll.lists.forEach(function (entry) {
+      if (!entry.node || !entry.node.isConnected) return;
+      entry.node.scrollTop = entry.top;
+      entry.node.scrollLeft = entry.left;
+    });
+  }
+
+  function nodeUsable(controller, node) {
+    if (!node || !node.isConnected || !articleOwned(controller, node)) return false;
+    if (node.closest('[hidden]')) return false;
+    if (!node.getClientRects || !node.getClientRects().length) return false;
+    var win = controller.environment.window;
+    try {
+      if (win.getComputedStyle && win.getComputedStyle(node).visibility === 'hidden') return false;
+    } catch (_) {}
+    return true;
+  }
+
+  function inspectorHeading(article, mode, field) {
+    if (mode === 'ledger') return article.querySelector('[data-im-inspector-page="ledger"] [tabindex="-1"], [data-im-inspector-page="ledger"] h4');
+    if (mode === 'field' && field) {
+      var block = article.querySelector('[data-im-inspector-field="' + field + '"]');
+      return block ? block.querySelector('[tabindex="-1"], h5') : null;
+    }
+    if (mode === 'deeper') {
+      var deeper = article.querySelector('[data-im-inspector-page="deeper"]');
+      return deeper ? deeper.querySelector('[tabindex="-1"], h4') : article.querySelector('[data-im-inspector-title]');
+    }
+    return article.querySelector('[data-im-inspector-title]');
+  }
+
+  function snapshotInspectorOwned(root) {
+    var selector = '[data-im-inspector-origin],[data-im-inspector-payload],[data-im-inspector-enhancement],[data-im-inspector-page],[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-shell]';
+    return owned(root, selector).map(function (node) {
+      var attrs = ['hidden'];
+      if (node.matches('details')) attrs.push('open');
+      if (node.matches('[data-im-inspector-shell]')) attrs.push('aria-labelledby', 'aria-label');
+      return {
+        node: node,
+        attrs: attrs.map(function (name) { return [name, node.getAttribute(name)]; }),
+        open: 'open' in node ? !!node.open : null,
+        parent: node.matches('[data-im-inspector-payload]') ? node.parentNode : null,
+        next: node.nextSibling
+      };
+    });
+  }
+
+  function snapshotInspectorSubtree(article, shell, originDetails) {
+    var nodes = [article, shell, originDetails];
+    if (article) nodes = nodes.concat(Array.from(article.querySelectorAll('[data-im-inspector-enhancement],[data-im-inspector-page],[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-deeper-unavailable]')));
+    return nodes.filter(Boolean).map(function (node) {
+      return {
+        node: node,
+        hidden: !!node.hidden,
+        open: 'open' in node ? !!node.open : null,
+        labelledby: node.getAttribute ? node.getAttribute('aria-labelledby') : null,
+        label: node.getAttribute ? node.getAttribute('aria-label') : null
+      };
+    });
+  }
+
+  function restoreOwnedPresentation(entries) {
+    if (!entries) return;
+    entries.forEach(function (entry) {
+      if (!entry.node) return;
+      entry.node.hidden = entry.hidden;
+      if (entry.node.removeAttribute) {
+        if (entry.labelledby == null) entry.node.removeAttribute('aria-labelledby');
+        else entry.node.setAttribute('aria-labelledby', entry.labelledby);
+      }
+      if (entry.node.matches && entry.node.matches('dialog')) return;
+      if (entry.open !== null && 'open' in entry.node) entry.node.open = entry.open;
+    });
+  }
+
+  function placeNode(node, parent, next) {
+    if (!node || !parent) return;
+    var reference = next && next.parentNode === parent ? next : null;
+    if (node.parentNode !== parent || node.nextSibling !== reference) parent.insertBefore(node, reference);
+  }
+
+  function prepareInspector(controller) {
+    var prepared = { supported: false, originals: snapshotInspectorOwned(controller.root), added: [], generation: 0, modalityFailed: false, shell: null };
+    var shell = inspectorShell(controller);
+    if (!shell || typeof shell.showModal !== 'function' || typeof shell.close !== 'function') return prepared;
+    prepared.supported = true;
+    prepared.shell = shell;
+    return prepared;
+  }
+
+  function paintInspectorFallbacks(controller, state) {
+    if (!controller.inspectorHost) return;
+    owned(controller.root, '[data-im-inspector-origin]').forEach(function (details) {
+      if (controller.inspector && controller.inspector.placement.originDetails === details) {
+        details.hidden = true;
+        return;
+      }
+      var article = details.querySelector('[data-im-inspector-payload]');
+      if (!article || !articleOwned(controller, article)) {
+        details.hidden = false;
+        return;
+      }
+      if (!articleMatchesTuple(article, state)) {
+        details.hidden = true;
+        return;
+      }
+      var disclosed = articleSource(article);
+      if (disclosed !== null && disclosed !== state.source_reference) {
+        details.hidden = true;
+        return;
+      }
+      details.hidden = false;
+    });
+  }
+
+  function applyInspectorLanguage(controller) {
+    var shell = controller.inspectorHost && controller.inspectorHost.shell;
+    if (!shell) return;
+    var zh = normalLanguage(controller.root) === 'zh';
+    var label = shell.getAttribute(zh ? 'data-im-label-zh' : 'data-im-label-en');
+    if (label) shell.setAttribute('aria-label', label);
+  }
+
+  function ensureEnhancedControls(controller, article) {
+    var host = controller.inspectorHost;
+    var nav = article.querySelector('[data-im-inspector-enhancement]');
+    if (!nav || !articleOwned(controller, nav)) return nav;
+    nav.hidden = false;
+    if (!nav.querySelector('[data-im-inspector-action="evidence"]')) {
+      var evidence = makeInspectorButton(article.ownerDocument, 'evidence', 'Evidence', '依据');
+      nav.appendChild(evidence);
+      host.added.push(evidence);
+    }
+    if (!nav.querySelector('[data-im-inspector-action="deeper"]')) {
+      var deeper = makeInspectorButton(article.ownerDocument, 'deeper', 'Go deeper', '深入研究');
+      nav.appendChild(deeper);
+      host.added.push(deeper);
+    }
+    return nav;
+  }
+
+  function applyInspectorMode(controller, mode, field, options) {
+    var attachment = controller.inspector;
+    if (!attachment) return false;
+    var previousMode = attachment.mode;
+    var previousField = attachment.field;
+    var article = attachment.placement.article;
+    var previousFocus = article.ownerDocument.activeElement;
+    var snapshot = snapshotInspectorSubtree(article, attachment.placement.shell, attachment.placement.originDetails);
+    var host = controller.inspectorHost;
+    var addedCount = host && host.added ? host.added.length : 0;
+    try {
+      var read = article.querySelector('[data-im-inspector-page="read"]');
+      var ledger = article.querySelector('[data-im-inspector-ledger]');
+      var deeper = article.querySelector('[data-im-inspector-page="deeper"]');
+      var unavailable = article.querySelector('[data-im-inspector-deeper-unavailable]');
+      if (mode === 'deeper' && !deeper && !unavailable) {
+        unavailable = article.ownerDocument.createElement('p');
+        unavailable.setAttribute('data-im-inspector-deeper-unavailable', '');
+        appendWords(unavailable, 'No deeper destinations are available for this market.', '此市场暂无深入研究目标。');
+        article.appendChild(unavailable);
+        if (host && host.added) host.added.push(unavailable);
+      }
+      if (read) read.hidden = mode !== 'read';
+      if (ledger) {
+        ledger.hidden = mode !== 'ledger' && mode !== 'field';
+        ledger.open = mode === 'ledger' || mode === 'field';
+      }
+      Array.from(article.querySelectorAll('[data-im-inspector-field]')).forEach(function (node) {
+        var id = node.getAttribute('data-im-inspector-field');
+        if (mode === 'field') {
+          node.hidden = id !== field;
+          node.open = id === field;
+        } else if (mode === 'ledger') {
+          node.hidden = false;
+          node.open = false;
+        } else {
+          node.hidden = true;
+          node.open = false;
+        }
+      });
+      if (deeper) deeper.hidden = mode !== 'deeper';
+      unavailable = article.querySelector('[data-im-inspector-deeper-unavailable]');
+      if (unavailable) unavailable.hidden = !(mode === 'deeper' && !deeper);
+      attachment.mode = mode;
+      attachment.field = mode === 'field' ? field : null;
+      var heading = inspectorHeading(article, mode, field);
+      var shell = attachment.placement.shell;
+      if (heading && heading.id) shell.setAttribute('aria-labelledby', heading.id);
+      else shell.removeAttribute('aria-labelledby');
+      applyInspectorLanguage(controller);
+      if (!options || options.focus !== false) {
+        var focusTarget = options && options.focusNode ? options.focusNode : heading;
+        if (focusTarget && typeof focusTarget.focus === 'function') focusTarget.focus();
+      }
+      return true;
+    } catch (_) {
+      attachment.mode = previousMode;
+      attachment.field = previousField;
+      restoreOwnedPresentation(snapshot);
+      if (host && host.added) {
+        while (host.added.length > addedCount) {
+          var extra = host.added.pop();
+          if (extra && extra.parentNode) extra.parentNode.removeChild(extra);
+        }
+      }
+      if (previousFocus && typeof previousFocus.focus === 'function') {
+        try { previousFocus.focus(); } catch (error) {}
+      }
+      return false;
+    }
+  }
+
+  function captureLiveInspector(controller) {
+    var attachment = controller.inspector;
+    if (!attachment) return null;
+    var article = attachment.placement.article;
+    return {
+      market: attachment.market,
+      mode: attachment.mode,
+      field: attachment.field,
+      origin: attachment.origin,
+      scroll: attachment.scroll,
+      focus: attachment.focus,
+      generation: attachment.generation,
+      contextFingerprint: attachment.contextFingerprint,
+      fieldTrigger: attachment.fieldTrigger,
+      readControl: attachment.readControl,
+      ownedSnapshot: attachment.ownedSnapshot,
+      placement: {
+        article: article,
+        originDetails: attachment.placement.originDetails,
+        originParent: attachment.placement.originParent,
+        originNext: attachment.placement.originNext,
+        originOpen: attachment.placement.originOpen,
+        shell: attachment.placement.shell,
+        dialogParent: article.parentNode,
+        dialogNext: article.nextSibling
+      },
+      modal: dialogIsModal(attachment.placement.shell),
+      focusNow: article.ownerDocument.activeElement
+    };
+  }
+
+  function dialogIsModal(shell) {
+    return !!(shell && (shell.open || (typeof shell.matches === 'function' && shell.matches(':modal'))));
+  }
+
+  function closeInspectorDialog(controller, shell) {
+    if (!shell) return;
+    controller.inspectorSilent = true;
+    try {
+      if (dialogIsModal(shell) && typeof shell.close === 'function') shell.close();
+    } catch (_) {}
+    controller.inspectorSilent = false;
+  }
+
+  function visuallyCloseInspector(controller, options) {
+    var attachment = controller.inspector;
+    if (!attachment) return;
+    var placement = attachment.placement;
+    var article = placement.article;
+    closeInspectorDialog(controller, placement.shell);
+    restoreOwnedPresentation(attachment.ownedSnapshot);
+    var nav = article.querySelector('[data-im-inspector-enhancement]');
+    if (nav) nav.hidden = true;
+    placeNode(article, placement.originParent, placement.originNext);
+    if (placement.originDetails) {
+      placement.originDetails.open = !!placement.originOpen;
+      placement.originDetails.hidden = false;
+    }
+    if (options && options.release) controller.inspector = null;
+  }
+
+  function releaseInspectorToOrigin(controller, snap) {
+    if (!snap || !snap.placement) {
+      controller.inspector = null;
+      return;
+    }
+    if (controller.inspector) visuallyCloseInspector(controller, { release: true });
+    else {
+      var articleHome = snap.placement.article;
+      closeInspectorDialog(controller, snap.placement.shell);
+      restoreOwnedPresentation(snap.ownedSnapshot);
+      if (articleHome) {
+        var homeNav = articleHome.querySelector('[data-im-inspector-enhancement]');
+        if (homeNav) homeNav.hidden = true;
+        placeNode(articleHome, snap.placement.originParent, snap.placement.originNext);
+      }
+    }
+    var originDetails = snap.placement.originDetails;
+    if (originDetails) {
+      originDetails.hidden = false;
+      originDetails.open = true;
+    }
+    controller.inspector = null;
+    if (controller.state) paintInspectorFallbacks(controller, controller.state);
+    var focusNode = snap.focusNow;
+    if (!nodeUsable(controller, focusNode)) {
+      focusNode = originDetails && originDetails.querySelector('[data-im-inspector-trigger]');
+    }
+    if (!nodeUsable(controller, focusNode) && snap.placement.article) {
+      focusNode = inspectorHeading(snap.placement.article, 'read', null);
+    }
+    if (focusNode && typeof focusNode.focus === 'function') {
+      try { focusNode.focus(); } catch (_) {}
+    }
+  }
+
+  function rehydrateInspector(controller, snap) {
+    if (!snap) return false;
+    try {
+      var article = snap.placement.article;
+      var shell = snap.placement.shell;
+      placeNode(article, snap.placement.dialogParent, snap.placement.dialogNext);
+      restoreOwnedPresentation(snap.ownedSnapshot);
+      if (article) {
+        var nav = article.querySelector('[data-im-inspector-enhancement]');
+        if (nav) nav.hidden = false;
+      }
+      controller.inspector = {
+        market: snap.market,
+        mode: snap.mode,
+        field: snap.field,
+        origin: snap.origin,
+        scroll: snap.scroll,
+        focus: snap.focus,
+        generation: snap.generation,
+        contextFingerprint: snap.contextFingerprint,
+        placement: {
+          article: article,
+          originDetails: snap.placement.originDetails,
+          originParent: snap.placement.originParent,
+          originNext: snap.placement.originNext,
+          originOpen: snap.placement.originOpen,
+          shell: snap.placement.shell
+        },
+        ownedSnapshot: snap.ownedSnapshot,
+        fieldTrigger: snap.fieldTrigger,
+        readControl: snap.readControl
+      };
+      var nativeOk = !snap.modal;
+      if (snap.modal) {
+        nativeOk = false;
+        if (shell && typeof shell.showModal === 'function') {
+          try {
+            if (!dialogIsModal(shell)) shell.showModal();
+            nativeOk = dialogIsModal(shell);
+          } catch (_) {
+            nativeOk = false;
+          }
+        }
+      }
+      // A native platform failure cannot restore modal; do not swallow mode false.
+      if (!nativeOk || !applyInspectorMode(controller, snap.mode, snap.field, { focus: false })) {
+        releaseInspectorToOrigin(controller, snap);
+        return false;
+      }
+      if (controller.state) paintInspectorFallbacks(controller, controller.state);
+      if (snap.focusNow && typeof snap.focusNow.focus === 'function' && snap.focusNow.isConnected) {
+        try { snap.focusNow.focus(); } catch (_) {}
+      }
+      return true;
+    } catch (_) {
+      try { releaseInspectorToOrigin(controller, snap); } catch (error) {}
+      return false;
+    }
+  }
+
+  function closeInspector(controller, options) {
+    if (!controller.live && !(options && options.destroying)) return destroyedResult();
+    var attachment = controller.inspector;
+    if (!attachment) return inspectorResult(controller, true, []);
+    var restoreScroll = !options || options.restoreScroll !== false;
+    var restoreFocus = !options || options.restoreFocus !== false;
+    var contextUnchanged = controller.state && attachment.contextFingerprint === inspectorFingerprint(controller.state);
+    var originNode = attachment.origin && attachment.origin.node;
+    var originFingerprint = attachment.origin && attachment.origin.contextFingerprint;
+    var scroll = attachment.scroll;
+    visuallyCloseInspector(controller, { release: true });
+    if (controller.state) paintInspectorFallbacks(controller, controller.state);
+    if (restoreScroll && contextUnchanged) restoreScrollOffsets(controller, scroll);
+    if (restoreFocus) {
+      var originValid = !!(originNode && originFingerprint === inspectorFingerprint(controller.state) && nodeUsable(controller, originNode));
+      var target = originValid ? originNode : owned(controller.root, '[data-im-heading]')[0];
+      if (target && typeof target.focus === 'function') {
+        try { target.focus(); } catch (_) {}
+      }
+    }
+    return inspectorResult(controller, true, []);
+  }
+
+  function inspectorBack(controller) {
+    if (!controller.live) return destroyedResult();
+    var attachment = controller.inspector;
+    if (!attachment) return inspectorResult(controller, true, []);
+    var mode = attachment.mode;
+    if (mode === 'field') {
+      var trigger = attachment.fieldTrigger;
+      if (!applyInspectorMode(controller, 'ledger', null, { focusNode: nodeUsable(controller, trigger) ? trigger : null })) {
+        return inspectorResult(controller, false, [{ code: 'UI_UPDATE_FAILED', field: 'inspector' }]);
+      }
+      return inspectorResult(controller, true, []);
+    }
+    if (mode === 'ledger' || mode === 'deeper') {
+      var readControl = attachment.readControl;
+      var heading = inspectorHeading(attachment.placement.article, 'read', null);
+      if (!applyInspectorMode(controller, 'read', null, { focusNode: nodeUsable(controller, readControl) ? readControl : heading })) {
+        return inspectorResult(controller, false, [{ code: 'UI_UPDATE_FAILED', field: 'inspector' }]);
+      }
+      return inspectorResult(controller, true, []);
+    }
+    return closeInspector(controller, {});
+  }
+
+  function inspectorEvidence(controller, control) {
+    var attachment = controller.inspector;
+    if (!attachment) return inspectorResult(controller, false, [{ code: 'NO_MATCHING_PANEL', field: 'inspector' }]);
+    if (attachment.mode !== 'read' && attachment.mode !== 'deeper') return inspectorResult(controller, true, []);
+    attachment.readControl = control || attachment.readControl;
+    if (!applyInspectorMode(controller, 'ledger', null, {})) {
+      return inspectorResult(controller, false, [{ code: 'UI_UPDATE_FAILED', field: 'inspector' }]);
+    }
+    return inspectorResult(controller, true, []);
+  }
+
+  function inspectorDeeper(controller, control) {
+    var attachment = controller.inspector;
+    if (!attachment) return inspectorResult(controller, false, [{ code: 'NO_MATCHING_PANEL', field: 'inspector' }]);
+    if (attachment.mode !== 'read' && attachment.mode !== 'ledger') return inspectorResult(controller, true, []);
+    attachment.readControl = control || attachment.readControl;
+    if (!applyInspectorMode(controller, 'deeper', null, {})) {
+      return inspectorResult(controller, false, [{ code: 'UI_UPDATE_FAILED', field: 'inspector' }]);
+    }
+    return inspectorResult(controller, true, []);
+  }
+
+  function inspectorField(controller, field, control) {
+    var attachment = controller.inspector;
+    if (!attachment || attachment.mode !== 'ledger') {
+      return inspectorResult(controller, false, [{ code: 'NO_MATCHING_PANEL', field: 'inspector' }]);
+    }
+    if (INSPECTOR_FIELDS.indexOf(field) === -1) return inspectorResult(controller, false, [{ code: 'INVALID_ACTION', field: 'field' }]);
+    var node = attachment.placement.article.querySelector('[data-im-inspector-field="' + field + '"]');
+    if (!node) return inspectorResult(controller, false, [{ code: 'NO_MATCHING_PANEL', field: 'field' }]);
+    attachment.fieldTrigger = control || node.querySelector('[data-im-inspector-field-trigger]');
+    if (!applyInspectorMode(controller, 'field', field, {})) {
+      return inspectorResult(controller, false, [{ code: 'UI_UPDATE_FAILED', field: 'inspector' }]);
+    }
+    return inspectorResult(controller, true, []);
+  }
+
+  function openInspector(controller, request) {
+    if (!controller.live) return destroyedResult();
+    var copied = ownDataCopy(request, ['market_id', 'expected_source']);
+    if (!copied) return inspectorResult(controller, false, [{ code: 'INVALID_ACTION', field: 'inspector' }]);
+    if (typeof copied.market_id !== 'string' || copied.market_id.length === 0) {
+      return inspectorResult(controller, false, [{ code: 'INVALID_ACTION', field: 'market_id' }]);
+    }
+    var expected = normalizeSource(copied.expected_source);
+    if (expected === undefined && copied.expected_source !== null) {
+      return inspectorResult(controller, false, [{ code: 'INVALID_ACTION', field: 'expected_source' }]);
+    }
+    var currentSource = normalizeSource(controller.state.source_reference);
+    if (expected !== currentSource) return inspectorResult(controller, false, [{ code: 'STALE_SOURCE', field: 'expected_source' }]);
+    var host = controller.inspectorHost;
+    var shell = host && host.shell ? host.shell : inspectorShell(controller);
+    if (!host || !host.supported || host.modalityFailed || !shell) {
+      return inspectorResult(controller, false, [{ code: 'NO_MATCHING_PANEL', field: 'inspector' }]);
+    }
+    var overviewPanels = activeOverviewPanels(controller);
+    if (overviewPanels.length > 1) return inspectorResult(controller, false, [{ code: 'AMBIGUOUS_PANEL', field: 'inspector' }]);
+    if (overviewPanels.length !== 1) return inspectorResult(controller, false, [{ code: 'NO_MATCHING_PANEL', field: 'inspector' }]);
+    var contextId = overviewContextId(overviewPanels[0]);
+    if (!contextId) return inspectorResult(controller, false, [{ code: 'NO_MATCHING_PANEL', field: 'inspector' }]);
+    var matches = matchingInspectorArticles(controller, copied.market_id, expected).filter(function (article) {
+      return article.getAttribute('data-im-inspector-context') === contextId;
+    });
+    if (matches.length > 1) return inspectorResult(controller, false, [{ code: 'AMBIGUOUS_PANEL', field: 'inspector' }]);
+    if (matches.length !== 1) return inspectorResult(controller, false, [{ code: 'NO_MATCHING_PANEL', field: 'inspector' }]);
+    var article = matches[0];
+    if (controller.inspector && controller.inspector.placement.article === article && dialogIsModal(shell)) {
+      if (!applyInspectorMode(controller, 'read', null, {})) {
+        return inspectorResult(controller, false, [{ code: 'UI_UPDATE_FAILED', field: 'inspector' }]);
+      }
+      return inspectorResult(controller, true, []);
+    }
+    if (controller.inspector) closeInspector(controller, { restoreScroll: true, restoreFocus: false });
+    var originDetails = article.closest('[data-im-inspector-origin]');
+    var trigger = controller.pendingInspectorTrigger ||
+      (originDetails && originDetails.querySelector('[data-im-inspector-trigger]')) || article;
+    var focusNow = article.ownerDocument.activeElement;
+    var scroll = captureScrollOffsets(controller, originDetails || article);
+    var originOpen = originDetails ? !!originDetails.open : false;
+    var originParent = article.parentNode;
+    var originNext = article.nextSibling;
+    var fingerprint = inspectorFingerprint(controller.state);
+    ensureEnhancedControls(controller, article);
+    var ownedBefore = snapshotInspectorSubtree(article, shell, originDetails);
+    placeNode(article, shell, null);
+    if (originDetails) {
+      originDetails.open = false;
+      originDetails.hidden = true;
+    }
+    controller.inspector = {
+      market: copied.market_id,
+      mode: 'read',
+      field: null,
+      origin: { node: trigger, contextFingerprint: fingerprint },
+      scroll: scroll,
+      focus: focusNow,
+      generation: (host.generation += 1),
+      contextFingerprint: fingerprint,
+      placement: {
+        article: article,
+        originDetails: originDetails,
+        originParent: originParent,
+        originNext: originNext,
+        originOpen: originOpen,
+        shell: shell
+      },
+      ownedSnapshot: ownedBefore,
+      fieldTrigger: null,
+      readControl: null
+    };
+    var shown = false;
+    try {
+      if (!applyInspectorMode(controller, 'read', null, { focus: false })) {
+        placeNode(article, originParent, originNext);
+        restoreOwnedPresentation(ownedBefore);
+        if (originDetails) {
+          originDetails.open = originOpen;
+          originDetails.hidden = false;
+        }
+        var failedNav = article.querySelector('[data-im-inspector-enhancement]');
+        if (failedNav) failedNav.hidden = true;
+        controller.inspector = null;
+        paintInspectorFallbacks(controller, controller.state);
+        return inspectorResult(controller, false, [{ code: 'UI_UPDATE_FAILED', field: 'inspector' }]);
+      }
+      try {
+        shell.showModal();
+        shown = true;
+      } catch (showError) {
+        placeNode(article, originParent, originNext);
+        restoreOwnedPresentation(ownedBefore);
+        if (originDetails) {
+          originDetails.open = originOpen;
+          originDetails.hidden = false;
+        }
+        var modalNav = article.querySelector('[data-im-inspector-enhancement]');
+        if (modalNav) modalNav.hidden = true;
+        controller.inspector = null;
+        host.modalityFailed = true;
+        paintInspectorFallbacks(controller, controller.state);
+        return inspectorResult(controller, false, [{ code: 'UI_UPDATE_FAILED', field: 'inspector' }]);
+      }
+      var heading = inspectorHeading(article, 'read', null);
+      if (heading && heading.focus) heading.focus();
+      paintInspectorFallbacks(controller, controller.state);
+      return inspectorResult(controller, true, []);
+    } catch (_) {
+      if (shown) {
+        closeInspector(controller, { restoreScroll: true, restoreFocus: true });
+      } else {
+        placeNode(article, originParent, originNext);
+        restoreOwnedPresentation(ownedBefore);
+        if (originDetails) {
+          originDetails.open = originOpen;
+          originDetails.hidden = false;
+        }
+        var nav = article.querySelector('[data-im-inspector-enhancement]');
+        if (nav) nav.hidden = true;
+        controller.inspector = null;
+        paintInspectorFallbacks(controller, controller.state);
+        restoreScrollOffsets(controller, scroll);
+        if (focusNow && typeof focusNow.focus === 'function') {
+          try { focusNow.focus(); } catch (error) {}
+        }
+      }
+      return inspectorResult(controller, false, [{ code: 'UI_UPDATE_FAILED', field: 'inspector' }]);
+    }
+  }
+
+  function teardownInspector(controller) {
+    if (controller.inspector) closeInspector(controller, { restoreScroll: false, restoreFocus: false, destroying: true });
+    var host = controller.inspectorHost;
+    if (!host) return;
+    if (host.shell && controller.onInspectorCancel) {
+      host.shell.removeEventListener('cancel', controller.onInspectorCancel, false);
+    }
+    if (host.shell && controller.onInspectorKeydown) {
+      host.shell.removeEventListener('keydown', controller.onInspectorKeydown, true);
+    }
+    if (host.shell && controller.onInspectorClose) {
+      host.shell.removeEventListener('close', controller.onInspectorClose, false);
+    }
+    host.added.slice().forEach(function (node) {
+      if (node && node.parentNode) node.parentNode.removeChild(node);
+    });
+    host.added = [];
+    host.originals.forEach(function (entry) {
+      var node = entry.node;
+      if (!node) return;
+      if (entry.parent) placeNode(node, entry.parent, entry.next);
+      entry.attrs.forEach(function (attribute) {
+        if (attribute[1] === null) node.removeAttribute(attribute[0]);
+        else node.setAttribute(attribute[0], attribute[1]);
+      });
+      if (entry.open !== null && 'open' in node && !(node.matches && node.matches('dialog'))) node.open = entry.open;
+    });
+    controller.inspector = null;
+  }
+
+  function inspectorEvent(controller, event) {
+    if (!controller.live || !controller.inspectorHost) return false;
+    var target = event.target;
+    if (!target || !target.closest) return false;
+    if (target.closest('[data-im-workspace]') !== controller.root) return false;
+    if (event.type !== 'click') return false;
+    var deeperLink = target.closest('a');
+    if (deeperLink && controller.inspector && articleOwned(controller, deeperLink) &&
+        deeperLink.closest('[data-im-inspector-page="deeper"]')) {
+      closeInspector(controller, { restoreScroll: false, restoreFocus: false });
+      return false;
+    }
+    var openBtn = target.closest('button[data-im-inspector-open]');
+    if (openBtn && articleOwned(controller, openBtn) && !openBtn.disabled) {
+      event.preventDefault();
+      controller.pendingInspectorTrigger = openBtn;
+      var sourceAttr = openBtn.hasAttribute('data-source') ? openBtn.getAttribute('data-source') : null;
+      openInspector(controller, { market_id: openBtn.getAttribute('data-market-id'), expected_source: normalizeSource(sourceAttr) });
+      controller.pendingInspectorTrigger = null;
+      return true;
+    }
+    var trigger = target.closest('[data-im-inspector-trigger]');
+    if (trigger && articleOwned(controller, trigger) && controller.inspectorHost.supported && !controller.inspectorHost.modalityFailed) {
+      var origin = trigger.closest('[data-im-inspector-origin]');
+      var article = origin && origin.querySelector('[data-im-inspector-payload]');
+      if (article && articleMatchesRequest(controller, article, article.getAttribute('data-market-id'), normalizeSource(controller.state.source_reference))) {
+        event.preventDefault();
+        controller.pendingInspectorTrigger = trigger;
+        openInspector(controller, { market_id: article.getAttribute('data-market-id'), expected_source: articleSource(article) });
+        controller.pendingInspectorTrigger = null;
+        return true;
+      }
+    }
+    if (!controller.inspector) return false;
+    var actionBtn = target.closest('[data-im-inspector-action]');
+    if (actionBtn && articleOwned(controller, actionBtn)) {
+      var action = actionBtn.getAttribute('data-im-inspector-action');
+      event.preventDefault();
+      if (action === 'close') closeInspector(controller, {});
+      else if (action === 'back') inspectorBack(controller);
+      else if (action === 'evidence') inspectorEvidence(controller, actionBtn);
+      else if (action === 'deeper') inspectorDeeper(controller, actionBtn);
+      return true;
+    }
+    var ledgerTrigger = target.closest('[data-im-inspector-ledger-trigger]');
+    if (ledgerTrigger && articleOwned(controller, ledgerTrigger)) {
+      event.preventDefault();
+      if (controller.inspector.mode === 'read' || controller.inspector.mode === 'deeper') inspectorEvidence(controller, ledgerTrigger);
+      return true;
+    }
+    var fieldTrigger = target.closest('[data-im-inspector-field-trigger]');
+    if (fieldTrigger && articleOwned(controller, fieldTrigger)) {
+      event.preventDefault();
+      if (controller.inspector.mode === 'ledger') {
+        var fieldNode = fieldTrigger.closest('[data-im-inspector-field]');
+        inspectorField(controller, fieldNode && fieldNode.getAttribute('data-im-inspector-field'), fieldTrigger);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  function inspectorCancel(controller, event) {
+    if (controller.inspectorSilent) return;
+    if (event && typeof event.preventDefault === 'function') event.preventDefault();
+    if (!controller.live || !controller.inspector) return;
+    inspectorBack(controller);
+  }
+
+  function inspectorNativeClose(controller, event) {
+    if (controller.inspectorSilent) return;
+    if (!controller.live) return;
+    var host = controller.inspectorHost;
+    var shell = host && host.shell;
+    if (!shell) return;
+    if (event && event.target && event.target !== shell) return;
+    if (dialogIsModal(shell)) return;
+    var attachment = controller.inspector;
+    if (!attachment || attachment.placement.shell !== shell) return;
+    closeInspector(controller, {});
+  }
+
+  function inspectorEscapeKey(controller, event) {
+    if (controller.inspectorSilent || !controller.inspector) return;
+    if (!event || (event.key !== 'Escape' && event.key !== 'Esc')) return;
+    if (typeof event.preventDefault === 'function') event.preventDefault();
+    inspectorBack(controller);
+  }
+
   function snapshotRoot(root) {
     var selector = '[data-im-heading],[data-im-issues],[data-im-unavailable],[data-im-panel],'+
       '[data-im-action],[data-im-expanded-region],[data-im-expansion-trigger] .l-en,[data-im-expansion-trigger] .l-zh,'+
       '[data-im-library-static],[data-im-library-search],[data-im-library-clear],[data-im-library-status],'+
-      '[data-im-library-groups],[data-im-library-group],[data-im-library-results],[data-im-library-empty],[data-im-library-tool]';
+      '[data-im-library-groups],[data-im-library-group],[data-im-library-results],[data-im-library-empty],[data-im-library-tool],'+
+      '[data-im-inspector-origin],[data-im-inspector-payload],[data-im-inspector-enhancement],[data-im-inspector-page],'+
+      '[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-shell],[data-im-inspector-deeper-unavailable]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
       if (node === root) attrs.push('data-im-enhanced');
@@ -201,9 +1054,12 @@
       if (node.matches('select[data-im-action]')) value = ['select_market','set_library_group','set_view','set_horizon','set_basis'].includes(node.getAttribute('data-im-action'));
       if (node.matches('[data-im-expansion-trigger]')) attrs.push('hidden','aria-expanded','data-im-expanded');
       if (node.matches('[data-im-expansion-trigger] .l-en,[data-im-expansion-trigger] .l-zh')) text = true;
+      if (node.matches('[data-im-inspector-origin],[data-im-inspector-enhancement],[data-im-inspector-page],[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-deeper-unavailable]')) attrs.push('hidden');
+      if (node.matches('details[data-im-inspector-origin],details[data-im-inspector-ledger],details[data-im-inspector-field]')) attrs.push('open');
+      if (node.matches('[data-im-inspector-shell]')) attrs.push('aria-labelledby','aria-label');
       return {node:node, attrs:Array.from(new Set(attrs)).map(function (name) {return [name,node.getAttribute(name)];}),
         value:value ? node.value : null, children:text ? Array.from(node.childNodes) : null,
-        parent:node.matches('[data-im-library-tool]') ? node.parentNode : null, next:node.nextSibling};
+        parent:node.matches('[data-im-library-tool],[data-im-inspector-payload]') ? node.parentNode : null, next:node.nextSibling};
     });
   }
 
@@ -300,6 +1156,7 @@
       });
     }
     paintLibrary(controller,state);
+    paintInspectorFallbacks(controller,state);
     return reported;
   }
 
@@ -331,11 +1188,15 @@
     var previous = controller.state;
     var snapshot = snapshotRoot(controller.root);
     rememberNodes(controller, snapshot);
+    var inspectorSnap = captureLiveInspector(controller);
     var serialized = controller.reducer.serializeQuery(state);
     if (!serialized.ok) return {ok:false, state:previous, issues:serialized.issues, intent:null};
     var shouldPush = !['mount', 'popstate', 'resize'].includes(actionType) && serialized.query !== controller.serializedQuery;
     try {
+      var fingerprintChanged = !!(controller.inspector && controller.inspector.contextFingerprint !== inspectorFingerprint(state));
+      if (fingerprintChanged) visuallyCloseInspector(controller, { release: true });
       var reported = paint(controller, state, issues);
+      if (controller.inspector) applyInspectorMode(controller, controller.inspector.mode, controller.inspector.field, { focus: false });
       if (shouldPush) controller.environment.window.history.pushState(null, '', nextUrl(controller, serialized.query));
       controller.state = state;
       controller.issues = reported;
@@ -343,6 +1204,7 @@
       return {ok:true, state:state, issues:reported, intent:null};
     } catch (error) {
       restoreRoot(controller.root, snapshot);
+      if (inspectorSnap) rehydrateInspector(controller, inspectorSnap);
       if (actionType === 'mount') throw error;
       return {ok:false, state:previous, issues:[{code:'UI_UPDATE_FAILED', field:'workspace'}], intent:null};
     }
@@ -372,9 +1234,17 @@
 
   function popstate(controller) {
     if (!controller.live) return;
+    var hadInspector = !!controller.inspector;
+    if (hadInspector) visuallyCloseInspector(controller, { release: true });
     var parsed = controller.reducer.parseQuery(controller.environment.window.location.search);
     var committed = stageAndCommit(controller, parsed.state, parsed.issues, 'popstate', false);
     controller.issues = committed.issues;
+    if (hadInspector) {
+      var heading = owned(controller.root, '[data-im-heading]')[0];
+      if (heading && typeof heading.focus === 'function') {
+        try { heading.focus(); } catch (_) {}
+      }
+    }
   }
 
   function actionFromEvent(controller, event) {
@@ -408,6 +1278,7 @@
   }
 
   function clickOrChange(controller, event) {
+    if (inspectorEvent(controller,event)) return;
     if (libraryEvent(controller,event)) return;
     var action = actionFromEvent(controller, event);
     if (!action) return;
@@ -436,12 +1307,14 @@
     if (!expanded.ok) return expanded;
     var previousNodes = snapshotRoot(controller.root);
     rememberNodes(controller, previousNodes);
+    var inspectorSnap = captureLiveInspector(controller);
     var previousState = controller.state;
     var previousReducer = controller.reducer;
     var previousSerialized = controller.serializedQuery;
     var previousIssues = controller.issues;
     var failed = true;
     try {
+      if (controller.inspector) visuallyCloseInspector(controller, { release: true });
       var reported = paint(controller, expanded.state, []);
       controller.reducer = replacement;
       controller.state = expanded.state;
@@ -449,6 +1322,8 @@
       controller.serializedQuery = replacement.serializeQuery(expanded.state).query;
       failed = false;
       return { ok: true, state: expanded.state, issues: reported, intent: { type: 'invalidate_source_bound_context' } };
+    } catch (_) {
+      return { ok: false, state: previousState, issues: [{ code: 'UI_UPDATE_FAILED', field: 'source_reference' }], intent: null };
     } finally {
       if (failed) {
         controller.reducer = previousReducer;
@@ -456,6 +1331,7 @@
         controller.issues = previousIssues;
         controller.serializedQuery = previousSerialized;
         restoreRoot(controller.root, previousNodes);
+        if (inspectorSnap) rehydrateInspector(controller, inspectorSnap);
       }
     }
   }
@@ -487,9 +1363,10 @@
     };
     var controller = {
       root: root, config: config, configWithSource: configWithSource, reducer: reducer, environment: { window: window },
-      state: null, issues: [], serializedQuery: '', live: false, original: []
+      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null
     };
     controller.library = prepareLibrary(root,config);
+    controller.inspectorHost = prepareInspector(controller);
     var snapshot = snapshotRoot(root);
     controller.original = snapshot.slice();
     var installed = { listeners: false, popstate: false, observer: null };
@@ -505,24 +1382,42 @@
       controller.onLibraryEvent = function (event) { libraryEvent(controller,event); };
       controller.onPopstate = function () { popstate(controller); };
       controller.onResize = function () { dispatch(controller, {type:'resize'}); };
+      controller.onInspectorCancel = function (event) { inspectorCancel(controller, event); };
+      controller.onInspectorKeydown = function (event) { inspectorEscapeKey(controller, event); };
+      controller.onInspectorClose = function (event) { inspectorNativeClose(controller, event); };
+      if (controller.inspectorHost && controller.inspectorHost.shell) {
+        controller.inspectorHost.shell.addEventListener('cancel', controller.onInspectorCancel, false);
+        controller.inspectorHost.shell.addEventListener('keydown', controller.onInspectorKeydown, true);
+        controller.inspectorHost.shell.addEventListener('close', controller.onInspectorClose, false);
+      }
       root.addEventListener('click', controller.onClick, false);
       root.addEventListener('change', controller.onChange, false);
       ['input','compositionstart','compositionend','submit'].forEach(function (type) { root.addEventListener(type,controller.onLibraryEvent,false); });
       window.addEventListener('popstate', controller.onPopstate, false);
       window.addEventListener('resize', controller.onResize, false);
-      controller.observer = new window.MutationObserver(function () { repaintIssues(controller); paintLibrary(controller,controller.state); });
+      controller.observer = new window.MutationObserver(function () {
+        repaintIssues(controller);
+        paintLibrary(controller,controller.state);
+        applyInspectorLanguage(controller);
+        if (controller.inspector) applyInspectorMode(controller, controller.inspector.mode, controller.inspector.field, { focus: false });
+        paintInspectorFallbacks(controller, controller.state);
+      });
       controller.observer.observe(window.document.documentElement, { attributes: true, attributeFilter: ['lang'] });
       root.setAttribute('data-im-enhanced', 'true');
       var handle = {
         dispatch: function (action) { return JSON.parse(JSON.stringify(dispatch(controller, action))); },
         getState: function () { return controller.state === null ? null : JSON.parse(JSON.stringify(controller.state)); },
         replaceSource: function (newSource, expectedSource) { return JSON.parse(JSON.stringify(replaceSource(controller, newSource, expectedSource))); },
+        openInspector: function (request) { return JSON.parse(JSON.stringify(openInspector(controller, request))); },
+        inspectorBack: function () { return JSON.parse(JSON.stringify(inspectorBack(controller))); },
+        closeInspector: function () { return JSON.parse(JSON.stringify(closeInspector(controller, {}))); },
         destroy: function () { return destroy(controller); }
       };
       if (!HANDLES) throw new Error('WeakMap is unavailable');
       HANDLES.set(root, handle);
       return handle;
     } catch (error) {
+      teardownInspector(controller);
       if (controller.observer) controller.observer.disconnect();
       if (controller.onClick) root.removeEventListener('click', controller.onClick, false);
       if (controller.onChange) root.removeEventListener('change', controller.onChange, false);
@@ -537,6 +1432,7 @@
   function destroy(controller) {
     if (!controller.live) return false;
     controller.live = false;
+    teardownInspector(controller);
     controller.state = null;
     controller.reducer = null;
     if (controller.observer) controller.observer.disconnect();

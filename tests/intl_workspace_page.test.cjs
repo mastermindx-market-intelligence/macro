@@ -8,17 +8,20 @@ const {chromium} = require('playwright');
 const root = path.resolve(__dirname, '..');
 const html = execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
   [path.join(__dirname, 'test_intl_workspace_integration.py')],
-  {cwd:root, env:{...process.env, PYTHONPATH:root}, encoding:'utf8', maxBuffer:1024*1024});
+  {cwd:root, env:{...process.env, PYTHONPATH:root}, encoding:'utf8', maxBuffer:4*1024*1024});
 
 async function pageFixture(fn, {javaScriptEnabled=true, broken=false, width=1440, state="unknown"}={}) {
   const browser = await chromium.launch({headless:true,
     ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? {channel:process.env.PLAYWRIGHT_CHROMIUM_CHANNEL} : {})});
   const fixtureHtml = state === 'unknown' ? html : execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
     [path.join(__dirname,'test_intl_workspace_integration.py'),'macro',state],
-    {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:1024*1024});
+    {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
   const context = await browser.newContext({javaScriptEnabled, viewport:{width,height:900}});
   const page = await context.newPage();
   page.setDefaultTimeout(2500);
+  // Loading the full multi-context server fixture has its own bounded budget;
+  // short interaction waits are not a page-load performance assertion.
+  page.setDefaultNavigationTimeout(30000);
   await page.route('**/*', async route => {
     const url = new URL(route.request().url());
     if (url.hostname !== 'intl.test') return route.abort();
