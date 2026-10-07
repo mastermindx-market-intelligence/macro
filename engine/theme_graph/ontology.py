@@ -186,6 +186,17 @@ def _visible_by_instant(value: Any, field: str, cutoff: dt.datetime) -> bool:
     return _parse_date(value, field) < cutoff.date()
 
 
+def _is_ignored_theme_tier(row: Mapping[str, Any]) -> bool:
+    """Non-`theme` tiers are display-only hierarchy nodes; readers treat them as absent."""
+    if str(row.get("kind") or "") != "theme":
+        return False
+    tier = row.get("tier")
+    if _is_null(tier):
+        # Legacy crosswalk themes omit tier; they remain canonical theme nodes.
+        return False
+    return str(tier) != "theme"
+
+
 def _node_projection(row: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "node_id": str(row.get("node_id") or ""),
@@ -265,7 +276,11 @@ def _nodes_as_known(
         row["retire_date"] = lifecycle.get("retire_date")
         row["merged_into"] = lifecycle.get("merged_into")
         visible[node_id] = row
-    return visible
+    return {
+        node_id: row
+        for node_id, row in visible.items()
+        if not _is_ignored_theme_tier(row)
+    }
 
 
 def _contains_exact(value: Any, node_id: str) -> bool:
@@ -295,6 +310,55 @@ def _default_rights_resolver(node_id: str) -> dict[str, Any] | None:
         "rights_class": current_class,
         "public_display_allowed": bool(allowed),
     }
+
+
+def _live_edges_at_asof(
+    rows: Sequence[Mapping[str, Any]],
+    *,
+    asof: dt.date,
+    knowledge_cutoff: dt.date | dt.datetime,
+) -> list[dict[str, Any]]:
+    """All graph edges live at ``asof`` visible by ``knowledge_cutoff`` (no node filter)."""
+    instant = isinstance(knowledge_cutoff, dt.datetime)
+    if instant:
+        knowledge_cutoff = _clock_instant(knowledge_cutoff, "knowledge_cutoff")
+    eligible: list[tuple[dt.date, str, int, dict[str, Any]]] = []
+    for index, original in enumerate(rows):
+        row = dict(original)
+        edge_id = str(row.get("edge_id") or "")
+        type_ = str(row.get("type") or "")
+        src = str(row.get("src") or "")
+        dst = str(row.get("dst") or "")
+        if not edge_id or not type_ or not src or not dst:
+            continue
+        if instant:
+            if not _visible_by_instant(row.get("belief_time"), "belief_time", knowledge_cutoff):
+                continue
+            belief = _clock_date(row.get("belief_time"), "belief_time")
+        else:
+            belief = _parse_date(row.get("belief_time"), "belief_time")
+            if belief > knowledge_cutoff:
+                continue
+        eligible.append((belief, str(row.get("computed_at") or ""), index, row))
+
+    latest: dict[str, tuple[dt.date, str, int, dict[str, Any]]] = {}
+    for candidate in eligible:
+        edge_id = str(candidate[3]["edge_id"])
+        if edge_id not in latest or candidate[:3] > latest[edge_id][:3]:
+            latest[edge_id] = candidate
+
+    live: list[dict[str, Any]] = []
+    for _belief, _computed_at, _index, row in latest.values():
+        valid_from = _parse_date(row.get("valid_from"), "valid_from")
+        raw_valid_to = row.get("valid_to")
+        valid_to = (
+            None
+            if _is_null(raw_valid_to) or str(raw_valid_to).strip() == ""
+            else _parse_date(raw_valid_to, "valid_to")
+        )
+        if valid_from <= asof and (valid_to is None or asof < valid_to):
+            live.append(row)
+    return live
 
 
 def _collapse_relevant_edges(
@@ -474,6 +538,24 @@ def _proposal_mapping_edge(
     return None
 
 
+def _proposal_materialization_edge(
+    row: Mapping[str, Any],
+) -> tuple[str, str, str] | None:
+    kind = str(row.get("kind") or "")
+    if kind == "mapping":
+        return _proposal_mapping_edge(row)
+    if kind != "hierarchy":
+        return None
+    subject = row.get("subject")
+    if not isinstance(subject, Mapping):
+        return None
+    parent_id = str(subject.get("parent_id") or "")
+    child_id = str(subject.get("child_id") or "")
+    if parent_id and child_id:
+        return ("PARENT_OF", parent_id, child_id)
+    return None
+
+
 def _curation_summary(
     proposals: Sequence[Mapping[str, Any]],
     *,
@@ -497,7 +579,9 @@ def _curation_summary(
             row for row in proposals if str(row.get("status")) == "ratified"
         ]
         materialized = sum(
-            _proposal_mapping_edge(row) in live_relations for row in ratified
+            1
+            for row in ratified
+            if _proposal_materialization_edge(row) in live_relations
         )
         if materialized == len(ratified):
             state = "RATIFIED_AND_MATERIALIZED"
@@ -552,8 +636,19 @@ def compose_neighborhood(
     subject_row = node_map.get(exact_id)
 
     raw_edges = _records(store_view.read_edges())
+    ignored_ids = {
+        str(row.get("node_id") or "")
+        for row in nodes
+        if str(row.get("node_id") or "") and _is_ignored_theme_tier(row)
+    }
+    reader_edges = [
+        row
+        for row in raw_edges
+        if str(row.get("src") or "") not in ignored_ids
+        and str(row.get("dst") or "") not in ignored_ids
+    ]
     live_rows, future_beliefs = _collapse_relevant_edges(
-        raw_edges,
+        reader_edges,
         node_id=exact_id,
         asof=asof_date,
         knowledge_cutoff=cutoff_date,
@@ -620,7 +715,11 @@ def compose_neighborhood(
     }
     curation = _curation_summary(
         proposal_rows,
-        live_rows=live_rows,
+        live_rows=_live_edges_at_asof(
+            raw_edges,
+            asof=asof_date,
+            knowledge_cutoff=cutoff_date,
+        ),
     )
     availability = (
         {"state": "OK", "reason": None}

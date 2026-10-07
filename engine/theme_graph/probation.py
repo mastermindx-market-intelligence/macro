@@ -23,7 +23,7 @@ import hashlib
 import json
 import logging
 import re
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 
@@ -34,7 +34,17 @@ log = logging.getLogger(__name__)
 #: from the coverage-gap and overlap diagnostics.
 PROPOSAL_KINDS: frozenset[str] = frozenset({
     "new_theme", "merge", "split", "mapping", "key_rename", "identity_continuity",
+    "hierarchy",
 })
+
+HIERARCHY_EPOCH = date(2026, 10, 7)
+_THEME_ID_RE = re.compile(r"^theme:[a-z0-9][a-z0-9_]{1,62}$")
+_NOMINATED_FROM_RE = re.compile(
+    r"^(basket:\S+|vertical:[a-z0-9_]+:[a-z0-9_]+|research:\S+)$"
+)
+_VENDOR_SUBSTRINGS = ("finviz_themes", "ths_concepts")
+_VENDOR_TOKENS = frozenset({"finviz", "ths"})
+_HIERARCHY_CHILD_TIERS = frozenset({"theme", "micro_theme"})
 
 PROPOSED_BY: frozenset[str] = frozenset({
     "coverage_gap", "overlap_stats", "refresh_identity", "llm_proposed",
@@ -64,6 +74,80 @@ def _parse_stamp(value: object, field: str) -> datetime:
     if stamp.tzinfo is None:
         stamp = stamp.replace(tzinfo=timezone.utc)
     return stamp.astimezone(timezone.utc)
+
+
+def _nominated_from_errors(nominated_from: str) -> list[str]:
+    """Vendor nominator rule (W-C3); each error starts with its reason token."""
+    value = str(nominated_from or "").strip()
+    if not _NOMINATED_FROM_RE.fullmatch(value):
+        return [f"NOMINATED_FROM_GRAMMAR: nominated_from {value!r} is malformed"]
+    for needle in _VENDOR_SUBSTRINGS:
+        if needle in value:
+            return [
+                f"VENDOR_NOMINATOR: nominated_from {value!r} names a vendor family"
+            ]
+    for token in re.split(r"[:/_.\-]", value.lower()):
+        if token in _VENDOR_TOKENS:
+            return [
+                f"VENDOR_NOMINATOR: nominated_from {value!r} names a vendor family"
+            ]
+    if value.startswith("basket:"):
+        from engine.theme_graph import rights
+
+        family = rights.family_for_node_id(value)
+        if family in {"finviz_themes", "ths_concepts"}:
+            return [
+                f"VENDOR_NOMINATOR: nominated_from {value!r} names a vendor family"
+            ]
+        if family != "mastermind_curated":
+            return [
+                f"NOMINATOR_FAMILY_UNRESOLVED: nominated_from {value!r} "
+                f"does not resolve to a house basket family"
+            ]
+    return []
+
+
+def _validate_hierarchy_row(row: dict) -> list[str]:
+    out: list[str] = []
+    subject = row.get("subject")
+    if not isinstance(subject, dict):
+        out.append("hierarchy subject must be an object")
+        return out
+    parent_id = str(subject.get("parent_id") or "")
+    child_id = str(subject.get("child_id") or "")
+    child_tier = str(subject.get("child_tier") or "")
+    asserted_on = str(subject.get("proposed_asserted_on") or "")
+    nominated_from = str(subject.get("nominated_from") or "")
+    if not _THEME_ID_RE.fullmatch(parent_id):
+        out.append(f"hierarchy parent_id {parent_id!r} is malformed")
+    if not _THEME_ID_RE.fullmatch(child_id):
+        out.append(f"hierarchy child_id {child_id!r} is malformed")
+    if child_tier not in _HIERARCHY_CHILD_TIERS:
+        out.append(f"hierarchy child_tier {child_tier!r} is outside {_HIERARCHY_CHILD_TIERS}")
+    if parent_id and child_id and parent_id == child_id:
+        out.append("HIERARCHY_SELF_EDGE: parent_id must differ from child_id")
+    if asserted_on:
+        try:
+            parsed = date.fromisoformat(asserted_on)
+        except ValueError:
+            out.append(
+                f"hierarchy proposed_asserted_on {asserted_on!r} is not a YYYY-MM-DD date"
+            )
+        else:
+            if parsed < HIERARCHY_EPOCH:
+                out.append(
+                    f"HIERARCHY_EPOCH: proposed_asserted_on {asserted_on!r} "
+                    f"predates {HIERARCHY_EPOCH.isoformat()}"
+                )
+    out.extend(_nominated_from_errors(nominated_from))
+    if (
+        row.get("proposed_by") == "llm_proposed"
+        and str(row.get("status") or "") == "ratified"
+    ):
+        out.append(
+            "LLM_HIERARCHY_NOT_RATIFIABLE: llm_proposed hierarchy rows may not be ratified"
+        )
+    return out
 
 
 def proposal_id(kind: str, subject: dict) -> str:
@@ -150,6 +234,8 @@ def validate(row: dict) -> list[str]:
         and adjudicated_clock < created_clock
     ):
         out.append("adjudicated_at predates created")
+    if row.get("kind") == "hierarchy":
+        out.extend(_validate_hierarchy_row(row))
     return out
 
 
