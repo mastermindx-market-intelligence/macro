@@ -81,11 +81,38 @@ def test_macro_api_gets_only_read_paths_not_provider_credential_file():
         "Environment=MM_TICKER_NEWS_UNIVERSE=/var/lib/macro-ticker-news/news_universe.json",
         "Environment=MM_TICKER_NEWS_RIGHTS=/etc/macro-ticker-news-rights.json",
         "Environment=MM_TICKER_NEWS_HEALTH=/var/lib/macro-ticker-news/health.json",
-        "ReadOnlyPaths=/var/lib/macro-ticker-news",
+        "ReadOnlyPaths=-/var/lib/macro-ticker-news",
+        "ReadOnlyPaths=-/etc/macro-ticker-news-rights.json",
         "InaccessiblePaths=-/etc/macro-ticker-news.env",
     ):
         assert line in text
     assert "BENZINGA_API_KEY" not in text
+
+
+def test_macro_api_ticker_news_systemd_paths_are_optional_when_unprovisioned():
+    """Absent ticker-news VPS paths must not prevent macro-api start (D5)."""
+    text = _text(API_UNIT)
+    path_directives = (
+        "ReadOnlyPaths",
+        "ReadWritePaths",
+        "InaccessiblePaths",
+        "EnvironmentFile",
+    )
+    ticker_news_markers = (
+        "macro-ticker-news",
+        "ticker-news-rights",
+        "ticker-news.env",
+    )
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not any(stripped.startswith(f"{d}=") for d in path_directives):
+            continue
+        if not any(marker in stripped for marker in ticker_news_markers):
+            continue
+        value = stripped.split("=", 1)[1]
+        assert value.startswith("-"), (
+            f"ticker-news path must be optional (leading '-'): {stripped}"
+        )
 
 
 def test_initial_api_setup_provisions_state_root_without_installing_or_arming_news():

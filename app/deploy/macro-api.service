@@ -92,7 +92,7 @@ ReadOnlyPaths=-/var/lib/macro-biocatalyst/public
 ReadOnlyPaths=/var/lib/macro-market-memory/public
 # update/setup provision this even while the writer is dark, so the API can
 # never become a second writer to the qbus hot store.
-ReadOnlyPaths=/var/lib/macro-ticker-news
+ReadOnlyPaths=-/var/lib/macro-ticker-news
 ReadOnlyPaths=-/etc/macro-ticker-news-rights.json
 InaccessiblePaths=-/var/lib/macro-biocatalyst/state
 InaccessiblePaths=-/var/lib/macro-biocatalyst/activation
