@@ -1,9 +1,9 @@
 # RS Pullback Launch: retained-minute reader contract
 
 Workstream: `WS:LIVE-ENTRY-RADAR`  
-Operation: `rs-pullback-launch-source-retention-20261007-sol-002`  
+Operations: original `rs-pullback-launch-source-retention-20261007-sol-002`; correction `rs-pullback-launch-basis-binding-20261007-sol-005`
 Date: 2026-10-07  
-Scope: source retention and offline input conformance
+Scope: source retention, versioned response declarations and basis-unavailable input conformance
 
 ## Result and evidence boundary
 
@@ -11,7 +11,7 @@ Terminal can retain bounded one-minute source observations in its existing per-s
 
 [Phase 1](PHASE1_ADMISSION_2026-10-07.json) remains **NOT_ADMITTED** with 29 refusals; H1, H2 and H3 remain **NOT_TESTED**. The admission artifact SHA-256 remains `a4e00a5c191917dc8c64fb74ca3348827ab9bd47d9ad8a03a1130a50fde36e9f`. Retention code, synthetic conformance, hosted CI and deployment are separate evidence classes.
 
-The [joint conformance receipt](SOURCE_RETENTION_CONFORMANCE_2026-10-07.json) binds the exercised code by exact revisions and file SHA-256 values. It uses injected transport and synthetic clocks. The producer implementation and wire contract are delivered through [Terminal PR #840](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/840).
+The unchanged [original joint conformance receipt](SOURCE_RETENTION_CONFORMANCE_2026-10-07.json) is historical evidence for its exact source revisions. The distinct [declaration and basis-refusal receipt](SOURCE_BASIS_DECLARATION_CONFORMANCE_2026-10-07.json) binds the corrected implementation by exact file SHA-256 values. It uses injected transport and synthetic clocks. The producer implementation and wire contract are delivered through [Terminal PR #840](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/840).
 
 ## Owner and storage boundaries
 
@@ -67,13 +67,37 @@ The caller retains the enrolled receipts through the existing input bundle. This
 
 `cutoff` is required, keyword-only and non-null. Omission raises `TypeError`; explicit null raises `InputContractError` before snapshot semantics are parsed. Decode separately for every candidate decision, including a replay of an earlier decision using a later source snapshot.
 
-The decoder first verifies structural seals and reader-receipt consistency. It then applies actual receipt coverage and the decision cutoff before parsing the eligible captures' event/value semantics. Consequently a well-sealed later malformed event cannot disrupt an earlier frame. The malformed event is refused when it becomes visible. Structural corruption of the supplied file or an invalid seal remains a refusal.
+The bounded reader immediately verifies the outer envelope type/version, complete JSON and size bounds, capture IDs and contiguous sequence, and every payload/record/prefix seal. It retains intact payloads without deciding whether their versions are supported. The decoder then verifies reader-receipt consistency and applies explicit enrollment and the decision cutoff. Only the visible prefix determines supported payload versions, envelope compatibility, v1-to-v2 ordering and event/value semantics. A well-sealed later unsupported, null, object-valued or downgraded payload version cannot disrupt an earlier frame or an old-only enrolled prefix. It is refused once enrolled and visible. A later broken seal, sequence or ID still refuses the whole file immediately.
 
-The output uses the existing minute-input vocabulary: stream, security/basis labels where supplied, revision identity, event start/end, `known_at`, OHLCV and immutable source/reader references. The existing selector resolves revisions; this module does not pick a winner.
+The output uses the existing minute-input vocabulary: stream, security identity where supplied, revision identity, event start/end, `known_at`, OHLCV and immutable source/reader references. Every Terminal source row carries `basis_id: null` and `basis_refusals: ["TERMINAL_BASIS_UNPROVEN"]`. Caller metadata cannot label or admit that occurrence. The existing selector resolves revisions; this module does not pick a winner.
+
+## Versioned declarations and the basis boundary
+
+The reader accepts `mastermind.intraday_minute_capture.v1` and `.v2`. New v2 payloads carry `schema: mastermind.intraday_minute_capture_payload.v2` and boolean `chart_eligible`. An upgraded envelope preserves an exact ordered prefix of v1 records followed only by v2 records. Old prefix seals and owner-read receipts stay valid; a v1 record after a v2 record is refused when that record enters the enrolled visible prefix.
+
+Each v2 page contains only the normalized declaration object `response_adjusted: {state: ...}`. An observation resolves its exact page by `page_index`; the decoder retains that page index, row index, capture hash, response body hash, response declaration and actual owner-read receipt hash. None is inferred from another response or from the request parameter.
+
+| State | Retained meaning |
+|---|---|
+| `TRUE` / `FALSE` | The unique top-level response field is an actual JSON boolean |
+| `MISSING` | No top-level response field |
+| `NULL` | Explicit JSON null |
+| `INVALID_TYPE` | A nonboolean, nonnull value; arbitrary raw content is not retained |
+| `AMBIGUOUS` | Duplicate top-level declaration keys, even when their values agree |
+| `UNPARSED` | A malformed or nonobject response that could not be interpreted |
+| `UNRECORDED` | Derived legacy v1 state only; it is never written into an old seal |
+
+`chart_eligible` reports complete transport with nonempty pages all declaring `TRUE`. It does not prove split factors, dividend treatment, volume convention or an adjustment vintage. Complete captures with incompatible declarations remain source observations while the existing chart projection is preserved. Equal raw bars under FALSE → TRUE → FALSE remain three episodes. A later equal declaration and equal values can be suppressed, and a suppressed capture cannot manufacture another revision or relabel an older occurrence.
+
+The current existing `engine/close_pass/massive_close.py` corporate-actions owner returns affected tickers and counts. It does not retain a reconstructable factor table, factor observation clocks or a factor receipt bound to an aggregate-response vintage. A caller label, self-sealed hash, `adjusted=true` declaration or separately fetched latest split table does not supply that missing evidence. Accordingly this slice deliberately implements no basis-admission schema, basis-file reader, trusted method allowlist or synthetic production bypass.
+
+The next dependent phase must extend that existing action/basis owner first. It must produce either evidence intrinsically bound to the exact capture/page/response vintage or reconstructable raw-plus-factors evidence, including explicit price and volume conventions and action evidence. A future consumer may attach its own actual read custody; the source artifact should not depend on knowing that downstream read receipt in advance. Stable compatible basis classification and immutable occurrence evidence are separate identities. This declaration slice closes neither requirement.
+
+The new conformance receipt demonstrates v1 replay, v2 declarations, A/B/A retention, no suppression re-expansion, raw first-seen preservation and basis refusal through the actual producer/store/reader/selector. Its independent synthetic selector control does not establish positive end-to-end market basis. The earlier receipt remains unchanged and cannot be used to reinstate scalar basis inheritance.
 
 ## Corrections, nulls and failures
 
-- Consecutive equal finalized observations can be suppressed relative to the last complete capture. A/B/A remains three observation episodes; equality with an older nonadjacent version does not erase a correction.
+- Consecutive equal finalized observations can be suppressed relative to the last complete capture only when both raw values and the exact referenced page declaration agree. A/B/A remains three observation episodes; equality with an older nonadjacent version does not erase a correction.
 - An actual reader that first sees A/B/A together assigns the same first-seen time to those versions. The existing selector returns `CONFLICTING_MINUTE_REVISION`, an unavailable bar and null OHLCV where required. It does not invent the missing intermediate read history.
 - Only complete capture attempts contribute model-input observations. A later failed or partial attempt preserves its source receipt and does not advance the complete-capture compaction base.
 - Partial failure leaves the existing chart projection unchanged. Empty, forming-only and failed captures are retained. An already enabled, valid empty store can recover through ordinary existing-only refresh while preserving the old prefix.
@@ -94,9 +118,9 @@ python3 scripts/entry_radar_rs_pullback_source_retention_check.py \
 
 The harness invokes the actual producer, atomic temporary-file store, bounded Macro reader and existing selector. It injects the capture transport and refuses accidental use of the legacy transport. It performs no provider request and reads no market outcomes.
 
-The scenarios retain 30 synthetic original minutes plus two corrections across three complete captures. Their 30m closes are 100.39 → 100.44 → 100.39 and their raw-volume sum is 517.5. The complete earlier frame remains byte-identical after later corrections, a later partial failure and a well-sealed future malformed semantic append. A first read after all three versions preserves the same-clock conflict.
+The scenarios retain 30 synthetic original minutes plus two corrections across three complete captures. Their final raw minute closes are 100.39 → 100.44 → 100.39 and the initial raw-volume sum is 517.5. Source-derived 30m bars remain unavailable because basis evidence is absent. The earlier unavailable frame and raw input rows remain byte-identical after later corrections, a later partial failure and a well-sealed future malformed semantic append. A first read after all three versions preserves the same-clock conflict.
 
-The unchanged 900-second finality rule leaves the contemporaneous latest 15m input unavailable. The complete synthetic 30m bar is deliberately older. The harness does not backdate the reader clock to manufacture a fresh full frame.
+The unchanged 900-second finality rule leaves the contemporaneous latest 15m input unavailable. A separate direct-input synthetic selector fixture proves complete-window aggregation without using Terminal rows or conferring source-basis admission. The harness does not backdate the reader clock to manufacture a fresh full frame.
 
 The focused independent reviews required and checked four repairs:
 

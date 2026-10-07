@@ -369,6 +369,15 @@ def _aggregate(rows: list[dict[str, Any]], stream: str, meta: Mapping[str, Any],
             errors.append("MINUTE_IDENTITY_MISMATCH")
         if row.get("basis_id") != meta.get("basis", {}).get("basis_id"):
             errors.append("MINUTE_BASIS_MISMATCH")
+        # No admitted factor/vintage path exists for retained Terminal minutes.
+        # A caller scalar cannot turn source declaration provenance into proof.
+        # This is input-contract consistency, not source authentication.
+        source = row.get("source_observation")
+        source_ref = row.get("source_ref")
+        if (isinstance(source, Mapping) and
+                source.get("observer_id") == "terminal.backfill_intraday") or (
+                isinstance(source_ref, str) and source_ref.startswith("terminal-minute-capture:")):
+            errors.append("TERMINAL_BASIS_UNPROVEN")
         if not _has_receipt(row) or not row.get("revision_id"):
             errors.append("MINUTE_REVISION_RECEIPT_MISSING")
         prices = [row.get(k) for k in ("open", "high", "low", "close")]
