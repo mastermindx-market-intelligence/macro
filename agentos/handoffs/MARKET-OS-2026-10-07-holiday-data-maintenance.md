@@ -383,3 +383,66 @@ The previously failing preservation/index test then passed (PID 4637, 1.11 secon
 exit 0), as did the same-diff P0B closure gate. No browser assertions or fixtures
 were weakened. The final task diff contains 92 explicitly owned paths; hosted
 verification and actual release proof remain required.
+
+
+### Final current-main integrations and release candidate
+
+The earlier e3 integration and final browser evidence were committed as
+f5ac25a5425162d48be5ac084d2f87ad550ea8ea. Main then introduced a new, exclusive
+research calendar CI owner at 4fc4589f0408fc514599b21a229148a96fb7771f.
+Its absolute import-closure check reproduced exactly one missing path,
+lib/exchange_holidays.py (PID 25887, exit 1, 131.82 seconds). Adding that one path
+made the unchanged absolute gate pass (PID 39661, exit 0, 129.15 seconds).
+The new research calendar suite passed all 53 tests (PID 25971, 4.34 seconds).
+Independent review verified all 247 job semantics, preserving the previously
+accepted steps changes and the retained calendar research projection. That
+integration was committed as 58c82c7fa805f4595a7c9740b0c3296490325298.
+
+A further relevant main change, 55e8cf844fbfb851939d5ed91153b4c57ad5edaa,
+introduced the default-off integrated-answer API and its dependencies. The sole
+deployment conflict was resolved as the exact new main script plus our two
+previously accepted calendar comment lines and exchange_holidays restart leaf.
+The new main engine/script dependencies and both sets of comments remain intact.
+The final deployment script SHA256 is
+`daf1fcb26a05a2da951eaeb317a7b87cb004b2dfae825705148792ee740b4b9f`.
+
+The combined manifest preserves all 248 job declarations, including the seven
+new-main exclusive API path additions and its new nonexclusive API job, while
+retaining every previously accepted holiday path and job step. Existing
+duplicate path entries are preserved rather than silently cleaned up.
+Its final SHA256 is
+`d18541001b88a2599ef222a208eb074db1140ef60ddab96b03e5bb13578e599b`.
+The exact semantic comparison passed (PID 89121); the final absolute closure
+gate passed (PID 65706, 124.31 seconds); the manifest validator accepted 176
+code jobs (PID 90686). Independent review found no additional calendar leaf
+required by this API consumer. No other previously accepted task-owned source,
+browser receipt, screenshot or fixture blob moved during these integrations.
+
+The actual API restart boundary passed all 253 tests after the final integration
+(PID 84182, 12.71 seconds). A supplementary new-API/deployment run initially
+passed 60 cases and failed two golden-AAPL cases because the sparse carrier
+omitted its committed security and issuer reference tables. Read-only diagnosis
+confirmed all eighteen golden package files and all three registry YAML files
+were already present. Root materialized only
+data/reference/security_master.parquet and data/reference/issuer_master.parquet
+from pinned 55e8; both exact blob hashes and byte counts were verified, with zero
+tracked content changes and zero provider calls (PID 3330). The same two failed
+cases then passed unchanged (PID 4037, 7.97 seconds). No fixture, expectation,
+runtime data, calendar source or application behavior was changed for that setup.
+
+At 2026-10-07T09:59:39Z, a fresh origin/main fetch observed
+d6b11b5b2f140b7e1c6e004a9bfc132af221f3a0. Its sole delta from integrated 55e8 is
+site/stocks/earnings/route-catalog.json, with no holiday source, deployment,
+CI or pinned-browser-asset intersection. This generated, disjoint movement
+does not require an ancestry-only integration.
+
+The candidate remains BUILT_NOT_PROVEN until the final immutable head has
+concluded hosted CI, governed squash integration and actual public release
+proof. The parent remains the sole ref/PR/merge/release owner. All read-only
+review and browser children have received ACCEPTED / STOP; no child or stale
+CI observer owns continuing release work. Next: publish the single final
+candidate on PR #8606, update the prepared observer and actual-live verifier
+to that exact head, conclude CI, merge through the existing admission law,
+verify both served assets/page stamps plus fresh session receipts and actual
+retained-China-price witnesses, then write the final PR receipt explicitly
+superseding this historical pending-release state.
