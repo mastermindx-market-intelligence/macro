@@ -1,10 +1,35 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-07T16:28:48.435400+00:00",
-  "posts_seen": 10,
-  "seen_total": 269,
-  "evaluated": 0,
-  "activated": 0,
+  "as_of": "2026-10-07T21:59:02.905443+00:00",
+  "posts_seen": 14,
+  "seen_total": 273,
+  "evaluated": 4,
+  "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-10-07-national-energy-dominance-month-2026",
+      "importance": 68,
+      "activated": true,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-07-congressional-bills-h-r-5345-and-s-766-signed-into-law",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-07-columbus-day-2026",
+      "importance": 2,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-07-lower-taxes-safer-streets-stronger-border-president-trumps-texas-record",
+      "importance": 20,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }
