@@ -4615,7 +4615,13 @@ CURATED_EXCLUSIVE = {
     # job owns all four PB-D suites. Its exclusive declaration covers the
     # measured 50-path import/read closure; packing ceilings stay unchanged.
     "pb-d-event-quality",
-    # 2026-10-07 RS source delivery: Register the reviewed calendar owner and its complete declared read closure.
+    # 2026-10-07 Package N #8454: Terminal per-ticker news qbus correctness kernel.
+    # gate:code home for the twenty-two ticker-news/qbus suites; scope: exclusive
+    # so inference does not smear the measured import closure across ordinary code
+    # PRs. paths: are the job's suite import closure; the cover-their-own-import-
+    # closure test keeps that list honest as the tree moves.
+    "ticker-news-qbus",
+    # 2026-10-07 RS source delivery: retain the reviewed source-owner inventory.
     # Exact inventory only; scope audits and packing ceilings remain unchanged.
     "entry-radar-rs-pullback-calendar",
 }

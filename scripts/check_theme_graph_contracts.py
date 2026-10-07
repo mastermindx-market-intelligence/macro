@@ -194,6 +194,13 @@ EDGE_PAIRING: dict[str, set[tuple[str, str]]] = {
     "TRACKS": {("etf", "basket")},
 }
 
+#: GMI theme hierarchy (W-C1, DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK).
+THEME_TIERS: frozenset[str] = frozenset({"macro_category", "theme", "micro_theme"})
+THEME_NODE_ID_RE = re.compile(r"^theme:[a-z0-9][a-z0-9_]{1,62}$")
+CROSSWALK_NODE_PROVENANCE = "crosswalk:config/theme_crosswalk.yml"
+PARENT_OF_ADJACENT: frozenset[tuple[str, str]] = frozenset(
+    {("macro_category", "theme"), ("theme", "micro_theme")})
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -235,6 +242,39 @@ def _sample(df: pd.DataFrame, n: int = SAMPLE_MAX) -> pd.DataFrame:
         return df
     step = max(1, len(df) // n)
     return df.iloc[::step].head(n)
+
+
+def _parent_of_cycle_nodes(parent_child: list[tuple[str, str]]) -> list[str]:
+    """Return node ids on a directed cycle in parent→child edges, or [] if acyclic."""
+    adj: dict[str, list[str]] = {}
+    for parent, child in parent_child:
+        adj.setdefault(parent, []).append(child)
+    visited: set[str] = set()
+    stack: set[str] = []
+    on_stack: set[str] = set()
+
+    def dfs(u: str) -> list[str] | None:
+        visited.add(u)
+        on_stack.add(u)
+        stack.append(u)
+        for v in adj.get(u, []):
+            if v not in visited:
+                found = dfs(v)
+                if found:
+                    return found
+            elif v in on_stack:
+                idx = stack.index(v)
+                return stack[idx:]
+        stack.pop()
+        on_stack.remove(u)
+        return None
+
+    for start in sorted(adj):
+        if start not in visited:
+            found = dfs(start)
+            if found:
+                return found
+    return []
 
 
 def _dated(v: object) -> bool:
@@ -1103,6 +1143,121 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
             "by every build (python -m scripts.build_theme_graph); its absence means "
             "nothing has resolved them yet")
 
+    # --- GMI hierarchy (W-C1, DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK) ---------
+    tiers_by_node: dict[str, str | None] = {}
+    provenance_by_node: dict[str, str] = {}
+    if "kind" in nodes.columns and "node_id" in nodes.columns:
+        prov_series = (nodes["provenance"] if "provenance" in nodes.columns
+                       else pd.Series([""] * len(nodes), index=nodes.index))
+        tier_series = (nodes["tier"] if "tier" in nodes.columns
+                       else pd.Series([None] * len(nodes), index=nodes.index))
+        for nid, kind, tier, prov in zip(nodes["node_id"], nodes["kind"],
+                                         tier_series, prov_series):
+            nid_s, kind_s = str(nid), str(kind)
+            tier_s = None if _is_null(tier) else str(tier)
+            if kind_s == "theme":
+                if tier_s not in THEME_TIERS:
+                    breaches.append(
+                        f"hierarchy: node {nid_s!r} kind=theme requires tier "
+                        f"macro_category|theme|micro_theme (got {tier_s!r})")
+            elif tier_s is not None:
+                breaches.append(
+                    f"hierarchy: node {nid_s!r} kind={kind_s!r} must have tier null "
+                    f"(got {tier_s!r})")
+            tiers_by_node[nid_s] = tier_s
+            provenance_by_node[nid_s] = str(prov) if not _is_null(prov) else ""
+
+    if kinds and {"type", "src", "dst", "valid_to"} <= set(edges.columns):
+        evidence_by_id = {}
+        if "evidence_id" in evidence.columns and "source_ref" in evidence.columns:
+            for eid, sref in zip(evidence["evidence_id"], evidence["source_ref"]):
+                evidence_by_id[str(eid)] = str(sref) if not _is_null(sref) else ""
+
+        mastermind_ok = rights.emission_allowed("mastermind_curated")
+        if not mastermind_ok:
+            breaches.append(
+                "hierarchy: rights.emission_allowed('mastermind_curated') is false — "
+                "PARENT_OF endpoints require an emission-allowed curated family")
+
+        open_parent_of: list[tuple[str, str]] = []
+        parent_count: dict[str, set[str]] = {}
+        for row in edges.to_dict("records"):
+            if str(row.get("type")) != "PARENT_OF":
+                continue
+            src, dst = str(row.get("src")), str(row.get("dst"))
+            eid = str(row.get("edge_id"))
+            if str(row.get("source_class")) != "curated":
+                breaches.append(
+                    f"hierarchy: PARENT_OF edge {eid!r} must have source_class=curated "
+                    f"(got {row.get('source_class')!r})")
+            if str(row.get("date_provenance")) != "crosswalk":
+                breaches.append(
+                    f"hierarchy: PARENT_OF edge {eid!r} must have "
+                    f"date_provenance=crosswalk (got {row.get('date_provenance')!r})")
+            for field in store.RESERVED_EDGE_FIELDS:
+                if not _is_null(row.get(field)):
+                    breaches.append(
+                        f"hierarchy: PARENT_OF edge {eid!r} must have {field}=null "
+                        f"(got {row.get(field)!r})")
+            refs = row.get("evidence_refs")
+            refs = list(refs) if refs is not None and not _is_null(refs) else []
+            refs = [str(r) for r in refs]
+            if not refs:
+                breaches.append(
+                    f"hierarchy: PARENT_OF edge {eid!r} carries no evidence_refs")
+            else:
+                for ref in refs:
+                    sref = evidence_by_id.get(ref)
+                    if sref is None:
+                        breaches.append(
+                            f"hierarchy: PARENT_OF edge {eid!r} evidence {ref!r} "
+                            f"does not resolve to an evidence row")
+                        continue
+                    fam = rights.family_for_source_ref(sref)
+                    if fam != "mastermind_curated":
+                        breaches.append(
+                            f"hierarchy: PARENT_OF edge {eid!r} evidence {ref!r} "
+                            f"source_ref maps to family {fam!r}, not mastermind_curated")
+            for endpoint in (src, dst):
+                ek = kinds.get(endpoint)
+                if ek != "theme":
+                    breaches.append(
+                        f"hierarchy: PARENT_OF edge {eid!r} endpoint {endpoint!r} must "
+                        f"be kind=theme (got {ek!r})")
+                prov = provenance_by_node.get(endpoint, "")
+                if prov != CROSSWALK_NODE_PROVENANCE:
+                    breaches.append(
+                        f"hierarchy: PARENT_OF endpoint {endpoint!r} provenance must "
+                        f"be {CROSSWALK_NODE_PROVENANCE!r} (got {prov!r})")
+            src_tier = tiers_by_node.get(src)
+            dst_tier = tiers_by_node.get(dst)
+            if (src_tier, dst_tier) not in PARENT_OF_ADJACENT:
+                breaches.append(
+                    f"hierarchy: PARENT_OF edge {eid!r} tier adjacency "
+                    f"({src_tier!r}→{dst_tier!r}) not in "
+                    f"macro_category→theme or theme→micro_theme")
+            if _is_null(row.get("valid_to")):
+                open_parent_of.append((src, dst))
+                parent_count.setdefault(dst, set()).add(src)
+        for dst, parents in sorted(parent_count.items()):
+            if len(parents) > 3:
+                breaches.append(
+                    f"hierarchy: PARENT_OF child {dst!r} has {len(parents)} open parents "
+                    f"(max 3)")
+        cycle_nodes = _parent_of_cycle_nodes(open_parent_of)
+        if cycle_nodes:
+            breaches.append(
+                f"hierarchy: open PARENT_OF edges contain a directed cycle "
+                f"(e.g. {' → '.join(cycle_nodes)})")
+
+    if kinds and {"type", "src", "dst"} <= set(edges.columns):
+        for row in edges.to_dict("records"):
+            src, dst = str(row.get("src")), str(row.get("dst"))
+            if kinds.get(src) == "company" and kinds.get(dst) == "theme":
+                breaches.append(
+                    f"hierarchy: edge {str(row.get('edge_id'))!r} is company→theme "
+                    f"({src!r}→{dst!r}) — per-ticker stored tags forbidden (§9.6)")
+
     # --- closed-edge survivorship -------------------------------------------
     if {"edge_id", "valid_to", "belief_time"} <= set(edges.columns):
         closed = {str(e) for e, v in zip(edges["edge_id"], edges["valid_to"])
@@ -1257,7 +1412,48 @@ def _clean_rows() -> tuple[list[dict], list[dict], list[dict]]:
             "computed_at": stamp, "engine_version": store.ENGINE_VERSION}
     for f in store.RESERVED_EDGE_FIELDS:
         edge[f] = None
-    return nodes, [edge], ev
+    edges = [edge]
+    crosswalk_ev = {
+        "evidence_id": "ev:0000000000000002", "kind": "operator_curation",
+        "published_at": "2024-01-01", "effective_at": None,
+        "source_ref": "config/theme_crosswalk.yml#hierarchy:fixture",
+        "licensing_internal_ok": True, "licensing_display_ok": True,
+        "licensing_redistribution_ok": True, "retention": None,
+        "computed_at": stamp, "provider": None, "claim_type": None,
+    }
+    ev.append(crosswalk_ev)
+    theme_base = {
+        "name_en": "Fixture", "name_zh": None, "market_scope": "global",
+        "status": "canonical", "merged_into": None, "birth_date": None,
+        "retire_date": None, "identity_epoch": 1, "external_ids": "{}",
+        "provenance": CROSSWALK_NODE_PROVENANCE, "computed_at": stamp,
+        "engine_version": store.ENGINE_VERSION, "source_meta": None,
+    }
+    nodes.extend([
+        {**theme_base, "node_id": "theme:cat_fixture", "kind": "theme",
+         "tier": "macro_category"},
+        {**theme_base, "node_id": "theme:mid_fixture", "kind": "theme", "tier": "theme"},
+        {**theme_base, "node_id": "theme:micro_fixture", "kind": "theme",
+         "tier": "micro_theme"},
+    ])
+    for src, dst, vf in (
+            ("theme:cat_fixture", "theme:mid_fixture", "2024-01-01"),
+            ("theme:mid_fixture", "theme:micro_fixture", "2024-01-02"),
+    ):
+        po = {
+            "edge_id": f"parent_of:{src}->{dst}@{vf}",
+            "type": "PARENT_OF", "src": src, "dst": dst,
+            "valid_from": vf, "valid_to": None, "evidence_time": vf,
+            "belief_time": "2024-01-02", "era": "reconstruction",
+            "source_class": "curated", "date_provenance": "crosswalk",
+            "evidence_refs": ["ev:0000000000000002"],
+            "confidence_basis": "crosswalk.v1",
+            "computed_at": stamp, "engine_version": store.ENGINE_VERSION,
+        }
+        for f in store.RESERVED_EDGE_FIELDS:
+            po[f] = None
+        edges.append(po)
+    return nodes, list(edges), ev
 
 
 def selftest(tmp_root: Path | None = None) -> int:
@@ -1353,7 +1549,7 @@ def selftest(tmp_root: Path | None = None) -> int:
                    "a local-theme id outside the grammar must breach"))
 
     nodes, edges, ev = _clean_rows()
-    nodes.append({**nodes[0], "node_id": "theme:solar", "kind": "theme"})
+    nodes.append({**nodes[0], "node_id": "theme:solar", "kind": "theme", "tier": "theme"})
     smuggled = {**edges[0], "dst": "theme:solar",
                 "edge_id": "member_of:co:us:AAA->theme:solar@2024-01-01"}
     d = _fixture(tmp_root / "pairing", nodes=nodes, edges=[*edges, smuggled], evidence=ev)
@@ -1614,6 +1810,41 @@ def selftest(tmp_root: Path | None = None) -> int:
     checks.append((not any("conflict-retirement invariant" in x for x in b),
                    f"the same collision, with co:us:AAA retired, must NOT breach FIX-3's "
                    f"conflict-retirement invariant: {b}"))
+
+    # --- W-C1: hierarchy -----------------------------------------------------
+    nodes, edges, ev = _clean_rows()
+    bad_adj = dict(edges[-1])
+    bad_adj.update({
+        "edge_id": "parent_of:theme:cat_fixture->theme:micro_fixture@2024-01-01",
+        "src": "theme:cat_fixture", "dst": "theme:micro_fixture",
+    })
+    edges.append(bad_adj)
+    d = _fixture(tmp_root / "hierarchy_adjacency", nodes=nodes, edges=edges, evidence=ev)
+    checks.append((any("hierarchy:" in x and "adjacency" in x
+                       for x in audit(d, empty_breaks)[0]),
+                   "a non-adjacent PARENT_OF tier pair must breach"))
+
+    nodes, edges, ev = _clean_rows()
+    mid_theme = next(n for n in nodes if n.get("node_id") == "theme:mid_fixture")
+    nodes.append({**mid_theme, "node_id": "theme:cycle_a"})
+    nodes.append({**mid_theme, "node_id": "theme:cycle_b"})
+    cyc_ev = dict(edges[-1])
+    cyc_ev.update({
+        "edge_id": "parent_of:theme:cycle_a->theme:cycle_b@2024-01-03",
+        "src": "theme:cycle_a", "dst": "theme:cycle_b", "valid_from": "2024-01-03",
+    })
+    cyc_ev2 = dict(cyc_ev)
+    cyc_ev2.update({
+        "edge_id": "parent_of:theme:cycle_b->theme:cycle_a@2024-01-03",
+        "src": "theme:cycle_b", "dst": "theme:cycle_a",
+    })
+    edges.extend([cyc_ev, cyc_ev2])
+    d = _fixture(tmp_root / "hierarchy_cycle", nodes=nodes, edges=edges, evidence=ev)
+    h_breaches = audit(d, empty_breaks)[0]
+    checks.append((any("hierarchy:" in x and "cycle" in x for x in h_breaches),
+                   "an open PARENT_OF cycle must breach"))
+    checks.append((any("hierarchy:" in x and "adjacency" in x for x in h_breaches),
+                   "a theme→theme PARENT_OF must also breach adjacency"))
 
     bad = [m for ok, m in checks if not ok]
     for m in bad:
