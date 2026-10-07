@@ -227,6 +227,10 @@ _REASONS: dict[str, tuple[str, str]] = {
         "This link has no identifier, so it cannot be used.",
         "该关联没有标识符，因此无法使用。",
     ),
+    "HIERARCHY_REFUSED": (
+        "Category path unavailable: the theme hierarchy could not be read safely.",
+        "类别路径暂不可用：主题层级无法安全读取。",
+    ),
 }
 
 
@@ -283,6 +287,7 @@ class ThemeExposure:
     distinct_security_count: int | None
     etf_proxies: tuple[Mapping[str, Any], ...] | None
     abstentions: tuple[Mapping[str, Any], ...]
+    ancestors: tuple[Mapping[str, Any], ...] = ()
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -330,6 +335,27 @@ class _DefaultStoreView:
         from engine.theme_graph.store import read_nodes
 
         return read_nodes(current=True)
+
+
+class _HierarchySnapshot:
+    def __init__(
+        self,
+        nodes: Sequence[Mapping[str, Any]],
+        edges: Sequence[Mapping[str, Any]],
+        lifecycle: Sequence[Mapping[str, Any]],
+    ):
+        self._nodes = nodes
+        self._edges = edges
+        self._lifecycle = lifecycle
+
+    def read_nodes(self) -> list[Mapping[str, Any]]:
+        return list(self._nodes)
+
+    def read_edges(self) -> list[Mapping[str, Any]]:
+        return list(self._edges)
+
+    def read_node_lifecycle(self) -> list[Mapping[str, Any]]:
+        return list(self._lifecycle)
 
 
 def default_store_view() -> StoreView:
@@ -894,6 +920,55 @@ def _compose_theme(
     }, bridge_dsts)
 
 
+def _ancestor_entries(
+    records: Sequence[Mapping[str, Any]],
+    theme_id: str,
+    assert_allowed: Callable[[str], None],
+) -> tuple[Mapping[str, Any], ...]:
+    entries: dict[tuple[tuple[str, ...], tuple[str, ...]], dict[str, Any]] = {}
+    for record in records:
+        path = record.get("path", ())
+        anchor_index = next(
+            (index for index, element in enumerate(path)
+             if isinstance(element, Mapping) and element.get("node_id") == theme_id),
+            -1,
+        )
+        if record.get("anchor_node_id") != theme_id or anchor_index < 1:
+            continue
+        chain: list[dict[str, Any]] = []
+        allowed = True
+        for element in path[:anchor_index]:
+            try:
+                rights = element["rights"]
+                family = rights["family"]
+                if rights.get("public_display_allowed") is not True:
+                    allowed = False
+                    break
+                assert_allowed(family)
+                chain.append({
+                    "node_id": element["node_id"],
+                    "tier": element["tier"],
+                    "name": {
+                        "en": element.get("name_en"),
+                        "zh": element.get("name_zh"),
+                    },
+                    "rights_family": family,
+                })
+            except Exception:
+                allowed = False
+                break
+        if not allowed or not chain:
+            continue
+        edges = list(record["parent_of_edge_ids"][:anchor_index])
+        key = (
+            tuple(str(element["node_id"]) for element in chain),
+            tuple(str(edge) for edge in edges),
+        )
+        entry = {"chain": chain, "parent_of_edge_ids": edges}
+        entries.setdefault(key, entry)
+    return tuple(entries[key] for key in sorted(entries))
+
+
 # --- top-level composition -------------------------------------------------------------
 
 def compose_exposure_map(
@@ -905,6 +980,7 @@ def compose_exposure_map(
     chain_loader: Callable[[], Mapping[str, Mapping[str, Any]]] | None = None,
     family_resolver: Callable[[object], str | None] | None = None,
     assert_allowed: Callable[[str], None] | None = None,
+    hierarchy_reader: Callable[..., Sequence[Mapping[str, Any]]] | None = None,
 ) -> ExposureMap:
     """Pure projection with separate effective and knowledge dates.
 
@@ -912,6 +988,8 @@ def compose_exposure_map(
     latest-belief collapse and defaults to ``asof`` for backward compatibility.
     No ambient clock, network, LLM or write is used. Data unavailability returns
     typed nulls rather than raising.
+    Callers pass ``engine.theme_graph.structural_navigation.hierarchy_paths`` (W-C6);
+    ``None`` emits no ancestors and keeps the map byte-identical.
     """
     asof_date = _parse_asof(asof)
     knowledge_cutoff_date = (
@@ -1003,6 +1081,17 @@ def compose_exposure_map(
         if node_id is not None:
             node_names[str(node_id)] = row
 
+    hierarchy_snapshot = None
+    if hierarchy_reader is not None:
+        lifecycle_reader = getattr(store, "read_node_lifecycle", None)
+        lifecycle = []
+        if callable(lifecycle_reader):
+            try:
+                lifecycle = _records(lifecycle_reader())
+            except Exception:
+                lifecycle = []
+        hierarchy_snapshot = _HierarchySnapshot(raw_nodes, raw_edges, lifecycle)
+
     identity_rows: dict[str, Mapping[str, Any]] = {}
     for row in raw_identity:
         node_id = row.get("node_id")
@@ -1018,6 +1107,28 @@ def compose_exposure_map(
             assert_allowed=assert_allowed, clock_abstentions=clock_abstentions,
             node_names=node_names,
         )
+        if (
+            hierarchy_snapshot is not None
+            and row["theme_plane"] == "canonical_theme"
+            and row["state"] in {"OK", "NO_THEME_EDGES", "NO_MEMBERSHIP_YET"}
+        ):
+            try:
+                records = hierarchy_reader(
+                    hierarchy_snapshot,
+                    theme_id,
+                    asof_date,
+                    knowledge_cutoff=knowledge_cutoff_date,
+                )
+                row["ancestors"] = _ancestor_entries(records, theme_id, assert_allowed)
+            except Exception as exc:
+                row["ancestors"] = ()
+                row["abstentions"] = list(row["abstentions"]) + [
+                    _unavailable(
+                        "HIERARCHY_REFUSED",
+                        subject_id=theme_id,
+                        detail=str(exc),
+                    )
+                ]
         theme_rows.append(row)
 
     themes = tuple(
@@ -1028,6 +1139,7 @@ def compose_exposure_map(
             company_count=r["company_count"],
             distinct_security_count=r["distinct_security_count"],
             etf_proxies=r["etf_proxies"], abstentions=tuple(r["abstentions"]),
+            ancestors=r.get("ancestors", ()),
         )
         for r in theme_rows
     )
@@ -1048,7 +1160,7 @@ def _shock_json(shock: Shock) -> dict[str, Any]:
 
 
 def _theme_json(theme: ThemeExposure) -> dict[str, Any]:
-    return {
+    out = {
         "theme_node_id": theme.theme_node_id, "theme_plane": theme.theme_plane,
         "rights_family": theme.rights_family, "name": dict(theme.name),
         "state": theme.state, "unavailable": theme.unavailable,
@@ -1058,6 +1170,23 @@ def _theme_json(theme: ThemeExposure) -> dict[str, Any]:
         "etf_proxies": list(theme.etf_proxies) if theme.etf_proxies is not None else None,
         "abstentions": list(theme.abstentions),
     }
+    if theme.ancestors:
+        out["ancestors"] = [
+            {
+                "chain": [
+                    {
+                        "node_id": element["node_id"],
+                        "tier": element["tier"],
+                        "name": dict(element["name"]),
+                        "rights_family": element["rights_family"],
+                    }
+                    for element in entry["chain"]
+                ],
+                "parent_of_edge_ids": list(entry["parent_of_edge_ids"]),
+            }
+            for entry in theme.ancestors
+        ]
+    return out
 
 
 def to_json(exposure_map: ExposureMap) -> dict[str, Any]:
