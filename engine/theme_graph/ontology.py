@@ -186,6 +186,17 @@ def _visible_by_instant(value: Any, field: str, cutoff: dt.datetime) -> bool:
     return _parse_date(value, field) < cutoff.date()
 
 
+def _is_ignored_theme_tier(row: Mapping[str, Any]) -> bool:
+    """Non-`theme` tiers are display-only hierarchy nodes; readers treat them as absent."""
+    if str(row.get("kind") or "") != "theme":
+        return False
+    tier = row.get("tier")
+    if _is_null(tier):
+        # Legacy crosswalk themes omit tier; they remain canonical theme nodes.
+        return False
+    return str(tier) != "theme"
+
+
 def _node_projection(row: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "node_id": str(row.get("node_id") or ""),
@@ -265,7 +276,11 @@ def _nodes_as_known(
         row["retire_date"] = lifecycle.get("retire_date")
         row["merged_into"] = lifecycle.get("merged_into")
         visible[node_id] = row
-    return visible
+    return {
+        node_id: row
+        for node_id, row in visible.items()
+        if not _is_ignored_theme_tier(row)
+    }
 
 
 def _contains_exact(value: Any, node_id: str) -> bool:
@@ -474,6 +489,24 @@ def _proposal_mapping_edge(
     return None
 
 
+def _proposal_materialization_edge(
+    row: Mapping[str, Any],
+) -> tuple[str, str, str] | None:
+    kind = str(row.get("kind") or "")
+    if kind == "mapping":
+        return _proposal_mapping_edge(row)
+    if kind != "hierarchy":
+        return None
+    subject = row.get("subject")
+    if not isinstance(subject, Mapping):
+        return None
+    parent_id = str(subject.get("parent_id") or "")
+    child_id = str(subject.get("child_id") or "")
+    if parent_id and child_id:
+        return ("PARENT_OF", parent_id, child_id)
+    return None
+
+
 def _curation_summary(
     proposals: Sequence[Mapping[str, Any]],
     *,
@@ -497,7 +530,9 @@ def _curation_summary(
             row for row in proposals if str(row.get("status")) == "ratified"
         ]
         materialized = sum(
-            _proposal_mapping_edge(row) in live_relations for row in ratified
+            1
+            for row in ratified
+            if _proposal_materialization_edge(row) in live_relations
         )
         if materialized == len(ratified):
             state = "RATIFIED_AND_MATERIALIZED"
@@ -552,8 +587,19 @@ def compose_neighborhood(
     subject_row = node_map.get(exact_id)
 
     raw_edges = _records(store_view.read_edges())
+    ignored_ids = {
+        str(row.get("node_id") or "")
+        for row in nodes
+        if str(row.get("node_id") or "") and _is_ignored_theme_tier(row)
+    }
+    reader_edges = [
+        row
+        for row in raw_edges
+        if str(row.get("src") or "") not in ignored_ids
+        and str(row.get("dst") or "") not in ignored_ids
+    ]
     live_rows, future_beliefs = _collapse_relevant_edges(
-        raw_edges,
+        reader_edges,
         node_id=exact_id,
         asof=asof_date,
         knowledge_cutoff=cutoff_date,
@@ -618,9 +664,38 @@ def compose_neighborhood(
         "state": canonical_state,
         "theme_node_ids": canonical_ids,
     }
+    hier = {
+        edge
+        for row in proposal_rows
+        if str(row.get("status")) == "ratified"
+        and str(row.get("kind")) == "hierarchy"
+        for edge in (_proposal_materialization_edge(row),)
+        if edge is not None
+    }
+    curation_live = list(live_rows)
+    # raw_edges (not reader_edges): hierarchy child may be ignored-tier, so PARENT_OF
+    # can be absent from reader_edges while still materializing curation truth.
+    for type_, parent_id, child_id in sorted(hier):
+        matching = [
+            e
+            for e in raw_edges
+            if (
+                str(e.get("type") or ""),
+                str(e.get("src") or ""),
+                str(e.get("dst") or ""),
+            )
+            == (type_, parent_id, child_id)
+        ]
+        collapsed, _future = _collapse_relevant_edges(
+            matching,
+            node_id=child_id,
+            asof=asof_date,
+            knowledge_cutoff=cutoff_date,
+        )
+        curation_live.extend(collapsed)
     curation = _curation_summary(
         proposal_rows,
-        live_rows=live_rows,
+        live_rows=curation_live,
     )
     availability = (
         {"state": "OK", "reason": None}
