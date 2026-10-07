@@ -8711,6 +8711,10 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - engine/close_pass/massive_split_evidence.py
+      - engine/neuralweb/brain_analogues.py
+      - engine/neuralweb/market_memory.py
+      - engine/neuralweb/market_memory_source_kernel.py
       - collectors/__init__.py
       - collectors/china_ths_concepts.py
       - config/theme_crosswalk.yml
