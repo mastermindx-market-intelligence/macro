@@ -3659,6 +3659,7 @@ jobs:
       - "tests/test_intl_workspace_integration.py"
       - "tests/intl_workspace_controller.test.cjs"
       - "tests/intl_workspace_page.test.cjs"
+      - "tests/intl_workspace_legacy_navigation.test.cjs"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -3678,7 +3679,7 @@ jobs:
       - name: Actual International builder and template contracts
         run: python -m pytest tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_integration.py -q
       - name: Actual DOM controller and page entry in Chromium
-        run: node --test tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs
+        run: node --test tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs
 
   stock-dashboard-first-frame:
     if: ${{ false }}
