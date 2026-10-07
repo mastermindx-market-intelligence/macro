@@ -146,6 +146,28 @@ def _hp(store_view, node_id, asof=ASOF, **kw):
     return structural.hierarchy_paths(store_view, node_id, asof, **kw)
 
 
+def _install_w_c3_reader_tier_guard(monkeypatch):
+    """Simulate W-C3: _nodes_as_known drops non-theme-tier theme nodes."""
+    from engine.theme_graph import ontology
+
+    real = ontology._nodes_as_known
+
+    def guarded(*args, **kwargs):
+        out = real(*args, **kwargs)
+        return {
+            nid: row
+            for nid, row in out.items()
+            if not (
+                str(row.get("kind") or "") == "theme"
+                and row.get("tier") is not None
+                and str(row.get("tier")) != "theme"
+            )
+        }
+
+    monkeypatch.setattr(ontology, "_nodes_as_known", guarded)
+    return guarded
+
+
 def _full_hierarchy_plane():
     """Hierarchy nodes not wired to T1/T2 subjects."""
     nodes = [
@@ -261,15 +283,32 @@ def test_vendor_parent_refused():
     co = _company("co:us:Z")
 
     cases = [
-        ([cat, mid, bad_local], [_parent_of(bad_local["node_id"], mid["node_id"])]),
-        ([cat, mid, bad_basket], [_parent_of(bad_basket["node_id"], mid["node_id"])]),
-        ([cat, bad_theme], [_parent_of(cat["node_id"], bad_theme["node_id"])]),
-        ([cat, mid, co], [_parent_of(co["node_id"], mid["node_id"])]),
-        ([cat, micro], [_parent_of(cat["node_id"], micro["node_id"])]),
+        (
+            ([cat, mid, bad_local], [_parent_of(bad_local["node_id"], mid["node_id"])]),
+            "endpoint kind must be theme",
+        ),
+        (
+            ([cat, mid, bad_basket], [_parent_of(bad_basket["node_id"], mid["node_id"])]),
+            "endpoint kind must be theme",
+        ),
+        (
+            ([cat, bad_theme], [_parent_of(cat["node_id"], bad_theme["node_id"])]),
+            "provenance must be crosswalk",
+        ),
+        (
+            ([cat, mid, co], [_parent_of(co["node_id"], mid["node_id"])]),
+            "endpoint kind must be theme",
+        ),
+        (
+            ([cat, micro], [_parent_of(cat["node_id"], micro["node_id"])]),
+            "invalid tier adjacency",
+        ),
     ]
-    for nodes, edges in cases:
-        with pytest.raises(ValueError, match="hierarchy_paths: refused PARENT_OF"):
+    for (nodes, edges), expected in cases:
+        with pytest.raises(ValueError, match="hierarchy_paths: refused PARENT_OF") as info:
             _hp(FakeStore(nodes, edges), mid["node_id"])
+        assert expected in str(info.value)
+        assert "endpoint not as-known" not in str(info.value)
 
 
 def test_rights_receipts_on_every_element():
@@ -474,3 +513,118 @@ def test_parent_of_liveness_follows_latest_belief():
 
     assert_belief_order([belief_a, belief_b])
     assert_belief_order([belief_b, belief_a])
+
+
+def test_hierarchy_tier_nodes_survive_reader_tier_guard(monkeypatch):
+    _install_w_c3_reader_tier_guard(monkeypatch)
+    nodes = [
+        _theme("theme:cat_a", "macro_category"),
+        _theme("theme:cat_b", "macro_category"),
+        _theme("theme:a", "theme"),
+        _theme("theme:b", "theme"),
+        _theme("theme:micro", "micro_theme"),
+    ]
+    edges = [
+        _parent_of("theme:cat_a", "theme:a"),
+        _parent_of("theme:cat_b", "theme:b"),
+        _parent_of("theme:a", "theme:micro"),
+        _parent_of("theme:b", "theme:micro", valid_from="2024-01-02"),
+    ]
+    sv = FakeStore(nodes, edges)
+    paths = _hp(sv, "theme:micro")
+    ids = [tuple(el["node_id"] for el in p["path"]) for p in paths]
+    assert sorted(ids) == [
+        ("theme:cat_a", "theme:a", "theme:micro"),
+        ("theme:cat_b", "theme:b", "theme:micro"),
+    ]
+    fixture_tiers = {n["node_id"]: n["tier"] for n in nodes}
+    for rec in paths:
+        for el in rec["path"]:
+            assert el["tier"] == fixture_tiers[el["node_id"]]
+
+    cat = _theme("theme:cat", "macro_category")
+    micro = _theme("theme:m", "micro_theme")
+    with pytest.raises(ValueError, match="invalid tier adjacency"):
+        _hp(FakeStore([cat, micro], [_parent_of(cat["node_id"], micro["node_id"])]), micro["node_id"])
+
+
+def _assert_nodes_unchanged_after_hierarchy_paths(nodes, before, ids_before, blob_before):
+    assert nodes == before
+    assert json.dumps(nodes, sort_keys=True, default=str) == blob_before
+    assert [id(row) for row in nodes] == ids_before
+    for row in nodes:
+        assert "__hierarchy_paths_tier" not in row
+
+
+def test_hierarchy_paths_leaves_no_state_behind(monkeypatch):
+    from engine.theme_graph.ontology import _parse_date
+
+    guarded = _install_w_c3_reader_tier_guard(monkeypatch)
+    asof_date = _parse_date(ASOF, "asof")
+    cat = _theme("theme:cat", "macro_category")
+    mid = _theme("theme:t", "theme")
+    micro = _theme("theme:m", "micro_theme")
+    fixture_tiers = {
+        cat["node_id"]: cat["tier"],
+        mid["node_id"]: mid["tier"],
+        micro["node_id"]: micro["tier"],
+    }
+    nodes_ok = [cat, mid, micro]
+    edges_ok = [
+        _parent_of(cat["node_id"], mid["node_id"]),
+        _parent_of(mid["node_id"], micro["node_id"], valid_from="2024-01-02"),
+    ]
+    nodes_bad = [cat, micro]
+    edges_bad = [_parent_of(cat["node_id"], micro["node_id"])]
+
+    def snapshot(node_list):
+        return (
+            copy.deepcopy(node_list),
+            [id(row) for row in node_list],
+            json.dumps(node_list, sort_keys=True, default=str),
+        )
+
+    before, ids_before, blob_before = snapshot(nodes_ok)
+    _hp(FakeStore(nodes_ok, edges_ok), micro["node_id"])
+    _assert_nodes_unchanged_after_hierarchy_paths(nodes_ok, before, ids_before, blob_before)
+    for row in nodes_ok:
+        assert row["tier"] == fixture_tiers[row["node_id"]]
+
+    known = guarded(nodes_ok, [], asof=asof_date, knowledge_cutoff=asof_date)
+    assert cat["node_id"] not in known
+    assert micro["node_id"] not in known
+    assert mid["node_id"] in known
+
+    before2, ids_before2, blob_before2 = snapshot(nodes_bad)
+    with pytest.raises(ValueError, match="invalid tier adjacency"):
+        _hp(FakeStore(nodes_bad, edges_bad), micro["node_id"])
+    _assert_nodes_unchanged_after_hierarchy_paths(nodes_bad, before2, ids_before2, blob_before2)
+    for row in nodes_bad:
+        assert row["tier"] == fixture_tiers.get(row["node_id"], row["tier"])
+
+    known2 = guarded(nodes_bad, [], asof=asof_date, knowledge_cutoff=asof_date)
+    assert cat["node_id"] not in known2
+    assert micro["node_id"] not in known2
+    assert mid["node_id"] not in known2
+
+
+def test_refusal_reasons_not_as_known_and_rights_gate(monkeypatch):
+    from engine.theme_graph import rights
+
+    cat = _theme("theme:cat", "macro_category")
+    edges_a = [_parent_of(cat["node_id"], "theme:ghost")]
+    with pytest.raises(ValueError, match="hierarchy_paths: refused PARENT_OF") as info_a:
+        _hp(FakeStore([cat], edges_a), cat["node_id"])
+    assert "endpoint not as-known" in str(info_a.value)
+
+    mid = _theme("theme:t", "theme")
+    micro = _theme("theme:m", "micro_theme")
+    nodes_b = [cat, mid, micro]
+    edges_b = [
+        _parent_of(cat["node_id"], mid["node_id"]),
+        _parent_of(mid["node_id"], micro["node_id"], valid_from="2024-01-02"),
+    ]
+    monkeypatch.setattr(rights, "emission_allowed", lambda family, **kw: False)
+    with pytest.raises(ValueError) as info_b:
+        _hp(FakeStore(nodes_b, edges_b), micro["node_id"])
+    assert "hierarchy family not emission-allowed" in str(info_b.value)

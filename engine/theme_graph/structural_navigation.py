@@ -564,6 +564,7 @@ def hierarchy_paths(store_view, node_id, asof, *, knowledge_cutoff=None, rights_
     liveness is the incumbent ``_collapse_relevant_edges`` over PARENT_OF rows only.
     Vendor and internal-only basket hops are never followed (Gate #2). Any live
     PARENT_OF edge that violates the house hierarchy contract raises ValueError (fail closed).
+    Hierarchy-tier theme nodes remain visible to this reader despite the reader tier guard.
     """
     from engine.theme_graph import rights
     from engine.theme_graph.ontology import (
@@ -632,9 +633,22 @@ def hierarchy_paths(store_view, node_id, asof, *, knowledge_cutoff=None, rights_
     nodes = _records(store_view.read_nodes())
     lifecycle_reader = getattr(store_view, "read_node_lifecycle", None)
     lifecycle = _records(lifecycle_reader()) if callable(lifecycle_reader) else []
+    # Readers ignore non-`theme`-tier theme nodes (W-C3 reader tier guard). This is the
+    # one reader whose subject IS those tiers, so _nodes_as_known is asked for
+    # VISIBILITY only (computed_at / birth_date / lifecycle): tier is set aside before
+    # the call and restored after. Validation below re-checks kind, tier and provenance.
+    _tier_key = "__hierarchy_paths_tier"
+    masked_nodes = []
+    for row in nodes:
+        masked = dict(row)
+        masked[_tier_key] = masked.get("tier")
+        masked["tier"] = None
+        masked_nodes.append(masked)
     node_map = _nodes_as_known(
-        nodes, lifecycle, asof=asof_date, knowledge_cutoff=cutoff_date
+        masked_nodes, lifecycle, asof=asof_date, knowledge_cutoff=cutoff_date
     )
+    for row in node_map.values():
+        row["tier"] = row.pop(_tier_key, None)
 
     raw_edges = _records(store_view.read_edges())
     parent_rows = [row for row in raw_edges if str(row.get("type") or "") == "PARENT_OF"]
