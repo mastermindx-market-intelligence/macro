@@ -485,3 +485,24 @@ def test_options_compare_shipped_js_is_syntax_valid():
     )
     assert proc.returncode == 0, proc.stderr
 
+
+def test_options_compare_generated_macro_assets_match_source_bytes():
+    import hashlib
+
+    template_js = (ROOT / "templates" / "risk_envelope_live.js").read_bytes()
+    site_js = (ROOT / "site" / "risk_envelope_live.js").read_bytes()
+    macro = (ROOT / "site" / "macro.html").read_text()
+    css_source = (ROOT / "templates" / "_risk_envelope_band.css.j2").read_text()
+
+    assert template_js == site_js
+    js_key = hashlib.sha256(site_js).hexdigest()[:8]
+    assert f'risk_envelope_live.js?v={js_key}' in macro
+
+    # build_site's style extractor preserves the Jinja include's leading newline.
+    expected_asset = ("\n" + css_source).encode()
+    css_key = hashlib.sha256(expected_asset).hexdigest()[:8]
+    css_asset = ROOT / "site" / "assets" / "css" / f"{css_key}.css"
+    assert css_asset.exists()
+    assert css_asset.read_bytes() == expected_asset
+    assert f'assets/css/{css_key}.css?v={css_key}' in macro
+
