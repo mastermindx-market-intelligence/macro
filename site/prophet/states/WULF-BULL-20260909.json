@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WULF-BULL-20260909",
-  "asof": "2026-10-04",
+  "asof": "2026-10-06",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 28.5,
-  "raw_confidence": 27.8,
-  "delta_vs_base": -31.5,
+  "management_confidence": 26.2,
+  "raw_confidence": 24.0,
+  "delta_vs_base": -33.8,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 39.9,
+    "validity": 12.7,
     "progress": 0.0,
-    "pace": 10.1,
+    "pace": 7.2,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.506,
+    "dist_to_stop_r": 0.229,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 51.1,
-    "p1": -0.3294,
-    "p2": -0.1647,
+    "horizon_pct_used": 55.6,
+    "p1": -0.5138,
+    "p2": -0.2569,
     "p3": null,
-    "move_r": -0.494,
+    "move_r": -0.771,
     "mfe_r": 0.32,
     "mae_r": -0.889
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-09-18",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 23,
-  "tau": 0.5111
+  "days_elapsed": 25,
+  "tau": 0.5556
 }

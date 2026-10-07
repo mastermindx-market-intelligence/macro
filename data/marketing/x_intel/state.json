@@ -1,76 +1,76 @@
 {
   "handles": {
     "Barchart": {
-      "last_captured_at": "2026-10-03T23:44:51Z",
+      "last_captured_at": "2026-10-07T00:37:39Z",
       "last_kept": 0
     },
     "DeItaone": {
-      "last_captured_at": "2026-10-03T23:44:51Z",
+      "last_captured_at": "2026-10-07T00:37:39Z",
       "last_kept": 0
     },
     "FirstSquawk": {
-      "last_captured_at": "2026-10-03T23:44:51Z",
+      "last_captured_at": "2026-10-07T00:37:39Z",
       "last_kept": 0
     },
     "KobeissiLetter": {
-      "last_captured_at": "2026-10-03T23:44:51Z",
+      "last_captured_at": "2026-10-07T00:37:39Z",
       "last_kept": 0
     },
     "LizAnnSonders": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     },
     "Mr_Derivatives": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     },
     "PeterLBrandt": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     },
     "RyanDetrick": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     },
     "StockMKTNewz": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     },
     "alphatrends": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     },
     "bespokeinvest": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     },
     "charliebilello": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     },
     "jam_croissant": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     },
     "markminervini": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     },
     "traderstewie": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     },
     "unusual_whales": {
-      "last_captured_at": "2026-10-03T23:44:51Z",
+      "last_captured_at": "2026-10-07T00:37:39Z",
       "last_kept": 0
     },
     "wallstengine": {
-      "last_captured_at": "2026-09-28T00:08:05Z",
+      "last_captured_at": "2026-10-05T00:19:37Z",
       "last_kept": 0
     }
   },
   "last_run": {
-    "at": "2026-10-03T23:44:51Z",
+    "at": "2026-10-07T00:37:39Z",
     "calls": 5,
     "rows": 0,
     "stopped": null,
@@ -93,11 +93,11 @@
       "usd": 0.16365
     },
     "2026-10": {
-      "calls": 20,
+      "calls": 47,
       "tweets": 0,
-      "usd": 0.003
+      "usd": 0.00705
     }
   },
   "schema": "marketing.x_intel_state/v1",
-  "updated_at": "2026-10-03T23:44:51Z"
+  "updated_at": "2026-10-07T00:37:39Z"
 }

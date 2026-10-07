@@ -204,7 +204,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "housing_real_estate-US-9407e6a7594a59ad"
+    "predecessor_generation_id": "housing_real_estate-US-c0f886e11d7c3546"
   },
   "drivers": {
     "balance_sheet": [
@@ -311,11 +311,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-04T06:25:52Z",
+    "built_at": "2026-10-06T11:28:26Z",
     "calculation_as_of": "2026-10-01",
-    "code_version": "0d0c1533368aba1cd5f5d1ca3b14df825f540e91",
-    "content_sha256": "f3fc7e481d54b4e4205ff67559764e0a4c6ea1594307c3b8fdc6980d350c90ef",
-    "generation_id": "housing_real_estate-US-f3fc7e481d54b4e4",
+    "code_version": "640e3e237eede62351b6f657c8e13ad20274585c",
+    "content_sha256": "fa24182e641aa46dd76ff4a719ff625689ed0b27ae34c4715e6fef9cd765fb16",
+    "generation_id": "housing_real_estate-US-fa24182e641aa46d",
     "producer": "engine.market_os.macro_workspaces.housing",
     "rendered_at": null
   },

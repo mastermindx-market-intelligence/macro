@@ -63,16 +63,17 @@
     },
     "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope in cn/hk)"
   },
-  "cik_map_snapshot": "2026-09-28",
-  "code_version": "a0be393991daa3990fecd8aa2c3ef2eadceb6abd",
+  "cik_map_snapshot": "2026-10-05",
+  "code_version": "5104156de0170c0559dc15bf55d60c09472506d1",
   "coverage": {
-    "resolved": 709,
+    "resolved": 708,
     "total": 718,
-    "unresolved": 9,
+    "unresolved": 10,
     "unresolved_names": [
       "ANGPY",
       "B",
       "BLD",
+      "CBOE",
       "EA",
       "GATO",
       "IMPUY",
@@ -88,7 +89,7 @@
     "reference.issuer_migrations",
     "reference.security_migrations"
   ],
-  "generated_at": "2026-10-06T06:08:43",
+  "generated_at": "2026-10-05T04:25:13",
   "identity_exceptions": [
     {
       "evidence": "SEC Barnes Group 2025-01-27 8-K/Form 25; Barrick Mining 2025-05-07 Form 6-K Exhibit 99.2; Gold.com 2025-11-12 AMRK->NYSE GOLD transfer announcement; config/theme_graph_identity_breaks.yml GOLD",
@@ -107,19 +108,19 @@
     "config.yml": "b8963682e5f2fe209cee1a604f19e51bbce232992d75c0b26c60a615600a310f",
     "config/delisted_symbols.yml": "6cefebced6f19f7d612078f369e47ae4cd4d23ac35f6ecfbd732f4dd4a6e661a",
     "data/baskets/membership.json": "b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a",
-    "data/breadth/constituents.parquet": "c6164db37521667ec55d0a5ce88654954d60042a2f102d5a914171224260f6ce",
+    "data/breadth/constituents.parquet": "e5c9a998e7539751601cfc7891c9338cff63b498cfd4a037a4d8b16c782fde23",
     "data/china_filings/filings.parquet": "673a37de4b278bb59490135d8cf2c88ad78af87a9f0ae40fddc0253137b351e8",
     "data/hk_shorts/positions.parquet": "5a16bec36c5379cf81d0af1e60c9e8cc21575e84bd9c557c48fefd6986d75444",
     "data/hk_shorts/turnover.parquet": "d9f6246564471d98181860d02126efa3414219d6847fab42e967fc6cf22b86a1",
-    "data/symbol_directory/cik_map": "cca44810fd452b6c9d76155b0f9469f9ef104195d7aaa7b1ef61c4bd00d06844",
-    "data/symbol_directory/snapshots": "98ca1f5b389bd4c1126eb986a47b664eb13251104facc7010ef0052f2999e8a9",
+    "data/symbol_directory/cik_map": "5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9",
+    "data/symbol_directory/snapshots": "6dcc85d3f84abf9476d9db4ee0083d2e528e86bf4cb14d434e5e39a61558a9a8",
     "data/theme_graph/nodes.parquet": "c93b4e840bf83b18b53343acd15ecb01c22f38d22d2ff979eea13a6f0910934b",
     "lib/ticker_aliases.py": "6a6da16e40de28e9ac3eb9f319ca6b1a137a479656101b590b9264211e3e70fd"
   },
   "issuer": {
     "era": "issuer_semantic_correction_v1",
     "era_migrations_total": 3,
-    "evidence_snapshot": "2026-09-28",
+    "evidence_snapshot": "2026-10-05",
     "migrations_this_run": 0,
     "multi_security_groups": [
       {
@@ -147,7 +148,7 @@
     "state_counts": {
       "DEFERRED_IDENTITY_EXCEPTION": 1,
       "NO_ISSUER_EVIDENCE": 1168,
-      "RESOLVED": 1213
+      "RESOLVED": 1212
     }
   },
   "listing_continuity": [
@@ -177,7 +178,7 @@
         "SEC:US-XNYS-WBS"
       ],
       "reason": "pending-transition fence: 7 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
-      "snapshot_date": "2026-09-28",
+      "snapshot_date": "2026-10-05",
       "symbol": "KHC"
     }
   ],
@@ -217,19 +218,19 @@
   ],
   "resurrection_refusals": [],
   "row_counts": {
-    "issuer_master": 1214,
+    "issuer_master": 1213,
     "issuer_migrations": 3,
-    "security_master": 2383,
+    "security_master": 2382,
     "security_migrations": 1,
-    "vendor_alias_rows_readable": 6041,
-    "vendor_aliases": 6041
+    "vendor_alias_rows_readable": 6037,
+    "vendor_aliases": 6037
   },
   "security": {
     "era": "security_supersession_duplicate_mint_v1",
     "era_migrations_total": 1,
     "migrations_this_run": 0,
     "state_counts": {
-      "ACTIVE": 2382,
+      "ACTIVE": 2381,
       "SUPERSEDED_DUPLICATE_MINT": 1
     }
   },
@@ -241,7 +242,7 @@
     "ticker_key_migrations": 1,
     "universe_keys": 713
   },
-  "symbol_directory_snapshot": "2026-10-03",
+  "symbol_directory_snapshot": "2026-10-05",
   "undated_renames": [
     {
       "evidence": "lib/ticker_aliases.py YAHOO_FETCH_ALIASES FI->FISV (vendor LAGS the rename); config.yml breadth.ticker_fixups FISV->FI; no in-repo date for the 2023 change",
@@ -282,6 +283,11 @@
         "code": "not_listed_no_cik",
         "reason": "absent from the newest symbol-directory snapshot under 'BLD' or 'BLD' (and from the exit ledger) \u2014 venue unknown",
         "symbol": "BLD"
+      },
+      {
+        "code": "unsupported_venue",
+        "reason": "listed on exchange code 'Z' (collectors/symbol_directory.py:184-185: P=NYSE Arca, Z=BATS, V=Investors Exchange) which has no MIC in lib/dataos/identity.KNOWN_MICS",
+        "symbol": "CBOE"
       },
       {
         "code": "not_listed_no_cik",
@@ -394,7 +400,7 @@
         "symbol": "UGRO"
       }
     ],
-    "refused_this_run": 24,
+    "refused_this_run": 25,
     "resolved_not_rederivable": [
       {
         "code": "ATAI",
@@ -433,8 +439,8 @@
         "security_id": "SEC:US-XNAS-YYGH"
       }
     ],
-    "resolved_this_run": 1,
-    "resolved_total": 1212,
+    "resolved_this_run": 0,
+    "resolved_total": 1211,
     "structural_check_exempt_exit_ledger": [],
     "target_n": 1237,
     "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope=us)"

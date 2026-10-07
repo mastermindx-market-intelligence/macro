@@ -425,7 +425,7 @@ def exposure_dial(latest: dict, evidence: dict) -> dict:
 
     # --- conditions-layer rules (research/QUANT_FACTOR_EXPANSION.md) -------------
     # Independent, often EARLIER signals than the price-based quad: the Fed-research
-    # recession composite (Sahm + Excess Bond Premium + term-premium-adjusted curve)
+    # recession composite (Sahm + Excess Bond Premium + legacy TP10 curve heuristic)
     # and broad financial conditions (NFCI). Each cites its measured forward-return
     # edge over the classifier's own 2007-> history (engine/playbook.risk_evidence).
     cond_layer = latest.get("conditions") or {}
@@ -439,9 +439,9 @@ def exposure_dial(latest: dict, evidence: dict) -> dict:
                 f"and ran a {ev['avg_worst_dd63_pct']}% worst 3-month drawdown"
                 if ev and evl else "")
         reasons.append(("-", f"Recession-risk composite is HIGH ({rec.get('score', 0):.0f}/100: "
-                        f"Sahm + Excess Bond Premium + term-premium-adjusted curve)" + tail,
+                        f"Sahm + Excess Bond Premium + legacy TP10 curve heuristic)" + tail,
                         f"衰退风险综合评分高（{rec.get('score', 0):.0f}/100：Sahm 法则＋超额债券溢价＋"
-                        f"期限溢价调整曲线）— 历史前瞻回报更弱、回撤更深"))
+                        f"旧版TP10曲线启发式）— 历史前瞻回报更弱、回撤更深"))
     elif rec.get("label") == "elevated":
         ev = evidence.get("conditions_recession_high")
         reasons.append(("i", "Recession-risk composite is ELEVATED — an early warning that often "

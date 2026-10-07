@@ -18,9 +18,11 @@ auto-promotion path the queue exists to prevent.
 """
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import logging
+import re
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
@@ -249,3 +251,356 @@ def append_proposals(rows: list[dict], path: Path) -> tuple[int, int]:
             fh.write(json.dumps({k: row.get(k) for k in ROW_FIELDS},
                                 ensure_ascii=False, sort_keys=True) + "\n")
     return len(fresh), skipped
+
+
+# Explicit lifecycle events use a SEPARATE version-selected input. Legacy v1
+# proposals, ids, schema and default readers above remain unchanged.
+_RELATION_EVENT_SEAL = object()
+
+
+class AcceptedRelationEvent:
+    """Immutable validated receipt; authentication belongs to the trusted owner reader."""
+    __slots__ = ("_json", "_seal", "_authority_json", "_owner_reader")
+
+    def __init__(self, receipt: dict, *, authority_receipt=None, owner_reader=None, _seal=None):
+        if _seal is not _RELATION_EVENT_SEAL:
+            raise ValueError("relation event requires probation owner admission")
+        object.__setattr__(self, "_json", json.dumps(receipt, sort_keys=True, allow_nan=False))
+        object.__setattr__(self, "_seal", _seal)
+        object.__setattr__(self, "_authority_json", json.dumps(authority_receipt, sort_keys=True, allow_nan=False))
+        object.__setattr__(self, "_owner_reader", owner_reader)
+
+    @property
+    def authority_receipt(self) -> dict:
+        return json.loads(self._authority_json)
+
+    def __setattr__(self, name, value):
+        raise AttributeError("accepted relation receipt is immutable")
+
+    @property
+    def receipt(self) -> dict:
+        return json.loads(self._json)
+
+
+class RelationEventRefusal(ValueError):
+    """Version/action/source/clock/rights input cannot authorize a lifecycle act."""
+
+
+def relation_event_digest(row: dict) -> str:
+    payload = {key: value for key, value in row.items()
+               if key not in {"event_id", "event_sha256"}}
+    encoded = json.dumps(payload, sort_keys=True, ensure_ascii=False,
+                         separators=(",", ":"), allow_nan=False).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def relation_source_receipt(source_path: Path) -> dict:
+    """Read the actual incumbent curated source; strings labelled accepted do not bind."""
+    import yaml
+
+    raw = source_path.read_bytes()
+    doc = yaml.safe_load(raw)
+    if not isinstance(doc, dict) or not isinstance(doc.get("themes"), list):
+        raise RelationEventRefusal("curated source is unavailable/malformed")
+    version = doc.get("date") or doc.get("updated")
+    if not isinstance(version, str) or len(version) != 10:
+        raise RelationEventRefusal("curated source version unavailable")
+    try:
+        datetime.strptime(version, "%Y-%m-%d")
+    except ValueError as exc:
+        raise RelationEventRefusal("invalid curated source version") from exc
+    sha = hashlib.sha256(raw).hexdigest()
+    return {"source_ref": "config/theme_crosswalk.yml", "version": version,
+            "sha256": sha, "revision": f"crosswalk:{version}:{sha}"}
+
+
+def _relation_clock(value: str) -> datetime:
+    # This contract requires actual zoned instants; never use the v1 permissive
+    # date/unzoned parser to fabricate midnight knowledge for an event.
+    stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if stamp.tzinfo is None:
+        raise RelationEventRefusal("relation clock must be zoned")
+    return stamp.astimezone(timezone.utc)
+
+
+def _require_relation_rights(row: dict) -> None:
+    from engine.theme_graph import rights
+
+    prior = row["prior_relation"]
+    for node in [prior["src"], prior["dst"], row["new_destination"]]:
+        if node is None:
+            continue
+        family = (rights.family_for_source_ref(row["source_receipt"]["source_ref"])
+                  if node.startswith("theme:") else rights.family_for_node_id(node))
+        if family is None:
+            raise RelationEventRefusal("relation endpoint rights family unavailable")
+        rights.rights_class(family)
+        if rights.licensing_for_family(family)[0] is not True:
+            raise RelationEventRefusal("relation internal use refused")
+    rights.rights_class("mastermind_curated")
+    if rights.licensing_for_family("mastermind_curated")[0] is not True:
+        raise RelationEventRefusal("curation internal use refused")
+
+
+_HEX64 = re.compile(r"^[a-f0-9]{64}$")
+
+
+class RelationActionOwnerReader:
+    """Narrow read-only resolver over the probation owner's own append-only relation-event ledger. Resolves an explicit ratified row by event_sha256; never writes; never infers."""
+
+    OWNER = "theme_graph.probation"
+    SCHEMA = "gmi.probation_owner_action_read/v1"
+
+    def __init__(self, ledger_path):
+        self._ledger_path = Path(ledger_path)
+
+    def _refusal(self, status: str, reason: str) -> dict:
+        return {"schema": self.SCHEMA, "owner": self.OWNER, "status": status,
+                "receipt_ref": None, "reason": reason}
+
+    def _parse_cutoff(self, knowledge_cutoff):
+        if knowledge_cutoff is None:
+            return None
+        try:
+            if isinstance(knowledge_cutoff, str):
+                return _relation_clock(knowledge_cutoff)
+            if isinstance(knowledge_cutoff, datetime):
+                if knowledge_cutoff.tzinfo is None:
+                    return None
+                return knowledge_cutoff.astimezone(timezone.utc)
+        except (RelationEventRefusal, ValueError, TypeError):
+            return None
+        return None
+
+    def _not_ratified(self, field: str) -> dict:
+        return self._refusal("UNAVAILABLE",
+                             f"relation action not ratified by the curator path: {field}")
+
+    def read_relation_action(self, *, event_sha256, knowledge_cutoff) -> dict:
+        if not isinstance(event_sha256, str) or not _HEX64.match(event_sha256):
+            return self._refusal("UNAVAILABLE", "malformed resolver request")
+        cutoff = self._parse_cutoff(knowledge_cutoff)
+        if cutoff is None:
+            return self._refusal("UNAVAILABLE", "malformed resolver request")
+
+        if not self._ledger_path.exists():
+            return self._refusal("UNAVAILABLE", "owner ledger absent")
+
+        matches: list[dict] = []
+        try:
+            lines = self._ledger_path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return self._refusal("UNAVAILABLE", "owner ledger absent")
+
+        for line in lines:
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                return self._refusal("STALE", "owner ledger line unreadable")
+            if not isinstance(row, dict):
+                return self._refusal("STALE", "owner ledger line unreadable")
+            if row.get("event_sha256") == event_sha256:
+                matches.append(row)
+
+        if not matches:
+            return self._refusal("UNAVAILABLE", "no accepted relation action for event")
+        if len(matches) > 1:
+            return self._refusal("STALE", "duplicate ledger rows for event")
+
+        row = matches[0]
+        if relation_event_digest(row) != event_sha256:
+            return self._refusal("STALE", "receipt digest mismatch")
+        if row.get("event_id") != "relation-event:" + event_sha256:
+            return self._refusal("STALE", "receipt identity mismatch")
+
+        if row.get("schema") != "gmi.probation_relation_event/v2":
+            return self._not_ratified("schema")
+        if row.get("status") != "ratified":
+            return self._not_ratified("status")
+        ratified_by = row.get("ratified_by")
+        if not isinstance(ratified_by, str) or not ratified_by.strip():
+            return self._not_ratified("ratified_by")
+        for clock_field in ("adjudicated_at", "known_at", "created_at"):
+            try:
+                _relation_clock(row[clock_field])
+            except (KeyError, RelationEventRefusal, TypeError):
+                return self._not_ratified(clock_field)
+        if row.get("action") not in {"RELATION_WITHDRAW", "DESTINATION_CHANGE"}:
+            return self._not_ratified("action")
+        caps = row.get("authority_caps")
+        if not isinstance(caps, dict):
+            return self._not_ratified("authority_caps")
+        for cap_key in ("may_rank", "may_size", "may_gate", "may_escalate"):
+            if caps.get(cap_key) is not False:
+                return self._not_ratified("authority_caps")
+        evidence_refs = row.get("evidence_refs")
+        if (not isinstance(evidence_refs, list) or not evidence_refs
+                or not all(isinstance(ref, str) and ref for ref in evidence_refs)):
+            return self._not_ratified("evidence_refs")
+        if not isinstance(row.get("prior_relation"), dict):
+            return self._not_ratified("prior_relation")
+        if not isinstance(row.get("source_receipt"), dict):
+            return self._not_ratified("source_receipt")
+
+        try:
+            created = _relation_clock(row["created_at"])
+            adjudicated = _relation_clock(row["adjudicated_at"])
+            known = _relation_clock(row["known_at"])
+        except (RelationEventRefusal, TypeError):
+            return self._not_ratified("clock")
+
+        if created > adjudicated or adjudicated > known:
+            return self._refusal("STALE", "receipt chronology violated")
+        if known > cutoff:
+            return self._refusal("UNAVAILABLE", "relation action not yet knowable at cutoff")
+
+        accepted = {
+            "schema": self.SCHEMA,
+            "owner": self.OWNER,
+            "status": "ACCEPTED",
+            "receipt_ref": "data/theme_graph/probation/relation_events.v2.jsonl#"
+            + row["event_id"],
+            "reason": None,
+            "event_sha256": event_sha256,
+            "action": row["action"],
+            "prior_relation": row["prior_relation"],
+            "new_destination": row.get("new_destination"),
+            "source_receipt": row["source_receipt"],
+            "ratified_by": row["ratified_by"],
+            "evidence_refs": list(row["evidence_refs"]),
+            "accepted_at": row["adjudicated_at"],
+            "known_at": row["known_at"],
+            "valid_from": row["adjudicated_at"],
+            "valid_to": None,
+        }
+        return copy.deepcopy(accepted)
+
+
+def _read_owner_action(reader, row: dict, *, emitted_at: str) -> dict:
+    """Consume an authenticated incumbent reader capability, never source assertions.
+
+    The normal builder wires the probation owner's own ``RelationActionOwnerReader``
+    (Chairman gate #5, 2026-10-06); a ``None`` reader still refuses. Injection is a
+    trusted owner interface, not data granting itself authority; controlled test
+    implementations stand in for that capability and prove no natural acceptance.
+    """
+    import jsonschema
+
+    if reader is None:
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_UNAVAILABLE: incumbent resolver unwired")
+    try:
+        receipt = reader.read_relation_action(
+            event_sha256=row["event_sha256"], knowledge_cutoff=emitted_at)
+    except Exception as exc:
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_UNAVAILABLE: owner read failed") from exc
+    contract = Path(__file__).resolve().parents[2] / (
+        "contracts/theme_graph/probation_relation_event.v2.schema.json")
+    schema = json.loads(contract.read_text())["$defs"]["owner_action_read"]
+    try:
+        jsonschema.Draft202012Validator(schema).validate(receipt)
+    except jsonschema.ValidationError as exc:
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_INVALID: malformed owner receipt") from exc
+    status = receipt["status"]
+    if status != "ACCEPTED":
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_" + status + ": " + receipt["reason"])
+    if not receipt["receipt_ref"].strip():
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_INVALID: empty owner receipt reference")
+    for field in ("event_sha256", "action", "prior_relation", "new_destination",
+                  "source_receipt", "ratified_by", "evidence_refs"):
+        if receipt[field] != row[field]:
+            raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_MISMATCH: " + field)
+    accepted = _relation_clock(receipt["accepted_at"])
+    known = _relation_clock(receipt["known_at"])
+    valid_from = _relation_clock(receipt["valid_from"])
+    valid_to = _relation_clock(receipt["valid_to"]) if receipt["valid_to"] is not None else None
+    emitted = _relation_clock(emitted_at)
+    if (accepted != _relation_clock(row["adjudicated_at"]) or accepted > known
+            or known > _relation_clock(row["known_at"]) or known > emitted
+            or valid_from > accepted or valid_from > emitted
+            or (valid_to is not None and valid_to <= emitted)):
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_CLOCK_REFUSAL")
+    return receipt
+
+
+def read_relation_events(path: Path, *, source_path: Path,
+                         emitted_at: str, owner_action_reader=None) -> list[AcceptedRelationEvent]:
+    """Strict accepted-event owner read; no writer, ratifier, mixed queue or ledger.
+
+    An absent optional event input means no lifecycle act was supplied; it is not
+    a complete relation-population observation and authorizes no withdrawals.
+    """
+    import jsonschema
+    from engine.theme_graph import rights
+
+    if not path.exists():
+        return []
+    source = relation_source_receipt(source_path)
+    emitted = _relation_clock(emitted_at)
+    contract = Path(__file__).resolve().parents[2] / (
+        "contracts/theme_graph/probation_relation_event.v2.schema.json")
+    validator = jsonschema.Draft202012Validator(json.loads(contract.read_text()))
+    result = []
+    seen = set()
+    for row in read_proposals(path, strict=True):
+        try:
+            validator.validate(row)
+            digest = relation_event_digest(row)
+            if row["event_sha256"] != digest or row["event_id"] != "relation-event:" + digest:
+                raise RelationEventRefusal("relation event digest/identity mismatch")
+            if row["event_id"] in seen:
+                raise RelationEventRefusal("duplicate relation event")
+            seen.add(row["event_id"])
+            if row["source_receipt"] != source:
+                raise RelationEventRefusal("relation event curation revision mismatch")
+            prior = row["prior_relation"]
+            expected = f"expresses:{prior['src']}->{prior['dst']}@{prior['valid_from']}"
+            if prior["edge_id"] != expected:
+                raise RelationEventRefusal("relation identity mismatch")
+            datetime.strptime(prior["valid_from"], "%Y-%m-%d")
+            created = _relation_clock(row["created_at"])
+            known = _relation_clock(row["known_at"])
+            adjudicated = _relation_clock(row["adjudicated_at"])
+            effective = _relation_clock(row["effective_at"])
+            if created > adjudicated or known != adjudicated or known > emitted or effective > emitted:
+                raise RelationEventRefusal("relation event chronology/future refusal")
+            if source["version"] > known.date().isoformat():
+                raise RelationEventRefusal("curation source version not yet known")
+            if effective.date().isoformat() <= prior["valid_from"]:
+                raise RelationEventRefusal("relation event must advance the prior valid window")
+            if row["new_destination"] == prior["dst"]:
+                raise RelationEventRefusal("destination change must change destination")
+            # Current per-use licensing comes only from the incumbent registry.
+            if not row["ratified_by"].strip():
+                raise RelationEventRefusal("relation ratifier unavailable")
+            _require_relation_rights(row)
+        except (jsonschema.ValidationError, ValueError, rights.RightsRefusal) as exc:
+            raise RelationEventRefusal(str(exc)) from exc
+        authority_receipt = _read_owner_action(owner_action_reader, row, emitted_at=emitted_at)
+        result.append(AcceptedRelationEvent(row, authority_receipt=authority_receipt,
+                                           owner_reader=owner_action_reader, _seal=_RELATION_EVENT_SEAL))
+    return result
+
+
+def require_daily_relation_event(event: AcceptedRelationEvent, *, belief_time: str,
+                                 emitted_at: str) -> dict:
+    """Refuse precision the daily graph cannot represent; do not ceil an effect."""
+    if not isinstance(event, AcceptedRelationEvent) or event._seal is not _RELATION_EVENT_SEAL:
+        raise RelationEventRefusal("unadmitted relation event")
+    row = event.receipt
+    current_authority = _read_owner_action(event._owner_reader, row, emitted_at=emitted_at)
+    if current_authority != event.authority_receipt:
+        raise RelationEventRefusal("OWNER_ACTION_AUTHORITY_CHANGED: re-read differs from accepted receipt")
+    _require_relation_rights(row)  # revocation is checked at this actual use too
+    effective = _relation_clock(row["effective_at"])
+    known = _relation_clock(row["known_at"])
+    emitted = _relation_clock(emitted_at)
+    if effective.time().isoformat() != "00:00:00":
+        raise RelationEventRefusal("DAILY_GRAPH_UNREPRESENTABLE: intraday effective clock")
+    day = datetime.strptime(belief_time, "%Y-%m-%d").date()
+    if known.date() > day or (known.date() == day and known.time().isoformat() != "00:00:00"):
+        raise RelationEventRefusal("DAILY_GRAPH_UNREPRESENTABLE: intraday known clock")
+    if known > emitted or effective > emitted or effective.date() > day:
+        raise RelationEventRefusal("relation event future relative to graph clocks")
+    return row
