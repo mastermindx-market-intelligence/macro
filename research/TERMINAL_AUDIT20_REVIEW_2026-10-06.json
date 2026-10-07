@@ -11,16 +11,18 @@
       "outcome": "Pine request.security: eliminate silent symbol substitution and future-data leakage",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "SCOPED_PINE_HISTORY_DEPLOYED; LIVE_SHELL_VERIFIED",
-      "evidence_summary": "PR835 exactb6adc839 passed required CI37482089627, merged8f3d04f1; git-gated deploy exited0. Source, deployment marker, public HTML/scripts agree8f3; Terminal/QuoteHub active. Intended Chrome profile15 visible canvases. Weekly editor/customer journey and broader Pine parity remain unproven."
+      "review_status": "SCOPED_PINE_HISTORY_DEPLOYED; ACTUAL_EDITOR_WARNING_VERIFIED",
+      "evidence_summary": "PR835 landed/deployed8f3 historically. On Oct7 actual authenticated Scripts editor served52b9107; unsaved 1W script warned that an unconfirmed ISO-week tail returns the prior confirmed value or na; foreign symbol warned and returns na. Built-in diagnosis uses synthetic130 daily bars with SYNTH, not live chart bars. Original editable buffer restored byte-identically; no Save/Add to Chart. Actual viewport1525x936. Chart-attached weekly plotting and broader Pine parity remain unproven."
     },
     {
       "mission": "A02",
       "outcome": "Pine worker containment: bounded compilation, cancellation and disposal",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "SCOPED_SOURCE_BROWSER_ACCEPTED; REQUIRED_CI_RED",
-      "evidence_summary": "Ready auto-merge PR834 exactac5c02; mobile startup identity failure, incumbent597 dependency"
+      "review_status": "SCOPED_SOURCE_BROWSER_ACCEPTED; CURRENT_MASTER_MERGE_REPAIRED; REQUIRED_CI_IN_PROGRESS",
+      "evidence_summary": "Prior same-head required CI became green; current-master conflict was solely superseded ownership evidence. Mergeab267 preserves canonical upstream record and removes obsolete provenance apparatus, leaving exactly two reviewed source/test files unchanged. Current-master100 focused tests, full typegen/TSC0, actual Next/native Worker at three sizes3pass0skip, repository responsive60pass24existing conditional skips0fail. Candidate pushed; ready/merge-on-green/native protected auto armed once; exact new CI37701701904 in progress. No merge/deploy/authenticated containment or whole-mission acceptance.",
+      "source_head": "ab267daa5b740fbd008cf190f567bd78222b1b73",
+      "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/834"
     },
     {
       "mission": "A03",
@@ -123,9 +125,9 @@
       "outcome": "Heatmap economic sizing: propagate genuine capitalization and disclose coverage",
       "original_started": true,
       "whole_mission_accepted": false,
-      "review_status": "SCOPED_SOURCE_AND_11_REAL_BROWSER_CASES_ACCEPTED; PR839_REQUIRED_CI_PENDING",
-      "evidence_summary": "Higher Grok r8 repaired only owned fixture initialization and qualified actual mounted Discover/Heatmap in own production-mode Next: 11 pass, 0 fail, 0 skip; native process/fixture cleanup proven. Parent integrated immutable six-file proposal at16b30bf005ca9040aa556b9dcb630de3ae4872b0. Normal npm build/typecheck exit0, focused24, full unit7715 plus4 existing TODOs, responsive shell41 pass4 skips0 fail across desktop/tablet/mobile. Earlier concurrent unchanged Pine budget timeout preserved; isolated4 and bounded full suite pass. PR839 ready, native auto-merge and merge-on-green armed. Exact CI, merged-master deploy and actual live acceptance still owed.",
-      "source_head": "16b30bf005ca9040aa556b9dcb630de3ae4872b0",
+      "review_status": "SCOPED_SOURCE_AND_BROWSER_ACCEPTED; REQUIRED_CHECKS_GREEN; WORKFLOW_ACTION_REQUIRED",
+      "evidence_summary": "Original reviewed six-file source16b30 unchanged after controller refresh94dff. Higher Grok11 actual fixture cases plus parent build/typecheck/focused24/unit7715+4TODO/responsive41+4existing skips accepted. Exact-head workflow_dispatch37650471663 all10 jobs SUCCESS. PR workflow37650481196 action_required with zero jobs; normal protected merge refused, no bypass. Tool automatic review denied exact workflow-approval POST before execution. User workflow-action question pending. Merge/deploy/actual USD CAP proof remain owed.",
+      "source_head": "94dff15fdf5270f145e374ae6810881426549242",
       "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/839"
     },
     {
@@ -174,15 +176,32 @@
     "A04_regressions_sha256": "745f8f01814880c276e8cf9fe4f34abad99f2bbbfdac015644bee7aa9d83ef8f",
     "A04_proof": "33 guard +11 transaction +3 independent concurrent/replay/rollback cases, actual isolatedPostgreSQL17.11, not production17.6 or client/migration acceptance",
     "A09_helper_sha256": "9d328a64212e923d773b45627abce2a67ef52ef54dd2fcab0f36fe6136542383",
-    "A15_proof": "24 unit + full TSC +7/11 actual browser cases; full matrix failed/incomplete",
+    "A15_proof": "11 actual mounted browser cases, 24 focused unit, full TSC/build, 7715 unit plus4 existing TODOs, 41 responsive pass plus4 viewport-conditional skips; exact refreshed-head dispatch all10 jobs green. No merged/deployed/live new-mode claim.",
     "A08_owner_widget_sha256": "e3bc058057220af801fd43b9733416ae8be5e300fb4303a465b2d85c7cfea2e8",
     "A08_owner_head": "53a1fc4cc47b4b9240fad828d0ef2161346aaacc",
     "A04_transaction_function_sha256": "1bb8d8639c73945bae80e1523d64d84414a49cde0964ea8ab82af69809cb38d2",
     "A04_concurrency_proof": "3 actual isolatedPostgreSQL17.11 cases: two sessions one commit/one conflict, stable replay, admitted write rollback; fullrow readback and fixturecleanup verified",
     "A04_transaction_regressions_sha256": "a8a8d5f7a02b0e4299f0ca6a001107168440a1d48ed56869e09c14e93f309249",
-    "A15_PR839": "research/terminal_audit20/A15_PR839/reviewed-proof.json"
+    "A15_PR839": "research/terminal_audit20/A15_PR839/reviewed-proof.json",
+    "A01_actual_editor_proof": "research/terminal_audit20/A01_EDITOR_PROOF/actual-editor-20261007.json",
+    "A02_PR834": "research/terminal_audit20/A02_PR834/reviewed-proof-20261007.json"
   },
-  "updated_at": "2026-10-06T18:00:07.800163+00:00",
-  "current_terminal_deployment": "8f3d04f1c7b2d26a90623497b30f0901160d03a2",
-  "active_fabric_children": []
+  "updated_at": "2026-10-07T23:21:19.933828+00:00",
+  "current_terminal_deployment": "52b9107b2f33738256b1e4877bbf166a45556525",
+  "active_fabric_children": [],
+  "current_terminal_deployment_observation": "Actual authenticated served Scripts bundle identity on 2026-10-07; this continuation has not deployed or independently requalified backend marker/service health at that release.",
+  "continuation_dispatch": [
+    {
+      "id": "terminal-audit20-records-ci-r1-20261007",
+      "state": "PRE_LAUNCH_REFUSED",
+      "reason": "ECONOMIC_POLICY_REFUSED: bounded_complexity_requires_escalation",
+      "started": false
+    },
+    {
+      "id": "terminal-audit20-A04-bootstrap-r1-20261007",
+      "state": "PRE_LAUNCH_REFUSED",
+      "reason": "NONE: no_pool_available",
+      "started": false
+    }
+  ]
 }

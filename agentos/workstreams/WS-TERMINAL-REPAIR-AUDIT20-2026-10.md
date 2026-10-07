@@ -8,7 +8,8 @@ objective: >-
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: blocked
 blocked_by:
-  - Terminal PR839 exact-head required browser CI is pending; merged-master deployment and actual USD CAP acceptance remain owed.
+  - Terminal PR834 refreshed two-file candidateab267 requires new-head CI, protected merge, git-gated deploy and actual containment acceptance.
+  - Terminal PR839 exact-head required checks are green, but PR workflow37650481196 is action_required and normal protected merge is refused; user workflow action, merged-master deployment and actual USD CAP acceptance remain owed.
   - Exact active Terminal PR597 source-owner binding is unresolved for shared startup, editor and drawing caller hunks.
   - Macro PR8526 incumbent incorporation, owning CI and live delivery of the reviewed Brain contribution are unaccepted.
   - Existing holds and drawing bootstrap/schema, financial source-unit, private identity and recipient contracts remain unclosed.
@@ -26,13 +27,15 @@ waves:
     title: Consume higher-level repairs and deliver accepted scoped changes
     status: in_progress
 next_action: >-
-  Finish Terminal PR839 exact-head CI, merged-master git-gated deployment and actual
-  USD CAP mode/disclosure acceptance. Then recover exact incumbent Terminal PR597 owner binding for startup, editor and drawing
+  Resolve Terminal PR839 workflow action_required, then complete protected merge, merged-master git-gated deployment and actual
+  USD CAP mode/disclosure acceptance. Finish refreshed PR834 exact-head CI and release containment. Then recover exact incumbent Terminal PR597 owner binding for startup, editor and drawing
   caller contributions; incorporate the qualified Brain patch through Macro PR8526.
   Use the accepted drawing DB prototype only after legacy bootstrap, client/outbox
   and migration/source admission; preserve all incumbent holds and actual live gates.
 owns_paths: []
 artifacts:
+  - research/terminal_audit20/A01_EDITOR_PROOF/actual-editor-20261007.json
+  - research/terminal_audit20/A02_PR834/reviewed-proof-20261007.json
   - research/TERMINAL_AUDIT20_REVIEW_2026-10-06.json
   - research/terminal_audit20/A08_PR8526/README.md
   - research/terminal_audit20/A04_RPC_PROTOTYPE/README.md
@@ -64,7 +67,7 @@ A complete archive of every originally declared kind is still unproven.
 
 Terminal PR835 is merged and deployed at `8f3d04f1c7b2d26a90623497b30f0901160d03a2`.
 The git-gated build, service health and public release identity agree; the intended Chrome
-profile rendered the daily chart shell. The actual weekly Pine editor journey is unproven.
+profile rendered the daily chart shell. On Oct7 the actual authenticated Scripts editor at served52b9107 diagnosed an unsaved weekly probe with the expected unconfirmed-week warning, and a foreign-symbol probe with explicit na refusal. Its built-in diagnosis uses synthetic daily bars. The original editor buffer was restored byte-identically; no Save or Add to Chart was invoked. Chart-attached weekly plotting remains unproven.
 
 The Brain freshness contribution passed 20 checks and five actual widget fixture cases
 against exact owner PR8526 head `53a1fc4cc47b4b9240fad828d0ef2161346aaacc`.
@@ -78,5 +81,10 @@ this wave are consumed and sealed; no future automatic wake or source takeover i
 
 Terminal PR839 carries the independently reviewed cached USD capitalization upgrade at
 `16b30bf005ca9040aa556b9dcb630de3ae4872b0`. Eleven Heatmap browser fixture cases,
-parent normal build/typecheck,7715 unit and41 responsive shell cases passed. Required
-browser CI is pending; production remains8f3 and actual USD CAP live acceptance is owed.
+parent normal build/typecheck,7715 unit and41 responsive shell cases passed. The controller refreshed it to94dff15fdf5270f145e374ae6810881426549242 without changing its six source files. Exact dispatch37650471663 passed all10 jobs, including required checks and browser shards. The separate PR workflow37650481196 is action_required with zero jobs; normal merge is refused. Automatic tool review blocked the workflow-approval request before execution; the user action is pending. Actual USD CAP live acceptance is owed. Served Scripts currently identifies52b9107; this continuation has not deployed or requalified its backend health/marker.
+
+The installed ExecutiveV3 connector is authenticated read-only without serviceable modifying ingress. The approved stable-handle adapter preserved the original root. Routine records repair terminal-audit20-records-ci-r1-20261007 was refused pre-launch by economic routing; the explicit C3 drawing-bootstrap request terminal-audit20-A04-bootstrap-r1-20261007 returned no_pool_available before launch. Neither child reached START. No native child or Astra was used.
+
+Macro PR8545's genuine contract-delta failure was repaired with one reasoned exception for the frozen PR8526 regression artifact in the existing unrun-test waiver file. The exception names its source head, owning CI installation/deletion condition and falsifier. It does not claim that installing the historical research artifact into product CI would execute product assertions. Local test census and Agent OS validation passed. A separate CI Git fetch EOF remains infrastructure evidence, not an assertion failure.
+
+Pine containment PR834 now carries exact two-file candidate `ab267daa5b740fbd008cf190f567bd78222b1b73`, merged on mastere963eef. The sole conflict was superseded ownership evidence; canonical upstream evidence is retained, and the previously reviewed host/test source is unchanged. Current-master100 focused tests, route type generation/full TSC, three actual Next native-Worker journeys with zero skips, and repository responsive60pass24existing viewport-conditional skips passed. Candidate pushed; ready/merge-on-green/native protected auto-merge armed once. Exact new-head run37701701904 is in progress under the existing controller. No merge, deploy or authenticated containment acceptance is claimed. Own3127 test server and authenticated editor tab are closed.

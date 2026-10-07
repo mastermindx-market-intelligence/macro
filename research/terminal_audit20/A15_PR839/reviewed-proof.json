@@ -3,8 +3,8 @@
   "mission": "A15",
   "whole_mission_accepted": false,
   "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/839",
-  "source_head": "16b30bf005ca9040aa556b9dcb630de3ae4872b0",
-  "base_head": "8f3d04f1c7b2d26a90623497b30f0901160d03a2",
+  "source_head": "94dff15fdf5270f145e374ae6810881426549242",
+  "base_head": "e963eefb3ac1984008caae922d6f43bfafa9d827",
   "source_hashes": {
     "terminal/lib/heatmapCapitalization.ts": "bd10b0d58078cf235fee75de98fc510e91352bd86bb36009c4843450230eb377",
     "terminal/components/heatmap/HeatmapView.tsx": "98d3605d37a0decaf69c9828f7057fe835ba9c310482b3ef1780b7fedb0555d9",
@@ -47,59 +47,101 @@
     "isolated_pine_pass": 4,
     "local_port3145_stopped": true
   },
-  "required_ci": [
-    {
-      "name": "Terminal unit + typecheck (shard)",
-      "status": "COMPLETED",
-      "conclusion": "SUCCESS",
-      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37507642658/job/112420266543"
-    },
-    {
-      "name": "Terminal e2e desktop-1 (shard)",
-      "status": "IN_PROGRESS",
-      "conclusion": "",
-      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37507642658/job/112420266652"
-    },
-    {
-      "name": "Terminal e2e desktop-2 (shard)",
-      "status": "IN_PROGRESS",
-      "conclusion": "",
-      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37507642658/job/112420266674"
-    },
-    {
-      "name": "Terminal e2e tablet (shard)",
-      "status": "IN_PROGRESS",
-      "conclusion": "",
-      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37507642658/job/112420266677"
-    },
-    {
-      "name": "Terminal e2e mobile (shard)",
-      "status": "IN_PROGRESS",
-      "conclusion": "",
-      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37507642658/job/112420266890"
-    },
-    {
-      "name": "Terminal e2e serial (shard)",
-      "status": "IN_PROGRESS",
-      "conclusion": "",
-      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37507642658/job/112420266639"
-    },
-    {
-      "name": "Ingest + signal-layer tests",
-      "status": "COMPLETED",
-      "conclusion": "SUCCESS",
-      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37507642658/job/112420266578"
-    },
-    {
-      "name": "Investigation PostgreSQL invariants",
-      "status": "COMPLETED",
-      "conclusion": "SUCCESS",
-      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37507642658/job/112420266628"
-    }
-  ],
-  "release_state": "READY_AUTO_MERGE_ARMED_REQUIRED_BROWSER_SHARDS_PENDING",
+  "required_ci": {
+    "conclusion": "success",
+    "headSha": "94dff15fdf5270f145e374ae6810881426549242",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "databaseId": 112892176602,
+        "name": "Investigation PostgreSQL invariants",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176602"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892176829,
+        "name": "Terminal e2e serial (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176829"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892176859,
+        "name": "Terminal unit + typecheck (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176859"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892176888,
+        "name": "Ingest + signal-layer tests",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176888"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892176917,
+        "name": "Terminal e2e desktop-2 (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176917"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892176999,
+        "name": "Terminal e2e mobile (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892176999"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892177073,
+        "name": "Terminal e2e tablet (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892177073"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892177198,
+        "name": "Quote Hub tests",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892177198"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112892177294,
+        "name": "Terminal e2e desktop-1 (shard)",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112892177294"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 112908819298,
+        "name": "Terminal typecheck + tests",
+        "status": "completed",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37650471663/job/112908819298"
+      }
+    ],
+    "event": "workflow_dispatch",
+    "run_id": 37650471663
+  },
+  "release_state": "REQUIRED_CHECKS_GREEN; PR_WORKFLOW_ACTION_REQUIRED; NORMAL_MERGE_REFUSED",
   "merged": false,
   "deployed": false,
   "actual_live_new_mode": false,
-  "updated_at": "2026-10-06T18:05:10.748233+00:00"
+  "updated_at": "2026-10-07T23:19:08.926713+00:00",
+  "reviewed_source_head": "16b30bf005ca9040aa556b9dcb630de3ae4872b0",
+  "source_unchanged_after_controller_refresh": true,
+  "release_gate": {
+    "pull_request_run": 37650481196,
+    "head": "94dff15fdf5270f145e374ae6810881426549242",
+    "conclusion": "action_required",
+    "jobs": [],
+    "synthetic_merge_head": "adbfd24e100ae3ec51b8dfa30837e4315c8aec0b",
+    "synthetic_merge_check_runs": 0,
+    "normal_merge_refused": true,
+    "approval_tool_review": "DENIED_PRE_EXECUTION; USER_ACTION_PENDING",
+    "protection_bypass": false
+  },
+  "reviewed_base_head": "8f3d04f1c7b2d26a90623497b30f0901160d03a2"
 }

@@ -31,7 +31,7 @@ verified:
   - claim: The scoped Pine security/history vertical is deployed and its live chart shell renders.
     command: >-
       From terminal/: npx vitest run lib/__tests__/pineSecurityRefusal.test.ts lib/__tests__/pineSecurityFidelity.test.ts lib/__tests__/pineHost.test.ts lib/__tests__/flagshipPine.test.ts; a01-worker-protocol-browser.cjs at three sizes; required CI37482089627; git-gated target8f3 build; intended Chrome chart-shell readback.
-    result: PR835 merged8f3d04f1c7b2d26a90623497b30f0901160d03a2 and deploy exited0. Services active and source/marker/public scripts agree. Fifteen visible chart canvases. Weekly editable-script live journey not proven.
+    result: PR835 merged8f3d04f1c7b2d26a90623497b30f0901160d03a2 and deploy exited0. Services active and source/marker/public scripts agree. Fifteen visible chart canvases. Oct7 actual authenticated Scripts editor served52b9107; weekly unconfirmed-tail and foreign-symbol warnings verified using its built-in synthetic daily bars. Original buffer restored byte-identically; no Save/Add to Chart. Chart-attached weekly plotting still unproven.
   - claim: The Brain freshness contribution qualifies against the exact owning carrier.
     command: Twenty asset/source checks; both widget syntax checks; whole-widget inspector_freshness_fixture.cjs; git apply --check and candidate byte comparison at53a.
     result: Twenty checks and five actual browser cases passed, zero skips; all three patch outputs match the tested candidate. Synthetic SSE fixture stopped. Owner integration and live delivery unproven.
@@ -46,14 +46,14 @@ unverified:
   - claim: The transaction prototype can safely upgrade current drawing collections and the outbox caller.
     what_would_verify: Admit legacy bootstrap without fabricated old operation receipts; bind TerminalShell owner597; integrate stable operation/revision/outbox semantics; review migration and live two-tab recovery.
 unresolved:
-  - Terminal PR839 source16b30bf0 required browser shards are running; merge, production deployment and actual new-mode acceptance are unproven.
+  - Terminal PR839 refreshed94dff has all10 dispatch jobs green; separate PR run37650481196 is action_required with zero jobs and normal protected merge was refused. Exact approval request was denied before execution by automatic tool review; user workflow action pending. Merge, deployment and actual new-mode acceptance remain unproven.
   - Exact active owner binding for Terminal PR597 remains unavailable; the existing user owner-reference question has no response.
   - Brain PR8526 exact source owner is identified, but no exact active chat binding or owner acceptance was recovered. A canonical artifact is not a notification.
   - Drawings source/client/bootstrap/migration/live acceptance remains outstanding; the strict RPC must not be installed directly onto existing legacy collections.
   - Incumbent HOLDs, private source contracts, financial unit/FX authority, recipient consent and reserved migration0026 remain separate gates.
 next_actions:
-  - Consume Terminal PR839 exact-head required browser CI, deploy its merged master through the git-gated builder, restore and verify service/marker identity, then qualify actual intended-profile USD CAP and complete missing coverage.
-  - Bind the existing Terminal PR597 source owner and return the startup timeframe contribution through that carrier; resolve genuine PR834 mobile CI red without bypass.
+  - Resolve Terminal PR839 workflow approval, consume its existing protected merge, and deploy its merged master through the git-gated builder, restore and verify service/marker identity, then qualify actual intended-profile USD CAP and complete missing coverage.
+  - Finish refreshed Terminal PR834 containment CI and release. Bind the existing Terminal PR597 source owner for the separate shared startup and drawing caller contributions.
   - Incorporate research/terminal_audit20/A08_PR8526 through exact owning PR8526, reconciling any changed head and rerunning affected proofs.
   - Continue drawings only with the existing TerminalShell owner and admitted migration/bootstrap plan; use the accepted DB prototype and pending/unknown outbox contract without creating a second store.
   - Follow the per-mission snapshot for incumbent owner contributions and remaining actual user paths; do not re-fan out the original twenty missions.
@@ -74,11 +74,11 @@ danger_areas:
 
 ## §0 State
 
-The twenty original Fabric missions have been dispatched and reviewed, with higher-tier repairs consumed where needed. Two scoped Terminal verticals are merged, deployed and live-checked: export PR836 and Pine PR835. The third reviewed vertical, Heatmap PR839, is ready with required browser CI pending. None of the original whole missions is accepted. The current Terminal release is `8f3d04f1c7b2d26a90623497b30f0901160d03a2`.
+The twenty original Fabric missions have been dispatched and reviewed, with higher-tier repairs consumed where needed. Two scoped Terminal verticals are merged, deployed and live-checked: export PR836 and Pine PR835. Heatmap PR839 has required checks green but a separate GitHub workflow approval gate. Pine containment PR834 has a refreshed two-file candidate on current master awaiting release qualification. None of the original whole missions is accepted. The authenticated Scripts bundle observed Oct7 identifies `52b9107b2f33738256b1e4877bbf166a45556525`; this continuation has not deployed or independently requalified its backend health/marker.
 
 Exact carriers: [Terminal PR835](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/835), [Terminal PR836](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/836), [Terminal PR834](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/834), [Terminal owner PR597](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/597), [Macro Brain owner PR8526](https://github.com/mastermindx-market-intelligence/macro/pull/8526), and [Macro records PR8545](https://github.com/mastermindx-market-intelligence/macro/pull/8545).
 
-All wave children are consumed, native/process cleanup is proven and owned fixtures are removed. No active worker or future automatic wake is claimed. The required PR839 browser CI and subsequent deployment/live phase, together with the source-owner, bootstrap/schema, private-contract and recipient gates, are the continuation boundary.
+All wave children are consumed, native/process cleanup is proven and owned fixtures are removed. No active worker or future automatic wake is claimed. The PR839 workflow approval and subsequent protected merge/deployment/live phase, together with the source-owner, bootstrap/schema, private-contract and recipient gates, are the continuation boundary.
 
 Evidence root: `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92`. Macro records carrier PR8545 uses the existing external worktree `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/macro-terminal-audit20-01a10f92-fed0fcce78dc426d`. Knowledge records reserve no source paths or worker liveness.
 
@@ -86,9 +86,9 @@ The drawing source function remains `1bb8d8639c73945bae80e1523d64d84414a49cde096
 
 ## §1 What is left
 
-First finish Terminal PR839 from exact source16b30bf0. Consume required browser CI through the existing controller, deploy only its merged master with the git-gated builder, and verify actual USD CAP mode/disclosure with restored health and release identity. No deployment is started or active at this boundary.
+First finish Terminal PR839 at refreshed94dff, with its original six source files unchanged. All10 exact-head dispatch jobs are green, but PR workflow37650481196 is action_required and normal merge was refused. Resolve the pending user workflow action, consume the existing controller merge, deploy only its merged master with the git-gated builder, and verify actual USD CAP mode/disclosure with restored health and release identity. No deployment is started or active at this boundary.
 
-Then recover the exact incumbent Terminal PR597 owner binding. Its startup timeframe hunk is the dependency for PR834's genuine mobile CI failure; it also owns the actual drawing save/load caller. A missing local worktree or old PR update does not authorize takeover.
+Then recover the exact incumbent Terminal PR597 owner binding. It owns separate shared startup hunks and the actual drawing save/load caller. The prior PR834 mobile CI failure cleared on a later same-head run; current PR834 work resolves only its ownership-evidence merge conflict and requalifies containment on current master. A missing local worktree or old PR update does not authorize takeover.
 
 Next return the tested Brain contribution through Macro PR8526 exact head53a1fc4cc47b4b9240fad828d0ef2161346aaacc. The contribution and hashes are in this PR, and owner incorporation/CI/live integration remain owed.
 
@@ -100,7 +100,7 @@ The per-mission review snapshot is the remaining-lane index. It records source-o
 
 The audit ZIP is evidence; its historical Opus routing and procedure pin do not supersede the current user request or protected procedures. Fabric chooses admitted placement. All descendants keep the same root, grant and budget; available capacity is not a utilization target.
 
-Pine's three-size native Worker fixture is distinct from its authenticated weekly editor journey. Export's source responsive matrix is distinct from real-account viewport coverage; native JSON content proof is distinct from CSV parsing and filesystem hashing. Heatmap higher repair r8 now passes all11 actual production-mode fixture cases; parent normal build/typecheck,7715 unit and41 responsive shell cases also pass. PR839 is in the required-CI phase; merge/deploy/live acceptance remains unproven until its release receipt.
+Pine native Worker fixture, actual authenticated editor diagnosis on synthetic bars, and chart-attached weekly plotting are separate proof levels. Export's source responsive matrix is distinct from real-account viewport coverage; native JSON content proof is distinct from CSV parsing and filesystem hashing. Heatmap higher repair r8 now passes all11 actual production-mode fixture cases; parent normal build/typecheck,7715 unit and41 responsive shell cases also pass. PR839 has green exact-head dispatch CI and a separate pull-request workflow approval gate; merge/deploy/live acceptance remains unproven until its release receipt.
 
 ## §3 What was decided and found
 
@@ -110,4 +110,6 @@ No separate control plane, duplicate source owner, new customer store or new pro
 
 Do not take over held incumbent branches, pane geometry, Brain routing/field registry, FX authority, private Prophet identity joins, native chart analysis or recipient notification consent. Do not install the strict drawing prototype or release it as a full migration. No active worker, watcher, future wake or program completion is implied by this handoff; those require exact independent evidence.
 
-A15 phase update: exact six-file integration head `16b30bf005ca9040aa556b9dcb630de3ae4872b0` is published in Terminal PR839, ready and auto-merge armed. At the current phase boundary the source and parent validation are consumed; required browser CI remains the external dependency. Macro records PR8545 was held draft/disarmed during updates and may be rearmed only after the final records push. This handoff claims no merge, new deployment, active Fabric worker or future model wake.
+Oct7 continuation: PR839 remains unmerged at refreshed94dff; its six source files are unchanged, all10 dispatch jobs passed, and the separate PR workflow approval is pending. The exact workflow-approval tool request was denied before execution. The root and both pre-launch adapter refusals are recorded in the workstream/review snapshot. No new Fabric worker, native child, Astra, deploy or future automatic model wake is claimed. Macro PR8545 remains draft/disarmed while this continuation updates material proof.
+
+Pine containment PR834 now carries exact two-file candidate `ab267daa5b740fbd008cf190f567bd78222b1b73`, merged on mastere963eef. The sole conflict was superseded ownership evidence; canonical upstream evidence is retained, and the previously reviewed host/test source is unchanged. Current-master100 focused tests, route type generation/full TSC, three actual Next native-Worker journeys with zero skips, and repository responsive60pass24existing viewport-conditional skips passed. Candidate pushed; ready/merge-on-green/native protected auto-merge armed once. Exact new-head run37701701904 is in progress under the existing controller. No merge, deploy or authenticated containment acceptance is claimed. Own3127 test server and authenticated editor tab are closed.
