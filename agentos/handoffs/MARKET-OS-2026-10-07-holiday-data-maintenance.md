@@ -204,3 +204,22 @@ the pre-release browser matrix is controlled evidence only.
 
 Native child agents have no separate Git refs, publication rights or external watchers.
 The parent remains the only commit, push, PR, merge and release owner.
+
+
+## Hosted contract coverage repair
+
+PR #8606 first candidate `bfacfe3556b6c24a8ee23120880b62b0b95e3934` reached the
+hosted contract gate against tested base `f245417e99dffd499e344e2ea17ec01ddd285400`.
+Run 37588606779 / job 112684463395 identified 75 introduced transitive import-closure
+path declarations missing across 21 existing exclusive CI jobs. No payload-schema
+or packing-budget violation was reported. The repair adds exactly those 75 leaf
+paths to `.github/ci/legacy-jobs.yml`; no prior path, command, gate, threshold or
+other parsed job field changes. Independent exact-delta review passed at manifest
+SHA256 `a9ad85294b08dec83f2045ab9a16e3dcce5829864c566a53a5ffa21f06846c5b`.
+
+Local shared closure and ordinary-code packing-ceiling checks both passed:
+2 tests in 198.17 seconds, PID 44482, exit 0, MM_DATA_GUARD enabled. Manifest validation
+passed 172 code jobs, PID 45734, exit 0. This is bounded repair evidence; the full
+hosted differential gate on the repaired immutable candidate remains required.
+Feature source and accepted backend/client review bindings are unchanged.
+Deployment and actual public-page proof remain parent-owned and pending.
