@@ -18007,8 +18007,10 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
-      - name: frozen price panel — write-once bytes + a reader that never falls back
-        run: python -m pytest tests/test_research_price_panel.py -q
+      # RS Pullback Phase 1 adds synthetic first-seen/PIT input admission here:
+      # gate: code makes it a PR check; signal-contract is data-plane only.
+      - name: frozen price panel + RS pullback input admission and temporal conformance
+        run: python -m pytest tests/test_research_price_panel.py tests/test_entry_radar_rs_pullback_phase1.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
