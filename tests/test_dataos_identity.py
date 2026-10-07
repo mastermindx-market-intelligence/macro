@@ -838,8 +838,8 @@ def _obs_append(original, history, rows, *, status="BOUND", listing=False, bound
     evidence = {name: _obs_hash(name) for name in
                 ("listing_snapshot", "listing_receipt", "cik_mapping", "mic_evidence", "identity_seams")}
     deps = {"source_commit": "1" * 40,
-            "source_blobs": {name: "4" * 40 for name in ("scripts/build_security_master.py",
-                "lib/dataos/identity.py", "config/identity_seams.yml")},
+            "source_blobs": {name: "4" * 40 for name in ("scripts/build_security_master.py",  # ci-trigger-closure: data — synthetic receipt keys, never opened
+                "lib/dataos/identity.py", "config/identity_seams.yml")},  # ci-trigger-closure: data — synthetic receipt keys, never opened
             "prior_receipt_sha256": "2" * 64,
             "artifact_sha256": {name: _obs_hash(name) for name in _OBS_NAMES},
             "evidence_sha256": evidence}

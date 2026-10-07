@@ -896,6 +896,7 @@ _NATIVE_SCOPE = {"polygon:MU": ("MU", "XNAS", "CS"),
                  "polygon:SMH": ("SMH", "XNAS", "ETF")}
 _EVIDENCE_COMMON = frozenset({"listing_snapshot", "listing_receipt", "cik_mapping",
                               "mic_evidence", "identity_seams"})
+# ci-trigger-closure: data — receipt metadata keys; this pure validator never opens these paths.
 _SOURCE_PATHS = frozenset({"scripts/build_security_master.py", "lib/dataos/identity.py",
                            "config/identity_seams.yml"})
 _MIB = 1024 * 1024
