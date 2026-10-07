@@ -247,3 +247,24 @@ If the edge fails, close the program with a falsification record. Do not force a
 ## First response expected from the Sol implementation session
 
 Recover current source, then immediately advance Phase 1. Return a current owner/collision census, exact research operation boundary, data-availability matrix, and the first concrete implementation/result — not another generic plan.
+
+## Continuation: retained source observations (2026-10-07)
+
+Operation: `rs-pullback-launch-source-retention-20261007-sol-002`.
+
+The preceding Phase-1 checkpoint is historical. Its delivery completed in [Macro PR #8571](https://github.com/mastermindx-market-intelligence/macro/pull/8571), squash `47a3a248ba9228b498376d2bdc170fd61e38dac0`. The concluded hosted gate and merged-file identity were verified. Phase 1 closed through its permitted negative result: **NOT_ADMITTED**, 29 refusals, H1/H2/H3 **NOT_TESTED** and all authority false. Its admission artifact remains byte-identical.
+
+The next source-retention slice uses Terminal's existing producer and per-symbol atomic store. [Terminal PR #840](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/840) adds an explicit bounded 1m capture option, immutable capture-prefix receipts and retained corrections/failures. Existing scheduled defaults remain unchanged. Macro's new `engine/entry_radar/replay/terminal_minute_observations.py` reads actual bytes, creates an actual owner-read receipt and decodes eligible observations for an explicitly supplied decision cutoff. The existing Phase-1 selector remains the revision and aggregation owner.
+
+Recover this slice through:
+
+- [Reader/source contract](../../research/live_entry_radar/rs_pullback_launch/SOURCE_RETENTION_READER_CONTRACT_2026-10-07.md).
+- [Exact local synthetic conformance receipt](../../research/live_entry_radar/rs_pullback_launch/SOURCE_RETENTION_CONFORMANCE_2026-10-07.json).
+- Reproducer: `scripts/entry_radar_rs_pullback_source_retention_check.py --terminal-source /absolute/path/to/mastermind-terminal`.
+- Focused suite: `tests/test_entry_radar_terminal_minute_observations.py`, added to the existing frozen-panel/RS code-CI step.
+
+The joint proof uses the real producer, atomic temporary file, bounded reader and canonical selector with injected transport and clocks. It checks A/B/A, fractional volume, entire earlier-frame invariance, future malformed semantic isolation, late-first-read conflict and partial-failure refusal. The contemporaneous latest 15m/full frame stays unavailable under the unchanged 900-second finality rule.
+
+Independent review exposed the omitted-cutoff path, enabled empty-file recovery, contradictory pagination identity and automatic HTTP redirects. Their discriminating regressions and final source identities are recorded in the paired delivery evidence. Review, hosted CI, merge, deployed source identity and market admission remain separate gates; this source checkpoint does not claim an unrecorded delivery result.
+
+No provider fetch, runtime cohort enrollment, new schedule, outcome experiment or owner authority is established by the synthetic receipt. Before actual accrual, bind cohort/cadence/finality/capacity through the existing source owner and attach the existing operator-confirmed `research/licenses/MASSIVE_ENTITLEMENT_RECORD.md`, which already closes the global licensing gate for minute aggregates, research and archival retention. The 4096-attempt cap is not a 90-session guarantee. Continue by resolving the next concrete existing-owner admission dependency: stable listing identity and basis, calendar law, actual daily/incumbent receipts, or actual first-seen observation custody. Preserve nonfires, failures and all remaining refusals. The parent program is incomplete.

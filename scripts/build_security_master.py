@@ -90,6 +90,7 @@ sys.path.insert(0, str(ROOT))
 
 from lib import config, ticker_aliases  # noqa: E402
 from lib.dataos.identity import (  # noqa: E402
+    BATS,
     XASE,
     XNAS,
     XNYS,
@@ -310,14 +311,15 @@ VENDOR_THEME_GRAPH_NATIVE = "theme_graph_native"
 #: otherlisted.txt single-character exchange codes, per the legend the collector that
 #: fetches the file records at ``collectors/symbol_directory.py:184-185``:
 #: "A=NYSE MKT (AMEX), N=NYSE, P=NYSE Arca, Z=BATS, V=Investors Exchange".
-#: Only the three that have a MIC in ``lib/dataos/identity.KNOWN_MICS`` are mapped.
-#: Arca / BATS / IEX are deliberately ABSENT rather than approximated: a name listed
+#: Only venues with an evidence-backed MIC in ``lib/dataos/identity.KNOWN_MICS`` are mapped.
+#: Arca / IEX remain deliberately ABSENT rather than approximated: a name listed
 #: there is reported unresolved by name, because widening the closed MIC list is a
 #: decision a human makes once, in a diff — not something a seed loader guesses.
 EXCHANGE_MIC = {
     "NASDAQ": XNAS,
     "N": XNYS,
     "A": XASE,
+    "Z": BATS,
 }
 
 #: `exchange:` values used by the exit ledger (`config/delisted_symbols.yml`), which
@@ -1652,7 +1654,7 @@ def _gmi_us_unresolved_refusal(
         # set whenever either matched; ``exchange_symbol`` is NOT a reliable signal
         # here, because ``resolve_universe``'s own unresolved-Resolution construction
         # hardcodes it None on the unmapped-MIC path — verified against the real
-        # committed CBOE/Z case).  AMENDMENT R15 — the two DISTINCT venue-shaped
+        # historical pre-BATS-support CBOE/Z case). AMENDMENT R15 — the two DISTINCT venue-shaped
         # refusals sharing this branch are discriminated STRUCTURALLY via
         # ``res.venue_mapped`` (set explicitly at every construction site in
         # :func:`resolve_universe`), never by substring-matching the human-readable

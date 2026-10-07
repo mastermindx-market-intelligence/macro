@@ -223,3 +223,163 @@ passed 172 code jobs, PID 45734, exit 0. This is bounded repair evidence; the fu
 hosted differential gate on the repaired immutable candidate remains required.
 Feature source and accepted backend/client review bindings are unchanged.
 Deployment and actual public-page proof remain parent-owned and pending.
+
+## Concluded hosted findings and revised integration
+
+The repaired candidate `f29b31c72ca310e5d2c8e87c1994a7f8684008f7` completed hosted
+run 37591265599 against tested merge `185674f41cf2e75ac1107514cf74f828eb6c6166`
+and base `abb1e6c3da7550eb4d5beca574dbc280bcc96e81`. The full contract-delta
+gate passed with zero introduced and zero inherited findings. The complete run
+still correctly refused release: pack 10 found the API's missing
+`lib/exchange_holidays.py` restart dependency, and pack 3 found an incumbent HK
+stale-data fixture dated on a holiday plus missing same-diff P0B browser remints.
+These findings were repaired rather than waived.
+
+The API fix was reproduced by the existing import-closure test (PID 81345, exit 1),
+then the exact calendar leaf and two explanatory comment lines were added to the
+existing restart allowlist. All 253 deployment tests passed (PID 82359).
+A genuine concurrent source collision then required integrating pinned main
+`e3e3eff48cf4c0b44815d0b066a37fdb65689da0`. Its QBUS news API dependencies,
+ticker-news state provisioning, and operator-controlled writer reconciliation
+were preserved. The resolved script equals that main plus only the reviewed
+calendar repair; all 263 deployment/news-service boundary tests passed
+(PID 98964, exit 0).
+
+The new main's ticker-news CI owner required four additional transitive paths:
+`lib/exchange_holidays.py`, `lib/market_observations.py`,
+`lib/market_session.py`, and `lib/tsx_calendar.py`. The existing absolute
+coverage gate first demonstrated those four omissions (PID 98842, exit 1), then
+passed after the four additions (PID 20518, 138.96 seconds, exit 0). All other
+parsed job fields and previous path order remain intact. Integration preserved
+all 246 parsed job definitions, including the concurrent conviction-profile
+path union. The ordinary-code packing ceiling passed (PID 7270, 121.52 seconds);
+the subsequent four exact leaf additions match none of its three probe paths.
+The final manifest validates 174 code jobs (PID 46544, exit 0).
+
+The HK stale-data test retains its July 8 clock, fresh primary stores, and
+stale/dead plus degraded/stale assertions. Its observation is now the genuine
+June 30 Connect session, five missed sessions earlier, rather than the closed
+July 1 date. The original failure was reproduced (PID 25970, exit 1); all 50
+HK robustness/freshness tests passed with the existing Python 3.14 runtime
+(PID 34565, 3.38 seconds, exit 0). An earlier local Python 3.12 group run lacked
+Plotly; all 13 import errors were environment availability, not product failures.
+No dependency installation or assertion weakening was used.
+
+Independent read-only review accepted all three exact repair files:
+
+- app/deploy/update.sh: SHA256 `eba2aa35a7a5595f986631f45fccd71d79952076af8e05aa3cd018a2588344c3`
+- .github/ci/legacy-jobs.yml: SHA256 `e99c47aa0e77bf727bcc5e49ce569c57abc377377b9541ebf05f350472fc0ae4`
+- tests/test_hk_robustness_w5.py: SHA256 `2bdd9ff20354d65bc51b8718e2df18868f1235543bd7e026cea01bb2e4383f8e`
+
+Every previously reviewed feature blob remains identical to the earlier candidate,
+apart from the explicitly reviewed CI manifest integration. Browser evidence
+reminting does not change the feature implementation.
+
+## Actual current-break data census
+
+A read-only production census at 2026-10-07T08:14:40.127648Z inspected the complete
+named CN cash stores: 1,875 stock histories, 28 cash index/ETF histories, and the
+1,823 cash columns of china_search/closes.parquet. Footer maxima were all before
+October 1, so no bulk price-column read was needed. There were zero October 1–7
+rows or non-null cash cells within that coverage. Of the stock histories, 1,866
+ended on September 30 and nine already ended earlier; all 28 cash index histories
+and the wide panel's shared date index ended on September 30. The panel's shared
+index does not prove every constituent column is current. Two noncash files were
+excluded. This census makes no provider request, changes no runtime data, and
+does not mistake older source observations for current holiday data.
+
+The census is pre-release evidence. The revised immutable candidate still needs
+concluded hosted CI, the existing governed squash/release path, actual fresh
+session publication and public-page consumption before PROVEN_OUTCOME may be
+recorded. The final PR receipt must explicitly supersede the pending-release
+clauses of this historical checkpoint once those proofs exist.
+
+## Browser navigation regression exposed by the session strip
+
+The required HK P0B remint exposed a real pending-composer navigation regression.
+A controlled comparison used the identical canonical route handler, HTML, assets,
+initialization, layout/screenshot setup and mobileBehavior function. The current
+live.js failed the pending EN/dark Buy-to-Near sequence while the prior exact
+live.js passed. The status strip changed geometry: a native fragment jump moved
+the stationary mouse over the unrelated Blocked-stage tooltip. Pointerover at
+850.8 ms scheduled its opening; hashchange at 853.4 ms preceded the actual open
+at 952.6 ms. The resulting sheet and scrim intercepted the next link. The settled
+composer-failed/light controls passed. A touch-capable context still using the
+canonical mouse clicks reproduced the pending failure; this is not native-touch
+proof. The diagnostic receipt SHA256 is
+`75cf8275e7c73f02cbbffd6ae889c394915e590eb9302cc81610be38331e39e9`.
+
+The repair adds only a comment and `window.addEventListener('hashchange', hide)`
+beside the existing resize listener in both theme copies. The existing hide
+function cancels pending timers even before the popup exists and closes an open
+popup through its established cleanup. The template and emitted asset retain
+their respective configuration and Terminal bundle bytes. Independent review
+accepted template SHA256
+`df579ac567bba69f57b77db61b321999a6e1fbe07e9843631f199bb581cb9daf`
+and emitted SHA256
+`a16c1bd5b07384786362947d47a842f2cfe7861f3d36156606e372864bedc44a`.
+
+An identical deterministic harness executing each actual lens IIFE first showed
+four navigation failures and 14 passing controls (PID 53781, exit 1), then passed
+all 18 cases after the repair (PID 56624, exit 0). Separate sheet-state controls
+confirm removal of popup, scrim, scroll lock, trigger accent and aria-describedby.
+Ordinary hover, focus, touch toggle, nested-control behavior and Escape remain
+passing. The existing lens suite passed 21 tests with one incumbent skip because
+the current hub bake has no dot-symbol ticker; both Node syntax checks passed.
+The canonical fixture renderer and browser verifier remain unchanged. Both full
+HK and Canada receipts are being reminted against the final theme asset before
+this candidate can be submitted for concluded hosted verification.
+
+## Final browser receipts and source compatibility
+
+Both full canonical browser runs completed on the unchanged verifier and final
+source bytes. HK passed in 249.713 seconds (parent PID 61999 / Node 62013, exit 0);
+Canada passed in 244.376 seconds (parent PID 72751 / Node 72763, exit 0). Both used
+Chromium 151.0.7922.34 and produced no stderr. Each receipt passes all seven page
+states, eight expansion cases, six fragment cases, eleven desktop sequence cases,
+48 primary owner cases, 16 degraded controls and eight persisted screenshots.
+Canada also passes all seven quote-state cases. Root read both complete result
+structures and found no false pass field. HK's pending EN/dark fallback sequence
+now passes using normal click actionability and the original timeouts.
+
+- `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json`: SHA256 `a0e16a90fab180861306ed2344ca3179583e159e602d8a3d5f3a6c192ae9fd23`
+- `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json`: SHA256 `95329f4fc82779669788bd4443a5caa62f816014122ce349148c1e4950e99132`
+
+Both pin live.js `2464239d98feaff4d073210275694cc4c0cbcd654a836188bd85d2d1c635db17`
+and emitted theme.js `a16c1bd5b07384786362947d47a842f2cfe7861f3d36156606e372864bedc44a`.
+The fixture recipe remains deterministic and its receipt retains SHA256
+`747b63f0dfb9b98757cefb49d5d0efd7e9d6c43de2bf2222c279a54b94d69762`.
+The historical baseline objects are identical to the existing main objects and
+still recover through their original exact head/tree. These are reproducible
+browser-fixture proofs with an explicit production claim of none.
+
+The latest source compatibility check at 2026-10-07T09:25:42Z compared integrated
+main e3e3eff48cf4c0b44815d0b066a37fdb65689da0 with
+1ba1b06cc516113896d71d8143b8c0def3e1a8ae. No holiday-owned source or browser receipt
+pin moved. The only owned-path intersection is the shared CI manifest; its newer
+edit adds two tests to the separate, nonexclusive research-vault job. No affected
+job overlaps the holiday manifest changes and no new job was introduced, so an
+ancestry-only integration is unnecessary. Protected Mastermind was re-fetched at
+2026-10-07T09:27:49Z to a2254b290caa7b422fd93657e44e992152541ca7; its six changed
+paths are research-read integration/requirements/tests. Every loaded governing
+document remains byte-identical, so the existing procedure corpus remains valid.
+
+Actual live verification has been extended and independently reviewed to require
+both new live.js and theme.js bodies consumed by all four public stock pages,
+including their changed page asset stamps. Its separate pre-release theme census
+at 09:21:13Z found all four pages still loading theme.js?v=a0fdddc2. The existing
+fresh session-receipt and actual retained-China-price assertions remain required.
+No live release or actual-page outcome is claimed at this checkpoint.
+
+The final source-contract run passed 114 first-frame checks and caught the visual
+manifest's stale links to the earlier receipts (PID 90464, exit 1). After actual
+browser execution, the repair_extension index was reconciled with the two new
+receipt digests and sixteen actual PNG digests, and its generated_at was updated.
+All nineteen changed fields are within that extension; historical targets,
+operation identity, claims, counts and every other manifest field are preserved.
+The corrected manifest SHA256 is
+`a668302f1876df0b4219e8b33bcee49631f55d09828965cdf052bef6196c2251`.
+The previously failing preservation/index test then passed (PID 4637, 1.11 seconds,
+exit 0), as did the same-diff P0B closure gate. No browser assertions or fixtures
+were weakened. The final task diff contains 92 explicitly owned paths; hosted
+verification and actual release proof remain required.

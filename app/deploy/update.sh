@@ -469,6 +469,14 @@ OPTIONS_CREDENTIAL_READY=0
 API_UNIT_UPDATED=0
 API_UNIT_READY=0
 
+# macro-api binds ticker-news state read-only. Provision only the private state
+# root here; this does NOT install, enable, or start the writer service.
+if [ -L /var/lib/macro-ticker-news ]; then
+	echo "macro-update: refusing symlinked ticker-news state root" >&2
+	exit 1
+fi
+install -d -m 0700 /var/lib/macro-ticker-news
+
 if ! mm_reviewed_unit_file_ready \
 	"$APP_DIR/app/deploy/macro-api.service" \
 	/etc/systemd/system/macro-api.service; then
@@ -1253,7 +1261,7 @@ fi
 API_RESTART_CONFIRMED=0
 API_RESTART_NEEDED=0
 # BEGIN MACRO_API_RESTART_TRIGGER
-if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/equity_earnings\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|brain_native_inputs|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights)\.py|engine/earnings_catalyst\.py|engine/sue\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|ontology_explorer|prophet_integrity|options_issue_desk|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/entry_radar/(__init__|contracts|spool)\.py|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|document_terms|event_spine|projection|source_identity)\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1)\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state)\.py|lib/dataos/.*\.py|lib/(config|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|exchange_holidays|user_prefs|tiers|team_membership)\.py)$' <<<"$CHANGED" || \
+if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/equity_earnings\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|brain_native_inputs|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights)\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|engine/earnings_catalyst\.py|engine/sue\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|ontology_explorer|prophet_integrity|options_issue_desk|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/entry_radar/(__init__|contracts|spool)\.py|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|document_terms|event_spine|projection|source_identity)\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1)\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state)\.py|lib/dataos/.*\.py|lib/(config|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|exchange_holidays|user_prefs|tiers|team_membership)\.py)$' <<<"$CHANGED" || \
    [ "$API_DEPS_UPDATED" -eq 1 ]; then
 	API_RESTART_NEEDED=1
 
@@ -2145,6 +2153,42 @@ if [ -f /etc/systemd/system/marketing-press-feeds.service ] && \
 		echo "macro-update: marketing-press-feeds systemd sandbox updated"
 	else
 		echo "macro-update: refusing marketing-press-feeds unit update — systemd-analyze verify failed" >&2
+	fi
+fi
+
+# TICKER NEWS is a long-running, operator-armed source service. Routine deploys
+# never install, enable, or start an absent/inactive unit. If an operator has
+# already installed it, keep the reviewed unit current and restart only an
+# already-active writer when import-cached code or canonical universe inputs move.
+TICKER_NEWS_RUNTIME_REGEX='^(app/requirements\.txt|scripts/run_qbus_news\.py|scripts/build_qbus_news_universe\.py|collectors/benzinga_news\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|lib/dataos/identity\.py|data/breadth/(constituents|sp1500_pit_membership)\.parquet|data/reference/(security_master|vendor_aliases)\.parquet)$'
+TICKER_NEWS_UNIT_UPDATED=0
+if [ -f /etc/systemd/system/macro-ticker-news.service ]; then
+	if ! cmp -s "$APP_DIR/app/deploy/macro-ticker-news.service" /etc/systemd/system/macro-ticker-news.service; then
+		if systemd-analyze verify "$APP_DIR/app/deploy/macro-ticker-news.service"; then
+			install -m 0644 "$APP_DIR/app/deploy/macro-ticker-news.service" /etc/systemd/system/macro-ticker-news.service
+			systemctl daemon-reload
+			TICKER_NEWS_UNIT_UPDATED=1
+			RECONCILED=1
+			echo "macro-update: macro-ticker-news reviewed unit reconciled"
+		else
+			echo "macro-update: refusing macro-ticker-news unit update — systemd-analyze verify failed" >&2
+			if systemctl is-active --quiet macro-ticker-news.service; then
+				exit 1
+			fi
+		fi
+	fi
+	if [ "$TICKER_NEWS_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE "$TICKER_NEWS_RUNTIME_REGEX"; then
+		if systemctl is-active --quiet macro-ticker-news.service; then
+			systemctl restart macro-ticker-news.service
+			systemctl is-active --quiet macro-ticker-news.service || {
+				echo "macro-update: macro-ticker-news restart failed" >&2
+				exit 1
+			}
+			RECONCILED=1
+			echo "macro-update: active macro-ticker-news restarted on reviewed source"
+		else
+			echo "macro-update: macro-ticker-news installed but inactive; preserving operator-controlled arming"
+		fi
 	fi
 fi
 

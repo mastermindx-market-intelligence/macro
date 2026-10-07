@@ -32,7 +32,7 @@ import hashlib
 import json
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 import numpy as np
 import pandas as pd
@@ -1150,26 +1150,111 @@ def _history_invalid(
     code: str,
     inspected_nonblank_lines: int,
 ) -> dict:
+    coverage = {
+        "selected_rows": 0,
+        "event_counts": {"created": 0, "closed": 0},
+        "mode_counts": {
+            "RECONSTRUCTED_REPLAY": 0,
+            "RETAINED_LEDGER_UNMARKED": 0,
+        },
+        "invalid_rows": 1,
+        "inspected_nonblank_lines": inspected_nonblank_lines,
+        "stopped_by": "invalid",
+        "first_uninspected_line": None,
+        "first_observation": None,
+        "last_observation": None,
+    }
+    coverage.update(_history_diagnostics([], through))
     return {
         "status": "INVALID",
         "source_sha256": source_sha256,
         "query": {"mode": mode, "through": through, "limit": limit},
         "rows": [],
-        "coverage": {
-            "selected_rows": 0,
-            "event_counts": {"created": 0, "closed": 0},
-            "mode_counts": {
-                "RECONSTRUCTED_REPLAY": 0,
-                "RETAINED_LEDGER_UNMARKED": 0,
-            },
-            "invalid_rows": 1,
-            "inspected_nonblank_lines": inspected_nonblank_lines,
-            "stopped_by": "invalid",
-            "first_uninspected_line": None,
-            "first_observation": None,
-            "last_observation": None,
-        },
+        "coverage": coverage,
         "error": {"code": code, "line": line},
+    }
+
+
+def _history_diagnostics(selected: list[dict], through: str | None) -> dict:
+    native_replayed_true_rows = 0
+    native_replayed_other_rows = 0
+    native_replayed_absent_rows = 0
+    naive_record_clock_rows = 0
+    recorded_after_observation_rows = 0
+    recorded_before_observation_rows = 0
+    skew_days_list: list[int] = []
+    recorded_after_through_rows: int | None = 0 if through is not None else None
+    max_after_through_days_list: list[int] = []
+    repeated_lifecycle_event_rows = 0
+    seen_lifecycle_event: set[tuple[str, str]] = set()
+    through_date = date.fromisoformat(through) if through is not None else None
+
+    for entry in selected:
+        row = entry["row"]
+        if "replayed" not in row:
+            native_replayed_absent_rows += 1
+        elif row["replayed"] is True:
+            native_replayed_true_rows += 1
+        else:
+            native_replayed_other_rows += 1
+
+        ts = pd.Timestamp(entry["recorded_at"])
+        if ts.tzinfo is not None:
+            record_date = ts.tz_convert("UTC").date()
+        else:
+            record_date = ts.date()
+            naive_record_clock_rows += 1
+
+        observation_date = date.fromisoformat(entry["observation_date"])
+        skew_days = (record_date - observation_date).days
+        skew_days_list.append(skew_days)
+        if skew_days > 0:
+            recorded_after_observation_rows += 1
+        elif skew_days < 0:
+            recorded_before_observation_rows += 1
+
+        if through_date is not None and record_date > through_date:
+            recorded_after_through_rows += 1
+            max_after_through_days_list.append(
+                (record_date - through_date).days
+            )
+
+        event = row.get("event")
+        lifecycle_id = entry["lifecycle_id"]
+        pair = (lifecycle_id, event)
+        if pair in seen_lifecycle_event:
+            repeated_lifecycle_event_rows += 1
+        else:
+            seen_lifecycle_event.add(pair)
+
+    min_skew_days = min(skew_days_list) if skew_days_list else None
+    max_skew_days = max(skew_days_list) if skew_days_list else None
+    max_recorded_after_through_days = None
+    if (
+        through is not None
+        and recorded_after_through_rows
+        and recorded_after_through_rows > 0
+    ):
+        max_recorded_after_through_days = max(max_after_through_days_list)
+
+    return {
+        "replay_metadata": {
+            "native_replayed_true_rows": native_replayed_true_rows,
+            "native_replayed_other_rows": native_replayed_other_rows,
+            "native_replayed_absent_rows": native_replayed_absent_rows,
+            "absent_means": "UNKNOWN_NOT_EVIDENCE_OF_NOT_REPLAYED",
+        },
+        "clock_skew": {
+            "basis": "RECORD_DATE_UTC_MINUS_OBSERVATION_DATE_DAYS",
+            "naive_record_clock_rows": naive_record_clock_rows,
+            "recorded_after_observation_rows": recorded_after_observation_rows,
+            "recorded_before_observation_rows": recorded_before_observation_rows,
+            "min_skew_days": min_skew_days,
+            "max_skew_days": max_skew_days,
+            "recorded_after_through_rows": recorded_after_through_rows,
+            "max_recorded_after_through_days": max_recorded_after_through_days,
+        },
+        "repeated_lifecycle_event_rows": repeated_lifecycle_event_rows,
     }
 
 
@@ -1192,6 +1277,15 @@ def read_ledger_history(
     are not semantically parsed. ``limit`` likewise stops after the requested
     number of selected rows. Source bytes are hashed for provenance but never
     modified.
+
+    Coverage diagnostics count selected rows only. A missing native ``replayed``
+    field is unknown and is not evidence that a row was not replayed.
+    ``through`` bounds the observation clock only — rows written after
+    ``through`` are still returned and are counted in clock_skew. Whether a
+    leg belonged to a cohort as of an observation date is a consumer join
+    against the cohort surfaces, not a claim this reader makes.
+    ``repeated_lifecycle_event_rows`` is not a deduplicated lifecycle count and
+    the reader never deduplicates.
     """
     import pathlib
 
@@ -1225,12 +1319,14 @@ def read_ledger_history(
     query = {"mode": mode, "through": through, "limit": limit}
 
     if not path.exists():
+        missing_coverage = dict(base_coverage)
+        missing_coverage.update(_history_diagnostics([], through))
         return {
             "status": "MISSING",
             "source_sha256": None,
             "query": query,
             "rows": [],
-            "coverage": base_coverage,
+            "coverage": missing_coverage,
             "error": None,
         }
 
@@ -1239,6 +1335,7 @@ def read_ledger_history(
     except OSError:
         coverage = dict(base_coverage)
         coverage["stopped_by"] = "unreadable"
+        coverage.update(_history_diagnostics([], through))
         return {
             "status": "UNREADABLE",
             "source_sha256": None,
@@ -1264,12 +1361,14 @@ def read_ledger_history(
 
     physical_lines = text.splitlines()
     if not any(line.strip() for line in physical_lines):
+        empty_coverage = dict(base_coverage)
+        empty_coverage.update(_history_diagnostics([], through))
         return {
             "status": "EMPTY",
             "source_sha256": source_sha256,
             "query": query,
             "rows": [],
-            "coverage": base_coverage,
+            "coverage": empty_coverage,
             "error": None,
         }
 
@@ -1455,22 +1554,24 @@ def read_ledger_history(
             break
 
     observations = [entry["observation_date"] for entry in selected]
+    ok_coverage = {
+        "selected_rows": len(selected),
+        "event_counts": event_counts,
+        "mode_counts": mode_counts,
+        "invalid_rows": 0,
+        "inspected_nonblank_lines": inspected,
+        "stopped_by": stopped_by,
+        "first_uninspected_line": first_uninspected_line,
+        "first_observation": observations[0] if observations else None,
+        "last_observation": observations[-1] if observations else None,
+    }
+    ok_coverage.update(_history_diagnostics(selected, through))
     return {
         "status": "OK",
         "source_sha256": source_sha256,
         "query": query,
         "rows": selected,
-        "coverage": {
-            "selected_rows": len(selected),
-            "event_counts": event_counts,
-            "mode_counts": mode_counts,
-            "invalid_rows": 0,
-            "inspected_nonblank_lines": inspected,
-            "stopped_by": stopped_by,
-            "first_uninspected_line": first_uninspected_line,
-            "first_observation": observations[0] if observations else None,
-            "last_observation": observations[-1] if observations else None,
-        },
+        "coverage": ok_coverage,
         "error": None,
     }
 

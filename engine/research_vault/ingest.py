@@ -597,12 +597,22 @@ def _reextract_bodies(store, conn, cap: int = REEXTRACT_MAX) -> dict:
     measured facts at all — but they are ordered LAST because, unlike the
     ``unavailable`` rows, they are not user-visibly broken.
 
+    Blank-thin rows sit between those two groups: published rows stamped
+    ``text_layer='thin'`` whose stored body is only whitespace or form feeds.
+    ``pdftotext`` on an image-only PDF emits one form feed per page, so
+    ``text_facts`` used to classify those rows ``thin`` (chars > 0) instead of
+    the honest ``none``. They are not ``unavailable`` and they are not NULL, so
+    the original query never revisited them. Re-measuring them restamps
+    ``text_layer='none'`` (or fills a real body if the PDF now yields text) and
+    they drop out of candidacy — quiescence holds.
+
     Load-bearing rules:
 
     - **Fill-only for ``body``.** A row that already holds text keeps it
-      byte-for-byte; only an empty/NULL body is written. A NULL-``text_layer`` row
-      is usually a fine pre-v2 row that simply was never measured, and re-extraction
-      must not be allowed to shorten (or otherwise rewrite) text already published.
+      byte-for-byte; only an empty/NULL/whitespace-only body is written. A
+      NULL-``text_layer`` row is usually a fine pre-v2 row that simply was never
+      measured, and re-extraction must not be allowed to shorten (or otherwise
+      rewrite) text already published.
     - **Facts are ALWAYS stamped** (every measured value, not just the body). Even
       a scan-only PDF gets its measured columns, which re-classifies it to
       ``text_layer='none'`` — the honest "this document has no text" state — and
@@ -640,9 +650,15 @@ def _reextract_bodies(store, conn, cap: int = REEXTRACT_MAX) -> dict:
         rows = conn.execute(
             "SELECT doc_id, body, text_layer FROM documents "
             "WHERE text_layer = 'unavailable' OR text_layer IS NULL "
-            # 'unavailable' first (user-visibly broken), NULL after (never
-            # measured); newest published_at first inside each group.
-            "ORDER BY (text_layer IS NULL) ASC, published_at DESC"
+            "OR (text_layer = 'thin' "
+            "AND trim(COALESCE(body,''), ' ' || char(9,10,11,12,13)) = '') "
+            # 'unavailable' first (user-visibly broken), blank-thin next
+            # (misclassified scans), NULL last (never measured); newest
+            # published_at first inside each group.
+            "ORDER BY CASE "
+            "WHEN text_layer = 'unavailable' THEN 0 "
+            "WHEN text_layer = 'thin' THEN 1 "
+            "ELSE 2 END, published_at DESC"
         ).fetchall()
     except Exception as e:  # noqa: BLE001 — an unreadable corpus is not fatal here
         log.warning("research_vault: body re-extraction query failed: %s", e)
@@ -688,7 +704,7 @@ def _reextract_bodies(store, conn, cap: int = REEXTRACT_MAX) -> dict:
             params: list = []
             stored_body = row["body"] or ""
             new_body = (raw_text or "")[:corpus_mod.BODY_MAX_CHARS]
-            filled = not stored_body and bool(new_body)
+            filled = not stored_body.strip() and bool(new_body.strip())
             if filled:
                 sets.append("body=?")
                 params.append(new_body)
