@@ -4611,6 +4611,10 @@ CURATED_EXCLUSIVE = {
     # opaque code fallback, so every ordinary code PR selected it. The exact
     # closure is now declared; packing ceilings remain unchanged.
     "regime-outlook-mapping",
+    # 2026-10-07 PB-D event-quality implementation (#8576): one gate:code
+    # job owns all four PB-D suites. Its exclusive declaration covers the
+    # measured 50-path import/read closure; packing ceilings stay unchanged.
+    "pb-d-event-quality",
     # 2026-10-07 Package N #8454: Terminal per-ticker news qbus correctness kernel.
     # gate:code home for the twenty-two ticker-news/qbus suites; scope: exclusive
     # so inference does not smear the measured import closure across ordinary code

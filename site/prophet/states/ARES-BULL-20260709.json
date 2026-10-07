@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ARES-BULL-20260709",
-  "asof": "2026-10-06",
+  "asof": "2026-10-07",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 32.9,
@@ -10,21 +10,21 @@
   "recommended_action": "trim",
   "human_state": "Deep Giveback \u2014 Reassess",
   "components": {
-    "validity": 19.9,
+    "validity": 28.6,
     "progress": 60.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.302,
+    "dist_to_stop_r": 0.395,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 195.6,
-    "p1": -0.4653,
-    "p2": -0.2327,
+    "horizon_pct_used": 197.8,
+    "p1": -0.4032,
+    "p2": -0.2016,
     "p3": null,
-    "move_r": -0.698,
+    "move_r": -0.605,
     "mfe_r": 4.238,
     "mae_r": -2.153
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": "2026-08-06",
   "_first_t2_ts": "2026-08-12",
-  "days_elapsed": 88,
-  "tau": 1.9556
+  "days_elapsed": 89,
+  "tau": 1.9778
 }
