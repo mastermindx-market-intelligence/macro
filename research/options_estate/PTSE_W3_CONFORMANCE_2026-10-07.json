@@ -1,4 +1,14 @@
 {
+  "actual_source_proof": {
+    "canonical_b1_suppressed": 1996,
+    "enrolled_without_context": 937,
+    "path": "research/options_estate/PTSE_W3_ACTUAL_COHORT_2026-10-07.json",
+    "preflight_status": "RELATION_REFUSED",
+    "protected_outcomes_accessed": false,
+    "publication_authority": false,
+    "source_commit": "7359e29812c57722fd729ecd7af6863155b7ec9d",
+    "whole_observed_stamp": 2933
+  },
   "c1_preservation": {
     "head": "e1a6524ecfcdfee0f0cad251e0d502f2660c32a7",
     "pr": 7929,

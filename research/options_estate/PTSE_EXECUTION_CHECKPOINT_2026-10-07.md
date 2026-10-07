@@ -95,6 +95,54 @@ The previous head's CI run 37292207526 and fences run 37292206948 succeeded.
 Hosted checks must be observed again on the published candidate; old green
 checks are not new-head proof.
 
+## Actual incumbent-source proof
+
+The five PTSE modules needed by the preflight were fetched as exact GitHub blobs
+from published source commit `7359e29812c57722fd729ecd7af6863155b7ec9d`, verified
+by Git blob and SHA256, and executed in memory on the authorized Studio host.
+No host source file, W3 store, grader or production caller was changed.
+
+The incumbent candidate loader observed 139,038 rows across 40 stamps. Its full
+three-column projection for 2026-10-05 contained 2,933 candidate rows. The
+incumbent validated B1 reader returned generation
+`peg:7473e0087a7a47de5b0feffe9ff6637457d6f6f0a16513e853819f3e2ec45151`
+with 1,060 episodes. This is a read-only observation at installed source commit
+`007e0cccbd06f089605ba122efc658f406043dd3`, not a claim about the latest deployed
+production source or natural first-seen issuance.
+
+| Outcome in the complete observed stamp | Count |
+| --- | ---: |
+| Attempted candidate rows | 2,933 |
+| Exact B1 relation; UNAVAILABLE / CONTEXT_MISSING enrollment | 937 |
+| Explicit CANDIDATE_B1_RELATION_UNAVAILABLE rows | 1,996 |
+| Fabricated context artifacts or ambiguous relations | 0 |
+
+The immutable B1 generation's reconciliation receipt independently records the
+same 2,933 candidate inputs, 937 mapped and 1,996 suppressed. Its same-stamp
+suppression records contain 1,893 IDENTITY_UNRESOLVED and 103
+MISSING_STRUCTURAL_ANCHOR source IDs, with no duplicate IDs. All 1,996 belong to
+`us_prophet_v3`. The generation manifest and receipt digests were checked against
+the HEAD manifest pin. A separate identity census verified exact set equality
+between the 1,996 missing-relation source IDs and the 1,996 canonical suppression
+IDs: zero missing, extra, ambiguous, duplicate or outside-population IDs. The
+snapshot's validated receipt equals the immutable generation receipt. These are
+canonical suppression decisions, not evidence
+that same-stamp B1 reconciliation was absent or that unsupported boards caused
+the difference. PTSE must not invent episode links for those rows.
+
+The complete packet remains **RELATION_REFUSED**. That is the expected refusal
+behavior for the observed source material; it is not publication acceptance.
+Reversing the input order returned IDENTICAL_REPLAY. Replacing the population
+with an empty input returned REVISION_REFUSED / CANDIDATES_OMITTED and preserved
+the first packet bytes. Source HEAD, B1 HEAD and revalidated B1 material were
+unchanged. Every authority value remained literal false. The process exited 0.
+
+`PTSE_W3_ACTUAL_COHORT_2026-10-07.json` contains the exact source and material
+digests, observation time, denominator counts, canonical suppression binding
+and replay checks. Its manifest digests are observer-produced verification
+receipts over actual incumbent-reader material; they are not owner-issued live
+admission receipts. No grade, protected B0 outcome or frozen C1 source was read.
+
 ## Existing-owner integration ruling still required
 
 Physical W3 storage belongs to `engine/us_prophet_w3.py` and
@@ -158,10 +206,10 @@ do not establish position or exit ownership.
 
 ## Next executable gates and acceptance
 
-1. Publish this reviewed source to the existing #8364 branch with exact-head
-   compare-and-swap, observe current-head CI, and bind a real read-only candidate
-   cohort proof to the published code. Such a proof does not fabricate context
-   or claim natural prospective issuance.
+1. Source publication to existing #8364 used exact-head compare-and-swap and
+   exact content readback. The real read-only cohort proof is bound to that
+   published code. Observe the final current-head hosted CI separately; neither
+   local verification nor an earlier green run replaces that gate.
 2. Obtain the incumbent W3 sub-grain and Macro/Terminal consumer-custody ruling,
    then implement through those owners and normal repository release controls.
    Formal independent source/science review remains separate from internal
