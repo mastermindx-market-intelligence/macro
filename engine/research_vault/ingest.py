@@ -43,6 +43,7 @@ import json
 import logging
 import os
 import shutil
+import sqlite3
 import subprocess
 import tempfile
 from datetime import datetime, timedelta, timezone
@@ -720,11 +721,14 @@ def _restore_corpus(store, corpus_path: str | Path) -> str:
     """Restore the canonical ``corpus.sqlite`` from the store to ``corpus_path``.
 
     Returns:
-      - ``"fresh"``    — no store copy yet (first run); any stale local file is
-                          cleared so we never publish leftover local state.
-      - ``"restored"`` — the store copy was written locally.
-      - ``"error"``    — a store copy EXISTS but could not be written locally; the
-                          caller MUST NOT publish, to avoid clobbering it.
+      - ``"fresh"`` - the strict store authoritatively reported absence;
+                        stale local scratch is cleared, but run() must still
+                        refuse bootstrap over a nonempty published catalog.
+      - ``"restored"`` - exact bytes passed SQLite structural validation and
+                           replaced the local scratch copy.
+      - ``"error"`` - strict-read support, authoritative read, byte validation,
+                        SQLite integrity or local replacement failed. The caller
+                        MUST NOT publish from an incomplete source view.
 
     Why this exists: the run skips already-processed PDFs (idempotency), so it only
     upserts the NEW documents. The store copy is therefore the source of truth and
@@ -735,28 +739,52 @@ def _restore_corpus(store, corpus_path: str | Path) -> str:
     """
     p = Path(corpus_path)
     _sidecars = (f"{p}-wal", f"{p}-shm", f"{p}-journal")
-    data = store.get_bytes(CORPUS_KEY)
-    if not data:
+    strict_get = getattr(store, "get_bytes_strict", None)
+    if not callable(strict_get):
+        log.error("research_vault: corpus restore requires a strict-read store")
+        return "error"
+    try:
+        data = strict_get(CORPUS_KEY)
+    except Exception as exc:  # noqa: BLE001 - outage is not authoritative absence
+        log.error("research_vault: authoritative corpus read failed (%s)", exc)
+        return "error"
+    if data is None:
         for cand in (str(p), *_sidecars):
             try:
                 Path(cand).unlink()
             except OSError:
                 pass
         return "fresh"
+    if type(data) is not bytes or not data:
+        log.error("research_vault: corpus read returned empty or invalid bytes")
+        return "error"
+    tmp = p.with_suffix(p.suffix + ".restore.tmp")
     try:
         p.parent.mkdir(parents=True, exist_ok=True)
-        for s in _sidecars:
+        tmp.write_bytes(data)
+        # Validate the downloaded SQLite before replacing even a local recovery
+        # copy. Read-only mode cannot create or repair a corrupt source artifact.
+        check = sqlite3.connect(tmp.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
+        try:
+            if check.execute("PRAGMA quick_check(1)").fetchall() != [("ok",)]:
+                raise ValueError("restored corpus failed SQLite integrity check")
+        finally:
+            check.close()
+        for sidecar in _sidecars:
             try:
-                Path(s).unlink()
+                Path(sidecar).unlink()
             except OSError:
                 pass
-        tmp = p.with_suffix(p.suffix + ".restore.tmp")
-        tmp.write_bytes(data)
         os.replace(tmp, p)
         return "restored"
     except Exception as e:  # noqa: BLE001 — protect the published corpus
         log.error("research_vault: corpus restore failed (%s)", e)
         return "error"
+    finally:
+        try:
+            tmp.unlink(missing_ok=True)
+        except OSError:
+            pass
 
 
 # ---------------------------------------------------------------------------
@@ -869,8 +897,12 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
         would republish a truncated catalog over it. Nothing was read, written, or
         receipted; recover from the last known-good snapshot (see
         :func:`_vault_history`).
-      * ``error='corpus_restore_failed'`` — a store corpus exists but could not be
-        restored locally; publishing would clobber it with a truncated rebuild.
+      * ``error='corpus_restore_failed'`` - the strict corpus read, byte/type
+        validation, SQLite integrity check or local restore failed. Publication
+        cannot proceed from an unknown or invalid source snapshot.
+      * ``error='corpus_history_unavailable'`` - a nonempty authoritative catalog
+        has no restored corpus rows. The normal receipt-idempotent pipeline is
+        not a corpus rebuild tool, so this empty restart refuses publication.
       * ``error='corpus_publish_failed'`` / ``'catalog_publish_failed'`` — the
         publication commit did not complete. ``corpus_published`` /
         ``catalog_published`` say exactly how far it got, and
@@ -904,16 +936,15 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     # Restore the published corpus before we upsert onto it (see _restore_corpus).
     restore = _restore_corpus(store, corpus_path)
     if restore == "error":
-        # A store copy exists but could not be restored — refuse to proceed so we
+        # The corpus could not be authoritatively read and validated — refuse to proceed so we
         # never overwrite the good published corpus with a truncated rebuild. No
         # receipts are written, so the next run retries the whole batch cleanly.
         # Bare print, NOT log.error: GitHub only parses a workflow command when
         # "::" STARTS the line, and every entry point that runs this module
         # (build_research_vault, ingest_research) logs with a "%(levelname)s "
         # prefix, which silently drops the annotation.
-        print("::error::research_vault: corpus restore FAILED with an existing "
-              "store copy — skipping this run to protect the published corpus",
-              flush=True)
+        print("::error::research_vault: authoritative corpus restore FAILED - "
+              "skipping this run to protect the published corpus", flush=True)
         summary["error"] = "corpus_restore_failed"
         return summary
 
@@ -995,6 +1026,21 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
                  "bootstrap", reason)
         summary["catalog_state"] = "bootstrap"
         cat = cat if cat is not None else catalog_mod.empty()
+
+    # A valid nonempty catalog is itself published history. Even an explicit
+    # corpus 404 is not permission to start from zero: receipted reports would
+    # be skipped forever, and a read/publish cycle would freeze that data loss.
+    # A degraded but nonzero corpus remains usable and can be repaired in place.
+    if (cat.get("items") or []) and _corpus_row_count(corpus_path) == 0:
+        history = _vault_history(store, corpus_restored=(restore == "restored"))
+        history["corpus_rows"] = 0
+        summary["vault_history"] = history
+        summary["error"] = "corpus_history_unavailable"
+        print("::error title=research_vault::nonempty published catalog has no "
+              "restorable corpus rows - refusing an empty-corpus publication; "
+              "receipts are unchanged and bounded corpus recovery is required",
+              flush=True)
+        return summary
 
     conn = corpus_mod.open_db(corpus_path)
     pending_receipts: list = []  # (key, body) — flushed only after a publish

@@ -1,16 +1,16 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-06T17:11:17.700783+00:00",
-  "posts_seen": 15,
-  "seen_total": 268,
+  "as_of": "2026-10-06T21:40:02.726338+00:00",
+  "posts_seen": 11,
+  "seen_total": 269,
   "evaluated": 1,
-  "activated": 1,
+  "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-10-06-what-they-are-saying-president-trump-delivers-immediate-diesel-relief-saving-ame",
-      "importance": 72,
-      "activated": true,
+      "id": "wh-2026-10-06-presidential-message-on-german-american-day",
+      "importance": 5,
+      "activated": false,
       "degraded_reason": "served_by:deepseek"
     }
   ]
