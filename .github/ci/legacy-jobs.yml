@@ -13278,6 +13278,8 @@ jobs:
       # TZ=UTC because these writers stamp UTC dates the tests read back.
       - name: theme graph — permanent node identity and ratified epochs
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity.py -q
+      - name: theme graph — curated PARENT_OF withdrawal (RELATION_WITHDRAW on hierarchy edges; DESTINATION_CHANGE refused)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_withdrawal.py -q
       - name: theme graph — bitemporal materialization from the membership documents
         run: TZ=UTC python -m pytest tests/test_theme_graph_materialize.py -q
       - name: theme graph — contract guard (incident fixtures + annotation shape)
