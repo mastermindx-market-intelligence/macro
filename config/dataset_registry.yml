@@ -404,7 +404,18 @@ datasets:
           inclusive end makes the changeover day ambiguous, and 2026-01-14 is exactly
           the day the MMC/MRSH answer has to be unambiguous.
       ingested_at: {dtype: "datetime64[ns]", nullable: false}
+      known_at: {dtype: string, nullable: true, note: "aware UTC evidence observation; required for polygon, not consumer read availability"}
+      evidence_sha256: {dtype: string, nullable: true, note: "retained decoded source evidence digest; required for polygon"}
+      binding_sha256: {dtype: string, nullable: true, note: "semantic alias tuple seal; consistency, not source authenticity"}
     notes: >
+      The additional `polygon` historical-naming namespace is a bounded prospective
+      reference observation, with valid_from on the actual requested date and exclusive
+      valid_to. Both canonical lookup directions require an explicit aware decision_at;
+      known_at gates evidence observation, never publication or Radar file-read custody.
+      Candidate use additionally requires its existing input-bundle native snapshot read
+      receipt by cutoff. Missing clocks or conflicting observations refuse; this is not
+      bitemporal revision selection. Digests establish consistency, not authenticity.
+      Existing namespaces retain their original semantics and null additive fields.
       Supersedes lib/ticker_aliases.py — 53 lines, 2 entries, Yahoo-only and TIMELESS,
       which is why it can say "MMC means MRSH" but not "MMC meant MMC before
       2026-01-14". Its own docstring records the 7-month silent production loss the
