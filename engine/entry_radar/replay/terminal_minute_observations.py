@@ -113,9 +113,9 @@ def _known_at(nanoseconds: int) -> str:
     return instant.isoformat().replace("+00:00", "Z")
 
 
-def _cutoff_ns(value: str | None) -> int | None:
+def _cutoff_ns(value: str) -> int:
     if value is None:
-        return None
+        raise InputContractError("an explicit non-null decision cutoff is required")
     try:
         instant = datetime.fromisoformat(value.replace("Z", "+00:00"))
         if instant.tzinfo is None or instant.utcoffset() is None:
@@ -256,7 +256,7 @@ def _receipt(
 
 def _coverage(
     records: list[dict[str, Any]], receipts: Sequence[Mapping[str, Any]],
-    reader_identity: str, own: dict[str, Any], cutoff_ns: int | None,
+    reader_identity: str, own: dict[str, Any], cutoff_ns: int,
 ) -> list[dict[str, Any] | None]:
     if not isinstance(receipts, (list, tuple)) or len(receipts) > MAX_READ_RECEIPTS:
         raise InputContractError("owner receipt list is absent or exceeds its bound")
@@ -269,7 +269,7 @@ def _coverage(
             raise InputContractError("conflicting payload under an owner read ID")
         by_id[receipt["read_id"]] = receipt
         completed = receipt["read_completed_at_utc_ns"]
-        if cutoff_ns is not None and ((completed + 999) // 1000) * 1000 > cutoff_ns:
+        if ((completed + 999) // 1000) * 1000 > cutoff_ns:
             continue
         sequence = receipt["capture_sequence"]
         if sequence not in by_sequence \
@@ -354,9 +354,13 @@ def decode_terminal_minute_observations(
     symbol: str,
     stream: str,
     stream_metadata: Mapping[str, Any] | None = None,
-    cutoff: str | None = None,
+    cutoff: str,
 ) -> dict[str, Any]:
-    """Emit revision inputs; the existing RS selector alone resolves revisions.
+    """Emit decision-scoped inputs; the existing RS selector resolves revisions.
+
+    An explicit non-null decision cutoff is required. Decode separately for each
+    model decision: a later capture must not be parsed while preparing an earlier
+    frame. The raw snapshot reader remains independent of any decision cutoff.
 
     Caller metadata supplies labels from the existing identity/basis owner. This
     decoder neither creates those receipts nor treats the source adjusted flag
@@ -368,6 +372,7 @@ def decode_terminal_minute_observations(
     """
     reader_identity = _identifier(reader_identity, "reader_identity")
     symbol, stream = _identifier(symbol, "symbol"), _identifier(stream, "stream")
+    cutoff_ns = _cutoff_ns(cutoff)
     if not isinstance(snapshot, TerminalMinuteSnapshot):
         raise InputContractError("a bounded file-read snapshot is required")
     records = _captures(snapshot.raw_bytes)
@@ -378,7 +383,7 @@ def decode_terminal_minute_observations(
             or own["capture_sequence"] != len(records) \
             or own["capture_prefix_sha256"] != expected_prefix:
         raise InputContractError("snapshot bytes do not match their owner read receipt")
-    coverage = _coverage(records, read_receipts, reader_identity, own, _cutoff_ns(cutoff))
+    coverage = _coverage(records, read_receipts, reader_identity, own, cutoff_ns)
     meta = stream_metadata if isinstance(stream_metadata, Mapping) else {}
     basis = meta.get("basis") if isinstance(meta.get("basis"), Mapping) else {}
     security_id, basis_id = meta.get("security_id"), basis.get("basis_id")

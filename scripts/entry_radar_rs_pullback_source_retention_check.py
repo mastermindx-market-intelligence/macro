@@ -28,6 +28,7 @@ from pathlib import Path
 import sys
 import tempfile
 import urllib.error
+import urllib.parse
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -117,7 +118,7 @@ def run(terminal_source: Path) -> dict:
     frames = []
     logs = []
 
-    def decoded(snapshot, owner_receipts, reader=READER):
+    def decoded(snapshot, owner_receipts, decision, reader=READER):
         metadata = fixture.fixture()["streams"]["stock"]
         return decode_terminal_minute_observations(
             snapshot,
@@ -126,6 +127,7 @@ def run(terminal_source: Path) -> dict:
             symbol="SPY",
             stream="stock",
             stream_metadata=metadata,
+            cutoff=decision,
         )
 
     def panel_frame(rows, decision, owner_receipts):
@@ -155,7 +157,11 @@ def run(terminal_source: Path) -> dict:
                 )
             body = {"status": "OK", "results": rows}
             if partial:
-                body["next_url"] = "https://api.polygon.io/synthetic-next?cursor=fixture"
+                request_url = urllib.parse.urlsplit(_request.full_url)
+                body["next_url"] = urllib.parse.urlunsplit((
+                    request_url.scheme, request_url.netloc, request_url.path,
+                    "cursor=fixture", "",
+                ))
             return Response(body)
 
         output = io.StringIO()
@@ -179,6 +185,7 @@ def run(terminal_source: Path) -> dict:
         assert result == (producer.EXIT_STORE_FAILURES if partial else producer.EXIT_OK), (
             result, output.getvalue()[-1800:]
         )
+        assert calls > 1 if partial else calls == 1
         assert DUMMY_KEY.encode() not in snapshot.raw_bytes
         return snapshot
 
@@ -191,12 +198,13 @@ def run(terminal_source: Path) -> dict:
             snapshot = capture_and_read(store, rows, clock)
             snapshots.append(snapshot)
             receipts.append(snapshot.receipt)
-            bridge = decoded(snapshot, receipts)
+            bridge = decoded(snapshot, receipts, decisions[index])
             frame = panel_frame(bridge["minutes"], decisions[index], receipts)
             frames.append(frame)
 
-        latest_bridge = decoded(snapshots[-1], receipts)
-        earlier_again = panel_frame(latest_bridge["minutes"], decisions[0], receipts)
+        latest_bridge = decoded(snapshots[-1], receipts, decisions[-1])
+        earlier_bridge = decoded(snapshots[-1], receipts, decisions[0])
+        earlier_again = panel_frame(earlier_bridge["minutes"], decisions[0], receipts)
         assert fixture.frame_bytes(frames[0]) == fixture.frame_bytes(earlier_again)
         closes = [item["bars"]["stock"]["30"]["ohlcv"]["close"] for item in frames]
         assert closes[0] == closes[2] and closes[1] != closes[0], closes
@@ -235,7 +243,9 @@ def run(terminal_source: Path) -> dict:
             late = read_terminal_minute_snapshot(
                 store / "SPY.1m.json", reader_identity=late_reader
             )
-        late_rows = decoded(late, [late.receipt], reader=late_reader)["minutes"]
+        late_rows = decoded(
+            late, [late.receipt], "2026-10-06T14:20:01Z", reader=late_reader
+        )["minutes"]
         late_frame = panel_frame(late_rows, "2026-10-06T14:20:01Z", [late.receipt])
         late_bar = late_frame["bars"]["stock"]["30"]
         assert late_bar["availability"] == "unavailable"
@@ -254,15 +264,74 @@ def run(terminal_source: Path) -> dict:
         partial_document = json.loads(partial_snapshot.raw_bytes)
         partial_capture = partial_document["minute_capture"]["captures"][-1]
         assert partial_capture["payload"]["status"] == "partial"
+        assert partial_capture["payload"]["failure_kind"] == "transport_exhausted"
         assert partial_document["bars"] == projection_before
         partial_receipts = receipts + [partial_snapshot.receipt]
-        partial_bridge = decoded(partial_snapshot, partial_receipts)
+        partial_bridge = decoded(
+            partial_snapshot, partial_receipts, "2026-10-06T14:21:01Z"
+        )
         assert partial_bridge["minutes"] == latest_bridge["minutes"]
+        partial_earlier_bridge = decoded(
+            partial_snapshot, partial_receipts, decisions[0]
+        )
         partial_earlier = panel_frame(
-            partial_bridge["minutes"], decisions[0], partial_receipts
+            partial_earlier_bridge["minutes"], decisions[0], partial_receipts
         )
         assert fixture.frame_bytes(partial_earlier) == fixture.frame_bytes(frames[0])
         retained_count = len(retained)
+
+        # Adversarial, well-sealed synthetic append. The producer would reject
+        # this malformed value; this tests the reader's candidate boundary.
+        # It is written only to a separate temporary fixture, never a source.
+        mutation = copy.deepcopy(partial_document)
+        records = mutation["minute_capture"]["captures"]
+        future_payload = copy.deepcopy(captures[-1]["payload"])
+        mutation_ns = int(fixture.clock("2026-10-06T14:22:00Z").timestamp()) * 1_000_000_000
+        future_payload["started_at_utc_ns"] = mutation_ns
+        future_payload["finality_reference_utc_ns"] = mutation_ns
+        future_payload["completed_at_utc_ns"] = mutation_ns + 3000
+        for page in future_payload["pages"]:
+            page["request_started_at_utc_ns"] = mutation_ns + 1000
+            page["response_received_at_utc_ns"] = mutation_ns + 2000
+        future_payload["observations"][0]["event_start_utc_ms"] = "malformed-future-start"
+
+        def seal(value):
+            raw = json.dumps(value, sort_keys=True, separators=(",", ":"),
+                             ensure_ascii=True, allow_nan=False).encode()
+            return hashlib.sha256(raw).hexdigest()
+
+        used_ids = {record["capture_id"] for record in records}
+        counter = 1
+        while f"{counter:032x}" in used_ids:
+            counter += 1
+        future_record = {
+            "sequence": len(records) + 1,
+            "capture_id": f"{counter:032x}",
+            "previous_capture_sha256": mutation["minute_capture"]["prefix_sha256"],
+            "payload_sha256": seal(future_payload),
+            "payload": future_payload,
+        }
+        future_record["capture_sha256"] = seal(future_record)
+        records.append(future_record)
+        mutation["minute_capture"]["prefix_sha256"] = future_record["capture_sha256"]
+        mutation_path = Path(tmp) / "future-mutation.json"
+        mutation_path.write_text(json.dumps(mutation, allow_nan=False))
+        with patch.object(producer.time, "time_ns", return_value=mutation_ns + 4000):
+            mutation_snapshot = read_terminal_minute_snapshot(
+                mutation_path, reader_identity=READER
+            )
+        mutation_receipts = partial_receipts + [mutation_snapshot.receipt]
+        mutation_earlier = decoded(mutation_snapshot, mutation_receipts, decisions[0])
+        mutation_frame = panel_frame(
+            mutation_earlier["minutes"], decisions[0], mutation_receipts
+        )
+        assert fixture.frame_bytes(mutation_frame) == fixture.frame_bytes(frames[0])
+        try:
+            decoded(mutation_snapshot, mutation_receipts, "2026-10-06T14:22:01Z")
+        except ValueError as error:
+            assert "event start" in str(error)
+        else:
+            raise AssertionError("Visible malformed event start must be refused")
 
     assert digest(admission_path) == admission_before
     return {
@@ -276,6 +345,8 @@ def run(terminal_source: Path) -> dict:
             "a_b_a_revision_sequence": True,
             "earlier_complete_frame_byte_invariance": True,
             "fractional_volume_preserved": True,
+            "future_semantic_mutation_isolated": True,
+            "future_invalid_semantics_refused_when_visible": True,
             "late_first_read_conflict_preserved": True,
             "partial_failure_not_promoted": True,
             "partial_failure_preserves_chart_projection": True,

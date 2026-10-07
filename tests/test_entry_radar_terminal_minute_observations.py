@@ -146,7 +146,7 @@ def metadata(security_id="SYNTHETIC:AAPL"):
     }
 
 
-def decode(snapshot, receipts, *, cutoff=None, stream_metadata=None):
+def decode(snapshot, receipts, *, cutoff, stream_metadata=None):
     return bridge.decode_terminal_minute_observations(
         snapshot, receipts, reader_identity=READER, symbol=SYMBOL, stream="stock",
         stream_metadata=metadata() if stream_metadata is None else stream_metadata,
@@ -226,6 +226,24 @@ def test_public_read_has_no_timestamp_override(captured):
         bridge.read_terminal_minute_snapshot(path, reader_identity=READER, now_ns=1)
 
 
+def test_model_input_decode_refuses_omitted_decision_cutoff(captured):
+    snapshot = captured[3]
+    with pytest.raises(TypeError, match="cutoff"):
+        bridge.decode_terminal_minute_observations(
+            snapshot, [snapshot.receipt], reader_identity=READER, symbol=SYMBOL,
+            stream="stock", stream_metadata=metadata(),
+        )
+
+
+def test_model_input_decode_refuses_explicit_null_decision_cutoff(captured):
+    snapshot = captured[3]
+    with pytest.raises(InputContractError, match="non-null decision cutoff"):
+        bridge.decode_terminal_minute_observations(
+            snapshot, [snapshot.receipt], reader_identity=READER, symbol=SYMBOL,
+            stream="stock", stream_metadata=metadata(), cutoff=None,
+        )
+
+
 def test_bounded_read_missing_file_and_invalid_limit(tmp_path, captured):
     with pytest.raises(FileNotFoundError):
         bridge.read_terminal_minute_snapshot(tmp_path / "missing.json", reader_identity=READER)
@@ -286,12 +304,12 @@ def test_duplicate_json_keys_are_refused(captured):
 
 def test_owner_receipt_must_be_explicit_and_cannot_fallback_to_http_clock(captured):
     snapshot = captured[3]
-    missing = decode(snapshot, [])
+    missing = decode(snapshot, [], cutoff="2026-10-06T14:16:00Z")
     early = decode(snapshot, [snapshot.receipt], cutoff="2026-10-06T14:15:30Z")
     assert missing["status"] == early["status"] == "UNAVAILABLE"
     assert missing["minutes"] == early["minutes"] == []
     assert missing["diagnostics"]["captures_without_visible_owner_receipt"] == 1
-    observed = decode(snapshot, [snapshot.receipt])
+    observed = decode(snapshot, [snapshot.receipt], cutoff="2026-10-06T14:16:00Z")
     assert {row["known_at"] for row in observed["minutes"]} == {"2026-10-06T14:16:00Z"}
     assert observed["minutes"][0]["source_observation"]["source_received_at_utc_ns"] \
         < snapshot.receipt["read_completed_at_utc_ns"]
@@ -305,7 +323,7 @@ def test_missing_identity_basis_and_typed_volume_remain_explicit(captured):
     rows[2]["v"] = 12.75
     atomic_fixture(path, append_capture(envelope(), rows))
     snapshot = read_at(path, "2026-10-06T14:16:00Z")
-    result = decode(snapshot, [snapshot.receipt], stream_metadata={})
+    result = decode(snapshot, [snapshot.receipt], stream_metadata={}, cutoff="2026-10-06T14:16:00Z")
     first = result["minutes"][:3]
     assert [row["volume"] for row in first] == [None, None, 12.75]
     assert [row["source_observation"]["volume_state"] for row in first] == [
@@ -314,7 +332,7 @@ def test_missing_identity_basis_and_typed_volume_remain_explicit(captured):
     assert "price_volume_corporate_action_basis" in result["unproven_owner_requirements"]
     assert result["scientific_claims"] == {"H1": "NOT_TESTED", "H2": "NOT_TESTED", "H3": "NOT_TESTED"}
     assert not any(result["authority"].values())
-    complete = decode(snapshot, [snapshot.receipt])
+    complete = decode(snapshot, [snapshot.receipt], cutoff="2026-10-06T14:16:00Z")
     frame = build_input_panel(bundle(complete["minutes"]))["frames"][0]
     assert "INVALID_OHLCV" in frame["bars"]["stock"]["30"]["refusals"]
 
@@ -329,7 +347,7 @@ def test_receipt_tampering_is_refused(captured, field, value):
     receipt = snapshot.receipt
     receipt[field] = value
     with pytest.raises(InputContractError):
-        decode(snapshot, [receipt])
+        decode(snapshot, [receipt], cutoff="2026-10-06T14:16:00Z")
 
 
 def test_resealed_wrong_prefix_or_reader_and_conflicting_read_id_are_refused(captured):
@@ -339,22 +357,22 @@ def test_resealed_wrong_prefix_or_reader_and_conflicting_read_id_are_refused(cap
         bad[field] = value
         reseal_receipt(bad)
         with pytest.raises(InputContractError):
-            decode(snapshot, [bad])
+            decode(snapshot, [bad], cutoff="2026-10-06T14:16:00Z")
     bad = snapshot.receipt
     bad["read_completed_at_utc_ns"] += 1_000_000
     reseal_receipt(bad)
     with pytest.raises(InputContractError, match="conflicting"):
-        decode(snapshot, [snapshot.receipt, bad])
+        decode(snapshot, [snapshot.receipt, bad], cutoff="2026-10-06T14:16:00Z")
     # Exact duplicate enrollment is idempotent.
-    assert decode(snapshot, [snapshot.receipt])["minutes"] == \
-        decode(snapshot, [snapshot.receipt, snapshot.receipt])["minutes"]
+    assert decode(snapshot, [snapshot.receipt], cutoff="2026-10-06T14:16:00Z")["minutes"] == \
+        decode(snapshot, [snapshot.receipt, snapshot.receipt], cutoff="2026-10-06T14:16:00Z")["minutes"]
 
 
 def test_snapshot_byte_binding_cannot_be_swapped(captured):
     snapshot = captured[3]
     changed = bridge.TerminalMinuteSnapshot(snapshot.raw_bytes + b" ", snapshot.receipt_json)
     with pytest.raises(InputContractError, match="snapshot bytes"):
-        decode(changed, [snapshot.receipt])
+        decode(changed, [snapshot.receipt], cutoff="2026-10-06T14:16:00Z")
 
 
 def test_receipt_from_a_forked_prefix_is_refused(captured):
@@ -364,14 +382,14 @@ def test_receipt_from_a_forked_prefix_is_refused(captured):
     atomic_fixture(path, append_capture(envelope(), rows))
     fork = read_at(path, "2026-10-06T14:17:00Z")
     with pytest.raises(InputContractError, match="prefix"):
-        decode(fork, [original.receipt, fork.receipt])
+        decode(fork, [original.receipt, fork.receipt], cutoff="2026-10-06T14:17:00Z")
 
 
 def test_owner_read_before_capture_completion_is_refused(captured):
     path = captured[0]
     impossible = read_at(path, "2026-10-06T14:15:02Z")
     with pytest.raises(InputContractError, match="precedes capture completion"):
-        decode(impossible, [impossible.receipt])
+        decode(impossible, [impossible.receipt], cutoff="2026-10-06T14:16:00Z")
 
 
 @pytest.mark.parametrize("status", ("partial", "failed"))
@@ -381,7 +399,7 @@ def test_incomplete_capture_observations_are_excluded(captured, status):
     changed = append_capture(capture, [correction], source_at="2026-10-06T14:17:00Z", status=status)
     atomic_fixture(path, changed)
     snapshot = read_at(path, "2026-10-06T14:18:00Z")
-    result = decode(snapshot, [initial.receipt, snapshot.receipt])
+    result = decode(snapshot, [initial.receipt, snapshot.receipt], cutoff="2026-10-06T14:18:00Z")
     assert len(result["minutes"]) == 30
     assert result["diagnostics"]["visible_capture_outcomes"][status] == 1
     assert all(row["close"] == 100 for row in result["minutes"])
@@ -391,7 +409,7 @@ def test_empty_complete_capture_is_distinct_from_missing_and_failure(tmp_path):
     path = tmp_path / "AAPL.1m.json"
     atomic_fixture(path, append_capture(envelope(), []))
     snapshot = read_at(path, "2026-10-06T14:16:00Z")
-    result = decode(snapshot, [snapshot.receipt])
+    result = decode(snapshot, [snapshot.receipt], cutoff="2026-10-06T14:16:00Z")
     assert result["status"] == "UNAVAILABLE"
     assert result["minutes"] == []
     assert result["diagnostics"]["visible_capture_outcomes"] == {
@@ -410,20 +428,22 @@ def test_successive_actual_reads_preserve_correction_and_reversion_in_existing_s
     atomic_fixture(path, reverted)
     third = read_at(path, "2026-10-06T14:20:00Z")
     receipts = [first.receipt, second.receipt, third.receipt]
-    decoded = decode(third, receipts)
-    assert len(decoded["minutes"]) == 32
+    frames, visible_counts = [], []
+    for cutoff in ("2026-10-06T14:16:00Z", "2026-10-06T14:18:00Z", "2026-10-06T14:20:00Z"):
+        decoded = decode(third, receipts, cutoff=cutoff)
+        visible_counts.append(len(decoded["minutes"]))
+        panel = build_input_panel(bundle(decoded["minutes"], cutoffs=(cutoff,), receipts=receipts))
+        frames.append(panel["frames"][0])
+        # The unchanged finality lag still withholds contemporaneous latest 15m inputs.
+        assert panel["available_count"] == 0
+        assert not any(panel["authority"].values())
+    assert visible_counts == [30, 31, 32]
     assert [row["close"] for row in decoded["minutes"][-3:]] == [100, 119, 100]
-    panel = build_input_panel(bundle(
-        decoded["minutes"], cutoffs=("2026-10-06T14:16:00Z", "2026-10-06T14:18:00Z",
-                                      "2026-10-06T14:20:00Z"), receipts=receipts))
-    bars = [frame["bars"]["stock"]["30"] for frame in panel["frames"]]
+    bars = [frame["bars"]["stock"]["30"] for frame in frames]
     assert all(bar["availability"] == "available" for bar in bars)
     assert [bar["ohlcv"]["close"] for bar in bars] == [100, 119, 100]
     assert [bar["ohlcv"]["high"] for bar in bars] == [101, 120, 101]
     assert len({bar["input_revision_sha256"] for bar in bars}) == 3
-    # The unchanged 900-second finality constraint still withholds latest 15m inputs.
-    assert panel["available_count"] == 0
-    assert not any(panel["authority"].values())
 
 
 def test_one_late_first_read_of_a_b_a_remains_same_clock_conflict(captured):
@@ -433,7 +453,7 @@ def test_one_late_first_read_of_a_b_a_remains_same_clock_conflict(captured):
     reverted = append_capture(changed, [raw_rows()[-1]], source_at="2026-10-06T14:19:00Z")
     atomic_fixture(path, reverted)
     late = read_at(path, "2026-10-06T14:20:00Z")
-    result = decode(late, [late.receipt])
+    result = decode(late, [late.receipt], cutoff="2026-10-06T14:20:00Z")
     assert len(result["minutes"]) == 32
     assert {row["known_at"] for row in result["minutes"]} == {"2026-10-06T14:20:00Z"}
     frame = build_input_panel(bundle(result["minutes"],
@@ -444,7 +464,7 @@ def test_one_late_first_read_of_a_b_a_remains_same_clock_conflict(captured):
 @pytest.mark.parametrize("malformed", ("value", "event"))
 def test_future_semantic_mutation_cannot_change_complete_earlier_frame(captured, malformed):
     path, capture, _, earlier = captured
-    prior = decode(earlier, [earlier.receipt])
+    prior = decode(earlier, [earlier.receipt], cutoff="2026-10-06T14:16:00Z")
     before = build_input_panel(bundle(prior["minutes"], receipts=[earlier.receipt]))
     changed = append_capture(capture, [raw_rows()[-1]], source_at="2026-10-06T14:17:00Z")
     observation = changed["captures"][-1]["payload"]["observations"][0]
@@ -466,7 +486,7 @@ def test_future_semantic_mutation_cannot_change_complete_earlier_frame(captured,
         with pytest.raises(InputContractError):
             decode(later, receipts, cutoff="2026-10-06T14:18:00Z")
     else:
-        future = decode(later, receipts)
+        future = decode(later, receipts, cutoff="2026-10-06T14:18:00Z")
         frame = build_input_panel(bundle(future["minutes"],
                                         cutoffs=("2026-10-06T14:18:00Z",)))["frames"][0]
         assert "INVALID_OHLCV" in frame["bars"]["stock"]["30"]["refusals"]
@@ -489,7 +509,7 @@ def test_distinct_ns_reads_in_same_microsecond_keep_a_conflict(captured):
     changed = append_capture(capture, [{**raw_rows()[-1], "h": 120, "c": 119}])
     atomic_fixture(path, changed)
     second = read_at(path, instant + 999)
-    result = decode(second, [first.receipt, second.receipt])
+    result = decode(second, [first.receipt, second.receipt], cutoff="2026-10-06T14:16:00.000001Z")
     assert {row["known_at"] for row in result["minutes"]} == {"2026-10-06T14:16:00.000001Z"}
     frame = build_input_panel(bundle(result["minutes"],
                                     cutoffs=("2026-10-06T14:16:00.000001Z",)))["frames"][0]
@@ -514,10 +534,10 @@ def test_visible_source_clock_finality_and_page_bindings_are_enforced(captured, 
     atomic_fixture(path, capture)
     snapshot = read_at(path, "2026-10-06T14:16:00Z")
     with pytest.raises(InputContractError):
-        decode(snapshot, [snapshot.receipt])
+        decode(snapshot, [snapshot.receipt], cutoff="2026-10-06T14:16:00Z")
 
 
 def test_receipt_capacity_is_explicit_no_silent_pruning(captured):
     snapshot = captured[3]
     with pytest.raises(InputContractError, match="bound"):
-        decode(snapshot, [snapshot.receipt] * (bridge.MAX_READ_RECEIPTS + 1))
+        decode(snapshot, [snapshot.receipt] * (bridge.MAX_READ_RECEIPTS + 1), cutoff="2026-10-06T14:16:00Z")
