@@ -45,6 +45,14 @@ _NOMINATED_FROM_RE = re.compile(
 _VENDOR_SUBSTRINGS = ("finviz_themes", "ths_concepts")
 _VENDOR_TOKENS = frozenset({"finviz", "ths"})
 _HIERARCHY_CHILD_TIERS = frozenset({"theme", "micro_theme"})
+_HIERARCHY_SUBJECT_REQUIRED: tuple[str, ...] = (
+    "parent_id",
+    "child_id",
+    "child_tier",
+    "proposed_asserted_on",
+    "nominated_from",
+)
+_ASSERTED_ON_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 PROPOSED_BY: frozenset[str] = frozenset({
     "coverage_gap", "overlap_stats", "refresh_identity", "llm_proposed",
@@ -111,27 +119,46 @@ def _validate_hierarchy_row(row: dict) -> list[str]:
     out: list[str] = []
     subject = row.get("subject")
     if not isinstance(subject, dict):
-        out.append("hierarchy subject must be an object")
+        out.append("HIERARCHY_SUBJECT_SHAPE: hierarchy subject must be an object")
         return out
+    allowed = set(_HIERARCHY_SUBJECT_REQUIRED)
+    for key in sorted(_HIERARCHY_SUBJECT_REQUIRED):
+        if key not in subject:
+            out.append(f"HIERARCHY_SUBJECT_SHAPE: missing required key {key!r}")
+    for key in sorted(set(subject.keys()) - allowed):
+        out.append(f"HIERARCHY_SUBJECT_SHAPE: unexpected key {key!r}")
     parent_id = str(subject.get("parent_id") or "")
     child_id = str(subject.get("child_id") or "")
     child_tier = str(subject.get("child_tier") or "")
     asserted_on = str(subject.get("proposed_asserted_on") or "")
     nominated_from = str(subject.get("nominated_from") or "")
     if not _THEME_ID_RE.fullmatch(parent_id):
-        out.append(f"hierarchy parent_id {parent_id!r} is malformed")
+        out.append(
+            f"HIERARCHY_ID_GRAMMAR: hierarchy parent_id {parent_id!r} is malformed"
+        )
     if not _THEME_ID_RE.fullmatch(child_id):
-        out.append(f"hierarchy child_id {child_id!r} is malformed")
+        out.append(
+            f"HIERARCHY_ID_GRAMMAR: hierarchy child_id {child_id!r} is malformed"
+        )
     if child_tier not in _HIERARCHY_CHILD_TIERS:
-        out.append(f"hierarchy child_tier {child_tier!r} is outside {_HIERARCHY_CHILD_TIERS}")
+        out.append(
+            "HIERARCHY_CHILD_TIER: hierarchy child_tier "
+            f"{child_tier!r} is outside ['micro_theme', 'theme']"
+        )
     if parent_id and child_id and parent_id == child_id:
         out.append("HIERARCHY_SELF_EDGE: parent_id must differ from child_id")
-    if asserted_on:
+    if not _ASSERTED_ON_RE.fullmatch(asserted_on):
+        out.append(
+            "HIERARCHY_ASSERTED_ON_GRAMMAR: hierarchy proposed_asserted_on "
+            f"{asserted_on!r} is not a YYYY-MM-DD date"
+        )
+    else:
         try:
             parsed = date.fromisoformat(asserted_on)
         except ValueError:
             out.append(
-                f"hierarchy proposed_asserted_on {asserted_on!r} is not a YYYY-MM-DD date"
+                "HIERARCHY_ASSERTED_ON_GRAMMAR: hierarchy proposed_asserted_on "
+                f"{asserted_on!r} is not a YYYY-MM-DD date"
             )
         else:
             if parsed < HIERARCHY_EPOCH:

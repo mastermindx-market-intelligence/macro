@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -9,6 +10,7 @@ import jsonschema
 import pytest
 
 from engine.theme_graph import probation, proposal_worklist
+from engine.theme_graph import ontology
 from engine.theme_graph.ontology import compose_neighborhood
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -300,3 +302,224 @@ def test_proposal_worklist_accepts_and_filters_hierarchy_kind():
     page = proposal_worklist.compose_worklist(rows, asof="2026-10-07", kind="hierarchy")
     assert page["counts"]["matching"] == 1
     assert page["items"][0]["proposal"]["kind"] == "hierarchy"
+
+
+_REASON_PREFIX = re.compile(r"^[A-Z][A-Z_]+: ")
+
+
+def _assert_schema_and_validate_reject(
+    row: dict,
+    *,
+    expected_token: str,
+    schema_must_reject: bool = True,
+) -> None:
+    errors = probation.validate(row)
+    assert errors
+    assert any(e.startswith(f"{expected_token}:") for e in errors)
+    assert all(_REASON_PREFIX.match(e) for e in errors)
+    schema_errors = list(_VALIDATOR.iter_errors(row))
+    if schema_must_reject:
+        assert schema_errors
+    else:
+        assert not schema_errors
+
+
+def _row_with_list_subject() -> dict:
+    row = _hierarchy_row()
+    row["subject"] = []
+    return row
+
+
+@pytest.mark.parametrize(
+    "row,expected_token,schema_must_reject",
+    [
+        (
+            _hierarchy_row(subject={k: v for k, v in _hierarchy_subject().items() if k != "parent_id"}),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(subject={k: v for k, v in _hierarchy_subject().items() if k != "child_id"}),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(subject={k: v for k, v in _hierarchy_subject().items() if k != "child_tier"}),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(
+                subject={k: v for k, v in _hierarchy_subject().items() if k != "proposed_asserted_on"}
+            ),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(
+                subject={k: v for k, v in _hierarchy_subject().items() if k != "nominated_from"}
+            ),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(subject={**_hierarchy_subject(), "extra": 1}),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+        (
+            _hierarchy_row(subject=_hierarchy_subject(proposed_asserted_on="20261008")),
+            "HIERARCHY_ASSERTED_ON_GRAMMAR",
+            True,
+        ),
+        (
+            _hierarchy_row(subject=_hierarchy_subject(proposed_asserted_on="2026-13-01")),
+            "HIERARCHY_ASSERTED_ON_GRAMMAR",
+            False,
+        ),
+        (
+            _hierarchy_row(subject=_hierarchy_subject(proposed_asserted_on="2026-1-07")),
+            "HIERARCHY_ASSERTED_ON_GRAMMAR",
+            True,
+        ),
+        (
+            _hierarchy_row(subject=_hierarchy_subject(child_tier="basket")),
+            "HIERARCHY_CHILD_TIER",
+            True,
+        ),
+        (
+            _hierarchy_row(subject=_hierarchy_subject(parent_id="theme:A")),
+            "HIERARCHY_ID_GRAMMAR",
+            True,
+        ),
+        (
+            _row_with_list_subject(),
+            "HIERARCHY_SUBJECT_SHAPE",
+            True,
+        ),
+    ],
+    ids=[
+        "missing_parent_id",
+        "missing_child_id",
+        "missing_child_tier",
+        "missing_proposed_asserted_on",
+        "missing_nominated_from",
+        "extra_key",
+        "asserted_on_compact",
+        "asserted_on_bad_month",
+        "asserted_on_short_month",
+        "child_tier_basket",
+        "parent_id_grammar",
+        "subject_not_object",
+    ],
+)
+def test_hierarchy_validate_matches_schema_on_bad_rows(
+    row, expected_token, schema_must_reject
+):
+    _assert_schema_and_validate_reject(
+        row, expected_token=expected_token, schema_must_reject=schema_must_reject
+    )
+
+
+def test_hierarchy_validate_errors_always_carry_reason_tokens():
+    bad_rows = [
+        _hierarchy_row(subject={k: v for k, v in _hierarchy_subject().items() if k != "parent_id"}),
+        _hierarchy_row(subject={**_hierarchy_subject(), "extra": 1}),
+        _hierarchy_row(subject=_hierarchy_subject(proposed_asserted_on="20261008")),
+        _hierarchy_row(subject=_hierarchy_subject(child_tier="basket")),
+        _hierarchy_row(
+            subject=_hierarchy_subject(parent_id="theme:same", child_id="theme:same")
+        ),
+        _hierarchy_row(subject=_hierarchy_subject(proposed_asserted_on="2026-10-06")),
+        _hierarchy_row(subject=_hierarchy_subject(nominated_from="basket:finviz_themes:x")),
+        _hierarchy_row(
+            proposed_by="llm_proposed",
+            status="ratified",
+            ratified_by="bot",
+            adjudicated_at="2026-10-08T00:00:00Z",
+        ),
+    ]
+    for row in bad_rows:
+        errors = probation.validate(row)
+        assert errors
+        assert all(_REASON_PREFIX.match(e) for e in errors)
+
+
+def test_mapping_curation_parity_when_subject_node_absent():
+    local = "ltheme:finviz:ai"
+    basket = "basket:baskets:us_tech"
+    mapping = probation.make_proposal(
+        kind="mapping",
+        subject={"basket": basket, "local_theme": local},
+        proposed_by="coverage_gap",
+    )
+    mapping["status"] = "ratified"
+    mapping["ratified_by"] = "curator:test"
+    mapping["adjudicated_at"] = "2026-10-08T00:00:00Z"
+    edge = _ont_edge("exp:1", "EXPRESSES", basket, local)
+    store = _store(edges=[edge], proposals=[mapping])
+    result = compose_neighborhood(store, node_id=local, asof="2026-10-08")
+    assert result["availability"]["state"] == "SUBJECT_NOT_FOUND"
+    assert result["curation"]["state"] == "RATIFIED_NOT_MATERIALIZED"
+
+
+def test_curation_collapse_scoped_to_incident_and_hierarchy(monkeypatch):
+    child = "theme:ai_power"
+    parent = "theme:macro_energy"
+    nodes = [
+        _ont_node(parent, "theme", tier="macro_category"),
+        _ont_node(child, "theme", tier="theme"),
+    ]
+    edge = _ont_edge("parent_of:1", "PARENT_OF", parent, child)
+    calls: list[int] = []
+    real_collapse = ontology._collapse_relevant_edges
+
+    def counting_collapse(rows, *, node_id, asof, knowledge_cutoff):
+        calls.append(1)
+        return real_collapse(
+            rows, node_id=node_id, asof=asof, knowledge_cutoff=knowledge_cutoff
+        )
+
+    monkeypatch.setattr(ontology, "_collapse_relevant_edges", counting_collapse)
+
+    store_plain = _store(nodes=nodes, edges=[edge])
+    calls.clear()
+    compose_neighborhood(store_plain, node_id=child, asof="2026-10-08")
+    assert len(calls) == 1
+
+    proposal = _hierarchy_row(
+        status="ratified",
+        ratified_by="curator:test",
+        adjudicated_at="2026-10-08T00:00:00Z",
+        subject=_hierarchy_subject(parent_id=parent, child_id=child),
+    )
+    store_hier = _store(nodes=nodes, edges=[edge], proposals=[proposal])
+    calls.clear()
+    compose_neighborhood(store_hier, node_id=child, asof="2026-10-08")
+    assert len(calls) == 2
+
+
+def test_ratified_hierarchy_not_materialized_when_parent_of_expired():
+    parent = "theme:macro_energy"
+    child = "theme:ai_power"
+    proposal = _hierarchy_row(
+        status="ratified",
+        ratified_by="curator:test",
+        adjudicated_at="2026-10-08T00:00:00Z",
+        subject=_hierarchy_subject(parent_id=parent, child_id=child),
+    )
+    nodes = [
+        _ont_node(parent, "theme", tier="macro_category"),
+        _ont_node(child, "theme", tier="theme"),
+    ]
+    edge = _ont_edge(
+        "parent_of:1",
+        "PARENT_OF",
+        parent,
+        child,
+        valid_from="2026-10-01",
+    )
+    edge["valid_to"] = "2026-10-08"
+    store = _store(nodes=nodes, edges=[edge], proposals=[proposal])
+    result = compose_neighborhood(store, node_id=parent, asof="2026-10-08")
+    assert result["curation"]["state"] == "RATIFIED_NOT_MATERIALIZED"

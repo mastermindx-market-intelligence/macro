@@ -312,55 +312,6 @@ def _default_rights_resolver(node_id: str) -> dict[str, Any] | None:
     }
 
 
-def _live_edges_at_asof(
-    rows: Sequence[Mapping[str, Any]],
-    *,
-    asof: dt.date,
-    knowledge_cutoff: dt.date | dt.datetime,
-) -> list[dict[str, Any]]:
-    """All graph edges live at ``asof`` visible by ``knowledge_cutoff`` (no node filter)."""
-    instant = isinstance(knowledge_cutoff, dt.datetime)
-    if instant:
-        knowledge_cutoff = _clock_instant(knowledge_cutoff, "knowledge_cutoff")
-    eligible: list[tuple[dt.date, str, int, dict[str, Any]]] = []
-    for index, original in enumerate(rows):
-        row = dict(original)
-        edge_id = str(row.get("edge_id") or "")
-        type_ = str(row.get("type") or "")
-        src = str(row.get("src") or "")
-        dst = str(row.get("dst") or "")
-        if not edge_id or not type_ or not src or not dst:
-            continue
-        if instant:
-            if not _visible_by_instant(row.get("belief_time"), "belief_time", knowledge_cutoff):
-                continue
-            belief = _clock_date(row.get("belief_time"), "belief_time")
-        else:
-            belief = _parse_date(row.get("belief_time"), "belief_time")
-            if belief > knowledge_cutoff:
-                continue
-        eligible.append((belief, str(row.get("computed_at") or ""), index, row))
-
-    latest: dict[str, tuple[dt.date, str, int, dict[str, Any]]] = {}
-    for candidate in eligible:
-        edge_id = str(candidate[3]["edge_id"])
-        if edge_id not in latest or candidate[:3] > latest[edge_id][:3]:
-            latest[edge_id] = candidate
-
-    live: list[dict[str, Any]] = []
-    for _belief, _computed_at, _index, row in latest.values():
-        valid_from = _parse_date(row.get("valid_from"), "valid_from")
-        raw_valid_to = row.get("valid_to")
-        valid_to = (
-            None
-            if _is_null(raw_valid_to) or str(raw_valid_to).strip() == ""
-            else _parse_date(raw_valid_to, "valid_to")
-        )
-        if valid_from <= asof and (valid_to is None or asof < valid_to):
-            live.append(row)
-    return live
-
-
 def _collapse_relevant_edges(
     rows: Sequence[Mapping[str, Any]],
     *,
@@ -713,13 +664,38 @@ def compose_neighborhood(
         "state": canonical_state,
         "theme_node_ids": canonical_ids,
     }
-    curation = _curation_summary(
-        proposal_rows,
-        live_rows=_live_edges_at_asof(
-            raw_edges,
+    hier = {
+        edge
+        for row in proposal_rows
+        if str(row.get("status")) == "ratified"
+        and str(row.get("kind")) == "hierarchy"
+        for edge in (_proposal_materialization_edge(row),)
+        if edge is not None
+    }
+    curation_live = list(live_rows)
+    # raw_edges (not reader_edges): hierarchy child may be ignored-tier, so PARENT_OF
+    # can be absent from reader_edges while still materializing curation truth.
+    for type_, parent_id, child_id in sorted(hier):
+        matching = [
+            e
+            for e in raw_edges
+            if (
+                str(e.get("type") or ""),
+                str(e.get("src") or ""),
+                str(e.get("dst") or ""),
+            )
+            == (type_, parent_id, child_id)
+        ]
+        collapsed, _future = _collapse_relevant_edges(
+            matching,
+            node_id=child_id,
             asof=asof_date,
             knowledge_cutoff=cutoff_date,
-        ),
+        )
+        curation_live.extend(collapsed)
+    curation = _curation_summary(
+        proposal_rows,
+        live_rows=curation_live,
     )
     availability = (
         {"state": "OK", "reason": None}
