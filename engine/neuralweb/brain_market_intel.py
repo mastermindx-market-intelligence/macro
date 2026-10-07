@@ -1279,40 +1279,376 @@ def _excerpt_paragraphs(root: Path, doc_id: str) -> list[str]:
     return [p.strip() for p in paras if isinstance(p, str) and p.strip()]
 
 
-def _load_corpus_document(doc_id: str):
-    """research_vault.corpus.get_document(doc_id), or None. Never raises.
+# Report-body paging over the read port. One call asks for four segments; eight
+# calls is the hard stop (at most 32 segments). The 12,000-char cap is still
+# applied later by _slice_report_body — paging only refuses to keep fetching
+# once the collected text already exceeds that cap.
+_HARD_FETCH_CALLS = 8
+_FETCH_MAX_SEGMENTS = 4
+_EVIDENCE_MAX_PASSAGES = 3
+_PORT_TEXT_LAYERS = {"full": "full", "thin": "thin", "none": "none"}
+# Q-F11-9. Neighbouring research notes are English-only, so this sentence is too.
+# The leading space concatenates onto the existing rights note.
+_PORT_PRODUCER_STALE_NOTE = (
+    " The research library has not refreshed on schedule; reports newer than "
+    "its last refresh may be missing."
+)
+_PORT_MATCH_FIELDS = (
+    "start_char",
+    "end_char",
+    "match_start_char",
+    "match_end_char",
+    "match_text",
+    "matched_terms",
+)
 
-    Imported lazily and called through the MODULE (not a from-import) so the
-    attribute resolves at call time — the corpus reader is the seam tests replace,
-    and an engine module that cannot be imported at all must degrade to the
-    excerpt rather than take the chat turn down.
+
+def _brain_research_adapter():
+    """Process-cached Brain adapter. Tests replace this; the seams do not."""
+    from engine.research_vault.read_runtime import brain_adapter  # noqa: PLC0415
+    return brain_adapter()
+
+
+def _server_read_context(principal_id: str):
+    """Server-side context. Entitlement is the gateway's already-admitted pro."""
+    from engine.research_vault.read_service import ServerReadContext  # noqa: PLC0415
+    return ServerReadContext(
+        principal_id=principal_id,
+        entitlement="pro",
+        scopes=frozenset({"fetch", "find_evidence"}),
+        surface="brain",
+    )
+
+
+def _map_text_layer(value) -> str:
+    if not isinstance(value, str):
+        return ""
+    return _PORT_TEXT_LAYERS.get(value, "")
+
+
+def _port_result(envelope) -> dict | None:
+    if not isinstance(envelope, dict):
+        return None
+    result = envelope.get("result")
+    return result if isinstance(result, dict) else None
+
+
+def _validated_scope(result: dict) -> dict | None:
+    """Re-validate the port's all-or-none search-scope block. Fail closed.
+
+    A missing block and a partial or ill-typed block are the same outcome:
+    coverage stays unknown. ``page_count`` must be an int >= 1, never null.
+    """
+    keys = ("searched_char_count", "text_layer_state", "page_count")
+    present = [key for key in keys if result.get(key) is not None]
+    if len(present) != 3:
+        return None
+    searched = result.get("searched_char_count")
+    layer = result.get("text_layer_state")
+    pages = result.get("page_count")
+    if type(searched) is not int or searched < 0:
+        return None
+    if layer not in _PORT_TEXT_LAYERS:
+        return None
+    if type(pages) is not int or pages < 1:
+        return None
+    return {
+        "searched_char_count": searched,
+        "text_layer_state": layer,
+        "page_count": pages,
+    }
+
+
+def _full_text_partial(source) -> bool:
+    """True when the port source lists FULL_TEXT_PARTIAL.
+
+    The port field is ``known_degradation`` (read_port.source_state), not
+    ``degradations``.
+    """
+    if not isinstance(source, dict):
+        return False
+    degradation = source.get("known_degradation")
+    if not isinstance(degradation, (list, tuple)):
+        return False
+    return "FULL_TEXT_PARTIAL" in degradation
+
+
+def _agreed_sha(passages, key: str) -> str | None:
+    """Shared sha across every raw passage, or None when they disagree.
+
+    An empty passage list agrees on ``""``. A non-string or a second value
+    fails closed (the caller drops every passage).
+    """
+    seen: list = []
+    for passage in passages:
+        if isinstance(passage, dict):
+            seen.append(passage.get(key))
+    if not seen:
+        return ""
+    first = seen[0]
+    if not isinstance(first, str) or any(value != first for value in seen):
+        return None
+    return first
+
+
+def _passage_from_port(passage, *, block) -> dict | None:
+    """Corpus hit shape from one port passage. Missing match fields are dropped.
+
+    Page rule (Q-F11-6b): ``page = page_start + text[:match_start - start].count("\\f")``
+    and ``kind`` is ``page_text_span`` only when ``page_start`` is not None.
+    The ``page <= page_count`` guard uses the revalidated scope block's
+    ``page_count``. That guard is dropped only when the block is absent — a
+    block that fails re-validation counts as absent and is not a reason to
+    invent a page_count.
+    """
+    if not isinstance(passage, dict):
+        return None
+    if any(passage.get(field) is None for field in _PORT_MATCH_FIELDS):
+        return None
+    text = passage.get("text")
+    match_text = passage.get("match_text")
+    terms = passage.get("matched_terms")
+    if not isinstance(text, str) or not isinstance(match_text, str):
+        return None
+    if not isinstance(terms, list):
+        return None
+    start = passage.get("start_char")
+    end = passage.get("end_char")
+    match_start = passage.get("match_start_char")
+    match_end = passage.get("match_end_char")
+    locator = {
+        "kind": "text_span",
+        "start_char": start,
+        "end_char": end,
+        "match_start_char": match_start,
+        "match_end_char": match_end,
+    }
+    page_start = passage.get("page_start")
+    if page_start is not None and type(start) is int and type(match_start) is int:
+        offset = match_start - start
+        if type(page_start) is int and page_start >= 1 and 0 <= offset <= len(text):
+            page = page_start + text[:offset].count("\f")
+            if block is not None and page > block["page_count"]:
+                # Guard held: do not claim a page past the scope block's page_count.
+                pass
+            else:
+                locator["kind"] = "page_text_span"
+                locator["page"] = page
+    return {
+        "text": text,
+        "match_text": match_text,
+        "matched_terms": list(terms),
+        "locator": locator,
+    }
+
+
+def _legacy_selection_from_port(result: dict, query: str) -> dict:
+    """Map one port evidence_result onto the legacy selection the projector expects."""
+    source = result.get("source") if isinstance(result.get("source"), dict) else None
+    coverage_state = result.get("coverage_state")
+    coverage_state = coverage_state if isinstance(coverage_state, str) else ""
+    state = result.get("evidence_state")
+    if state in {"FOUND", "PARTIAL"}:
+        status = "matched"
+    elif state == "NOT_FOUND":
+        status = "no_matching_passage"
+    else:
+        status = "body_unavailable"
+    raw = result.get("passages") if isinstance(result.get("passages"), list) else []
+    block = _validated_scope(result)
+    mapped: list[dict] = []
+    pdf_sha = ""
+    text_sha = ""
+    if status == "matched":
+        agreed_pdf = _agreed_sha(raw, "source_pdf_sha256")
+        agreed_text = _agreed_sha(raw, "extracted_text_sha256")
+        if agreed_pdf is None or agreed_text is None:
+            status = "body_unavailable"
+        else:
+            pdf_sha = agreed_pdf
+            text_sha = agreed_text
+            for passage in raw:
+                item = _passage_from_port(passage, block=block)
+                if item is not None:
+                    mapped.append(item)
+    if block is not None and not _full_text_partial(source):
+        binding = {
+            "content_sha256": pdf_sha,
+            "stored_body_sha256": text_sha,
+            "coverage": "complete",
+            "source_char_count": block["searched_char_count"],
+            "stored_char_count": block["searched_char_count"],
+            "tail_omitted": False,
+            "text_layer": block["text_layer_state"],
+            "page_count": block["page_count"],
+        }
+    else:
+        binding = {
+            "content_sha256": pdf_sha,
+            "stored_body_sha256": text_sha,
+            "coverage": "unknown",
+            "source_char_count": None,
+            "stored_char_count": None,
+            "tail_omitted": None,
+            "text_layer": block["text_layer_state"] if block is not None else "",
+            "page_count": block["page_count"] if block is not None else None,
+        }
+    return {
+        "status": status,
+        "query": str(query or ""),
+        "passages": mapped if status == "matched" else [],
+        "source_binding": binding,
+        "_port_coverage_state": coverage_state,
+        "_port_source": source,
+    }
+
+
+def _unavailable_selection(query: str, *, coverage: str = "", source=None) -> dict:
+    return {
+        "status": "body_unavailable",
+        "query": str(query or ""),
+        "passages": [],
+        "source_binding": {},
+        "_port_coverage_state": coverage,
+        "_port_source": source if isinstance(source, dict) else None,
+    }
+
+
+def _load_corpus_document(doc_id: str, *, principal_id: str):
+    """Layer-3 report body via paged research_fetch. Never raises.
+
+    Returns the legacy document shape ``_research_report`` already reads.
+    A failure, a non-dict, or any exception is None (excerpt-only, disclosed).
+    ``body`` is empty unless the port's coverage_state is FULL_TEXT. Identity
+    is not fabricated here.
     """
     try:
-        from engine.research_vault import corpus as corpus_mod  # noqa: PLC0415
-        return corpus_mod.get_document(doc_id)
-    except Exception:  # noqa: BLE001 — no corpus → excerpt-only, disclosed
+        adapter = _brain_research_adapter()
+        ctx = _server_read_context(principal_id)
+        collected: list[str] = []
+        cursor = 0
+        total = None
+        coverage = ""
+        layer = ""
+        report: dict = {}
+        source = None
+        previous_end = None
+        for _call in range(_HARD_FETCH_CALLS):
+            if total is not None and cursor >= total:
+                break
+            envelope = adapter.call(
+                "research_fetch",
+                {
+                    "report_id": doc_id,
+                    "selectors": {
+                        "segment_start": cursor,
+                        "max_segments": _FETCH_MAX_SEGMENTS,
+                    },
+                },
+                server_context=ctx,
+            )
+            result = _port_result(envelope)
+            if result is None or result.get("ok") is not True:
+                return None
+            if not coverage:
+                raw_coverage = result.get("coverage_state")
+                coverage = raw_coverage if isinstance(raw_coverage, str) else ""
+                layer = _map_text_layer(result.get("text_layer_state"))
+                report = result.get("report") if isinstance(result.get("report"), dict) else {}
+                source = result.get("source") if isinstance(result.get("source"), dict) else None
+            raw_total = result.get("segment_count_total")
+            total = raw_total if type(raw_total) is int and raw_total >= 0 else 0
+            segments = result.get("segments")
+            if not isinstance(segments, list) or not segments:
+                break
+            stop = False
+            for segment in segments:
+                if not isinstance(segment, dict):
+                    stop = True
+                    break
+                text = segment.get("text")
+                start = segment.get("start_byte")
+                end = segment.get("end_byte")
+                if not isinstance(text, str) or type(start) is not int or type(end) is not int:
+                    stop = True
+                    break
+                if previous_end is not None and start != previous_end:
+                    stop = True
+                    break
+                collected.append(text)
+                previous_end = end
+                cursor += 1
+                if len("".join(collected)) > REPORT_BODY_MAX_CHARS:
+                    stop = True
+                    break
+            if stop or cursor >= total:
+                break
+        body = "".join(collected) if coverage == "FULL_TEXT" else ""
+
+        def _text(key: str) -> str:
+            value = report.get(key)
+            return value if isinstance(value, str) else ""
+
+        document = {
+            "body": body,
+            "text_layer": layer,
+            "title": _text("title"),
+            "institution": _text("institution"),
+            "side": _text("side"),
+            "published_at": _text("published_at"),
+        }
+        if source is not None:
+            document["_port_source"] = source
+        return document
+    except Exception:  # noqa: BLE001 — port failure → excerpt-only, disclosed
         return None
 
 
-def _load_evidence_document(doc_id: str):
-    """The same corpus row plus source-binding metadata for R1B, or None."""
+def _load_evidence_document(doc_id: str, *, principal_id: str):
+    """Light handle only. find_evidence is the single evidence read."""
     try:
-        from engine.research_vault import corpus as corpus_mod  # noqa: PLC0415
-        return corpus_mod.get_evidence_document(doc_id)
-    except Exception:  # noqa: BLE001 — no corpus → disclosed evidence shortfall
+        return {"report_id": doc_id, "principal_id": principal_id}
+    except Exception:  # noqa: BLE001 — never raise into the chat turn
         return None
 
 
 def _select_evidence(document, query: str) -> dict:
-    """Run the corpus owner's deterministic selector; fail to body_unavailable."""
+    """research_find_evidence, mapped back to the legacy selection shape.
+
+    Never raises. A failure, a non-dict, or an exception is body_unavailable.
+    Passages that lack the port match fields are dropped, never synthesized.
+    """
     try:
-        from engine.research_vault import corpus as corpus_mod  # noqa: PLC0415
-        return corpus_mod.find_evidence_passages(document or {}, query)
+        report_id = ""
+        principal_id = ""
+        if isinstance(document, dict):
+            report_id = str(document.get("report_id") or "")
+            principal_id = str(document.get("principal_id") or "")
+        if not principal_id:
+            return _unavailable_selection(query)
+        adapter = _brain_research_adapter()
+        ctx = _server_read_context(principal_id)
+        envelope = adapter.call(
+            "research_find_evidence",
+            {
+                "report_id": report_id,
+                "query": query,
+                "max_passages": _EVIDENCE_MAX_PASSAGES,
+            },
+            server_context=ctx,
+        )
+        result = _port_result(envelope)
+        if result is None or result.get("ok") is not True:
+            coverage = ""
+            source = None
+            if isinstance(result, dict):
+                raw_coverage = result.get("coverage_state")
+                coverage = raw_coverage if isinstance(raw_coverage, str) else ""
+                source = result.get("source") if isinstance(result.get("source"), dict) else None
+            return _unavailable_selection(query, coverage=coverage, source=source)
+        return _legacy_selection_from_port(result, query)
     except Exception:  # noqa: BLE001 — retrieval must not take the chat turn down
-        return {
-            "status": "body_unavailable", "query": str(query or ""),
-            "passages": [], "source_binding": {},
-        }
+        return _unavailable_selection(query)
 
 
 def _evidence_requested(query: str) -> bool:
@@ -1955,14 +2291,16 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
             "view_limit_reached", _REPORT_ERR_LIMIT,
             report_id=rid, remaining=0, limit=preflight.get("limit"))
     document = (
-        _load_evidence_document(rid)
+        _load_evidence_document(rid, principal_id=uid)
         if evidence_requested
-        else _load_corpus_document(rid)
+        else _load_corpus_document(rid, principal_id=uid)
     )
-    # Independent re-check (defense in depth alongside the corpus owner's own
-    # fail-closed gate) so the note can distinguish an identity gap from a scan.
-    identity_ok = bool(_sha256_or_empty((document or {}).get("content_sha256"))) \
-        if isinstance(document, dict) else False
+    port_source = (
+        document.get("_port_source")
+        if isinstance(document, dict) and isinstance(document.get("_port_source"), dict)
+        else None
+    )
+    port_coverage = ""
 
     quota: dict | None = None
     evidence: dict | None = None
@@ -1970,6 +2308,11 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
     matched_without_usable_text = False
     if evidence_requested:
         selection = _select_evidence(document, evidence_query)
+        if isinstance(selection, dict):
+            if isinstance(selection.get("_port_source"), dict):
+                port_source = selection["_port_source"]
+            if isinstance(selection.get("_port_coverage_state"), str):
+                port_coverage = selection["_port_coverage_state"]
         # Projection is the final trust boundary. Validate/clip every passage and
         # canonical binding before body assembly or quota mutation; a raw selector
         # status is never sufficient debit authority.
@@ -2027,12 +2370,12 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
             note += _REPORT_NO_EVIDENCE + _partial_evidence_search_note(evidence)
         elif matched_without_usable_text:
             note += _REPORT_NO_USABLE_PASSAGE
-        elif not identity_ok:
+        elif port_coverage == "SOURCE_REVISION_CHANGED":
             note += _REPORT_SOURCE_UNVERIFIED
+        elif port_coverage == "NO_TEXT_LAYER":
+            note += _REPORT_SCAN_ONLY
         else:
-            layer = str((document or {}).get("text_layer") or "") \
-                if isinstance(document, dict) else ""
-            note += _REPORT_SCAN_ONLY if layer == "none" else _REPORT_EXCERPT_ONLY
+            note += _REPORT_EXCERPT_ONLY
     elif quota is None:
         # No body was served. WHY there is none decides which sentence is honest:
         # a measured 'none' is a scan (nothing more will ever exist), everything
@@ -2129,6 +2472,8 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
             }
             projected["access"] = {"decision": "allowed", "metered": True}
 
+    if isinstance(port_source, dict) and port_source.get("state") == "PRODUCER_STALE":
+        response["note"] += _PORT_PRODUCER_STALE_NOTE
     return response
 
 

@@ -65,7 +65,7 @@ _UPGRADE_URL = "/plans.html"
 # full search, view, and download surfaces require PRO — essential/free/unknown all
 # stay on the preview or resolve to 402 paid_required. Fails CLOSED.
 _VIEW_TIERS = frozenset({"pro"})
-_PUBLIC_PREVIEW_COUNT = 3
+_PUBLIC_PREVIEW_COUNT = catalog_mod.PUBLIC_PREVIEW_COUNT
 
 # ── doc_id validation ──────────────────────────────────────────────────────
 # The slug shape produced by sidecar.slug (lowercase alnum + hyphens, first char
@@ -481,19 +481,9 @@ def _safe_filename(doc_id: str, title: str) -> str:
 def _catalog_preview(catalog: dict, limit: int = _PUBLIC_PREVIEW_COUNT) -> dict:
     """Return only the newest summary-ready reports while retaining total count."""
     items = list(catalog.get("items") or [])
-    ready = [
-        item for item in items
-        if any(str(point or "").strip() for point in ((item or {}).get("summary_points") or []))
-    ]
-    preview = ready[:limit]
-    selected = {str((item or {}).get("id") or "") for item in preview}
-    if len(preview) < limit:
-        preview.extend(
-            item for item in items
-            if str((item or {}).get("id") or "") not in selected
-        )
+    preview = catalog_mod.preview_items(catalog, limit)
     public = dict(catalog)
-    public["items"] = preview[:limit]
+    public["items"] = preview
     public["count"] = len(items)
     public["preview"] = True
     public["summary"] = catalog.get("summary") or catalog_mod.public_summary(catalog)

@@ -57,22 +57,83 @@ def _document(body: str, **over) -> dict:
 
 
 def _stub_documents(monkeypatch, body: str, **over):
+    """Feed the port adapter (generic body) and a corpus-oracle selector.
+
+    Prefix-partial and char-count-unknown coverage are not representable on the
+    port (Q-F11-7). The oracle keeps those frozen notes byte-identical by
+    returning the corpus selection, and tags body_unavailable with the port
+    coverage_state the new note branch reads.
+    """
     from engine.research_vault import corpus
 
     evidence_calls: list[str] = []
     legacy_calls: list[str] = []
     row = _document(body, **over)
 
-    def evidence(doc_id, store_factory=None):
-        evidence_calls.append(doc_id)
-        return dict(row)
+    class _Adapter:
+        def call(self, tool, arguments, *, server_context):
+            doc_id = arguments.get("report_id") if isinstance(arguments, dict) else ""
+            if tool == "research_fetch":
+                legacy_calls.append(doc_id)
+                text = row.get("body") if isinstance(row.get("body"), str) else ""
+                segments = []
+                if text:
+                    raw = text.encode("utf-8")
+                    segments = [{"text": text, "start_byte": 0, "end_byte": len(raw)}]
+                layer = row.get("text_layer")
+                return {
+                    "schema": "brain.research_port.v1",
+                    "tool": tool,
+                    "result": {
+                        "ok": True,
+                        "report": {
+                            "title": row.get("title") or "",
+                            "institution": row.get("institution") or "",
+                            "side": row.get("side") or "",
+                            "published_at": row.get("published_at") or "",
+                        },
+                        "source": {"state": "SOURCE_FRESH", "known_degradation": []},
+                        "coverage_state": "FULL_TEXT",
+                        "text_layer_state": layer if isinstance(layer, str) else "",
+                        "segment_count_total": len(segments),
+                        "segments": segments,
+                    },
+                }
+            raise AssertionError(tool)
 
-    def legacy(doc_id, store_factory=None):
-        legacy_calls.append(doc_id)
-        return {key: row.get(key) for key in corpus.DOCUMENT_FIELDS}
+    monkeypatch.setattr(bmi, "_brain_research_adapter", lambda: _Adapter())
 
-    monkeypatch.setattr(corpus, "get_evidence_document", evidence)
-    monkeypatch.setattr(corpus, "get_document", legacy)
+    def select(document, query):
+        doc_id = ""
+        if isinstance(document, dict):
+            doc_id = str(document.get("report_id") or document.get("doc_id") or "")
+        evidence_calls.append(doc_id or REPORT_ID)
+        found = corpus.find_evidence_passages(row, query)
+        if not isinstance(found, dict):
+            found = {
+                "status": "body_unavailable",
+                "query": str(query or ""),
+                "passages": [],
+                "source_binding": {},
+            }
+        else:
+            found = dict(found)
+        sha = row.get("content_sha256")
+        identity_ok = isinstance(sha, str) and len(sha) == 64 and all(
+            ch in "0123456789abcdef" for ch in sha
+        )
+        layer = str(row.get("text_layer") or "")
+        if not identity_ok:
+            port_coverage = "SOURCE_REVISION_CHANGED"
+        elif layer == "none":
+            port_coverage = "NO_TEXT_LAYER"
+        else:
+            port_coverage = ""
+        found["_port_coverage_state"] = port_coverage
+        found["_port_source"] = None
+        return found
+
+    monkeypatch.setattr(bmi, "_select_evidence", select)
     return evidence_calls, legacy_calls
 
 

@@ -1481,10 +1481,9 @@ def test_real_catalog_clusters_are_coherent():
 # --------------------------------------------------------------------------- #
 # 47-62  W4 — the full-report escalation (mode='report', PRO, metered)
 # --------------------------------------------------------------------------- #
-# The corpus is R2-only, so the body layer is reached through ONE seam
-# (research_vault.corpus.get_document) and every test replaces it. Nothing here
-# opens a socket; the quota ledger, where a test lets the real one run, is rooted
-# at a tmp MACRO_API_STATE_DIR.
+# The body layer is reached through the Brain research adapter and every test
+# replaces that adapter. Nothing here opens a socket; the quota ledger, where a
+# test lets the real one run, is rooted at a tmp MACRO_API_STATE_DIR.
 
 _PRO = {"user_id": "u-pro-1", "ip_hint": "203.0.113.9"}
 
@@ -1499,36 +1498,85 @@ def _excerpts(root: pathlib.Path, mapping: dict) -> None:
 
 
 def _stub_document(monkeypatch, body: str, *, calls: list | None = None, **over):
-    """Replace the corpus seam with a canned document row (no R2, no sqlite)."""
-    from engine.research_vault import corpus as corpus_mod
+    """Replace the read-port adapter with a canned document (no R2, no sqlite)."""
+    row = {"doc_id": "", "title": "Corpus Title", "institution": "Corpus Co",
+           "side": "sell", "published_at": "2026-01-01T00:00:00Z",
+           "summary": "corpus summary", "body": body,
+           "pages": 1, "char_count": len(body), "content_sha256": "a" * 64,
+           # '' is the unmeasured default a pre-probe row returns.
+           "text_layer": ""}
+    row.update(over)
 
-    def _get_document(doc_id, store_factory=None):
-        if calls is not None:
-            calls.append(doc_id)
-        row = {"doc_id": doc_id, "title": "Corpus Title", "institution": "Corpus Co",
-               "side": "sell", "published_at": "2026-01-01T00:00:00Z",
-               "summary": "corpus summary", "body": body,
-               "pages": 1, "char_count": len(body), "content_sha256": "a" * 64,
-               # corpus.DOCUMENT_FIELDS carries the measured text-layer state; ''
-               # is the unmeasured default a pre-probe row returns.
-               "text_layer": ""}
-        row.update(over)
-        return row
+    class _Adapter:
+        def call(self, tool, arguments, *, server_context):
+            doc_id = arguments.get("report_id") if isinstance(arguments, dict) else None
+            if calls is not None:
+                calls.append(doc_id)
+            if tool == "research_fetch":
+                text = row.get("body") if isinstance(row.get("body"), str) else ""
+                segments = []
+                if text:
+                    raw = text.encode("utf-8")
+                    segments = [{
+                        "text": text,
+                        "start_byte": 0,
+                        "end_byte": len(raw),
+                    }]
+                layer = row.get("text_layer")
+                return {
+                    "schema": "brain.research_port.v1",
+                    "tool": tool,
+                    "result": {
+                        "ok": True,
+                        "report": {
+                            "title": row.get("title") or "",
+                            "institution": row.get("institution") or "",
+                            "side": row.get("side") or "",
+                            "published_at": row.get("published_at") or "",
+                        },
+                        "source": {"state": "SOURCE_FRESH", "known_degradation": []},
+                        "coverage_state": "FULL_TEXT",
+                        "text_layer_state": layer if isinstance(layer, str) else "",
+                        "segment_count_total": len(segments),
+                        "segments": segments,
+                    },
+                }
+            if tool == "research_find_evidence":
+                text = row.get("body") if isinstance(row.get("body"), str) else ""
+                return {
+                    "schema": "brain.research_port.v1",
+                    "tool": tool,
+                    "result": {
+                        "ok": True,
+                        "evidence_state": "NOT_FOUND",
+                        "coverage_state": "FULL_TEXT",
+                        "source": {"state": "SOURCE_FRESH", "known_degradation": []},
+                        "passages": [],
+                        "searched_char_count": len(text),
+                        "text_layer_state": "full",
+                        "page_count": 1,
+                    },
+                }
+            raise AssertionError(tool)
 
-    monkeypatch.setattr(corpus_mod, "get_document", _get_document)
-    monkeypatch.setattr(corpus_mod, "get_evidence_document", _get_document)
+    monkeypatch.setattr(bmi, "_brain_research_adapter", lambda: _Adapter())
 
 
 def _stub_no_document(monkeypatch, calls: list | None = None):
-    """The corpus is unreachable (no R2 creds, dead bucket, unknown row)."""
-    from engine.research_vault import corpus as corpus_mod
+    """The read port is unreachable (no store, dead bucket, unknown row)."""
 
-    def _get_document(doc_id, store_factory=None):
-        if calls is not None:
-            calls.append(doc_id)
-        return None
+    class _Adapter:
+        def call(self, tool, arguments, *, server_context):
+            if calls is not None:
+                doc_id = arguments.get("report_id") if isinstance(arguments, dict) else None
+                calls.append(doc_id)
+            return {
+                "schema": "brain.research_port.v1",
+                "tool": tool,
+                "result": {"ok": False, "code": "SOURCE_BODY_UNAVAILABLE"},
+            }
 
-    monkeypatch.setattr(corpus_mod, "get_document", _get_document)
+    monkeypatch.setattr(bmi, "_brain_research_adapter", lambda: _Adapter())
 
 
 def _stub_quota(monkeypatch, allowed: bool = True, *, remaining: int = 59,
@@ -1875,13 +1923,13 @@ def test_a_missing_or_corrupt_catalog_reports_the_vault_unavailable(tmp_path, mo
 
 def test_a_corpus_that_raises_never_takes_the_turn_down(tmp_path, monkeypatch):
     """The retrieval-must-not-raise contract, extended to the new R2-backed leg."""
-    from engine.research_vault import corpus as corpus_mod
     _seed_one(tmp_path)
 
-    def _boom(doc_id, store_factory=None):
-        raise RuntimeError("R2 is down")
+    class _Down:
+        def call(self, tool, arguments, *, server_context):
+            raise RuntimeError("R2 is down")
 
-    monkeypatch.setattr(corpus_mod, "get_document", _boom)
+    monkeypatch.setattr(bmi, "_brain_research_adapter", lambda: _Down())
     result = _report(tmp_path, "gs-oil-1")
     assert result["report"]["body_text"] == "", "degrades to the public excerpt"
     assert result["quota"] is None
