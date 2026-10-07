@@ -1,11 +1,13 @@
 (function (root, factory) {
   'use strict';
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./intl_workspace_state.js'));
+    var search;
+    try { search = require('./intl_library_search.js'); } catch (error) { if (error.code !== 'MODULE_NOT_FOUND') throw error; }
+    module.exports = factory(require('./intl_workspace_state.js'), search);
   } else {
-    root.IntlWorkspace = factory(root.IntlWorkspaceState);
+    root.IntlWorkspace = factory(root.IntlWorkspaceState, root.IntlLibrarySearch);
   }
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (IntlWorkspaceState) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (IntlWorkspaceState, IntlLibrarySearch) {
   'use strict';
 
   var HANDLES = typeof WeakMap === 'function' ? new WeakMap() : null;
@@ -55,13 +57,144 @@
     });
   }
 
+  // Library is metadata owned by this workspace. Search state is a local draft;
+  // the existing reducer remains the sole owner of shareable research context.
+  function prepareLibrary(root, config) {
+    var panels = owned(root, '[data-view="library"][data-im-library-static]');
+    if (panels.length !== 1) return null;
+    var panel = panels[0];
+    function all(selector) { return owned(root, selector).filter(function (node) { return panel.contains(node); }); }
+    function one(selector) { var nodes = all(selector); return nodes.length === 1 ? nodes[0] : null; }
+    var library = {panel:panel, all:all, input:one('[data-im-library-search]'), form:one('[data-im-library-search-form]'),
+      clear:one('[data-im-library-clear]'), status:one('[data-im-library-status]'), groupsRoot:one('[data-im-library-groups]'),
+      results:one('[data-im-library-results]'), empty:one('[data-im-library-empty]'), back:one('[data-im-library-back]'),
+      groups:all('[data-im-library-group]'), rows:all('[data-im-library-tool]'), valid:false, query:'', composing:false};
+    library.placements = library.rows.map(function (node) { return {node:node,parent:node.parentNode,next:node.nextSibling}; });
+    try {
+      if (!['input','form','clear','status','groupsRoot','results','empty','back'].every(function (key) { return !!library[key]; }) ||
+          !IntlLibrarySearch || typeof IntlLibrarySearch.searchIntlTools !== 'function') return library;
+      var script = one('script[data-im-library-catalogue]');
+      if (!script) return library;
+      var catalogue = JSON.parse(script.textContent);
+      // The accepted helper validates the complete public catalogue schema.
+      IntlLibrarySearch.searchIntlTools(catalogue, '', null);
+      var groups = new Set(library.groups.map(function (group) { return group.getAttribute('data-im-library-group'); }));
+      if (groups.size !== 6 || library.groups.length !== 6 || catalogue.length !== 18 || library.rows.length !== 18 ||
+          groups.size !== config.library_group_ids.length || config.library_group_ids.some(function (id) { return !groups.has(id); }) ||
+          library.groups.some(function (group) {
+            var id=group.getAttribute('data-im-library-group');
+            return !library.groupsRoot.contains(group) || catalogue.filter(function (item) { return item.group_id===id; }).length!==3 ||
+              all('[data-im-library-tools]').filter(function (list) { return list.closest('[data-im-library-group]')===group; }).length!==1;
+          })) return library;
+      var byKey = new Map(library.rows.map(function (row) { return [row.getAttribute('data-im-library-tool'),row]; }));
+      if (byKey.size !== library.rows.length || catalogue.some(function (item) {
+        var row = byKey.get(item.presentation_key);
+        return !row || row.getAttribute('data-im-library-order') !== String(item.order) ||
+          !row.parentNode.matches('[data-im-library-tools]') || row.parentNode.getAttribute('data-im-library-tools') !== item.group_id ||
+          !groups.has(item.group_id) || !row.closest('[data-im-library-group]') ||
+          row.closest('[data-im-library-group]').getAttribute('data-im-library-group') !== item.group_id;
+      })) return library;
+      library.catalogue = catalogue; library.byKey = byKey; library.valid = true;
+      library.query = library.input.value;
+    } catch (_) { /* The approved static page survives failed enhancement. */ }
+    return library;
+  }
+
+  function restoreLibraryRows(placements) {
+    // Restore right siblings first, including whitespace/text siblings. Moving
+    // original nodes preserves third-party handlers and exact pre-mount order.
+    placements.slice().reverse().forEach(function (entry) {
+      var next = entry.next && entry.next.parentNode === entry.parent ? entry.next : null;
+      if (entry.node.parentNode !== entry.parent || entry.node.nextSibling !== next) entry.parent.insertBefore(entry.node,next);
+    });
+  }
+
+  function paintLibrary(controller, state) {
+    var library = controller.library;
+    if (!library || library.panel.hidden) return;
+    var zh = normalLanguage(controller.root) === 'zh';
+    if (!library.valid) {
+      library.panel.removeAttribute('data-im-library-enhanced');
+      if (library.input) library.input.disabled = true;
+      if (library.clear) library.clear.disabled = true;
+      library.all('[data-im-library-group-open]').forEach(function (button) { button.hidden = true; });
+      if (library.status) library.status.textContent = zh ? '此视图的工具目录暂不可用。' : 'The tool catalogue is unavailable for this view.';
+      return;
+    }
+    library.panel.setAttribute('data-im-library-enhanced','true');
+    library.input.disabled = false; library.clear.disabled = false;
+    library.input.setAttribute('placeholder',zh ? '工具名称、问题或别名' : 'Tool name, question or alias');
+    var matches, invalid = false;
+    try { matches = IntlLibrarySearch.searchIntlTools(library.catalogue, library.query, state.library_group); }
+    catch (_) { invalid = true; matches = []; }
+    var searching = library.query.trim().length > 0;
+    var resultRows = !invalid && searching ? matches.map(function (match) { return library.byKey.get(match.presentation_key); }) : [];
+    var resultSet = new Set(resultRows);
+    restoreLibraryRows(library.placements.filter(function (entry) { return !resultSet.has(entry.node); }));
+    library.groupsRoot.hidden = invalid || searching;
+    library.groups.forEach(function (group) {
+      var id = group.getAttribute('data-im-library-group');
+      group.hidden = !!state.library_group && id !== state.library_group;
+      if (id === state.library_group) group.setAttribute('data-im-library-active','');
+      else group.removeAttribute('data-im-library-active');
+    });
+    library.all('[data-im-library-group-open]').forEach(function (button) { button.hidden = false; });
+    library.results.hidden = invalid || !searching || !matches.length;
+    library.empty.hidden = invalid || !searching || !!matches.length;
+    library.back.hidden = !state.library_group;
+    library.status.textContent = invalid ? (zh ? '搜索内容无效。请输入不超过256个字符，且不含不支持的控制字符。' : 'Search input is invalid. Use up to 256 characters without unsupported control characters.') :
+      searching && !matches.length ? (zh ? '没有匹配的工具。请尝试其他工具名称或问题。' : 'No tools match this search. Try another tool name or question.') : '';
+    var nextResult = null;
+    resultRows.slice().reverse().forEach(function (row) {
+      if (row.parentNode !== library.results || row.nextSibling !== nextResult) {
+        if (nextResult === null) library.results.appendChild(row);
+        else library.results.insertBefore(row,nextResult);
+      }
+      nextResult = row;
+    });
+  }
+
+  function libraryEvent(controller, event) {
+    var library = controller.library;
+    if (!controller.live || !library || !library.valid || library.panel.hidden ||
+        !event.target.closest || event.target.closest('[data-im-workspace]')!==controller.root) return false;
+    if (event.type === 'submit' && event.target === library.form) { event.preventDefault(); return true; }
+    var clear = event.type === 'click' && event.target.closest && event.target.closest('[data-im-library-clear]') === library.clear;
+    if (!clear && event.target !== library.input) return false;
+    if (event.type === 'compositionstart') { library.composing = true; return true; }
+    if (event.type === 'input' && library.composing) {
+      // Validate the interim draft through the same helper, but keep the last
+      // committed result set until composition ends (including locale changes).
+      try { IntlLibrarySearch.searchIntlTools(library.catalogue, library.input.value, controller.state.library_group, {composing:true}); } catch (_) {}
+      return true;
+    }
+    if (clear || event.type === 'compositionend' || event.type === 'input') {
+      if (clear) { event.preventDefault(); library.input.value = ''; }
+      var previousQuery = library.query;
+      library.composing = false; library.query = library.input.value;
+      var committed = stageAndCommit(controller,controller.state,controller.issues,'resize');
+      if (!committed.ok) { library.query=previousQuery; library.input.value=previousQuery; }
+      if (clear) library.input.focus();
+      return true;
+    }
+    return false;
+  }
+
   function snapshotRoot(root) {
     var selector = '[data-im-heading],[data-im-issues],[data-im-unavailable],[data-im-panel],'+
-      '[data-im-action],[data-im-expanded-region],[data-im-expansion-trigger] .l-en,[data-im-expansion-trigger] .l-zh';
+      '[data-im-action],[data-im-expanded-region],[data-im-expansion-trigger] .l-en,[data-im-expansion-trigger] .l-zh,'+
+      '[data-im-library-static],[data-im-library-search],[data-im-library-clear],[data-im-library-status],'+
+      '[data-im-library-groups],[data-im-library-group],[data-im-library-results],[data-im-library-empty],[data-im-library-tool]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
       if (node === root) attrs.push('data-im-enhanced');
       if (node.matches('[data-im-heading]')) attrs.push('tabindex');
+      if (node.matches('[data-im-library-static]')) attrs.push('data-horizon','data-basis','data-im-library-enhanced');
+      if (node.matches('[data-im-library-group]')) attrs.push('data-im-library-active');
+      if (node.matches('[data-im-library-groups],[data-im-library-group],[data-im-library-results],[data-im-library-empty],[data-im-library-group-open],[data-im-library-back]')) attrs.push('hidden');
+      if (node.matches('[data-im-library-search],[data-im-library-clear]')) attrs.push('disabled');
+      if (node.matches('[data-im-library-search]')) { attrs.push('placeholder'); value = true; }
+      if (node.matches('[data-im-library-status]')) text = true;
       if (node.matches('[data-im-issues]')) { attrs.push('role'); text = true; }
       if (node.matches('[data-im-unavailable],[data-im-panel],[data-im-expanded-region]')) attrs.push('hidden');
       if (node.matches('button[data-im-action="set_view"]')) attrs.push('disabled','aria-pressed');
@@ -69,7 +202,8 @@
       if (node.matches('[data-im-expansion-trigger]')) attrs.push('hidden','aria-expanded','data-im-expanded');
       if (node.matches('[data-im-expansion-trigger] .l-en,[data-im-expansion-trigger] .l-zh')) text = true;
       return {node:node, attrs:Array.from(new Set(attrs)).map(function (name) {return [name,node.getAttribute(name)];}),
-        value:value ? node.value : null, children:text ? Array.from(node.childNodes) : null};
+        value:value ? node.value : null, children:text ? Array.from(node.childNodes) : null,
+        parent:node.matches('[data-im-library-tool]') ? node.parentNode : null, next:node.nextSibling};
     });
   }
 
@@ -80,6 +214,7 @@
   }
 
   function restoreRoot(root, snapshot) {
+    restoreLibraryRows(snapshot.filter(function (entry) { return !!entry.parent; }));
     snapshot.forEach(function (entry) {
       var node = entry.node;
       if (node !== root && node.closest('[data-im-workspace]') !== root) return;
@@ -129,6 +264,10 @@
 
   function paint(controller, state, issues) {
     var root = controller.root;
+    var library = controller.library;
+    if (library && panelValid(library.panel,controller.config,state.source_reference)) {
+      library.panel.setAttribute('data-horizon',state.horizon); library.panel.setAttribute('data-basis',state.currency_basis);
+    }
     var panels = panelFor(controller, state);
     var panel = panels.length === 1 ? panels[0] : null;
     var supported = structuralPanels(controller, state.source_reference);
@@ -160,6 +299,7 @@
         if (zh) zh.textContent = state.expanded ? '收起全部市场' : '展开全部市场';
       });
     }
+    paintLibrary(controller,state);
     return reported;
   }
 
@@ -268,10 +408,21 @@
   }
 
   function clickOrChange(controller, event) {
+    if (libraryEvent(controller,event)) return;
     var action = actionFromEvent(controller, event);
     if (!action) return;
     event.preventDefault();
-    dispatch(controller, action);
+    var previousGroup=controller.state.library_group;
+    var committed=dispatch(controller, action);
+    if (committed.ok && action.type==='set_library_group' && event.type==='click' && controller.library && controller.library.valid) {
+      var library=controller.library, target;
+      if (action.group_id) {
+        var group=library.groups.find(function (node) { return node.getAttribute('data-im-library-group')===action.group_id; });
+        target=group && group.querySelector('h3');
+      } else target=library.all('[data-im-library-group-open]').find(function (node) { return node.getAttribute('data-im-group')===previousGroup; });
+      if (!target || target.closest('[hidden]') || !target.getClientRects().length) target=library.input;
+      target.focus();
+    }
   }
 
   function replaceSource(controller, newSource, expectedSource) {
@@ -338,6 +489,7 @@
       root: root, config: config, configWithSource: configWithSource, reducer: reducer, environment: { window: window },
       state: null, issues: [], serializedQuery: '', live: false, original: []
     };
+    controller.library = prepareLibrary(root,config);
     var snapshot = snapshotRoot(root);
     controller.original = snapshot.slice();
     var installed = { listeners: false, popstate: false, observer: null };
@@ -350,13 +502,15 @@
       controller.live = true;
       controller.onClick = function (event) { clickOrChange(controller, event); };
       controller.onChange = function (event) { clickOrChange(controller, event); };
+      controller.onLibraryEvent = function (event) { libraryEvent(controller,event); };
       controller.onPopstate = function () { popstate(controller); };
       controller.onResize = function () { dispatch(controller, {type:'resize'}); };
       root.addEventListener('click', controller.onClick, false);
       root.addEventListener('change', controller.onChange, false);
+      ['input','compositionstart','compositionend','submit'].forEach(function (type) { root.addEventListener(type,controller.onLibraryEvent,false); });
       window.addEventListener('popstate', controller.onPopstate, false);
       window.addEventListener('resize', controller.onResize, false);
-      controller.observer = new window.MutationObserver(function () { repaintIssues(controller); });
+      controller.observer = new window.MutationObserver(function () { repaintIssues(controller); paintLibrary(controller,controller.state); });
       controller.observer.observe(window.document.documentElement, { attributes: true, attributeFilter: ['lang'] });
       root.setAttribute('data-im-enhanced', 'true');
       var handle = {
@@ -372,6 +526,7 @@
       if (controller.observer) controller.observer.disconnect();
       if (controller.onClick) root.removeEventListener('click', controller.onClick, false);
       if (controller.onChange) root.removeEventListener('change', controller.onChange, false);
+      if (controller.onLibraryEvent) ['input','compositionstart','compositionend','submit'].forEach(function (type) { root.removeEventListener(type,controller.onLibraryEvent,false); });
       if (controller.onPopstate) window.removeEventListener('popstate', controller.onPopstate, false);
       if (controller.onResize) window.removeEventListener('resize', controller.onResize, false);
       restoreRoot(root, controller.original);
@@ -387,6 +542,7 @@
     if (controller.observer) controller.observer.disconnect();
     controller.root.removeEventListener('click', controller.onClick, false);
     controller.root.removeEventListener('change', controller.onChange, false);
+    ['input','compositionstart','compositionend','submit'].forEach(function (type) { controller.root.removeEventListener(type,controller.onLibraryEvent,false); });
     controller.environment.window.removeEventListener('popstate', controller.onPopstate, false);
     controller.environment.window.removeEventListener('resize', controller.onResize, false);
     HANDLES.delete(controller.root);

@@ -70,3 +70,46 @@
   .intl-overview__first-read { gap:var(--fs-body); }
   .intl-workspace__toolbar > label { flex-basis:100%; }
 }
+.intl-library { margin-block:calc(var(--fs-body) * 1.5); min-inline-size:0; }
+.intl-library *, .intl-library *::before, .intl-library *::after { box-sizing:border-box; }
+.intl-library [hidden] { display:none !important; }
+.intl-library__heading, .intl-library__intro { margin-block:0 calc(var(--fs-body) / 2); overflow-wrap:anywhere; }
+.intl-library__heading { font-size:var(--fs-h2); line-height:1.4; }
+.intl-library__search { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:calc(var(--fs-body) / 2); align-items:end; margin-block:var(--fs-body); padding:var(--fs-body); background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card,12px); }
+.intl-library__search-label { grid-column:1 / -1; color:var(--muted); }
+.intl-library__search input { grid-column:1; width:100%; min-inline-size:0; font:inherit; color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:var(--r-ctl,8px); padding:calc(var(--fs-body) / 2) var(--fs-body); min-block-size:calc(var(--fs-num-lg) * 2); overflow-wrap:anywhere; }
+.intl-library__search button { grid-column:2; }
+.intl-library__status { grid-column:1 / -1; margin:0; min-inline-size:0; overflow-wrap:anywhere; }
+.intl-library__status:empty { margin:0; }
+.intl-library__notice, .intl-library__catalogue-unavailable { margin-block:0 var(--fs-body); color:var(--muted); font-size:var(--fs-sm); overflow-wrap:anywhere; }
+.intl-library__groups { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:var(--fs-body); align-items:start; }
+.intl-library__group { min-inline-size:0; background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,12px); }
+.intl-library__group-open { display:block; inline-size:100%; text-align:start; }
+.intl-library__group-heading { margin:0; padding:var(--fs-body); font-size:var(--fs-h2); line-height:1.4; overflow-wrap:anywhere; }
+.intl-library__tools { list-style:none; margin:0; padding:0; }
+.intl-library__tool { display:grid; gap:calc(var(--fs-body) / 2); min-inline-size:0; padding:var(--fs-body); overflow-wrap:anywhere; }
+.intl-library__tool + .intl-library__tool { border-block-start:1px solid var(--line); }
+.intl-library__tool:hover, .intl-library__tool:focus-within { background:var(--panel2); }
+.intl-library__tool-name { margin:0; font-size:var(--fs-body); font-weight:650; }
+.intl-library__tool-question, .intl-library__tool-scope, .intl-library__tool-unavailable { margin:0; color:var(--muted); }
+.intl-library__tool-scope, .intl-library__tool-unavailable { font-size:var(--fs-sm); }
+.intl-library__tool-link { min-block-size:calc(var(--fs-num-lg) * 2); display:inline-flex; align-items:center; color:var(--link); overflow-wrap:anywhere; }
+.intl-library :is(input,button,a,[tabindex]):focus-visible { outline:2px solid var(--link); outline-offset:3px; }
+.intl-library__results, .intl-library__empty, .intl-library__back { margin-block:var(--fs-body); }
+.intl-library__results { list-style:none; padding:0; }
+.intl-library__back { inline-size:100%; }
+[data-theme="light"] .intl-library__group, [data-theme="light"] .intl-library__search { background:var(--panel); box-shadow:var(--card-shadow); }
+[data-theme="light"] .intl-library__tool:hover, [data-theme="light"] .intl-library__tool:focus-within { background:var(--panel2); }
+[data-theme="light"] .intl-library__search input { background:var(--panel); }
+@media (max-width:768px) {
+  .intl-library__groups { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+  .intl-library__search { grid-template-columns:minmax(0,1fr); }
+  .intl-library__search input, .intl-library__search button, .intl-library__back { grid-column:1; inline-size:100%; }
+}
+@media (max-width:600px) {
+  .intl-library__groups { grid-template-columns:minmax(0,1fr); }
+  .intl-library[data-im-library-enhanced] .intl-library__group:not([data-im-library-active]) .intl-library__group-heading { display:none; }
+  .intl-library[data-im-library-enhanced] .intl-library__group:not([data-im-library-active]) .intl-library__tool { display:none; }
+  .intl-library[data-im-library-enhanced] .intl-library__group:not([data-im-library-active]) .intl-library__group-open { display:block; }
+  .intl-library[data-im-library-enhanced] .intl-library__group[data-im-library-active] .intl-library__group-open { display:none; }
+}

@@ -26,6 +26,7 @@
 {% if mode != 'stocks' and intl_workspace|default(none) %}
 <link rel="stylesheet" href="intl_workspace.css">
 <script defer src="intl_workspace_state.js"></script>
+<script defer src="intl_library_search.js"></script>
 <script defer src="intl_workspace.js"></script>
 <script defer src="intl_workspace_entry.js"></script>
 {% endif %}
@@ -686,7 +687,7 @@
 {%- endmacro %}
 <div class="panel accent">
   <div class="sec-h">
-    <h2>{{ t('World markets — turns & rotation', '全球市场 — 拐点与轮动') }}
+    <h2 id="intl-market-turns">{{ t('World markets — turns & rotation', '全球市场 — 拐点与轮动') }}
       {{ help('Each market\'s trend, read straight from its price action — climbing, stretched, topping out, breaking, or falling. The hottest markets sort to the top, and every card tells you what to do. The "pullback risk" tag is a separate heads-up that a drop may be brewing — from US rates, the currency, or a stretched price. It is context only, never a forecast, and never ranks the markets. Hover any card for the full read.', '每个市场的趋势，直接读自其价格走势——上行、伸展、见顶、破位或下跌。最紧迫的市场排在最前，每张卡都会告诉你该怎么做。「回撤风险」标签是另一重提示，表示可能正在酝酿一轮下跌——来自美债利率、汇率或价格过度伸展。它仅供参考，绝非预测，也不参与市场排名。将鼠标悬停在任意卡片上可查看完整解读。') }}
     </h2>
     <span style="flex:1"></span>
@@ -931,7 +932,7 @@
   <summary><span class="rf-t">{{ t('Full data tables', '完整数据表') }}</span><span class="rf-s">{{ t('Cross-country scorecard · rates & curve desk', '跨国评分卡 · 利率与曲线台') }}</span><span class="rf-caret" aria-hidden="true">▾</span></summary>
 <!-- ===== Cross-country comparison grid (the reference table) ===== -->
 <div class="panel">
-  <h2>{{ t('Cross-country comparison', '跨国对比') }} {{ help('Same scorecard for every economy: regime, recession risk, rates, CPI, FX, and equity stretch.', '每个经济体用同一套表：周期、衰退风险、利率、CPI、汇率与股市拉伸。') }}</h2>
+  <h2 id="intl-cross-country">{{ t('Cross-country comparison', '跨国对比') }} {{ help('Same scorecard for every economy: regime, recession risk, rates, CPI, FX, and equity stretch.', '每个经济体用同一套表：周期、衰退风险、利率、CPI、汇率与股市拉伸。') }}</h2>
   <div class="gridwrap">
   <table class="cmp">
     <thead><tr>
@@ -993,7 +994,7 @@
 {% if rates %}
 {% set AN = rates.anchor %}
 <div class="panel">
-  <div class="sec-h"><h2>{{ t('Rates & curve desk', '利率与曲线室') }} {{ help('Compares yield curves, real yields, 10-year yield drift, and carry vs the US.', '比较收益率曲线、实际利率、10年利率变化，以及相对美国的套息。') }}</h2>
+  <div class="sec-h"><h2 id="intl-rates-curves">{{ t('Rates & curve desk', '利率与曲线室') }} {{ help('Compares yield curves, real yields, 10-year yield drift, and carry vs the US.', '比较收益率曲线、实际利率、10年利率变化，以及相对美国的套息。') }}</h2>
     <span style="flex:1"></span>
     {% if AN.y10 is not none %}<span class="sub">{{ t('US anchor', '美国锚') }}: <b style="color:var(--text)">{{ AN.y10 }}%</b> 10y · {{ AN.y2 }}% 2y · {{ t('curve', '曲线') }} {{ '%+.2f'|format(AN.curve) if AN.curve is not none else '—' }}</span>{% endif %}
   </div>
@@ -1040,7 +1041,7 @@
     <!-- Eurozone periphery -->
     {% if rates.periphery %}
     <div>
-      <h3>🇪🇺 {{ t('Eurozone fragmentation — peripheral spreads over Bund', '欧元区分化 — 外围国相对德债利差') }} {{ help('Wider spreads mean more Eurozone stress; tighter spreads mean calmer conditions.', '利差走阔代表欧元区压力上升；收窄代表环境更稳。') }}</h3>
+      <h3 id="intl-euro-fragmentation">🇪🇺 {{ t('Eurozone fragmentation — peripheral spreads over Bund', '欧元区分化 — 外围国相对德债利差') }} {{ help('Wider spreads mean more Eurozone stress; tighter spreads mean calmer conditions.', '利差走阔代表欧元区压力上升；收窄代表环境更稳。') }}</h3>
       <table class="sb">
         <thead><tr><th class="l">{{ t('Spread', '利差') }}</th><th>{{ t('bps', '基点') }}</th><th>{{ t('3m', '3月') }}</th><th class="l">{{ t('Read', '读数') }}</th></tr></thead>
         <tbody>
@@ -1414,7 +1415,7 @@
     <!-- CONTAGION BOARD -->
     <div class="panel">
       <div class="sec-h">
-        <h2>{{ t('Contagion board', '传导看板') }} {{ help('How tightly are global markets linked right now? The score (0–100) measures how far a shock in one market travels to others, using a rolling 150-day window. Higher = shocks spread faster. Top shock senders are markets that export the most stress to peers. US receiving share = how much of international stress eventually reaches the S&P 500 — this is a transmission read, not a causal share. Source: daily ETF returns.', '全球市场目前关联程度如何？得分（0–100）衡量某市场冲击向其他市场的传导程度，使用150日滚动窗口。数值越高，冲击传播越快。前三大冲击输出方是最多向同伴输出压力的市场。美国接收份额 = 国际压力最终传导至标普500的比例——这是传导读数，非因果占比。数据来源：ETF日度收益。') }}</h2>
+        <h2 id="intl-contagion">{{ t('Contagion board', '传导看板') }} {{ help('How tightly are global markets linked right now? The score (0–100) measures how far a shock in one market travels to others, using a rolling 150-day window. Higher = shocks spread faster. Top shock senders are markets that export the most stress to peers. US receiving share = how much of international stress eventually reaches the S&P 500 — this is a transmission read, not a causal share. Source: daily ETF returns.', '全球市场目前关联程度如何？得分（0–100）衡量某市场冲击向其他市场的传导程度，使用150日滚动窗口。数值越高，冲击传播越快。前三大冲击输出方是最多向同伴输出压力的市场。美国接收份额 = 国际压力最终传导至标普500的比例——这是传导读数，非因果占比。数据来源：ETF日度收益。') }}</h2>
         <span class="sub">{{ t('How connected are markets right now?', '市场间关联程度如何？') }}</span>
       </div>
 
@@ -1498,7 +1499,7 @@
     {%- if CBD and CBD.get('cbs') %}
     <div class="panel">
       <div class="sec-h">
-        <h2>{{ t('Central bank desk', '央行动态台') }} {{ help('Rates from public data. Stance = realized rate changes over the trailing 3 months — not forward guidance or market pricing. Balance sheet: available for Fed, ECB, and BoJ only (public weekly data); others are honest nulls. Next meeting dates are calendar-only.  Descriptive only — no policy-intent projection.', '利率来自公开数据。立场 = 过去3个月已实现的利率变动——非前瞻指引或市场定价。资产负债表：仅限美联储、欧央行和日本央行（公开周度数据）；其他为诚实缺失。下次会议日期仅为日历。仅描述，不预测政策意图。') }}</h2>
+        <h2 id="intl-central-banks">{{ t('Central bank desk', '央行动态台') }} {{ help('Rates from public data. Stance = realized rate changes over the trailing 3 months — not forward guidance or market pricing. Balance sheet: available for Fed, ECB, and BoJ only (public weekly data); others are honest nulls. Next meeting dates are calendar-only.  Descriptive only — no policy-intent projection.', '利率来自公开数据。立场 = 过去3个月已实现的利率变动——非前瞻指引或市场定价。资产负债表：仅限美联储、欧央行和日本央行（公开周度数据）；其他为诚实缺失。下次会议日期仅为日历。仅描述，不预测政策意图。') }}</h2>
         <span class="sub">{{ t('What the major central banks are actually doing', '主要央行的实际政策动向') }}</span>
       </div>
       <table class="ird-cb">
@@ -1566,7 +1567,7 @@
     <!-- CREDIT & BOND STRESS -->
     <div class="panel">
       <div class="sec-h">
-        <h2>{{ t('Credit & bond stress', '信用与债券压力') }} {{ help('Credit spreads = the extra yield emerging-market bonds pay above comparable Treasuries, in percentage points. Velocity arrow = direction of 20-day move (↑ widening = more stress, ↓ tightening = easing). EM high-yield source: BAML EM High Yield index. Regional spreads: BAML regional subindices. Inversion board: 10yr minus 3-month yield for 6 major curves. EM spread history collected since Jul 2023 (data-vendor cap) — long-run comparisons build up over time.', '信用利差 = 新兴市场债券相对同期美债的超额收益率（百分点）。速度箭头 = 20日走势方向（↑走阔 = 压力上升，↓收窄 = 压力减轻）。新兴市场高收益来源：美银美林新兴市场高收益指数。地区利差：美银美林地区子指数。倒挂看板：6个主要收益率曲线的10年减3月期利差。新兴市场利差数据自2023年7月起收集（数据供应商限制）——长期比较随时间积累。') }}</h2>
+        <h2 id="intl-credit-bonds">{{ t('Credit & bond stress', '信用与债券压力') }} {{ help('Credit spreads = the extra yield emerging-market bonds pay above comparable Treasuries, in percentage points. Velocity arrow = direction of 20-day move (↑ widening = more stress, ↓ tightening = easing). EM high-yield source: BAML EM High Yield index. Regional spreads: BAML regional subindices. Inversion board: 10yr minus 3-month yield for 6 major curves. EM spread history collected since Jul 2023 (data-vendor cap) — long-run comparisons build up over time.', '信用利差 = 新兴市场债券相对同期美债的超额收益率（百分点）。速度箭头 = 20日走势方向（↑走阔 = 压力上升，↓收窄 = 压力减轻）。新兴市场高收益来源：美银美林新兴市场高收益指数。地区利差：美银美林地区子指数。倒挂看板：6个主要收益率曲线的10年减3月期利差。新兴市场利差数据自2023年7月起收集（数据供应商限制）——长期比较随时间积累。') }}</h2>
         <span class="sub">{{ t('Are lenders charging more for risk?', '贷款方是否在为风险索取更高溢价？') }}</span>
       </div>
 
@@ -1654,7 +1655,7 @@
     <!-- WHAT'S DRIVING THE DOLLAR -->
     <div class="panel">
       <div class="sec-h">
-        <h2>{{ t('What\'s driving the dollar?', '美元走势的驱动因素') }}
+        <h2 id="intl-dollar-conditions">{{ t('What\'s driving the dollar?', '美元走势的驱动因素') }}
           {%- if SM %}
             {{ help('Dollar regime uses a 120-day rolling window. Rate-differential weight: how much of the DXY move correlates with the US-vs-world short-rate spread. Risk-off weight: DXY vs VIX co-movement. Residual: unexplained. Dual-window confirmed over both 5d and 20d. Weights used: ' + (SM.get('weights_used')|string if SM.get('weights_used') else 'standard') + '. Window-sensitive: regime may shift with a different window.', '美元制度使用120日滚动窗口。利差权重：DXY走势与美国对全球短期利差的相关程度。避险权重：DXY与VIX的同步走势。残差：不可解释部分。双窗口在5日和20日均已确认。使用权重：' + (SM.get('weights_used')|string if SM.get('weights_used') else '标准') + '。窗口敏感：不同窗口下制度判断可能不同。') }}
           {%- else %}
@@ -1722,7 +1723,7 @@
 <!-- ===== FRAGILITY MAP (FULL WIDTH) ===== -->
 <div class="panel">
   <div class="sec-h">
-    <h2>{{ t('Fragility map', '脆弱性地图') }}
+    <h2 id="intl-structural-fragility">{{ t('Fragility map', '脆弱性地图') }}
       {{ help('Flags countries where structural vulnerabilities coincide: debt-to-GDP above 70% and rising, fiscal deficit below −5% of GDP, or current account deficit below −3% of GDP. BIS credit gap where available. Source: IMF WEO 2025. Annual data — updates with IMF WEO releases. Berg &amp; Pattillo (1999) criterion adapted. Presence of a flag = vulnerabilities exist, not that a crisis is imminent; most historically flagged countries did not experience a crisis.', '标记存在结构性脆弱因素的国家：债务/GDP超过70%且上升、财政赤字低于GDP的−5%，或经常账户赤字低于GDP的−3%。BIS信用缺口（可用时）。来源：IMF WEO 2025。年度数据——随IMF WEO发布更新。改编自Berg &amp; Pattillo（1999）标准。有标记 = 脆弱性存在，不代表危机即将发生；历史上大多数预警未演变为危机。') }}</h2>
     <span class="sub">{{ t('Slow-moving structural vulnerabilities — not a timing signal', '缓慢变化的结构性脆弱因素——非择时信号') }}</span>
   </div>
@@ -1888,7 +1889,7 @@
   <summary><span class="rf-t">{{ t('Regimes, correlations & rankings', '周期、相关性与排名') }}</span><span class="rf-s">{{ t('Growth × inflation map · correlation heatmap · league tables', '增长×通胀图 · 相关性热力图 · 排行榜') }}</span><span class="rf-caret" aria-hidden="true">▾</span></summary>
 <!-- ===== Growth × inflation regime map ===== -->
 <div class="panel">
-  <h2>{{ t('Regime map — growth × inflation', '周期图 — 增长 × 通胀') }} {{ help('Places each economy on the growth/inflation clock. Right side = better growth; top = more inflation pressure.', '把每个经济体放在增长/通胀时钟上。右侧增长更好；上方通胀压力更高。') }}</h2>
+  <h2 id="intl-growth-inflation">{{ t('Regime map — growth × inflation', '周期图 — 增长 × 通胀') }} {{ help('Places each economy on the growth/inflation clock. Right side = better growth; top = more inflation pressure.', '把每个经济体放在增长/通胀时钟上。右侧增长更好；上方通胀压力更高。') }}</h2>
   <div class="scatter">
     <div class="axx"></div><div class="axy"></div>
     <div class="ql" style="left:8px;top:8px">↖ {{ t('Stagflation', '滞胀') }}</div>
@@ -1909,7 +1910,7 @@
 <!-- ===== Correlation & diversification heatmap ===== -->
 {% if CR %}
 <div class="panel">
-  <div class="sec-h"><h2>{{ t('Cross-market correlation', '跨市场相关性') }} {{ help('Shows whether markets are moving together. Lower correlation means better diversification.', '显示各市场是否同涨同跌。相关性越低，分散越好。') }}</h2>
+  <div class="sec-h"><h2 id="intl-cross-market-correlation">{{ t('Cross-market correlation', '跨市场相关性') }} {{ help('Shows whether markets are moving together. Lower correlation means better diversification.', '显示各市场是否同涨同跌。相关性越低，分散越好。') }}</h2>
     <span style="flex:1"></span>{% if CR.avg_offdiag is not none %}<span class="sub">{{ t('avg', '平均') }} <b style="color:var(--text)">{{ '%.2f'|format(CR.avg_offdiag) }}</b> · {{ CR.window_d }}d</span>{% endif %}</div>
   <div class="heatwrap">
     <table class="heat">
@@ -1941,7 +1942,7 @@
     {# ---- mom20 momentum ranking (prepended, guarded) ---- #}
     {% if rotation_ranks is defined and rotation_ranks %}
     <div>
-      <h3>{{ t('20d momentum — rotation rank', '20日动能 — 轮动排名') }}</h3>
+      <h3 id="intl-leadership-rotation">{{ t('20d momentum — rotation rank', '20日动能 — 轮动排名') }}</h3>
       {% for rr in rotation_ranks %}
         <div class="rb"><span class="flg">{{ rr.flag if rr.flag is defined else '' }}</span><span style="width:54px" class="muted">{{ rr.cc }}</span>
           <span class="bar"><span class="bf" style="width:{{ '%.0f'|format([[rr.score, 0]|max, 3]|min / 3 * 100) }}%;background:{{ 'var(--down)' if rr.gov is defined and rr.gov < 1 else 'var(--link)' }}"></span></span>

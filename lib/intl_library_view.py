@@ -1,5 +1,7 @@
 """Pure projection for the international library catalogue."""
 
+import hashlib
+import json
 import math
 
 
@@ -44,6 +46,23 @@ _FAMILY_KEYS = frozenset(
 )
 _METRIC_KEYS = frozenset({"key", "value", "unit", "interpretation", "quality"})
 _TARGET_KEYS = frozenset({"page_id", "route", "region_id", "verified"})
+_PUBLIC_TOOL_FIELDS = (
+    "presentation_key",
+    "group_id",
+    "order",
+    "label_en",
+    "label_zh",
+    "question_en",
+    "question_zh",
+    "aliases",
+    "analytical_scope",
+    "page_id",
+    "existing_route",
+)
+_DECISION_KEYS = frozenset(
+    {"scope", "copy_sha256", "approved_tool_keys", "owner_ref", "decision_ref"}
+)
+_DECISION_SCOPE = "public_product_copy"
 
 
 def _is_string(value):
@@ -77,6 +96,40 @@ def _exact_keys(value, keys, error):
 
 def _enum(value, choices):
     return _is_string(value) and value in choices
+
+
+def _validate_plain_json(value, seen=None):
+    if seen is None:
+        seen = set()
+    if type(value) not in (dict, list, str, int, float, bool, type(None)):
+        raise ValueError("invalid_json:type")
+    if isinstance(value, bool) or value is None:
+        return
+    if not isinstance(value, (dict, list, str, int, float)):
+        raise ValueError("invalid_json:type")
+    if isinstance(value, str):
+        return
+    if type(value) is int:
+        return
+    if type(value) is float:
+        if not math.isfinite(value):
+            raise ValueError("invalid_json:nonfinite")
+        return
+    marker = id(value)
+    if marker in seen:
+        raise ValueError("invalid_json:cycle")
+    seen.add(marker)
+    try:
+        if isinstance(value, dict):
+            if any(type(key) is not str for key in value):
+                raise ValueError("invalid_json:key")
+            children = value.values()
+        else:
+            children = value
+        for child in children:
+            _validate_plain_json(child, seen)
+    finally:
+        seen.remove(marker)
 
 
 def _validated_bindings(route_bindings):
@@ -465,6 +518,87 @@ def build_intl_library_view(context, qualified_workspace, route_bindings):
         "search_catalogue": search_rows,
         "exclusions": exclusions,
     }
+
+
+def public_intl_library_copy_sha256(bindings):
+    _validate_plain_json(bindings)
+    _, _, tools, _, _ = _validated_bindings({"bindings": bindings, "targets": {}})
+    projection = {
+        "schema": bindings["schema"],
+        "groups": [
+            {
+                "id": group["id"],
+                "label_en": group["label_en"],
+                "label_zh": group["label_zh"],
+            }
+            for group in bindings["groups"]
+        ],
+        "tools": [
+            {field: tool[field] for field in _PUBLIC_TOOL_FIELDS}
+            for tool in tools
+        ],
+    }
+    encoded = json.dumps(
+        projection, ensure_ascii=False, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def build_public_intl_library_view(context, *, route_bindings, public_copy_decision):
+    _validate_plain_json(context)
+    _validate_plain_json(route_bindings)
+    _validate_plain_json(public_copy_decision)
+    original_context = _validated_context(context)
+    digest = public_intl_library_copy_sha256(route_bindings["bindings"])
+    _exact_keys(
+        public_copy_decision,
+        _DECISION_KEYS,
+        "invalid_public_decision:fields",
+    )
+    if public_copy_decision["scope"] != _DECISION_SCOPE:
+        raise ValueError("invalid_public_decision:scope")
+    if public_copy_decision["copy_sha256"] != digest:
+        raise ValueError("invalid_public_decision:digest")
+    approved_keys = public_copy_decision["approved_tool_keys"]
+    if (
+        not isinstance(approved_keys, list)
+        or any(not _is_nonempty_string(key) for key in approved_keys)
+        or len(set(approved_keys)) != len(approved_keys)
+    ):
+        raise ValueError("invalid_public_decision:approved_keys")
+    _, _, tools, _, _ = _validated_bindings(route_bindings)
+    known_keys = {tool["presentation_key"] for tool in tools}
+    if not set(approved_keys).issubset(known_keys):
+        raise ValueError("invalid_public_decision:approved_keys")
+    for field in ("owner_ref", "decision_ref"):
+        if not _is_nonempty_string(public_copy_decision[field]):
+            raise ValueError(f"invalid_public_decision:{field}")
+
+    copy_source = "public-copy:sha256:" + digest
+    qualified_workspace = {
+        "source_reference": copy_source,
+        "catalogue_generation": copy_source,
+        "families": {
+            key: {
+                "metadata": "allowed",
+                "values": "unknown",
+                "data_state": "unknown",
+                "owner_ref": public_copy_decision["owner_ref"],
+                "decision_ref": public_copy_decision["decision_ref"],
+                "source_reference": copy_source,
+                "metrics": [],
+            }
+            for key in approved_keys
+        },
+    }
+    internal_context = dict(original_context)
+    internal_context["source_reference"] = copy_source
+    result = build_intl_library_view(
+        internal_context, qualified_workspace, route_bindings
+    )
+    result["context"]["source_reference"] = original_context["source_reference"]
+    result["catalogue_source_reference"] = copy_source
+    return result
 
 
 def resolve_intl_tool(presentation_key, context, qualified_workspace, route_bindings):

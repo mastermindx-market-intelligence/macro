@@ -1,0 +1,62 @@
+{
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "scope": "IM07 actual Library metadata/search mount with retained research navigation",
+  "source_hashes": {
+    "lib/intl_library_view.py": "cf5555a4c2c582eb0ad00568e13c532ca05c2c083a62d25525da2cc6f594b081",
+    "lib/intl_library_mount.py": "e46755cc7771211189215c52df67b89a86f79b70099b8fa1d66b31b35ca21859",
+    "scripts/build_intl.py": "28a83cc98a0a60ae185a3f6450f92ec80a3117c203445ad2bc4a8a4752f1f54f",
+    "config/intl_library_catalogue.json": "efb38991184357909b1f8c55c6753efad4f2e8b56616d2d526d9318e8a94895c",
+    "templates/intl.html.j2": "68579e733c4e8e9324e42a71bd33cbc2aa9fa37ed0fb8d6d3348c03f3cdd281f",
+    "templates/intl_workspace/shell.html.j2": "65840794e39b03325592902748f6bcd93af925a0bc4ee79fb18bf33aea1abf79",
+    "templates/intl_workspace/library.html.j2": "b299203aa6e317eb48073d47639c02d99820c0edc7175b3a7b55624dd229b76a",
+    "templates/intl_workspace.js": "a36e5c93053e180e99c82c35b0ccaac50baf6bd1f1e5b6cd63eae26b77a1e046",
+    "templates/intl_workspace.css": "398729a9902352d46197bba901938eb4347df6596bbb6c545976b33f09222d75",
+    "templates/intl_library_search.js": "019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f",
+    "tests/intl_workspace_library_controller.test.cjs": "72d383b1655f9c48552f21c17e4b2b28a0a668defef715faefbf92f51410c62c",
+    "tests/intl_workspace_page.test.cjs": "fd710c07eadd596091a113268c945b0540ecbf913b855188f2f396bbbd866b5a",
+    "tests/test_intl_workspace_integration.py": "8d4786a108ad95d87e960af53f025feeb2bc6c8bd2d6d95d9294a479dd46db7b",
+    "tests/test_intl_library_public_copy.py": "43fbacfd0910885a37ec9e49f73e653a709abb31a1bf80fda6c52a7a530a60c0",
+    "tests/test_intl_library_mount.py": "8eb9c07a1b8450ca275ba545355d0a7efb009ff70d5dad3172a45fe79ef41d00",
+    "tests/test_intl_workspace_library_render.py": "a5c44aa227a7a5e3dc2cb06260f2d81ad6c59c11d5f76aa78fbb9d1da9b806bc",
+    ".github/ci/legacy-jobs.yml": "875d2fdd39af1b5fd4928b477f2b11642682fe16a6b69af10e42dec4e3b05b62"
+  },
+  "validation": {
+    "chrome_tests": 61,
+    "public_copy_and_consumer_pytest": 40,
+    "library_render_pytest": 8,
+    "source_review_r2": {
+      "run": "paper-01a1101f-library-parent-review-r2",
+      "verdict": "PASS",
+      "chrome_tests": 36,
+      "scope": "prior controller before focus-stability amendment"
+    },
+    "focus_delta_review": "R3 full GLM and R4 Grok both timed out with no verdict; pending independent acceptance, not a PASS",
+    "focused_library_python_tests": 68,
+    "ci_manifest_jobs_validated": 247,
+    "ci_inferred_uncovered_paths": {
+      "international-workspace-foundation": [],
+      "international-workspace-browser": []
+    },
+    "exact_remote_source_closure_hash_matches": 56
+  },
+  "visual": {
+    "captured_states": 48,
+    "manifests": [
+      "mockups/evidence/paper-international-library/default/manifest.json",
+      "mockups/evidence/paper-international-library/group/manifest.json",
+      "mockups/evidence/paper-international-library/group-focus/manifest.json"
+    ],
+    "kind": "synthetic empty supplied frames through actual composition/template",
+    "default_and_group_artwork": "32 captures; unchanged final HTML and CSS",
+    "final_controller_focus_matrix": "16 captures, keyboard interaction plus visible-outline check",
+    "parent_assessment": "Distinct dark luminance and light surface/elevation treatment, readable bilingual six-group catalogue at1440 and390. Final keyboard screenshot shows2px focused-link ring; no actual document horizontal overflow or console errors. Seven hidden inherited global elements exceed mobile viewport individually; no blanket element-width claim."
+  },
+  "limits": [
+    "Final focus-delta independent acceptance is pending; two settled timeout attempts produced no verdict",
+    "Source metadata approval is not numerical disclosure/qualification",
+    "Other four research views remain disabled until implemented",
+    "No live/authenticated data proof or served publication",
+    "Incumbent Saved interfaces and final source/CI/release gates remain separate"
+  ],
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f"
+}

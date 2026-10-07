@@ -69,7 +69,7 @@ for (const options of [{javaScriptEnabled:false},{broken:true}]) {
     await pageFixture(async page=>{
       assert.equal(await page.locator('[data-im-enhanced]').count(),0);
       assert.equal(await page.locator('[data-im-controls]').evaluate(n=>n.disabled),true);
-      assert.equal(await page.locator('[data-im-panel]:visible').count(),10);
+      assert.equal(await page.locator('[data-im-panel]:visible').count(),11);
       assert.equal(await page.locator('[data-im-market-unknown]:visible').count(),70);
       assert.equal(await page.locator('[data-im-expansion-trigger]:visible').count(),0);
       assert.equal(await page.locator('#fixture-owner-fragment').isVisible(),true);
@@ -148,3 +148,25 @@ for(const state of ['qualified','negative','denied']) {
     },{state});
   });
 }
+
+for (const width of [1440,390]) test(`actual Library search and retained research link work at ${width}px`,async()=>{
+  await pageFixture(async page=>{
+    if(width===1440)await page.click('button[data-im-view="library"]');
+    else await page.selectOption('select[data-im-action="set_view"]','library');
+    assert.equal(await page.locator('[data-im-library-static]:visible').count(),1);
+    assert.equal(await page.locator('[data-im-library-search]').isEnabled(),true);
+    await page.fill('[data-im-library-search]','cross country');
+    assert.equal(await page.locator('[data-im-library-results] [data-im-library-tool]').count(),1);
+    const link=page.locator('[data-im-library-results] a');
+    assert.equal(await link.getAttribute('href'),'#intl-cross-country');
+    await link.click();
+    assert.equal(await page.locator('#intl-cross-country').isVisible(),true);
+    assert.equal(new URL(page.url()).searchParams.get('view'),'library');
+    await page.fill('[data-im-library-search]','增长');
+    assert.equal(await page.locator('[data-im-library-results] [data-im-library-tool]').getAttribute('data-im-library-tool'),'growth_inflation');
+    await page.selectOption('[data-im-action="set_horizon"]','3m');
+    await page.selectOption('[data-im-action="set_basis"]','local');
+    assert.equal(await page.locator('[data-im-library-static]:visible').count(),1);
+    assert.equal(await page.inputValue('[data-im-library-search]'),'增长');
+  },{width});
+});

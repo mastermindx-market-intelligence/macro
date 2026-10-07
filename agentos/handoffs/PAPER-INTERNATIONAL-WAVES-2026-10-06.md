@@ -2,7 +2,7 @@
 workstream: WS:PAPER-INTERNATIONAL-WAVES
 session: claude/ssd-paper-international-waves-ad8d40c8d3b06fff
 model: codex
-ended_because: blocked
+ended_because: context_budget
 mission: Deliver all three International Paper waves through the existing product with the requested economical
   Sol 6.1 hierarchy and real user-path acceptance.
 state_before: Received three-wave specifications; no installed International redesign. Earlier reviews and source-only
@@ -41,7 +41,7 @@ changed:
 - path: engine/intl_workspace_overview.py
   what: Reviewed qualification-aware projection and bounded actual composition helper.
 - path: lib/intl_library_view.py
-  what: Reviewed pure 18-tool/six-group catalogue and resolver; unmounted.
+  what: Reviewed 18-tool/six-group catalogue and public metadata wrapper, now mounted through actual rendered region bindings.
 - path: mockups/evidence/paper-international-overview/
   what: Canonical dark/light EN/ZH desktop/mobile rest/focus evidence with explicitly synthetic provenance.
 verified:
@@ -101,41 +101,34 @@ verified:
     and CONCURRENT_CONTROLLER_DELTA.json.
   result: 116 distinct affected cases plus52 installed smoke cases pass; configured host cap and task-complexity
     forwarding respected. Later concurrent wrapper additions preserved.
-- claim: Next ready build has no current admitted automatic or probed escalation route.
-  command: 'Original root: pool pick build --host auto; pool pick build --pool glm --host auto --explain; pool
-    pick build --pool bailian --host auto --explain.'
-  result: Automatic NONE/no_pool_available; both explicit pools report no eligible host mode. No fallback spawned
-    and no admission limits changed.
+- claim: Library actual controller and composition preserve local search, context, legacy navigation and keyboard focus.
+  command: NODE_PATH=/Users/mini2/node_modules INTL_TEST_PYTHON=/Users/mini2/lanes/venv/bin/python PLAYWRIGHT_CHROMIUM_CHANNEL=chrome node --test tests/intl_workspace_controller.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_page.test.cjs in exact staged closure.
+  result: 61 actual Chrome cases pass;18 specifically exercise Library, including two red-then-green focus repaint regressions. R2 independent review passed36 cases; final focus delta R3/R4 attempts timed out without verdict; independent acceptance remains pending.
+- claim: Library evidence uses actual template and canonical assets, with explicit synthetic provenance.
+  command: Run bound capture_library.py and capture_library_keyboard.py; inspect three committed manifests and fixture provenance.
+  result: 48 captures across dark/light EN/ZH1440/390; no page horizontal overflow or console errors; final keyboard cells assert active focus-visible and2px outline. Not authenticated/live acceptance.
+- claim: Qwen snapshot dispatch failed before provider start and the unavailable host route is now held.
+  command: fabric_task status/result paper-01a1101f-source-snapshot-r1; inspect owned-process receipt, key_names-only diagnostic and QWEN_MINI2_HOLD_RECEIPT.json.
+  result: rc75,1.47seconds,residual0,no provider execution or source artifact. Mini2 expected local account configuration absent; only existing qwen qualification hold added, no credentials or limits changed.
+
 unverified:
 - claim: Full programme and production acceptance.
-  what_would_verify: Remaining views, live source qualification through existing owner, Library mount, incumbent
+  what_would_verify: Remaining views, live source qualification through existing owner, incumbent
     Saved integration, authenticated served journeys and subsequent normal publication.
 - claim: Final candidate is hosted-green, merged or published.
   what_would_verify: Exact latest GitHub head required checks, semantic review/base proof, authorized merge, normal
     build/publication and served verification. PR remains Draft.
 unresolved:
-- No admitted next build route at the current selector boundary. Preserve root and existing policy; do not manufacture
-  a fallback worker or a fresh budget root.
-- The actual Overview renders current source qualification as unknown. Applicable upstream price/FX/access policy
-  must come from a separately reviewed existing input-owner change, not a page-wide date threshold or raw observation
-  age.
-- Library consumer is accepted but not mounted; actual rendered region bindings and further view implementations
-  remain required.
-- Existing-owner Investigation/Saved interfaces and rights still gate IM08-IM10; no duplicate store or held migration
-  takeover.
-- All current workers are terminal with cleanup/settlement evidence. No native parent wake or durable coding execution
-  is claimed. Exact-head CI is release-owned, not a running coding worker.
+- Numerical currentness and disclosure still need actual completed-session, adjustment-basis and independent access-owner evidence. No guessed calendar or page-wide freshness threshold.
+- Four remaining research views and incumbent Investigation/Saved interfaces remain open; no duplicate store or migration takeover.
+- Source-snapshot pure extension awaits a qualified worker. Difficulty currently reaches launch guard but cannot explicitly select stronger build labor; Sol source-bound ruling freezes a repair preserving class and selected-model checks.
+- Final independent focus delta review, exact-head hosted checks, merge, normal publication and served acceptance remain distinct gates.
 next_actions:
-- Resume the same root/carrier in this Codex thread. On an actual admission recovery, commission a bounded Library
-  rendered-region binding/mount using exact current source and accepted catalogue; preserve one shared-template/controller
-  integration writer.
-- Advance the critical qualification dependency through engine/intl_inputs.py ownership, preserving performance
-  PR7202. The UI remains unknown until that source decision is accepted.
-- Use the existing Sol session for consequential judgment and independent review. Routine work belongs on the
-  admitted Fabric; no fixed one-leaf programme cap, no native grandchildren.
-- Consume a real final-head CI event through existing owners. Keep the PR Draft until applicable release gates
-  are met; no duplicate watcher or premature merge-on-green.
-- Freeze the International Investigation extension with incumbent Terminal804 before shared kernel or Saved writes.
+- Continue original root and sole PR8527 carrier; obtain final focus-delta acceptance and publish mount/evidence, then continue source qualification.
+- Implement and independently review the narrow witnessed-model selector repair from fabric-stable-id/DIFFICULTY_RULING.json. Preserve model-specific quality floors, host/provider admission, role and original root.
+- Consume original snapshot refusal; do not replay its durable ID or copy credentials. A newly scoped/admitted successor may proceed only after original effects are adjudicated.
+- Freeze International Investigation extension with incumbent Terminal804 before shared kernel or Saved writes.
+- Use existing Sol for consequential judgment; routine work stays on Fabric. No artificial one-leaf programme ceiling and no native grandchildren.
 do_not_redo:
 - Keep received archive bytes and the completed 1589-board census; inspect only material design/source invalidators.
 - Do not recreate the old International R3 core; exact named seams match the current pickup base.
@@ -150,6 +143,6 @@ prs:
 - 8527
 ---
 
-MISSION_COMPLETE: false. Current source is committed on the sole PR8527 carrier; actual publication and all three waves remain unfinished.
+MISSION_COMPLETE: false. The sole PR8527 carrier contains the implementation; actual publication and all three waves remain unfinished.
 
-Current process/effect identities and latest head are bound in `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/CHECKPOINT.md` and `FINAL_RECEIPT.json`. Earlier receipts preserve rejected worker artifacts and obsolete CI snapshots; do not treat their one-worker ceiling or unmounted Overview notes as current. No automatic Codex-parent wake is claimed. These records create no execution grant, queue or runtime owner.
+Current process/effect identities and latest head are bound in `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/CHECKPOINT.md` ; prior `FINAL_RECEIPT.json` is historical. Earlier receipts preserve rejected worker artifacts and obsolete CI snapshots; do not treat their one-worker ceiling or unmounted Overview notes as current. No automatic Codex-parent wake is claimed. These records create no execution grant, queue or runtime owner.

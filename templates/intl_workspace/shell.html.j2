@@ -7,13 +7,13 @@
     <legend id="intl-context-label">{{ t('Research context', '研究范围') }}</legend>
     <nav class="intl-workspace__view-nav" aria-labelledby="intl-context-label">
       {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
-      <button type="button" data-im-action="set_view" data-im-view="{{ key|e }}"{% if key != 'overview' %} disabled{% endif %}>{{ t(en, zh) }}</button>
+      <button type="button" data-im-action="set_view" data-im-view="{{ key|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) %} disabled{% endif %}>{{ t(en, zh) }}</button>
       {% endfor %}
     </nav>
     <label class="intl-workspace__view-select">{{ t('Views', '视图') }}
       <select data-im-action="set_view">
         {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
-        <option value="{{ key|e }}" data-im-label-en="{{ en|e }}" data-im-label-zh="{{ zh|e }}"{% if key != 'overview' %} disabled{% endif %}>{{ en|e }}</option>
+        <option value="{{ key|e }}" data-im-label-en="{{ en|e }}" data-im-label-zh="{{ zh|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) %} disabled{% endif %}>{{ en|e }}</option>
         {% endfor %}
       </select>
     </label>
@@ -34,6 +34,9 @@
   {% for panel in intl_workspace.panels %}
     {% with overview=panel.overview, context_id=panel.context_id %}{% include 'intl_workspace/overview.html.j2' %}{% endwith %}
   {% endfor %}
+  {% if intl_workspace.library|default(none) %}
+    {% with payload=intl_workspace.library, context_id='im-catalogue' %}{% include 'intl_workspace/library.html.j2' %}{% endwith %}
+  {% endif %}
   <p><a href="#intl-legacy-research">{{ t('Detailed research and existing tools', '详细研究与现有工具') }}</a> · <a href="intl_stocks.html">{{ t('International stocks', '国际股票') }}</a></p>
   <script type="application/json" data-im-config>{{ intl_workspace.config|tojson }}</script>
 </section>

@@ -12,6 +12,7 @@ from engine import i18n, intl_inputs
 from engine.intl_performance_records import build_return_records
 from engine.intl_workspace_overview import build_overview, build_workspace_overviews as _workspace_overviews
 from lib import store
+from lib.intl_library_mount import render_international_pages
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -64,7 +65,9 @@ def render_fixture(mode="macro", workspace=True, state="unknown"):
         vm["intl_workspace"] = _workspace_overviews(None) if state == "unknown" else synthetic_qualified_workspace(state)
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
     env.globals.update(t=i18n.t, tr=i18n.tr, td=i18n.td)
-    return env.get_template("intl.html.j2").render(**vm, mode=mode)
+    catalogue = json.loads((ROOT / "config/intl_library_catalogue.json").read_text())
+    pages = render_international_pages(env.get_template("intl.html.j2"), vm, catalogue=catalogue)
+    return pages[1] if mode == "stocks" else pages[0]
 
 
 @pytest.fixture(autouse=True)
@@ -118,6 +121,32 @@ def test_actual_macro_template_mounts_once_and_retains_legacy_owner_fragment():
     for asset in ("intl_workspace.css", "intl_workspace_state.js", "intl_workspace.js", "intl_workspace_entry.js"):
         assert asset in html
         assert (ROOT / "templates" / asset).is_file()
+
+
+def test_library_advertises_only_targets_in_actual_render_and_one_catalogue():
+    from html.parser import HTMLParser
+    class Destinations(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.ids, self.hrefs = [], []
+        def handle_starttag(self, tag, attrs):
+            row = dict(attrs)
+            if "id" in row:
+                self.ids.append(row["id"])
+            if "intl-library__tool-link" in row.get("class", ""):
+                self.hrefs.append(row["href"])
+    html = render_fixture()
+    parsed = Destinations()
+    parsed.feed(html)
+    assert html.count("data-im-library-catalogue>") == 1
+    assert html.count("data-im-library-tool=") == 18
+    assert parsed.hrefs == ["#intl-cross-country", "#intl-growth-inflation", "/intl_stocks.html"]
+    assert all(parsed.ids.count(href[1:]) == 1 for href in parsed.hrefs if href.startswith("#"))
+    assert "data-view=\"library\" data-im-library-static" in html
+
+
+def test_library_does_not_change_ordinary_stock_page_output():
+    assert render_fixture("stocks") == render_fixture("stocks", workspace=False)
 
 
 def test_stocks_mode_does_not_inherit_macro_workspace_or_hide_stock_tools():

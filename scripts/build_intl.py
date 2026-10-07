@@ -25,6 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from lib import config, site_assets  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from engine.intl_workspace_overview import build_workspace_overviews as _workspace_overviews  # noqa: E402
+from lib.intl_library_mount import render_international_pages  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_intl")
@@ -34,7 +35,7 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "mtf.js", "chart_i18n.js", "charts.js",
           "tablesort.js", "stockdata.js", "stockview.js",
           "intl_workspace.css", "intl_workspace_state.js",
-          "intl_workspace.js", "intl_workspace_entry.js")
+          "intl_library_search.js", "intl_workspace.js", "intl_workspace_entry.js")
 
 # quad colour keys (match the .q-Qn CSS) — uniform with the other verticals
 QUAD_MEANING = {
@@ -932,8 +933,15 @@ def main() -> int:
         vm["global_regime_html"] = read_global_regime_fragment(site)
 
         tmpl = env.get_template("intl.html.j2")
-        write_page(site / "intl.html", tmpl.render(**vm, mode="macro"))
-        write_page(site / "intl_stocks.html", tmpl.render(**vm, mode="stocks"))
+        catalogue = None
+        try:
+            catalogue = json.loads((Path(__file__).resolve().parent.parent /
+                                    "config/intl_library_catalogue.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            log.error("International Library copy unavailable (%s)", type(exc).__name__)
+        macro_html, stocks_html = render_international_pages(tmpl, vm, catalogue=catalogue)
+        write_page(site / "intl.html", macro_html)
+        write_page(site / "intl_stocks.html", stocks_html)
         log.info("wrote intl.html + intl_stocks.html (%d economies, %d standouts)",
                  vm["summary"]["n"], len((setups or {}).get("buy") or []))
 
