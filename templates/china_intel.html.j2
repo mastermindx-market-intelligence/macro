@@ -222,6 +222,61 @@
   a.slink:hover { border-color:var(--link); }
   a.slink .sl-name { font-size:12.5px; font-weight:700; }
   a.slink .sl-desc { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.4; }
+  /* Paper p-7-1 production translation */
+  .ci-vnext{font-family:var(--font-ui);display:flex;flex-direction:column;gap:16px;margin:0 0 24px}
+  .ci-vnext *{box-sizing:border-box}
+  .ci-vnext-tabs{display:flex;gap:22px;min-height:36px;align-items:center;border-bottom:1px solid var(--line);overflow-x:auto;white-space:nowrap}
+  .ci-vnext-tab{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-decoration:none;padding:10px 0 9px}
+  .ci-vnext-tab.active{color:var(--text);border-bottom:2px solid var(--link)}
+  .ci-vnext-hero{display:grid;grid-template-columns:minmax(0,1fr) 450px 280px;gap:16px;align-items:stretch}
+  .ci-vnext-lead,.ci-vnext-readout,.ci-vnext-panel,.ci-vnext-signals,.ci-vnext-decision{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px)}
+  .ci-vnext-lead{padding:18px 20px;display:flex;flex-direction:column;justify-content:center}
+  .ci-vnext-live{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--ok)}
+  .ci-vnext-title{font-size:28px;line-height:1.08;margin:7px 0;letter-spacing:-.02em}
+  .ci-vnext-deck{font-size:12px;line-height:1.5;color:var(--muted)}
+  .ci-vnext-readout{padding:14px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+  .ci-vnext-readrow{display:flex;justify-content:space-between;gap:10px;font-size:11px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  .ci-vnext-readrow:last-child{border-bottom:0;padding-bottom:0}
+  .ci-map{width:450px;height:142px;max-width:100%;border-radius:var(--r-card,12px);overflow:hidden;position:relative;background:linear-gradient(180deg,var(--panel2),var(--panel))}
+  .ci-map svg{position:absolute;inset:0;width:100%;height:100%}
+  .ci-map-kicker{position:absolute;right:8px;bottom:7px;color:var(--muted);font-size:9px;letter-spacing:.11em}
+  .ci-vnext-kpis{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line);border-radius:var(--r-card,12px);overflow:hidden;background:var(--panel)}
+  .ci-vnext-kpi{min-height:64px;padding:10px 12px;border-right:1px solid var(--line)}
+  .ci-vnext-kpi:last-child{border-right:0}
+  .ci-vnext-kpi-label{font-size:9px;font-weight:700;letter-spacing:.07em;color:var(--muted);text-transform:uppercase}
+  .ci-vnext-kpi-value{margin-top:6px;font-size:12px;font-weight:650}
+  .ci-vnext-synthesis{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.75fr);gap:16px}
+  .ci-vnext-panel,.ci-vnext-signals,.ci-vnext-decision{padding:14px 16px}
+  .ci-vnext-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+  .ci-vnext-head b{font-size:10px;letter-spacing:.09em}
+  .ci-vnext-observation{display:grid;grid-template-columns:26px 1fr;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.42}
+  .ci-vnext-num{color:var(--muted);font-family:var(--font-mono);font-size:9px}
+  .ci-vnext-badge{border:1px solid var(--line);border-radius:var(--r-pill,999px);padding:2px 7px;color:var(--muted);font-size:9px;white-space:nowrap}
+  .ci-vnext-fresh-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:10.5px}
+  .ci-vnext-signal-rail{display:grid;grid-template-columns:repeat(7,minmax(128px,1fr));gap:8px;padding-top:10px}
+  .ci-vnext-signal{min-width:128px;padding:10px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2)}
+  .ci-vnext-signal[data-state="active"]{border-left:2px solid var(--ok)}
+  .ci-vnext-signal[data-state="measured"]{border-left:2px solid var(--info)}
+  .ci-vnext-signal[data-state="watch"]{border-left:2px solid var(--warn)}
+  .ci-vnext-signal[data-state="unavailable"]{border-left:2px solid var(--muted)}
+  .ci-vnext-signal strong,.ci-vnext-signal span{display:block;font-size:10px}
+  .ci-vnext-signal span{color:var(--muted);margin-top:4px}
+  .ci-vnext-signal .ci-vnext-signal-status{color:var(--text);font-weight:700}
+  .ci-vnext-decisions{display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:16px}
+  .ci-vnext-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:10.5px}
+  .ci-vnext-evidence-divider{margin:4px 0 12px;color:var(--muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+  @media(max-width:900px){
+    .ci-vnext-hero{grid-template-columns:minmax(0,1fr) minmax(300px,1fr)}
+    .ci-vnext-readout{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr)}
+    .ci-map{width:100%}.ci-vnext-kpis{grid-template-columns:repeat(3,1fr)}
+    .ci-vnext-synthesis{grid-template-columns:1fr 1fr}.ci-vnext-signal-rail{display:flex;overflow-x:auto}
+    .ci-vnext-decisions{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:560px){
+    .ci-vnext{gap:12px}.ci-vnext-hero,.ci-vnext-synthesis,.ci-vnext-decisions{grid-template-columns:1fr}
+    .ci-vnext-readout{grid-column:auto;grid-template-columns:1fr}.ci-vnext-title{font-size:24px}
+    .ci-map{width:100%;height:126px}.ci-vnext-kpis{grid-template-columns:repeat(2,1fr)}
+  }
 {% endblock %}
 
 {% block content %}
@@ -232,13 +287,135 @@
 {% set _LANE_EN = {'lhb_first_seat':'LHB First Seat','margin_velocity':'Margin Velocity','southbound_delta':'Southbound Delta','ths_emerging_concepts':'THS Concepts'} %}
 {% set _LANE_ZH = {'lhb_first_seat':'龙虎榜首现','margin_velocity':'融资速度','southbound_delta':'南向持仓变化','ths_emerging_concepts':'同花顺概念'} %}
 
-<section class="ci-hero">
-  <p class="eyebrow">🧠 {{ t('China Intelligence', '中国情报中心') }}</p>
-  <h1>{{ t('China Intelligence Hub', '中国情报中心') }}</h1>
-  <p class="lens">{{ t('Central synthesis of five China surfaces — what matters most, cross-surface conviction, flagged tickers · context only · as of', '五个中国面板的中央综合——最重要的事、跨面板共振、标记个股 · 仅供参考 · 截至') }} {{ b.asof }}</p>
-</section>
-
 <div class="ci-wrap">
+
+  {# Accepted Paper p-7-1 inner workspace. report_base owns the global navigation. #}
+  <div class="ci-vnext" data-ci-vnext="paper-p7-1">
+    <nav class="ci-vnext-tabs" aria-label="China Intelligence">
+      <a class="ci-vnext-tab active" href="china_intel.html">{{ t('Overview','总览') }}</a>
+      <a class="ci-vnext-tab" href="china_policy_watch.html">{{ t('Policy','政策') }}</a>
+      <a class="ci-vnext-tab" href="china.html">{{ t('Markets','市场') }}</a>
+      <a class="ci-vnext-tab" href="china_sector_desk.html">{{ t('Sectors','板块') }}</a>
+      <a class="ci-vnext-tab" href="china_stocks.html">{{ t('Companies','公司') }}</a>
+      <a class="ci-vnext-tab" href="#ci-upcoming-catalysts">{{ t('Catalysts','催化') }}</a>
+    </nav>
+
+    <div class="ci-vnext-hero">
+      <section class="ci-vnext-lead">
+        <div class="ci-vnext-live">● {{ t('LIVE','实时') }} · {{ b.asof }}</div>
+        <h2 class="ci-vnext-title">{{ t('China Intelligence Hub','中国情报中心') }}</h2>
+        <div class="ci-vnext-deck">{{ t('What matters now across policy, liquidity, flows, sectors and companies. Context only.','聚合政策、流动性、资金流、板块与公司的当下要点。仅供背景参考。') }}</div>
+      </section>
+      <div class="ci-map" role="img" aria-label="{{ t('China intelligence map: Beijing, Shanghai and Shenzhen','中国情报地图：北京、上海与深圳') }}">
+        <svg viewBox="0 0 440 142" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="ci-map-fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--panel2)" stop-opacity=".82"/><stop offset="100%" stop-color="var(--panel)" stop-opacity=".55"/></linearGradient><filter id="ci-map-glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <path d="M76 55 L104 38 L132 41 L155 30 L188 34 L207 25 L238 31 L259 42 L292 41 L318 54 L332 70 L317 82 L298 86 L286 104 L261 100 L246 116 L221 110 L202 122 L179 113 L155 119 L138 108 L117 111 L103 99 L83 96 L71 84 L54 74 L63 62 Z" filter="url(#ci-map-glow)" fill="url(#ci-map-fill)" stroke="var(--info)" stroke-width="1.4"/>
+          <path d="M111 45 L129 67 L151 78 L170 65 M170 65 L198 74 L220 57 M198 74 L211 98 M220 57 L250 68 L277 58 M250 68 L265 92 M211 98 L238 101" fill="none" stroke="var(--muted)" stroke-width=".7" opacity=".7"/>
+          <circle cx="267" cy="54" r="3.3" fill="var(--warn)"/><circle cx="300" cy="77" r="3.3" fill="var(--warn)"/><circle cx="285" cy="101" r="3.3" fill="var(--warn)"/>
+          <circle cx="213" cy="88" r="2.1" fill="var(--link)"/><circle cx="249" cy="81" r="2.1" fill="var(--link)"/>
+          <g font-family="Inter" font-size="8.7" fill="var(--text)"><text x="274" y="52">Beijing</text><text x="307" y="76">Shanghai</text><text x="292" y="104">Shenzhen</text></g>
+          <g opacity=".75" fill="var(--info)"><circle cx="121" cy="60" r="1.2"/><circle cx="146" cy="51" r="1"/><circle cx="169" cy="88" r="1.2"/><circle cx="188" cy="50" r="1"/><circle cx="202" cy="97" r="1.2"/><circle cx="230" cy="49" r="1"/><circle cx="240" cy="82" r="1.2"/><circle cx="274" cy="67" r="1"/><circle cx="289" cy="61" r="1"/></g>
+        </svg>
+        <span class="ci-map-kicker">PEOPLE · MARKETS · POLICY · OPPORTUNITY</span>
+      </div>
+      <aside class="ci-vnext-readout">
+        <div class="ci-vnext-readrow"><span>{{ t('REGIME','环境') }}</span><b>{% if b.regime and b.regime.band_en %}{{ bl(b.regime.band_en,b.regime.band_zh or b.regime.band_en) }}{% else %}{{ t('Unavailable','暂无') }}{% endif %}</b></div>
+        <div class="ci-vnext-readrow"><span>{{ t('CYCLE','周期') }}</span><b>{% if b.analogs and b.analogs.query and b.analogs.query.cycle %}{{ td(b.analogs.query.cycle) }}{% else %}{{ t('Unavailable','暂无') }}{% endif %}</b></div>
+        <div class="ci-vnext-readrow"><span>PBoC</span><b>{% if b.policy and b.policy.pboc_stance %}{{ bl(b.policy.stance_label_en or b.policy.pboc_stance,b.policy.stance_label_zh or b.policy.pboc_stance) }}{% else %}{{ t('Unavailable','暂无') }}{% endif %}</b></div>
+      </aside>
+    </div>
+
+    <section class="ci-vnext-kpis">
+      <div class="ci-vnext-kpi"><div class="ci-vnext-kpi-label">{{ t('Risk appetite','风险偏好') }}</div><div class="ci-vnext-kpi-value">{% if b.regime and b.regime.risk_tilt is not none %}{{ t('Positive','积极') if b.regime.risk_tilt>0 else (t('Cautious','谨慎') if b.regime.risk_tilt<0 else t('Neutral','中性')) }}{% else %}—{% endif %}</div></div>
+      <div class="ci-vnext-kpi"><div class="ci-vnext-kpi-label">{{ t('PBoC stance','央行立场') }}</div><div class="ci-vnext-kpi-value">{% if b.policy and b.policy.pboc_stance %}{{ bl(b.policy.stance_label_en or b.policy.pboc_stance,b.policy.stance_label_zh or b.policy.pboc_stance) }}{% else %}—{% endif %}</div></div>
+      <div class="ci-vnext-kpi"><div class="ci-vnext-kpi-label">{{ t('Media','媒体') }}</div><div class="ci-vnext-kpi-value">{% if b.news and b.news.band %}{{ bl(b.news.band_label_en or b.news.band,b.news.band_label_zh or b.news.band) }}{% else %}—{% endif %}</div></div>
+      <div class="ci-vnext-kpi"><div class="ci-vnext-kpi-label">{{ t('Market breadth','市场广度') }}</div><div class="ci-vnext-kpi-value">{{ (b.surfaces_present or [])|length }} {{ t('surfaces','面板') }}</div></div>
+      <div class="ci-vnext-kpi"><div class="ci-vnext-kpi-label">{{ t('Data freshness','数据新鲜度') }}</div><div class="ci-vnext-kpi-value">{% if b.max_staleness_days is not none %}{{ t('Oldest data','最旧数据') }} · {{ b.max_staleness_days }}d{% else %}{{ t('Undated','无日期') }}{% endif %}</div></div>
+      <div class="ci-vnext-kpi"><div class="ci-vnext-kpi-label">{{ t('Evidence','证据') }}</div><div class="ci-vnext-kpi-value">{{ (b.conviction or [])|length }} {{ t('sector reads','板块读数') }}</div></div>
+    </section>
+
+    <div class="ci-vnext-synthesis">
+      <section class="ci-vnext-panel">
+        <div class="ci-vnext-head"><b>WHAT MATTERS NOW</b><span class="ci-vnext-badge">{{ b.asof }}</span></div>
+        {% if b.salience %}
+          {% for w in b.salience[:4] %}
+          <div class="ci-vnext-observation"><span class="ci-vnext-num">{{ '%02d'|format(loop.index) }}</span><span>{{ bl(w.label_en,w.label_zh) }}{% if w.detail_en %} — {{ bl(w.detail_en,w.detail_zh) }}{% endif %}</span></div>
+          {% endfor %}
+        {% else %}
+          <div class="ci-vnext-observation"><span class="ci-vnext-num">—</span><span>{{ t('No ranked observations available.','暂无可排序观察。') }}</span></div>
+        {% endif %}
+      </section>
+      <section class="ci-vnext-panel">
+        <div class="ci-vnext-head"><b>FRESHNESS & SOURCES</b><span class="ci-vnext-badge">{% if b.max_staleness_days is not none %}{{ t('Oldest data','最旧数据') }} {{ b.max_staleness_days }}d{% else %}{{ t('Undated','无日期') }}{% endif %}</span></div>
+        {% set _fas = b.surface_asof or {} %}
+        {% for _fk,_fl in [('news',t('China news tape','中国新闻')),('policy',t('PBoC & policy','央行与政策')),('altdata',t('Alt-data','另类数据')),('radar',t('Divergence radar','背离雷达'))] %}
+          <div class="ci-vnext-fresh-row"><span>{{ _fl }}</span><span class="ci-vnext-badge">{{ _fas.get(_fk) or t('Unavailable','暂无') }}</span></div>
+        {% endfor %}
+      </section>
+    </div>
+
+    <section class="ci-vnext-signals">
+      <div class="ci-vnext-head"><b>SURFACE SIGNALS</b><span class="ci-vnext-badge">7 {{ t('lenses','视角') }}</span></div>
+      <div class="ci-vnext-signal-rail">
+        {% for key,label,desc in [
+          ('news',t('News','新闻'),t('China news tape','中国新闻脉搏')),
+          ('policy',t('Policy','政策'),t('PBoC & policy watch','央行与政策观察')),
+          ('altdata',t('Alt-Data','另类数据'),t('Smart-money convergence','聪明钱共振')),
+          ('radar',t('Radar','雷达'),t('Divergence signals','背离信号')),
+          ('special_situations',t('Special Sits','特殊情景'),t('Unlocks · inquiry · ST','解禁 · 问询 · ST')),
+          ('stocks',t('Stocks','个股'),t('China stocks board','中国个股板')),
+          ('sector',t('Sector Desk','板块台'),t('Sector momentum','板块动能'))
+        ] %}
+        <div class="ci-vnext-signal" data-state="{% if key == 'news' and b.news and b.news.get('band') and b.news.get('band') != 'unknown' %}{{ 'watch' if b.news.band == 'cautious' else 'active' }}{% elif key == 'policy' and b.policy and b.policy.get('pboc_stance') %}measured{% elif key == 'altdata' and b.altdata and b.altdata.get('n_triple') is not none %}measured{% elif key == 'radar' and b.radar and b.radar.get('n_active') is not none %}measured{% elif key == 'special_situations' and b.special_situations and (b.special_situations.get('n_unlocks') is not none or b.special_situations.get('n_inquiry') is not none) %}watch{% elif key == 'stocks' and cmd_full and cmd_full.get('command') is not none %}active{% elif key == 'sector' and b.get('conviction') is not none %}active{% else %}unavailable{% endif %}">
+          <strong>{{ label }}</strong><span>{{ desc }}</span>
+          {% if key == 'news' and b.news and b.news.get('band') and b.news.get('band') != 'unknown' %}
+            <span class="ci-vnext-signal-status">{{ t('WATCH','观察') if b.news.band == 'cautious' else t('ACTIVE','活跃') }} · {{ bl(b.news.band_label_en or b.news.band, b.news.band_label_zh or b.news.band) }}</span>
+            <span>{% if b.news.get('n_events_7d') is not none %}{{ b.news.n_events_7d }} {{ t('events / 7d','条事件 / 7日') }} · {% endif %}{{ b.news.asof or t('undated','无日期') }}</span>
+          {% elif key == 'policy' and b.policy and b.policy.get('pboc_stance') %}
+            <span class="ci-vnext-signal-status">{{ t('MEASURED','已测量') }} · {{ bl(b.policy.stance_label_en or b.policy.pboc_stance, b.policy.stance_label_zh or STANCE_ZH.get(b.policy.pboc_stance, b.policy.pboc_stance)) }}</span>
+            <span>{{ b.policy.asof or t('undated','无日期') }}</span>
+          {% elif key == 'altdata' and b.altdata and b.altdata.get('n_triple') is not none %}
+            <span class="ci-vnext-signal-status">{{ t('MEASURED','已测量') }} · {{ b.altdata.n_triple }} {{ t('triple-signal names','个三信号名称') }}</span>
+            <span>{{ b.altdata.asof or t('undated','无日期') }}</span>
+          {% elif key == 'radar' and b.radar and b.radar.get('n_active') is not none %}
+            <span class="ci-vnext-signal-status">{{ t('MEASURED','已测量') }} · {{ b.radar.n_active }} {{ t('active divergences','个活跃背离') }}</span>
+            <span>{{ b.radar.asof or t('undated','无日期') }}</span>
+          {% elif key == 'special_situations' and b.special_situations and (b.special_situations.get('n_unlocks') is not none or b.special_situations.get('n_inquiry') is not none) %}
+            <span class="ci-vnext-signal-status">{{ t('WATCH','观察') }}{% if b.special_situations.get('n_unlocks') is not none %} · {{ b.special_situations.n_unlocks }} {{ t('unlocks','解禁') }}{% endif %}{% if b.special_situations.get('n_inquiry') is not none %} · {{ b.special_situations.n_inquiry }} {{ t('inquiry letters','问询函') }}{% endif %}</span>
+            <span>{{ b.special_situations.asof or t('undated','无日期') }}</span>
+          {% elif key == 'stocks' and cmd_full and cmd_full.get('command') is not none %}
+            <span class="ci-vnext-signal-status">{{ t('ACTIVE','活跃') }} · {{ cmd_full.command|length }} {{ t('ranked names','个排序名称') }}</span>
+            <span>{{ b.asof }}</span>
+          {% elif key == 'sector' and b.get('conviction') is not none %}
+            <span class="ci-vnext-signal-status">{{ t('ACTIVE','活跃') }} · {{ b.conviction|length }} {{ t('sector reads','个板块读数') }}</span>
+            <span>{{ b.asof }}</span>
+          {% else %}
+            <span class="ci-vnext-signal-status">{{ t('UNAVAILABLE','暂无') }}</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <div class="ci-vnext-decisions">
+      <section class="ci-vnext-decision">
+        <div class="ci-vnext-head"><b>PRIORITY THREADS</b><span class="ci-vnext-badge">{{ [5,(b.salience or [])|length]|min }}</span></div>
+        {% if b.salience %}{% for w in b.salience[:5] %}<div class="ci-vnext-row"><span>{{ bl(w.label_en,w.label_zh) }}</span><small>→</small></div>{% endfor %}
+        {% else %}<div class="ci-vnext-row"><span>{{ t('No ranked threads available','暂无排序主题') }}</span><small>—</small></div>{% endif %}
+      </section>
+      <section class="ci-vnext-decision">
+        <div class="ci-vnext-head"><b>SECTOR / TICKER FOCUS</b><span class="ci-vnext-badge">{{ [6,(b.conviction or [])|length]|min }}</span></div>
+        {% if b.conviction %}{% for c in b.conviction[:6] %}<div class="ci-vnext-row"><span>{{ bl(c.sector_en,c.sector_zh) }}{% if c.members %} · {{ c.members[0].ticker }}{% endif %}</span><small>{{ c.opportunity_score if c.opportunity_score is not none else c.context_conviction if c.context_conviction is not none else '—' }}</small></div>{% endfor %}
+        {% else %}<div class="ci-vnext-row"><span>{{ t('No sector focus available','暂无板块焦点') }}</span><small>—</small></div>{% endif %}
+      </section>
+      <section class="ci-vnext-decision" id="ci-upcoming-catalysts">
+        <div class="ci-vnext-head"><b>UPCOMING CATALYSTS</b><span class="ci-vnext-badge">{% if b.news and b.news.scheduled_ahead %}{{ [5,b.news.scheduled_ahead|length]|min }}{% else %}0{% endif %}</span></div>
+        {% if b.news and b.news.scheduled_ahead %}{% for ev in b.news.scheduled_ahead[:5] %}<div class="ci-vnext-row"><span>{{ bl(ev.name_en,ev.name_zh) }}</span><small>{{ ev.md }}</small></div>{% endfor %}
+        {% else %}<div class="ci-vnext-row"><span>{{ t('No scheduled catalysts available','暂无已排期催化') }}</span><small>—</small></div>{% endif %}
+      </section>
+    </div>
+  </div>
+  <div class="ci-vnext-evidence-divider">{{ t('Deep evidence & desk detail','深度证据与面板详情') }}</div>
 
   {# ── A. COMMAND BAR ── #}
   <div class="cmdbar">
@@ -260,7 +437,7 @@
       <span class="mc"><span>{{ t('Media','媒体') }}</span> <b>{{ bl(b.news.band_label_en or (b.news.band|capitalize), b.news.band_label_zh or b.news.band) }}</b></span>
     {%- endif %}
     {%- if b.max_staleness_days is not none and b.max_staleness_days > 2 %}
-      <span class="mc warn"><span>{{ t('Freshest data','最新数据') }}</span> <b>{{ b.max_staleness_days }}{{ t('d old','天') }}</b></span>
+      <span class="mc warn"><span>{{ t('Oldest data','最旧数据') }}</span> <b>{{ b.max_staleness_days }}{{ t('d old','天') }}</b></span>
     {%- endif %}
     <span class="mode-badge">{{ t('Context only','仅供参考') }}</span>
   </div>
