@@ -45,7 +45,7 @@ evidence:
 Data custody and classified options schema qualification: existing Advanced Data Options owner.
 Live trade+quote/signature: Intraday Flow owner. Predictive/promotion: Options Alpha owner.
 Cboe samples are private research/evaluation inputs, never merged with C2 TBT or
-market-wide OPRA tapes as if sourced from the same reporting population. 
+market-wide OPRA tapes as if sourced from the same reporting population.
 The existing `research/options_intelligence/2026-10-03/ONTOLOGY_AND_PRODUCT.md`
 already distinguishes classified participant action, aggressor inference,
 actual dealer inventory and matched option-expiry interpretation.
