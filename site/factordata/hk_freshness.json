@@ -1,44 +1,62 @@
 {
-  "checked_at": "2026-10-04T22:24:14+00:00",
-  "expected_session": "2026-10-02",
+  "checked_at": "2026-10-08T15:51:02+00:00",
+  "expected_session": "2026-10-08",
   "stores": {
     "cache": {
-      "asof": "2026-10-02",
+      "asof": "2026-10-08",
       "lag_days": 0,
-      "state": "fresh"
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true
     },
     "bellwether": {
-      "asof": "2026-10-02",
+      "asof": "2026-10-08",
       "lag_days": 0,
-      "state": "fresh"
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true
     },
     "standouts": {
-      "asof": "2026-10-02",
-      "lag_days": 0,
-      "state": "fresh"
+      "asof": "2026-10-07",
+      "lag_days": 1,
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
+      "calendar_verified": true
     },
     "regime": {
-      "asof": "2026-10-02",
+      "asof": "2026-10-08",
       "lag_days": 0,
-      "state": "fresh"
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true
     },
     "southbound": {
       "asof": "2026-09-30",
-      "lag_days": 2,
-      "state": "fresh"
+      "lag_days": 8,
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
+      "calendar_verified": true,
+      "expected_session": "2026-10-08"
     }
   },
   "coherence": {
     "ok": true,
-    "standouts_asof": "2026-10-02",
-    "regime_date": "2026-10-02",
-    "gap_sessions": 0,
-    "note": null
+    "standouts_asof": "2026-10-07",
+    "regime_date": "2026-10-08",
+    "gap_sessions": 1,
+    "calendar_verified": true,
+    "data_state": "current",
+    "note": "regime read is one session behind the stock scan \u2014 catches up after the next Asia close"
   },
   "regression": {
     "ok": true,
-    "prev_cache_max": "2026-10-02",
-    "curr_cache_max": "2026-10-02",
+    "prev_cache_max": "2026-10-07",
+    "curr_cache_max": "2026-10-08",
     "note": null
   },
   "verdict": "ok",

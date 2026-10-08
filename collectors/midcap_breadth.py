@@ -19,6 +19,7 @@ from lib import config
 class MidCap400BreadthAdapter(BreadthAdapter):
     name = "midcap_breadth"
     group = "midcap_breadth"
+    session_calendar = "US"  # observation dates follow the cash/Connect session
 
     def __init__(self) -> None:
         self.cfg = config.load()["midcap_breadth"]

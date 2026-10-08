@@ -1700,11 +1700,15 @@ def brain_threads(user: dict = Depends(require_user)):
     """Return thread list for the authenticated user.
 
     Response: {threads: [{id, title, lane, updated_at}]}
-    Empty list when thread store is absent or user has no threads.
+    Empty list only after a successful empty read; store failure is HTTP 503.
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
-    threads = gw.list_threads(user_id)
+    try:
+        threads = gw.list_threads(user_id)
+    except gw.ThreadStoreUnavailable:
+        raise HTTPException(503, "research history temporarily unavailable",
+                            headers={"Cache-Control": "no-store"}) from None
     return {"threads": threads}
 
 
@@ -1713,11 +1717,15 @@ def brain_thread_detail(thread_id: str, user: dict = Depends(require_user)):
     """Return thread + messages for thread_id owned by the authenticated user.
 
     Response: {thread: {...}, messages: [{role, content, created_at}]}
-    HTTP 404 if not found or not owner.
+    HTTP 404 if not found or not owner; HTTP 503 if history cannot be read.
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
-    result = gw.get_thread(thread_id, user_id)
+    try:
+        result = gw.get_thread(thread_id, user_id)
+    except gw.ThreadStoreUnavailable:
+        raise HTTPException(503, "research history temporarily unavailable",
+                            headers={"Cache-Control": "no-store"}) from None
     if result is None:
         raise HTTPException(404, "thread not found or not authorized")
     return result
@@ -2281,6 +2289,12 @@ app.include_router(earnings_router)
 from app.company_intelligence import router as company_intelligence_router  # noqa: E402
 app.include_router(company_intelligence_router)
 
+# Private low-latency ticker-news reads. The router authenticates + enforces
+# site_full, then independently fails closed on feed-specific display rights
+# before opening the qbus store read-only.
+from app.ticker_news import router as ticker_news_router  # noqa: E402
+app.include_router(ticker_news_router)
+
 # Bounded localhost projection of ONE regular-session quote for the static
 # stock dossiers.  Market-data authority stays with the Terminal Quote Plane —
 # this owns no store, socket, scheduler, or vendor credential, and it may only
@@ -2350,6 +2364,12 @@ try:
     app.include_router(capital_structure_router)
 except Exception as _capital_structure_exc:  # noqa: BLE001
     log.warning("capital structure router not mounted: %r", _capital_structure_exc)
+
+try:
+    from app.integrated_answer import router as integrated_answer_router  # noqa: E402
+    app.include_router(integrated_answer_router)
+except Exception as _integrated_answer_exc:  # noqa: BLE001
+    log.warning("integrated answer router not mounted: %r", _integrated_answer_exc)
 
 # Warm the SHARED corpus cache off the request path (Analyst OS W4). The chat
 # tool's mode="report" and the vault routes now read one process-wide copy

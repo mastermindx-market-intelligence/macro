@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DUK-BULL-20260616",
-  "asof": "2026-10-04",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 11.6,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -48.4,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "asof": "2026-10-08",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 20.3,
+  "raw_confidence": 20.7,
+  "delta_vs_base": -39.7,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.0,
+    "validity": 0.4,
     "progress": 0.0,
-    "pace": 0.0,
-    "retention": 40.1,
-    "overlay": 53.0
+    "pace": 22.0,
+    "retention": 41.5,
+    "overlay": 50.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.104,
+    "dist_to_stop_r": 0.049,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 104.4,
-    "p1": -0.736,
-    "p2": -0.368,
+    "horizon_pct_used": 113.3,
+    "p1": -0.6339,
+    "p2": -0.3169,
     "p3": null,
-    "move_r": -1.104,
+    "move_r": -0.951,
     "mfe_r": 0.0,
     "mae_r": -1.253
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 47,
-  "tau": 1.0444
+  "days_elapsed": 51,
+  "tau": 1.1333
 }

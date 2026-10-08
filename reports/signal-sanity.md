@@ -1,20 +1,14 @@
-# Signal sanity — 2026-10-04
+# Signal sanity — 2026-10-07
 
-**🚨 FAIL** · 3 failure(s), 0 warning(s)
+**✅ OK** · 0 failure(s), 0 warning(s)
 
 | board | as_of | records | coverage | status |
 |---|---|---:|---:|---|
-| standouts (engine buy-board) | 2026-10-02 | 75 | 75 | ok |
-| briefing (Phase-5 priority queue) | 2026-10-04 | 25 | 25 | ok |
-| radar (divergence radar) | 2026-10-04 | 278 | 278 | 🚨 fail |
-| altdata (alt-data desk) | 2026-10-04 | 30 | 30 | 🚨 fail |
-| news (news flow) | 2026-10-04 | 1076 | 991 | 🚨 fail |
-| intel_hub (5-desk command) | 2026-10-04 | 30 | 30 | ok |
-
-## Failures (these block publish)
-
-- radar: CONTENT FROZEN — as_of advanced 2026-10-03→2026-10-04 but signal values are byte-identical to the prior vintage (builder did not recompute)
-- altdata: CONTENT FROZEN — as_of advanced 2026-10-03→2026-10-04 but signal values are byte-identical to the prior vintage (builder did not recompute)
-- news: CONTENT FROZEN — as_of advanced 2026-10-03→2026-10-04 but signal values are byte-identical to the prior vintage (builder did not recompute)
+| standouts (engine buy-board) | 2026-10-06 | 89 | 89 | ok |
+| briefing (Phase-5 priority queue) | 2026-10-07 | 25 | 25 | ok |
+| radar (divergence radar) | 2026-10-07 | 260 | 260 | ok |
+| altdata (alt-data desk) | 2026-10-07 | 30 | 30 | ok |
+| news (news flow) | 2026-10-07 | 1110 | 1064 | ok |
+| intel_hub (5-desk command) | 2026-10-07 | 30 | 30 | ok |
 
 _Invariants: coverage floor · score-column degeneracy · content-freeze (as_of advanced but values identical) · staleness · distribution drift. Ground-truth-free — see engine/signal_sanity.py._

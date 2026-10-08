@@ -169,18 +169,18 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked tier field changed value (no-change republication).",
-    "predecessor_generation_id": "business_activity-US-cc2b96cb5bd03b1b"
+    "predecessor_generation_id": "business_activity-US-c16742385ea7f687"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-10-04T06:25:52Z",
+    "built_at": "2026-10-07T05:39:34Z",
     "calculation_as_of": "2026-10-31",
-    "code_version": "0d0c1533368aba1cd5f5d1ca3b14df825f540e91",
-    "content_sha256": "0c6eb5125c6dec269d5fbabc650d9484fd1fac22ab34ef0bd86f0f1594cc627c",
-    "generation_id": "business_activity-US-0c6eb5125c6dec26",
+    "code_version": "07db8e5931d93a08d5c92022373e7a3a60ab2c76",
+    "content_sha256": "3fce0c891a751f755370cf5c7876b8bf15d6aa6d668ff1d3505e0b9a2eaefd4a",
+    "generation_id": "business_activity-US-3fce0c891a751f75",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -276,8 +276,8 @@
         "horizon": "current",
         "implication_id": "leading_tier_read",
         "text": {
-          "en": "Leading tier: 6-month momentum 0.5173337840059276, direction rising, breadth 66.66666666666667 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "领先层：6个月动量 0.5173337840059276，方向 rising，广度 66.66666666666667（扩散窗口内上升分项占比，0-100）。"
+          "en": "Leading tier: 6-month momentum 0.6636906195549699, direction rising, breadth 66.66666666666667 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 0.6636906195549699，方向 rising，广度 66.66666666666667（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
       },

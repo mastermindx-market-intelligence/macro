@@ -1,23 +1,23 @@
 {
   "schema": "thematic_desk.v1",
-  "as_of": "2026-10-04",
-  "scored_total": 280,
-  "open": 148,
+  "as_of": "2026-10-07",
+  "scored_total": 282,
+  "open": 151,
   "unscored_soft": 73,
   "overall": {
-    "n": 280,
-    "hits": 186,
-    "misses": 94,
-    "hit_rate": 0.664,
-    "dir_accuracy": 0.446
+    "n": 282,
+    "hits": 187,
+    "misses": 95,
+    "hit_rate": 0.663,
+    "dir_accuracy": 0.447
   },
   "by_market": {
     "us": {
-      "n": 84,
-      "hits": 57,
+      "n": 85,
+      "hits": 58,
       "misses": 27,
-      "hit_rate": 0.679,
-      "dir_accuracy": 0.488
+      "hit_rate": 0.682,
+      "dir_accuracy": 0.494
     },
     "china": {
       "n": 77,
@@ -34,19 +34,19 @@
       "dir_accuracy": 0.917
     },
     "canada": {
-      "n": 95,
+      "n": 96,
       "hits": 63,
-      "misses": 32,
-      "hit_rate": 0.663,
-      "dir_accuracy": 0.347
+      "misses": 33,
+      "hit_rate": 0.656,
+      "dir_accuracy": 0.344
     }
   },
   "by_conviction": {
     "low": {
-      "n": 276,
-      "hits": 183,
-      "misses": 93,
-      "hit_rate": 0.663,
+      "n": 278,
+      "hits": 184,
+      "misses": 94,
+      "hit_rate": 0.662,
       "dir_accuracy": 0.442
     },
     "medium": {
@@ -64,8 +64,28 @@
       "dir_accuracy": null
     }
   },
-  "calibration_note": "280 scored, hit-rate 0.664 (directional accuracy 0.446). Chance alone would land a hit-rate near 0.8368 (directional accuracy near 0.5082) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "282 scored, hit-rate 0.663 (directional accuracy 0.447). Chance alone would land a hit-rate near 0.8367 (directional accuracy near 0.5082) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "canada-2026-09-08-20260909085933-1",
+      "market": "canada",
+      "subject": "Silver & Royalties",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0601,
+      "check_by": "2026-10-06"
+    },
+    {
+      "id": "us-2026-09-16-20260917074708-2",
+      "market": "us",
+      "subject": "Cybersecurity",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.037,
+      "check_by": "2026-10-06"
+    },
     {
       "id": "hk-2026-09-04-20260904114404-1",
       "market": "hk",
@@ -164,26 +184,6 @@
       "conviction": "low",
       "outcome": "miss",
       "realized": -0.1149,
-      "check_by": "2026-10-02"
-    },
-    {
-      "id": "hk-2026-09-04-20260906061631-1",
-      "market": "hk",
-      "subject": "China Platform Megacaps",
-      "lean": "underweight",
-      "conviction": "medium",
-      "outcome": "hit",
-      "realized": -0.0278,
-      "check_by": "2026-10-02"
-    },
-    {
-      "id": "canada-2026-09-04-20260906061711-1",
-      "market": "canada",
-      "subject": "Technology",
-      "lean": "underweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": 0.1201,
       "check_by": "2026-10-02"
     }
   ]

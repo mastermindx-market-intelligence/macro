@@ -1287,6 +1287,71 @@ def test_snapshot_lane_requests_private_quote_provenance(tmp_path: Path):
     full = next(call for call in calls if call[0] == "full_quotes")
     assert full[0:2] == ("full_quotes", "scripts.build_live_quotes")
     assert "--private-provenance" in full[2]
+    assert [name for name, _module, args in calls
+            if "--private-provenance" in args] == ["full_quotes"]
+
+
+def test_private_full_snapshot_does_not_disclose_provenance_in_public_intraday_output(
+    tmp_path: Path, monkeypatch,
+):
+    from scripts import build_intraday_flow_quotes as public_quotes
+    from scripts import build_live_quotes as full_quotes
+
+    raw = {
+        "REAL": {"price": 100.0, "quote_ts": "2026-10-08T14:30:00+00:00",
+                 "quote_ts_synthetic": False, "source": "fixture",
+                 "price_basis": "trade", "prev_close": 99.0, "currency": "USD",
+                 "delay_min": 1.0, "day_volume": 1000, "day_high": 101.0,
+                 "day_low": 98.0},
+        "SYNTH": {"price": 50.0, "quote_ts": "2026-10-08T14:30:01+00:00",
+                  "quote_ts_synthetic": True, "source": "fixture",
+                  "price_basis": "day", "prev_close": 50.0, "currency": "USD",
+                  "delay_min": 0.0},
+        "UNDISCLOSED": {"price": 25.0, "quote_ts": "2026-10-08T14:30:00+00:00",
+                        "quote_ts_synthetic": False},
+    }
+    snapshot = {
+        "ts": 1791469800000, "asof": "2026-10-08T14:30:00+00:00",
+        "source": "snapshot",
+        "quotes": full_quotes.to_worker_quotes(raw, include_private_provenance=True),
+        "meta": {"requested": 3, "resolved": 3},
+    }
+    snapshot["quotes"]["REAL"]["internal_owner_receipt"] = "private-sentinel"
+    original_snapshot = json.loads(json.dumps(snapshot))
+    base_path = tmp_path / "base.json"
+    private_path = tmp_path / "quotes_full.json"
+    public_path = tmp_path / "public" / "intraday_quotes.json"
+    base_path.write_text(json.dumps({"leaders": [{"ticker": "REAL"},
+                                               {"ticker": "SYNTH"}]}))
+    private_path.write_text(json.dumps(snapshot))
+    private_bytes = private_path.read_bytes()
+    monkeypatch.setattr(sys, "argv", ["build_intraday_flow_quotes", "--base",
+                       str(base_path), "--quotes", str(private_path), "--out",
+                       str(public_path)])
+
+    assert public_quotes.main() == 0
+    published = json.loads(public_path.read_text())
+
+    assert set(published["quotes"]) == {"REAL", "SYNTH"}
+    for row in published["quotes"].values():
+        assert "quote_ts" not in row
+        assert "quote_ts_synthetic" not in row
+        assert "internal_owner_receipt" not in row
+    assert published["quotes"]["REAL"] == {
+        "price": 100.0, "ts": 1791469800000, "source": "fixture", "basis": "trade",
+        "prevClose": 99.0, "changePct": 1.01, "currency": "USD", "delayMin": 1.0,
+        "vol": 1000, "hi": 101.0, "lo": 98.0,
+    }
+    assert published["quotes"]["SYNTH"] == {
+        "price": 50.0, "ts": None, "source": "fixture", "basis": "day",
+        "prevClose": 50.0, "changePct": 0.0, "currency": "USD", "delayMin": 0.0,
+        "tsSynthetic": True,
+    }
+    assert published["ts"] == snapshot["ts"]
+    assert published["asof"] == snapshot["asof"]
+    assert published["meta"]["requested"] == published["meta"]["resolved"] == 2
+    assert json.loads(private_path.read_text()) == original_snapshot
+    assert private_path.read_bytes() == private_bytes
 
 
 def test_command_does_not_publish_stale_required_output(tmp_path: Path):

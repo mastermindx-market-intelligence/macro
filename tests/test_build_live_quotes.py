@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import pathlib
 import re
+import pytest
 
 from engine import live_quotes as lq
 from scripts import build_live_quotes as blq
@@ -148,6 +149,73 @@ def test_to_worker_quotes_private_provenance_preserves_source_clock_truth():
     assert out["SYNTH"]["quote_ts_synthetic"] is True
     # Missing provenance is never guessed from a non-null timestamp.
     assert out["UNKNOWN"]["quote_ts_synthetic"] is None
+
+
+def test_synthetic_quote_keeps_public_clock_refusal_with_private_opt_in():
+    clock = "2026-10-08T14:30:00.123456+00:00"
+    raw = {"UNIT": {"price": 10.0, "quote_ts": clock,
+                    "quote_ts_synthetic": True, "price_basis": "day"}}
+
+    public = blq.to_worker_quotes(raw)["UNIT"]
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    assert public["ts"] is None
+    assert public["tsSynthetic"] is True
+    assert "quote_ts" not in public and "quote_ts_synthetic" not in public
+    assert private["ts"] is None
+    assert private["tsSynthetic"] is True
+    assert private["quote_ts"] == clock
+    assert private["quote_ts_synthetic"] is True
+    assert {k: v for k, v in private.items()
+            if k not in {"quote_ts", "quote_ts_synthetic"}} == public
+
+
+@pytest.mark.parametrize("provenance", [None, 0, 1, "false", "true", [], {}])
+def test_private_quote_provenance_does_not_coerce_nonboolean_values(provenance):
+    clock = "2026-10-08T14:30:00+00:00"
+    raw = {"UNIT": {"price": 10.0, "quote_ts": clock,
+                    "quote_ts_synthetic": provenance}}
+
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    assert private["quote_ts"] == clock
+    assert private["quote_ts_synthetic"] is None
+
+
+def test_build_private_opt_in_preserves_all_session_receipts(monkeypatch, tmp_path):
+    from datetime import datetime, timezone
+    from lib.market_session import session_status
+
+    clock = datetime(2026, 10, 8, 14, 30, tzinfo=timezone.utc)
+
+    class FrozenDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return clock.astimezone(tz) if tz is not None else clock.replace(tzinfo=None)
+
+    raw = {"UNIT": {"price": 10.0, "quote_ts": clock.isoformat(),
+                    "quote_ts_synthetic": False}}
+    calls = []
+
+    def fake_fetch_quotes(universe, *, offline=False, diag=None):
+        calls.append((universe, offline))
+        assert universe == ["UNIT"] and offline is False
+        return raw
+
+    monkeypatch.setattr(blq, "datetime", FrozenDatetime)
+    monkeypatch.setattr(blq.live_quotes, "fetch_quotes", fake_fetch_quotes)
+    public = blq.build(tmp_path, symbols=["UNIT"])
+    private = blq.build(tmp_path, symbols=["UNIT"], include_private_provenance=True)
+
+    expected = {market: session_status(market, clock)
+                for market in ("us", "cn", "hk", "ca", "connect")}
+    assert set(expected) == {"us", "cn", "hk", "ca", "connect"}
+    assert public["sessions"] == private["sessions"] == expected
+    assert public["asof"] == private["asof"] == clock.isoformat()
+    assert public["ts"] == private["ts"] == int(clock.timestamp() * 1000)
+    assert private["quotes"]["UNIT"]["quote_ts"] == clock.isoformat()
+    assert "quote_ts" not in public["quotes"]["UNIT"]
+    assert len(calls) == 2
 
 
 def test_build_private_provenance_is_opt_in(monkeypatch, tmp_path):
@@ -392,8 +460,6 @@ def test_display_board_pages_are_pages_this_repo_actually_builds():
 # 0/10. These tests pin the expanded coverage and add the standing invariant
 # that makes a future dead pill fail CI instead of shipping silently.
 import logging
-
-import pytest
 
 
 @pytest.mark.parametrize("page,valid_syms,malformed", [

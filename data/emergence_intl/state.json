@@ -1,17 +1,17 @@
 {
-  "125f1b744192": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Staples + Industrials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Staples + Industrials",
-    "score": 59.0
-  },
   "2c85fe224982": {
     "name_en": "Cross-sector cluster \u00b7 Information Technology + Financials",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Information Technology + Financials",
-    "score": 54.2
+    "score": 52.1
   },
-  "5a8bdabdef54": {
+  "ab7471204e50": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Staples + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Staples + Industrials",
+    "score": 54.4
+  },
+  "f42f52188d74": {
     "name_en": "Cross-sector cluster \u00b7 Information Technology + Communication",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Information Technology + Communication",
-    "score": 44.9
+    "score": 44.4
   }
 }

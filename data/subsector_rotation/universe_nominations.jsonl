@@ -109,3 +109,13 @@
 {"date":"2026-10-02","theme":"Space Tech","donor":"spaceinfrastructure","receiver":"spacedataanalytics","confidence":0.185,"both_confirmed":false}
 {"date":"2026-10-02","theme":"Semiconductors","donor":"semismemory","receiver":"semisdesigntools","confidence":0.184,"both_confirmed":false}
 {"date":"2026-10-02","theme":"Commodities Agriculture","donor":"commagribiofuels","receiver":"commagrilivestock","confidence":0.167,"both_confirmed":false}
+{"date":"2026-10-05","theme":"FinTech","donor":"fintechblockchain","receiver":"fintechinsurance","confidence":0.592,"both_confirmed":false}
+{"date":"2026-10-05","theme":"Software","donor":"softwareos","receiver":"softwaredesign","confidence":0.322,"both_confirmed":false}
+{"date":"2026-10-05","theme":"Electric Vehicles","donor":"evscharging","receiver":"evsbatteries","confidence":0.289,"both_confirmed":false}
+{"date":"2026-10-06","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechenergy","confidence":0.653,"both_confirmed":false}
+{"date":"2026-10-06","theme":"FinTech","donor":"fintechblockchain","receiver":"fintechinsurance","confidence":0.515,"both_confirmed":false}
+{"date":"2026-10-06","theme":"Energy Traditional","donor":"energybasemajors","receiver":"energybaseutilities","confidence":0.304,"both_confirmed":false}
+{"date":"2026-10-07","theme":"Digital Entertainment","donor":"entertainmentvideo","receiver":"entertainmentgambling","confidence":0.345,"both_confirmed":false}
+{"date":"2026-10-07","theme":"Telecommunications","donor":"telecomg","receiver":"telecominfrastructure","confidence":0.324,"both_confirmed":false}
+{"date":"2026-10-07","theme":"Industrial Automation","donor":"automationdprinting","receiver":"automationsoftware","confidence":0.311,"both_confirmed":false}
+{"date":"2026-10-07","theme":"Biometrics","donor":"biometricshardware","receiver":"biometricsgovdefense","confidence":0.261,"both_confirmed":false}

@@ -454,7 +454,7 @@ def to_worker_quotes(
         chg = round((price / prev - 1) * 100, 2) if prev else None
         entry: dict = {
             "price": price,
-            "ts": _to_ms(q.get("quote_ts")),
+            "ts": None if q.get("quote_ts_synthetic") else _to_ms(q.get("quote_ts")),
             "source": q.get("source"),
             "basis": q.get("price_basis"),
             "prevClose": prev,
@@ -462,6 +462,8 @@ def to_worker_quotes(
             "currency": q.get("currency"),
             "delayMin": q.get("delay_min"),     # measured age of THIS quote (honest, per-symbol)
         }
+        if q.get("quote_ts_synthetic"):
+            entry["tsSynthetic"] = True
         if include_private_provenance:
             synthetic = q.get("quote_ts_synthetic")
             entry["quote_ts"] = q.get("quote_ts")
@@ -518,7 +520,13 @@ def build(
         raw,
         include_private_provenance=include_private_provenance,
     )
+    # The incumbent fast snapshot runs around the clock, including Asia hours
+    # and weekends. Calendar receipts must not depend on the US-hours overlay.
+    from lib.market_session import session_status
+    sessions = {market: session_status(market, now)
+                for market in ("us", "cn", "hk", "ca", "connect")}
     return {
+        "sessions": sessions,
         "ts": int(now.timestamp() * 1000),
         "asof": now.isoformat(),
         "source": "snapshot",

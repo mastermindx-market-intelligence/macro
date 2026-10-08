@@ -1094,10 +1094,10 @@ def test_b4_session_policy_passes_only_inside_actual_rth_window():
     assert out["session_policy_era"] == SESSION_POLICY_ERA
     assert out["calendar_owner"] == "lib.nyse_calendar.is_session"
     assert out["execution_window_owner"] == "engine.prophet_entry_policy._execution_session_window_et"
-    assert out["execution_schedule_source"] == "NYSE_HOLIDAYS_AND_TRADING_HOURS_2026"
-    assert out["execution_schedule_verified_on"] == "2026-09-22"
-    assert out["supported_session_years"] == [2026]
-    assert out["early_close_dates"] == ["2026-11-27", "2026-12-24"]
+    assert out["execution_schedule_source"] == "NYSE_BETA_HOLIDAYS_AND_TRADING_HOURS_2026_2027"
+    assert out["execution_schedule_verified_on"] == "2026-10-07"
+    assert out["supported_session_years"] == [2026, 2027]
+    assert out["early_close_dates"] == ["2026-11-27", "2026-12-24", "2027-11-26"]
     assert out["policy_receipt"].startswith("pep:")
     assert out["session_receipt"].startswith("pes:")
     assert out["fact_receipt"].startswith("pepf:")
@@ -1162,8 +1162,8 @@ def test_b4_session_policy_requires_aware_clock_and_accepted_strategy_definition
             market_session="2026-09-22",
         )
 
-    with pytest.raises(EntryPolicyContractError, match="outside NYSE_RTH_2026"):
-        _session_policy("2027-01-04T15:00:00Z", "2027-01-04")
+    with pytest.raises(EntryPolicyContractError, match="outside NYSE_RTH_2026_2027"):
+        _session_policy("2028-01-03T15:00:00Z", "2028-01-03")
 
 
 def _risk_policy(current_price=100.0, invalidation_price=97.0, atr=2.0):

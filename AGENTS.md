@@ -1077,7 +1077,7 @@ blocks. Every blocker also carries an escape ladder so an unsatisfiable gate can
 longer trap a session indefinitely: an EXTERNAL blocker escapes at 2 consecutive OR
 3 cumulative external blocks; ANY code (including the internal ones —
 unmerged/ci_failed_unmerged/unpushed/uncommitted/unsafe_branch/guard_error)
-escapes at 10 consecutive OR 15 total blocks. Every escape still requires an explicit `SHIP LOOP BLOCKED:`
+escapes at 10 consecutive OR 15 total blocks. `.claude/settings.json` sets `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP=15` so Claude's default ninth-block provider override cannot pre-empt that repository-owned ladder; this compatibility ceiling grants no earlier exit. Every escape still requires an explicit `SHIP LOOP BLOCKED:`
 evidence report with `stop_hook_active` set, so a session cannot bail on the first
 attempt. A ratified ladder exit is REMEMBERED for the exact frozen state it excused
 (2026-08-19): once the full ladder has fired for a `ci_failed` merged-head block,

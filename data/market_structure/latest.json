@@ -1,18 +1,18 @@
 {
   "schema": "market_structure_context.v1",
-  "asof": "2026-10-02",
-  "built_at": "2026-10-04T06:25:47.413693+00:00",
+  "asof": "2026-10-06",
+  "built_at": "2026-10-07T05:39:27.102399+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
     "regime": "long",
-    "net_gex_bn": 50.136114,
-    "net_gex_pctile": 73.8,
-    "gamma_flip": 7659.028261,
-    "spot": 7722.7202,
-    "dist_to_flip_pct": 0.824735,
-    "days_in_regime": 2,
-    "days_in_regime_observed": 2,
+    "net_gex_bn": 122.132541,
+    "net_gex_pctile": 98.4,
+    "gamma_flip": 7682.580461,
+    "spot": 7818.9302,
+    "dist_to_flip_pct": 1.743841,
+    "days_in_regime": 4,
+    "days_in_regime_observed": 4,
     "series_start": "2026-06-15",
     "history": [
       {
@@ -441,11 +441,25 @@
         "regime": "long",
         "flip": 7659.028261,
         "spot": 7722.7202
+      },
+      {
+        "date": "2026-10-05",
+        "net_gex_bn": 86.482766,
+        "regime": "long",
+        "flip": 7674.514849,
+        "spot": 7773.9502
+      },
+      {
+        "date": "2026-10-06",
+        "net_gex_bn": 122.132541,
+        "regime": "long",
+        "flip": 7682.580461,
+        "spot": 7818.9302
       }
     ],
     "coverage": {
-      "last_obs": "2026-10-02",
-      "expected_last_session": "2026-10-02",
+      "last_obs": "2026-10-06",
+      "expected_last_session": "2026-10-06",
       "sessions_behind": 0,
       "window_sessions": 20,
       "missing_recent": [
@@ -457,44 +471,28 @@
   },
   "systematic": {
     "vc": {
-      "alloc_bn": 273.482972,
-      "alloc_frac": 0.91161,
-      "flow_1d_bn": -0.061501,
-      "flow_5d_bn": 4.31712,
-      "state": "adding",
+      "alloc_bn": 272.245039,
+      "alloc_frac": 0.907483,
+      "flow_1d_bn": -0.643198,
+      "flow_5d_bn": -1.492982,
+      "state": "cutting",
       "flow_window_n": 5,
       "aum_bn": 300.0,
       "target_vol_pct": 10.0,
       "series_start": "1927-12-30"
     },
     "cta": {
-      "score": 0.713632,
-      "z": -0.348411,
-      "flow_1d": 0.118561,
-      "flow_5d": -0.07868,
-      "state": "cutting",
+      "score": 1.113857,
+      "z": 0.354683,
+      "flow_1d": 0.184188,
+      "flow_5d": 0.512145,
+      "state": "adding",
       "flow_window_n": 5,
-      "cta_near_flat": true
+      "cta_near_flat": false
     },
     "agreement": "split",
     "flow_window_n": 5,
     "history": [
-      {
-        "date": "2024-10-04",
-        "vc_alloc_bn": 186.817432,
-        "vc_flow_bn": -1.047152,
-        "cta_score": 1.692484,
-        "cta_flow": 0.319409,
-        "spx_close": 5751.069824
-      },
-      {
-        "date": "2024-10-07",
-        "vc_alloc_bn": 185.370544,
-        "vc_flow_bn": -1.446888,
-        "cta_score": 1.487355,
-        "cta_flow": -0.20513,
-        "spx_close": 5695.939941
-      },
       {
         "date": "2024-10-08",
         "vc_alloc_bn": 185.511174,
@@ -4478,67 +4476,75 @@
         "cta_score": 0.713632,
         "cta_flow": 0.118561,
         "spx_close": 7722.720215
+      },
+      {
+        "date": "2026-10-05",
+        "vc_alloc_bn": 272.888238,
+        "vc_flow_bn": -0.594734,
+        "cta_score": 0.929669,
+        "cta_flow": 0.216037,
+        "spx_close": 7773.950195
+      },
+      {
+        "date": "2026-10-06",
+        "vc_alloc_bn": 272.245039,
+        "vc_flow_bn": -0.643198,
+        "cta_score": 1.113857,
+        "cta_flow": 0.184188,
+        "spx_close": 7818.930176
       }
     ]
   },
   "vol": {
-    "rv21": 0.104893,
-    "rv63": 0.109696,
+    "rv21": 0.101747,
+    "rv63": 0.110195,
     "rv_cross_state": "calm",
     "vix_curve": [
       {
         "tenor": "M1",
-        "settle": 17.648,
-        "dte": 19
+        "settle": 17.0818,
+        "dte": 15
       },
       {
         "tenor": "M2",
-        "settle": 18.3449,
-        "dte": 47
+        "settle": 17.6375,
+        "dte": 43
       },
       {
         "tenor": "M3",
-        "settle": 18.7966,
-        "dte": 75
+        "settle": 18.1615,
+        "dte": 71
       },
       {
         "tenor": "M4",
-        "settle": 19.4502,
-        "dte": 110
+        "settle": 19.025,
+        "dte": 106
       },
       {
         "tenor": "M5",
-        "settle": 19.9486,
-        "dte": 138
+        "settle": 19.5821,
+        "dte": 134
       },
       {
         "tenor": "M6",
-        "settle": 20.125,
-        "dte": 166
+        "settle": 19.7602,
+        "dte": 162
       }
     ],
-    "vix_curve_slope": 2.477,
+    "vix_curve_slope": 2.6784,
     "series_start_curve": "2026-04-16"
   },
   "dispersion": {
-    "cor1m": 8.05,
+    "cor1m": 8.33,
     "cor1m_regime": "dispersion",
-    "cor1m_1y_delta": -1.33,
-    "cor1m_pctile_2y": 11.7,
+    "cor1m_1y_delta": 0.9,
+    "cor1m_pctile_2y": 13.7,
     "cor1m_pctile_lo": 20,
     "cor1m_pctile_hi": 80,
     "cor1m_available": true,
-    "cor3m": 11.48,
-    "dspx": 34.7,
+    "cor3m": 11.49,
+    "dspx": 35.09,
     "history": [
-      {
-        "date": "2024-10-04",
-        "cor1m": 11.24
-      },
-      {
-        "date": "2024-10-07",
-        "cor1m": 20.45
-      },
       {
         "date": "2024-10-08",
         "cor1m": 18.61
@@ -6530,6 +6536,14 @@
       {
         "date": "2026-10-02",
         "cor1m": 8.05
+      },
+      {
+        "date": "2026-10-05",
+        "cor1m": 8.51
+      },
+      {
+        "date": "2026-10-06",
+        "cor1m": 8.33
       }
     ]
   },
@@ -6542,32 +6556,40 @@
     "band_1sigma_hi": 7858.19,
     "band_2sigma_lo": 7451.78,
     "band_2sigma_hi": 7993.66,
-    "gamma_flip": 7659.028261,
+    "gamma_flip": 7682.580461,
     "implied_weekly_pct": 1.75,
     "source": "spx_iv30_scaled_5d"
   },
   "state_changes": {
-    "vs_asof": "2026-10-01",
+    "vs_asof": "2026-10-05",
     "items": [
       {
-        "key": "cor1m_regime",
-        "from": "normal",
-        "to": "dispersion",
-        "note_en": "Correlation regime: Normal correlation → Dispersion (stock-picker's market)",
-        "note_zh": "相关性机制：正常相关性 → 分散（选股市场）",
+        "key": "vc_state",
+        "from": "adding",
+        "to": "cutting",
+        "note_en": "Vol-control funds: adding → cutting",
+        "note_zh": "波动率控制基金：加仓 → 减仓",
+        "display_only": true
+      },
+      {
+        "key": "agreement",
+        "from": "aligned_adding",
+        "to": "split",
+        "note_en": "Systematic agreement: Aligned adding → Split",
+        "note_zh": "系统化机构一致性：一致加仓 → 分歧",
         "display_only": true
       }
     ]
   },
   "prev_state": {
-    "as_of": "2026-10-01",
+    "as_of": "2026-10-05",
     "state": {
       "gamma_regime": "long",
       "vc_state": "adding",
-      "cta_state": "cutting",
-      "agreement": "split",
+      "cta_state": "adding",
+      "agreement": "aligned_adding",
       "rv_cross_state": "calm",
-      "cor1m_regime": "normal"
+      "cor1m_regime": "dispersion"
     }
   }
 }

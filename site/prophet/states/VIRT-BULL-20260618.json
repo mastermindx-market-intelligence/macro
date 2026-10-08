@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VIRT-BULL-20260618",
-  "asof": "2026-10-04",
+  "asof": "2026-10-08",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 41.3,
@@ -11,20 +11,20 @@
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 4.4,
-    "pace": 0.7,
-    "retention": 8.6,
-    "overlay": 59.0
+    "progress": 4.5,
+    "pace": 0.0,
+    "retention": 8.8,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.039,
-    "dist_to_t1_r": 1.461,
-    "dist_to_t2_r": 2.961,
-    "horizon_pct_used": 148.9,
-    "p1": 0.0262,
-    "p2": 0.0131,
+    "dist_to_stop_r": 1.04,
+    "dist_to_t1_r": 1.46,
+    "dist_to_t2_r": 2.96,
+    "horizon_pct_used": 157.8,
+    "p1": 0.0268,
+    "p2": 0.0134,
     "p3": null,
-    "move_r": 0.039,
+    "move_r": 0.04,
     "mfe_r": 0.458,
     "mae_r": -0.241
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 67,
-  "tau": 1.4889
+  "days_elapsed": 71,
+  "tau": 1.5778
 }
