@@ -607,7 +607,8 @@ def _build_membership_df(
                 "net_premium_mn": _get(row, "net_premium_mn"),
                 "premium_mn": _get(row, "premium_mn") or _get(row, "gross_premium_mn"),
                 "zerodte_share": _get(row, "zerodte_share"),
-                "signing_source": "minute_tick",
+                "net_premium_ex0dte_mn": _get(row, "net_premium_ex0dte_mn"),
+                "signing_source": "tape" if "net_premium_ex0dte_mn" in df.columns else "minute_tick",
             })
 
         if not day_rows_list:
@@ -615,13 +616,13 @@ def _build_membership_df(
 
         day_df = pd.DataFrame(day_rows_list)
 
-        # tape ex-0DTE overrides where available
+        # The latest tape row cannot be applied to a prior session: that was a
+        # silent lookahead. Only use ex-0DTE premium stamped on THIS dated row.
         ex0dte: dict[str, float] = {}
-        for ticker in day_df["ticker"].unique():
-            tape_row = tape_rows.get(ticker)
-            v = _tape_ex0dte_net(tape_row)
-            if v is not None:
-                ex0dte[ticker] = v
+        for _, day_row in day_df.iterrows():
+            val = day_row.get("net_premium_ex0dte_mn")
+            if val is not None and pd.notna(val):
+                ex0dte[str(day_row["ticker"])] = float(val)
 
         try:
             enriched = normalized_impact_table(day_df, mktcap_map, ex0dte or None)
@@ -944,10 +945,18 @@ def build(
 
     as_of = datetime.now(timezone.utc).isoformat()
 
-    # ── Load all summary parquets ─────────────────────────────────────────────
-    summaries = _load_all_summaries(data_root)
+    # ── Canonical source admission ────────────────────────────────────────────
+    # ThetaData T2a trade+NBBO is the ONLY prospectively usable options flow
+    # spine. Massive/Polygon summaries retired 2026-08-22: keep them only as an
+    # explicitly STALE historical fallback. A new build clock changes neither.
+    from engine.options_universe import gex_symbols
+    from scripts.flow_leaders_theta_tape import load_tape_cohort
+
+    cohort = load_tape_cohort(data_root, gex_symbols())
+    source_family = "thetadata_t2a_tape" if cohort.summaries else "legacy_options_flow_archive"
+    summaries = cohort.summaries if cohort.summaries else _load_all_summaries(data_root)
     if not summaries:
-        log.warning("build_flow_leaders: no summary parquets found — writing cold-start payload")
+        log.warning("build_flow_leaders: no usable tape or archive summaries — unavailable")
 
     # ── Determine universe ────────────────────────────────────────────────────
     # flow_universe = names in summaries ∩ US single names (excludes ETFs from boards)
@@ -962,16 +971,31 @@ def build(
 
     # ── Freshness SLA ─────────────────────────────────────────────────────────
     latest_session = _latest_summary_session(summaries)
-    stale = _check_stale(latest_session)
+    source_age_stale = _check_stale(latest_session)
+    insufficient_coverage = source_family == "thetadata_t2a_tape" and not cohort.coverage_ready
+    # Full-universe leadership requires ≥90% *same-session* configured roots;
+    # a sparse or mixed-session tape feed cannot announce cross-universe winners.
+    stale = source_age_stale or insufficient_coverage or source_family != "thetadata_t2a_tape"
+    stale_reason = (
+        "source_session_old" if source_age_stale else
+        "legacy_options_source_retired" if source_family != "thetadata_t2a_tape" else
+        "insufficient_same_session_coverage" if insufficient_coverage else None
+    )
     if stale:
-        log.warning("build_flow_leaders: flow store stale (latest=%s) — boards in stale state", latest_session)
+        log.warning("build_flow_leaders: unavailable source=%s session=%s reason=%s "
+                    "coverage=%.3f", source_family, latest_session, stale_reason, cohort.coverage_ratio)
 
     # ── Load supporting stores ────────────────────────────────────────────────
     tape_rows: dict[str, pd.Series | None] = {}
     for name in all_flow_names:
         tape_rows[name] = _load_tape_row(name, data_root)
 
-    chain_t, chain_t1 = _load_two_chain_days(data_root)
+    # Polygon OI chains are retired. Never mix their OI confirmation or gamma
+    # estate into a ThetaData signed-flow session under a fresh-looking stamp.
+    if source_family == "thetadata_t2a_tape":
+        chain_t, chain_t1 = pd.DataFrame(), pd.DataFrame()
+    else:
+        chain_t, chain_t1 = _load_two_chain_days(data_root)
     oi_confirmed_map: dict[str, bool | None] = {}
     if not chain_t.empty and not chain_t1.empty:
         try:
@@ -981,7 +1005,10 @@ def build(
         except Exception as e:  # noqa: BLE001
             log.debug("build_flow_leaders: oi_confirm failed: %s", e)
 
-    options_entry_map = _load_options_entry(data_root)
+    options_entry_map = (
+        {} if source_family == "thetadata_t2a_tape"
+        else _load_options_entry(data_root)
+    )
     personality_map = _load_personality(site_root)
     mtf_upturn_map = _load_mtf_upturn(site_root)
     washout_ctx_map = _load_washout_ctx(site_root)
@@ -1029,6 +1056,14 @@ def build(
                 as_of=as_of,
                 stale=stale,
             )
+            if source_family == "thetadata_t2a_tape":
+                # Tape quote-rule signing is estimated, not a prospectively
+                # qualified FL-R3 predictor; preserve measured observations
+                # without emitting unearned actionable signal flags.
+                rec["signing_source"] = "tape"
+                rec["signing_note"] = "ThetaData trade+NBBO quote-rule; estimated direction (FL-R3 research)"
+                rec["fire_a"] = False
+                rec["fire_b"] = False
             # Board A is recurrence-sorted (money that keeps landing). Board B is
             # the "turned back up" board — only names that actually inflected (a
             # real washout-turn) belong there, not the whole universe. A name may
@@ -1140,14 +1175,25 @@ def build(
         # stays for whatever else already reads the build timestamp.
         "session_date": latest_session,
         "stale": stale,
+        "stale_reason": stale_reason,
+        "source_family": source_family,
+        "source_age_stale": source_age_stale,
+        "signal_policy": "research_only",
         "cold_start": cold_start,
         "direction_note": (
-            "Net premium direction is ~-soft (approximate) for all sources "
-            "until multi-session tape calibration extension passes (FL-R3). "
-            "Magnitude leads direction."
+            "ThetaData trade+NBBO quote-rule signing estimates trade direction; "
+            "signed-premium observations are display-only pending FL-R3 and "
+            "prospective evaluation. Magnitude leads direction."
+            if source_family == "thetadata_t2a_tape" else
+            "Historical retired-source snapshot; no current flow signals. "
+            "Net premium direction is approximate; FL-R3 not qualified."
         ),
         "coverage": {
             "n_universe": len(board_names),
+            "n_expected_roots": cohort.expected_roots,
+            "n_current_roots": cohort.current_roots,
+            "same_session_coverage_ratio": round(cohort.coverage_ratio, 4),
+            "min_full_universe_coverage": 0.90,
             "n_flow_sessions": n_flow_sessions,
             "flow_z_live": flow_z_live,
             "tape_names": tape_names,
