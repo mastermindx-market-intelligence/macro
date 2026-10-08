@@ -1117,20 +1117,23 @@ def test_wc7_owner_graph_reader_uses_uncollapsed_beliefs(monkeypatch, tmp_path):
     from engine.theme_graph import store as graph_store
     nodes = tmp_path / "nodes.parquet"
     edges = tmp_path / "edges.parquet"
+    lifecycle = tmp_path / "node_lifecycle.parquet"
     nodes.touch()
     edges.touch()
+    lifecycle.touch()
     graph = _wc7_graph()
     flags = []
     monkeypatch.setattr(graph_store, "nodes_path", lambda: nodes)
     monkeypatch.setattr(graph_store, "edges_path", lambda: edges)
+    monkeypatch.setattr(graph_store, "node_lifecycle_path", lambda: lifecycle)
     monkeypatch.setattr(graph_store, "read_nodes", lambda **kw: graph.read_nodes())
 
     def raw_edges(*, latest_belief=True, **kw):
         flags.append(("edges", latest_belief))
         return graph.read_edges()
 
-    def raw_lifecycle(*, latest=True, **kw):
-        flags.append(("lifecycle", latest))
+    def raw_lifecycle(*, latest=True, strict=False, **kw):
+        flags.append(("lifecycle", latest, strict))
         return graph.read_node_lifecycle()
 
     monkeypatch.setattr(graph_store, "read_edges", raw_edges)
@@ -1138,7 +1141,7 @@ def test_wc7_owner_graph_reader_uses_uncollapsed_beliefs(monkeypatch, tmp_path):
     assert ucv._hierarchy_categories_for_baskets(["x"], "2026-10-07") == {
         "x": ("theme:cat_a",)
     }
-    assert flags == [("edges", False), ("lifecycle", False)]
+    assert flags == [("edges", False), ("lifecycle", False, True)]
 
 
 def test_wc7_missing_live_graph_is_typed_null(tmp_path, monkeypatch, capsys):
@@ -1298,3 +1301,25 @@ def test_wc7_absent_vs_valid_empty_lifecycle_both_remain_compatible(
     assert ucv._hierarchy_categories_for_baskets(["x"], "2026-10-07") == expected
     pd.DataFrame(columns=graph_store.NODE_LIFECYCLE_COLUMNS).to_parquet(lifecycle)
     assert ucv._hierarchy_categories_for_baskets(["x"], "2026-10-07") == expected
+
+
+def test_wc7_failed_lifecycle_read_does_not_stop_nightly_stamp(
+    verdicts, append_kwargs, tmp_path, monkeypatch, capsys
+):
+    """Owner read refusal yields a typed-null hierarchy field, but keeps nightly rows."""
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA"]})
+
+    class BadLifecycle(FakeStore):
+        def read_node_lifecycle(self):
+            raise PermissionError("private lifecycle exception payload")
+
+    graph = _wc7_graph()
+    bad = BadLifecycle(graph.read_nodes(), graph.read_edges())
+    assert _wc7_stamp(verdicts, append_kwargs, "2026-10-07", bad) == 3
+    saved = ucv.load_candidates(tmp_path)
+    assert len(saved) == 3
+    assert saved["theme_category_ids"].isna().all()
+    output = capsys.readouterr().out
+    assert "hierarchy-unavailable" in output
+    assert "private lifecycle exception payload" not in output
