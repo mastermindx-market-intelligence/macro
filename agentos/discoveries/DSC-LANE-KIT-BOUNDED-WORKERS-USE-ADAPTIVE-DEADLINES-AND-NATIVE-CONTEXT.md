@@ -177,8 +177,12 @@ account-local source now derives the direct Grok worker timeout from the same re
 semantics as remote execution: ordinary/C2 defaults remain 3600 seconds, C3 defaults to 7200 seconds,
 and stale explicit short overrides are lifted to 3600 for C2 or 7200 for C3. C0/C1 callers may still
 intentionally request shorter bounded windows. Source SHA-256 is
-`a780a9b5e790c236e30d0f338b51b1d6a97179382a63c14d7437955053352a19`.
-The dedicated Grok dispatch suite, including new C2/C3 floor regressions, passed **53 tests**.
+`e94ca9cd616042baaa1ffeba5ef94253c3df4a9bc8e81fa0fae44b1a080612b7`.
+The direct Grok path now also treats turn count as a bounded productivity fuse rather than a hidden
+short-task default: 140 turns for ordinary work, 240 for C2, and 400 for C3, while an explicit
+`POOL_MAX_TURNS` may tighten one commission and values outside 1..400 fail before provider launch.
+The dedicated Grok dispatch suite, including runtime-floor and turn-budget regressions, passed
+**59 tests**.
 
 Live carrier evidence also confirms that the widened remote policy is being consumed by real workers,
 not only hermetic tests: a C2 Grok review on ubuntu2 ran approximately 327 seconds and settled rc=0
