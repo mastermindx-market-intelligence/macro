@@ -168,6 +168,37 @@ the special PONG canary) appears when the bounded resume budget is exhausted, th
 rc=76 rather than false-success rc=0. Hermetic wrapper/routing tests covering larger C2/C3 budgets,
 explicit tightening, the hard cap, and terminal-status exhaustion passed in the current focused pack.
 
+
+### 2026-10-08 continuation hardening
+
+A further local-Grok audit found that the direct `sub.sh grok` path still defaulted every worker to
+3600 seconds even when the commission was already classified `C3_FRONTIER_JUDGMENT`. The live
+account-local source now derives the direct Grok worker timeout from the same reviewed complexity
+semantics as remote execution: ordinary/C2 defaults remain 3600 seconds, C3 defaults to 7200 seconds,
+and stale explicit short overrides are lifted to 3600 for C2 or 7200 for C3. C0/C1 callers may still
+intentionally request shorter bounded windows. Source SHA-256 is
+`a780a9b5e790c236e30d0f338b51b1d6a97179382a63c14d7437955053352a19`.
+The dedicated Grok dispatch suite, including new C2/C3 floor regressions, passed **53 tests**.
+
+Live carrier evidence also confirms that the widened remote policy is being consumed by real workers,
+not only hermetic tests: a C2 Grok review on ubuntu2 ran approximately 327 seconds and settled rc=0
+under a 3600-second native window, while a C2 MiniMax-M3 build on mini2 ran approximately 902 seconds
+and settled rc=0 under a 7200-second controller window. Both exceed historical short ceilings that
+previously terminated useful work.
+
+The ordinary non-native remote controller source has also been tightened for completion visibility:
+its default completion poll interval is now 30 seconds rather than 150 seconds while preserving the
+same 7200-second hard controller ceiling. That source change is readback-installed but remains
+**BUILT_NOT_PROVEN by executable post-edit regression** because the bounded validation invocation was
+explicitly safety-blocked before dispatch. No alternate carrier or equivalent retry was used.
+
+Two fail-closed residuals remain known. First, the leased `glm-codex` branch in `sub.sh` still
+forces `GLM_CODEX_MAX_CONTINUES=0`, suppressing the newer bounded same-session continuation policy on
+that entry path; the direct repair attempt was safety-blocked before dispatch and has not been retried.
+Second, automatic execute selection may still choose the intentionally short Go capability for C2/C3
+and then be refused by launch policy rather than preselecting the next long-runtime-capable pool.
+Neither residual permits a too-short long worker to run silently, but both remain hardening targets.
+
 ### Verification boundary
 
 Directly observed current green evidence:
@@ -186,8 +217,8 @@ Directly observed current green evidence:
 A wider legacy kit run previously reached 1467 passes with 33 failures in other fixture/policy areas;
 it is not evidence that the entire kit is globally green.
 
-The core timeout, lease, process-cleanup, context, OpenCode-free, Go complexity guard, and bounded
-auto-continue changes are now executable-post-edit verified on the original m2studio carrier. The
+The core timeout, lease, process-cleanup, context, OpenCode-free, Go complexity guard, bounded
+auto-continue, and direct-Grok complexity floor changes are now executable-post-edit verified on the original m2studio carrier. The
 remaining known in-scope defect is routing ergonomics: automatic execute selection may choose Go for
 C2/C3 and then be refused at the launch-policy gate instead of preselecting the next eligible
 long-runtime pool.
