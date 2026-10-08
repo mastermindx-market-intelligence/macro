@@ -31,3 +31,18 @@ The script reads only that acquisition, validates exact SHA + one historical ses
 2. Obtain written BOX three-month trial terms, company legal signature, SFTP and pre-expiry cancellation requirements; avoid business/account auto-charge.
 3. Reconfirm ThetaData current trade+quote and commercial rights through incumbent authorized collector owner; do not duplicate the live poller.
 4. Only once rights and event availability are proven, integrate a classified volume source via the existing Options Intelligence admission seam, keeping coverage and nulls truthful.
+
+
+## Second public demonstration asset: Cboe C1 TBT, 3% sample
+- Official URL: https://datashop.cboe.com/download/sample/289 . Cboe TBT execution sample dated 2025-03-28; not a usable current exchange feed.
+- Source is 3,807,739 byte outer ZIP; raw SHA256 6c99e69e43d259e81bc31334574579cf9c623f5e77ff596cacf268712cd3262c.
+- M2 private source and receipt: same existing 0700 root, files cboe_c1_tbt_public_eval_2025-03-28_outer.zip and cboe_tbt_receipt.json (both 0600).
+- Inner CSV has 22 lowercase fields, 113,018 participant-side execution rows across 1,250 underlyings. The packaged sample references TBT specification v1.0; online current official spec v1.1 must be qualified separately before any real feed adapter.
+- Qualification script: python3 -m scripts.qualify_options_free_tbt --private-root /Users/chriswong/.mastermind_private/options_free_trials_20261008 --persist-private
+- Parsed private research result: qualified_cboe_c1_tbt_sample.json, 0600, SHA256 c8622403caea9f2cbc428b23e2ebe039a2472de16b47c9302099447adb50496d.
+- Real-source classification census: 113,018 source participant-side rows, 92,838 with required side/open-close/capacity/positive economics; 20,180 missing open/close, 507 missing option right, 69 unknown side. These exclusion categories can overlap. No market-wide denominator. The 111,756 price-only positive two-sided NBBO rows are NOT quote-age eligible; there is NO NBBO quote-event timestamp in the demo.
+- 49,332 sample rows have nonempty complex-execution ID, but package membership and complete economic interpretation are NOT established. Rows with field-level classifications are not automatically trade-condition, correction, clock, or prospective-admission eligible.
+- TBT stores participant SIDE, not observed aggressor. Execution IDs can connect opposite sides, which must not be counted as separate unique executions without validated deduplication.
+- TBT historical original availability clock, network receiver clock, independent NBBO quote time, delta, matured forward-response labels, capacity rights and venue-wide sample completeness remain unknown. Keep them explicit null/false. Preserve raw private bytes for future licensed, fixed-rule assessment; do NOT auto-publish, score or trade.
+
+Verification: 16 hermetic synthetic tests passed on M2 after the real-sample unknown-option-right repair, and both sample qualification scripts were executed successfully. This proves local schema handling only, not production or signal validity.
