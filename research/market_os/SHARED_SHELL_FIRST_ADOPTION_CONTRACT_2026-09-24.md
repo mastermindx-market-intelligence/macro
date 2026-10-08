@@ -4,6 +4,33 @@ Status: design candidate with a verified existing-source baseline. NOT implement
 
 Operation: `market-os-shared-shell-design-20260924-sol-001`. Existing parent: `WS:MARKET-OS`. Sole branch / Draft PR: `sol/market-os-shared-shell-design-20260924` / Macro #7949. Chairman commission: Sol leads the common Macro/Terminal experience, with editable mockups and refinement before site-wide release. This contract does not displace any incumbent source writer.
 
+## 0. 2026-10-08 Chairman adoption ruling
+
+Current live Chairman direction resolves the framework question left open by this
+candidate: a mature Jinja Macro workspace may remain Jinja and become a first-class
+surface of the shared application shell. The product boundary is the shared shell, not
+React versus Jinja. Terminal capabilities should compose into the same journey rather
+than forcing the reader into a second product experience.
+
+The implementation plan is
+`research/market_os/SHARED_SHELL_JINJA_SURFACE_PLAN_2026-10-08.md`. It preserves
+Macro/Jinja as the host document for the first adoption and reuses the existing
+`MDXTerminalOverlay` bridge for Terminal-owned depth. No second page renderer, route
+registry, auth/session owner or persisted shell-context store is admitted by this ruling.
+
+The first source hardening landed on this held carrier at
+`371e3447dab9608f298461a4cfa963aa0b03af1c`: portal animation origin and keyboard
+return focus are now separate inputs; ticker search passes its actual Search control as
+the return target; desktop resolves that target only after the Macro document is removed
+from `inert` / `aria-hidden`; invalid targets fall back to visible shared navigation;
+the incumbent mobile no-refocus/scroll-restoration path is unchanged.
+
+This source candidate is **BUILT_NOT_PROVEN** at the interaction level. Its new static
+contract assertions are present, but the earlier 34-test baseline predates this change
+and is not promoted to fresh execution proof. PR #7949 remains Draft / HOLD-FOR-SOL and
+integration-dirty against current main. China shell adoption must also reconcile the
+incumbent China writer PR #7618 before changing `templates/china.html.j2`.
+
 ## 1. The useful pilot
 
 A user can enter the US market overview, inspect the stock board or a native sector view, open one exact security in the existing Terminal, use the existing watchlist capability, and return to the originating research context. A second native market tests whether the frame really generalizes without relabeling US content as Chinese content. New navigation is successful only when the destination works or presents its intentional access/unavailable state.
