@@ -62,6 +62,7 @@ A null here means "not measured for this name tonight", never "false"
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
+from types import SimpleNamespace
 import json
 import logging
 import math
@@ -193,6 +194,10 @@ POOL_COLUMNS = (
 #: theme membership exactly as ``us_board_rank.THEME_ID_EXCLUDE_PREFIX`` does.
 THEME_ID_EXCLUDE_PREFIX = "us_sector_"
 
+# W-C7: additive, display-only hierarchy SHADOW; never classification authority.
+# Missing or not-yet-admitted hierarchy means NULL, not "no category".
+HIERARCHY_CATEGORY_COLUMN = "theme_category_ids"
+
 #: Trailing window for the S-A turnover percentile stand-in.
 TURNOVER_WINDOW_20D = 20
 
@@ -305,6 +310,96 @@ def _ids(value: Any) -> str | None:
 
 def _mapping(value: Any) -> Mapping[str, Any]:
     return value if isinstance(value, Mapping) else {}
+
+
+def _hierarchy_categories_for_baskets(
+    basket_ids: Iterable[str], asof: str, *, view: Any = None, root: Any = None,
+) -> dict[str, tuple[str, ...]]:
+    """PIT house-category shadow through W-C6; never resolve hierarchy here.
+
+    Derive once per recorded basket, not once per ticker. The graph owner
+    supplies RAW bitemporal edges and lifecycle; latest-belief or latest-lifecycle
+    views would suppress corrected historical facts. hierarchy_paths owns all
+    traversal, effective/knowledge clocks and rights.
+    """
+    baskets = sorted({
+        basket for basket in basket_ids
+        if isinstance(basket, str) and basket
+        and not basket.startswith(THEME_ID_EXCLUDE_PREFIX)
+    })
+    if not baskets:
+        return {}
+
+    def refuse(reason: str) -> None:
+        log.warning("us_context_vector: hierarchy shadow unavailable (%s)", reason)
+        print(
+            "::warning title=us-context-vector-hierarchy-unavailable::"
+            f"theme_category_ids withheld: {reason}; nightly rows still accrue",
+            flush=True,
+        )
+
+    if view is None:
+        if root is not None:
+            # Explicit test/scratch root must never read the production graph.
+            # Its owner can inject a fixture view; nightly uses root=None.
+            log.info("us_context_vector: explicit root without graph view; hierarchy null")
+            return {}
+        try:
+            from engine.theme_graph import store as graph_store
+
+            if not graph_store.nodes_path().is_file() or not graph_store.edges_path().is_file():
+                refuse("graph nodes/edges missing")
+                return {}
+            node_rows = graph_store.read_nodes(strict=True)
+            edge_rows = graph_store.read_edges(latest_belief=False, strict=True)
+            lifecycle_rows = graph_store.read_node_lifecycle(latest=False)
+            # One owner snapshot, cached across baskets in the same nightly run.
+            view = SimpleNamespace(
+                read_nodes=lambda: node_rows,
+                read_edges=lambda: edge_rows,
+                read_node_lifecycle=lambda: lifecycle_rows,
+            )
+        except Exception as exc:  # noqa: BLE001 — shadow cannot veto a night
+            refuse(f"owner read {type(exc).__name__}")
+            return {}
+
+    try:
+        from engine.theme_graph.structural_navigation import hierarchy_paths
+    except Exception as exc:  # noqa: BLE001
+        refuse(f"reader import {type(exc).__name__}")
+        return {}
+
+    categories: dict[str, tuple[str, ...]] = {}
+    refused = 0
+    for basket in baskets:
+        try:
+            paths = hierarchy_paths(
+                view, f"basket:baskets:{basket}", asof, knowledge_cutoff=asof,
+            )
+            # Defence in depth: a vendor/source-local parent cannot be a
+            # house category even if an upstream reader regresses.
+            ancestors = {
+                el["node_id"]
+                for path in paths
+                for el in path.get("path", ())
+                if el.get("kind") == "theme"
+                and el.get("tier") == "macro_category"
+                and isinstance(el.get("node_id"), str)
+                and el["node_id"].startswith("theme:")
+                and _mapping(el.get("rights")).get("family") == "mastermind_curated"
+                and _mapping(el.get("rights")).get("public_display_allowed") is True
+            }
+            if ancestors:
+                categories[basket] = tuple(sorted(ancestors))
+        except Exception as exc:  # noqa: BLE001 — refuse only the shadow
+            log.warning(
+                "us_context_vector: hierarchy basket %s refused (%s)",
+                basket, type(exc).__name__,
+            )
+            refused += 1
+    if refused:
+        refuse(f"reader refused {refused}/{len(baskets)} baskets")
+    return categories
 
 
 # --------------------------------------------------------------------------- #
@@ -1263,7 +1358,8 @@ _OBJECT_COLUMNS = (
     # otherwise read back float and collide with the next month's strings.
     "prophet_shadow_definition",
     "tier_cascade", "tier_sub", "gate_state", "gate_reason", "near_miss_reason",
-    "signal_asof", "stage", "theme_membership_ids", "theme_primary_id",
+    "signal_asof", "stage", "theme_membership_ids", "theme_category_ids",
+    "theme_primary_id",
     "theme_primary_name", "theme_label", "theme_reco", "relay_basket_id",
     "foresight_stage", "regime_dispersion_state", "regime_market_quad",
     "regime_quad_name", "regime_vol_regime", "context_dims",
@@ -1435,6 +1531,7 @@ def append_candidates(
     pool_columns: Mapping[str, Mapping[str, Any]] | None = None,
     sue_z: Mapping[str, Any] | None = None,
     short_flow: Mapping[str, Mapping[str, Any]] | None = None,
+    hierarchy_store_view: Any = None,
 ) -> int:
     """Append one settled full-universe US context snapshot.
 
@@ -1556,6 +1653,20 @@ def append_candidates(
             return 0
 
         new = pd.DataFrame(records)
+        # Shadow PIT clock = this night's settled decision date; never join
+        # today's hierarchy onto historical records or feed a ranking input.
+        basket_categories = _hierarchy_categories_for_baskets(
+            (basket for ids in theme_ids.values() for basket in ids),
+            stamp_date, view=hierarchy_store_view, root=root,
+        )
+        new[HIERARCHY_CATEGORY_COLUMN] = [
+            _ids(
+                category
+                for basket in theme_ids.get(ticker, ())
+                for category in basket_categories.get(basket, ())
+            )
+            for ticker in new["ticker"]
+        ]
         if with_context_dims:
             dims = context_dimension_frame(tickers, stamp_date, root=root)
             if not dims.empty:
