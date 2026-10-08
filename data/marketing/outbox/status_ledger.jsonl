@@ -9606,3 +9606,4 @@
 {"id":"ob-2026-10-08-f14f10c6ef","from":"queued","to":"quarantined","at":"2026-10-08T02:39:28Z","actor":"approval-desk","note":"approval-desk: session_language: today_word_off_session:today","receipt":null}
 {"id":"ob-2026-10-07-437376406c","from":"approved","to":"posting","at":"2026-10-08T02:39:31Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-07-437376406c","from":"posting","to":"posted","at":"2026-10-08T02:39:32Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ac7026495b0fb1c5cc7aabe","external_url":null,"at":"2026-10-08T02:39:28Z","booked_at":"2026-10-08T02:40:28Z"}}
+{"id":"ob-2026-10-07-e3055ed147","from":"queued","to":"quarantined","at":"2026-10-08T03:00:14Z","actor":"press_wire_reap","note":"expired_stale_wire: breaking sat untouched 3.3h (ttl 3h) — the moment it was written about is gone","receipt":null}
