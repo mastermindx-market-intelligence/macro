@@ -61,3 +61,17 @@ Reconcile the new research masterplan with this checkpoint; latest #8629 and #86
 **DO_NOT_REDO / research holds.** #8629 remains the incumbent population and CI owner; do not edit or merge its carrier from W-C7. #8631 W-C8 is merged and must not be rebuilt. #8633/#8635 V1.1 censuses and #7870 vertical are externally owned; W-C5 requires #7870 merge and countersign. W-C9 evaluation depends on actual accrual. New taxonomy, exposure weights, causal edges, ThemeState legs and Prophet/trading authority remain held for Pro research.
 
 **Next convergence action.** After W-C4 has merged through its own owner, reconcile #8643 onto the exact new main (including merged W-C8), verify current-main code and CI, obtain independent review and then the first real nightly PIT consumer receipt. This continuation is BUILT_NOT_PROVEN, not production-accepted.
+
+## 2026-10-08 isolated current-upstream integration proof
+
+**Purpose:** verify W-C7 compatibility with the active, newer W-C4 owner head and already-merged W-C8 without editing any incumbent PR or declaring CI green.
+
+**Exact source:** W-C7 semantic head 7574d409ac6bb2a5792a0c9364075019b372a2da in the detached, isolated test worktree. Current W-C4 owner head at probe a4deb82387895dae58bb77404faeeb851450c174 (descends from original W-C4 f64ee5f). The latter includes accepted W-C8 merge 8aa1aca8c593982e722bbc666a221fdd82466f15. W-C4 movement from f64ee5 to a4deb did not change any of W-C7's four owned files (GitHub compare: zero path overlap).
+
+**Method:** same-carrier local git fetch of W-C4 owner branch; git merge-tree --write-tree of the W-C7 test head plus FETCH_HEAD returned tree SHA 3918a260a503ad4bf96bcf1a57eb601324119985, no conflict. An isolated git merge --no-ff --no-commit of FETCH_HEAD into the DETACHED W-C7 TEST WORKTREE then succeeded without conflict; this was a test-only merge, not a branch push/commit, and not an attempt to move W-C4 source custody.
+
+**Verification on the merged test tree:** W-C7-only targeted cases -> 18 passed, 58 deselected, exit 0. Seven-suite pack (US context vector, payload containment, hierarchy paths, hierarchy materializer, hierarchy population, tier guard, AND F04 exposure-map) -> 206 passed, 10 skipped, exit 0, TZ=UTC, COLLECT_LANE=nightly, Python 3.12. This directly tests W-C7 plus W-C4 candidate and merged W-C8 together at the testable level; skipped cases are still full-data tests. No full-graph local rebake, GitHub CI conclusion or production receipt is implied.
+
+**Cleanup/readback:** Local merge explicitly aborted on the same isolated worktree; HEAD verified back at 7574d409ac6bb2a5792a0c9364075019b372a2da and tracked dirty count 0. Remote W-C7 branch and upstream W-C4 branch were never modified by this compatibility test.
+
+**Frontier remains held:** W-C4 #8629 is still OPEN / DRAFT at a4deb82387895dae58bb77404faeeb851450c174. The latest unrelated Macro main observation after this test is 11b48b2304ecda38bc4f78594af58cc8bfafd871; this moving main was not the target of the isolated merge proof, and owner CI/merge admission remain separate. After W-C4 merges through its incumbent owner, reconcile/retest W-C7 against that final exact main, obtain owner CI + review, and pursue natural nightly production artifact proof.
