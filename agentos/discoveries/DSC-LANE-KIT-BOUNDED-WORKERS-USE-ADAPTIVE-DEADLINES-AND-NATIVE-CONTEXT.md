@@ -230,6 +230,21 @@ Current relevant SHA-256 after this taxonomy pass:
 `oc_free_exec.sh 279842e54d6095276b087fd78eae9268026db3079add4b61e474119ce08d3783`;
 `remote_sub.sh 2dab8b40c5bad1acbb07eac7298090d5b9ae4bf8d9fac33cd2c8041167bdff66`.
 
+### Lane-driver turn-budget hardening
+
+The long-lived lane driver also had hidden fixed direct-CLI turn ceilings independent of its already
+repaired wall-clock floors: Grok was hardcoded to 140 turns and the generic Claude fallback to 200.
+The live `lane2.py` now derives those direct CLI budgets from the fix/review task-complexity field:
+Grok remains 140 for ordinary work, C2 gets 240, and C3 gets 400; Claude remains 200 for ordinary
+work, C2 gets 240, and C3 gets 400. An explicit `LANE_MAX_TURNS` may tighten the current lane to
+1..400; invalid values fail closed. The MiniMax direct path was already at 400.
+
+The helper is shared by fix and review steps but consumes the correct `task_complexity` or
+`review_task_complexity` field for that step. Python compile plus the lane context/routing regression
+completed **60 passed**. Current SHA-256:
+`lane2.py c42bc5d75d06ec78280ea3c8dff87fb8be7da6c1d5892bff4d4f6c48ae77a4bc`;
+`test_worker_context_policy.py ef34d79d0c78d79a718812bb55335a3c2ed5bd39966a1b199925fda2ab4fbcd0`.
+
 ### Verification boundary
 
 Directly observed current green evidence:
