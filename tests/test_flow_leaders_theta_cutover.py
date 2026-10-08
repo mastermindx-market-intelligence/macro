@@ -272,3 +272,28 @@ def test_missing_intermediate_nyse_day_breaks_recurrence_window(tmp_path, monkey
     assert payload["coverage"]["n_flow_sessions"] == 3
     assert payload["cold_start"] is True
     assert all(row["recurrence_count"] is None for row in payload["board_a"])
+
+
+def test_washout_does_not_splice_nonconsecutive_thetadata_sessions():
+    from engine.flow_leaders import flow_inflect
+    from scripts.build_flow_leaders import _theta_calendar_net_history
+
+    current = _recent_session()
+    prior = []
+    cursor = pd.Timestamp(current).date()
+    for _ in range(4):
+        cursor = last_session_on_or_before(cursor - timedelta(days=1))
+        prior.append(cursor.isoformat())
+
+    # Without calendar reindexing the four OBSERVED rows read [-,-,-,+]
+    # and falsely look like a valid fresh inflection.
+    obs = pd.DataFrame(
+        {"net_premium_mn": [-2.0, -2.0, -2.0, 3.0]},
+        index=pd.DatetimeIndex([prior[3], prior[2], prior[0], current]),
+    )
+    assert flow_inflect(obs["net_premium_mn"])["inflected"] is True
+
+    aligned = _theta_calendar_net_history(obs)
+    missing_session = pd.Timestamp(prior[1])
+    assert pd.isna(aligned.loc[missing_session])
+    assert flow_inflect(aligned)["inflected"] is False
