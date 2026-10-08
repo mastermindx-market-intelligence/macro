@@ -40,14 +40,13 @@ def _checked_root(candidate: Path) -> Path:
         mounted = EXTERNAL_VOLUME.resolve(strict=True)
         if root != expected or root == mounted or root.is_symlink():
             raise SourceRejected("qualification requires the exact external private Cboe root")
-        with subprocess.Popen(
+        process = subprocess.run(
             ["/usr/sbin/diskutil", "info", "-plist", str(mounted)],
-            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-        ) as process:
-            data = process.communicate(timeout=8)[0]
-            if process.returncode != 0:
-                raise SourceRejected("cannot establish 4 TB external volume identity")
-        info = plistlib.loads(data)
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=8, check=False,
+        )
+        if process.returncode != 0:
+            raise SourceRejected("cannot establish 4 TB external volume identity")
+        info = plistlib.loads(process.stdout)
         _check_volume(
             info, mounted_device=mounted.stat().st_dev,
             system_device=Path("/").stat().st_dev,
