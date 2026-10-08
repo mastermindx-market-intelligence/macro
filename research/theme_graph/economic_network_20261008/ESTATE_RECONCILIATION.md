@@ -224,3 +224,47 @@ No fresh source-wide production Graph1 count, licensed vendor entitlement/PIT ar
 
 The bounded result is therefore source-reconciled and reproducible. Adoption, merge, natural publication, any owner/schema amendment, vendor procurement and trading use remain separate outcomes under their existing carriers.
 
+## Final freshness addendum — observed 2026-10-08 23:28 UTC
+
+The original inspection and witness pins above remain immutable historical receipts. They are **not relabeled as the final default heads**, and the original Data OS witness was not rerun against a different checkout. The final machine-readable reconciliation is FINAL_REVISION_RECONCILIATION.json.
+
+| Repository | Original inspection base | Final observed head | Reconciliation |
+|---|---|---|---|
+| Macro | 7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477 | c44aae5f131a59571ad0afcd7197e3d8696bc2b9 | 2 commits ahead;9 changed paths |
+| Terminal | 54f97dda68a76a55ba0813afc9433ef54aaf401c | f03aa5d019f1894210a7c6e40b8825ae28015198 | 1 commit ahead;10 changed paths |
+| Protected Mastermind | c7e47c859eb2925c5626931fd511800773ba09ac | f74e912d3efa3b67cae40ba04f9e558d579096e9 | Root refreshed protected INDEX+7 companions atomically; compatible1.0.1/bootstrap1; worker attributes this verification to root |
+
+[Macro exact compare](https://github.com/mastermindx-market-intelligence/macro/compare/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477...c44aae5f131a59571ad0afcd7197e3d8696bc2b9), [Terminal exact compare](https://github.com/mastermindx-market-intelligence/mastermind-terminal/compare/54f97dda68a76a55ba0813afc9433ef54aaf401c...f03aa5d019f1894210a7c6e40b8825ae28015198), [protected exact compare](https://github.com/mastermindx-market-intelligence/Mastermind/compare/c7e47c859eb2925c5626931fd511800773ba09ac...f74e912d3efa3b67cae40ba04f9e558d579096e9).
+
+### Material Macro delta: native nightly witness retention
+
+The relevant change adds diagnostic capture to scripts/build_theme_graph.py and wires it into the existing regional Theme Graph builder/guard band. start_nightly_witness binds run/attempt/job, actual checkout SHA and source hashes; _emit_meta_write_receipt binds the successful metadata write and keeps materialization and metadata clocks separate; finish_nightly_witness retains builder/guard logs and return codes, metadata and output hashes before the unrelated parallel barrier. It flags missing/stale/ambiguous markers, metadata mismatches, advisory guard warnings and missing output. The existing workflow uploads that fresh run-bound directory as an advisory artifact with14-day retention.
+
+This source change is a useful incumbent evidence seam for a later authorized natural-generation acceptance packet. The manifest deliberately keeps acceptance=not_evaluated even when capture_status=complete. This research did not obtain or inspect an actual hosted capture, and a merge of retention code does not accept D2E/W3B or prove natural publication. The graph-writing path adds a post-write diagnostic; no new semantic/state/membership/identity/clock/rights authority is introduced by the inspected delta.
+
+Sources: [new builder](https://github.com/mastermindx-market-intelligence/macro/blob/c44aae5f131a59571ad0afcd7197e3d8696bc2b9/scripts/build_theme_graph.py), [existing band with capture wiring](https://github.com/mastermindx-market-intelligence/macro/blob/c44aae5f131a59571ad0afcd7197e3d8696bc2b9/scripts/ci/daily_engine_regional_desk_builders.sh), [advisory uploader](https://github.com/mastermindx-market-intelligence/macro/blob/c44aae5f131a59571ad0afcd7197e3d8696bc2b9/.github/workflows/daily.yml). New tests were inspected as source, not rerun or relabeled hosted CI proof here.
+
+### Relevant unchanged proof
+
+Direct fetch at the final heads reproduced the **same Git blob IDs** for eight key sources:
+
+| Source | Unchanged blob |
+|---|---|
+| GMI current workstream | fd7f8a16f9e4505d9bd923bb098a2cc6f22e521a |
+| GMI ownership/sequencing decision | 212258074d74934a579a20aebc4c5caa7eca7b3a |
+| Data OS temporal.py | 094b149a8b9158f19cb99c4005568c12db96ed41 |
+| F04 exposure_map.py | 6b2131f440b55791d30730ed7cea928f79968cf7 |
+| Theme hierarchy crosswalk | 5796e3e5cf16839c7dbca2bf6d74737b35b547fc |
+| Natural graph _meta.json | 99eb52e5062ad6cbc5232d00229c46a26f3901fa |
+| Terminal Company Theme Context route | 9f82fbd37b196d0b509daf0ed1d5bb2bb16daa5c |
+| Terminal MarketOntology navigation helper | 792e55e5aed5ef34111ad5f7726f84e5e6ac5bc3 |
+
+The compare file census has no hierarchy population, micro-membership admission, owner decision, ThemeState publication contract or F04 composition change. Natural metadata therefore still says computed_at2026-10-07T08:00:17Z; it remains earlier than the Oct8 hierarchy merge. This is current checked-in receipt equality, not a fresh production runtime census.
+
+Terminal's delta concerns Pine Editor and saved-script integrity. The inspected TerminalShell diff only changes the saved-script rename import/callback. The current Company Theme Context status/generation/auth contract and date-only mo_* navigation helper remain unchanged by direct blob equality.
+
+Root rechecked held candidates at23:26UTC: K3-D #6514 retains head74b6426c8be71adec27df00f2f98172f8528c2b2, open/draft/held; Commission4 #8406 retains head4f4e80ca9ba9309ccb8bb211ff4d0a1ecff00272, open/non-draft research candidate. Root reports the protected advance as one relay-enrollment/runbook/test commit with required loaded procedure files unchanged.
+
+**Impact on the final proposal:** no architectural or product release amendment is required by these source deltas. Future WP00/WP04 can consume the incumbent run-bound nightly witness once a real capture exists, while preserving all natural acceptance gates. The original23-case temporal helper witness and18-case synthetic composition witness keep their original source/execution scope. Source comparisons and7 additional byte-exact scoped source files are recorded under source/estate/final_compare_*.json and final_fresh_sources_manifest.json; they supplement the original37-source inspection manifest.
+
+

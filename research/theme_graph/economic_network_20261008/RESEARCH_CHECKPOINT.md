@@ -1,60 +1,60 @@
-# GMI economic relationships and multi-layer network research — checkpoint
+# GMI economic network research — final recovery checkpoint
 
-Updated: 2026-10-08. Research is in progress; this is a cumulative recovery note inside the existing GMI research owner, not a new workstream, queue, or runtime record.
+Research date: 2026-10-08. This cumulative recovery note belongs to the existing GMI research carrier. It does not create a workstream, queue, runtime record or authority transfer.
 
-## Commission and scope
+## Completed work
 
-Current Chairman instruction commissions principal research and cross-system architecture: inspect the current estate, independently research economic relationships and multi-layer networks, deliver detailed architecture, source strategy, testable mechanisms, product contracts, and an owner-preserving implementation plan for Sol CEO adjudication. Production implementation, ownership reassignment, procurement, live collection, trading promotion, and deployment are not part of this research return.
+The visible commission's substantive research is complete: nine core reports totaling 33,917 words; a 37-file immutable estate census; independent primary economic, technical, financial and competitive research; six issuer cases; detailed contracts and architecture; source/rights strategy; product specifications; and eleven owner-preserving work packages, WP00–WP10.
 
-The named attached **GMI Economic Relationships & Multi-Layer Neural Graph Research Handoff** was not present in the supplied turn or located by the exact/broader Library searches and bounded GitHub handoff census. The Chairman has been asked to attach it while independent work continues. Do not claim attachment-specific acceptance until its complete content is reconciled. The visible commission remains sufficient for the ongoing research.
+Independent review R1–R10 is resolved. The final core report hashes are retained in INDEPENDENT_REVIEW.md and the consolidated report's build receipt. Final publication, draft-PR and exported-artifact verification are separate receipts; a document saying “complete” is not itself proof of a remote modifying effect.
 
-## Source and authority receipts
+The named **GMI Economic Relationships & Multi-Layer Neural Graph Research Handoff** attachment was unavailable in the supplied turn and not recovered by bounded authorized retrieval. The visible commission has been researched in depth. Exact attachment-specific conformance remains unverified and must not be asserted.
 
-- Protected procedure: Mastermind master `c7e47c859eb2925c5626931fd511800773ba09ac`; INDEX schema `mastermind.sol_skillpack.v1`, skillpack 1.0.1, minimum bootstrap major 1. Compatible.
-- Same-revision procedure: COLD_START, ACTIVE_EXECUTION, SESSION_RELIABILITY, WEB_CEO_DELEGATION, Executive Worker Routing Chairman Addendum, and relevant Chat-native cognition law.
-- Macro main publication base: `7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477`.
-- Terminal master census: `54f97dda68a76a55ba0813afc9433ef54aaf401c`.
-- Existing GMI owner: [WS-GMI-THEME-GRAPH](https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/agentos/workstreams/WS-GMI-THEME-GRAPH.md). This report does not replace its accountable role or implementation custody.
-- Research publication carrier: `claude/gmi-economic-network-research-20261008`, additive directory `research/theme_graph/economic_network_20261008/`, GitHub connector. No existing report, engine, graph registry, runtime, or owner record changed.
+## Source pins and materiality
 
-## Confirmed material findings
+| Estate | Initial inspection pin | Final bounded refresh |
+|---|---|---|
+| Mastermind protected master | c7e47c859eb2925c5626931fd511800773ba09ac | f74e912d3efa3b67cae40ba04f9e558d579096e9 |
+| Macro main | 7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477 | c44aae5f131a59571ad0afcd7197e3d8696bc2b9 |
+| Terminal master | 54f97dda68a76a55ba0813afc9433ef54aaf401c | f03aa5d019f1894210a7c6e40b8825ae28015198 |
 
-1. The previous Theme Fabric handoff's PR status table is stale. Macro #8631 merged 2026-10-08 (accepted head `54419a42871837682ddd217bfaad30cff4bfa209`, merge `8aa1aca8c593982e722bbc666a221fdd82466f15`). #8629 also merged (accepted head `a4deb82387895dae58bb77404faeeb851450c174`, merge `123eda091dfd0d83c4c303f7f138d4c8a2c7e128`). Preserve the accepted hierarchy and display-only ancestor work.
-2. Commission 4 already investigates effective-dated economic exposure and supply chains: Macro #8406, current candidate `4f4e80ca9ba9309ccb8bb211ff4d0a1ecff00272`, [full research](https://github.com/mastermindx-market-intelligence/macro/blob/4f4e80ca9ba9309ccb8bb211ff4d0a1ecff00272/research/economic_propagation/COMMISSION4_EFFECTIVE_DATED_ECONOMIC_EXPOSURE_SUPPLY_CHAIN_GRAPH_2026-10-04.md). It is an open research candidate, not binding implemented law. Reuse its three-graph separation, source-native ownership, relationship-versus-magnitude separation, crosswalk, and Data OS temporal compatibility. Investigate the remaining questions rather than rewrite it.
-3. K3-D #6514 remains held/draft at `74b6426c8be71adec27df00f2f98172f8528c2b2`. Its DATE-granular cutoff must not be advertised as intraday PIT. Date-only same-day evidence and instant-qualified ThemeState/Data OS consumers require an explicit compatibility boundary.
-4. Simultaneous micro-membership research has its own existing branch `sol/gmi-micro-membership-research-20261008` at observed `1392087e13254f7f8fc8e2a48d8def02f0097ee8`, directory `research/theme_graph/micro_membership_20261008/`. Its all-68 membership profiles are outside this report's writing surface.
-5. A relationship, its quantitative economic exposure, a shock-transmission hypothesis, and a validated predictive model must remain separately evidenced. A generic neural edge weight cannot substitute for these objects.
-6. Public and commercial availability do not establish retention, display, redistribution, embedding, or model-training rights. Current first-party vendor terms are being inspected per intended use; prices not published remain unknown.
-7. Technical literature and current GraphRAG documentation support retrieval and graph learning as candidate methods, not factual or predictive authority. Domain-specific event, identity, and qualification preservation require a constrained projection over existing evidence.
+The protected INDEX and seven companions were atomically loaded at the final protected pin. Skillpack schema mastermind.sol_skillpack.v1, version 1.0.1, minimum bootstrap major 1 remained compatible. Relevant ownership, temporal, F04, taxonomy and Terminal context source blobs were unchanged. New nightly witness retention is advisory and explicitly not evaluated for acceptance. Preserve initial immutable inspection and witness lineage; do not reinterpret the refresh as a latest-head replay or production acceptance.
 
-## DO_NOT_REDO
+Current held/candidate carriers remain K3-D #6514 at 74b6426c8be71adec27df00f2f98172f8528c2b2 and Commission4 #8406 at 4f4e80ca9ba9309ccb8bb211ff4d0a1ecff00272. The final estate receipt records accepted hierarchy/breadth/M1 changes and the active micro-membership research separately.
 
-Do not reopen completed Theme Fabric hierarchy, create a new ThemeState, duplicate the simultaneous membership study, resurrect the rejected standalone GMI W4, replace K3-D/F04, or reinterpret generic counterparties as proven suppliers. Old zero-row assertions are dated observations, not a fresh production census. No production or live-market performance claim has been made.
+## Reproducible evidence and limits
 
-## Active research branches and returns
+- All 37 initial estate files were checked against their Git blob hashes.
+- 23 temporal checks passed against the bundled byte-exact Data OS module. ThemeState and held K3-D compatibility are source-traced, not executed by that witness.
+- 18 synthetic composition checks passed, covering dimensional compatibility, missing parameters, inventory, substitution, complementary inputs and double counting.
+- The six issuer cases preserve source-local identity, unmeasured magnitudes, source version and falsifiers. They are diagnostic cases, not an adjudicated global reference set.
+- The source register distinguishes 43 source records and 20 rights profiles. Candidate adapters remain subject to native custody, dataset/profile adoption and purpose-specific rights.
 
-The supported in-session collaboration workers are bounded, read-only investigations, not Executive runtime claims:
-- estate_census: current immutable source, current PRs, ownership and compatibility seams.
-- economic_evidence: primary empirical literature, counterevidence and validation requirements.
-- sources_competitors: official data access, licensing and competitive capability evidence.
+These are research/helper results. No fitted economic model, return backtest, proprietary vendor sample, live positive Graph 1 path or production release acceptance is claimed.
 
-The principal retains architecture, direct case-source verification, synthesis, isolated replay/semantic witnesses, and final acceptance audit. No background continuation is claimed.
+## Durable research carrier
 
-## Next actions
+Repository: mastermindx-market-intelligence/macro.
 
-Complete the internal compatibility census; inspect independent primary sources and contrary evidence; construct a source-anchored cross-market casebook and explicit failure cases; run isolated temporal/semantic and propagation-sensitivity witnesses; build executable work packages and a traceable acceptance matrix. Reconcile the missing full handoff immediately if supplied. Save completed findings into this same research carrier and verify its resulting commit.
+Branch: claude/gmi-economic-network-research-20261008.
 
-## Effect state and completion
+Directory: research/theme_graph/economic_network_20261008/.
 
-No prior modifying effect is uncertain. The publication receipt for this checkpoint must be verified separately after creation. This checkpoint does not prove the research, parent programme, or Sol adjudication complete.
+Earlier verified checkpoints:
 
-# Phase 2 material checkpoint — 2026-10-08
+- d073001a134cae6d25abcdd242c850c3b78c564d — initial recovery checkpoint.
+- c69681f306075d7ee05e751061bad91bba3ea79c — material reports, cases and witnesses; all 17 published files were verified against local Git blobs.
 
-Substantial research candidates are now complete locally: estate reconciliation; independent economic literature and evaluation protocol; source/licensing/competitive diligence; six original-source issuer cases; detailed architecture; product integration; and WP00–WP10 implementation masterplan. Independent review is resolving ownership, precision-gate, temporal-contract and wording issues before final publication.
+The final draft PR and exported PUBLICATION_RECEIPT.json identify the exact delivered semantic revision and scope verification. Keep publication additive to this directory. Do not merge or treat research publication as architecture adoption.
 
-Executed research evidence: 23 Data OS temporal cases and 18 synthetic composition cases passed. Data OS was imported from a byte-exact pinned source snapshot. ThemeState/K3-D compatibility is separately source-traced. Neither witness is a real-world prediction test or live consumer proof.
+## Do not redo or silently change
 
-The specifically named handoff attachment remains unavailable. No attachment-specific completion claim is made. The final package will include an explicit visible-commission coverage matrix and the remaining handoff reconciliation requirement.
+Preserve the incumbent GMI accountable record and sole ThemeState producer, accepted structural hierarchy, merged breadth/M1/F04 work, sibling micro-membership research, native specialist fact custody and Data OS identity/source/temporal policy. Reuse Economic Propagation, K3-D and F04 rather than creating a parallel truth plane.
 
-No runtime, ownership, membership, schema, grading, trading or deployment changes were made. This branch remains research-only, with Sol adjudication and existing-owner implementation gates preserved.
+Do not revive standalone GMI W4/W5/W6, convert generic counterparties into suppliers, manufacture canonical identities, multiply observed shares as propagation derivatives, relax the proposed Commission4 precision floor, or use date-grain cutoffs as intraday replay proof. All four K3-D killed-species receipts remain intact; economic_share remains null under its current hypothesis contract. No grade, rank, size or trade promotion is granted.
 
+## Continuation and closeout
+
+Read RESEARCH_FINDINGS.md, then the detailed reports and RESEARCH_HANDOFF.md. The next research action upon attachment recovery is a requirement-by-requirement comparison, adding only genuine gaps. The next organizational action is Sol adjudication of D01–D10, followed by existing-owner implementation if adopted.
+
+At verified final delivery: visible-commission research complete; attachment conformance unverified; overall attachment-defined mission not certified complete; architecture SPEC_ONLY / CANDIDATE_FOR_SOL_ADJUDICATION; parent implementation not complete; predictive promotion not granted. No outside messages, watcher dialogue or background continuation were initiated.

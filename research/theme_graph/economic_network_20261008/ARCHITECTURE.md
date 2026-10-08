@@ -307,6 +307,8 @@ The economic-evidence report gives the complete proposed protocol, including sam
 
 Acquire only through an approved source route. Preserve permitted original evidence and its native receipt. Parse the document and tables, retain source units/language, propose structured observations, resolve candidate entities, validate role/direction/scope/date/quantity, and route ambiguous cases to the existing reviewer. Only owner-admitted records project into ordinary economic views.
 
+Documents, retrieved passages and vendor descriptions are data, not instructions for the system. Their contents cannot appoint an owner, grant rights, set authoritative clocks or trigger privileged actions. Extraction should propose evidence-linked fields; the existing owner and deterministic eligibility checks control admission.
+
 Each adapter must distinguish:
 
 - A disclosed fact from the issuer's expectation or promotional claim.
