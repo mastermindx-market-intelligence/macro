@@ -1,0 +1,82 @@
+{
+  "artifacts": {
+    "OUTCOME_BLIND_FUNDING_AUDIT.md": "a1753123020c73b3481f873e7b4d10bdffed94e15278c92f9c191c649e6c376f",
+    "OUTCOME_BLIND_FUNDING_CASEBOOK.json": "f64acecce2414726448fcfc9214431ce782cbb8090283e4b96af4c09606b544d",
+    "SOURCE_RECEIPTS.json": "b8dfd2a97e5399d070a1de97d18fdf6dc9631df0b2aa97afd867b715cd488a4f",
+    "audited_macro_treasury_d2eec.py": "59502111d0002f326edac42c29ab24eaf42fefccfbc215471ab4f56101529706",
+    "collector_git_blob": "a79b9d373baef7c94d9ce2e096b59a211825c7d3",
+    "outcome_blind_funding_audit.py": "f2904f73c94362c1c13975b2cbac053eb0227234f67951159fb60afd64a03da0"
+  },
+  "checks": {
+    "canonical_layout_replay": "PASS",
+    "causal_receipt_order": "PASS: 12 of 12",
+    "collector_git_blob_match": "PASS",
+    "linked_auction_digest_and_fixture": "PASS",
+    "missing_and_invalid_value_checks": "PASS: missing category or component stays null; sourced zero stays zero; textual NaN missing marker maps to null; boolean and nonfinite numeric inputs rejected",
+    "original_response_hashes_and_lengths": "PASS: 12 of 12",
+    "preserved_private_cash_and_reserve_nulls": "PASS",
+    "published_value_arithmetic": "PASS: TGA 2079, net Bill face 11035, net marketable accounting 11258, restricted marketable bridge 9025, broad public debt cash net 10998 USD million",
+    "quoted_monetary_units_and_query_completeness": "PASS",
+    "raw_sources_unchanged_from_acquisition_receipts": "PASS",
+    "tga_independent_table_ii_bridge": "PASS: 8248 - 17167 + 10998 = 2079 USD million"
+  },
+  "commands": [
+    {
+      "casebook_sha256": "f64acecce2414726448fcfc9214431ce782cbb8090283e4b96af4c09606b544d",
+      "command": "python3 research_funding/outcome_blind_funding_audit.py --check",
+      "exit_code": 0,
+      "layout": "original scratch sibling research_source"
+    },
+    {
+      "casebook_sha256": "f64acecce2414726448fcfc9214431ce782cbb8090283e4b96af4c09606b544d",
+      "command": "python3 funding_audit/outcome_blind_funding_audit.py --check",
+      "exit_code": 0,
+      "layout": "isolated canonical sibling source_audit; exact captured bytes copied to temporary directory"
+    }
+  ],
+  "environment": {
+    "pdftotext": "pdftotext version 24.02.0",
+    "python": "3.12.14"
+  },
+  "gates": {
+    "D2": "FAIL preserved",
+    "SLF006": "NO-GO preserved",
+    "Terminal": "KILL preserved",
+    "deploy_authority": false,
+    "exit_authority": false,
+    "probability_authority": false,
+    "risk_authority": false
+  },
+  "not_established": [
+    "complete private settlement cash ledger",
+    "historical first releases or initial-vintage completeness",
+    "H3 pre-settlement forecast eligibility",
+    "any new predictive or causal result",
+    "prospective evaluation start",
+    "production deployment or live decision effect"
+  ],
+  "s_minus_one": {
+    "cutoff": "2026-10-05T16:00:00-04:00",
+    "eligible_new_source_receipts": 0,
+    "status": "NOT_TESTABLE_FROM_RETROSPECTIVE_RECEIPTS",
+    "total_new_source_receipts": 12
+  },
+  "schema_version": "outcome_blind_funding_verification_v1",
+  "scope": "local byte custody, accounting and PIT eligibility verification only; no network request, model fit, market outcome evaluation, collector execution or remote mutation",
+  "source_sha256": {
+    "raw/borrowing_aug3_2026.html": "e6cb93ff233da9b54f85c73c54f9bb80a7fe6f04dd954d52449ab92e97670eb7",
+    "raw/dealer_publication.html": "4946c072e4aa907c7ea59ecac754aeee0eb38dd875a1c550e94c1ae9ff568c65",
+    "raw/dts_oct6.pdf": "9a6157f2e09e77a6c4cb067e3c59a2feb1991aad33b31df96dd95f1b8d3b3a2e",
+    "raw/dts_oct6_cash.json": "62ffe3fd20b6be16bf9032c610bc6519a4c67a306e2abfdd01efb310930110a0",
+    "raw/dts_oct6_marketable.json": "b0b94aa828bbccdb3569cfe4d7da73bc875ce7566fe714c426be4bdc4e4047c2",
+    "raw/dts_tga_earliest.json": "fbfc9a92a2e209227fa4dc1c5df76422d223f686ce89d0a1128a2696d2982337",
+    "raw/dts_tga_latest.json": "c388e2f5b145b487886bf8f22ef83fd7a7549be6d0ad0870d20c470c68bc5657",
+    "raw/nyfed_latest_rates.json": "be758c3a876678ae5e4e9994b3d2f590a4b4aca4d27b25e8bd4b8877dd68584d",
+    "raw/reference_rates_policy.html": "8504d51f3c946d17adb9d398bfd9fd5d2937d479e853cb7cb51d408aaf9a0ae6",
+    "raw/refunding_aug5_2026.html": "72631461826a85f2acc0f3ef782559daee51a0e562cb9c6ad6c6326909e18684",
+    "raw/soma_holdings.html": "a96c3af46677f3dc8a82dddf11fd7c088c35f50c1c1811674e0065dd1e346ab9",
+    "raw/tgcr_first_week.json": "bc9257917b9d0679efda838cb0564b2705253110352d29bc0fad96273606960c"
+  },
+  "verification_harness_note": "An initial supplemental assertion expected the string NaN to raise. The existing documented marker behavior maps that string to missing; the assertion was corrected to require null, with actual nonfinite numeric rejection separately checked. No source parser or casebook change was needed.",
+  "verified_at": "2026-10-08T23:05:12.938624+00:00"
+}

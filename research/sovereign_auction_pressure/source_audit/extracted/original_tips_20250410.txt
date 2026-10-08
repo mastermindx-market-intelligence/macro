@@ -1,0 +1,57 @@
+             Embargoed Until 11:00 A.M.                                                                    CONTACT: Treasury Auctions
+             April 10, 2025                                                                                         202-504-3550
+
+                                            TREASURY OFFERING ANNOUNCEMENT 1
+             Term and Type of Security                                                                                              5-Year TIPS
+             Offering Amount                                                                                                   $25,000,000,000
+             Currently Outstanding                                                                                                            $0
+             CUSIP Number                                                                                                           91282CNB3
+             Auction Date                                                                                                         April 17, 2025
+             Original Issue Date                                                                                                  April 30, 2025
+             Issue Date                                                                                                           April 30, 2025
+             Maturity Date                                                                                                        April 15, 2030
+             Dated Date                                                                                                           April 15, 2025
+             Series                                                                                                                      X-2030
+             Real Yield                                                                                                   Determined at Auction
+             Interest Rate                                                                                                Determined at Auction
+             Interest Payment Dates                                                                                      October 15 and April 15
+             Accrued Interest from 04/15/2025 to 04/30/2025                                                               Determined at Auction
+             Adjusted Accrued Interest Payable by Investor                                                                Determined at Auction
+             Premium or Discount                                                                                          Determined at Auction
+             Minimum Amount Required for STRIPS                                                                                              $100
+              Corpus CUSIP Number                                                                                                      912821RW7
+              Additional TIIN(s) Due Date(s) and                                                                                             None
+              CUSIP Number(s)                                                                                                                None
+             Maximum Award                                                                                                         $8,750,000,000
+             Maximum Recognized Bid at a Single Yield                                                                              $8,750,000,000
+             NLP Reporting Threshold                                                                                               $8,750,000,000
+             NLP Exclusion Amount                                                                                                              $0
+             Minimum Bid Amount and Multiples                                                                                                $100
+             Competitive Bid Yield Increments 2                                                                                           0.001%
+             Maximum Noncompetitive Award                                                                                            $10,000,000
+             Eligible for Holding by Treasury Retail                                                                                          Yes
+             Estimated Amount of Maturing Coupon Securities Held by the Public                                                  $175,787,000,000
+             Maturing Date                                                                                                         April 30, 2025
+             SOMA Holdings Maturing                                                                                              $19,508,000,000
+             SOMA Amounts Included in Offering Amount                                                                                          No
+             FIMA Amounts Included in Offering Amount 3                                                                                       Yes
+
+             Noncompetitive Closing Time                                                                                            12:00 Noon ET
+             Competitive Closing Time                                                                                                 1:00 p.m. ET
+
+             CPI Base Reference Period                                                                                                   1982-1984
+             Ref CPI 04/15/2025                                                                                                          318.32947
+             Ref CPI 04/30/2025                                                                                                          319.03497
+             Index Ratio 04/30/2025                                                                                                        1.00222
+
+
+
+
+1
+  Governed by the Terms and Conditions set forth in The Uniform Offering Circular for the Sale and Issue of Marketable Book-Entry Treasury Bills, Notes, and Bonds
+(31 CFR Part 356, as amended), and this offering announcement.
+2
+  Must be expressed as a yield with three decimals e.g., 7.123%.
+3
+  FIMA up to $2,000 million in noncompetitive bids from Foreign and International Monetary Authority not to exceed $500 million per account.
+

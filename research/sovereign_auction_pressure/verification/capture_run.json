@@ -1,0 +1,48 @@
+{
+  "schema_version": "treasury_auction_capture_receipt_v1",
+  "captures": [
+    {
+      "source_name": "announced",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/announced?format=json",
+      "status": "available",
+      "body_status": "available",
+      "observed_at": "2026-10-08T22:40:37.249367+00:00",
+      "path": "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/current_capture/treasury_auctions/observations/20261008T224037249367Z-e4c3d0bfe50e788b4b5190c9ccb79cb2ff49a2d898022987e8ed7a77026d1cfe.json",
+      "receipt_sha256": "e4c3d0bfe50e788b4b5190c9ccb79cb2ff49a2d898022987e8ed7a77026d1cfe",
+      "bytes": 1950637
+    },
+    {
+      "source_name": "upcoming",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json",
+      "status": "available",
+      "body_status": "available",
+      "observed_at": "2026-10-08T22:40:37.583436+00:00",
+      "path": "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/current_capture/treasury_auctions/observations/20261008T224037583436Z-816215351299c5e311f514507d214357c69b65529bc6d0964304fad54602f5f6.json",
+      "receipt_sha256": "816215351299c5e311f514507d214357c69b65529bc6d0964304fad54602f5f6",
+      "bytes": 22721
+    },
+    {
+      "source_name": "tentative",
+      "source_url": "https://home.treasury.gov/system/files/221/Tentative-Auction-Schedule.xml",
+      "status": "unavailable",
+      "body_status": "unavailable",
+      "observed_at": "2026-10-08T22:40:37.813414+00:00",
+      "path": "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/current_capture/treasury_auctions/observations/20261008T224037813414Z-b74b5381ed956c3598fca3f61db97244f60b594d7e1bcc53abee5eb230372088.json",
+      "receipt_sha256": "b74b5381ed956c3598fca3f61db97244f60b594d7e1bcc53abee5eb230372088",
+      "bytes": 542
+    },
+    {
+      "source_name": "pending",
+      "source_url": "https://www.treasurydirect.gov/xml/PendingAuctions.xml",
+      "status": "available",
+      "body_status": "available",
+      "observed_at": "2026-10-08T22:40:38.213305+00:00",
+      "path": "/Volumes/Mastermind/agent-workspaces/macro/web/sovereign-auction-pressure-20261008-sol-001/research/sovereign_auction_pressure/verification/current_capture/treasury_auctions/observations/20261008T224038213305Z-10bb1dd34c0df58c42631874de5706a420bc149d44df2cd5defb05bba239cbc3.json",
+      "receipt_sha256": "10bb1dd34c0df58c42631874de5706a420bc149d44df2cd5defb05bba239cbc3",
+      "bytes": 7639
+    }
+  ],
+  "data_owner": "treasury_auctions",
+  "scheduled": false,
+  "published": false
+}

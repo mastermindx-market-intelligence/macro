@@ -1,0 +1,62 @@
+                For Immediate Release                                                                         CONTACT: Treasury Auctions
+                September 17, 2026                                                                                     202-504-3550
+
+                                                       TREASURY AUCTION RESULTS
+                            Term and Type of Security                                                          9-Year 10-Month TIPS
+                            CUSIP Number                                                                                 91282CRE3
+                            Series                                                                                           D-2036
+
+                            Interest Rate                                                                                         2-3/8%
+                            High Yield 1                                                                                          2.653%
+                            Allotted at High                                                                                      93.14%
+                            Adjusted Price 2                                                                                   97.598142
+                            Unadjusted Price                                                                                   97.612784
+                            Adjusted Accrued Interest per $1,000 2                                                              $4.96868
+                            Unadjusted Accrued Interest per $1,000                                                              $4.96943
+                            TIIN Conversion Factor per $1,000 3                                                             3.555711365
+
+                            Median Yield 4                                                                                         2.577%
+                            Low Yield 5                                                                                            2.529%
+
+                            Issue Date                                                                             September 30, 2026
+                            Maturity Date                                                                               July 15, 2036
+                            Original Issue Date                                                                         July 31, 2026
+                            Dated Date                                                                                  July 15, 2026
+
+                                                                                        Tendered                                      Accepted
+                Competitive                                                          $42,369,960,000                               $18,883,984,000
+                Noncompetitive                                                         $116,022,000                                  $116,022,000
+                FIMA (Noncompetitive)                                                             $0                                            $0
+                Subtotal 6                                                           $42,485,982,000                              $19,000,006,0007
+
+                SOMA                                                                   $2,860,448,000                               $2,860,448,000
+
+                Total                                                                $45,346,430,000                               $21,860,454,000
+
+                                                                                        Tendered                                      Accepted
+                                    8
+                Primary Dealer                                                       $23,306,000,000                                $2,300,024,000
+                Direct Bidder 8                                                       $6,875,000,000                                $5,419,000,000
+                Indirect Bidder 8                                                    $12,188,960,000                               $11,164,960,000
+                Total Competitive                                                    $42,369,960,000                               $18,883,984,000
+
+
+
+
+1
+  All tenders at lower yields were accepted in full.
+2
+  Adjusted by an index ratio of 0.99985.
+3
+  This factor is used to calculate the adjusted values for any TIIN face amount and will be maintained to 2-decimals on book-entry systems.
+4
+  50% of the amount of accepted competitive tenders was tendered at or below that yield.
+5
+  5% of the amount of accepted competitive tenders was tendered at or below that yield.
+6
+  Bid-to-Cover Ratio: $42,485,982,000/$19,000,006,000 = 2.24
+7
+  Awards to Treasury Retail = $20,751,000.
+8
+  For descriptions of these terms, see the Auction FAQs available at https://www.treasurydirect.gov/help-center/faqs/auction-faqs/.
+

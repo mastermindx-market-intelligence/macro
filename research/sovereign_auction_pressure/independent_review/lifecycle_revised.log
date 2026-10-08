@@ -1,0 +1,11 @@
+test_alias_requires_its_source_evidence_and_dates_stay_distinct (__main__.IndependentLifecycle.test_alias_requires_its_source_evidence_and_dates_stay_distinct) ... ok
+test_awaiting_result_survives_next_et_midnight_and_is_bounded (__main__.IndependentLifecycle.test_awaiting_result_survives_next_et_midnight_and_is_bounded) ... ok
+test_conflicting_equal_clock_withholding_is_order_independent (__main__.IndependentLifecycle.test_conflicting_equal_clock_withholding_is_order_independent) ... ok
+test_failure_and_malformed_bodies_cannot_refresh_valid_age (__main__.IndependentLifecycle.test_failure_and_malformed_bodies_cannot_refresh_valid_age) ... ok
+test_future_result_contradiction_does_not_become_valid_in_later_build (__main__.IndependentLifecycle.test_future_result_contradiction_does_not_become_valid_in_later_build) ... ok
+test_microsecond_receipt_boundary_and_updates_do_not_backdate (__main__.IndependentLifecycle.test_microsecond_receipt_boundary_and_updates_do_not_backdate) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.009s
+
+OK

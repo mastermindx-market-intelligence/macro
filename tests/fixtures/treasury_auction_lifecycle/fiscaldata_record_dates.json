@@ -1,0 +1,169 @@
+{
+  "data": [
+    {
+      "cusip": "912797VP9",
+      "auction_date": "2026-10-01",
+      "record_date": "2026-10-06",
+      "issue_date": "2026-10-06",
+      "announcemt_date": "2026-09-29",
+      "pdf_filenm_announcemt": "A_20260929_3.pdf",
+      "pdf_filenm_comp_results": "R_20261001_1.pdf"
+    },
+    {
+      "cusip": "912797VZ7",
+      "auction_date": "2026-10-01",
+      "record_date": "2026-10-06",
+      "issue_date": "2026-10-06",
+      "announcemt_date": "2026-09-29",
+      "pdf_filenm_announcemt": "A_20260929_1.pdf",
+      "pdf_filenm_comp_results": "R_20261001_2.pdf"
+    },
+    {
+      "cusip": "912797WU7",
+      "auction_date": "2026-10-05",
+      "record_date": "2026-10-08",
+      "issue_date": "2026-10-08",
+      "announcemt_date": "2026-10-01",
+      "pdf_filenm_announcemt": "A_20261001_1.pdf",
+      "pdf_filenm_comp_results": "R_20261005_2.pdf"
+    },
+    {
+      "cusip": "912797VS3",
+      "auction_date": "2026-10-05",
+      "record_date": "2026-10-08",
+      "issue_date": "2026-10-08",
+      "announcemt_date": "2026-10-01",
+      "pdf_filenm_announcemt": "A_20261001_5.pdf",
+      "pdf_filenm_comp_results": "R_20261005_1.pdf"
+    },
+    {
+      "cusip": "91282CRQ6",
+      "auction_date": "2026-10-06",
+      "record_date": "2026-10-15",
+      "issue_date": "2026-10-15",
+      "announcemt_date": "2026-10-01",
+      "pdf_filenm_announcemt": "A_20261001_2.pdf",
+      "pdf_filenm_comp_results": "R_20261006_2.pdf"
+    },
+    {
+      "cusip": "912797UZ8",
+      "auction_date": "2026-10-06",
+      "record_date": "2026-10-08",
+      "issue_date": "2026-10-08",
+      "announcemt_date": "2026-10-01",
+      "pdf_filenm_announcemt": "A_20261001_6.pdf",
+      "pdf_filenm_comp_results": "R_20261006_1.pdf"
+    },
+    {
+      "cusip": "91282CRF0",
+      "auction_date": "2026-10-07",
+      "record_date": "2026-10-15",
+      "issue_date": "2026-10-15",
+      "announcemt_date": "2026-10-01",
+      "pdf_filenm_announcemt": "A_20261001_3.pdf",
+      "pdf_filenm_comp_results": "R_20261007_2.pdf"
+    },
+    {
+      "cusip": "912797WY9",
+      "auction_date": "2026-10-07",
+      "record_date": "2026-10-13",
+      "issue_date": "2026-10-13",
+      "announcemt_date": "2026-10-06",
+      "pdf_filenm_announcemt": "A_20261006_2.pdf",
+      "pdf_filenm_comp_results": "R_20261007_1.pdf"
+    },
+    {
+      "cusip": "912810UW6",
+      "auction_date": "2026-10-08",
+      "record_date": "2026-10-15",
+      "issue_date": "2026-10-15",
+      "announcemt_date": "2026-10-01",
+      "pdf_filenm_announcemt": "A_20261001_4.pdf",
+      "pdf_filenm_comp_results": "R_20261008_3.pdf"
+    },
+    {
+      "cusip": "912797VW4",
+      "auction_date": "2026-10-08",
+      "record_date": "2026-10-13",
+      "issue_date": "2026-10-13",
+      "announcemt_date": "2026-10-06",
+      "pdf_filenm_announcemt": "A_20261006_1.pdf",
+      "pdf_filenm_comp_results": "R_20261008_1.pdf"
+    },
+    {
+      "cusip": "912797WE3",
+      "auction_date": "2026-10-08",
+      "record_date": "2026-10-13",
+      "issue_date": "2026-10-13",
+      "announcemt_date": "2026-10-06",
+      "pdf_filenm_announcemt": "A_20261006_3.pdf",
+      "pdf_filenm_comp_results": "R_20261008_2.pdf"
+    },
+    {
+      "cusip": "912797SU2",
+      "auction_date": "2026-10-13",
+      "record_date": "2026-10-15",
+      "issue_date": "2026-10-15",
+      "announcemt_date": "2026-10-08",
+      "pdf_filenm_announcemt": "A_20261008_1.pdf",
+      "pdf_filenm_comp_results": "null"
+    },
+    {
+      "cusip": "912797UE5",
+      "auction_date": "2026-10-13",
+      "record_date": "2026-10-15",
+      "issue_date": "2026-10-15",
+      "announcemt_date": "2026-10-08",
+      "pdf_filenm_announcemt": "A_20261008_2.pdf",
+      "pdf_filenm_comp_results": "null"
+    },
+    {
+      "cusip": "912797VT1",
+      "auction_date": "2026-10-13",
+      "record_date": "2026-10-15",
+      "issue_date": "2026-10-15",
+      "announcemt_date": "2026-10-08",
+      "pdf_filenm_announcemt": "A_20261008_3.pdf",
+      "pdf_filenm_comp_results": "null"
+    }
+  ],
+  "meta": {
+    "count": 14,
+    "labels": {
+      "cusip": "CUSIP",
+      "auction_date": "Auction Date",
+      "record_date": "Record Date",
+      "issue_date": "Issue Date",
+      "announcemt_date": "Announcement Date",
+      "pdf_filenm_announcemt": "Download PDF - Announcement",
+      "pdf_filenm_comp_results": "Download PDF - Competitive Results"
+    },
+    "dataTypes": {
+      "cusip": "STRING",
+      "auction_date": "DATE",
+      "record_date": "DATE",
+      "issue_date": "DATE",
+      "announcemt_date": "DATE",
+      "pdf_filenm_announcemt": "STRING",
+      "pdf_filenm_comp_results": "STRING"
+    },
+    "dataFormats": {
+      "cusip": "String",
+      "auction_date": "YYYY-MM-DD",
+      "record_date": "YYYY-MM-DD",
+      "issue_date": "YYYY-MM-DD",
+      "announcemt_date": "YYYY-MM-DD",
+      "pdf_filenm_announcemt": "String",
+      "pdf_filenm_comp_results": "String"
+    },
+    "total-count": 14,
+    "total-pages": 1
+  },
+  "links": {
+    "self": "&page%5Bnumber%5D=1&page%5Bsize%5D=100",
+    "first": "&page%5Bnumber%5D=1&page%5Bsize%5D=100",
+    "prev": null,
+    "next": null,
+    "last": "&page%5Bnumber%5D=1&page%5Bsize%5D=100"
+  }
+}

@@ -36,6 +36,7 @@ log = logging.getLogger("build_feeds")
 
 SCHEMA_VERSION = 1
 EVENT_HORIZON_D = 21
+SOVEREIGN_AUCTION_HORIZON_D = 30
 
 
 def _feeds_dir() -> Path:
@@ -145,8 +146,21 @@ def build() -> dict:
             "commodity": ec.commodity_events(today, EVENT_HORIZON_D),
             "is_context_only": True,
         }
+        # This display sibling cannot suppress the incumbent calendar if its
+        # reader fails. Null means unavailable to the strict consumers.
+        try:
+            from engine import treasury_auction_lifecycle
+            # Source receipts retain their own clocks. The legacy calendar asof
+            # above never grants freshness or forecast authority to this block.
+            cal["sovereign_auction_context"] = treasury_auction_lifecycle.snapshot(
+                data_dir=data, as_of=datetime.now(timezone.utc),
+                horizon_days=SOVEREIGN_AUCTION_HORIZON_D,
+            )
+        except Exception as e:  # noqa: BLE001
+            cal["sovereign_auction_context"] = None
+            log.warning("sovereign auction context failed: %s — calendar retained", e)
         _write_json(out, "event_calendar.json", cal)
-        note("event_calendar.json", cal["asof"], "engine/event_calendar.py")
+        note("event_calendar.json", cal["asof"], "engine/event_calendar.py + engine/treasury_auction_lifecycle.py")
     except Exception as e:  # noqa: BLE001
         log.warning("feed event_calendar.json failed: %s — skipped", e)
 

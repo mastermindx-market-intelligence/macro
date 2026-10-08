@@ -1,0 +1,48 @@
+{
+  "schema_version": "treasury_auction_capture_receipt_v1",
+  "captures": [
+    {
+      "source_name": "announced",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/announced?format=json",
+      "status": "available",
+      "body_status": "available",
+      "observed_at": "2026-10-08T22:53:20.956449+00:00",
+      "path": "research_source/forward_capture_primary/treasury_auctions/observations/20261008T225320956449Z-1ff0778ec045ff5445c303f27a52ebc75813b51f31f9ac28cedb3bbf240682e4.json",
+      "receipt_sha256": "1ff0778ec045ff5445c303f27a52ebc75813b51f31f9ac28cedb3bbf240682e4",
+      "bytes": 1950637
+    },
+    {
+      "source_name": "upcoming",
+      "source_url": "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json",
+      "status": "available",
+      "body_status": "available",
+      "observed_at": "2026-10-08T22:53:25.572222+00:00",
+      "path": "research_source/forward_capture_primary/treasury_auctions/observations/20261008T225325572222Z-a74cfb26c437e0d9d2b3242df6ccdc5c997dad696f7074931cff71c9507b0916.json",
+      "receipt_sha256": "a74cfb26c437e0d9d2b3242df6ccdc5c997dad696f7074931cff71c9507b0916",
+      "bytes": 22721
+    },
+    {
+      "source_name": "tentative",
+      "source_url": "https://home.treasury.gov/system/files/221/Tentative-Auction-Schedule.xml",
+      "status": "available",
+      "body_status": "available",
+      "observed_at": "2026-10-08T22:53:29.204683+00:00",
+      "path": "research_source/forward_capture_primary/treasury_auctions/observations/20261008T225329204683Z-c00d73268eaab3bf3619040eb39f21be1a37d7abc7c74fbca524539459454aea.json",
+      "receipt_sha256": "c00d73268eaab3bf3619040eb39f21be1a37d7abc7c74fbca524539459454aea",
+      "bytes": 165258
+    },
+    {
+      "source_name": "pending",
+      "source_url": "https://www.treasurydirect.gov/xml/PendingAuctions.xml",
+      "status": "available",
+      "body_status": "available",
+      "observed_at": "2026-10-08T22:53:33.744010+00:00",
+      "path": "research_source/forward_capture_primary/treasury_auctions/observations/20261008T225333744010Z-141d39b47bbd030b4cfbbdd32209f7e95477042ba753d0253175d28849ebeabf.json",
+      "receipt_sha256": "141d39b47bbd030b4cfbbdd32209f7e95477042ba753d0253175d28849ebeabf",
+      "bytes": 7639
+    }
+  ],
+  "data_owner": "treasury_auctions",
+  "scheduled": false,
+  "published": false
+}

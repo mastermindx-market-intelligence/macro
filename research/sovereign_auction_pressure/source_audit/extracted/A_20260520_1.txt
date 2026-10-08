@@ -1,0 +1,39 @@
+             Embargoed Until 11:00 A.M.                                                                    CONTACT: Treasury Auctions
+             May 20, 2026                                                                                           202-504-3550
+
+                                            TREASURY OFFERING ANNOUNCEMENT 1
+             Term and Type of Security                                                                                              27-Day Bill
+             Security Description                                                                                         Cash Management Bill
+             Offering Amount                                                                                                   $25,000,000,000
+             Currently Outstanding                                                                                            $255,607,000,000
+             CUSIP Number                                                                                                          912797TD9
+             Auction Date                                                                                                        May 21, 2026
+             Original Issue Date                                                                                             December 18, 2025
+             Issue Date                                                                                                          May 22, 2026
+             Maturity Date                                                                                                       June 18, 2026
+             Maximum Award                                                                                                         $8,750,000,000
+             Maximum Recognized Bid at a Single Rate                                                                               $8,750,000,000
+             NLP Reporting Threshold                                                                                               $8,750,000,000
+             NLP Exclusion Amount                                                                                                 $82,700,000,000
+             Minimum Bid Amount and Multiples                                                                                                 $100
+             Competitive Bid Rate Increments 2                                                                                             0.005%
+             Maximum Noncompetitive Award                                                                                              $10,000,000
+             Eligible for Holding by Treasury Retail                                                                                            No
+             Maturing Date                                                                                                                     N/A
+             SOMA Amounts Included in Offering Amount                                                                                           No
+             FIMA Amounts Included in Offering Amount 3                                                                                        Yes
+
+             Noncompetitive Closing Time                                                                                            12:00 Noon ET
+             Competitive Closing Time                                                                                                 1:00 p.m. ET
+
+
+
+
+1
+  Governed by the Terms and Conditions set forth in The Uniform Offering Circular for the Sale and Issue of Marketable Book-Entry Treasury Bills, Notes, and Bonds
+(31 CFR Part 356, as amended), and this offering announcement.
+2
+  Must be expressed as a discount rate with three decimals in increments of 0.005%, e.g., 7.100%, 7.105%.
+3
+  FIMA up to $2,000 million in noncompetitive bids from Foreign and International Monetary Authority not to exceed $500 million per account.
+

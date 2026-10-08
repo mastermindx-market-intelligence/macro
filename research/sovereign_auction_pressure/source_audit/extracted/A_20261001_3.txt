@@ -1,0 +1,56 @@
+             Embargoed Until 11:00 A.M.                                                                    CONTACT: Treasury Auctions
+             October 01, 2026                                                                                       202-504-3550
+
+                                            TREASURY OFFERING ANNOUNCEMENT 1
+             Term and Type of Security                                                                           9-Year 10-Month 4-5/8% Note
+                                                                                                                                   (Reopening)
+             Offering Amount                                                                                                   $39,000,000,000
+             Currently Outstanding                                                                                             $91,623,000,000
+             CUSIP Number                                                                                                          91282CRF0
+             Auction Date                                                                                                     October 07, 2026
+             Original Issue Date                                                                                               August 17, 2026
+             Issue Date                                                                                                       October 15, 2026
+             Maturity Date                                                                                                     August 15, 2036
+             Dated Date                                                                                                        August 15, 2026
+             Series                                                                                                                     E-2036
+             Yield                                                                                                      Determined at Auction
+             Interest Rate                                                                                                              4-5/8%
+             Interest Payment Dates                                                                                 February 15 and August 15
+             Accrued Interest from 08/15/2026 to 10/15/2026                                                               $ 7.66644 Per $1,000
+             Premium or Discount                                                                                        Determined at Auction
+             Minimum Amount Required for STRIPS                                                                                               $100
+              Corpus CUSIP Number                                                                                                       912821UZ6
+              Additional TINT(s) Due Date(s) and                                                                                             None
+              CUSIP Number(s)
+             Maximum Award                                                                                                        $13,650,000,000
+             Maximum Recognized Bid at a Single Yield                                                                             $13,650,000,000
+             NLP Reporting Threshold                                                                                              $13,650,000,000
+             NLP Exclusion Amount                                                                                                 $28,400,000,000
+             Minimum Bid Amount and Multiples                                                                                                $100
+             Competitive Bid Yield Increments 2                                                                                           0.001%
+             Maximum Noncompetitive Award                                                                                            $10,000,000
+             Eligible for Holding by Treasury Retail                                                                                          Yes
+             Estimated Amount of Maturing Coupon Securities Held by the Public 4                                                 $86,437,000,000
+             Maturing Date                                                                                                       October 15, 2026
+             SOMA Holdings Maturing 5                                                                                             $2,826,000,000
+             SOMA Amounts Included in Offering Amount                                                                                          No
+             FIMA Amounts Included in Offering Amount 3                                                                                       Yes
+
+             Noncompetitive Closing Time                                                                                            12:00 Noon ET
+             Competitive Closing Time                                                                                                 1:00 p.m. ET
+
+
+
+
+1
+  Governed by the Terms and Conditions set forth in The Uniform Offering Circular for the Sale and Issue of Marketable Book-Entry Treasury Bills, Notes, and Bonds
+(31 CFR Part 356, as amended), and this offering announcement.
+2
+  Must be expressed as a yield with three decimals e.g., 7.123%.
+3
+  FIMA up to $2,000 million in noncompetitive bids from Foreign and International Monetary Authority not to exceed $500 million per account.
+4
+  Includes maturing TIPS which have been adjusted for inflation.
+5
+  Includes maturing TIPS which have been adjusted for inflation.
+
