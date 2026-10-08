@@ -1570,6 +1570,11 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
         "note": "data/neuralweb/theme_state.json absent — run scripts/build_thematic_state.py",
     }
 
+    from .theme_state_generation_reader import legacy_consumer_barrier
+    barrier = legacy_consumer_barrier(root)
+    if barrier is not None:
+        return barrier
+
     if not state_path.exists():
         return dict(_null)
 
@@ -1585,7 +1590,7 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
         if theme_id_filter:
             matched = [t for t in themes if isinstance(t, dict) and t.get("theme_id") == theme_id_filter]
             if not matched:
-                return {
+                return legacy_consumer_barrier(root) or {
                     "available": True,
                     "theme_id": theme_id_filter,
                     "found": False,
@@ -1595,7 +1600,7 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
                 }
             th = matched[0]
             foresight = th.get("foresight") or {}
-            return {
+            return legacy_consumer_barrier(root) or {
                 "available": True,
                 "theme_id": theme_id_filter,
                 "found": True,
@@ -1635,7 +1640,7 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
             except Exception:  # noqa: BLE001
                 pass
 
-        return {
+        return legacy_consumer_barrier(root) or {
             "available": True,
             "as_of": raw_state.get("as_of"),
             "n_themes": raw_state.get("n_themes") or len(themes),
@@ -1674,6 +1679,11 @@ def _tool_read_theme_thesis(root: Path, params: dict) -> dict:
         "note": "site/neuralwebdata/theme_thesis.json absent",
     }
 
+    from .theme_state_generation_reader import legacy_consumer_barrier
+    barrier = legacy_consumer_barrier(root)
+    if barrier is not None:
+        return barrier
+
     if not thesis_path.exists():
         return dict(_null)
 
@@ -1702,14 +1712,14 @@ def _tool_read_theme_thesis(root: Path, params: dict) -> dict:
         if theme_id_filter:
             matched = [t for t in theses if isinstance(t, dict) and t.get("theme_id") == theme_id_filter]
             if not matched:
-                return {
+                return legacy_consumer_barrier(root) or {
                     "available": True,
                     "theme_id": theme_id_filter,
                     "found": False,
                     "is_context_only": True,
                     "display_only": True,
                 }
-            return {
+            return legacy_consumer_barrier(root) or {
                 "available": True,
                 "theme_id": theme_id_filter,
                 "found": True,
@@ -1719,7 +1729,7 @@ def _tool_read_theme_thesis(root: Path, params: dict) -> dict:
                 "note": "not advice — context only",
             }
 
-        return {
+        return legacy_consumer_barrier(root) or {
             "available": True,
             "as_of": raw.get("as_of"),
             "n_theses": raw.get("n_theses") or len(theses),

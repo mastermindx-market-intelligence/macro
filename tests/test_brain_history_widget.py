@@ -340,6 +340,9 @@ def test_delayed_open_focus_respects_current_interaction(page, next_focus):
 @pytest.mark.parametrize('text_scale',[1,2])
 def test_composer_controls_keep_touch_targets_and_reflow(page,width,lang,text_scale):
     page.set_viewport_size({'width':width,'height':844})
+    # open() hands focus to the composer 260ms after entry (focusPanel). Let that one-shot
+    # handoff land first, or it can take focus from a control between focus() and the check.
+    expect(page.locator('#mmb-ta')).to_be_focused()
     page.evaluate("""({lang,scale})=>{
       document.documentElement.dataset.lang=lang;document.dispatchEvent(new Event('langchange'));
       document.querySelector('[data-act=voice]').style.display='';

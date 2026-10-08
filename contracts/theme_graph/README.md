@@ -137,6 +137,38 @@ max `computed_at` per node. It is internal, never user-facing, and never a marke
 It lives outside the node row precisely because node rows are write-once: a capability
 stored there would be a one-way ratchet that outlived every later substrate improvement.
 
+## Hierarchy (DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK)
+
+House theme taxonomy is three tiers on `kind=theme` nodes: `macro_category`, `theme`
+(the 18 legacy crosswalk themes), and `micro_theme`. Node ids stay `theme:<slug>` with
+slug grammar `^[a-z0-9][a-z0-9_]{1,62}$`, globally unique across tiers. Non-theme node
+kinds keep `tier` null.
+
+**Edges.** Only `PARENT_OF` models hierarchy. Direction: `src` = PARENT, `dst` = CHILD.
+Allowed adjacency: `macro_category → theme` or `theme → micro_theme` (no
+category→micro, no theme→theme). The graph is a DAG; a child may have at most three
+parents; a `theme` may have zero categories. Fields: `source_class=curated`,
+`date_provenance=crosswalk`, `valid_from` = the parent row's `asserted_on`, evidence
+from operator curation of `config/theme_crosswalk.yml` (same evidence shape as crosswalk
+EXPRESSES). No weight, share, count, or score on PARENT_OF. The #8324 typed vocabulary
+(EQUIVALENT / NARROWER_THAN / …) is probation/mapping vocabulary only — not a graph edge
+type in v1.
+
+**Rights.** Hierarchy nodes resolve to family `mastermind_curated` exactly like the 18
+canonical themes (`direct_display_ok`); no new prefix or rights row.
+
+**Source of truth.** The ONLY hierarchy source is the `hierarchy:` block in
+`config/theme_crosswalk.yml`; the ONLY emitter is `engine/theme_graph/materialize.py`
+into `data/theme_graph/{nodes,edges}.parquet`. Display-tier only until gauntleted (G0.1).
+No per-ticker stored category/theme tags (DNR:HOLD-TICKER-EXPOSURE-TAGS).
+
+**Schema vs checker.** Per row, `nodes.v1` / `edges.v1` jsonschema enforce kind/tier
+conditionals, PARENT_OF endpoint id grammar, `source_class` / `date_provenance`, and
+null reserved exposure columns. Per store, `scripts/check_theme_graph_contracts.py`
+enforces tier adjacency, endpoint existence, DAG (no cycles among open PARENT_OF),
+the three-parent cap, crosswalk provenance and rights on endpoints and evidence, and
+the spec §9.6 ban on company→theme edges.
+
 ## 5. Versioning — additive only
 
 `v1` is **additive-only**: a later wave may add columns and enum members; it may not

@@ -1,13 +1,13 @@
 {
   "schema": "macro_snapshot.v1.2",
-  "asof": "2026-10-05",
+  "asof": "2026-10-07",
   "oldest_component_asof": "2026-09-30",
-  "macro_context_id": "f9ee4ffb0ddf8051",
+  "macro_context_id": "3155baadc42099db",
   "labels": {
     "us": {
       "us_quad": "Q2",
       "us_transition_state": "TRANSITIONING",
-      "us_fused_risk": "elevated",
+      "us_fused_risk": "caution",
       "us_vol_regime": "normalizing",
       "us_risk_radar": "caution",
       "us_rate_pressure": "panic",
@@ -30,8 +30,8 @@
       "recession_risk": "low"
     },
     "fx": {
-      "usd_trend": "mixed",
-      "usd_regime": "Global reflation",
+      "usd_trend": "up",
+      "usd_regime": "Risk-off haven bid",
       "fx_risk": "risk-off",
       "real_rate_regime": "Restrictive real yields",
       "fx_liquidity_dir": "supportive",
@@ -81,7 +81,7 @@
     },
     "canada": {
       "canada_quad": "Q2",
-      "canada_overlay_state": "Risk-off",
+      "canada_overlay_state": "Neutral",
       "canada_cycle_tag": "mid"
     },
     "dispersion": {
@@ -93,28 +93,28 @@
       "intl_gb_quad": "Q3",
       "intl_in_quad": "Q3",
       "intl_jp_quad": "Q2",
-      "intl_kr_quad": "Q3",
-      "intl_tw_quad": "Q2"
+      "intl_kr_quad": "Q1",
+      "intl_tw_quad": "Q1"
     }
   },
   "sources": {
-    "data/regime/latest.json": "2026-10-02",
-    "data/market_state/latest.json": "2026-10-02",
-    "data/transmission/latest.json": "2026-10-02",
-    "data/forex/latest.json": "2026-10-05",
-    "data/bonds/bond_health.json": "2026-10-02",
-    "data/commodity/latest.json": "2026-10-04",
+    "data/regime/latest.json": "2026-10-06",
+    "data/market_state/latest.json": "2026-10-06",
+    "data/transmission/latest.json": "2026-10-06",
+    "data/forex/latest.json": "2026-10-07",
+    "data/bonds/bond_health.json": "2026-10-06",
+    "data/commodity/latest.json": "2026-10-06",
     "data/china_regime/latest.json": "2026-09-30",
-    "data/hk_regime/latest.json": "2026-10-02",
-    "data/canada_regime/latest.json": "2026-10-02",
-    "data/dispersion/regime.json": "2026-10-05",
-    "data/intl_regime/AU_history.parquet": "2026-10-05",
-    "data/intl_regime/EZ_history.parquet": "2026-10-02",
-    "data/intl_regime/GB_history.parquet": "2026-10-02",
-    "data/intl_regime/IN_history.parquet": "2026-10-01",
-    "data/intl_regime/JP_history.parquet": "2026-10-05",
-    "data/intl_regime/KR_history.parquet": "2026-10-02",
-    "data/intl_regime/TW_history.parquet": "2026-10-05"
+    "data/hk_regime/latest.json": "2026-10-06",
+    "data/canada_regime/latest.json": "2026-10-06",
+    "data/dispersion/regime.json": "2026-10-07",
+    "data/intl_regime/AU_history.parquet": "2026-10-07",
+    "data/intl_regime/EZ_history.parquet": "2026-10-06",
+    "data/intl_regime/GB_history.parquet": "2026-10-06",
+    "data/intl_regime/IN_history.parquet": "2026-10-06",
+    "data/intl_regime/JP_history.parquet": "2026-10-07",
+    "data/intl_regime/KR_history.parquet": "2026-10-07",
+    "data/intl_regime/TW_history.parquet": "2026-10-07"
   },
   "gaps": [],
   "display_only": true

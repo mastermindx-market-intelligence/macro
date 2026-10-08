@@ -706,8 +706,16 @@ def test_updater_reconciles_disarms_and_runs_exact_option_closure() -> None:
         'if [ "$OPTIONS_TIMER_WAS_ENABLED" -eq 0 ]', immediate
     )
     assert conditional_enable < timer_enable
-    assert update.count("--check-ready") == 1
-    assert update.index("--check-ready") < update.index(full_prereq, marker)
+    # update.sh also runs the SPY-REST prereqs with --check-ready; count only the
+    # options prereq invocation.
+    options_check_ready = [
+        match.start()
+        for match in re.finditer(
+            r'market-memory-options-prereqs\.sh"\s*(?:\\\s*)?--check-ready', update
+        )
+    ]
+    assert len(options_check_ready) == 1
+    assert options_check_ready[0] < update.index(full_prereq, marker)
     deps_drift = update.index('if [ "$API_REQ_HASH" != "$API_INSTALLED_REQ_HASH" ]')
     deps_disarm = update.index("disarm_options_timer", deps_drift)
     deps_pip = update.index("/opt/macro-api/.venv/bin/pip install", deps_drift)

@@ -2,61 +2,54 @@
   "schema": "master_brief.v2",
   "lens": "macro",
   "is_context_only": true,
-  "generated_at": "2026-10-05T09:27:54.824037+00:00",
+  "generated_at": "2026-10-07T09:34:34.256375+00:00",
   "model": "gpt-5.6-sol",
   "served_by": "codex",
-  "state_asof": "2026-10-02",
+  "state_asof": "2026-10-06",
   "tldr": [
-    "Main driver: Widening credit stress clouds otherwise calm markets.",
-    "Regime drift: Reflation is losing ground to a Growth-scare.",
-    "Rate pressure: Restrictive real yields favor value over growth shares.",
-    "What to do: Get ready; credit stress argues against chasing."
+    "Dollar pressure: A firm dollar and high real yields are squeezing risk assets.",
+    "Regime drifting: Reflation is losing ground to Growth-scare.",
+    "Narrow leadership: Chip stocks lead, but wider participation remains weak.",
+    "What to do: Get ready."
   ],
-  "summary": "Markets remain calm, but widening credit stress and restrictive rates make the Reflation position increasingly fragile.",
-  "regime_read": "The US remains in Reflation on the map, but confidence is low and momentum is shifting toward a Growth-scare. Today\u2019s dominant driver is widening credit stress.\n\nGrowth and inflation are cooling. The Fed remains hawkish, while restrictive real yields add pressure to growth shares and other rate-sensitive assets.",
+  "summary": "The dollar and high real yields are challenging narrow stock leadership while the US regime drifts toward Growth-scare.",
+  "regime_read": "The US is still marked Reflation, but it is transitioning toward Growth-scare. Growth has cooled recently while inflation has warmed, leaving the map unusually unsettled.\n\nThe dominant driver is the firm dollar, reinforced by restrictive real yields and a hawkish Fed. Chip leadership remains narrow and low-confidence. The wider overnight review is partly stale, so it adds no confidence.",
   "conflicts": [
-    "Risk split: Stock prices remain calm, but the bond desk sees widening credit stress \u2014 keep conviction modest.",
-    "Global split: China and Hong Kong show contracting liquidity, while Bitcoin remains risk-on \u2014 risk-taking is uneven.",
-    "Policy split: Inflation is cooling, but the Fed remains hawkish \u2014 restrictive rates can linger despite softer price pressure."
+    "Stocks versus bonds: Calm stocks and narrow chip leadership say steady, while widening credit and sovereign strains say caution \u2014 keep conviction modest.",
+    "Bitcoin split: Bitcoin still looks risk-on, while the dollar and high real yields are headwinds \u2014 its strength faces a tougher backdrop."
   ],
-  "rotation_check": null,
+  "rotation_check": "The sequence is stalling: chip leadership remains narrow, China and Hong Kong liquidity is shrinking, while Bitcoin still looks risk-on.",
   "transmission": [
-    "If credit spreads keep widening \u2192 calm stock markets face a stronger warning from lenders",
-    "If restrictive real yields keep rising \u2192 growth shares, gold and Bitcoin face more pressure"
+    "If dollar strength keeps up \u2192 US stocks, emerging markets, copper and Bitcoin face more pressure",
+    "If real yields keep rising \u2192 growth stocks and long bonds remain under pressure"
   ],
   "watch_items": [
-    "Credit spreads reverse: the dominant stress signal fades",
-    "Real yields fall: pressure on growth shares and Bitcoin eases",
-    "Hong Kong outflows ease: Asia\u2019s liquidity drag weakens",
-    "Growth-scare gains further: the Reflation position becomes harder to defend"
+    "Dollar eases: pressure on stocks, copper and Bitcoin should fade",
+    "Credit stops widening: bond-market caution would soften",
+    "Chip leadership broadens: the stock rally becomes more durable",
+    "Inflation stays hot: high real yields remain a drag"
   ],
-  "confidence": "medium",
+  "confidence": "low",
   "theses": [],
-  "raw_text": "{\"tldr\":[\"Main driver: Widening credit stress clouds otherwise calm markets.\",\"Regime drift: Reflation is losing ground to a Growth-scare.\",\"Rate pressure: Restrictive real yields favor value over growth shares.\",\"What to do: Get ready; credit stress argues against chasing.\"],\"summary\":\"Markets remain calm, but widening credit stress and restrictive rates make the Reflation position increasingly fragile.\",\"regime_read\":\"The US remains in Reflation on the map, but confidence is low and momentum is shifting toward a Growth-scare. Today\u2019s dominant driver is widening credit stress.\\n\\nGrowth and inflation are cooling. The Fed remains hawkish, while restrictive real yields add pressure to growth shares and other rate-sensitive assets.\",\"conflicts\":[\"Risk split: Stock prices remain calm, but the bond desk sees widening credit stress \u2014 keep conviction modest.\",\"Global split: China and Hong Kong show contracting liquidity, while Bitcoin remains risk-on \u2014 risk-taking is uneven.\",\"Policy split: Inflation is cooling, but the Fed remains hawkish \u2014 restrictive rates can linger despite softer price pressure.\"],\"transmission\":[\"If credit spreads keep widening \u2192 calm stock markets face a stronger warning from lenders\",\"If restrictive real yields keep rising \u2192 growth shares, gold and Bitcoin face more pressure\"],\"watch_items\":[\"Credit spreads reverse: the dominant stress signal fades\",\"Real yields fall: pressure on growth shares and Bitcoin eases\",\"Hong Kong outflows ease: Asia\u2019s liquidity drag weakens\",\"Growth-scare gains further: the Reflation position becomes harder to defend\"],\"confidence\":\"medium\",\"forward_watch\":[{\"date\":\"2026-10-08\",\"label\":\"claims\",\"kind\":\"change_thousands\",\"note\":\"Only the 197.0 benchmark is available; no model forecast.\"},{\"date\":\"2026-10-14\",\"label\":\"CPI (consumer prices)\",\"kind\":\"CPI\",\"note\":\"The key test of whether cooling inflation can soften rate pressure.\"},{\"date\":\"2026-10-15\",\"label\":\"PPI (producer prices)\",\"kind\":\"PPI\",\"note\":\"A follow-up check on inflation pressure moving through businesses.\"}],\"forward_read\":\"The inflation releases are the next clean test for restrictive rates. Softer pressure would ease the conflict; renewed heat would reinforce it.\"}",
+  "raw_text": "{\"tldr\":[\"Dollar pressure: A firm dollar and high real yields are squeezing risk assets.\",\"Regime drifting: Reflation is losing ground to Growth-scare.\",\"Narrow leadership: Chip stocks lead, but wider participation remains weak.\",\"What to do: Get ready.\"],\"summary\":\"The dollar and high real yields are challenging narrow stock leadership while the US regime drifts toward Growth-scare.\",\"regime_read\":\"The US is still marked Reflation, but it is transitioning toward Growth-scare. Growth has cooled recently while inflation has warmed, leaving the map unusually unsettled.\\n\\nThe dominant driver is the firm dollar, reinforced by restrictive real yields and a hawkish Fed. Chip leadership remains narrow and low-confidence. The wider overnight review is partly stale, so it adds no confidence.\",\"conflicts\":[\"Stocks versus bonds: Calm stocks and narrow chip leadership say steady, while widening credit and sovereign strains say caution \u2014 keep conviction modest.\",\"Bitcoin split: Bitcoin still looks risk-on, while the dollar and high real yields are headwinds \u2014 its strength faces a tougher backdrop.\"],\"transmission\":[\"If dollar strength keeps up \u2192 US stocks, emerging markets, copper and Bitcoin face more pressure\",\"If real yields keep rising \u2192 growth stocks and long bonds remain under pressure\"],\"rotation_check\":\"The sequence is stalling: chip leadership remains narrow, China and Hong Kong liquidity is shrinking, while Bitcoin still looks risk-on.\",\"watch_items\":[\"Dollar eases: pressure on stocks, copper and Bitcoin should fade\",\"Credit stops widening: bond-market caution would soften\",\"Chip leadership broadens: the stock rally becomes more durable\",\"Inflation stays hot: high real yields remain a drag\"],\"confidence\":\"low\",\"forward_watch\":[{\"date\":\"2026-10-14\",\"label\":\"CPI (consumer prices)\",\"kind\":\"CPI\",\"note\":\"The key test for whether inflation pressure is cooling or returning.\"},{\"date\":\"2026-10-15\",\"label\":\"PPI (producer prices)\",\"kind\":\"PPI\",\"note\":\"A follow-up check on price pressure moving through businesses.\"}],\"forward_read\":\"The inflation releases are the next clean test for the hawkish Fed and high real-yield backdrop.\"}",
   "degraded_reason": null,
   "disclaimer": "Context only \u2014 not a signal. This is an AI-generated SYNTHESIS of the dashboards' own deterministic outputs. It does not feed any score, signal or allocation, and it can be wrong or overconfident. Use it as a research read; verify every claim against the underlying dashboard it cites. Effective sample sizes on macro regimes are small \u2014 treat cross-asset 'reads' as odds, not forecasts.",
   "style_flags": [],
   "forward_watch": [
     {
-      "date": "2026-10-08",
-      "label": "claims",
-      "kind": "change_thousands",
-      "note": "Only the 197.0 benchmark is available; no model forecast."
-    },
-    {
       "date": "2026-10-14",
       "label": "CPI (consumer prices)",
       "kind": "CPI",
-      "note": "The key test of whether cooling inflation can soften rate pressure."
+      "note": "The key test for whether inflation pressure is cooling or returning."
     },
     {
       "date": "2026-10-15",
       "label": "PPI (producer prices)",
       "kind": "PPI",
-      "note": "A follow-up check on inflation pressure moving through businesses."
+      "note": "A follow-up check on price pressure moving through businesses."
     }
   ],
-  "forward_read": "The inflation releases are the next clean test for restrictive rates. Softer pressure would ease the conflict; renewed heat would reinforce it.",
+  "forward_read": "The inflation releases are the next clean test for the hawkish Fed and high real-yield backdrop.",
   "nw_context_used": true,
   "cortex_status": "absent",
   "refresh_days": 1,
@@ -105,35 +98,34 @@
       "key": "driver",
       "label_en": "What's moving markets",
       "label_zh": "\u5f53\u524d\u4e3b\u5bfc",
-      "value_en": "Credit stress",
-      "value_zh": "Credit stress",
+      "value_en": "AI / semis",
+      "value_zh": "AI / semis",
       "tone": "info"
     }
   ],
   "zh": {
-    "summary": "\u5e02\u573a\u4ecd\u8f83\u5e73\u9759\uff0c\u4f46\u4fe1\u7528\u538b\u529b\u6269\u5927\u548c\u9650\u5236\u6027\u5229\u7387\u4f7f\u518d\u901a\u80c0\u4ed3\u4f4d\u65e5\u76ca\u8106\u5f31\u3002",
-    "regime_read": "\u7f8e\u56fd\u5728\u56fe\u4e2d\u4ecd\u5904\u4e8e\u518d\u901a\u80c0\u9636\u6bb5\uff0c\u4f46\u7f6e\u4fe1\u5ea6\u8f83\u4f4e\uff0c\u52a8\u80fd\u6b63\u8f6c\u5411\u589e\u957f\u62c5\u5fe7\u3002\u5f53\u524d\u4e3b\u5bfc\u56e0\u7d20\u662f\u4fe1\u7528\u538b\u529b\u6269\u5927\u3002\n\n\u589e\u957f\u548c\u901a\u80c0\u5747\u5728\u964d\u6e29\u3002Fed\u4ecd\u504f\u9e70\u6d3e\uff0c\u800c\u9650\u5236\u6027\u5b9e\u9645\u6536\u76ca\u7387\u8fdb\u4e00\u6b65\u65bd\u538b\u6210\u957f\u80a1\u53ca\u5176\u4ed6\u5229\u7387\u654f\u611f\u578b\u8d44\u4ea7\u3002",
-    "rotation_check": null,
+    "summary": "\u7f8e\u5143\u8d70\u5f3a\u548c\u5b9e\u9645\u6536\u76ca\u7387\u9ad8\u4f01\u6b63\u6311\u6218\u7531\u5c11\u6570\u80a1\u7968\u4e3b\u5bfc\u7684\u884c\u60c5\uff0c\u540c\u65f6\u7f8e\u56fd\u5e02\u573a\u73af\u5883\u6b63\u9010\u6e10\u8f6c\u5411\u201c\u589e\u957f\u62c5\u5fe7\u201d\u3002",
+    "regime_read": "\u7f8e\u56fd\u76ee\u524d\u4ecd\u5904\u4e8e\u201c\u518d\u901a\u80c0\u201d\u72b6\u6001\uff0c\u4f46\u6b63\u5411\u201c\u589e\u957f\u62c5\u5fe7\u201d\u8fc7\u6e21\u3002\u8fd1\u671f\u589e\u957f\u964d\u6e29\u800c\u901a\u80c0\u5347\u6e29\uff0c\u4ee4\u5e02\u573a\u683c\u5c40\u5f02\u5e38\u4e0d\u660e\u6717\u3002\n\n\u4e3b\u8981\u9a71\u52a8\u56e0\u7d20\u662f\u7f8e\u5143\u575a\u633a\uff0c\u5b9e\u9645\u6536\u76ca\u7387\u5904\u4e8e\u9650\u5236\u6027\u9ad8\u4f4d\u53ca\u7f8e\u8054\u50a8\u7acb\u573a\u9e70\u6d3e\u8fdb\u4e00\u6b65\u5f3a\u5316\u4e86\u8fd9\u4e00\u8d8b\u52bf\u3002\u82af\u7247\u80a1\u7684\u9886\u6da8\u8303\u56f4\u4f9d\u7136\u72ed\u7a84\uff0c\u53ef\u4fe1\u5ea6\u8f83\u4f4e\u3002\u66f4\u5e7f\u6cdb\u7684\u9694\u591c\u5e02\u573a\u56de\u987e\u90e8\u5206\u4fe1\u606f\u5df2\u8fc7\u65f6\uff0c\u56e0\u6b64\u672a\u80fd\u589e\u5f3a\u5224\u65ad\u4fe1\u5fc3\u3002",
+    "rotation_check": "\u8fd9\u4e00\u8d70\u52bf\u6b63\u5728\u505c\u6ede\uff1a\u82af\u7247\u80a1\u7684\u9886\u6da8\u8303\u56f4\u4ecd\u7136\u72ed\u7a84\uff0c\u4e2d\u56fd\u5185\u5730\u548c\u9999\u6e2f\u7684\u6d41\u52a8\u6027\u6b63\u5728\u6536\u7f29\uff0c\u800c Bitcoin \u4f9d\u7136\u5448\u73b0\u98ce\u9669\u504f\u597d\u5347\u6e29\u6001\u52bf\u3002",
     "tldr": [
-      "\u4e3b\u8981\u9a71\u52a8\u56e0\u7d20\uff1a\u4fe1\u7528\u538b\u529b\u6269\u5927\uff0c\u7ed9\u539f\u672c\u5e73\u9759\u7684\u5e02\u573a\u8499\u4e0a\u9634\u5f71\u3002",
-      "\u4f53\u5236\u6f02\u79fb\uff1a\u518d\u901a\u80c0\u6b63\u8ba9\u4f4d\u4e8e\u589e\u957f\u6050\u614c\u3002",
-      "\u5229\u7387\u538b\u529b\uff1a\u9650\u5236\u6027\u5b9e\u9645\u6536\u76ca\u7387\u4f7f\u4ef7\u503c\u80a1\u4f18\u4e8e\u6210\u957f\u80a1\u3002",
-      "\u5e94\u5bf9\u7b56\u7565\uff1a\u505a\u597d\u51c6\u5907\uff1b\u4fe1\u8d37\u538b\u529b\u8868\u660e\u4e0d\u5b9c\u8ffd\u9ad8\u3002"
+      "\u7f8e\u5143\u538b\u529b\uff1a\u5f3a\u52bf\u7f8e\u5143\u548c\u9ad8\u5b9e\u9645\u6536\u76ca\u7387\u6b63\u6324\u538b\u98ce\u9669\u8d44\u4ea7\u3002",
+      "\u5e02\u573a\u73af\u5883\u6b63\u5728\u8f6c\u53d8\uff1a\u518d\u901a\u80c0\u4ea4\u6613\u6b63\u9010\u6e10\u8ba9\u4f4d\u4e8e\u589e\u957f\u62c5\u5fe7\u3002",
+      "\u9886\u6da8\u8303\u56f4\u72ed\u7a84\uff1a\u82af\u7247\u80a1\u9886\u6da8\uff0c\u4f46\u6574\u4f53\u5e02\u573a\u53c2\u4e0e\u5ea6\u4f9d\u7136\u8f83\u5f31\u3002",
+      "\u5e94\u5bf9\u7b56\u7565\uff1a\u505a\u597d\u51c6\u5907\u3002"
     ],
     "conflicts": [
-      "\u98ce\u9669\u5206\u5316\uff1a\u80a1\u4ef7\u4ecd\u8f83\u5e73\u9759\uff0c\u4f46\u503a\u5238\u4ea4\u6613\u53f0\u89c2\u5bdf\u5230\u4fe1\u7528\u538b\u529b\u6269\u5927\u2014\u2014\u5b9c\u4fdd\u6301\u9002\u5ea6\u4fe1\u5fc3\u3002",
-      "\u5168\u7403\u5206\u5316\uff1a\u4e2d\u56fd\u548c\u9999\u6e2f\u6d41\u52a8\u6027\u6536\u7f29\uff0c\u800cBitcoin\u4ecd\u5904\u4e8e\u98ce\u9669\u504f\u597d\u72b6\u6001\u2014\u2014\u98ce\u9669\u627f\u62c5\u5e76\u4e0d\u5747\u8861\u3002",
-      "\u653f\u7b56\u5206\u5316\uff1a\u901a\u80c0\u6b63\u5728\u964d\u6e29\uff0c\u4f46Fed\u4ecd\u504f\u9e70\u6d3e\u2014\u2014\u5c3d\u7ba1\u4ef7\u683c\u538b\u529b\u7f13\u89e3\uff0c\u9650\u5236\u6027\u5229\u7387\u4ecd\u53ef\u80fd\u6301\u7eed\u3002"
+      "\u80a1\u7968\u4e0e\u503a\u5238\u5bf9\u6bd4\uff1a\u80a1\u5e02\u5e73\u7a33\u4e14\u82af\u7247\u80a1\u9886\u6da8\u8303\u56f4\u72ed\u7a84\uff0c\u91ca\u653e\u51fa\u7a33\u5b9a\u4fe1\u53f7\uff1b\u4f46\u4fe1\u7528\u5229\u5dee\u6269\u5927\u548c\u4e3b\u6743\u503a\u52a1\u538b\u529b\u5219\u63d0\u793a\u8c28\u614e\u2014\u2014\u5e94\u4fdd\u6301\u9002\u5ea6\u4fe1\u5fc3\u3002",
+      "Bitcoin \u4fe1\u53f7\u5206\u5316\uff1aBitcoin \u4ecd\u5448\u73b0\u98ce\u9669\u504f\u597d\u5347\u6e29\u6001\u52bf\uff0c\u4f46\u7f8e\u5143\u8d70\u5f3a\u548c\u5b9e\u9645\u6536\u76ca\u7387\u9ad8\u4f01\u6784\u6210\u963b\u529b\u2014\u2014\u5176\u5f3a\u52bf\u6b63\u9762\u4e34\u66f4\u4e25\u5cfb\u7684\u73af\u5883\u3002"
     ],
     "transmission": [
-      "\u82e5\u4fe1\u7528\u5229\u5dee\u7ee7\u7eed\u6269\u5927 \u2192 \u5e73\u9759\u7684\u80a1\u5e02\u5c06\u9762\u4e34\u6765\u81ea\u4fe1\u8d37\u5e02\u573a\u66f4\u5f3a\u70c8\u7684\u8b66\u793a",
-      "\u5982\u679c\u5177\u6709\u9650\u5236\u6027\u7684\u5b9e\u9645\u6536\u76ca\u7387\u7ee7\u7eed\u4e0a\u5347 \u2192 \u6210\u957f\u80a1\u3001\u9ec4\u91d1\u548c\u6bd4\u7279\u5e01\u5c06\u9762\u4e34\u66f4\u5927\u538b\u529b"
+      "\u82e5\u7f8e\u5143\u6301\u7eed\u8d70\u5f3a \u2192 \u7f8e\u56fd\u80a1\u7968\u3001\u65b0\u5174\u5e02\u573a\u3001\u94dc\u548c Bitcoin \u5c06\u9762\u4e34\u66f4\u5927\u538b\u529b",
+      "\u5982\u679c\u5b9e\u9645\u6536\u76ca\u7387\u6301\u7eed\u4e0a\u5347 \u2192 \u6210\u957f\u80a1\u548c\u957f\u671f\u503a\u5238\u4ecd\u5c06\u627f\u538b"
     ],
     "watch_items": [
-      "\u4fe1\u7528\u5229\u5dee\u9006\u8f6c\uff1a\u4e3b\u8981\u538b\u529b\u4fe1\u53f7\u6d88\u9000",
-      "\u5b9e\u9645\u6536\u76ca\u7387\u4e0b\u964d\uff1a\u6210\u957f\u80a1\u548c\u6bd4\u7279\u5e01\u7684\u538b\u529b\u7f13\u89e3",
-      "\u9999\u6e2f\u8d44\u91d1\u5916\u6d41\u7f13\u89e3\uff1a\u4e9a\u6d32\u6d41\u52a8\u6027\u62d6\u7d2f\u51cf\u5f31",
-      "\u589e\u957f\u62c5\u5fe7\u8fdb\u4e00\u6b65\u52a0\u5267\uff1a\u518d\u901a\u80c0\u5934\u5bf8\u66f4\u96be\u7ef4\u6301"
+      "\u7f8e\u5143\u8d70\u5f31\uff1a\u80a1\u7968\u3001\u94dc\u548c\u6bd4\u7279\u5e01\u9762\u4e34\u7684\u538b\u529b\u5e94\u4f1a\u6d88\u9000",
+      "\u4fe1\u7528\u5229\u5dee\u505c\u6b62\u6269\u5927\uff1a\u503a\u5238\u5e02\u573a\u7684\u8c28\u614e\u60c5\u7eea\u5c06\u7f13\u548c",
+      "\u82af\u7247\u80a1\u9886\u6da8\u8303\u56f4\u6269\u5927\uff1a\u80a1\u5e02\u4e0a\u6da8\u884c\u60c5\u5c06\u66f4\u6301\u4e45",
+      "\u901a\u80c0\u6301\u7eed\u9ad8\u4f01\uff1a\u9ad8\u5b9e\u9645\u6536\u76ca\u7387\u4ecd\u6784\u6210\u62d6\u7d2f"
     ]
   }
 }

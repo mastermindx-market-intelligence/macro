@@ -4284,6 +4284,10 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
+    # Preserve its concrete imports and dynamic corpus/asset/data inputs.
+    # All packing ceilings, commands, data gate and weights remain unchanged.
+    "transmission-chains",
     "nw-lobe-unfreeze",
     "china-search-universe",
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
@@ -4601,6 +4605,28 @@ CURATED_EXCLUSIVE = {
     # exclusive replaces inference, so the declared job must be pinned here
     # or the curated-set contract rejects the manifest.
     "options-signal-campaign-v2",
+    # 2026-10-05 GMI #8455 (lane gmi_a_packing_r1): regime-outlook-mapping's
+    # reader import (world_state -> theme_state_generation_reader ->
+    # theme_graph/thematic_state -> scripts/build_thematic_state.py) was an
+    # opaque code fallback, so every ordinary code PR selected it. The exact
+    # closure is now declared; packing ceilings remain unchanged.
+    "regime-outlook-mapping",
+    # 2026-10-07 PB-D event-quality implementation (#8576): one gate:code
+    # job owns all four PB-D suites. Its exclusive declaration covers the
+    # measured 50-path import/read closure; packing ceilings stay unchanged.
+    "pb-d-event-quality",
+    # 2026-10-07 Package N #8454: Terminal per-ticker news qbus correctness kernel.
+    # gate:code home for the twenty-two ticker-news/qbus suites; scope: exclusive
+    # so inference does not smear the measured import closure across ordinary code
+    # PRs. paths: are the job's suite import closure; the cover-their-own-import-
+    # closure test keeps that list honest as the tree moves.
+    "ticker-news-qbus",
+    # 2026-10-07 RS source delivery: retain the reviewed source-owner inventory.
+    # Exact inventory only; scope audits and packing ceilings remain unchanged.
+    "entry-radar-rs-pullback-calendar",
+    # 2026-10-07 RS source delivery: Register the reviewed native-reference owner and its complete declared read closure.
+    # Exact inventory only; scope audits and packing ceilings remain unchanged.
+    "dataos-prospective-reference",
 }
 
 
@@ -4768,9 +4794,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 134, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 132, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 127, 5_600),
+    ("templates/index.html", 135, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 133, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 128, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5353,6 +5379,31 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     probe (134 -> 135) without selecting ci-control-plane-contracts.
     Nothing was re-measured and no ceiling moved. integration-baseline.yml
     still runs this file on main.
+
+    PR #8596 (2026-10-07): ``integrated-answer-v0`` (w4, ``gate: code``,
+    Package I v0 composer, default-off) joins the manifest with ordinary
+    ``paths:`` inference. Its one suite imports app.integrated_answer,
+    app.forensics and tests.test_company_theme_exposure; the declared
+    closure is 628 owned paths, none of them a probe, plus the whole-tree
+    fallback smear (admin/**, app/**, collectors/**, config/**, ...). It
+    rides all three probes on that FALLBACK tier only, +1 job / +4..7
+    weight each. Re-measured, full manifest, inference on, on the PR's
+    merge with main 96261883bee:
+
+        templates/index.html          134 -> 135 jobs, 5,673 weight
+        scripts/build_free_content.py 132 -> 133 jobs, 5,419 weight
+        engine/prophet/plan_book.py   127 -> 128 jobs, 5,379 weight
+
+    JOB ceilings re-based to measurement (135 / 133 / 128), the #8322
+    shape: the entrant is a fallback-tier smear, so by the standing rule
+    it is a curation candidate, and this entry funds the headroom so the
+    default-off composer lands green. The curation follow-on is named
+    integrated-answer-v0-scope (a ``scope: exclusive`` declaration must
+    cover the 628-path closure, which is why it has none here). WEIGHT and
+    PACK ceilings stay unmoved (5,800 / 5,600 / 5,600 and 10 packs):
+    weights are 5,673 / 5,419 / 5,379, packs are 10 / 10 / 9. All three
+    job bounds are full again, so the next entrant needs a decision
+    recorded here, not a reflexive bump.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
@@ -6170,6 +6221,43 @@ def test_markets_fresh_render_byte_match_is_code_gated_and_runs_exactly_once() -
         if selector in cmds or node in cmds:
             duplicates.append(name)
     assert not duplicates, sorted(duplicates)
+
+
+@pytest.mark.parametrize("probe", [row[0] for row in PACKING_PROBES])
+def test_transmission_scope_does_not_match_unrelated_packing_probe(probe: str) -> None:
+    """GMI's reader import must not restore transmission's opaque code fallback."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST)
+               if job.job_id == "transmission-chains")
+    assert job.exclusive
+    selected, _ = PACK.select_jobs([job], [probe])
+    assert not selected, f"transmission does not read packing probe {probe}"
+
+
+@pytest.mark.parametrize("owned_path", [
+    "engine/transmission_chains.py",  # ci-trigger-closure: data — selector label, never opened
+    "engine/neuralweb/world_state.py",  # ci-trigger-closure: data — selector label, never opened
+    "engine/neuralweb/theme_state_generation_reader.py",  # ci-trigger-closure: data — selector label, never opened
+    "scripts/build_transmission.py",  # ci-trigger-closure: data — selector label, never opened
+    "tests/test_transmission_chains_nw.py",  # ci-trigger-closure: data — selector label, never opened
+    "tests/fixtures/transmission/new_case.json",  # ci-trigger-closure: data — selector label, never opened
+    "knowledge/transmission/new_chain.yaml",  # ci-trigger-closure: data — selector label, never opened
+    "knowledge/transmission/proposed/new_chain.yaml",  # ci-trigger-closure: data — selector label, never opened
+    "knowledge/transmission/killed/new_chain.yaml",  # ci-trigger-closure: data — selector label, never opened
+    "data/yahoo/NEW_SERIES.parquet",  # ci-trigger-closure: data — selector label, never opened
+    "data/transmission/chain_calibration.json",  # ci-trigger-closure: data — selector label, never opened
+    "site/stockdata/NEW_SYMBOL.json",  # ci-trigger-closure: data — selector label, never opened
+    "site/assets/css/0123abcd.css",  # ci-trigger-closure: data — selector label, never opened
+    "templates/transmission.html.j2",  # ci-trigger-closure: data — selector label, never opened
+    "templates/_navlinks.html.j2",  # ci-trigger-closure: data — selector label, never opened
+    "templates/_future_fragment.html.j2",  # ci-trigger-closure: data — selector label, never opened
+    "config.yml",  # ci-trigger-closure: data — selector label, never opened
+])
+def test_transmission_scope_retains_static_and_future_dynamic_inputs(owned_path: str) -> None:
+    """Future corpus/asset/series members remain selected; no frozen-file loophole."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST)
+               if job.job_id == "transmission-chains")
+    selected, _ = PACK.select_jobs([job], [owned_path])
+    assert [job.job_id for job in selected] == ["transmission-chains"]
 
 
 def test_price_ladder_deterministic_contract_is_owned_by_existing_code_gate(tmp_path: Path) -> None:

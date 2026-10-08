@@ -2158,6 +2158,7 @@ def main() -> int:
         # library FINALIZED rival, no fallback refresh, no public template expansion.
         # Current source-specific mixed-vendor capture and per-stock reason capability
         # are unavailable: typed refusal leaves the board and its reasons unchanged.
+        _cn_w3c_refusal = None
         vm["cn_selection_cohort_internal"] = None
         try:
             from datetime import datetime as _w3c_dt, timezone as _w3c_tz
@@ -2183,9 +2184,16 @@ def main() -> int:
             if _cn_w3c["status"] == "AVAILABLE":
                 vm["cn_selection_cohort_internal"] = _cn_w3c
             else:
+                _cn_w3c_refusal = _cn_w3c
                 log.info("W3C China source unavailable: %s", _cn_w3c["reason_codes"])
         except Exception as _cn_w3c_e:  # noqa: BLE001 — preserve ordinary publication
             log.warning("W3C China source unavailable (%s)", _cn_w3c_e)
+        try:
+            from engine.theme_graph.selection_cohort_projection import write_product_projection
+            # A typed refusal reaches only the product projection (gate #8: preserve reasons); the internal binding stays None.
+            write_product_projection(site, "cn", vm.get("cn_selection_cohort_internal") or _cn_w3c_refusal)
+        except Exception as _scp_e:  # noqa: BLE001 — projection never breaks ordinary rendering
+            log.warning("selection-cohort projection (cn) not written (%s)", _scp_e)
 
         env = Environment(loader=FileSystemLoader(
             str(Path(__file__).resolve().parent.parent / "templates")), autoescape=False)

@@ -26,8 +26,8 @@
   ],
   "held": [
     "ai_infra",
-    "memory_storage",
     "cybersecurity",
+    "semicap_equipment",
     "non_ai_tech"
   ],
   "leader": "ai_infra",

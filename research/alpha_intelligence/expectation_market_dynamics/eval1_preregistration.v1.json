@@ -1,0 +1,139 @@
+{
+  "activation": {
+    "activation_receipt_required": true,
+    "freeze_boundary_rule": "first_nyse_session_open_strictly_after_origin_main_commit_containing_exact_registration_digest/v1",
+    "origin_main_required": true,
+    "outcome_access": "post_boundary_rows_only_and_only_after_owner_acceptance_and_activation_receipt_admit_this_digest",
+    "outcomes_inspected_before_freeze": false,
+    "owner_acceptance_required": true,
+    "pre_boundary_rows": "never_EVAL_1_evaluation_rows",
+    "results_in_this_registration": false
+  },
+  "admitted_experiments": [
+    "K3E-EVAL1-T1_NEXT_REVISION_DIRECTION-H21"
+  ],
+  "amendment": {
+    "diff_vs_eval0": [
+      "eras: DEVELOPMENT / VALIDATION / LOCKED_RETROSPECTIVE_HOLDOUT replaced, for the admitted experiment only, by forward partitions F_DEV / PURGE_1 / F_VAL / PURGE_2 / F_HOLD strictly after the EVAL-1 boundary, followed by PROSPECTIVE_SHADOW",
+      "scope: one admitted experiment (T1 at 21 sessions) instead of the full EVAL-0 target set; every other registered target stays under EVAL-0 only",
+      "challenger: one trial from REGULARIZED_LINEAR_OR_HAZARD, counted against the unreset 64-trial family",
+      "comparator: the strongest eligible baseline is chosen per partition from probability-emitting baselines B0 and B6; B1-B4 are reported descriptively",
+      "censoring: T1 at 21 sessions read with the EVAL-0 63-session window as the outer observation window",
+      "boundary: new forward boundary bound to this digest's first canonical-main introduction commit"
+    ],
+    "later_supersession": "The Eval OS owner (WS:EVAL-OS-MEASUREMENT-LAW) may supersede EVAL-1 by a later registration version with its own digest, reason, diff and forward boundary.",
+    "reason": "The EVAL-0 fixed retrospective eras (2012-01-03 through 2026-08-21) cannot be filled: the accepted PIT expectation source starts accruing in August 2026, which makes them UNESTIMABLE_AS_PROGRAM for this source. EVAL-0 forbids moving those dates. Its amendment law instead requires a new version with a new forward boundary, and that is what this registration is.",
+    "supersession": "EVAL-1 supersedes EVAL-0 only in replacing the era plan for K3E-EVAL1-T1_NEXT_REVISION_DIRECTION-H21. EVAL-0 bytes, digest and any EVAL-0 results remain attached to EVAL-0 and are never relabeled."
+  },
+  "authored_on": "2026-10-07",
+  "authority": {
+    "descriptive_context_only": true,
+    "may_claim_fair_value": false,
+    "may_create_lifecycle": false,
+    "may_gate": false,
+    "may_grant_production_authority": false,
+    "may_influence_prophet": false,
+    "may_publish_product_state": false,
+    "may_rank": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "canonicalization": "json_utf8_sort_keys_compact_no_ascii_escape/v1",
+  "challenger": {
+    "absent_trial_policy": "If no trial identity is committed before the first F_DEV label read, the challenger arm is UNESTIMABLE. The baselines are still reported, and nothing advances.",
+    "family": "REGULARIZED_LINEAR_OR_HAZARD",
+    "family_scope_note": "Regularized linear/logistic or discrete-time hazard: the lowest-capacity registered family. No other family may be run under EVAL-1.",
+    "trial_count": 1,
+    "trial_identity": "model_family+target+horizon+feature_set+preprocessing+hyperparameters+seed_policy",
+    "trial_identity_commit_rule": "The full trial identity is committed to canonical main before any F_DEV label is read. Every element cites an owner-authored spec line. Features are restricted to derived expectation-surface components that EXP-1 emits with printed denominators and that exist on canonical main at the boundary commit. Preprocessing is fit on F_DEV only. Hyperparameters are fixed at commit, with no tuning loop. Committing the identity spends the one trial even if the trial later fails. A second configuration of any kind is a second trial: it exceeds this budget and triggers the EVAL-0 budget-exceeded kill."
+  },
+  "decision_law": {
+    "advance_research_only_requires": [
+      "exact_EVAL_1_registration_digest_was_on_origin_main_before_the_boundary_and_owner_acceptance_and_activation_receipt_admit_it",
+      "strongest_eligible_baseline_is_beaten_on_primary_loss_in_F_VAL_and_F_HOLD",
+      "relative_primary_loss_improvement_is_at_least_0.05_in_both_F_VAL_and_F_HOLD",
+      "issuer_episode_cluster_bootstrap_95pct_ci_for_loss_improvement_excludes_zero_in_both_F_VAL_and_F_HOLD",
+      "benjamini_yekutieli_q_is_at_most_0.10_for_the_full_cumulative_family",
+      "each_of_F_DEV_F_VAL_F_HOLD_has_at_least_100_distinct_issuer_episodes",
+      "scored_fraction_and_named_case_coverage_floors_are_met_without_hiding_abstentions",
+      "current_regime_and_all_motivating_cases_are_reported_before_conclusion",
+      "calibration_and_abstention_metrics_do_not_materially_regress_vs_the_strongest_baseline",
+      "no_leakage_rights_identity_correction_or_denominator_blocker_survives_independent_review"
+    ],
+    "allowed_terminal_states": [
+      "ADVANCE_RESEARCH_ONLY",
+      "RETAIN_BASELINE",
+      "REVISE_PREREG",
+      "KILL_CONSTRUCTION",
+      "UNESTIMABLE_AS_PROGRAM",
+      "RIGHTS_BLOCKED",
+      "INSUFFICIENT_EPISODE_N"
+    ],
+    "kill_or_revise_if": "inherited_verbatim_from_EVAL_0_decision_law_kill_or_revise_if_with_locked_holdout_read_as_F_HOLD",
+    "prospective_authority_requirement": "new_explicit_promotion_decision_after_prospective_shadow_never_from_EVAL_1",
+    "research_only": true,
+    "unestimable_if": "inherited_verbatim_from_EVAL_0_decision_law_unestimable_if_evaluated_per_partition"
+  },
+  "inherited_from_eval0_verbatim": [
+    "time_law",
+    "episode_law",
+    "population",
+    "metrics.calibration",
+    "metrics.abstention",
+    "null_and_adverse_law",
+    "baselines (definitions; development read as F_DEV)",
+    "coverage_gate.motivating_cases",
+    "coverage_gate.hostile_cases"
+  ],
+  "multiple_testing": {
+    "family_scope": "all_promotion_bearing_challenger_target_horizon_comparisons_in_k3e_expectation_market_dynamics_v1_cumulative_across_EVAL_0_and_EVAL_1",
+    "primary_pvalue_unit": "issuer_episode_clustered_loss_difference_vs_strongest_eligible_baseline_in_F_HOLD",
+    "procedure": "benjamini_yekutieli",
+    "q": 0.1,
+    "subgroup_policy": "descriptive_unless_preregistered_primary_no_subgroup_rescue_of_failed_overall_result",
+    "unregistered_comparison_policy": "exploratory_only_and_counts_toward_future_declared_budget_if_reused"
+  },
+  "owners": {
+    "admission_code": "engine/k3e_eval_admission.py",
+    "custody_record": "DEC:K3E-EVAL1-CUSTODY-UNDER-CHAIRMAN-DIRECTIVE-2026-10-07",
+    "evaluation_law": "WS:EVAL-OS-MEASUREMENT-LAW",
+    "forbidden_duplicates": "inherited_verbatim_from_EVAL_0_owners_forbidden_duplicates",
+    "semantic_program": "WS:ALPHA-INTELLIGENCE-INTEGRATION"
+  },
+  "predecessor": {
+    "canonical_digest_sha256": "986ec117e8517b77e8dece565fd9d9dc169e758beb9d1619acc443e061ef87fd",
+    "predecessor_bytes_modified": false,
+    "prior_trial_budget_reset": false,
+    "registration_id": "K3E-EVAL-0-V1",
+    "relation": "EVAL-1 is a new version under the EVAL-0 amendment law. It changes only the evaluation partitions for the single admitted experiment, replacing the fixed retrospective DEVELOPMENT, VALIDATION and LOCKED_RETROSPECTIVE_HOLDOUT eras, which this source cannot fill, with forward partitions strictly after the EVAL-1 boundary. Every other EVAL-0 term is inherited verbatim. EVAL-0 stays immutable and keeps every result attached to it."
+  },
+  "program": "K3E_EXPECTATION_MARKET_DYNAMICS",
+  "rationale_path": "research/alpha_intelligence/expectation_market_dynamics/EVAL1_PREREGISTRATION_RATIONALE_2026-10-07.md",
+  "registration_id": "K3E-EVAL-1-V1",
+  "schema": "k3e.eval1_preregistration/v1",
+  "scientific_freeze": {
+    "censoring_rule": "Labels use the system_observed_at clock. UP or DOWN: the first eligible same-period change on owner-native scale has system_observed_at in (cutoff, cutoff+21 sessions]. FLAT: no such change, and a successful scheduled snapshot with system_observed_at in [cutoff+21, cutoff+63 sessions] shows the same-period value unchanged against the cutoff value. Every other row is right-censored at its last observable session. That includes failed attempts, provider 429s, gaps, delisting, rights loss, and a first change observed after cutoff+21 with no unchanged snapshot at or after cutoff+21 before it. A censored row is never FLAT and never imputed. It is excluded from the primary loss and counted in the abstention denominator by reason. Fiscal rollover alone is not a change. The 63-session outer window is the EVAL-0 T1 censoring window and the registered maximum horizon. Corrections use the version known at each clock, and superseded as-known bytes are preserved.",
+    "coverage_rule": "In each of F_VAL and F_HOLD, at least 0.60 of eligible rows are scored, with abstained, censored, unavailable and rights-blocked rows kept in the denominator and reported by reason. At least 0.60 of the four registered motivating cases are answered. A case counts as answered when its EVAL-0 expected_result_policy is met using post-boundary rows only. NVDA_2023_PIT_NEGATIVE_CONTROL passes when it returns UNAVAILABLE or UNESTIMABLE. MRNA_POST_JUNE_2026_REVISION_EPISODE counts as unanswered unless post-boundary rows of that episode exist. Before any conclusion the report leads with: current regime, hostile cases, missing and delisted panel members, rights losses and episode N. The result is UNESTIMABLE when the challenger abstains on more than 0.40 of eligible rows, or when the scored fraction is below 0.60.",
+    "dependence_rule": "Primary uncertainty is an issuer-episode clustered bootstrap 95 percent interval on the per-row loss difference (strongest baseline minus challenger) within one partition. Cluster keys are issuer_ref, episode_id and event_cluster_id; rows with no episode cluster by issuer_ref. The interval must exclude zero in both F_VAL and F_HOLD. Sensitivity: a date-block bootstrap with blocks of 63 NYSE sessions, the registered purge and embargo length. An advantage that disappears under clustering or under date-block sensitivity is a kill or revise outcome. The primary p-value unit is the issuer-episode clustered loss difference against the strongest eligible baseline in F_HOLD. Benjamini-Yekutieli at q=0.10 is applied over the cumulative family k3e_expectation_market_dynamics_v1. Bootstrap replicate count and seed are fixed in evaluator code committed to canonical main before the first outcome read, and are reported.",
+    "effect_size_threshold": 0.05,
+    "effective_n_rule": "The inference unit is a distinct issuer episode, taken verbatim from the EVAL-0 episode_law. Episode identity = sha256(issuer_ref, metric, horizon_or_fiscal_period, episode_start_nyse_session). Twenty quiet sessions separate episodes. A fiscal rollover without a nonzero same-period change starts no episode. Overlapping owner-native events for one issuer collapse to one event cluster. Raw row count never substitutes for episodes. Floor: at least 100 distinct issuer episodes in each of F_DEV, F_VAL and F_HOLD. No promotion-bearing subgroup is claimed; subgroups are descriptive only, so no claim rests on the 25-episode subgroup floor. A row without a canonical issuer_ref known at its decision cutoff is ineligible and counted; it is never repaired by a later identity backfill. A scored row that belongs to no revision episode adds zero effective N and is clustered by issuer_ref. A row whose episode started before its own partition began is excluded from that partition's scoring and counted by reason.",
+    "forward_partitions": "Every partition lies strictly after the EVAL-1 boundary: the first NYSE session open strictly after the first canonical origin/main commit containing this exact registration digest. Each row belongs to the partition that contains its decision-cutoff session. Rows with a cutoff before the boundary are never EVAL-1 evaluation rows. Pre-boundary observations may enter a post-boundary row only as cutoff-eligible inputs under the EVAL-0 time law. F_DEV starts at the first eligible session and closes at the first session where its eligible rows contain at least 100 distinct issuer episodes. F_DEV is the only place B0, B6 and the single challenger trial are fit. PURGE_1 is the next 63 NYSE sessions; nothing in it is fit or scored. F_VAL starts at the next session and closes at 100 distinct issuer episodes. It compares the frozen challenger with the strongest eligible baseline, with no refit and no retuning. PURGE_2 is the next 63 NYSE sessions. F_HOLD starts at the next session and closes at 100 distinct issuer episodes. F_HOLD is locked: it gets one final evaluation, after every F_HOLD row is labelled or censored, which is at most 63 sessions after its last cutoff. PROSPECTIVE_SHADOW covers every later session: append-only, no retuning, never promotion-bearing. A partition closes on episode counts alone. Those counts come from episode starts, never from label direction, loss, comparison or a calendar date chosen after outcome access. A partition that never reaches its floor stays open and reports INSUFFICIENT_EPISODE_N. Fitted artifacts are committed to canonical main before any label of a later partition is read. Those artifacts are the challenger trial identity, its F_DEV parameters, and the B0 and B6 probabilities.",
+    "primary_endpoint": "T1_NEXT_REVISION_DIRECTION at horizon 21 NYSE sessions. Three-class label UP, DOWN or FLAT from the first later eligible same-period consensus change on owner-native scale; fiscal rollover alone is not a change. Grain: issuer+metric+normalized_fiscal_period_or_raw_horizon at one decision cutoff. Decision cutoff: the NYSE session close on or after every input's system_observed_at. The label starts strictly after the cutoff. Every metric and fiscal period of the eligible grain is scored; none is selected. Cohort: EVAL-0 population law. US primary-listed common equity is resolved through the canonical issuer/security owner at the decision cutoff, with no ticker guess. ADR and non-US rows are descriptive only.",
+    "primary_horizon_sessions": 21,
+    "primary_loss": "Multiclass log loss on the three-class UP/DOWN/FLAT probability is primary. Brier score is secondary: always reported, never decision-bearing on its own. The loss is the mean over scored rows within one partition. Relative improvement = (L_strongest_baseline - L_challenger) / L_strongest_baseline, computed separately in F_VAL and in F_HOLD. No clipping, smoothing or recalibration is applied unless EVAL-0 registers it. A challenger that puts zero probability on a realized class scores infinite loss. A baseline whose F_DEV class frequencies leave a class at zero probability is UNESTIMABLE as a comparator; it is never scored as infinitely bad. Calibration (reliability curve, ECE, intercept, slope) and abstention (risk-coverage curve, error and denominator by abstention reason) are reported beside the loss.",
+    "strongest_baseline_rule": "Eligible comparators are the registered T1 baselines that can emit a three-class probability without any fit outside F_DEV. B0_NO_CHANGE uses class probabilities fixed from F_DEV only. B6_HISTORICAL_BASE_RATE is the F_DEV base rate stratified by target, metric and horizon. No coverage band is declared on canonical main, so B6 uses one band; declaring bands needs a new version. In each of F_VAL and F_HOLD separately, the strongest baseline is the eligible baseline with the lowest primary loss in that same partition. The challenger must beat the minimum. B1_LATEST_ELIGIBLE_CONSENSUS, B2_REVISION_30D, B3_REVISION_90D and B4_FRESH_MEDIAN are registered with fitted_on none and emit deterministic values or summaries. Turning them into class probabilities would be an unregistered fit, so they are reported descriptively (accuracy and confusion counts) and are never the comparator. B5_DETERMINISTIC_WAVE is ineligible unless the REV-1 contract is on canonical main before the boundary. If no eligible baseline is estimable in a partition, the comparison is UNESTIMABLE. Baselines consume zero trials. Changing one requires a new registration version.",
+    "total_search_budget": 1
+  },
+  "status": "FROZEN_BEFORE_OUTCOME_ACCESS",
+  "trial_budget_accounting": {
+    "budget_reset": false,
+    "eval1_trials_allotted": 1,
+    "failed_trials_count": true,
+    "family_maximum_total_trials": 64,
+    "family_trials_remaining_after_eval1": 63,
+    "fdr_family": "k3e_expectation_market_dynamics_v1",
+    "manual_feature_or_threshold_change_counts": true,
+    "prior_consumption_evidence": "data/trial_ledger.jsonl at origin/main bb7847a33c5fcaa3d2963e3c6be18d3628493966 holds no K3E rows. eval0_activation_receipt.v1.json records that no EVAL-0 challenger trial was registered.",
+    "prior_family_trials_consumed": 0
+  }
+}

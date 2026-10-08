@@ -6136,6 +6136,7 @@ def main() -> int:
     # action_board notable cards below.
     us_standouts = None
     _us_w3c = None
+    _us_w3c_refusal = None
     _us_w3c_binding = None
     _us = site / "factordata" / "us_standouts.json"
     if _us.exists():
@@ -6149,11 +6150,23 @@ def main() -> int:
                 _us_w3c_binding = _w3c_sha256(_us_source_bytes).hexdigest()
                 from engine.theme_graph.selection_cohort_publication import (
                     consume_us_source, default_capture_capability)
-                _us_w3c_read = consume_us_source(
-                    _us_source_bytes, data_dir=config.data_dir(),
-                    authorize_capture=default_capture_capability())
-                if _us_w3c_read["status"] == "AVAILABLE":
-                    _us_w3c = _us_w3c_read
+                try:
+                    from functools import partial as _w3c_partial
+                    from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                    _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                    log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                    _w3c_attempts = (None,)
+                for _w3c_qr in _w3c_attempts:
+                    _us_w3c_read = consume_us_source(
+                        _us_source_bytes, data_dir=config.data_dir(),
+                        authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                    if _us_w3c_read["status"] == "AVAILABLE":
+                        _us_w3c = _us_w3c_read
+                        break
+                    _us_w3c_refusal = _us_w3c_read
+                    if _w3c_qr is not None:
+                        log.warning("W3C US qualified reads refused (%s); receipt-only", _us_w3c_read["reason_codes"])
             except Exception as _us_w3c_e:  # noqa: BLE001 — preserve incumbent source rendering
                 log.warning("W3C US source binding unavailable (%s)", _us_w3c_e)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
@@ -7749,6 +7762,7 @@ def main() -> int:
             _us_path = site / "factordata" / "us_standouts.json"
             _fresh_source_bytes = _us_path.read_bytes() if _us_path.exists() else None
             _fresh_w3c = None
+            _fresh_w3c_refusal = None
             _fresh_w3c_binding = None
             if _fresh_source_bytes is not None:
                 try:
@@ -7756,11 +7770,23 @@ def main() -> int:
                     _fresh_w3c_binding = _w3c_sha256(_fresh_source_bytes).hexdigest()
                     from engine.theme_graph.selection_cohort_publication import (
                         consume_us_source, default_capture_capability)
-                    _fresh_w3c_read = consume_us_source(
-                        _fresh_source_bytes, data_dir=config.data_dir(),
-                        authorize_capture=default_capture_capability())
-                    if _fresh_w3c_read["status"] == "AVAILABLE":
-                        _fresh_w3c = _fresh_w3c_read
+                    try:
+                        from functools import partial as _w3c_partial
+                        from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                        _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                    except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                        log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                        _w3c_attempts = (None,)
+                    for _w3c_qr in _w3c_attempts:
+                        _fresh_w3c_read = consume_us_source(
+                            _fresh_source_bytes, data_dir=config.data_dir(),
+                            authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                        if _fresh_w3c_read["status"] == "AVAILABLE":
+                            _fresh_w3c = _fresh_w3c_read
+                            break
+                        _fresh_w3c_refusal = _fresh_w3c_read
+                        if _w3c_qr is not None:
+                            log.warning("W3C US qualified reads refused (%s); receipt-only", _fresh_w3c_read["reason_codes"])
                 except Exception as _fresh_w3c_e:  # noqa: BLE001 — keep ordinary fresh-board rendering
                     log.warning("W3C fresh US source binding unavailable (%s)", _fresh_w3c_e)
             _fresh_su = _attach_board_display_chips(
@@ -7782,6 +7808,7 @@ def main() -> int:
                     or _fresh_w3c != vm.get("us_selection_cohort_internal")):
                 vm["us_selection_cohort_internal"] = _fresh_w3c
                 _us_w3c_binding = _fresh_w3c_binding
+                _us_w3c_refusal = _fresh_w3c_refusal
                 vm["us_standouts"] = _fresh_su
                 vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
@@ -7890,6 +7917,12 @@ def main() -> int:
         except Exception as _rr_e:  # noqa: BLE001 — additive, never fatal
             log.warning("one-build-lag re-render skipped (%s)", _rr_e)
         _tmark("one_build_lag_rerender")
+        try:
+            from engine.theme_graph.selection_cohort_projection import write_product_projection
+            # A typed refusal reaches only the product projection (gate #8: preserve reasons); the internal binding stays None.
+            write_product_projection(site, "us", vm.get("us_selection_cohort_internal") or _us_w3c_refusal)
+        except Exception as _scp_e:  # noqa: BLE001 — projection never breaks ordinary rendering
+            log.warning("selection-cohort projection (us) not written (%s)", _scp_e)
 
         # Bespoke single-stock chart data: a compact per-ticker OHLC JSON
         # (site/ohlc/<T>.json) read client-side by chart.js. Pure serialisation of
