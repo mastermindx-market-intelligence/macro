@@ -169,7 +169,6 @@ def classify_print(
     trade_sip_ns, quote_sip_ns, trade_received_ns, quote_received_ns,
     decision_ns, max_quote_age_ns, trade_source_receipt, quote_source_receipt,
     eligible_for_pressure, condition_rules_ref, venue_class,
-    trf_execution_clock_qualified=False,
 ):
     """Conservative scalar TP-1 print classification against an already joined NBBO.
 
@@ -181,8 +180,8 @@ def classify_print(
     source-native correction/condition eligibility and its actual availability
     receipt; this helper cannot authenticate source records, join order or capture
     completeness. Requires strictly prior SIP quote time; unorderable equal-time
-    prints abstain. Reported TRF prints require a separately qualified
-    execution/report clock before any attempt to classify them.
+    prints abstain. Reported TRF prints ALWAYS abstain in this initial
+    lit-print-only leaf: the SIP/report clock is not a qualified execution time.
 
     Intentionally scalar/pure: the TP-1 ingest owner can use the same function
     for live and historical comparisons without changing the existing options
@@ -211,7 +210,7 @@ def classify_print(
         return result("unclassified", "ORIGINAL_RECEIPT_MISSING")
     if venue_class == "UNKNOWN":
         return result("unclassified", "VENUE_UNKNOWN")
-    if venue_class == "TRF" and trf_execution_clock_qualified is not True:
+    if venue_class == "TRF":
         return result("unclassified", "TRF_EXECUTION_CLOCK_UNQUALIFIED")
 
     clocks = (trade_sip_ns, quote_sip_ns, trade_received_ns, quote_received_ns,
