@@ -44,6 +44,7 @@ from __future__ import annotations
 import glob
 import json
 import logging
+from math import ceil
 import sys
 import tempfile
 from datetime import date, datetime, timezone
@@ -980,9 +981,10 @@ def build(
     # spine. Massive/Polygon summaries retired 2026-08-22: keep them only as an
     # explicitly STALE historical fallback. A new build clock changes neither.
     from engine.options_universe import gex_symbols
-    from scripts.flow_leaders_theta_tape import load_tape_cohort
+    from scripts.flow_leaders_theta_tape import MIN_UNIVERSE_COVERAGE, load_tape_cohort
 
-    cohort = load_tape_cohort(data_root, gex_symbols())
+    expected_options_roots = gex_symbols()
+    cohort = load_tape_cohort(data_root, expected_options_roots)
     source_family = "thetadata_t2a_tape" if cohort.summaries else "legacy_options_flow_archive"
     summaries = cohort.summaries if cohort.summaries else _load_all_summaries(data_root)
     if not summaries:
@@ -1066,7 +1068,7 @@ def build(
             membership_df = _build_membership_df(
                 board_summaries, mktcap_map, tape_rows,
                 min_session_roots=(
-                    __import__("math").ceil(cohort.expected_roots * 0.90)
+                    ceil(len(set(expected_options_roots) - _ETF_SET) * MIN_UNIVERSE_COVERAGE)
                     if source_family == "thetadata_t2a_tape" else 0
                 ),
             )
@@ -1188,14 +1190,16 @@ def build(
 
     # Cold-start state
     from engine.flow_leaders import RECUR_MIN_HISTORY
-    n_flow_sessions = (
-        int(membership_df["session"].nunique()) if source_family == "thetadata_t2a_tape"
-        and not membership_df.empty else 0
-    ) if source_family == "thetadata_t2a_tape" else len(sorted({
-        str(idx.date()) if hasattr(idx, "date") else str(idx)[:10]
-        for df in summaries.values()
-        for idx in df.index
-    }))
+    if source_family == "thetadata_t2a_tape":
+        n_flow_sessions = (
+            int(membership_df["session"].nunique()) if not membership_df.empty else 0
+        )
+    else:
+        n_flow_sessions = len(sorted({
+            str(idx.date()) if hasattr(idx, "date") else str(idx)[:10]
+            for df in summaries.values()
+            for idx in df.index
+        }))
     cold_start = n_flow_sessions < RECUR_MIN_HISTORY
 
     # flow_z_live: any ticker with flow_z available
@@ -1237,6 +1241,8 @@ def build(
             "n_universe": len(board_names),
             "n_expected_roots": cohort.expected_roots,
             "n_current_roots": cohort.current_roots,
+            "n_expected_board_roots": len(set(expected_options_roots) - _ETF_SET),
+            "n_current_board_roots": len(board_names),
             "same_session_coverage_ratio": round(cohort.coverage_ratio, 4),
             "min_full_universe_coverage": 0.90,
             "n_flow_sessions": n_flow_sessions,
@@ -1252,7 +1258,12 @@ def build(
         "cold_start_detail": {
             "n_sessions": n_flow_sessions,
             "required_for_recurrence": RECUR_MIN_HISTORY,
-            "message": f"Recurrence accruing — {n_flow_sessions}/{RECUR_MIN_HISTORY} sessions" if cold_start else None,
+            "message": (
+                f"Source unavailable ({stale_reason}); current-session coverage unqualified"
+                if stale else
+                f"Recurrence accruing — {n_flow_sessions}/{RECUR_MIN_HISTORY} coherent sessions"
+                if cold_start else None
+            ),
         },
     }
 
