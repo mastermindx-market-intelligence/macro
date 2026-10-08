@@ -72,7 +72,8 @@ def _quote(row, symbol, session):
     # skip them and silently match a stale earlier valid quote.
     result["bid"] = _amount(row.get("bid"), "quote.bid", allow_zero=True)
     result["ask"] = _amount(row.get("ask"), "quote.ask", allow_zero=True)
-    result["valid"] = result["bid"] > 0 and result["ask"] > result["bid"]
+    result["valid"] = (result["bid"] > 0 and result["ask"] > result["bid"]
+                       and row["bid_size"] > 0 and row["ask_size"] > 0)
     for key in ("bid_exchange", "ask_exchange"):
         if row.get(key) is not None:
             _name(row[key], f"quote.{key}")
