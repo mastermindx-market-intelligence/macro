@@ -1,58 +1,34 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-10-08T13:37:48Z",
+  "produced_at": "2026-10-08T16:50:18Z",
   "as_of": "2026-10-08",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 36,
-    "passed": 33,
-    "quarantined": 3,
-    "quarantined_policy": 3,
+    "items": 37,
+    "passed": 36,
+    "quarantined": 1,
+    "quarantined_policy": 1,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
   "reasons_histogram": {
-    "near_dup": 3
+    "near_dup": 1
   },
   "quarantined": [
     {
-      "id": "post-meagan-013",
-      "account": "meagan",
-      "slot": "D1-S13",
+      "id": "post-cici-003",
+      "account": "cici",
+      "slot": "D1-S3",
       "type": "macro",
       "cashtag": "",
       "headline": "",
       "class": "policy",
       "reasons": [
-        "near_dup:post-flagship-020"
-      ]
-    },
-    {
-      "id": "post-meagan-051",
-      "account": "meagan",
-      "slot": "D1-S51",
-      "type": "chart",
-      "cashtag": "$OMC",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-founder-037"
-      ]
-    },
-    {
-      "id": "post-kelly-012",
-      "account": "kelly",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-flagship-020"
+        "near_dup:post-kelly-012"
       ]
     }
   ],
@@ -66,27 +42,11 @@
       "headline": ""
     },
     {
-      "id": "post-flagship-019",
-      "account": "flagship",
-      "slot": "D1-S19",
-      "type": "chart",
-      "cashtag": "$MTZ",
-      "headline": ""
-    },
-    {
       "id": "post-flagship-020",
       "account": "flagship",
       "slot": "D1-S20",
       "type": "macro",
       "cashtag": "",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-024",
-      "account": "flagship",
-      "slot": "D1-S24",
-      "type": "chart",
-      "cashtag": "$KRC",
       "headline": ""
     },
     {
@@ -111,30 +71,22 @@
       "slot": "D1-S32",
       "type": "signal",
       "cashtag": "$NWS",
-      "headline": "$NWS is holding above the busiest price in its recent range"
+      "headline": "$NWS has the six-month volume shelf underneath."
     },
     {
-      "id": "post-flagship-033",
+      "id": "post-flagship-034",
       "account": "flagship",
-      "slot": "D1-S33",
+      "slot": "D1-S34",
       "type": "receipt",
-      "cashtag": "$INGR",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-042",
-      "account": "flagship",
-      "slot": "D1-S42",
-      "type": "signal",
-      "cashtag": "$MKSI",
-      "headline": "The $MKSI rejection matters less than the hold"
+      "cashtag": "$CHRW",
+      "headline": "$CHRW sits below its six-month volume anchor"
     },
     {
       "id": "post-flagship-050",
       "account": "flagship",
       "slot": "D1-S50",
       "type": "receipt",
-      "cashtag": "$FIBK",
+      "cashtag": "$TNDM",
       "headline": ""
     },
     {
@@ -170,6 +122,30 @@
       "headline": "Healthcare & Biotech selling off, -2.0% avg on Wednesday"
     },
     {
+      "id": "post-insider-001",
+      "account": "flagship",
+      "slot": "D1-S9",
+      "type": "insider",
+      "cashtag": "$ACCV",
+      "headline": ""
+    },
+    {
+      "id": "post-founder-015",
+      "account": "founder",
+      "slot": "D1-S15",
+      "type": "signal",
+      "cashtag": "$MZTI",
+      "headline": ""
+    },
+    {
+      "id": "post-founder-016",
+      "account": "founder",
+      "slot": "D1-S16",
+      "type": "macro",
+      "cashtag": "",
+      "headline": "The slowdown still isn't in the data."
+    },
+    {
       "id": "post-founder-033",
       "account": "founder",
       "slot": "D1-S33",
@@ -186,12 +162,28 @@
       "headline": ""
     },
     {
-      "id": "post-founder-043",
+      "id": "post-founder-042",
       "account": "founder",
-      "slot": "D1-S43",
-      "type": "receipt",
-      "cashtag": "$SHO",
-      "headline": "$SHO has held 11.1 since the September volume spike"
+      "slot": "D1-S42",
+      "type": "signal",
+      "cashtag": "$IRDM",
+      "headline": ""
+    },
+    {
+      "id": "post-founder-045",
+      "account": "founder",
+      "slot": "D1-S45",
+      "type": "chart",
+      "cashtag": "$ECG",
+      "headline": ""
+    },
+    {
+      "id": "post-founder-046",
+      "account": "founder",
+      "slot": "D1-S46",
+      "type": "chart",
+      "cashtag": "$DOCS",
+      "headline": "The $DOCS setup starts at 28.6"
     },
     {
       "id": "post-insider-002",
@@ -210,11 +202,19 @@
       "headline": ""
     },
     {
-      "id": "post-insider-003",
+      "id": "post-meagan-051",
       "account": "meagan",
-      "slot": "D1-S6",
-      "type": "insider",
-      "cashtag": "$STWI",
+      "slot": "D1-S51",
+      "type": "chart",
+      "cashtag": "$OMC",
+      "headline": ""
+    },
+    {
+      "id": "post-meagan-053",
+      "account": "meagan",
+      "slot": "D1-S53",
+      "type": "signal",
+      "cashtag": "$TTWO",
       "headline": ""
     },
     {
@@ -223,15 +223,7 @@
       "slot": "D1-S5",
       "type": "chart",
       "cashtag": "$COKE",
-      "headline": "The $COKE breakout starts above 195."
-    },
-    {
-      "id": "post-sophia-008",
-      "account": "sophia",
-      "slot": "D1-S8",
-      "type": "receipt",
-      "cashtag": "$INGR",
-      "headline": ""
+      "headline": "$COKE has one level to settle"
     },
     {
       "id": "post-sophia-012",
@@ -242,11 +234,35 @@
       "headline": ""
     },
     {
+      "id": "post-sophia-039",
+      "account": "sophia",
+      "slot": "D1-S39",
+      "type": "chart",
+      "cashtag": "$NVO",
+      "headline": ""
+    },
+    {
       "id": "post-sophia-042",
       "account": "sophia",
       "slot": "D1-S42",
       "type": "chart",
       "cashtag": "$ULS",
+      "headline": "The $ULS setup starts above 68.4."
+    },
+    {
+      "id": "post-sophia-047",
+      "account": "sophia",
+      "slot": "D1-S47",
+      "type": "chart",
+      "cashtag": "$SCHL",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-054",
+      "account": "sophia",
+      "slot": "D1-S54",
+      "type": "receipt",
+      "cashtag": "$TNDM",
       "headline": ""
     },
     {
@@ -258,27 +274,27 @@
       "headline": ""
     },
     {
-      "id": "post-kelly-011",
+      "id": "post-kelly-012",
       "account": "kelly",
-      "slot": "D1-S11",
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
+    },
+    {
+      "id": "post-kelly-043",
+      "account": "kelly",
+      "slot": "D1-S43",
       "type": "watchlist",
       "cashtag": "$ICHR",
-      "headline": ""
+      "headline": "$ICHR's rebound still hasn't cleared the test"
     },
     {
-      "id": "post-kelly-026",
+      "id": "post-kelly-048",
       "account": "kelly",
-      "slot": "D1-S26",
-      "type": "chart",
-      "cashtag": "$NWE",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-040",
-      "account": "kelly",
-      "slot": "D1-S40",
-      "type": "chart",
-      "cashtag": "$TFIN",
+      "slot": "D1-S48",
+      "type": "watchlist",
+      "cashtag": "$CELH",
       "headline": ""
     },
     {
@@ -290,28 +306,12 @@
       "headline": "Energy Traditional ripping, +1.9% avg on Wednesday"
     },
     {
-      "id": "post-cici-016",
+      "id": "post-cici-049",
       "account": "cici",
-      "slot": "D1-S16",
+      "slot": "D1-S49",
       "type": "receipt",
-      "cashtag": "$SFM",
-      "headline": ""
-    },
-    {
-      "id": "post-cici-023",
-      "account": "cici",
-      "slot": "D1-S23",
-      "type": "chart",
-      "cashtag": "$ESI",
-      "headline": ""
-    },
-    {
-      "id": "post-cici-028",
-      "account": "cici",
-      "slot": "D1-S28",
-      "type": "chart",
-      "cashtag": "$POWI",
-      "headline": ""
+      "cashtag": "$GPI",
+      "headline": "不猜底 (don't guess the bottom) with Group 1 Automotive, $GPI"
     },
     {
       "id": "post-theme-006",
@@ -324,8 +324,8 @@
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 430,
-      "hits": 3,
+      "pairs_checked": 536,
+      "hits": 1,
       "shared_media_hits": 0
     },
     "cadence": {

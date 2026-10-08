@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 307,
+    "opportunity_queue_depth": 314,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,30 +1690,30 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 307,
-      "scored": 491,
+      "open": 314,
+      "scored": 498,
       "newest": [
         {
-          "id": "radar-stage-ACA-2026-10-07",
-          "problem_or_desire": "$ACA: stage 2D_extended_run, SATA 10, 52w in stage",
-          "expected_value": 0.4,
-          "score": 0.342469,
+          "id": "radar-confluence-GM-2026-10-08",
+          "problem_or_desire": "$GM: confluence combo Weekly short-term uptrend + RSI-14 washed out + POC retest holds firing, test WR 64%",
+          "expected_value": 0.55,
+          "score": 0.51307,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
         {
-          "id": "radar-stage-ACU-2026-10-07",
-          "problem_or_desire": "$ACU: stage 2D_extended_run, SATA 9, 26w in stage",
-          "expected_value": 0.4,
-          "score": 0.342469,
+          "id": "radar-confluence-MS-2026-10-08",
+          "problem_or_desire": "$MS: confluence combo Weekly short-term uptrend + weekly RSI-14 washed out + lower-band reclaim firing, test WR 67%",
+          "expected_value": 0.55,
+          "score": 0.51307,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
         {
-          "id": "radar-stage-GRAL-2026-10-07",
-          "problem_or_desire": "$GRAL: stage 2A_strong_breakout, SATA 10, 2w in stage",
-          "expected_value": 0.4,
-          "score": 0.342469,
+          "id": "radar-confluence-RCL-2026-10-08",
+          "problem_or_desire": "$RCL: confluence combo Weekly long-term uptrend + weekly reclaims 100-day line + reclaims 35-day line firing, test WR 64%",
+          "expected_value": 0.55,
+          "score": 0.51307,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 33,
-    "signal_posts": 9,
-    "charts": 178,
+    "total_posts": 34,
+    "signal_posts": 11,
+    "charts": 180,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-10-08"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-10-08T13:38:10Z",
-  "inputs_hash": "sha256:cdb4a8909041303e6bdf4f46cf97ab94f6e18a008097388cce16b47a2d2aa2a9",
+  "produced_at": "2026-10-08T16:50:47Z",
+  "inputs_hash": "sha256:0ae5366ab642f2c0351d5316dd368a9d39d677057a21fc902dce04f956bab5f6",
   "tier": "display"
 }
