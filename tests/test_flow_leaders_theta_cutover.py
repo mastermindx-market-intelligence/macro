@@ -297,3 +297,19 @@ def test_washout_does_not_splice_nonconsecutive_thetadata_sessions():
     missing_session = pd.Timestamp(prior[1])
     assert pd.isna(aligned.loc[missing_session])
     assert flow_inflect(aligned)["inflected"] is False
+
+
+def test_stale_nightly_build_emits_machine_visible_source_warning(tmp_path, capsys):
+    from scripts import build_flow_leaders as builder
+
+    payload = builder.build(
+        data_root=tmp_path / "data",
+        site_root=tmp_path / "site",
+        tpl_root=Path(builder.__file__).resolve().parent.parent / "templates",
+    )
+    out = capsys.readouterr().out
+    assert payload["stale"] is True
+    assert "::warning title=flow-leaders-source-stale::" in out
+    assert "same_session_roots=0/" in out
+    assert "session=none" in out
+    assert "source=legacy_options_flow_archive" in out
