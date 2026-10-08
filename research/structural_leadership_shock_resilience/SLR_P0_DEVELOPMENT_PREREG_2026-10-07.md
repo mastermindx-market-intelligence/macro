@@ -1,8 +1,10 @@
-# SLR-P0 — frozen retrospective development specification v1
+# SLR-P0 — frozen retrospective development specification v1.0.1
 
 Commission: 2026-10-07. **FROZEN_RESEARCH_SPEC / DATA_NOT_ADMITTED / OUTCOMES_NOT_OPENED.**
 
 This is a pre-outcome specification for historical **development**, not an independent confirmatory preregistration, a prospective registration, a production policy, or approval to bypass an input gate. The accompanying source audit was conducted using published prior research, code, schemas, manifests and eight whitelisted parent-metadata columns. No SLR forward returns or CR1/AF1 outcomes were inspected. The immutable publication commit and file digest establish the freeze. Any methodological correction requires a versioned amendment, a reason and a statement of whether outcomes have been seen; the original stays recoverable.
+
+Revision note: v1 was frozen at commit `e48c314f4ef4dceca48bc81559d28f92a276974b`. This v1.0.1 wording clarification, still before any outcome access, makes the kill direction explicit: both interval upper bounds must be below the relevance threshold. An interval entirely above that threshold is favorable, not a kill. No data, event, feature, endpoint, estimator or threshold changed.
 
 ## 1. Question and decision scope
 
@@ -118,7 +120,7 @@ At B calculate U, the factor-adjusted standardized response, using a fresh past-
 
 Mandatory audit: source mix by actual event/label window; all exclusions and missing controls; security-type and dead/exited linkage; era/sector composition; exact challenge dates and counts; top-date and top-name influence; leave-one-date/issuer out; technology versus other-sector results; first-challenge observability; and actual-window gap/basis sensitivity. Do not use a parent flag as proof of source truth. Results disappearing outside one shock/name/source era are fragile, not robust alpha.
 
-**Kill the tested return-alpha construction** when a sufficiently precise interval excludes the 0.50-point relevance threshold, or a sufficiently precise controlled comparison shows that conditional-beta/reversal/path baselines remove its material increment. An attenuated point estimate with a wide interval is not a kill. A wide interval is inconclusive. A negative association is an adverse result, not permission to reverse the signal on the same history. A surviving tail effect warrants a separate tail-confirmation proposal, not a renamed return-alpha success.
+**Kill the tested return-alpha construction** when both specified interval upper bounds are below the 0.50-point relevance threshold, or a sufficiently precise controlled comparison shows that conditional-beta/reversal/path baselines remove its material increment under the same upper-bound rule. An interval wholly above the threshold is favorable, not a kill. An attenuated point estimate with a wide interval is not a kill. A wide interval is inconclusive. A negative association is an adverse result, not permission to reverse the signal on the same history. A surviving tail effect warrants a separate tail-confirmation proposal, not a renamed return-alpha success.
 
 Recommend prospective validation only after lawful data admission, complete result publication, positive primary effect at least 0.50 points, both specified intervals above zero, the explicit ΔMSE gate above with at least three estimable annual folds, and no dominant single-name/date or known data-bias explanation. A failed H7 limits the claim to a useful residual update, not a special shock-resilience state. Historical significance remains development; it cannot clear prospective or production authority.
 
