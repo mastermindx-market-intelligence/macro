@@ -19,13 +19,13 @@ def _pack(name: str, content: bytes) -> bytes:
     return output.getvalue()
 
 
-def _sample(*, side="B", oc="O", capacity="Customer", day=DAY, complex_id=""):
+def _sample(*, side="B", oc="O", capacity="Customer", day=DAY, complex_id="", right="P"):
     names = sorted(REQUIRED)
     row = {k: "" for k in names}
     row.update({
         "trading_dt": day, "transact_time": "2025-03-27 22:30:00.123",
         "underlying": "XLK", "osi_root": "XLK", "expire_date": "2025-04-17",
-        "strike_price": "200", "call_put_flag": "P", "size": "3",
+        "strike_price": "200", "call_put_flag": right, "size": "3",
         "price": "1.25", "nbbo_bid": "1.20", "nbbo_ask": "1.30",
         "side": side, "open_close": oc, "capacity": capacity,
         "trade_type": "Complex Add", "exec_id": "X1",
@@ -89,3 +89,11 @@ def test_tbt_rejects_schema_drift_without_silent_zero():
     receipt["columns"] = ["other"]
     with pytest.raises(SourceRejected):
         qualify_cboe_tbt_sample(blob, receipt)
+
+
+def test_unknown_right_preserved_but_not_classified():
+    blob, receipt = _sample(right="")
+    report = qualify_cboe_tbt_sample(blob, receipt)
+    assert report["rows_total"] == 1
+    assert report["unknown_reasons"] == {"right_unknown": 1}
+    assert report["rows_fully_classified_with_economics"] == 0
