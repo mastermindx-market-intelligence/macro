@@ -9,7 +9,7 @@ def args(**kw):
     row = dict(
         ticker="SPY", quote_ticker="SPY", session="2026-10-08:RTH",
         quote_session="2026-10-08:RTH", trade_price="100.90",
-        bid="100.00", ask="101.00", trade_sip_ns=130,
+        bid="100.00", ask="101.00", bid_size=100, ask_size=200, trade_sip_ns=130,
         quote_sip_ns=120, trade_received_ns=131, quote_received_ns=121,
         decision_ns=150, max_quote_age_ns=20,
         trade_source_receipt="actual:trade:123", quote_source_receipt="actual:quote:45",
@@ -106,3 +106,13 @@ def test_price_floats_are_normalized_via_decimal_string_not_epsilon():
     b = classify_print(**args(trade_price=100.5))
     assert a["bucket"] == "buy"
     assert b["bucket"] == "mid"
+
+
+@pytest.mark.parametrize("field,value", [
+    ("bid_size", 0), ("ask_size", 0), ("bid_size", -3),
+    ("ask_size", None), ("bid_size", 100.0), ("ask_size", True),
+])
+def test_zero_unknown_or_noninteger_displayed_quote_size_is_not_firm(field, value):
+    result = classify_print(**args(**{field: value}))
+    assert result["bucket"] == "unclassified"
+    assert result["reason"] == "NO_FIRM_DISPLAYED_NBBO_SIZE"
