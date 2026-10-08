@@ -14,7 +14,11 @@ falsifier: >
   sample licensing terms or current entitlement scope changes;
   accepted classification semantics or data-trial specifications are
   revised; or independently verified current licensed venue data becomes
-  available. Recheck the exact affected lane, not historical accepted bytes.
+  available. The runnable witness is python3 -B -m
+  scripts.options_free_source_inventory --private-root
+  /Volumes/Mastermind/.mastermind_private/options_free_trials_20261008
+  --persist-private; a nonzero failure or a changed accepted source contract
+  falsifies the relevant admitted source fact. Recheck only the affected lane.
 so_what: >
   Reuse the demonstrated schema, participant-side opening/closing categories,
   missingness classes and private source sample inventory to improve existing
@@ -24,9 +28,9 @@ so_what: >
   useful gate is a license and time-qualified multi-session BOX/Cboe feed
   via the existing Advanced Data Options owner, with source event/quote/
   availability timestamps, matched delta/tenor and independent study acceptance.
-kind: discovery
+kind: data
 verified_at: 2026-10-08
-verified_by: "M2 Studio host-local SHA-256 comparison, real parser execution, 28 synthetic tests, diskutil volume identity"
+verified_by: "Macro PR #8658; python3 -B -m scripts.options_free_source_inventory --private-root /Volumes/Mastermind/.mastermind_private/options_free_trials_20261008 --persist-private; M2 SHA-256 comparison, 28 hermetic tests, diskutil UUID and external-device checks"
 scope: [macro, options-intelligence, private-research]
 confidence: verified
 workstream: "WS:ADVANCED-DATA-OPTIONS"
