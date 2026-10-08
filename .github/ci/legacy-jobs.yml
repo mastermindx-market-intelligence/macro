@@ -13382,6 +13382,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity.py -q
       - name: theme graph — curated PARENT_OF withdrawal (RELATION_WITHDRAW on hierarchy edges; DESTINATION_CHANGE refused)
         run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_withdrawal.py -q
+      - name: theme graph — W-C4 production hierarchy population (frozen R-C.3 table, PIT, rights, outputs unchanged)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_population.py -q
       - name: theme graph — bitemporal materialization from the membership documents
         run: TZ=UTC python -m pytest tests/test_theme_graph_materialize.py -q
       - name: theme graph — contract guard (incident fixtures + annotation shape)
@@ -21146,6 +21148,7 @@ jobs:
       - "lib/evidence_foundation.py"
       - "scripts/__init__.py"
       - "scripts/query_pb_d_event_quality.py"
+      - "scripts/run_pb_d_example.sh"
       - "tests/test_pb_d_quality.py"
       - "tests/test_pb_d_cohort.py"
       - "tests/test_pb_d_evaluation.py"
@@ -21161,3 +21164,9 @@ jobs:
         run: pip install pytest numpy==2.3.5 pyyaml jsonschema==4.26.0
       - name: PB-D quality, cohort, evaluation and executable consumer
         run: python -m pytest tests/test_pb_d_quality.py tests/test_pb_d_cohort.py tests/test_pb_d_evaluation.py tests/test_pb_d_consumer.py -q
+      - name: PB-D operator example from a foreign working directory
+        run: |
+          pbd_launcher="$PWD/scripts/run_pb_d_example.sh"
+          pbd_python="$(python -c 'import sys; print(sys.executable)')"
+          cd /tmp
+          bash "$pbd_launcher" --python "$pbd_python"

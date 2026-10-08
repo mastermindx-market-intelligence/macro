@@ -22,6 +22,8 @@ from engine.market_ontology.exposure_map import (
     compose_exposure_map,
     to_json,
 )
+from engine.theme_graph.structural_navigation import hierarchy_paths
+from engine.theme_graph.rights import family_for_source_ref
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_PATH = REPO_ROOT / "contracts" / "market_ontology" / "exposure_map.v1.schema.json"
@@ -80,6 +82,25 @@ class FakeStore:
         return []
 
 
+class HierarchyStore(FakeStore):
+    def __init__(self, nodes, edges, **kw):
+        super().__init__(edges, **kw)
+        self._hierarchy_nodes = nodes
+        self.node_calls = 0
+        self.edge_calls = 0
+
+    def read_nodes(self):
+        self.node_calls += 1
+        return self._hierarchy_nodes
+
+    def read_edges(self):
+        self.edge_calls += 1
+        return self._edges
+
+    def read_node_lifecycle(self):
+        return []
+
+
 CHAINS = {
     "credit_spreads_refinancing": {
         "chain": "credit_spreads_refinancing",
@@ -113,6 +134,56 @@ def _compose(store, spec, asof="2026-06-01", **kw):
     kw.setdefault("chain_loader", _chain_loader)
     kw.setdefault("assert_allowed", _allow_all)
     return compose_exposure_map(store, spec, asof=asof, **kw)
+
+
+def _hierarchy_node(node_id, tier="theme", *, name_en=None, name_zh=None, provenance=None):
+    return {
+        "node_id": node_id,
+        "kind": "theme",
+        "name_en": name_en if name_en is not None else node_id,
+        "name_zh": name_zh,
+        "market_scope": "global",
+        "tier": tier,
+        "status": "canonical",
+        "merged_into": None,
+        "birth_date": "2026-01-01",
+        "retire_date": None,
+        "identity_epoch": 1,
+        "external_ids": "{}",
+        "provenance": provenance or "crosswalk:config/theme_crosswalk.yml",
+        "computed_at": "2026-01-02T00:00:00Z",
+        "engine_version": "theme_graph.v1",
+        "source_meta": None,
+    }
+
+
+def _parent_of(src, dst, *, valid_from="2026-01-01", belief_time="2026-01-01"):
+    return edge(
+        f"parent_of:{src}->{dst}@{valid_from}",
+        "PARENT_OF",
+        src,
+        dst,
+        valid_from=valid_from,
+        belief_time=belief_time,
+        evidence_time=valid_from,
+        era="reconstruction",
+        source_class="curated",
+        date_provenance="crosswalk",
+        confidence_basis="crosswalk.v1",
+    )
+
+
+def _wc8_theme_fixture(*, parent_valid_from="2026-01-01", parent_belief="2026-01-01"):
+    nodes = [
+        _hierarchy_node("theme:category", "macro_category", name_en="Category"),
+        _hierarchy_node("theme:t", "theme", name_en="Theme"),
+    ]
+    parent = _parent_of(
+        "theme:category", "theme:t",
+        valid_from=parent_valid_from, belief_time=parent_belief,
+    )
+    membership = edge("member:1", "MEMBER_OF", "co:us:A", "theme:t")
+    return HierarchyStore(nodes, [parent, membership])
 
 
 def test_direct_membership_projection():
@@ -1041,3 +1112,441 @@ def test_store_meta_projection_edge_cases():
     m = _compose(MetaErrorStore([]), _spec(["ltheme:finviz:x"]))
     assert m.provenance["store_meta"] is None
     jsonschema.validate(to_json(m), _schema())
+
+
+def _without_abstentions(value):
+    if isinstance(value, dict):
+        return {k: _without_abstentions(v) for k, v in value.items() if k != "abstentions"}
+    if isinstance(value, list):
+        return [_without_abstentions(v) for v in value]
+    return value
+
+
+def test_wc8_default_reader_is_byte_identical():
+    theme = _hierarchy_node("theme:ok", "theme")
+    local_nodes = [_hierarchy_node("ltheme:finviz:x", "theme", provenance="fixture")]
+    local_nodes[0]["kind"] = "local_theme"
+    cases = [
+        ("ok", HierarchyStore([theme], [edge("m", "MEMBER_OF", "co:us:A", "theme:ok")]), _spec(["theme:ok"]), {}),
+        ("no membership", HierarchyStore([theme], [edge("e", "EXPRESSES", None, "theme:ok")]), _spec(["theme:ok"]), {}),
+        (
+            "rights suppressed",
+            HierarchyStore([theme], [edge("m", "MEMBER_OF", "co:us:A", "theme:ok")]),
+            _spec(["theme:ok"]),
+            {"family_resolver": lambda _id: "vendor_x", "assert_allowed": _refuse("vendor_x")},
+        ),
+        (
+            "local theme",
+            HierarchyStore(local_nodes, [edge("m", "MEMBER_OF", "co:us:A", "ltheme:finviz:x")]),
+            _spec(["ltheme:finviz:x"]),
+            {},
+        ),
+    ]
+    for _, store, spec, kwargs in cases:
+        baseline = json.dumps(to_json(_compose(store, spec, **kwargs)), sort_keys=True)
+        assert "ancestors" not in baseline
+        assert "HIERARCHY_REFUSED" not in baseline
+        with_reader = json.dumps(
+            to_json(_compose(store, spec, hierarchy_reader=hierarchy_paths, **kwargs)),
+            sort_keys=True,
+        )
+        assert with_reader == baseline
+
+
+def test_wc8_ancestors_for_canonical_theme():
+    m = _compose(
+        _wc8_theme_fixture(),
+        _spec(["theme:t"]),
+        hierarchy_reader=hierarchy_paths,
+    )
+    expected_family = family_for_source_ref("config/theme_crosswalk.yml")
+    assert to_json(m)["themes"][0]["ancestors"] == [{
+        "chain": [{
+            "node_id": "theme:category",
+            "tier": "macro_category",
+            "name": {"en": "Category", "zh": None},
+            "rights_family": expected_family,
+        }],
+        "parent_of_edge_ids": ["parent_of:theme:category->theme:t@2026-01-01"],
+    }]
+    jsonschema.validate(to_json(m), _schema())
+
+
+def test_wc8_ancestors_point_in_time():
+    store = _wc8_theme_fixture(parent_valid_from="2026-03-01", parent_belief="2026-03-01")
+    before_effective = _compose(
+        store, _spec(["theme:t"]), asof="2026-02-01",
+        knowledge_cutoff="2026-02-01", hierarchy_reader=hierarchy_paths,
+    )
+    before_belief = _compose(
+        store, _spec(["theme:t"]), asof="2026-06-01",
+        knowledge_cutoff="2026-02-01", hierarchy_reader=hierarchy_paths,
+    )
+    current = _compose(
+        store, _spec(["theme:t"]), asof="2026-06-01",
+        knowledge_cutoff="2026-03-01", hierarchy_reader=hierarchy_paths,
+    )
+    assert "ancestors" not in to_json(before_effective)["themes"][0]
+    assert "ancestors" not in to_json(before_belief)["themes"][0]
+    assert "ancestors" in to_json(current)["themes"][0]
+    effective_only_store = _wc8_theme_fixture(
+        parent_valid_from="2026-03-01", parent_belief="2026-01-01",
+    )
+    before_effective_one_clock = _compose(
+        effective_only_store, _spec(["theme:t"]), asof="2026-02-01",
+        hierarchy_reader=hierarchy_paths,
+    )
+    after_effective_one_clock = _compose(
+        effective_only_store, _spec(["theme:t"]), asof="2026-06-01",
+        hierarchy_reader=hierarchy_paths,
+    )
+    assert "ancestors" not in to_json(before_effective_one_clock)["themes"][0]
+    assert "ancestors" in to_json(after_effective_one_clock)["themes"][0]
+
+
+def test_wc8_refused_hierarchy_is_fail_soft():
+    nodes = [
+        _hierarchy_node("theme:category", "macro_category"),
+        _hierarchy_node("theme:t", "theme"),
+        _hierarchy_node("theme:micro", "micro_theme"),
+    ]
+    edges = [
+        _parent_of("theme:category", "theme:t"),
+        _parent_of("theme:micro", "theme:category"),
+        edge("member:1", "MEMBER_OF", "co:us:A", "theme:t"),
+    ]
+    store = HierarchyStore(nodes, edges)
+    baseline = to_json(_compose(store, _spec(["theme:t"])))
+    refused = to_json(_compose(store, _spec(["theme:t"]), hierarchy_reader=hierarchy_paths))
+    assert all("ancestors" not in row for row in refused["themes"])
+    refusal = refused["themes"][0]["abstentions"][-1]
+    assert refusal["code"] == "HIERARCHY_REFUSED"
+    assert refusal["subject_id"] == "theme:t"
+    assert refusal["detail"] == "Theme hierarchy could not be read safely."
+    assert _without_abstentions(refused) == _without_abstentions(baseline)
+    jsonschema.validate(refused, _schema())
+
+
+def test_wc8_refused_vendor_provenance_parent_leaks_nothing():
+    withheld_id = "theme:withheld_vendor_structure"
+    withheld_name = "Withheld Vendor Category"
+    parent = _parent_of(withheld_id, "theme:t")
+    nodes = [
+        _hierarchy_node("theme:t"),
+        _hierarchy_node(
+            withheld_id, "macro_category", name_en=withheld_name,
+            provenance="local-theme:finviz_themes",
+        ),
+    ]
+    store = HierarchyStore(nodes, [
+        parent,
+        edge("member:1", "MEMBER_OF", "co:us:A", "theme:t"),
+    ])
+    baseline = to_json(_compose(store, _spec(["theme:t"])))
+    refused = to_json(_compose(
+        store, _spec(["theme:t"]), hierarchy_reader=hierarchy_paths,
+    ))
+    row = refused["themes"][0]
+    assert "ancestors" not in row
+    refusal = row["abstentions"][-1]
+    assert refusal["code"] == "HIERARCHY_REFUSED"
+    assert refusal["subject_id"] == "theme:t"
+    assert refusal["detail"] == "Theme hierarchy could not be read safely."
+    dumped = json.dumps(refused)
+    for withheld in (
+        withheld_id, withheld_name, parent["edge_id"],
+        "local-theme:finviz_themes", "hierarchy_paths: refused PARENT_OF",
+    ):
+        assert withheld not in dumped
+    assert _without_abstentions(refused) == _without_abstentions(baseline)
+    jsonschema.validate(refused, _schema())
+
+
+@pytest.mark.parametrize("lifecycle_state", ["absent", "empty", "failed"])
+def test_wc8_lifecycle_reader_distinguishes_absent_empty_and_failure(lifecycle_state):
+    fixture = _wc8_theme_fixture()
+    calls = []
+    lifecycle_calls = []
+    private_error = "lifecycle owner unavailable for theme:withheld_lifecycle"
+
+    class NoLifecycleStore(FakeStore):
+        def read_nodes(self):
+            return fixture._hierarchy_nodes
+
+    class EmptyLifecycleStore(NoLifecycleStore):
+        def read_node_lifecycle(self):
+            lifecycle_calls.append("empty")
+            return []
+
+    class FailedLifecycleStore(NoLifecycleStore):
+        def read_node_lifecycle(self):
+            lifecycle_calls.append("failed")
+            raise RuntimeError(private_error)
+
+    def reader(*args, **kwargs):
+        calls.append((args, kwargs))
+        return hierarchy_paths(*args, **kwargs)
+
+    store_class = {
+        "absent": NoLifecycleStore,
+        "empty": EmptyLifecycleStore,
+        "failed": FailedLifecycleStore,
+    }[lifecycle_state]
+    store = store_class(fixture._edges)
+    baseline = to_json(_compose(store, _spec(["theme:t"])))
+    assert lifecycle_calls == []
+    payload = to_json(_compose(store, _spec(["theme:t"]), hierarchy_reader=reader))
+    row = payload["themes"][0]
+    assert row["state"] == "OK"
+    assert [company["company_node_id"] for company in row["companies"]] == ["co:us:A"]
+    if lifecycle_state == "failed":
+        assert calls == []
+        assert lifecycle_calls == ["failed"]
+        assert "ancestors" not in row
+        refusal = row["abstentions"][-1]
+        assert refusal["code"] == "HIERARCHY_REFUSED"
+        assert refusal["subject_id"] == "theme:t"
+        assert refusal["detail"] == "Theme hierarchy could not be read safely."
+        assert "withheld_lifecycle" not in json.dumps(payload)
+        assert private_error not in json.dumps(payload)
+        assert _without_abstentions(payload) == _without_abstentions(baseline)
+    else:
+        assert len(calls) == 1
+        assert lifecycle_calls == ([] if lifecycle_state == "absent" else ["empty"])
+        assert row["ancestors"][0]["chain"][0]["node_id"] == "theme:category"
+        without_ancestors = dict(row)
+        without_ancestors.pop("ancestors")
+        assert without_ancestors == baseline["themes"][0]
+    jsonschema.validate(payload, _schema())
+
+
+def test_wc8_hierarchy_edges_never_change_existing_rows():
+    asof = "2026-06-01"
+    base_nodes = [
+        _hierarchy_node("theme:gold", "theme"),
+        _hierarchy_node("theme:lonely", "theme"),
+    ]
+    base_edges = [
+        edge("g1", "MEMBER_OF", "co:us:A", "theme:gold"),
+        edge("g2", "MEMBER_OF", "co:us:B", "theme:gold"),
+    ]
+    category = _hierarchy_node("theme:test_cat_f0", "macro_category")
+    micro = _hierarchy_node("theme:test_micro_f0", "micro_theme")
+    p1 = _parent_of("theme:test_cat_f0", "theme:lonely")
+    p2 = _parent_of("theme:lonely", "theme:test_micro_f0")
+    p3 = _parent_of("theme:test_cat_f0", "theme:gold", belief_time="2026-07-01")
+    p4 = dict(
+        _parent_of("theme:test_cat_f0", "theme:lonely"),
+        edge_id="p4",
+        belief_time=None,
+    )
+    spec = _spec(["theme:gold", "theme:lonely"])
+
+    def base_store():
+        return HierarchyStore(base_nodes, base_edges)
+
+    def overlay_store(edges):
+        return HierarchyStore(base_nodes + [category, micro], edges)
+
+    for knowledge_cutoff in (None, "2026-05-01"):
+        kwargs = {} if knowledge_cutoff is None else {"knowledge_cutoff": knowledge_cutoff}
+        baseline = json.dumps(
+            to_json(_compose(base_store(), spec, asof=asof, **kwargs)),
+            sort_keys=True,
+        )
+        overlay = json.dumps(
+            to_json(
+                _compose(
+                    overlay_store(base_edges + [p1, p2, p3, p4]),
+                    spec, asof=asof, **kwargs,
+                )
+            ),
+            sort_keys=True,
+        )
+        assert overlay == baseline
+        overlay_rows = json.loads(overlay)["themes"]
+        by_id = {row["theme_node_id"]: row for row in overlay_rows}
+        assert by_id["theme:lonely"]["state"] == "NO_THEME_EDGES"
+        assert not any(
+            abstention["code"] in {
+                "BELIEF_AFTER_ASOF",
+                "BELIEF_AFTER_KNOWLEDGE_CUTOFF",
+                "BELIEF_TIME_UNKNOWN",
+                "EDGE_ID_MISSING",
+            }
+            for row in overlay_rows
+            for abstention in row["abstentions"]
+        )
+
+    reader_base = to_json(
+        _compose(base_store(), spec, hierarchy_reader=hierarchy_paths)
+    )
+    reader_overlay = to_json(
+        _compose(
+            overlay_store(base_edges + [p1, p2]),
+            spec,
+            hierarchy_reader=hierarchy_paths,
+        )
+    )
+    base_by_id = {row["theme_node_id"]: row for row in reader_base["themes"]}
+    overlay_by_id = {row["theme_node_id"]: row for row in reader_overlay["themes"]}
+    for theme_id, row in overlay_by_id.items():
+        expected = dict(base_by_id[theme_id])
+        expected.pop("ancestors", None)
+        assert {key: value for key, value in row.items() if key != "ancestors"} == expected
+    assert overlay_by_id["theme:lonely"]["state"] == "NO_THEME_EDGES"
+    assert overlay_by_id["theme:lonely"]["ancestors"] == [{
+        "chain": [{
+            "node_id": "theme:test_cat_f0",
+            "tier": "macro_category",
+            "name": {"en": category["name_en"], "zh": None},
+            "rights_family": family_for_source_ref("config/theme_crosswalk.yml"),
+        }],
+        "parent_of_edge_ids": [p1["edge_id"]],
+    }]
+
+
+def test_wc8_ineligible_rows_never_call_reader():
+    calls = []
+
+    def reader(*args, **kwargs):
+        calls.append((args, kwargs))
+        return []
+
+    theme = _hierarchy_node("theme:t", "theme")
+    micro = _hierarchy_node("theme:micro", "micro_theme")
+    local = _hierarchy_node("ltheme:finviz:x", "theme", provenance="fixture")
+    local["kind"] = "local_theme"
+    store = HierarchyStore(
+        [theme, micro, local],
+        [
+            edge("m1", "MEMBER_OF", "co:us:A", "theme:t"),
+            edge("m2", "MEMBER_OF", "co:us:A", "theme:micro"),
+            edge("m3", "MEMBER_OF", "co:us:A", "ltheme:finviz:x"),
+        ],
+    )
+    m = _compose(
+        store,
+        _spec(["theme:t", "theme:micro", "ltheme:finviz:x"]),
+        family_resolver=lambda node_id: "vendor_x" if node_id == "theme:t" else None,
+        assert_allowed=_refuse("vendor_x"),
+        hierarchy_reader=reader,
+    )
+    assert calls == []
+    assert all("ancestors" not in row for row in to_json(m)["themes"])
+
+
+def test_wc8_ancestor_rights_refusal_drops_chain_and_leaks_nothing():
+    theme = _hierarchy_node("theme:t", "theme")
+    store = HierarchyStore([theme], [edge("m", "MEMBER_OF", "co:us:A", "theme:t")])
+
+    def record(family, allowed=True):
+        rights = {
+            "family": family,
+            "rights_class": "direct_display_ok",
+            "public_display_allowed": allowed,
+        }
+        return {
+            "anchor_node_id": "theme:t",
+            "path": [
+                {
+                    "node_id": "theme:secret",
+                    "kind": "theme",
+                    "tier": "macro_category",
+                    "name_en": "Secret",
+                    "name_zh": None,
+                    "rights": rights,
+                },
+                {
+                    "node_id": "theme:t",
+                    "kind": "theme",
+                    "tier": "theme",
+                    "name_en": "Theme",
+                    "name_zh": None,
+                    "rights": rights,
+                },
+            ],
+            "parent_of_edge_ids": ["parent_of:secret"],
+            "via": [],
+        }
+
+    for returned in (record("vendor_x"), record("mastermind_curated", allowed=False)):
+        payload = to_json(_compose(
+            store,
+            _spec(["theme:t"]),
+            assert_allowed=_refuse("vendor_x"),
+            hierarchy_reader=lambda *_args, **_kwargs: [returned],
+        ))
+        assert "ancestors" not in payload["themes"][0]
+        assert "theme:secret" not in json.dumps(payload)
+
+
+def test_wc8_deterministic_and_deduped():
+    nodes = [
+        _hierarchy_node("theme:category", "macro_category"),
+        _hierarchy_node("theme:t", "theme"),
+        _hierarchy_node("theme:micro_a", "micro_theme"),
+        _hierarchy_node("theme:micro_b", "micro_theme"),
+    ]
+    edges = [
+        _parent_of("theme:category", "theme:t"),
+        _parent_of("theme:t", "theme:micro_a"),
+        _parent_of("theme:t", "theme:micro_b"),
+        edge("member:1", "MEMBER_OF", "co:us:A", "theme:t"),
+    ]
+    m = _compose(
+        HierarchyStore(nodes, edges),
+        _spec(["theme:t"]),
+        hierarchy_reader=hierarchy_paths,
+    )
+    payload = to_json(m)
+    assert len(payload["themes"][0]["ancestors"]) == 1
+    reversed_store = HierarchyStore(list(reversed(nodes)), list(reversed(edges)))
+    reversed_payload = to_json(_compose(
+        reversed_store,
+        _spec(["theme:t"]),
+        hierarchy_reader=hierarchy_paths,
+    ))
+    assert json.dumps(payload, sort_keys=True) == json.dumps(reversed_payload, sort_keys=True)
+
+
+def test_wc8_reader_receives_snapshot_once():
+    calls = []
+
+    def reader(*args, **kwargs):
+        calls.append((args, kwargs))
+        return hierarchy_paths(*args, **kwargs)
+
+    nodes = [_hierarchy_node("theme:a", "theme"), _hierarchy_node("theme:b", "theme")]
+    store = HierarchyStore(nodes, [
+        edge("m1", "MEMBER_OF", "co:us:A", "theme:a"),
+        edge("m2", "MEMBER_OF", "co:us:B", "theme:b"),
+    ])
+    _compose(store, _spec(["theme:a", "theme:b"]), hierarchy_reader=reader)
+    assert len(calls) == 2
+    assert all(args[2] == datetime.date(2026, 6, 1) for args, _kwargs in calls)
+    assert all(
+        kwargs["knowledge_cutoff"] == datetime.date(2026, 6, 1)
+        for _args, kwargs in calls
+    )
+    assert store.node_calls == 1
+    assert store.edge_calls == 1
+
+
+def test_wc8_no_new_imports_and_no_forbidden_keys():
+    tree = ast.parse(MODULE_PATH.read_text())
+    imported_modules = {
+        node.module for node in ast.walk(tree)
+        if isinstance(node, ast.ImportFrom) and node.module
+    }
+    imported_names = {
+        alias.name for node in ast.walk(tree)
+        if isinstance(node, ast.Import) for alias in node.names
+    }
+    assert "engine.theme_graph.structural_navigation" not in imported_modules | imported_names
+    payload = to_json(_compose(
+        _wc8_theme_fixture(),
+        _spec(["theme:t"]),
+        hierarchy_reader=hierarchy_paths,
+    ))
+    assert all(not _FORBIDDEN_KEY_RE.search(key) for key in _walk_keys(payload))
