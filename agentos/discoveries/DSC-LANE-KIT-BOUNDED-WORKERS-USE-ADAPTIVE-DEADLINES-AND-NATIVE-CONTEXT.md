@@ -307,6 +307,48 @@ Current SHA-256:
 `test_lease_broker.py fc137497c55d57ffbb50fc4b9be1d131d274c10278f028ea2963bc61178be061`;
 `test_hosts_registry.py 5ed3f5d5f1e81acfe3f89e0e3e9f3ccbc0b6868dccf170a802a556581e8fc258`.
 
+### 2026-10-08 direct source-writer reconciliation and lease-TTL red team
+
+The GitHub PR writer identity is `mastermindx-2` (the connector GitHub account used for this
+evidence carrier), not proof that a separate human or live AI session owns an exclusive source lease.
+The PR has no recorded issue/review comments or source-writer lock. At inspection the M2 kit
+`ext/active` directory had only its admission-lock file, and no Git commit/push/merge process
+was observed. The ongoing remote workers were unrelated and were left untouched. This new delta
+was reconciled against PR head `8af58e3a297d72cdd25eb85023447c4a7189abcf` using exact
+file-revision compare-and-swap, without overwriting the other retained source evidence.
+
+Additional live account-local `sub.sh` behavior for direct Grok workers is complexity-aligned:
+ordinary jobs retain bounded defaults; C2 uses a minimum 3600-second worker deadline and 240 turns,
+C3 uses a minimum 7200-second deadline and 400 turns, with explicit turn tightening only inside
+1–400 and fail-closed invalid values. The previously accepted direct-Grok regression suite passed
+59 tests. The Claude-backed worker context regression was run again and passed **43 tests**,
+covering qualified 1M/900K context/late-compaction settings, context override bounds, long
+complexity turns and independent Qwen/OpenCode-free checks.
+
+A new independent slot-custody red-team found that `slot.py` could accept a non-finite lease
+heartbeat grace (e.g. NaN or infinity). That can prevent the unknown-broker expiry comparison
+from ever firing. The live account-local slot implementation now refuses invalid/unbounded
+`LANE_LEASE_TTL_S` grace before host/provider admission, refuses it inside direct heartbeat
+execution, and treats an invalid or above-7500-second held broker TTL as typed
+`broker_ttl_invalid` lease loss. The maximum valid grace corresponds to the 7200-second
+owned child plus 300 seconds of settlement headroom. Local source SHA-256:
+`ext/slot.py 783db4d518e3f2768a321b779b540516d84cd553513b48edfdd488767241464d`;
+`ext/tests/test_lease_typed_loss.py
+4ff2f1be1ae88554c5a8aa78971483494ed523545f624bcb9c4d01be3214d724`.
+A focused Python compile and the lease-loss tests passed **26 tests**.
+A subsequent *broader* slot regression command was explicitly refused before dispatch by the
+tool safety boundary; it was not replayed through another carrier and is **NOT VERIFIED**.
+There is no evidence of failure of the focused 26-test set, but the broader sweep is not
+claimed as green. Eight pytest Chromium temporary-cleanup warnings were unrelated.
+
+The implementation is currently **LOCAL_VERIFIED / NOT FLEET-WIDE PROVEN**. PR #8535 is an
+Agent OS evidence-only draft, not the executable kit's source distribution. Green GitHub CI
+and fences on this discovery do not establish that the newest local changes are installed
+on every worker host, selected by all sessions, or production-canary accepted. The active
+remote worker's source manifest referenced the pre-patch `slot.py` hash; no in-flight
+worker was restarted or replaced. Prior permission/safety-denied automatic Go reroute and
+leased-GLM edits remain fenced; this evidence update is not an authorization to retry them.
+
 ### Verification boundary
 
 Directly observed current green evidence:
