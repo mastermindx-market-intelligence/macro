@@ -7290,6 +7290,13 @@ intl:
     # basis, mid-2026). Descriptive display weights, sqrt-dampened at compose time
     # so the dial is world-shaped rather than a pure US mirror. Not live data.
     cap_share: {US: 62, EZ: 9, CN: 6.5, JP: 5.5, IN: 4, GB: 3.5, HK: 3.5, TW: 2.5, AU: 2, KR: 1.5}
+    # Green is a semantic claim, not merely score >=60. Require broad/fast
+    # confirmation and deny green when the dial's own weight is materially stressed.
+    risk_on_confirmation:
+      min_breadth_ratio: 0.65
+      min_median_mom_20d: 0.0
+      max_stress_weight_pct: 25.0
+      max_loud_risk_weight_pct: 20.0
     extra_markets:                   # US/CN/HK are outside intl.countries — display fields for the turn board + drags
       US: {name: "United States", name_zh: "美国", flag: "🇺🇸"}
       CN: {name: "China", name_zh: "中国", flag: "🇨🇳"}

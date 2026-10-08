@@ -24,6 +24,7 @@ Each returned country dict has exactly these keys (None when unavailable):
 from __future__ import annotations
 
 import logging
+from datetime import date
 from typing import Optional
 
 import numpy as np
@@ -127,6 +128,120 @@ _EXT_OR_PARA_STATES = {"extended", "parabolic"}
 # so a confirmed repair persists while its evidence remains intact instead of
 # appearing for one session and then falling through to ``calm``.
 _DOWNWARD_LINEAGE = {"downtrend", "crash", "basing", "breaking", "recovery"}
+
+# A price-turn state and a leading pullback-risk radar answer different questions.
+# A quiet/uptrend price tape must never erase a loud radar or render an all-clear.
+_RISK_CONTEXT_ALERT_STATES = {"caution", "elevated", "risk-off"}
+_RISK_CONTEXT_SOFT_STATES = {"calm", "uptrend", "recovery", "basing"}
+_RISK_CONTEXT_STALE_DAYS = 4
+
+
+def _age_days(asof: object, page_asof: object) -> int | None:
+    """Calendar age for display honesty; malformed/missing dates stay unknown."""
+    try:
+        a = date.fromisoformat(str(asof)[:10])
+        p = date.fromisoformat(str(page_asof)[:10])
+        return max(0, (p - a).days)
+    except (TypeError, ValueError):
+        return None
+
+
+def apply_risk_context(
+    state: dict,
+    radar: dict | None,
+    *,
+    page_asof: object = None,
+) -> dict:
+    """Attach a leading-risk radar without rewriting the price-turn authority.
+
+    ``state`` remains the canonical price-only turn result.  Additive display fields
+    synthesize a conflict when the tape looks calm/up while a caution-or-louder radar
+    is live, so the customer never sees ``Quiet / Nothing to do`` beside a flashing
+    pullback warning.  A stale radar is disclosed instead of silently treated as live.
+    """
+    out = dict(state or {})
+    if not isinstance(radar, dict) or not radar.get("state"):
+        return out
+
+    out["risk_radar"] = radar
+    base_state = str(out.get("state") or "")
+    age = _age_days(radar.get("asof"), page_asof)
+    # With a known page date, an absent/unparseable radar timestamp is unresolved,
+    # not implicitly fresh.  Without a page date we cannot judge age, so preserve
+    # the radar as live context rather than manufacturing staleness.
+    stale = bool(page_asof and (age is None or age > _RISK_CONTEXT_STALE_DAYS))
+    out["risk_radar_age_days"] = age
+    out["risk_radar_stale"] = stale
+
+    # A stale auxiliary read never hides a stronger active price state.  Only a
+    # soft/quiet tape gets the explicit unresolved-staleness presentation.
+    if stale and base_state not in _RISK_CONTEXT_SOFT_STATES:
+        return out
+    if stale:
+        out["risk_context"] = {
+            "advisory": True,
+            "stale": True,
+            "heat": "warm",
+            "css": "risk-stale",
+            "lens_kind": "read",
+            "label_en": "Risk read stale",
+            "label_zh": "风险读数已过期",
+            "stance_en": "Refresh required — quiet is not an all-clear",
+            "stance_zh": "需要刷新——平静不代表解除警报",
+            "read_en": "The price tape is current, but the leading-risk read is stale. Treat the tile as unresolved until the radar refreshes.",
+            "read_zh": "价格走势是当前读数，但领先风险读数已经过期。雷达刷新前应视为尚未解决。",
+        }
+        out["display_state_en"] = "Risk read stale"
+        out["display_state_zh"] = "风险读数已过期"
+        out["display_stance_en"] = "Refresh required — quiet is not an all-clear"
+        out["display_stance_zh"] = "需要刷新——平静不代表解除警报"
+        out["display_css"] = "risk-stale"
+        out["display_heat"] = "warm"
+        return out
+
+    radar_state = str(radar.get("state") or "").lower()
+    if radar_state not in _RISK_CONTEXT_ALERT_STATES or base_state not in _RISK_CONTEXT_SOFT_STATES:
+        return out
+
+    advisory = not bool(radar.get("can_force"))
+    radar_word = {"caution": "caution", "elevated": "elevated", "risk-off": "risk-off"}[radar_state]
+    radar_word_zh = {"caution": "谨慎", "elevated": "偏高", "risk-off": "避险"}[radar_state]
+    label_en = "Quiet tape · risk alert" if base_state == "calm" else f"{out.get('state_en', base_state)} · risk alert"
+    label_zh = "平静盘面 · 风险警报" if base_state == "calm" else f"{out.get('state_zh', base_state)} · 风险警报"
+    high = radar_state in {"elevated", "risk-off"}
+    stance_en = ("No break yet — leading pullback risk is high" if high
+                 else "Price is intact — leading pullback risk is elevated")
+    stance_zh = ("尚未破位——领先回撤风险很高" if high
+                 else "价格尚稳——领先回撤风险升高")
+    authority_en = ("It remains advisory and does not rewrite the price state."
+                    if advisory else "It has earned binding authority on the broader market-state board.")
+    authority_zh = ("它仍属提示，不会改写价格状态。"
+                    if advisory else "它已在更广泛的市场状态看板上获得约束权限。")
+
+    context = {
+        "advisory": advisory,
+        "stale": False,
+        "heat": "hot" if radar_state == "risk-off" else "warm",
+        "css": "risk-alert",
+        "lens_kind": "caution",
+        "label_en": label_en,
+        "label_zh": label_zh,
+        "stance_en": stance_en,
+        "stance_zh": stance_zh,
+        "read_en": (f"The price-only tape is {('quiet' if base_state == 'calm' else out.get('state_en', base_state).lower())}, "
+                    f"but the leading pullback radar is {radar_word}. These are different horizons; "
+                    f"quiet price action is not an all-clear. {authority_en}"),
+        "read_zh": (f"价格视角为{('平静' if base_state == 'calm' else out.get('state_zh', base_state))}，"
+                    f"但领先回撤雷达为{radar_word_zh}。二者衡量周期不同；价格平静不等于解除警报。{authority_zh}"),
+    }
+    out["risk_context"] = context
+    out["display_state_en"] = label_en
+    out["display_state_zh"] = label_zh
+    out["display_stance_en"] = stance_en
+    out["display_stance_zh"] = stance_zh
+    out["display_css"] = context["css"]
+    out["display_heat"] = context["heat"]
+    return out
 
 
 # ---------------------------------------------------------------------------
