@@ -14,11 +14,11 @@
     "note_zh": "\u534a\u5bfc\u4f53\u7ec4\u5408\uff08SMH/SOXX\u7b49\u6743\uff09\u8ddd\u8fc7\u53bb120\u65e5\u9ad8\u70b9-8.8%\u3002\u56de\u64a4\u6df1\u5ea6\u662f\u8f6e\u52a8\u53cd\u8f6c\u6761\u4ef6\u7684\u7ed3\u6784\u6027\u80cc\u666f\u3002"
   },
   "jawboning": {
-    "n_7d": 9,
-    "n_30d": 19,
-    "last_alert_ts": "2026-10-08T15:05:06+00:00",
-    "last_alert_summary": "$6B+ federal-AI/compute push \u2014 NVIDIA, AMD, OpenAI lead; quantum, fusion, space-nuclear funded",
-    "last_alert_summary_zh": "\u8054\u90a6AI/\u7b97\u529b\u8ba1\u5212\u8d8560\u4ebf\u7f8e\u5143\u2014\u2014\u82f1\u4f1f\u8fbe\u3001AMD\u3001OpenAI\u9886\u6295\uff1b\u91cf\u5b50\u3001\u805a\u53d8\u3001\u592a\u7a7a\u6838\u80fd\u83b7\u8d44\u52a9"
+    "n_7d": 10,
+    "n_30d": 20,
+    "last_alert_ts": "2026-10-08T19:44:36+00:00",
+    "last_alert_summary": "Trump touts $15B steel plant, $200B Korea energy deal, defense shipyard surge \u2014 reshoring tailwinds",
+    "last_alert_summary_zh": "\u7279\u6717\u666e\u529b\u63a8150\u4ebf\u7f8e\u5143\u94a2\u5382\u30012000\u4ebf\u7f8e\u5143\u97e9\u8d44\u80fd\u6e90\u534f\u8bae\u53ca\u9632\u52a1\u8239\u5382\u6269\u5f20\u2014\u2014\u672c\u571f\u5316\u6d6a\u6f6e"
   },
   "calendar": {
     "days_to_midterm": 26,
