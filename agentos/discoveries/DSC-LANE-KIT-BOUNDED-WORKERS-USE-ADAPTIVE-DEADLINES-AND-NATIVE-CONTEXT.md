@@ -177,12 +177,18 @@ account-local source now derives the direct Grok worker timeout from the same re
 semantics as remote execution: ordinary/C2 defaults remain 3600 seconds, C3 defaults to 7200 seconds,
 and stale explicit short overrides are lifted to 3600 for C2 or 7200 for C3. C0/C1 callers may still
 intentionally request shorter bounded windows. Source SHA-256 is
-`e94ca9cd616042baaa1ffeba5ef94253c3df4a9bc8e81fa0fae44b1a080612b7`.
+`3ac95f16be472483fcd7f1957a4c9837174a23fa9b012733e971e38b0026c697`.
 The direct Grok path now also treats turn count as a bounded productivity fuse rather than a hidden
 short-task default: 140 turns for ordinary work, 240 for C2, and 400 for C3, while an explicit
 `POOL_MAX_TURNS` may tighten one commission and values outside 1..400 fail before provider launch.
-The dedicated Grok dispatch suite, including runtime-floor and turn-budget regressions, passed
-**59 tests**.
+
+The same principle now applies to Claude-backed MiniMax/GLM workers. Existing ordinary defaults remain
+120 turns, or 240 for the cheap MiniMax-M3 / GLM Flash profiles. C2 receives at least 240 turns and C3
+receives 400, while explicit `POOL_MAX_TURNS` still tightens a single commission and values outside
+1..400 fail closed. This removes another hidden short-task ceiling without turning bounded workers
+into unbounded agents. The combined context/Grok policy regression passed **87 tests**; the dedicated
+Grok suite alone remains **59 tests**. Current policy-test SHA-256:
+`cb85f1feb71acc4bd0fd2a9aecc01fac3ed4cda2b66082f611a028d50f09aab8`.
 
 Live carrier evidence also confirms that the widened remote policy is being consumed by real workers,
 not only hermetic tests: a C2 Grok review on ubuntu2 ran approximately 327 seconds and settled rc=0
