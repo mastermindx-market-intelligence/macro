@@ -104,3 +104,42 @@ def test_occ_wrong_session_does_not_create_zero():
          "10,SPY,SPY,C,P,CBOE,10/06/2026,10/06/2026\n").encode()
     with pytest.raises(SourceRejected):
         qualify_occ_volume_csv(b, "2026-10-07", "SPY")
+
+def test_external_private_root_refuses_internal_fallback(tmp_path):
+    from scripts.qualify_options_free_samples import _checked_root
+
+    with pytest.raises(SourceRejected, match="external private Cboe root"):
+        _checked_root(tmp_path)
+
+
+@pytest.mark.parametrize("bad_field,bad_value", [
+    ("VolumeUUID", "not-the-enrolled-volume"),
+    ("MountPoint", "/Volumes/Imposter"),
+    ("TotalSize", 100_000),
+])
+def test_external_volume_identity_pinned(bad_field, bad_value):
+    from scripts.qualify_options_free_samples import (
+        _check_volume, EXTERNAL_VOLUME, EXTERNAL_VOLUME_BYTES, EXTERNAL_VOLUME_UUID,
+    )
+
+    info = {
+        "VolumeUUID": EXTERNAL_VOLUME_UUID,
+        "MountPoint": str(EXTERNAL_VOLUME),
+        "TotalSize": EXTERNAL_VOLUME_BYTES,
+    }
+    info[bad_field] = bad_value
+    with pytest.raises(SourceRejected, match="not mounted/identical"):
+        _check_volume(info, mounted_device=3, system_device=2)
+
+
+def test_external_disk_cannot_be_main_ssd():
+    from scripts.qualify_options_free_samples import (
+        _check_volume, EXTERNAL_VOLUME, EXTERNAL_VOLUME_BYTES, EXTERNAL_VOLUME_UUID,
+    )
+
+    with pytest.raises(SourceRejected, match="not mounted/identical"):
+        _check_volume({
+            "VolumeUUID": EXTERNAL_VOLUME_UUID,
+            "MountPoint": str(EXTERNAL_VOLUME),
+            "TotalSize": EXTERNAL_VOLUME_BYTES,
+        }, mounted_device=2, system_device=2)
