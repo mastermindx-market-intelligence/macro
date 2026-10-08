@@ -117,6 +117,10 @@ def _active_trades(rows, decision_ns):
         if ordered[0]["revision"] != 0 or ordered[0]["action"] != "ORIGINAL":
             excluded["UNRESOLVED_ORIGINAL"] += 1
             continue
+        if any(ordered[i]["revision"] != ordered[i - 1]["revision"] + 1
+               for i in range(1, len(ordered))):
+            excluded["MISSING_CORRECTION_GENERATION"] += 1
+            continue
         if any(ordered[i]["available_ns"] <= ordered[i - 1]["available_ns"]
                for i in range(1, len(ordered))):
             raise ValueError("nonmonotone correction availability")
@@ -152,7 +156,7 @@ def _prior_quote(quotes, times, stamp, *, max_age_ns, require_exact_order=False)
     return latest, None
 
 
-def _recovery(quotes, start_quote, start_ns, end_ns, side):
+def _recovery(quotes, start_quote, start_ns, end_ns, side, *, max_age_ns):
     """Best-quote displayed-size recovery proxy, NEVER order replenishment."""
     if start_quote is None:
         return {"state": "UNKNOWN", "reason": "NO_START_QUOTE"}
@@ -164,6 +168,11 @@ def _recovery(quotes, start_quote, start_ns, end_ns, side):
     updates = [q for q in quotes if start_ns <= q["sip_ns"] < end_ns]
     if not updates:
         return {"state": "UNKNOWN", "reason": "NO_QUOTE_UPDATES"}
+    if any(updates[i]["sip_ns"] == updates[i - 1]["sip_ns"]
+           for i in range(1, len(updates))):
+        return {"state": "UNKNOWN", "reason": "AMBIGUOUS_QUOTE_ORDER"}
+    if end_ns - updates[-1]["sip_ns"] > max_age_ns:
+        return {"state": "UNKNOWN", "reason": "STALE_RECOVERY_ENDPOINT"}
     for q in updates:
         if not q["valid"]:
             return {"state": "UNKNOWN", "reason": "INVALID_INTERVENING_NBBO"}
@@ -211,13 +220,17 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
         raise ValueError("unrecognized evidence mode")
     if watermark_seen_ns > decision_ns:
         raise ValueError("future watermark receipt")
+    if watermark_seen_ns < watermark_ns:
+        raise ValueError("watermark receipt precedes the completed event time")
     if watermark_ns < end_ns or end_ns > decision_ns:
         return {"schema": SCHEMA, "state": "NOT_MATURE", "reason": "WINDOW_NOT_COMPLETE",
                 "ticker": ticker, "session": session, "window_end_ns": end_ns,
                 "decision_ns": decision_ns, "evidence_mode": evidence_mode,
                 "authority": "RESEARCH_ONLY"}
-    norm_q = [_quote(q, ticker, session) for q in quotes]
-    q_seen = [q for q in norm_q if q["available_ns"] <= decision_ns]
+    # A later source generation cannot poison an earlier as-seen measurement.
+    # Validate availability clocks first, then parse only records already known.
+    q_seen = [_quote(q, ticker, session) for q in quotes
+              if _int(q.get("available_ns"), "quote.available_ns") <= decision_ns]
     q_seen.sort(key=lambda q: (q["sip_ns"], q["id"]))
     # Same native ID must not refer to conflicting quote versions.
     dedup = {}
@@ -228,11 +241,12 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
         dedup[q["id"]] = q
     q_seen = sorted(dedup.values(), key=lambda q: (q["sip_ns"], q["id"]))
     q_times = [q["sip_ns"] for q in q_seen]
-    norm_t = [_trade(t, ticker, session) for t in trades]
-    policy_refs = sorted({t["eligibility_rules_ref"] for t in norm_t})
+    norm_t = [_trade(t, ticker, session) for t in trades
+              if _int(t.get("available_ns"), "trade.available_ns") <= decision_ns]
+    active, exclusions = _active_trades(norm_t, decision_ns)
+    policy_refs = sorted({t["eligibility_rules_ref"] for t in active})
     if len(policy_refs) > 1:
         raise ValueError("mixed trade-condition policies require separate measurement windows")
-    active, exclusions = _active_trades(norm_t, decision_ns)
     active = sorted((t for t in active if start_ns <= t["sip_ns"] < end_ns),
                     key=lambda t: (t["sip_ns"], t["id"]))
     buy = sell = unknown = Decimal(0)
@@ -299,8 +313,8 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
         "pressure_balance": _fmt((buy - sell) / classified) if classified else None,
         "midpoint_response_bps": response,
         "response_null_reason": ({"start": start_reason, "end": end_reason} if response is None else None),
-        "bid_size_recovery": _recovery(q_seen, start_q, start_ns, end_ns, "bid"),
-        "ask_size_recovery": _recovery(q_seen, start_q, start_ns, end_ns, "ask"),
+        "bid_size_recovery": _recovery(q_seen, start_q, start_ns, end_ns, "bid", max_age_ns=max_quote_age_ns),
+        "ask_size_recovery": _recovery(q_seen, start_q, start_ns, end_ns, "ask", max_age_ns=max_quote_age_ns),
         "print_diagnostics_private_only": prints,
         "interpretation": "MEASURED_TRADE_PRESSURE_AND_BEST_QUOTE_PROXY_NOT_ACTOR_INTENT",
         "absorption_signal": None,  # Requires a separate outcome-blind calibration owner.
