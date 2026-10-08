@@ -67,7 +67,7 @@ def test_window_not_mature_when_event_watermark_lags():
 
 
 def test_window_not_mature_when_decision_precedes_end():
-    r = measure(decision_ns=299, watermark_seen_ns=290)
+    r = measure(decision_ns=299, watermark_seen_ns=290, watermark_ns=290)
     assert r["state"] == "NOT_MATURE"
 
 
@@ -232,3 +232,46 @@ def test_mixed_condition_policy_versions_fail_closed():
     b["eligibility_rules_ref"] = "conditions@hash-2"
     with pytest.raises(ValueError, match="mixed trade-condition policies"):
         measure(trades=[a, b])
+
+
+def test_future_bad_quote_does_not_poison_earlier_snapshot():
+    future_bad = q("future", 125, available=501)
+    future_bad["bid_size"] = "malformed"
+    earlier = measure(quotes=[q("old", 90), q("dip", 120, az=400), future_bad])
+    assert earlier["n_active_prints"] == 2
+
+
+def test_future_correction_condition_ref_does_not_invalidate_old_snapshot():
+    original = t("stable", 130)
+    future = t("stable", 130, available=501, revision=1, action="REPLACE")
+    future["eligibility_rules_ref"] = "conditions@future-not-known"
+    early = measure(trades=[original, future], decision_ns=400)
+    assert early["condition_policy_refs"] == ["conditions@hash-1"]
+    assert early["buy_proxy_notional_usd"] == "1009.0"
+
+
+def test_unknown_correction_generation_quarantined_only_after_known():
+    original = t("rev", 130)
+    rev2 = t("rev", 130, revision=2, action="REPLACE", available=501)
+    early = measure(trades=[original, rev2], decision_ns=400)
+    late = measure(trades=[original, rev2], decision_ns=600)
+    assert early["n_active_prints"] == 1
+    assert late["n_excluded_revisions_or_conditions"] == {"MISSING_CORRECTION_GENERATION": 1}
+
+
+def test_ambiguous_same_time_quote_recovery_is_unknown():
+    qs = [q("old", 90), q("drop", 120, az=300),
+          q("tie", 120, az=350), q("up", 170, az=900)]
+    res = measure(quotes=qs)
+    assert res["ask_size_recovery"]["reason"] == "AMBIGUOUS_QUOTE_ORDER"
+
+
+def test_stale_recovery_endpoint_abstains_despite_earlier_depletion():
+    qs = [q("old", 90), q("drop", 120, az=400), q("up", 130, az=900)]
+    res = measure(trades=[t("only", 121)], quotes=qs, max_quote_age_ns=100)
+    assert res["ask_size_recovery"]["reason"] == "STALE_RECOVERY_ENDPOINT"
+
+
+def test_source_watermark_cannot_be_observed_before_its_event_time():
+    with pytest.raises(ValueError, match="watermark receipt precedes"):
+        measure(watermark_seen_ns=340)
