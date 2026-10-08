@@ -1,0 +1,57 @@
+{
+  "schema": "sovereign_auction_actual_full_build_v1",
+  "started_at": "2026-10-08T23:37:46.200448+00:00",
+  "completed_at": "2026-10-08T23:37:47.546037+00:00",
+  "command": [
+    "python3",
+    "-m",
+    "scripts.build_feeds"
+  ],
+  "exit_code": 0,
+  "mocked_producers": false,
+  "source_head": "d9325a8dc984ef902c3a1a72446884db7676702d",
+  "builder_sha256": "376b8e74c5cd6599d322813231d274d551e02e5619f900c70eb0d2b8e76c8caf",
+  "lifecycle_sha256": "9f8aee017dfd1f545a6e3b1a9bc96bb2ab6a60300d6d2ac1043f890606c0e91a",
+  "seed_copies": [
+    {
+      "source": "research/sovereign_auction_pressure/source_audit/forward_capture_primary/treasury_auctions/observations/20261008T225320956449Z-1ff0778ec045ff5445c303f27a52ebc75813b51f31f9ac28cedb3bbf240682e4.json",
+      "destination": "data/treasury_auctions/observations/20261008T225320956449Z-1ff0778ec045ff5445c303f27a52ebc75813b51f31f9ac28cedb3bbf240682e4.json",
+      "sha256": "1ff0778ec045ff5445c303f27a52ebc75813b51f31f9ac28cedb3bbf240682e4"
+    },
+    {
+      "source": "research/sovereign_auction_pressure/source_audit/forward_capture_primary/treasury_auctions/observations/20261008T225325572222Z-a74cfb26c437e0d9d2b3242df6ccdc5c997dad696f7074931cff71c9507b0916.json",
+      "destination": "data/treasury_auctions/observations/20261008T225325572222Z-a74cfb26c437e0d9d2b3242df6ccdc5c997dad696f7074931cff71c9507b0916.json",
+      "sha256": "a74cfb26c437e0d9d2b3242df6ccdc5c997dad696f7074931cff71c9507b0916"
+    },
+    {
+      "source": "research/sovereign_auction_pressure/source_audit/forward_capture_primary/treasury_auctions/observations/20261008T225329204683Z-c00d73268eaab3bf3619040eb39f21be1a37d7abc7c74fbca524539459454aea.json",
+      "destination": "data/treasury_auctions/observations/20261008T225329204683Z-c00d73268eaab3bf3619040eb39f21be1a37d7abc7c74fbca524539459454aea.json",
+      "sha256": "c00d73268eaab3bf3619040eb39f21be1a37d7abc7c74fbca524539459454aea"
+    },
+    {
+      "source": "research/sovereign_auction_pressure/source_audit/forward_capture_primary/treasury_auctions/observations/20261008T225333744010Z-141d39b47bbd030b4cfbbdd32209f7e95477042ba753d0253175d28849ebeabf.json",
+      "destination": "data/treasury_auctions/observations/20261008T225333744010Z-141d39b47bbd030b4cfbbdd32209f7e95477042ba753d0253175d28849ebeabf.json",
+      "sha256": "141d39b47bbd030b4cfbbdd32209f7e95477042ba753d0253175d28849ebeabf"
+    }
+  ],
+  "artifact_sha256": "45301353b7f8b5c900cc2c5fde15cb67625953429dc093abaac122fb06b35012",
+  "artifact_bytes": 1201614,
+  "source_observed_at": "2026-10-08T22:53:33.744010+00:00",
+  "decision_cutoff_utc": "2026-10-08T23:37:47.058832+00:00",
+  "event_count": 74,
+  "legacy_array_counts": {
+    "us_macro": 10,
+    "high_impact": 5,
+    "commodity": 4
+  },
+  "existing_risk_inputs_before": {
+    "data/regime/latest.json": null,
+    "data/neuralweb/world_state.json": null
+  },
+  "existing_risk_inputs_after": {
+    "data/regime/latest.json": null,
+    "data/neuralweb/world_state.json": null
+  },
+  "source_capture_scheduled": false,
+  "deployed": false
+}

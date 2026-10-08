@@ -1,0 +1,14 @@
+{
+  "repository": "mastermindx-market-intelligence/macro",
+  "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+  "path": ".gitignore",
+  "git_blob_sha": "b1272ff5216d8f08bfccbf2904c8ad65bafaf825",
+  "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/.gitignore",
+  "ranges": [
+    {
+      "start_line": 35,
+      "end_line": 60,
+      "text": "# short-link lane (engine/marketing/links.py, D07 W1a): orphaned atomic-write\n# temps possible only after a hard crash mid-write; pages themselves ARE committed.\nsite/go/**/.tmp_*\n# no trailing slash: a trailing-slash pattern matches DIRECTORIES ONLY, so a\n# SYMLINK at this path is not ignored — which is how a machine-local absolute-path\n# symlink reached a commit (a crop harness links the nightly artifacts in from the\n# main checkout, an aborted run left it behind, and a broad `git add` swept it up).\nsite/stockdata\nsite/ohlc/\nsite/stockbrief/\nsite/chinastockdata/\nsite/chinamechanicsdata/\nsite/hkstockdata/\nsite/canadastockdata/\nsite/intlstockdata/\nsite/chinaohlc/\nsite/canadaohlc/\nsite/intlohlc/\nsite/hkohlc/\nsite/intraday/\n# machine-consumable contract plane (scripts/build_feeds.py) — R2-only by design,\n# regenerated every daily run; consumers read the R2 _manifest.json, never git\nsite/feeds/\n# live intraday overlay — runtime artifact written by scripts/build_live_overlay (intraday\n# cron) and by the offline test path; never committed (the cron force-pushes / re-emits it).\nsite/live/"
+    }
+  ]
+}

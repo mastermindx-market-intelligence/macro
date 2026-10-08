@@ -14,8 +14,16 @@ The Macro Treasury data owner retains immutable official-response observations. 
 | Economic primitives | `engine/treasury_auction_primitives.py` | Externally qualified inputs, exact units, explicit missingness; no market-data acquisition or predictive model |
 | Publication | `scripts/build_feeds.py`, existing `event_calendar.json` | Additive nested context; preserve existing 21-day calendar arrays; new context has its own 30-day horizon and source clocks |
 | Mastermind display | Existing `/api/market_view` response enrichment and Market View page | Served sibling only. Stored planes, coverage, decision-context, PM and strategist inputs remain unchanged |
-| Terminal display | Existing authenticated `/api/nw` allowlist and macro strip | Fixed calendar path, caller entitlement, private/no-store response, independent context component |
+| Terminal display | Existing authenticated `/api/nw` allowlist and active `TerminalShell` detail area | Fixed calendar path, caller entitlement, private/no-store response, independent context component |
 | Research evidence / continuity | This Macro research directory and existing Macro Agent OS | One evidence owner; no duplicate Agent OS, job controller, notifier, calendar or data warehouse |
+
+### Existing delivery path, corrected source order
+
+`event_calendar.json` is the sole Git exception in `site/feeds/`; other feeds remain R2-only. The existing daily feed-build step moves immediately before its existing engine-output commit, followed by the existing R2 publisher. There is no additional scheduled invocation. Existing Macro Git refresh/`site.served` rsync and Mastermind's `site` sparse cone can therefore receive the same produced bytes. Authentication remains Macro's existing registration and staged `site_full` paywall policy. No direct public-R2 fallback or new Terminal tier predicate is introduced.
+
+The first data directory is seeded with four exact immutable official responses captured on October 8. Acquisition remains attended-only. Daily reprojection can advance the query cutoff and lifecycle window; it never changes the original source observation clock. Collector cadence, immutable archive selection beyond the v1 read bounds, a freshness SLA and production activation remain explicit readiness work. A local byte-copy/reader proof is not a deployed or entitled HTTP acceptance claim.
+
+Terminal's previously proposed `NeuralWebStrip` is dormant in the current product. The accepted leaf is mounted directly after the existing actions in `TerminalShell.tsx`; it does not activate that strip or its old risk fetch. Its shared-file PR census is recorded with the consumer evidence.
 
 The source-only code is useful without a predictive result. Default production exposure remains the existing producer-publication boundary: unmerged/undeployed candidates create no live product change, and an absent nested producer object is unavailable. No forecast or risk flag is repurposed as a display setting.
 
@@ -35,7 +43,7 @@ The seven clocks remain distinct:
 | Decision cutoff | `decision_cutoff_utc` / `as_of`; eligibility requires receipt knowledge no later than this cutoff |
 | Build/render | Publication or rendering activity; cannot freshen an underlying observation |
 
-`source_observed_at` is the maximum valid eligible observation, with its UTC date in `asof`. It does not certify that every source is current. `source_health` retains every origin's latest attempt, latest failure, last valid observation and age. Consumers display the observation and **freshness unassessed** because v1 has no accepted source-age policy. They reject evidence from after the producer cutoff or their injected current clock; future scheduled deadlines remain valid calendar facts.
+`source_observed_at` is the maximum valid eligible observation, with its UTC date in `asof`. It does not certify that every source is current. `source_health` retains every origin's latest attempt, latest failure, actual body receipt, last valid observation and age. The body receipt is read only from qualified literal capture metadata; missing legacy body clocks remain null. Parse completion is the conservative availability bound, not body arrival. Aggregate last-body and last-valid clocks are independent: parsing can finish later, and a later malformed body can follow an older valid observation. Consumers display the observation and **freshness unassessed** because v1 has no accepted source-age policy. They reject evidence from after the producer cutoff or their injected current clock; future scheduled deadlines remain valid calendar facts.
 
 Capture validates the exact official HTTPS host before following redirects and on the final response. It persists complete receipts using a no-overwrite publication operation. Malformed bodies remain evidence but produce a non-success semantic status and CLI exit; missing bodies are failure receipts. This is an application no-overwrite property, not a claim of WORM storage or crash-proof disk durability.
 
@@ -87,7 +95,7 @@ Terminal retains the existing caller-cookie relay, private/no-store and Vary:Coo
 | Macro #8241 | Held Bonds R11 actually edits build_bonds.py; both builder and template ownership preserved |
 | Macro #7022 / #7949 | Existing Alert Center and shared shell preserved; no second notifier or shell |
 | Terminal #849 / #852 / #833 | Existing market-risk stale/schema/copilot work preserved; the new display does not reuse that drifted bridge |
-| Terminal #614 / #620 | Existing OracleDash writers avoided through the independent macro strip |
+| Terminal #614 / #620 | Existing OracleDash writers avoided through a direct, independent leaf after the existing detail actions |
 | Mastermind #565 | Crypto/volume-profile auction theory, not sovereign auction implementation |
 
 Open PR state alone is not a live lease. Root acquired the installed canonical operation workspaces, verified exact base/preimages and checked current target-path movement. The new operations do not take over older branches, clear their holds or replay their earlier refused effects.

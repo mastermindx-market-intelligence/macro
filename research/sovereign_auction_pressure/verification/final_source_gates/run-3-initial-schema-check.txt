@@ -1,0 +1,2 @@
+::error title=agentos-unfalsifiable-claim::agentos/discoveries/DSC-SOVEREIGN-AUCTION-H3-CASH-PIT-GATE.md: [unfalsifiable-claim] 'falsifier' carries no runnable token — needs a command, a 'file:line', or a '#PR' (README rule 4), got 'Produce independently retained, source-qualified receipts av'
+agentos: 1584 records (81 workstreams, 422 decisions, 473 discoveries, 608 handoffs) — 1 error(s), 138 warning(s)

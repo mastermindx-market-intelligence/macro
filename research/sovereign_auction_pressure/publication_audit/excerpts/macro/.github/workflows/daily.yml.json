@@ -1,0 +1,14 @@
+{
+  "repository": "mastermindx-market-intelligence/macro",
+  "ref": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+  "path": ".github/workflows/daily.yml",
+  "git_blob_sha": "8f00a356faffc50f11722115646322ca6f466b17",
+  "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8a35d8b62494a84b2448182aaa561edea83fe54f/.github/workflows/daily.yml",
+  "ranges": [
+    {
+      "start_line": 4842,
+      "end_line": 4866,
+      "text": "        run: python -m scripts.build_options_flow_attention || echo \"::warning::build_options_flow_attention failed (non-fatal — reflex dormant this run)\"\n      - name: commit engine outputs\n        if: always()   # commit the freshly-built pages even if a LATER optional builder times out or is cancelled. pages.yml deploys the COMMITTED main tree, so a skipped commit = stale live site. The builders are individually resilient (each leaves the prior page in place on its own error), so partial output is never broken — committing what built beats shipping nothing.\n        run: bash scripts/ci/daily_engine_commit_outputs.sh\n      - name: assemble machine-consumable feeds (site/feeds -> R2)\n        if: always()\n        # Handoff H4 (2026-07-02 incident): risk_radar snapshot, froth/dislocation\n        # logs, group_flow meta, RRG rotation, event calendar, intl spillover,\n        # per-sector breadth — one flat dir whose _manifest.json bulk consumers\n        # (Mastermind bot) sync against. Never fatal; missing sources are skipped.\n        run: python -m scripts.build_feeds || echo \"::warning::build_feeds failed (non-fatal)\"\n      - name: publish heavy per-ticker stores to R2 (additive; no-op without creds)\n        if: always()\n        env:\n          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}\n          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}\n          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}\n          R2_BUCKET: ${{ secrets.R2_BUCKET }}\n        # US-evening shard owns the US/intl/canada/subsector stores; CN/HK go via asia-close.yml.\n        # Content-hash skip -> only deltas upload. Still committed to git for now (Pages fallback);\n        # the git de-bloat + Pages slim-down is the follow-up increment once the client reads R2.\n        # massive_stock_day moved to the COLLECT job (2026-07-29) — it is restored, advanced and\n        # published there. An engine checkout never holds that store, so listing it here only ever\n        # produced a nightly publish_r2 refusal warning (under the _DATA_DIR_MIN_FILES floor).\n        run: python -m scripts.publish_r2 --dirs ohlc,intlohlc,canadaohlc,subsectorohlc,subsectorohlc_russell,subsectorohlc_nasdaq,stockdata,intlstockdata,canadastockdata,intraday,feeds,stock_personality,oddsmatrix,odds_ohlcv,seasonalitydata/entities || echo \"::warning::R2 publish failed (non-fatal)\""
+    }
+  ]
+}
