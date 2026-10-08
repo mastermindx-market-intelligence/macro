@@ -166,16 +166,33 @@ def _check_stale(latest_session: str | None, now: datetime | None = None) -> boo
 
 # ── Tape flow loaders ─────────────────────────────────────────────────────────
 
-def _load_tape_row(ticker: str, data_root: Path) -> pd.Series | None:
-    """Load latest tape_flow daily row for a ticker. None if absent."""
+def _load_tape_row(
+    ticker: str, data_root: Path, session_date: str | None = None,
+) -> pd.Series | None:
+    """Load a tape row from the exact source session.
+
+    T2a daily rows have a RangeIndex and a *date column*, not a date index.
+    Calling sort_index().iloc[-1] can select an arbitrary wrong session, and
+    can attach later volume/flag data to an earlier options-flow snapshot.
+    The legacy historical fixture/index path is preserved only when no session
+    is supplied; canonical Theta must use an exact root/session match.
+    """
     p = data_root / "tape_flow" / "daily" / f"{ticker}.parquet"
     if not p.exists():
         return None
     try:
-        df = pd.read_parquet(p).sort_index()
+        df = pd.read_parquet(p)
         if df.empty:
             return None
-        return df.iloc[-1]
+        if session_date is not None:
+            if "date" not in df.columns:
+                return None
+            matches = df[df["date"].astype(str).str[:10] == session_date]
+            if len(matches) != 1:
+                return None
+            row = matches.iloc[0]
+            return row if str(row.get("root", "")).upper() == ticker.upper() and row.get("signing_source") == "tape" else None
+        return df.sort_index().iloc[-1]
     except Exception as e:  # noqa: BLE001
         log.debug("build_flow_leaders: tape_flow/%s unreadable: %s", ticker, e)
         return None
@@ -563,6 +580,7 @@ def _build_membership_df(
     summaries: dict[str, pd.DataFrame],
     mktcap_map: dict[str, float],
     tape_rows: dict[str, pd.Series | None],
+    min_session_roots: int = 0,
 ) -> pd.DataFrame:
     """Rebuild trailing membership table from summary parquets.
 
@@ -577,6 +595,25 @@ def _build_membership_df(
         for df in summaries.values()
         for idx in df.index
     })
+    if min_session_roots > 0 and sessions:
+        # A daily top-20 denominator exists only when the *same* source
+        # session covers >=90% of the whole configured universe. The prior
+        # flow implementation ranked 1 of 375 observed tickers as a "top-20"
+        # winner on sparse days. Restrict membership to the most recent
+        # contiguous NYSE-session suffix; a missing day breaks recurrence.
+        qualified = [
+            session for session in sessions
+            if sum(pd.Timestamp(session) in df.index for df in summaries.values())
+            >= min_session_roots
+        ]
+        contiguous: list[str] = []
+        for session in reversed(qualified):
+            if contiguous and not is_prior_session(
+                date.fromisoformat(session), date.fromisoformat(contiguous[0])
+            ):
+                break
+            contiguous.insert(0, session)
+        sessions = contiguous
 
     for session_str in sessions:
         # build per-session rows
@@ -981,7 +1018,10 @@ def build(
     # ── Load supporting stores ────────────────────────────────────────────────
     tape_rows: dict[str, pd.Series | None] = {}
     for name in all_flow_names:
-        tape_rows[name] = _load_tape_row(name, data_root)
+        tape_rows[name] = _load_tape_row(
+            name, data_root,
+            latest_session if source_family == "thetadata_t2a_tape" else None,
+        )
 
     # Polygon OI chains are retired. Never mix their OI confirmation or gamma
     # estate into a ThetaData signed-flow session under a fresh-looking stamp.
@@ -1023,7 +1063,13 @@ def build(
     membership_df = pd.DataFrame()
     if board_summaries and not stale:
         try:
-            membership_df = _build_membership_df(board_summaries, mktcap_map, tape_rows)
+            membership_df = _build_membership_df(
+                board_summaries, mktcap_map, tape_rows,
+                min_session_roots=(
+                    __import__("math").ceil(cohort.expected_roots * 0.90)
+                    if source_family == "thetadata_t2a_tape" else 0
+                ),
+            )
         except Exception as e:  # noqa: BLE001
             log.warning("build_flow_leaders: membership build failed: %s", e)
 
@@ -1142,7 +1188,10 @@ def build(
 
     # Cold-start state
     from engine.flow_leaders import RECUR_MIN_HISTORY
-    n_flow_sessions = len(sorted({
+    n_flow_sessions = (
+        int(membership_df["session"].nunique()) if source_family == "thetadata_t2a_tape"
+        and not membership_df.empty else 0
+    ) if source_family == "thetadata_t2a_tape" else len(sorted({
         str(idx.date()) if hasattr(idx, "date") else str(idx)[:10]
         for df in summaries.values()
         for idx in df.index
