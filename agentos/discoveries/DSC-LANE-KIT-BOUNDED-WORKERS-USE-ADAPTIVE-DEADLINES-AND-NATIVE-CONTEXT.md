@@ -30,22 +30,25 @@ verified_at: 2026-10-07
 verified_by: >
   Sol red-team continuation on m2studio against the installed ~/.local/bin/pool carrier and
   account-local kit. Protected Mastermind procedure pin
-  1fc040f7343dde73fec3556dd3bf9bc8c1b18129, Skillpack v1.0.1. Current live SHA-256:
+  c7e47c859eb2925c5626931fd511800773ba09ac, Skillpack v1.0.1. Current live SHA-256:
   ext/sub.sh ea56fe81c19527450717a2f17f4ad29f35b58bef07dfaa4906b8d23b87868005;
   ext/remote_sub.sh d3d909877c03e79d53d5d25852c11221e3580dde0381a160050c9afc7e02c30a;
   ext/native_remote.py 3821d9d11684e97622103416ffd88f6f9955df3121389183af8eb6f5ac931e36;
   ext/remote_sub_exec.py e3d583218f16995315005469d0f4aa11f0221eec2d30823f7e4f3360dada917d;
   ext/lane_runtime.py 0a49c645d72824a57d6c1b68304abc13c410513cc45a2968a599d2aba1cf9796;
-  ext/lane2.py f41ecae0fb0c797f28a953a679f2218b764e342c8041dfcef734e98be6fb9412;
+  ext/lane2.py d25d7a259202dc44af149e7acf9e2eef8d8e80489f0fb0bb8d7c0df35942a9e1;
   ext/slot.py 37b334366d90e22076add744714488b1b86f51185d5d34d43dfd16131c7d53f4;
   ext/oc_free_exec.sh 0024fbfaf2ce4b9d80e029e219ac43c791f3d80b5bcd10a5526c4a3c99ec6a21;
   ext/codex_glm/config.toml 811b8f5bafc2e97ddfe53ad617a8ef1f9588a80528b9d0ed93792317b23cbf64;
-  ext/codex_minimax/config.toml 7bde4dac1c9773c27395db513006055e6dc9605f93adf8141c7de6186dded8aa.
-  The last directly observed focused runtime/context/remote regression run before the final static-only
-  OpenCode-free edit passed 121 tests plus 7 subtests; earlier installed-pool dry-runs proved adaptive
-  lease TTLs of 3890 seconds at the native 3600-second default and 7490 seconds at the 7200-second max.
+  ext/codex_minimax/config.toml 7bde4dac1c9773c27395db513006055e6dc9605f93adf8141c7de6186dded8aa;
+  ext/pick.py a5b07eaa2f005340293f026e8db447a785f65036181ff7283f94602cee6eddfe;
+  ext/glm_codex_exec.sh fd521b24950a9f8e5f81263037a531f34000b75189fa451ff7e42ee057869bec;
+  ext/mm_codex_exec.sh 2589edc96fa1056fd06056be355400557a755ab90931cd9f62a324e94dba93f2.
+  Latest focused red-team regression: 175 tests passed plus 7 subtests. Earlier installed-pool
+  dry-runs proved adaptive lease TTLs of 3890 seconds at the native 3600-second default and 7490
+  seconds at the 7200-second max.
 scope: [macro, fleet-lane-hosts, meta-ceo-kit, executive-capacity-fabric]
-confidence: partial
+confidence: verified
 ---
 
 ## Current implementation
@@ -91,11 +94,9 @@ delegates timeout, lease-loss, parent-signal, and normal-exit reconciliation to
 `lane_runtime.settle_owned_process_session`, which reuses the incumbent verified process-census /
 termination owner.
 
-Hermetic tests prove timeout returns rc=124 with the descendant gone and prove a wrapper that exits 7
-cannot leave a background descendant behind. An additional parent-SIGTERM regression was added after
-the last executable regression pack; because the subsequent local validation call was refused by the
-tool surface before dispatch, that newest test remains source-present but not execution-proven in this
-record. No retry or alternate carrier was used to evade that refusal.
+Hermetic tests prove timeout returns rc=124 with the descendant gone, prove a wrapper that exits 7
+cannot leave a background descendant behind, and prove parent SIGTERM reconciles the exact nested
+provider session. These process-cleanup regressions are included in the latest 175-test focused pack.
 
 ### Context and compaction policy
 
@@ -134,20 +135,47 @@ now defaults that inner call fuse to 3600 seconds, defaults C3 frontier work to 
 accepts only explicit integer values from 60 through 7200 before slot admission. Source tests for the
 legacy-default removal and invalid-value refusal are present.
 
-This last OpenCode-free change is deliberately recorded as **BUILT_NOT_PROVEN by executable
-post-edit test**: the bounded local validation call was explicitly blocked by the tool surface before
-dispatch. Static source readback and hashes are current, but this record does not manufacture an
-execution receipt or retry through another carrier. The already-proven core timeout, lease,
-process-cleanup and context changes remain independently valid.
+The OpenCode-free timeout validation now has executable post-edit proof in the latest focused
+regression pack. Invalid timeout values fail before slot/provider admission; the legacy 900-second
+default is absent from the live wrapper.
+
+
+### Go short-capability boundary
+
+Go is intentionally different from the long-runtime pools. Its current remote bearer capability keeps
+the child at <=240 seconds and the transport capability at <=300 seconds. That security lifetime was
+not widened to fit long work. Instead, `pick.launch_policy` refuses `go` / `go-codex` for
+`C2_COMPLEX_BOUNDED` and `C3_FRONTIER_JUDGMENT` with typed reason
+`go_short_capability_only_for_c0_c1`, while preserving registered C0/C1 leaf work. `sub.sh` and
+`remote_sub.sh` both pass task complexity into the launch-policy gate before provider execution.
+
+The independent launch-policy regression passed and is included in the latest focused pack. One UX
+residual remains fail-closed: the automatic execute candidate walk can still choose Go first for a
+C2/C3 request, after which launch policy refuses it, instead of transparently selecting the next
+long-runtime-capable pool. That does not permit a too-short provider effect, but can waste one routing
+attempt.
+
+### Turn-continuation budget
+
+A separate red-team pass found that long Codex-backed GLM/MiniMax workers could hit the wrapper's
+fixed two-resume auto-continue ceiling even when the outer wall-clock budget and context window still
+had room. The wrappers now derive bounded defaults from task complexity: 2 resumes for ordinary work,
+4 for C2, 8 for C3, with any explicit override capped at 12. The lane driver forwards fix/review task
+complexity in a copied child environment so settings do not leak into the parent process.
+
+Auto-continue exhaustion is fail-closed: if no terminal `STATUS: COMPLETE` / `STATUS: BLOCKED` (or
+the special PONG canary) appears when the bounded resume budget is exhausted, the wrappers return typed
+rc=76 rather than false-success rc=0. Hermetic wrapper/routing tests covering larger C2/C3 budgets,
+explicit tightening, the hard cap, and terminal-status exhaustion passed in the current focused pack.
 
 ### Verification boundary
 
-Directly observed green evidence before that final static-only edit:
+Directly observed current green evidence:
 
-- Python compile plus the focused runtime/context/native-lease pack:
-  **121 passed, 7 subtests passed** (only unrelated pytest temp-cleanup warnings).
-- Earlier timeout/context/native regression:
-  **117 passed, 7 subtests passed**.
+- Focused timeout/context/lease/process/launch-policy/auto-continue pack:
+  **175 passed, 7 subtests passed** (only unrelated pytest temp-cleanup warnings).
+- Wrapper/routing continuation subset after the C2/C3 resume-budget change:
+  **65 passed**.
 - Installed `pool` dry-run lease calculations:
   **3890** seconds at the native 3600-second default and **7490** at the 7200-second maximum,
   without acquiring a real provider lease.
@@ -158,7 +186,8 @@ Directly observed green evidence before that final static-only edit:
 A wider legacy kit run previously reached 1467 passes with 33 failures in other fixture/policy areas;
 it is not evidence that the entire kit is globally green.
 
-The exact next verification action is to execute the newest parent-SIGTERM and OpenCode-free timeout
-tests on the original m2studio carrier once that tool surface permits the already-defined bounded
-validation. Until then the truthful overall state is partial hardening: the core repair is verified,
-the final OpenCode-free removal is source-installed but not executable-post-edit-proven.
+The core timeout, lease, process-cleanup, context, OpenCode-free, Go complexity guard, and bounded
+auto-continue changes are now executable-post-edit verified on the original m2studio carrier. The
+remaining known in-scope defect is routing ergonomics: automatic execute selection may choose Go for
+C2/C3 and then be refused at the launch-policy gate instead of preselecting the next eligible
+long-runtime pool.
