@@ -34,7 +34,7 @@ def trade(when, **changes):
 
 def opts(**kwargs):
     base = dict(decision_ns=INGEST+10_000_000,
-                source_complete_through_ns=(BASE+300)*1_000_000,
+                source_complete_through_ns=(BASE+30)*1_000_000,
                 watermark_available_ns=INGEST+1,
                 watermark_receipt_id="joint-tq-completeness-owner-receipt",
                 source_completeness_attested=True,
