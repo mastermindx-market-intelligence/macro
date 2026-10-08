@@ -4,6 +4,30 @@ Status: design candidate with a verified existing-source baseline. NOT implement
 
 Operation: `market-os-shared-shell-design-20260924-sol-001`. Existing parent: `WS:MARKET-OS`. Sole branch / Draft PR: `sol/market-os-shared-shell-design-20260924` / Macro #7949. Chairman commission: Sol leads the common Macro/Terminal experience, with editable mockups and refinement before site-wide release. This contract does not displace any incumbent source writer.
 
+## 0A. 2026-10-08 superseding full-estate scope correction
+
+The Chairman subsequently clarified that the requested result is a **complete
+Paper-led site makeover and shared-shell integration for the entire customer
+estate**, not a China-only/Jinja-preservation rollout. This first-adoption
+contract is a narrow technical compatibility baseline, not the whole
+implementation program. Its earlier no-redesign and Jinja-host language is
+provisional only; the existing `MDXTerminalOverlay` remains a useful
+bridge, not a complete shell or site design.
+
+Use `research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md` as the
+current scope/product charter, governed by the pre-existing Design Migration
+Factory, source registry, Reference Integrity Gate and current Paper references.
+The global shell current source is the separate Mastermind OS Paper file
+`01M3NRCX55B452A12819WNE1RH` page `p-8-0` (desktop `H7R-0`,
+mobile `IOE-0`); `MASTERMIND PAGES` `p-D-0` is historical shared-shell
+research. The market-user navigation context must be resolved independently
+of the Executive/CEO OS navigation labels. Full-site rollout requires
+container-width-aware recomposition for the new left rail and a
+per-family preserve/refine/rebuild ruling; neither native Jinja retention nor
+framework conversion is the product acceptance criterion.
+
+Draft/HOLD and conflict/custody/production gates remain unchanged.
+
 ## 0. 2026-10-08 Chairman adoption ruling
 
 Current live Chairman direction resolves the framework question left open by this

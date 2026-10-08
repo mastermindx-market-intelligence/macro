@@ -1,5 +1,7 @@
 # Shared Shell + Jinja surfaces — implementation plan
 
+> **2026-10-08 CURRENT CHAIRMAN SCOPE CORRECTION — this is a narrow compatibility pilot, NOT the whole redesign.** The accepted program is a complete visual and structural makeover of the customer-facing Macro estate following current Paper references, followed by full shared-shell/Terminal integration. Some panels remain; others are refined, recomposed or rebuilt for the reduced workspace caused by the new left sidebar. Earlier phrases such as "China ... no redesign", "Jinja is the host document", and "don't rewrite the page" below are **only feasibility/canary assumptions**, not final market-shell, Paper, implementation or release decisions. The controlling whole-site charter is `research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md`, under the existing Design Migration Factory and RIG. Current Mastermind OS Paper shell is a different file from the older p-D-0 study; preserve distinct market/Executive IA until adjudicated.
+
 Status: ACTIVE DESIGN/IMPLEMENTATION PLAN / SAME CARRIER / DRAFT-HOLD.
 Date: 2026-10-08.
 Parent: `WS:MARKET-OS`.
