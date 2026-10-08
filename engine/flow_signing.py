@@ -166,7 +166,7 @@ from decimal import Decimal, InvalidOperation
 
 def classify_print(
     *, ticker, quote_ticker, session, quote_session, trade_price, bid, ask,
-    trade_sip_ns, quote_sip_ns, trade_received_ns, quote_received_ns,
+    bid_size, ask_size, trade_sip_ns, quote_sip_ns, trade_received_ns, quote_received_ns,
     decision_ns, max_quote_age_ns, trade_source_receipt, quote_source_receipt,
     eligible_for_pressure, condition_rules_ref, venue_class,
 ):
@@ -239,6 +239,9 @@ def classify_print(
     p, b, a = dec(trade_price), dec(bid), dec(ask)
     if p is None or b is None or a is None or p <= 0 or b <= 0 or a <= b:
         return result("unclassified", "INVALID_NBBO_OR_PRICE", age_ns)
+    if (type(bid_size) is not int or type(ask_size) is not int
+            or bid_size <= 0 or ask_size <= 0):
+        return result("unclassified", "NO_FIRM_DISPLAYED_NBBO_SIZE", age_ns)
     if p < b or p > a:
         return result("unclassified", "OUTSIDE_NBBO", age_ns)
     mid = (b + a) / 2
