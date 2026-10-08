@@ -2,6 +2,38 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-08",
+      "tickers": [
+        "COKE",
+        "CTVA",
+        "ESE",
+        "ESI",
+        "FIBK",
+        "GAP",
+        "ICHR",
+        "INGR",
+        "JOE",
+        "KRC",
+        "MKSI",
+        "MTZ",
+        "NWE",
+        "NWS",
+        "OMC",
+        "PEB",
+        "POWI",
+        "PPL",
+        "PPLI",
+        "PRTA",
+        "PSUS",
+        "RYAN",
+        "SFM",
+        "SHO",
+        "STWI",
+        "TFIN",
+        "ULS"
+      ]
+    },
+    {
       "as_of": "2026-10-07",
       "tickers": [
         "AAP",
@@ -166,40 +198,6 @@
         "UTHR",
         "WS",
         "XENE",
-        "XOM"
-      ]
-    },
-    {
-      "as_of": "2026-10-01",
-      "tickers": [
-        "ADRX",
-        "AEIS",
-        "AMKR",
-        "ATR",
-        "BKE",
-        "BSX",
-        "CDNS",
-        "CLH",
-        "CLPR",
-        "EGBN",
-        "ESI",
-        "HGBL",
-        "HLNE",
-        "INR",
-        "MAR",
-        "MRSH",
-        "OMCL",
-        "OTTR",
-        "PLAB",
-        "PNC",
-        "PPLI",
-        "PVH",
-        "QDEL",
-        "REX",
-        "RPM",
-        "TJX",
-        "UTHR",
-        "WING",
         "XOM"
       ]
     }
