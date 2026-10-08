@@ -109,7 +109,14 @@ does not implement its own hierarchy traversal, create new member/exposure
 edges, or read the latest taxonomy onto an old date.
 
 An unadmitted hierarchy, absent graph, insufficient PIT knowledge, or refused
-rights/reader yields **null**, never a measured false/zero. Real input/refusal
+rights/reader yields **null**, never a measured false/zero. A missing optional
+node-lifecycle sidecar is legitimately empty; a present but corrupt/unreadable
+sidecar must instead **refuse** the hierarchy shadow, never silently become
+empty history. If one basket is refused, any ticker belonging to that basket
+gets a null category shadow rather than a misleading partial set. Unaffected
+tickers may still retain their independently resolved categories. An explicit
+scratch root that does not match the incumbent graph owner also yields null
+with a diagnostic, not an unbound production read. Real input/refusal
 problems emit a warning, but the **nightly-only** context-vector accrual still
 succeeds. Historical monthly parts are not rewritten; `load_candidates`
 unifies old parts without the column as null. Keep-first ensures a correction
