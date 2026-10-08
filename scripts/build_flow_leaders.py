@@ -1,37 +1,30 @@
 """scripts/build_flow_leaders.py — Flow Leaders Desk nightly builder (FL W2).
 
 ╔══════════════════════════════════════════════════════════════════════════╗
-║ THIS BOARD IS PERMANENTLY stale:true — AND THAT IS NOT A BUG.            ║
+║ CANONICAL SOURCE POLICY (Chairman decision 2026-08-22)                   ║
 ║                                                                          ║
-║ Its options spine (data/options_flow/summary_*.parquet, via              ║
-║ data/polygon_gex/chains/) comes from the LEGACY Massive/Polygon estate,  ║
-║ whose options entitlement 403'd on 2026-08-13/14 and was RETIRED by the  ║
-║ Chairman source ruling of 2026-08-22                                     ║
-║ (DEC:AD-OPTIONS-CANONICAL-SOURCE-THETADATA). THETADATA is the canonical  ║
-║ options source; Massive/Polygon is a STOCK-data source. There is no      ║
-║ options key to rotate.                                                   ║
+║ Massive/Polygon OPTIONS entitlements ended after session 2026-08-12.     ║
+║ data/options_flow/summary_*.parquet is RETIRED as a fresh source.         ║
+║ It may be read only as an explicitly stale historical archive.           ║
 ║                                                                          ║
-║ So the spine is frozen at session 2026-08-12, `_check_stale` correctly   ║
-║ returns True, the stale branch in build() correctly skips the recurrence ║
-║ block, every A1_flow_recur/recurrence_count is null, K_a collapses to 0, ║
-║ and fire_a/fire_b are False on EVERY row. That whole chain is one        ║
-║ fail-closed refusal working as designed — NOT a Board A/B scoring bug.   ║
-║ Do not "fix" the gates. Downstream, plab_flow_leader and                 ║
-║ plab_flow_washout can never fire while this holds.                       ║
+║ Freshness requires real ThetaData T2a trade+NBBO signed-tape features,    ║
+║ a coherent NYSE session and >=90% of the configured options universe     ║
+║ on that SAME session. Partial or unavailable receipts fail closed.       ║
+║ No legacy OI/gamma is fused into a ThetaData session. Theta quote-rule    ║
+║ direction stays research-only pending its own FL-R3 qualification.       ║
+║ The downstream fire_a/fire_b flags remain FALSE for unqualified data.   ║
 ║                                                                          ║
-║ The OPEN question — repoint this lane at the ThetaData EOD/T1 spine      ║
-║ (engine/thetadata_store.py), or retire the boards — belongs to Sol /     ║
-║ WS:ADVANCED-DATA-OPTIONS. Nothing in this file may silently swap the     ║
-║ source; the superseded DNR row existed to reserve exactly that call.     ║
+║ The canonical ThetaData store/terminal retains its OWN existing writer; ║
+║ this builder is a read-only derived consumer, not another collector.     ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 
 Inputs (all absent-safe — honest nulls on miss):
-  data/options_flow/summary_*.parquet      soft-spine: gross premium, net_premium_mn,
-                                            zerodte_share, fresh_contracts
-  data/tape_flow/daily/<ROOT>.parquet      tape-spine per name when present
-  data/polygon_gex/chains/<date>.parquet   OI-confirmation (2 most-recent SESSION days;
-                                            weekend/holiday byte-copies are skipped)
-  data/options_entry/state.parquet         gamma_regime per name
+  data/tape_flow/daily/<ROOT>.parquet      CANONICAL ThetaData T2a source;
+                                            signed+gross premium converted USD→USD mn,
+                                            per-session DTE and provenance checked
+  data/options_flow/summary_*.parquet      RETIRED legacy historical fallback (stale)
+  data/polygon_gex/chains/<date>.parquet   RETIRED legacy-only OI (never Theta)
+  data/options_entry/state.parquet         RETIRED legacy-only gamma (never Theta)
   site/stockdata/<T>.json                  tech/rs/high52w/rel_volume/obv/earnings/profile/valuation
   site/factordata/stock_personality.json   failed_breakout_trap, stair_step_leader
   site/stockdata/mtf_upturn.json           mtf_upturn state per ticker
@@ -1062,6 +1055,9 @@ def build(
                 # without emitting unearned actionable signal flags.
                 rec["signing_source"] = "tape"
                 rec["signing_note"] = "ThetaData trade+NBBO quote-rule; estimated direction (FL-R3 research)"
+            # Both retired historical boards and current unqualified Theta tape
+            # are never admitted to live Pick Lab/downstream signal consumers.
+            if stale or source_family == "thetadata_t2a_tape":
                 rec["fire_a"] = False
                 rec["fire_b"] = False
             # Board A is recurrence-sorted (money that keeps landing). Board B is
