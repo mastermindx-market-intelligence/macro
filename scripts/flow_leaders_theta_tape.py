@@ -113,6 +113,10 @@ def _parse_root(path: Path, expected: set[str]) -> tuple[str, pd.DataFrame] | No
         },
         index=pd.DatetimeIndex(dates_valid.to_numpy(), name="session"),
     ).sort_index()
+    # The downstream detector must know this is a sparse T2a daily series so
+    # it can insert missing NYSE sessions, rather than splice old tape into a
+    # false four-session washout flip.
+    result.attrs["flow_source"] = "thetadata_t2a_tape"
     return root, result
 
 
