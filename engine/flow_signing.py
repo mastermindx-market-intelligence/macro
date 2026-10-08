@@ -157,3 +157,92 @@ def verdict(per_trade: dict, recovery: dict, bar: float = 0.70) -> dict:
                      "buy/sell is approximate; MAGNITUDE / positioning reads stay reliable"
                      if rec is not None else
                      "no calibration sample yet — direction display-only, magnitude reliable")}
+
+
+# TP-1 equity tape: qualified at-trade NBBO location; not an aggressor oracle.
+# Keep quote_rule_sign() and option-tape callers unchanged (Macro #7368).
+from decimal import Decimal, InvalidOperation
+
+
+def classify_print(
+    *, ticker, quote_ticker, session, quote_session, trade_price, bid, ask,
+    trade_sip_ns, quote_sip_ns, trade_received_ns, quote_received_ns,
+    decision_ns, max_quote_age_ns, trade_source_receipt, quote_source_receipt,
+    eligible_for_pressure, condition_rules_ref, venue_class,
+    trf_execution_clock_qualified=False,
+):
+    """Conservative scalar TP-1 print classification against an already joined NBBO.
+
+    Returns the *quote-rule proxy* buckets 'buy', 'sell', 'mid', 'unclassified'
+    with typed abstention reasons and a quote-age receipt. NOT participant side,
+    resting-order identity, signal strength or forward response.
+
+    Caller/source owner MUST supply the genuine most recent pre-trade SIP quote,
+    source-native correction/condition eligibility and its actual availability
+    receipt; this helper cannot authenticate source records, join order or capture
+    completeness. Requires strictly prior SIP quote time; unorderable equal-time
+    prints abstain. Reported TRF prints require a separately qualified
+    execution/report clock before any attempt to classify them.
+
+    Intentionally scalar/pure: the TP-1 ingest owner can use the same function
+    for live and historical comparisons without changing the existing options
+    vector quote_rule_sign and without introducing another source store.
+    """
+    def result(bucket, reason, age=None):
+        return {"bucket": bucket, "reason": reason, "quote_age_ns": age,
+                "method": "SIP_NBBO_QUOTE_LOCATION_PROXY",
+                "authority": "OBSERVATIONAL_ONLY"}
+
+    if any(not isinstance(s, str) or not s.strip()
+           for s in (ticker, quote_ticker, session, quote_session)):
+        return result("unclassified", "MISSING_IDENTITY")
+    if ticker != quote_ticker or session != quote_session:
+        return result("unclassified", "SOURCE_IDENTITY_MISMATCH")
+    if venue_class not in ("LIT", "TRF", "UNKNOWN"):
+        return result("unclassified", "INVALID_VENUE_CLASS")
+    if not isinstance(eligible_for_pressure, bool):
+        return result("unclassified", "CONDITION_ELIGIBILITY_UNKNOWN")
+    if not isinstance(condition_rules_ref, str) or not condition_rules_ref.strip():
+        return result("unclassified", "CONDITION_POLICY_UNKNOWN")
+    if not eligible_for_pressure:
+        return result("unclassified", "CONDITION_INELIGIBLE")
+    if (not isinstance(trade_source_receipt, str) or not trade_source_receipt.strip()
+            or not isinstance(quote_source_receipt, str) or not quote_source_receipt.strip()):
+        return result("unclassified", "ORIGINAL_RECEIPT_MISSING")
+    if venue_class == "UNKNOWN":
+        return result("unclassified", "VENUE_UNKNOWN")
+    if venue_class == "TRF" and trf_execution_clock_qualified is not True:
+        return result("unclassified", "TRF_EXECUTION_CLOCK_UNQUALIFIED")
+
+    clocks = (trade_sip_ns, quote_sip_ns, trade_received_ns, quote_received_ns,
+              decision_ns, max_quote_age_ns)
+    if any(type(c) is not int or c < 0 for c in clocks):
+        return result("unclassified", "CLOCK_MISSING_OR_INVALID")
+    if (trade_received_ns < trade_sip_ns or quote_received_ns < quote_sip_ns):
+        return result("unclassified", "IMPOSSIBLE_RECEIPT_CLOCK")
+    if trade_received_ns > decision_ns or quote_received_ns > decision_ns:
+        return result("unclassified", "NOT_KNOWN_AT_DECISION")
+    if quote_sip_ns >= trade_sip_ns:
+        return result("unclassified", "SIP_CLOCK_ORDER_UNQUALIFIED")
+    age_ns = trade_sip_ns - quote_sip_ns
+    if age_ns > max_quote_age_ns:
+        return result("unclassified", "QUOTE_STALE", age_ns)
+
+    def dec(x):
+        if isinstance(x, bool) or not isinstance(x, (int, float, str, Decimal)):
+            return None
+        try:
+            value = Decimal(str(x))
+        except InvalidOperation:
+            return None
+        return value if value.is_finite() else None
+
+    p, b, a = dec(trade_price), dec(bid), dec(ask)
+    if p is None or b is None or a is None or p <= 0 or b <= 0 or a <= b:
+        return result("unclassified", "INVALID_NBBO_OR_PRICE", age_ns)
+    if p < b or p > a:
+        return result("unclassified", "OUTSIDE_NBBO", age_ns)
+    mid = (b + a) / 2
+    if p == mid:
+        return result("mid", None, age_ns)
+    return result("buy" if p > mid else "sell", None, age_ns)
