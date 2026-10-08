@@ -80,6 +80,9 @@ SOURCE_PREFIX_FAMILY: tuple[tuple[str, str], ...] = (
     ("data/baskets_canada/", "mastermind_curated"),
     ("data/baskets_intl/", "mastermind_curated"),
     ("config/theme_crosswalk.yml", "mastermind_curated"),
+    ("config/theme_graph_identity_breaks.yml#", "mastermind_curated"),
+    ("config/theme_graph_duplicate_mints.yml#", "mastermind_curated"),
+    ("gmi:entity_type_conflict:", "mastermind_curated"),
     ("data/theme_graph/probation/relation_events.v2.jsonl#", "mastermind_curated"),
 )
 

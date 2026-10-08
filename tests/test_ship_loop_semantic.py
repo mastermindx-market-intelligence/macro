@@ -138,6 +138,88 @@ def test_admitted_worktree_does_not_intercept_bash(tmp_path, capsys):
     assert capsys.readouterr().out.strip() == ""
 
 
+def test_quarantined_root_lets_enterworktree_repair_itself(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+
+    for tool in ("EnterWorktree", "Read", "Grep"):
+        GUARD._pre_tool_use(
+            primary,
+            tmp_path / "state.json",
+            {"hook_event_name": "PreToolUse", "tool_name": tool},
+        )
+        assert capsys.readouterr().out.strip() == "", tool
+
+    for tool in ("Bash", "Edit", "Write", "Agent", "ExitWorktree", "mcp__x__y"):
+        GUARD._pre_tool_use(
+            primary,
+            tmp_path / "state.json",
+            {"hook_event_name": "PreToolUse", "tool_name": tool},
+        )
+        out = json.loads(capsys.readouterr().out.strip())
+        assert out["hookSpecificOutput"]["permissionDecision"] == "deny", tool
+        assert "EnterWorktree" in out["hookSpecificOutput"]["permissionDecisionReason"]
+
+
+def test_quarantine_context_names_the_in_session_repair(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+
+    GUARD._session_start(
+        primary,
+        tmp_path / "state.json",
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+
+    context = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "additionalContext"
+    ]
+    assert "SESSION ROOT QUARANTINE" in context
+    assert "EnterWorktree" in context
+
+
+def test_relocated_session_seeds_completion_state_once(tmp_path, capsys):
+    _primary, worktree = _linked_root_fixture(tmp_path)
+    state_path = tmp_path / "relocated-state.json"
+    (worktree / "kept.txt").write_text("dirty before the first effectful call\\n")
+
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+    state = GUARD._load(state_path)
+    assert state["root"] == str(worktree)
+    assert state["start_head"] == _git(worktree, "rev-parse", "HEAD")
+    assert state["root_admitted"] is True
+    assert state["root_admission_v"] == GUARD._ROOT_ADMISSION_VERSION
+    assert state["seeded_by"] == "pre_tool_use_relocation"
+    assert "kept.txt" in json.dumps(state["baseline"])
+
+    state["blocker_count"] = 3
+    GUARD._save(state_path, state)
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Edit"},
+    )
+    assert GUARD._load(state_path)["blocker_count"] == 3
+
+
+def test_quarantined_root_never_seeds_completion_state(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    state_path = tmp_path / "quarantined-state.json"
+
+    GUARD._pre_tool_use(
+        primary,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "EnterWorktree"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+    assert GUARD._load(state_path) is None
+
+
 def test_quarantined_session_stops_cleanly_when_shared_main_moves(
     monkeypatch, tmp_path, capsys
 ):

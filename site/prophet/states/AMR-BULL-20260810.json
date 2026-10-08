@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AMR-BULL-20260810",
-  "asof": "2026-10-06",
+  "asof": "2026-10-08",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
-  "management_confidence": 53.1,
-  "raw_confidence": 53.1,
-  "delta_vs_base": -6.9,
+  "management_confidence": 50.4,
+  "raw_confidence": 49.5,
+  "delta_vs_base": -9.6,
   "recommended_action": "trim",
   "human_state": "T1 Giveback Warning",
   "components": {
     "validity": 100.0,
-    "progress": 45.3,
-    "pace": 24.9,
-    "retention": 29.6,
-    "overlay": 59.0
+    "progress": 42.1,
+    "pace": 18.9,
+    "retention": 22.5,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.533,
-    "dist_to_t1_r": 0.967,
-    "dist_to_t2_r": 2.467,
-    "horizon_pct_used": 122.2,
-    "p1": 0.3554,
-    "p2": 0.1777,
+    "dist_to_stop_r": 1.405,
+    "dist_to_t1_r": 1.095,
+    "dist_to_t2_r": 2.595,
+    "horizon_pct_used": 126.7,
+    "p1": 0.2699,
+    "p2": 0.135,
     "p3": null,
-    "move_r": 0.533,
+    "move_r": 0.405,
     "mfe_r": 2.881,
     "mae_r": -0.147
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": "2026-08-21",
   "_first_t2_ts": null,
-  "days_elapsed": 55,
-  "tau": 1.2222
+  "days_elapsed": 57,
+  "tau": 1.2667
 }

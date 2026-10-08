@@ -16,7 +16,7 @@
       "qualifiers_zh": "",
       "plain_en": "Not enough support to lean on — watch, don't chase.",
       "plain_zh": "支持不足，仅作观察，不要追。",
-      "owner_ref": "macro PR #6805 (Prophet V4 handoff); correction PR #8474",
+      "owner_ref": "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH",
       "consume_as": "display-tier"
     },
     {
@@ -32,7 +32,7 @@
       "qualifiers_zh": "三项检验，样本与证据等级为 2",
       "plain_en": "Cross-asset read was not supported — context only, don't chase it.",
       "plain_zh": "跨资产判读未获支持，仅作背景。",
-      "owner_ref": "macro PR #6805 (Prophet V4 handoff)",
+      "owner_ref": "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH",
       "consume_as": "display-tier"
     },
     {
@@ -48,7 +48,7 @@
       "qualifiers_zh": "21 个交易日隔离期；4 个样本外周；仅用于诊断",
       "plain_en": "Timeframe evidence is mixed — watch it as a diagnostic, don't chase.",
       "plain_zh": "时间粒度证据好坏参半，仅作诊断观察。",
-      "owner_ref": "macro PR #6803 (Temporal Grain)",
+      "owner_ref": "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH",
       "consume_as": "display-tier"
     },
     {
@@ -64,7 +64,7 @@
       "qualifiers_zh": "12 项中 10 项高于下限",
       "plain_en": "No effect found within the tested scope — keep watching, don't chase.",
       "plain_zh": "在已检验范围内未见效果，继续观察。",
-      "owner_ref": "macro PR #6805 (Prophet V4 handoff)",
+      "owner_ref": "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH",
       "consume_as": "display-tier"
     },
     {
@@ -80,7 +80,7 @@
       "qualifiers_zh": "D* 2026-07-05；最低覆盖率 25.43%；已搁置的研究线",
       "plain_en": "Point-in-time history is only partly complete — parked, watch only.",
       "plain_zh": "时点历史仅部分完整，已搁置，仅观察。",
-      "owner_ref": "macro PR #6803 (Temporal Grain)",
+      "owner_ref": "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH",
       "consume_as": "display-tier"
     },
     {
@@ -96,7 +96,7 @@
       "qualifiers_zh": "AR(1)-21 门槛；制约 C2",
       "plain_en": "An upstream control is broken — reads built on it are on hold; watch only.",
       "plain_zh": "上游对照已失效，相关判读暂停，仅观察。",
-      "owner_ref": "macro PR #6805 (Prophet V4 handoff)",
+      "owner_ref": "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH",
       "consume_as": "display-tier"
     },
     {
@@ -112,7 +112,7 @@
       "qualifiers_zh": "不用于排序、仓位或门槛",
       "plain_en": "Shown for context only; nothing here acts on them — watch, don't chase.",
       "plain_zh": "仅作展示背景，本站不据此行动，不要追。",
-      "owner_ref": "macro PR #6805 (Prophet V4 handoff)",
+      "owner_ref": "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH",
       "consume_as": "display-tier"
     },
     {
@@ -128,7 +128,7 @@
       "qualifiers_zh": "标注为反事实——非结论",
       "plain_en": "A what-if had the control passed — not a verdict; don't chase it.",
       "plain_zh": "假设对照通过时的推演，非结论，不要追。",
-      "owner_ref": "macro PR #6805 (Prophet V4 handoff); correction PR #8474",
+      "owner_ref": "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH",
       "consume_as": "display-tier"
     }
   ],
