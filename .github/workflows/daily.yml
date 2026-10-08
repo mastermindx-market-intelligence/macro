@@ -5173,6 +5173,14 @@ jobs:
               line = f"tier {tier}: date_to={dt} ({age}d old)"
               print(f"::error::TM STALE — {line}" if age > 4 else f"TM fresh — {line}")
           PY
+      - name: GMI graph shadow theme state (gate 8 — off-render, non-fatal)
+        # Seat ruling G1-RC1: state-only compose; writes data/theme_graph/shadow_theme_state.v1.json only.
+        # RC1-R1: no engine.result gate — engine ends red on the post-commit OIP PIT fail-closed marker after its commit.
+        timeout-minutes: 12
+        continue-on-error: true
+        env:
+          COLLECT_LANE: nightly
+        run: python -m scripts.build_thematic_state --mode GRAPH_SHADOW_STATE
       - name: commit oracle Time Machine feed + ratio lens
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
@@ -5185,6 +5193,7 @@ jobs:
           # on 2026-07-13 and 2026-07-14). The commit is gated below by `git diff --cached
           # --quiet`, so tolerating the file's absence is safe.
           git add data/oracle/washout_counterread_ledger.jsonl 2>/dev/null || true
+          git add data/theme_graph/shadow_theme_state.v1.json 2>/dev/null || true
           if git diff --cached --quiet; then echo "no oracle Time Machine or ratio lens changes"; exit 0; fi
           git commit -m "oracle-tm: nightly Time Machine feed + ratio lens refresh $(date -u +%F)"
           # best-effort push (own files -> rebases clean; no other job writes site/oracledata/)

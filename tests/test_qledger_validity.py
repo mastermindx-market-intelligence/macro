@@ -16,7 +16,13 @@ import subprocess
 
 import pytest
 
-from engine.k3e_eval_admission import EVAL0_CANONICAL_DIGEST, inspect_eval1_admission
+from engine.k3e_eval_admission import (
+    EVAL0_CANONICAL_DIGEST,
+    _canonical_json_digest,
+    _registration_reason,
+    inspect_eval1_admission,
+)
+import engine.k3e_eval1_forward as k3e_fwd
 from engine.qledger_validity import (
     SEVERITY_INVALID,
     SEVERITY_NOTE,
@@ -218,6 +224,7 @@ _K3E_ACTIVATION = _K3E_BASE / "eval1_activation_receipt.v1.json"
 
 _K3E_DEFAULT_WHEN = "2026-10-04T12:00:00-04:00"
 _K3E_AT_BOUNDARY = "2026-10-05T09:30:00-04:00"
+_K3E_EVAL1_COMMITTED_DIGEST = "1ca158a213fca3f90c5c4fdc1359d40bf9146f2400cb10d8caa202b18f293bd4"
 
 
 def _k3e_git(repo: Path, *args: str, when: str | None = None) -> str:
@@ -712,3 +719,326 @@ def test_k3e_eval1_t8_eval0_runs_first_and_calls_do_not_write(tmp_path: Path):
     after_admit = _k3e_snapshot(admitted_repo)
     assert admitted["admitted"] is True
     assert before_admit == after_admit
+
+
+def test_k3e_eval1_committed_preregistration_is_schema_valid_and_waits_for_owner_acceptance(
+    tmp_path: Path,
+):
+    raw = (_K3E_ROOT / _K3E_EVAL1).read_bytes()
+    payload = json.loads(raw.decode("utf-8"))
+    assert payload["registration_id"] == "K3E-EVAL-1-V1"
+    assert _registration_reason(payload) is None
+    assert _canonical_json_digest(raw) == _K3E_EVAL1_COMMITTED_DIGEST
+    assert payload["predecessor"]["canonical_digest_sha256"] == EVAL0_CANONICAL_DIGEST
+    assert payload["predecessor"]["prior_trial_budget_reset"] is False
+
+    repo = _k3e_source_repo(tmp_path)
+    target = repo / _K3E_EVAL1
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(raw)
+    _k3e_commit_main(repo, "freeze committed EVAL-1 preregistration bytes")
+    result = inspect_eval1_admission(repo, as_of_date=date(2026, 10, 4))
+    assert result["admitted"] is False
+    assert result["outcome_access_allowed"] is False
+    assert result["reasons"] == ["OWNER_ACCEPTANCE_MISSING"]
+    assert result["eval0"] == {
+        "registration_id": "K3E-EVAL-0-V1",
+        "canonical_digest": EVAL0_CANONICAL_DIGEST,
+        "preserved": True,
+    }
+
+
+def test_k3e_eval1_forward_t1_constants_match_registration():
+    assert k3e_fwd.BOOTSTRAP_SEED == int(k3e_fwd.REGISTRATION_DIGEST[:8], 16) == 480336034
+    assert k3e_fwd.BOOTSTRAP_REPLICATES == 19999
+    assert k3e_fwd.REGISTRATION_DIGEST == _K3E_EVAL1_COMMITTED_DIGEST
+    raw = (_K3E_ROOT / _K3E_EVAL1).read_bytes()
+    assert _canonical_json_digest(raw) == k3e_fwd.REGISTRATION_DIGEST
+    harmonic = sum(1.0 / i for i in range(1, 65))
+    assert (1.0 / (k3e_fwd.BOOTSTRAP_REPLICATES + 1)) < 0.10 / (64 * harmonic)
+
+
+def test_k3e_eval1_forward_t2_frozen_term_mismatches():
+    import copy
+
+    raw = (_K3E_ROOT / _K3E_EVAL1).read_bytes()
+    registration = json.loads(raw.decode("utf-8"))
+    assert k3e_fwd.frozen_term_mismatches(registration) == []
+    bad_h = copy.deepcopy(registration)
+    bad_h["scientific_freeze"]["primary_horizon_sessions"] = 22
+    assert "primary_horizon_sessions" in k3e_fwd.frozen_term_mismatches(bad_h)
+    bad_q = copy.deepcopy(registration)
+    bad_q["multiple_testing"]["q"] = 0.05
+    assert "by_q" in k3e_fwd.frozen_term_mismatches(bad_q)
+
+
+def test_k3e_eval1_forward_t3_t1_label():
+    cv = 1.0
+    cs = 100
+    assert k3e_fwd.t1_label(cs, cv, [(105, 1.0, True), (110, 1.2, True)], 200) == (
+        "UP",
+        None,
+    )
+    assert k3e_fwd.t1_label(cs, cv, [(110, 0.9, True)], 200) == ("DOWN", None)
+    assert k3e_fwd.t1_label(cs, cv, [(121, 1.0, True)], 200) == ("FLAT", None)
+    assert k3e_fwd.t1_label(cs, cv, [(130, 1.0, True)], 200) == ("FLAT", None)
+    assert k3e_fwd.t1_label(cs, cv, [(130, 1.1, True)], 200) == (
+        "CENSORED",
+        "change_after_horizon_before_unchanged_snapshot",
+    )
+    assert k3e_fwd.t1_label(cs, cv, [(130, None, False), (140, None, False)], 200) == (
+        "CENSORED",
+        "no_successful_snapshot_in_flat_window",
+    )
+    assert k3e_fwd.t1_label(cs, cv, [(110, 1.2, True)], 105) == (
+        "PENDING",
+        "horizon_not_reached",
+    )
+    assert k3e_fwd.t1_label(cs, cv, [], 130) == ("PENDING", "flat_window_open")
+    assert k3e_fwd.t1_label(cs, cv, [(90, 2.0, True), (100, 2.0, True)], 200) == (
+        "CENSORED",
+        "no_successful_snapshot_in_flat_window",
+    )
+    assert k3e_fwd.t1_label(cs, cv, [(164, 1.0, True)], 200) == (
+        "CENSORED",
+        "no_successful_snapshot_in_flat_window",
+    )
+    assert k3e_fwd.t1_label(cs, cv, [(163, 1.0, True)], 200) == ("FLAT", None)
+    with pytest.raises(ValueError):
+        k3e_fwd.t1_label(cs, float("nan"), [], 200)
+
+
+def test_k3e_eval1_forward_t4_loss_metrics():
+    import math
+
+    row = [(0.5, 0.25, 0.25)]
+    assert k3e_fwd.row_log_losses(row, ["UP"])[0] == pytest.approx(math.log(2))
+    assert k3e_fwd.row_log_losses([(0.0, 0.5, 0.5)], ["UP"])[0] == math.inf
+    with pytest.raises(ValueError):
+        k3e_fwd.row_log_losses([(0.5, 0.2, 0.2)], ["UP"])
+    with pytest.raises(ValueError):
+        k3e_fwd.row_log_losses(row, ["SIDEWAYS"])
+    assert k3e_fwd.brier_score([(1.0, 0.0, 0.0)], ["UP"]) == 0.0
+    assert k3e_fwd.brier_score(row, ["UP"]) == pytest.approx(0.375)
+
+
+def test_k3e_eval1_forward_t5_baselines():
+    assert k3e_fwd.fit_b0_no_change(["UP", "DOWN", "FLAT", "FLAT"]) == pytest.approx(
+        (0.25, 0.25, 0.5)
+    )
+    assert k3e_fwd.fit_b0_no_change(["FLAT", "FLAT"]) is None
+    assert k3e_fwd.fit_b0_no_change(["UP", "DOWN"]) is None
+    assert k3e_fwd.fit_b0_no_change([]) is None
+    rows = [
+        ("eps", "UP"),
+        ("eps", "DOWN"),
+        ("eps", "FLAT"),
+        ("rev", "UP"),
+        ("rev", "DOWN"),
+        ("rev", "FLAT"),
+        ("rev", "FLAT"),
+    ]
+    model = k3e_fwd.fit_b6_base_rate(rows)
+    assert model is not None
+    assert model["eps"] == pytest.approx((1 / 3, 1 / 3, 1 / 3))
+    assert model["rev"] == pytest.approx((0.25, 0.25, 0.5))
+    assert k3e_fwd.fit_b6_base_rate([("m", "UP"), ("m", "UP")]) is None
+    assert k3e_fwd.score_b6(model, [("missing", "UP")]) is None
+
+
+def test_k3e_eval1_forward_t6_strongest_baseline_and_relative_improvement():
+    import math
+
+    assert k3e_fwd.strongest_baseline(
+        {"B0_NO_CHANGE": 0.9, "B6_HISTORICAL_BASE_RATE": 0.8}
+    ) == ("B6_HISTORICAL_BASE_RATE", 0.8)
+    assert k3e_fwd.strongest_baseline(
+        {"B0_NO_CHANGE": None, "B6_HISTORICAL_BASE_RATE": None}
+    ) == (None, None)
+    with pytest.raises(ValueError):
+        k3e_fwd.strongest_baseline({"B1": 0.5})
+    assert k3e_fwd.relative_improvement(1.0, 0.95) == pytest.approx(0.05)
+    assert k3e_fwd.relative_improvement(None, 0.5) is None
+    assert k3e_fwd.relative_improvement(1.0, math.inf) == -math.inf
+
+
+def test_k3e_eval1_forward_t7_cluster_bootstrap():
+    import math
+
+    diffs: list[float] = []
+    clusters: list[str] = []
+    for i in range(40):
+        key = f"c{i:02d}"
+        for row in range(3):
+            diffs.append(0.1 + 0.01 * (i % 5) + 0.001 * row)
+            clusters.append(key)
+    a = k3e_fwd.cluster_bootstrap(diffs, clusters)
+    b = k3e_fwd.cluster_bootstrap(diffs, clusters)
+    assert a == b
+    assert a["p_value"] == pytest.approx(1 / 20000)
+    assert a["excludes_zero"] is True
+    assert a["replicates"] == 19999
+    assert a["seed"] == 480336034
+
+    sym_diffs: list[float] = []
+    sym_clusters: list[str] = []
+    for i in range(40):
+        sign = 0.2 if i % 2 == 0 else -0.2
+        key = f"s{i:02d}"
+        for _ in range(3):
+            sym_diffs.append(sign)
+            sym_clusters.append(key)
+    sym = k3e_fwd.cluster_bootstrap(sym_diffs, sym_clusters, replicates=1999)
+    assert sym["excludes_zero"] is False
+    assert sym["p_value"] > 0.05
+
+    one = k3e_fwd.cluster_bootstrap([0.1, 0.2], ["a", "a"])
+    assert one["ci_low"] == one["ci_high"] == one["mean"]
+
+    with pytest.raises(ValueError):
+        k3e_fwd.cluster_bootstrap([0.1], ["a", "b"])
+    with pytest.raises(ValueError):
+        k3e_fwd.cluster_bootstrap([math.inf], ["a"])
+
+
+def test_k3e_eval1_forward_t8_cluster_helpers():
+    assert k3e_fwd.cluster_key("AAPL", None, None) == "issuer:AAPL"
+    assert k3e_fwd.cluster_key("AAPL", "e1", None) == "issuer:AAPL|episode:e1|event:"
+    with pytest.raises(ValueError):
+        k3e_fwd.cluster_key("", None, None)
+    assert k3e_fwd.date_block_keys([10, 72, 73, 140]) == [
+        "block:0",
+        "block:0",
+        "block:1",
+        "block:2",
+    ]
+    expected = hashlib.sha256(
+        json.dumps(
+            ["AAPL", "eps", "2026Q3", "2026-10-08"],
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    assert (
+        k3e_fwd.episode_id("AAPL", "eps", "2026Q3", "2026-10-08") == expected
+    )
+    assert (
+        k3e_fwd.episode_id("AAPL", "eps", "2026Q3", "2026-10-09")
+        != expected
+    )
+
+
+def test_k3e_eval1_forward_t9_by_family_decision():
+    assert k3e_fwd.by_family_decision([5e-5] + [0.5] * 63)["rejected"][0] is True
+    assert k3e_fwd.by_family_decision([4e-4] + [0.9] * 63)["rejected"][0] is False
+
+
+def test_k3e_eval1_forward_t10_assign_partitions():
+    boundary = 1000
+
+    def _rows_dev_100():
+        return [(s, f"ep{s}", s) for s in range(1000, 1100)]
+
+    full = _rows_dev_100()
+    out = k3e_fwd.assign_partitions(full, boundary)
+    assert out["closes"]["F_DEV"] == 1099
+    assert out["status"]["F_DEV"] == "CLOSED"
+
+    with_purge = full + [(1100, "x", 1100), (1162, "y", 1162), (1163, "z", 1163)]
+    p = k3e_fwd.assign_partitions(with_purge, boundary)
+    assert p["partitions"][-3:] == ["PURGE_1", "PURGE_1", "F_VAL"]
+
+    pre = k3e_fwd.assign_partitions([(999, "e", 999)], boundary)
+    assert pre["partitions"] == [k3e_fwd.PRE_BOUNDARY]
+
+    val_rows = _rows_dev_100() + [(1100, "p1", 1100)]
+    val_rows += [(1163 + i, f"v{i}", 1163 + i) for i in range(100)]
+    val_rows.append((1200, "old", 1150))
+    p2 = k3e_fwd.assign_partitions(val_rows, boundary)
+    idx_old = val_rows.index((1200, "old", 1150))
+    assert p2["excluded"][idx_old] == "episode_started_before_partition"
+
+    short = [(1000 + i, f"s{i}", 1000 + i) for i in range(99)]
+    ps = k3e_fwd.assign_partitions(short, boundary)
+    assert ps["status"]["F_DEV"] == "OPEN"
+    assert ps["status"]["F_VAL"] == "NOT_STARTED"
+
+    chain: list[tuple[int, str | None, int | None]] = []
+    for start in (1000, 1163, 1326):
+        chain.extend((start + i, f"e{start}_{i}", start + i) for i in range(100))
+    chain.append((1426, "shadow", 1426))
+    pc = k3e_fwd.assign_partitions(chain, boundary)
+    assert pc["closes"]["F_VAL"] == 1262
+    assert pc["closes"]["F_HOLD"] == 1425
+    assert pc["partitions"][-1] == "PROSPECTIVE_SHADOW"
+
+    dup = [(1000, "same", 1000), (1001, "same", 1001)]
+    dup += [(1000 + i, f"u{i}", 1000 + i) for i in range(2, 100)]
+    pd = k3e_fwd.assign_partitions(dup, boundary)
+    assert pd["episode_counts"]["F_DEV"] == 99
+
+    shuffled = list(reversed(_rows_dev_100()))
+    psf = k3e_fwd.assign_partitions(shuffled, boundary)
+    full_map = dict(zip(full, out["partitions"]))
+    for row, part in zip(shuffled, psf["partitions"]):
+        assert part == full_map[row]
+
+
+def test_k3e_eval1_forward_t11_coverage():
+    statuses = ["SCORED"] * 6 + ["CENSORED:x"] * 4
+    ok = k3e_fwd.coverage_summary(statuses, challenger_abstained=4)
+    assert ok["unestimable"] is False
+    bad_abs = k3e_fwd.coverage_summary(statuses, challenger_abstained=5)
+    assert bad_abs["unestimable"] is True
+    half = k3e_fwd.coverage_summary(["SCORED"] * 5 + ["X"] * 5, challenger_abstained=0)
+    assert half["unestimable"] is True
+    empty = k3e_fwd.coverage_summary([], challenger_abstained=0)
+    assert empty["unestimable"] is True
+    assert empty["scored_fraction"] is None
+    assert k3e_fwd.case_coverage(3)["met"] is True
+    assert k3e_fwd.case_coverage(2)["met"] is False
+    with pytest.raises(ValueError):
+        k3e_fwd.case_coverage(5)
+
+
+def test_k3e_eval1_forward_t12_static_io_guard():
+    source = (_K3E_ROOT / "engine/k3e_eval1_forward.py").read_text(encoding="utf-8")
+    forbidden = (
+        "data/",
+        "site/",
+        "read_parquet",
+        "read_csv",
+        "open(",
+        "subprocess",
+        "import os",
+        "pathlib",
+        "pandas",
+    )
+    for needle in forbidden:
+        assert needle not in source
+
+
+def test_k3e_eval1_forward_t7b_cluster_sum_is_exact_fsum():
+    out = k3e_fwd.cluster_bootstrap([1e16, 1.0, -1e16], ["a", "a", "a"], replicates=99)
+    assert out["mean"] == 1.0 / 3.0
+    assert out["ci_low"] == out["ci_high"] == 1.0 / 3.0
+
+
+def test_k3e_eval1_forward_t2b_one_try_per_check():
+    import copy
+
+    raw = (_K3E_ROOT / _K3E_EVAL1).read_bytes()
+    registration = json.loads(raw.decode("utf-8"))
+    bad_q = copy.deepcopy(registration)
+    del bad_q["multiple_testing"]["q"]
+    assert k3e_fwd.frozen_term_mismatches(bad_q) == ["by_q"]
+    bad_outer = copy.deepcopy(registration)
+    del bad_outer["scientific_freeze"]["censoring_rule"]
+    assert k3e_fwd.frozen_term_mismatches(bad_outer) == ["outer_window"]
+    bad_cov = copy.deepcopy(registration)
+    del bad_cov["scientific_freeze"]["coverage_rule"]
+    assert k3e_fwd.frozen_term_mismatches(bad_cov) == [
+        "case_coverage_floor",
+        "max_challenger_abstention",
+        "scored_fraction_floor",
+    ]

@@ -1,0 +1,57 @@
+{
+  "authority": {
+    "can_escalate": false,
+    "can_gate": false,
+    "can_originate_signal": false,
+    "can_rank": false,
+    "can_size": false
+  },
+  "checks": {
+    "a_b_a_revision_sequence": true,
+    "credentials_excluded_from_store": true,
+    "earlier_complete_frame_byte_invariance": true,
+    "fractional_volume_preserved": true,
+    "future_invalid_semantics_refused_when_visible": true,
+    "future_semantic_mutation_isolated": true,
+    "late_first_read_conflict_preserved": true,
+    "latest_15m_remains_unavailable": true,
+    "partial_failure_not_promoted": true,
+    "partial_failure_preserves_chart_projection": true,
+    "phase1_admission_file_unchanged": true,
+    "producer_atomic_store_reader_selector": true
+  },
+  "clock_basis": "injected source and reader clocks; no market availability claim",
+  "complete_captures": 3,
+  "input_kind": "SYNTHETIC_CONFORMANCE",
+  "phase1_admission_sha256": "a4e00a5c191917dc8c64fb74ca3348827ab9bd47d9ad8a03a1130a50fde36e9f",
+  "producer_exit_codes": [
+    0,
+    0,
+    0,
+    1
+  ],
+  "proof_scope": "Local synthetic conformance; source review, hosted checks, deployment and market admission remain separate.",
+  "result": "PASS",
+  "retained_complete_observation_episodes": 32,
+  "schema": "mastermind.rs_pullback_launch.source_retention_conformance.v1",
+  "source_revisions": {
+    "macro": "f6c73d445ecfb90527df9fccb7bb08b7951f8ad2",
+    "terminal": "c616697d446591d396c6981dda7ba67345671ebc"
+  },
+  "source_sha256": {
+    "macro:engine/entry_radar/replay/rs_pullback_launch_data.py": "30983d39c1488bf63b289f4d1e14d74405331e8068b275eec153478983d64190",
+    "macro:engine/entry_radar/replay/terminal_minute_observations.py": "7f7b801f0f755fec21a00d8bef800105e43a3121437143654e617646c092f639",
+    "macro:scripts/entry_radar_rs_pullback_source_retention_check.py": "ec60db314cb1094581fa51f204021edb13115ef5e5ce2c45eb1d3e48445024fd",
+    "macro:tests/test_entry_radar_rs_pullback_phase1.py": "25a01209db7ccb95036976722017b96c7d1df7629f8eaad9cfaf2ed4a56caf6c",
+    "terminal:ingest/backfill_intraday.py": "c98fd3cfbefa720ac068287b2b162b4b40593827ed5d2636fbeb24282968fe96",
+    "terminal:ingest/intraday_capture.py": "d7f33cf82c0d6dd85f102d793a63e0141d73e4afc9c399643ee6ffc0c02fd3cd"
+  },
+  "synthetic_30m_closes": [
+    100.39,
+    100.44,
+    100.39
+  ],
+  "synthetic_30m_volume": 517.5,
+  "tested_at_utc": "2026-10-07T05:43:23.097962+00:00",
+  "transport": "injected urllib; no provider request"
+}

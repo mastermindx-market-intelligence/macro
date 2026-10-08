@@ -498,6 +498,18 @@ _ROOT_QUARANTINE_READ_ONLY_TOOLS = frozenset({
     "WebSearch",
     "AskUserQuestion",
 })
+# EnterWorktree is the in-session form of the repair this quarantine demands: it
+# moves the conversation's durable root onto a linked worktree. Denying it left a
+# session rooted in the designated local root -- a linked worktree that the
+# workspace law keeps on `main` -- with no in-session exit at all, because every
+# tool able to relocate it was itself quarantined (measured 2026-10-07, Research
+# Vault seat 0e657eec: a live seat frozen mid-program until the Chairman
+# intervened). Admission is still recomputed from the live cwd on every later
+# effectful call, so entering a tree that is not an admissible claude/* worktree
+# simply stays quarantined.
+_ROOT_QUARANTINE_REPAIR_TOOLS = frozenset({
+    "EnterWorktree",
+})
 
 
 def _resolved_git_path(root: Path, raw: str) -> Path:
@@ -4389,22 +4401,26 @@ def _block(
     _emit({"decision": "block", "reason": body})
 
 
+def _initial_state(root: Path, admitted: bool) -> dict[str, Any]:
+    return {
+        "root": str(root),
+        "start_head": _run(root, "git", "rev-parse", "HEAD"),
+        # A quarantined root is read-only, so paying for a full fingerprint of
+        # the shared checkout is both needless and capable of adding fleet noise.
+        "baseline": _fingerprint(root) if admitted else {},
+        "last_blocker": "",
+        "blocker_count": 0,
+        "total_blocks": 0,
+        "external_blocks": 0,
+    }
+
+
 def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
     source = str(payload.get("source") or "")
     admitted, admission_reason = _delivery_root_admission(root)
     state = _load(path)
     if state is None or source in {"startup", "clear"}:
-        state = {
-            "root": str(root),
-            "start_head": _run(root, "git", "rev-parse", "HEAD"),
-            # A quarantined root is read-only, so paying for a full fingerprint of
-            # the shared checkout is both needless and capable of adding fleet noise.
-            "baseline": _fingerprint(root) if admitted else {},
-            "last_blocker": "",
-            "blocker_count": 0,
-            "total_blocks": 0,
-            "external_blocks": 0,
-        }
+        state = _initial_state(root, admitted)
     # Refresh on every startup/resume/compact. A Desktop conversation can retain
     # its session identity while its durable cwd changes underneath it.
     state["root_admission_v"] = _ROOT_ADMISSION_VERSION
@@ -4450,7 +4466,8 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
             "change_directory, or a branch rename as a repair: those do not make the "
             "durable session root a safe carrier. Start a fresh worktree-backed Claude "
             "session (for example `claude --worktree <name>` or the Desktop worktree "
-            "flow) before any modifying work. Use this conversation only for read-only "
+            "flow), or move this conversation with EnterWorktree onto a linked claude/* "
+            "worktree, before any modifying work. Otherwise use this conversation only for read-only "
             "diagnosis or a continuation packet. The normal ship loop belongs to the "
             "fresh worktree-backed carrier.\n"
             + ship_loop_context
@@ -4475,12 +4492,12 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
     turns, the next modifying tool is stopped at admission rather than discovered
     much later by the Stop hook.
     """
-    del path  # state is completion evidence; admission is recomputed from live git identity
     admitted, reason = _delivery_root_admission(root)
     if admitted:
+        _seed_relocated_state(root, path)
         return
     tool = str(payload.get("tool_name") or "")
-    if tool in _ROOT_QUARANTINE_READ_ONLY_TOOLS:
+    if tool in _ROOT_QUARANTINE_READ_ONLY_TOOLS or tool in _ROOT_QUARANTINE_REPAIR_TOOLS:
         return
     _emit(
         {
@@ -4493,11 +4510,37 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
                     + " because this conversation is not attached to a linked "
                     "claude/* worktree (" + reason + "). Do not repair this with "
                     "cd/change_directory or by repointing the shared checkout. Start "
-                    "a fresh worktree-backed Claude session and continue there."
+                    "a fresh worktree-backed Claude session and continue there, or "
+                    "move this one with EnterWorktree onto a linked claude/* worktree."
                 ),
             }
         }
     )
+
+
+def _seed_relocated_state(root: Path, path: Path) -> None:
+    """Give a session that moved itself with EnterWorktree a completion record.
+
+    Completion state is keyed by root, and SessionStart only ever wrote one for the
+    root the conversation was born in. A session relocated onto an admissible
+    worktree therefore reached Stop with no state here, and Stop treats a missing
+    record as nothing to enforce -- so the repair path would have silently exempted
+    the very carrier the ship loop is meant to bind. Seed the record at the first
+    admitted effectful call: start_head and the dirty baseline are captured before
+    that call's side effect, which is the same moment SessionStart would have used.
+    Admission never depends on this write; a failure here leaves the tool allowed.
+    """
+    try:
+        if _load(path) is not None:
+            return
+        state = _initial_state(root, True)
+        state["root_admission_v"] = _ROOT_ADMISSION_VERSION
+        state["root_admitted"] = True
+        state["root_admission_reason"] = ""
+        state["seeded_by"] = "pre_tool_use_relocation"
+        _save(path, state)
+    except Exception:
+        return
 
 
 def _fast_forwarded_onto_main(root: Path) -> bool:

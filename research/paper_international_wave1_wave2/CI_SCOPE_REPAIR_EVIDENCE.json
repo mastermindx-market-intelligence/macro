@@ -127,5 +127,38 @@
     "ci_pack3": "ruling-graph Git fetch early EOF; no product assertion failed in this job",
     "ci_pack10": "cancelled during passing BioCatalyst tests; not a passing completion"
   },
-  "limits": "Exact changed manifest validated locally; new hosted merge/head and independent review remain separate. No test/gate/timeouts/weights/ceilings were relaxed."
+  "limits": "Exact changed manifest validated locally; new hosted merge/head and independent review remain separate. No test/gate/timeouts/weights/ceilings were relaxed.",
+  "integration_refresh": {
+    "upstream": "123eda091dfd0d83c4c303f7f138d4c8a2c7e128",
+    "merge_conflicts": "Two additive path-list hunks in legacy-jobs; preserved both sides",
+    "additional_closure_paths": {
+      "international-workspace-browser": [
+        "lib/us_cash_calendar.py"
+      ],
+      "international-workspace-foundation": [
+        "lib/us_cash_calendar.py"
+      ],
+      "itr-turn-rotation": [
+        "collectors/china_filings.py",
+        "collectors/china_visits.py",
+        "lib/dataos/identity.py",
+        "lib/exchange_holidays.py",
+        "lib/market_observations.py",
+        "lib/market_session.py",
+        "lib/tsx_calendar.py",
+        "lib/us_cash_calendar.py"
+      ]
+    },
+    "existing_curated_set_closure_packing_tests": {
+      "passed": 3,
+      "seconds": 122.89
+    },
+    "source_hashes": {
+      ".github/ci/legacy-jobs.yml": "a4f1885dd1566d4f020bf64c0e4a4f68ac59e56c9f52876741ea3f209adbe3d2",
+      "tests/test_ci_pack.py": "5ec264091ad24384f96b8987f208154c53268ab23c0ba8e97e5c159e1d9e98cc"
+    },
+    "product_source_delta": "No changes to accepted International lib/engine/templates/builders from this upstream merge",
+    "independent_review": "In flight on pre-additional-path merged snapshot; final ten added paths independently measured and parent-checked; review not yet accepted",
+    "upstream_whitespace": "Full merge diff contains existing upstream generated/content trailing whitespace; no unrelated cleanup attempted"
+  }
 }

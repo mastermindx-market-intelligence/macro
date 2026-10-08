@@ -84,6 +84,29 @@ def _native_json(value: Any) -> Any:
     raise ValueError("unsupported native result type: " + type(value).__name__)
 
 
+def _assembled_labels(node_id: str, raw_en, raw_zh) -> tuple[str, str]:
+    """Apply seat ruling G1-labels 2026-10-06T12:08Z (L-A): copy the vendor's own
+    label into the other language slot of a research-internal shadow."""
+    def present(value):
+        if value is None:
+            return False
+        if type(value) is dict:
+            if set(value) != {"native_null"}:
+                raise ValueError("invalid captured subject label dict")
+            return False
+        if type(value) is str:
+            return value.strip() != ""
+        raise ValueError(f"invalid captured subject label {type(value).__name__}")
+
+    en_present, zh_present = present(raw_en), present(raw_zh)
+    if not en_present and not zh_present:
+        raise ValueError(f"theme subject {node_id}: both name_en and name_zh absent")
+    return (
+        raw_en if en_present else raw_zh,
+        raw_zh if zh_present else raw_en,
+    )
+
+
 @dataclass(frozen=True)
 class OwnerBundle:
     payload_json: str
@@ -145,6 +168,53 @@ def _native_members(basket_id: str, suite: str, effective_at: str) -> dict:
     if checked["availability"] == "UNAVAILABLE":
         return {"availability": "UNAVAILABLE", "null_reason": "OWNER_HISTORY_UNREADABLE", "value": None, "unqualified_native_return": answer["value"]}
     return answer
+
+
+def _materialized_records(value: Any) -> Any:
+    # Mirrors ontology._records' input handling, so its per-call row copy sees equal rows.
+    if value is None:
+        return None
+    if hasattr(value, "to_dict"):
+        try:
+            return value.to_dict("records")
+        except TypeError:
+            pass
+    return list(value)
+
+
+class _CaptureStoreView:
+    """One capture's memo over the owner's ``StoreView`` seam (RULING_G1_render_cost r4).
+
+    ``ontology.compose_neighborhood`` re-read and re-materialized all four owner
+    frames on every call; 662 subjects x 4 ``to_dict("records")`` dominated the
+    capture profile. This view performs each owner read once per capture and
+    hands every compose call the same records; the owner still runs its full
+    composition per subject and copies each row before use. A failed read is
+    never memoized, so the per-subject failure path is unchanged. Its scope is
+    one capture: it is not a global cache, and the post-capture source hash
+    re-read still refuses source races.
+    """
+
+    def __init__(self, inner: Any) -> None:
+        self._inner = inner
+        self._rows: dict[str, Any] = {}
+
+    def _read(self, name: str) -> Any:
+        if name not in self._rows:
+            self._rows[name] = _materialized_records(getattr(self._inner, name)())
+        return self._rows[name]
+
+    def read_nodes(self) -> Any:
+        return self._read("read_nodes")
+
+    def read_node_lifecycle(self) -> Any:
+        return self._read("read_node_lifecycle")
+
+    def read_edges(self) -> Any:
+        return self._read("read_edges")
+
+    def read_proposals(self) -> Any:
+        return self._read("read_proposals")
 
 
 def _input_paths(root: Path) -> dict[str, str]:
@@ -306,8 +376,9 @@ def capture_owner_bundle(root: Path, *, owner_readers=None, effective_at: str, k
     graph_hashes = {k: v["sha256"] for k, v in sources.items() if k.startswith("graph/")}
     graph_capture_id = "adapter-snapshot:" + theme_state.canonical_sha256(graph_hashes)
     query = {"effective_at": effective_at, "known_at": known_at}
+    capture_view = _CaptureStoreView(view)
     for node_id, subject in subjects.items():
-        reads = {"ontology": _attempt(ontology.compose_neighborhood, view, node_id=node_id, asof=effective_at[:10], knowledge_cutoff=known_at[:10]), "identity": identity_reads}
+        reads = {"ontology": _attempt(ontology.compose_neighborhood, capture_view, node_id=node_id, asof=effective_at[:10], knowledge_cutoff=known_at[:10]), "identity": identity_reads}
         basket = subject["basket"]
         reads["membership"] = _native_members(basket["basket_id"], basket["suite"], effective_at) if basket else {"availability": "UNAVAILABLE", "null_reason": "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE", "value": None}
         family = rights.family_for_node_id(node_id)
@@ -717,7 +788,8 @@ def _assemble_from_bundle(snapshot: dict) -> tuple:
                 generations[owner] = generation
         native_observations[node_id] = native
         source_dispositions[node_id] = _source_dispositions(native, qualified_sources, narrative_source, observations)
-        inputs.append({"node_id": node_id, **{k: subject[k] for k in ("kind", "name_en", "name_zh", "source_family", "native_id")}, "owners": owners, "observations": observations, "canonical_aggregation": None})
+        name_en, name_zh = _assembled_labels(node_id, subject["name_en"], subject["name_zh"])
+        inputs.append({"node_id": node_id, "kind": subject["kind"], "name_en": name_en, "name_zh": name_zh, "source_family": subject["source_family"], "native_id": subject["native_id"], "owners": owners, "observations": observations, "canonical_aggregation": None})
     return inputs, generations, native_observations, source_dispositions
 
 
@@ -742,6 +814,20 @@ def _assert_state_matches_bundle(state: dict, bundle: OwnerBundle) -> tuple:
             k: v for k, v in expected.items() if k not in owner_lineage}):
         raise ValueError("state differs from deterministic owner bundle assembly")
     return snapshot, native, dispositions
+
+
+def compose_state_only_from_owner_bundle(bundle: OwnerBundle, *, generated_at: str, previous=None) -> dict:
+    """theme_state/v1 only (seat ruling G1-RC1, 2026-10-06): the same snapshot, clock guard,
+    assembly and compose_state call as compose_from_owner_bundle, without the legacy
+    baseline/projection/shadow comparison. Byte-equal to compose_from_owner_bundle(...)["state"]
+    (pinned by tests/test_build_thematic_state_shadow_graph_state.py)."""
+    snapshot = bundle.snapshot()
+    _clock(generated_at, precise=True)
+    if _clock(generated_at, precise=True) < _clock(snapshot["observed_at"], precise=True):
+        raise ValueError("generation emission precedes actual owner capture")
+    inputs, generations, _native_observations, _dispositions = _assemble_from_bundle(snapshot)
+    return theme_state.compose_state(inputs, graph_generation_id=snapshot["graph_capture_id"], owner_generations=generations,
+                                     **snapshot["query"], generated_at=generated_at, previous=previous)
 
 
 def compose_from_owner_bundle(bundle: OwnerBundle, *, generated_at: str, previous=None) -> dict:

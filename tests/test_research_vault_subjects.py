@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 
 import pytest
 
@@ -211,6 +211,89 @@ def test_resolution_refuses_unusable_publication_clock(published_at):
             alias_vendor="membership",
             published_at=published_at,
         )
+
+
+@pytest.mark.parametrize(
+    "published_at",
+    [
+        "2026-01-14Tnot-a-time",
+        "2026-01-14T",
+        "2026-01-14T25:00",
+        "2026-01-14T10:61",
+        "2026-01-14T10:00:61",
+        "2026-01-14T10:00:00+24:00",
+        "2026-01-14T10:00:00Zjunk",
+        "2026-01-14T10:00:00 2026-01-15T10:00:00",
+        "2026-01-14T10:00:00+5",
+        "2026-01-14T2026-01-14",
+    ],
+)
+def test_resolution_refuses_malformed_publication_timestamp(published_at):
+    candidate = subjects.discover_candidates(
+        report_id="bad-timestamp",
+        source_tickers=["NVDA"],
+    )
+    with pytest.raises(ValueError):
+        subjects.resolve_candidates(
+            candidate,
+            aliases=VendorAliasTable([]),
+            alias_vendor="membership",
+            published_at=published_at,
+        )
+
+
+def test_malformed_clock_never_reaches_exact_alias_resolution():
+    table = VendorAliasTable([
+        AliasRow(
+            "membership",
+            "MMC",
+            "SEC:US-XNYS-MMC",
+            None,
+            date(2026, 1, 14),
+        ),
+        AliasRow(
+            "membership",
+            "MRSH",
+            "SEC:US-XNYS-MMC",
+            date(2026, 1, 14),
+            None,
+        ),
+    ])
+    candidate = subjects.discover_candidates(
+        report_id="rename-report",
+        source_tickers=["MMC"],
+    )
+    with pytest.raises(ValueError):
+        subjects.resolve_candidates(
+            candidate,
+            aliases=table,
+            alias_vendor="membership",
+            published_at="2026-01-14Tnot-a-time",
+        )
+
+
+@pytest.mark.parametrize(
+    ("published_at", "expected"),
+    [
+        ("2026-01-14", date(2026, 1, 14)),
+        ("2026-01-14T10", date(2026, 1, 14)),
+        ("2026-01-14T10:00:00", date(2026, 1, 14)),
+        ("2026-01-14T10:00:00Z", date(2026, 1, 14)),
+        ("2026-01-14T10:00:00+05:00", date(2026, 1, 14)),
+        ("2026-01-14T10:00:00.123456-05:00", date(2026, 1, 14)),
+        ("2026-01-14T23:30:00+14:00", date(2026, 1, 14)),
+        ("2026-01-13T23:30:00-12:00", date(2026, 1, 13)),
+        (date(2026, 1, 14), date(2026, 1, 14)),
+        (datetime(2026, 1, 14, 23, 0), date(2026, 1, 14)),
+    ],
+)
+def test_publication_date_keeps_the_written_date(published_at, expected):
+    assert subjects._publication_date(published_at) == expected
+
+
+def test_publication_date_refuses_basic_form_timestamp():
+    with pytest.raises(ValueError):
+        subjects._publication_date("20260114T10:00:00")
 
 
 def test_resolution_refuses_implicit_vendor_choice():

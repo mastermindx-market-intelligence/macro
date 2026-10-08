@@ -1,16 +1,22 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-06T17:11:17.700783+00:00",
-  "posts_seen": 15,
-  "seen_total": 268,
-  "evaluated": 1,
+  "as_of": "2026-10-08T22:04:24.525030+00:00",
+  "posts_seen": 17,
+  "seen_total": 277,
+  "evaluated": 2,
   "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-10-06-what-they-are-saying-president-trump-delivers-immediate-diesel-relief-saving-ame",
+      "id": "wh-2026-10-08-president-trump-is-putting-american-industry-jobs-and-paychecks-back-on-the-map",
       "importance": 72,
       "activated": true,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-08-president-trump-presents-national-medals-of-science-and-national-medals-of-techn",
+      "importance": 5,
+      "activated": false,
       "degraded_reason": "served_by:deepseek"
     }
   ]

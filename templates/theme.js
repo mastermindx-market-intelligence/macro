@@ -5849,6 +5849,8 @@
     });
   }, true);
   window.addEventListener('resize', function () { if (isOpen()) hide(); });
+  // Fragment navigation ends a transient explanation, including a pending hover.
+  window.addEventListener('hashchange', hide);
 
   /* Upgrade the legacy help() icons site-wide to this same popover system.
      The old help() macro renders EXACTLY

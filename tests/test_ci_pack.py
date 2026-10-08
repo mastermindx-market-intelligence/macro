@@ -4620,6 +4620,22 @@ CURATED_EXCLUSIVE = {
     # opaque code fallback, so every ordinary code PR selected it. The exact
     # closure is now declared; packing ceilings remain unchanged.
     "regime-outlook-mapping",
+    # 2026-10-07 PB-D event-quality implementation (#8576): one gate:code
+    # job owns all four PB-D suites. Its exclusive declaration covers the
+    # measured 50-path import/read closure; packing ceilings stay unchanged.
+    "pb-d-event-quality",
+    # 2026-10-07 Package N #8454: Terminal per-ticker news qbus correctness kernel.
+    # gate:code home for the twenty-two ticker-news/qbus suites; scope: exclusive
+    # so inference does not smear the measured import closure across ordinary code
+    # PRs. paths: are the job's suite import closure; the cover-their-own-import-
+    # closure test keeps that list honest as the tree moves.
+    "ticker-news-qbus",
+    # 2026-10-07 RS source delivery: retain the reviewed source-owner inventory.
+    # Exact inventory only; scope audits and packing ceilings remain unchanged.
+    "entry-radar-rs-pullback-calendar",
+    # 2026-10-07 RS source delivery: Register the reviewed native-reference owner and its complete declared read closure.
+    # Exact inventory only; scope audits and packing ceilings remain unchanged.
+    "dataos-prospective-reference",
 }
 
 
@@ -4787,9 +4803,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 134, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 132, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 127, 5_600),
+    ("templates/index.html", 135, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 133, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 128, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5372,6 +5388,31 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     probe (134 -> 135) without selecting ci-control-plane-contracts.
     Nothing was re-measured and no ceiling moved. integration-baseline.yml
     still runs this file on main.
+
+    PR #8596 (2026-10-07): ``integrated-answer-v0`` (w4, ``gate: code``,
+    Package I v0 composer, default-off) joins the manifest with ordinary
+    ``paths:`` inference. Its one suite imports app.integrated_answer,
+    app.forensics and tests.test_company_theme_exposure; the declared
+    closure is 628 owned paths, none of them a probe, plus the whole-tree
+    fallback smear (admin/**, app/**, collectors/**, config/**, ...). It
+    rides all three probes on that FALLBACK tier only, +1 job / +4..7
+    weight each. Re-measured, full manifest, inference on, on the PR's
+    merge with main 96261883bee:
+
+        templates/index.html          134 -> 135 jobs, 5,673 weight
+        scripts/build_free_content.py 132 -> 133 jobs, 5,419 weight
+        engine/prophet/plan_book.py   127 -> 128 jobs, 5,379 weight
+
+    JOB ceilings re-based to measurement (135 / 133 / 128), the #8322
+    shape: the entrant is a fallback-tier smear, so by the standing rule
+    it is a curation candidate, and this entry funds the headroom so the
+    default-off composer lands green. The curation follow-on is named
+    integrated-answer-v0-scope (a ``scope: exclusive`` declaration must
+    cover the 628-path closure, which is why it has none here). WEIGHT and
+    PACK ceilings stay unmoved (5,800 / 5,600 / 5,600 and 10 packs):
+    weights are 5,673 / 5,419 / 5,379, packs are 10 / 10 / 9. All three
+    job bounds are full again, so the next entrant needs a decision
+    recorded here, not a reflexive bump.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
