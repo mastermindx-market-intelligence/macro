@@ -8862,6 +8862,7 @@ jobs:
       - scripts/build_dt_contra_state.py
       - scripts/build_subsector_membership.py
       - scripts/build_theme_graph.py
+      - scripts/ci/daily_engine_regional_desk_builders.sh
       - scripts/correct_gmi_identity_lineage.py
       - scripts/publish_company_theme_exposure_r2.py
       - scripts/seed_china_ths_baskets.py
