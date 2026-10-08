@@ -1,0 +1,130 @@
+{
+  "document_kind": "non_executable_registration_intake_specimen",
+  "canonical_schema": false,
+  "operation": "prophet-frontier-hypotheses-20260926-sol-001",
+  "hypothesis_version": "H1-peer-participation-acceleration/v0.1",
+  "status": "SPECIFIED_FOR_REGISTRATION_INTAKE",
+  "run_allowed": false,
+  "numerical_results": "UNCOMPUTED",
+  "empirical_carrier": "macro#7288 comment5852069727",
+  "parent_carrier": "macro#6817 comment5852024147",
+  "q_primary": [
+    "Q05",
+    "Q10"
+  ],
+  "q_attribution": [
+    "Q02"
+  ],
+  "build_owners": [
+    "B09:GMI/Group Reads",
+    "B10:Conditional Fusion",
+    "B06:Evaluation"
+  ],
+  "downstream_held": [
+    "B11"
+  ],
+  "population": {
+    "market": "US",
+    "cohort": "curated",
+    "signal_class": "momentum",
+    "grain": "candidate-date landmark",
+    "requires_explicit_source_label": true,
+    "candidate_key": [
+      "stamp_date",
+      "ticker",
+      "board_definition"
+    ],
+    "economic_issuer_mapping": "owner-issued, required",
+    "no_synthetic_episode_ids": true
+  },
+  "feature": {
+    "name": "ex_issuer_peer_breadth_acceleration",
+    "window_now_sessions": 5,
+    "window_previous_sessions": 5,
+    "formula": "a = b_now - b_prev; breadth = fixed-owner-weight share of peer issuers outperforming same-endpoint SPY",
+    "membership": "one owner-declared primary group, same decision-eligible snapshot and weights in both windows",
+    "exclude": "all listings of the focal economic issuer",
+    "unavailable": "typed null; never measured zero"
+  },
+  "comparison": {
+    "configurations": [
+      "C0 own-price/industry/coverage baseline",
+      "C1 C0 information plus current ex-issuer peer breadth",
+      "C2 C1 information plus breadth acceleration"
+    ],
+    "primary": "C2-C1",
+    "auxiliary_cannot_rescue": [
+      "C0 comparisons",
+      "incumbent on genuinely comparable scored domain"
+    ],
+    "model_proposal": "date-weighted ridge; intercept unpenalized; training-only standardization; lambda=1; no tuning sweep",
+    "fit_manifest": null,
+    "common_unavailable_peer_fallback": "C0 for both policies"
+  },
+  "endpoint": {
+    "k": 5,
+    "horizon_sessions": 10,
+    "statistic": "equally date-weighted paired difference in decision-frozen top-five SPY-excess marks",
+    "net_return_claim": false,
+    "missing_selected_label": "unresolved paired date; do not reselect sixth-ranked name or call unknown cash",
+    "secondary": "coverage, concentration, downside, turnover/fillability context; cannot rescue primary"
+  },
+  "consumer": {
+    "module": "engine.us_prophet_grades",
+    "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+    "blob": "da7d1f625dc3d20431806502d9f36be82973ffa2",
+    "read_function": "load_grades",
+    "grade_key": [
+      "stamp_date",
+      "ticker",
+      "board_definition",
+      "horizon"
+    ],
+    "existing_ruler": "grade_row -> engine.grading.forward_metrics",
+    "write_functions_prohibited": [
+      "run",
+      "append_grades"
+    ],
+    "unresolved_benchmark_caveat": "SPY reindex/ffill; require exact endpoint/calendar witness or owner-versioned correction"
+  },
+  "registration": {
+    "trial_id": null,
+    "source_manifest": null,
+    "rights_receipt": null,
+    "train_dates": null,
+    "calibration_dates": null,
+    "test_dates": null,
+    "formal_look_rule": null,
+    "minimum_worthwhile_gain": null,
+    "maximum_tolerated_harm": null,
+    "inference_and_precision_rule": null,
+    "independent_review": null,
+    "runtime_binding": null,
+    "environment_lock": null,
+    "comparison_budget_acceptance": null
+  },
+  "authority": {
+    "production_source_write": false,
+    "ranking": false,
+    "entry": false,
+    "b4": false,
+    "sizing": false,
+    "trade": false,
+    "paper_edit": false,
+    "protected_outcome_read": false,
+    "worker_launch": false
+  },
+  "gates": [
+    "B09 original membership, primary-group, coverage and two-clock manifest",
+    "B01/Data OS listing/issuer mapping and correction lineage",
+    "B10 exact feature/fit implementation and partition binding",
+    "B06 native key/label maturity and benchmark exactness",
+    "D03 rights",
+    "D06 numeric economic/coverage/inference/look contract",
+    "D07 source/model vintage",
+    "D08 cost/fill/latency contract for any economic claim",
+    "independent review",
+    "admission, workspace, environment and budget"
+  ],
+  "next_action": "Existing Packet3 accepts/rejects the intake and returns the source/registration bindings; no numerical trial starts before those gates close."
+}
