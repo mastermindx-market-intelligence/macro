@@ -21146,6 +21146,7 @@ jobs:
       - "lib/evidence_foundation.py"
       - "scripts/__init__.py"
       - "scripts/query_pb_d_event_quality.py"
+      - "scripts/run_pb_d_example.sh"
       - "tests/test_pb_d_quality.py"
       - "tests/test_pb_d_cohort.py"
       - "tests/test_pb_d_evaluation.py"
@@ -21161,3 +21162,9 @@ jobs:
         run: pip install pytest numpy==2.3.5 pyyaml jsonschema==4.26.0
       - name: PB-D quality, cohort, evaluation and executable consumer
         run: python -m pytest tests/test_pb_d_quality.py tests/test_pb_d_cohort.py tests/test_pb_d_evaluation.py tests/test_pb_d_consumer.py -q
+      - name: PB-D operator example from a foreign working directory
+        run: |
+          pbd_launcher="$PWD/scripts/run_pb_d_example.sh"
+          pbd_python="$(python -c 'import sys; print(sys.executable)')"
+          cd /tmp
+          bash "$pbd_launcher" --python "$pbd_python"
