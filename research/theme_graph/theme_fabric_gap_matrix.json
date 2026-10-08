@@ -6,10 +6,46 @@
   "owner": "WS:GMI-THEME-GRAPH",
   "research_operation": "theme-fabric-completion-research-20261007-web-001",
   "research_package_review": {
-    "status": "CANDIDATE_PENDING_ADVERSARIAL_REVIEW",
-    "scope": "three research artifacts; no implementation acceptance"
+    "status": "PASS",
+    "scope": "records-only research; parent Theme Fabric incomplete",
+    "initial_verdict": "REQUEST_CHANGES",
+    "repair_scope": "F01 any-parent diagnostic; F02 basket count label; F03 direct references; F04 integrated locator",
+    "reviewer": "independent final_adversarial research-review lane",
+    "targeted_review_receipt_sha256": "236345da621bd5054c4adf397f41c54efceee328b56e23ba8259d21696d2f117",
+    "targeted_review_verdict": "PASS; all F01-F04 resolved; D03 content-versus-measurement clarification accepted",
+    "accepted_repaired_content_sha256": {
+      "THEME_FABRIC_COMPLETION_RESEARCH_2026-10-07.md": "17a6e2a213858c704411f87db74aabc18d74c14579ba1e5e5f7cdbf85fa41acf",
+      "theme_fabric_gap_matrix.json": "7291178764e7b91b9321ceaee56f4517ce16e83baa9cb0f77d1ee5e99de8f69b",
+      "THEME_FABRIC_CONVERGENCE_HANDOFF_2026-10-07.md": "ce229d262e004940ed5c1e29f75afb5757a532e4e883f0552d1a2e242125d900"
+    },
+    "final_metadata_delta": "Review/publication status only; exact final source head and immutable file digests recorded in the carrying PR",
+    "acceptance_scope": "Research and decision architecture only; no ontology admission, implementation acceptance or action authority",
+    "initial_findings": [
+      {
+        "id": "F01",
+        "severity": "MAJOR",
+        "disposition": "REPAIRED: inherited versus current any-parent diagnostics and surgical-robotics path"
+      },
+      {
+        "id": "F02",
+        "severity": "NONBLOCKING",
+        "disposition": "REPAIRED: all-forward-reference count renamed basket_ids_n"
+      },
+      {
+        "id": "F03",
+        "severity": "NONBLOCKING",
+        "disposition": "REPAIRED: direct data/code evidence refs"
+      },
+      {
+        "id": "F04",
+        "severity": "NONBLOCKING",
+        "disposition": "REPAIRED: integrated ThemeState locator"
+      }
+    ],
+    "original_reviewed_commit": "884db54012fad23360d20b1f71f9f8ea7f1b405c",
+    "initial_review_sha256": "bea22bad2c2d8bd617cf10f6f2499f55a8fbfbb080ec5a10daf67aa2805ea20b"
   },
-  "research_scope_complete": false,
+  "research_scope_complete": true,
   "parent_theme_fabric_mission_complete": false,
   "pins": {
     "protected_master": "c7e47c859eb2925c5626931fd511800773ba09ac",
@@ -58,7 +94,7 @@
     {
       "Capability": "Microtheme membership",
       "State at evidence boundary": "NOT_BUILT/admitted for W-C4 V1",
-      "Discriminating evidence": "V1 blocks micro ticker membership and basket EXPRESSES; 0/48/20 substrate reconciliation",
+      "Discriminating evidence": "V1 blocks micro ticker membership and basket EXPRESSES; inherited 0/48/20 plus current any-parent 0/49/19 reconciliation",
       "Remaining gate": "Explicit amendment to incumbent admission/read law and curated group/slice evidence"
     },
     {
@@ -168,127 +204,145 @@
         "theme_id": "ai_semiconductors",
         "primary_basket_id": "ai_semiconductors",
         "current_primary_members_n": 12,
-        "other_price_proxy_basket_n": 2,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 2,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "memory_storage",
         "primary_basket_id": "memory_storage",
         "current_primary_members_n": 4,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "semicap_equipment",
         "primary_basket_id": "semicap_equipment",
         "current_primary_members_n": 16,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "data_center_power",
         "primary_basket_id": "data_center_power",
         "current_primary_members_n": 8,
-        "other_price_proxy_basket_n": 2,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 2,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "nuclear_power",
         "primary_basket_id": "nuclear_power",
         "current_primary_members_n": 9,
-        "other_price_proxy_basket_n": 2,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 2,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "grid_electrification",
         "primary_basket_id": "power_grid",
         "current_primary_members_n": 24,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "cybersecurity",
         "primary_basket_id": "cybersecurity",
         "current_primary_members_n": 10,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "defense_aerospace",
         "primary_basket_id": "defense",
         "current_primary_members_n": 21,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "robotics_automation",
         "primary_basket_id": "robotics_automation",
         "current_primary_members_n": 12,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "glp1_obesity",
         "primary_basket_id": "obesity_glp1",
         "current_primary_members_n": 14,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "fintech_payments",
         "primary_basket_id": "payments_fintech",
         "current_primary_members_n": 21,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "space_satellite",
         "primary_basket_id": "space_economy",
         "current_primary_members_n": 15,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "rare_earth_critical_min",
         "primary_basket_id": "critical_minerals",
         "current_primary_members_n": 11,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "copper_steel_electrify",
         "primary_basket_id": null,
         "current_primary_members_n": null,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "ag_fertilizer",
         "primary_basket_id": null,
         "current_primary_members_n": null,
-        "other_price_proxy_basket_n": 0,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 0,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "medical_devices",
         "primary_basket_id": null,
         "current_primary_members_n": null,
-        "other_price_proxy_basket_n": 1,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 1,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "diagnostics_lifesci",
         "primary_basket_id": null,
         "current_primary_members_n": null,
-        "other_price_proxy_basket_n": 0,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 0,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       },
       {
         "theme_id": "solar",
         "primary_basket_id": null,
         "current_primary_members_n": null,
-        "other_price_proxy_basket_n": 0,
-        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership"
+        "interpretation": "primary membership diagnostic only; basket_ids includes economic proxies, so never reverse all basket_ids into canonical semantic membership",
+        "basket_ids_n": 0,
+        "basket_ids_count_basis": "all declared forward basket references, including primary when present; not additional proxies or semantic memberships"
       }
     ],
     "canonical_primary_counts": {
@@ -1518,6 +1572,29 @@
         "can_add_candidates": false,
         "can_escalate": false
       }
+    },
+    "current_any_parent_primary_diagnostic": {
+      "exact_identity_micro_cohorts_established_n": 0,
+      "broad_parent_proxy_n": 49,
+      "no_primary_basket_through_any_parent_n": 19,
+      "definition": "For each exact W-C4 micro, inspect every parent against the pinned current canonical primary-basket map; primary members remain a broad proxy, never admitted micro membership",
+      "inherited_diagnostic_retained": {
+        "IDENTITY": 0,
+        "PROXY": 48,
+        "NONE": 20
+      },
+      "changed_from_inherited": [
+        "theme:surgical_robotics_systems"
+      ],
+      "reason": "Inherited surgical-robotics row kept medical_devices only and omitted robotics_automation parent",
+      "evidence_refs": [
+        "G10",
+        "G12",
+        "G16",
+        "G34"
+      ],
+      "semantic_membership_admitted": false,
+      "measurement_qualified": false
     }
   },
   "ontology_decisions": [
@@ -1555,7 +1632,7 @@
       "named_consumer": "F04; semiconductor vertical; ThemeState only with sufficient cohort",
       "non_duplication": "Prospective hbm_memory and advanced_packaging_services; preserve old ID history; countersign shared slice migration",
       "lawful_provenance": "S03,S07,S11",
-      "falsifier": "Defer if owner cannot disentangle source identities or public HBM cohort is too thin; do not pad it with GPU customers/packagers"
+      "falsifier": "Defer content if source identities or semantic cohort/consumer evidence cannot be established; thin cohorts independently block measurements; never pad with GPU customers/packagers"
     },
     {
       "decision": "D04 SPLIT/ADD REVIEW optical versus switching interconnect",
@@ -1756,7 +1833,26 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:ai_semiconductors",
+          "primary_basket_id": "ai_semiconductors",
+          "current_parent_primary_members_n": 12
+        },
+        {
+          "parent_theme_id": "theme:memory_storage",
+          "primary_basket_id": "memory_storage",
+          "current_parent_primary_members_n": 4
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:gpu_merchant_accelerators",
@@ -1774,7 +1870,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:ai_semiconductors",
+          "primary_basket_id": "ai_semiconductors",
+          "current_parent_primary_members_n": 12
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:ai_interconnect_silicon",
@@ -1792,7 +1902,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:ai_semiconductors",
+          "primary_basket_id": "ai_semiconductors",
+          "current_parent_primary_members_n": 12
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:custom_asic_silicon",
@@ -1810,7 +1934,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:ai_semiconductors",
+          "primary_basket_id": "ai_semiconductors",
+          "current_parent_primary_members_n": 12
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:conventional_dram",
@@ -1828,7 +1966,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:memory_storage",
+          "primary_basket_id": "memory_storage",
+          "current_parent_primary_members_n": 4
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:nand_enterprise_storage",
@@ -1846,7 +1998,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:memory_storage",
+          "primary_basket_id": "memory_storage",
+          "current_parent_primary_members_n": 4
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:lithography_tools",
@@ -1864,7 +2030,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:semicap_equipment",
+          "primary_basket_id": "semicap_equipment",
+          "current_parent_primary_members_n": 16
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:etch_deposition_equipment",
@@ -1882,7 +2062,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:semicap_equipment",
+          "primary_basket_id": "semicap_equipment",
+          "current_parent_primary_members_n": 16
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:process_metrology_inspection",
@@ -1900,7 +2094,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:semicap_equipment",
+          "primary_basket_id": "semicap_equipment",
+          "current_parent_primary_members_n": 16
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:wafer_fab_subsystems",
@@ -1918,7 +2126,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:semicap_equipment",
+          "primary_basket_id": "semicap_equipment",
+          "current_parent_primary_members_n": 16
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:liquid_cooling_thermal",
@@ -1936,7 +2158,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:data_center_power",
+          "primary_basket_id": "data_center_power",
+          "current_parent_primary_members_n": 8
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:hv_transformers_switchgear",
@@ -1955,7 +2191,26 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:data_center_power",
+          "primary_basket_id": "data_center_power",
+          "current_parent_primary_members_n": 8
+        },
+        {
+          "parent_theme_id": "theme:grid_electrification",
+          "primary_basket_id": "power_grid",
+          "current_parent_primary_members_n": 24
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:ups_power_conversion",
@@ -1973,7 +2228,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:data_center_power",
+          "primary_basket_id": "data_center_power",
+          "current_parent_primary_members_n": 8
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:reactor_technology",
@@ -1991,7 +2260,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:nuclear_power",
+          "primary_basket_id": "nuclear_power",
+          "current_parent_primary_members_n": 9
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:nuclear_components",
@@ -2009,7 +2292,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:nuclear_power",
+          "primary_basket_id": "nuclear_power",
+          "current_parent_primary_members_n": 9
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:fuel_cycle",
@@ -2027,7 +2324,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:nuclear_power",
+          "primary_basket_id": "nuclear_power",
+          "current_parent_primary_members_n": 9
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:grid_distribution_automation",
@@ -2045,7 +2356,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:grid_electrification",
+          "primary_basket_id": "power_grid",
+          "current_parent_primary_members_n": 24
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:transmission_hvdc_cabling",
@@ -2063,7 +2388,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:grid_electrification",
+          "primary_basket_id": "power_grid",
+          "current_parent_primary_members_n": 24
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:endpoint_security",
@@ -2081,7 +2420,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:cybersecurity",
+          "primary_basket_id": "cybersecurity",
+          "current_parent_primary_members_n": 10
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:network_security",
@@ -2099,7 +2452,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:cybersecurity",
+          "primary_basket_id": "cybersecurity",
+          "current_parent_primary_members_n": 10
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:identity_access_management",
@@ -2117,7 +2484,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:cybersecurity",
+          "primary_basket_id": "cybersecurity",
+          "current_parent_primary_members_n": 10
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:cloud_security",
@@ -2135,7 +2516,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:cybersecurity",
+          "primary_basket_id": "cybersecurity",
+          "current_parent_primary_members_n": 10
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:missiles_munitions_effects",
@@ -2153,7 +2548,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:defense_aerospace",
+          "primary_basket_id": "defense",
+          "current_parent_primary_members_n": 21
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:missile_propulsion_supply",
@@ -2171,7 +2580,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:defense_aerospace",
+          "primary_basket_id": "defense",
+          "current_parent_primary_members_n": 21
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:defense_sensors_electronics_c2",
@@ -2189,7 +2612,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:defense_aerospace",
+          "primary_basket_id": "defense",
+          "current_parent_primary_members_n": 21
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:autonomous_systems_counter_uas",
@@ -2207,7 +2644,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:defense_aerospace",
+          "primary_basket_id": "defense",
+          "current_parent_primary_members_n": 21
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:naval_shipbuilding",
@@ -2225,7 +2676,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:defense_aerospace",
+          "primary_basket_id": "defense",
+          "current_parent_primary_members_n": 21
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:aerospace_components_aftermarket",
@@ -2243,7 +2708,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:defense_aerospace",
+          "primary_basket_id": "defense",
+          "current_parent_primary_members_n": 21
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:military_space_communications",
@@ -2262,7 +2741,26 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:defense_aerospace",
+          "primary_basket_id": "defense",
+          "current_parent_primary_members_n": 21
+        },
+        {
+          "parent_theme_id": "theme:space_satellite",
+          "primary_basket_id": "space_economy",
+          "current_parent_primary_members_n": 15
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:machine_vision",
@@ -2280,7 +2778,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:robotics_automation",
+          "primary_basket_id": "robotics_automation",
+          "current_parent_primary_members_n": 12
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:industrial_motion_controls",
@@ -2298,7 +2810,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:robotics_automation",
+          "primary_basket_id": "robotics_automation",
+          "current_parent_primary_members_n": 12
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:collaborative_robot_arms",
@@ -2316,7 +2842,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:robotics_automation",
+          "primary_basket_id": "robotics_automation",
+          "current_parent_primary_members_n": 12
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:industrial_robot_arms",
@@ -2334,7 +2874,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:robotics_automation",
+          "primary_basket_id": "robotics_automation",
+          "current_parent_primary_members_n": 12
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:precision_actuators_servo_motors",
@@ -2352,7 +2906,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:robotics_automation",
+          "primary_basket_id": "robotics_automation",
+          "current_parent_primary_members_n": 12
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:surgical_robotics_systems",
@@ -2371,7 +2939,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:robotics_automation",
+          "primary_basket_id": "robotics_automation",
+          "current_parent_primary_members_n": 12
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:glp1_incretin_therapies",
@@ -2389,7 +2971,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:glp1_obesity",
+          "primary_basket_id": "obesity_glp1",
+          "current_parent_primary_members_n": 14
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:oral_glp1_formulations",
@@ -2407,7 +3003,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:glp1_obesity",
+          "primary_basket_id": "obesity_glp1",
+          "current_parent_primary_members_n": 14
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:glp1_api_manufacturing",
@@ -2425,7 +3035,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:glp1_obesity",
+          "primary_basket_id": "obesity_glp1",
+          "current_parent_primary_members_n": 14
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:cardiorenal_metabolic_indications",
@@ -2443,7 +3067,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:glp1_obesity",
+          "primary_basket_id": "obesity_glp1",
+          "current_parent_primary_members_n": 14
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:fill_finish_delivery_devices",
@@ -2461,7 +3099,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:glp1_obesity",
+          "primary_basket_id": "obesity_glp1",
+          "current_parent_primary_members_n": 14
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:launch_services",
@@ -2479,7 +3131,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:space_satellite",
+          "primary_basket_id": "space_economy",
+          "current_parent_primary_members_n": 15
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:satellite_broadband_services",
@@ -2497,7 +3163,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:space_satellite",
+          "primary_basket_id": "space_economy",
+          "current_parent_primary_members_n": 15
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:direct_to_device_connectivity",
@@ -2515,7 +3195,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:space_satellite",
+          "primary_basket_id": "space_economy",
+          "current_parent_primary_members_n": 15
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:earth_observation",
@@ -2533,7 +3227,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:space_satellite",
+          "primary_basket_id": "space_economy",
+          "current_parent_primary_members_n": 15
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:satellite_ground_terminals",
@@ -2551,7 +3259,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:space_satellite",
+          "primary_basket_id": "space_economy",
+          "current_parent_primary_members_n": 15
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:rare_earth_separation_refining",
@@ -2569,7 +3291,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:rare_earth_critical_min",
+          "primary_basket_id": "critical_minerals",
+          "current_parent_primary_members_n": 11
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:ndfeb_permanent_magnets",
@@ -2587,7 +3323,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:rare_earth_critical_min",
+          "primary_basket_id": "critical_minerals",
+          "current_parent_primary_members_n": 11
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:critical_mineral_mining_development",
@@ -2605,7 +3355,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:rare_earth_critical_min",
+          "primary_basket_id": "critical_minerals",
+          "current_parent_primary_members_n": 11
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:gallium_germanium_supply_chain",
@@ -2623,7 +3387,21 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "PROXY",
+      "available_primary_parent_paths": [
+        {
+          "parent_theme_id": "theme:rare_earth_critical_min",
+          "primary_basket_id": "critical_minerals",
+          "current_parent_primary_members_n": 11
+        }
+      ],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:copper_mining",
@@ -2641,7 +3419,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:refined_copper",
@@ -2659,7 +3445,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:structural_steel_electrification",
@@ -2677,7 +3471,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:copper_wire_cable",
@@ -2695,7 +3497,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:nitrogen_fertilizer_production",
@@ -2713,7 +3523,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:potash_phosphate_nutrients",
@@ -2731,7 +3549,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:precision_agriculture_platforms",
@@ -2749,7 +3575,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:medical_imaging",
@@ -2767,7 +3601,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:remote_patient_monitoring",
@@ -2785,7 +3627,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:surgical_implants_instruments",
@@ -2803,7 +3653,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:liquid_biopsy_assays",
@@ -2821,7 +3679,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:genomic_sequencing",
@@ -2839,7 +3705,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:proteomics_discovery_platforms",
@@ -2857,7 +3731,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:life_science_lab_instruments",
@@ -2875,7 +3757,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:diagnostic_reagents_kits",
@@ -2893,7 +3783,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:pv_cell_module_manufacturing",
@@ -2911,7 +3809,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:polysilicon_solar_feedstock",
@@ -2929,7 +3835,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:solar_inverters",
@@ -2947,7 +3861,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     },
     {
       "micro_id": "theme:solar_trackers_bos",
@@ -2965,7 +3887,15 @@
       "economic_share": null,
       "trading_beta": null,
       "attention_share": null,
-      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge"
+      "admission_clock_rule": "draft date is not known-at authority; no earlier than actual admission/merge",
+      "current_any_parent_primary_status": "NONE",
+      "available_primary_parent_paths": [],
+      "current_parent_diagnostic_evidence_refs": [
+        "G10",
+        "G16",
+        "G34"
+      ],
+      "parent_proxy_is_micro_membership": false
     }
   ],
   "exposure_architecture": {
@@ -3057,7 +3987,7 @@
         "Axis / claim": "Theme-level aggregate attention, revisions, breadth and flow",
         "Source and incumbent owner to reuse": "One ThemeState owner, using its named legs and incumbent source owners",
         "PIT and denominator requirements": "Unique underlying securities/documents; universe and coverage separate from observed level; freshness and availability gates",
-        "Readiness from inspected evidence": "Parent Track E determines current leg readiness",
+        "Readiness from inspected evidence": "Report §7 and theme_state.leg_matrix determine current leg readiness",
         "Null / refusal condition": "No child-factor multiplication, double-counted conglomerates, fabricated options/institutional feed, or local-label rights laundering",
         "Named consumer and authority": "ThemeState display under its current authority; not ticker exposure storage"
       }
@@ -3530,7 +4460,7 @@
       "gap_id": "GAP-02",
       "category": "census_reconciliation",
       "current_capability_state": "PARTIAL",
-      "observed_gap": "Inherited 69/0/49/20 and 11/7 summaries differ from exact W-C4/current crosswalk",
+      "observed_gap": "Inherited 69/0/49/20 reindexes to68/0/48/20; current any-parent is0/49/19; current canonical primary13/5 differs from inherited11/7",
       "incumbent_owner": "GMI implementation lead; census writers",
       "owned_paths": [
         "research/theme_graph/census/MICRO_MEMBERSHIP_CENSUS_2026-10-07.md",
@@ -3540,11 +4470,14 @@
         "PR8633",
         "PR8635"
       ],
-      "next_action": "Use corrected 68/0/48/20 and 13/5 without repeating census",
+      "next_action": "Preserve inherited68/0/48/20, add any-current-parent0/49/19 and surgical-robotics exception; use current13/5 without repeating census",
       "acceptance_or_falsifier": "68 IDs all matched; only sic_gan_specialty extra; current YAML rows govern",
       "evidence_refs": [
-        "I1",
-        "I3"
+        "G10",
+        "G11",
+        "G12",
+        "G16",
+        "G34"
       ],
       "production_implemented_by_package": false
     },
@@ -3552,7 +4485,7 @@
       "gap_id": "GAP-03",
       "category": "micro_membership",
       "current_capability_state": "NOT_BUILT",
-      "observed_gap": "No exact identity micro cohorts established; 48 parent proxies and 20 no-primary-parent substrate",
+      "observed_gap": "No exact identity micro cohorts established; current any-parent diagnostic49 broad proxies/19 no primary parent; inherited48/20 retained",
       "incumbent_owner": "GMI membership; house/vertical groups; Data OS",
       "owned_paths": [
         "engine/theme_graph/membership_evidence.py",
@@ -3566,8 +4499,12 @@
       "next_action": "Reuse exact qualified group/slice then admit dated binding",
       "acceptance_or_falsifier": "No parent-to-all-children inference or shadow store; semantic-only retained independently of measurement",
       "evidence_refs": [
-        "I3",
-        "I4"
+        "G10",
+        "G12",
+        "G16",
+        "G34",
+        "I4",
+        "C05"
       ],
       "production_implemented_by_package": false
     },
@@ -3587,8 +4524,8 @@
       "next_action": "Inspect incumbent groups/slices before adding cohorts",
       "acceptance_or_falsifier": "Null primary is not absent theme; member-count cutoff does not validate economics",
       "evidence_refs": [
-        "I1",
-        "I3"
+        "G16",
+        "G34"
       ],
       "production_implemented_by_package": false
     },
@@ -3608,7 +4545,8 @@
       "next_action": "Resolve exact issuer/security/listing then classify coverage",
       "acceptance_or_falsifier": "No raw-symbol absence automatically becomes a graph gap or new theme",
       "evidence_refs": [
-        "I3"
+        "G30",
+        "G34"
       ],
       "production_implemented_by_package": false
     },
@@ -3627,7 +4565,11 @@
       "next_action": "Bind diagnostic to named complete/partial population",
       "acceptance_or_falsifier": "Preserve US1586/3069/150/137 and HK/Canada distinctions; unavailable is not empty",
       "evidence_refs": [
-        "R07"
+        "G30",
+        "G31",
+        "G32",
+        "G33",
+        "C01"
       ],
       "production_implemented_by_package": false
     },
@@ -3807,7 +4749,8 @@
       "next_action": "Add population/identity/mechanism/overlap/PIT/rights/falsifier packet profile",
       "acceptance_or_falsifier": "Deterministic keep-first history; no daily-ID evasion or machine ratification",
       "evidence_refs": [
-        "I3"
+        "G38",
+        "C03"
       ],
       "production_implemented_by_package": false
     },
@@ -3831,6 +4774,10 @@
       "next_action": "Extend existing shells/readers with version migration and separate semantic/exposure/state views",
       "acceptance_or_falsifier": "Natural source-generation-gateway-view proof; no score/order/gate change or page sprawl",
       "evidence_refs": [
+        "G39",
+        "C02",
+        "C04",
+        "C05",
         "R07"
       ],
       "production_implemented_by_package": false
@@ -3851,6 +4798,9 @@
       "next_action": "Retain refusal or resolve exact incumbent source/purpose admission",
       "acceptance_or_falsifier": "No permissive export fallback; only completeness proof permits valid empty",
       "evidence_refs": [
+        "G40",
+        "G41",
+        "G05",
         "R07"
       ],
       "production_implemented_by_package": false
@@ -4229,7 +5179,7 @@
   "red_team": [
     {
       "Challenge": "More labels could masquerade as completion",
-      "Finding / repair built into this plan": "68 micros retained for navigation; 0 exact / 48 proxy / 20 absent-parent-substrate measured separately",
+      "Finding / repair built into this plan": "68 micros retained for navigation; inherited 0/48/20 and current any-parent 0/49/19 kept separate",
       "Remaining falsifier or owner gate": "A qualified cohort and consumer must exist before a measured micro capability is claimed"
     },
     {
@@ -5248,6 +6198,53 @@
         "title": "Cohen and Frazzini (2008): Economic Links and Predictable Returns",
         "url": "https://people.stern.nyu.edu/afrazzin/pdf/Economic%20Links%20and%20Predictable%20Returns%20-%20Cohen%20and%20Frazzini.pdf",
         "finding": "Original documented customer-supplier research motivates economic-link controls; historic return results are not transferred to current Theme Fabric."
+      }
+    ],
+    "consumer_sources": [
+      {
+        "id": "C01",
+        "repo": "mastermindx-market-intelligence/macro",
+        "commit": "6848743faa613f2aad55d4b4d831b88f8482f89e",
+        "path": "scripts/build_stock_library.py",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6848743faa613f2aad55d4b4d831b88f8482f89e/scripts/build_stock_library.py",
+        "git_blob_sha": "ab362f61746ebe8008ac82c515eec742417dd942",
+        "inspected": "pinned source and cached implementation, bounded source identity recheck"
+      },
+      {
+        "id": "C02",
+        "repo": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a",
+        "path": "terminal/lib/companyThemeExposure.ts",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a/terminal/lib/companyThemeExposure.ts",
+        "git_blob_sha": "671b81a9a5b8f8f9592209c384e1613cbd7b4326",
+        "inspected": "pinned source and cached implementation, bounded source identity recheck"
+      },
+      {
+        "id": "C03",
+        "repo": "mastermindx-market-intelligence/macro",
+        "commit": "6848743faa613f2aad55d4b4d831b88f8482f89e",
+        "path": "engine/theme_graph/probation.py",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6848743faa613f2aad55d4b4d831b88f8482f89e/engine/theme_graph/probation.py",
+        "git_blob_sha": "c313402fc4a781171227aa6465c5944e6d22c4cb",
+        "inspected": "pinned source and cached implementation, bounded source identity recheck"
+      },
+      {
+        "id": "C04",
+        "repo": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a",
+        "path": "terminal/app/api/sector-intelligence/route.ts",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a/terminal/app/api/sector-intelligence/route.ts",
+        "git_blob_sha": "7bbd4a3256f4945da684c6ac20f05e1226d367d8",
+        "inspected": "pinned source and cached implementation, bounded source identity recheck"
+      },
+      {
+        "id": "C05",
+        "repo": "mastermindx-market-intelligence/macro",
+        "commit": "6848743faa613f2aad55d4b4d831b88f8482f89e",
+        "path": "engine/theme_graph/structural_navigation.py",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6848743faa613f2aad55d4b4d831b88f8482f89e/engine/theme_graph/structural_navigation.py",
+        "git_blob_sha": "5f1056e4bade9924cb7f7aeda60f52e75c0f21b0",
+        "inspected": "pinned source and cached implementation, bounded source identity recheck"
       }
     ]
   },

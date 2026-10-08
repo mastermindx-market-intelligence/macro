@@ -2,10 +2,10 @@
 
 **Prepared:** 2026-10-08 UTC. **To:** incumbent GMI implementation lead, `WS:GMI-THEME-GRAPH`.  
 **Research operation:** `theme-fabric-completion-research-20261007-web-001`.  
-**FINALIZATION_CLASSIFICATION:** PENDING_FINAL_RESEARCH_ACCEPTANCE  
-**MISSION_COMPLETE:** false until final review/publication — scoped research commission only.  
+**FINALIZATION_CLASSIFICATION:** PROVEN_OUTCOME (research scope)  
+**MISSION_COMPLETE:** true — scoped research commission only.  
 **PARENT_THEME_FABRIC_MISSION_COMPLETE:** false.  
-**Review status:** CANDIDATE_PENDING_ADVERSARIAL_REVIEW.
+**Review status:** PASS.
 
 ## 1. Outcome and governing contract
 
@@ -74,6 +74,7 @@ A thin public cohort can block a state measurement while the concept remains use
 ### Corrections to preserve
 
 - Exact W-C4 population is **68**, while the research seed/micro census contains **69**. The extra is `sic_gan_specialty`. Its removal changes inherited **0 IDENTITY / 49 PROXY / 20 NONE** to **0 / 48 / 20**.
+- A separate **current any-parent** check yields **0 exact / 49 broad proxies / 19 without a primary basket through any parent**. Surgical robotics has both medical-devices and robotics parents; the inherited table kept only the former. Its robotics proxy is available, but its members do not thereby become micro members.
 - Actual current crosswalk has **13 non-null primary baskets / five nulls**, correcting the inherited **11/7**. Null themes: copper/steel electrification, agriculture/fertilizer, medical devices, diagnostics/life sciences, solar.
 - Four multiple-parent micros remain one subject each. Parent count is not weight or extra sample size.
 - W-C4's draft `asserted_on=2026-10-07` must be reconciled with actual later admission/merge; no retrospective system knowledge. Preserve native source effective/publication clocks separately.
@@ -83,7 +84,7 @@ A thin public cohort can block a state measurement while the concept remains use
 
 | Gap | Evidence that makes it concrete | Next owner/action |
 |---|---|---|
-| Qualified micro membership | 0 exact / 48 broad proxy / 20 no-primary-parent-substrate | GMI + group/vertical membership + Data OS: explicit micro admission amendment, then dated group/slice binding |
+| Qualified micro membership | 0 exact / 49 broad proxy / 19 without a primary basket through any current parent; inherited labels remain 0/48/20 | GMI + group/vertical membership + Data OS: explicit micro admission amendment, then dated group/slice binding |
 | Active-stock identity/coverage | US candidate pool 150 raw symbols: 65 house matches, 21 canonical-primary matches; 85 no house match. 69 also absent from Finviz comparison snapshot | Existing gap engine: exact identity qualification and separate sector/local/canonical/micro/state coverage packet; no automatic theme creation |
 | Full denominator/source completeness | US board 1,586 vs upstream loader 3,069 vs candidate pool 150 vs visible union 137; HK 19 eligible vs 21 visible; Canada 2 eligible vs 18 visible | Incumbent board/selection owners supply defined populations and completeness; retain reported distinctions |
 | Economic attribution | Mixed segments and missing exact product numerator; Walmart advertising metric can mix sales and cost offsets | Existing filing/fundamental/vertical owner: source-bound facts with entity/period/unit/basis; undisclosed share null |
@@ -156,7 +157,7 @@ Final implementation acceptance must discriminate the actual failure modes: futu
 
 **Before:** active hierarchy/census work existed, but the exact economic grain, membership gap, exposure/state/relationship contracts and consumer/validation sequence were fragmented.
 
-**After:** the three-file package supplies a reconciled baseline, 18 explicit decision records, all-68 dispositions, concrete source readiness, a single-owner extension plan, evidence requirements and an executable gated sequence.
+**After:** the three-file package supplies a reconciled baseline, 18 explicit decision records, all-68 dispositions, separate inherited/current-parent diagnostics, concrete source readiness, a single-owner extension plan, evidence requirements and an executable gated sequence.
 
 **Verified:** pinned sources and aggregate calculations; current active heads; 22 unchanged governing blobs at the later main read; source-level consumer and measurement behavior; primary-source mechanisms/accounting/method limits; JSON/document consistency and independent adversarial review as recorded in the carrying PR.
 
