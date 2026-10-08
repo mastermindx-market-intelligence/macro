@@ -341,13 +341,20 @@ tool safety boundary; it was not replayed through another carrier and is **NOT V
 There is no evidence of failure of the focused 26-test set, but the broader sweep is not
 claimed as green. Eight pytest Chromium temporary-cleanup warnings were unrelated.
 
-The implementation is currently **LOCAL_VERIFIED / NOT FLEET-WIDE PROVEN**. PR #8535 is an
-Agent OS evidence-only draft, not the executable kit's source distribution. Green GitHub CI
-and fences on this discovery do not establish that the newest local changes are installed
-on every worker host, selected by all sessions, or production-canary accepted. The active
-remote worker's source manifest referenced the pre-patch `slot.py` hash; no in-flight
-worker was restarted or replaced. Prior permission/safety-denied automatic Go reroute and
-leased-GLM edits remain fenced; this evidence update is not an authorization to retry them.
+The implementation is currently **LOCAL_VERIFIED; SELECTED_ON_UBUNTU2 / NOT FLEET-WIDE
+PROVEN**. PR #8535 is an Agent OS evidence-only draft, not the executable kit's source
+distribution. GitHub CI and fences on this discovery do not establish installation/selection
+across all fleet hosts or production acceptance of each new failure branch. An observed C2
+Grok remote launch for `paper-01a1101f-im05-summary-repair-r2` logged `SCP
+support=executor-surface`, `SUPPORT_VERSION_READY`, a native 3600-second deadline,
+and successful `NATIVE_SSH_RETURN rc=0`; its support manifest includes the exact new
+`slot.py` SHA-256 `783db4d5...` and updated `sub.sh` SHA-256 `3ac95f16...`.
+That proves the newest source package was selected and transported for that Ubuntu2 run,
+**not** that the new lease-invalidity branch executed or that every fleet host has updated.
+The controller/worker was not restarted or duplicated. A separate older remote worker
+still had the earlier slot SHA in its own immutable launch manifest. Prior permission/
+safety-denied automatic Go reroute and leased-GLM edits remain fenced; this evidence update
+is not an authorization to retry them.
 
 ### Verification boundary
 
