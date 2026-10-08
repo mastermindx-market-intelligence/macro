@@ -1649,6 +1649,18 @@
       "at": "2026-10-08T16:28:52.915936+00:00",
       "activated": true,
       "importance": 74
+    },
+    "https://www.whitehouse.gov/?p=52465": {
+      "id": "wh-2026-10-08-president-trump-is-putting-american-industry-jobs-and-paychecks-back-on-the-map",
+      "at": "2026-10-08T22:04:14.296166+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=52459": {
+      "id": "wh-2026-10-08-president-trump-presents-national-medals-of-science-and-national-medals-of-techn",
+      "at": "2026-10-08T22:04:24.521984+00:00",
+      "activated": false,
+      "importance": 5
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

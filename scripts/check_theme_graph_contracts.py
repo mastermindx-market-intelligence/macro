@@ -1229,6 +1229,10 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
                     breaches.append(
                         f"hierarchy: PARENT_OF endpoint {endpoint!r} provenance must "
                         f"be {CROSSWALK_NODE_PROVENANCE!r} (got {prov!r})")
+                if not THEME_NODE_ID_RE.match(endpoint):
+                    breaches.append(
+                        f"hierarchy: PARENT_OF edge {eid!r} endpoint {endpoint!r} "
+                        f"violates theme id grammar theme:<slug>")
             src_tier = tiers_by_node.get(src)
             dst_tier = tiers_by_node.get(dst)
             if (src_tier, dst_tier) not in PARENT_OF_ADJACENT:

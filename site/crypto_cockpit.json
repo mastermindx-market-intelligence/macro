@@ -3,16 +3,16 @@
   "contract_phase": "w0",
   "display_only": true,
   "as_of": "2026-10-08",
-  "generated_at": "2026-10-08T01:12:12+00:00",
+  "generated_at": "2026-10-08T21:42:08+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 83230.94,
-    "change_24h_pct": -0.6,
-    "stance_en": "RISK-ON",
-    "stance_zh": "偏多",
-    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from futures positioning and the macro backdrop. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自期货持仓与宏观环境。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 32,
+    "price": 83065.17,
+    "change_24h_pct": -0.25,
+    "stance_en": "STRONG RISK-ON",
+    "stance_zh": "强烈偏多",
+    "summary_en": "The big picture reads strongly risk-on. Support comes from fundamentals and momentum; the drag comes from futures positioning and the macro backdrop. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向明显偏多。支撑来自基本面与动量；拖累来自期货持仓与宏观环境。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 35,
     "exposure_pct": 100,
     "gate_active": false
   },
@@ -210,9 +210,9 @@
           "label_en": "Holder spread (STH/LTH)",
           "label_zh": "持有者价差",
           "source": "master.board.holders",
-          "state_en": "Distribution",
-          "state_zh": "派发",
-          "tone": "bear",
+          "state_en": "Accumulation",
+          "state_zh": "累积",
+          "tone": "bull",
           "grade": "NEW"
         },
         {
@@ -248,9 +248,9 @@
           "label_en": "Conditional beta",
           "label_zh": "条件贝塔",
           "source": "master.board.beta",
-          "state_en": "Amplifies sell-offs",
-          "state_zh": "放大下跌",
-          "tone": "bear",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "CONFIRMED"
         }
       ]
