@@ -257,7 +257,40 @@ CI/green tests prove only their observed scenario; a Paper board proves static
 design intent, not a usable shipped page. Same-day automated rollout should not
 skip independent review/flagship approval.
 
-## 9. Immediate frontier and explicit holds
+## 9. Existing live implementation carriers — no duplicate builders
+
+Current source-custody reconnaissance (2026-10-08) found real overlapping
+implementation work already in motion. These are **not** new authorizations,
+worker starts or accepted design references:
+
+| Carrier | Current status and affected family | Rule |
+|---|---|---|
+| Macro #7949 | DRAFT/HOLD, shared nav / shell candidate, conflicted with main | existing shell design carrier; no Ready/merge/deploy |
+| Macro #8527 | DRAFT, International Paper workspace / Compare / Inspector inside existing Jinja | potential first regime-family implementation adopter; consume/review its existing work, do not open a second `intl.html.j2` builder |
+| Macro #8241 | DRAFT/HOLD, Paper Bonds R11 duration interaction | preserve Bonds owner; inspect accepted source and browser gaps before shell reflow |
+| Macro #7618 | DRAFT, China mobile control-target work | incumbent `china.html.j2` writer |
+| Macro #8196 | DRAFT, China economy + dialog integration | additional China source collision; reconcile scope before a broad China remake |
+| Macro #8428 | DRAFT, Confluence empty-source/share-card consumer fix | do not overlap Confluence template/builder until this consumer repair is reconciled |
+
+**Pilot-selection implication:** International is a high-value existing Paper-to-Jinja
+source candidate. Test the shell composition against that live carrier *with its
+original owner* after admission; do not replay its implementation on #7949.
+For the dense discovery archetype choose a qualified nonconflicting target or
+wait until the Confluence writer is reconciled; the global shell can be tested
+using a bounded fixture without modifying its incumbent content engine.
+The first template families `dashboard.html.j2` (US Macro + US Stocks modes)
+and `china.html.j2` (China Macro + China Stocks modes) must be verified in
+**both** their output modes. A single-regime screenshot does not accept the
+paired stocks route.
+
+Before each migration wave, recheck live GitHub PR state and the existing
+`docs/ACTIVE_BUILD_MAP.md`. Neither the 2026-09-04 registry snapshot nor
+this census is a durable source lease. UI changes can be implemented by
+admitted owners in independent template scopes; source overlap or unresolved
+effects requires original-carrier reconciliation, not another session taking
+over the same files.
+
+## 10. Immediate frontier and explicit holds
 
 - **Done now:** Chairman broad-scope ruling; whole-site framing; Paper roster
   and source registry census recovered; portal focus-boundary source hardening
