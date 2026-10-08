@@ -12,6 +12,10 @@ import json
 import sys
 from pathlib import Path
 
+# File-path entry must resolve this repository before any in-repo imports.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 from engine.market_microstructure.pressure_response import measure_window
 
 INPUT_SCHEMA = "equity.pressure_response_input/v0"
