@@ -1,6 +1,7 @@
 # shellcheck shell=bash
 # ---------------------------------------------------------------------------
-# scripts/ci/nightly_timings_finish.sh <cap-minutes> — a nightly job's LAST step
+# scripts/ci/nightly_timings_finish.sh <cap-minutes> [creep-budget-minutes] — a
+# nightly job's LAST step
 # (if: always()). W2 of NIGHTLY_RESILIENCE_AND_LIVE_TRANSITION_MASTERPLAN.
 #
 #   1. python3 scripts/nightly_timings.py finish — appends this job's row to
@@ -31,11 +32,16 @@
 # ---------------------------------------------------------------------------
 set -u
 
-CAP="${1:?usage: nightly_timings_finish.sh <cap-minutes>}"
+CAP="${1:?usage: nightly_timings_finish.sh <cap-minutes> [creep-budget-minutes]}"
+# Optional creep budget. Absent => the alarm uses the cap, exactly as before. Present
+# => the 85% tripwire measures against it, so raising a cap for survival headroom
+# cannot silently move the alarm off the workload that forced the raise.
+WARN="${2:-}"
 JOB="${GITHUB_JOB:-local}"
 LEDGER="data/ops/nightly_timings/${JOB}.jsonl"
 
-python3 scripts/nightly_timings.py finish --cap-minutes "$CAP" || {
+python3 scripts/nightly_timings.py finish --cap-minutes "$CAP" \
+  ${WARN:+--warn-minutes "$WARN"} || {
   echo "::warning title=nightly timings finish failed::${JOB}: finish exited $? — no timings row this night (non-fatal)"
   exit 0
 }
