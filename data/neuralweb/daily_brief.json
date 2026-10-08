@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-10-08T14:51:15.170176+00:00",
+  "produced_at": "2026-10-08T16:49:09.751281+00:00",
   "as_of": "2026-10-06",
   "status": "degraded",
   "phase": "final",
@@ -738,7 +738,7 @@
   },
   "china_market_state": {
     "available": true,
-    "as_of": "2026-10-07",
+    "as_of": "2026-10-08",
     "phase": "GRINDING_BEAR",
     "phase_confidence": 0.8,
     "who_controls": "mixed",
@@ -763,7 +763,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-10-07T10:25:04Z",
+    "asof": "2026-10-08T15:29:01Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,
