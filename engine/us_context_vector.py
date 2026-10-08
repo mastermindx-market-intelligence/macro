@@ -361,7 +361,19 @@ def _hierarchy_categories_for_baskets(
                 return {}
             node_rows = graph_store.read_nodes(strict=True)
             edge_rows = graph_store.read_edges(latest_belief=False, strict=True)
-            lifecycle_rows = graph_store.read_node_lifecycle(latest=False)
+            # An absent optional lifecycle sidecar is legitimately empty. A
+            # PRESENT but unreadable sidecar is not: the lenient store reader
+            # otherwise turns corruption into [] and can resurrect a retired
+            # or corrected hierarchy ancestor (same PIT failure family as
+            # W-C8 B2). Preserve the owner's raw historical rows.
+            try:
+                graph_store.node_lifecycle_path().lstat()
+            except FileNotFoundError:
+                lifecycle_rows = []
+            else:
+                lifecycle_rows = graph_store.read_node_lifecycle(
+                    latest=False, strict=True,
+                )
             # One owner snapshot, cached across baskets in the same nightly run.
             view = SimpleNamespace(
                 read_nodes=lambda: node_rows,
