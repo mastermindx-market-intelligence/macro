@@ -5,6 +5,12 @@
 **Research carrier:** [Macro draft PR #8321](https://github.com/mastermindx-market-intelligence/macro/pull/8321).  
 **Status:** second research phase built and independently reviewed. The exact published GEX/C1 run is reproduced; the six-pilot engineering design is specified; isolated mechanics, source-admission and positive-variance references run. A concrete Fable structural packet is prepared for existing-owner acceptance. Empirical data qualification, sealed trials and production implementation remain open.
 
+## Free classified options research assets (8 October 2026)
+
+Two one-session Cboe **C1 research demonstration samples** were acquired and verified on the UUID-pinned 4 TB external Mastermind drive, not under the internal SSD. EOD Open-Close (vendor 20% of 2025-03-28) and trade-by-trade (vendor 3% of that session) are present as **private internal research data only**. The new on-demand `scripts/options_free_source_inventory.py` verifies the acquired SHA/cutover and records honest rights, clocks, population/sample and downstream-authority nulls without publishing source data.
+
+Follow [the external-storage/data-access runbook](../../docs/runbooks/OPTIONS_FREE_SOURCE_EVALUATION.md) and the [source/custody discovery](../../agentos/discoveries/DSC-OPTIONS-C1-FREE-EXTERNAL-SAMPLE-CUSTODY-20261008.md). The existing C0 Options Intelligence owners stay singular. These samples do **not** establish current open/close flow or matched-tenor/delta technology-versus-defensives direction; insufficient defensive ETF TBT sample observations and missing original event/quote availability bar that promotion. The next legitimate integration is an authorized licensed multi-session source through Advanced Data Options, followed by independent options-alpha validation.
+
 ## Executive direction
 
 Options should become a source-linked evidence and risk layer within Mastermind. The immediate value is better observation, honest mechanics, coherent candidate monitoring and expression research. Directional influence must be earned through incremental tests against the actual incumbent model, which may already contain options information. A larger generic options score would not establish that value.
