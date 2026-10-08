@@ -275,3 +275,21 @@ def test_stale_recovery_endpoint_abstains_despite_earlier_depletion():
 def test_source_watermark_cannot_be_observed_before_its_event_time():
     with pytest.raises(ValueError, match="watermark receipt precedes"):
         measure(watermark_seen_ns=340)
+
+
+def test_out_of_window_condition_and_trade_are_not_in_window_denominator():
+    outside = t("outside", 350, eligible=False)
+    outside["eligibility_rules_ref"] = "unrelated-new-rule"
+    res = measure(trades=[t("inside", 130), outside])
+    assert res["n_excluded_revisions_or_conditions"] == {}
+    assert res["condition_policy_refs"] == ["conditions@hash-1"]
+    assert res["n_active_prints"] == 1
+
+
+def test_cross_window_correction_chain_keeps_consistent_asof_scope():
+    original = t("moving", 130)
+    replacement = t("moving", 330, revision=1, action="REPLACE", available=370)
+    early = measure(trades=[original, replacement], decision_ns=350, watermark_seen_ns=350)
+    later = measure(trades=[original, replacement], decision_ns=400)
+    assert early["n_active_prints"] == 1
+    assert later["n_active_prints"] == 0
