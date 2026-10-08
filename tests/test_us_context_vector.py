@@ -940,7 +940,7 @@ from tests.test_theme_graph_hierarchy_paths import (
     FakeStore, _basket, _edge, _local_theme, _parent_of, _theme,
 )
 
-from tests.test_theme_graph_hierarchy import populated_view
+from tests.test_theme_graph_hierarchy import tree, populated_view
 
 
 def _wc7_graph(*, admitted="2026-10-07", second_parent=False,
