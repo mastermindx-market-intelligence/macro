@@ -116,8 +116,13 @@ cl_baskets() {
   # ::warning): the plane is display-tier with all six authority booleans
   # false, so a contract breach must not take the collect lane down. CI runs
   # the same guard with --strict.
+  # Bind the actual checkout immediately before this producer, in this cluster only.
+  THEME_GRAPH_WITNESS_DIR=$(python -c 'from scripts.build_theme_graph import start_nightly_witness; print(start_nightly_witness())')
+  export THEME_GRAPH_WITNESS_ID="${THEME_GRAPH_WITNESS_DIR##*/}"
   brun theme_graph "theme graph nightly materialization (build_theme_graph)" scripts.build_theme_graph
   brun theme_graph_guard "theme graph contract guard (check_theme_graph_contracts)" scripts.check_theme_graph_contracts
+  # Capture now: an unrelated cluster can still exhaust the later wait barrier.
+  python -c 'import sys; from scripts.build_theme_graph import finish_nightly_witness; finish_nightly_witness(*sys.argv[1:])' "$THEME_GRAPH_WITNESS_DIR" "$ART" || echo "::warning::theme graph witness capture unavailable (non-fatal)"
   brun subsector_conf "subsector confluence desk + double-gated funnel (build_subsector_confluence)" scripts.build_subsector_confluence
   brun subsector_conf_ndx "nasdaq-100 subsector confluence desk (build_subsector_confluence --nasdaq)" scripts.build_subsector_confluence --nasdaq
   brun subsector_conf_rut "russell-2000 subsector confluence desk (build_subsector_confluence --russell)" scripts.build_subsector_confluence --russell
