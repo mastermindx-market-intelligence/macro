@@ -1,6 +1,5 @@
 """TP-1 scalar equity NBBO classifier: fail-closed, not actor identification."""
 
-import numpy as np
 import pytest
 
 from engine.flow_signing import classify_print, quote_rule_sign
