@@ -293,3 +293,18 @@ def test_cross_window_correction_chain_keeps_consistent_asof_scope():
     later = measure(trades=[original, replacement], decision_ns=400)
     assert early["n_active_prints"] == 1
     assert later["n_active_prints"] == 0
+
+
+def test_zero_bid_size_quote_is_unusable_for_classification():
+    qs = [q("previous", 90), q("no_firm_bid", 120, bs=0)]
+    obs = measure(trades=[t("only", 130)], quotes=qs)
+    assert obs["n_unclassified"] == {"INVALID_NBBO": 1}
+    assert obs["pressure_balance"] is None
+    assert obs["midpoint_response_bps"] is None
+
+
+def test_zero_ask_size_quote_is_unusable_for_classification():
+    qs = [q("previous", 90), q("no_firm_ask", 120, az=0)]
+    obs = measure(trades=[t("only", 130)], quotes=qs)
+    assert obs["n_unclassified"] == {"INVALID_NBBO": 1}
+    assert obs["ask_size_recovery"]["reason"] == "INVALID_INTERVENING_NBBO"
