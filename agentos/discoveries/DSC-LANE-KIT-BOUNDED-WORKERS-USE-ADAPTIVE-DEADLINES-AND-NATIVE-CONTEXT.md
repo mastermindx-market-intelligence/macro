@@ -164,9 +164,12 @@ had room. The wrappers now derive bounded defaults from task complexity: 2 resum
 complexity in a copied child environment so settings do not leak into the parent process.
 
 Auto-continue exhaustion is fail-closed: if no terminal `STATUS: COMPLETE` / `STATUS: BLOCKED` (or
-the special PONG canary) appears when the bounded resume budget is exhausted, the wrappers return typed
-rc=76 rather than false-success rc=0. Hermetic wrapper/routing tests covering larger C2/C3 budgets,
-explicit tightening, the hard cap, and terminal-status exhaustion passed in the current focused pack.
+the special PONG canary) appears when the bounded resume budget is exhausted, the wrappers now return
+typed rc=77 rather than false-success rc=0. This is deliberately distinct from rc=76, which the runtime
+reserves for lease/cleanup uncertainty. `remote_sub.sh` settles a cleanup-proven rc77 normally and
+records `reason=terminal_status_missing`; rc76 retains effect-unknown/lease-loss semantics. This fixes
+a red-team finding where report exhaustion could unnecessarily preserve a provider lease and be
+misdiagnosed as lease loss. The focused wrapper/context/remote taxonomy pack passed **113 tests**.
 
 
 ### 2026-10-08 continuation hardening
@@ -208,6 +211,24 @@ that entry path; the direct repair attempt was safety-blocked before dispatch an
 Second, automatic execute selection may still choose the intentionally short Go capability for C2/C3
 and then be refused by launch policy rather than preselecting the next long-runtime-capable pool.
 Neither residual permits a too-short long worker to run silently, but both remain hardening targets.
+
+### Return-code taxonomy hardening
+
+The worker/controller boundary now separates three materially different end states instead of
+overloading rc76: rc124 is a proven wall-clock child timeout; rc76 remains reserved for lease/cleanup
+uncertainty or capture paths that require reconciliation; rc77 is a cleanup-proven worker result whose
+bounded same-session continuation budget ended without a required terminal status. GLM Codex,
+MiniMax Codex, Go Codex, Qwen, and OpenCode-free wrappers all use rc77 for
+`terminal_status_missing`. This lets the controller release capacity on a known failure instead of
+holding a lease as if execution state were uncertain.
+
+Current relevant SHA-256 after this taxonomy pass:
+`glm_codex_exec.sh 87727f94b2f555ed3426f8ccadf808b8a0dcdb6f746dc13ad96a808f8c2784cf`;
+`mm_codex_exec.sh 3a48e82a58fd647db2d8a71cea58a6961fb8fd42e2ba2c5d428502229ad522ef`;
+`go_codex_exec.sh c557ec6db7e8a2d02dcb0746192ee50a6df6368c7b607195dfd57c4a204ae02c`;
+`qwen_exec.sh b4f7d934ae987636770db5254a7837014551d7331b079aeb723741bbf1eec16a`;
+`oc_free_exec.sh 279842e54d6095276b087fd78eae9268026db3079add4b61e474119ce08d3783`;
+`remote_sub.sh 2dab8b40c5bad1acbb07eac7298090d5b9ae4bf8d9fac33cd2c8041167bdff66`.
 
 ### Verification boundary
 
