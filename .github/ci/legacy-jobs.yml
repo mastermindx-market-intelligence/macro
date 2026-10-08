@@ -13382,6 +13382,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_identity.py -q
       - name: theme graph — curated PARENT_OF withdrawal (RELATION_WITHDRAW on hierarchy edges; DESTINATION_CHANGE refused)
         run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_withdrawal.py -q
+      - name: theme graph — W-C4 production hierarchy population (frozen R-C.3 table, PIT, rights, outputs unchanged)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_population.py -q
       - name: theme graph — bitemporal materialization from the membership documents
         run: TZ=UTC python -m pytest tests/test_theme_graph_materialize.py -q
       - name: theme graph — contract guard (incident fixtures + annotation shape)
@@ -18222,9 +18224,9 @@ jobs:
     # edit to either can start the job that proves the freeze still holds.
     #
     # Deps: pyarrow is load-bearing (the artifact IS a parquet; a fixture cannot stand in
-    # for the bytes under test).  The install string is byte-identical to the
-    # trial-budgets/outcome-spine family so the pack runner shares their venv rather than
-    # provisioning another.  Measured with exactly this line: 27 passed in ~1.9s, zero
+    # for the bytes under test).  The original five-package install shared the
+    # trial-budgets/outcome-spine venv; M0D adds requests for its existing source import
+    # closure.  The original lane measured 27 passed in ~1.9s, zero
     # skips.  The #4698-ref comparison SKIPS rather than passes when that ref is
     # unfetchable, so a checkout that cannot see the PR branch reads 26 passed / 1 skipped
     # — an unverifiable pin must not report itself green.
@@ -18235,7 +18237,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
       # RS Pullback Phase 1 adds synthetic first-seen/PIT input admission here:
       # gate: code makes it a PR check; signal-contract is data-plane only.
       # PTSE source-only research contracts are fixture-only: no live source/store
@@ -18263,6 +18265,10 @@ jobs:
           tests/test_ptse_shadow_integrity.py
           tests/test_ptse_shadow_outcome.py
           tests/test_ptse_w3_publication.py -q
+      # M0D v2 uses offline tmp stores and committed source/deployment contracts.
+      # Keep its entire suite on the PR code gate as well as data-health.
+      - name: Market Memory M0D v2 source binding and static contracts
+        run: python -m pytest tests/test_market_memory_m0d_v2.py -q
 
   entry-radar-rs-pullback-calendar:
     if: ${{ false }}
