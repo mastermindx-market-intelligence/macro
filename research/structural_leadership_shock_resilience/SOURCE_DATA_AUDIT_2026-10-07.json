@@ -1,0 +1,224 @@
+{
+  "schema": "slr_p0.source_audit.v1",
+  "status": "OUTCOME_BLIND_AUDIT_COMPLETE_STRICT_PRIMARY_NOT_ADMITTED",
+  "commission_date": "2026-10-07",
+  "protected_sha": "c7e47c859eb2925c5626931fd511800773ba09ac",
+  "macro_source_sha": "1bf1ff6723e8d56f8d38cfb5c0c04d30d15270d7",
+  "research_only": true,
+  "slr_forward_outcomes_inspected": false,
+  "cr1_af1_forward_outcomes_inspected": false,
+  "production_changes": false,
+  "observed_source_defects": [
+    {
+      "file": "engine/residual_alpha.py",
+      "blob_sha": "e0afcb355b83b30f3afe5e0f04afd078676fb957",
+      "finding": "Sector basket R[cols].mean includes the subject. Sequential lagged-beta orthogonalization is not the same as a joint exact-window OLS projection. Reuse ownership, not unqualified drop-in math."
+    },
+    {
+      "file": "scripts/research_liquidity_shock_reversal.py",
+      "blob_sha": "62c1abbc1d10aa450cb81d9fa6c06ae8f7fe9dec",
+      "finding": "Normal basket is ex-self, but missing/thin sectors fall back to whole-universe mean including subject. min_peers comparison counts all names, not other names. Primary SLR requires explicit ex-self coverage mask and no fallback."
+    },
+    {
+      "file": "data/breadth/_sp1500_pit_sectors_coverage.json",
+      "sha256": "ce5c692075dc14b1a830c611565b4ba7c48e637fcfaa2a53690829a4ed0ff34c",
+      "finding": "Metadata explicitly states all labels are as-of-now; era_correct_count=0. PIT membership must not be confused with PIT sector classification."
+    }
+  ],
+  "data_files": [
+    {
+      "path": "data/research/winner_episodes.parquet",
+      "sha256": "3eda29d5ca26b77bc0780ed5ddf1a31f24b9784d2eadf644baf5ec8304eaab81",
+      "rows": 2650,
+      "bytes": 266515,
+      "read_scope": "Parquet schema/footer and eight explicitly whitelisted non-outcome columns; no forward-return, label or prospective-state columns."
+    },
+    {
+      "path": "data/research/winner_episodes_manifest.json",
+      "sha256": "c1a6a1cbec74a726d44dfcc0b3457e26f6aa61ccdaf0bdb4e1ae6dac30161c77",
+      "as_of": "2026-07-07",
+      "n_tickers_with_prices": 1111,
+      "price_source_coverage": {
+        "yahoo": 697,
+        "massive": 3,
+        "dead_name": 411
+      },
+      "gap_window_episodes": 854,
+      "basis_mismatch_count": 14
+    },
+    {
+      "path": "data/breadth/sp1500_pit_sectors.parquet",
+      "sha256": "cba7fc07da53a6230122fec5797b15163bbe3b31f78918839f5722e885c00de3",
+      "rows": 2589,
+      "era_correct_count": 0,
+      "basis_counts_all": {
+        "gics_current": 1492,
+        "sic_current": 12,
+        "sic_derived": 282,
+        "unlabeled": 803
+      }
+    },
+    {
+      "path": "data/breadth/sp1500_pit_membership.parquet",
+      "sha256": "7b34316c0561619ba052f02036ec1fbe7fff3d00dcda3e7acb7dffda10582eca",
+      "rows": 3286
+    },
+    {
+      "path": "data/breadth/ticker_sectors.parquet",
+      "sha256": "e63d2112e38f95bc49e7cc68c6095d1eca2b148898688a946bce40da2c77d6ad",
+      "rows": 1515
+    }
+  ],
+  "execution_effects": {
+    "remote_repository_writes": [
+      {
+        "branch": "sol/slr-p0-deep-research-20261007-c3",
+        "base_sha": "7eef450b8feb65f677bc78c078633dd8eb1bf125",
+        "checkpoint_commit": "bb74f427bbf8c38afecd7cf99d06bad150c6a915",
+        "checkpoint_blob": "e451ad51712cdf1d1dba46176f7aff990f83b322",
+        "readback_verified": true,
+        "scope": "research report checkpoint only; final package revision is recorded in publication receipt"
+      }
+    ],
+    "workers_started": [],
+    "runtime_mode_observed": "readonly",
+    "effect_unknown": false
+  },
+  "next_action": "Qualify historical identity/classification through incumbent owners without outcomes; execute the frozen protocol only after admission and implementation verification; otherwise retain NOT_ADMITTED.",
+  "admission_scope": "Inspected retained Winner Autopsy parent and S&P1500 classification substrate; not an assertion about every store or entitlement.",
+  "parent_census": {
+    "input_sha256": "3eda29d5ca26b77bc0780ed5ddf1a31f24b9784d2eadf644baf5ec8304eaab81",
+    "columns_read": [
+      "ticker",
+      "t0",
+      "sector",
+      "benchmark_fallback",
+      "price_source",
+      "gap_leg_crossed",
+      "survivorship_biased",
+      "basis_mismatch"
+    ],
+    "all_rows": 2650,
+    "all_names": 457,
+    "all_min_t0": "1997-07-23",
+    "all_max_t0": "2026-07-02",
+    "broad_candidate_window": [
+      "2014-01-01",
+      "2025-12-31"
+    ],
+    "rows": 1837,
+    "names": 409,
+    "sector_nonblank_rows": 915,
+    "sector_blank_rows": 922,
+    "price_source_counts": {
+      "yahoo": 1825,
+      "massive": 12
+    },
+    "flags": {
+      "benchmark_fallback": {
+        "true": 922,
+        "false": 915
+      },
+      "gap_leg_crossed": {
+        "true": 854,
+        "false": 983
+      },
+      "survivorship_biased": {
+        "false": 1837
+      },
+      "basis_mismatch": {
+        "true": 12,
+        "false": 1825
+      }
+    },
+    "onset_year_counts": {
+      "2014": 32,
+      "2015": 36,
+      "2016": 62,
+      "2017": 59,
+      "2018": 55,
+      "2019": 64,
+      "2020": 195,
+      "2021": 165,
+      "2022": 147,
+      "2023": 236,
+      "2024": 366,
+      "2025": 420
+    },
+    "onset_sector_counts": {
+      "UNMAPPED": 922,
+      "Information Technology": 356,
+      "Industrials": 173,
+      "Health Care": 119,
+      "Materials": 94,
+      "Financials": 63,
+      "Consumer Discretionary": 53,
+      "Utilities": 30,
+      "Communication Services": 18,
+      "Consumer Staples": 6,
+      "Energy": 2,
+      "Real Estate": 1
+    },
+    "top_onset_name_counts": {
+      "AMD": 20,
+      "BTC-USD": 19,
+      "AXON": 18,
+      "XYZ": 18,
+      "VIPS": 17,
+      "FSLR": 16,
+      "MDB": 15,
+      "NVDA": 15,
+      "DXCM": 14,
+      "MU": 14
+    },
+    "ticker_pattern_minus_USD_rows": 39,
+    "distinct_onset_dates": 996,
+    "actual_slr_events": null,
+    "actual_slr_shock_dates": null,
+    "note": "915 is a loose current-mapped parent upper bound, not eligible SLR observations. No inference from false survivorship flags. The -USD count is a string-pattern audit, not security-type qualification."
+  },
+  "derived_audit_only": {
+    "unmapped_share": 0.5019052803483941,
+    "flagged_gap_share": 0.4648884050081655,
+    "technology_share_of_mapped": 0.38907103825136613,
+    "mapped_parent_upper_bound": 915,
+    "verified_era_correct_classification_rows": 0
+  },
+  "read_only_source_support": {
+    "collectors/sp1500_pit_sectors.py": "04e9570f3984b3a298ff0949d19e1a8c9dd77a5f",
+    "config/compiled_kill_registry.yml": "e11692656f894f0965bf1a461564707104b5b72a"
+  },
+  "admission": {
+    "decision": "NOT_ADMITTED",
+    "primary_blocker": "No verified membership-era sector labels in inspected substrate; current labels cannot establish historical ex-self same-sector shocks.",
+    "other_unresolved": [
+      "Stable security/issuer and historical security-type reconciliation",
+      "Matched subject/peer total-return basis and actual window-gap audit",
+      "Delisting and terminal-payoff completeness",
+      "PIT size/catalyst controls and formal lifecycle history qualification"
+    ],
+    "hypotheses_tested": [],
+    "hypothesis_verdict": "NOT_TESTED_NOT_NULL",
+    "microstructure_empirical_status": "NOT_OPENED"
+  },
+  "commission_input_sha256": "7158b65daa45bba0217159e77176135e95b989459e89445932b851b3a80b5214",
+  "pre_freeze_design_correction": {
+    "outcomes_seen": false,
+    "previous_draft_primary": "21-session fitted-factor residual sum",
+    "frozen_primary": "21-session coefficient-free stock-minus-ex-self-peer total return",
+    "reason": "Shared nuisance-estimation error can mechanically correlate the challenge residual with a future label adjusted by the same fitted model.",
+    "evidence": "METHODS_DERIVATION.json",
+    "scope": "Analytical design correction before immutable protocol freeze; no empirical outcome run."
+  },
+  "publication_boundary_source_recheck": {
+    "protected_sha": "c7e47c859eb2925c5626931fd511800773ba09ac",
+    "macro_main_sha": "1385697ab8353e849f376ad5b2d29994076652ee",
+    "carrier_head_before_publication": "bb74f427bbf8c38afecd7cf99d06bad150c6a915",
+    "changed_since_carrier_base": [
+      "data/marketing/x_intel/state.json",
+      "data/research_vault/catalog.json",
+      "data/research_vault/excerpts.json"
+    ],
+    "relevant_inspected_source_changed": false
+  }
+}
