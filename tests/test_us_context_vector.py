@@ -1137,3 +1137,46 @@ def test_wc7_owner_graph_reader_uses_uncollapsed_beliefs(monkeypatch, tmp_path):
         "x": ("theme:cat_a",)
     }
     assert flags == [("edges", False), ("lifecycle", False)]
+
+
+def test_wc7_missing_live_graph_is_typed_null(tmp_path, monkeypatch, capsys):
+    """A sparse deployment without graph files must never assert no category."""
+    from engine.theme_graph import store as graph_store
+
+    monkeypatch.setattr(graph_store, "nodes_path", lambda: tmp_path / "absent_nodes.parquet")
+    monkeypatch.setattr(graph_store, "edges_path", lambda: tmp_path / "absent_edges.parquet")
+    assert ucv._hierarchy_categories_for_baskets(["x"], "2026-10-07") == {}
+    assert "graph nodes/edges missing" in capsys.readouterr().out
+
+
+def test_wc7_invalid_reader_output_is_null_not_a_partial_taxonomy(
+    verdicts, append_kwargs, tmp_path, monkeypatch, capsys
+):
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA"]})
+    from engine.theme_graph import structural_navigation
+
+    monkeypatch.setattr(
+        structural_navigation, "hierarchy_paths",
+        lambda *args, **kw: [None],
+    )
+    assert _wc7_stamp(verdicts, append_kwargs, "2026-10-07", _wc7_graph()) == 3
+    assert ucv.load_candidates(tmp_path)["theme_category_ids"].isna().all()
+    assert "reader refused" in capsys.readouterr().out
+
+
+def test_wc7_legacy_part_without_new_column_reads_null_forward_only(
+    verdicts, append_kwargs, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA"]})
+    _wc7_stamp(verdicts, append_kwargs, "2026-09-30", _wc7_graph())
+    september = ucv._part_path("2026-09-30", tmp_path)
+    legacy = pd.read_parquet(september).drop(columns=["theme_category_ids"])
+    legacy.to_parquet(september, index=False)  # model a historical, pre-W-C7 part
+    legacy_bytes = september.read_bytes()
+    _wc7_stamp(verdicts, append_kwargs, "2026-10-07", _wc7_graph())
+    assert september.read_bytes() == legacy_bytes
+    rows = ucv.load_candidates(tmp_path).query("ticker == 'AAA'").set_index("stamp_date")
+    assert pd.isna(rows.loc["2026-09-30", "theme_category_ids"])
+    assert rows.loc["2026-10-07", "theme_category_ids"] == "theme:cat_a"
