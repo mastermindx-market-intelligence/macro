@@ -314,7 +314,7 @@ def _mapping(value: Any) -> Mapping[str, Any]:
 
 def _hierarchy_categories_for_baskets(
     basket_ids: Iterable[str], asof: str, *, view: Any = None, root: Any = None,
-) -> dict[str, tuple[str, ...]]:
+) -> dict[str, tuple[str, ...] | None]:
     """PIT house-category shadow through W-C6; never resolve hierarchy here.
 
     Derive once per recorded basket, not once per ticker. The graph owner
@@ -351,9 +351,7 @@ def _hierarchy_categories_for_baskets(
                 expected = (Path(root) / "data" / "theme_graph").resolve()
                 actual = graph_store.store_dir().resolve()
                 if actual != expected:
-                    log.info(
-                        "us_context_vector: hierarchy shadow null for non-owner root"
-                    )
+                    refuse("explicit root does not match graph owner")
                     return {}
 
             if not graph_store.nodes_path().is_file() or not graph_store.edges_path().is_file():
@@ -390,7 +388,10 @@ def _hierarchy_categories_for_baskets(
         refuse(f"reader import {type(exc).__name__}")
         return {}
 
-    categories: dict[str, tuple[str, ...]] = {}
+    # None records a REFUSED basket, distinct from a legitimately
+    # uncategorized basket. The calling ticker must never publish a partial
+    # category set when any of its constituent baskets was unreadable.
+    categories: dict[str, tuple[str, ...] | None] = {}
     refused = 0
     for basket in baskets:
         try:
@@ -417,6 +418,7 @@ def _hierarchy_categories_for_baskets(
                 "us_context_vector: hierarchy basket %s refused (%s)",
                 basket, type(exc).__name__,
             )
+            categories[basket] = None
             refused += 1
     if refused:
         refuse(f"reader refused {refused}/{len(baskets)} baskets")
@@ -1681,7 +1683,12 @@ def append_candidates(
             stamp_date, view=hierarchy_store_view, root=root,
         )
         new[HIERARCHY_CATEGORY_COLUMN] = [
-            _ids(
+            None
+            if any(
+                basket_categories.get(basket, ()) is None
+                for basket in theme_ids.get(ticker, ())
+            )
+            else _ids(
                 category
                 for basket in theme_ids.get(ticker, ())
                 for category in basket_categories.get(basket, ())
