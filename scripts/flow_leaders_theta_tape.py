@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
+import numpy as np
 import pandas as pd
 
 from lib.nyse_calendar import is_session
@@ -81,8 +82,9 @@ def _parse_root(path: Path, expected: set[str]) -> tuple[str, pd.DataFrame] | No
     ))
     valid = (
         session_ok & trades.gt(0) & net.notna() & gross.gt(0)
+        & np.isfinite(trades) & np.isfinite(net) & np.isfinite(gross)
         & (gross.add(0.0001) >= net.abs())
-        & (zshare.isna() | zshare.between(0, 1))
+        & (zshare.isna() | (np.isfinite(zshare) & zshare.between(0, 1)))
     ).fillna(False)
     if not valid.any():
         return None
@@ -99,7 +101,7 @@ def _parse_root(path: Path, expected: set[str]) -> tuple[str, pd.DataFrame] | No
     ex0dte = pd.Series(float("nan"), index=df.index)
     if all(col in df.columns for col in _EX_ZERO_DTE):
         buckets = df.loc[:, list(_EX_ZERO_DTE)].apply(pd.to_numeric, errors="coerce")
-        complete = buckets.notna().all(axis=1)
+        complete = buckets.notna().all(axis=1) & np.isfinite(buckets).all(axis=1)
         ex0dte.loc[complete] = buckets.sum(axis=1).loc[complete] / 1_000_000
 
     result = pd.DataFrame(
