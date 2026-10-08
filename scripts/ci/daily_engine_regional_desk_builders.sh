@@ -118,7 +118,7 @@ cl_baskets() {
   # the same guard with --strict.
   # Bind the actual checkout immediately before this producer, in this cluster only.
   THEME_GRAPH_WITNESS_DIR=$(python -c 'from scripts.build_theme_graph import start_nightly_witness; print(start_nightly_witness())')
-  export THEME_GRAPH_WITNESS_ID="${THEME_GRAPH_WITNESS_DIR##*/}"
+  export THEME_GRAPH_WITNESS_ID="$(python -c 'import os, sys; print(os.path.basename(sys.argv[1]))' "$THEME_GRAPH_WITNESS_DIR")"
   brun theme_graph "theme graph nightly materialization (build_theme_graph)" scripts.build_theme_graph
   brun theme_graph_guard "theme graph contract guard (check_theme_graph_contracts)" scripts.check_theme_graph_contracts
   # Capture now: an unrelated cluster can still exhaust the later wait barrier.
