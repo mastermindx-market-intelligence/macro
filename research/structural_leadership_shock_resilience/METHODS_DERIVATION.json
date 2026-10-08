@@ -1,0 +1,33 @@
+{
+  "schema": "slr_p0.shared_estimation_error_derivation.v1",
+  "status": "ANALYTICAL_NULL_NOT_EMPIRICAL",
+  "assumptions": [
+    "r_t = mu + eta_t; eta_t independent with mean zero and variance sigma^2",
+    "mu_hat is mean of n independent prior observations",
+    "challenge and future observations disjoint from training",
+    "standardization uses true sigma for this illustrative derivation, not estimated RMSE"
+  ],
+  "definitions": {
+    "delta": "mu_hat - mu",
+    "X": "eta_C - delta",
+    "Y": "sum of H independent future innovations - H*delta",
+    "Z": "X/sigma"
+  },
+  "identities": {
+    "variance_delta": "sigma^2/n",
+    "covariance_X_Y": "H*sigma^2/n",
+    "variance_Z": "1+1/n",
+    "slope_Y_on_Z": "H*sigma/(n+1)"
+  },
+  "illustration": {
+    "n": 200,
+    "H": 21,
+    "sigma": 0.02,
+    "covariance_X_Y": 4.2e-05,
+    "slope_return_units": 0.0020895522388059704,
+    "slope_percentage_points": 0.20895522388059704
+  },
+  "meaning": "Positive apparent forecast slope without true predictability. More complex conditional controls may attenuate this artifact, but it cannot be assumed absent. This is not a measured magnitude in Mastermind.",
+  "pre_outcome_design_resolution": "Primary = 21-session coefficient-free stock total return minus equal-initial-weight C-frozen ex-self peer total return. Reused-model residual labels are secondary diagnostics only.",
+  "actual_slr_outcomes_read": false
+}
