@@ -243,12 +243,16 @@ def measure_window(*, ticker, session, start_ns, end_ns, decision_ns,
     q_times = [q["sip_ns"] for q in q_seen]
     norm_t = [_trade(t, ticker, session) for t in trades
               if _int(t.get("available_ns"), "trade.available_ns") <= decision_ns]
-    active, exclusions = _active_trades(norm_t, decision_ns)
+    # Resolve correction chains as a unit; keep exclusions scoped to this window
+    # instead of counting unrelated same-session events.
+    window_ids = {t["id"] for t in norm_t if start_ns <= t["sip_ns"] < end_ns}
+    active, exclusions = _active_trades(
+        [t for t in norm_t if t["id"] in window_ids], decision_ns)
+    active = sorted((t for t in active if start_ns <= t["sip_ns"] < end_ns),
+                    key=lambda t: (t["sip_ns"], t["id"]))
     policy_refs = sorted({t["eligibility_rules_ref"] for t in active})
     if len(policy_refs) > 1:
         raise ValueError("mixed trade-condition policies require separate measurement windows")
-    active = sorted((t for t in active if start_ns <= t["sip_ns"] < end_ns),
-                    key=lambda t: (t["sip_ns"], t["id"]))
     buy = sell = unknown = Decimal(0)
     counts = Counter()
     prints = []
