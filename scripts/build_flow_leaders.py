@@ -47,7 +47,7 @@ import logging
 from math import ceil
 import sys
 import tempfile
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -59,7 +59,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from jinja2 import Environment, FileSystemLoader
 from lib import config
 from lib.nyse_calendar import (  # noqa: E402
-    is_prior_session, is_session, sessions_apart, sessions_behind,
+    is_prior_session, is_session, sessions_apart, sessions_behind, sessions_between,
 )
 from lib.pages import write_page  # noqa: E402
 
@@ -679,6 +679,22 @@ def _build_membership_df(
 
 # ── Per-ticker record builder ─────────────────────────────────────────────────
 
+def _theta_calendar_net_history(summary_df: pd.DataFrame) -> pd.Series:
+    """Prepare the *observed-session* tape for B5 inflection.
+
+    T2a's round-robin store may have holes. They must stay NaN on the
+    actual NYSE calendar: joining [-,-,-,+] across missing sessions is
+    NOT a consecutive-session washout. Limit to the trailing ~month so
+    a multi-year sparse store cannot manufacture a huge positional age.
+    """
+    if summary_df.empty or "net_premium_mn" not in summary_df:
+        return pd.Series(dtype=float)
+    latest = summary_df.index[-1].date()
+    earliest = max(summary_df.index[0].date(), latest - timedelta(days=45))
+    calendar = pd.DatetimeIndex(sessions_between(earliest, latest))
+    return summary_df["net_premium_mn"].astype(float).reindex(calendar)
+
+
 def _build_ticker_record(
     ticker: str,
     is_etf: bool,
@@ -734,7 +750,11 @@ def _build_ticker_record(
             # site — exactly the defect the detector was fixed to avoid.
             # (Sessions absent from the frame entirely are still invisible; the
             # detector can only break on gaps the store actually records.)
-            net_hist = summary_df["net_premium_mn"].astype(float)
+            net_hist = (
+                _theta_calendar_net_history(summary_df)
+                if summary_df.attrs.get("flow_source") == "thetadata_t2a_tape"
+                else summary_df["net_premium_mn"].astype(float)
+            )
 
     # Recurrence count and leg (for non-stale sessions)
     ticker_membership = (
