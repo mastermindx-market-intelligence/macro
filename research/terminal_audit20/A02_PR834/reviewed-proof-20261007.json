@@ -134,11 +134,29 @@
     "exit": 0
   },
   "owned_server3127_stopped": true,
-  "release_state": "READY_AUTO_MERGE_ARMED; EXACT_HEAD_CI_IN_PROGRESS",
+  "release_state": "MERGED; DEPLOY_PRE_EFFECT_REFUSED_NO_SPACE",
   "ci_run": 37701701904,
-  "merged": false,
+  "merged": true,
   "deployed": false,
   "authenticated_containment": false,
   "whole_mission_accepted": false,
-  "generated_at": "2026-10-07T23:21:19.933123+00:00"
+  "generated_at": "2026-10-07T23:21:19.933123+00:00",
+  "merge_commit": "d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a",
+  "merged_at": "2026-10-07T23:58:32Z",
+  "updated_at": "2026-10-08T21:44:10.127542+00:00",
+  "deployment_attempt": {
+    "at": "2026-10-08",
+    "target": "d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a",
+    "exit": 1,
+    "stage": "preflight mktemp",
+    "reason": "NO_SPACE_LEFT_ON_DEVICE",
+    "source_fetch_started": false,
+    "services_stopped": false,
+    "served_source_and_marker": "52b9107b2f33738256b1e4877bbf166a45556525",
+    "terminal_active": true,
+    "quote_hub_active": true,
+    "disk_free_bytes": 0,
+    "storage_owner_frontier": "/opt/macro/.git 33GB with active upload-pack; no destructive cleanup",
+    "log": "a02-deploy-20261008.log"
+  }
 }

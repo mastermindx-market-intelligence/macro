@@ -3,8 +3,8 @@
   "mission": "A15",
   "whole_mission_accepted": false,
   "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/839",
-  "source_head": "94dff15fdf5270f145e374ae6810881426549242",
-  "base_head": "e963eefb3ac1984008caae922d6f43bfafa9d827",
+  "source_head": "a49629399ad380516bd062dc072cedbb6e801fa6",
+  "base_head": "d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a",
   "source_hashes": {
     "terminal/lib/heatmapCapitalization.ts": "bd10b0d58078cf235fee75de98fc510e91352bd86bb36009c4843450230eb377",
     "terminal/components/heatmap/HeatmapView.tsx": "98d3605d37a0decaf69c9828f7057fe835ba9c310482b3ef1780b7fedb0555d9",
@@ -47,7 +47,15 @@
     "isolated_pine_pass": 4,
     "local_port3145_stopped": true
   },
-  "required_ci": {
+  "release_state": "CURRENT_HEAD_PR_APPROVAL_REQUIRED; DISPATCH_REAL_UI_FAILURE; APP_ENROLLMENT_PENDING",
+  "merged": false,
+  "deployed": false,
+  "actual_live_new_mode": false,
+  "updated_at": "2026-10-08T21:44:10.127542+00:00",
+  "reviewed_source_head": "16b30bf005ca9040aa556b9dcb630de3ae4872b0",
+  "source_unchanged_after_controller_refresh": true,
+  "reviewed_base_head": "8f3d04f1c7b2d26a90623497b30f0901160d03a2",
+  "historical_required_ci": {
     "conclusion": "success",
     "headSha": "94dff15fdf5270f145e374ae6810881426549242",
     "jobs": [
@@ -125,14 +133,7 @@
     "event": "workflow_dispatch",
     "run_id": 37650471663
   },
-  "release_state": "REQUIRED_CHECKS_GREEN; PR_WORKFLOW_ACTION_REQUIRED; NORMAL_MERGE_REFUSED",
-  "merged": false,
-  "deployed": false,
-  "actual_live_new_mode": false,
-  "updated_at": "2026-10-07T23:19:08.926713+00:00",
-  "reviewed_source_head": "16b30bf005ca9040aa556b9dcb630de3ae4872b0",
-  "source_unchanged_after_controller_refresh": true,
-  "release_gate": {
+  "historical_release_gate": {
     "pull_request_run": 37650481196,
     "head": "94dff15fdf5270f145e374ae6810881426549242",
     "conclusion": "action_required",
@@ -141,7 +142,58 @@
     "synthetic_merge_check_runs": 0,
     "normal_merge_refused": true,
     "approval_tool_review": "DENIED_PRE_EXECUTION; USER_ACTION_PENDING",
+    "protection_bypass": false,
+    "approval_observed_20261008": {
+      "status": "in_progress",
+      "run_attempt": 2,
+      "triggering_actor": "chriswong6031-creator",
+      "qualifies_current_head": false
+    }
+  },
+  "required_ci": {
+    "run_id": 37707991707,
+    "headSha": "a49629399ad380516bd062dc072cedbb6e801fa6",
+    "event": "workflow_dispatch",
+    "conclusion": "failure",
+    "mobile_job": 113086877001,
+    "mobile_passed": 365,
+    "mobile_skipped": 158,
+    "mobile_failed": 1,
+    "failure": "Seasonal read stays useful: noninteractive .fin-ro-tick-year SVG line intercepts the hovered .fin-ro-band",
+    "log": "a15-mobile-failure-20261008.log"
+  },
+  "release_gate": {
+    "pull_request_run": 37707997477,
+    "head": "a49629399ad380516bd062dc072cedbb6e801fa6",
+    "conclusion": "action_required",
+    "jobs": [],
+    "synthetic_merge_head": "24dd7cda98c3dcb1633936959e5ca0ca2ad0caf4",
+    "old_user_approval_qualifies_this_head": false,
+    "automation_pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/850",
+    "automation_head": "c47ee8e37bfccd9f39e44114ceccadfb8dc2c3aa",
+    "one_time_app_enrolled": false,
     "protection_bypass": false
   },
-  "reviewed_base_head": "8f3d04f1c7b2d26a90623497b30f0901160d03a2"
+  "existing_owner_fix_proof": {
+    "owner_pr": 846,
+    "owner_head": "ac4a3a60423b7a34aeb3c80243773bbbfb379518",
+    "path": "terminal/components/fin/RegimeOutlook.tsx",
+    "module_sha256": "f40b77c19dabffb9ab130457b61ec95900851557a1fab54cc84fc4fa781cc0cf",
+    "change": "Set pointerEvents=none on decorative tick group",
+    "actual_next_cases": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "projects": [
+        "desktop",
+        "tablet",
+        "mobile"
+      ]
+    },
+    "temporary_proof_only": true,
+    "a15_checkout_restored_clean": true,
+    "owned_server3145_stopped": true,
+    "incorporated": false,
+    "log": "seasonal-owner846-proof-20261008.log"
+  }
 }

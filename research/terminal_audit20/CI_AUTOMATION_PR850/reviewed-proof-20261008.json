@@ -1,0 +1,48 @@
+{
+  "child_id": "terminal-audit20-ci-automation-r1-20261008",
+  "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+  "decision": "ACCEPT_SCOPED_AFTER_PARENT_REPAIR",
+  "accepted_scope": "Workflow implementation integrated with parent-completed enrollment documentation and executable trust/failure tests; source qualification only.",
+  "fabric_route": {
+    "model": "grok-4.6",
+    "host": "ubuntu2",
+    "started": true,
+    "returncode": 0,
+    "cleanup_proven": true,
+    "residual_processes": 0
+  },
+  "parent_verification": {
+    "command": "python3 -m pytest tests/test_merge_refresh_identity.py tests/test_merge_on_green.py -q",
+    "passed": 40,
+    "failed": 0,
+    "log": "automation-parent-green-20261008.log",
+    "forbidden_owner_files_unchanged": true,
+    "diff_check": "passed"
+  },
+  "return_limitations": [
+    "Only the workflow unified diff was delivered in the retained result; private-capsule docs/tests content was not delivered.",
+    "The worker claim of 43 tests was not independently verified; only the actual 40 parent tests are accepted.",
+    "Usage receipt missing; no cost claim."
+  ],
+  "parent_repairs": [
+    "Disable checkout credential persistence.",
+    "Remove unverified release date from the action pin comment.",
+    "Complete two small supporting files and synchronize four agent-guide references."
+  ],
+  "not_accepted": [
+    "App installation or credential enrollment",
+    "Automatic current-head GitHub CI",
+    "Protected merge",
+    "Production deployment",
+    "Whole Audit20 mission"
+  ],
+  "source_pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/850",
+  "source_head": "c47ee8e37bfccd9f39e44114ceccadfb8dc2c3aa",
+  "base_head": "d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a",
+  "is_draft": true,
+  "auto_merge_armed": false,
+  "app_enrolled": false,
+  "ci_run": 37848577364,
+  "ci_observation": "IN_PROGRESS at initial exact-head read",
+  "updated_at": "2026-10-08T21:44:10.127542+00:00"
+}

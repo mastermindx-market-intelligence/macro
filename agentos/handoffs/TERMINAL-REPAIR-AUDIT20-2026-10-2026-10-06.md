@@ -20,8 +20,14 @@ changed:
     what: Preserve the tested Brain freshness contribution against exact incumbent head53a, including loader hash and public-widget fixture.
   - path: research/terminal_audit20/A04_RPC_PROTOTYPE
     what: Preserve the reviewed drawing guard and existing-table transaction prototype with actual isolated database proof.
-prs: [834, 835, 836, 839, 8545]
+prs: [834, 835, 836, 839, 850, 8545]
 verified:
+  - claim: The bounded automatic CI identity repair is source-qualified and pushed for review.
+    command: python3 -m pytest tests/test_merge_refresh_identity.py tests/test_merge_on_green.py -q; git diff --check; inspect Terminal #850 atc47ee8e and exact Fabric acceptance/native cleanup receipts.
+    result: Forty parent tests passed; controller, its existing tests and CI workflow unchanged. Grok workflow accepted after parent support-file repair. PR850 draft; no App enrollment, merge or live automatic CI acceptance.
+  - claim: Containment has merged, but its deploy was refused before effects with healthy prior services.
+    command: Inspect Terminal #834 merge receipt; authorized terminal-build.sh --target-sha d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a log; production source/marker, service and storage reads.
+    result: Required CI green, mergedd660. Preflight mktemp failed with diskfree0 before source fetch/service stop. Source and marker52b9107, terminal/quote-hub active; existing Macro Git store33GB with active upload-pack.
   - claim: All twenty original Fabric missions reached START and their returns were reviewed.
     command: Inspect the exact original native/process receipts and audit20-review-index.json under the evidence root.
     result: Twenty identities and STARTs verified; zero whole original missions accepted. Native collaboration children zero; Astra zero.
@@ -39,6 +45,12 @@ verified:
     command: python3 run_concurrent.py on the admitted Ubuntu2 disposable PostgreSQL17 fixture.
     result: Three cases passed; two actual sessions yielded one commit and one explicit conflict after2.008 seconds. Replay and rollback preserve exact preimages; container removed. Guard separately passed33 cases. Higher Grok repair r6 subsequently executed11 transaction cases with zero failures/skips and fixture removal.
 unverified:
+  - claim: The bounded automatic CI identity repair is source-qualified and pushed for review.
+    command: python3 -m pytest tests/test_merge_refresh_identity.py tests/test_merge_on_green.py -q; git diff --check; inspect Terminal #850 atc47ee8e and exact Fabric acceptance/native cleanup receipts.
+    result: Forty parent tests passed; controller, its existing tests and CI workflow unchanged. Grok workflow accepted after parent support-file repair. PR850 draft; no App enrollment, merge or live automatic CI acceptance.
+  - claim: Containment has merged, but its deploy was refused before effects with healthy prior services.
+    command: Inspect Terminal #834 merge receipt; authorized terminal-build.sh --target-sha d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a log; production source/marker, service and storage reads.
+    result: Required CI green, mergedd660. Preflight mktemp failed with diskfree0 before source fetch/service stop. Source and marker52b9107, terminal/quote-hub active; existing Macro Git store33GB with active upload-pack.
   - claim: The twenty original missions meet their full DONE_WHEN outcomes.
     what_would_verify: Incorporate scoped source contributions through exact incumbents, complete owning CI, migrations and actual authenticated/browser/source/recipient contracts, then compare every original acceptance case.
   - claim: Brain freshness is delivered in the current dashboard.
@@ -46,14 +58,15 @@ unverified:
   - claim: The transaction prototype can safely upgrade current drawing collections and the outbox caller.
     what_would_verify: Admit legacy bootstrap without fabricated old operation receipts; bind TerminalShell owner597; integrate stable operation/revision/outbox semantics; review migration and live two-tab recovery.
 unresolved:
-  - Terminal PR839 refreshed94dff has all10 dispatch jobs green; separate PR run37650481196 is action_required with zero jobs and normal protected merge was refused. Exact approval request was denied before execution by automatic tool review; user workflow action pending. Merge, deployment and actual new-mode acceptance remain unproven.
+  - Chairman approved historical94dff run37650481196; currenta496 PR run37707997477 remains action_required, and dispatch37707991707 has genuine Seasonal hover failure. App automation PR850 is draft until one-time enrollment and required CI. Existing owner846 fix passed3 actual viewport cases but is not released.
+  - Merged PR834 targetd660 deployment refused pre-effect at mktemp because production diskfree0; active /opt/macro/.git33GB storage owner must restore capacity. Source/marker52b9107 and services remain healthy.
   - Exact active owner binding for Terminal PR597 remains unavailable; the existing user owner-reference question has no response.
   - Brain PR8526 exact source owner is identified, but no exact active chat binding or owner acceptance was recovered. A canonical artifact is not a notification.
   - Drawings source/client/bootstrap/migration/live acceptance remains outstanding; the strict RPC must not be installed directly onto existing legacy collections.
   - Incumbent HOLDs, private source contracts, financial unit/FX authority, recipient consent and reserved migration0026 remain separate gates.
 next_actions:
-  - Resolve Terminal PR839 workflow approval, consume its existing protected merge, and deploy its merged master through the git-gated builder, restore and verify service/marker identity, then qualify actual intended-profile USD CAP and complete missing coverage.
-  - Finish refreshed Terminal PR834 containment CI and release. Bind the existing Terminal PR597 source owner for the separate shared startup and drawing caller contributions.
+  - Complete scoped App enrollment for source PR850, consume existing owner846 Seasonal fix and require automatic current-head PR839 CI and protected merge, then git-gated deployment and actual USD CAP acceptance.
+  - Restore production capacity through its existing owner before retrying merged PR834 targetd660 deployment; qualify live containment. Bind existing Terminal PR597 for separate startup/drawing caller contributions.
   - Incorporate research/terminal_audit20/A08_PR8526 through exact owning PR8526, reconciling any changed head and rerunning affected proofs.
   - Continue drawings only with the existing TerminalShell owner and admitted migration/bootstrap plan; use the accepted DB prototype and pending/unknown outbox contract without creating a second store.
   - Follow the per-mission snapshot for incumbent owner contributions and remaining actual user paths; do not re-fan out the original twenty missions.
@@ -74,11 +87,11 @@ danger_areas:
 
 ## §0 State
 
-The twenty original Fabric missions have been dispatched and reviewed, with higher-tier repairs consumed where needed. Two scoped Terminal verticals are merged, deployed and live-checked: export PR836 and Pine PR835. Heatmap PR839 has required checks green but a separate GitHub workflow approval gate. Pine containment PR834 has a refreshed two-file candidate on current master awaiting release qualification. None of the original whole missions is accepted. The authenticated Scripts bundle observed Oct7 identifies `52b9107b2f33738256b1e4877bbf166a45556525`; this continuation has not deployed or independently requalified its backend health/marker.
+The twenty original Fabric missions were dispatched and reviewed. Historical scoped export PR836 and Pine PR835 were deployed and live-checked. Containment PR834 is now merged asd660, but its authorized git-gated deployment failed before any effects because production diskfree0. Actual source/marker remain52b9107 and terminal/quote-hub active. Heatmap PR839 now hasa496 with a genuine Seasonal hover CI failure and a new approval-required PR workflow; user approval of historical94dff is recorded, not requested again. The source automation repair is pushed as draft PR850 atc47ee8e with40 actual parent tests passed, pending one-time App enrollment, required CI and fresh-head automatic acceptance. No original whole mission is accepted.
 
-Exact carriers: [Terminal PR835](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/835), [Terminal PR836](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/836), [Terminal PR834](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/834), [Terminal owner PR597](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/597), [Macro Brain owner PR8526](https://github.com/mastermindx-market-intelligence/macro/pull/8526), and [Macro records PR8545](https://github.com/mastermindx-market-intelligence/macro/pull/8545).
+Exact carriers: [Terminal PR835](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/835), [Terminal PR836](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/836), [Terminal PR834](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/834), [Terminal owner PR597](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/597), [Macro Brain owner PR8526](https://github.com/mastermindx-market-intelligence/macro/pull/8526), [Terminal automation PR850](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/850), and [Macro records PR8545](https://github.com/mastermindx-market-intelligence/macro/pull/8545).
 
-All wave children are consumed, native/process cleanup is proven and owned fixtures are removed. No active worker or future automatic wake is claimed. The PR839 workflow approval and subsequent protected merge/deployment/live phase, together with the source-owner, bootstrap/schema, private-contract and recipient gates, are the continuation boundary.
+All wave children are consumed, native/process cleanup is proven and owned fixtures are removed. No active worker or future automatic wake is claimed. One-time App enrollment, exact owner846 integration/current-head CI, production storage restoration and subsequent protected merge/deployment/live phase remain the immediate continuation gates. Source-owner, bootstrap/schema, private-contract and recipient gates also remain.
 
 Evidence root: `/Volumes/Mastermind/evidence/terminal-audit20-01a10f92`. Macro records carrier PR8545 uses the existing external worktree `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/macro-terminal-audit20-01a10f92-fed0fcce78dc426d`. Knowledge records reserve no source paths or worker liveness.
 
@@ -86,9 +99,11 @@ The drawing source function remains `1bb8d8639c73945bae80e1523d64d84414a49cde096
 
 ## §1 What is left
 
-First finish Terminal PR839 at refreshed94dff, with its original six source files unchanged. All10 exact-head dispatch jobs are green, but PR workflow37650481196 is action_required and normal merge was refused. Resolve the pending user workflow action, consume the existing controller merge, deploy only its merged master with the git-gated builder, and verify actual USD CAP mode/disclosure with restored health and release identity. No deployment is started or active at this boundary.
+First activate source automation PR850 only after repository-scoped App enrollment and required CI. The existing Chrome enrollment tab still waits for intended-account sign-in. Its token replaces default-token controller updates, preserving existing gates; no App grant, credential or live automation is claimed. Consume the exact already-reviewed Seasonal fix through owner846 and require current PR839 head automatic CI, protected merge and actual USD CAP mode/disclosure acceptance.
 
-Then recover the exact incumbent Terminal PR597 owner binding. It owns separate shared startup hunks and the actual drawing save/load caller. The prior PR834 mobile CI failure cleared on a later same-head run; current PR834 work resolves only its ownership-evidence merge conflict and requalifies containment on current master. A missing local worktree or old PR update does not authorize takeover.
+Restore production capacity through the existing active Macro Git storage owner before retrying merged PR834 targetd660. The failed builder stopped at preflight mktemp before fetch/service stop, so no restore/replacement service action is needed; services are healthy at old52b9107. Do not delete reachable Git packs, rollback artifacts or customer data on a full disk to manufacture space.
+
+Recover the exact incumbent Terminal PR597 owner binding for the separate startup and drawing save/load caller contributions. Historical ownership evidence does not authorize source takeover.
 
 Next return the tested Brain contribution through Macro PR8526 exact head53a1fc4cc47b4b9240fad828d0ef2161346aaacc. The contribution and hashes are in this PR, and owner incorporation/CI/live integration remain owed.
 
@@ -100,7 +115,7 @@ The per-mission review snapshot is the remaining-lane index. It records source-o
 
 The audit ZIP is evidence; its historical Opus routing and procedure pin do not supersede the current user request or protected procedures. Fabric chooses admitted placement. All descendants keep the same root, grant and budget; available capacity is not a utilization target.
 
-Pine native Worker fixture, actual authenticated editor diagnosis on synthetic bars, and chart-attached weekly plotting are separate proof levels. Export's source responsive matrix is distinct from real-account viewport coverage; native JSON content proof is distinct from CSV parsing and filesystem hashing. Heatmap higher repair r8 now passes all11 actual production-mode fixture cases; parent normal build/typecheck,7715 unit and41 responsive shell cases also pass. PR839 has green exact-head dispatch CI and a separate pull-request workflow approval gate; merge/deploy/live acceptance remains unproven until its release receipt.
+Pine native Worker fixture, actual authenticated editor diagnosis on synthetic bars, and chart-attached weekly plotting are separate proof levels. Export's source responsive matrix is distinct from real-account viewport coverage; native JSON content proof is distinct from CSV parsing and filesystem hashing. Heatmap higher repair r8 now passes all11 actual production-mode fixture cases; parent normal build/typecheck,7715 unit and41 responsive shell cases also pass. Those historical proofs do not qualify refresheda496, whose dispatch failed a real Seasonal hover. Existing owner846 one-line fix passed3 actual viewport cases, with source restored after proof; integration and release remain owed.
 
 ## §3 What was decided and found
 
@@ -110,6 +125,6 @@ No separate control plane, duplicate source owner, new customer store or new pro
 
 Do not take over held incumbent branches, pane geometry, Brain routing/field registry, FX authority, private Prophet identity joins, native chart analysis or recipient notification consent. Do not install the strict drawing prototype or release it as a full migration. No active worker, watcher, future wake or program completion is implied by this handoff; those require exact independent evidence.
 
-Oct7 continuation: PR839 remains unmerged at refreshed94dff; its six source files are unchanged, all10 dispatch jobs passed, and the separate PR workflow approval is pending. The exact workflow-approval tool request was denied before execution. The root and both pre-launch adapter refusals are recorded in the workstream/review snapshot. No new Fabric worker, native child, Astra, deploy or future automatic model wake is claimed. Macro PR8545 remains draft/disarmed while this continuation updates material proof.
+Oct8 continuation: bounded Fabric childterminal-audit20-ci-automation-r1-20261008 completed via automatic Grok4.6/Ubuntu2, with START,rc0,cleanup proven,residual0, consumed same-run output and reviewer acceptance after parent supporting-file repair. The retained workflow patch is independently qualified with40 parent tests; the worker's43-test claim is unverified. Controller/CI source owner785 files are untouched. Draft PR850 contains the repair; installing/minting/testing a token alone will not establish fresh-head automatic CI. No native child, Astra, duplicate watcher, new control plane or future automatic model wake is claimed.
 
-Pine containment PR834 now carries exact two-file candidate `ab267daa5b740fbd008cf190f567bd78222b1b73`, merged on mastere963eef. The sole conflict was superseded ownership evidence; canonical upstream evidence is retained, and the previously reviewed host/test source is unchanged. Current-master100 focused tests, route type generation/full TSC, three actual Next native-Worker journeys with zero skips, and repository responsive60pass24existing viewport-conditional skips passed. Candidate pushed; ready/merge-on-green/native protected auto-merge armed once. Exact new-head run37701701904 is in progress under the existing controller. No merge, deploy or authenticated containment acceptance is claimed. Own3127 test server and authenticated editor tab are closed.
+Macro records PR8545 was made draft/disarmed before these material updates. Its previous exact-head canonical CI was green. The initiating parent owns validation, final push and ready/merge-on-green transition for the updated record head through the incumbent controller.
