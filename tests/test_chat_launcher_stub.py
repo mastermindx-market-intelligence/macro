@@ -78,6 +78,19 @@ def theme_code(theme_src: str) -> str:
 # are checked for shared-root provenance by the second half of the test.
 _LITERAL_SRC_RE = re.compile(r"""\.(?:src|href)\s*=\s*(['"])([^'"]+)\1""")
 
+# A freshly created anchor's href is navigation, not an injected asset. Recognize
+# only the adjacent declaration/optional literal className/href shape: no calls,
+# reassignments or scope boundary may intervene. The declaration must start a
+# source line, so a //-commented declaration cannot classify a live href below it.
+# Unknown href receivers remain
+# guarded; never exempt a URL spelling or every later use of an anchor variable.
+_ANCHOR_NAVIGATION_RE = re.compile(
+    r"""(?m)^[ \t]*(?:var|let|const)\s+(?P<node>[A-Za-z_$][\w$]*)\s*=\s*"""
+    r"""document\.createElement\(\s*(?P<tag_quote>['"])a(?P=tag_quote)\s*\)\s*;\s*"""
+    r"""(?:(?P=node)\.className\s*=\s*(?P<class_quote>['"])[^'"]*(?P=class_quote)\s*;\s*)?"""
+    r"""(?P=node)(?P<href>\.href)\s*="""
+)
+
 # URLs that are not ours to rebase: absolute, protocol-relative, data/blob, and
 # the empty string (used to detach a media element).
 _NOT_LOCAL = ("http://", "https://", "//", "data:", "blob:", "about:", "#", "/")
@@ -86,10 +99,11 @@ _NOT_LOCAL = ("http://", "https://", "//", "data:", "blob:", "about:", "#", "/")
 def _document_relative_offenders(code: str) -> list[str]:
     """Injected asset URLs that are bare relative literals (comments stripped)."""
     code = re.sub(r"/\*.*?\*/", " ", code, flags=re.DOTALL)
+    navigation = {m.start("href") for m in _ANCHOR_NAVIGATION_RE.finditer(code)}
     return [
-        url
-        for _q, url in _LITERAL_SRC_RE.findall(code)
-        if url and not url.startswith(_NOT_LOCAL)
+        m.group(2)
+        for m in _LITERAL_SRC_RE.finditer(code)
+        if m.start() not in navigation and not m.group(2).startswith(_NOT_LOCAL)
     ]
 
 
@@ -123,10 +137,10 @@ def test_no_dynamic_child_asset_is_document_relative(theme_code: str) -> None:
     """
     offenders = _document_relative_offenders(theme_code)
     assert not offenders, (
-        "theme.js assigns a document-relative URL to an injected asset: "
-        f"{offenders}. A dynamic <script>/<link> resolves against the PAGE, so "
-        "this 404s on every nested route (site/stocks/, site/sectors/, …) while "
-        "working perfectly at the site root. Build the URL from "
+        "theme.js has a document-relative src/href literal without proven "
+        f"anchor navigation: {offenders}. For injected assets, a dynamic "
+        "<script>/<link> resolves against the PAGE and can 404 on nested routes. "
+        "Build injected asset URLs from "
         "_mmSharedAssetRoot, which is derived from theme.js's own script URL: "
         "  new URL('<asset>', _mmSharedAssetRoot || location.href).href"
     )
@@ -410,3 +424,61 @@ def test_stub_is_keyboard_operable_and_carries_no_translated_title(theme_src: st
         "the stub must re-localize on langchange rather than pinning the language "
         "it happened to mount in"
     )
+
+
+# ---------------------------------------------------------------------------
+# Navigation classification controls (kept in the CI-registered launcher suite)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("declaration", ["var", "let", "const"])
+def test_fresh_anchor_href_is_navigation(declaration):
+    source = (
+        f"{declaration} target = document.createElement('a');\n"
+        "target.className = 'mm-terminal-ticker-link';\n"
+        "target.href = 'stock.html#' + encodeURIComponent(ticker);"
+    )
+    assert _document_relative_offenders(source) == []
+
+
+def test_anchor_without_class_assignment_is_navigation():
+    assert _document_relative_offenders(
+        'var anchor = document.createElement("a"); anchor.href = "stock.html#";'
+    ) == []
+
+
+@pytest.mark.parametrize("source,expected", [
+    ("var s = document.createElement('script'); s.src = 'mm_brain.js';", ["mm_brain.js"]),
+    ("var s = document.createElement('script'); s.src = 'stock.html#';", ["stock.html#"]),
+    ("var a = document.createElement('link'); a.href = 'stock.html#';", ["stock.html#"]),
+    ("var a = document.createElement('a'); a.src = 'mm_brain.js';", ["mm_brain.js"]),
+    ("unknown.href = 'relative.css';", ["relative.css"]),
+    ("// var a = document.createElement('a');\na.href = 'relative.css';", ["relative.css"]),
+    ("var a = document.createElement('a'); a = document.createElement('link'); a.href = 'relative.css';", ["relative.css"]),
+    ("function one() { var a = document.createElement('a'); } function two() { a.href = 'relative.css'; }", ["relative.css"]),
+    ("var a = document.createElement('a'); a.href = 'stock.html#'; var a = document.createElement('link'); a.href = 'relative.css';", ["relative.css"]),
+    ("var a = document.createElement('a'); rebind(); a.href = 'relative.css';", ["relative.css"]),
+])
+def test_real_assets_and_unknown_receivers_remain_guarded(source, expected):
+    assert _document_relative_offenders(source) == expected
+
+
+def test_shared_root_and_root_absolute_assets_pass():
+    assert _document_relative_offenders(
+        "var s = document.createElement('script'); "
+        "s.src = new URL('mm_brain.js', _mmSharedAssetRoot || location.href).href; "
+        "var css = document.createElement('link'); css.href = '/theme.css';"
+    ) == []
+
+
+@pytest.mark.parametrize("original,replacement,asset", [
+    ("_mmBrainScript.src = _mmBrainSrc();", "_mmBrainScript.src = 'mm_brain.js';", "mm_brain.js"),
+    ("_mmOverlayScript.src = _mmOverlaySrc;", "_mmOverlayScript.src = 'terminal_overlay.js';", "terminal_overlay.js"),
+    ("s.src = pfx + 'account.js?v=20260913-account-actions';", "s.src = 'account.js?v=20260913-account-actions';", "account.js?v=20260913-account-actions"),
+    ("s.src = pfx + 'onboard.js';", "s.src = 'onboard.js';", "onboard.js"),
+])
+def test_guard_rejects_relative_mutations_of_real_child_assets(theme_src, original, replacement, asset):
+    assert theme_src.count(original) == 1, "child loader changed shape; update the mutation"
+    mutant = theme_src.replace(original, replacement, 1)
+    assert _document_relative_offenders(mutant) == [asset]
+    with pytest.raises(AssertionError, match=re.escape(asset)):
+        test_no_dynamic_child_asset_is_document_relative(mutant)
