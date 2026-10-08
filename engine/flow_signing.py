@@ -15,6 +15,8 @@ of guessing. References: Lee-Ready (1991), Ellis-Michaely-O'Hara (2000).
 """
 from __future__ import annotations
 
+from decimal import Decimal, InvalidOperation
+
 import numpy as np
 import pandas as pd
 
@@ -161,8 +163,6 @@ def verdict(per_trade: dict, recovery: dict, bar: float = 0.70) -> dict:
 
 # TP-1 equity tape: qualified at-trade NBBO location; not an aggressor oracle.
 # Keep quote_rule_sign() and option-tape callers unchanged (Macro #7368).
-from decimal import Decimal, InvalidOperation
-
 
 def classify_print(
     *, ticker, quote_ticker, session, quote_session, trade_price, bid, ask,
