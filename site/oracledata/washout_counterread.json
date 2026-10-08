@@ -9,24 +9,24 @@
   {
    "index": "SPY",
    "metric": "price_63d_drawdown_pctile",
-   "drawdown_pct": 0.0,
-   "depth_pctile": 19.2,
+   "drawdown_pct": -0.24,
+   "depth_pctile": 28.9,
    "extreme": false,
    "n_hist": 2520
   },
   {
    "index": "QQQ",
    "metric": "price_63d_drawdown_pctile",
-   "drawdown_pct": 0.0,
-   "depth_pctile": 18.0,
+   "drawdown_pct": -0.25,
+   "depth_pctile": 23.6,
    "extreme": false,
    "n_hist": 2520
   },
   {
    "index": "XLK",
    "metric": "price_63d_drawdown_pctile",
-   "drawdown_pct": 0.0,
-   "depth_pctile": 18.0,
+   "drawdown_pct": -0.3,
+   "depth_pctile": 24.3,
    "extreme": false,
    "n_hist": 2520
   }

@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "COIN-BULL-20260818",
-  "asof": "2026-10-07",
+  "asof": "2026-10-08",
   "phase": "at_t1",
   "detection_phase": "at_t1",
-  "management_confidence": 67.4,
-  "raw_confidence": 67.4,
-  "delta_vs_base": 7.4,
+  "management_confidence": 63.8,
+  "raw_confidence": 59.3,
+  "delta_vs_base": 3.8,
   "recommended_action": "hold",
   "human_state": "T1 Hit \u2014 Holding",
   "components": {
     "validity": 100.0,
-    "progress": 59.4,
-    "pace": 54.3,
-    "retention": 62.5,
+    "progress": 53.1,
+    "pace": 38.8,
+    "retention": 44.7,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.163,
-    "dist_to_t1_r": 0.337,
-    "dist_to_t2_r": 1.837,
-    "horizon_pct_used": 108.9,
-    "p1": 0.7753,
-    "p2": 0.3877,
+    "dist_to_stop_r": 1.831,
+    "dist_to_t1_r": 0.669,
+    "dist_to_t2_r": 2.169,
+    "horizon_pct_used": 111.1,
+    "p1": 0.554,
+    "p2": 0.277,
     "p3": null,
-    "move_r": 1.163,
+    "move_r": 0.831,
     "mfe_r": 1.86,
     "mae_r": -0.0
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-20",
   "_first_t1_ts": "2026-09-18",
   "_first_t2_ts": null,
-  "days_elapsed": 49,
-  "tau": 1.0889
+  "days_elapsed": 50,
+  "tau": 1.1111
 }

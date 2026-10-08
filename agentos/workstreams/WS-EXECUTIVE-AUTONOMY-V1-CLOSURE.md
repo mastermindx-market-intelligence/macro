@@ -145,8 +145,12 @@ waves:
         Socket Mode off, two scopes; release owner 6027192883 edit 00:52Z). Then: host operator runs enroll-shared --expected-bot-user-id
         U0BT71H4FQE --enable-w3c on the native host; it reads the enrolled C1 credential locally, so no
         token is typed → verify → start-agent-relay → target re-census (no summon) → one parenting
-        canary on an EXISTING queued acceptance root (JOB-003 or JOB-013; never a new Job, never
-        JOB-002 — Sol issuecomment-5991883687) → only then session_summon/delegation expansion.
+        canary through one useful normal product operation on the exact original parent. The
+        independent Packet-07 preflight on #1143 (issuecomment-6032160245, 2026-10-07)
+        supersedes issuecomment-5991883687: JOB-002, JOB-003 and JOB-013 are historical
+        evidence and must never be replayed or repurposed. Preserve actual parent consumption
+        and lost-response reconciliation without a duplicate provider effect; no synthetic
+        acceptance-only root → only then session_summon/delegation expansion.
         Seat role per Sol issuecomment-5991567681: C3 integration/acceptance only. ChatGPT product
         gate: Business cannot refresh a published app in place, so a fresh custom MCP app is
         recreated and republished on the existing tunnel/OAuth resource with the then-installed tool
@@ -199,7 +203,7 @@ do_not_redo:
   - "Do not revive Mastermind #1227 (closed unmerged 2026-10-04T08:29Z, superseded by #1191 commit 3149fe6f); its review criteria reach #1191 only through the incumbent writer."
   - "Do not re-post the #1227 review (pullrequestreview-5404908792) or the #1241 integration read (issuecomment-5978317957)."
   - "Do not re-file reviews on #1219 or #1251 while Sol (MastermindX1) owns their review gates; do not re-post the seat #1251 review (pullrequestreview-5408951316), the #1219 adjudication (issuecomment-5990732208) or the #1257 x #1219 merge pre-check (issuecomment-5991833933)."
-  - "Do not enqueue, re-approve or re-merge Mastermind #1257 (merged 2026-10-05T09:42:52Z as 1df1367f) and do not create another canary Job: JOB-003 / JOB-013 are the natural acceptance roots (Sol issuecomment-5991883687); JOB-002 is never repurposed."
+  - "Do not enqueue, re-approve or re-merge Mastermind #1257 (merged 2026-10-05T09:42:52Z as 1df1367f). Packet-07 #1143 issuecomment-6032160245 supersedes the old canary advice in issuecomment-5991883687: JOB-002, JOB-003 and JOB-013 are historical evidence, never canary targets or replay candidates. Use a useful operation through the normal product flow after the installation, catalog and relay gates; never manufacture a root solely for acceptance."
   - "Do not re-post the seat integration notes #1219 issuecomment-6005154414 / issuecomment-6011249322 or #1251 issuecomment-6009775212; do not resolve #1219 master re-merges for its writer (Sol is the active writer on the carrier); #1225 was owned by a different session on the shared mastermindxryan identity — never treat it as a seat artifact."
 ---
 
@@ -219,3 +223,14 @@ record only sequences their outputs into the acceptance operation.
 `MISSION_COMPLETE: true` only with `AUTONOMY_V1_PROVEN_LIVE` from one complete real production
 acceptance operation. A PARTIAL rehearsal, a merged release, an armed host or a green CI run is
 never that proof.
+
+## Canary instruction correction — 2026-10-08
+
+The current continuation and `do_not_redo` above follow the newer independent
+[Packet-07 preflight on Mastermind #1143](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1143#issuecomment-6032160245).
+The earlier recommendation to use JOB-003 or JOB-013 was superseded. JOB-002, JOB-003
+and JOB-013 remain historical evidence; no historical lifecycle state is changed by
+this record correction. Verification: `gh api repos/mastermindx-market-intelligence/Mastermind/issues/comments/6032160245`
+returns the 2026-10-07T06:14:10Z acceptance preflight. A useful normal product operation
+still requires the current installed generation, exact client catalog, relay readiness,
+original-parent consumption, lost-response reconciliation and independent acceptance.

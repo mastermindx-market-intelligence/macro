@@ -1,27 +1,26 @@
 {
   "schema": "stock_desk.v1",
   "as_of": "2026-10-06",
-  "generated_at": "2026-10-07T11:20:41.071530+00:00",
+  "generated_at": "2026-10-08T15:28:14.436371+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-10-06-URBN-20261007112041-1",
+      "id": "2026-10-06-URBN-20261008152814-1",
       "ticker": "URBN",
       "name": "Urban Outfitters, Inc.",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The validated selection ordering and an unblocked entry support a modest constructive lean, with price above both major averages and a fresh daily turn. Conviction stays low because the weekly trend is mixed, macro risk is elevated, and the prior left-translated cycle warns that momentum may tire early.",
+      "thesis": "The residual-alpha selection and unblocked entry support a modest relative-strength lean, with price above both major averages and a daily turn underway. Conviction stays low because the weekly trend is mixed, macro risk is elevated, and the prior cycle topped early.",
       "evidence": [
         "Verdict: High-confluence leader (context)",
-        "Selection axis z 1.09; percentile 66",
-        "Entry unblocked; percentile 64",
-        "Daily cycle new; price above 50dma and 200dma",
-        "Prior cycle left-translated; weekly timeframe not yet turned"
+        "Selection axis z 1.09; entry unblocked",
+        "Above 50-day and 200-day averages; MACD positive",
+        "Prior cycle left-translated; weekly timeframe not turned"
       ],
-      "dissent": "The early-topping prior cycle and unresolved weekly trend could make this another short-lived bounce that lags the S&P 500.",
+      "dissent": "The late investor phase and prior left-translated cycle could make the apparent bottoming turn another short-lived rally.",
       "falsifier": {
-        "text": "Price loses the 50-day average as daily momentum turns negative.",
+        "text": "Price loses both the 50-day and 200-day averages while daily momentum turns negative.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "URBN",
@@ -35,49 +34,47 @@
       "engine_verdict": "High-confluence leader (context)"
     },
     {
-      "id": "2026-10-06-VIR-20261007112041-2",
+      "id": "2026-10-06-VIR-20261008152814-2",
       "ticker": "VIR",
       "name": "Vir Biotechnology, Inc.",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The leader-like price action argues against a directional short, but the profile's accounting warning and deeply negative cash flow and earnings prevent a constructive call. The risk reshape therefore favors watching rather than chasing a stock already well above its major averages.",
+      "horizon_d": 15,
+      "thesis": "The risk controls say not to chase: the daily move is mature, momentum is fading, and accounting quality is flagged. However, it remains a leader above both major averages, so extension and weak quality are insufficient to justify a directional short.",
       "evidence": [
         "Verdict: Leader \u00b7 accounting warning \u2014 verify before buying",
-        "Quality axis percentile 38; accounting flag warn",
-        "Entry axis percentile 41",
-        "Price 13.1% above 50dma and 27.8% above 200dma",
-        "Net income and operating cash flow are negative"
+        "Entry axis pct 41 with pullback/extended and over-200dma risks",
+        "TOP WATCH; daily momentum rolling over",
+        "Above 50-day and 200-day averages; cycle right-translated"
       ],
-      "dissent": "The new daily turn, positive momentum, and proximity to the 52-week high could sustain relative leadership despite weak fundamentals.",
+      "dissent": "Deeply negative cash flow, losses, negative revisions and weak accounting quality could turn the late-cycle setup into genuine relative underperformance.",
       "falsifier": {
-        "text": "The weekly timeframe turns bullish while price continues to hold above the 50-day average.",
+        "text": "A fresh base forms and price resumes higher with daily momentum strengthening rather than rolling over.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-03",
+      "check_by": "2026-10-27",
       "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
     },
     {
-      "id": "2026-10-06-TAL-20261007112041-3",
+      "id": "2026-10-06-TAL-20261008152814-3",
       "ticker": "TAL",
       "name": "TAL Education (ADR)",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The deterministic profile says a base may be forming and the entry is unblocked, but the weekly trend remains mixed and the selection case rests only on contextual residual momentum. Elevated macro risk and absent quality evidence leave no accountable basis for a directional relative-performance call.",
+      "thesis": "The base-building verdict and unblocked entry argue against a bearish stance, but the weekly trend remains mixed and the selection support is limited to contextual residual momentum. Near-high positioning and elevated macro sensitivity favor watching for confirmation rather than assuming outperformance.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base; band neutral",
-        "Selection present only in residual momentum context",
-        "Entry unblocked; percentile 62",
-        "Weekly timeframe has not turned",
-        "Macro-risk elevated for a macro-sensitive name"
+        "Entry unblocked; entry axis pct 62",
+        "Above 50-day and 200-day averages; MACD positive",
+        "Weekly timeframe has not turned; macro-risk elevated"
       ],
-      "dissent": "Price above both major averages with positive MACD and a right-translated cycle could develop into sustained relative strength.",
+      "dissent": "The right-translated cycle, positive momentum and proximity to the 52-week high could sustain relative leadership before weekly confirmation arrives.",
       "falsifier": {
-        "text": "The weekly timeframe turns bullish while price holds above both the 50-day and 200-day averages.",
+        "text": "The weekly timeframe turns bullish while price holds above both major moving averages.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
@@ -87,53 +84,52 @@
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-10-06-JOE-20261007112041-4",
+      "id": "2026-10-06-JOE-20261008152814-4",
       "ticker": "JOE",
       "name": "St. Joe Company",
       "lean": "constructive",
       "conviction": "low",
-      "horizon_d": 25,
-      "thesis": "The validated selection ordering and unblocked entry support a restrained constructive lean as the daily cycle turns up near its major averages. Clean accounting, positive cash flow, and strong net-income growth help, but the unresolved weekly trend and weak profitability factor keep conviction low.",
+      "horizon_d": 30,
+      "thesis": "The residual-alpha selection and constructive base-building verdict support a tentative positive lean, reinforced by strong net-income growth, cash generation and clean accounting. The entry risk control still says wait because price remains below both major averages and has not reclaimed the 10-day average.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base",
-        "Selection axis percentile 60",
-        "Entry unblocked; percentile 64",
-        "Price above 50dma and 200dma with positive MACD",
-        "Accounting flag clean"
+        "Selection axis pct 60; entry unblocked",
+        "Net income growth 55.9%; positive operating cash flow",
+        "Below 10-day, 50-day and 200-day averages"
       ],
-      "dissent": "The mixed bigger-picture trend and negative profitability factor may leave the bounce without enough strength to beat the S&P 500.",
+      "dissent": "Failure to reclaim the moving averages could reveal a weak or lagging structure rather than a durable base.",
       "falsifier": {
-        "text": "Price falls below both the 50-day and 200-day averages as daily momentum turns negative.",
+        "text": "Price remains below the 50-day and 200-day averages and the swing low fails.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "JOE",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 25
+          "horizon_d": 30
         }
       },
-      "check_by": "2026-11-10",
+      "check_by": "2026-11-17",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-10-06-MCK-20261007112041-5",
+      "id": "2026-10-06-MCK-20261008152814-5",
       "ticker": "MCK",
       "name": "Mckesson Corp",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 25,
-      "thesis": "The strongest support is the risk-controlled entry: a fresh buy signal aligned with a bullish weekly trend, with no cycle block. The lean remains low-conviction because accounting quality is flagged for review, the sector basket is deteriorating, and the selection evidence is only middling.",
+      "thesis": "The fresh-buy, with-trend cycle and unblocked entry align with the residual-alpha selection for a constructive relative lean. Confidence is capped by the accounting watch, deteriorating health-care basket and weak quality axis.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base",
-        "Ladder: FRESH BUY; bigger picture bullish",
-        "Entry unblocked; percentile 64",
-        "Price above 50dma and 200dma; daily momentum crossed up",
-        "Accounting flag watch"
+        "FRESH BUY; bigger picture bullish",
+        "Above 50-day and 200-day averages; daily momentum crossed up",
+        "Quality axis pct 38 with accounting watch",
+        "Health Care basket deteriorating"
       ],
-      "dissent": "Weak sector breadth and the accounting-quality concern could overwhelm the otherwise favorable trend and produce relative underperformance.",
+      "dissent": "Weak sector breadth and questionable accounting quality could overwhelm the otherwise favorable trend restart.",
       "falsifier": {
-        "text": "The weekly trend loses its bullish alignment and price closes below the 50-day average.",
+        "text": "Price loses the recent cycle low and falls back below both major moving averages.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "MCK",
@@ -147,23 +143,23 @@
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-10-06-UTHR-20261007112041-6",
+      "id": "2026-10-06-UTHR-20261008152814-6",
       "ticker": "UTHR",
       "name": "United Therapeutics",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The deterministic verdict finds no clear edge: the daily bounce is intact, but the weekly trend has not turned and the prior cycle topped early. The lottery-spike risk control and overdue investor phase reinforce waiting for clearer confirmation rather than taking either directional side.",
+      "thesis": "The deterministic verdict finds no clear edge: the entry is unblocked and fundamentals are strong, but selection is below neutral, revisions are negative and the prior cycle topped early. The lottery-spike risk and overdue investor phase further argue against extrapolating the daily rebound.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis percentile 48",
-        "Weekly timeframe remains mixed",
-        "Prior cycle left-translated",
-        "Investor phase overdue"
+        "Selection axis z -0.13; revisions z -0.82",
+        "Prior cycle left-translated; investor phase overdue",
+        "Entry flags include lottery-spike",
+        "Net margin 41.9%; accounting clean"
       ],
-      "dissent": "Strong margins, positive cash generation, and price above both major averages could allow the daily turn to mature into renewed leadership.",
+      "dissent": "Strong profitability, cash flow and a turn above both major averages could allow the rebound to become renewed relative leadership.",
       "falsifier": {
-        "text": "The weekly timeframe turns bullish and the next daily cycle remains right-translated above the 50-day average.",
+        "text": "The weekly timeframe turns bullish and price holds above both major averages with strengthening momentum.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"

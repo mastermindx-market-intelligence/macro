@@ -7,7 +7,7 @@
   "baseline_completed_at": "2026-08-09T23:26:53.143216+00:00",
   "baseline_run_id": "usaspending-130d7fa25e9a0b31e84b6087",
   "baseline_started_at": "2026-08-09T23:26:53.143216+00:00",
-  "bounded_sample_complete": true,
+  "bounded_sample_complete": false,
   "coverage_manifest": {
     "action_history_sample": {
       "endpoint": "https://api.usaspending.gov/api/v2/transactions/",
@@ -219,9 +219,9 @@
   "coverage_manifest_changed_this_run": false,
   "coverage_manifest_id": "award-coverage-4c6b9a67f7f044aaa6563af2277dac0f7ddd1b976ae383f74aba8b0ea022343f",
   "coverage_scope": "USAspending award-detail and transaction observations collected from bounded recipient-query discovery; not a complete federal procurement corpus or issuer attribution.",
-  "last_observed_at": "2026-10-07T02:05:04.620785+00:00",
-  "last_run_id": "usaspending-5cad0fdb80b8251c99acd41f",
-  "last_run_was_full_receipt_bound_baseline": true,
+  "last_observed_at": "2026-10-08T02:31:06.160966+00:00",
+  "last_run_id": "usaspending-5fee2e898c96203724ca2419",
+  "last_run_was_full_receipt_bound_baseline": false,
   "projection_generation_id": "award-event-8aac578cfdbb18f4c552e68b",
   "projection_semantic_sha256": "8aac578cfdbb18f4c552e68b98466e53a21d5e76ba9221febb19ca2107fcab47",
   "schema_version": "government_revenue.award_event_projection_state.v1",

@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FIX-BULL-20260917",
-  "asof": "2026-10-07",
+  "asof": "2026-10-08",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 66.2,
-  "raw_confidence": 72.6,
-  "delta_vs_base": 6.2,
+  "management_confidence": 63.7,
+  "raw_confidence": 60.7,
+  "delta_vs_base": 3.7,
   "recommended_action": "hold",
   "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 47.7,
-    "pace": 80.9,
+    "progress": 30.0,
+    "pace": 50.6,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.935,
-    "dist_to_t1_r": 0.565,
-    "dist_to_t2_r": 2.065,
-    "horizon_pct_used": 42.2,
-    "p1": 0.623,
-    "p2": 0.3115,
+    "dist_to_stop_r": 1.505,
+    "dist_to_t1_r": 0.995,
+    "dist_to_t2_r": 2.495,
+    "horizon_pct_used": 44.4,
+    "p1": 0.3365,
+    "p2": 0.1682,
     "p3": null,
-    "move_r": 0.935,
+    "move_r": 0.505,
     "mfe_r": 0.935,
     "mae_r": -0.275
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-09-26",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 19,
-  "tau": 0.4222
+  "days_elapsed": 20,
+  "tau": 0.4444
 }
