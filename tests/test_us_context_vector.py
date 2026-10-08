@@ -344,6 +344,7 @@ CONTRACT: dict[str, str] = {
     "alpha": "f", "alpha_percentile": "f", "prophet_score": "f",
     "score_rank": "f", "display_rank": "f",
     "theme_membership_count": "i", "theme_membership_ids": "O",
+    "theme_category_ids": "O",
     "theme_primary_id": "O", "theme_primary_name": "O", "theme_label": "O",
     "theme_reco": "O", "theme_score": "f", "theme_bull_days": "f",
     "theme_heat_rank": "f", "foresight_stage": "O",
@@ -929,3 +930,210 @@ class TestBasketMembership:
 
     def test_absent_membership_file_is_safe(self, tmp_path):
         assert ucv.basket_membership("2026-07-31", root=tmp_path) == {}
+
+
+# --------------------------------------------------------------------------- #
+# W-C7: hierarchy category context shadow (display-tier only, no new authority)
+# --------------------------------------------------------------------------- #
+
+from tests.test_theme_graph_hierarchy_paths import (
+    FakeStore, _basket, _edge, _local_theme, _parent_of, _theme,
+)
+
+
+def _wc7_graph(*, admitted="2026-10-07", second_parent=False,
+               corrected_at=None, late_belief=False, vendor_parent=False):
+    nodes = [
+        _theme("theme:cat_a", "macro_category"),
+        _theme("theme:chip", "theme"),
+        _basket("basket:baskets:x"),
+    ]
+    edges = [
+        _edge("exp:x", "EXPRESSES", "basket:baskets:x", "theme:chip"),
+        _parent_of(
+            "theme:cat_a", "theme:chip", valid_from=admitted,
+            belief_time="2026-10-09" if late_belief else admitted,
+            computed_at="2026-10-09T01:00:00Z" if late_belief
+            else f"{admitted}T01:00:00Z",
+        ),
+    ]
+    if second_parent:
+        nodes.append(_theme("theme:cat_b", "macro_category"))
+        edges.append(_parent_of(
+            "theme:cat_b", "theme:chip", valid_from=admitted,
+            belief_time=admitted, computed_at=f"{admitted}T01:00:00Z",
+        ))
+    if corrected_at:
+        prior = edges[1]
+        replacement = dict(prior, belief_time=corrected_at,
+                           valid_to="2026-10-08",
+                           computed_at=f"{corrected_at}T01:00:00Z")
+        edges.append(replacement)
+    if vendor_parent:
+        nodes.append(_local_theme("ltheme:finviz:chip"))
+        edges.append(_parent_of(
+            "ltheme:finviz:chip", "theme:chip", valid_from=admitted,
+            belief_time=admitted, computed_at=f"{admitted}T01:00:00Z",
+        ))
+    return FakeStore(nodes, edges)
+
+
+def _wc7_stamp(verdicts, append_kwargs, stamp, graph, root=None):
+    kwargs = dict(append_kwargs)
+    if root is not None:
+        kwargs["root"] = root
+    kwargs["hierarchy_store_view"] = graph
+    return ucv.append_candidates(verdicts, stamp, **kwargs)
+
+
+def test_wc7_default_before_admission_null_and_unmodified_nightly(
+    verdicts, append_kwargs, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA"]})
+    assert _wc7_stamp(verdicts, append_kwargs, "2026-10-06",
+                      _wc7_graph()) == 3
+    frame = ucv.load_candidates(tmp_path)
+    assert frame["theme_category_ids"].isna().all()
+    assert frame.loc[frame["ticker"] == "AAA", "theme_membership_ids"].iloc[0] == "x"
+    assert ucv.DEDUPE_KEY == ("stamp_date", "ticker", "board_definition")
+
+
+def test_wc7_admitted_multi_parent_deterministically_persisted(
+    verdicts, append_kwargs, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA", "CCC"]})
+    view = _wc7_graph(second_parent=True)
+    assert _wc7_stamp(verdicts, append_kwargs, "2026-10-07", view) == 3
+    saved = ucv.load_candidates(tmp_path).set_index("ticker")
+    assert saved.loc["AAA", "theme_category_ids"] == "theme:cat_a|theme:cat_b"
+    assert saved.loc["CCC", "theme_category_ids"] == "theme:cat_a|theme:cat_b"
+    assert pd.isna(saved.loc["BBB", "theme_category_ids"])
+    assert saved.loc["AAA", "theme_membership_ids"] == "x"
+    # Reader preserves BOTH parents; no synthetic weight or new score appears.
+    assert not any(c.startswith("theme_category_score") for c in saved.columns)
+    assert list(saved["theme_category_ids"].dropna().unique()) == [
+        "theme:cat_a|theme:cat_b"
+    ]
+
+
+def test_wc7_later_belief_is_invisible_at_earlier_decision(
+    verdicts, append_kwargs, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA"]})
+    graph = _wc7_graph(late_belief=True)
+    _wc7_stamp(verdicts, append_kwargs, "2026-10-07", graph)
+    _wc7_stamp(verdicts, append_kwargs, "2026-10-09", graph)
+    rows = ucv.load_candidates(tmp_path).query("ticker == 'AAA'").set_index("stamp_date")
+    assert pd.isna(rows.loc["2026-10-07", "theme_category_ids"])
+    assert rows.loc["2026-10-09", "theme_category_ids"] == "theme:cat_a"
+
+
+def test_wc7_withdrawal_respects_belief_history_and_keep_first(
+    verdicts, append_kwargs, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA"]})
+    old = _wc7_graph()
+    corrected = _wc7_graph(corrected_at="2026-10-09")
+    _wc7_stamp(verdicts, append_kwargs, "2026-10-07", old)
+    # Current corrected view must not rewrite a previously stamped row.
+    _wc7_stamp(verdicts, append_kwargs, "2026-10-07", corrected)
+    _wc7_stamp(verdicts, append_kwargs, "2026-10-09", corrected)
+    rows = ucv.load_candidates(tmp_path).query("ticker == 'AAA'").set_index("stamp_date")
+    assert rows.loc["2026-10-07", "theme_category_ids"] == "theme:cat_a"
+    assert pd.isna(rows.loc["2026-10-09", "theme_category_ids"])
+
+
+def test_wc7_missing_and_refused_hierarchy_fail_soft_with_warning(
+    verdicts, append_kwargs, tmp_path, monkeypatch, capsys
+):
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA"]})
+
+    class Refused:
+        def read_nodes(self):
+            raise PermissionError("refused")
+        def read_edges(self):
+            return []
+        def read_node_lifecycle(self):
+            return []
+
+    assert _wc7_stamp(verdicts, append_kwargs, "2026-10-07", Refused()) == 3
+    assert ucv.load_candidates(tmp_path)["theme_category_ids"].isna().all()
+    assert "hierarchy-unavailable" in capsys.readouterr().out
+
+
+def test_wc7_vendor_parent_never_laundered_as_house_category(
+    verdicts, append_kwargs, tmp_path, monkeypatch, capsys
+):
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA"]})
+    assert _wc7_stamp(verdicts, append_kwargs, "2026-10-07",
+                      _wc7_graph(vendor_parent=True)) == 3
+    assert ucv.load_candidates(tmp_path)["theme_category_ids"].isna().all()
+    assert "hierarchy-unavailable" in capsys.readouterr().out
+
+
+def test_wc7_no_authority_leak_or_unreviewed_nonscalar(
+    verdicts, append_kwargs, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA"]})
+    before = tmp_path / "before"
+    after = tmp_path / "after"
+    _wc7_stamp(verdicts, append_kwargs, "2026-10-07", FakeStore([], []), before)
+    _wc7_stamp(verdicts, append_kwargs, "2026-10-07", _wc7_graph(), after)
+    baseline = ucv.load_candidates(before).set_index("ticker")
+    amended = ucv.load_candidates(after).set_index("ticker")
+    assert pd.isna(baseline.loc["AAA", "theme_category_ids"])
+    assert amended.loc["AAA", "theme_category_ids"] == "theme:cat_a"
+    for column in ("eligible", "buyable", "tier_cascade", "prophet_score",
+                   "score_rank", "display_rank", "lane"):
+        pd.testing.assert_series_equal(baseline[column], amended[column])
+    assert "theme_category_ids" in ucv._OBJECT_COLUMNS
+    assert ucv._contain_unclassified_nonscalars(amended.reset_index()).shape == amended.reset_index().shape
+
+
+def test_wc7_forward_only_old_part_does_not_acquire_categories(
+    verdicts, append_kwargs, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA"]})
+    _wc7_stamp(verdicts, append_kwargs, "2026-09-30", _wc7_graph())
+    older_bytes = ucv._part_path("2026-09-30", tmp_path).read_bytes()
+    _wc7_stamp(verdicts, append_kwargs, "2026-10-07", _wc7_graph())
+    assert ucv._part_path("2026-09-30", tmp_path).read_bytes() == older_bytes
+    frame = ucv.load_candidates(tmp_path).query("ticker == 'AAA'").set_index("stamp_date")
+    assert pd.isna(frame.loc["2026-09-30", "theme_category_ids"])
+    assert frame.loc["2026-10-07", "theme_category_ids"] == "theme:cat_a"
+
+
+def test_wc7_owner_graph_reader_uses_uncollapsed_beliefs(monkeypatch, tmp_path):
+    from engine.theme_graph import store as graph_store
+    nodes = tmp_path / "nodes.parquet"
+    edges = tmp_path / "edges.parquet"
+    nodes.touch()
+    edges.touch()
+    graph = _wc7_graph()
+    flags = []
+    monkeypatch.setattr(graph_store, "nodes_path", lambda: nodes)
+    monkeypatch.setattr(graph_store, "edges_path", lambda: edges)
+    monkeypatch.setattr(graph_store, "read_nodes", lambda **kw: graph.read_nodes())
+
+    def raw_edges(*, latest_belief=True, **kw):
+        flags.append(("edges", latest_belief))
+        return graph.read_edges()
+
+    def raw_lifecycle(*, latest=True, **kw):
+        flags.append(("lifecycle", latest))
+        return graph.read_node_lifecycle()
+
+    monkeypatch.setattr(graph_store, "read_edges", raw_edges)
+    monkeypatch.setattr(graph_store, "read_node_lifecycle", raw_lifecycle)
+    assert ucv._hierarchy_categories_for_baskets(["x"], "2026-10-07") == {
+        "x": ("theme:cat_a",)
+    }
+    assert flags == [("edges", False), ("lifecycle", False)]
