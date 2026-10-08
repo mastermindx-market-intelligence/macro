@@ -1,6 +1,7 @@
 """W-C4 production hierarchy population — frozen R-C.3 table, PIT, rights, outputs unchanged."""
 from __future__ import annotations
 
+import ast
 import copy
 import json
 import re
@@ -94,19 +95,11 @@ def _non_hierarchy_edges(edges):
     return [row for row in edges if row.get("type") != "PARENT_OF"]
 
 
-def _parquet_bytes(rows, columns: tuple[str, ...], *, sort_key: str) -> bytes:
+def _parquet_bytes(rows, columns: tuple[str, ...], path: Path, *, sort_key: str) -> bytes:
     ordered = sorted(rows, key=lambda row: row[sort_key])
     frame = pd.DataFrame(ordered).reindex(columns=list(columns))
-    path = Path(f"/tmp/wc4_parquet_{sort_key}.parquet")
     frame.to_parquet(path, index=False)
     return path.read_bytes()
-
-
-def _consumer_store(view):
-    return NodesFakeStore(
-        _non_hierarchy_edges(view.edges),
-        nodes=_non_hierarchy_nodes(view.nodes),
-    )
 
 
 def _hierarchy_evidence_ids(view) -> set[str]:
@@ -298,27 +291,31 @@ def test_every_basket_category_is_accounted_for():
 
 
 @pytest.mark.needs_full_checkout("data")
-def test_graph_view_outside_the_hierarchy_is_byte_identical(production_build):
+def test_graph_view_outside_the_hierarchy_is_byte_identical(production_build, tmp_path):
     asserted_on = production_build.asserted_on
 
     with_node_bytes = _parquet_bytes(
         _non_hierarchy_nodes(production_build.with_block.nodes),
         store.NODE_COLUMNS,
+        tmp_path / "with_nodes.parquet",
         sort_key="node_id",
     )
     without_node_bytes = _parquet_bytes(
         _non_hierarchy_nodes(production_build.without_block.nodes),
         store.NODE_COLUMNS,
+        tmp_path / "without_nodes.parquet",
         sort_key="node_id",
     )
     with_edge_bytes = _parquet_bytes(
         _non_hierarchy_edges(production_build.with_block.edges),
         store.EDGE_COLUMNS,
+        tmp_path / "with_edges.parquet",
         sort_key="edge_id",
     )
     without_edge_bytes = _parquet_bytes(
         _non_hierarchy_edges(production_build.without_block.edges),
         store.EDGE_COLUMNS,
+        tmp_path / "without_edges.parquet",
         sort_key="edge_id",
     )
 
@@ -349,34 +346,67 @@ def test_exposure_map_unchanged_by_the_production_block(production_build):
     asserted_on = production_build.asserted_on
     asof = asserted_on
 
-    with_store = _consumer_store(production_build.with_block)
-    without_store = _consumer_store(production_build.without_block)
+    with_store = NodesFakeStore(
+        list(production_build.with_block.edges),
+        nodes=list(production_build.with_block.nodes),
+    )
+    without_store = NodesFakeStore(
+        list(production_build.without_block.edges),
+        nodes=list(production_build.without_block.nodes),
+    )
 
-    parent_count = sum(1 for row in production_build.with_block.edges if row["type"] == "PARENT_OF")
-    assert parent_count == 93
+    parent_edges = [row for row in with_store.read_edges() if row["type"] == "PARENT_OF"]
+    assert len(parent_edges) == 93
+    for row in parent_edges:
+        assert row["valid_from"] <= asof
+        assert row["valid_to"] is None
+        assert row["belief_time"] <= asof
+    with_nodes = with_store.read_nodes()
+    assert sum(row.get("tier") == "macro_category" for row in with_nodes) == 10
+    assert sum(row.get("tier") == "micro_theme" for row in with_nodes) == 68
 
     spec = _spec(list(PRODUCTION_THEME_NODE_IDS))
-    with_map = to_json(
-        _compose(with_store, spec, asof=asof, chain_loader=_chain_loader)
-    )
-    without_map = to_json(
-        _compose(without_store, spec, asof=asof, chain_loader=_chain_loader)
-    )
-    assert with_map == without_map
+    day_before = (date.fromisoformat(asserted_on) - timedelta(days=1)).isoformat()
+    for clock_name, clock_args in (
+        ("default_clock", {}),
+        ("knowledge_cutoff_before_asserted_on", {"knowledge_cutoff": day_before}),
+    ):
+        with_map = to_json(
+            _compose(with_store, spec, asof=asof, chain_loader=_chain_loader, **clock_args)
+        )
+        without_map = to_json(
+            _compose(without_store, spec, asof=asof, chain_loader=_chain_loader, **clock_args)
+        )
+        assert with_map == without_map, f"exposure changed under {clock_name}"
     assert asof >= asserted_on
 
 
-@pytest.mark.needs_full_checkout("data")
-def test_theme_state_and_selection_cohort_unchanged(production_build):
-    for rel in (
+def test_theme_state_and_selection_cohort_unchanged():
+    pending = [
         "engine/theme_graph/theme_state.py",
         "engine/theme_graph/selection_cohort.py",
-    ):
+    ]
+    closure: set[str] = set()
+    theme_graph_imports: set[str] = set()
+    while pending:
+        rel = pending.pop()
+        if rel in closure:
+            continue
+        closure.add(rel)
         text = (ROOT / rel).read_text(encoding="utf-8")
-        assert "read_nodes" not in text
-        assert "read_edges" not in text
-        assert "nodes.parquet" not in text
-        assert "edges.parquet" not in text
+        for forbidden in (
+            "theme_crosswalk", "read_nodes", "read_edges", "nodes.parquet", "edges.parquet",
+        ):
+            assert forbidden not in text, f"{rel}: forbidden dependency {forbidden}"
+        for node in ast.walk(ast.parse(text, filename=rel)):
+            if (
+                isinstance(node, ast.ImportFrom)
+                and node.module
+                and node.module.startswith("engine.theme_graph.")
+            ):
+                theme_graph_imports.add(node.module)
+                pending.append(node.module.replace(".", "/") + ".py")
+    assert theme_graph_imports, "theme-state/selection-cohort import closure is empty"
 
     source, kw = selection(), inputs()
     before = compose_selection_cohort(source, **kw)
