@@ -940,6 +940,8 @@ from tests.test_theme_graph_hierarchy_paths import (
     FakeStore, _basket, _edge, _local_theme, _parent_of, _theme,
 )
 
+from tests.test_theme_graph_hierarchy import populated_view
+
 
 def _wc7_graph(*, admitted="2026-10-07", second_parent=False,
                corrected_at=None, late_belief=False, vendor_parent=False):
@@ -1180,3 +1182,26 @@ def test_wc7_legacy_part_without_new_column_reads_null_forward_only(
     rows = ucv.load_candidates(tmp_path).query("ticker == 'AAA'").set_index("stamp_date")
     assert pd.isna(rows.loc["2026-09-30", "theme_category_ids"])
     assert rows.loc["2026-10-07", "theme_category_ids"] == "theme:cat_a"
+
+
+def test_wc7_real_materializer_to_parquet_consumer(
+    populated_view, verdicts, append_kwargs, tmp_path, monkeypatch
+):
+    """W-C4 incumbent producer -> W-C6 PIT reader -> W-C7 saved consumer.
+
+    The real materializer emits the hierarchy and house rights; only the
+    synthetic basket/EXPRESSES input is appended to make a small US fixture.
+    This is an isolated fixture build, NEVER a local production graph rebake.
+    """
+    assert any(edge.get("type") == "PARENT_OF" for edge in populated_view.edges)
+    monkeypatch.setattr(ucv, "basket_membership",
+                        lambda asof, root=None: {"x": ["AAA"]})
+    graph = FakeStore(
+        [*populated_view.nodes, _basket("basket:baskets:x")],
+        [*populated_view.edges,
+         _edge("exp:solar", "EXPRESSES", "basket:baskets:x", "theme:solar")],
+    )
+    assert _wc7_stamp(verdicts, append_kwargs, "2026-10-08", graph) == 3
+    from_disk = pd.read_parquet(ucv._part_path("2026-10-08", tmp_path))
+    assert from_disk.set_index("ticker").loc["AAA", "theme_category_ids"] == "theme:hierarchy_cat"
+    assert ucv.load_candidates(tmp_path).set_index("ticker").loc["AAA", "theme_category_ids"] == "theme:hierarchy_cat"
