@@ -44,8 +44,8 @@ def test_at_trade_quote_location_and_midpoint_are_exact(price, bucket, reason):
     ("eligible_for_pressure", False, "CONDITION_INELIGIBLE"),
     ("trade_source_receipt", None, "ORIGINAL_RECEIPT_MISSING"),
     ("quote_source_receipt", "", "ORIGINAL_RECEIPT_MISSING"),
-    ("quote_sip_ns", 130, "SIP_CLOCK_ORDER_UNQUALIFIED"),
-    ("quote_sip_ns", 131, "SIP_CLOCK_ORDER_UNQUALIFIED"),
+    ("quote_sip_ns", 130, "IMPOSSIBLE_RECEIPT_CLOCK"),
+    ("quote_sip_ns", 131, "IMPOSSIBLE_RECEIPT_CLOCK"),
     ("quote_sip_ns", 90, "QUOTE_STALE"),
     ("quote_received_ns", 151, "NOT_KNOWN_AT_DECISION"),
     ("trade_received_ns", 151, "NOT_KNOWN_AT_DECISION"),
@@ -116,3 +116,12 @@ def test_zero_unknown_or_noninteger_displayed_quote_size_is_not_firm(field, valu
     result = classify_print(**args(**{field: value}))
     assert result["bucket"] == "unclassified"
     assert result["reason"] == "NO_FIRM_DISPLAYED_NBBO_SIZE"
+
+
+@pytest.mark.parametrize("event_ns,receipt_ns", [
+    (130, 131), (131, 132),
+])
+def test_same_or_later_quote_sip_clock_abstains_after_qualified_receipt(event_ns, receipt_ns):
+    got = classify_print(**args(quote_sip_ns=event_ns, quote_received_ns=receipt_ns))
+    assert got["bucket"] == "unclassified"
+    assert got["reason"] == "SIP_CLOCK_ORDER_UNQUALIFIED"
