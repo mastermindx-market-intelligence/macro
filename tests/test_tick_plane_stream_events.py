@@ -214,8 +214,6 @@ class StreamEventContractTests(unittest.TestCase):
         self.assertFalse(r["eligible_for_pressure"] is True)
 
 
-if __name__ == "__main__":
-    unittest.main()
 
 
     def test_trade_identity_scoped_by_exchange_and_trf(self):
@@ -239,3 +237,7 @@ if __name__ == "__main__":
         good["s"] = 10
         good["ds"] = "10.875"
         self.assertEqual(captured(good)["decimal_size_shares"], "10.875")
+
+
+if __name__ == "__main__":
+    unittest.main()
