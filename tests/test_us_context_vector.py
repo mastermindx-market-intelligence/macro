@@ -1323,3 +1323,31 @@ def test_wc7_failed_lifecycle_read_does_not_stop_nightly_stamp(
     output = capsys.readouterr().out
     assert "hierarchy-unavailable" in output
     assert "private lifecycle exception payload" not in output
+
+
+def test_wc7_refused_one_basket_withholds_only_affected_ticker(
+    verdicts, append_kwargs, tmp_path, monkeypatch, capsys
+):
+    """A mixed ticker cannot publish a partial set as complete category context."""
+    from engine.theme_graph import structural_navigation
+
+    monkeypatch.setattr(
+        ucv, "basket_membership",
+        lambda asof, root=None: {"x": ["AAA", "CCC"], "unreadable": ["AAA"]},
+    )
+    approved_reader = structural_navigation.hierarchy_paths
+
+    def partially_refused(store_view, node_id, asof, **kwargs):
+        if node_id == "basket:baskets:unreadable":
+            raise PermissionError("sensitive vendor edge details")
+        return approved_reader(store_view, node_id, asof, **kwargs)
+
+    monkeypatch.setattr(structural_navigation, "hierarchy_paths", partially_refused)
+    assert _wc7_stamp(verdicts, append_kwargs, "2026-10-07", _wc7_graph()) == 3
+    saved = ucv.load_candidates(tmp_path).set_index("ticker")
+    assert pd.isna(saved.loc["AAA", "theme_category_ids"])
+    assert saved.loc["CCC", "theme_category_ids"] == "theme:cat_a"
+    assert pd.isna(saved.loc["BBB", "theme_category_ids"])
+    text = capsys.readouterr().out
+    assert "hierarchy-unavailable" in text
+    assert "sensitive vendor edge details" not in text
