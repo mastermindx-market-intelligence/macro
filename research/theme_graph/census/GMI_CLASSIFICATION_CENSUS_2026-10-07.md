@@ -1,3 +1,5 @@
+> **Historical census with a C0 erratum added 2026-10-08.** The original text below is preserved verbatim at audited tree `f2c33b5e1373a344fde232a6750ef479ccfd6331`. Its G1/G2 11-primary/7-null statements are retained as erroneous reported counts, not current observations or revalidated historical facts; the corrected pinned count is **13 primary / 5 null out of 18 themes**, including the exact five IDs in the appended **C0 erratum**. All other HEAD/current phrases remain historical. `CENSUS_DONE` records census delivery, not content admission or phase-2 release.
+
 # GMI classification census — whole-GMI inventory for hierarchy V1.1 (2026-10-07)
 
 Program: GMI Theme Graph (WS:GMI-THEME-GRAPH)
@@ -105,3 +107,19 @@ Promotion to rank, size, gate or entry remains out of scope. The inventory above
 - Micro coverage holes cannot exist before the micro tier is admitted. The next census after a populated hierarchy load must repeat the evidence-source, theme-primary, category and F04-path checks at micro grain.
 - The audit reads `data/theme_graph/*.parquet`, `data/baskets*/membership.json` and `site/intel_hub/hub.json` in memory through `git show HEAD:<path>`; no producer, test, network call, price read or data write was run. The only network operation is the push of this branch.
 - Search bounds: exact terms `taxonomy|vertical|registry|registration|classification|category|theme|micro`, paths `engine/theme_graph`, `engine/neuralweb`, `engine/sector_intelligence`, `engine/market_ontology`, `config`, `research/defense_intelligence`, `research/healthcare`, `research/mining`, `research/energy`, `research/industrials`, `research/consumer_*`, and Agent OS decision/discovery stores. No healthcare ticker taxonomy, semiconductor vertical module, or standing program explicitly labeled “paused” was found on this HEAD; the Finance base tasks are HELD, while Mining and Consumer Cyclical programs remain active with gated work.
+
+## C0 erratum — pinned count reconciliation (2026-10-08)
+
+This is a correction to the interpretation of the preserved census, not a new census or admission. The reviewed [W-C4 crosswalk at `f64ee5f26ba32e4e6a5af69d16869e224d681fcc`](https://github.com/mastermindx-market-intelligence/macro/blob/f64ee5f26ba32e4e6a5af69d16869e224d681fcc/config/theme_crosswalk.yml) contains **10 categories, 18 canonical themes, 68 micros and 93 PARENT_OF rows**. The historical seed/table contains 69 micros; `sic_gan_specialty` is the sole seed-only ID and is excluded from C4. The 68-ID count is bound to that reviewed content. A later date restamp may preserve it only after exact content comparison excluding the per-entry `asserted_on` values; this erratum does not claim that future comparison, merge or natural materialization has happened. The old draft date is not proof of first system knowledge.
+
+| Diagnostic and scope | Exact identity established | Broad parent proxy | No primary parent proxy |
+|---|---:|---:|---:|
+| Historical 69-row census assignment | 0 | 49 | 20 |
+| Same inherited assignment restricted to C4's 68 IDs | 0 | 48 | 20 |
+| All declared C4 parents joined to the current canonical primary mapping | 0 | 49 | 19 |
+
+The last two rows answer different questions. `surgical_robotics_systems` is the only changed diagnostic: the inherited assignment used `medical_devices`, whose primary is null; the C4 `robotics_automation` parent also supplies the broad `robotics_automation` primary-basket path. Neither that path nor any other parent proxy admits the parent's members to a micro. Multiple parents do not create additional subjects, weights or independent samples.
+
+The [canonical crosswalk at main `8aa1aca8c593982e722bbc666a221fdd82466f15`](https://github.com/mastermindx-market-intelligence/macro/blob/8aa1aca8c593982e722bbc666a221fdd82466f15/config/theme_crosswalk.yml) has **18 themes: 13 non-null primary baskets and five nulls**. The exact null theme IDs are `copper_steel_electrify`, `ag_fertilizer`, `medical_devices`, `diagnostics_lifesci` and `solar`. The inherited 11/7 statement is not a current count. A null primary is not proof that the theme is absent or has no other EXPRESSES path. These primary-path diagnostics are not Data OS-qualified coverage or cohort measurements.
+
+The [accepted research matrix](https://github.com/mastermindx-market-intelligence/macro/blob/f1d018defc1a9577202ceee53362845c68ea004d/research/theme_graph/theme_fabric_gap_matrix.json) retains both diagnostics and the admission boundaries. This erratum preserves the original historical narrative and counts; it does not reclassify source rows, change graph/config/data, admit a cohort, release K phase 2, or add capture, display, score or trading rights. Incumbent census/GMI/vertical owners and the existing carrier remain unchanged.

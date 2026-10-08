@@ -1,3 +1,5 @@
+> **Historical census with a C0 erratum added 2026-10-08.** The original text below is preserved verbatim and refers to its audited `70d2bef9662618d9209aad40b534e2fb8ef10864` tree; its unqualified HEAD/current phrases and 69-row seed table are historical. For the reviewed C4 population and current canonical counts, use the appended **C0 erratum**: C4 has 68 micros; inherited 0/48/20 and current-any-parent 0/49/19 are distinct diagnostics. `CENSUS_DONE` records census delivery, not content admission or phase-2 release.
+
 # Micro-theme membership census — GMI hierarchy V1.1 input (2026-10-07)
 
 Program: GMI Theme Graph (WS:GMI-THEME-GRAPH)  
@@ -209,3 +211,19 @@ On HEAD, `config/theme_crosswalk.yml` has `hierarchy.micro_themes: []` (`config/
 - Full engine/scripts reader enumeration truncated in Q1 table to production paths + count-pinning tests; complete path list: `git grep -l 'baskets/membership.json' HEAD -- engine/ scripts/ tests/` (80+ test fixtures).
 - No test suite executed (docs-only census per commission).
 
+
+## C0 erratum — pinned count reconciliation (2026-10-08)
+
+This is a correction to the interpretation of the preserved census, not a new census or admission. The reviewed [W-C4 crosswalk at `f64ee5f26ba32e4e6a5af69d16869e224d681fcc`](https://github.com/mastermindx-market-intelligence/macro/blob/f64ee5f26ba32e4e6a5af69d16869e224d681fcc/config/theme_crosswalk.yml) contains **10 categories, 18 canonical themes, 68 micros and 93 PARENT_OF rows**. The historical seed/table contains 69 micros; `sic_gan_specialty` is the sole seed-only ID and is excluded from C4. The 68-ID count is bound to that reviewed content. A later date restamp may preserve it only after exact content comparison excluding the per-entry `asserted_on` values; this erratum does not claim that future comparison, merge or natural materialization has happened. The old draft date is not proof of first system knowledge.
+
+| Diagnostic and scope | Exact identity established | Broad parent proxy | No primary parent proxy |
+|---|---:|---:|---:|
+| Historical 69-row census assignment | 0 | 49 | 20 |
+| Same inherited assignment restricted to C4's 68 IDs | 0 | 48 | 20 |
+| All declared C4 parents joined to the current canonical primary mapping | 0 | 49 | 19 |
+
+The last two rows answer different questions. `surgical_robotics_systems` is the only changed diagnostic: the inherited assignment used `medical_devices`, whose primary is null; the C4 `robotics_automation` parent also supplies the broad `robotics_automation` primary-basket path. Neither that path nor any other parent proxy admits the parent's members to a micro. Multiple parents do not create additional subjects, weights or independent samples.
+
+The [canonical crosswalk at main `8aa1aca8c593982e722bbc666a221fdd82466f15`](https://github.com/mastermindx-market-intelligence/macro/blob/8aa1aca8c593982e722bbc666a221fdd82466f15/config/theme_crosswalk.yml) has **18 themes: 13 non-null primary baskets and five nulls**. The exact null theme IDs are `copper_steel_electrify`, `ag_fertilizer`, `medical_devices`, `diagnostics_lifesci` and `solar`. The inherited 11/7 statement is not a current count. A null primary is not proof that the theme is absent or has no other EXPRESSES path. These primary-path diagnostics are not Data OS-qualified coverage or cohort measurements.
+
+The [accepted research matrix](https://github.com/mastermindx-market-intelligence/macro/blob/f1d018defc1a9577202ceee53362845c68ea004d/research/theme_graph/theme_fabric_gap_matrix.json) retains both diagnostics and the admission boundaries. This erratum preserves the original historical narrative and counts; it does not reclassify source rows, change graph/config/data, admit a cohort, release K phase 2, or add capture, display, score or trading rights. Incumbent census/GMI/vertical owners and the existing carrier remain unchanged.
