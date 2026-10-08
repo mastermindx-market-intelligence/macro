@@ -960,3 +960,311 @@ TZ=UTC COLLECT_LANE=nightly /home/longr/lanes/tmp/d2e-venv/bin/python -m pytest 
 
 Phase 2 was measured in §6 (rounds r2/r2b/r2c) on the natural nightly generation GEN2.
 
+
+
+## Prospective evidence-window amendment — ADOPTED PROSPECTIVE RULE ONLY
+
+Candidate ID: `D2E-PROSPECTIVE-NATURAL-WITNESS-20261008`. Sole carrier: existing
+Macro PR #8540, original record head `52d57f34aad6956b3ddb697fff34c82588e791af`.
+This appendix and the matching `prospective_evidence_window_candidate` JSON
+subtree record the adopted prospective evidence-window rule only. They grant no acceptance or
+execution authority. All text above and every pre-existing JSON subtree remain
+historical evidence, including their then-current verdicts, counts and commands.
+Their preservation does not turn a historical PASS into a current result.
+
+**Adoption status: ADOPTED_PROSPECTIVE_RULE_ONLY.** Principal adjudicator
+`ceo-sol` adopted only this prospective evidence-window rule in
+[#8540 comment 6071188794](https://github.com/mastermindx-market-intelligence/macro/pull/8540#issuecomment-6071188794), created_at `2026-10-08T23:38:32Z`.
+External final R6 independent review PASS receipt SHA256 `c831dd818eb9bec065fc0346e7e04b55bc596a92ecd577d2b8d3e729514531f3`
+binds the frozen pre-adoption content identified below. The original attempt-1
+workflow-run `run_started_at` must be strictly later than that designated
+comment `created_at`; all other frozen selection and proof laws remain.
+No actual replacement run, effective checkout, publication commit or Phase-2/P3
+acceptance is asserted. This author's implementation and deterministic proof
+contributions are not independent review. The inherited acceptance law and all
+gates remain unchanged; W3B remains held.
+
+### Reason and historical boundary
+
+GEN3 natural run `37558610387`, engine job `112633282165`, used code
+`07db8e5931d93a08d5c92022373e7a3a60ab2c76` and published data
+`856c5939858fe6adcf41bfc2e10787a21de649a3`. Retained historical logs cannot prove
+N4's logged-final-metadata equality or N5's natural build/guard completion.
+**Historical GEN3 N4 and N5 remain UNPROVEN.** The deterministic checks recorded
+in #8540 comment `6068374556` do not replace those observations. The final metadata
+clock `2026-10-07T08:00:17Z` and materialization-row clock `08:00:10Z` are different
+clocks; their seven-second difference is preserved, not repaired into equality.
+
+Oct 8 run `37716729584`, engine job `113158877653`, remains only a later N5
+candidate. It is not reclassified as complete N4/N5 evidence or selected by this
+amendment. No historical run receives a retroactive PASS. This amendment neither
+reruns production nor changes any historical ledger, source datum or result.
+
+### Frozen prerequisites and selection rule
+
+Before adoption, root must resolve and record every actual squash merge, exact
+reviewed PR head, principal release receipt and post-merge owned-source verification.
+The source-release facts below are now resolved; they are not D2E adoption or generation acceptance:
+
+| Dependency | Frozen reviewed head | Verified squash merge binding |
+|---|---|---|
+| C4 #8629 | `a4deb82387895dae58bb77404faeeb851450c174` | Verified squash `123eda091dfd0d83c4c303f7f138d4c8a2c7e128`; principal release comment `6070151039`; post-merge parity receipt below |
+| M1 #8651 | `0b331ec68f26ef2decbcf67eabb9cac38b415fc9` | Verified squash `11b48b2304ecda38bc4f78594af58cc8bfafd871`; principal release comment `6069579052`; four-owned-blob post-merge parity receipt below |
+| Witness retention #8653 | `ebd4382fdafdfecf55029305baddfa95b60f863a` | Verified squash `c44aae5f131a59571ad0afcd7197e3d8696bc2b9`; principal release comment `6070969336`; binding CI and five-owned-blob post-merge parity below |
+
+C4's root post-merge receipt SHA256 is
+`68dc86e87015722c6a62e2e6e24dd4e03c5cf77d706f15e7f9ecdb9752823b18`,
+recorded `2026-10-08T22:37:50.349280Z`, observing main
+`8a35d8b62494a84b2448182aaa561edea83fe54f`; the merge-ancestor probe returned rc 0.
+Public post-merge proof is #8629 comment `6070559424`. The actual integrated
+`.github/ci/legacy-jobs.yml` blob is
+`b9e71767b7d1fc3ffe0de7dc981be31f0ee2fc31`: it preserves the already-landed
+upstream PB-D #8654 squash `d2eec4732abee359ebb578b245fa7359b3c01a7d`, and adds
+only C4's approved two population-test lines against the actual parent. The
+other four C4 owned blobs match their reviewed bytes. Integration-review receipt
+SHA256 `fd28cbb230b5b60c7fc874add65ac25856481976b4fdcf56a52e42834e8dd9c2`
+records this conservation; it does not pretend the older whole-CI snapshot is
+identical to the integrated merge. M1's root four-owned-blob post-merge receipt
+SHA256 is `1b28c4aa215b46578053059cd2f285787439b50348785d340a2eb551af80862c`,
+recorded `2026-10-08T21:40:51.683216Z`. These are dependency source-release facts,
+not D2E generation observations or adoption.
+
+The witness head was explicitly rebound from parent
+`7df186a7553c8494bd846c8b06454f2fe3f222b3` to
+`c40ea096a5116e5394ea4c0eaa3a6df5fe3e34fe` after independent exact-head review
+PASS. Root reports the original four implementation/test blobs unchanged and
+only one additional CI-trigger line in a fifth changed file. The independent
+reviewer `gmi_dependency_audit` explicitly approved this changed-head binding.
+This records source-review lineage, not a squash merge, CI release or adoption.
+
+The current witness head `ebd4382fdafdfecf55029305baddfa95b60f863a` has parent
+`c40ea096a5116e5394ea4c0eaa3a6df5fe3e34fe`. Under #8653 repair ruling
+`6070559640`, it changes only the witness-ID export line to avoid the unchanged
+DAG parser's embedded-brace collision, preserving all other band bytes and the
+five-file PR scope. The frozen repair patch SHA256 is
+`9e4ee11c771ef89787b0561ef41bf5292cd3edbc4b301cf61149ca5c83ea99df`, with
+independent source-review PASS receipt
+`9bf26eaf30998b0e8d7ff6af67bdab4a2f7d9963d4080f2a1b9ee86e7fff0c96`.
+Independent exact-pushed-head review PASS receipt
+`691290cdba78c4c1bd64fd941237e470523acd4c1d3bbe857c6ba6960e7309d1`
+confirms sole parent c40, only the shell's one-line delta, the other four PR files
+unchanged, and the native/push receipt hashes below.
+Root's native validation receipt `witness-dag-repair-native-validation.json`,
+SHA256 `87d8de97a673b7044314dbfacad5551576d1145a468e3f8c850bb86a5ca90af8`,
+records nine pre-repair DAG mismatches and checker selftest PASS, followed by
+27 lanes rc 0 with the same two inherited suspects, shell syntax PASS, ten
+witness-ID parity cases and 114 tests passed with zero skips/failures. Root's
+ordinary-push receipt `witness-dag-repair-commit-push.json`, SHA256
+`eae620b3ed34edce2c9514ff1d3328acf3a94a8534a6b07933bdc08d6a12cc9b`, binds the
+new head. Independent R4 review PASS receipt
+`d2ca3707e269bd22e2404e29b06a77a288d22b2264a4945f18e9ba9c4b8b57e5`
+accepted the ebd D2E head rebinding and the actual C4/M1 facts while final witness
+CI/merge/release/parity were still pending. Those historical source/native/push
+receipts retain their original scope.
+
+Witness binding CI run `37855935397` completed with all 12 packs and applicable
+gate, contract-delta, ci-plan, active main authority, fences, grader-manifest and
+capability-broker checks successful. The inactive pilot authority context is not
+silently relabeled successful; its failure is recorded as inactive base context.
+Principal engineering/source release is #8653 comment `6070969336`. Accepted head
+`ebd4382fdafdfecf55029305baddfa95b60f863a` was squash-merged as
+`c44aae5f131a59571ad0afcd7197e3d8696bc2b9`, actual first parent
+`53914368416d3350684887b3cc45070a3ad5700a`. Root's completed native receipt
+`witness-post-merge.json`, SHA256
+`0b10c9635fd886f8344bb1e44a83f63c7cc6ad88b8e065ccbde299e01a8cf20e`,
+recorded `2026-10-08T23:20:32.267715Z`, observed that exact squash on main with
+fetch and merge-ancestor rc 0, a clean witness workspace and native process
+`36808` completed rc 0. Public postproof is #8653 comment `6070995691`.
+
+All five integrated owned blobs were verified: producer `dc051c176b797f8f684fe0b7be599d922d42d05d`,
+regional band `e59f2c2a43300b7e35a1e4b9719cafe286c3ff5d`, daily workflow
+`26731b7c6bf05a18f818e16e8139c51418d0f0ce`, materialization test
+`0eada6503e673ba3f5dcff2c675d81aac1ad6ec0`, and integrated CI
+`178cbb69586301cd47da98e5400b023a2a977c36`. The complete integrated CI file,
+minus only the approved witness trigger line, equals actual-parent CI blob
+`b9e71767b7d1fc3ffe0de7dc981be31f0ee2fc31`, preserving C4 and upstream PB-D.
+Independent actual-GitHub merge/source/CI/release PASS receipt
+`bc908f46d7984330d7fcc64d3e68f9be115e461a581ad8a4b084ce43aa75f0bb`
+binds those GitHub facts; the independent reviewer separately read and
+hash-verified the native postreceipt. These are source-release facts only.
+
+Independent R5 review PASS receipt
+`c9fa7849975e7ef97ce918e4eac9ccc44b231bbcad466dfa9875c22bd9ba6558`
+reviewed the narrow source-only no-execution clarification below. Draft
+clarification #8540 comment `6070802215` is explicitly **not adoption**.
+The frozen pre-adoption revision R6 received external independent source/rules
+review PASS from `/root/gmi_dependency_audit`, receipt SHA256 `c831dd818eb9bec065fc0346e7e04b55bc596a92ecd577d2b8d3e729514531f3`.
+It binds cumulative patch SHA256 `1e679a3055f688a25b5db5bd387db8f1e96f69b7f4e89da50b85886070ad46f0`,
+R5-to-R6 patch SHA256 `904b7164da6565e3f09f52d3c0aca8b5681c059c384740ccb35b469d5dc0905e`,
+pre-adoption Markdown Git blob `1be5eadf5896f1ad6dd7d85c0baf613070bd5176` and
+pre-adoption JSON Git blob `e5a61b3e51c399f8973b384de021ac781218011e`.
+Formal adoption is #8540 comment `6071188794`, created_at `2026-10-08T23:38:32Z`.
+This control-only delta binds those actual external facts without a recursive
+self-hash. Generation observations and Phase-2/P3 acceptance remain unset.
+
+If any frozen reviewed head changes, root must obtain explicit review of the
+changed amendment/dependency binding before adoption. A newer head, a mergeable
+flag or branch-name match is not a substitute. Resolve C4 and witness squash
+SHAs before adoption and any evidence composition; do not guess them from their
+PR heads. If overlapping source paths exist, the recorded expected parity is the
+principal-reviewed integrated content, with each dependency's effect accounted for.
+
+The adopted replacement window is **the first original `schedule`-event run of
+`.github/workflows/daily.yml`, attempt 1, whose original workflow-run
+`run_started_at` is strictly later than the designated formal adoption comment
+`created_at`, and whose
+actual effective producer checkout contains all three verified squash merges and
+the original predecessors, and whose immutable workflow-definition revision
+contains the reviewed witness upload wiring**. Workflow-definition eligibility
+is independent of effective producer checkout ancestry: pulling newer source
+inside an older queued workflow does not add an upload step to that workflow.
+Record event SHA and the actual workflow-definition commit, path and Git blob
+separately from the effective producer checkout. Inspect the immutable definition
+for the reviewed step/output/upload wiring. A definition known to lack that wiring
+is ineligible. Missing or unknown definition proof is UNKNOWN and cannot justify
+skipping the run. Upload success is not an eligibility condition; after a run is
+selected, a failed or missing upload holds that selected window without rollover.
+The original predecessor set remains:
+
+```text
+0b1fe88730547207475ad3c04118d2e771a9b949  D2C
+79b566f5c0ccba878ab963084a239993d3116aa9  D2D
+192a46de8be8c694e47a1f2ab60b396d7dbb4f7f  original R0.1 predecessor
+527243be5c03c79c016d8731179307f6ff03bf1d  D2C/D2D acceptance trace
+ebe35dc916de5aae556371a5aa963c6692175c9c  PIN3 duplicate/rights correction
+```
+
+For the adoption cutoff, bind the original attempt-1 **workflow-run
+`run_started_at`** and the explicitly designated formal #8540 adoption comment's
+**`created_at`**, and require the former to be strictly greater. Workflow-run
+`created_at` serves only to order candidates (then run ID as a deterministic
+tie-break); it does not substitute for `run_started_at`. Engine, job, checkout,
+producer or witness start never substitutes. A workflow started before or at
+adoption is ineligible even if its engine or witness starts later. Missing or
+ambiguous original-attempt `run_started_at` is UNKNOWN and cannot justify either
+skipping the candidate or selecting it. Record engine/producer timing and actual
+checkout separately. The designated formal adoption comment is `6071188794`,
+created_at `2026-10-08T23:38:32Z`. No observed run time is set here.
+The principal records the inspected candidate-run list and why each earlier run
+was ineligible. Missing source evidence for an earlier candidate is UNKNOWN, not
+permission to select a later convenient run. Freeze the selected run/attempt/job,
+event SHA, workflow-definition commit/path/blob, effective source SHA, publication
+commit, metadata hash and seven output hashes
+before reader/test composition. Dispatches, reruns, manual graph rebuilds and
+cross-run mixtures are ineligible. If the selected window fails or loses its
+archive, hold it; selecting another window requires a new prospective ruling,
+not silent rollover or cherry-picking a successful outcome.
+
+**Narrow no-execution clarification (adopted prospective clarification only):** a
+scheduled attempt is INELIGIBLE as conclusively gated off only when complete
+immutable-workflow and same-run/attempt evidence proves that the existing
+checkout-free `et_gate` completed successfully and actually published the literal
+job output `run=false`, the engine's terminal conclusion was `skipped`, and no
+engine steps, checkout or producer execution
+occurred. Retain that proven disposition in the ordered candidate list; no
+actual effective producer checkout or generation exists for that attempt.
+This is positive proof of non-execution, not missing evidence. A cron/date
+prediction, missing gate output, missing log or artifact, an errored gate (which
+is fail-open), a canceled engine, or any started-engine/setup/producer failure does not establish
+this exception. Incomplete or ambiguous proof remains UNKNOWN and cannot justify
+skipping the candidate. Upload success is not an eligibility condition. A
+failed/missing archive on an otherwise selected run remains HOLD with no rollover.
+This clarification does not change the future-adoption boundary or select any
+actual run.
+A bare `run=false` log notice is insufficient: the notice precedes the
+`GITHUB_OUTPUT` write, so successful output evidence must be proved separately.
+Whole-workflow SUCCESS is not required for this exception. An unrelated overall
+workflow failure or cancellation does not by itself change a fully proved
+successful-gate/false-output/engine-skipped/no-execution disposition. Ambiguous,
+canceled or errored gate or engine evidence cannot satisfy the exception; any
+started engine remains outside it.
+Failure to establish this exception does not override independently proved
+ineligibility under the other unchanged R4 rules.
+
+### Proof required on the one frozen replacement generation
+
+Every original gate and its gating/non-gating classification remains, including
+R0, R1.A–F, R2, R3, C1–C7 and the coverage/negative categories. Original command
+recipes remain historical references; rebind their source/data inputs and record
+actual new outputs. No historical rc, count, PASS or local fixture result is
+copied into a replacement observation. Execute the original test/read obligations
+with the selected effective code and the exact canonical published data, recording
+any narrowly required committed-fixture hydration separately. Do not regenerate
+the graph or write historical ledgers to obtain a reader result.
+
+| Clause | Required replacement evidence |
+|---|---|
+| N1 | GitHub run/attempt/event/workflow and engine job identity; original schedule event, attempt 1; original workflow-run `run_started_at` strictly greater than the designated formal adoption comment `created_at`, both fields recorded and bound to that original attempt; workflow-run `created_at` orders candidates only, engine/job/producer/witness start never substitutes, and missing/ambiguous original-attempt start is UNKNOWN with no skipping or selection; first-eligible selection proof. Record event SHA and immutable workflow-definition commit/path/Git blob separately from the effective producer checkout; prove that definition contains the reviewed witness upload wiring. Known absent wiring is ineligible; missing/unknown definition proof is UNKNOWN, not permission to skip. Apply the narrow no-execution clarification only with complete immutable-workflow and same-run/attempt proof of successful complete checkout-free et_gate execution, actual literal run=false output, terminal engine skipped and no executed engine steps, checkout or producer; retain that ineligible disposition in the ordered list. A bare log notice, cron/date prediction, missing/ambiguous/canceled/errored gate or engine evidence, or any started-engine/setup/producer failure cannot establish that exception. Whole-workflow SUCCESS is not required; unrelated overall workflow failure/cancellation alone does not change a fully proved no-execution disposition. Upload success is not an eligibility condition; selected-run archive failure remains HOLD without rollover. Report overall job conclusion separately, including later unrelated failure. |
+| N2 | Actual effective producer `git rev-parse HEAD` after checkout/pull and at witness start, distinguished from event `GITHUB_SHA` and immutable workflow-definition commit/path/Git blob; repository/run/attempt/job binding and retained source hashes. Verify each identity independently: a newer producer checkout or its retained daily.yml hash cannot prove an older queued workflow definition contained the upload step. |
+| N3 | Recorded `git merge-base --is-ancestor` rc 0 for every original predecessor and each resolved exact-head squash against the actual producer checkout; post-merge source parity and no unreviewed reversal of prerequisite effects. |
+| N4 | The producer's post-write marker final metadata `computed_at` and SHA256 equal the exact canonical published `data/theme_graph/_meta.json` clock and byte hash. Its run-bound archive copy must agree. Record the separate materialization clock. Bind publisher/data commit, commit timing, source ancestry and publication provenance to this run, not a later main snapshot. All seven archived output hashes must match that same canonical data publication. |
+| N5 | Native graph build and native advisory guard each completed with retained rc 0 and valid elapsed-seconds evidence; their run-bound log groups/sidecars agree. Inspect both full retained band logs for warning/error annotations (raw and rendered forms) and logged failures; zero warning/error evidence is required. A caught builder exception or absent post-write marker is not success. Local strict rc 0 cannot replace native evidence. |
+| N6 | Existing guard `--selftest` and `--strict` at the frozen source/data pair, both rc 0, without breach or INDETERMINATE; retain commands and outputs. |
+| N7 | Re-run R-A8 edge-stability comparison and the GOLD/IBIT correction/PIT probes against the original baselines. Preserve correction beliefs and endpoints; reconcile any new structural rows individually to accepted C4 scope. Report measured totals/append counts, never copy historical totals or use count padding. Any unexplained protected-edge/history change holds the gate. |
+| Q1 | Strict stored metadata matches the selected published metadata: nightly lane/mode, observed era, correct belief time and exact final metadata identity. Reconstruction is not observed proof. |
+| Q2 | Native strict `RepositoryStore` readers succeed on nodes, lifecycle, edges and proposals; record actual measured populations and all negative categories. The old total 3,882 is historical, not a target after structural additions. |
+| Q3 | Native identity resolutions: `co:us:NVDA` RESOLVED; `co:us:B` and `co:us:GOLD` DEFERRED_IDENTITY_EXCEPTION; `co:us:IBIT` ENTITY_TYPE_CONFLICT. |
+| Q4 | Execute every explicit dated tuple below with native `compose_neighborhood`; all return `availability.state=OK`, with the specified presence, absence and future-belief exclusion. |
+
+The seven output paths, relative to `data/theme_graph/`, are `nodes.parquet`,
+`node_lifecycle.parquet`, `edges.parquet`, `evidence.parquet`,
+`capability.parquet`, `identity_resolution.parquet` and
+`probation/proposals.jsonl`. Retain exactly the native graph/guard `.log`, `.rc`
+and `.sec` files plus final metadata from the fresh run-bound witness directory.
+Check the witness manifest's repository, run, attempt, event, job, effective HEAD,
+source hashes, unique witness ID, file hashes and capture errors against the
+actual archive and canonical source/data bytes. At minimum the four retained
+source hashes cover producer, contract guard, regional band and daily workflow;
+record the remaining owned prerequisite-source parity separately. That retained
+daily-workflow hash identifies the checkout copy, not necessarily the immutable
+workflow definition used to schedule the job; N1/N2 require the latter separately.
+
+**R1.A is unchanged:** zero failed identity tests; physical company nodes 2,807
+and canonical company nodes 2,806 under the original frozen rule: subtract only
+latest lifecycle `merged` duplicates, not every retired-like node. VMRK must stay
+merged into live `co:us:EQR` under the original ratifier, absent from canonical
+company enumeration and fresh identity materialization; no live VMRK membership
+may escape suppression. GOLD/IBIT lifecycle, edge closure/refusal and PIT behavior
+remain required. A changed company population requires explicit adjudication,
+not silently relaxing these frozen company constraints. C4 structural nodes may
+change the total-node count without changing that company law.
+
+**R3.2 is unchanged:** evaluate every distinct evidence `source_ref`, report row
+and distinct-reference denominators, and require `family_for_source_ref` None = 0.
+Preserve the existing registry, internal-only Finviz/THS restrictions, refusal
+categories and purpose-specific rights fences. A family mapping is not permission
+for public display or a new source capability.
+
+### Explicit Q4 tuples to freeze
+
+These tuples are copied from the preserved deterministic GEN3 summary
+(`gmi_state_gen3_summary_20261008.json`, SHA256
+`11fcd1bcf0d75e3f470f8776736995ba583c48120e2a44a0b7b47a299e807e87`).
+They make the prospective queries reproducible. They do **not** claim to recover
+the unspecified a–e literals of the older acceptance record. Their earlier local
+results are historical; each must be re-executed on the replacement generation.
+
+| GEN3 explicit tuple | Node | `asof` | `knowledge_cutoff` | Required result in addition to OK |
+|---|---|---|---|---|
+| a | `basket:baskets:gold_miners` | `2025-12-01` | `2026-10-07` | `co:us:GOLD` present |
+| b | `basket:baskets:gold_miners` | `2025-12-02` | `2026-10-07` | `co:us:GOLD` absent |
+| c | `basket:baskets:gold_miners` | `2026-08-20` | `2026-08-20` | `co:us:GOLD` present; `future_beliefs_excluded >= 1` |
+| d | `basket:baskets:crypto_rails` | `2026-08-20` | `2026-10-07` | `co:us:IBIT` absent; `etf:IBIT` present |
+| e | `basket:baskets:crypto_rails` | `2026-10-07` | `2026-10-07` | `co:us:IBIT` absent; `etf:IBIT` present |
+
+### Composition and retained holds
+
+An archive missing, incomplete or inconsistent with its selected run/data is
+UNKNOWN/incomplete evidence, never PASS. `capture_status=complete` means retained
+evidence is available; it does not mean D2E acceptance. Any gating FAIL blocks
+composition; missing gating proof holds it. Informational rows retain their
+original classification and routing, including R1.X and R1.A-CI.
+
+After all replacement observations are recorded, a reviewer independent of the
+producer and evidence composer must perform P3 against the exact composed packet
+and frozen identities. The principal then records the explicit Phase-2 ruling
+and supporting receipt on #8540/the incumbent acceptance trace. **W3B stays held
+until principal Phase-2 PASS**; release is not automated by an artifact, test or
+merged implementation. This amendment does not create another state producer, store,
+queue, service, workflow or carrier, and authorizes no E1 outcome look, performance
+experiment or downstream scoring/trading capability.

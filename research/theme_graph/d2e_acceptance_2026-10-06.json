@@ -1405,5 +1405,1036 @@
   "w3b": {
     "status": "DRAFT_NOT_RELEASED",
     "text": "\u00a77 W3B release handoff \u2014 target gmi-theme-state-w3b-20260827-sol-001; held until PHASE-2 PASS at GEN3"
+  },
+  "prospective_evidence_window_candidate": {
+    "candidate_id": "D2E-PROSPECTIVE-NATURAL-WITNESS-20261008",
+    "status": "ADOPTED_PROSPECTIVE_RULE_ONLY",
+    "governing": true,
+    "carrier": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pr": 8540,
+      "original_head": "52d57f34aad6956b3ddb697fff34c82588e791af",
+      "owned_paths": [
+        "research/theme_graph/D2E_ACCEPTANCE_2026-10-06.md",
+        "research/theme_graph/d2e_acceptance_2026-10-06.json"
+      ],
+      "original_git_blobs": {
+        "research/theme_graph/D2E_ACCEPTANCE_2026-10-06.md": "9fe2ea709570da04f0df980ba805bfd056c2f1da",
+        "research/theme_graph/d2e_acceptance_2026-10-06.json": "c87b29df54d59eb77c8d5659bb32311652c33108"
+      }
+    },
+    "procedure_context": {
+      "protected_repository": "mastermindx-market-intelligence/Mastermind",
+      "parent_verified_commit": "c7e47c859eb2925c5626931fd511800773ba09ac"
+    },
+    "scope": "Prospective evidence-window amendment only; no acceptance, production rerun, new carrier or new authority.",
+    "adoption": {
+      "status": "ADOPTED_PROSPECTIVE_RULE_ONLY",
+      "adjudicator": "ceo-sol",
+      "adjudicated_at_utc": "2026-10-08T23:38:32Z",
+      "principal_ruling_receipt": {
+        "comment_id": 6071188794,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8540#issuecomment-6071188794",
+        "created_at": "2026-10-08T23:38:32Z",
+        "comment_author": "mastermidx4",
+        "adjudicator": "ceo-sol",
+        "scope": "Prospective evidence-window rule only; no generation selection or D2E/Phase2/P3/W3B acceptance",
+        "read_back_receipt_name": "formal_adoption_comment_readback.json",
+        "read_back_receipt_sha256": "594bb117a3e5d41cd62724178c83ac594f1a5d807b8b654ba0e031f84b951a92"
+      },
+      "independent_amendment_review_receipt": {
+        "receipt_name": "independent_review_r6.json",
+        "sha256": "c831dd818eb9bec065fc0346e7e04b55bc596a92ecd577d2b8d3e729514531f3",
+        "revision": "R6",
+        "verdict": "PASS",
+        "reviewer": "/root/gmi_dependency_audit",
+        "observed_at_utc": "2026-10-08T23:35:20Z",
+        "scope": "Final frozen pre-adoption R6 source/rules and exact content binding; separate from future generation P3"
+      },
+      "amendment_reviewed_head_or_artifact_hashes": {
+        "pre_adoption_revision": "R6",
+        "cumulative_patch_sha256": "1e679a3055f688a25b5db5bd387db8f1e96f69b7f4e89da50b85886070ad46f0",
+        "r5_to_r6_patch_sha256": "904b7164da6565e3f09f52d3c0aca8b5681c059c384740ccb35b469d5dc0905e",
+        "manifest_sha256": "29197c7655d428111c909f0e3f2e5cb0297fba7f36c0ca61bd37cf8dc87a8c55",
+        "control_inventory_sha256": "949e6a23379cd9833f3161919b8256d26b02dad0a3a12ff32f3fc3293e741e12",
+        "files": [
+          {
+            "path": "research/theme_graph/D2E_ACCEPTANCE_2026-10-06.md",
+            "git_blob": "1be5eadf5896f1ad6dd7d85c0baf613070bd5176",
+            "sha256": "ab9142d2b6898412cfbd969f69eae33f546af2b1406a0e59043f424ecf8b03e7"
+          },
+          {
+            "path": "research/theme_graph/d2e_acceptance_2026-10-06.json",
+            "git_blob": "e5a61b3e51c399f8973b384de021ac781218011e",
+            "sha256": "6a6cc06a25508eba7390320c226b740932a997e92b040fed33f3c010d97a0d73"
+          }
+        ]
+      },
+      "requires_before_eligible_run_start": true,
+      "requires_all_actual_squashes_and_exact_head_release_parity_bindings_before_adoption": true,
+      "changed_frozen_head_requires_explicit_new_review": true,
+      "proof_author_is_not_independent_reviewer": true
+    },
+    "history": {
+      "preservation": "Whole original Markdown bytes retained as prefix; every original JSON subtree unchanged. Original top-level verdicts remain historical, never replacement observations.",
+      "gen3": {
+        "run_id": 37558610387,
+        "engine_job_id": 112633282165,
+        "code_commit": "07db8e5931d93a08d5c92022373e7a3a60ab2c76",
+        "data_commit": "856c5939858fe6adcf41bfc2e10787a21de649a3",
+        "N4": "UNPROVEN",
+        "N5": "UNPROVEN",
+        "reason": "Required native evidence absent from retained historical log surfaces; deterministic local proof cannot reconstruct it.",
+        "final_meta_computed_at": "2026-10-07T08:00:17Z",
+        "materialization_row_computed_at": "2026-10-07T08:00:10Z",
+        "separate_clocks_preserved": true,
+        "proof_comment_id": 6068374556,
+        "deterministic_summary_sha256": "11fcd1bcf0d75e3f470f8776736995ba583c48120e2a44a0b7b47a299e807e87"
+      },
+      "oct8": {
+        "run_id": 37716729584,
+        "engine_job_id": 113158877653,
+        "status": "LATER_N5_CANDIDATE_ONLY_NOT_COMPLETE_N4_N5_NOT_SELECTED"
+      },
+      "retroactive_pass": false
+    },
+    "prerequisites": [
+      {
+        "name": "C4",
+        "pr": 8629,
+        "frozen_reviewed_head": "a4deb82387895dae58bb77404faeeb851450c174",
+        "source_native_review": "ROOT_REPORTED_PASS",
+        "squash_merge": "123eda091dfd0d83c4c303f7f138d4c8a2c7e128",
+        "principal_release_receipt": {
+          "comment_id": 6070151039,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8629#issuecomment-6070151039"
+        },
+        "post_merge_parity_receipt": {
+          "sha256": "68dc86e87015722c6a62e2e6e24dd4e03c5cf77d706f15e7f9ecdb9752823b18",
+          "recorded_at_utc": "2026-10-08T22:37:50.349280Z",
+          "observed_main": "8a35d8b62494a84b2448182aaa561edea83fe54f",
+          "merge_ancestor_rc": 0,
+          "public_comment_id": 6070559424,
+          "public_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8629#issuecomment-6070559424",
+          "integrated_ci_blob": "b9e71767b7d1fc3ffe0de7dc981be31f0ee2fc31",
+          "ci_path": ".github/ci/legacy-jobs.yml",
+          "upstream_pr": 8654,
+          "upstream_squash": "d2eec4732abee359ebb578b245fa7359b3c01a7d",
+          "integration_review_sha256": "fd28cbb230b5b60c7fc874add65ac25856481976b4fdcf56a52e42834e8dd9c2",
+          "parity_scope": "Other four owned blobs exact; integrated CI preserves upstream PB-D and adds only approved C4 two population-test lines versus actual parent. Older whole-CI snapshot is not claimed identical.",
+          "evidence_source": "Root post-merge receipt supplied in task and canonical/c4_merged_update/source_receipts.json"
+        },
+        "state": "MERGED_PRINCIPAL_RELEASE_AND_POST_MERGE_PARITY_RECORDED"
+      },
+      {
+        "name": "M1",
+        "pr": 8651,
+        "frozen_reviewed_head": "0b331ec68f26ef2decbcf67eabb9cac38b415fc9",
+        "squash_merge": "11b48b2304ecda38bc4f78594af58cc8bfafd871",
+        "state": "ROOT_REPORTED_EXACT_HEAD_MERGE_AND_POST_MERGE_FOUR_BLOBS_VERIFIED",
+        "post_merge_verification_at": "2026-10-08T21:40:51.683216Z",
+        "verification_source": "Principal task clarification; this local candidate performed no independent merge fetch",
+        "principal_release_receipt": {
+          "comment_id": 6069579052,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8651#issuecomment-6069579052"
+        },
+        "post_merge_parity_receipt": {
+          "sha256": "1b28c4aa215b46578053059cd2f285787439b50348785d340a2eb551af80862c",
+          "recorded_at_utc": "2026-10-08T21:40:51.683216Z",
+          "parity_scope": "Four owned blobs verified after exact-head squash merge",
+          "evidence_source": "Root-provided canonical post-merge receipt hash and recorded time"
+        }
+      },
+      {
+        "name": "witness_retention",
+        "pr": 8653,
+        "frozen_reviewed_head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+        "source_native_review": "ROOT_REPORTED_PASS",
+        "squash_merge": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+        "principal_release_receipt": {
+          "comment_id": 6070969336,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8653#issuecomment-6070969336",
+          "created_at": "2026-10-08T23:19:32Z",
+          "accepted_head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+          "scope": "Engineering/source only; no D2E adoption or production acceptance"
+        },
+        "post_merge_parity_receipt": {
+          "receipt_name": "witness-post-merge.json",
+          "sha256": "0b10c9635fd886f8344bb1e44a83f63c7cc6ad88b8e065ccbde299e01a8cf20e",
+          "recorded_at_utc": "2026-10-08T23:20:32.267715Z",
+          "observed_main": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+          "actual_first_parent": "53914368416d3350684887b3cc45070a3ad5700a",
+          "fetch_rc": 0,
+          "merge_ancestor_rc": 0,
+          "workspace_clean": true,
+          "native_process_id": 36808,
+          "native_process_rc": 0,
+          "public_comment_id": 6070995691,
+          "public_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8653#issuecomment-6070995691",
+          "owned_blobs": {
+            ".github/ci/legacy-jobs.yml": "178cbb69586301cd47da98e5400b023a2a977c36",
+            ".github/workflows/daily.yml": "26731b7c6bf05a18f818e16e8139c51418d0f0ce",
+            "scripts/build_theme_graph.py": "dc051c176b797f8f684fe0b7be599d922d42d05d",
+            "scripts/ci/daily_engine_regional_desk_builders.sh": "e59f2c2a43300b7e35a1e4b9719cafe286c3ff5d",
+            "tests/test_theme_graph_materialize.py": "0eada6503e673ba3f5dcff2c675d81aac1ad6ec0"
+          },
+          "actual_parent_ci_blob": "b9e71767b7d1fc3ffe0de7dc981be31f0ee2fc31",
+          "integrated_ci_blob": "178cbb69586301cd47da98e5400b023a2a977c36",
+          "parity_scope": "All five integrated owned blobs verified; four runtime/test blobs exact accepted source. Complete integrated CI minus only the approved witness trigger line equals actual-parent b9e717 bytes, preserving C4 and upstream PB-D.",
+          "evidence_source": "Root supplied completed native receipt hash, timestamp and results; independent reviewer gmi_dependency_audit separately read and hash-verified that receipt and public postproof before this draft."
+        },
+        "changed_head_review": {
+          "parent_head": "7df186a7553c8494bd846c8b06454f2fe3f222b3",
+          "reviewed_head": "c40ea096a5116e5394ea4c0eaa3a6df5fe3e34fe",
+          "independent_exact_head_review": "ROOT_REPORTED_PASS",
+          "binding_approved_by": "gmi_dependency_audit",
+          "scope": "Original four implementation/test blobs unchanged; only one additional CI-trigger line in a fifth changed file",
+          "authority_scope": "Explicit changed-head binding only; not squash merge, CI release or adoption"
+        },
+        "dag_repair_head_review": {
+          "parent_head": "c40ea096a5116e5394ea4c0eaa3a6df5fe3e34fe",
+          "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+          "scope_ruling_comment_id": 6070559640,
+          "scope": "One witness-ID export line changed; unchanged parser/config/guards/archive behavior and all other band bytes; existing five-file PR scope retained",
+          "patch_sha256": "9e4ee11c771ef89787b0561ef41bf5292cd3edbc4b301cf61149ca5c83ea99df",
+          "independent_source_review": "PASS",
+          "independent_source_review_sha256": "9bf26eaf30998b0e8d7ff6af67bdab4a2f7d9963d4080f2a1b9ee86e7fff0c96",
+          "independent_exact_head_review": {
+            "status": "PASS",
+            "reviewer": "gmi_dependency_audit",
+            "receipt_name": "independent_exact_head_ebd_review.json",
+            "sha256": "691290cdba78c4c1bd64fd941237e470523acd4c1d3bbe857c6ba6960e7309d1",
+            "scope": "Exact pushed ebd sole parent c40; shell one-line delta e59f2c2; other four PR files unchanged; native/push receipt hashes independently verified"
+          },
+          "native_validation": {
+            "receipt_name": "witness-dag-repair-native-validation.json",
+            "sha256": "87d8de97a673b7044314dbfacad5551576d1145a468e3f8c850bb86a5ca90af8",
+            "source": "Root-provided native receipt",
+            "dag_before_mismatches": 9,
+            "checker_selftest": "PASS",
+            "dag_after_lanes": 27,
+            "dag_after_rc": 0,
+            "inherited_suspects_unchanged": 2,
+            "bash_syntax": "PASS",
+            "id_parity_cases_passed": 10,
+            "tests_passed": 114,
+            "tests_skipped": 0,
+            "tests_failed": 0
+          },
+          "ordinary_push": {
+            "receipt_name": "witness-dag-repair-commit-push.json",
+            "sha256": "eae620b3ed34edce2c9514ff1d3328acf3a94a8534a6b07933bdc08d6a12cc9b",
+            "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+            "source": "Root-provided ordinary-push receipt"
+          },
+          "d2e_changed_head_binding_review": {
+            "status": "PASS",
+            "revision": "R4",
+            "reviewer": "gmi_dependency_audit",
+            "receipt_name": "independent_review_r4.json",
+            "sha256": "d2ca3707e269bd22e2404e29b06a77a288d22b2264a4945f18e9ba9c4b8b57e5",
+            "scope": "Exact ebd rebinding and C4/M1 factual bindings; witness final merge/release/parity were then pending and require final R6 review."
+          },
+          "binding_ci": {
+            "workflow_run": 37855935397,
+            "required_checks": [
+              {
+                "name": "ci-gate",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113588914724"
+              },
+              {
+                "name": "ci-authority/main",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113580618042"
+              },
+              {
+                "name": "ci-pack-9",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580322051"
+              },
+              {
+                "name": "ci-pack-6",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580322046"
+              },
+              {
+                "name": "ci-pack-10",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580322025"
+              },
+              {
+                "name": "ci-pack-3",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580322019"
+              },
+              {
+                "name": "ci-pack-7",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580322015"
+              },
+              {
+                "name": "ci-pack-0",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321996"
+              },
+              {
+                "name": "ci-pack-11",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321974"
+              },
+              {
+                "name": "ci-pack-5",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321966"
+              },
+              {
+                "name": "ci-pack-8",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321961"
+              },
+              {
+                "name": "ci-pack-2",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321957"
+              },
+              {
+                "name": "ci-pack-4",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321941"
+              },
+              {
+                "name": "ci-pack-1",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113580321929"
+              },
+              {
+                "name": "grader-manifest",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113580229753"
+              },
+              {
+                "name": "capability-broker",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113580227424"
+              },
+              {
+                "name": "self-mod-fence",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113580224476"
+              },
+              {
+                "name": "contract-delta",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113579987065"
+              },
+              {
+                "name": "ci-plan",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855935397/job/113579986636"
+              },
+              {
+                "name": "fence-pack",
+                "status": "completed",
+                "conclusion": "success",
+                "head": "ebd4382fdafdfecf55029305baddfa95b60f863a",
+                "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37855934978/job/113579986498"
+              }
+            ],
+            "all_required_success": true,
+            "main_context_active": true,
+            "pilot_context_active": false,
+            "pilot_actual_conclusion": "failure",
+            "pilot_context_reason": "inactive_base_context"
+          },
+          "authority_scope": "Source/native proof and ordinary push only; no merge, release, post-merge parity, adoption or natural-generation observation"
+        },
+        "state": "MERGED_PRINCIPAL_RELEASE_AND_POST_MERGE_PARITY_RECORDED",
+        "independent_merge_source_review": {
+          "status": "PASS",
+          "reviewer": "gmi_dependency_audit",
+          "receipt_name": "independent_merge_source_review.json",
+          "sha256": "bc908f46d7984330d7fcc64d3e68f9be115e461a581ad8a4b084ce43aa75f0bb",
+          "scope": "Actual GitHub squash source, integrated CI conservation, principal release and concluded binding checks; native post-merge receipt assessed separately"
+        }
+      }
+    ],
+    "original_predecessors": [
+      {
+        "role": "D2C",
+        "commit": "0b1fe88730547207475ad3c04118d2e771a9b949"
+      },
+      {
+        "role": "D2D",
+        "commit": "79b566f5c0ccba878ab963084a239993d3116aa9"
+      },
+      {
+        "role": "original R0.1 predecessor",
+        "commit": "192a46de8be8c694e47a1f2ab60b396d7dbb4f7f"
+      },
+      {
+        "role": "D2C/D2D acceptance trace",
+        "commit": "527243be5c03c79c016d8731179307f6ff03bf1d"
+      },
+      {
+        "role": "PIN3 duplicate/rights correction",
+        "commit": "ebe35dc916de5aae556371a5aa963c6692175c9c"
+      }
+    ],
+    "selection": {
+      "rule": "First original schedule-event .github/workflows/daily.yml attempt-1 run whose original attempt-1 workflow-run run_started_at is strictly later than the designated formal adoption comment created_at whose actual effective producer checkout contains every verified prerequisite squash and original predecessor, and whose immutable workflow-definition revision contains the reviewed witness upload wiring.",
+      "workflow_path": ".github/workflows/daily.yml",
+      "event": "schedule",
+      "run_attempt": 1,
+      "conclusively_gated_off_no_execution": {
+        "status": "ADOPTED_PROSPECTIVE_CLARIFICATION_ONLY",
+        "classification_if_all_proven": "INELIGIBLE_CONCLUSIVELY_GATED_OFF",
+        "all_required": [
+          "Complete immutable workflow-definition proof establishes the existing checkout-free et_gate and engine exclusion semantics",
+          "Same original schedule-run and attempt identity bound across complete gate/job evidence",
+          "Existing checkout-free et_gate completed successfully and actually published the literal job output run=false; a printed notice alone is insufficient because it precedes the GITHUB_OUTPUT write",
+          "Engine terminal conclusion skipped",
+          "Complete same-run/attempt proof that no engine steps, checkout or producer execution occurred"
+        ],
+        "retain_in_ordered_candidate_list": true,
+        "reason": "No actual effective producer checkout or generation exists; this is positive non-execution proof, not missing evidence",
+        "does_not_establish_exception": [
+          "Bare run=false log notice without successful output proof",
+          "Cron/date prediction alone",
+          "Missing gate output",
+          "Missing log",
+          "Missing artifact",
+          "Errored gate, which is fail-open",
+          "Ambiguous/canceled/errored gate or engine evidence",
+          "Any started engine",
+          "Any started-engine/setup/producer failure"
+        ],
+        "whole_workflow_success_required": false,
+        "unrelated_overall_workflow_failure_or_cancellation": "Does not by itself change a fully proved successful-gate/false-output/engine-skipped/no-execution disposition",
+        "incomplete_or_ambiguous_proof": "UNKNOWN; cannot justify skipping the candidate",
+        "upload_success_is_eligibility": false,
+        "otherwise_selected_run_failed_or_missing_archive": "HOLD selected window; no rollover",
+        "future_adoption_boundary_unchanged": true,
+        "other_R4_ineligibility_rules": "Unchanged; failure to establish this exception does not override independently proved ineligibility under another existing rule",
+        "observed_run_or_disposition": null
+      },
+      "workflow_definition_proof": {
+        "event_sha": null,
+        "definition_commit": null,
+        "definition_path": ".github/workflows/daily.yml",
+        "definition_git_blob": null,
+        "proof_reference": null,
+        "reviewed_witness_upload_wiring": "UNASSESSED",
+        "separate_from_actual_effective_producer_checkout": true,
+        "known_absent_wiring": "INELIGIBLE",
+        "missing_or_unknown_definition_proof": "UNKNOWN; cannot justify skipping the run",
+        "upload_success_is_eligibility": false,
+        "selected_run_failed_or_missing_upload": "HOLD selected window; no rollover"
+      },
+      "ordering": [
+        "run_created_at_utc",
+        "run_id"
+      ],
+      "enumerate_earlier_candidates_and_dispositions": true,
+      "missing_earlier_candidate_source_proof": "UNKNOWN; cannot silently skip",
+      "freeze_before_reader_test_composition": [
+        "run_id",
+        "run_attempt",
+        "engine_job_id",
+        "event_sha",
+        "workflow_definition_commit",
+        "workflow_definition_path",
+        "workflow_definition_git_blob",
+        "actual_effective_checkout",
+        "canonical_data_commit",
+        "final_metadata_sha256",
+        "seven_output_hashes"
+      ],
+      "ineligible": [
+        "workflow_dispatch",
+        "rerun/attempt greater than 1",
+        "manual graph rebuild",
+        "pre-adoption generation",
+        "mixed generation/attempt evidence",
+        "immutable workflow definition known to lack reviewed witness upload wiring"
+      ],
+      "failure_or_missing_archive": "Hold selected window; replacement requires a new prospective principal ruling, no silent rollover.",
+      "selected_generation": null,
+      "earlier_candidate_dispositions": null,
+      "adoption_time_binding": {
+        "workflow_run_start_field": "run_started_at",
+        "workflow_run_start_scope": "Original workflow-run attempt 1, not engine, job, checkout, producer or witness start",
+        "adoption_cutoff_field": "created_at",
+        "adoption_cutoff_scope": "The explicitly designated formal adoption comment on existing PR #8540, not draft clarification comment 6070802215",
+        "required_relation": "original_attempt_1_workflow_run.run_started_at > designated_formal_adoption_comment.created_at",
+        "strictly_after": true,
+        "workflow_run_created_at_role": "Candidate ordering only, followed by run ID; never the start/adoption comparison",
+        "later_engine_or_witness_start_substitutes": false,
+        "workflow_started_before_or_at_adoption": "INELIGIBLE even if its engine, producer or witness starts later",
+        "missing_or_ambiguous_original_attempt_start": "UNKNOWN; cannot justify skipping or selection",
+        "observed_original_attempt_1_run_started_at": null,
+        "designated_formal_adoption_comment_id": 6071188794,
+        "designated_formal_adoption_comment_created_at": "2026-10-08T23:38:32Z"
+      }
+    },
+    "replacement_gates": [
+      {
+        "id": "N1",
+        "gating": true,
+        "required": "Original schedule-event daily.yml attempt 1 with original workflow-run run_started_at strictly greater than the designated formal adoption comment created_at; record both fields and bind the original attempt. Workflow run created_at orders candidates only; engine/job/producer/witness start never substitutes. Missing or ambiguous original-attempt run_started_at is UNKNOWN, not permission to skip or select; prove first eligibility, repository/workflow/run/attempt/engine-job identity and timing. Record event SHA and immutable workflow-definition commit/path/Git blob separately from effective producer checkout; prove reviewed witness upload wiring exists in that definition. Known absent wiring is ineligible; missing/unknown definition proof is UNKNOWN and cannot justify skipping. Apply the narrow no-execution clarification only with complete immutable-workflow and same-run/attempt proof of successful complete checkout-free et_gate execution, actual literal run=false output, terminal engine skipped and no executed engine steps, checkout or producer; retain the ineligible disposition in the ordered list. A bare log notice, cron/date prediction, missing/ambiguous/canceled/errored gate or engine evidence, or any started-engine/setup/producer failure cannot establish that exception. Whole-workflow SUCCESS is not required; unrelated overall workflow failure/cancellation alone does not change a fully proved no-execution disposition. Upload success is not eligibility; selected-run archive failure remains HOLD without rollover. Report actual overall conclusion separately.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N2",
+        "gating": true,
+        "required": "Bind actual effective producer checkout after checkout/pull and at witness start, separate from event GITHUB_SHA and immutable workflow-definition commit/path/Git blob; validate each identity independently, retained run identity, unique witness ID and source hashes against exact canonical source. A newer producer checkout or its daily.yml hash cannot prove an older queued workflow definition contains the upload step.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N3",
+        "gating": true,
+        "required": "Every original predecessor and resolved exact-head squash is ancestor of actual producer checkout, each merge-base rc 0; verify principal-reviewed integrated owned-source parity and no unreviewed reversal.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N4",
+        "gating": true,
+        "required": "Post-write logged final metadata computed_at and SHA256 equal exact canonical published _meta.json and archive copy. Keep materialization clock separate. Bind source ancestry, publisher, commit timing and canonical data commit to selected run. All seven output hashes match that publication.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N5",
+        "gating": true,
+        "required": "Natural native producer and advisory guard rc 0, valid seconds and mutually consistent group/sidecar evidence; inspect full retained logs for raw/rendered warning/error annotations and logged failure, requiring zero. Require successful post-write marker; caught exceptions, absent marker or local rc never substitute.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N6",
+        "gating": true,
+        "required": "Existing native guard --selftest and --strict at frozen effective code and exact selected published data: rc 0, no breach or INDETERMINATE; retain actual commands/logs.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "N7",
+        "gating": true,
+        "required": "Repeat original R-A8 edge-stability and GOLD/IBIT correction/PIT comparisons to original baselines. Preserve correction beliefs/endpoints. Individually reconcile new structural rows to accepted C4. Record measured totals/appends, no copied counts or padding; unexplained protected/history changes hold.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "Q1",
+        "gating": true,
+        "required": "Native strict stored metadata equals selected published metadata identity, nightly lane/mode, observed era and correct belief time; reconstruction is not observed proof.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "Q2",
+        "gating": true,
+        "required": "Native strict RepositoryStore nodes/lifecycle/edges/proposals succeed on exact publication, record actual population and negative categories. Historical total 3882 is not a target after structural additions.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "Q3",
+        "gating": true,
+        "required": "Run native resolve_graph_node_identity for the four exact identities/states frozen below.",
+        "status": "NOT_RUN",
+        "observation": null
+      },
+      {
+        "id": "Q4",
+        "gating": true,
+        "required": "Run native compose_neighborhood for each explicit dated tuple frozen below, all availability.state OK and exact presence/absence/future-belief requirements. These are not a claim to recover old unknown a-e literals.",
+        "status": "NOT_RUN",
+        "observation": null
+      }
+    ],
+    "inherited_gate_matrix": [
+      {
+        "id": "R0.1",
+        "gating": true,
+        "gate": "Predecessor ancestry",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R0.2",
+        "gating": true,
+        "gate": "Agent OS acceptance trace",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R0.3",
+        "gating": true,
+        "gate": "No overlapping D2E carrier",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R0.4",
+        "gating": true,
+        "gate": "Owner-action authority #8507",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.A",
+        "gating": true,
+        "gate": "D2A identity resolution",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.A-CI",
+        "gating": false,
+        "gate": "D2A data lane (INFO)",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.B",
+        "gating": true,
+        "gate": "D2B lifecycle hostile matrix",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.C",
+        "gating": true,
+        "gate": "D2C PIT vintage",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.D",
+        "gating": true,
+        "gate": "D2D ontology/probation",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.E",
+        "gating": true,
+        "gate": "Materialize + contracts",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.F",
+        "gating": true,
+        "gate": "Rights tests (theme graph)",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R1.X",
+        "gating": false,
+        "gate": "MarketOntology half-B rights docket (INFORMATIONAL)",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R2",
+        "gating": true,
+        "gate": "Strict contract guard",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C1",
+        "gating": true,
+        "gate": "GOLD/IBIT lifecycle standing",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C2",
+        "gating": true,
+        "gate": "GOLD edge closure",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C3",
+        "gating": true,
+        "gate": "IBIT refusal fence",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C4",
+        "gating": true,
+        "gate": "Retired-consistency",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C5",
+        "gating": true,
+        "gate": "Identity sidecar R-A2",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C6",
+        "gating": true,
+        "gate": "Generation provenance at PIN3",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "C7",
+        "gating": true,
+        "gate": "Nightly _meta history",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R3.1",
+        "gating": true,
+        "gate": "theme_sources.yml registry",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R3.2",
+        "gating": true,
+        "gate": "Source-ref census (evidence.source_ref)",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "R3.3",
+        "gating": true,
+        "gate": "Spot checks",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V1",
+        "gating": true,
+        "gate": "Node prefix census",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V2",
+        "gating": true,
+        "gate": "Capability generations",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V3",
+        "gating": true,
+        "gate": "Identity generations",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V4",
+        "gating": true,
+        "gate": "THS mapping arithmetic",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V5",
+        "gating": true,
+        "gate": "Probation proposals",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V6",
+        "gating": true,
+        "gate": "PIT vintage + edge era",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "id": "V7",
+        "gating": true,
+        "gate": "Refusal/negative categories",
+        "original_reference": "rows_pin3",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      }
+    ],
+    "inherited_law": {
+      "all_original_gates_and_classifications_preserved": true,
+      "historical_rc_counts_pass_not_copied": true,
+      "commands": "Rebind original Appendix C/native recipes to selected exact effective source and canonical data; retain actual command lines, outputs, rc and fixture manifest. Do not regenerate graph or mutate historical ledgers.",
+      "R1_A": {
+        "required_failed_tests": 0,
+        "physical_company_nodes": 2807,
+        "canonical_company_nodes": 2806,
+        "canonical_rule": "canonical = physical kind=='company' nodes minus those whose LATEST node_lifecycle status == 'merged' (post-freeze merged duplicates; co:us:GOLD and co:us:IBIT are latest-status 'retired' and are inside the frozen 2806, so they are not subtracted)",
+        "vmrk": {
+          "node": "co:us:VMRK",
+          "latest_lifecycle_status": "merged",
+          "merged_into": "co:us:EQR",
+          "merged_into_live_company": true,
+          "ratifier": "DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE",
+          "canonical_and_fresh_identity_materialization_suppressed": true,
+          "live_membership_suppressed": true
+        },
+        "changed_company_population": "Requires explicit adjudication; never silently weaken frozen company constraints"
+      },
+      "R3_2": {
+        "family_none_required": 0,
+        "population": "Every distinct evidence source_ref, with actual evidence-row and distinct-ref denominators reported",
+        "rights_fences": "Existing registry/purpose laws, internal-only Finviz/THS, and refusal/negative categories unchanged; family mapping is not display permission"
+      },
+      "total_node_count": "Measure and reconcile actual total; 3882 is historical, not a post-C4 target; no padding.",
+      "lifecycle": "All original GOLD/IBIT/VMRK lifecycle, edge-closure, refusal, identity and PIT gates retained",
+      "non_gating": "Original classifications/routes retained, including R1.X FAIL-INFO and R1.A-CI INFO"
+    },
+    "Q3_identity_states": {
+      "co:us:B": "DEFERRED_IDENTITY_EXCEPTION",
+      "co:us:GOLD": "DEFERRED_IDENTITY_EXCEPTION",
+      "co:us:IBIT": "ENTITY_TYPE_CONFLICT",
+      "co:us:NVDA": "RESOLVED"
+    },
+    "Q4_explicit_tuples": [
+      {
+        "absent": [],
+        "asof": "2025-12-01",
+        "case": "a",
+        "knowledge_cutoff": "2026-10-07",
+        "node_id": "basket:baskets:gold_miners",
+        "present": [
+          "co:us:GOLD"
+        ],
+        "availability_state_required": "OK",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "absent": [
+          "co:us:GOLD"
+        ],
+        "asof": "2025-12-02",
+        "case": "b",
+        "knowledge_cutoff": "2026-10-07",
+        "node_id": "basket:baskets:gold_miners",
+        "present": [],
+        "availability_state_required": "OK",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "absent": [],
+        "asof": "2026-08-20",
+        "case": "c",
+        "knowledge_cutoff": "2026-08-20",
+        "minimum_future_beliefs_excluded": 1,
+        "node_id": "basket:baskets:gold_miners",
+        "present": [
+          "co:us:GOLD"
+        ],
+        "availability_state_required": "OK",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "absent": [
+          "co:us:IBIT"
+        ],
+        "asof": "2026-08-20",
+        "case": "d",
+        "knowledge_cutoff": "2026-10-07",
+        "node_id": "basket:baskets:crypto_rails",
+        "present": [
+          "etf:IBIT"
+        ],
+        "availability_state_required": "OK",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      },
+      {
+        "absent": [
+          "co:us:IBIT"
+        ],
+        "asof": "2026-10-07",
+        "case": "e",
+        "knowledge_cutoff": "2026-10-07",
+        "node_id": "basket:baskets:crypto_rails",
+        "present": [
+          "etf:IBIT"
+        ],
+        "availability_state_required": "OK",
+        "replacement_status": "NOT_RUN",
+        "replacement_observation": null
+      }
+    ],
+    "Q4_source": {
+      "file": "gmi_state_gen3_summary_20261008.json",
+      "sha256": "11fcd1bcf0d75e3f470f8776736995ba583c48120e2a44a0b7b47a299e807e87",
+      "scope": "Known explicit GEN3 proof tuples; not recovered original unknown a-e literals. Prior tuple PASS is historical; new observations unset."
+    },
+    "witness_binding": {
+      "fresh_run_bound_directory_required": true,
+      "band_files": [
+        "theme_graph.log",
+        "theme_graph.rc",
+        "theme_graph.sec",
+        "theme_graph_guard.log",
+        "theme_graph_guard.rc",
+        "theme_graph_guard.sec"
+      ],
+      "metadata_path": "data/theme_graph/_meta.json",
+      "retained_source_paths": [
+        "scripts/build_theme_graph.py",
+        "scripts/check_theme_graph_contracts.py",
+        "scripts/ci/daily_engine_regional_desk_builders.sh",
+        ".github/workflows/daily.yml"
+      ],
+      "graph_output_paths": [
+        "data/theme_graph/nodes.parquet",
+        "data/theme_graph/node_lifecycle.parquet",
+        "data/theme_graph/edges.parquet",
+        "data/theme_graph/evidence.parquet",
+        "data/theme_graph/capability.parquet",
+        "data/theme_graph/identity_resolution.parquet",
+        "data/theme_graph/probation/proposals.jsonl"
+      ],
+      "required_checks": [
+        "repository/run/attempt/event/job and witness-ID binding",
+        "event SHA and immutable workflow-definition commit/path/Git blob recorded separately from actual effective producer checkout",
+        "reviewed witness upload wiring proven in immutable workflow definition independently of checkout ancestry or checkout daily.yml hash",
+        "source hashes match selected canonical code and prerequisite source parity",
+        "all original/prerequisite ancestry rc0 and checkout ancestry to canonical publication",
+        "post-write final metadata computed_at and hash EXACT canonical published metadata",
+        "materialization clock separately recorded, never forced equal to final metadata clock",
+        "all seven output hashes EXACT same canonical data publication",
+        "native build/guard rc0 plus numeric sec and full retained warning/error-free logs",
+        "capture errors absent and retained files byte hashes validated"
+      ],
+      "capture_complete_is_acceptance": false,
+      "missing_incomplete_or_mismatched_archive": "UNKNOWN_OR_INCOMPLETE_NEVER_PASS"
+    },
+    "composition": {
+      "replacement_phase2_verdict": "NOT_ASSESSED",
+      "d2e": "HOLD_AWAITING_SELECTED_GENERATION_PROOF",
+      "gating_fail_blocks": true,
+      "missing_gating_proof_holds": true,
+      "independent_P3_required": true,
+      "independent_P3_receipt": null,
+      "principal_phase2_ruling": null,
+      "principal_phase2_ruling_at_utc": null,
+      "W3B": "HELD_UNTIL_PRINCIPAL_PHASE2_PASS",
+      "release_automatic": false
+    },
+    "non_goals": [
+      "No production or natural-workflow dispatch/rerun",
+      "No graph regeneration to create proof",
+      "No new state producer/store/queue/service/workflow/carrier",
+      "No historical ledger mutation",
+      "No E1 outcome look or performance experiment",
+      "No downstream scoring/trading/capability grant"
+    ],
+    "amendment_review_lineage": {
+      "pre_adoption_revision": "R6",
+      "prior_reviews": [
+        {
+          "revision": "R4",
+          "verdict": "PASS",
+          "reviewer": "gmi_dependency_audit",
+          "receipt_name": "independent_review_r4.json",
+          "sha256": "d2ca3707e269bd22e2404e29b06a77a288d22b2264a4945f18e9ba9c4b8b57e5",
+          "scope": "Changed-head ebd binding and C4/M1 actual facts; not final witness source release or adoption."
+        },
+        {
+          "revision": "R5",
+          "verdict": "PASS",
+          "reviewer": "gmi_dependency_audit",
+          "receipt_name": "independent_review_r5.json",
+          "sha256": "c9fa7849975e7ef97ce918e4eac9ccc44b231bbcad466dfa9875c22bd9ba6558",
+          "scope": "Source-only narrow conclusive no-execution clarification and inherited-law preservation; no actual run selected."
+        }
+      ],
+      "draft_clarification_receipt": {
+        "comment_id": 6070802215,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8540#issuecomment-6070802215",
+        "is_adoption": false
+      },
+      "final_review_binding": "External independent review must bind the frozen R6 artifact hashes and complete source/rules before formal adoption. A later control-only delta records that actual review and designated adoption comment; no self-referential hash is fabricated."
+    }
   }
 }
