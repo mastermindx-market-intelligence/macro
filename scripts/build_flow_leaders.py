@@ -1036,6 +1036,17 @@ def build(
     if stale:
         log.warning("build_flow_leaders: unavailable source=%s session=%s reason=%s "
                     "coverage=%.3f", source_family, latest_session, stale_reason, cohort.coverage_ratio)
+        # GitHub Actions parses annotations only at column 0; the logger's
+        # level prefix was not an operator-visible health receipt. Keep
+        # this nonfatal: unrelated nightly products must still publish.
+        print(
+            "::warning title=flow-leaders-source-stale::"
+            f"Flow Leaders unqualified; session={latest_session or 'none'} "
+            f"source={source_family} reason={stale_reason} "
+            f"same_session_roots={cohort.current_roots}/{cohort.expected_roots} "
+            f"coverage={cohort.coverage_ratio:.3f}",
+            flush=True,
+        )
 
     # ── Load supporting stores ────────────────────────────────────────────────
     tape_rows: dict[str, pd.Series | None] = {}
