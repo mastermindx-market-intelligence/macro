@@ -118,6 +118,25 @@ def test_iframe_load_has_a_bounded_fail_open_path():
     assert "clearTimeout(state.frameLoadFallbackTimer)" in code
 
 
+def test_overlay_restores_explicit_invoker_after_dashboard_is_unlocked():
+    theme = _read("templates/theme.js")
+    code = _read("templates/terminal_overlay.js")
+    assert "function openTerminal(t, trigger, requestedUrl, returnFocus)" in theme
+    assert "returnFocus: returnFocus || trigger || null" in theme
+    assert "openTerminal(x.t, box, null, trigger)" in theme
+    assert "returnFocus: null" in code
+    assert "function isReturnFocusCandidate(el)" in code
+    assert "el.closest('[inert],[aria-hidden=\"true\"]')" in code
+    assert "function resolveReturnFocus(primary)" in code
+    assert ".site-nav .search-trigger, .site-nav a[href], .site-nav button:not([disabled])" in code
+    assert "state.returnFocus = config.returnFocus || config.trigger || document.activeElement || null" in code
+    assert "state.returnFocus || state.activeElement" in code
+    unlocked = code.index("document.documentElement.classList.remove('mm-terminal-lock')")
+    resolved = code.index("resolveReturnFocus(requestedReturnFocus)", unlocked)
+    focused = code.index("restoreFocus.focus({ preventScroll: true })", resolved)
+    assert unlocked < resolved < focused
+
+
 def test_overlay_restores_the_exact_dashboard_position_without_smooth_scroll():
     code = _read("templates/terminal_overlay.js")
     assert "state.scrollX = window.scrollX" in code

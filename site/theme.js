@@ -323,7 +323,7 @@
     };
     document.head.appendChild(_mmOverlayScript);
   }
-  function openTerminal(t, trigger, requestedUrl) {
+  function openTerminal(t, trigger, requestedUrl, returnFocus) {
     if (!mmTerminalOn()) return false;
     var directUrl = requestedUrl ? terminalExistingUrl(requestedUrl, false) : terminalUrl(t);
     var embedUrl = requestedUrl ? terminalExistingUrl(requestedUrl, true) : terminalEmbedUrl(t);
@@ -337,7 +337,8 @@
         url: embedUrl,
         directUrl: directUrl,
         targetOrigin: MM_TERMINAL_ORIGIN,
-        trigger: trigger || null
+        trigger: trigger || null,
+        returnFocus: returnFocus || trigger || null
       });
     });
     return true;
@@ -1085,7 +1086,7 @@
           meta: { market: x._mk, source: 'animated_nav_search', to_terminal: !!(mmTerminalOn() && TERMINAL_PAGES[x._tgt]) }
         });
       } catch (e) {}
-      if (mmTerminalOn() && TERMINAL_PAGES[x._tgt]) { openTerminal(x.t, box); return; }
+      if (mmTerminalOn() && TERMINAL_PAGES[x._tgt]) { openTerminal(x.t, box, null, trigger); return; }
       location.href = pfx + (x._tgt || 'stock.html') + '#' + encodeURIComponent(x.t);
     }
 

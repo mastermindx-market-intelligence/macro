@@ -38,6 +38,7 @@
     scrollY: 0,
     rootScrollBehavior: '',
     activeElement: null,
+    returnFocus: null,
     bodyStyle: null,
     locked: [],
     historyArmed: false,
@@ -372,6 +373,27 @@
     state.overlay.style.setProperty('--mmto-y', Math.round(y) + 'px');
   }
 
+  function isReturnFocusCandidate(el) {
+    if (!el || typeof el.focus !== 'function' || !el.isConnected || el.disabled) return false;
+    try {
+      if (el.closest('[inert],[aria-hidden="true"]')) return false;
+      var style = window.getComputedStyle ? window.getComputedStyle(el) : null;
+      if (style && (style.display === 'none' || style.visibility === 'hidden')) return false;
+    } catch (e) { return false; }
+    return true;
+  }
+
+  function resolveReturnFocus(primary) {
+    if (isReturnFocusCandidate(primary)) return primary;
+    var fallback = null;
+    try {
+      fallback = document.querySelector(
+        '.site-nav .search-trigger, .site-nav a[href], .site-nav button:not([disabled])'
+      );
+    } catch (e) {}
+    return isReturnFocusCandidate(fallback) ? fallback : null;
+  }
+
   function lockDashboard() {
     if (state.positionTimer) {
       clearTimeout(state.positionTimer);
@@ -382,6 +404,7 @@
     state.scrollY = window.scrollY || window.pageYOffset || 0;
     state.rootScrollBehavior = document.documentElement.style.scrollBehavior;
     state.activeElement = document.activeElement;
+    if (!state.returnFocus) state.returnFocus = state.activeElement;
     state.bodyStyle = {
       position: document.body.style.position,
       top: document.body.style.top,
@@ -420,7 +443,8 @@
     // Mobile/touch browsers can honor preventScroll late, after our scroll pin,
     // and jump the dashboard to the focused ticker. The remount path skips that
     // keyboard-only restoration; desktop keeps it for accessibility.
-    var restoreFocus = options && options.restoreFocus === false ? null : state.activeElement;
+    var requestedReturnFocus = options && options.restoreFocus === false
+      ? null : (state.returnFocus || state.activeElement);
     state.locked.forEach(function (rec) {
       try { rec.el.inert = rec.inert; } catch (e) {}
       if (rec.aria == null) rec.el.removeAttribute('aria-hidden');
@@ -435,7 +459,9 @@
     document.body.style.overflow = state.bodyStyle.overflow;
     document.documentElement.classList.remove('mm-terminal-lock');
     state.bodyStyle = null;
+    var restoreFocus = requestedReturnFocus ? resolveReturnFocus(requestedReturnFocus) : null;
     state.activeElement = null;
+    state.returnFocus = null;
     if (restoreFocus && restoreFocus.focus) {
       try { restoreFocus.focus({ preventScroll: true }); } catch (e) { try { restoreFocus.focus(); } catch (ignore) {} }
     }
@@ -588,6 +614,7 @@
     setLaunchOrigin(config.trigger);
 
     if (!state.open) {
+      state.returnFocus = config.returnFocus || config.trigger || document.activeElement || null;
       state.open = true;
       root.setAttribute('aria-hidden', 'false');
       root.classList.remove('is-closing');
