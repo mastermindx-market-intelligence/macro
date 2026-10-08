@@ -1222,9 +1222,102 @@ def test_wc8_refused_hierarchy_is_fail_soft():
     refusal = refused["themes"][0]["abstentions"][-1]
     assert refusal["code"] == "HIERARCHY_REFUSED"
     assert refusal["subject_id"] == "theme:t"
-    assert refusal["detail"].startswith("hierarchy_paths: refused PARENT_OF")
+    assert refusal["detail"] == "Theme hierarchy could not be read safely."
     assert _without_abstentions(refused) == _without_abstentions(baseline)
     jsonschema.validate(refused, _schema())
+
+
+def test_wc8_refused_vendor_provenance_parent_leaks_nothing():
+    withheld_id = "theme:withheld_vendor_structure"
+    withheld_name = "Withheld Vendor Category"
+    parent = _parent_of(withheld_id, "theme:t")
+    nodes = [
+        _hierarchy_node("theme:t"),
+        _hierarchy_node(
+            withheld_id, "macro_category", name_en=withheld_name,
+            provenance="local-theme:finviz_themes",
+        ),
+    ]
+    store = HierarchyStore(nodes, [
+        parent,
+        edge("member:1", "MEMBER_OF", "co:us:A", "theme:t"),
+    ])
+    baseline = to_json(_compose(store, _spec(["theme:t"])))
+    refused = to_json(_compose(
+        store, _spec(["theme:t"]), hierarchy_reader=hierarchy_paths,
+    ))
+    row = refused["themes"][0]
+    assert "ancestors" not in row
+    refusal = row["abstentions"][-1]
+    assert refusal["code"] == "HIERARCHY_REFUSED"
+    assert refusal["subject_id"] == "theme:t"
+    assert refusal["detail"] == "Theme hierarchy could not be read safely."
+    dumped = json.dumps(refused)
+    for withheld in (
+        withheld_id, withheld_name, parent["edge_id"],
+        "local-theme:finviz_themes", "hierarchy_paths: refused PARENT_OF",
+    ):
+        assert withheld not in dumped
+    assert _without_abstentions(refused) == _without_abstentions(baseline)
+    jsonschema.validate(refused, _schema())
+
+
+@pytest.mark.parametrize("lifecycle_state", ["absent", "empty", "failed"])
+def test_wc8_lifecycle_reader_distinguishes_absent_empty_and_failure(lifecycle_state):
+    fixture = _wc8_theme_fixture()
+    calls = []
+    lifecycle_calls = []
+    private_error = "lifecycle owner unavailable for theme:withheld_lifecycle"
+
+    class NoLifecycleStore(FakeStore):
+        def read_nodes(self):
+            return fixture._hierarchy_nodes
+
+    class EmptyLifecycleStore(NoLifecycleStore):
+        def read_node_lifecycle(self):
+            lifecycle_calls.append("empty")
+            return []
+
+    class FailedLifecycleStore(NoLifecycleStore):
+        def read_node_lifecycle(self):
+            lifecycle_calls.append("failed")
+            raise RuntimeError(private_error)
+
+    def reader(*args, **kwargs):
+        calls.append((args, kwargs))
+        return hierarchy_paths(*args, **kwargs)
+
+    store_class = {
+        "absent": NoLifecycleStore,
+        "empty": EmptyLifecycleStore,
+        "failed": FailedLifecycleStore,
+    }[lifecycle_state]
+    store = store_class(fixture._edges)
+    baseline = to_json(_compose(store, _spec(["theme:t"])))
+    assert lifecycle_calls == []
+    payload = to_json(_compose(store, _spec(["theme:t"]), hierarchy_reader=reader))
+    row = payload["themes"][0]
+    assert row["state"] == "OK"
+    assert [company["company_node_id"] for company in row["companies"]] == ["co:us:A"]
+    if lifecycle_state == "failed":
+        assert calls == []
+        assert lifecycle_calls == ["failed"]
+        assert "ancestors" not in row
+        refusal = row["abstentions"][-1]
+        assert refusal["code"] == "HIERARCHY_REFUSED"
+        assert refusal["subject_id"] == "theme:t"
+        assert refusal["detail"] == "Theme hierarchy could not be read safely."
+        assert "withheld_lifecycle" not in json.dumps(payload)
+        assert private_error not in json.dumps(payload)
+        assert _without_abstentions(payload) == _without_abstentions(baseline)
+    else:
+        assert len(calls) == 1
+        assert lifecycle_calls == ([] if lifecycle_state == "absent" else ["empty"])
+        assert row["ancestors"][0]["chain"][0]["node_id"] == "theme:category"
+        without_ancestors = dict(row)
+        without_ancestors.pop("ancestors")
+        assert without_ancestors == baseline["themes"][0]
+    jsonschema.validate(payload, _schema())
 
 
 def test_wc8_hierarchy_edges_never_change_existing_rows():

@@ -1085,6 +1085,7 @@ def compose_exposure_map(
             node_names[str(node_id)] = row
 
     hierarchy_snapshot = None
+    hierarchy_lifecycle_failed = False
     if hierarchy_reader is not None:
         lifecycle_reader = getattr(store, "read_node_lifecycle", None)
         lifecycle = []
@@ -1092,8 +1093,10 @@ def compose_exposure_map(
             try:
                 lifecycle = _records(lifecycle_reader())
             except Exception:
-                lifecycle = []
-        hierarchy_snapshot = _HierarchySnapshot(raw_nodes, raw_edges, lifecycle)
+                # Unknown lifecycle history cannot safely project ancestors.
+                hierarchy_lifecycle_failed = True
+        if not hierarchy_lifecycle_failed:
+            hierarchy_snapshot = _HierarchySnapshot(raw_nodes, raw_edges, lifecycle)
 
     identity_rows: dict[str, Mapping[str, Any]] = {}
     for row in raw_identity:
@@ -1111,25 +1114,29 @@ def compose_exposure_map(
             node_names=node_names,
         )
         if (
-            hierarchy_snapshot is not None
+            hierarchy_reader is not None
             and row["theme_plane"] == "canonical_theme"
             and row["state"] in {"OK", "NO_THEME_EDGES", "NO_MEMBERSHIP_YET"}
         ):
-            try:
-                records = hierarchy_reader(
-                    hierarchy_snapshot,
-                    theme_id,
-                    asof_date,
-                    knowledge_cutoff=knowledge_cutoff_date,
-                )
-                row["ancestors"] = _ancestor_entries(records, theme_id, assert_allowed)
-            except Exception as exc:
+            hierarchy_refused = hierarchy_lifecycle_failed
+            if not hierarchy_refused:
+                try:
+                    records = hierarchy_reader(
+                        hierarchy_snapshot,
+                        theme_id,
+                        asof_date,
+                        knowledge_cutoff=knowledge_cutoff_date,
+                    )
+                    row["ancestors"] = _ancestor_entries(records, theme_id, assert_allowed)
+                except Exception:
+                    hierarchy_refused = True
+            if hierarchy_refused:
                 row["ancestors"] = ()
                 row["abstentions"] = list(row["abstentions"]) + [
                     _unavailable(
                         "HIERARCHY_REFUSED",
                         subject_id=theme_id,
-                        detail=str(exc),
+                        detail="Theme hierarchy could not be read safely.",
                     )
                 ]
         theme_rows.append(row)
