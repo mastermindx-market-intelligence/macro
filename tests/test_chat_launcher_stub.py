@@ -57,17 +57,6 @@ def brain_src() -> str:
     return MM_BRAIN_JS.read_text()
 
 
-@pytest.fixture(scope="module")
-def theme_code(theme_src: str) -> str:
-    """theme.js with /* block comments */ removed.
-
-    Needed because this file's own prose quotes the defect verbatim
-    (``s.src = 'mm_brain.js'``), and so does theme.js's — a guard that scanned
-    comments would fire on the explanation of the bug rather than the bug.
-    """
-    return re.sub(r"/\*.*?\*/", " ", theme_src, flags=re.DOTALL)
-
-
 # ---------------------------------------------------------------------------
 # 1. every dynamic child asset resolves from the SHARED root, never the document
 # ---------------------------------------------------------------------------
@@ -97,9 +86,14 @@ _NOT_LOCAL = ("http://", "https://", "//", "data:", "blob:", "about:", "#", "/")
 
 
 def _document_relative_offenders(code: str) -> list[str]:
-    """Injected asset URLs that are bare relative literals (comments stripped)."""
-    code = re.sub(r"/\*.*?\*/", " ", code, flags=re.DOTALL)
+    """Injected asset URLs that are bare relative literals in unprocessed source."""
+    # Prove adjacency before the legacy comment filter can erase live code
+    # between comment delimiters inside strings. Comments within the candidate
+    # sequence conservatively prevent an exemption; this is not a JS parser.
     navigation = {m.start("href") for m in _ANCHOR_NAVIGATION_RE.finditer(code)}
+    # Keep offsets aligned with the original source while ignoring prose that
+    # quotes relative asset assignments in genuine block comments.
+    code = re.sub(r"/\*.*?\*/", lambda m: " " * len(m.group()), code, flags=re.DOTALL)
     return [
         m.group(2)
         for m in _LITERAL_SRC_RE.finditer(code)
@@ -127,7 +121,7 @@ def test_the_resolution_guard_actually_fires_on_the_2026_08_19_defect() -> None:
     ) == []
 
 
-def test_no_dynamic_child_asset_is_document_relative(theme_code: str) -> None:
+def test_no_dynamic_child_asset_is_document_relative(theme_src: str) -> None:
     """No injected asset URL may be a bare relative literal.
 
     This is the bug itself. `s.src = 'mm_brain.js'` reads as obviously correct
@@ -135,7 +129,7 @@ def test_no_dynamic_child_asset_is_document_relative(theme_code: str) -> None:
     wrong on every nested one — the failure is invisible from the source and
     invisible in CI, because the only symptom is a 404 in someone else's browser.
     """
-    offenders = _document_relative_offenders(theme_code)
+    offenders = _document_relative_offenders(theme_src)
     assert not offenders, (
         "theme.js has a document-relative src/href literal without proven "
         f"anchor navigation: {offenders}. For injected assets, a dynamic "
@@ -459,6 +453,42 @@ def test_anchor_without_class_assignment_is_navigation():
     ("var a = document.createElement('a'); rebind(); a.href = 'relative.css';", ["relative.css"]),
 ])
 def test_real_assets_and_unknown_receivers_remain_guarded(source, expected):
+    assert _document_relative_offenders(source) == expected
+
+
+@pytest.mark.parametrize("intervening", [
+    "a = document.createElement('link');",
+    "rebind();",
+], ids=["reassignment", "call"])
+def test_comment_delimiters_in_strings_cannot_hide_intervening_code(intervening):
+    source = (
+        "var a = document.createElement('a');\n"
+        "a.className = '/*';\n"
+        f"{intervening}\n"
+        "a.className = '*/';\n"
+        "a.href = 'relative.css';"
+    )
+    assert _document_relative_offenders(source) == ["relative.css"]
+    with pytest.raises(AssertionError, match="relative.css"):
+        test_no_dynamic_child_asset_is_document_relative(source)
+
+
+@pytest.mark.parametrize("source,expected", [
+    (
+        "/* s.src = 'comment-only.js';\n a.href = 'comment-only.css'; */\n"
+        "var a = document.createElement('a');\na.href = 'stock.html#';",
+        [],
+    ),
+    (
+        "/* var a = document.createElement('a'); */\na.href = 'relative.css';",
+        ["relative.css"],
+    ),
+    (
+        "var a = document.createElement('a');\n/* comment */\na.href = 'relative.css';",
+        ["relative.css"],
+    ),
+], ids=["comment-before-fresh-anchor", "commented-declaration", "comment-interrupts-adjacency"])
+def test_block_comments_do_not_manufacture_anchor_adjacency(source, expected):
     assert _document_relative_offenders(source) == expected
 
 
