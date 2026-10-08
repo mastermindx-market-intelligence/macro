@@ -245,6 +245,20 @@ completed **60 passed**. Current SHA-256:
 `lane2.py c42bc5d75d06ec78280ea3c8dff87fb8be7da6c1d5892bff4d4f6c48ae77a4bc`;
 `test_worker_context_policy.py ef34d79d0c78d79a718812bb55335a3c2ed5bd39966a1b199925fda2ab4fbcd0`.
 
+### Review-only lane complexity controls
+
+The standalone `review_lane.py` path also had independent fixed ceilings: Grok was hardcoded to
+140 turns and the review subprocess defaulted to 2400 seconds regardless of known complexity. It now
+accepts an explicit `--task-complexity` (or existing `POOL_TASK_COMPLEXITY` environment value) and
+derives the same long-work floors without changing unclassified legacy behavior: C2 gets at least
+3600 seconds and 240 Grok turns; C3 gets 7200 seconds and 400 turns. `--max-turns` may tighten one
+review within 1..400 and `--timeout` remains bounded to 60..7200; invalid settings fail closed before
+provider work.
+
+Python compile plus the review-lane regression completed **17 passed**. Current SHA-256:
+`review_lane.py 9f9417f04af067f2758bb9cc9d97e485aaec124af28ee4a36b93781657780778`;
+`test_r22_job_class.py 52ebdf060dc81c3d44008cbbde9d59e162909a96a2fd5a3c8bf6bf6899f59ce0`.
+
 ### Verification boundary
 
 Directly observed current green evidence:
