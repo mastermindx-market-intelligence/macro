@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EFX-BULL-20260701",
-  "asof": "2026-10-07",
+  "asof": "2026-10-08",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -17,14 +17,14 @@
     "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.194,
+    "dist_to_stop_r": -0.196,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 188.9,
-    "p1": -0.7959,
-    "p2": -0.3979,
+    "horizon_pct_used": 191.1,
+    "p1": -0.7972,
+    "p2": -0.3986,
     "p3": null,
-    "move_r": -1.194,
+    "move_r": -1.196,
     "mfe_r": 0.873,
     "mae_r": -1.402
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 85,
-  "tau": 1.8889
+  "days_elapsed": 86,
+  "tau": 1.9111
 }
