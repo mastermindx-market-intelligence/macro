@@ -7,6 +7,7 @@ import unittest
 from engine.tick_plane.stream_events import normalize_ws_event
 from engine.tick_plane.asof_nbbo import InFlightNBBO
 from engine.tick_plane.print_observations import observe_provisional_trade
+from engine.tick_plane.condition_policy import parse_condition_reference, evaluate_trade_conditions
 
 BASE=1_791_417_600_000
 RECV=BASE*1_000_000+100_000_000
@@ -34,15 +35,27 @@ def t(**more):
     return wrap(x)
 
 
-def input_args(**updates):
+def condition_verdict(trade, *, decision=RECV+20_000_000):
+    native={"asset_class":"stocks","data_types":["trade"],"type":"condition","id":0,
+            "name":"Eligible fixture only","update_rules":{"consolidated":{
+              "updates_volume":True,"updates_high_low":True,"updates_open_close":True}}}
+    snapshot=parse_condition_reference(raw_response_bytes=json.dumps({
+        "status":"OK","request_id":"fixture-reference","results":[native]}).encode(),
+        reference_received_ns=RECV-1_000_000,
+        source_receipt_id="fixture:original-reference")
+    return evaluate_trade_conditions(trade_conditions=trade["trade_conditions"],
+        reference=snapshot,decision_ns=decision,original_reference_custody_attested=True)
+
+
+def input_args(trade=None,**updates):
+    trade = t() if trade is None else trade
     kw=dict(decision_ns=RECV+20_000_000,
             source_complete_through_ns=(BASE+10)*1_000_000,
             watermark_available_ns=RECV+10,
             watermark_receipt_id="source-owner-contiguous-tq-proof",
             source_completeness_attested=True,
             max_quote_age_ns=50_000_000,
-            trade_condition_eligible=True,
-            trade_condition_rules_ref="update_rules@source-sha",
+            trade_condition_verdict=condition_verdict(trade),
             quote_condition_eligible=True,
             quote_condition_rules_ref="quote_conditions@source-sha")
     kw.update(updates)
@@ -55,8 +68,9 @@ class ProvisionalObservationTests(unittest.TestCase):
         self.ring.ingest_quote(q())
 
     def observed(self, trade=None, **kw):
-        return observe_provisional_trade(t() if trade is None else trade,self.ring,
-                                          **input_args(**kw))
+        trade=t() if trade is None else trade
+        return observe_provisional_trade(trade,self.ring,
+                                          **input_args(trade=trade,**kw))
 
     def test_buy_at_offer_is_proxy_not_institutional_proof(self):
         r=self.observed()
@@ -81,12 +95,14 @@ class ProvisionalObservationTests(unittest.TestCase):
         self.assertIsNone(r["signed_notional_usd"])
 
     def test_unqualified_trade_condition_cannot_be_silently_true(self):
-        r=self.observed(trade_condition_eligible=None)
+        r=self.observed(trade_condition_verdict=None)
         self.assertEqual(r["reason"],"TRADE_CONDITION_POLICY_UNQUALIFIED")
         self.assertEqual(r["side_proxy"],"unclassified")
 
     def test_known_ineligible_condition_does_not_sign_print(self):
-        r=self.observed(trade_condition_eligible=False)
+        bad=condition_verdict(t())
+        bad["eligible_for_pressure"]=False
+        r=self.observed(trade_condition_verdict=bad)
         self.assertEqual(r["state"],"INELIGIBLE")
         self.assertIsNone(r["signed_notional_usd"])
 
@@ -116,7 +132,8 @@ class ProvisionalObservationTests(unittest.TestCase):
     def test_valid_bid_ask_can_be_temporary_no_firm_quote(self):
         ring=InFlightNBBO(session=SESSION,symbols={"SPY"})
         ring.ingest_quote(q(**{"as":0}))
-        r=observe_provisional_trade(t(),ring,**input_args())
+        tr=t()
+        r=observe_provisional_trade(tr,ring,**input_args(trade=tr))
         self.assertEqual(r["reason"],"INVALID_OR_ONE_SIDED_NBBO")
 
     def test_trade_late_arrival_rejected(self):
@@ -140,6 +157,37 @@ class ProvisionalObservationTests(unittest.TestCase):
     def test_quote_watermark_maturity_required(self):
         r=self.observed(source_complete_through_ns=(BASE+1)*1_000_000)
         self.assertEqual(r["reason"],"TRADE_WINDOW_NOT_COMPLETE")
+ 
+    def test_trade_condition_receipt_and_native_codes_must_match_source_trade(self):
+        ver=condition_verdict(t())
+        ver["native_trade_conditions"]=[12]
+        r=self.observed(trade_condition_verdict=ver)
+        self.assertEqual(r["reason"],"TRADE_CONDITION_POLICY_UNQUALIFIED")
+
+    def test_trade_condition_later_reference_clock_not_backdated(self):
+        ver=condition_verdict(t())
+        ver["reference_received_ns"]=RECV+25_000_000
+        r=self.observed(trade_condition_verdict=ver)
+        self.assertEqual(r["reason"],"TRADE_CONDITION_POLICY_UNQUALIFIED")
+
+    def test_trade_condition_decision_time_mismatch_abstains(self):
+        ver=condition_verdict(t())
+        ver["decision_ns"]=RECV+100_000_000
+        r=self.observed(trade_condition_verdict=ver)
+        self.assertEqual(r["reason"],"TRADE_CONDITION_POLICY_UNQUALIFIED")
+
+    def test_unknown_native_condition_does_not_default_to_buy_side(self):
+        trade=t(c=[999])
+        r=self.observed(trade=trade)
+        self.assertEqual(r["reason"],"TRADE_CONDITION_POLICY_UNQUALIFIED")
+        self.assertIsNone(r["signed_notional_usd"])
+
+    def test_source_condition_vintage_receipt_is_exposed_by_reference(self):
+        r=self.observed()
+        self.assertEqual(len(r["trade_conditions_rules_ref"]),64)
+        self.assertEqual(r["trade_condition_policy_reason"],
+                         "CONSERVATIVE_PRICE_FORMING_CANDIDATE")
+
 
 if __name__ == "__main__":
     unittest.main()

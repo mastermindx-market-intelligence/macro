@@ -51,7 +51,10 @@ def parse_condition_reference(*, raw_response_bytes, reference_received_ns,
     for item in response["results"]:
         if type(item) is not dict:
             raise FrameContractError("malformed vendor condition record")
-        if item.get("asset_class") != "stocks" or "trade" not in item.get("data_types", []):
+        data_types = item.get("data_types")
+        if not isinstance(data_types, list) or any(type(kind) is not str for kind in data_types):
+            raise FrameContractError("invalid reference data_types")
+        if item.get("asset_class") != "stocks" or "trade" not in data_types:
             continue
         code = _integer(item.get("id"), "native condition id")
         if item.get("type") not in ("condition", "sale_condition"):
@@ -97,6 +100,11 @@ def evaluate_trade_conditions(*, trade_conditions, reference, decision_ns,
                 "reason": reason, "volume_eligible": volume,
                 "price_stat_eligible": price,
                 "conditions_rules_ref": rule_ref,
+                "native_trade_conditions": list(trade_conditions) if isinstance(trade_conditions, (list, tuple)) else None,
+                "reference_source_receipt_id": reference.get("source_receipt_id") if isinstance(reference, dict) else None,
+                "reference_received_ns": reference.get("reference_received_ns") if isinstance(reference, dict) else None,
+                "reference_vintage": reference.get("reference_vintage") if isinstance(reference, dict) else None,
+                "decision_ns": decision_ns,
                 "method": "CONSOLIDATED_UPDATES_V0_CONSERVATIVE_PROXY",
                 "authority": "OBSERVATIONAL_ONLY"}
 

@@ -12,6 +12,7 @@ from decimal import Decimal, InvalidOperation
 
 from engine.flow_signing import classify_print
 from engine.tick_plane.asof_nbbo import InFlightNBBO, MATCH_SCHEMA
+from engine.tick_plane.condition_policy import POLICY_SCHEMA
 from engine.tick_plane.stream_events import SCHEMA as STREAM_SCHEMA
 
 SCHEMA = "equity.tick_plane.provisional_print_observation/v0"
@@ -32,7 +33,7 @@ def observe_provisional_trade(
     trade, ring: InFlightNBBO, *, decision_ns, source_complete_through_ns,
     watermark_available_ns, watermark_receipt_id,
     source_completeness_attested, max_quote_age_ns,
-    trade_condition_eligible, trade_condition_rules_ref,
+    trade_condition_verdict,
     quote_condition_eligible, quote_condition_rules_ref,
 ):
     """Return measured quote-location context with strict as-seen abstention.
@@ -51,7 +52,14 @@ def observe_provisional_trade(
             "dedup_key": trade.get("dedup_key") if isinstance(trade, dict) else None,
             "original_available_ns": trade.get("original_frame_received_ns") if isinstance(trade, dict) else None,
             "decision_ns": decision_ns, "source_watermark_receipt": watermark_receipt_id,
-            "trade_conditions_rules_ref": trade_condition_rules_ref,
+            "trade_conditions_rules_ref": (
+                trade_condition_verdict.get("conditions_rules_ref")
+                if isinstance(trade_condition_verdict, dict) else None
+            ),
+            "trade_condition_policy_reason": (
+                trade_condition_verdict.get("reason")
+                if isinstance(trade_condition_verdict, dict) else None
+            ),
             "quote_conditions_rules_ref": quote_condition_rules_ref,
             "quote_source_receipt_id": quote_receipt,
             "matched_quote_id": matched, "quote_age_ns": age,
@@ -77,7 +85,23 @@ def observe_provisional_trade(
         return output("UNKNOWN", "UNQUALIFIED_CORRECTION_STATE")
     if _money(trade) is None:
         return output("UNKNOWN", "INVALID_TRADE_NOTIONAL")
-    if type(trade_condition_eligible) is not bool or not isinstance(trade_condition_rules_ref, str) or not trade_condition_rules_ref.strip():
+    if (not isinstance(trade_condition_verdict, dict)
+            or trade_condition_verdict.get("schema") != POLICY_SCHEMA
+            or trade_condition_verdict.get("authority") != "OBSERVATIONAL_ONLY"
+            or trade_condition_verdict.get("method") != "CONSOLIDATED_UPDATES_V0_CONSERVATIVE_PROXY"
+            or trade_condition_verdict.get("decision_ns") != decision_ns
+            or trade_condition_verdict.get("reference_vintage") != "RECEIVED_AT_ONLY_NOT_HISTORICAL_VALIDITY"
+            or type(trade_condition_verdict.get("reference_received_ns")) is not int
+            or trade_condition_verdict["reference_received_ns"] > decision_ns
+            or not isinstance(trade_condition_verdict.get("reference_source_receipt_id"), str)
+            or not trade_condition_verdict["reference_source_receipt_id"]
+            or not isinstance(trade_condition_verdict.get("conditions_rules_ref"), str)
+            or len(trade_condition_verdict["conditions_rules_ref"]) != 64
+            or trade_condition_verdict.get("native_trade_conditions") != trade.get("trade_conditions")):
+        return output("UNKNOWN", "TRADE_CONDITION_POLICY_UNQUALIFIED")
+    trade_condition_eligible = trade_condition_verdict.get("eligible_for_pressure")
+    trade_condition_rules_ref = trade_condition_verdict["conditions_rules_ref"]
+    if type(trade_condition_eligible) is not bool:
         return output("UNKNOWN", "TRADE_CONDITION_POLICY_UNQUALIFIED")
     if not trade_condition_eligible:
         return output("INELIGIBLE", "TRADE_CONDITION_EXCLUDED")

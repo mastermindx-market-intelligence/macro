@@ -158,6 +158,20 @@ class ConditionAdmissionTests(unittest.TestCase):
         self.assertEqual(assess([1],ref=ref,decision=R-1)["reason"],
                          "REFERENCE_NOT_YET_AVAILABLE")
 
+    def test_condition_verdict_binds_native_codes_reference_receipt_and_cutoff(self):
+        r=assess([1])
+        self.assertEqual(r["native_trade_conditions"],[1])
+        self.assertEqual(r["reference_received_ns"],R)
+        self.assertEqual(r["decision_ns"],R+10)
+        self.assertEqual(r["reference_source_receipt_id"],"original-reference:sha256")
+        self.assertEqual(len(r["conditions_rules_ref"]),64)
+
+    def test_reference_with_null_data_types_refused(self):
+        rec=row(1)
+        rec["data_types"]=None
+        with self.assertRaisesRegex(FrameContractError,"data_types"):
+            parsed(rec)
+
     def test_source_policy_does_not_identify_initiator(self):
         r=assess([1])
         self.assertNotIn("customer_side",r)
