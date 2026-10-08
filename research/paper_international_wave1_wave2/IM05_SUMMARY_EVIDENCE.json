@@ -1,0 +1,29 @@
+{
+  "status": "ACCEPTED_SCOPED_SOURCE",
+  "run_id": "paper-01a1101f-im05-summary-repair-r2",
+  "source_hashes": {
+    "lib/intl_workspace_risk.py": "5590285024a7365192b71ad89cdce267bb4bea7fd87667c57ec43ef71fbb8b59",
+    "tests/test_intl_workspace_risk.py": "7abe517bc0e1ad1d726922134252ca23f1a523a27c47df7049a0a69bbd4dc366",
+    "tests/fixtures/intl_workspace/risk_cases.json": "70ee5485aeeb5e1d515ca57c7a799095bfbad4dfafc6e45ac74c30d0e88f502c"
+  },
+  "parent_validation": {
+    "retained_and_parent_tests": 87,
+    "exhaustive_relation_checks": 192,
+    "immutable_three_counterexamples_sha256": "171c3940600e0db9bf092c1ebc197894bf86844e6d9b12ae4c23fad1a1f80aed"
+  },
+  "prior_return": "R1 rejected with three genuine failures; R2 fixes verified by parent source review and execution",
+  "limits": "Pure summary qualification only; no risk root, presentation, actual owner eligibility or production acceptance.",
+  "integration": {
+    "source_hash_unchanged": true,
+    "repository_test_passes": 87,
+    "regression_test_path": "tests/test_intl_workspace_risk_regression.py",
+    "regression_test_sha256": "9427c1e8677db656d826672a969fe70451ef3fa73d19465ddf8d6169bcbaa0e1",
+    "packaging_adjustment": "Only parent test import changed to tests.test_intl_workspace_risk for repository package import mode; three assertions unchanged",
+    "ci_owner": "international-workspace-foundation",
+    "ci_scope_and_packing_tests": {
+      "passed": 3,
+      "seconds": 120.27
+    },
+    "manifest_jobs_validated": 252
+  }
+}

@@ -158,7 +158,17 @@
       "tests/test_ci_pack.py": "5ec264091ad24384f96b8987f208154c53268ab23c0ba8e97e5c159e1d9e98cc"
     },
     "product_source_delta": "No changes to accepted International lib/engine/templates/builders from this upstream merge",
-    "independent_review": "In flight on pre-additional-path merged snapshot; final ten added paths independently measured and parent-checked; review not yet accepted",
+    "independent_review": {
+      "status": "ACCEPTED_SCOPED",
+      "child": "paper-01a1101f-ci-scope-review-r1",
+      "review_sha256": "55d6f4c9dcfeb8c17c4a56f445f35e14db2089a318a320e0026ffcb6460e0451",
+      "reviewed_hashes": {
+        ".github/ci/legacy-jobs.yml": "0c151dc258090dc51e8335234a103e0aa3e0bb796a41a087935289026680c3ca",
+        "tests/test_ci_pack.py": "5ec264091ad24384f96b8987f208154c53268ab23c0ba8e97e5c159e1d9e98cc"
+      },
+      "parent_delta": "Exact final merge differs only by ten independently measured additive closure paths; YAML comparison proves every other job field/command unchanged; three repository tests pass",
+      "parent_accepted_at": "2026-10-08T22:37:00Z"
+    },
     "upstream_whitespace": "Full merge diff contains existing upstream generated/content trailing whitespace; no unrelated cleanup attempted"
   }
 }
