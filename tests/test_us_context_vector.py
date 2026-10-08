@@ -1205,3 +1205,45 @@ def test_wc7_real_materializer_to_parquet_consumer(
     from_disk = pd.read_parquet(ucv._part_path("2026-10-08", tmp_path))
     assert from_disk.set_index("ticker").loc["AAA", "theme_category_ids"] == "theme:hierarchy_cat"
     assert ucv.load_candidates(tmp_path).set_index("ticker").loc["AAA", "theme_category_ids"] == "theme:hierarchy_cat"
+
+
+def test_wc7_scan_root_uses_matching_graph_owner_only(
+    verdicts, append_kwargs, tmp_path, monkeypatch
+):
+    """Scan nightly passes root=checkout; unlike scratch paths this is lawful."""
+    from engine.theme_graph import store as graph_store
+
+    checkout = tmp_path / "checkout"
+    graph_dir = checkout / "data" / "theme_graph"
+    graph_dir.mkdir(parents=True)
+    nodes = graph_dir / "nodes.parquet"
+    edges = graph_dir / "edges.parquet"
+    nodes.touch()
+    edges.touch()
+    graph = _wc7_graph()
+
+    monkeypatch.setattr(graph_store, "store_dir", lambda: graph_dir)
+    monkeypatch.setattr(graph_store, "nodes_path", lambda: nodes)
+    monkeypatch.setattr(graph_store, "edges_path", lambda: edges)
+    monkeypatch.setattr(graph_store, "read_nodes", lambda **kw: graph.read_nodes())
+    monkeypatch.setattr(graph_store, "read_edges", lambda **kw: graph.read_edges())
+    monkeypatch.setattr(
+        graph_store, "read_node_lifecycle",
+        lambda **kw: graph.read_node_lifecycle(),
+    )
+    monkeypatch.setattr(
+        ucv, "basket_membership",
+        lambda asof, root=None: {"x": ["AAA"]},
+    )
+    scan_kwargs = dict(append_kwargs, root=checkout, tier=ucv.TIER_SCAN)
+    assert ucv.append_candidates(verdicts, "2026-10-07", **scan_kwargs) == 3
+    saved = ucv.load_candidates(checkout).set_index("ticker")
+    assert saved.loc["AAA", "theme_category_ids"] == "theme:cat_a"
+    assert pd.isna(saved.loc["BBB", "theme_category_ids"])
+
+    # The owner graph is configured for checkout, not this separate scratch
+    # root: no cross-root graph read or implicit production read is allowed.
+    scratch = tmp_path / "scratch"
+    scratch_kwargs = dict(append_kwargs, root=scratch, tier=ucv.TIER_SCAN)
+    assert ucv.append_candidates(verdicts, "2026-10-07", **scratch_kwargs) == 3
+    assert ucv.load_candidates(scratch)["theme_category_ids"].isna().all()
