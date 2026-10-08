@@ -33,9 +33,9 @@ workstream: "WS:ADVANCED-DATA-OPTIONS"
 evidence:
   - "Volume Mastermind: UUID 7EE5D196-8BB6-4E6D-B1D7-AFEA5DEB172A, 4,000,577,273,856 bytes, external APFS; not encrypted."
   - "Original 28 source/verification files totaling 9,082,019 bytes transferred and verified. Source data bytes removed from internal SSD; previous directory now an external symlink."
-  - "Private original Cboe EOD ZIP SHA-256 445cd9d658dc06028c286e09d4ac4818bd5884d7da8addd7509f3a0fa4840552; C1 20% sample 2025-03-28, 23,179 rows, 23,080 standard."
-  - "Private original TBT ZIP SHA-256 6c99e69e43d259e81bc31334574579cf9c623f5e77ff596cacf268712cd3262c; C1 3% sample 2025-03-28, 113,018 participant-side rows, 92,838 classified/economically complete."
-  - "TBT unknowns: open/close 20,180, right 507, side 69; categories may overlap. Quote timestamp, original historical availability and unique execution count remain unavailable."
+  - "Private original Cboe EOD ZIP SHA-256 445cd9d658dc06028c286e09d4ac4818bd5884d7da8addd7509f3a0fa4840552; C1 20% sample 2025-03-28; classification counts remain on the M2 external private inventory."
+  - "Private original TBT ZIP SHA-256 6c99e69e43d259e81bc31334574579cf9c623f5e77ff596cacf268712cd3262c; C1 3% sample 2025-03-28; participant/capacity counts remain on the M2 external private inventory."
+  - "TBT unknown classes are retained in the private inventory; categories overlap. Quote timestamp, original historical availability and unique execution count remain unavailable."
   - "Verified cutover receipt SHA-256 4b52d66f5d8e3f439431b299d6318c1fa649087dff30b35d55d2ee334b9b89dd."
   - "Private machine-readable options.private_research_source_receipt/v1 sha256 0623f0ea71e26c851508e1c2b5ffcb639d7c59a1638b0fbbdb1c04ac1d5f4702."
   - "Macro PR #8658, research-only parser and external mount guard; M2 hermetic tests 28 passed, natural EOD/TBT qualification and inventory passed."
@@ -59,8 +59,7 @@ actual dealer inventory and matched option-expiry interpretation.
   illustrative six-ETF coverage census. It is an on-demand research input,
   not an independently scheduled market-data feed or new source registry.
 - Small illustrative ETF sample counts in the inventory show 3%-sample TBT
-  participant-side row counts: XLK 56; SMH 157; SOXX 9; XLP 9; XLU 21;
-  XLV 4. The sample is too sparse/uneven to validate the desired
+  participant-side row counts are highly uneven between technology and defensive ETFs, with exact counts retained only in the private inventory. The sample is too sparse/uneven to validate the desired
   technology-versus-defensives directional comparison. Matched delta,
   tenor, original availability and a current multi-session population
   remain unobserved.
