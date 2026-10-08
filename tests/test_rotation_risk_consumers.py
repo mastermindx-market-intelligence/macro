@@ -71,6 +71,14 @@ def test_authority_escalation_fails_closed():
     assert rc.compact_context(native, now=NOW)["reason"] == "authority_contract_unqualified"
 
 
+def test_context_code_changes_reach_the_running_api_through_existing_restart_owner():
+    from tests.test_deploy_update_self_heal import _triggers_restart
+
+    assert _triggers_restart("engine/neuralweb/rotation_risk_context.py")
+    assert not _triggers_restart("engine/neuralweb/rotation_risk_context.py.bak")
+    assert not _triggers_restart("data/risk_envelope/latest.json")
+
+
 @pytest.mark.parametrize("field,reason", [("measured_state", "measured_source_session_mismatch"),
                                         ("rotation_context", "rotation_source_session_mismatch")])
 def test_nested_usable_source_cannot_borrow_the_envelope_date(field, reason):
