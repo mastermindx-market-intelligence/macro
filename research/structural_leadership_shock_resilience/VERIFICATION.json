@@ -1,0 +1,109 @@
+{
+  "status": "PACKAGE_CHECKS_PASS",
+  "checks": [
+    {
+      "check": "report_all_A_to_R_sections",
+      "pass": true
+    },
+    {
+      "check": "report_22_explicit_questions",
+      "pass": true
+    },
+    {
+      "check": "prereg_12_sections",
+      "pass": true
+    },
+    {
+      "check": "external_29_original_records",
+      "pass": true
+    },
+    {
+      "check": "internal_18_immutable_records",
+      "pass": true
+    },
+    {
+      "check": "SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md:no_unresolved_placeholder",
+      "pass": true
+    },
+    {
+      "check": "ASTRA_DEEP_RESEARCH_2026-10-07.md:no_unresolved_placeholder",
+      "pass": true
+    },
+    {
+      "check": "SLR_P0_DEVELOPMENT_RESULTS_2026-10-07.md:no_unresolved_placeholder",
+      "pass": true
+    },
+    {
+      "check": "SOURCE_REGISTER.md:no_unresolved_placeholder",
+      "pass": true
+    },
+    {
+      "check": "RESEARCH_TO_BUILD_HANDOFF.md:no_unresolved_placeholder",
+      "pass": true
+    },
+    {
+      "check": "coefficient_free_primary",
+      "pass": true
+    },
+    {
+      "check": "shared_estimation_error_explicit",
+      "pass": true
+    },
+    {
+      "check": "secondary_family_14",
+      "pass": true
+    },
+    {
+      "check": "no_outcome_access_claimed",
+      "pass": true
+    },
+    {
+      "check": "three_fold_floor_and_pvalue_rule",
+      "pass": true
+    },
+    {
+      "check": "audit_year_count_sum",
+      "pass": true
+    },
+    {
+      "check": "audit_sector_count_sum",
+      "pass": true
+    },
+    {
+      "check": "audit_source_count_sum",
+      "pass": true
+    },
+    {
+      "check": "sector_blank_plus_mapped",
+      "pass": true
+    },
+    {
+      "check": "actual_events_not_invented",
+      "pass": true
+    },
+    {
+      "check": "outcome_and_prod_flags_false",
+      "pass": true
+    },
+    {
+      "check": "commission_input_digest",
+      "pass": true
+    },
+    {
+      "check": "power_formulas",
+      "pass": true
+    },
+    {
+      "check": "shared_error_formula",
+      "pass": true
+    }
+  ],
+  "claims_not_tested": [
+    "empirical_signal",
+    "source_admission",
+    "production",
+    "prospective_validation",
+    "research_adapter_mechanics"
+  ],
+  "note": "Content/structural/arithmetic checks only. Canonical publication is separately read back and recorded."
+}
