@@ -339,13 +339,22 @@ def _hierarchy_categories_for_baskets(
         )
 
     if view is None:
-        if root is not None:
-            # Explicit test/scratch root must never read the production graph.
-            # Its owner can inject a fixture view; nightly uses root=None.
-            log.info("us_context_vector: explicit root without graph view; hierarchy null")
-            return {}
         try:
             from engine.theme_graph import store as graph_store
+
+            if root is not None:
+                from pathlib import Path
+
+                # The scan-tier nightly legitimately passes its repository root.
+                # Refuse only when the incumbent graph owner is configured for a
+                # DIFFERENT root: a scratch/test root must not read production.
+                expected = (Path(root) / "data" / "theme_graph").resolve()
+                actual = graph_store.store_dir().resolve()
+                if actual != expected:
+                    log.info(
+                        "us_context_vector: hierarchy shadow null for non-owner root"
+                    )
+                    return {}
 
             if not graph_store.nodes_path().is_file() or not graph_store.edges_path().is_file():
                 refuse("graph nodes/edges missing")
