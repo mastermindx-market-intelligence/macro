@@ -1,57 +1,57 @@
 {
   "schema": "ledger_heartbeat_state.v1",
-  "updated_utc": "2026-10-07T10:30:14Z",
-  "last_check_date": "2026-10-07",
+  "updated_utc": "2026-10-08T15:05:48Z",
+  "last_check_date": "2026-10-08",
   "ledgers": {
     "data/opex_windows/forward_log.jsonl": {
       "asof": "2026-08-01",
-      "last_check_date": "2026-10-07",
+      "last_check_date": "2026-10-08",
       "stalled_since": "2026-10-06"
     },
     "data/risk_radar/forward_log.jsonl": {
       "asof": "2026-10-06",
-      "last_check_date": "2026-10-07",
-      "stalled_since": null
+      "last_check_date": "2026-10-08",
+      "stalled_since": "2026-10-07"
     },
     "data/market_state/forward_log.jsonl": {
       "asof": "2026-10-06",
-      "last_check_date": "2026-10-07",
-      "stalled_since": null
+      "last_check_date": "2026-10-08",
+      "stalled_since": "2026-10-07"
     },
     "data/mag7_regime/ledger.jsonl": {
       "asof": "2026-10-06",
-      "last_check_date": "2026-10-07",
-      "stalled_since": null
+      "last_check_date": "2026-10-08",
+      "stalled_since": "2026-10-07"
     },
     "data/leadership_crack/forward_log.jsonl": {
       "asof": "2026-10-06",
-      "last_check_date": "2026-10-07",
-      "stalled_since": null
+      "last_check_date": "2026-10-08",
+      "stalled_since": "2026-10-07"
     },
     "data/deterioration_cascade/forward_log.jsonl": {
       "asof": "2026-10-06",
-      "last_check_date": "2026-10-07",
+      "last_check_date": "2026-10-08",
       "stalled_since": "2026-10-06"
     },
     "data/event_windows/forward_log.jsonl": {
       "asof": null,
-      "last_check_date": "2026-10-07",
+      "last_check_date": "2026-10-08",
       "stalled_since": null
     },
     "data/basket_turn/ledger.jsonl": {
       "asof": "2026-10-06",
-      "last_check_date": "2026-10-07",
-      "stalled_since": null
+      "last_check_date": "2026-10-08",
+      "stalled_since": "2026-10-07"
     },
     "data/china_basket_turn/ledger.jsonl": {
       "asof": "2026-09-30",
-      "last_check_date": "2026-10-07",
+      "last_check_date": "2026-10-08",
       "stalled_since": "2026-10-06"
     },
     "data/us_basket_turn/ledger.jsonl": {
       "asof": "2026-10-06",
-      "last_check_date": "2026-10-07",
-      "stalled_since": null
+      "last_check_date": "2026-10-08",
+      "stalled_since": "2026-10-07"
     }
   }
 }
