@@ -10,7 +10,6 @@ import argparse
 import hashlib
 import json
 import os
-import stat
 from pathlib import Path
 from typing import Any
 
