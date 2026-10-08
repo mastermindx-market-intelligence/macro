@@ -103,7 +103,7 @@ def qualify_cboe_tbt_sample(archive: bytes, receipt: dict[str, Any]) -> dict[str
             raise SourceRejected("malformed TBT underlying")
         right = row["call_put_flag"].strip().upper()
         if right not in ("C", "P"):
-            raise SourceRejected("invalid TBT right")
+            unknowns["right_unknown"] += 1
         bucket = by_symbol[symbol]
         bucket["participant_side_rows"] += 1
         side = row["side"].strip().upper()
@@ -136,7 +136,7 @@ def qualify_cboe_tbt_sample(archive: bytes, receipt: dict[str, Any]) -> dict[str
         if bid is not None and ask is not None and bid > 0 and ask > bid:
             valid_price_only_nbbo += 1
         # A price-consistent NBBO is NOT qualified for historical quote-age.
-        if (side in ("B", "S") and oc in ("O", "C")
+        if (right in ("C", "P") and side in ("B", "S") and oc in ("O", "C")
                 and capacity in CAPACITIES and size > 0 and price is not None and price > 0):
             fully_classified += 1
             bucket["classifiable_rows"] += 1
