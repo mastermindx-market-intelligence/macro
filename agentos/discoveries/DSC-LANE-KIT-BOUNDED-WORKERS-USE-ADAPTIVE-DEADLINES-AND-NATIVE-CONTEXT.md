@@ -259,6 +259,26 @@ Python compile plus the review-lane regression completed **17 passed**. Current 
 `review_lane.py 9f9417f04af067f2758bb9cc9d97e485aaec124af28ee4a36b93781657780778`;
 `test_r22_job_class.py 52ebdf060dc81c3d44008cbbde9d59e162909a96a2fd5a3c8bf6bf6899f59ce0`.
 
+### Qwen second-opinion ownership and runtime hardening
+
+The independent `qwen_review.py` second-opinion path still wrapped `qwen_exec.sh` in a raw
+`subprocess.run(..., timeout=3600)`. That created two problems for long work: C3 reviews could be
+killed at one hour even though the fabric permits two hours, and killing only the wrapper did not use
+the incumbent exact-process cleanup owner. The path now derives complexity from
+`review_task_complexity`, `task_complexity`, or `POOL_TASK_COMPLEXITY`; C2 retains a 3600-second
+floor and C3 gets 7200 seconds. `QWEN_REVIEW_TIMEOUT` may set a bounded 60..7200 value, but cannot
+silently reduce an already-classified C2/C3 job below its floor.
+
+The Qwen reviewer now runs through `lane_runtime.run_owned_process` with a per-review process receipt,
+typed rc124 on wall-clock timeout, and rc76 on unproven cleanup or truncated result capture. It forwards
+task complexity into `qwen_exec.sh`, so the wrapper's 2/4/8 same-thread continuation policy is active
+for classified reviews. This reuses the incumbent process-census/cleanup owner rather than creating a
+new retry or lifecycle plane.
+
+Python compile plus the worker-context regression completed **43 passed**. Current SHA-256:
+`qwen_review.py 0792849a1e33f2283a8ed9ce5b9bde70dfbf1791a083c8bc0d3cead03b57b5cc`;
+`test_worker_context_policy.py 97847fc04624c17f55d8bbb9e0c5666d908ce872fcfb791b82251fec7df8e790`.
+
 ### Verification boundary
 
 Directly observed current green evidence:
