@@ -356,6 +356,27 @@ still had the earlier slot SHA in its own immutable launch manifest. Prior permi
 safety-denied automatic Go reroute and leased-GLM edits remain fenced; this evidence update
 is not an authorization to retry them.
 
+### Import-time configuration refusal follow-through
+
+A later inspection found a narrower input-handling issue in the already hardened `slot.py`:
+an invalid **non-numeric** `LANE_LEASE_TTL_S` raised an import-time `ValueError`
+before the existing typed admission guard could run. This was fail-closed but lacked the
+intended stable refusal result. The source now handles that parse error as a sentinel
+non-finite TTL and lets its incumbent pre-host-admission guard return
+`rc=78 admission_denied reason=lease_ttl_invalid`.
+
+One direct local CLI canary with malformed TTL confirmed **rc=78** and the exact
+typed denial before any host/provider admission. Python compilation and the
+unchanged 26-test focused lease-loss regression also passed after this edit.
+A separate attempted *new test-file append* was safety-refused **before dispatch**;
+the new regression source was **not** installed and that denied write was not
+retried through another tool. Do not equate the direct CLI canary with a new
+committed regression test. Current local slot SHA-256:
+`0d8c574c54d227361c523f51384ca8eab797362c5552f4caf7cb8df3160e1fd6`.
+This newer hash supersedes the earlier `783db4d5...` slot hash only for **subsequent
+launches**; the already launched Ubuntu2 worker retains its immutable, older
+`783db4d5...` support-package receipt.
+
 ### Verification boundary
 
 Directly observed current green evidence:
