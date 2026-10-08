@@ -3815,6 +3815,20 @@
     var pair = CTX_STATUS_WORDS[status];
     return pair ? L(pair[0], pair[1]) : L('unavailable', '暂缺');
   }
+  /* Closed W1-A freshness vocabulary (fresh/stale/unknown/not_applicable).
+     Canonical `fresh` is the only state painted as current. Aliases such as
+     current/future are not granted as fresh. Missing/null/malformed/
+     unsupported states collapse to unknown — never to current. */
+  var CTX_FRESHNESS_WORDS = {
+    fresh: ['current', '最新'],
+    stale: ['stale', '较早'],
+    unknown: ['unknown', '未知'],
+    not_applicable: ['not applicable', '不适用']
+  };
+  function ctxFreshnessWord(state) {
+    var pair = (typeof state === 'string') ? Object.prototype.hasOwnProperty.call(CTX_FRESHNESS_WORDS, state) ? CTX_FRESHNESS_WORDS[state] : null : null;
+    return pair ? L(pair[0], pair[1]) : L('unknown', '未知');
+  }
   function ctxFactValue(f) {
     if (!f) return '—';
     if (f.status && f.status !== 'available') return ctxStatusWord(f.status);
@@ -3867,7 +3881,7 @@
       nf.facts.forEach(function (f) {
         var lbl = CTX_FIELD_LABELS[f.field_id]; var label = lbl ? L(lbl[0], lbl[1]) : f.field_id;
         var freshState = f.freshness && f.freshness.state;
-        var freshWord = freshState === 'stale' ? L('stale', '较早') : L('current', '最新');
+        var freshWord = ctxFreshnessWord(freshState);
         /* Review repair (NB-7): source_family only — `owner` is an internal
            label, not the plain-word "source family name" the design spec asks
            for, so it is never shown even as a fallback. */
