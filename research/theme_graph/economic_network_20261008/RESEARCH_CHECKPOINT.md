@@ -47,3 +47,14 @@ Complete the internal compatibility census; inspect independent primary sources 
 ## Effect state and completion
 
 No prior modifying effect is uncertain. The publication receipt for this checkpoint must be verified separately after creation. This checkpoint does not prove the research, parent programme, or Sol adjudication complete.
+
+# Phase 2 material checkpoint — 2026-10-08
+
+Substantial research candidates are now complete locally: estate reconciliation; independent economic literature and evaluation protocol; source/licensing/competitive diligence; six original-source issuer cases; detailed architecture; product integration; and WP00–WP10 implementation masterplan. Independent review is resolving ownership, precision-gate, temporal-contract and wording issues before final publication.
+
+Executed research evidence: 23 Data OS temporal cases and 18 synthetic composition cases passed. Data OS was imported from a byte-exact pinned source snapshot. ThemeState/K3-D compatibility is separately source-traced. Neither witness is a real-world prediction test or live consumer proof.
+
+The specifically named handoff attachment remains unavailable. No attachment-specific completion claim is made. The final package will include an explicit visible-commission coverage matrix and the remaining handoff reconciliation requirement.
+
+No runtime, ownership, membership, schema, grading, trading or deployment changes were made. This branch remains research-only, with Sol adjudication and existing-owner implementation gates preserved.
+
