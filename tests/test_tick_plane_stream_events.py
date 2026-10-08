@@ -227,3 +227,15 @@ if __name__ == "__main__":
         c = copy.deepcopy(TRADE)
         c["trfi"] = 202
         self.assertNotEqual(captured(a)["dedup_key"], captured(c)["dedup_key"])
+
+
+    def test_fractional_size_must_agree_with_vendor_integer_floor(self):
+        bad = copy.deepcopy(TRADE)
+        bad["s"] = 10
+        bad["ds"] = "12.5"
+        with self.assertRaisesRegex(FrameContractError, "disagrees"):
+            captured(bad)
+        good = copy.deepcopy(TRADE)
+        good["s"] = 10
+        good["ds"] = "10.875"
+        self.assertEqual(captured(good)["decimal_size_shares"], "10.875")

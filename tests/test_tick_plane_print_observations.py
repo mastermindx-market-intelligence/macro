@@ -115,10 +115,7 @@ class ProvisionalObservationTests(unittest.TestCase):
 
     def test_valid_bid_ask_can_be_temporary_no_firm_quote(self):
         ring=InFlightNBBO(session=SESSION,symbols={"SPY"})
-        ring.ingest_quote(q(as_=0)) if False else None
-        quote=q()
-        quote["valid_firm_nbbo"]=False
-        ring.ingest_quote(quote)
+        ring.ingest_quote(q(**{"as":0}))
         r=observe_provisional_trade(t(),ring,**input_args())
         self.assertEqual(r["reason"],"INVALID_OR_ONE_SIDED_NBBO")
 

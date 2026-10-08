@@ -183,6 +183,8 @@ def normalize_ws_event(
         size = _integer(event.get("s"), "trade size")
         fractional = event.get("ds")
         size_exact = _decimal(fractional, "decimal trade size") if fractional is not None else str(size)
+        if fractional is not None and int(Decimal(size_exact)) != size:
+            raise FrameContractError("fractional decimal_size disagrees with integer size")
         if Decimal(size_exact) <= 0:
             raise FrameContractError("trade is zero-size without qualified fractional size")
         price = _decimal(event.get("p"), "trade price")
