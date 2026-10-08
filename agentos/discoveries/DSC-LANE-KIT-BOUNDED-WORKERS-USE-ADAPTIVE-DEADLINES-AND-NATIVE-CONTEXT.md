@@ -279,6 +279,34 @@ Python compile plus the worker-context regression completed **43 passed**. Curre
 `qwen_review.py 0792849a1e33f2283a8ed9ce5b9bde70dfbf1791a083c8bc0d3cead03b57b5cc`;
 `test_worker_context_policy.py 97847fc04624c17f55d8bbb9e0c5666d908ce872fcfb791b82251fec7df8e790`.
 
+### Remote-lane provider-custody fencing
+
+A deeper controller-failure audit found an older custody bug in `remote_lane_v8.sh`. The Studio-side
+broker lease represented provider work executing under a remote `nohup lane2.py`, but the lease was
+recorded against the Studio broker host and the Studio controller PID. Broker GC therefore could treat
+controller death as proof that the remote provider worker died and immediately free capacity even
+while that remote process was still running.
+
+The live remote-lane acquisition now binds the provider lease to `HOST_KEY` (the remote worker host)
+instead of the Studio controller host, and uses a 7500-second recovery TTL: one maximum 7200-second
+owned child plus 300 seconds of settlement headroom. The existing 300-second controller heartbeat
+continues renewing the lease while the controller is healthy, and the existing EXIT/INT/TERM/HUP trap
+still releases it on a normal controller exit. If the Studio controller disappears without cleanup,
+local PID death no longer falsifies remote-worker death; provider capacity stays fenced until the
+remote-host lease actually expires.
+
+Hermetic broker/source regressions prove a dead Studio PID does not reap a lease bound to a different
+remote host, that the lease expires after its 7500-second no-heartbeat TTL, and that
+`remote_lane_v8.sh` carries `--host "$HOST_KEY"`, `--ttl 7500`, heartbeat, and release-trap
+semantics. The two new focused tests passed. A broader host-registry run had **36 passes / 3 failures**,
+but all three failures are pre-existing registry expectation drift (mb/bmb max_active and m1 roles),
+not failures of this change; they are not counted as green evidence for this lane.
+
+Current SHA-256:
+`remote_lane_v8.sh aaae84dfd05ce6c6cdfa1c9fbfcc16a025c5ca4cddd9c1a7494f1450fd75b5c5`;
+`test_lease_broker.py fc137497c55d57ffbb50fc4b9be1d131d274c10278f028ea2963bc61178be061`;
+`test_hosts_registry.py 5ed3f5d5f1e81acfe3f89e0e3e9f3ccbc0b6868dccf170a802a556581e8fc258`.
+
 ### Verification boundary
 
 Directly observed current green evidence:
