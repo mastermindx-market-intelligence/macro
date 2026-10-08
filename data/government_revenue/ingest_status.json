@@ -231,13 +231,13 @@
     "coverage_manifest_id": "award-coverage-4c6b9a67f7f044aaa6563af2277dac0f7ddd1b976ae383f74aba8b0ea022343f",
     "coverage_scope": "USAspending award-detail and transaction observations collected from bounded recipient-query discovery; not a complete federal procurement corpus or issuer attribution.",
     "event_eligible_action_versions_seen": 33975,
-    "event_eligible_snapshots_seen": 150,
+    "event_eligible_snapshots_seen": 149,
     "full_receipt_bound_baseline_this_run": false,
-    "last_observed_at": "2026-10-08T02:31:06.160966+00:00",
+    "last_observed_at": "2026-10-08T02:31:06.540627+00:00",
     "projection_generation_id": "award-event-8aac578cfdbb18f4c552e68b",
     "projection_semantic_sha256": "8aac578cfdbb18f4c552e68b98466e53a21d5e76ba9221febb19ca2107fcab47",
     "schema_version": "government_revenue.award_event_projection_state.v1",
-    "snapshots_seen": 150,
+    "snapshots_seen": 149,
     "snapshots_total": 467,
     "source_exhausted": false,
     "state_is_stale_because": null,
@@ -347,11 +347,11 @@
       {
         "applicable": true,
         "comparison": "==",
-        "detail": "detail_succeeded 150 != detail_candidates 152",
+        "detail": "detail_succeeded 149 != detail_candidates 152",
         "name": "detail_succeeded_equals_detail_candidates",
         "observed": {
           "name": "detail_succeeded",
-          "value": 150
+          "value": 149
         },
         "required": {
           "name": "detail_candidates",
@@ -470,7 +470,7 @@
     "persistence_failure_reason": null,
     "safety_cap_note": "A declared page cap that was retrieved cleanly counts as a complete bounded sample and is not an activation blocker; raising the cap would widen coverage but would not have changed this run's verdict.",
     "schema_version": "government_revenue.baseline_activation_diagnostics.v1",
-    "summary": "Collection did not meet every receipt-bound baseline condition, so no baseline activated even though persistence succeeded. Unmet: award_bounded_complete_entities 19 != requested_entities 21; detail_succeeded 150 != detail_candidates 152; action_awards_bounded_complete 144 != detail_candidates 152.",
+    "summary": "Collection did not meet every receipt-bound baseline condition, so no baseline activated even though persistence succeeded. Unmet: award_bounded_complete_entities 19 != requested_entities 21; detail_succeeded 149 != detail_candidates 152; action_awards_bounded_complete 144 != detail_candidates 152.",
     "unsatisfied_conditions": [
       "award_bounded_complete_entities_equals_requested_entities",
       "detail_succeeded_equals_detail_candidates",
@@ -478,25 +478,25 @@
     ],
     "unsatisfied_details": [
       "award_bounded_complete_entities 19 != requested_entities 21",
-      "detail_succeeded 150 != detail_candidates 152",
+      "detail_succeeded 149 != detail_candidates 152",
       "action_awards_bounded_complete 144 != detail_candidates 152"
     ]
   },
   "bounded": true,
   "collection_receipts": {
-    "new_receipts_this_run": 330,
+    "new_receipts_this_run": 329,
     "path": "collection_receipts.jsonl",
     "raw_response_bodies_persisted": false,
-    "receipt_payloads_sha256": "1e7ec6acc0ac9028826b0664a7986543f13c886cec645d4c8cd178f11eaaef7c",
-    "receipts_total": 25305,
-    "response_receipts_this_run": 330,
-    "run_id": "usaspending-5fee2e898c96203724ca2419",
+    "receipt_payloads_sha256": "f06ca26506f9632f69b67e98a9c25b1201255ac8118d2f5a34a91e8c98a699ef",
+    "receipts_total": 25304,
+    "response_receipts_this_run": 329,
+    "run_id": "usaspending-87ee37e2b51e8563b141a4fd",
     "schema_version": "government_revenue.collection_receipt.v1"
   },
   "coverage_scope": "bounded recipient-query award data plus bounded award-detail/action sample; not full USAspending coverage",
   "detail_awards_attempted": 152,
   "detail_awards_limit_per_entity": 8,
-  "detail_awards_succeeded": 150,
+  "detail_awards_succeeded": 149,
   "effective_at": "2026-10-08",
   "entities_configured_total": 21,
   "entities_mapped": 21,
@@ -600,6 +600,13 @@
       "ticker": "HEI"
     },
     {
+      "award_id": "HC101325F0092",
+      "error": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+      "reason": "request_failed",
+      "stage": "award_detail",
+      "ticker": "IRDM"
+    },
+    {
       "award_id": "VC09",
       "error": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
       "reason": "request_failed",
@@ -691,7 +698,7 @@
   "lookback_days": 1826,
   "max_action_pages_per_award": 100,
   "max_pages_per_entity": 2,
-  "observed_at": "2026-10-08T02:31:06.160966+00:00",
+  "observed_at": "2026-10-08T02:31:06.540627+00:00",
   "page_size": 100,
   "partial": true,
   "rails": {
@@ -758,20 +765,20 @@
         "attempted": 152,
         "candidate_awards": 152,
         "skipped_missing_generated_award_id": 0,
-        "succeeded": 150
+        "succeeded": 149
       },
       "last_successful_observed_at": null,
       "pages": {
         "requested": 152,
         "safety_cap_per_entity": 8,
-        "succeeded": 150
+        "succeeded": 149
       },
       "records": {
         "candidate_awards": 152,
-        "details_fetched": 150,
+        "details_fetched": 149,
         "ledger_total": 3932
       },
-      "response_receipts": 150,
+      "response_receipts": 149,
       "state": "partial"
     },
     "awards": {
@@ -824,7 +831,7 @@
     }
   },
   "schema_version": "government_revenue.ingest_status.v2",
-  "snapshots_total": 6074,
+  "snapshots_total": 6075,
   "source_urls": [
     "https://api.usaspending.gov/api/v2/search/spending_by_award/",
     "https://api.usaspending.gov/api/v2/awards/{award_id}/",

@@ -2,7 +2,7 @@
   "session": "2026-10-07",
   "attempts": [
     {
-      "capture_instant": "2026-10-08T04:12:01.702620+00:00",
+      "capture_instant": "2026-10-08T04:12:00.435501+00:00",
       "requested_underlyings": 375,
       "attempted_underlyings": 5,
       "successful_underlyings": 0,

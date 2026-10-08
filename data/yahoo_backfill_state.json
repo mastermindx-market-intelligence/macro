@@ -12353,9 +12353,9 @@
   },
   "GAB": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-10-06",
-   "refreshed": "2026-10-07",
-   "rows": 10113
+   "last_obs": "2026-10-07",
+   "refreshed": "2026-10-08",
+   "rows": 10114
   },
   "GABC": {
    "backfilled": "2026-09-06",
@@ -21018,7 +21018,7 @@
    "backfilled": "2026-08-21",
    "last_obs": "2026-10-06",
    "refreshed": "2026-10-08",
-   "rows": 6
+   "rows": 7
   },
   "NHS": {
    "backfilled": "2026-08-21",
@@ -34726,7 +34726,7 @@
    "unsupported_symbols": 886
   },
   "dry_run": false,
-  "elapsed_s": 400.5,
+  "elapsed_s": 402.4,
   "no_data": 2,
   "parked": 0,
   "period": "max",
@@ -34743,7 +34743,7 @@
     "20.6% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "LFGY": [
-    "21.0% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "20.7% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "MINY": [
     "20.3% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
@@ -34755,16 +34755,16 @@
     "20.4% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "NVYY": [
-    "20.2% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "19.9% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "QDTY": [
-    "20.8% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "20.6% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "SATA": [
     "37.1% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "SDTY": [
-    "20.6% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "20.8% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "SLTY": [
     "20.8% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
@@ -34782,10 +34782,10 @@
     "20.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "YMAG": [
-    "17.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "17.7% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "YMAX": [
-    "16.8% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "17.0% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ]
   },
   "refresh_attempted": 5511,
@@ -47359,12 +47359,12 @@
   "BLFS": {
    "attempts": 1,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-08T04:33:21+00:00"
+   "last_attempt": "2026-10-08T04:33:19+00:00"
   },
-  "GAB": {
+  "IAT": {
    "attempts": 1,
-   "error": "[refresh] no data returned for vendor symbol 'GAB'",
-   "last_attempt": "2026-10-08T04:34:56+00:00"
+   "error": "[refresh] no data returned for vendor symbol 'IAT'",
+   "last_attempt": "2026-10-08T04:35:24+00:00"
   },
   "IBACR": {
    "attempts": 1,
@@ -47384,7 +47384,7 @@
   "SLP": {
    "attempts": 1,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-08T04:37:48+00:00"
+   "last_attempt": "2026-10-08T04:37:47+00:00"
   },
   "WBD": {
    "attempts": 1,
@@ -47393,5 +47393,5 @@
   }
  },
  "schema": "yahoo_backfill_state/1",
- "updated_utc": "2026-10-08T04:38:52+00:00"
+ "updated_utc": "2026-10-08T04:38:54+00:00"
 }
