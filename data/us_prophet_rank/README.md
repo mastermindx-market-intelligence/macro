@@ -89,6 +89,43 @@ the grade store at all.
 | Monthly parts | a stamp opens and rewrites **only** its own `YYYY-MM` part; every earlier part is byte-identical forever after its month closes (pinned by `TestMonthlyPartitionedLayout`) |
 | Fail-soft | every failure path logs and returns 0; research telemetry never breaks the nightly build |
 
+## W-C7: point-in-time house category shadow (display only)
+
+`theme_category_ids` is an **additive, nullable, sorted pipe-delimited** set of
+`theme:<slug>` macro-category ids on the context-vector row. It is **not** a
+per-ticker canonical graph assertion, an exposure weight, an admission policy or
+a Prophet signal. It changes none of the existing scoring, gating, sizing, ranking,
+candidate, or portfolio paths. Its only consumer here is the stored research
+context; no decision engine reads it.
+
+For each night's already-known basket memberships, the writer reads a single
+snapshot of the incumbent theme graph's raw bitemporal edges and lifecycle.
+It asks `engine/theme_graph/structural_navigation.py::hierarchy_paths` for
+each distinct basket, using **both** `asof=stamp_date` and
+`knowledge_cutoff=stamp_date`. Only rights-approved, house-owned
+`macro_category` ancestors qualify; vendor/local-theme parents cannot become
+house categories. Multiple parents are kept in canonical-id order. The writer
+does not implement its own hierarchy traversal, create new member/exposure
+edges, or read the latest taxonomy onto an old date.
+
+An unadmitted hierarchy, absent graph, insufficient PIT knowledge, or refused
+rights/reader yields **null**, never a measured false/zero. A missing optional
+node-lifecycle sidecar is legitimately empty; a present but corrupt/unreadable
+sidecar must instead **refuse** the hierarchy shadow, never silently become
+empty history. If one basket is refused, any ticker belonging to that basket
+gets a null category shadow rather than a misleading partial set. Unaffected
+tickers may still retain their independently resolved categories. An explicit
+scratch root that does not match the incumbent graph owner also yields null
+with a diagnostic, not an unbound production read. Real input/refusal
+problems emit a warning, but the **nightly-only** context-vector accrual still
+succeeds. Historical monthly parts are not rewritten; `load_candidates`
+unifies old parts without the column as null. Keep-first ensures a correction
+known tomorrow never mutates yesterday's stamped row. W-C7 is dependent on
+W-C4 hierarchy population and W-C6 reader; the column stays empty on current
+`main` while W-C4 is an unmerged draft. Synthetic
+`append_candidates → monthly parquet → load_candidates` tests exercise the
+entire consumer path; no synthetic test implies a real-night production receipt.
+
 ## `grades/` — the forward record (§W7)
 
 `grades/YYYY-MM/YYYY-MM-DD.parquet`. One row per **(candidate row, horizon)** across the
