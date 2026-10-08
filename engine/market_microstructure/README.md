@@ -50,3 +50,44 @@ Run `PYTHONPATH=. python -m pytest -q tests/test_equity_pressure_response.py` fr
 6. Promote beyond display/research only through the incumbent outcome/admission owners; execution, sizing, Prophet gate, and automatic alerts remain OFF.
 
 **Current first blocker:** Macro main has no `engine/tick_plane/` producer or real TP-1 source watermark contract. This R0 leaf is deliberately independent and not live-connected. Resume upstream work at [TP-1 #7368](https://github.com/mastermindx-market-intelligence/macro/issues/7368) and the parent [#7367](https://github.com/mastermindx-market-intelligence/macro/issues/7367); do not start a second producer.
+
+## Offline pilot execution (the Macro repository, not the Terminal or a Mac terminal)
+
+After an authorized source owner has produced a **private, qualified** input file, run from the root directory of the **Macro repository** (the directory containing `engine/`, `scripts/` and `tests/`):
+
+```bash
+python3 -m scripts.microstructure_pressure_response_pilot --input /private/path/to/qualified_TQ_window.json
+```
+
+The private input envelope is exactly:
+
+```json
+{
+  "contract": "equity.pressure_response_input/v0",
+  "measurement": {
+    "ticker": "SPY",
+    "session": "2026-10-08:RTH",
+    "start_ns": 0,
+    "end_ns": 1,
+    "decision_ns": 2,
+    "watermark_ns": 1,
+    "watermark_seen_ns": 2,
+    "watermark_receipt": "REPLACE_WITH_AUTHENTIC_SOURCE_RECEIPT",
+    "source_manifest": "REPLACE_WITH_AUTHENTIC_SOURCE_MANIFEST",
+    "evidence_mode": "FINAL_VINTAGE",
+    "max_quote_age_ns": 5000000000,
+    "trades": [],
+    "quotes": []
+  }
+}
+```
+
+That envelope is an **illustration of field shapes only**, not admissible real-market provenance. Never use the example receipt strings as genuine evidence. The CLI reads only a JSON file of at most 16 MiB, makes no network calls, and writes a bounded derived summary to stdout without native print/quote identities. A nonzero exit denotes qualification failure; it must not be interpreted as neutral flow.
+
+Run local unit verification from the same Macro root:
+
+```bash
+PYTHONPATH=. python3 -m pytest -q tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py
+```
+
+These commands are **not** production-deployment instructions. No supplied license key, RTH stream slot, private data file or actual watermark proof was available in this draft PR, and no synthetic measurement should ever be presented as a real session.
