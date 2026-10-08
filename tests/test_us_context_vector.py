@@ -1247,3 +1247,54 @@ def test_wc7_scan_root_uses_matching_graph_owner_only(
     scratch_kwargs = dict(append_kwargs, root=scratch, tier=ucv.TIER_SCAN)
     assert ucv.append_candidates(verdicts, "2026-10-07", **scratch_kwargs) == 3
     assert ucv.load_candidates(scratch)["theme_category_ids"].isna().all()
+
+
+def test_wc7_corrupt_owner_lifecycle_fail_soft(tmp_path, monkeypatch, capsys):
+    """A PRESENT unreadable lifecycle is not a legitimately empty history.
+
+    If it were treated as [], withdrawn/merged categories could reappear in the
+    committed context vector. This is the analogous W-C8 B2 defect.
+    """
+    from engine.theme_graph import store as graph_store
+
+    graph = _wc7_graph()
+    nodes = tmp_path / "nodes.parquet"
+    edges = tmp_path / "edges.parquet"
+    lifecycle = tmp_path / "node_lifecycle.parquet"
+    nodes.touch()
+    edges.touch()
+    lifecycle.write_bytes(b"corrupt—not a parquet")
+    monkeypatch.setattr(graph_store, "nodes_path", lambda: nodes)
+    monkeypatch.setattr(graph_store, "edges_path", lambda: edges)
+    monkeypatch.setattr(graph_store, "node_lifecycle_path", lambda: lifecycle)
+    monkeypatch.setattr(graph_store, "read_nodes", lambda **kw: graph.read_nodes())
+    monkeypatch.setattr(graph_store, "read_edges", lambda **kw: graph.read_edges())
+
+    assert ucv._hierarchy_categories_for_baskets(["x"], "2026-10-07") == {}
+    output = capsys.readouterr().out
+    assert "hierarchy-unavailable" in output
+    assert "corrupt—not a parquet" not in output
+
+
+def test_wc7_absent_vs_valid_empty_lifecycle_both_remain_compatible(
+    tmp_path, monkeypatch
+):
+    """An optional missing sidecar and a valid empty sidecar are distinct from corruption."""
+    from engine.theme_graph import store as graph_store
+
+    graph = _wc7_graph()
+    nodes = tmp_path / "nodes.parquet"
+    edges = tmp_path / "edges.parquet"
+    lifecycle = tmp_path / "node_lifecycle.parquet"
+    nodes.touch()
+    edges.touch()
+    monkeypatch.setattr(graph_store, "nodes_path", lambda: nodes)
+    monkeypatch.setattr(graph_store, "edges_path", lambda: edges)
+    monkeypatch.setattr(graph_store, "node_lifecycle_path", lambda: lifecycle)
+    monkeypatch.setattr(graph_store, "read_nodes", lambda **kw: graph.read_nodes())
+    monkeypatch.setattr(graph_store, "read_edges", lambda **kw: graph.read_edges())
+
+    expected = {"x": ("theme:cat_a",)}
+    assert ucv._hierarchy_categories_for_baskets(["x"], "2026-10-07") == expected
+    pd.DataFrame(columns=graph_store.NODE_LIFECYCLE_COLUMNS).to_parquet(lifecycle)
+    assert ucv._hierarchy_categories_for_baskets(["x"], "2026-10-07") == expected
