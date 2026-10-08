@@ -57,3 +57,22 @@ The new critical-path ordering is:
 No code changed. No existing live detector, publisher or owner needs to be rewritten for this audit. No protected CR1/AF1 states or outcomes were accessed. The existing research-spec and kill/no-redo boundaries remain unchanged. This research finding does not itself authorize rerunning the original winner census or introducing a second canonical episode store.
 
 **Current classification:** NEW_PIT_PARENT_DEPENDENCY_IDENTIFIED; FROZEN_EXPERIMENT_NOT_ADMITTED; mission incomplete.
+
+## 5. Additional material hazard: benchmark ETF inception and era changes
+
+The builder and detector source inspection exposes a second, testable selection problem within the same upstream PIT gate:
+
+- The sector map resolves `Communication Services` to **XLC**, and `Real Estate` to **XLRE**. The historical detector chooses one ETF series for each security, then intersects the subject's close-date index with that benchmark's dates **before** calculating old episodes (`engine/winner_autopsy.py`, lines 240–259).
+- The fund sponsor identifies **XLC inception as June 18, 2018**, while the major GICS Communication Services structure took effect in GICS Direct later in 2018. For a name assigned its modern Communication Services sector across all history, using actual XLC ETF bars can **left-truncate** the detector input to 2018 onward. The correct historical GICS mapping for pre-change Alphabet/Facebook was Information Technology; the benchmark should follow the historical classification, not modern XLC. A bar series containing synthetic pre-inception prices would present a different source-integrity question, not solve it silently.
+- The fund sponsor identifies **XLRE inception as October 7, 2015**; the separate GICS Real Estate sector was implemented in GICS Direct after August 31, 2016. Real Estate names under pre-2016 GICS belonged to the Financials umbrella. A modern Real Estate sector mapping therefore also has a period in which the chosen ETF was not yet listed, and a transition where listed-fund existence and official GICS taxonomy timing differ.
+- S&P/MSCI announced another GICS structural revision implemented after March 17, 2023 (including reclassification of some outsourced services and retail businesses); **2018 is not the only historical structural change**. A single 2026 sector snapshot cannot be deemed safe for the 2014–2025 census merely by special-casing Alphabet.
+
+Official supporting sources:
+- State Street XLC: https://www.ssga.com/us/en/intermediary/etfs/state-street-communication-services-select-sector-spdr-etf-xlc
+- State Street XLRE: https://www.ssga.com/us/en/institutional/etfs/state-street-real-estate-select-sector-spdr-etf-xlre
+- S&P 2016 sector restructure: https://press.spglobal.com/2016-06-07-S-P-Dow-Jones-Indices-Announces-Changes-to-the-Financial-Services-Select-Sector-Real-Estate-Select-Sector-and-Financial-Select-Sector-Indices
+- S&P/MSCI 2023 restructure: https://press.spglobal.com/2022-03-31-S-P-DOW-JONES-INDICES-AND-MSCI-ANNOUNCE-REVISIONS-TO-THE-GLOBAL-INDUSTRY-CLASSIFICATION-STANDARD-GICS-R-STRUCTURE-IN-2023
+
+**Careful status:** this is a code-plus-primary-source **structural hazard**, not an observed count of missing onsets. The actual `bench_closes` file coverage, synthetic-date behavior, `common` intersections and onset changes were not measured; the previously refused host/reference row reads were not retried. No event or return inference is made.
+
+**Required input-only acceptance extension:** record each benchmark's first qualified available session, sector classification validity at every historical onset, whether a current-map benchmark series left-truncates a name, and the frozen detector’s exact first-onset/cooldown parity under period-correct benchmark selection. The historical 2016/2018/2023 taxonomy changes must be deliberate fixtures. A missing prelisting ETF benchmark is **not** permission to inject future-index reconstructed prices and call them tradable or first-known history. Replacing the original vintage with a counterfactual synthetic benchmark would change the population and require an explicitly versioned research design, not a hidden source patch.
