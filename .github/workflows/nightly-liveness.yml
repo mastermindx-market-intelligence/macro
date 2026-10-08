@@ -95,8 +95,6 @@ jobs:
           # Same push spine healthcheck uses, so a failure reaches a phone rather
           # than only the Actions tab. DISCORD_WEBHOOK_WATCHLIST is the fallback
           # transport that is actually provisioned on this account.
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
         run: python3 scripts/check_nightly_liveness.py
