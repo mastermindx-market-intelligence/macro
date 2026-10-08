@@ -42,7 +42,7 @@ Run `PYTHONPATH=. python -m pytest -q tests/test_equity_pressure_response.py` fr
 
 ## Real-data and production gates
 
-1. Finish TP-0.5/RTH qualification against the **incumbent** Terminal socket and host, no second connection; prove T/Q entitlement and proper event/ingestion clocks.
+1. **Consume, do not repeat, the 2026-08-08 TP-0.5 socket experiment** recorded in Massive masterplan §3.1b.4: delayed and real-time are separate buckets, but opening a second real-time socket evicts the oldest. Verify the *current* Quote Hub `/health` effective cluster and original TP-1 live-slot owner without starting any rival RT WebSocket. Qualify T/Q real RTH frames, event/receipt clocks and remaining source gates only inside the admitted owner/maintenance path.
 2. Establish source-owner continuous T/Q retention or qualified targeted historical replay, condition-update rules, corrections and original availability mode. Published Massive aggregate bars or quote snapshots are insufficient.
 3. Freeze a small PIT-selected cohort (SPY, QQQ and pre-selected liquidity/sector strata) and event-window protocol before outcome inspection. Record trade/quote capture coverage, lit/TRF separated classification coverage, baseline markouts, source gaps and byte receipts.
 4. Integrate as a nullable derived leaf behind the existing Macro intelligence/R2 source owner, followed by existing Terminal consumer fixture + real browser proof. No duplicate vendor connection or fresh event lifecycle.
