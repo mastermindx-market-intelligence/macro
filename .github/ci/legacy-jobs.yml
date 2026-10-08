@@ -8862,6 +8862,7 @@ jobs:
       - scripts/build_dt_contra_state.py
       - scripts/build_subsector_membership.py
       - scripts/build_theme_graph.py
+      - scripts/ci/daily_engine_regional_desk_builders.sh
       - scripts/correct_gmi_identity_lineage.py
       - scripts/publish_company_theme_exposure_r2.py
       - scripts/seed_china_ths_baskets.py
@@ -14937,7 +14938,7 @@ jobs:
       # Strategy-platform prerequisite for B4: one immutable, versioned, authority-false
       # owner definition. This does not compute Availability or widen B1/B3 admission.
       - name: prophet strategy definition owner projection (B4 prerequisite only)
-        run: python -m pytest tests/test_prophet_strategy_definition.py -q
+        run: python -m pytest tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py -q
       # MI-S2 prospective registration binds the B4 session policy above (2026-2027
       # era, early-close table) and freezes one TrialLedger config; it rides this
       # code gate so a session-policy edit and the registration can red each other.
