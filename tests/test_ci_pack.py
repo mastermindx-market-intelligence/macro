@@ -4284,6 +4284,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # Paper International: retain the measured ITR closure, dropping opaque fallback.
+    "itr-turn-rotation",
     # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
     # Preserve its concrete imports and dynamic corpus/asset/data inputs.
     # All packing ceilings, commands, data gate and weights remain unchanged.

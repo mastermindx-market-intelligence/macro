@@ -3583,6 +3583,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - collectors/china_filings.py
+      - collectors/china_visits.py
+      - lib/dataos/identity.py
+      - lib/exchange_holidays.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/tsx_calendar.py
       - "engine/__init__.py"
       - "engine/canon.py"
       - "engine/conditions.py"
@@ -3841,6 +3848,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - collectors/china_filings.py
+      - collectors/china_visits.py
+      - lib/dataos/identity.py
+      - lib/exchange_holidays.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/tsx_calendar.py
       - "templates/intl*"
       - "templates/_site_nav.html.j2"
       - "templates/_navlinks.html.j2"
@@ -5343,6 +5357,19 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_macro.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
       - "collectors/edgar_8k.py"
       - "collectors/edgar_dilution.py"
@@ -9189,6 +9216,229 @@ jobs:
   itr-turn-rotation:
     if: ${{ false }}
     gate: data
+    # Explicit measured closure: avoid unrelated opaque fallback selection.
+    scope: exclusive
+    paths:
+      - collectors/__init__.py
+      - collectors/_drip.py
+      - collectors/base.py
+      - collectors/china_analyst.py
+      - collectors/china_news.py
+      - collectors/edgar.py
+      - collectors/edgar_13f.py
+      - collectors/edgar_deadname_prices.py
+      - collectors/edgar_deadnames.py
+      - collectors/edgar_delisting.py
+      - collectors/edgar_eps.py
+      - collectors/edgar_flow_quality.py
+      - collectors/edgar_share_quality.py
+      - collectors/edgar_stock_quality.py
+      - collectors/fred.py
+      - collectors/openfigi.py
+      - config/ai_pricing.yml
+      - config/capability_manifest.yml
+      - config/intl_library_catalogue.json
+      - config/metabolism_budget.yml
+      - engine/__init__.py
+      - engine/ai_desk.py
+      - engine/ai_desk_scorer.py
+      - engine/altdata_ledger.py
+      - engine/altdata_models.py
+      - engine/altdata_picks.py
+      - engine/altdata_signals.py
+      - engine/anticipation.py
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/baskets.py
+      - engine/baskets_canada.py
+      - engine/baskets_china.py
+      - engine/baskets_hk.py
+      - engine/baskets_intl.py
+      - engine/baskets_region.py
+      - engine/canon.py
+      - engine/catalyst_tone.py
+      - engine/cb_desk.py
+      - engine/china_altdata.py
+      - engine/china_basket_spine.py
+      - engine/china_conviction.py
+      - engine/china_crowding.py
+      - engine/china_discovery.py
+      - engine/china_event_calendar.py
+      - engine/china_extras.py
+      - engine/china_intel_bus.py
+      - engine/china_news.py
+      - engine/china_news_intel.py
+      - engine/china_pboc_stance.py
+      - engine/china_radar.py
+      - engine/china_radar_ledger.py
+      - engine/china_signal_lab.py
+      - engine/china_validation.py
+      - engine/cn_newswires.py
+      - engine/codex_lane/runner.py
+      - engine/codex_provider.py
+      - engine/conditions.py
+      - engine/confluence_tiers.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/conviction_accrual.py
+      - engine/cross_asset.py
+      - engine/cross_asset_trend.py
+      - engine/cycles.py
+      - engine/desk_ledger.py
+      - engine/desk_scorer.py
+      - engine/election_cycle.py
+      - engine/entity_resolver.py
+      - engine/equity_factors.py
+      - engine/europe_news_intel.py
+      - engine/event_calendar.py
+      - engine/extension.py
+      - engine/flow_regime.py
+      - engine/forward_calendar_context.py
+      - engine/forward_dist.py
+      - engine/gdelt_client.py
+      - engine/global_liquidity.py
+      - engine/grading.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/hysteresis.py
+      - engine/i18n.py
+      - engine/index_direction.py
+      - engine/indicators.py
+      - engine/inputs.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/ledger_lane.py
+      - engine/llm_auth.py
+      - engine/macro_surprise.py
+      - engine/manager_lag.py
+      - engine/manager_quality.py
+      - engine/manager_trades.py
+      - engine/market_state.py
+      - engine/master_brain.py
+      - engine/metabolism/__init__.py
+      - engine/metabolism/budget_gate.py
+      - engine/name_direction.py
+      - engine/name_resolver.py
+      - engine/name_score.py
+      - engine/name_score_grader.py
+      - engine/narrative_crossmarket.py
+      - engine/narrative_rotation.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brief_context.py
+      - engine/neuralweb/capability_broker.py
+      - engine/neuralweb/constitution.py
+      - engine/neuralweb/envelope.py
+      - engine/neuralweb/governance.py
+      - engine/neuralweb/key_pool.py
+      - engine/neuralweb/read.py
+      - engine/neuralweb/synapse.py
+      - engine/news_common.py
+      - engine/news_translate.py
+      - engine/ohlc_reconstruct.py
+      - engine/ollama_provider.py
+      - engine/opex.py
+      - engine/oracle/__init__.py
+      - engine/oracle/washout_counterread.py
+      - engine/passport.py
+      - engine/pit.py
+      - engine/pit_lag_recorder.py
+      - engine/pooling.py
+      - engine/prophet_board_since.py
+      - engine/provider_health.py
+      - engine/qbus.py
+      - engine/qkernel.py
+      - engine/qledger.py
+      - engine/qledger_validity.py
+      - engine/rebalance_calendar.py
+      - engine/regime.py
+      - engine/regime_label.py
+      - engine/regime_one.py
+      - engine/regime_vector.py
+      - engine/residual_alpha.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - engine/session_anchor.py
+      - engine/setups.py
+      - engine/signal_archive.py
+      - engine/signal_gate.py
+      - engine/signal_quality.py
+      - engine/smart_money.py
+      - engine/spine.py
+      - engine/stock_score.py
+      - engine/stock_technicals.py
+      - engine/stock_view.py
+      - engine/sue.py
+      - engine/technicals.py
+      - engine/theme_crowding.py
+      - engine/theme_validation.py
+      - engine/ticker_shape.py
+      - engine/trial_ledger.py
+      - engine/tushare_freshness.py
+      - engine/universe_history.py
+      - engine/validation.py
+      - engine/valuation.py
+      - engine/velocity.py
+      - engine/vol_forecast.py
+      - engine/vol_regime.py
+      - engine/vol_squeeze.py
+      - engine/yield_momentum.py
+      - lib/__init__.py
+      - lib/ai_costs.py
+      - lib/closes_panel.py
+      - lib/cn_calendar.py
+      - lib/config.py
+      - lib/filing_value_units.py
+      - lib/global_regime_fragment.py
+      - lib/hk_calendar.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_macro.py
+      - lib/nyse_calendar.py
+      - lib/pages.py
+      - lib/site_assets.py
+      - lib/store.py
+      - lib/ticker_aliases.py
+      - lib/ticker_popularity.py
+      - scripts/__init__.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/thematic_rotation_phase0.py
+      - scripts/validate_regime_fwd.py
+      - site/factordata/basket_washout_state.json
+      - tests/test_intl_market_state.py
+      - tests/test_intl_rotation.py
     # ITR-W1 (research/INTL_TURN_ROTATION_REVAMP.md): per-market turn state
     # machine (crash/breaking/topping/... incl. KOSPI replay goldens on the
     # committed _KS11 store) + fast rotation re-rank + ITR-R6 benchmark
@@ -9233,6 +9483,43 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - config/intl_library_catalogue.json
+      - engine/cb_desk.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_performance.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/rri_shadow.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_macro.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
       - collectors/__init__.py
       - collectors/china_ths_concepts.py
       - config/theme_crosswalk.yml
@@ -11142,6 +11429,33 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - engine/cb_desk.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_performance.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/risk_radar_intl_tune.py
+      - engine/rri_shadow.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
@@ -19926,6 +20240,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
       # The eight suites the step runs, plus helper suites they import.
       - "tests/test_dashboard_template_render.py"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
