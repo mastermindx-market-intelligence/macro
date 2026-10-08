@@ -216,3 +216,14 @@ class StreamEventContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_trade_identity_scoped_by_exchange_and_trf(self):
+        a = copy.deepcopy(TRADE)
+        b = copy.deepcopy(TRADE)
+        b["x"] = 11
+        b.pop("trfi", None)
+        self.assertNotEqual(captured(a)["dedup_key"], captured(b)["dedup_key"])
+        c = copy.deepcopy(TRADE)
+        c["trfi"] = 202
+        self.assertNotEqual(captured(a)["dedup_key"], captured(c)["dedup_key"])

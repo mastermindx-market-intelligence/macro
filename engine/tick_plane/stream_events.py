@@ -192,7 +192,7 @@ def normalize_ws_event(
         trf_ns = _millis(event.get("trft"), "TRF timestamp", optional=True)
         common.update({
             "trade_id": trade_id,
-            "dedup_key": f"{session}:{symbol}:{trade_id}:{sip_ns}",
+            "dedup_key": f"{session}:{symbol}:{exchange}:{trf_id if trf_id is not None else '-'}:{trade_id}:{sip_ns}",
             "price": price, "size_integer_shares": size,
             "decimal_size_shares": size_exact, "trade_conditions": conditions,
             "exchange": exchange, "trf_id": trf_id,
