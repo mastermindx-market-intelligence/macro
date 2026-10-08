@@ -50,3 +50,7 @@
 {"asof": "2026-09-24", "quad": "Q3", "label_quad": "Q3", "freshness_bitmask": 23, "degraded": false}
 {"asof": "2026-09-25", "quad": "Q2", "label_quad": "Q2", "freshness_bitmask": 23, "degraded": false}
 {"asof": "2026-09-28", "quad": "Q2", "label_quad": "Q2", "freshness_bitmask": 23, "degraded": false}
+{"asof": "2026-09-29", "quad": "Q2", "label_quad": "Q2", "freshness_bitmask": 23, "degraded": false}
+{"asof": "2026-09-30", "quad": "Q2", "label_quad": "Q2", "freshness_bitmask": 23, "degraded": false}
+{"asof": "2026-10-01", "quad": "Q2", "label_quad": "Q2", "freshness_bitmask": 23, "degraded": false}
+{"asof": "2026-10-02", "quad": "Q2", "label_quad": "Q2", "freshness_bitmask": 23, "degraded": false}

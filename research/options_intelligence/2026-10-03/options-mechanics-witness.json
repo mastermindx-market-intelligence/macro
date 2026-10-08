@@ -1,0 +1,773 @@
+{
+  "title": "Options mechanics: bounded source and synthetic numerical witness",
+  "research_date": "2026-10-03",
+  "status": "PASS: all intended counterexample and control assertions",
+  "production_execution": false,
+  "production_mutations": false,
+  "claim_scope": "Pinned pure-source execution and synthetic Black-Scholes scenarios only; no live runtime, dealer inventory, prediction, or alpha claim.",
+  "convention": {
+    "r": 0,
+    "q": 0,
+    "T_unit": "years, frozen during spot move",
+    "volatility": "annual decimal, frozen during spot move",
+    "option_position": "n signed contracts; positive long; multiplier shares per contract",
+    "hedge_shares": "q(S)=-sum(n*multiplier*Delta(S))",
+    "H": "S_target*(q_target-q_initial), dollars; positive underlying buy trade notional",
+    "cash": "cash balance change from one endpoint hedge trade is -H; financing and existing cash mark excluded",
+    "path_limit": "H is endpoint rehedge notional, not cumulative continuously executed trading cash or turnover",
+    "gamma_rows": "sum(n*multiplier*Gamma(S0)*S0^2*0.01)/1e6; $mn sensitivity per +1% spot at S0",
+    "matched_weights": "Fractional signed scenario weights are intentional analytic portfolio scalings, not observed contract counts."
+  },
+  "source_provenance": {
+    "terminal": {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "commit": "a049d46fa2415d3949aae5efc0ee515b6667c7a0",
+      "path": "terminal/lib/marketStructure.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/lib/marketStructure.ts",
+      "git_blob_sha": "b57bb1b794522c80af5a8288a82bcb06d64ed939",
+      "file_sha256": "9dbb320e5f89dee717e8f6d7fa044ec36036a46c514dc685efd5dcd8cb1c852a",
+      "file_bytes": 32139,
+      "function_lines": "646-697",
+      "prelude_lines": "86,597,623-635",
+      "function_sha256": "fd21c46014e78e3bf68cb2dfd944c46056a90cb7c9fc1367a885adc2b7a9f053"
+    },
+    "macro": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/gex_engine.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/gex_engine.py",
+      "git_blob_sha": "15cff47b86b6a452daa6268a7f8be5455f914b13",
+      "file_sha256": "781298048633b08050ae00fe6bb5fd89fdc20d0d040630e7b0a4b3d7d5e97e2c",
+      "file_bytes": 10018,
+      "function_lines": "43-90",
+      "function_sha256": "77d8691290f482573b55a7ffcfe26c9cee64c358ee1eabe6ab9fb45728e0637e"
+    },
+    "terminal_ui": {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "commit": "a049d46fa2415d3949aae5efc0ee515b6667c7a0",
+      "path": "terminal/components/msc/HedgingCards.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/a049d46fa2415d3949aae5efc0ee515b6667c7a0/terminal/components/msc/HedgingCards.tsx",
+      "git_blob_sha": "b3562a6b227673a94e8f2cc55bb55b64fe87dce3",
+      "file_sha256": "55b9d401674b8f4b283a0c0b02f9d5f032912f60e067af97f71624c54aaac67e",
+      "file_bytes": 18225
+    }
+  },
+  "execution": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "node": "v24.19.0",
+    "terminal_js_program_sha256": "d174034c6edfaad1f297193f63f06580d626677f130c0ba54224427c17a862cb",
+    "terminal_method": "Original source with enumerated TypeScript-only type erasure, executed in Node",
+    "macro_method": "Original gamma_profile and _gamma_flip ASTs only; injected numpy/pandas/SQRT2PI; no production imports"
+  },
+  "terminal_inputs": {
+    "zero_move": {
+      "book": [
+        {
+          "K": 100.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        },
+        {
+          "K": 110.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        }
+      ],
+      "rows": [
+        {
+          "strike": 100.0,
+          "gamma_net": 0.695484407697744
+        },
+        {
+          "strike": 110.0,
+          "gamma_net": 0.1832285100628632
+        }
+      ],
+      "profile": {
+        "greek": "gamma",
+        "rows": [
+          {
+            "strike": 100,
+            "hedgeMn": -0.695484407697744
+          },
+          {
+            "strike": 110,
+            "hedgeMn": -0.1832285100628632
+          }
+        ],
+        "cumulative": [
+          {
+            "strike": 100,
+            "cumMn": -0.695484407697744
+          },
+          {
+            "strike": 110,
+            "cumMn": -0.8787129177606072
+          }
+        ],
+        "anchored": true,
+        "maxAbsMn": 0.695484407697744,
+        "maxAbsCumMn": 0.8787129177606072,
+        "perUnit": "1% spot"
+      }
+    },
+    "lower_branch": {
+      "book": [
+        {
+          "K": 95.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        },
+        {
+          "K": 105.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        }
+      ],
+      "rows": [
+        {
+          "strike": 95.0,
+          "gamma_net": 0.45433298822785034
+        },
+        {
+          "strike": 105.0,
+          "gamma_net": 0.4961966514383016
+        }
+      ],
+      "profile": {
+        "greek": "gamma",
+        "rows": [
+          {
+            "strike": 95,
+            "hedgeMn": -0.45433298822785034
+          },
+          {
+            "strike": 105,
+            "hedgeMn": -0.4961966514383016
+          }
+        ],
+        "cumulative": [
+          {
+            "strike": 95,
+            "cumMn": -0.45433298822785034
+          },
+          {
+            "strike": 105,
+            "cumMn": -0.4961966514383016
+          }
+        ],
+        "anchored": true,
+        "maxAbsMn": 0.4961966514383016,
+        "maxAbsCumMn": 0.4961966514383016,
+        "perUnit": "1% spot"
+      }
+    },
+    "more_lower_strike_inventory": {
+      "book": [
+        {
+          "K": 95.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 3000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        },
+        {
+          "K": 105.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        }
+      ],
+      "rows": [
+        {
+          "strike": 95.0,
+          "gamma_net": 1.3629989646835512
+        },
+        {
+          "strike": 105.0,
+          "gamma_net": 0.4961966514383016
+        }
+      ],
+      "profile": {
+        "greek": "gamma",
+        "rows": [
+          {
+            "strike": 95,
+            "hedgeMn": -1.3629989646835512
+          },
+          {
+            "strike": 105,
+            "hedgeMn": -0.4961966514383016
+          }
+        ],
+        "cumulative": [
+          {
+            "strike": 95,
+            "cumMn": -1.3629989646835512
+          },
+          {
+            "strike": 105,
+            "cumMn": -0.4961966514383016
+          }
+        ],
+        "anchored": true,
+        "maxAbsMn": 1.3629989646835512,
+        "maxAbsCumMn": 1.3629989646835512,
+        "perUnit": "1% spot"
+      }
+    },
+    "matched_maturity_A": {
+      "book": [
+        {
+          "K": 100.0,
+          "T": 0.019178082191780823,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        },
+        {
+          "K": 110.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        }
+      ],
+      "rows": [
+        {
+          "strike": 100.0,
+          "gamma_net": 1.440243214217126
+        },
+        {
+          "strike": 110.0,
+          "gamma_net": 0.1832285100628632
+        }
+      ],
+      "profile": {
+        "greek": "gamma",
+        "rows": [
+          {
+            "strike": 100,
+            "hedgeMn": -1.440243214217126
+          },
+          {
+            "strike": 110,
+            "hedgeMn": -0.1832285100628632
+          }
+        ],
+        "cumulative": [
+          {
+            "strike": 100,
+            "cumMn": -1.440243214217126
+          },
+          {
+            "strike": 110,
+            "cumMn": -1.6234717242799892
+          }
+        ],
+        "anchored": true,
+        "maxAbsMn": 1.440243214217126,
+        "maxAbsCumMn": 1.6234717242799892,
+        "perUnit": "1% spot"
+      }
+    },
+    "matched_maturity_B": {
+      "book": [
+        {
+          "K": 100.0,
+          "T": 0.4931506849315068,
+          "sigma": 0.2,
+          "n": 5082.957178275995,
+          "is_call": true,
+          "multiplier": 100.0
+        },
+        {
+          "K": 110.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        }
+      ],
+      "rows": [
+        {
+          "strike": 100.0,
+          "gamma_net": 1.440243214217126
+        },
+        {
+          "strike": 110.0,
+          "gamma_net": 0.1832285100628632
+        }
+      ],
+      "profile": {
+        "greek": "gamma",
+        "rows": [
+          {
+            "strike": 100,
+            "hedgeMn": -1.440243214217126
+          },
+          {
+            "strike": 110,
+            "hedgeMn": -0.1832285100628632
+          }
+        ],
+        "cumulative": [
+          {
+            "strike": 100,
+            "cumMn": -1.440243214217126
+          },
+          {
+            "strike": 110,
+            "cumMn": -1.6234717242799892
+          }
+        ],
+        "anchored": true,
+        "maxAbsMn": 1.440243214217126,
+        "maxAbsCumMn": 1.6234717242799892,
+        "perUnit": "1% spot"
+      }
+    },
+    "matched_iv_A": {
+      "book": [
+        {
+          "K": 100.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.1,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        },
+        {
+          "K": 110.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        }
+      ],
+      "rows": [
+        {
+          "strike": 100.0,
+          "gamma_net": 1.3913976047376615
+        },
+        {
+          "strike": 110.0,
+          "gamma_net": 0.1832285100628632
+        }
+      ],
+      "profile": {
+        "greek": "gamma",
+        "rows": [
+          {
+            "strike": 100,
+            "hedgeMn": -1.3913976047376615
+          },
+          {
+            "strike": 110,
+            "hedgeMn": -0.1832285100628632
+          }
+        ],
+        "cumulative": [
+          {
+            "strike": 100,
+            "cumMn": -1.3913976047376615
+          },
+          {
+            "strike": 110,
+            "cumMn": -1.5746261148005247
+          }
+        ],
+        "anchored": true,
+        "maxAbsMn": 1.3913976047376615,
+        "maxAbsCumMn": 1.5746261148005247,
+        "perUnit": "1% spot"
+      }
+    },
+    "matched_iv_B": {
+      "book": [
+        {
+          "K": 100.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.5,
+          "n": 5012.343979473898,
+          "is_call": true,
+          "multiplier": 100.0
+        },
+        {
+          "K": 110.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        }
+      ],
+      "rows": [
+        {
+          "strike": 100.0,
+          "gamma_net": 1.3913976047376615
+        },
+        {
+          "strike": 110.0,
+          "gamma_net": 0.1832285100628632
+        }
+      ],
+      "profile": {
+        "greek": "gamma",
+        "rows": [
+          {
+            "strike": 100,
+            "hedgeMn": -1.3913976047376615
+          },
+          {
+            "strike": 110,
+            "hedgeMn": -0.1832285100628632
+          }
+        ],
+        "cumulative": [
+          {
+            "strike": 100,
+            "cumMn": -1.3913976047376615
+          },
+          {
+            "strike": 110,
+            "cumMn": -1.5746261148005247
+          }
+        ],
+        "anchored": true,
+        "maxAbsMn": 1.3913976047376615,
+        "maxAbsCumMn": 1.5746261148005247,
+        "perUnit": "1% spot"
+      }
+    }
+  },
+  "witness_zero_move": {
+    "S0": 100.0,
+    "target_spot": 100.0,
+    "initial_hedge_shares": -56260.969464944865,
+    "target_hedge_shares": -56260.969464944865,
+    "hedge_share_change": 0.0,
+    "H_dollars": 0.0,
+    "H_mn": 0.0,
+    "cash_balance_change_dollars": -0.0,
+    "source_profile_value_at_spot_mn_per_plus_1pct": -0.695484407697744
+  },
+  "witness_lower_branch": {
+    "S0": 100.0,
+    "target_spot": 95.0,
+    "initial_hedge_shares": -102752.7224498814,
+    "target_hedge_shares": -55444.14294083061,
+    "hedge_share_change": 47308.579509050796,
+    "H_dollars": 4494315.053359826,
+    "H_mn": 4.494315053359826,
+    "cash_balance_change_dollars": -4494315.053359826,
+    "source_profile_value_at_target_mn_per_plus_1pct": -0.45433298822785034
+  },
+  "witness_upper_branch_control": {
+    "S0": 100.0,
+    "target_spot": 105.0,
+    "initial_hedge_shares": -102752.7224498814,
+    "target_hedge_shares": -147341.75840766222,
+    "hedge_share_change": -44589.03595778081,
+    "H_dollars": -4681848.775566985,
+    "H_mn": -4.681848775566985,
+    "cash_balance_change_dollars": 4681848.775566985,
+    "source_profile_value_at_target_mn_per_plus_1pct": -0.4961966514383016
+  },
+  "witness_omitted_inventory": {
+    "baseline": {
+      "S0": 100.0,
+      "target_spot": 105.0,
+      "initial_hedge_shares": -102752.7224498814,
+      "target_hedge_shares": -147341.75840766222,
+      "hedge_share_change": -44589.03595778081,
+      "H_dollars": -4681848.775566985,
+      "H_mn": -4.681848775566985,
+      "cash_balance_change_dollars": 4681848.775566985,
+      "source_profile_value_at_target_mn_per_plus_1pct": -0.4961966514383016
+    },
+    "more_lower_strike_inventory": {
+      "S0": 100.0,
+      "target_spot": 105.0,
+      "initial_hedge_shares": -267164.6836714753,
+      "target_hedge_shares": -339738.12459494174,
+      "hedge_share_change": -72573.44092346646,
+      "H_dollars": -7620211.296963979,
+      "H_mn": -7.620211296963978,
+      "cash_balance_change_dollars": 7620211.296963979,
+      "source_profile_value_at_target_mn_per_plus_1pct": -0.4961966514383016
+    }
+  },
+  "witness_matched_gamma": {
+    "maturity": {
+      "book_A": [
+        {
+          "K": 100.0,
+          "T": 0.019178082191780823,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        },
+        {
+          "K": 110.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        }
+      ],
+      "book_B": [
+        {
+          "K": 100.0,
+          "T": 0.4931506849315068,
+          "sigma": 0.2,
+          "n": 5082.957178275995,
+          "is_call": true,
+          "multiplier": 100.0
+        },
+        {
+          "K": 110.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        }
+      ],
+      "snapshot_gamma_max_error_mn": 0.0,
+      "profile_max_error_mn": 0.0,
+      "source_profile_at_target_A_mn_per_plus_1pct": -1.6234717242799892,
+      "source_profile_at_target_B_mn_per_plus_1pct": -1.6234717242799892,
+      "A": {
+        "S0": 100.0,
+        "target_spot": 110.0,
+        "initial_hedge_shares": -55669.85152169706,
+        "target_hedge_shares": -151116.0630271077,
+        "hedge_share_change": -95446.21150541064,
+        "H_dollars": -10499083.26559517,
+        "H_mn": -10.49908326559517,
+        "cash_balance_change_dollars": 10499083.26559517
+      },
+      "B": {
+        "S0": 100.0,
+        "target_spot": 110.0,
+        "initial_hedge_shares": -273493.7655758631,
+        "target_hedge_shares": -444066.9445880903,
+        "hedge_share_change": -170573.17901222722,
+        "H_dollars": -18763049.691344995,
+        "H_mn": -18.763049691344996,
+        "cash_balance_change_dollars": 18763049.691344995
+      }
+    },
+    "iv": {
+      "book_A": [
+        {
+          "K": 100.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.1,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        },
+        {
+          "K": 110.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        }
+      ],
+      "book_B": [
+        {
+          "K": 100.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.5,
+          "n": 5012.343979473898,
+          "is_call": true,
+          "multiplier": 100.0
+        },
+        {
+          "K": 110.0,
+          "T": 0.0821917808219178,
+          "sigma": 0.2,
+          "n": 1000.0,
+          "is_call": true,
+          "multiplier": 100.0
+        }
+      ],
+      "snapshot_gamma_max_error_mn": 0.0,
+      "profile_max_error_mn": 0.0,
+      "source_profile_at_target_A_mn_per_plus_1pct": -1.5746261148005247,
+      "source_profile_at_target_B_mn_per_plus_1pct": -1.5746261148005247,
+      "A": {
+        "S0": 100.0,
+        "target_spot": 110.0,
+        "initial_hedge_shares": -55689.24055223474,
+        "target_hedge_shares": -151101.50854500177,
+        "hedge_share_change": -95412.26799276703,
+        "H_dollars": -10495349.479204373,
+        "H_mn": -10.495349479204373,
+        "cash_balance_change_dollars": 10495349.479204373
+      },
+      "B": {
+        "S0": 100.0,
+        "target_spot": 110.0,
+        "initial_hedge_shares": -270054.2772117926,
+        "target_hedge_shares": -436747.3689388353,
+        "hedge_share_change": -166693.0917270427,
+        "H_dollars": -18336240.089974694,
+        "H_mn": -18.336240089974694,
+        "cash_balance_change_dollars": 18336240.089974694
+      }
+    }
+  },
+  "controls": {
+    "reversed_input_same_profile": true,
+    "tiny_move_exact_H_dollars": -95.05300150319809,
+    "tiny_move_gamma_approx_H_dollars": -95.05305902273459,
+    "tiny_move_relative_error": 6.051311961507829e-07,
+    "all_strike_gamma_spot_integral_H_dollars": -4681848.77556698,
+    "exact_H_dollars_for_integral": -4681848.775566985,
+    "inventory_sign_reversal_H_dollars": 4681848.775566985,
+    "equal_sigma_sqrtT_same_H_dollars": -4681848.775566985
+  },
+  "macro_synthetic_chain_recipe": {
+    "lower_strikes": "95.00 + 0.01*j, j=0..9",
+    "upper_strikes": "105.00 + 0.01*j, j=0..9",
+    "T": 0.0821917808219178,
+    "iv": 0.2,
+    "oi_each": 100,
+    "multiplier": 100,
+    "descending": "lower calls, upper puts",
+    "ascending": "lower puts, upper calls",
+    "all_calls": "both groups calls"
+  },
+  "witness_gamma_flip": [
+    {
+      "chain": "descending",
+      "input_spot": 98.0,
+      "contract_rows": 20,
+      "assumed_sign": "call +1; put -1",
+      "returned_flip": 99.75550734870933,
+      "all_flips": [
+        99.75550734870933
+      ],
+      "returned_distance_percent": -1.79,
+      "returned_regime": "short",
+      "same_curve_gamma_at_spot_dollars_per_1pct": 242969.32535437986,
+      "same_curve_regime": "long",
+      "regime_agrees_with_own_curve": false,
+      "selected_crossing": {
+        "left_spot": 99.47000000000001,
+        "right_spot": 99.96000000000001,
+        "left_gamma_dollars_per_1pct": 41266.63862517875,
+        "right_gamma_dollars_per_1pct": -29556.94268629323,
+        "orientation": "descending"
+      }
+    },
+    {
+      "chain": "descending",
+      "input_spot": 101.0,
+      "contract_rows": 20,
+      "assumed_sign": "call +1; put -1",
+      "returned_flip": 99.75550988739006,
+      "all_flips": [
+        99.75550988739006
+      ],
+      "returned_distance_percent": 1.23,
+      "returned_regime": "long",
+      "same_curve_gamma_at_spot_dollars_per_1pct": -178019.05831660557,
+      "same_curve_regime": "short",
+      "regime_agrees_with_own_curve": false,
+      "selected_crossing": {
+        "left_spot": 99.485,
+        "right_spot": 99.99,
+        "left_gamma_dollars_per_1pct": 39107.89593691955,
+        "right_gamma_dollars_per_1pct": -33900.479611535535,
+        "orientation": "descending"
+      }
+    },
+    {
+      "chain": "ascending",
+      "input_spot": 98.0,
+      "contract_rows": 20,
+      "assumed_sign": "call +1; put -1",
+      "returned_flip": 99.75550734870933,
+      "all_flips": [
+        99.75550734870933
+      ],
+      "returned_distance_percent": -1.79,
+      "returned_regime": "short",
+      "same_curve_gamma_at_spot_dollars_per_1pct": -242969.32535437986,
+      "same_curve_regime": "short",
+      "regime_agrees_with_own_curve": true,
+      "selected_crossing": {
+        "left_spot": 99.47000000000001,
+        "right_spot": 99.96000000000001,
+        "left_gamma_dollars_per_1pct": -41266.63862517875,
+        "right_gamma_dollars_per_1pct": 29556.94268629323,
+        "orientation": "ascending"
+      }
+    },
+    {
+      "chain": "ascending",
+      "input_spot": 101.0,
+      "contract_rows": 20,
+      "assumed_sign": "call +1; put -1",
+      "returned_flip": 99.75550988739006,
+      "all_flips": [
+        99.75550988739006
+      ],
+      "returned_distance_percent": 1.23,
+      "returned_regime": "long",
+      "same_curve_gamma_at_spot_dollars_per_1pct": 178019.05831660557,
+      "same_curve_regime": "long",
+      "regime_agrees_with_own_curve": true,
+      "selected_crossing": {
+        "left_spot": 99.485,
+        "right_spot": 99.99,
+        "left_gamma_dollars_per_1pct": -39107.89593691955,
+        "right_gamma_dollars_per_1pct": 33900.479611535535,
+        "orientation": "ascending"
+      }
+    },
+    {
+      "chain": "all_calls",
+      "input_spot": 101.0,
+      "contract_rows": 20,
+      "assumed_sign": "call +1; put -1",
+      "returned_flip": null,
+      "all_flips": [],
+      "returned_distance_percent": null,
+      "returned_regime": "long",
+      "same_curve_gamma_at_spot_dollars_per_1pct": 955204.6080983777,
+      "same_curve_regime": "long",
+      "regime_agrees_with_own_curve": true,
+      "selected_crossing": null
+    }
+  ]
+}

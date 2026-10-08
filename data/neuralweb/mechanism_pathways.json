@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-09-29",
+  "as_of": "2026-10-03",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -28,7 +28,7 @@
       "family": "real_rate_shock",
       "driver": "real_rate_shock",
       "pathway_role": "primary",
-      "as_of": "2026-09-29",
+      "as_of": "2026-10-03",
       "direction_en": "Rates / inflation shock",
       "direction_zh": "利率/通胀冲击",
       "confidence_ceiling": "context_only",
@@ -38,7 +38,7 @@
       "nodes": [
         {
           "node_id": "driver_real_rate_shock",
-          "as_of": "2026-09-29",
+          "as_of": "2026-10-03",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "real_rate_shock",
@@ -47,7 +47,7 @@
             "zh": "利率/通胀冲击"
           },
           "direction": "",
-          "value": 87.3,
+          "value": 83.7,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -58,7 +58,7 @@
         },
         {
           "node_id": "transmission_real_rate_order1",
-          "as_of": "2026-09-29",
+          "as_of": "2026-10-03",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -78,7 +78,7 @@
         },
         {
           "node_id": "transmission_real_rate_order2",
-          "as_of": "2026-09-29",
+          "as_of": "2026-10-03",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -98,7 +98,7 @@
         },
         {
           "node_id": "transmission_real_rate_order3",
-          "as_of": "2026-09-29",
+          "as_of": "2026-10-03",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -160,11 +160,11 @@
       "scare": "rates"
     },
     {
-      "family": "china",
-      "driver": "china_stimulus",
+      "family": "credit",
+      "driver": "credit_stress",
       "pathway_role": "alternate",
-      "as_of": "2026-09-29",
-      "direction_en": "China risk-off — A-shares/HK & copper lead down",
+      "as_of": "2026-10-03",
+      "direction_en": "credit spreads widening — stress",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -172,17 +172,53 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_china_stimulus",
-          "as_of": "2026-09-29",
+          "node_id": "driver_credit_stress",
+          "as_of": "2026-10-03",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "china_stimulus",
+          "entity": "credit_stress",
           "observation": {
-            "en": "China risk-off — A-shares/HK & copper lead down",
+            "en": "credit spreads widening — stress",
             "zh": ""
           },
           "direction": "",
-          "value": 1.15,
+          "value": 1.13,
+          "z_or_percentile": null,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "trigger",
+          "evidence_refs": [
+            "market_drivers.primary"
+          ]
+        }
+      ],
+      "edges": [],
+      "coverage_basis": "scare_trigger"
+    },
+    {
+      "family": "fx",
+      "driver": "usd_shock",
+      "pathway_role": "alternate",
+      "as_of": "2026-10-03",
+      "direction_en": "dollar surging — squeeze, commodities & EM pressured",
+      "direction_zh": "",
+      "confidence_ceiling": "context_only",
+      "coverage_score": null,
+      "coherence": "partial",
+      "stale_legs": [],
+      "nodes": [
+        {
+          "node_id": "driver_usd_shock",
+          "as_of": "2026-10-03",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "usd_shock",
+          "observation": {
+            "en": "dollar surging — squeeze, commodities & EM pressured",
+            "zh": ""
+          },
+          "direction": "",
+          "value": 0.99,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",

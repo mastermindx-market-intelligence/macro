@@ -4917,11 +4917,12 @@ def _us_board_gate_cfg() -> dict:
         cfg = config.load().get("us_board_gate") or {}
         return {"gated": bool(cfg.get("gated", False)),
                 "preview_rows": int(cfg.get("preview_rows") or 3),
+                "today_preview_rows": int(cfg.get("today_preview_rows") or 6),
                 "panels": bool(cfg.get("panels", False)),
                 "panel_preview_rows": int(cfg.get("panel_preview_rows")
                                           or US_PANEL_PREVIEW_DEFAULT)}
     except Exception:  # noqa: BLE001
-        return {"gated": False, "preview_rows": 3,
+        return {"gated": False, "preview_rows": 3, "today_preview_rows": 6,
                 "panels": False, "panel_preview_rows": US_PANEL_PREVIEW_DEFAULT}
 
 
@@ -5037,6 +5038,22 @@ def us_stance_projection(entry_status: "str | None", board_read: "dict | None") 
         return {"verb": _US_STANCE_VERB_BY_STATUS.get(br_status, "wait"),
                 "stance_basis": "board_read"}
     return {"verb": None, "stance_basis": "no_read"}
+
+
+def _us_today_featured_preview(
+    us_standouts: "dict | None", preview_rows: int
+) -> list[dict]:
+    """Bounded Today shelf from the FULL owner-ordered Featured population.
+
+    The Screener gate intentionally exposes only a prefix of buy. Today used
+    to filter that already-sliced prefix, so a healthy 12-name Featured shelf
+    could collapse to two visible cards merely because rank #3 was not Featured.
+    This projection reads the full board before the split, preserves owner order,
+    and changes neither membership nor timing/entry semantics.
+    """
+    rows = (us_standouts or {}).get("buy") or []
+    limit = max(0, int(preview_rows))
+    return [row for row in rows if row.get("featured")][:limit]
 
 
 def _split_us_board(us_standouts: "dict | None", preview_rows: int, *, gated: bool = True):
@@ -5395,16 +5412,60 @@ def _us_board_row_flat(n: dict) -> dict:
     }
 
 
+def _plan_relations_for(
+    book: "dict | None", book_error: object = False
+) -> "tuple[str, dict[str, list[dict]]]":
+    """Return open, same-security plan summaries keyed by normalized ticker."""
+    if book_error:
+        return "unknown", {}
+    if not isinstance(book, dict):
+        return "unknown", {}
+    by_ticker: dict[str, list[dict]] = {}
+    for plan in book.get("plans") or []:
+        if not isinstance(plan, dict) or plan.get("closed"):
+            continue
+        asset = plan.get("asset")
+        if not isinstance(asset, str) or not asset.strip():
+            continue
+        ticker = asset.strip().upper()
+        by_ticker.setdefault(ticker, []).append({
+            "id": plan.get("id"),
+            "lifecycle_state": plan.get("lifecycle_state"),
+            "formation_date": plan.get("formation_date"),
+            "signal_date": plan.get("signal_date"),
+            "plan_asof": plan.get("plan_asof"),
+        })
+    for plans in by_ticker.values():
+        plans.sort(key=lambda plan: (
+            str(plan.get("formation_date") or ""), str(plan.get("id") or "")), reverse=True)
+    return "none", by_ticker
+
+
+def _plan_relation_for_row(
+    plan_relations: "tuple[str, dict[str, list[dict]]] | None", row: dict
+) -> dict:
+    """Return the security-level relation payload for one already-entitled row."""
+    if not plan_relations:
+        return {"state": "none", "plans": []}
+    state, by_ticker = plan_relations
+    if state == "unknown":
+        return {"state": "unknown", "plans": []}
+    plans = by_ticker.get(str(row.get("ticker") or "").strip().upper(), [])
+    return {"state": "related_security" if plans else "none", "plans": plans}
+
+
 def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
                        locked_rows: list[dict], us_standouts: "dict | None",
                        top_setups: "dict | None", built: str,
+                       today_rows: "list[dict] | None" = None,
                        pgate: "dict | None" = None,
                        panel_blocks: "dict | None" = None,
                        life_gate: "dict | None" = None,
                        locked_plans: "list[dict] | None" = None,
                        cand_map: "dict | None" = None,
                        trg_map: "dict | None" = None,
-                       episode_map: "dict | None" = None) -> None:
+                       episode_map: "dict | None" = None,
+                       plan_relations: "tuple[str, dict[str, list[dict]]] | None" = None) -> None:
     """Render the paid remainder of the US Prophet board into
     site/premiumdata/us_stocks.json.
 
@@ -5429,7 +5490,9 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         flat = _us_board_row_flat(n)
         try:
             presenter = env.get_template("_prophet_setup_detail.html.j2").module.table_action
-            flat["setup_detail"] = str(presenter(n, (us_standouts or {}).get("as_of")))
+            flat["setup_detail"] = str(presenter(
+                n, (us_standouts or {}).get("as_of"),
+                plan_rel=_plan_relation_for_row(plan_relations, n)))
         except Exception as exc:  # noqa: BLE001 — a missing detail is not a missing row
             log.error("us_stocks: table detail unavailable (%s)", exc)
             flat["setup_detail"] = None
@@ -5438,12 +5501,14 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     path = site / US_PAYLOAD_DIR / US_PAYLOAD_NAME
     path.parent.mkdir(parents=True, exist_ok=True)
     panel_blocks = panel_blocks or {}
+    today_rows = list(today_rows or [])
     if gate is None:
         # The board itself is whole (ungated, or smaller than the preview cap) but
         # the ADJACENT panels can still be withholding rows, so the payload is not
         # necessarily empty here — `gated` reports the BOARD, `panels` the rest.
         payload = {"schema": "tier_payload.v1", "page": "us_stocks", "gated": False,
-                   "built": built, "cards_html": "", "rows": []}
+                   "built": built, "cards_html": "", "rows": [],
+                   "today_cards_html": "", "today_preview": 0, "today_total": 0}
     else:
         full_buy = (us_standouts or {}).get("buy") or []
         # sg_any/bs_adj/xu_allfeat/trg_map mirror dashboard.html.j2's own derivation
@@ -5472,12 +5537,35 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         rw_zh = (("今晚无法检查"
                   + (("全部 " + str(_rw_n) + " 只股票") if _rw_n else "这些股票")
                   + "的上行空间，因此这一项不加分。") if _rw_dead else "")
+
+        # Today is a paid/full-access presentation shelf. Keep its extra rows in
+        # the already protected payload instead of baking them into anonymous HTML.
+        try:
+            today_cards_html = env.get_template("_us_board_cards.html.j2").render(
+                items=today_rows, sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
+                trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh,
+                setup_as_of=(us_standouts or {}).get("as_of"),
+                plan_rel={"state": plan_relations[0] if plan_relations else "none",
+                          "plans": []},
+                plan_rel_by_ticker=(plan_relations[1] if plan_relations else {}))
+        except Exception as e:  # noqa: BLE001 — front shelf fails soft to shell
+            log.error("us_stocks: Today card render failed (%s)", e)
+            today_cards_html = ""
+        _today_declared = ((us_standouts or {}).get("ranking") or {}).get("featured_count")
+        _today_total = (_today_declared
+                        if isinstance(_today_declared, int) and not isinstance(_today_declared, bool)
+                        and _today_declared >= len(feat)
+                        else len(feat))
+
         items = _us_board_group_items(locked_rows, sg_any, gate["stage_counts"])
         try:
             cards_html = env.get_template("_us_board_cards.html.j2").render(
                 items=items, sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
                 trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh,
-                setup_as_of=(us_standouts or {}).get("as_of"))
+                setup_as_of=(us_standouts or {}).get("as_of"),
+                plan_rel={"state": plan_relations[0] if plan_relations else "none",
+                          "plans": []},
+                plan_rel_by_ticker=(plan_relations[1] if plan_relations else {}))
         except Exception as e:  # noqa: BLE001 — payload must still write with an
             # honest empty card block rather than aborting the whole build.
             log.error("us_stocks: locked card render failed (%s)", e)
@@ -5489,6 +5577,9 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
             "locked": gate["locked"], "as_of": (us_standouts or {}).get("as_of") or "",
             "cards_html": cards_html,
             "rows": [_table_row(n) for n in locked_rows],
+            "today_cards_html": today_cards_html,
+            "today_preview": len(today_rows),
+            "today_total": _today_total,
         }
     if pgate:
         payload["panels"] = {k: v for k, v in pgate.items()
@@ -5726,7 +5817,8 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
 
 
 def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dict,
-                             vm: dict) -> dict:
+                             vm: dict,
+                             plan_relations: "tuple[str, dict[str, list[dict]]] | None" = None) -> dict:
     """Render the withheld panels into the `*_html` blocks that ride the board's
     payload. Every block comes from the SAME template the shell renders, so the
     hydrated page and a full server render cannot drift apart.
@@ -5748,7 +5840,10 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
     if locked.get("candidate_pool"):
         _render("candidate_pool_html", "_us_candidate_pool_rows.html.j2",
                 rows=locked["candidate_pool"],
-                setup_as_of=(vm.get("us_candidate_visibility") or {}).get("as_of"))
+                setup_as_of=(vm.get("us_candidate_visibility") or {}).get("as_of"),
+                plan_rel={"state": plan_relations[0] if plan_relations else "none",
+                          "plans": []},
+                plan_rel_by_ticker=(plan_relations[1] if plan_relations else {}))
         candidate_view = vm.get("us_candidate_visibility") or {}
         out["candidate_pool_source"] = {
             "as_of": candidate_view.get("as_of"),
@@ -7265,6 +7360,8 @@ def main() -> int:
     # an overridden copy of vm, and the withheld remainder is written to
     # site/premiumdata/us_stocks.json regardless of the switch (empty when off).
     _us_gate_cfg = _us_board_gate_cfg()
+    _us_today_featured = _us_today_featured_preview(
+        vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
     _us_shell_su, _us_gate, _us_locked = _split_us_board(
         vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
     # P-MP1-SHELL central act, §8b: the SAME re-plumb as the candidate split
@@ -7289,16 +7386,24 @@ def main() -> int:
     # *_html blocks. Same rule: NEVER mutate the shared vm.
     _us_pov, _us_pgate, _us_plocked = _split_us_panels(
         vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
+    _us_plan_state, _us_plan_by_ticker = _plan_relations_for(
+        vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
+    vm["plan_rel_by_ticker"] = _us_plan_by_ticker
+    vm["plan_rel"] = {"state": _us_plan_state, "plans": []}
     _write_us_payload(env, site, _us_gate, locked_rows=_us_locked,
                        us_standouts=vm.get("us_standouts"),
                        top_setups=vm.get("top_setups"), built=generated,
+                       today_rows=_us_today_featured,
                        pgate=_us_pgate,
-                       panel_blocks=_render_us_panel_payload(env, _us_pgate, _us_plocked, vm),
+                       panel_blocks=_render_us_panel_payload(
+                                       env, _us_pgate, _us_plocked, vm,
+                                       (_us_plan_state, _us_plan_by_ticker)),
                        life_gate=_us_life_gate, locked_plans=_us_life_locked,
                        cand_map=_us_life_repair["us_candidate_map"],
                        trg_map={r.get("ticker"): r for r in ((vm.get("top_setups") or {}).get("buy") or [])
                                 if r.get("ticker")},
-                       episode_map=_us_life_episodes)
+                       episode_map=_us_life_episodes,
+                       plan_relations=(_us_plan_state, _us_plan_by_ticker))
     out_st = site / "us_stocks.html"
     write_page(out_st, env.get_template("dashboard.html.j2").render(
         **{**vm, **_us_pov, "us_standouts": _us_shell_su,
@@ -7686,6 +7791,8 @@ def main() -> int:
                 # payload from THIS generation — otherwise the re-render would bake
                 # the fresh board's full row set straight into the shell and
                 # silently reopen the leak on every one-build-lag refresh.
+                _us_today_featured2 = _us_today_featured_preview(
+                    vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
                 _us_shell_su2, _us_gate2, _us_locked2 = _split_us_board(
                     vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
                 # The plan book is not touched by this one-build-lag re-render
@@ -7707,17 +7814,24 @@ def main() -> int:
                 # or the re-render bakes their full row sets back into the shell.
                 _us_pov2, _us_pgate2, _us_plocked2 = _split_us_panels(
                     vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
+                _us_plan_state2, _us_plan_by_ticker2 = _plan_relations_for(
+                    vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
+                vm["plan_rel_by_ticker"] = _us_plan_by_ticker2
+                vm["plan_rel"] = {"state": _us_plan_state2, "plans": []}
                 _write_us_payload(env, site, _us_gate2, locked_rows=_us_locked2,
                                    us_standouts=vm.get("us_standouts"),
                                    top_setups=vm.get("top_setups"), built=generated,
+                                   today_rows=_us_today_featured2,
                                    pgate=_us_pgate2,
                                    panel_blocks=_render_us_panel_payload(
-                                       env, _us_pgate2, _us_plocked2, vm),
+                                       env, _us_pgate2, _us_plocked2, vm,
+                                       (_us_plan_state2, _us_plan_by_ticker2)),
                                    life_gate=_us_life_gate2, locked_plans=_us_life_locked2,
                                    cand_map=_us_life_repair2["us_candidate_map"],
                                    trg_map={r.get("ticker"): r for r in ((vm.get("top_setups") or {}).get("buy") or [])
                                             if r.get("ticker")},
-                                   episode_map=_us_life_episodes2)
+                                   episode_map=_us_life_episodes2,
+                                   plan_relations=(_us_plan_state2, _us_plan_by_ticker2))
                 _dash = env.get_template("dashboard.html.j2")
                 write_page(site / "macro.html", _dash.render(**vm, mode="macro"))
                 write_page(site / "us_stocks.html", _dash.render(

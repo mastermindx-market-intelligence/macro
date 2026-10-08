@@ -68,9 +68,30 @@
 set -eu
 
 # ── paths ─────────────────────────────────────────────────────────────────────
-REPO="/Users/chriswong/flow-ops-wt"
+# Empty or unset keeps the historical lane. ${VAR:-default} treats an empty
+# string as unset, so it cannot become the current directory.
+REPO="${MACRO_OPTIONS_MATRIX_ROOT:-/Users/chriswong/flow-ops-wt}"
 PYTHON="/opt/homebrew/Caskroom/miniconda/base/bin/python"
 STORE="${THETADATA_STORE:-/Users/chriswong/theta-ops-wt/data/thetadata_eod}"
+
+# Refuse a relative or missing code root before the freshness helper or the build.
+case "$REPO" in
+    /*) ;;
+    *)
+        echo "[options_matrix] ERROR: REPO must be an absolute existing directory, not '$REPO'"
+        exit 1
+        ;;
+esac
+if [ ! -d "$REPO" ]; then
+    echo "[options_matrix] ERROR: REPO is not an existing directory: $REPO"
+    exit 1
+fi
+if [ ! -f "$REPO/scripts/build_options_matrix.py" ]; then
+    echo "[options_matrix] ERROR: REPO is not the options-matrix code checkout (missing scripts/build_options_matrix.py): $REPO"
+    exit 1
+fi
+# Imports come from this checkout. A stale PYTHONPATH must not win.
+export PYTHONPATH="$REPO"
 
 # ── freshness check helper ────────────────────────────────────────────────────
 # Prints "fresh" if the SPY OI shard has the expected last session, else "stale".

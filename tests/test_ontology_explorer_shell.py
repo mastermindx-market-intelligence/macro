@@ -223,17 +223,52 @@ def test_a_missing_paired_asset_raises_instead_of_reporting_success(tmp_path,
 
 
 def test_the_client_uses_the_house_sign_in_return_convention():
-    """A bare `/?signin=1` strands a reader who came for one specific trace: the
-    house wall carries `&ret=<root-relative path>`, consumed by onboard.js's
-    retTarget(), which accepts same-origin "/..." only. The bounce is this
-    page's, so the return is this page's responsibility."""
+    """Sign-in must return to the exact selected path, not merely the route.
+
+    The house wall accepts one same-origin root-relative ``ret`` value.  A trace
+    selection lives in ``location.hash`` (``#ox-leg-<node>``), so dropping the
+    hash before sign-in silently loses the first blocker and defeats the exact
+    focus-return contract accepted in R23/R24.
+    """
     client = (ROOT / "templates" / "ontology.js").read_text(encoding="utf-8")
     assert "signin=1&ret=" in client
     assert "encodeURIComponent" in client
+    assert "location.pathname + location.search + location.hash" in client
     # the guard retTarget() applies, mirrored on our side before we hand it over
     assert 'path.slice(0, 2) !== "//"' in client
     # and never the bare form, which is the regression this pins
     assert '"/?signin=1"' not in client
+
+
+def test_selected_path_uses_the_existing_brain_host_seam_and_exact_return():
+    """The ontology page may add context to the shared Brain, never a second chat.
+
+    The context is bounded to the current chain/revision/leg through the existing
+    ``MM_BRAIN_CFG.getAiContext`` hook.  Closing the shared Brain must return
+    focus to the exact invoking control; no browser store becomes a fifth state
+    object or a substitute return plane.
+    """
+    client = (ROOT / "templates" / "ontology.js").read_text(encoding="utf-8")
+    assert "var selectedPathRef = null" in client
+    assert "var returnFocusRef = null" in client
+    assert "var returnScrollY = null" in client
+    assert "window.MM_BRAIN_CFG = window.MM_BRAIN_CFG || {}" in client
+    assert "window.MM_BRAIN_CFG.getAiContext = function ()" in client
+    assert 'schema: "ai_context_client.v1"' in client
+    assert 'page: "ontology"' in client
+    assert "chain: source.chain" in client
+    assert "panel: selectedPathRef.leg" in client
+    assert "window.MM_BRAIN_CFG.onClose = function ()" in client
+    assert "returnFocusRef.focus({ preventScroll: true })" in client
+    assert "top: returnScrollY" in client
+    assert "var restored = document.activeElement === returnFocusRef" in client
+    assert "returnFocusRef = null;" in client
+    assert "returnScrollY = null;" in client
+    assert "selectedPathRef = null;" in client
+    assert "window.MMBrain.open()" in client
+    assert 'document.getElementById("mmb-boot")' in client
+    assert 'localStorage.setItem("ontology' not in client
+    assert 'sessionStorage.setItem("ontology' not in client
 
 
 def test_the_canonical_transmission_continuation_is_offered_in_every_state():

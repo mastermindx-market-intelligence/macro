@@ -1210,16 +1210,23 @@ def _null_payload(root: str, asof_ts: str, reason: str) -> dict:
 
 
 def _extract_spot(greeks_df: pd.DataFrame, eod_df: pd.DataFrame) -> float | None:
-    """Only an observed underlying reference is spot; option close is premium.
+    """Read underlying spot from the same-session Greeks tier.
 
-    Keep the two-argument interface for existing callers. The EOD matrix reader
-    does not publish underlying prices, so its close column is never a fallback.
+    ThetaData option EOD close is an option premium, never an underlying
+    price. The caller retains its unavailable payload when this field is absent.
     """
     if greeks_df.empty or "underlying_price" not in greeks_df.columns:
         return None
-    values = pd.to_numeric(greeks_df["underlying_price"], errors="coerce")
-    values = values[np.isfinite(values) & (values > 0)]
-    return float(values.iloc[0]) if not values.empty else None
+    for raw in greeks_df["underlying_price"]:
+        if isinstance(raw, (bool, np.bool_)):
+            continue
+        try:
+            spot = float(raw)
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if np.isfinite(spot) and spot > 0:
+            return spot
+    return None
 
 
 def _contract_iv_lookup(greeks_df: pd.DataFrame) -> dict[tuple[float, str, str], object]:
