@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PNC-BULL-20260911",
-  "asof": "2026-10-07",
+  "asof": "2026-10-08",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 14.0,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 56.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -5.563,
+    "dist_to_stop_r": -6.229,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 57.8,
-    "p1": -4.3753,
-    "p2": -2.1876,
+    "horizon_pct_used": 60.0,
+    "p1": -4.8194,
+    "p2": -2.4097,
     "p3": null,
-    "move_r": -6.563,
+    "move_r": -7.229,
     "mfe_r": 0.011,
-    "mae_r": -6.563
+    "mae_r": -7.229
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.04000549316407387,
-  "_mae": -24.039996337890614,
+  "_mae": -26.479998779296864,
   "_max_p1": 0.00728100703686846,
   "_first_trigger_ts": "2026-09-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 26,
-  "tau": 0.5778
+  "days_elapsed": 27,
+  "tau": 0.6
 }

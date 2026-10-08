@@ -1,9 +1,12 @@
 ---
 workstream: WS:LIVE-ENTRY-RADAR
+# session/model/ended_because attribute the original Phase-1 return only.
+# They do not declare that the continuing root session has ended or the parent mission is complete.
 session: claude/rs-pullback-launch-phase1-20261007
 model: sol
 ended_because: blocked
-mission: "Advance RS Pullback Launch Phase 1 through source census, reproducible admission/refusal, and offline input conformance; parent signal program remains incomplete."
+mission: "Continue RS Pullback Launch through existing source owners, delivery and data admission; Phase 1 remains NOT_ADMITTED and the parent signal program remains incomplete."
+# state_before and changed preserve the original Phase-1 attribution.
 state_before: "Research complete at macro@21e7ece49b682d65a63f73ba6045853aded782f0; implementation not started."
 changed:
   - path: engine/entry_radar/replay/rs_pullback_launch_data.py
@@ -14,7 +17,24 @@ changed:
     what: "Pinned source and read-only production inventory/qualifier receipts."
   - path: research/live_entry_radar/rs_pullback_launch/PHASE1_ADMISSION_2026-10-07.json
     what: "Reproducible NOT_ADMITTED verdict with 29 named refusals."
+# verified/unverified/unresolved/next_actions describe the cumulative checkpoint below.
 verified:
+  - claim: "The original Phase-1 negative result and retention-v1 delivery are complete within their engineering scopes."
+    command: "Macro #8571/#8581 and Terminal #840 delivery records; original Phase-1 artifact and installed 12-control retention receipt."
+    result: "Phase1 SHA a4e00a5c191917dc8c64fb74ca3348827ab9bd47d9ad8a03a1130a50fde36e9f remains exact: NOT_ADMITTED, 29 refusals, H1/H2/H3 NOT_TESTED and all authority false; retention proof is synthetic installed conformance, not a market pilot."
+  - claim: "Calendar and Native source components have scoped installed proof."
+    command: "Calendar #8602 installed 10-control receipt at 09:34:38Z; Native #8607 required CI 37609426098 and installed proof/lineage/delivery records from process 93607."
+    result: "Calendar proof PASS. Native proof PASS at 11:56:09–15Z with exact 13-file bindings and positive release ancestry: MU bound, SPY/QQQ/SMH original refusals retained; no historical visibility recertification or Radar admission."
+  - claim: "The v2 reader is installed at the hash/import level and Terminal v2 source has merged with exact postmerge identity."
+    command: "Macro #8618 merge 67c1d8155d9194825f6cb301967d6b1c1f91b433 and 10:34 installed import/hash receipt; Terminal #843 CI 37609414595, merge e963eefb3ac1984008caae922d6f43bfafa9d827 and postmerge process 73169."
+    result: "Terminal v2 all 10 required jobs passed; four accepted source blobs exact at squash. Normal producer deployment and the paired installed 19-control proof remain pending."
+  - claim: "Split source delivery is merged, with installation proof prepared but not executed."
+    command: "Macro #8625 required CI 37610310900; accepted d657ab26781e87a19d9c8705d5ac293c816acbb5; squash f2c33b5e1373a344fde232a6750ef479ccfd6331; postmerge process 13259."
+    result: "Exact reviewed merge tree 2ce5b02de07fbb1a8ba4c8211b403e7d013fa256. Remote proof 62ab08fb… and wrapper 12992c28… independently reviewed; no installed Split result or factor applicability yet."
+  - claim: "Raw-v3 candidates and eleven-case listing research have explicit remaining boundaries."
+    command: "Macro #8623 required CI 37610526356; Terminal #844 integration 61800, retained failed browser 71984, passing browser 78787 and exact commit/push 85130; corrected LISTING_TRANSITION_RESEARCH_2026-10-07.md."
+    result: "Macro raw-v3 remains DRAFT/HOLD until paired v2 proof. Terminal daily-axis case passed locally with actual consumer evidence; accepted capture blobs unchanged at a826c945d666f6f34d2dddcf72222568df4dbff3, hosted CI 37622577138 running. Original hosted and local failures retained. Eleven listing cases researched; no transition or later Native attempt applied."
+  # Original Phase-1 verification entries remain historical evidence.
   - claim: "The CLI binds imports to this repository even when a foreign package precedes an ambient root."
     command: "python3 -m pytest tests/test_check_script_import_pinning.py -q; actual CLI invocation with hostile engine decoy and repo root later on PYTHONPATH"
     result: "11 passed; decoy not executed; CLI admission output byte-identical. Conditional pin repaired without baseline or waiver changes."
@@ -28,32 +48,174 @@ verified:
     command: "ingest.intraday_qualification.qualify_store on SPY/QQQ/SMH/MU 1m and SPY 5m; 2026-09-28 through 2026-10-05; cutoff 1791244800; as_observed; read-only process 61222."
     result: "Required 1m files missing; complete-grid SPY 5m control still has zero as-observed rows and pit_proven=false."
 unverified:
+  - claim: "Terminal v2 normal deployment and paired installed declaration/basis/framing conformance."
+    what_would_verify: "Resolve the recorded host disk-full condition through its existing owner, verify normal deployment of the exact accepted producer, then run and retain the reviewed 19-control paired installed proof."
+  - claim: "Installed Split owner function conformance."
+    what_would_verify: "Observe normal installation of the merged Split source, establish exact positive release lineage and installed source closure, then execute the reviewed one-attempt wrapper and retain its actual result. Namespace-only loading and synthetic evidence cannot prove normal application integration or provider acquisition."
+  - claim: "Raw-v3 source delivery and installed paired behavior."
+    what_would_verify: "Complete Terminal #844 binding CI 37622577138 for the reviewed local browser repair, review any new current-main delta, then deliver Macro reader before Terminal producer after v2 proof is complete."
+  - claim: "Listing-transition application and a later immutable Native attempt."
+    what_would_verify: "Review and prove the existing owner's class/listing/observation-time extension, current-tip lookup and versioned attempt history; retain every original Native refusal and clock. Research filings alone do not qualify identity inputs."
   - claim: "A real immutable first-seen one-minute leader/pullback pilot can be constructed."
-    what_would_verify: "Existing data owners supply retained 1m revisions with listing identity, basis, calendar and actual daily/incumbent receipts; rerun Phase 1."
+    what_would_verify: "Existing data owners supply retained 1m revisions with listing identity, qualified raw/split basis, calendar and actual daily/incumbent receipts; rerun Phase 1 on a complete pilot population."
   - claim: "Historical or prospective H1/H2/H3 edge."
     what_would_verify: "Admitted data, TrialLedger preregistration, strong B0 and controls/ablations, then prospective paired incumbent validation."
-  - claim: "Hosted source-delivery acceptance."
-    what_would_verify: "Concluded required checks and merge status on the pull request for this branch; local passing tests and this evidence checkpoint do not imply production or scientific admission."
 unresolved:
-  - "Missing 1m archive and historical first-seen/revision lineage on the inspected canonical store."
+  - "At the supplied 12:24Z host census, /dev/vda1 had 77G used and zero available, updater fetch had failed after 11:51Z, and checkout remained f1966d3fdae3f14f42c8e026958f74590d72f9fe. No cleanup or manual retry success is established."
+  - "Paired installed v2 conformance, installed Split proof and raw-v3 delivery remain pending; required source/CI/proof records must not be replaced by this checkpoint."
+  - "Current Native delivery does not erase the original eleven lost-row transition evidence or upgrade SPY/QQQ/SMH refusals. No later Native attempt is admitted."
+  - "Missing admitted 1m cohort/cadence/history, factor applicability and complete pilot/nonfire/failure population; the 4096-attempt cap is not a 90-session guarantee."
   - "Per-row stale daily context and missing faithful historical Entry Engine input/output receipts."
-  - "No real pilot, detector registration, calibrated probability, or production signal authority."
+  - "No detector registration, calibrated probability, market-panel admission, or production signal authority."
 next_actions:
-  - "Complete review and required CI of this offline Phase-1 candidate on its existing branch."
-  - "Reconcile a bounded source-owner extension with incumbent minute-resolution/capture owners before any collector or live-path change."
-  - "Obtain owner-qualified immutable inputs and rerun Phase 1 before baseline/outcome work."
+  - "Root reconciles safe disk recovery through the existing owner; preserve the original updater failure and actual recovery result without speculative cleanup or blind retry."
+  - "Complete normal Terminal #843 deployment after its exact postmerge verification, then run the reviewed paired v2 installed proof while the v2 Macro harness remains installed."
+  - "Observe normal Split installation and execute the independently reviewed single-attempt wrapper; retain actual lineage, intent, raw output and scoped result."
+  - "Complete Terminal #844 binding CI for accepted a826c945d666f6f34d2dddcf72222568df4dbff3, preserve failed attempts and accepted capture blobs, reconcile any new current-main delta, and deliver raw-v3 reader before producer after the v2 dependency."
+  - "Review the bounded DOMO/HUCK and YYGH/YFOR existing-owner extension and later Native-attempt versioning; separately qualify actual permitted raw/split acquisition through existing owners."
+  - "Bind daily/incumbent receipts and complete pilot population, rerun Phase 1 before baseline/outcome work, and continue toward the preserved total-program DONE_WHEN without widening authority."
 do_not_redo:
-  - "Do not rerun the completed broad research commission."
+  - "Do not rerun the completed broad research commission or eleven-case listing research merely because branches move; refresh only changed or unresolved evidence."
+  - "Do not repeat the exact delivered Phase-1, retention-v1, Calendar or Native proofs without a concrete relevant change; recover their pinned receipts first."
   - "Do not substitute 5m history or corrected-history backfills for true 1m historical first-seen evidence."
   - "Do not duplicate Macro #7274/#7275, Fable Terminal #784 performance work, or Terminal #814 intraday route changes."
   - "Do not register a detector, write TrialLedger/shared ledgers, let C4 fire, use F1, or grant rank/gate/size/order authority."
+  - "Do not reopen the operator-confirmed global licensing gate without new evidence, fabricate 90 sessions, or create another data/lifecycle/publication/scheduler/ledger owner."
 danger_areas:
   - "Bar end is not publication/receipt time; Terminal ET display epochs are not true UTC instants."
-  - "Synthetic conformance is not a real market pilot or evidence of an edge."
+  - "Synthetic conformance, a source merge, a health response and a current installed reader prove different things; none admits a market pilot or an edge."
   - "Fresh top-level daily publication does not refresh stale constituent rows."
+  - "Current research and actual new reads cannot be backdated into historical identity or rewrite original REFUSED Native evidence."
+  - "A response adjustment flag or separately fetched latest factor snapshot does not establish a shared basis vintage."
 ---
 
-## Current delivery and next-source checkpoint — 2026-10-07
+## Cumulative source and delivery checkpoint — 2026-10-07
+
+**Parent `WS:LIVE-ENTRY-RADAR`; MISSION_COMPLETE: false. Phase 1 remains NOT_ADMITTED; H1/H2/H3 remain NOT_TESTED; all research/trading authority remains false.** The original Phase-1 return is complete through its permitted negative result. Later source components advance the continuing commission; they do not complete the parent program or admit the market panel.
+
+This cumulative checkpoint includes Terminal #843 postmerge verification process 73169, Terminal #844 retained browser failure 71984, passing corrected browser run 78787, and exact commit/push 85130. Root observed the new required CI 37622577138 running at 12:41Z. The recorded 12:24Z disk census is a historical host observation; it is not a new current disk measurement. Subsequent bounded preparation includes independently accepted paired-v2 proof and read-only deployment budget assessment; neither establishes deployment. Root is continuing the concrete recovery and delivery work. The YAML `session`, `model` and `ended_because` fields retain attribution to the original Phase-1 return, not an assertion that the active root session ended. Machine-facing verification and continuation fields describe this cumulative frontier.
+
+Current protected procedure pin: Mastermind `a2c93f1d5280f285751107543645154e9b20eb8f`. Root read the complete applicable procedures; the one-commit delta from `a2254b290caa7b422fd93657e44e992152541ca7` contains four unrelated ResearchReadMCP files and leaves these procedures unchanged. Earlier operations retain their original procedure attribution in the historical sections. This checkpoint does not change the wider WS-LIVE-ENTRY-RADAR C0..C8 queue or create a new session lifecycle or source owner.
+
+### Delivered components and their exact limits
+
+| Component | Delivery evidence | What remains outside the result |
+|---|---|---|
+| Original Phase 1 | [Macro #8571](https://github.com/mastermindx-market-intelligence/macro/pull/8571), squash `47a3a248ba9228b498376d2bdc170fd61e38dac0`. [Original admission](../../research/live_entry_radar/rs_pullback_launch/PHASE1_ADMISSION_2026-10-07.json) remains SHA-256 `a4e00a5c191917dc8c64fb74ca3348827ab9bd47d9ad8a03a1130a50fde36e9f`: 29 named refusals. | No admitted pilot, detector or outcome claim. Preserve the original result. |
+| Retention v1 | [Macro #8581](https://github.com/mastermindx-market-intelligence/macro/pull/8581), merge `45dd4e26166f8676f548631f24978580b4d8a723`, and [Terminal #840](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/840), merge `d21fa05ad8d934bb4d70731587ab2df64a28c194`. Installed 12-control proof at 06:41:04Z, SHA-256 `ac1ec230ce6ba56d0f24a05e8fb00bea36f94a5cb3737ec80ea10d58d59cfc32`, retained in #8581. | Injected engineering conformance only; no acquired cohort, new cadence, basis or market pilot. |
+| Calendar | [Macro #8602](https://github.com/mastermindx-market-intelligence/macro/pull/8602), squash `0e80cf14572b52c10ea58dda3686bd7d5cb00adc`. Installed 10-control proof at 09:34:38Z: 6,066 bytes, SHA-256 `42cfdc16a4f67b93fee7bc68aa8904fd21040f15cf1936209b601e9cb83b4e4e`. | Exact calendar observation and conformance do not supply the remaining identity, basis, daily or incumbent evidence. |
+| Native reference | [Macro #8607](https://github.com/mastermindx-market-intelligence/macro/pull/8607), accepted `6d14f398564dce1d0f68daf956315cf7e9d19520`, squash `7a1f9ad0a28973cdc9b261e80bfdf61f4eae9575`; [required CI 37609426098](https://github.com/mastermindx-market-intelligence/macro/actions/runs/37609426098) PASS. Installed proof process 93607 exit 0 at 11:56:09–15Z; exact linked records below. | Pure installed Native alias reader over actual retained bytes; no Radar candidate admission, historical visibility recertification or transition ingestion. API health proves only its own liveness/version scope. |
+
+The earlier Native draft's **11 unresolved against cap 10** was a real historical blocker. Accepted integration with the separately admitted BATS owner resolved CBOE and produced **718 total / 708 resolved / 10 unresolved**, retaining the unchanged coverage caps. The required gates subsequently passed; #8607 is no longer a blocked draft. This does not repair the eleven old listing-transition rows behind the original prospective attempt: those are a distinct owner/refusal population, and their evidence remains intact. The historical failed gates and diagnostic records below must remain attributable to their original source and inputs.
+
+### Native installed proof: actual custody and preserved refusals
+
+The exact executed [Native remote proof](../../research/live_entry_radar/rs_pullback_launch/verification/installed_native_conformance_remote.py) and [M2 lineage wrapper](../../research/live_entry_radar/rs_pullback_launch/verification/run_installed_native_proof_m2.py) are archived as verification evidence. Their fixed source, target and artifact bindings describe the observed attempt; a future execution requires fresh matching evidence through the existing owner.
+
+The complete records are linked rather than copied into this handoff:
+
+| Record | Exact identity |
+|---|---|
+| [Installed Native conformance](../../research/live_entry_radar/rs_pullback_launch/INSTALLED_NATIVE_REFERENCE_CONFORMANCE_2026-10-07.json) | 9,168 bytes; SHA-256 `24502c48927c99cdc05c08fdc599a6162351e5fd250bfec64fb7e9cec6d89156` |
+| [Positive release lineage](../../research/live_entry_radar/rs_pullback_launch/INSTALLED_NATIVE_REFERENCE_LINEAGE_2026-10-07.json) | 4,689 bytes; SHA-256 `e74975051f764f18b44a8cbbb82a60ef5b693fd8a63c75e514d6bf6770e51b41` |
+| [Composite delivery receipt](../../research/live_entry_radar/rs_pullback_launch/INSTALLED_NATIVE_REFERENCE_DELIVERY_2026-10-07.json) | 810 bytes; SHA-256 `9b9f3fc78cbdfed338937c80e818d6a4acf4febf9f98d42d387c215ddcfba6bd` |
+
+At that observation, installed checkout was `f1966d3fdae3f14f42c8e026958f74590d72f9fe`, while the running API process reported release `7a1f9ad0a28973cdc9b261e80bfdf61f4eae9575`. The records preserve this difference. Both checkout and process-build refs have exact positive release-ancestry receipts and the same thirteen protected source/artifact hashes, plus the required DataOS import-tree and API source bindings. Both repositories are shallow; no `is-shallow=false` prerequisite or fabricated installed-local ancestry is claimed. The installed proof records its unavailable local ancestry as null and is accepted together with the positive external lineage record.
+
+The pure installed reader called `VendorAliasTable.from_records`, `resolve` and `vendor_symbol_for` over actual retained installed bytes at **`1791374169888567767` ns** (`2026-10-07T11:56:09.888567767Z`). MU resolved to `SEC:US-XNAS-MU`, reverse lookup returned MU, and SPY/QQQ/SMH remained null/refused. Missing or naive decisions, absent native clocks and tampered seals refused; conservative nanosecond rounding and half-open validity controls passed. These were actual present reads and in-memory controls, not proof that an earlier Radar decision possessed those bytes.
+
+The original owner-input read remains **`1791354276802797000` ns**. Its complete prospective-reference block remains SHA-256 `0e07e498d7a6983c8752a53d719281b07c30d334895c0b418edbbcc160145856`, with MU bound and SPY/QQQ/SMH's original refusals unchanged. Queries around that retained cutoff test reader behavior against evidence read now; they do not backdate the verifier or create a historical Radar receipt.
+
+The actual retained master has 2,383 rows, code version `75a2bfce6dd95ee921d05d719cfc67976de17145`, generated at `2026-10-07T10:11:04`. The sidecar retains 165,493 historical rows and 2,807 current nodes computed at `2026-10-07T10:11:06Z`. CBOE and ETHA are resolved. IBIT has canonical ETF master identity `SEC:US-XNAS-IBIT` while its graph row remains `ENTITY_TYPE_CONFLICT` with null security/issuer. Preserve that consumer refusal. The graph loader and HTTP Native semantic route were not executed; direct artifact checks and local `/api/health` must not be relabeled as those proofs. No provider call, regeneration, deployment or restart occurred within the Native conformance proof.
+
+### v2 reader and producer: source delivery ahead of paired installed proof
+
+[Macro reader #8618](https://github.com/mastermindx-market-intelligence/macro/pull/8618) merged as `67c1d8155d9194825f6cb301967d6b1c1f91b433`. Its 10:34 installed record is a **hash/import proof only**: 1,848 bytes, SHA-256 `09a8ce307d610f65b7e1c79d9c8fb6e40259e1fbcde4a3c3346fac934a4b7909`. Keep the v2 harness installed until the paired proof finishes.
+
+[Terminal #843](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/843) merged at **12:26:21Z** as `e963eefb3ac1984008caae922d6f43bfafa9d827`, from accepted `642fa4cd3d0340ad90952588ac48ca2d4f3e0d8b`. [Required CI 37609414595](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37609414595) passed all ten jobs; the normal workflow approval returned 201 at 11:48Z. Postmerge verification process **73169** passed, confirming all four accepted source blobs at the squash; the remote branch was already deleted. Its receipt is `/private/tmp/rs-pullback-terminal-v2-postmerge-1791376323200563000.json`, 798 bytes, SHA-256 `b4d755964ff534b823cc7373e083fdd250c16c327759aa5de2e74f94c7c61182`.
+
+**Normal Terminal v2 deployment and paired installed conformance remain pending.** The [preserved original paired proof](../../research/live_entry_radar/rs_pullback_launch/verification/installed_basis_conformance_original_reviewed.py) is 11,304 bytes, SHA-256 `03410cd59d4ece1e8d7caa221cd2c16a2bce273d9ebe68b6753a10cee0ad2e20`; it was never executed on the host. Root and an independent reviewer accepted the minimal shallow-aware preparation below after reading the complete delta and wrapper. All eleven source hashes, the actual committed 19-control harness invocation and all three stdlib HTTP framing cases remain exact, including first-page/observation identity and unchanged chart projection after partial failure.
+
+| Preparation artifact | Exact reviewed identity |
+|---|---|
+| [Installed paired-v2 proof](../../research/live_entry_radar/rs_pullback_launch/verification/installed_basis_conformance_remote.py) | 13,581 bytes; SHA-256 `b1881376715132785dbbe21e1f0f12bdb4fa3dabe03d88970f0da4fd8c682227` |
+| [Paired-v2 M2 lineage wrapper](../../research/live_entry_radar/rs_pullback_launch/verification/run_installed_basis_proof_m2.py) | 25,134 bytes; SHA-256 `786671ef45ef94ab62238fe1409e3e72e1faaf77dc2b612b96a1eb0b5658101b` |
+
+The remote requires exact root-supplied installed heads before and after proof, records actual shallow flags, and leaves host release ancestry **UNAVAILABLE_NOT_CHECKED**. The wrapper independently requires actual positive M2 ancestry for both fixed releases and all eleven source-object bindings at accepted, merged and supplied installed refs before immutable lineage/intent and one SSH. Negative or unavailable ancestry blocks execution; a shallow repository with actual positive ancestry is valid. Raw stdout/stderr and status are retained before semantic acceptance; timeout leaves remote completion unconfirmed. Exact nanoseconds are serialized as decimal strings only at the JSON boundary. Independent cloud controls covered source/head/admission/provider/prefix/clock refusals, strict JSON and both repositories' negative/unavailable ancestry paths, without Git or SSH.
+
+Neither final prepared script has executed on M2 or the host. Actual results must be retained after root execution against the real accepted deployment. This scoped preparation preserves separate source/read clocks, original prefix identity, basis-null refusal, future visibility isolation and short-body framing refusal. All retained Terminal rows remain unavailable for positive basis admission; a visible scalar relabel is not authority.
+
+### Split source merged; installed function proof prepared
+
+[Macro Split #8625](https://github.com/mastermindx-market-intelligence/macro/pull/8625) merged as `f2c33b5e1373a344fde232a6750ef479ccfd6331`, parent `70d2bef9662618d9209aad40b534e2fb8ef10864`, from accepted `d657ab26781e87a19d9c8705d5ac293c816acbb5`. The actual merge tree **`2ce5b02de07fbb1a8ba4c8211b403e7d013fa256`** is the reviewed current-main composition. [Required CI 37610310900](https://github.com/mastermindx-market-intelligence/macro/actions/runs/37610310900) passed, and postmerge source verification process **13259** exited 0. The earlier tree `4221f0f1eafc1805c9e284df6030a15b80f2365b` was an intermediate reviewed composition, not the actual squash tree.
+
+The three earlier implementation findings were repaired and independently accepted: incomplete Content-Length EOF and interrupted HTTP framing remain failed evidence, and numeric JSON identity tokens cannot masquerade as strings. The existing CorpActions opt-in function, generic source kernel and pinned reader retain complete/empty/failed/partial attempts, exact decimal lexemes, correction/omission/reversion history, occurrence identity, create-once/conflict rules and actual custody clocks. This owner stores **observed-body hashes/counts and normalized rows, not entire raw HTTP bodies**. Its basis eligibility remains false.
+
+The remote installed proof and separate M2 wrapper are prepared and independently reviewed, **not executed**:
+
+| Preparation artifact | Exact reviewed identity |
+|---|---|
+| [Installed Split proof](../../research/live_entry_radar/rs_pullback_launch/verification/installed_split_conformance_remote.py) | 39,404 bytes; SHA-256 `62ab08fb2b08687176a90356352f115915b25987ed2210351ef72f2db8192483` |
+| [Split lineage wrapper](../../research/live_entry_radar/rs_pullback_launch/verification/run_installed_split_proof_m2.py) | 24,967 bytes; SHA-256 `12992c28b91d93653228dcb6f11f64cd2d3308bac25d80b1d59a292c057c353d` |
+
+The remote script binds twelve exact source files plus accepted registry projections, compiles the actual installed functions, and confines synthetic writes to a private temporary kernel store. Its namespace-only `close_pass` loader deliberately bypasses the broader initializer: success would prove bounded installed function conformance, not ordinary package/application integration, live HTTP API semantics, provider acquisition, factor applicability or operational cadence. The original 37,926-byte preparation, SHA-256 `742bcffd798f8212a42b300320de12bbff18b103ac9b8657132a28546eab47a6`, remains preserved as `installed_split_conformance_original_prepared.py`; it was not executed. Review corrected its merge-tree label and strengthened exact partial-prefix and A/B/A assertions. The final proof checks exact corrected value/body identity rather than only counts and new IDs.
+
+The wrapper requires actual positive release ancestry and exact protected bytes before its single SSH execution, records immutable lineage and intent first, retains bounded raw stdout/stderr before parsing, and does not retry or infer remote cancellation from a stopped local SSH process. Root owns the later installation, execution, reconciliation and acceptance. No prepared script or wrapper changes the program's admission state.
+
+### Actual deployment obstruction and raw-v3 hold
+
+At the supplied **12:24Z** host census, `/dev/vda1` had **77G used / 0 available**. The existing updater's fetch failed after 11:51Z; checkout remained `f1966d3fdae3f14f42c8e026958f74590d72f9fe`. Root is investigating recovery through the existing owner. This checkpoint records no cleanup, manual retry, installation or recovery success. The condition blocks normal Split installation and Terminal deployment; independent source/research preparation can continue within its existing authority.
+
+The subsequent read-only recovery assessment rejects a build on the small candidates alone. Exact failed-fetch orphan `tmp_pack_Cf6wFt` accounts for **49,176,576 allocated bytes**; `git prune-packed -n` identifies **1,173 loose duplicate objects / 200,450,048 allocated bytes**. Its complete M2 candidate manifest is `/private/tmp/rs-pullback-host-prune-packed-readonly-1791376858020410000.json`, 623,990 bytes, SHA-256 `71f84a1c017c274edf89808a95c1a2696e90bfc90b6f8ebb09cae5822820a4cd`, process 88388 exit 0. Index checksums and pack/index trailer bindings passed; pack-body integrity remains unverified. No candidate was removed.
+
+The unchanged normal Terminal build owner, SHA-256 `31d04362f041258524bbce1551befbae7322d2dd80a2f368cf6ae43c98de669f`, skips dependency reinstall for this exact unchanged package/lock pair and hardlinks existing dependencies/public data on the same filesystem. It still copies **103,071,744 bytes** of target source and creates a new build while live and rollback outputs remain. Source plus the current output footprint is a **222,420,992-byte baseline**, excluding directory metadata, fetch, prebuild and compiler peaks. Exact candidate reclamation totals 249,626,624 bytes, leaving only 27,205,632 above that baseline. Physical `f_bfree` bytes were not allocatable `f_bavail`; a fresh actual recovery measurement remains required. The six inactive rotated plaintext logs have a compression estimate only, and existing delay-compress/rotation policy is not an emergency content-preserving cleanup procedure.
+
+The unchanged Macro updater fetches moving `origin/main` with `--depth 1`; M2's f196-to-f2 object census finds 7,235 new blobs and 746,685,551 logical bytes, but local object storage is not a guaranteed negotiated transfer or peak bound. A bounded read-only index comparison is assessing whether any existing packs are wholly redundant while preserving every object, reference and reflog. This checkpoint claims no pack-body verification, pack removal, GC/repack, log rotation, data deletion or restored delivery capacity.
+
+[Macro raw-v3 #8623](https://github.com/mastermindx-market-intelligence/macro/pull/8623), accepted `6cff6ef8aba28dc7ee6f7779a81ef18856d9b3b6`, passed [all binding CI 37610526356](https://github.com/mastermindx-market-intelligence/macro/actions/runs/37610526356) but remains **DRAFT/HOLD** until the paired v2 proof is retained. Do not replace its v2 dependency/harness prematurely.
+
+[Terminal raw-v3 #844](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/844) remains **DRAFT**, now at reviewed and pushed commit `a826c945d666f6f34d2dddcf72222568df4dbff3`, with parents `26c03470ff348071086fe3ab7e6b5a69da826660` and newly merged v2 `e963eefb3ac1984008caae922d6f43bfafa9d827`. Prior hosted run [37606825394](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37606825394) remains red: its inherited test incorrectly assumed that two different calendars could never share a starting logical index. The complete pre-patch integration tree was exactly the already reviewed hosted merge tree `5b89698916059f09c6860bed7b3d5c0da70c7baa`; the only four merge conflicts were resolved to the independently accepted v3 capture blobs. All other incoming-master entries remain exact.
+
+The one-case repair isolates the existing watchlist fixture, uses 2,000 weekday NVDA observations and 1,400 daily BTC observations, preserves the 2.5-day calendar and greater-than-five-index requirements, and checks actual input/consumer clocks and real manual movement. Its first browser run **71984 failed all three ordinary attempts** because the application defaults to 3D while the proof clock is daily. Those failed reports, three traces and screenshots remain retained. The accepted correction selects D through the existing toolbar before splitting and waits for actual daily consumer windows; it changes no product timeframe defaults or shared helpers.
+
+Corrected actual desktop run **78787 passed on its first attempt** at `2026-10-07T12:35:45Z`: one passed, zero retries/skips/flaky results, with Node 26.5.0. Retained consumer states show zero calendar endpoint disagreement, a 364.374-day move earlier, an 800-index start difference, and 696.668-day disagreement for the incorrect logical-copy control. The six other cases, shared helpers and shared fixtures remain unchanged. Root read the exact final diff and actual state JSON and inspected the resulting existing screenshot before accepting commit/push process **85130**, exit 0. Final tree is `6d4b1a7256d313b06ea0e1d66a0e0480e50e3c76`; test blob `d8af167f1fc72533e42ae512f0be4c5838f4d0f0`, screenshot blob `934e16d1ed7c26ed9679f471ebd6ff3d12ab88ba`. The four capture-semantic blobs are unchanged.
+
+Evidence remains under the owned Terminal worktree's ignored `terminal/playwright-report/pane-sync-20261007/`: `desktop-case-2.json` SHA-256 `ff80e7570d4886a7b9a2cb431bd5a389d66135ab3a0d082f7ea36b256750642e`, `calendar-pane-state-2.json` SHA-256 `8d4380f77eb9d33cff22959b345e12a73f18bb3d60b51ed2b1e71444bd6a6222`, and the complete `first-run/` failures. [Required CI 37622577138](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37622577138) is running; hosted Node 20, other required shards and actual v3 delivery remain unproved. No v3 producer release precedes the compatible installed reader.
+
+### Listing research is ready for a bounded owner contract, not application
+
+The independently reviewed [eleven-case listing report](../../research/live_entry_radar/rs_pullback_launch/LISTING_TRANSITION_RESEARCH_2026-10-07.md) is **21,469 bytes**, SHA-256 `5f5e58ff6548e0471ea302566a17eb9057d58440b3a5ff9da933bef751c5acb5`. Root applied only the two source-fidelity corrections: YYGH's amendment was reported **filed** August 31, and PSKY's completed transfer is in the 8-K **Explanatory Note, PDF page 2**. The report retains primary URLs, class distinctions, contradictory directory observations and unknown publisher/OTC/last-session clocks.
+
+| Research class | Cases | Application boundary |
+|---|---|---|
+| Same-venue class continuity | DOMO→HUCK Class B; YYGH→YFOR Class A | Proposed first two-case implementation; no rename applied. |
+| Listing transfers | KHC; ET common LP units; PSKY→SKYD Class B | Preserve canonical identity across venue/class evidence; no transfer inferred from ticker or CIK alone. |
+| Old common conversions | ATAI; QRVO; DBRG; WBS | Distinct from consideration securities; exact exit-owner fields and observation law still required. |
+| Suspension with continuing shares | GWH | Exact OTC commencement/final delisting unresolved; do not mark the security extinct. |
+| Continuing ADS program | CSAN→CSANY | Preserve ADR/ADS versus underlying ordinary-share identity and the undated issuer-page contradiction. |
+
+No event was applied, no old Native refusal was upgraded, and no later attempt was admitted. Research retrieval intervals and public filing/effective dates are not actual identity-owner `known_at` or Radar availability. The proposed DOMO/HUCK and YYGH/YFOR wave needs reviewed class/listing/observation-time evidence, a current-tip lookup repair preserving inception IDs and legacy fetch/store keys, and real consumer cutoff/reverse/mismatch/correction tests. Merely adding `RenameEvent` rows or a `known_at` field to an ungated legacy namespace is insufficient.
+
+A subsequent Native attempt needs a bounded versioned extension of the **existing receipt owner** with immutable attempt identity, predecessor/input/dependency seals, actual acquisition and owner-read clocks, identical-attempt idempotence, same-attempt conflict refusal and coherent publication/history. Keep the original prospective block, MU binding and SPY/QQQ/SMH refusals exact. No new journal, catalog, selector, data owner or historical identity is created by this report.
+
+### Ordered continuation and parent completion boundary
+
+1. Reconcile the exact safe disk recovery through the existing operational owner, retaining the failed updater observation and actual recovery evidence.
+2. Complete normal deployment of the postmerge-verified Terminal #843 source and run the reviewed paired v2 installed proof before replacing the installed v2 harness.
+3. Observe normal installation of merged Split and run the reviewed one-attempt installed function proof, retaining lineage, intent, raw output and scoped result through the existing evidence owner.
+4. Complete Terminal #844 required CI for the accepted actual-browser repair and reconcile any new current-main delta without altering accepted capture semantics. Deliver raw-v3 Macro reader before Terminal producer, after the v2 dependency is complete.
+5. Review and implement the bounded existing identity-owner extension and later Native-attempt history. Separately qualify actual permitted raw/split acquisition, cohort, cadence, finality and capacity through existing owners; no automatic dual fetch or new scheduler is implied.
+6. Bind actual PIT daily leader/pullback rows and faithful incumbent `engine/entry_signal.py::assess` inputs/outputs, construct the complete pilot/nonfire/failure/ambiguity population, and rerun Phase 1 before baseline/outcome work.
+
+The original research state model, labels, frozen H1/H2/H3 gates and **total-program DONE_WHEN** remain below. The newest nominal 15-minute interval remains unavailable under the unchanged 900-second finality law; the 4096-attempt cap does not demonstrate 90 prospective sessions. Current daily publication cannot refresh stale constituent rows. Catalyst absence remains unknown without coverage. Global minute-aggregate/research/archive licensing remains closed by the operator-confirmed `research/licenses/MASSIVE_ENTITLEMENT_RECORD.md`; do not reopen it without new evidence.
+
+Continue the commissioned work through the next safe existing-owner dependency; this checkpoint does not terminate the parent mission. No detector, score, calibrated probability, UI admission, outcome tuning, C4/F1 firing, new ledger, scheduler, publication owner or rank/gate/size/order authority follows from these component receipts.
+
+## Preserved historical checkpoints and research contract
+
+The following historical body is retained from canonical handoff blob `76d082a02ff72dc37aa29ea7d7866d65dbde9b60`, SHA-256 `453ea340a06149ff75d3b46e52c8331e7f934fec0d6f561e10d4c836f07ade49`. Only stale checkpoint heading labels were changed to identify their historical scope. Pending/current statements below describe their original observations; the cumulative checkpoint above owns the supplied current delivery frontier. Original Phase-1 attribution, negative admission, source receipts, research state model and total-program DONE_WHEN are preserved.
+
+## Prior delivery and next-source checkpoint — 2026-10-07, 09:04Z
 
 Observed at: 2026-10-07T09:04:43.216371Z. Parent `WS:LIVE-ENTRY-RADAR`; **MISSION_COMPLETE: false**.
 
@@ -77,7 +239,7 @@ The native draft has a binding data blocker: current official listing inputs yie
 
 The later control-plane CI runs found that the two new exclusive jobs were omitted from the explicit curated-job inventory. Each branch added its own reviewed job name while retaining the exact equality assertion, dependency audits, planner and ceilings. Independent module-AST checks and protected-file freezes passed; both four-test inventory/closure/fallback/packing sets passed. Calendar integrated main `46ec48ecbf0b3dfddd9cb4ba083ee83a00af51bd`, preserving the concurrent `ticker-news-qbus` registration. Native integration also intersects main's separately admitted BATS venue; its source union and unchanged data gates require review before further delivery. The native artifacts have not been regenerated or granted a new result.
 
-### Current declaration and basis-refusal slice
+### Prior declaration and basis-refusal slice
 
 Operation `rs-pullback-launch-basis-binding-20261007-sol-005` uses protected Mastermind `1fc040f7343dde73fec3556dd3bf9bc8c1b18129`; the prior retention/calendar/reference operations retain their original protected pin `ee120e80f5d5e0344c453dd7cbf4108b9c429b38`.
 
@@ -104,7 +266,7 @@ Other open admission dependencies remain: the complete pilot/nonfire/failure pop
 No outcome tuning, detector authority, score, probability, UI admission, new ledger, scheduler, publication owner or decision engine is authorized by these component receipts. Preserve the negative result and continue the next safe existing-owner dependency in the same session.
 
 
-## Current cumulative Phase-1 checkpoint — 2026-10-07
+## Historical cumulative Phase-1 checkpoint — 2026-10-07
 
 Operation: `rs-pullback-launch-phase1-20261007-sol-001`. Parent: `WS:LIVE-ENTRY-RADAR`.
 Procedure: Mastermind `9a24ef2c4b27ac95a4d1f72f5eae1073657cd7c2`, skillpack 1.0.1/bootstrap 1.
