@@ -53,6 +53,18 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
+    # Daily/render lanes build rotation at different points. Refresh the existing
+    # canonical envelope at this common seam so the blackboard cannot lag one
+    # publication behind a newly built rotation artifact. This is the same owner
+    # used by build_site, not another risk composer or a new ledger.
+    # A custom-output diagnostic retains its original no-canonical-write scope.
+    if args.out is None:
+        try:
+            from scripts.build_risk_envelope import write as write_risk_envelope
+            write_risk_envelope(root=args.root)
+        except Exception as exc:  # noqa: BLE001 — preserve World State's fail-soft contract
+            log.warning("risk envelope refresh failed; source clocks remain authoritative (%s)", type(exc).__name__)
+
     try:
         payload = build_and_write(root=args.root, out_path=args.out)
     except OSError as exc:

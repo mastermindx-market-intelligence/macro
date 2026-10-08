@@ -4669,7 +4669,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml pandas pyarrow requests jsonschema
+        run: pip install pytest pyyaml pandas pyarrow requests jsonschema jinja2
       - name: synapse registry integrity (hard gate)
         run: python3 scripts/check_synapse_registry.py
       - name: synapse read-gate — warn tier + Article-2 hard fail
@@ -4679,7 +4679,7 @@ jobs:
       - name: factor boundary selftest (guard fires on planted violations)
         run: python3 scripts/check_factor_boundaries.py --selftest
       - name: synapse read-gate unit tests
-        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py -q
+        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py -q
       - name: factor deescalation shadow + boundary guard tests
         run: python -m pytest tests/test_factor_deescalation_shadow.py -q
       - name: edgar 8-K item-code expansion unit tests (LHB-R7)
@@ -8402,7 +8402,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy scipy pyyaml pyarrow
       - name: ratio lens test suite
-        run: python -m pytest tests/test_oracle_ratio_lens.py -q
+        run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_flow_pit.py -q
 
   hk-confirming-turn:
     if: ${{ false }}
