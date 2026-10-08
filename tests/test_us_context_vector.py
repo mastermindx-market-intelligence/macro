@@ -1263,7 +1263,7 @@ def test_wc7_corrupt_owner_lifecycle_fail_soft(tmp_path, monkeypatch, capsys):
     lifecycle = tmp_path / "node_lifecycle.parquet"
     nodes.touch()
     edges.touch()
-    lifecycle.write_bytes(b"corrupt—not a parquet")
+    lifecycle.write_bytes(b"corrupt-not-a-parquet")
     monkeypatch.setattr(graph_store, "nodes_path", lambda: nodes)
     monkeypatch.setattr(graph_store, "edges_path", lambda: edges)
     monkeypatch.setattr(graph_store, "node_lifecycle_path", lambda: lifecycle)
@@ -1273,7 +1273,7 @@ def test_wc7_corrupt_owner_lifecycle_fail_soft(tmp_path, monkeypatch, capsys):
     assert ucv._hierarchy_categories_for_baskets(["x"], "2026-10-07") == {}
     output = capsys.readouterr().out
     assert "hierarchy-unavailable" in output
-    assert "corrupt—not a parquet" not in output
+    assert "corrupt-not-a-parquet" not in output
 
 
 def test_wc7_absent_vs_valid_empty_lifecycle_both_remain_compatible(
