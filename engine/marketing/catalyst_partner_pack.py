@@ -751,7 +751,8 @@ def build_partner_pack_from_native_event(
                  and eid not in evidence_lookup, "NATIVE_EVIDENCE_INVALID")
         evidence_lookup[eid] = sid
 
-    def source_refs(claim: dict) -> list[str]:
+    def producer_source_refs(claim: dict) -> list[str]:
+        """01 packet fact evidence IDs refer to evidence ledger entries."""
         _require(isinstance(claim, dict), "NATIVE_CLAIM_INVALID")
         evidence_ids = claim.get("evidence_ids") or []
         source_ids = claim.get("source_ids") or []
@@ -767,6 +768,15 @@ def build_partner_pack_from_native_event(
         _require(bool(refs), "NATIVE_CLAIM_EVIDENCE_INVALID")
         return refs
 
+    def scan_source_refs(claim: dict) -> list[str]:
+        """01 scan projection changes evidence IDs to PUBLIC source IDs."""
+        _require(isinstance(claim, dict), "NATIVE_CLAIM_INVALID")
+        ids = claim.get("evidence_ids")
+        _require(isinstance(ids, list) and bool(ids)
+                 and all(isinstance(s, str) and s in native_byid for s in ids),
+                 "NATIVE_CLAIM_EVIDENCE_INVALID")
+        return sorted(set(ids))
+
     original = native_event.get("what_changed")
     _require(isinstance(original, list) and len(original) <= 30,
              "NATIVE_CLAIM_INVALID")
@@ -774,7 +784,7 @@ def build_partner_pack_from_native_event(
     for claim in original:
         text = _atom(claim.get("text") if isinstance(claim, dict) else None,
                      "NATIVE_CLAIM_INVALID", 600)
-        permitted_facts.add((text, tuple(source_refs(claim))))
+        permitted_facts.add((text, tuple(producer_source_refs(claim))))
 
     relations_raw = native_event.get("affected_tickers")
     _require(isinstance(relations_raw, list), "NATIVE_RELATIONS_MISSING")
@@ -815,6 +825,8 @@ def build_partner_pack_from_native_event(
                              )
                          } for s in scanned_sources),
                  "NATIVE_SCAN_SOURCE_MISMATCH")
+        _require({s["source_id"] for s in scanned_sources} == set(native_byid),
+                 "NATIVE_SCAN_SOURCE_MISMATCH")
         # All scan source IDs, including headline/indirect evidence, must
         # correspond byte-for-byte to the rights-qualified source projection.
         headlines = result.get("headline_evidence_ids")
@@ -843,7 +855,7 @@ def build_partner_pack_from_native_event(
                 observation.get("text") if isinstance(observation, dict) else None,
                 "NATIVE_CLAIM_INVALID", 600,
             )
-            claimed_refs = source_refs(observation)
+            claimed_refs = scan_source_refs(observation)
             allowed_fact = (text, tuple(claimed_refs)) in permitted_facts
             if kind == "EVIDENCED_INDIRECT" and not allowed_fact:
                 summary = relation.get("summary")
