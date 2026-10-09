@@ -12,6 +12,16 @@ Trade IDs are source-scoped by **ticker × exchange × TRF**, additionally bound
 
 The ring uses an append-first ordered index and a logical head for amortized eviction; genuinely out-of-order events use a bounded insertion path. It has a hard total capacity ceiling of 131,072 active observations across its subscribed symbols (plus bounded per-symbol compaction overhang). A capacity breach quarantines the affected symbol rather than silently asserting a continuous valid NBBO. Default 4,096 per-symbol allowance is only a memory cap, **not a production throughput admission**. On Mini4 synthetic observations, 9,000 same-symbol insertions completed in 145 ms versus 6,466 ms for the older implementation; this is not a live exchange-load SLO.
 
+### Historical REST source qualification and venue safeguards
+
+`rest_page.normalize_rest_page` now accepts one immutable private Massive Stocks REST trades/quotes response, preserving the original retrieval timestamp and byte digest, native nanosecond SIP/participant/TRF fields, fractional notional and native condition/correction identifiers. Historical REST outputs are **`FINAL_VINTAGE` only**: even a terminal pagination response cannot independently prove full-range capture, historical receivability, original correction lineage or an as-seen decision. Missing condition arrays stay null rather than being treated as empty. The path opens no new REST client or WebSocket; it reuses the existing source owner's collection capability.
+
+Both live and historical normalizers share `_coarse_venue_class`. Exchange 4 with a **recognized** TRF ID 201/202/203 is TRF (off-exchange reporting). Missing or unknown TRF IDs, SIP IDs 5/13 and FINRA ORF ID 62 remain UNKNOWN, never lit signed pressure. Other exchanges remain only **coarse lit candidates** until a source-versioned `/v3/reference/exchanges` admission has independently confirmed their type. Current Massive primary docs explicitly say exchange 62 is OTC/ORF and lacks the ordinary originating participant timestamp; it cannot be used as a lit trade.
+
+**Source-branch acceptance (2026-10-08):** candidate `d6eeb39f2f1529cdee1fb1d71467ad3d2dfed900` passed **233 pytest tests and 39 subtests** on M2 Studio (actual shared classifier plus all TP-1 modules). This is synthetic source-contract behavior, not real T/Q capture, final CI acceptance, a selected runtime or a production deployment.
+
+**Host boundary:** The canonical Terminal Quote Hub is VPS-local at `127.0.0.1:3100`, not a worker host. The attended M2 Studio read-only SSH preflight to the documented production VPS was denied `Permission denied (publickey)`; this does not confer source custody or a real-time socket lease. No alternative account/tool path or competing socket may be used to work around the denied access. Real capture requires current incumbent-host ownership/health and human-authorized host credential/permission resolution through its proper owner.
+
 `rest_corrections.compare_rest_trade` consumes a fully fetched, privately held REST response (no network) and returns typed mismatch/correction/ambiguity evidence without changing the original stream row. REST fields include a correction indicator; zero or absent correction in a later REST snapshot is not independent proof of historically final execution. Missing REST records are not automatically cancellations.
 
 `print_observations.observe_provisional_trade` invokes the ONE canonical `engine.flow_signing.classify_print` only after original as-seen trade/quote and condition checks. Output remains observational, correction-provisional, and explicitly null for directional alpha or future markouts. Lit and TRF are separate populations. Unknown-side notional must remain unknown—not a silent zero.
@@ -29,7 +39,7 @@ The ring uses an append-first ordered index and a logical head for amortized evi
 PYTHONPATH=. python3 -m pytest -q tests/test_tp1_qualified_print_classifier.py tests/test_tick_plane_*.py
 ```
 
-At source candidate `1133c11f0170f05bc4e6a27850dfad4185b5d55d`, M2 Studio completed 207 pytest cases and 30 subtests on the actual shared classifier plus all source modules. The local synthetic test result does not satisfy hosted CI, independent review, actual vendor-source coverage or production acceptance.
+At source candidate `d6eeb39f2f1529cdee1fb1d71467ad3d2dfed900`, M2 Studio completed 233 pytest cases and 39 subtests on the actual shared classifier plus all source modules. The local synthetic test result does not satisfy hosted CI, independent review, actual vendor-source coverage or production acceptance.
 
 
 
