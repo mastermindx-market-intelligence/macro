@@ -30,6 +30,8 @@ from uuid import UUID
 
 SCOPE = "catalyst_event_updates/v1"
 INTENT_TTL = timedelta(minutes=20)
+# Match the public scan freshness ceiling until the source owner admits a stricter TTL.
+PUBLIC_REVISION_MAX_AGE = timedelta(days=7)
 _TOKEN_PREFIX = b"mastermind.catalyst.intent.v1\x00"
 _EMAIL = re.compile(r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$")
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$")
@@ -431,8 +433,12 @@ class FunnelService:
         """
         now = _utc(now)
         _validate_revision(revision)
-        if _timestamp(revision.as_of_utc) > now + timedelta(seconds=30):
+        revision_as_of = _timestamp(revision.as_of_utc)
+        if revision_as_of > now + timedelta(seconds=30):
             raise FunnelGate("FUTURE_SOURCE_REVISION", 400)
+        # Latest generation does not imply an observation is recent enough to mail.
+        if now - revision_as_of > PUBLIC_REVISION_MAX_AGE:
+            raise FunnelGate("STALE_SOURCE_REVISION", 409)
         if not 1 <= limit <= 100:
             raise FunnelGate("INVALID_BATCH_LIMIT", 400)
         if not self.consent.available():
@@ -461,7 +467,7 @@ class FunnelService:
                 elif self.revisions.is_current(revision.event_id, revision.generation) is not True:
                     state = "OUTDATED_OR_UNVERIFIED_REVISION"
                 else:
-                    idem = f"catalyst:{revision.event_id}:{revision.generation}:{current.user_id}"
+                    idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{current.user_id}"
                     raw = self.sender.deliver(current, revision, idem)
                     state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
                              "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
