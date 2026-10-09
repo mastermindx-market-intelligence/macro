@@ -1,0 +1,40 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_________ test_specimen_grid_minimum_fits_its_container[\\.spec-grid] __________
+tests/test_design_system_foundations.py:627: in test_specimen_grid_minimum_fits_its_container
+    assert "minmax(min(300px,100%),1fr)" in body
+E   AssertionError: assert 'minmax(min(300px,100%),1fr)' in '{display:grid;gap:var(--gap-grid);grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}'
+__________ test_specimen_grid_minimum_fits_its_container[\\.do-dont] ___________
+tests/test_design_system_foundations.py:627: in test_specimen_grid_minimum_fits_its_container
+    assert "minmax(min(300px,100%),1fr)" in body
+E   AssertionError: assert 'minmax(min(300px,100%),1fr)' in '{display:grid;gap:var(--gap-grid);grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}'
+_________ test_specimen_type_samples_reflow_without_reducing_the_ramp __________
+tests/test_design_system_foundations.py:631: in test_specimen_type_samples_reflow_without_reducing_the_ramp
+    assert "flex-wrap:wrap" in re.sub(r"\s+", "", _rule_body(specimen, r"\.trow"))
+E   assert 'flex-wrap:wrap' in '{display:flex;align-items:baseline;gap:var(--sp-4);border-bottom:1pxdashedvar(--line);padding:7px0;}'
+E    +  where '{display:flex;align-items:baseline;gap:var(--sp-4);border-bottom:1pxdashedvar(--line);padding:7px0;}' = <function sub at 0x10125ba60>('\\s+', '', '{ display:flex; align-items:baseline; gap:var(--sp-4); border-bottom:1px dashed var(--line); padding:7px 0; }')
+E    +    where <function sub at 0x10125ba60> = re.sub
+E    +    and   '{ display:flex; align-items:baseline; gap:var(--sp-4); border-bottom:1px dashed var(--line); padding:7px 0; }' = _rule_body('<!doctype html>\n<html lang="en" data-lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="widt...b.id) location.hash = b.id;   /* tab state lives in the URL hash */\n    };\n  });\n});\n</script>\n</body>\n</html>\n', '\\.trow')
+___________ test_specimen_static_lens_and_long_buttons_fit_the_panel ___________
+tests/test_design_system_foundations.py:639: in test_specimen_static_lens_and_long_buttons_fit_the_panel
+    assert "max-width:100%" in lens and "box-sizing:border-box" in lens
+E   AssertionError: assert ('max-width:100%' in '{position:absolute;left:0;top:calc(100%+8px);z-index:5;width:280px;background:var(--glass-bg);border:1pxsolidvar(--gl...ass-blur);backdrop-filter:var(--glass-blur);box-shadow:var(--popover-shadow);padding:10px12px;font-size:var(--fs-sm);}')
+_________ test_specimen_wide_tables_keep_an_explicit_scroll_container __________
+tests/test_design_system_foundations.py:647: in test_specimen_wide_tables_keep_an_explicit_scroll_container
+    assert tables and len(wrapped) == len(tables), "Every wide table needs its existing scroll wrapper"
+E   AssertionError: Every wide table needs its existing scroll wrapper
+E   assert (['<table class="mx-tbl"', '<table class="mx-tbl"', '<table class="mx-tbl"'] and 2 == 3)
+E    +  where 2 = len(['<div class="mx-tblbox" id="pane-demo" role="tabpanel"><table class="mx-tbl"', '<div class="mx-tblbox"><table class="mx-tbl"'])
+E    +  and   3 = len(['<table class="mx-tbl"', '<table class="mx-tbl"', '<table class="mx-tbl"'])
+__________________ test_specimen_long_reference_copy_can_wrap __________________
+tests/test_design_system_foundations.py:654: in test_specimen_long_reference_copy_can_wrap
+    assert "overflow-wrap:anywhere" in body
+E   AssertionError: assert 'overflow-wrap:anywhere' in '{font-size:var(--fs-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}'
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_specimen_grid_minimum_fits_its_container[\\.spec-grid]
+FAILED tests/test_design_system_foundations.py::test_specimen_grid_minimum_fits_its_container[\\.do-dont]
+FAILED tests/test_design_system_foundations.py::test_specimen_type_samples_reflow_without_reducing_the_ramp
+FAILED tests/test_design_system_foundations.py::test_specimen_static_lens_and_long_buttons_fit_the_panel
+FAILED tests/test_design_system_foundations.py::test_specimen_wide_tables_keep_an_explicit_scroll_container
+FAILED tests/test_design_system_foundations.py::test_specimen_long_reference_copy_can_wrap
+6 failed, 34 deselected in 0.07s

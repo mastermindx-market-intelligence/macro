@@ -1,0 +1,12 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_specimen_task_directory_has_real_reachable_destinations _________
+tests/test_design_system_foundations.py:820: in test_specimen_task_directory_has_real_reachable_destinations
+    assert link['href'].startswith('#') and len(matching) == 1
+E   AssertionError: assert (True and 0 == 1)
+E    +  where True = <built-in method startswith of str object at 0x1037cdab0>('#')
+E    +    where <built-in method startswith of str object at 0x1037cdab0> = '#missing-type'.startswith
+E    +  and   0 = len([])
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_specimen_task_directory_has_real_reachable_destinations
+1 failed, 75 deselected in 0.04s

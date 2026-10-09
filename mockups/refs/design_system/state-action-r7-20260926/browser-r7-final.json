@@ -1,0 +1,1426 @@
+{
+  "scope": "R7 additions on current-main integrated specimen; local file transport; external HTTP(S) blocked; static action examples have no persistence service; keyboard details are real; no production or human-comprehension claim",
+  "cells": [
+    {
+      "viewport": 320,
+      "clientWidth": 309,
+      "documentWidth": 309,
+      "theme": "dark",
+      "locale": "en",
+      "documentLanguage": "en",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "Check save status",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "clientWidth": 309,
+      "documentWidth": 309,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "查询保存状态",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "clientWidth": 309,
+      "documentWidth": 309,
+      "theme": "light",
+      "locale": "en",
+      "documentLanguage": "en",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "Check save status",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "clientWidth": 309,
+      "documentWidth": 309,
+      "theme": "light",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "查询保存状态",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 360,
+      "clientWidth": 349,
+      "documentWidth": 349,
+      "theme": "dark",
+      "locale": "en",
+      "documentLanguage": "en",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "Check save status",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 360,
+      "clientWidth": 349,
+      "documentWidth": 349,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "查询保存状态",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 360,
+      "clientWidth": 349,
+      "documentWidth": 349,
+      "theme": "light",
+      "locale": "en",
+      "documentLanguage": "en",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "Check save status",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 360,
+      "clientWidth": 349,
+      "documentWidth": 349,
+      "theme": "light",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "查询保存状态",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 390,
+      "clientWidth": 379,
+      "documentWidth": 379,
+      "theme": "dark",
+      "locale": "en",
+      "documentLanguage": "en",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "Check save status",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 390,
+      "clientWidth": 379,
+      "documentWidth": 379,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "查询保存状态",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 390,
+      "clientWidth": 379,
+      "documentWidth": 379,
+      "theme": "light",
+      "locale": "en",
+      "documentLanguage": "en",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "Check save status",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 390,
+      "clientWidth": 379,
+      "documentWidth": 379,
+      "theme": "light",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "查询保存状态",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 768,
+      "clientWidth": 757,
+      "documentWidth": 757,
+      "theme": "dark",
+      "locale": "en",
+      "documentLanguage": "en",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "Check save status",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 768,
+      "clientWidth": 757,
+      "documentWidth": 757,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "查询保存状态",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 768,
+      "clientWidth": 757,
+      "documentWidth": 757,
+      "theme": "light",
+      "locale": "en",
+      "documentLanguage": "en",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "Check save status",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 768,
+      "clientWidth": 757,
+      "documentWidth": 757,
+      "theme": "light",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "查询保存状态",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 1440,
+      "clientWidth": 1429,
+      "documentWidth": 1429,
+      "theme": "dark",
+      "locale": "en",
+      "documentLanguage": "en",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "Check save status",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 1440,
+      "clientWidth": 1429,
+      "documentWidth": 1429,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "查询保存状态",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 1440,
+      "clientWidth": 1429,
+      "documentWidth": 1429,
+      "theme": "light",
+      "locale": "en",
+      "documentLanguage": "en",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "Check save status",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    },
+    {
+      "viewport": 1440,
+      "clientWidth": 1429,
+      "documentWidth": 1429,
+      "theme": "light",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "stateCount": 8,
+      "saveCount": 5,
+      "buttonsDisabled": true,
+      "caseOverflow": [],
+      "languageLeak": false,
+      "summaries": 7,
+      "partialAtRest": true,
+      "unknownText": "查询保存状态",
+      "href": "file:///Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r7-20260926/integrated/mockups/design_system/specimen.html",
+      "storageCount": 0,
+      "inspections": [
+        {
+          "name": "coverage",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "checks",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "empty-scope",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "filters",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "dated-read",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "public-evidence",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        },
+        {
+          "name": "save-result",
+          "open": true,
+          "focus": true,
+          "overflow": false,
+          "closed": true
+        }
+      ],
+      "noFictionalAction": true,
+      "pass": true
+    }
+  ],
+  "exceptions": []
+}

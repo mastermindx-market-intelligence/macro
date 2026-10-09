@@ -1,0 +1,4866 @@
+[
+  {
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "operation_id": "design-system-r4-warning-binding-20260926-001",
+    "tool": "update_styles",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"bba69475\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"13N-0\"\n    }\n  ]\n}"
+        }
+      ]
+    },
+    "before": {
+      "basic_info": {
+        "fileName": "MASTERMIND PAGES",
+        "pageName": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+        "pageId": "p-A-0",
+        "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+        "rootNodeId": "root_node_p-A-0",
+        "nodeCount": 1087,
+        "artboardCount": 11,
+        "artboards": [
+          {
+            "id": "RFJ-0",
+            "name": "01 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 0,
+            "worldY": 0
+          },
+          {
+            "id": "RJ4-0",
+            "name": "02 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 1520,
+            "worldY": 0
+          },
+          {
+            "id": "RMP-0",
+            "name": "03 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3040,
+            "worldY": 0
+          },
+          {
+            "id": "RMQ-0",
+            "name": "04 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3510,
+            "worldY": 0
+          },
+          {
+            "id": "RR1-0",
+            "name": "05 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 3980,
+            "worldY": 0
+          },
+          {
+            "id": "RR2-0",
+            "name": "06 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 5500,
+            "worldY": 0
+          },
+          {
+            "id": "RR3-0",
+            "name": "07 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7020,
+            "worldY": 0
+          },
+          {
+            "id": "RR4-0",
+            "name": "08 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7490,
+            "worldY": 0
+          },
+          {
+            "id": "SZ3-0",
+            "name": "09 \u00b7 Confluence Screener \u00b7 Global zero \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 420,
+            "worldX": 7960,
+            "worldY": 0
+          },
+          {
+            "id": "SZJ-0",
+            "name": "10 \u00b7 Confluence Screener \u00b7 Entitled hydration \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 560,
+            "worldX": 8760,
+            "worldY": 0
+          },
+          {
+            "id": "T0E-0",
+            "name": "11 \u00b7 Confluence Screener \u00b7 Honesty disclosure open \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 640,
+            "worldX": 9560,
+            "worldY": 0
+          }
+        ],
+        "pages": [
+          {
+            "id": "p-1-0",
+            "name": "Page 1",
+            "isActive": false
+          },
+          {
+            "id": "p-Q-0",
+            "name": "Earnings + Dossiers \u00b7 North Star Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-5-0",
+            "name": "Archetype Starters \u00b7 Governed",
+            "isActive": false
+          },
+          {
+            "id": "p-3-1",
+            "name": "News Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-2-1",
+            "name": "Prophet \u00b7 HK + Canada",
+            "isActive": false
+          },
+          {
+            "id": "p-4-1",
+            "name": "Company Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-9-0",
+            "name": "Sector Central \u00b7 Redesign \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-D-0",
+            "name": "Mastermind \u00b7 Shared Shell \u00b7 Review 01 \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-A-0",
+            "name": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+            "isActive": true
+          },
+          {
+            "id": "p-P-1",
+            "name": "Gov Revenue \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-O-1",
+            "name": "Bonds \u00b7 Decision Workspace \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-N-1",
+            "name": "Forex \u00b7 Guided Intelligence \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-J-1",
+            "name": "Policy Watch \u00b7 Decision Desk \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-I-1",
+            "name": "Intelligence Hub \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-H-1",
+            "name": "Confluence Screener \u00b7 R2 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-E-1",
+            "name": "Sector Intelligence \u00b7 vNext Study \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-8-1",
+            "name": "Live Site Baselines \u00b7 Wave 1 \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-C-0",
+            "name": "International Markets \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-B-0",
+            "name": "CANARY \u00b7 Paper v3 scratch \u00b7 2026-09-23",
+            "isActive": false
+          },
+          {
+            "id": "p-7-1",
+            "name": "China Intelligence \u00b7 vNext \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-6-1",
+            "name": "Sector Intelligence \u00b7 Unified Detail \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-G-0",
+            "name": "MarketOntology \u00b7 Joined Journey \u00b7 2026-09-25",
+            "isActive": false
+          },
+          {
+            "id": "p-F-0",
+            "name": "Mastermind AI \u00b7 Chat Workbench \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-M-0",
+            "name": "Crypto + Vector \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-L-0",
+            "name": "Commodities \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-K-0",
+            "name": "BioCatalyst \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif",
+          "Menlo",
+          "System Monospace",
+          "Arial"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--mx-dark-bg",
+              "value": "#0F1115"
+            },
+            {
+              "name": "--mx-dark-panel",
+              "value": "#181B21"
+            },
+            {
+              "name": "--mx-dark-panel2",
+              "value": "#1E222A"
+            },
+            {
+              "name": "--mx-dark-text",
+              "value": "#D7DCE3"
+            },
+            {
+              "name": "--mx-dark-muted",
+              "value": "#8B93A1"
+            },
+            {
+              "name": "--mx-dark-line",
+              "value": "#3A4150"
+            },
+            {
+              "name": "--mx-dark-up",
+              "value": "#45B873"
+            },
+            {
+              "name": "--mx-dark-down",
+              "value": "#E06464"
+            },
+            {
+              "name": "--mx-dark-warn",
+              "value": "#E0A030"
+            },
+            {
+              "name": "--mx-dark-act",
+              "value": "#E05555"
+            },
+            {
+              "name": "--mx-dark-ok",
+              "value": "#3DA564"
+            },
+            {
+              "name": "--mx-dark-info",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-link",
+              "value": "#7AA7E0"
+            },
+            {
+              "name": "--mx-dark-orange",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-bg",
+              "value": "#F7F8FA"
+            },
+            {
+              "name": "--mx-light-panel",
+              "value": "#FFFFFF"
+            },
+            {
+              "name": "--mx-light-panel2",
+              "value": "#EEF1F6"
+            },
+            {
+              "name": "--mx-light-text",
+              "value": "#1C2430"
+            },
+            {
+              "name": "--mx-light-muted",
+              "value": "#5D6B7E"
+            },
+            {
+              "name": "--mx-light-line",
+              "value": "#C9CCD1"
+            },
+            {
+              "name": "--mx-light-up",
+              "value": "#1F9A55"
+            },
+            {
+              "name": "--mx-light-down",
+              "value": "#CF4040"
+            },
+            {
+              "name": "--mx-light-warn",
+              "value": "#B9791A"
+            },
+            {
+              "name": "--mx-light-act",
+              "value": "#C43D3D"
+            },
+            {
+              "name": "--mx-light-ok",
+              "value": "#2F8A52"
+            },
+            {
+              "name": "--mx-light-info",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-link",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-orange",
+              "value": "#C4781F"
+            },
+            {
+              "name": "--mx-dark-prov",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-prov-ink",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-dark-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-dark-tier-ink",
+              "value": "#9B86FF"
+            },
+            {
+              "name": "--mx-dark-ser-1",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-ser-2",
+              "value": "#D4A017"
+            },
+            {
+              "name": "--mx-dark-ser-3",
+              "value": "#0EA5E9"
+            },
+            {
+              "name": "--mx-dark-ser-4",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-prov",
+              "value": "#2F6FD0"
+            },
+            {
+              "name": "--mx-light-prov-ink",
+              "value": "#2C62B3"
+            },
+            {
+              "name": "--mx-light-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-light-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-light-tier-ink",
+              "value": "#5B3FC4"
+            },
+            {
+              "name": "--mx-light-ser-1",
+              "value": "#2F63C4"
+            },
+            {
+              "name": "--mx-light-ser-2",
+              "value": "#8F6A04"
+            },
+            {
+              "name": "--mx-light-ser-3",
+              "value": "#0284C7"
+            },
+            {
+              "name": "--mx-light-ser-4",
+              "value": "#B06A25"
+            },
+            {
+              "name": "--mx-light-ink-up",
+              "value": "#1E6D47"
+            },
+            {
+              "name": "--mx-light-ink-down",
+              "value": "#B23C3D"
+            },
+            {
+              "name": "--mx-light-ink-warn",
+              "value": "#7D5922"
+            },
+            {
+              "name": "--mx-light-ink-link",
+              "value": "#2758E6"
+            },
+            {
+              "name": "--font-ui",
+              "value": "Inter"
+            },
+            {
+              "name": "--fs-micro",
+              "value": "10px"
+            },
+            {
+              "name": "--fs-label",
+              "value": "11px"
+            },
+            {
+              "name": "--fs-sm",
+              "value": "12.5px"
+            },
+            {
+              "name": "--fs-body",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-h3",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-md",
+              "value": "15px"
+            },
+            {
+              "name": "--fs-h2",
+              "value": "17px"
+            },
+            {
+              "name": "--fs-num-lg",
+              "value": "22px"
+            },
+            {
+              "name": "--fs-h1",
+              "value": "28px"
+            },
+            {
+              "name": "--fs-num-xl",
+              "value": "38px"
+            },
+            {
+              "name": "--fs-display",
+              "value": "46px"
+            },
+            {
+              "name": "--fw-regular",
+              "value": "400"
+            },
+            {
+              "name": "--fw-medium",
+              "value": "500"
+            },
+            {
+              "name": "--fw-semibold",
+              "value": "600"
+            },
+            {
+              "name": "--fw-bold",
+              "value": "700"
+            },
+            {
+              "name": "--fw-extrabold",
+              "value": "800"
+            },
+            {
+              "name": "--bp-mobile",
+              "value": "390px"
+            },
+            {
+              "name": "--bp-tablet",
+              "value": "768px"
+            },
+            {
+              "name": "--bp-desktop",
+              "value": "1440px"
+            },
+            {
+              "name": "--sp-1",
+              "value": "4px"
+            },
+            {
+              "name": "--sp-2",
+              "value": "8px"
+            },
+            {
+              "name": "--sp-3",
+              "value": "12px"
+            },
+            {
+              "name": "--sp-4",
+              "value": "16px"
+            },
+            {
+              "name": "--sp-5",
+              "value": "20px"
+            },
+            {
+              "name": "--sp-6",
+              "value": "24px"
+            },
+            {
+              "name": "--sp-7",
+              "value": "32px"
+            },
+            {
+              "name": "--sp-8",
+              "value": "44px"
+            },
+            {
+              "name": "--r-ctl",
+              "value": "8px"
+            },
+            {
+              "name": "--r-btn",
+              "value": "10px"
+            },
+            {
+              "name": "--r-card",
+              "value": "12px"
+            },
+            {
+              "name": "--r-panel",
+              "value": "14px"
+            },
+            {
+              "name": "--r-pill",
+              "value": "999px"
+            }
+          ]
+        },
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "contentHash": {
+          "tokens": "bba69475"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M2WGNCX9475G79JRKJTCM08P"
+      },
+      "snapshot_sha256": "dacc0e835ca55cc37f540bb9ae9adac09a43ed9039ef88428181348bbb1ea1e6",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "after": {
+      "basic_info": {
+        "fileName": "MASTERMIND PAGES",
+        "pageName": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+        "pageId": "p-A-0",
+        "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+        "rootNodeId": "root_node_p-A-0",
+        "nodeCount": 1087,
+        "artboardCount": 11,
+        "artboards": [
+          {
+            "id": "RFJ-0",
+            "name": "01 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 0,
+            "worldY": 0
+          },
+          {
+            "id": "RJ4-0",
+            "name": "02 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 1520,
+            "worldY": 0
+          },
+          {
+            "id": "RMP-0",
+            "name": "03 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3040,
+            "worldY": 0
+          },
+          {
+            "id": "RMQ-0",
+            "name": "04 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3510,
+            "worldY": 0
+          },
+          {
+            "id": "RR1-0",
+            "name": "05 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 3980,
+            "worldY": 0
+          },
+          {
+            "id": "RR2-0",
+            "name": "06 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 5500,
+            "worldY": 0
+          },
+          {
+            "id": "RR3-0",
+            "name": "07 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7020,
+            "worldY": 0
+          },
+          {
+            "id": "RR4-0",
+            "name": "08 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7490,
+            "worldY": 0
+          },
+          {
+            "id": "SZ3-0",
+            "name": "09 \u00b7 Confluence Screener \u00b7 Global zero \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 420,
+            "worldX": 7960,
+            "worldY": 0
+          },
+          {
+            "id": "SZJ-0",
+            "name": "10 \u00b7 Confluence Screener \u00b7 Entitled hydration \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 560,
+            "worldX": 8760,
+            "worldY": 0
+          },
+          {
+            "id": "T0E-0",
+            "name": "11 \u00b7 Confluence Screener \u00b7 Honesty disclosure open \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 640,
+            "worldX": 9560,
+            "worldY": 0
+          }
+        ],
+        "pages": [
+          {
+            "id": "p-1-0",
+            "name": "Page 1",
+            "isActive": false
+          },
+          {
+            "id": "p-Q-0",
+            "name": "Earnings + Dossiers \u00b7 North Star Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-5-0",
+            "name": "Archetype Starters \u00b7 Governed",
+            "isActive": false
+          },
+          {
+            "id": "p-3-1",
+            "name": "News Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-2-1",
+            "name": "Prophet \u00b7 HK + Canada",
+            "isActive": false
+          },
+          {
+            "id": "p-4-1",
+            "name": "Company Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-9-0",
+            "name": "Sector Central \u00b7 Redesign \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-D-0",
+            "name": "Mastermind \u00b7 Shared Shell \u00b7 Review 01 \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-A-0",
+            "name": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+            "isActive": true
+          },
+          {
+            "id": "p-P-1",
+            "name": "Gov Revenue \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-O-1",
+            "name": "Bonds \u00b7 Decision Workspace \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-N-1",
+            "name": "Forex \u00b7 Guided Intelligence \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-J-1",
+            "name": "Policy Watch \u00b7 Decision Desk \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-I-1",
+            "name": "Intelligence Hub \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-H-1",
+            "name": "Confluence Screener \u00b7 R2 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-E-1",
+            "name": "Sector Intelligence \u00b7 vNext Study \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-8-1",
+            "name": "Live Site Baselines \u00b7 Wave 1 \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-C-0",
+            "name": "International Markets \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-B-0",
+            "name": "CANARY \u00b7 Paper v3 scratch \u00b7 2026-09-23",
+            "isActive": false
+          },
+          {
+            "id": "p-7-1",
+            "name": "China Intelligence \u00b7 vNext \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-6-1",
+            "name": "Sector Intelligence \u00b7 Unified Detail \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-G-0",
+            "name": "MarketOntology \u00b7 Joined Journey \u00b7 2026-09-25",
+            "isActive": false
+          },
+          {
+            "id": "p-F-0",
+            "name": "Mastermind AI \u00b7 Chat Workbench \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-M-0",
+            "name": "Crypto + Vector \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-L-0",
+            "name": "Commodities \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-K-0",
+            "name": "BioCatalyst \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif",
+          "Menlo",
+          "System Monospace",
+          "Arial"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--mx-dark-bg",
+              "value": "#0F1115"
+            },
+            {
+              "name": "--mx-dark-panel",
+              "value": "#181B21"
+            },
+            {
+              "name": "--mx-dark-panel2",
+              "value": "#1E222A"
+            },
+            {
+              "name": "--mx-dark-text",
+              "value": "#D7DCE3"
+            },
+            {
+              "name": "--mx-dark-muted",
+              "value": "#8B93A1"
+            },
+            {
+              "name": "--mx-dark-line",
+              "value": "#3A4150"
+            },
+            {
+              "name": "--mx-dark-up",
+              "value": "#45B873"
+            },
+            {
+              "name": "--mx-dark-down",
+              "value": "#E06464"
+            },
+            {
+              "name": "--mx-dark-warn",
+              "value": "#E0A030"
+            },
+            {
+              "name": "--mx-dark-act",
+              "value": "#E05555"
+            },
+            {
+              "name": "--mx-dark-ok",
+              "value": "#3DA564"
+            },
+            {
+              "name": "--mx-dark-info",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-link",
+              "value": "#7AA7E0"
+            },
+            {
+              "name": "--mx-dark-orange",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-bg",
+              "value": "#F7F8FA"
+            },
+            {
+              "name": "--mx-light-panel",
+              "value": "#FFFFFF"
+            },
+            {
+              "name": "--mx-light-panel2",
+              "value": "#EEF1F6"
+            },
+            {
+              "name": "--mx-light-text",
+              "value": "#1C2430"
+            },
+            {
+              "name": "--mx-light-muted",
+              "value": "#5D6B7E"
+            },
+            {
+              "name": "--mx-light-line",
+              "value": "#C9CCD1"
+            },
+            {
+              "name": "--mx-light-up",
+              "value": "#1F9A55"
+            },
+            {
+              "name": "--mx-light-down",
+              "value": "#CF4040"
+            },
+            {
+              "name": "--mx-light-warn",
+              "value": "#B9791A"
+            },
+            {
+              "name": "--mx-light-act",
+              "value": "#C43D3D"
+            },
+            {
+              "name": "--mx-light-ok",
+              "value": "#2F8A52"
+            },
+            {
+              "name": "--mx-light-info",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-link",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-orange",
+              "value": "#C4781F"
+            },
+            {
+              "name": "--mx-dark-prov",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-prov-ink",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-dark-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-dark-tier-ink",
+              "value": "#9B86FF"
+            },
+            {
+              "name": "--mx-dark-ser-1",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-ser-2",
+              "value": "#D4A017"
+            },
+            {
+              "name": "--mx-dark-ser-3",
+              "value": "#0EA5E9"
+            },
+            {
+              "name": "--mx-dark-ser-4",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-prov",
+              "value": "#2F6FD0"
+            },
+            {
+              "name": "--mx-light-prov-ink",
+              "value": "#2C62B3"
+            },
+            {
+              "name": "--mx-light-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-light-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-light-tier-ink",
+              "value": "#5B3FC4"
+            },
+            {
+              "name": "--mx-light-ser-1",
+              "value": "#2F63C4"
+            },
+            {
+              "name": "--mx-light-ser-2",
+              "value": "#8F6A04"
+            },
+            {
+              "name": "--mx-light-ser-3",
+              "value": "#0284C7"
+            },
+            {
+              "name": "--mx-light-ser-4",
+              "value": "#B06A25"
+            },
+            {
+              "name": "--mx-light-ink-up",
+              "value": "#1E6D47"
+            },
+            {
+              "name": "--mx-light-ink-down",
+              "value": "#B23C3D"
+            },
+            {
+              "name": "--mx-light-ink-warn",
+              "value": "#7D5922"
+            },
+            {
+              "name": "--mx-light-ink-link",
+              "value": "#2758E6"
+            },
+            {
+              "name": "--font-ui",
+              "value": "Inter"
+            },
+            {
+              "name": "--fs-micro",
+              "value": "10px"
+            },
+            {
+              "name": "--fs-label",
+              "value": "11px"
+            },
+            {
+              "name": "--fs-sm",
+              "value": "12.5px"
+            },
+            {
+              "name": "--fs-body",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-h3",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-md",
+              "value": "15px"
+            },
+            {
+              "name": "--fs-h2",
+              "value": "17px"
+            },
+            {
+              "name": "--fs-num-lg",
+              "value": "22px"
+            },
+            {
+              "name": "--fs-h1",
+              "value": "28px"
+            },
+            {
+              "name": "--fs-num-xl",
+              "value": "38px"
+            },
+            {
+              "name": "--fs-display",
+              "value": "46px"
+            },
+            {
+              "name": "--fw-regular",
+              "value": "400"
+            },
+            {
+              "name": "--fw-medium",
+              "value": "500"
+            },
+            {
+              "name": "--fw-semibold",
+              "value": "600"
+            },
+            {
+              "name": "--fw-bold",
+              "value": "700"
+            },
+            {
+              "name": "--fw-extrabold",
+              "value": "800"
+            },
+            {
+              "name": "--bp-mobile",
+              "value": "390px"
+            },
+            {
+              "name": "--bp-tablet",
+              "value": "768px"
+            },
+            {
+              "name": "--bp-desktop",
+              "value": "1440px"
+            },
+            {
+              "name": "--sp-1",
+              "value": "4px"
+            },
+            {
+              "name": "--sp-2",
+              "value": "8px"
+            },
+            {
+              "name": "--sp-3",
+              "value": "12px"
+            },
+            {
+              "name": "--sp-4",
+              "value": "16px"
+            },
+            {
+              "name": "--sp-5",
+              "value": "20px"
+            },
+            {
+              "name": "--sp-6",
+              "value": "24px"
+            },
+            {
+              "name": "--sp-7",
+              "value": "32px"
+            },
+            {
+              "name": "--sp-8",
+              "value": "44px"
+            },
+            {
+              "name": "--r-ctl",
+              "value": "8px"
+            },
+            {
+              "name": "--r-btn",
+              "value": "10px"
+            },
+            {
+              "name": "--r-card",
+              "value": "12px"
+            },
+            {
+              "name": "--r-panel",
+              "value": "14px"
+            },
+            {
+              "name": "--r-pill",
+              "value": "999px"
+            }
+          ]
+        },
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "contentHash": {
+          "tokens": "bba69475"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M2WGNCX9475G79JRKJTCM08P"
+      },
+      "snapshot_sha256": "dacc0e835ca55cc37f540bb9ae9adac09a43ed9039ef88428181348bbb1ea1e6",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "retry_allowed": false,
+    "production_acceptance": false,
+    "artifact_paths": []
+  },
+  {
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "operation_id": "design-system-r4-prepared-template-text-20260926-001",
+    "tool": "set_text_content",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"bba69475\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"19W-0\",\n      \"textContent\": \"DESIGN SYSTEM \u00b7 PREPARED-ANSWER TEMPLATE \u00b7 WORKING\"\n    },\n    {\n      \"nodeId\": \"19X-0\",\n      \"textContent\": \"Make the answer obvious. Keep the depth.\"\n    },\n    {\n      \"nodeId\": \"19Y-0\",\n      \"textContent\": \"Start with the user\u2019s question, not a wall of modules. This working template projects repository guidance; reference approval and implementation proof remain separate.\"\n    },\n    {\n      \"nodeId\": \"1A1-0\",\n      \"textContent\": \"ILLUSTRATIVE FIRST READ \u00b7 NOT LIVE DATA\\nIndex up. Breadth weak. \u2192 Inspect participating sectors.\\nUse the same comparison window; keep partial coverage beside the claim.\"\n    },\n    {\n      \"nodeId\": \"1A7-0\",\n      \"textContent\": \"02 \u00b7 FIRST READ + USEFUL DEFAULT\"\n    },\n    {\n      \"nodeId\": \"1A8-0\",\n      \"textContent\": \"Question + intended reader: __________\\nMain read + material caveat: __________\\nUseful before setup: __________\\nPrimary step + full-research route: __________\"\n    },\n    {\n      \"nodeId\": \"1AM-0\",\n      \"textContent\": \"Source components + editable aliases: __________\\nExisting state variants: __________\\nActual text/background pairs: __________\\nMissing primitive \u2192 design-system owner; no local substitute.\"\n    },\n    {\n      \"nodeId\": \"1AO-0\",\n      \"textContent\": \"07 \u00b7 EARNED COPY + ACCESSIBLE DEPTH\"\n    },\n    {\n      \"nodeId\": \"1AP-0\",\n      \"textContent\": \"First fold: answer + decisive comparison\\nRemove repetition, not adverse evidence\\nDemoted item \u2192 actual destination: __________\\nFull results stay directly reachable; no disclosure maze.\"\n    },\n    {\n      \"nodeId\": \"1AV-0\",\n      \"textContent\": \"09 \u00b7 FOUR SEPARATE PROOF TYPES\"\n    },\n    {\n      \"nodeId\": \"1AW-0\",\n      \"textContent\": \"TECHNICAL: actual data, layout, states and interactions\\nDESIGN: reading order, earned copy and preserved depth\\nHUMAN: unfamiliar intended-user responses; no walkthrough\\nJOURNEY: complete the task, inspect evidence, return\\nAttach exact receipts; unperformed evidence = NOT TESTED.\"\n    },\n    {\n      \"nodeId\": \"1B0-0\",\n      \"textContent\": \"Comfortable targets: 44px product target\\nVisible focus; keyboard, touch and zoom\\nContrast on each actual surface/state\\nNo hover-only information\\nOne h1; panel sections use h2\"\n    },\n    {\n      \"nodeId\": \"1B5-0\",\n      \"textContent\": \"12 \u00b7 REAL RESULT + ACCEPTANCE\"\n    },\n    {\n      \"nodeId\": \"1B6-0\",\n      \"textContent\": \"Save / alert result owner: __________\\nReturn: object, filters, selection, position\\nDesign authority + independent review: __________\\nReal journey + production evidence: __________\\nHuman orientation: NOT TESTED until observed.\"\n    },\n    {\n      \"nodeId\": \"1B8-0\",\n      \"textContent\": \"BEFORE BUILD \u00b7 EXISTING GATES STILL APPLY\"\n    },\n    {\n      \"nodeId\": \"1B9-0\",\n      \"textContent\": \"Resolve missing primitives, family scope and editable identity. RIG approves canonical reference status; a screenshot or tool approval does not. Handoff includes data mapping, responsive and degraded states, accessible interactions, real results and evidence. Unresolved material gaps return to design authority.\"\n    }\n  ]\n}"
+        }
+      ]
+    },
+    "before": {
+      "basic_info": {
+        "fileName": "MASTERMIND PAGES",
+        "pageName": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+        "pageId": "p-A-0",
+        "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+        "rootNodeId": "root_node_p-A-0",
+        "nodeCount": 1087,
+        "artboardCount": 11,
+        "artboards": [
+          {
+            "id": "RFJ-0",
+            "name": "01 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 0,
+            "worldY": 0
+          },
+          {
+            "id": "RJ4-0",
+            "name": "02 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 1520,
+            "worldY": 0
+          },
+          {
+            "id": "RMP-0",
+            "name": "03 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3040,
+            "worldY": 0
+          },
+          {
+            "id": "RMQ-0",
+            "name": "04 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3510,
+            "worldY": 0
+          },
+          {
+            "id": "RR1-0",
+            "name": "05 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 3980,
+            "worldY": 0
+          },
+          {
+            "id": "RR2-0",
+            "name": "06 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 5500,
+            "worldY": 0
+          },
+          {
+            "id": "RR3-0",
+            "name": "07 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7020,
+            "worldY": 0
+          },
+          {
+            "id": "RR4-0",
+            "name": "08 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7490,
+            "worldY": 0
+          },
+          {
+            "id": "SZ3-0",
+            "name": "09 \u00b7 Confluence Screener \u00b7 Global zero \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 420,
+            "worldX": 7960,
+            "worldY": 0
+          },
+          {
+            "id": "SZJ-0",
+            "name": "10 \u00b7 Confluence Screener \u00b7 Entitled hydration \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 560,
+            "worldX": 8760,
+            "worldY": 0
+          },
+          {
+            "id": "T0E-0",
+            "name": "11 \u00b7 Confluence Screener \u00b7 Honesty disclosure open \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 640,
+            "worldX": 9560,
+            "worldY": 0
+          }
+        ],
+        "pages": [
+          {
+            "id": "p-1-0",
+            "name": "Page 1",
+            "isActive": false
+          },
+          {
+            "id": "p-Q-0",
+            "name": "Earnings + Dossiers \u00b7 North Star Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-5-0",
+            "name": "Archetype Starters \u00b7 Governed",
+            "isActive": false
+          },
+          {
+            "id": "p-3-1",
+            "name": "News Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-2-1",
+            "name": "Prophet \u00b7 HK + Canada",
+            "isActive": false
+          },
+          {
+            "id": "p-4-1",
+            "name": "Company Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-9-0",
+            "name": "Sector Central \u00b7 Redesign \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-D-0",
+            "name": "Mastermind \u00b7 Shared Shell \u00b7 Review 01 \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-A-0",
+            "name": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+            "isActive": true
+          },
+          {
+            "id": "p-P-1",
+            "name": "Gov Revenue \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-O-1",
+            "name": "Bonds \u00b7 Decision Workspace \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-N-1",
+            "name": "Forex \u00b7 Guided Intelligence \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-J-1",
+            "name": "Policy Watch \u00b7 Decision Desk \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-I-1",
+            "name": "Intelligence Hub \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-H-1",
+            "name": "Confluence Screener \u00b7 R2 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-E-1",
+            "name": "Sector Intelligence \u00b7 vNext Study \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-8-1",
+            "name": "Live Site Baselines \u00b7 Wave 1 \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-C-0",
+            "name": "International Markets \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-B-0",
+            "name": "CANARY \u00b7 Paper v3 scratch \u00b7 2026-09-23",
+            "isActive": false
+          },
+          {
+            "id": "p-7-1",
+            "name": "China Intelligence \u00b7 vNext \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-6-1",
+            "name": "Sector Intelligence \u00b7 Unified Detail \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-G-0",
+            "name": "MarketOntology \u00b7 Joined Journey \u00b7 2026-09-25",
+            "isActive": false
+          },
+          {
+            "id": "p-F-0",
+            "name": "Mastermind AI \u00b7 Chat Workbench \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-M-0",
+            "name": "Crypto + Vector \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-L-0",
+            "name": "Commodities \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-K-0",
+            "name": "BioCatalyst \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif",
+          "Menlo",
+          "System Monospace",
+          "Arial"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--mx-dark-bg",
+              "value": "#0F1115"
+            },
+            {
+              "name": "--mx-dark-panel",
+              "value": "#181B21"
+            },
+            {
+              "name": "--mx-dark-panel2",
+              "value": "#1E222A"
+            },
+            {
+              "name": "--mx-dark-text",
+              "value": "#D7DCE3"
+            },
+            {
+              "name": "--mx-dark-muted",
+              "value": "#8B93A1"
+            },
+            {
+              "name": "--mx-dark-line",
+              "value": "#3A4150"
+            },
+            {
+              "name": "--mx-dark-up",
+              "value": "#45B873"
+            },
+            {
+              "name": "--mx-dark-down",
+              "value": "#E06464"
+            },
+            {
+              "name": "--mx-dark-warn",
+              "value": "#E0A030"
+            },
+            {
+              "name": "--mx-dark-act",
+              "value": "#E05555"
+            },
+            {
+              "name": "--mx-dark-ok",
+              "value": "#3DA564"
+            },
+            {
+              "name": "--mx-dark-info",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-link",
+              "value": "#7AA7E0"
+            },
+            {
+              "name": "--mx-dark-orange",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-bg",
+              "value": "#F7F8FA"
+            },
+            {
+              "name": "--mx-light-panel",
+              "value": "#FFFFFF"
+            },
+            {
+              "name": "--mx-light-panel2",
+              "value": "#EEF1F6"
+            },
+            {
+              "name": "--mx-light-text",
+              "value": "#1C2430"
+            },
+            {
+              "name": "--mx-light-muted",
+              "value": "#5D6B7E"
+            },
+            {
+              "name": "--mx-light-line",
+              "value": "#C9CCD1"
+            },
+            {
+              "name": "--mx-light-up",
+              "value": "#1F9A55"
+            },
+            {
+              "name": "--mx-light-down",
+              "value": "#CF4040"
+            },
+            {
+              "name": "--mx-light-warn",
+              "value": "#B9791A"
+            },
+            {
+              "name": "--mx-light-act",
+              "value": "#C43D3D"
+            },
+            {
+              "name": "--mx-light-ok",
+              "value": "#2F8A52"
+            },
+            {
+              "name": "--mx-light-info",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-link",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-orange",
+              "value": "#C4781F"
+            },
+            {
+              "name": "--mx-dark-prov",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-prov-ink",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-dark-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-dark-tier-ink",
+              "value": "#9B86FF"
+            },
+            {
+              "name": "--mx-dark-ser-1",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-ser-2",
+              "value": "#D4A017"
+            },
+            {
+              "name": "--mx-dark-ser-3",
+              "value": "#0EA5E9"
+            },
+            {
+              "name": "--mx-dark-ser-4",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-prov",
+              "value": "#2F6FD0"
+            },
+            {
+              "name": "--mx-light-prov-ink",
+              "value": "#2C62B3"
+            },
+            {
+              "name": "--mx-light-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-light-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-light-tier-ink",
+              "value": "#5B3FC4"
+            },
+            {
+              "name": "--mx-light-ser-1",
+              "value": "#2F63C4"
+            },
+            {
+              "name": "--mx-light-ser-2",
+              "value": "#8F6A04"
+            },
+            {
+              "name": "--mx-light-ser-3",
+              "value": "#0284C7"
+            },
+            {
+              "name": "--mx-light-ser-4",
+              "value": "#B06A25"
+            },
+            {
+              "name": "--mx-light-ink-up",
+              "value": "#1E6D47"
+            },
+            {
+              "name": "--mx-light-ink-down",
+              "value": "#B23C3D"
+            },
+            {
+              "name": "--mx-light-ink-warn",
+              "value": "#7D5922"
+            },
+            {
+              "name": "--mx-light-ink-link",
+              "value": "#2758E6"
+            },
+            {
+              "name": "--font-ui",
+              "value": "Inter"
+            },
+            {
+              "name": "--fs-micro",
+              "value": "10px"
+            },
+            {
+              "name": "--fs-label",
+              "value": "11px"
+            },
+            {
+              "name": "--fs-sm",
+              "value": "12.5px"
+            },
+            {
+              "name": "--fs-body",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-h3",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-md",
+              "value": "15px"
+            },
+            {
+              "name": "--fs-h2",
+              "value": "17px"
+            },
+            {
+              "name": "--fs-num-lg",
+              "value": "22px"
+            },
+            {
+              "name": "--fs-h1",
+              "value": "28px"
+            },
+            {
+              "name": "--fs-num-xl",
+              "value": "38px"
+            },
+            {
+              "name": "--fs-display",
+              "value": "46px"
+            },
+            {
+              "name": "--fw-regular",
+              "value": "400"
+            },
+            {
+              "name": "--fw-medium",
+              "value": "500"
+            },
+            {
+              "name": "--fw-semibold",
+              "value": "600"
+            },
+            {
+              "name": "--fw-bold",
+              "value": "700"
+            },
+            {
+              "name": "--fw-extrabold",
+              "value": "800"
+            },
+            {
+              "name": "--bp-mobile",
+              "value": "390px"
+            },
+            {
+              "name": "--bp-tablet",
+              "value": "768px"
+            },
+            {
+              "name": "--bp-desktop",
+              "value": "1440px"
+            },
+            {
+              "name": "--sp-1",
+              "value": "4px"
+            },
+            {
+              "name": "--sp-2",
+              "value": "8px"
+            },
+            {
+              "name": "--sp-3",
+              "value": "12px"
+            },
+            {
+              "name": "--sp-4",
+              "value": "16px"
+            },
+            {
+              "name": "--sp-5",
+              "value": "20px"
+            },
+            {
+              "name": "--sp-6",
+              "value": "24px"
+            },
+            {
+              "name": "--sp-7",
+              "value": "32px"
+            },
+            {
+              "name": "--sp-8",
+              "value": "44px"
+            },
+            {
+              "name": "--r-ctl",
+              "value": "8px"
+            },
+            {
+              "name": "--r-btn",
+              "value": "10px"
+            },
+            {
+              "name": "--r-card",
+              "value": "12px"
+            },
+            {
+              "name": "--r-panel",
+              "value": "14px"
+            },
+            {
+              "name": "--r-pill",
+              "value": "999px"
+            }
+          ]
+        },
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "contentHash": {
+          "tokens": "bba69475"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M2WGNCX9475G79JRKJTCM08P"
+      },
+      "snapshot_sha256": "dacc0e835ca55cc37f540bb9ae9adac09a43ed9039ef88428181348bbb1ea1e6",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "after": {
+      "basic_info": {
+        "fileName": "MASTERMIND PAGES",
+        "pageName": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+        "pageId": "p-A-0",
+        "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+        "rootNodeId": "root_node_p-A-0",
+        "nodeCount": 1087,
+        "artboardCount": 11,
+        "artboards": [
+          {
+            "id": "RFJ-0",
+            "name": "01 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 0,
+            "worldY": 0
+          },
+          {
+            "id": "RJ4-0",
+            "name": "02 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 1520,
+            "worldY": 0
+          },
+          {
+            "id": "RMP-0",
+            "name": "03 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3040,
+            "worldY": 0
+          },
+          {
+            "id": "RMQ-0",
+            "name": "04 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3510,
+            "worldY": 0
+          },
+          {
+            "id": "RR1-0",
+            "name": "05 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 3980,
+            "worldY": 0
+          },
+          {
+            "id": "RR2-0",
+            "name": "06 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 5500,
+            "worldY": 0
+          },
+          {
+            "id": "RR3-0",
+            "name": "07 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7020,
+            "worldY": 0
+          },
+          {
+            "id": "RR4-0",
+            "name": "08 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7490,
+            "worldY": 0
+          },
+          {
+            "id": "SZ3-0",
+            "name": "09 \u00b7 Confluence Screener \u00b7 Global zero \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 420,
+            "worldX": 7960,
+            "worldY": 0
+          },
+          {
+            "id": "SZJ-0",
+            "name": "10 \u00b7 Confluence Screener \u00b7 Entitled hydration \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 560,
+            "worldX": 8760,
+            "worldY": 0
+          },
+          {
+            "id": "T0E-0",
+            "name": "11 \u00b7 Confluence Screener \u00b7 Honesty disclosure open \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 640,
+            "worldX": 9560,
+            "worldY": 0
+          }
+        ],
+        "pages": [
+          {
+            "id": "p-1-0",
+            "name": "Page 1",
+            "isActive": false
+          },
+          {
+            "id": "p-Q-0",
+            "name": "Earnings + Dossiers \u00b7 North Star Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-5-0",
+            "name": "Archetype Starters \u00b7 Governed",
+            "isActive": false
+          },
+          {
+            "id": "p-3-1",
+            "name": "News Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-2-1",
+            "name": "Prophet \u00b7 HK + Canada",
+            "isActive": false
+          },
+          {
+            "id": "p-4-1",
+            "name": "Company Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-9-0",
+            "name": "Sector Central \u00b7 Redesign \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-D-0",
+            "name": "Mastermind \u00b7 Shared Shell \u00b7 Review 01 \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-A-0",
+            "name": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+            "isActive": true
+          },
+          {
+            "id": "p-P-1",
+            "name": "Gov Revenue \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-O-1",
+            "name": "Bonds \u00b7 Decision Workspace \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-N-1",
+            "name": "Forex \u00b7 Guided Intelligence \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-J-1",
+            "name": "Policy Watch \u00b7 Decision Desk \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-I-1",
+            "name": "Intelligence Hub \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-H-1",
+            "name": "Confluence Screener \u00b7 R2 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-E-1",
+            "name": "Sector Intelligence \u00b7 vNext Study \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-8-1",
+            "name": "Live Site Baselines \u00b7 Wave 1 \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-C-0",
+            "name": "International Markets \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-B-0",
+            "name": "CANARY \u00b7 Paper v3 scratch \u00b7 2026-09-23",
+            "isActive": false
+          },
+          {
+            "id": "p-7-1",
+            "name": "China Intelligence \u00b7 vNext \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-6-1",
+            "name": "Sector Intelligence \u00b7 Unified Detail \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-G-0",
+            "name": "MarketOntology \u00b7 Joined Journey \u00b7 2026-09-25",
+            "isActive": false
+          },
+          {
+            "id": "p-F-0",
+            "name": "Mastermind AI \u00b7 Chat Workbench \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-M-0",
+            "name": "Crypto + Vector \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-L-0",
+            "name": "Commodities \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-K-0",
+            "name": "BioCatalyst \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif",
+          "Menlo",
+          "System Monospace",
+          "Arial"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--mx-dark-bg",
+              "value": "#0F1115"
+            },
+            {
+              "name": "--mx-dark-panel",
+              "value": "#181B21"
+            },
+            {
+              "name": "--mx-dark-panel2",
+              "value": "#1E222A"
+            },
+            {
+              "name": "--mx-dark-text",
+              "value": "#D7DCE3"
+            },
+            {
+              "name": "--mx-dark-muted",
+              "value": "#8B93A1"
+            },
+            {
+              "name": "--mx-dark-line",
+              "value": "#3A4150"
+            },
+            {
+              "name": "--mx-dark-up",
+              "value": "#45B873"
+            },
+            {
+              "name": "--mx-dark-down",
+              "value": "#E06464"
+            },
+            {
+              "name": "--mx-dark-warn",
+              "value": "#E0A030"
+            },
+            {
+              "name": "--mx-dark-act",
+              "value": "#E05555"
+            },
+            {
+              "name": "--mx-dark-ok",
+              "value": "#3DA564"
+            },
+            {
+              "name": "--mx-dark-info",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-link",
+              "value": "#7AA7E0"
+            },
+            {
+              "name": "--mx-dark-orange",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-bg",
+              "value": "#F7F8FA"
+            },
+            {
+              "name": "--mx-light-panel",
+              "value": "#FFFFFF"
+            },
+            {
+              "name": "--mx-light-panel2",
+              "value": "#EEF1F6"
+            },
+            {
+              "name": "--mx-light-text",
+              "value": "#1C2430"
+            },
+            {
+              "name": "--mx-light-muted",
+              "value": "#5D6B7E"
+            },
+            {
+              "name": "--mx-light-line",
+              "value": "#C9CCD1"
+            },
+            {
+              "name": "--mx-light-up",
+              "value": "#1F9A55"
+            },
+            {
+              "name": "--mx-light-down",
+              "value": "#CF4040"
+            },
+            {
+              "name": "--mx-light-warn",
+              "value": "#B9791A"
+            },
+            {
+              "name": "--mx-light-act",
+              "value": "#C43D3D"
+            },
+            {
+              "name": "--mx-light-ok",
+              "value": "#2F8A52"
+            },
+            {
+              "name": "--mx-light-info",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-link",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-orange",
+              "value": "#C4781F"
+            },
+            {
+              "name": "--mx-dark-prov",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-prov-ink",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-dark-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-dark-tier-ink",
+              "value": "#9B86FF"
+            },
+            {
+              "name": "--mx-dark-ser-1",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-ser-2",
+              "value": "#D4A017"
+            },
+            {
+              "name": "--mx-dark-ser-3",
+              "value": "#0EA5E9"
+            },
+            {
+              "name": "--mx-dark-ser-4",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-prov",
+              "value": "#2F6FD0"
+            },
+            {
+              "name": "--mx-light-prov-ink",
+              "value": "#2C62B3"
+            },
+            {
+              "name": "--mx-light-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-light-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-light-tier-ink",
+              "value": "#5B3FC4"
+            },
+            {
+              "name": "--mx-light-ser-1",
+              "value": "#2F63C4"
+            },
+            {
+              "name": "--mx-light-ser-2",
+              "value": "#8F6A04"
+            },
+            {
+              "name": "--mx-light-ser-3",
+              "value": "#0284C7"
+            },
+            {
+              "name": "--mx-light-ser-4",
+              "value": "#B06A25"
+            },
+            {
+              "name": "--mx-light-ink-up",
+              "value": "#1E6D47"
+            },
+            {
+              "name": "--mx-light-ink-down",
+              "value": "#B23C3D"
+            },
+            {
+              "name": "--mx-light-ink-warn",
+              "value": "#7D5922"
+            },
+            {
+              "name": "--mx-light-ink-link",
+              "value": "#2758E6"
+            },
+            {
+              "name": "--font-ui",
+              "value": "Inter"
+            },
+            {
+              "name": "--fs-micro",
+              "value": "10px"
+            },
+            {
+              "name": "--fs-label",
+              "value": "11px"
+            },
+            {
+              "name": "--fs-sm",
+              "value": "12.5px"
+            },
+            {
+              "name": "--fs-body",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-h3",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-md",
+              "value": "15px"
+            },
+            {
+              "name": "--fs-h2",
+              "value": "17px"
+            },
+            {
+              "name": "--fs-num-lg",
+              "value": "22px"
+            },
+            {
+              "name": "--fs-h1",
+              "value": "28px"
+            },
+            {
+              "name": "--fs-num-xl",
+              "value": "38px"
+            },
+            {
+              "name": "--fs-display",
+              "value": "46px"
+            },
+            {
+              "name": "--fw-regular",
+              "value": "400"
+            },
+            {
+              "name": "--fw-medium",
+              "value": "500"
+            },
+            {
+              "name": "--fw-semibold",
+              "value": "600"
+            },
+            {
+              "name": "--fw-bold",
+              "value": "700"
+            },
+            {
+              "name": "--fw-extrabold",
+              "value": "800"
+            },
+            {
+              "name": "--bp-mobile",
+              "value": "390px"
+            },
+            {
+              "name": "--bp-tablet",
+              "value": "768px"
+            },
+            {
+              "name": "--bp-desktop",
+              "value": "1440px"
+            },
+            {
+              "name": "--sp-1",
+              "value": "4px"
+            },
+            {
+              "name": "--sp-2",
+              "value": "8px"
+            },
+            {
+              "name": "--sp-3",
+              "value": "12px"
+            },
+            {
+              "name": "--sp-4",
+              "value": "16px"
+            },
+            {
+              "name": "--sp-5",
+              "value": "20px"
+            },
+            {
+              "name": "--sp-6",
+              "value": "24px"
+            },
+            {
+              "name": "--sp-7",
+              "value": "32px"
+            },
+            {
+              "name": "--sp-8",
+              "value": "44px"
+            },
+            {
+              "name": "--r-ctl",
+              "value": "8px"
+            },
+            {
+              "name": "--r-btn",
+              "value": "10px"
+            },
+            {
+              "name": "--r-card",
+              "value": "12px"
+            },
+            {
+              "name": "--r-panel",
+              "value": "14px"
+            },
+            {
+              "name": "--r-pill",
+              "value": "999px"
+            }
+          ]
+        },
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "contentHash": {
+          "tokens": "bba69475"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M2WGNCX9475G79JRKJTCM08P"
+      },
+      "snapshot_sha256": "dacc0e835ca55cc37f540bb9ae9adac09a43ed9039ef88428181348bbb1ea1e6",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "retry_allowed": false,
+    "production_acceptance": false,
+    "artifact_paths": []
+  },
+  {
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "operation_id": "design-system-r4-controls-template-style-20260926-001",
+    "tool": "update_styles",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"bba69475\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"10G-0\"\n    },\n    {\n      \"nodeId\": \"10I-0\"\n    },\n    {\n      \"nodeId\": \"10K-0\"\n    },\n    {\n      \"nodeId\": \"10M-0\"\n    },\n    {\n      \"nodeId\": \"133-0\"\n    },\n    {\n      \"nodeId\": \"135-0\"\n    },\n    {\n      \"nodeId\": \"137-0\"\n    },\n    {\n      \"nodeId\": \"139-0\"\n    },\n    {\n      \"nodeId\": \"19Z-0\"\n    },\n    {\n      \"nodeId\": \"1A0-0\"\n    },\n    {\n      \"nodeId\": \"1A1-0\"\n    }\n  ]\n}"
+        }
+      ]
+    },
+    "before": {
+      "basic_info": {
+        "fileName": "MASTERMIND PAGES",
+        "pageName": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+        "pageId": "p-A-0",
+        "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+        "rootNodeId": "root_node_p-A-0",
+        "nodeCount": 1087,
+        "artboardCount": 11,
+        "artboards": [
+          {
+            "id": "RFJ-0",
+            "name": "01 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 0,
+            "worldY": 0
+          },
+          {
+            "id": "RJ4-0",
+            "name": "02 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 1520,
+            "worldY": 0
+          },
+          {
+            "id": "RMP-0",
+            "name": "03 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3040,
+            "worldY": 0
+          },
+          {
+            "id": "RMQ-0",
+            "name": "04 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3510,
+            "worldY": 0
+          },
+          {
+            "id": "RR1-0",
+            "name": "05 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 3980,
+            "worldY": 0
+          },
+          {
+            "id": "RR2-0",
+            "name": "06 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 5500,
+            "worldY": 0
+          },
+          {
+            "id": "RR3-0",
+            "name": "07 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7020,
+            "worldY": 0
+          },
+          {
+            "id": "RR4-0",
+            "name": "08 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7490,
+            "worldY": 0
+          },
+          {
+            "id": "SZ3-0",
+            "name": "09 \u00b7 Confluence Screener \u00b7 Global zero \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 420,
+            "worldX": 7960,
+            "worldY": 0
+          },
+          {
+            "id": "SZJ-0",
+            "name": "10 \u00b7 Confluence Screener \u00b7 Entitled hydration \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 560,
+            "worldX": 8760,
+            "worldY": 0
+          },
+          {
+            "id": "T0E-0",
+            "name": "11 \u00b7 Confluence Screener \u00b7 Honesty disclosure open \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 640,
+            "worldX": 9560,
+            "worldY": 0
+          }
+        ],
+        "pages": [
+          {
+            "id": "p-1-0",
+            "name": "Page 1",
+            "isActive": false
+          },
+          {
+            "id": "p-Q-0",
+            "name": "Earnings + Dossiers \u00b7 North Star Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-5-0",
+            "name": "Archetype Starters \u00b7 Governed",
+            "isActive": false
+          },
+          {
+            "id": "p-3-1",
+            "name": "News Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-2-1",
+            "name": "Prophet \u00b7 HK + Canada",
+            "isActive": false
+          },
+          {
+            "id": "p-4-1",
+            "name": "Company Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-9-0",
+            "name": "Sector Central \u00b7 Redesign \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-D-0",
+            "name": "Mastermind \u00b7 Shared Shell \u00b7 Review 01 \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-A-0",
+            "name": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+            "isActive": true
+          },
+          {
+            "id": "p-P-1",
+            "name": "Gov Revenue \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-O-1",
+            "name": "Bonds \u00b7 Decision Workspace \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-N-1",
+            "name": "Forex \u00b7 Guided Intelligence \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-J-1",
+            "name": "Policy Watch \u00b7 Decision Desk \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-I-1",
+            "name": "Intelligence Hub \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-H-1",
+            "name": "Confluence Screener \u00b7 R2 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-E-1",
+            "name": "Sector Intelligence \u00b7 vNext Study \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-8-1",
+            "name": "Live Site Baselines \u00b7 Wave 1 \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-C-0",
+            "name": "International Markets \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-B-0",
+            "name": "CANARY \u00b7 Paper v3 scratch \u00b7 2026-09-23",
+            "isActive": false
+          },
+          {
+            "id": "p-7-1",
+            "name": "China Intelligence \u00b7 vNext \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-6-1",
+            "name": "Sector Intelligence \u00b7 Unified Detail \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-G-0",
+            "name": "MarketOntology \u00b7 Joined Journey \u00b7 2026-09-25",
+            "isActive": false
+          },
+          {
+            "id": "p-F-0",
+            "name": "Mastermind AI \u00b7 Chat Workbench \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-M-0",
+            "name": "Crypto + Vector \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-L-0",
+            "name": "Commodities \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-K-0",
+            "name": "BioCatalyst \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif",
+          "Menlo",
+          "System Monospace",
+          "Arial"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--mx-dark-bg",
+              "value": "#0F1115"
+            },
+            {
+              "name": "--mx-dark-panel",
+              "value": "#181B21"
+            },
+            {
+              "name": "--mx-dark-panel2",
+              "value": "#1E222A"
+            },
+            {
+              "name": "--mx-dark-text",
+              "value": "#D7DCE3"
+            },
+            {
+              "name": "--mx-dark-muted",
+              "value": "#8B93A1"
+            },
+            {
+              "name": "--mx-dark-line",
+              "value": "#3A4150"
+            },
+            {
+              "name": "--mx-dark-up",
+              "value": "#45B873"
+            },
+            {
+              "name": "--mx-dark-down",
+              "value": "#E06464"
+            },
+            {
+              "name": "--mx-dark-warn",
+              "value": "#E0A030"
+            },
+            {
+              "name": "--mx-dark-act",
+              "value": "#E05555"
+            },
+            {
+              "name": "--mx-dark-ok",
+              "value": "#3DA564"
+            },
+            {
+              "name": "--mx-dark-info",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-link",
+              "value": "#7AA7E0"
+            },
+            {
+              "name": "--mx-dark-orange",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-bg",
+              "value": "#F7F8FA"
+            },
+            {
+              "name": "--mx-light-panel",
+              "value": "#FFFFFF"
+            },
+            {
+              "name": "--mx-light-panel2",
+              "value": "#EEF1F6"
+            },
+            {
+              "name": "--mx-light-text",
+              "value": "#1C2430"
+            },
+            {
+              "name": "--mx-light-muted",
+              "value": "#5D6B7E"
+            },
+            {
+              "name": "--mx-light-line",
+              "value": "#C9CCD1"
+            },
+            {
+              "name": "--mx-light-up",
+              "value": "#1F9A55"
+            },
+            {
+              "name": "--mx-light-down",
+              "value": "#CF4040"
+            },
+            {
+              "name": "--mx-light-warn",
+              "value": "#B9791A"
+            },
+            {
+              "name": "--mx-light-act",
+              "value": "#C43D3D"
+            },
+            {
+              "name": "--mx-light-ok",
+              "value": "#2F8A52"
+            },
+            {
+              "name": "--mx-light-info",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-link",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-orange",
+              "value": "#C4781F"
+            },
+            {
+              "name": "--mx-dark-prov",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-prov-ink",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-dark-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-dark-tier-ink",
+              "value": "#9B86FF"
+            },
+            {
+              "name": "--mx-dark-ser-1",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-ser-2",
+              "value": "#D4A017"
+            },
+            {
+              "name": "--mx-dark-ser-3",
+              "value": "#0EA5E9"
+            },
+            {
+              "name": "--mx-dark-ser-4",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-prov",
+              "value": "#2F6FD0"
+            },
+            {
+              "name": "--mx-light-prov-ink",
+              "value": "#2C62B3"
+            },
+            {
+              "name": "--mx-light-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-light-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-light-tier-ink",
+              "value": "#5B3FC4"
+            },
+            {
+              "name": "--mx-light-ser-1",
+              "value": "#2F63C4"
+            },
+            {
+              "name": "--mx-light-ser-2",
+              "value": "#8F6A04"
+            },
+            {
+              "name": "--mx-light-ser-3",
+              "value": "#0284C7"
+            },
+            {
+              "name": "--mx-light-ser-4",
+              "value": "#B06A25"
+            },
+            {
+              "name": "--mx-light-ink-up",
+              "value": "#1E6D47"
+            },
+            {
+              "name": "--mx-light-ink-down",
+              "value": "#B23C3D"
+            },
+            {
+              "name": "--mx-light-ink-warn",
+              "value": "#7D5922"
+            },
+            {
+              "name": "--mx-light-ink-link",
+              "value": "#2758E6"
+            },
+            {
+              "name": "--font-ui",
+              "value": "Inter"
+            },
+            {
+              "name": "--fs-micro",
+              "value": "10px"
+            },
+            {
+              "name": "--fs-label",
+              "value": "11px"
+            },
+            {
+              "name": "--fs-sm",
+              "value": "12.5px"
+            },
+            {
+              "name": "--fs-body",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-h3",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-md",
+              "value": "15px"
+            },
+            {
+              "name": "--fs-h2",
+              "value": "17px"
+            },
+            {
+              "name": "--fs-num-lg",
+              "value": "22px"
+            },
+            {
+              "name": "--fs-h1",
+              "value": "28px"
+            },
+            {
+              "name": "--fs-num-xl",
+              "value": "38px"
+            },
+            {
+              "name": "--fs-display",
+              "value": "46px"
+            },
+            {
+              "name": "--fw-regular",
+              "value": "400"
+            },
+            {
+              "name": "--fw-medium",
+              "value": "500"
+            },
+            {
+              "name": "--fw-semibold",
+              "value": "600"
+            },
+            {
+              "name": "--fw-bold",
+              "value": "700"
+            },
+            {
+              "name": "--fw-extrabold",
+              "value": "800"
+            },
+            {
+              "name": "--bp-mobile",
+              "value": "390px"
+            },
+            {
+              "name": "--bp-tablet",
+              "value": "768px"
+            },
+            {
+              "name": "--bp-desktop",
+              "value": "1440px"
+            },
+            {
+              "name": "--sp-1",
+              "value": "4px"
+            },
+            {
+              "name": "--sp-2",
+              "value": "8px"
+            },
+            {
+              "name": "--sp-3",
+              "value": "12px"
+            },
+            {
+              "name": "--sp-4",
+              "value": "16px"
+            },
+            {
+              "name": "--sp-5",
+              "value": "20px"
+            },
+            {
+              "name": "--sp-6",
+              "value": "24px"
+            },
+            {
+              "name": "--sp-7",
+              "value": "32px"
+            },
+            {
+              "name": "--sp-8",
+              "value": "44px"
+            },
+            {
+              "name": "--r-ctl",
+              "value": "8px"
+            },
+            {
+              "name": "--r-btn",
+              "value": "10px"
+            },
+            {
+              "name": "--r-card",
+              "value": "12px"
+            },
+            {
+              "name": "--r-panel",
+              "value": "14px"
+            },
+            {
+              "name": "--r-pill",
+              "value": "999px"
+            }
+          ]
+        },
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "contentHash": {
+          "tokens": "bba69475"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M2WGNCX9475G79JRKJTCM08P"
+      },
+      "snapshot_sha256": "dacc0e835ca55cc37f540bb9ae9adac09a43ed9039ef88428181348bbb1ea1e6",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "after": {
+      "basic_info": {
+        "fileName": "MASTERMIND PAGES",
+        "pageName": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+        "pageId": "p-A-0",
+        "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+        "rootNodeId": "root_node_p-A-0",
+        "nodeCount": 1087,
+        "artboardCount": 11,
+        "artboards": [
+          {
+            "id": "RFJ-0",
+            "name": "01 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 0,
+            "worldY": 0
+          },
+          {
+            "id": "RJ4-0",
+            "name": "02 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 1520,
+            "worldY": 0
+          },
+          {
+            "id": "RMP-0",
+            "name": "03 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3040,
+            "worldY": 0
+          },
+          {
+            "id": "RMQ-0",
+            "name": "04 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3510,
+            "worldY": 0
+          },
+          {
+            "id": "RR1-0",
+            "name": "05 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 3980,
+            "worldY": 0
+          },
+          {
+            "id": "RR2-0",
+            "name": "06 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 5500,
+            "worldY": 0
+          },
+          {
+            "id": "RR3-0",
+            "name": "07 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7020,
+            "worldY": 0
+          },
+          {
+            "id": "RR4-0",
+            "name": "08 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7490,
+            "worldY": 0
+          },
+          {
+            "id": "SZ3-0",
+            "name": "09 \u00b7 Confluence Screener \u00b7 Global zero \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 420,
+            "worldX": 7960,
+            "worldY": 0
+          },
+          {
+            "id": "SZJ-0",
+            "name": "10 \u00b7 Confluence Screener \u00b7 Entitled hydration \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 560,
+            "worldX": 8760,
+            "worldY": 0
+          },
+          {
+            "id": "T0E-0",
+            "name": "11 \u00b7 Confluence Screener \u00b7 Honesty disclosure open \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 640,
+            "worldX": 9560,
+            "worldY": 0
+          }
+        ],
+        "pages": [
+          {
+            "id": "p-1-0",
+            "name": "Page 1",
+            "isActive": false
+          },
+          {
+            "id": "p-Q-0",
+            "name": "Earnings + Dossiers \u00b7 North Star Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-5-0",
+            "name": "Archetype Starters \u00b7 Governed",
+            "isActive": false
+          },
+          {
+            "id": "p-3-1",
+            "name": "News Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-2-1",
+            "name": "Prophet \u00b7 HK + Canada",
+            "isActive": false
+          },
+          {
+            "id": "p-4-1",
+            "name": "Company Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-9-0",
+            "name": "Sector Central \u00b7 Redesign \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-D-0",
+            "name": "Mastermind \u00b7 Shared Shell \u00b7 Review 01 \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-A-0",
+            "name": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+            "isActive": true
+          },
+          {
+            "id": "p-P-1",
+            "name": "Gov Revenue \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-O-1",
+            "name": "Bonds \u00b7 Decision Workspace \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-N-1",
+            "name": "Forex \u00b7 Guided Intelligence \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-J-1",
+            "name": "Policy Watch \u00b7 Decision Desk \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-I-1",
+            "name": "Intelligence Hub \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-H-1",
+            "name": "Confluence Screener \u00b7 R2 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-E-1",
+            "name": "Sector Intelligence \u00b7 vNext Study \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-8-1",
+            "name": "Live Site Baselines \u00b7 Wave 1 \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-C-0",
+            "name": "International Markets \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-B-0",
+            "name": "CANARY \u00b7 Paper v3 scratch \u00b7 2026-09-23",
+            "isActive": false
+          },
+          {
+            "id": "p-7-1",
+            "name": "China Intelligence \u00b7 vNext \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-6-1",
+            "name": "Sector Intelligence \u00b7 Unified Detail \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-G-0",
+            "name": "MarketOntology \u00b7 Joined Journey \u00b7 2026-09-25",
+            "isActive": false
+          },
+          {
+            "id": "p-F-0",
+            "name": "Mastermind AI \u00b7 Chat Workbench \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-M-0",
+            "name": "Crypto + Vector \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-L-0",
+            "name": "Commodities \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-K-0",
+            "name": "BioCatalyst \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif",
+          "Menlo",
+          "System Monospace",
+          "Arial"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--mx-dark-bg",
+              "value": "#0F1115"
+            },
+            {
+              "name": "--mx-dark-panel",
+              "value": "#181B21"
+            },
+            {
+              "name": "--mx-dark-panel2",
+              "value": "#1E222A"
+            },
+            {
+              "name": "--mx-dark-text",
+              "value": "#D7DCE3"
+            },
+            {
+              "name": "--mx-dark-muted",
+              "value": "#8B93A1"
+            },
+            {
+              "name": "--mx-dark-line",
+              "value": "#3A4150"
+            },
+            {
+              "name": "--mx-dark-up",
+              "value": "#45B873"
+            },
+            {
+              "name": "--mx-dark-down",
+              "value": "#E06464"
+            },
+            {
+              "name": "--mx-dark-warn",
+              "value": "#E0A030"
+            },
+            {
+              "name": "--mx-dark-act",
+              "value": "#E05555"
+            },
+            {
+              "name": "--mx-dark-ok",
+              "value": "#3DA564"
+            },
+            {
+              "name": "--mx-dark-info",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-link",
+              "value": "#7AA7E0"
+            },
+            {
+              "name": "--mx-dark-orange",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-bg",
+              "value": "#F7F8FA"
+            },
+            {
+              "name": "--mx-light-panel",
+              "value": "#FFFFFF"
+            },
+            {
+              "name": "--mx-light-panel2",
+              "value": "#EEF1F6"
+            },
+            {
+              "name": "--mx-light-text",
+              "value": "#1C2430"
+            },
+            {
+              "name": "--mx-light-muted",
+              "value": "#5D6B7E"
+            },
+            {
+              "name": "--mx-light-line",
+              "value": "#C9CCD1"
+            },
+            {
+              "name": "--mx-light-up",
+              "value": "#1F9A55"
+            },
+            {
+              "name": "--mx-light-down",
+              "value": "#CF4040"
+            },
+            {
+              "name": "--mx-light-warn",
+              "value": "#B9791A"
+            },
+            {
+              "name": "--mx-light-act",
+              "value": "#C43D3D"
+            },
+            {
+              "name": "--mx-light-ok",
+              "value": "#2F8A52"
+            },
+            {
+              "name": "--mx-light-info",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-link",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-orange",
+              "value": "#C4781F"
+            },
+            {
+              "name": "--mx-dark-prov",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-prov-ink",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-dark-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-dark-tier-ink",
+              "value": "#9B86FF"
+            },
+            {
+              "name": "--mx-dark-ser-1",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-ser-2",
+              "value": "#D4A017"
+            },
+            {
+              "name": "--mx-dark-ser-3",
+              "value": "#0EA5E9"
+            },
+            {
+              "name": "--mx-dark-ser-4",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-prov",
+              "value": "#2F6FD0"
+            },
+            {
+              "name": "--mx-light-prov-ink",
+              "value": "#2C62B3"
+            },
+            {
+              "name": "--mx-light-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-light-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-light-tier-ink",
+              "value": "#5B3FC4"
+            },
+            {
+              "name": "--mx-light-ser-1",
+              "value": "#2F63C4"
+            },
+            {
+              "name": "--mx-light-ser-2",
+              "value": "#8F6A04"
+            },
+            {
+              "name": "--mx-light-ser-3",
+              "value": "#0284C7"
+            },
+            {
+              "name": "--mx-light-ser-4",
+              "value": "#B06A25"
+            },
+            {
+              "name": "--mx-light-ink-up",
+              "value": "#1E6D47"
+            },
+            {
+              "name": "--mx-light-ink-down",
+              "value": "#B23C3D"
+            },
+            {
+              "name": "--mx-light-ink-warn",
+              "value": "#7D5922"
+            },
+            {
+              "name": "--mx-light-ink-link",
+              "value": "#2758E6"
+            },
+            {
+              "name": "--font-ui",
+              "value": "Inter"
+            },
+            {
+              "name": "--fs-micro",
+              "value": "10px"
+            },
+            {
+              "name": "--fs-label",
+              "value": "11px"
+            },
+            {
+              "name": "--fs-sm",
+              "value": "12.5px"
+            },
+            {
+              "name": "--fs-body",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-h3",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-md",
+              "value": "15px"
+            },
+            {
+              "name": "--fs-h2",
+              "value": "17px"
+            },
+            {
+              "name": "--fs-num-lg",
+              "value": "22px"
+            },
+            {
+              "name": "--fs-h1",
+              "value": "28px"
+            },
+            {
+              "name": "--fs-num-xl",
+              "value": "38px"
+            },
+            {
+              "name": "--fs-display",
+              "value": "46px"
+            },
+            {
+              "name": "--fw-regular",
+              "value": "400"
+            },
+            {
+              "name": "--fw-medium",
+              "value": "500"
+            },
+            {
+              "name": "--fw-semibold",
+              "value": "600"
+            },
+            {
+              "name": "--fw-bold",
+              "value": "700"
+            },
+            {
+              "name": "--fw-extrabold",
+              "value": "800"
+            },
+            {
+              "name": "--bp-mobile",
+              "value": "390px"
+            },
+            {
+              "name": "--bp-tablet",
+              "value": "768px"
+            },
+            {
+              "name": "--bp-desktop",
+              "value": "1440px"
+            },
+            {
+              "name": "--sp-1",
+              "value": "4px"
+            },
+            {
+              "name": "--sp-2",
+              "value": "8px"
+            },
+            {
+              "name": "--sp-3",
+              "value": "12px"
+            },
+            {
+              "name": "--sp-4",
+              "value": "16px"
+            },
+            {
+              "name": "--sp-5",
+              "value": "20px"
+            },
+            {
+              "name": "--sp-6",
+              "value": "24px"
+            },
+            {
+              "name": "--sp-7",
+              "value": "32px"
+            },
+            {
+              "name": "--sp-8",
+              "value": "44px"
+            },
+            {
+              "name": "--r-ctl",
+              "value": "8px"
+            },
+            {
+              "name": "--r-btn",
+              "value": "10px"
+            },
+            {
+              "name": "--r-card",
+              "value": "12px"
+            },
+            {
+              "name": "--r-panel",
+              "value": "14px"
+            },
+            {
+              "name": "--r-pill",
+              "value": "999px"
+            }
+          ]
+        },
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "contentHash": {
+          "tokens": "bba69475"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M2WGNCX9475G79JRKJTCM08P"
+      },
+      "snapshot_sha256": "dacc0e835ca55cc37f540bb9ae9adac09a43ed9039ef88428181348bbb1ea1e6",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "retry_allowed": false,
+    "production_acceptance": false,
+    "artifact_paths": []
+  },
+  {
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "operation_id": "design-system-r4-finish-own-nodes-20260926-001",
+    "tool": "finish_working_on_nodes",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"bba69475\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    },
+    "before": {
+      "basic_info": {
+        "fileName": "MASTERMIND PAGES",
+        "pageName": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+        "pageId": "p-A-0",
+        "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+        "rootNodeId": "root_node_p-A-0",
+        "nodeCount": 1087,
+        "artboardCount": 11,
+        "artboards": [
+          {
+            "id": "RFJ-0",
+            "name": "01 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 0,
+            "worldY": 0
+          },
+          {
+            "id": "RJ4-0",
+            "name": "02 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 1520,
+            "worldY": 0
+          },
+          {
+            "id": "RMP-0",
+            "name": "03 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3040,
+            "worldY": 0
+          },
+          {
+            "id": "RMQ-0",
+            "name": "04 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3510,
+            "worldY": 0
+          },
+          {
+            "id": "RR1-0",
+            "name": "05 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 3980,
+            "worldY": 0
+          },
+          {
+            "id": "RR2-0",
+            "name": "06 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 5500,
+            "worldY": 0
+          },
+          {
+            "id": "RR3-0",
+            "name": "07 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7020,
+            "worldY": 0
+          },
+          {
+            "id": "RR4-0",
+            "name": "08 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7490,
+            "worldY": 0
+          },
+          {
+            "id": "SZ3-0",
+            "name": "09 \u00b7 Confluence Screener \u00b7 Global zero \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 420,
+            "worldX": 7960,
+            "worldY": 0
+          },
+          {
+            "id": "SZJ-0",
+            "name": "10 \u00b7 Confluence Screener \u00b7 Entitled hydration \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 560,
+            "worldX": 8760,
+            "worldY": 0
+          },
+          {
+            "id": "T0E-0",
+            "name": "11 \u00b7 Confluence Screener \u00b7 Honesty disclosure open \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 640,
+            "worldX": 9560,
+            "worldY": 0
+          }
+        ],
+        "pages": [
+          {
+            "id": "p-1-0",
+            "name": "Page 1",
+            "isActive": false
+          },
+          {
+            "id": "p-Q-0",
+            "name": "Earnings + Dossiers \u00b7 North Star Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-5-0",
+            "name": "Archetype Starters \u00b7 Governed",
+            "isActive": false
+          },
+          {
+            "id": "p-3-1",
+            "name": "News Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-2-1",
+            "name": "Prophet \u00b7 HK + Canada",
+            "isActive": false
+          },
+          {
+            "id": "p-4-1",
+            "name": "Company Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-9-0",
+            "name": "Sector Central \u00b7 Redesign \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-D-0",
+            "name": "Mastermind \u00b7 Shared Shell \u00b7 Review 01 \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-A-0",
+            "name": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+            "isActive": true
+          },
+          {
+            "id": "p-P-1",
+            "name": "Gov Revenue \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-O-1",
+            "name": "Bonds \u00b7 Decision Workspace \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-N-1",
+            "name": "Forex \u00b7 Guided Intelligence \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-J-1",
+            "name": "Policy Watch \u00b7 Decision Desk \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-I-1",
+            "name": "Intelligence Hub \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-H-1",
+            "name": "Confluence Screener \u00b7 R2 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-E-1",
+            "name": "Sector Intelligence \u00b7 vNext Study \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-8-1",
+            "name": "Live Site Baselines \u00b7 Wave 1 \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-C-0",
+            "name": "International Markets \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-B-0",
+            "name": "CANARY \u00b7 Paper v3 scratch \u00b7 2026-09-23",
+            "isActive": false
+          },
+          {
+            "id": "p-7-1",
+            "name": "China Intelligence \u00b7 vNext \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-6-1",
+            "name": "Sector Intelligence \u00b7 Unified Detail \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-G-0",
+            "name": "MarketOntology \u00b7 Joined Journey \u00b7 2026-09-25",
+            "isActive": false
+          },
+          {
+            "id": "p-F-0",
+            "name": "Mastermind AI \u00b7 Chat Workbench \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-M-0",
+            "name": "Crypto + Vector \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-L-0",
+            "name": "Commodities \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-K-0",
+            "name": "BioCatalyst \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif",
+          "Menlo",
+          "System Monospace",
+          "Arial"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--mx-dark-bg",
+              "value": "#0F1115"
+            },
+            {
+              "name": "--mx-dark-panel",
+              "value": "#181B21"
+            },
+            {
+              "name": "--mx-dark-panel2",
+              "value": "#1E222A"
+            },
+            {
+              "name": "--mx-dark-text",
+              "value": "#D7DCE3"
+            },
+            {
+              "name": "--mx-dark-muted",
+              "value": "#8B93A1"
+            },
+            {
+              "name": "--mx-dark-line",
+              "value": "#3A4150"
+            },
+            {
+              "name": "--mx-dark-up",
+              "value": "#45B873"
+            },
+            {
+              "name": "--mx-dark-down",
+              "value": "#E06464"
+            },
+            {
+              "name": "--mx-dark-warn",
+              "value": "#E0A030"
+            },
+            {
+              "name": "--mx-dark-act",
+              "value": "#E05555"
+            },
+            {
+              "name": "--mx-dark-ok",
+              "value": "#3DA564"
+            },
+            {
+              "name": "--mx-dark-info",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-link",
+              "value": "#7AA7E0"
+            },
+            {
+              "name": "--mx-dark-orange",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-bg",
+              "value": "#F7F8FA"
+            },
+            {
+              "name": "--mx-light-panel",
+              "value": "#FFFFFF"
+            },
+            {
+              "name": "--mx-light-panel2",
+              "value": "#EEF1F6"
+            },
+            {
+              "name": "--mx-light-text",
+              "value": "#1C2430"
+            },
+            {
+              "name": "--mx-light-muted",
+              "value": "#5D6B7E"
+            },
+            {
+              "name": "--mx-light-line",
+              "value": "#C9CCD1"
+            },
+            {
+              "name": "--mx-light-up",
+              "value": "#1F9A55"
+            },
+            {
+              "name": "--mx-light-down",
+              "value": "#CF4040"
+            },
+            {
+              "name": "--mx-light-warn",
+              "value": "#B9791A"
+            },
+            {
+              "name": "--mx-light-act",
+              "value": "#C43D3D"
+            },
+            {
+              "name": "--mx-light-ok",
+              "value": "#2F8A52"
+            },
+            {
+              "name": "--mx-light-info",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-link",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-orange",
+              "value": "#C4781F"
+            },
+            {
+              "name": "--mx-dark-prov",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-prov-ink",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-dark-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-dark-tier-ink",
+              "value": "#9B86FF"
+            },
+            {
+              "name": "--mx-dark-ser-1",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-ser-2",
+              "value": "#D4A017"
+            },
+            {
+              "name": "--mx-dark-ser-3",
+              "value": "#0EA5E9"
+            },
+            {
+              "name": "--mx-dark-ser-4",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-prov",
+              "value": "#2F6FD0"
+            },
+            {
+              "name": "--mx-light-prov-ink",
+              "value": "#2C62B3"
+            },
+            {
+              "name": "--mx-light-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-light-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-light-tier-ink",
+              "value": "#5B3FC4"
+            },
+            {
+              "name": "--mx-light-ser-1",
+              "value": "#2F63C4"
+            },
+            {
+              "name": "--mx-light-ser-2",
+              "value": "#8F6A04"
+            },
+            {
+              "name": "--mx-light-ser-3",
+              "value": "#0284C7"
+            },
+            {
+              "name": "--mx-light-ser-4",
+              "value": "#B06A25"
+            },
+            {
+              "name": "--mx-light-ink-up",
+              "value": "#1E6D47"
+            },
+            {
+              "name": "--mx-light-ink-down",
+              "value": "#B23C3D"
+            },
+            {
+              "name": "--mx-light-ink-warn",
+              "value": "#7D5922"
+            },
+            {
+              "name": "--mx-light-ink-link",
+              "value": "#2758E6"
+            },
+            {
+              "name": "--font-ui",
+              "value": "Inter"
+            },
+            {
+              "name": "--fs-micro",
+              "value": "10px"
+            },
+            {
+              "name": "--fs-label",
+              "value": "11px"
+            },
+            {
+              "name": "--fs-sm",
+              "value": "12.5px"
+            },
+            {
+              "name": "--fs-body",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-h3",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-md",
+              "value": "15px"
+            },
+            {
+              "name": "--fs-h2",
+              "value": "17px"
+            },
+            {
+              "name": "--fs-num-lg",
+              "value": "22px"
+            },
+            {
+              "name": "--fs-h1",
+              "value": "28px"
+            },
+            {
+              "name": "--fs-num-xl",
+              "value": "38px"
+            },
+            {
+              "name": "--fs-display",
+              "value": "46px"
+            },
+            {
+              "name": "--fw-regular",
+              "value": "400"
+            },
+            {
+              "name": "--fw-medium",
+              "value": "500"
+            },
+            {
+              "name": "--fw-semibold",
+              "value": "600"
+            },
+            {
+              "name": "--fw-bold",
+              "value": "700"
+            },
+            {
+              "name": "--fw-extrabold",
+              "value": "800"
+            },
+            {
+              "name": "--bp-mobile",
+              "value": "390px"
+            },
+            {
+              "name": "--bp-tablet",
+              "value": "768px"
+            },
+            {
+              "name": "--bp-desktop",
+              "value": "1440px"
+            },
+            {
+              "name": "--sp-1",
+              "value": "4px"
+            },
+            {
+              "name": "--sp-2",
+              "value": "8px"
+            },
+            {
+              "name": "--sp-3",
+              "value": "12px"
+            },
+            {
+              "name": "--sp-4",
+              "value": "16px"
+            },
+            {
+              "name": "--sp-5",
+              "value": "20px"
+            },
+            {
+              "name": "--sp-6",
+              "value": "24px"
+            },
+            {
+              "name": "--sp-7",
+              "value": "32px"
+            },
+            {
+              "name": "--sp-8",
+              "value": "44px"
+            },
+            {
+              "name": "--r-ctl",
+              "value": "8px"
+            },
+            {
+              "name": "--r-btn",
+              "value": "10px"
+            },
+            {
+              "name": "--r-card",
+              "value": "12px"
+            },
+            {
+              "name": "--r-panel",
+              "value": "14px"
+            },
+            {
+              "name": "--r-pill",
+              "value": "999px"
+            }
+          ]
+        },
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "contentHash": {
+          "tokens": "bba69475"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M2WGNCX9475G79JRKJTCM08P"
+      },
+      "snapshot_sha256": "dacc0e835ca55cc37f540bb9ae9adac09a43ed9039ef88428181348bbb1ea1e6",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "after": {
+      "basic_info": {
+        "fileName": "MASTERMIND PAGES",
+        "pageName": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+        "pageId": "p-A-0",
+        "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+        "rootNodeId": "root_node_p-A-0",
+        "nodeCount": 1087,
+        "artboardCount": 11,
+        "artboards": [
+          {
+            "id": "RFJ-0",
+            "name": "01 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 0,
+            "worldY": 0
+          },
+          {
+            "id": "RJ4-0",
+            "name": "02 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 EN",
+            "childCount": 8,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 1520,
+            "worldY": 0
+          },
+          {
+            "id": "RMP-0",
+            "name": "03 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3040,
+            "worldY": 0
+          },
+          {
+            "id": "RMQ-0",
+            "name": "04 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 3510,
+            "worldY": 0
+          },
+          {
+            "id": "RR1-0",
+            "name": "05 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 3980,
+            "worldY": 0
+          },
+          {
+            "id": "RR2-0",
+            "name": "06 \u00b7 Confluence Screener \u00b7 Light \u00b7 Desktop \u00b7 ZH",
+            "childCount": 1,
+            "width": 1440,
+            "height": 1080,
+            "worldX": 5500,
+            "worldY": 0
+          },
+          {
+            "id": "RR3-0",
+            "name": "07 \u00b7 Confluence Screener \u00b7 Dark \u00b7 Mobile \u00b7 ZH",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7020,
+            "worldY": 0
+          },
+          {
+            "id": "RR4-0",
+            "name": "08 \u00b7 Confluence Screener \u00b7 Light \u00b7 Mobile \u00b7 EN",
+            "childCount": 1,
+            "width": 390,
+            "height": 1500,
+            "worldX": 7490,
+            "worldY": 0
+          },
+          {
+            "id": "SZ3-0",
+            "name": "09 \u00b7 Confluence Screener \u00b7 Global zero \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 420,
+            "worldX": 7960,
+            "worldY": 0
+          },
+          {
+            "id": "SZJ-0",
+            "name": "10 \u00b7 Confluence Screener \u00b7 Entitled hydration \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 560,
+            "worldX": 8760,
+            "worldY": 0
+          },
+          {
+            "id": "T0E-0",
+            "name": "11 \u00b7 Confluence Screener \u00b7 Honesty disclosure open \u00b7 Dark \u00b7 EN",
+            "childCount": 1,
+            "width": 720,
+            "height": 640,
+            "worldX": 9560,
+            "worldY": 0
+          }
+        ],
+        "pages": [
+          {
+            "id": "p-1-0",
+            "name": "Page 1",
+            "isActive": false
+          },
+          {
+            "id": "p-Q-0",
+            "name": "Earnings + Dossiers \u00b7 North Star Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-5-0",
+            "name": "Archetype Starters \u00b7 Governed",
+            "isActive": false
+          },
+          {
+            "id": "p-3-1",
+            "name": "News Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-2-1",
+            "name": "Prophet \u00b7 HK + Canada",
+            "isActive": false
+          },
+          {
+            "id": "p-4-1",
+            "name": "Company Intelligence \u00b7 2026-09-20",
+            "isActive": false
+          },
+          {
+            "id": "p-9-0",
+            "name": "Sector Central \u00b7 Redesign \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-D-0",
+            "name": "Mastermind \u00b7 Shared Shell \u00b7 Review 01 \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-A-0",
+            "name": "Confluence Screener \u00b7 Governed Reference \u00b7 2026-09-22",
+            "isActive": true
+          },
+          {
+            "id": "p-P-1",
+            "name": "Gov Revenue \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-O-1",
+            "name": "Bonds \u00b7 Decision Workspace \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-N-1",
+            "name": "Forex \u00b7 Guided Intelligence \u00b7 R1 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-J-1",
+            "name": "Policy Watch \u00b7 Decision Desk \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-I-1",
+            "name": "Intelligence Hub \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-H-1",
+            "name": "Confluence Screener \u00b7 R2 \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-E-1",
+            "name": "Sector Intelligence \u00b7 vNext Study \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-8-1",
+            "name": "Live Site Baselines \u00b7 Wave 1 \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-C-0",
+            "name": "International Markets \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-B-0",
+            "name": "CANARY \u00b7 Paper v3 scratch \u00b7 2026-09-23",
+            "isActive": false
+          },
+          {
+            "id": "p-7-1",
+            "name": "China Intelligence \u00b7 vNext \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-6-1",
+            "name": "Sector Intelligence \u00b7 Unified Detail \u00b7 2026-09-21",
+            "isActive": false
+          },
+          {
+            "id": "p-G-0",
+            "name": "MarketOntology \u00b7 Joined Journey \u00b7 2026-09-25",
+            "isActive": false
+          },
+          {
+            "id": "p-F-0",
+            "name": "Mastermind AI \u00b7 Chat Workbench \u00b7 vNext \u00b7 2026-09-24",
+            "isActive": false
+          },
+          {
+            "id": "p-M-0",
+            "name": "Crypto + Vector \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-L-0",
+            "name": "Commodities \u00b7 R1 Study \u00b7 2026-09-26",
+            "isActive": false
+          },
+          {
+            "id": "p-K-0",
+            "name": "BioCatalyst \u00b7 North Star + Build Blueprint \u00b7 2026-09-26",
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif",
+          "Menlo",
+          "System Monospace",
+          "Arial"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--mx-dark-bg",
+              "value": "#0F1115"
+            },
+            {
+              "name": "--mx-dark-panel",
+              "value": "#181B21"
+            },
+            {
+              "name": "--mx-dark-panel2",
+              "value": "#1E222A"
+            },
+            {
+              "name": "--mx-dark-text",
+              "value": "#D7DCE3"
+            },
+            {
+              "name": "--mx-dark-muted",
+              "value": "#8B93A1"
+            },
+            {
+              "name": "--mx-dark-line",
+              "value": "#3A4150"
+            },
+            {
+              "name": "--mx-dark-up",
+              "value": "#45B873"
+            },
+            {
+              "name": "--mx-dark-down",
+              "value": "#E06464"
+            },
+            {
+              "name": "--mx-dark-warn",
+              "value": "#E0A030"
+            },
+            {
+              "name": "--mx-dark-act",
+              "value": "#E05555"
+            },
+            {
+              "name": "--mx-dark-ok",
+              "value": "#3DA564"
+            },
+            {
+              "name": "--mx-dark-info",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-link",
+              "value": "#7AA7E0"
+            },
+            {
+              "name": "--mx-dark-orange",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-bg",
+              "value": "#F7F8FA"
+            },
+            {
+              "name": "--mx-light-panel",
+              "value": "#FFFFFF"
+            },
+            {
+              "name": "--mx-light-panel2",
+              "value": "#EEF1F6"
+            },
+            {
+              "name": "--mx-light-text",
+              "value": "#1C2430"
+            },
+            {
+              "name": "--mx-light-muted",
+              "value": "#5D6B7E"
+            },
+            {
+              "name": "--mx-light-line",
+              "value": "#C9CCD1"
+            },
+            {
+              "name": "--mx-light-up",
+              "value": "#1F9A55"
+            },
+            {
+              "name": "--mx-light-down",
+              "value": "#CF4040"
+            },
+            {
+              "name": "--mx-light-warn",
+              "value": "#B9791A"
+            },
+            {
+              "name": "--mx-light-act",
+              "value": "#C43D3D"
+            },
+            {
+              "name": "--mx-light-ok",
+              "value": "#2F8A52"
+            },
+            {
+              "name": "--mx-light-info",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-link",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-orange",
+              "value": "#C4781F"
+            },
+            {
+              "name": "--mx-dark-prov",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-prov-ink",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-dark-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-dark-tier-ink",
+              "value": "#9B86FF"
+            },
+            {
+              "name": "--mx-dark-ser-1",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-ser-2",
+              "value": "#D4A017"
+            },
+            {
+              "name": "--mx-dark-ser-3",
+              "value": "#0EA5E9"
+            },
+            {
+              "name": "--mx-dark-ser-4",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-prov",
+              "value": "#2F6FD0"
+            },
+            {
+              "name": "--mx-light-prov-ink",
+              "value": "#2C62B3"
+            },
+            {
+              "name": "--mx-light-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-light-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-light-tier-ink",
+              "value": "#5B3FC4"
+            },
+            {
+              "name": "--mx-light-ser-1",
+              "value": "#2F63C4"
+            },
+            {
+              "name": "--mx-light-ser-2",
+              "value": "#8F6A04"
+            },
+            {
+              "name": "--mx-light-ser-3",
+              "value": "#0284C7"
+            },
+            {
+              "name": "--mx-light-ser-4",
+              "value": "#B06A25"
+            },
+            {
+              "name": "--mx-light-ink-up",
+              "value": "#1E6D47"
+            },
+            {
+              "name": "--mx-light-ink-down",
+              "value": "#B23C3D"
+            },
+            {
+              "name": "--mx-light-ink-warn",
+              "value": "#7D5922"
+            },
+            {
+              "name": "--mx-light-ink-link",
+              "value": "#2758E6"
+            },
+            {
+              "name": "--font-ui",
+              "value": "Inter"
+            },
+            {
+              "name": "--fs-micro",
+              "value": "10px"
+            },
+            {
+              "name": "--fs-label",
+              "value": "11px"
+            },
+            {
+              "name": "--fs-sm",
+              "value": "12.5px"
+            },
+            {
+              "name": "--fs-body",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-h3",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-md",
+              "value": "15px"
+            },
+            {
+              "name": "--fs-h2",
+              "value": "17px"
+            },
+            {
+              "name": "--fs-num-lg",
+              "value": "22px"
+            },
+            {
+              "name": "--fs-h1",
+              "value": "28px"
+            },
+            {
+              "name": "--fs-num-xl",
+              "value": "38px"
+            },
+            {
+              "name": "--fs-display",
+              "value": "46px"
+            },
+            {
+              "name": "--fw-regular",
+              "value": "400"
+            },
+            {
+              "name": "--fw-medium",
+              "value": "500"
+            },
+            {
+              "name": "--fw-semibold",
+              "value": "600"
+            },
+            {
+              "name": "--fw-bold",
+              "value": "700"
+            },
+            {
+              "name": "--fw-extrabold",
+              "value": "800"
+            },
+            {
+              "name": "--bp-mobile",
+              "value": "390px"
+            },
+            {
+              "name": "--bp-tablet",
+              "value": "768px"
+            },
+            {
+              "name": "--bp-desktop",
+              "value": "1440px"
+            },
+            {
+              "name": "--sp-1",
+              "value": "4px"
+            },
+            {
+              "name": "--sp-2",
+              "value": "8px"
+            },
+            {
+              "name": "--sp-3",
+              "value": "12px"
+            },
+            {
+              "name": "--sp-4",
+              "value": "16px"
+            },
+            {
+              "name": "--sp-5",
+              "value": "20px"
+            },
+            {
+              "name": "--sp-6",
+              "value": "24px"
+            },
+            {
+              "name": "--sp-7",
+              "value": "32px"
+            },
+            {
+              "name": "--sp-8",
+              "value": "44px"
+            },
+            {
+              "name": "--r-ctl",
+              "value": "8px"
+            },
+            {
+              "name": "--r-btn",
+              "value": "10px"
+            },
+            {
+              "name": "--r-card",
+              "value": "12px"
+            },
+            {
+              "name": "--r-panel",
+              "value": "14px"
+            },
+            {
+              "name": "--r-pill",
+              "value": "999px"
+            }
+          ]
+        },
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "contentHash": {
+          "tokens": "bba69475"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M2WGNCX9475G79JRKJTCM08P"
+      },
+      "snapshot_sha256": "dacc0e835ca55cc37f540bb9ae9adac09a43ed9039ef88428181348bbb1ea1e6",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "retry_allowed": false,
+    "production_acceptance": false,
+    "artifact_paths": []
+  }
+]

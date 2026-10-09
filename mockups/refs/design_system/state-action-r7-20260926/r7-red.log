@@ -1,0 +1,124 @@
+FFFFFFFFFFFFFFF.                                                         [100%]
+=================================== FAILURES ===================================
+_______ test_prepared_recovery_state_is_bilingual_and_explicit[loading] ________
+tests/test_design_system_foundations.py:673: in test_prepared_recovery_state_is_bilingual_and_explicit
+    body = _prepared_case(specimen, "state", state)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/loading
+E   assert None
+________ test_prepared_recovery_state_is_bilingual_and_explicit[stale] _________
+tests/test_design_system_foundations.py:673: in test_prepared_recovery_state_is_bilingual_and_explicit
+    body = _prepared_case(specimen, "state", state)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/stale
+E   assert None
+________ test_prepared_recovery_state_is_bilingual_and_explicit[error] _________
+tests/test_design_system_foundations.py:673: in test_prepared_recovery_state_is_bilingual_and_explicit
+    body = _prepared_case(specimen, "state", state)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/error
+E   assert None
+________ test_prepared_recovery_state_is_bilingual_and_explicit[empty] _________
+tests/test_design_system_foundations.py:673: in test_prepared_recovery_state_is_bilingual_and_explicit
+    body = _prepared_case(specimen, "state", state)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/empty
+E   assert None
+____ test_prepared_recovery_state_is_bilingual_and_explicit[filtered-empty] ____
+tests/test_design_system_foundations.py:673: in test_prepared_recovery_state_is_bilingual_and_explicit
+    body = _prepared_case(specimen, "state", state)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/filtered-empty
+E   assert None
+_______ test_prepared_recovery_state_is_bilingual_and_explicit[partial] ________
+tests/test_design_system_foundations.py:673: in test_prepared_recovery_state_is_bilingual_and_explicit
+    body = _prepared_case(specimen, "state", state)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/partial
+E   assert None
+_____ test_prepared_recovery_state_is_bilingual_and_explicit[conflicting] ______
+tests/test_design_system_foundations.py:673: in test_prepared_recovery_state_is_bilingual_and_explicit
+    body = _prepared_case(specimen, "state", state)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/conflicting
+E   assert None
+________ test_prepared_recovery_state_is_bilingual_and_explicit[locked] ________
+tests/test_design_system_foundations.py:673: in test_prepared_recovery_state_is_bilingual_and_explicit
+    body = _prepared_case(specimen, "state", state)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/locked
+E   assert None
+______ test_prepared_save_examples_cannot_submit_fictional_actions[ready] ______
+tests/test_design_system_foundations.py:680: in test_prepared_save_examples_cannot_submit_fictional_actions
+    body = _prepared_case(specimen, "save", outcome)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: save/ready
+E   assert None
+_____ test_prepared_save_examples_cannot_submit_fictional_actions[pending] _____
+tests/test_design_system_foundations.py:680: in test_prepared_save_examples_cannot_submit_fictional_actions
+    body = _prepared_case(specimen, "save", outcome)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: save/pending
+E   assert None
+____ test_prepared_save_examples_cannot_submit_fictional_actions[confirmed] ____
+tests/test_design_system_foundations.py:680: in test_prepared_save_examples_cannot_submit_fictional_actions
+    body = _prepared_case(specimen, "save", outcome)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: save/confirmed
+E   assert None
+_____ test_prepared_save_examples_cannot_submit_fictional_actions[failed] ______
+tests/test_design_system_foundations.py:680: in test_prepared_save_examples_cannot_submit_fictional_actions
+    body = _prepared_case(specimen, "save", outcome)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: save/failed
+E   assert None
+_____ test_prepared_save_examples_cannot_submit_fictional_actions[unknown] _____
+tests/test_design_system_foundations.py:680: in test_prepared_save_examples_cannot_submit_fictional_actions
+    body = _prepared_case(specimen, "save", outcome)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: save/unknown
+E   assert None
+________ test_prepared_recovery_denominators_and_caveats_are_not_hidden ________
+tests/test_design_system_foundations.py:691: in test_prepared_recovery_denominators_and_caveats_are_not_hidden
+    partial = _prepared_case(specimen, "state", "partial")
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/partial
+E   assert None
+_______ test_prepared_recovery_uses_native_inspection_not_nested_modals ________
+tests/test_design_system_foundations.py:704: in test_prepared_recovery_uses_native_inspection_not_nested_modals
+    body = _prepared_case(specimen, "state", state)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/stale
+E   assert None
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_state_is_bilingual_and_explicit[loading]
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_state_is_bilingual_and_explicit[stale]
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_state_is_bilingual_and_explicit[error]
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_state_is_bilingual_and_explicit[empty]
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_state_is_bilingual_and_explicit[filtered-empty]
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_state_is_bilingual_and_explicit[partial]
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_state_is_bilingual_and_explicit[conflicting]
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_state_is_bilingual_and_explicit[locked]
+FAILED tests/test_design_system_foundations.py::test_prepared_save_examples_cannot_submit_fictional_actions[ready]
+FAILED tests/test_design_system_foundations.py::test_prepared_save_examples_cannot_submit_fictional_actions[pending]
+FAILED tests/test_design_system_foundations.py::test_prepared_save_examples_cannot_submit_fictional_actions[confirmed]
+FAILED tests/test_design_system_foundations.py::test_prepared_save_examples_cannot_submit_fictional_actions[failed]
+FAILED tests/test_design_system_foundations.py::test_prepared_save_examples_cannot_submit_fictional_actions[unknown]
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_denominators_and_caveats_are_not_hidden
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_uses_native_inspection_not_nested_modals
+15 failed, 1 passed, 41 deselected in 0.19s

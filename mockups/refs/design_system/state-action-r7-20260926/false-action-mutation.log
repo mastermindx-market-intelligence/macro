@@ -1,0 +1,10 @@
+........F.......                                                         [100%]
+=================================== FAILURES ===================================
+______ test_prepared_save_examples_cannot_submit_fictional_actions[ready] ______
+tests/test_design_system_foundations.py:682: in test_prepared_save_examples_cannot_submit_fictional_actions
+    assert buttons and all('type="button"' in x and re.search(r'\bdisabled(?:\s|=|$)', x) for x in buttons)
+E   assert ([' type="button" class="gbtn gbtn-cta" aria-describedby="specimen-state-actions-note"'] and False)
+E    +  where False = all(<generator object test_prepared_save_examples_cannot_submit_fictional_actions.<locals>.<genexpr> at 0x101a83c80>)
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_prepared_save_examples_cannot_submit_fictional_actions[ready]
+1 failed, 15 passed, 41 deselected in 0.03s

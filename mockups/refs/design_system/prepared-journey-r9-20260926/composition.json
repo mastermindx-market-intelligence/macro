@@ -1,0 +1,20 @@
+{
+  "mode": "one-file current-source semantic composition",
+  "base_merge": "29c7d0787fa2b1a1f4462992b62f73790dcf9383",
+  "preserved": [
+    "current callout variants",
+    "regime-spine section",
+    "R5-R8 interaction repairs"
+  ],
+  "superseded": "fictional LIVE/Act hero, including its main-only stance-class correction",
+  "files": [
+    "mockups/design_system/specimen.html"
+  ],
+  "sha256": "11fafdc6502496f53e1443b2dcd8286c115e466712e10b12237d115baa91469b",
+  "additional_repairs": [
+    "dated example retained on return",
+    "body-grade sector labels",
+    "two redundant unavailable travel cells removed",
+    "existing mx-vh retained"
+  ]
+}

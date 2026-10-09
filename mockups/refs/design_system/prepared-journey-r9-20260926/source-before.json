@@ -1,0 +1,21 @@
+{
+  "head": "a75134cd512f33dd8391fb6789b6f531b696e18f",
+  "files": {
+    "mockups/design_system/specimen.html": {
+      "blob": "0aef1a1c2867acf917a6fc824ec58267d6e1237b",
+      "sha256": "15f4615eee0ba18f0e3f7699e90311c88e2ae4957d2f528515b948e9fe780bb5"
+    },
+    "tests/test_design_system_foundations.py": {
+      "blob": "8ec1160958950acef3a95da6c3ac2e4878359d1c",
+      "sha256": "451a6034d41e8cecdc8bb98d325388dee5560de3073128c84ae67fd2f0ffacf6"
+    },
+    "templates/theme.css": {
+      "blob": "138b4031143ae0f559bac218a58476199c71401d",
+      "sha256": "d41ce2d4027dbd176c1511f497c968651787da80ff0c35d7a972ece1bbc965e0"
+    },
+    "templates/tier_preview.css": {
+      "blob": "9cc9afa897cd1578780cd49ba088750b70a8cc28",
+      "sha256": "d390f5999f642821569c8ddd0a14516d699e01b589365692faf40cb32f0aa592"
+    }
+  }
+}

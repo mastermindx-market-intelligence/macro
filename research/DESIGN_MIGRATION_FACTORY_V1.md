@@ -61,6 +61,27 @@ A builder that believes the packet is wrong stops and escalates to the design au
 packet is amended (or a dissent recorded) — the builder never improvises. This is the
 spawn-handoff law applied to migration: quality travels in the packet, not by pointer.
 
+**Editable-reference law (2026-09-19; reconciled 2026-09-20).** A static screenshot,
+generated HTML render, chat image, or prose description is evidence/reference material, not by
+itself an editable design source. Every material migration must name the governed editable source
+used to compose it (Figma, Paper, or a later approved equivalent), the exact file/document plus
+frame/node/artboard identifiers, and the canonical components/tokens it consumes.
+
+Editable traceability is **necessary but not sufficient** for reference authority. Figma/Paper
+governance approves a tool/projection boundary; it does not approve a reference. The existing
+Reference Integrity Gate remains the canonicality gate: only a reference with a valid
+`RIG-RECEIPT:` may be treated as canonical/final or support final reference-conformance claims.
+Likewise, an editable source never narrows route-family, sibling-page, or atomic-migration scope
+already required by current product law.
+
+The editable tool is a **one-way projection of repository design law**, never a competing token
+root, component registry, approval plane, or release authority. Repository law/theme contracts
+establish whether a primitive exists. A tool-only primitive is provisional; after repository
+acceptance, synchronize the governed projection before relying on that primitive as migration
+design input. Exported/generated code is implementation input only. If the required primitive does
+not exist, the builder returns a DESIGN-SYSTEM GAP to design authority rather than drawing a
+page-local substitute.
+
 ## §2 The migration packet (template — every field mandatory)
 
 ```markdown
@@ -71,11 +92,50 @@ spawn-handoff law applied to migration: quality travels in the packet, not by po
                          a `RIG-RECEIPT: <reference-id>` line naming its approved
                          Reference Integrity artifact (RIG V1 §12; checker-enforced —
                          a packet citing an unapproved reference cannot merge)
+3A EDITABLE SOURCE       governed tool + exact file/document identifier + frame/node/artboard
+                         ids; name the design-system library/file consumed and record whether
+                         this is a fresh composition, a governed projection of the cited
+                         reference, or a no-visual-change migration. A screenshot/chat render
+                         alone is invalid. Tool governance does not replace the RIG-RECEIPT in
+                         field 3 and grants no canonical-reference status.
+3B COMPONENT DELTA       every component/token used comes from the canonical repository
+                         vocabulary; missing primitive → DESIGN-SYSTEM GAP + owning design
+                         lane. Builders may not mint page-local substitutes. Repository law
+                         establishes primitive authority; a tool-only primitive is provisional.
+                         Synchronize the governed editable projection after repository acceptance
+                         and before relying on that primitive as migration design input.
+                         State the foreground/background/interaction-state pair for important
+                         text and solid-label controls. Name source roles separately from
+                         editable aliases; a token name alone is not a contrast pass.
+3C STATE + INTERACTION   Dark + Light × EN + ZH × desktop + mobile, plus materially distinct
+   MATRIX                data/availability states as applicable (loading / empty / stale /
+                         partial / denied / error / corrected / success) and materially distinct
+                         interaction/overlay states as applicable (hover; keyboard focus /
+                         focus-visible; pressed / active / selected; expanded/open popover,
+                         dialog, menu or disclosure; disabled; component-specific variants).
+                         Record editable frame/component-variant ids that define intended visual
+                         treatment. Separately name browser/fixture evidence required in field 11
+                         to prove the implementation. Editable frames do not prove runtime/data
+                         emission. Existing evidence tooling remains the capture/receipt owner;
+                         use real browser interaction for native pseudo-states and existing
+                         state hooks/forced-state capture only where they truthfully represent
+                         the implemented state.
 4  PRIMARY QUESTION      one sentence (registry `primary_user_question`)
+                         FIRST READ: subject, owned assessment, consequential limitation and
+                         useful continuation, in intended reading order. These are semantic
+                         obligations, not a quota of boxes, subtitles or paragraphs.
+                         DEFAULT TASK: the useful prepared view before custom configuration;
+                         preserve the full population, comparisons and direct expert access.
+                         ASSEMBLY DEBT: list every setup action, cross-reference, mental
+                         calculation or configuration required before the useful first read;
+                         target 0. If unavoidable subject input remains, name it explicitly;
+                         the product performs the comparison/synthesis after that input.
 5  PRIMITIVES TO REUSE   the §11 components this page composes (explicit list)
 6  MODULE DISPOSITIONS   table: current module → RETAIN / COMPRESS / MERGE-INTO <x> /
                          DEMOTE-TO <tier/tab/page> / REMOVE (landing named) — every current
-                         first-level module appears exactly once
+                         first-level module appears exactly once. Name the actual destination
+                         and show that the ordinary task remains coherent after demotion;
+                         do not hide an adverse fact or force reconstruction across disclosures.
 7  MUST NOT CHANGE       engine outputs, payload schemas, canonical counts, access
                          boundaries, URLs, ledger/data writes — verified in review
 8  FILES IN SCOPE        exhaustive
@@ -88,10 +148,29 @@ spawn-handoff law applied to migration: quality travels in the packet, not by po
                          packet-specific bans
 10 STATES                the four states' copy (EN+ZH) written IN the packet
 11 EVIDENCE REQUIRED     the §0.2 screenshot matrix + forced-state shots + harness capture
+                         Separate TECHNICAL proof (data/binding, layout and interactions),
+                         DESIGN assessment (hierarchy, earned copy, depth), COLD-READER
+                         evidence (actual intended-user responses, no author walkthrough),
+                         and REAL-JOURNEY proof (task, result, deeper evidence, return).
+                         Unperformed evidence is NOT TESTED, never inferred from a render.
 12 ACCEPTANCE            §0 gates + packet-specific checks (each testable by a stranger)
+                         RESULT + RETURN: identify the real success/failure owner; requests
+                         are not saves or active alerts. Preserve applicable subject/listing,
+                         market, filters, benchmark/window, selection and return position.
+                         Reset incompatible market state explicitly. Inspecting evidence or
+                         receiving a refresh must not silently replace the inspected object.
 13 COLLISIONS            open PRs/lanes on these files (gh pr list + ACTIVE_BUILD_MAP)
 14 ROLLBACK              revert story (template-scoped by default)
 ```
+
+The existing fields above also carry the human-first doctrine: clear initial orientation,
+earned copy, accessible depth and a complete task. They create no new approval store or
+mandatory extra approval for routine reversible work. `docs/DESIGN_DOCTRINE.md` remains
+the content-law owner; compose with #8041 without treating that pending amendment as
+merged law. A measured worked
+repair and unsupported-pair dispositions are recorded in
+`research/DESIGN_SYSTEM_READABILITY_REPAIR_2026-09-26.md`; that record is candidate evidence,
+not a RIG receipt or proof that its native Paper patch has been applied.
 
 Packets are committed under `research/migration_packets/MP-<seq>-<slug>.md` BEFORE the builder
 is spawned; the spawn prompt inlines §0 gates and the packet path plus committed reference
@@ -224,9 +303,13 @@ on Sol §J.9. Items 4 and 5 have their mockup gate satisfied by
 `mockups/design_system/{today_reference,utility_reference}.html` (this lane); the BUILDS still wait
 on DS-PR-0.*
 
-**P1 — immediately post-launch:** `china.html` + `hk.html` (D-archetype followers of the macro
-reference — the reference generalizing IS the test of Wave 0), `news`/`alerts` (G — the G
-reference ships with the first of these, satisfying first-of-archetype), `watchlist`
+**P1 — immediately post-launch:** regional-primary D adoption is **not** implied by the
+Wave-0 macro reference. Chairman ruling #7456/#7471 makes the restored deep `china.html`
+dashboard the canonical production default; the compressed Archetype-D China experiment remains
+incubation material unless separately matured and accepted. Any future macro/China/HK/Canada
+primary-route D migration must be freshly scoped by current product law and cannot be authorized by
+an editable reference alone. Continue with `news`/`alerts` (G — the G reference ships with the
+first of these, satisfying first-of-archetype), `watchlist`
 (**pending the IA §10.4 Sol ruling** — its archetype home follows the ruling),
 `confluence_screener` + heatmaps (B), `research_vault` (F — its migration is the F reference),
 `products/*` polish (H-product), sector_central pair (C/E — the E reference ships with the

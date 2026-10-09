@@ -1,0 +1,1910 @@
+{
+  "scope": "Existing PR6860 exact changes composed onto current main, extracted original LENS module in an isolated fixture; source-only reference rates; no production, native Paper, live markets or screen-reader acceptance",
+  "cells": [
+    {
+      "kind": "existing-owner-runtime",
+      "width": 1440,
+      "input": "mouse",
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_click_persists",
+          "pass": true
+        },
+        {
+          "name": "second_dedicated_click_closes",
+          "pass": true
+        },
+        {
+          "name": "hover_opens",
+          "pass": true
+        },
+        {
+          "name": "hover_card_remains_readable",
+          "pass": true
+        },
+        {
+          "name": "genuine_outside_click_closes",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "Historical examples, not a forecast.\nFictional · 26 cases",
+            "closeLabel": "Close",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 1440,
+      "input": "mouse",
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_click_persists",
+          "pass": true
+        },
+        {
+          "name": "second_dedicated_click_closes",
+          "pass": true
+        },
+        {
+          "name": "hover_opens",
+          "pass": true
+        },
+        {
+          "name": "hover_card_remains_readable",
+          "pass": true
+        },
+        {
+          "name": "genuine_outside_click_closes",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "历史示例，不是预测。\n虚构 · 26例",
+            "closeLabel": "关闭",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 1440,
+      "input": "mouse",
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_click_persists",
+          "pass": true
+        },
+        {
+          "name": "second_dedicated_click_closes",
+          "pass": true
+        },
+        {
+          "name": "hover_opens",
+          "pass": true
+        },
+        {
+          "name": "hover_card_remains_readable",
+          "pass": true
+        },
+        {
+          "name": "genuine_outside_click_closes",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "Historical examples, not a forecast.\nFictional · 26 cases",
+            "closeLabel": "Close",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 1440,
+      "input": "mouse",
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_click_persists",
+          "pass": true
+        },
+        {
+          "name": "second_dedicated_click_closes",
+          "pass": true
+        },
+        {
+          "name": "hover_opens",
+          "pass": true
+        },
+        {
+          "name": "hover_card_remains_readable",
+          "pass": true
+        },
+        {
+          "name": "genuine_outside_click_closes",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "历史示例，不是预测。\n虚构 · 26例",
+            "closeLabel": "关闭",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 820,
+      "input": "touch",
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_plain_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "genuine_second_tap_closes",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "legacy_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "nested_control_keeps_its_action",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "Historical examples, not a forecast.\nFictional · 26 cases",
+            "closeLabel": "Close",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 820,
+      "input": "touch",
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_plain_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "genuine_second_tap_closes",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "legacy_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "nested_control_keeps_its_action",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "历史示例，不是预测。\n虚构 · 26例",
+            "closeLabel": "关闭",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 820,
+      "input": "touch",
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_plain_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "genuine_second_tap_closes",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "legacy_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "nested_control_keeps_its_action",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "Historical examples, not a forecast.\nFictional · 26 cases",
+            "closeLabel": "Close",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 820,
+      "input": "touch",
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_plain_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "genuine_second_tap_closes",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "legacy_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "nested_control_keeps_its_action",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "历史示例，不是预测。\n虚构 · 26例",
+            "closeLabel": "关闭",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 390,
+      "input": "touch",
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_plain_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "rapid_genuine_scrim_tap_closes",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "legacy_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "nested_control_keeps_its_action",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "✕\nHistorical examples, not a forecast.\nFictional · 26 cases",
+            "closeLabel": "Close",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "close_control_really_closes",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 390,
+      "input": "touch",
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_plain_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "rapid_genuine_scrim_tap_closes",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "legacy_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "nested_control_keeps_its_action",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "✕\n历史示例，不是预测。\n虚构 · 26例",
+            "closeLabel": "关闭",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "close_control_really_closes",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 390,
+      "input": "touch",
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_plain_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "rapid_genuine_scrim_tap_closes",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "legacy_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "nested_control_keeps_its_action",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "✕\nHistorical examples, not a forecast.\nFictional · 26 cases",
+            "closeLabel": "Close",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "close_control_really_closes",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 390,
+      "input": "touch",
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "first_plain_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "rapid_genuine_scrim_tap_closes",
+          "pass": true
+        },
+        {
+          "name": "first_dedicated_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "legacy_tap_persists",
+          "pass": true
+        },
+        {
+          "name": "nested_control_keeps_its_action",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "✕\n历史示例，不是预测。\n虚构 · 26例",
+            "closeLabel": "关闭",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "close_control_really_closes",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 390,
+      "input": "keyboard",
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "legacy_enter_opens",
+          "pass": true
+        },
+        {
+          "name": "legacy_escape_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "nested_keyboard_action_not_hijacked",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "✕\nHistorical examples, not a forecast.\nFictional · 26 cases",
+            "closeLabel": "Close",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "close_control_really_closes",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 390,
+      "input": "keyboard",
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "legacy_enter_opens",
+          "pass": true
+        },
+        {
+          "name": "legacy_escape_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "nested_keyboard_action_not_hijacked",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "✕\n历史示例，不是预测。\n虚构 · 26例",
+            "closeLabel": "关闭",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "close_control_really_closes",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 390,
+      "input": "keyboard",
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "legacy_enter_opens",
+          "pass": true
+        },
+        {
+          "name": "legacy_escape_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "nested_keyboard_action_not_hijacked",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "✕\nHistorical examples, not a forecast.\nFictional · 26 cases",
+            "closeLabel": "Close",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "close_control_really_closes",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "existing-owner-runtime",
+      "width": 390,
+      "input": "keyboard",
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "keyboard_focus_available_in_this_mode",
+          "pass": true
+        },
+        {
+          "name": "escape_closes_retains_trigger",
+          "pass": true
+        },
+        {
+          "name": "legacy_enter_opens",
+          "pass": true
+        },
+        {
+          "name": "legacy_escape_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "nested_keyboard_action_not_hijacked",
+          "pass": true
+        },
+        {
+          "name": "one_open_bounded_explanation",
+          "pass": true,
+          "detail": {
+            "open": true,
+            "within": true,
+            "localeHidden": true,
+            "text": "✕\n历史示例，不是预测。\n虚构 · 26例",
+            "closeLabel": "关闭",
+            "described": true,
+            "single": true,
+            "docFits": true
+          }
+        },
+        {
+          "name": "correct_language_and_description",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true
+        },
+        {
+          "name": "close_control_really_closes",
+          "pass": true
+        },
+        {
+          "name": "no_navigation_or_persistence_effect",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 320,
+      "typeScale": 1,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "en",
+            "leak": false,
+            "limit": "Small historical sample—not a forecast.",
+            "context": "Fictional study · static open-state example. The button is not connected here.",
+            "basis": "16 of 26 faded within a day.",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 320,
+      "typeScale": 1,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "zh-CN",
+            "leak": false,
+            "limit": "少量历史样本，不是预测。",
+            "context": "虚构研究 · 静态展开示例。此处按钮未连接交互。",
+            "basis": "26次中，16次在一天内消退。",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 320,
+      "typeScale": 1,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "en",
+            "leak": false,
+            "limit": "Small historical sample—not a forecast.",
+            "context": "Fictional study · static open-state example. The button is not connected here.",
+            "basis": "16 of 26 faded within a day.",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 320,
+      "typeScale": 1,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "zh-CN",
+            "leak": false,
+            "limit": "少量历史样本，不是预测。",
+            "context": "虚构研究 · 静态展开示例。此处按钮未连接交互。",
+            "basis": "26次中，16次在一天内消退。",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 390,
+      "typeScale": 1,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "en",
+            "leak": false,
+            "limit": "Small historical sample—not a forecast.",
+            "context": "Fictional study · static open-state example. The button is not connected here.",
+            "basis": "16 of 26 faded within a day.",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 390,
+      "typeScale": 1,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "zh-CN",
+            "leak": false,
+            "limit": "少量历史样本，不是预测。",
+            "context": "虚构研究 · 静态展开示例。此处按钮未连接交互。",
+            "basis": "26次中，16次在一天内消退。",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 390,
+      "typeScale": 1,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "en",
+            "leak": false,
+            "limit": "Small historical sample—not a forecast.",
+            "context": "Fictional study · static open-state example. The button is not connected here.",
+            "basis": "16 of 26 faded within a day.",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 390,
+      "typeScale": 1,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "zh-CN",
+            "leak": false,
+            "limit": "少量历史样本，不是预测。",
+            "context": "虚构研究 · 静态展开示例。此处按钮未连接交互。",
+            "basis": "26次中，16次在一天内消退。",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 768,
+      "typeScale": 1,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "en",
+            "leak": false,
+            "limit": "Small historical sample—not a forecast.",
+            "context": "Fictional study · static open-state example. The button is not connected here.",
+            "basis": "16 of 26 faded within a day.",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 768,
+      "typeScale": 1,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "zh-CN",
+            "leak": false,
+            "limit": "少量历史样本，不是预测。",
+            "context": "虚构研究 · 静态展开示例。此处按钮未连接交互。",
+            "basis": "26次中，16次在一天内消退。",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 768,
+      "typeScale": 1,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "en",
+            "leak": false,
+            "limit": "Small historical sample—not a forecast.",
+            "context": "Fictional study · static open-state example. The button is not connected here.",
+            "basis": "16 of 26 faded within a day.",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 768,
+      "typeScale": 1,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "zh-CN",
+            "leak": false,
+            "limit": "少量历史样本，不是预测。",
+            "context": "虚构研究 · 静态展开示例。此处按钮未连接交互。",
+            "basis": "26次中，16次在一天内消退。",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 1440,
+      "typeScale": 1,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "en",
+            "leak": false,
+            "limit": "Small historical sample—not a forecast.",
+            "context": "Fictional study · static open-state example. The button is not connected here.",
+            "basis": "16 of 26 faded within a day.",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 1440,
+      "typeScale": 1,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "zh-CN",
+            "leak": false,
+            "limit": "少量历史样本，不是预测。",
+            "context": "虚构研究 · 静态展开示例。此处按钮未连接交互。",
+            "basis": "26次中，16次在一天内消退。",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 1440,
+      "typeScale": 1,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "en",
+            "leak": false,
+            "limit": "Small historical sample—not a forecast.",
+            "context": "Fictional study · static open-state example. The button is not connected here.",
+            "basis": "16 of 26 faded within a day.",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 1440,
+      "typeScale": 1,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "zh-CN",
+            "leak": false,
+            "limit": "少量历史样本，不是预测。",
+            "context": "虚构研究 · 静态展开示例。此处按钮未连接交互。",
+            "basis": "26次中，16次在一天内消退。",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 12.5
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 390,
+      "typeScale": 2,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "en",
+            "leak": false,
+            "limit": "Small historical sample—not a forecast.",
+            "context": "Fictional study · static open-state example. The button is not connected here.",
+            "basis": "16 of 26 faded within a day.",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 25
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 390,
+      "typeScale": 2,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "zh-CN",
+            "leak": false,
+            "limit": "少量历史样本，不是预测。",
+            "context": "虚构研究 · 静态展开示例。此处按钮未连接交互。",
+            "basis": "26次中，16次在一天内消退。",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 25
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 390,
+      "typeScale": 2,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "en",
+            "leak": false,
+            "limit": "Small historical sample—not a forecast.",
+            "context": "Fictional study · static open-state example. The button is not connected here.",
+            "basis": "16 of 26 faded within a day.",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 25
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "reference-rate",
+      "width": 390,
+      "typeScale": 2,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "layout_contained",
+          "pass": true,
+          "detail": {
+            "docFits": true,
+            "panelFits": true,
+            "language": "zh-CN",
+            "leak": false,
+            "limit": "少量历史样本，不是预测。",
+            "context": "虚构研究 · 静态展开示例。此处按钮未连接交互。",
+            "basis": "26次中，16次在一天内消退。",
+            "static": true,
+            "within": true,
+            "disabled": true,
+            "height": 44,
+            "receipt": 25
+          }
+        },
+        {
+          "name": "historical_limit_visible",
+          "pass": true
+        },
+        {
+          "name": "correct_locale",
+          "pass": true
+        },
+        {
+          "name": "honest_static_projection",
+          "pass": true
+        },
+        {
+          "name": "receipt_legible",
+          "pass": true
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "exceptions": []
+}
