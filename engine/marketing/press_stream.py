@@ -494,6 +494,7 @@ def ack_spool(root: Path | str, snapshot: SpoolSnapshot) -> bool:
                 dir=path.parent, prefix=".stream-spool-ack-", suffix=".tmp"
             )
             with os.fdopen(fd, "wb") as output:
+                os.fchmod(output.fileno(), stat.st_mode & 0o777)
                 output.write(raw[snapshot.byte_count:])
                 output.flush()
                 os.fsync(output.fileno())

@@ -402,3 +402,12 @@ def test_failed_ack_replace_keeps_the_original_unconsumed(tmp_path, monkeypatch)
     monkeypatch.setattr(ps.os, "replace", fail_replace)
     assert ps.ack_spool(tmp_path, snapshot) is False
     assert _snapshot_spool(tmp_path).read_bytes() == before
+
+
+def test_ack_keeps_spool_file_permissions_after_atomic_replace(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "A"}])
+    path = _snapshot_spool(tmp_path)
+    path.chmod(0o640)
+    before = ps.peek_spool(tmp_path)
+    assert ps.ack_spool(tmp_path, before) is True
+    assert path.stat().st_mode & 0o777 == 0o640
