@@ -21,22 +21,28 @@ The accepted primitives, measured on a two-issuer / two-period nest:
 ===============================  ==========================================  ========
 primitive                        representation                              bytes
 ===============================  ==========================================  ========
-``event_workspaces/manifest``    the ONE mutable control object: the marker.  1 820
+``event_workspaces/manifest``    the ONE mutable control object: the marker.  1 858
    .json                         Closed key set ``event_workspace_manifest
-                                 .v2`` — schema, status, generated_at,
-                                 generation_id, event_count, files{path ->
-                                 {bytes, sha256}}, aliases{alias -> canonical
-                                 event id}, warnings, authority
-                                 ("context_only"), previous_generation_id,
+                                 .v3`` — schema, status, generated_at,
+                                 source_clock, generation_id, event_count,
+                                 files{path -> {bytes, sha256}},
+                                 aliases{alias -> canonical event id},
+                                 warnings, authority ("context_only"),
+                                 previous_generation_id,
                                  previous_manifest_sha256.
 ``generations/<24hex>/           the same bytes, immutable at a
-   manifest.json``               content-addressed key.                       1 820
+   manifest.json``               content-addressed key.                       1 858
 ``generations/<24hex>/           one immutable data object per event,         7 710
    workspaces/<event_id>.json``  receipted by bytes+sha256 in the manifest.   - 8 489
 ===============================  ==========================================  ========
 
 Budget: ~1.8 KB of control plane per generation plus ~8 KB per event; a
-two-issuer, two-period generation is **36 038 bytes across 6 objects**. The
+two-issuer, two-period generation is **36 114 bytes across 6 objects**, pinned
+by ``test_the_documented_byte_budget_is_the_measured_one`` at the foot of this
+file. It is pinned because this table had already drifted: main's #8336 moved
+the marker to ``.v3`` and added ``source_clock``, taking it from 1 820 to
+1 858 bytes and the nest from 36 038 to 36 114, and nothing noticed, because a
+budget stated only in prose is a budget no test can read. The
 binder reads at most FOUR objects per witness request (marker, immutable
 manifest, current object, preceding object) and never walks the predecessor
 chain — that walk is O(hops) and is what the 153 s incident was.
@@ -331,3 +337,36 @@ def test_supersession_moves_the_marker_and_the_binder_follows_it(
     generations = {value for kind, value in bundle.revision_tuple if kind == "generation"}
     assert generations == {second_marker["generation_id"]}, generations
     assert first_gen not in generations
+
+
+def test_the_documented_byte_budget_is_the_measured_one(tmp_path, payloads):
+    """The byte column in the module table above is asserted HERE or nowhere.
+
+    These figures are legitimately assertable, and that is a consequence of
+    #8336 rather than an accident: once the publication clock became derived
+    from the rows' own observation clocks, the same payloads always serialize
+    to the same bytes — which the identical-replay proof above states as byte
+    identity. Before that commit a wall-clock ``generated_at`` would have made
+    the length stable but the content not, and this assertion would have been
+    the wrong instrument.
+
+    When this fails, the writer's wire format moved. That is the signal being
+    bought: update the table in the module docstring and these numbers in the
+    same commit, the way #8336 should have.
+    """
+    out = tmp_path / "company_intelligence"
+    marker = _write(out, payloads)
+    root = out / "event_workspaces"
+    sizes = {p.relative_to(root).as_posix(): p.stat().st_size
+             for p in sorted(root.rglob("*.json"))}
+
+    assert len(sizes) == 6, sizes
+    gen = root / "generations" / marker["generation_id"]
+    # the mutable marker and its content-addressed twin are the same bytes,
+    # so one figure covers both rows of the table
+    assert (root / "manifest.json").stat().st_size == 1858, sizes
+    assert (gen / "manifest.json").stat().st_size == 1858, sizes
+    # the per-event row quotes a RANGE; pin both of its endpoints
+    assert sorted(p.stat().st_size for p in (gen / "workspaces").glob("*.json")) == [
+        7710, 7710, 8489, 8489], sizes
+    assert sum(sizes.values()) == 36114, sizes

@@ -671,7 +671,15 @@ def _require_registered_contract(
 
 
 def _refuse_unreadable_cutoff(body: _QueryBody | _EvidenceBody) -> None:
-    """Refuse a supplied cutoff the engine cannot read — for every vertical.
+    """Refuse a supplied cutoff the engine cannot read.
+
+    Scope, stated exactly: this closes the silent-200 half for every vertical
+    whose LOADER does not itself parse a cutoff. Because of the ORDER LAW
+    below the loader runs first, so a loader that parses one can still raise
+    a bare ValueError into the catch-all's 503 before this check is reached.
+    That residue is the loader author's to close, not this shell's — a
+    registering vertical that reads cutoffs inside its loader must refuse an
+    unreadable one there.
 
     The Energy seat measured both faults this prevents over nuclear's route
     (#7870 issuecomment-5868018569 / 5869344590 / 5870740225): a bare
@@ -697,11 +705,18 @@ def _refuse_unreadable_cutoff(body: _QueryBody | _EvidenceBody) -> None:
     FORMAT only: `validate_replay_cutoffs` stays vertical-owned, because which
     modes a vertical serves differs per vertical (see the
     `identity_vintage_unsupported` note on the refusal map). The two
-    validators are disjoint by construction — `validate_replay_cutoffs` fires
-    only on a MISSING cutoff in replay mode and never parses; this one fires
-    only on a PRESENT unparseable value — so no input reaches both and this
-    placement cannot reorder them. Idempotent for a vertical that validates
-    too: the check is pure and raises only on a cutoff `le` could not compare.
+    validators are NOT disjoint, and an earlier revision of this docstring
+    claimed they were: there are two cutoff FIELDS, so one request can carry
+    a missing one and an unreadable one at once. `system_replay` with
+    `source_cutoff="not-a-date"` and `recorded_cutoff=None` raises
+    `replay_cutoffs_required` from one and `cutoff_unreadable` from the other,
+    so this placement DOES reorder them for that input. It is unobservable
+    rather than harmless: both codes land in the same byte-identical 400
+    (`invalid_request` / `fix_request`, no `detail`), which is also why the
+    earlier claim that the reorder was externally visible was withdrawn. If
+    that envelope is ever differentiated, this pair needs a declared
+    precedence and a test. Idempotent for a vertical that validates too: the
+    check is pure and raises only on a cutoff `le` could not compare.
     """
     validate_cutoff_format(body.source_cutoff, body.recorded_cutoff)
 

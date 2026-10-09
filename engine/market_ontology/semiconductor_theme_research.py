@@ -168,11 +168,18 @@ def _validate_query(query: ResearchQuery) -> None:
 
     Over the HTTP route the shell refuses an unreadable cutoff before this
     runs (`app.theme_research._refuse_unreadable_cutoff`), so a request that
-    is BOTH out of page bounds and carries a malformed cutoff is answered by
-    the shell's check first. Not observable to the caller: `limit_out_of_range`
-    and `cutoff_unreadable` share one undifferentiated 400 envelope (`code`
-    `invalid_request`, `action` `fix_request`, no `detail`). Non-route callers
-    of this composer get the order above unchanged."""
+    trips both the shell's check and one of these is answered by the shell's.
+    The worked example must be a REACHABLE one, and `limit_out_of_range` is
+    not: `_MIN_LIMIT, _MAX_LIMIT` are 1 and 100, the same bounds the route
+    body already declares (`limit: Field(ge=1, le=100)`), so Pydantic refuses
+    an out-of-range limit at the door and this branch never fires over HTTP.
+    The reachable pair is `expected_generation_required` (offset > 0 with no
+    `expected_generation` — both fields independently valid to Pydantic)
+    against `cutoff_unreadable`: that request answers `cutoff_unreadable`
+    now and answered `expected_generation_required` before. Not observable
+    to the caller either way — the two share one undifferentiated 400
+    envelope (`code` `invalid_request`, `action` `fix_request`, no `detail`).
+    Non-route callers of this composer get the order above unchanged."""
     validate_pagination(limit=query.limit, offset=query.offset,
                         expected_generation=query.expected_generation,
                         min_limit=_MIN_LIMIT, max_limit=_MAX_LIMIT)

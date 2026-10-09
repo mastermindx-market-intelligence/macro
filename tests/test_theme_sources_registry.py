@@ -82,8 +82,12 @@ def test_rights_module_reads_this_registry():
     from engine.theme_graph import rights
 
     assert rights.rights_class("mastermind_curated") == "direct_display_ok"
-    # Both unresolved families refuse public emission today; flipping the registry
-    # to a display class is the operator's act and flips the gate with no code change.
+    # Both vendor families read `internal_only` today, not `unresolved` — the
+    # 2026-10-06 gate-2 review decided against emitting rather than deferring. Either
+    # class refuses public emission, which is why the branch below accepts both and
+    # why this test survived the reclassification without noticing it. Flipping the
+    # registry to a display class is the operator's act and flips the gate with no
+    # code change.
     for fam in ("finviz_themes", "ths_concepts"):
         klass = rights.rights_class(fam)
         assert klass in RIGHTS_CLASSES

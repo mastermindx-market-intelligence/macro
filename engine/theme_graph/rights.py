@@ -15,9 +15,13 @@ Two directions matter and they are not symmetric:
 * an UNKNOWN family fails CLOSED — :func:`rights_class` raises, and the guard treats a
   stored node whose ``rights_family`` has no registry row as a breach. A family nobody
   wrote down is a family nobody reviewed.
-* an unresolved-but-registered family is simply refused at the emission gate. That is
-  the steady state for both vendor families in W3A, and it is a decision pending, not
-  an error.
+* a REGISTERED family that does not permit public emission is simply refused at the
+  gate. Two distinct classes land there and conflating them misreports the company's
+  position: ``unresolved`` is a decision pending, while ``internal_only`` is a decision
+  made, against emitting. Both vendor families in W3A read ``internal_only`` as of the
+  2026-10-06 Chairman gate-2 ruling (registry ``review.by: chairman-gate2``), which
+  retained internal-only and granted no display or redistribution rights — so calling
+  their steady state "pending" inverts what was decided. Neither class is an error.
 
 LABEL vs STRUCTURE (F19). A vendor's own subtheme NAME is already-public vocabulary and
 rides ``name_en``/``name_zh`` lawfully; what rights govern is the subtheme→member

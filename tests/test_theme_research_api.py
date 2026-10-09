@@ -2129,6 +2129,68 @@ def test_a_vertical_that_never_validates_still_serves_a_wellformed_cutoff(
     assert response.status_code == 200, response.text
 
 
+@pytest.mark.parametrize("bad", ["not-a-date", "", "20261231", "2026-W53-4"])
+@pytest.mark.parametrize("field", ["source_cutoff", "recorded_cutoff"])
+def test_an_unreadable_cutoff_is_refused_on_the_evidence_route_too(
+    entitled_client, bundle_loader, monkeypatch, field, bad,
+):
+    """The SECOND call site, pinned independently of the compose one.
+
+    ``_refuse_unreadable_cutoff`` is called twice -- once in ``_call_compose``,
+    once in ``_call_evidence`` -- and the pair above exercises only the first.
+    Measured on this harness: commenting out the ``_call_evidence`` call left
+    all 23 files this job declares green -- 1143 passed, rc=0 -- so the
+    evidence route's half of the fault the Energy seat measured was carried by
+    nothing. The 11 sparse-checkout skips in that run were checked too: the one
+    skipped test that names a cutoff posts WELL-FORMED cutoffs to the COMPOSE
+    route, so it could not have caught this on either count.
+    Nothing could have caught it: every evidence-route body in this file comes
+    from ``_WITNESS_BODY``, which sends ``source_cutoff: None`` and
+    ``recorded_cutoff: None``, and ``None`` is readable.
+
+    Paired with the 200 control below for the same reason the compose pair is:
+    a 400 alone would also be produced by the evidence body's own door checks
+    (the ``assertion_ref`` pattern, the required ``expected_generation``).
+    """
+    calls = _install_synthetic_registration(monkeypatch)
+    ref = "gmi-curation://synthetic_vertical/gmirca_" + "c" * 32
+    body = _evidence_body_with(ref, generation="gen_" + "b" * 32)
+    body["anchor_theme_id"] = _SYNTHETIC_ANCHOR
+    body["slice_key"] = _SYNTHETIC_SLICE
+    body[field] = bad
+
+    response = entitled_client.post("/api/themes/v1/research/evidence", json=body)
+
+    assert response.status_code == 400, response.text
+    _assert_private_headers(response)
+    error = response.json()["detail"]["error"]
+    assert error["code"] == "invalid_request"
+    assert error["action"] == "fix_request"
+    assert bad not in response.text or bad == "", "the unreadable value is not echoed"
+    assert calls["select"] == [], "refused BEFORE the vertical's selector ran"
+
+
+def test_the_evidence_route_still_serves_a_wellformed_cutoff(
+    entitled_client, bundle_loader, monkeypatch,
+):
+    """Control for the test above, on the same synthetic evidence path.
+
+    One readable cutoff reaches the synthetic selector and serves 200. Without
+    it the 400s above could come from the evidence body shape and would pass
+    for the wrong reason on both sides of the fix."""
+    calls = _install_synthetic_registration(monkeypatch)
+    ref = "gmi-curation://synthetic_vertical/gmirca_" + "c" * 32
+    body = _evidence_body_with(ref, generation="gen_" + "b" * 32)
+    body["anchor_theme_id"] = _SYNTHETIC_ANCHOR
+    body["slice_key"] = _SYNTHETIC_SLICE
+    body["source_cutoff"] = "2026-12-31"
+
+    response = entitled_client.post("/api/themes/v1/research/evidence", json=body)
+
+    assert response.status_code == 200, response.text
+    assert len(calls["select"]) == 1, "the readable cutoff reached the selector"
+
+
 def _rewrite_scopes_to_canonical(monkeypatch) -> None:
     """Wrap the installed loader so every assertion's
     ``scope.canonical_theme_id`` is re-minted through the identity owner's

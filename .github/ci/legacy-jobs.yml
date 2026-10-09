@@ -2527,7 +2527,18 @@ jobs:
     # Every Semiconductor B suite was named only in `gate: data` jobs — the
     # paid theme-research transport in `tier-gate`, the issuer profiles /
     # guidance history / intake in `neural-web-core`, the composer in
-    # `unrun-intl-libraries`, the basket mount in `unrun-subsector-themes`.
+    # `unrun-intl-libraries`, the basket mount in `unrun-subsector-themes`,
+    # and the K1 evidence-foundation / native-identity contracts in
+    # `signal-contract`. That last pair was MISSED by this job's first
+    # revision, and a semantic mutation proved the cost: flipping
+    # `_rights_and_missingness`' UNKNOWN branch to `permitted` — the
+    # "never silently permitted" law on 620 lines of new shared foundation —
+    # left all twelve steps here GREEN and reddened only
+    # `test_semiconductor_native_identity.py`, i.e. only the nightly lane,
+    # only after merge. `engine/theme_graph/**` already triggers this job, so
+    # the trigger fired while no step read the module's contract: a gate whose
+    # read set is disjoint from the diff's write set returns the same verdict
+    # either way.
     # ci.yml packs `--gate code`, so a PR that removed the rights-owner veto
     # from app/theme_research.py or broke the closed release grammars would
     # merge green and red only in the next day's data-health lane (the
@@ -2555,7 +2566,7 @@ jobs:
     # roots and the job would select on templates/index.html and every other
     # ordinary code PR it never reads (the packing-ceiling probe caught exactly
     # that: +1 job on all three probes). The paths below are the files these
-    # twenty suites import, open or render — the vertical's own subjects, the
+    # twenty-two suites import, open or render — the vertical's own subjects, the
     # shared owners it consumes (Theme Graph rights/contracts, Earnings
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
@@ -2626,6 +2637,13 @@ jobs:
       # by no other test in the tree.
       - "tests/test_theme_research_binding.py"
       - "tests/test_semiconductor_owner_bundle.py"
+      # The K1 evidence-foundation contract and the owner-native identity /
+      # evidence-reference projection. Their subjects are already covered
+      # (lib/**, engine/theme_graph/**, contracts/**), but an edit to the
+      # SUITES themselves must re-run them too — a test file that re-runs only
+      # when its subject changes is the packer's own documented false green.
+      - "tests/test_evidence_foundation_contract.py"
+      - "tests/test_semiconductor_native_identity.py"
       # That suite reaches its helpers as `from tests.semiconductor_research_helpers
       # import ...` — a PACKAGE import, so the closure audit counts the package
       # initialiser too (two other exclusive jobs declare it for the same reason).
@@ -2705,6 +2723,14 @@ jobs:
       - "engine/entry_radar/**"
       - "engine/fundamental_forensics/**"
       - "engine/government_revenue/**"
+      # institutional_census is reached BOTH ways by the K1 evidence-foundation
+      # contract: a static import of `models` and an importlib resolution of the
+      # `institutional_13f.catalog_generation` reader string (catalog.py, through
+      # _resolve_reader). The closure audit can only see the first; declaring just
+      # models.py would satisfy that audit and leave the dynamic half uncovered,
+      # so the whole package is named, like every other reader package in that
+      # same contract table.
+      - "engine/institutional_census/**"
       - "engine/intelligence_workspace/**"
       - "engine/marketing/**"
       - "engine/metabolism/**"
@@ -2762,6 +2788,8 @@ jobs:
         run: pip install pytest pyyaml jinja2 jsonschema fastapi httpx requests numpy pandas pyarrow
       - name: shared binding kernel (day-vs-instant cutoffs, unreadable-owner withhold, pagination bounds, generation fingerprint) — no vertical imported
         run: python -m pytest tests/test_theme_research_binding.py -q
+      - name: K1 evidence-foundation contract + owner-native identity and evidence-reference admission (rights never silently permitted)
+        run: python -m pytest tests/test_evidence_foundation_contract.py tests/test_semiconductor_native_identity.py -q
       - name: paid theme research transport (auth gate, closed vertical registration, rights owner veto, private binding)
         run: python -m pytest tests/test_theme_research_registry.py tests/test_theme_research_api.py tests/test_theme_research_rights_refresh.py tests/test_theme_research_private_binding.py -q
       - name: issuer release grammars, guidance history, EDGAR intake (TSMC + onsemi witnesses)
