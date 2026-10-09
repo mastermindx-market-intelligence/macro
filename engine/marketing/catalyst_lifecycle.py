@@ -24,7 +24,7 @@ import re
 import secrets
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Protocol
+from typing import Any, Callable, Protocol
 from urllib.parse import parse_qsl, unquote, urlsplit
 from uuid import UUID
 
@@ -404,7 +404,8 @@ class FunnelService:
 
     def __init__(self, *, secret: str, scan: ScanAuthority, identity: OtpIdentityAuthority,
                  consent: ConsentOwner, suppression: SuppressionAuthority,
-                 revisions: RevisionAuthority, sender: DeliveryAuthority):
+                 revisions: RevisionAuthority, sender: DeliveryAuthority,
+                 rights_clock: Callable[[datetime], datetime] | None = None):
         self.secret = secret
         self.scan = scan
         self.identity = identity
@@ -412,6 +413,17 @@ class FunnelService:
         self.suppression = suppression
         self.revisions = revisions
         self.sender = sender
+        # Production reads real wall time separately for EACH rights check;
+        # deterministic tests may inject a frozen/advancing clock. A caller's
+        # initial batch "now" cannot extend a license across a long send.
+        self._rights_clock = rights_clock if rights_clock is not None else (
+            lambda _batch_now: datetime.now(timezone.utc))
+
+    def _rights_now(self, batch_now: datetime) -> datetime:
+        try:
+            return _utc(self._rights_clock(batch_now))
+        except Exception:
+            raise FunnelGate("SOURCE_RIGHTS_CLOCK_UNAVAILABLE") from None
 
     def _qualified_scan(self, receipt: str, *, now: datetime) -> ScanEvidence:
         """Recheck the current public source through the canonical ScanAuthority.
@@ -643,7 +655,7 @@ class FunnelService:
             if self.revisions.is_current(revision.event_id, revision.generation) is not True:
                 raise FunnelGate("OUTDATED_OR_UNVERIFIED_REVISION", 409)
             # Read authoritative public/email rights BEFORE roster retrieval.
-            self._require_live_rights(revision, at_utc=now)
+            self._require_live_rights(revision, at_utc=self._rights_now(now))
             subscribers = self.consent.interested(revision.event_id, limit)
         except FunnelGate:
             raise
@@ -666,7 +678,7 @@ class FunnelService:
                     # A grant may be withdrawn AFTER roster selection. Re-read
                     # immediately before each sender call, not once per batch.
                     try:
-                        self._require_live_rights(revision, at_utc=now)
+                        self._require_live_rights(revision, at_utc=self._rights_now(now))
                     except FunnelGate as exc:
                         state = ("SOURCE_RIGHTS_NOT_CURRENT" if exc.status == 403
                                  else "SOURCE_RIGHTS_UNAVAILABLE")
