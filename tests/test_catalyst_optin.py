@@ -36,22 +36,35 @@ def web(monkeypatch):
     catalyst_optin.configure(None)
 
 
-def test_session00_exact_private_request_contract_without_duplicate_public_route(web):
+def test_session00_private_request_requires_signed_proof_and_explicit_consent(web):
     client, service = web
     assert client.post("/api/catalyst/optin/request", json={}).status_code == 404
-    data = {"email": "investor@example.com", "event_id": "event-123", "tickers": ["NVDA"],
-            "consent": True, "scope": catalyst_optin.SCOPE,
-            "attribution": {"utm_content": "post-02", "utm_medium": "partner-1"}}
+    # Structurally signed-looking only: the fake service below is not the
+    # canonical HMAC verifier. Production must inject 00.ScanReceiptAuthority.
+    signed = "eyJ2IjoxLCJldmVudF9pZCI6ImV2ZW50LTEyMyJ9." + "b" * 43
+    data = {"email": "investor@example.com", "scan_receipt": signed,
+            "consent_checked": True, "scope": catalyst_optin.SCOPE,
+            "form_elapsed_ms": 3000, "honeypot": "",
+            "first_touch": {"utm_content": "post-02", "utm_medium": "partner-1"}}
     out = catalyst_optin.request_optin(data)
     assert out == {"status": "VERIFICATION_REQUIRED", "public_ref": "opaque_testref_1234"}
     assert len(service.requests) == 1
-    assert service.requests[0]["touch"] == data["attribution"]
+    assert service.requests[0]["touch"] == data["first_touch"]
     assert service.requests[0]["checked"] is True
-    import json
-    assert json.loads(service.requests[0]["scan_receipt"]) == {
-        "event_id": "event-123", "tickers": ["NVDA"]}
-    for bad in ({**data, "consent": False}, {**data, "scope": "all_marketing"},
-                {**data, "tickers": ["NVDA", "NVDA"]}):
+    assert service.requests[0]["scan_receipt"] == signed
+    for bad in (
+        {**data, "consent_checked": False},
+        {**data, "scope": "all_marketing"},
+        {**data, "scan_receipt": '{"event_id":"event-123","tickers":["NVDA"]}'},
+        {**data, "scan_receipt": "not-a-signature"},
+        {**data, "honeypot": "robot"},
+        {**data, "form_elapsed_ms": 2999},
+        {**data, "form_elapsed_ms": True},
+        {**data, "form_elapsed_ms": 86_400_001},
+        {**data, "event_id": "event-123"},
+        {**data, "tickers": ["NVDA"]},
+        {**data, "first_touch": {"comment": "x" * 4200}},
+    ):
         with pytest.raises(FunnelGate):
             catalyst_optin.request_optin(bad)
     assert len(service.requests) == 1
@@ -238,35 +251,14 @@ def test_first_value_scan_is_owned_by_00_no_email_wall_or_duplicate_route(web):
     assert svc.requests == []
 
 
-def test_reuses_exact_00_public_scan_rights_and_freshness_gate(monkeypatch):
-    import json
-    import sys
-    from types import SimpleNamespace
-    from app import catalyst_optin
-    seen = []
-    def read(tickers, *, event_id):
-        seen.append((tickers, event_id))
-        return {"event_id": event_id, "as_of_utc": "2026-10-09T03:00:00+00:00",
-                "publication_state": "PUBLIC_QUALIFIED",
-                "results": [{"ticker": t, "status": "SUPPORTED"} for t in tickers]}
-    owner = SimpleNamespace(scan_with_reader=read, normalize_tickers=lambda ts: ts)
-    monkeypatch.setitem(sys.modules, "app.catalyst_integration", owner)
-    from app import catalyst_optin as app_module
-    monkeypatch.setattr(__import__("app"), "catalyst_integration", owner, raising=False)
-    adapter = catalyst_optin.CanonicalPublicScanAuthority()
-    rec = json.dumps({"event_id": "event-123", "tickers": ["NVDA", "AMD"]})
-    evidence = adapter.require_public_scan(rec)
-    assert evidence.public_safe and evidence.event_id == "event-123"
-    assert evidence.tickers == ("NVDA", "AMD")
-    assert seen == [(["NVDA", "AMD"], "event-123")]
-    owner.scan_with_reader = lambda ts, *, event_id: {
-        "event_id": event_id, "as_of_utc": "2026-10-09T03:00:00+00:00",
-        "publication_state": "PARTIAL",
-        "results": [{"ticker": "NVDA", "status": "SUPPORTED"},
-                    {"ticker": "AMD", "status": "RIGHTS_BLOCKED"}]}
-    with pytest.raises(FunnelGate) as error:
-        adapter.require_public_scan(rec)
-    assert error.value.code == "SCAN_NOT_PUBLIC_SAFE"
+def test_unsigned_scan_descriptor_never_falls_back_to_unmerged_integration_module():
+    with pytest.raises(FunnelGate) as err:
+        catalyst_optin.UnwiredScanAuthority().require_public_scan(
+            '{"event_id":"event-123","tickers":["NVDA"]}')
+    assert err.value.code == "SCAN_AUTHORITY_NOT_WIRED"
+    assert err.value.status == 503
+    # No sibling module import is needed until Session 00 explicitly injects
+    # its HMAC signer/verifier backed by a rights-qualified current producer.
 
 
 def test_00_private_delivery_seam_needs_an_authoritative_revision_loader():
