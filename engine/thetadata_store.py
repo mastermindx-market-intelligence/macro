@@ -427,7 +427,8 @@ def store_root(override: str | Path | None = None) -> Path:
 # --------------------------------------------------------------------------- #
 
 def _load_parquets(tier: str, root: str, years: list[int] | None,
-                   store: str | Path | None = None) -> pd.DataFrame:
+                   store: str | Path | None = None, *,
+                   retain_source_clocks: bool = False) -> pd.DataFrame:
     """Load all parquets for (tier, root), optionally filtered to `years`.
     Missing files are silently skipped (partial store is normal during backfill).
 
@@ -435,6 +436,12 @@ def _load_parquets(tier: str, root: str, years: list[int] | None,
     This means consecutive chain() calls for different dates in the same year pay
     one disk read, not N reads.  Call clear_parquet_cache() after a batch run to
     release memory.
+
+    Greek consumers default to the legacy economic projection: source clocks
+    are excluded and clock-only duplicates collapse. Provenance consumers can
+    request retain_source_clocks=True to inspect every retained raw vintage.
+    Neither view certifies point-in-time availability. The cache always holds
+    the raw frame, so reading a legacy view cannot erase source evidence.
 
     Defensive dedup: full-row drop_duplicates() is applied to each parquet frame
     before caching.  This protects downstream consumers (Phase-B gate runs, backtest
@@ -479,7 +486,13 @@ def _load_parquets(tier: str, root: str, years: list[int] | None,
             frames.append(df)
         except Exception as e:  # noqa: BLE001
             log.debug("skip %s: %s", f, e)
-    return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+    if not frames:
+        return pd.DataFrame()
+    result = pd.concat(frames, ignore_index=True)
+    clock_cols = [c for c in ("timestamp", "underlying_timestamp") if c in result.columns]
+    if tier == "greeks" and clock_cols and not retain_source_clocks:
+        result = result.drop(columns=clock_cols).drop_duplicates().reset_index(drop=True)
+    return result
 
 
 def _normalise_date(df: pd.DataFrame, col: str = "date") -> pd.DataFrame:
@@ -806,7 +819,13 @@ def chain(date: str, root: str,
                               "vega", "rho", "underlying_price")
                  if c in greeks.columns]
         if extra:
-            eod = eod.merge(greeks[gcols + extra], on=gcols, how="left")
+            # Source clocks may distinguish otherwise identical raw observations.
+            # This legacy date view projects those clocks out; dedup that exact
+            # projection before joining so clock-only vintages cannot multiply
+            # positions. Do not choose/rewrite a raw vintage or reconcile rows
+            # with different economic values here.
+            economic_rows = greeks[gcols + extra].drop_duplicates()
+            eod = eod.merge(economic_rows, on=gcols, how="left")
         else:
             for c in ("implied_vol", "iv_error", "delta", "theta", "vega", "rho"):
                 eod[c] = np.nan
