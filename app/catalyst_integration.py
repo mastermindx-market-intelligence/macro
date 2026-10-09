@@ -386,11 +386,15 @@ async def optin_request(request: Request):
     # The *only* supported identity/OTP/consent implementation is Session 02.
     # No fallback: a missing module, owner RPC, or configured service yields 503.
     try:
-        from app.catalyst_optin import request_optin
+        from app.catalyst_optin import request_optin, _abuse_guard
         from engine.marketing.catalyst_lifecycle import FunnelGate
     except ImportError:
         raise HTTPException(503, "Verification service unavailable") from None
     try:
+        # Account-affecting OTP requests must use the SAME shared abuse owner
+        # as Session 02's verify route, not just the anonymous scan limiter.
+        # A missing shared guard is 503, never an unthrottled identity effect.
+        _abuse_guard(request)
         result = request_optin(body)
     except FunnelGate as exc:
         raise HTTPException(exc.status, exc.code) from None
