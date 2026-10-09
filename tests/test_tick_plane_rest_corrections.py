@@ -287,5 +287,24 @@ class HistoricalRestPageTests(unittest.TestCase):
         q = self.quote(ask_price=102.72, ask_exchange=4, ask_size=1.25)
         self.assertFalse(historical("quotes", [q])["private_rows"][0]["valid_firm_nbbo_candidate"])
 
+    def test_historical_orf_and_sip_not_lit(self):
+        for exchange in (5, 13, 62):
+            with self.subTest(exchange=exchange):
+                record = self.trade(exchange=exchange)
+                output = historical("trades", [record])["private_rows"][0]
+                self.assertEqual(output["venue_class"], "UNKNOWN")
+
+    def test_historical_invalid_trf_code_stays_unknown(self):
+        record = self.trade(exchange=4, trf_id=999)
+        output = historical("trades", [record])["private_rows"][0]
+        self.assertEqual(output["venue_class"], "UNKNOWN")
+
+    def test_historical_recognized_trfs_remain_off_exchange(self):
+        for trf_id in (201, 202, 203):
+            with self.subTest(trf_id=trf_id):
+                rec = self.trade(exchange=4, trf_id=trf_id)
+                observed = historical("trades", [rec])["private_rows"][0]
+                self.assertEqual(observed["venue_class"], "TRF")
+
 if __name__ == "__main__":
     unittest.main()
