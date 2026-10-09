@@ -5431,6 +5431,21 @@ jobs:
           python3 -m scripts.check_entity_thesis_registry --selftest
           python3 -m scripts.check_entity_thesis_registry
 
+  quant-q05-exec-sensitivity:
+    if: ${{ false }}
+    gate: code
+    # Q05 pins the OA-3 ruler reproduction, no-quote-before-arrival, size-unavailable, frozen shared grid, separate result layers and population-loss/cluster-bootstrap reporting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q05 option execution sensitivity research reference tests
+        run: python -m pytest tests/test_options_execution_sensitivity.py -q
+
   intelligence-registry:
     if: ${{ false }}
     gate: code
