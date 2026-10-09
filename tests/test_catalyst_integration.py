@@ -161,11 +161,15 @@ def test_first_value_html_escapes_untrusted_headline_claims_and_source_title():
 
 def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monkeypatch):
     """No user data or external effects: REAL 01/00/02 code, synthetic grants and owner ports."""
+    import hmac
+    from dataclasses import replace
     from datetime import timedelta
     from app import catalyst_optin
     from engine.marketing import catalyst_scan
     from engine.marketing.catalyst_packets import PublicSourceGrant, build_event_packet
-    from engine.marketing.catalyst_lifecycle import FunnelService, SCOPE
+    from engine.marketing.catalyst_lifecycle import (
+        Confirmation, FunnelService, PublicRevision, SCOPE, VerifiedIdentity,
+    )
 
     now = datetime.now(timezone.utc)
     source_id = "sec:0000078003:0000078003-26-000094"
@@ -204,30 +208,70 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
     ci._reset_rate_limits_for_tests()
 
     class PendingOwner:
-        pending = []
+        def __init__(self):
+            self.pending = []
+            self.records = {}
         def available(self):
             return True
         def begin_pending_intent(self, token, email_tag, expires):
             self.pending.append((token, email_tag, expires))
             return "opaque_fixture_ref_123456789"
+        def resolve_pending_intent(self, public_ref, email_tag):
+            assert public_ref == "opaque_fixture_ref_123456789"
+            assert self.pending and hmac.compare_digest(self.pending[0][1], email_tag)
+            return self.pending[0][0]
+        def confirm(self, record):
+            self.records[(record.user_id, record.event_id)] = record
+            return Confirmation(record, True)
+        def current(self, user_id, event_id):
+            return self.records.get((user_id, event_id))
+        def interested(self, event_id, limit):
+            return [row for row in self.records.values() if row.event_id == event_id][:limit]
+        def revoke(self, user_id, event_id, at_utc):
+            key = (user_id, event_id)
+            self.records[key] = replace(self.records[key], revoked_at_utc=at_utc)
+            return True
 
     class OtpOwner:
-        requested = []
+        def __init__(self):
+            self.requested = []
+            self.verified = []
         def request_otp(self, address):
             self.requested.append(address)
             return True
+        def verify_otp(self, address, code):
+            self.verified.append((address, code))
+            assert code == "123456"
+            return VerifiedIdentity(
+                "9507e687-116a-4d30-9c30-fdf45c9d91b2", address,
+                datetime.now(timezone.utc).isoformat(),
+            )
 
     class SuppressionOwner:
         def is_suppressed(self, address, user_id):
             return False
 
-    pending, otp = PendingOwner(), OtpOwner()
+    class RevisionOwner:
+        def is_current(self, event_id, generation):
+            return event_id == expected_event["id"] and generation == expected_event["generation"]
+
+    class TestSender:
+        def __init__(self):
+            self.calls = []
+        def permitted(self):
+            return True
+        def deliver(self, record, revision, idem_key):
+            self.calls.append((record.user_id, revision.ticker, idem_key))
+            return "sent"  # synthetic SMTP-owner adapter, NEVER a real send
+
+    expected_event = {"id": None, "generation": 1}
+    pending, otp, sender = PendingOwner(), OtpOwner(), TestSender()
     from app.catalyst_scan_authority import ScanReceiptAuthority
     service = FunnelService(secret="intent_only_test_key_" * 3,
                             scan=ScanReceiptAuthority(),
                             identity=otp, consent=pending,
                             suppression=SuppressionOwner(),
-                            revisions=object(), sender=object())
+                            revisions=RevisionOwner(), sender=sender)
     catalyst_optin.configure(service)
     guard_allowed = {"yes": True}
     guard_calls = []
@@ -240,6 +284,7 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
     monkeypatch.setattr(catalyst_optin, "_abuse_guard", shared_guard)
     app = FastAPI()
     app.include_router(ci.router)
+    app.include_router(catalyst_optin.router)
     client = TestClient(app)
 
     try:
@@ -285,6 +330,80 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
         }
         assert len(otp.requested) == len(pending.pending) == 1
         assert "test_user@" not in str(request.json())
+        # A fake GoTrue authority verifies the same intent through Session 02's
+        # real HTTP verification route. No real user, email or Supabase is touched.
+        confirmation = client.post("/api/catalyst/optin/verify", json={
+            "email": body["email"], "otp": "123456",
+            "public_ref": request.json()["public_ref"],
+        })
+        assert confirmation.status_code == 200
+        verified = confirmation.json()
+        assert verified["status"] == "verified"
+        assert verified["event_id"] == first["event_id"]
+        assert verified["scope"] == SCOPE
+        assert verified["attribution"]["utm_source"] == "synthetic_fixture"
+        assert verified["attribution"]["user_ref"].startswith("u_")
+        assert "test_user@" not in confirmation.text
+        assert "9507e687" not in confirmation.text
+
+        # Advance the SAME deterministic SEC-shaped event to an evidenced
+        # correction. The second-value payload is derived from producer fields,
+        # not an LLM-originated number or an unrelated marketing story.
+        corrected_event = {
+            **event, "eps_actual": 0.43,
+            "correction_generation": 1,
+            "revision_status": "corrected",
+            "supersedes_generation": 0,
+            "correction_reason": "official_amendment",
+            "publication_time_utc": (now + timedelta(minutes=2)).isoformat(),
+        }
+        correction_as_of = now + timedelta(minutes=3)
+        corrected_packet = build_event_packet(
+            corrected_event, issuers=issuer, rights_resolver=grants,
+            as_of=correction_as_of,
+        )
+        assert corrected_packet["public_safe"] is True
+        corrected_scan = catalyst_scan.compose_scan(
+            ["PFE"], packets=[corrected_packet], issuers=issuer,
+            as_of=correction_as_of, event_id=first["event_id"],
+        )
+        revised_public = ci.sanitize_public_scan(
+            corrected_scan, ["PFE"], now_utc=correction_as_of,
+        )
+        assert revised_public["generation"] == 1
+        assert revised_public["results"][0]["correction_state"] == "CORRECTED"
+        changed = revised_public["results"][0]["what_changed"][0]["text"]
+        assert "0.43" in changed and "PFE" in changed
+        expected_event["id"] = first["event_id"]
+        revision = PublicRevision(
+            event_id=first["event_id"], generation=1,
+            as_of_utc=revised_public["as_of_utc"],
+            published_at_utc=corrected_packet["publication_time_utc"],
+            ticker="PFE", headline=revised_public["results"][0]["headline"],
+            what_changed=changed,
+            source_urls=tuple(x["url"] for x in revised_public["results"][0]["sources"]),
+            material=True, public_safe=True,
+            external_rights_confirmed=True, operator_approved=True,
+            correction="corrected", correction_note="Synthetic filing correction.",
+        )
+        sent = service.deliver(revision, now=now + timedelta(minutes=4))
+        assert sent[0]["state"] == "PROVIDER_ACCEPTED"
+        assert sent[0]["utm_source"] == "synthetic_fixture"
+        assert "email" not in sent[0] and "9507e687" not in str(sent)
+        assert len(sender.calls) == 1
+        assert sender.calls[0][2] == (
+            "catalyst:" + first["event_id"] + ":1:PFE:"
+            "9507e687-116a-4d30-9c30-fdf45c9d91b2"
+        )
+        # Scoped revocation (following incumbent unsubscribe authorization)
+        # suppresses subsequent attempts; no send is reissued.
+        service.revoke(
+            user_id="9507e687-116a-4d30-9c30-fdf45c9d91b2",
+            event_id=first["event_id"], now=now + timedelta(minutes=4),
+        )
+        after_revoke = service.deliver(revision, now=now + timedelta(minutes=5))
+        assert after_revoke[0]["state"] == "SUPPRESSED"
+        assert len(sender.calls) == 1
 
         # A revoked source grant at verification time must not request a second OTP.
         allow["yes"] = False
