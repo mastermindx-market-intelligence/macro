@@ -100,8 +100,13 @@ def _pin(monkeypatch, *identities):
 
 
 def _write(out: Path, payloads: dict, **kwargs) -> dict:
-    write_workspace_generation(out, payloads, generated_at="2026-09-24T15:00:00Z",
-                               status="ready", **kwargs)
+    # The publication clock is DERIVED from the rows' own observation clocks
+    # (``event_workspace._generation_clocks``) and supplying ``generated_at``
+    # is refused. This makes the identical-replay proof below stronger, not
+    # weaker: two writes of the same payloads now mint the same generation
+    # because the CONTENT determines the clock, where before they matched only
+    # because this helper pinned the same literal into both.
+    write_workspace_generation(out, payloads, status="ready", **kwargs)
     return json.loads((out / "event_workspaces" / "manifest.json").read_text(encoding="utf-8"))
 
 
@@ -141,7 +146,12 @@ def test_native_create_writes_a_marker_immutable_manifest_and_receipted_objects(
     out = tmp_path / "company_intelligence"
     marker = _write(out, payloads)
     validate_workspace_manifest(marker)
-    assert marker["schema"] == "event_workspace_manifest.v2"
+    # v3, not v2: main's #8336 ("manifest v3 with a generation clock derived
+    # from its rows", 7da2060f5d62) bumped the marker schema and made the clock
+    # row-derived in ONE commit. This assertion is a deliberate LITERAL — the
+    # tautological `== MANIFEST_SCHEMA_V3` would compare the writer's constant
+    # to itself and could never catch a wire-format change.
+    assert marker["schema"] == "event_workspace_manifest.v3"
     assert marker["authority"] == "context_only"
     assert marker["previous_generation_id"] is None
     assert marker["previous_manifest_sha256"] is None

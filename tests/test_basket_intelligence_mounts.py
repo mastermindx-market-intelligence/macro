@@ -36,7 +36,33 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).parent.parent
-T10B_BASE_COMMIT = "b256aa6a756a"          # head pre-T10b; diff must show `1\t0`
+
+
+def _integration_base() -> str | None:
+    """The commit this branch's template contribution is measured AGAINST.
+
+    DERIVED, never hardcoded. The claim under test is "*this branch* adds one
+    line to a template frozen by #7669 and deletes nothing", so the base has to
+    be the main this branch integrated — the merge-base. A literal SHA pinned
+    inside our own history silently changes the claim to "the template differs
+    from that commit by exactly one line", which also counts every edit MAIN
+    has made to the same file since, and reports an owner's work as our
+    regression. That is exactly what happened: the previous base
+    ``b256aa6a756a`` began failing when main's #8519 and #8297 touched
+    basket_detail.html.j2.
+
+    Returns None when no base resolves (shallow clone, no remote ref), which
+    the caller turns into an honest skip rather than a false regression.
+    """
+    for ref in ("origin/main", "main", "origin/HEAD"):
+        got = subprocess.run(
+            ["git", "merge-base", "HEAD", ref],
+            capture_output=True, text=True, cwd=str(REPO_ROOT),
+        )
+        if got.returncode == 0 and got.stdout.strip():
+            return got.stdout.strip()
+    return None
+
 
 MOUNT_ANCHOR = "ai_semiconductors"
 
@@ -258,25 +284,21 @@ def test_basket_detail_diff_is_exactly_one_inserted_line():
     from the tree by ``test_common_template_has_exactly_one_aggregator_include
     _outside_app``; what only a diff can show is the ``-0`` — that nothing else
     in a template frozen by #7669 moved. A checkout that does not carry
-    ``T10B_BASE_COMMIT`` cannot evaluate that claim at all: git answers
+    an integration base cannot evaluate that claim at all: git answers
     ``fatal: bad revision`` with exit 128, which a bare returncode assertion
     reports as a template regression that did not happen. Resolve the base
-    first and skip honestly when it is absent.
+    first (see ``_integration_base``) and skip honestly when it is absent.
     """
-    resolved = subprocess.run(
-        ["git", "rev-parse", "--verify", "--quiet",
-         f"{T10B_BASE_COMMIT}^{{commit}}"],
-        capture_output=True, text=True, cwd=str(REPO_ROOT),
-    )
-    if resolved.returncode != 0:
+    base = _integration_base()
+    if base is None:
         pytest.skip(
-            f"pre-T10b base {T10B_BASE_COMMIT} is not present in this checkout "
-            f"(shallow clone / grafted history), so the -0 half of L1 is not "
-            f"evaluable here; the tree-content half is covered by "
-            f"test_common_template_has_exactly_one_aggregator_include_outside_app"
+            "no integration base resolves in this checkout (shallow clone / no "
+            "main ref), so the -0 half of L1 is not evaluable here; the "
+            "tree-content half is covered by "
+            "test_common_template_has_exactly_one_aggregator_include_outside_app"
         )
     result = subprocess.run(
-        ["git", "diff", "--numstat", T10B_BASE_COMMIT, "--",
+        ["git", "diff", "--numstat", base, "--",
          "templates/basket_detail.html.j2"],
         capture_output=True, text=True, cwd=str(REPO_ROOT),
     )
@@ -284,6 +306,10 @@ def test_basket_detail_diff_is_exactly_one_inserted_line():
         f"git diff failed:\nSTDOUT={result.stdout}\nSTDERR={result.stderr}"
     )
     line = result.stdout.strip()
+    assert line, (
+        f"basket_detail.html.j2 is unchanged vs the integration base {base}: "
+        f"the aggregator include this suite exists to pin is absent from the diff"
+    )
     parts = line.split("\t")
     assert len(parts) >= 2, f"unexpected numstat output: {line!r}"
     added, deleted = int(parts[0]), int(parts[1])

@@ -193,8 +193,15 @@ def test_real_registry_posture_under_the_current_snapshot():
     revision, families = load_registry_snapshot(None)
     current = {k: str(v.get("rights_class", "")).strip() for k, v in families.items()}
     assert current["mastermind_curated"] == "direct_display_ok"
-    assert current["finviz_themes"] == "unresolved"
-    assert current["ths_concepts"] == "unresolved"
+    # internal_only, not unresolved: Chairman gate #2 (2026-10-06, PR #8324
+    # comment 6009724772, op gmi-vendor-rights-gate2-20261006-web-001) retained
+    # BOTH vendor families as internal-only and closed the 2026-08-14 gmi-w3a
+    # escalation as a no-display disposition. This test did its job — it failed
+    # loudly when the ruling moved the registry under it. The refusal half below
+    # needs no change: it reads `current[family]`, and rights.py:241 refuses
+    # `internal_only` and `unresolved` alike.
+    assert current["finviz_themes"] == "internal_only"
+    assert current["ths_concepts"] == "internal_only"
     assert_current_emission_allowed(["mastermind_curated"], snapshot=(revision, families))
     for family in ("finviz_themes", "ths_concepts"):
         with pytest.raises(RightsRefusal) as ei:

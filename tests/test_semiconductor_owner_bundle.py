@@ -625,17 +625,36 @@ def test_reader_error_class_is_swallowed_by_the_reader_and_fails_this_loader(mon
 #     item 4 (same publication domain only, never a cross-domain equality).
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _second_generation(tmp_dir, *, generated_at: str) -> dict:
+def _second_generation(tmp_dir, *, observed_shift_hours: int) -> dict:
     """A SECOND generation of the same witnesses, written by the production
-    writer with a different publication clock so its generation_id differs."""
+    writer, distinguished by the rows' own OBSERVATION clocks.
+
+    The publication clock is derived from those row clocks
+    (``event_workspace._generation_clocks``) and supplying ``generated_at`` is
+    refused, so a re-publication is modelled the way it actually happens: the
+    same witnesses observed again later. Shifting FORWARD from each row's own
+    ``observed_at`` preserves the writer's per-row
+    ``observed_at >= source_available_at`` invariant, which a flat literal
+    clock would risk violating for any row filed after it."""
+    from datetime import datetime, timedelta, timezone
+
     from engine.company_intelligence.event_workspace import write_workspace_generation
     from tests.semiconductor_research_helpers import nest_files, witness_workspace_payloads
 
+    shifted = {}
+    for event_id, payload in witness_workspace_payloads(
+            tickers=("TSM",), periods=(1, 2)).items():
+        lifecycle = dict(payload["lifecycle"])
+        observed = datetime.fromisoformat(
+            str(lifecycle["observed_at"]).replace("Z", "+00:00"))
+        lifecycle["observed_at"] = (
+            (observed + timedelta(hours=observed_shift_hours))
+            .astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        )
+        shifted[event_id] = {**payload, "lifecycle": lifecycle}
+
     out = Path(tmp_dir) / "company_intelligence"
-    write_workspace_generation(
-        out, witness_workspace_payloads(tickers=("TSM",), periods=(1, 2)),
-        generated_at=generated_at, status="ready",
-    )
+    write_workspace_generation(out, shifted, status="ready")
     return nest_files(out)
 
 
@@ -646,8 +665,8 @@ def test_a_publication_flip_between_the_two_reads_withholds_the_comparison(
     preceding read, so the two halves describe two different worlds. The panel
     would otherwise present them as one comparison. Real producer, real
     reader, real receipts — only the byte source flips."""
-    files_a = _second_generation(tmp_path / "a", generated_at="2026-09-24T15:00:00Z")
-    files_b = _second_generation(tmp_path / "b", generated_at="2026-09-24T18:30:00Z")
+    files_a = _second_generation(tmp_path / "a", observed_shift_hours=0)
+    files_b = _second_generation(tmp_path / "b", observed_shift_hours=3)
     assert files_a != files_b, "the two generations must be distinguishable"
 
     state = {"files": files_a}

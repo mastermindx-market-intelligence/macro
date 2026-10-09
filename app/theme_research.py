@@ -184,9 +184,14 @@ _RESEARCH_REFUSAL_MAP: dict[str, tuple[int, dict[str, str]]] = {
     # 5813801605: system_replay without a supported as-known identity). The
     # existing not_available refusal, with the mode named so the caller can
     # request `latest`; no new status code or error family. Because the loader
-    # runs before the composer, `replay_cutoffs_required` above is unreachable
-    # for a vertical whose loader refuses system_replay outright (today: the
-    # only registered one); it stays for verticals that serve replay.
+    # runs before BOTH the composer and the shell's `_refuse_unreadable_cutoff`,
+    # `replay_cutoffs_required` above — and `cutoff_unreadable` in system_replay
+    # — are unreachable for a vertical whose loader refuses that mode outright
+    # (today: the only registered one). They stay for verticals that serve
+    # replay, and `cutoff_unreadable` is reachable in every SERVED mode. An
+    # independent audit caught the opposite order silently converting this 404
+    # into a 400; `test_system_replay_unsupported_mode_outranks_bad_cutoff`
+    # pins it against the real registration.
     "identity_vintage_unsupported": (
         404, {"code": "not_available", "action": "none",
               "detail": "identity_vintage_unsupported"},
@@ -263,25 +268,10 @@ def _body_to_query(
     shell admitted by grammar but the vertical does not accept fails in the
     vertical. The shell constructs no vertical type itself.
 
-    A cutoff the engine cannot read is a fault in that SHARED grammar, so the
-    shell refuses it here — before the rights snapshot and the loader, for
-    every registered vertical — rather than leaving each composer to remember.
+    Construction only: the shared-grammar cutoff check deliberately does NOT
+    live here, because this runs before the loader and would preempt a
+    loader's own `not_available` verdict. See `_refuse_unreadable_cutoff`.
     """
-    # The Energy seat measured both faults this prevents over nuclear's route
-    # (#7870 issuecomment-5868018569 / 5869344590 / 5870740225): a bare
-    # ValueError raised inside a time gate, answered 503 `retry_later` by the
-    # catch-all, telling the caller to retry a string that can never work;
-    # and, where no gate read the value at all, a silent 200 that echoed the
-    # unreadable cutoff back with no limitation marking it. `cutoff_unreadable`
-    # already mapped to 400 above, but only the DETECTION lived in a vertical
-    # composer, so a vertical that omitted the call inherited the silent 200.
-    # FORMAT only: `validate_replay_cutoffs` stays vertical-owned, because
-    # which modes a vertical serves — and whether its loader refuses one
-    # outright before the composer runs — differs per vertical (see the
-    # `identity_vintage_unsupported` note on the refusal map). Idempotent for
-    # a vertical that validates too: the check is pure and raises only on a
-    # cutoff `le` could not compare.
-    validate_cutoff_format(body.source_cutoff, body.recorded_cutoff)
     return registration.build_query(
         anchor_theme_id=body.anchor_theme_id,
         slice_key=body.slice_key,
@@ -680,6 +670,42 @@ def _require_registered_contract(
     return dict(payload)
 
 
+def _refuse_unreadable_cutoff(body: _QueryBody | _EvidenceBody) -> None:
+    """Refuse a supplied cutoff the engine cannot read — for every vertical.
+
+    The Energy seat measured both faults this prevents over nuclear's route
+    (#7870 issuecomment-5868018569 / 5869344590 / 5870740225): a bare
+    ValueError raised inside a time gate, answered 503 `retry_later` by the
+    catch-all, telling the caller to retry a string that can never work; and,
+    where no gate read the value at all, a silent 200 that echoed the
+    unreadable cutoff back with no limitation marking it. `cutoff_unreadable`
+    already mapped to 400, but only the DETECTION lived in a vertical
+    composer, so a vertical that omitted the call inherited the silent 200.
+
+    ORDER LAW — this runs AFTER `load_authorized_owner_bundle`, never before.
+    A loader may refuse the requested mode outright (`identity_vintage_
+    unsupported`, 404 `not_available` + `action: none`; today the only
+    registered loader refuses `system_replay` on the mode token alone). That
+    verdict is the more actionable truth: no cutoff the caller could supply
+    would make an unserved mode work, so answering 400 `fix_request` first
+    would send them to fix a field that is not the obstacle. An independent
+    READ_ONLY audit of the first placement — inside `_body_to_query`, ahead
+    of the loader — found exactly that silent 404 -> 400 conversion, which is
+    why the check sits here and is pinned by a route test on the real
+    registration (`test_system_replay_unsupported_mode_outranks_bad_cutoff`).
+
+    FORMAT only: `validate_replay_cutoffs` stays vertical-owned, because which
+    modes a vertical serves differs per vertical (see the
+    `identity_vintage_unsupported` note on the refusal map). The two
+    validators are disjoint by construction — `validate_replay_cutoffs` fires
+    only on a MISSING cutoff in replay mode and never parses; this one fires
+    only on a PRESENT unparseable value — so no input reaches both and this
+    placement cannot reorder them. Idempotent for a vertical that validates
+    too: the check is pure and raises only on a cutoff `le` could not compare.
+    """
+    validate_cutoff_format(body.source_cutoff, body.recorded_cutoff)
+
+
 def _call_compose(
     body: _QueryBody, principal: Mapping[str, Any], registration: VerticalRegistration,
 ) -> JSONResponse:
@@ -688,6 +714,7 @@ def _call_compose(
     bundle = load_authorized_owner_bundle(
         query, principal=principal, registration=registration, rights_snapshot=snapshot,
     )
+    _refuse_unreadable_cutoff(body)  # AFTER the loader: see ORDER LAW there
     bundle, dropped = _filter_bundle_for_rights(bundle, snapshot=snapshot)
     payload = _require_registered_contract(
         registration.compose(query, bundle),
@@ -706,6 +733,7 @@ def _call_evidence(
     bundle = load_authorized_owner_bundle(
         query, principal=principal, registration=registration, rights_snapshot=snapshot,
     )
+    _refuse_unreadable_cutoff(body)  # AFTER the loader: see ORDER LAW there
     bundle, dropped = _filter_bundle_for_rights(bundle, snapshot=snapshot)
     payload = _require_registered_contract(
         registration.select_evidence(query, bundle, body.assertion_ref),

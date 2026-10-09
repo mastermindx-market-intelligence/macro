@@ -1971,7 +1971,14 @@ def test_malformed_cutoff_is_a_400_never_a_503_or_a_silent_200(
     body = _valid_body(time_mode=mode)
     if mode == "system_replay":
         # Both cutoffs are REQUIRED in a replay and that check runs first, so
-        # the other one has to be well formed for the format check to be reached.
+        # the other one has to be well formed for the format check to be
+        # reached. The replay rows are only reachable AT ALL because
+        # `_empty_bundle_loader` above replaces the registered loader, which
+        # refuses `system_replay` outright; against the real loader the answer
+        # is 404 `identity_vintage_unsupported`
+        # (test_system_replay_unsupported_mode_outranks_bad_cutoff). What these
+        # rows pin is the shell's format check for a vertical that DOES serve
+        # replay — the case the registered consumers are queued to add.
         body["source_cutoff"] = "2026-12-31"
         body["recorded_cutoff"] = "2026-12-31"
     body[field] = bad
@@ -2008,6 +2015,65 @@ def test_a_wellformed_cutoff_is_never_refused_for_arriving_in_this_mode(
         json=_valid_body(time_mode=mode, **{field: "2026-12-31"}),
     )
     assert response.status_code == 200, response.text
+
+
+@pytest.mark.parametrize("field", ["source_cutoff", "recorded_cutoff"])
+def test_system_replay_unsupported_mode_outranks_bad_cutoff(entitled_client, field):
+    """A mode the registered loader cannot serve is answered BEFORE format.
+
+    Found by an independent READ_ONLY audit of the first placement of the
+    shared cutoff check. That placement sat inside ``_body_to_query``, which
+    is the first statement of ``_call_compose`` -- ahead of
+    ``load_authorized_owner_bundle``. For the one registered vertical that
+    silently converted a 404 into a 400: the loader refuses ``system_replay``
+    on the mode token alone (``semiconductor_owner_bundle`` first statement,
+    ``IDENTITY_VINTAGE_UNSUPPORTED``), so before the check moved, a replay
+    request carrying a malformed cutoff was told ``fix_request`` -- and there
+    is no cutoff the caller could supply that would make an unserved mode
+    work. ``not_available`` + ``action: none`` is the actionable truth.
+
+    This test uses the REAL registration and the REAL loader on purpose. Every
+    other ``system_replay`` row in this file installs ``_empty_bundle_loader``,
+    which removes the very loader whose verdict is under test -- which is why
+    none of them caught the conversion.
+
+    Mutation control (receipt in the branch evidence): with the check restored
+    to ``_body_to_query`` this test answers 400 ``invalid_request``, so it
+    discriminates the repair rather than describing the current code.
+    """
+    body = _valid_body(time_mode="system_replay")
+    body["source_cutoff"] = "2026-12-31"
+    body["recorded_cutoff"] = "2026-12-31"
+    body[field] = "not-a-date"
+
+    response = entitled_client.post("/api/themes/v1/research/query", json=body)
+
+    assert response.status_code == 404, response.text
+    _assert_private_headers(response)
+    error = response.json()["detail"]["error"]
+    assert error["code"] == "not_available"
+    assert error["action"] == "none"
+    assert error["detail"] == "identity_vintage_unsupported"
+    assert "not-a-date" not in response.text
+
+
+def test_system_replay_evidence_route_also_answers_the_loader_verdict(entitled_client):
+    """The evidence route shares the ordering, so it is pinned separately.
+
+    ``_call_evidence`` is a second dispatch path with its own copy of the
+    loader call; a repair applied to only one of the two would leave this
+    route answering 400 for an unserved mode."""
+    body = _valid_body(time_mode="system_replay")
+    body["source_cutoff"] = "2026-13-45"
+    body["recorded_cutoff"] = "2026-12-31"
+    body["assertion_ref"] = "gmi-curation://ai_semiconductors/gmirca_" + "0" * 32
+    body["expected_generation"] = "gen_" + "a" * 32
+
+    response = entitled_client.post("/api/themes/v1/research/evidence", json=body)
+
+    assert response.status_code == 404, response.text
+    error = response.json()["detail"]["error"]
+    assert error["detail"] == "identity_vintage_unsupported"
 
 
 @pytest.mark.parametrize("bad", ["not-a-date", "", "20261231", "2026-W53-4"])

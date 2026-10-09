@@ -163,8 +163,16 @@ _readable = readable
 def _validate_query(query: ResearchQuery) -> None:
     """This vertical's page bounds and replay rule, enforced by the shared
     validators with every vertical input passed explicitly. The call order is
-    the original one, so refusal PRECEDENCE is unchanged: page bounds, then
-    the replay-cutoff requirement, then cutoff format."""
+    the original one, so refusal PRECEDENCE WITHIN THIS COMPOSER is unchanged:
+    page bounds, then the replay-cutoff requirement, then cutoff format.
+
+    Over the HTTP route the shell refuses an unreadable cutoff before this
+    runs (`app.theme_research._refuse_unreadable_cutoff`), so a request that
+    is BOTH out of page bounds and carries a malformed cutoff is answered by
+    the shell's check first. Not observable to the caller: `limit_out_of_range`
+    and `cutoff_unreadable` share one undifferentiated 400 envelope (`code`
+    `invalid_request`, `action` `fix_request`, no `detail`). Non-route callers
+    of this composer get the order above unchanged."""
     validate_pagination(limit=query.limit, offset=query.offset,
                         expected_generation=query.expected_generation,
                         min_limit=_MIN_LIMIT, max_limit=_MAX_LIMIT)
