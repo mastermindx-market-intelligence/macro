@@ -437,6 +437,59 @@ the rc1 MiniMax trace showed `ECONNRESET` (transport/provider failure).
 This is diagnostic evidence, **not** Executive OS's authoritative live job
 state or acceptance of the other worker outputs.
 
+### 2026-10-08 live GLM source selection and MiniMax-Codex private receipt parity
+
+**New real-worker source-selection evidence.** The previously dispatched C2
+`glm-codex` commission `paper-01a1101f-im06-history-projector-build-r1`
+on `mini2` selected an immutable support release whose manifest contains
+`glm_codex_exec.sh
+36afcaffedb614fe2ec9bbb81d77b7150ada950b2076c279ddce1fe31aea0508`.
+It used a 7200-second controller window. A separate read-only Mini2 process
+argv observation found active Codex commands containing **both**
+`model_context_window=1000000` and
+`model_auto_compact_token_limit=900000` as CLI overrides.
+The argv observation could not securely bind those particular process
+flags to the named run. Subsequent more granular live worker inspection was
+explicitly safety-blocked pre-dispatch, not retried or routed elsewhere.
+Do **not** claim terminal provider acceptance, real auto-compaction, or
+token capacity proof merely from source selection and argv sampling.
+No new paid worker was dispatched.
+
+**Additional independent instrumentation defect fixed locally:** the existing
+`mm_codex_exec.sh` MiniMax Codex cleanup omitted the private cumulative
+`codex_usage.py` receipt produced by GLM's sibling wrapper. This prevented
+typed native usage visibility after MiniMax completion even with correct model
+context overrides. The incumbent MiniMax EXIT trap now writes a same-directory
+0600 temporary receipt before deleting its private CODEX_HOME, atomically
+moves it to the runtime-provided `POOL_USAGE_FILE` on success, removes
+temporary artifacts, and preserves the provider's original exit code on
+usage capture failure. It uses **only** the existing Codex usage parser and
+remote usage-receipt consumer; no new transcript/memory/ledger/control plane
+was created.
+
+The existing hermetic usage capture tests now cover GLM **and** MiniMax on
+`rc=0` / `rc=3`, observed/missing/unwritable usage. The first run found
+an independent old fixture mismatch: a simulated 2-second remote task was
+left unclassified, correctly triggering the real runtime's >=3600s
+unclassified floor and exceeding the fixture's 20-second timeout. That
+**test-only** task was explicitly classified `C1_ROUTINE_BOUNDED`;
+production runtime floors were unchanged. Final usage/capture/transport
+and parser suite: **45 passed + 32 subtests**, eight unrelated old pytest
+Chromium temporary-cleanup warnings. Current M2 SHA-256:
+`ext/mm_codex_exec.sh
+ae5962207fed30d2db85b720bbc0fe77663005f9503a64cae59bff859fcd163b`;
+`ext/tests/test_usage_capture_chain.py
+3c15ad25b05c35d0778701147c8ec5d19c9507537015c90eae986e2d59a6b2dc`.
+
+**Acceptance:** this is locally source-installed and test-verified.
+A future naturally qualified MiniMax Codex remote release must select the
+new `ae5962...` wrapper, settle the worker normally, and present a validated
+native usage receipt before labeling that path `PROVEN_LIVE`. Existing
+immutable in-flight manifests cannot be reinterpreted as selecting new code.
+The older safety-denied Go preselection, leased-GLM override and slot
+regression paths remain fenced. This evidence-only draft is not a production
+deployment, merge or permission grant.
+
 ### Verification boundary
 
 Directly observed current green evidence:
