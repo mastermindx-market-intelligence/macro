@@ -1,5 +1,7 @@
 """Session 00 security and anonymous-value integration: synthetic fixtures are not live producer receipts."""
 import copy
+import json
+from pathlib import Path
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
@@ -204,3 +206,17 @@ def test_trusted_peer_limits_spoofed_ip_rotation(monkeypatch):
     })
     assert not ci._allow_request(another_ip_same_peer, "scan", now=4)
     ci._reset_rate_limits_for_tests()
+
+
+def test_frozen_json_contract_fixture():
+    """Sibling producers can target this exact on-disk schema, never real prices."""
+    fixture_path = Path(__file__).parent / "fixtures" / "catalyst_scan_contract_v1.json"
+    fixture = json.loads(fixture_path.read_text())
+    assert fixture["_fixture_warning"].startswith("SYNTHETIC")
+    result = ci.sanitize_public_scan(fixture, ["NVDA", "ZZZZ"], now_utc=NOW)
+    assert result["event_id"] == "fixture-earnings-20261008"
+    assert result["generation"] == 2
+    assert result["results"][0]["headline_evidence_ids"] == ["fixture-source-1"]
+    assert result["results"][1]["status"] == "NOT_COVERED"
+    assert result["coverage_note"] != fixture["coverage_note"]
+    assert "_fixture_warning" not in result
