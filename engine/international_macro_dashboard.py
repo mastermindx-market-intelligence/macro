@@ -16,11 +16,13 @@ Important honesty boundaries:
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 import yaml
 
@@ -1440,6 +1442,85 @@ def load_history(cc: str) -> pd.DataFrame | None:
     """Compatibility wrapper for existing country dashboards."""
     result = load_history_result(cc)
     return result["frame"] if result["status"] in {"ready", "empty"} else None
+
+
+def project_history_read(receipt: dict[str, object], *, return_basis: str = "price",
+                         universe: str | None = None) -> dict[str, object]:
+    """Detach one already loaded history receipt; acquire and grant nothing."""
+    from lib.intl_workspace_history import _validate as validate_history
+
+    integer_types = {int, np.int8, np.int16, np.int32, np.int64,
+                     np.uint8, np.uint16, np.uint32, np.uint64, np.intp, np.uintp, np.longlong, np.ulonglong}
+    float_types = {float, np.float16, np.float32, np.float64, np.longdouble}
+
+    def scalar(value):
+        # Check exact concrete types before invoking any user-defined conversion.
+        if value is None or value is pd.NA:
+            return None
+        if type(value) in integer_types:
+            return int(value)
+        if type(value) in float_types:
+            number = float(value)
+            if math.isnan(number):
+                return None
+            if math.isfinite(number):
+                return number
+        raise ValueError
+
+    try:
+        keys = {"status", "market_id", "artifact_ref", "read_at", "method_ref", "frame"}
+        if (type(receipt) is not dict or any(type(key) is not str for key in receipt)
+                or set(receipt) != keys):
+            raise ValueError
+        status = receipt["status"]
+        if type(status) is not str or status not in {
+                "ready", "empty", "missing", "failed", "invalid", "unsupported"}:
+            raise ValueError
+        for value in (receipt["market_id"], receipt["artifact_ref"], receipt["read_at"],
+                      receipt["method_ref"], universe):
+            if value is not None and (type(value) is not str or not value or value.strip() != value):
+                raise ValueError
+        if type(return_basis) is not str or return_basis != "price":
+            raise ValueError
+        frame = receipt["frame"]
+        points, identity = [], None
+        if status in {"ready", "empty"}:
+            if (type(frame) is not pd.DataFrame or type(frame.index) is not pd.DatetimeIndex
+                    or type(frame.columns) is not pd.Index
+                    or any(type(column) is not str for column in frame.columns)
+                    or frame.index.hasnans or frame.index.has_duplicates
+                    or not frame.index.is_monotonic_increasing or frame.columns.has_duplicates
+                    or not {"growth_score", "inflation_score"}.issubset(frame.columns)
+                    or (status == "empty") != (len(frame.index) == 0)):
+                raise ValueError
+            growth, inflation = frame["growth_score"], frame["inflation_score"]
+            if any(column.dtype.kind in "mM" for column in (growth, inflation)):
+                raise ValueError
+            for position, timestamp in enumerate(frame.index):
+                points.append({"observation_at": timestamp.isoformat(),
+                               "growth_score": scalar(growth.iloc[position]),
+                               "inflation_score": scalar(inflation.iloc[position])})
+            identity = {"market_id": receipt["market_id"], "unit": "score",
+                        "return_basis": return_basis, "universe": universe,
+                        "method_ref": receipt["method_ref"]}
+        elif frame is not None:
+            raise ValueError
+        result = {key: receipt[key] for key in keys if key != "frame"}
+        result.update(identity=identity, points=points)
+        # Reuse the accepted schema owner, including exact clocks and path rules.
+        # These validation-only context values do not select or transform scores.
+        validate_history(
+            {"selected_market": receipt["market_id"], "horizon": "1m",
+             "currency_basis": "local", "return_basis": return_basis},
+            result, [], None,
+            {**{key: {"metadata": "unknown", "value": "unknown"}
+                for key in ("history_source", "events", "track_record")},
+             "snapshot_compare": {"left_observation_at": None, "right_observation_at": None}},
+            {},
+        )
+        return result
+    except (ValueError, TypeError, KeyError, IndexError, AttributeError, OverflowError, RecursionError):
+        raise ValueError("invalid_history_read_projection") from None
 
 
 def validate_view(view: dict[str, Any]) -> None:

@@ -84,6 +84,15 @@ caches. The provenance sidecar retains provider, source ID and URL, request and
 source timestamps, last observation, unit, release-period semantics, and
 official/fallback/missing status.
 
+The series-level provenance status describes the latest fetch outcome, not the
+origin of every retained row. Default upserts keep old-only dates and missing
+values, and this sidecar is currently written by `fetch()` before the base
+adapter commits frames. It is therefore not a successful-store-write receipt.
+Historical disclosure must bind actual response date/value coverage and the
+committed artifact; a latest `official` label alone cannot certify the full
+cache. The bounded witness and current Eurostat comparison are recorded in
+`research/paper_international_wave1_wave2/IM06_HISTORY_SOURCE_WITNESS.json`.
+
 Central-bank calendars are hand-verified against official schedules in
 `data/intl_risk/cb_calendar.yml`. A past event receives a “released” outcome
 state but no fabricated policy decision. The user follows the official link for

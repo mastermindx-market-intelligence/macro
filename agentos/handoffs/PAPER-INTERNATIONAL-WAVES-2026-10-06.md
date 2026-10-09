@@ -14,8 +14,8 @@ changed:
 - path: templates/intl_workspace_scenario.js
   what: Independently reviewed exact binary-input scenario arithmetic and closed EN/ZH parser; 55 focused tests.
 - path: templates/intl_library_search.js
-  what: Independently reviewed deterministic permitted-label search and strict stale-reply identity guard; 100
-    focused tests.
+  what: Independently reviewed deterministic permitted-label search and strict stale-reply identity guard; 100 focused
+    tests.
 - path: engine/intl_performance_records.py
   what: Independently reviewed adapter over real owner helpers for unrounded returns, same-window decomposition
     and actual contributing observation dates.
@@ -41,16 +41,26 @@ changed:
 - path: engine/intl_workspace_overview.py
   what: Reviewed qualification-aware projection and bounded actual composition helper.
 - path: lib/intl_library_view.py
-  what: Reviewed 18-tool/six-group catalogue and public metadata wrapper, now mounted through actual rendered region bindings.
+  what: Reviewed 18-tool/six-group catalogue and public metadata wrapper, now mounted through actual rendered region
+    bindings.
 - path: mockups/evidence/paper-international-overview/
   what: Canonical dark/light EN/ZH desktop/mobile rest/focus evidence with explicitly synthetic provenance.
+- path: templates/intl_workspace/history.html.j2
+  what: Mounted independently reviewed History and manual scenario journey in the existing controller, with canonical
+    theme/language/focus evidence.
+- path: engine/international_macro_dashboard.py
+  what: Added strict pure History receipt projection; publisher reuses five existing reads and keeps failed History
+    separate from Macro and Risk.
+- path: research/paper_international_wave1_wave2/IM06_HISTORY_SOURCE_WITNESS.json
+  what: Qualified exact current Eurostat coverage and reproduced limits of latest series-level provenance without
+    altering stored observations.
 verified:
 - claim: All three packet specifications validated; this is input proof only.
   command: Run each original verification/verify_packet.py; Wave1/2 unittest discovery; Wave3 pytest verification/test_contract_examples.py.
   result: Wave1 17, Wave2 75, Wave3 64 examples passed; Wave3 29 hashes and62 portable checks passed.
 - claim: Accepted JS helper source hashes remain unchanged through the base refresh.
-  command: node --test tests/intl_workspace_scenario_math.test.cjs tests/intl_library_search.test.cjs; SHA256
-    bindings in IM06/IM07 evidence.
+  command: node --test tests/intl_workspace_scenario_math.test.cjs tests/intl_library_search.test.cjs; SHA256 bindings
+    in IM06/IM07 evidence.
   result: 155 passed,0 failed/skipped at accepted source; numerical oracles2005 and4900 independently pass.
 - claim: Numerical/provenance adapter passes against real owner helpers on both verified runtimes.
   command: PYTHONPATH=. python -m pytest -c /dev/null -p no:cacheprovider -q tests/test_intl_performance_records.py
@@ -64,8 +74,8 @@ verified:
 - claim: New Python PR check covers its actual imports and selects only its declared input scope.
   command: PACK.infer_job_scopes on the staged test job with exclusive=False; compare named closure against declared
     paths and exercise _job_diff_match.
-  result: 15 named dependencies covered;15 positive and4negative selections pass. Empty pre-staging inference
-    was rejected, not accepted as closure proof.
+  result: 15 named dependencies covered;15 positive and4negative selections pass. Empty pre-staging inference was
+    rejected, not accepted as closure proof.
 - claim: Raw chart projection passes focused local/remote and integrated tests.
   command: python -m pytest tests/test_intl_performance_charts.py -q on both verified runtimes; integrated records/charts
     plus five focused CI pack tests.
@@ -74,8 +84,8 @@ verified:
 - claim: Merge observer advanced the prior branch without changing accepted source inputs.
   command: Reconcile PR8527 after disarm; git fetch and git merge --ff-only origin/claude/ssd-paper-international-waves-ad8d40c8d3b06fff;
     compare all13input SHA256 values.
-  result: Fast-forward b4a95f24878d to daa57446653e with mainb76506fac0d9;13input hashes unchanged. No rewrite
-    or shared-owner edit.
+  result: Fast-forward b4a95f24878d to daa57446653e with mainb76506fac0d9;13input hashes unchanged. No rewrite or
+    shared-owner edit.
 - claim: Route-state derivative independently reviewed at exact source/test hashes.
   command: node --test tests/intl_workspace_state.test.cjs; frozen ROUTE_STATE_COUNTERCASES.cjs and route-state/REPAIR_COUNTERCASES.cjs;
     review ROUTE_STATE_SOL_REVIEW.json.
@@ -84,8 +94,8 @@ verified:
 - claim: Actual Overview source and fixture rendering are independently reviewed and tested.
   command: Run the bound numerical, render/composition and Chrome commands in IM01_OVERVIEW_MOUNT_EVIDENCE.json;
     inspect FINAL_SOURCE_REVIEW.json and DEPENDENCY_REPAIR_REVIEW.json.
-  result: 94 numerical,21 render/composition,27 Chrome cases pass;32 responsive states;16 canonical rest/focus
-    captures. Source review remains scoped, not a production acceptance.
+  result: 94 numerical,21 render/composition,27 Chrome cases pass;32 responsive states;16 canonical rest/focus captures.
+    Source review remains scoped, not a production acceptance.
 - claim: Full GLM repaired all three rejected Flash Library invariants.
   command: Run tests/test_intl_library_view.py and the bound frozen/independent harness commands in library-projection/SOL_REVIEW_R4.json
     against exact hashes in IM07_T1_EVIDENCE.json.
@@ -94,49 +104,89 @@ verified:
 - claim: Both affected CI jobs cover the final measured import closure.
   command: Canonical PACK.infer_job_scopes for international-workspace-foundation and international-workspace-browser;
     canonical suite_dependency_closure for both Python browser suites.
-  result: AFFECTED_CI_CLOSURE_FINAL.json and SCOPED_CLOSURE_PROOF.json report zero uncovered paths. Final nine
-    composition cases pass; hosted whole-manifest gate remains.
+  result: AFFECTED_CI_CLOSURE_FINAL.json and SCOPED_CLOSURE_PROOF.json report zero uncovered paths. Final nine composition
+    cases pass; hosted whole-manifest gate remains.
 - claim: Two reproduced installed Fabric routing faults were repaired without increasing limits.
   command: Review fabric-audit/SOL_REVIEW.json, INSTALL_RECEIPT.json, TESTS.log, PLACEMENT_TESTS_R2.log, INSTALLED_SMOKE.log
     and CONCURRENT_CONTROLLER_DELTA.json.
   result: 116 distinct affected cases plus52 installed smoke cases pass; configured host cap and task-complexity
     forwarding respected. Later concurrent wrapper additions preserved.
-- claim: Library actual controller and composition preserve local search, context, legacy navigation and keyboard focus.
-  command: NODE_PATH=/Users/mini2/node_modules INTL_TEST_PYTHON=/Users/mini2/lanes/venv/bin/python PLAYWRIGHT_CHROMIUM_CHANNEL=chrome node --test tests/intl_workspace_controller.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_page.test.cjs in exact staged closure.
-  result: 61 actual Chrome cases pass;18 specifically exercise Library, including two red-then-green focus repaint regressions. R2 independent review passed36 cases; final focus delta R3/R4 attempts timed out without verdict; final-delta-review-r1 later passed the exact complete source delta, bound by parent to the current file.
+- claim: Library actual controller and composition preserve local search, context, legacy navigation and keyboard
+    focus.
+  command: NODE_PATH=/Users/mini2/node_modules INTL_TEST_PYTHON=/Users/mini2/lanes/venv/bin/python PLAYWRIGHT_CHROMIUM_CHANNEL=chrome
+    node --test tests/intl_workspace_controller.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_legacy_navigation.test.cjs
+    tests/intl_workspace_page.test.cjs in exact staged closure.
+  result: 61 actual Chrome cases pass;18 specifically exercise Library, including two red-then-green focus repaint
+    regressions. R2 independent review passed36 cases; final focus delta R3/R4 attempts timed out without verdict;
+    final-delta-review-r1 later passed the exact complete source delta, bound by parent to the current file.
 - claim: Library evidence uses actual template and canonical assets, with explicit synthetic provenance.
-  command: Run bound capture_library.py and capture_library_keyboard.py; inspect three committed manifests and fixture provenance.
-  result: 48 captures across dark/light EN/ZH1440/390; no page horizontal overflow or console errors; final keyboard cells assert active focus-visible and2px outline. Not authenticated/live acceptance.
+  command: Run bound capture_library.py and capture_library_keyboard.py; inspect three committed manifests and fixture
+    provenance.
+  result: 48 captures across dark/light EN/ZH1440/390; no page horizontal overflow or console errors; final keyboard
+    cells assert active focus-visible and2px outline. Not authenticated/live acceptance.
 - claim: Qwen snapshot dispatch failed before provider start and the unavailable host route is now held.
-  command: fabric_task status/result paper-01a1101f-source-snapshot-r1; inspect owned-process receipt, key_names-only diagnostic and QWEN_MINI2_HOLD_RECEIPT.json.
-  result: rc75,1.47seconds,residual0,no provider execution or source artifact. Mini2 expected local account configuration absent; only existing qwen qualification hold added, no credentials or limits changed.
-
-
+  command: fabric_task status/result paper-01a1101f-source-snapshot-r1; inspect owned-process receipt, key_names-only
+    diagnostic and QWEN_MINI2_HOLD_RECEIPT.json.
+  result: rc75,1.47seconds,residual0,no provider execution or source artifact. Mini2 expected local account configuration
+    absent; only existing qwen qualification hold added, no credentials or limits changed.
 - claim: Pure supplied-close snapshot preserves original timestamp and numeric identity.
-  command: python3 -m pytest --rootdir . tests/test_intl_source_snapshot.py -q; run complete seven-suite foundation command in IM00_SOURCE_SNAPSHOT_EVIDENCE.json evidence logs.
-  result: 47 snapshot cases and190 affected foundation cases pass. Independent baseline review passed43 cases; parent exact-column/huge-integer amendments independently pass47 Linux cases and targeted counterchecks in final-delta-review-r1. No production qualification inferred.
+  command: python3 -m pytest --rootdir . tests/test_intl_source_snapshot.py -q; run complete seven-suite foundation
+    command in IM00_SOURCE_SNAPSHOT_EVIDENCE.json evidence logs.
+  result: 47 snapshot cases and190 affected foundation cases pass. Independent baseline review passed43 cases; parent
+    exact-column/huge-integer amendments independently pass47 Linux cases and targeted counterchecks in final-delta-review-r1.
+    No production qualification inferred.
 - claim: Explicit witnessed build escalation reaches the selected model and preserves its admission checks.
-  command: Run174 focused picker/adapter/regression tests; compare four installed SHA256 values with scoped Sol review and INSTALL_RECEIPT; installed pick build with requested full GLM, C2 and concrete witness.
-  result: 174 passed, Sol ACCEPT_SCOPED, installed hashes match and read-only selection returns glm-5.3. Occupied host capacity still refuses; no caps/holds/quality reset or immutable snapshot edit.
-
+  command: Run174 focused picker/adapter/regression tests; compare four installed SHA256 values with scoped Sol
+    review and INSTALL_RECEIPT; installed pick build with requested full GLM, C2 and concrete witness.
+  result: 174 passed, Sol ACCEPT_SCOPED, installed hashes match and read-only selection returns glm-5.3. Occupied
+    host capacity still refuses; no caps/holds/quality reset or immutable snapshot edit.
+- claim: History UI and scenario transitions have independent source acceptance.
+  command: Exact commands and hashes in IM06_HISTORY_UI_EVIDENCE.json.
+  result: 18 frozen Python and22 independent browser checks;16 behavioral Python and22 browser retained.40 actual-page
+    combinations and48 canonical captures with24 focus checks.
+- claim: History projector and publication repair independently accepted at exact source.
+  command: python3 -m pytest independent_tests.py independent_publication.py r2_challenge_numeric_hooks.py -q in
+    frozen R2 capsule; adapter accept by reviewer.
+  result: 37pass on parent; independent review PASS_SCOPED. Missing NumPy aliases repaired; integer precision and
+    custom-hook rejection preserved.
+- claim: Integrated Python jobs pass with repository guards enabled.
+  command: Run two exact pytest commands from .github/ci/legacy-jobs.yml captured in IM06_INTEGRATED_PYTHON_COMMANDS.json;
+    final render rerun and retained-review logs.
+  result: Foundation1269 before3 extra reviewer cases; render/publication334;99 retained reviewer/Risk checks after
+    those3 cases. No guard disabled.
+- claim: Actual unmodified current publisher produces all3 pages from copies of60 existing inputs.
+  command: run_im04_normal_main_real.py with isolated im06-normal-main-real-r1 and product paths; IM06_NORMAL_MAIN_R4_FINAL.log.
+  result: rc0,3pages,0 blocked effects; canonical data and network untouched. Local copied-input proof only.
+- claim: Current Eurostat response matches320 of434 stored unemployment observations;114 older rows remain unwitnessed.
+  command: im06-history-source-witness-r1/work/verify.py and compare_current.py current-official-full-range against
+    retained exact hashes.
+  result: 6 isolated store/provenance assertions;320/320 equal current values;114 absent even from1990 query. No
+    historical origin or rights inferred.
 unverified:
 - claim: Full programme and production acceptance.
-  what_would_verify: Remaining views, live source qualification through existing owner, incumbent
-    Saved integration, authenticated served journeys and subsequent normal publication.
+  what_would_verify: Remaining views, live source qualification through existing owner, incumbent Saved integration,
+    authenticated served journeys and subsequent normal publication.
 - claim: Final candidate is hosted-green, merged or published.
   what_would_verify: Exact latest GitHub head required checks, semantic review/base proof, authorized merge, normal
     build/publication and served verification. PR remains Draft.
 unresolved:
-- Numerical currentness and disclosure still need actual completed-session, adjustment-basis and independent access-owner evidence. No guessed calendar or page-wide freshness threshold.
-- Four remaining research views and incumbent Investigation/Saved interfaces remain open; no duplicate store or migration takeover.
-- Source snapshot and final two edge repairs are independently source-reviewed. Authentic session/basis/disclosure inputs and pure qualifier implementation remain owed. Difficulty-selection repair is installed and verified.
-- Final source gates passed; exact-head hosted checks, merge, normal publication and served acceptance remain distinct gates.
+- Actual completed-session, adjustment-basis, source identity and disclosure qualification remain source-specific
+  obligations. History current-series metadata is insufficient for all retained rows.
+- Investigation/Saved round trip depends on accepted incumbent Terminal804 contract and current source custody.
+  No parallel persistence or migration owner.
+- Policy comparison math is accepted; qualified source mappings, preview UI and same-record Saved settings remain
+  open.
+- Hosted exact-head CI, final release review, merge, served authenticated journeys and subsequent normal production
+  publication remain separate gates.
 next_actions:
-- Continue original root and sole PR8527 carrier; commit/push the accepted snapshot and focus-review evidence, then complete release gates while qualifier/Inspector work advances.
-- The exact snapshot precursor is accepted; qualification-extension/QUALIFIER_WORKER_R1_READY.md is released for admitted C2 build. Preserve original root and selected-model quality/capacity checks.
-- Consume original snapshot refusal; do not replay its durable ID or copy credentials. A newly scoped/admitted successor may proceed only after original effects are adjudicated.
-- Freeze International Investigation extension with incumbent Terminal804 before shared kernel or Saved writes.
-- Use existing Sol for consequential judgment; routine work stays on Fabric. No artificial one-leaf programme ceiling and no native grandchildren.
+- Continue original root and sole PR8527 carrier. Commit/push the accepted History/scenario source vertical and
+  exact evidence, then advance release and the next qualified source/domain integration lane.
+- Use the existing source owner to bind response date/value coverage and a successful artifact-write identity before
+  broad historical disclosure. Preserve all uncertain or absent source states.
+- Freeze International Investigation extension against accepted Terminal804 interface before shared kernel/Saved
+  changes; independent domain fixtures may proceed.
+- Use admitted Fabric for bounded work, reserve principals for architecture, acceptance and demonstrated no-worker
+  exceptions. Preserve live writers, root identity and capacity.
 do_not_redo:
 - Keep received archive bytes and the completed 1589-board census; inspect only material design/source invalidators.
 - Do not recreate the old International R3 core; exact named seams match the current pickup base.
@@ -145,12 +195,10 @@ danger_areas:
 - Do not confuse source tests, Paper snapshots, transport rc0 or CI with product acceptance.
 - Preserve dirty historical and remote checkouts; only the registered SSD carrier is an integration writer.
 - Do not infer Paper M2 access from a remote harness starting a local Paper process.
-- Keep Follow, first-known history and new financial-policy authority out of scope; Wave 3 Saved writes remain
-  incumbent Investigation-owned.
+- Keep Follow, first-known history and new financial-policy authority out of scope; Wave 3 Saved writes remain incumbent
+  Investigation-owned.
 prs:
 - 8527
 ---
 
-MISSION_COMPLETE: false. The sole PR8527 carrier contains the implementation; actual publication and all three waves remain unfinished.
-
-Current process/effect identities and latest head are bound in `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/CHECKPOINT.md` ; prior `FINAL_RECEIPT.json` is historical. Earlier receipts preserve rejected worker artifacts and obsolete CI snapshots; do not treat their one-worker ceiling or unmounted Overview notes as current. No automatic Codex-parent wake is claimed. These records create no execution grant, queue or runtime owner.
+MISSION_COMPLETE: false. All three wave packages and implementation remain grouped on PR8527. This handoff records the latest accepted vertical, not final delivery. Exact current run/head identities and immediate next action are in `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/CHECKPOINT.md`. Component receipts distinguish source, UI, copied publication and served acceptance. No new execution authority, scheduler or automatic parent wake is created.

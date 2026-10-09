@@ -495,8 +495,18 @@ def test_publisher_static_wiring_passes_empty_grants_and_preserves_failures():
     assert "attach_risks" in text
 
     tries = [node for node in function.body if isinstance(node, ast.Try)]
-    assert len(tries) == 2
-    macro_try, risk_try = tries
+    # Each incumbent panel keeps its own failure boundary as later panels join.
+    def containing_call(name):
+        matches = [block for block in tries if any(
+            isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+            and node.func.id == name for node in ast.walk(block)
+        )]
+        assert len(matches) == 1
+        return matches[0]
+
+    macro_try = containing_call("attach_macros")
+    risk_try = containing_call("attach_risks")
+    assert macro_try is not risk_try
     macro_calls = [
         node
         for node in ast.walk(macro_try)

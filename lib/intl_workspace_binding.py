@@ -17,7 +17,7 @@ def binding_version(workspace):
     if type(version) is not int or version not in VALID_BINDING_VERSIONS:
         raise ValueError('invalid workspace binding version')
     panels = workspace['panels']
-    for name in ('compares', 'inspectors', 'macros'):
+    for name in ('compares', 'inspectors', 'macros', 'histories'):
         if name in workspace:
             if type(workspace[name]) is not list:
                 raise ValueError('invalid workspace binding envelope')

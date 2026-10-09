@@ -29,6 +29,7 @@ from engine.intl_workspace_overview import build_workspace_overviews as _workspa
 from lib.intl_library_mount import render_international_pages  # noqa: E402
 from lib.intl_macro_mount import attach_macros  # noqa: E402
 from lib.intl_risk_mount import attach_risks  # noqa: E402
+from lib.intl_history_mount import attach_history  # noqa: E402
 from lib.intl_macro_publication import read_ecb_deposit_materialization  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -38,8 +39,8 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "dashboard-icons.js", "theme.js",
           "mtf.js", "chart_i18n.js", "charts.js",
           "tablesort.js", "stockdata.js", "stockview.js",
-          "intl_workspace.css", "intl_workspace_macro.css", "intl_workspace_risk.css", "intl_workspace_state.js",
-          "intl_library_search.js", "intl_workspace.js", "intl_workspace_entry.js")
+          "intl_workspace.css", "intl_workspace_macro.css", "intl_workspace_risk.css", "intl_workspace_history.css", "intl_workspace_state.js",
+          "intl_library_search.js", "intl_workspace_scenario.js", "intl_workspace.js", "intl_workspace_entry.js")
 
 
 def _ecb_publication_measure(materialized, *, evaluated_at, generation):
@@ -101,7 +102,31 @@ def _ecb_publication_measure(materialized, *, evaluated_at, generation):
         return unavailable
 
 
-def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, cgl=None):
+def _history_publication_sources(receipts):
+    """Reuse the country render's typed reads without conferring disclosure."""
+    from engine import international_macro_dashboard as owner
+    from lib.intl_history_mount import _unknown_source
+
+    if type(receipts) is not dict or any(type(key) is not str for key in receipts):
+        raise ValueError("invalid_history_receipts")
+    sources = {}
+    for market, receipt in receipts.items():
+        if market not in owner.REGIONS:
+            continue
+        try:
+            projected = owner.project_history_read(receipt)
+            if projected["market_id"] != market:
+                raise ValueError("history market mismatch")
+            source = _unknown_source()
+            source["history_read"] = projected
+            sources[market] = source
+        except Exception as exc:  # One malformed read cannot suppress other markets.
+            log.error("International History receipt unavailable (%s)", type(exc).__name__)
+    return sources
+
+
+def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, cgl=None,
+                           history_sources=None):
     """Compose one normal publication without granting any equity evidence."""
     from engine.intl_inputs import countries
 
@@ -140,6 +165,13 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
         )
     except Exception as exc:
         log.error("International Risk panel unavailable (%s)", type(exc).__name__)
+    try:
+        workspace = attach_history(
+            workspace, registry=registry,
+            sources={} if history_sources is None else history_sources,
+        )
+    except Exception as exc:
+        log.error("International History panel unavailable (%s)", type(exc).__name__)
     return workspace
 
 
@@ -274,7 +306,8 @@ def main() -> int:
     try:
         from scripts.build_international_macro import build_all as _build_country_macro
 
-        _build_country_macro(latest)
+        _intl_history_receipts = {}
+        _build_country_macro(latest, history_receipts=_intl_history_receipts)
     except Exception as e:  # noqa: BLE001
         print(
             f"::error title=international country dashboards failed::{e}",
@@ -1003,6 +1036,7 @@ def main() -> int:
                 _wr_intl_raw, data_root=config.data_dir(),
                 evaluated_at=datetime.now(timezone.utc).isoformat(),
                 risk_desk=_intl_risk_payload, cgl=_cgl_artifact,
+                history_sources=_history_publication_sources(_intl_history_receipts),
             )
         except Exception as exc:  # Preserve all incumbent views on adapter failure.
             log.error("International workspace unavailable (%s)", type(exc).__name__)

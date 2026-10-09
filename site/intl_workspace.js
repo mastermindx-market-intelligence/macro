@@ -3,11 +3,13 @@
   if (typeof module === 'object' && module.exports) {
     var search;
     try { search = require('./intl_library_search.js'); } catch (error) { if (error.code !== 'MODULE_NOT_FOUND') throw error; }
-    module.exports = factory(require('./intl_workspace_state.js'), search);
+    var scenario;
+    try { scenario = require('./intl_workspace_scenario.js'); } catch (error) { if (error.code !== 'MODULE_NOT_FOUND') throw error; }
+    module.exports = factory(require('./intl_workspace_state.js'), search, scenario);
   } else {
-    root.IntlWorkspace = factory(root.IntlWorkspaceState, root.IntlLibrarySearch);
+    root.IntlWorkspace = factory(root.IntlWorkspaceState, root.IntlLibrarySearch, root.IntlWorkspaceScenario);
   }
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (IntlWorkspaceState, IntlLibrarySearch) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (IntlWorkspaceState, IntlLibrarySearch, IntlWorkspaceScenario) {
   'use strict';
 
   var HANDLES = typeof WeakMap === 'function' ? new WeakMap() : null;
@@ -18,6 +20,7 @@
     INVALID_QUERY: { en: 'Invalid URL state restored', zh: '无效 URL 状态已还原' },
     PIN_LIMIT: { en: 'Pin limit reached', zh: '已达固定上限' },
     QUERY_TOO_LONG: { en: 'URL state is too long', zh: 'URL 状态过长' },
+    SCENARIO_CONFIRMATION_REQUIRED: { en: 'Review the pending scenario context first', zh: '请先检查待确认的情景范围' },
     STALE_SOURCE: { en: 'Source changed', zh: '数据源已变化' },
     NO_MATCHING_PANEL: { en: 'Data unavailable for this selection', zh: '无匹配数据' },
     UNSUPPORTED_MODE: { en: 'Unsupported workspace mode', zh: '不支持的工作区模式' },
@@ -1213,10 +1216,18 @@
       '[data-im-library-groups],[data-im-library-group],[data-im-library-results],[data-im-library-empty],[data-im-library-tool],'+
       '[data-im-inspector-origin],[data-im-inspector-payload],[data-im-inspector-enhancement],[data-im-inspector-page],'+
       '[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-shell],[data-im-inspector-deeper-unavailable],'+
-      '[data-im-macro-market],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option';
+      '[data-im-macro-market],[data-im-risk-channel],[data-im-risk-row],[data-im-risk-prompt],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option';
+    selector += ',[data-im-history-panel],[data-im-history-slot],[data-im-history-prompt],[data-im-history-tabs],[data-im-scenario-field],[data-im-scenario-fields],[data-im-scenario-tab],[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-confirm-context],[data-im-scenario-confirm-reset],[data-im-scenario-result],[data-im-scenario-empty],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error],[data-im-scenario-action]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
       if (node === root) attrs.push('data-im-enhanced');
+      if (node.closest('[data-im-history-panel]')) {
+        attrs.push('hidden','disabled');
+        if (node.matches('[data-im-history-panel]')) attrs.push('data-horizon','data-basis','data-im-history-enhanced','data-im-history-tab');
+        if (node.matches('[data-im-scenario-field]')) { value=true;attrs.push('aria-invalid'); }
+        if (node.matches('[data-im-scenario-tab]')) attrs.push('aria-pressed');
+        if (node.matches('[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error]')) text=true;
+      }
       if (node.matches('[data-im-heading]')) attrs.push('tabindex');
       if (node.matches('[data-im-library-static]')) attrs.push('data-horizon','data-basis','data-im-library-enhanced');
       if (node.matches('[data-im-library-group]')) attrs.push('data-im-library-active');
@@ -1235,6 +1246,10 @@
       if (node.matches('[data-im-inspector-shell]')) attrs.push('aria-labelledby','aria-label');
       if (node.matches('[data-im-panel][data-view="macro"]')) attrs.push('data-im-macro-has-selection');
       if (node.matches('[data-im-macro-market]')) attrs.push('data-im-macro-selected');
+      if (node.matches('[data-im-panel][data-view="risk"]')) attrs.push('data-im-risk-has-selection');
+      if (node.matches('[data-im-risk-row]')) attrs.push('data-im-risk-selected');
+      if (node.matches('[data-im-risk-channel],[data-im-risk-prompt]')) attrs.push('hidden');
+      if (node.matches('[data-im-risk-prompt]')) text = true;
       if (node.matches('[data-im-compare-panel]')) attrs.push('data-im-compare-state','data-im-compare-reason');
       if (node.matches('[data-im-compare-slot],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove]')) attrs.push('hidden');
       if (node.matches('[data-im-compare-status],[data-im-compare-pin] option')) text = true;
@@ -1274,7 +1289,7 @@
         !config.bases.includes(panel.getAttribute('data-basis')) ||
         !panel.hasAttribute('data-source') || (version === 2 ?
           !validGeneration(source) || panel.getAttribute('data-im-generation') !== source ||
-            (['overview','compare','macro'].includes(panel.getAttribute('data-view')) && panel.getAttribute('data-return-basis') !== 'price') :
+            (['overview','compare','macro','risk','history'].includes(panel.getAttribute('data-view')) && panel.getAttribute('data-return-basis') !== 'price') :
           panel.getAttribute('data-source') !== (source === null ? '' : source))) return false;
     if (panel.hasAttribute('data-market') && panel.getAttribute('data-market') !== '' &&
         !config.markets.includes(panel.getAttribute('data-market'))) return false;
@@ -1312,9 +1327,11 @@
     if (library && panelValid(library.panel,controller.config,state.source_reference,controller.bindingVersion)) {
       library.panel.setAttribute('data-horizon',state.horizon); library.panel.setAttribute('data-basis',state.currency_basis);
     }
+    paintHistory(controller,state);
     var panels = panelFor(controller, state);
     var panel = panels.length === 1 ? panels[0] : null;
     var compare = null;
+    if (panel && panel.hasAttribute('data-im-history-panel') && !historyPlan(controller,state)) panel=null;
     if (panel && panel.getAttribute('data-view') === 'compare') {
       compare = comparePlan(controller,panel,state);
       if (!compare) panel = null;
@@ -1354,10 +1371,218 @@
         row.setAttribute('data-im-macro-selected', String(row.getAttribute('data-im-macro-market') === state.selected_market));
       });
     });
+    paintRisk(controller, state);
     paintLibrary(controller,state);
     paintCompare(controller,compare);
     paintInspectorFallbacks(controller,state);
     return reported;
+  }
+
+  function scenarioContext(state) {
+    return {selected_market:state.selected_market,horizon:state.horizon,currency_basis:state.currency_basis};
+  }
+
+  function historyPlan(controller,state) {
+    if (!IntlWorkspaceScenario || !controller.scenarioDraft) return null;
+    var candidates=owned(controller.root,'[data-im-history-panel]').filter(function (p) {
+      return panelValid(p,controller.config,state.source_reference,controller.bindingVersion);
+    });
+    if (candidates.length!==1) return null;
+    var panel=candidates[0];
+    function all(selector) { return owned(controller.root,selector).filter(function(n){return n.closest('[data-im-panel]')===panel;}); }
+    function one(selector) { var nodes=all(selector);return nodes.length===1?nodes[0]:null; }
+    var fields={};
+    ['local','fx'].forEach(function(field){fields[field]=one('[data-im-scenario-field="'+field+'"]');});
+    var slots=all('[data-im-history-slot]');
+    if (slots.length!==controller.config.markets.length || slots.some(function(n,i){return n.getAttribute('data-im-history-slot')!==String(i)||n.getAttribute('data-im-history-market')!==controller.config.markets[i];})) return null;
+    var selectors={form:'[data-im-scenario-form]',fieldset:'[data-im-scenario-fields]',tabs:'[data-im-history-tabs]',prompt:'[data-im-history-prompt]',context:'[data-im-scenario-context]',candidate:'[data-im-scenario-candidate-context]',confirm:'[data-im-scenario-confirm-context]',reset:'[data-im-scenario-confirm-reset]',result:'[data-im-scenario-result]',empty:'[data-im-scenario-empty]',usd:'[data-im-scenario-usd]',contribution:'[data-im-scenario-contribution]',rows:'[data-im-scenario-rows]',announcement:'[data-im-scenario-announcement]'};
+    var plan={panel:panel,fields:fields,slots:slots,all:all};
+    Object.keys(selectors).forEach(function(k){plan[k]=one(selectors[k]);});
+    if (Object.keys(selectors).some(function(k){return !plan[k];})||!fields.local||!fields.fx||all('[data-im-scenario-error]').length!==2) return null;
+    return plan;
+  }
+
+  function scenarioContextText(controller,context) {
+    var zh=normalLanguage(controller.root)==='zh';
+    var select=owned(controller.root,'[data-im-history-panel] select[data-im-action="select_market"]')[0];
+    var option=select&&Array.from(select.options).find(function(o){return o.value===context.selected_market;});
+    var market=option?option.getAttribute(zh?'data-im-label-zh':'data-im-label-en'):(context.selected_market||(zh?'未选择市场':'No market selected'));
+    var basis=context.currency_basis==='local'?(zh?'研究口径：本币':'Research basis: Local currency'):(zh?'研究口径：美元 · 未对冲':'Research basis: USD · Unhedged');
+    return market+' · '+context.horizon+' · '+basis+' · '+(zh?'汇率假设：每单位本币兑美元':'FX assumption: USD per local unit');
+  }
+
+  function scenarioNumber(value) {
+    // Round only this display; tiny nonzero values must not look like exact zero.
+    if (value!==0 && (Math.abs(value)<0.005||Math.abs(value)>=1e9)) return value.toExponential(3);
+    return new Intl.NumberFormat('en-US',{maximumFractionDigits:2,minimumFractionDigits:0}).format(value);
+  }
+
+  function paintHistory(controller,state,announcement) {
+    var plan=historyPlan(controller,state);if(!plan)return;
+    var d=controller.scenarioDraft,raw=d.pending?d.pending.raw:d.raw,zh=normalLanguage(controller.root)==='zh';
+    plan.all('select[data-im-action="select_market"] option').forEach(function(option){option.textContent=option.getAttribute(zh?'data-im-label-zh':'data-im-label-en');});
+    plan.panel.setAttribute('data-horizon',state.horizon);plan.panel.setAttribute('data-basis',state.currency_basis);
+    plan.panel.setAttribute('data-im-history-enhanced','true');plan.panel.setAttribute('data-im-history-tab',d.tab);
+    plan.tabs.hidden=false;
+    plan.all('[data-im-scenario-tab]').forEach(function(n){n.setAttribute('aria-pressed',String(n.getAttribute('data-im-scenario-tab')===d.tab));});
+    var selected=controller.config.markets.indexOf(state.selected_market);
+    plan.slots.forEach(function(n,i){n.hidden=i!==selected;});plan.prompt.hidden=selected!==-1;
+    plan.fieldset.disabled=d.reset_pending;
+    plan.context.textContent=scenarioContextText(controller,d.context);
+    plan.candidate.textContent=d.pending?scenarioContextText(controller,d.pending.context):'';
+    plan.confirm.hidden=!d.pending;plan.reset.hidden=!d.reset_pending;
+    var messages={input_required:['Enter a complete percentage.','请输入完整的百分比。'],local_below_total_loss:['Local return must be at least −100%.','本币回报不得低于 −100%。'],fx_nonpositive_endpoint:['Currency return must be greater than −100%.','汇率回报必须大于 −100%。'],overflow:['These assumptions cannot be represented as a finite result.','这些假设无法得出有限数值结果。']};
+    ['local','fx'].forEach(function(field){
+      var input=plan.fields[field],error=plan.all('[data-im-scenario-error="'+field+'"]')[0];
+      if(input.value!==raw[field])input.value=raw[field];
+      var message=messages[d.errors[field]]||['Use a decimal point, optional sign and percentage sign; at most 128 characters.','请使用小数点，可带正负号和百分号，最多 128 个字符。'];
+      input.setAttribute('aria-invalid',String(!!d.errors[field]));error.hidden=!d.errors[field];error.textContent=d.errors[field]?message[zh?1:0]:'';
+    });
+    var result=d.pending?null:d.result;
+    plan.result.hidden=!result;plan.empty.hidden=!!result||!!d.pending;
+    plan.usd.textContent=result?scenarioNumber(result.usdPercent)+'%':'';
+    plan.contribution.textContent=result?scenarioNumber(result.fxContributionPp)+(zh?' 个百分点':' pp'):'';
+    plan.rows.replaceChildren();
+    if(result)d.rows.forEach(function(row){
+      var li=controller.root.ownerDocument.createElement('li'),label=controller.root.ownerDocument.createElement('span'),value=controller.root.ownerDocument.createElement('strong');
+      var labels={current:['Your FX input','您的汇率输入'],unchanged:['FX unchanged','汇率不变'],illustrative_plus3:['Illustrative FX +3%','示例汇率 +3%']};
+      label.textContent=labels[row.kind][zh?1:0]+' ('+scenarioNumber(row.fxPercent)+'%)';value.textContent=scenarioNumber(row.usdPercent)+'%';li.append(label,value);plan.rows.appendChild(li);
+    });
+    if(announcement&&result)plan.announcement.textContent=(zh?'条件美元回报 ':'Conditional USD return ')+scenarioNumber(result.usdPercent)+'%; '+(zh?'汇率贡献 ':'FX contribution ')+scenarioNumber(result.fxContributionPp)+(zh?' 个百分点':' pp');
+    else if(!result)plan.announcement.textContent='';
+    plan.all('[data-im-scenario-action="calculate"],[data-im-scenario-action="request_reset"]').forEach(function(n){n.disabled=!!d.pending||d.reset_pending;});
+  }
+
+  function commitResearch(controller,result,actionType) {
+    if (!controller.scenarioDraft) return stageAndCommit(controller,result.state,result.issues,actionType);
+    if (!result.ok) {
+      controller.issues=result.issues;repaintIssues(controller);
+      return {ok:false,state:controller.state,issues:result.issues,intent:null};
+    }
+    var prior=controller.scenarioDraft,oldPending=controller.pendingScenario;
+    if(oldPending&&actionType!=='resize') {
+      paint(controller,controller.state,controller.issues);
+      return {ok:false,state:controller.state,issues:[{code:'SCENARIO_CONFIRMATION_REQUIRED',field:'scenario'}],intent:null};
+    }
+    var current=scenarioContext(controller.state||result.state),next=scenarioContext(result.state);
+    if(JSON.stringify(current)!==JSON.stringify(next)) {
+      var proposal=IntlWorkspaceScenario.reduceDraft(prior,{type:'propose_context',context:next},normalLanguage(controller.root));
+      if(!proposal.ok)return {ok:false,state:controller.state,issues:[{code:'INVALID_ACTION',field:'scenario'}],intent:null};
+      controller.scenarioDraft=proposal.draft;
+      if(proposal.draft.pending) {
+        if(!historyPlan(controller,controller.state)){controller.scenarioDraft=prior;return {ok:false,state:controller.state,issues:[{code:'NO_MATCHING_PANEL',field:'history'}],intent:null};}
+        controller.pendingScenario={origin:controller.state,target:result.state,intent:result.intent,originFocus:controller.scenarioOrigin||controller.root.ownerDocument.activeElement};
+        controller.scenarioDraft=IntlWorkspaceScenario.reduceDraft(controller.scenarioDraft,{type:'set_tab',tab:'scenario'},normalLanguage(controller.root)).draft;
+        var preview=controller.reducer.reduce(controller.state,{type:'set_view',view:'history'});
+        var staged=stageAndCommit(controller,preview.state,[],actionType);
+        if(!staged.ok){controller.scenarioDraft=prior;controller.pendingScenario=oldPending;return staged;}
+        var plan=historyPlan(controller,controller.state);if(plan)plan.fields.local.focus({preventScroll:true});
+        return {ok:false,state:controller.state,issues:[{code:'SCENARIO_CONFIRMATION_REQUIRED',field:'scenario'}],intent:null};
+      }
+    }
+    var committed=stageAndCommit(controller,result.state,result.issues,actionType);
+    if(!committed.ok){controller.scenarioDraft=prior;controller.pendingScenario=oldPending;}
+    return committed;
+  }
+
+  function scenarioKeydown(controller,event) {
+    if (event.defaultPrevented || !['Escape','Esc'].includes(event.key) ||
+        !event.target || event.target.closest('[data-im-workspace]')!==controller.root) return;
+    var plan=controller.state&&historyPlan(controller,controller.state);
+    if(!plan||plan.panel.hidden||!controller.scenarioDraft)return;
+    var action=controller.pendingScenario?'cancel_context':controller.scenarioDraft.reset_pending?'cancel_reset':null;
+    if(!action)return;
+    event.preventDefault();
+    plan.all('[data-im-scenario-action="'+action+'"]')[0].click();
+  }
+
+  function scenarioEvent(controller,event) {
+    var plan=controller.state&&historyPlan(controller,controller.state);
+    if(!plan||plan.panel.hidden||!event.target||!plan.panel.contains(event.target)||event.target.closest('[data-im-workspace]')!==controller.root)return false;
+    var command=null;
+    if(event.type==='input'&&event.target.hasAttribute('data-im-scenario-field'))command={type:'edit',field:event.target.getAttribute('data-im-scenario-field'),raw:event.target.value};
+    else if(event.type==='submit'&&event.target===plan.form)command={type:'calculate'};
+    else if(event.type==='click'&&event.target.closest){
+      var button=event.target.closest('button[data-im-scenario-action]');
+      if(!button||button.disabled||button.closest('[data-im-panel]')!==plan.panel)return false;
+      var type=button.getAttribute('data-im-scenario-action');
+      // Calculate is handled once by the native form submit event.
+      if(type==='calculate')return false;
+      command=type==='set_tab'?{type:type,tab:button.getAttribute('data-im-scenario-tab')}:{type:type};
+    }
+    if(!command)return false;
+    event.preventDefault();
+    var prior=controller.scenarioDraft,oldPending=controller.pendingScenario,snapshot=snapshotRoot(controller.root);
+    try {
+      var reduced=IntlWorkspaceScenario.reduceDraft(prior,command,normalLanguage(controller.root));
+      controller.scenarioDraft=reduced.draft;
+      if(reduced.ok&&['confirm_context','cancel_context'].includes(command.type)) {
+        if(!oldPending)throw new Error('Missing pending context');
+        var target=command.type==='confirm_context'?oldPending.target:oldPending.origin;
+        var committed=stageAndCommit(controller,target,[],'scenario_'+command.type);
+        if(!committed.ok){controller.scenarioDraft=prior;restoreRoot(controller.root,snapshot);return true;}
+        controller.pendingScenario=null;
+        if(command.type==='confirm_context'&&oldPending.intent&&oldPending.intent.type==='restore_focus')restoreFocus(controller,oldPending.intent.anchor_id);
+      }
+      paintHistory(controller,controller.state,reduced.announce);
+      if(reduced.focus)plan.fields[reduced.focus].focus({preventScroll:true});
+      else if(command.type==='request_reset'&&reduced.ok)plan.all('[data-im-scenario-action="confirm_reset"]')[0].focus({preventScroll:true});
+      else if(['confirm_reset','cancel_reset'].includes(command.type)&&reduced.ok)plan.fields.local.focus({preventScroll:true});
+      else if(['confirm_context','cancel_context'].includes(command.type)&&reduced.ok) {
+        var origin=command.type==='cancel_context'&&oldPending&&oldPending.originFocus;
+        var target=origin&&nodeUsable(controller,origin)?origin:(!plan.panel.hidden?plan.fields.local:required(controller.root,'[data-im-heading]'));
+        target.focus({preventScroll:true});
+      }
+    } catch(_) {
+      controller.scenarioDraft=prior;controller.pendingScenario=oldPending;restoreRoot(controller.root,snapshot);
+    }
+    return true;
+  }
+
+  function paintRisk(controller, state) {
+    var root = controller.root, markets = controller.config.markets;
+    owned(root, '[data-im-panel][data-view="risk"]').forEach(function (panel) {
+      var channels = owned(root, '[data-im-risk-channel]').filter(function (node) { return panel.contains(node); });
+      var slots = new Set();
+      var valid = channels.length === markets.length && channels.every(function (node) {
+        var value = node.getAttribute('data-im-risk-channel'), slot = Number(value);
+        if (value !== String(slot) || !Number.isInteger(slot) || slot < 0 || slot >= markets.length || slots.has(slot)) return false;
+        slots.add(slot);
+        return !node.hasAttribute('data-im-risk-market') || node.getAttribute('data-im-risk-market') === markets[slot];
+      });
+      var selectedSlot = markets.indexOf(state.selected_market);
+      panel.setAttribute('data-im-risk-has-selection', String(selectedSlot !== -1));
+      channels.forEach(function (node) {
+        node.hidden = !valid || selectedSlot === -1 || node.getAttribute('data-im-risk-channel') !== String(selectedSlot);
+      });
+      owned(root, '[data-im-risk-row]').filter(function (node) { return panel.contains(node); }).forEach(function (node) {
+        node.setAttribute('data-im-risk-selected', String(node.getAttribute('data-im-risk-row') === state.selected_market));
+      });
+      owned(root, '[data-im-risk-prompt]').filter(function (node) { return panel.contains(node); }).forEach(function (node) {
+        node.hidden = valid && selectedSlot !== -1;
+        var en = root.ownerDocument.createElement('span'), zh = root.ownerDocument.createElement('span');
+        en.className = 'l-en'; zh.className = 'l-zh'; zh.lang = 'zh';
+        en.textContent = valid ? 'Select a market to examine the currency channel' : 'Currency details are unavailable for this selection.';
+        zh.textContent = valid ? '选择市场以查看汇率传导' : '此选择暂无可用的汇率详情。';
+        node.replaceChildren(en, zh);
+      });
+    });
+  }
+
+  function riskEvent(controller, event) {
+    if (event.type !== 'click' || !event.target || !event.target.closest) return false;
+    var button = event.target.closest('button[data-im-risk-close-context]');
+    if (!button || button.disabled || button.closest('[data-im-workspace]') !== controller.root) return false;
+    var panel = button.closest('[data-im-panel][data-view="risk"]');
+    if (!panel || panel.hidden || panelFor(controller, controller.state)[0] !== panel) return false;
+    var detail = button.closest('details');
+    if (!detail || !panel.contains(detail)) return false;
+    var summary = Array.from(detail.children).find(function (node) { return node.tagName === 'SUMMARY'; });
+    if (!summary) return false;
+    event.preventDefault();
+    detail.open = false;
+    summary.focus({preventScroll: true});
+    return true;
   }
 
   function repaintIssues(controller) {
@@ -1419,7 +1644,7 @@
       controller.issues = [{code:'UNSUPPORTED_VIEW', field:'view'}]; repaintIssues(controller);
       return {ok:false, state:controller.state, issues:controller.issues, intent:null};
     }
-    var committed = stageAndCommit(controller, result.state, result.issues, action && action.type, false);
+    var committed = commitResearch(controller, result, action && action.type);
     if (committed.ok) { committed.intent = result.intent; if (result.intent && result.intent.type === 'restore_focus') restoreFocus(controller, result.intent.anchor_id); }
     return committed;
   }
@@ -1437,7 +1662,11 @@
     var hadInspector = !!controller.inspector;
     if (hadInspector) visuallyCloseInspector(controller, { release: true });
     var parsed = controller.reducer.parseQuery(controller.environment.window.location.search);
-    var committed = stageAndCommit(controller, parsed.state, parsed.issues, 'popstate', false);
+    var committed = commitResearch(controller, parsed, 'popstate');
+    if (controller.pendingScenario) {
+      try { controller.environment.window.history.replaceState(null,'',nextUrl(controller,controller.serializedQuery)); }
+      catch (_) { committed.issues=[{code:'UI_UPDATE_FAILED',field:'url'}]; }
+    }
     controller.issues = committed.issues;
     if (hadInspector) {
       var heading = owned(controller.root, '[data-im-heading]')[0];
@@ -1478,6 +1707,8 @@
   }
 
   function clickOrChange(controller, event) {
+    if (scenarioEvent(controller,event)) return;
+    if (riskEvent(controller,event)) return;
     if (compareEvent(controller,event)) return;
     if (inspectorEvent(controller,event)) return;
     if (libraryEvent(controller,event)) return;
@@ -1485,7 +1716,9 @@
     if (!action) return;
     event.preventDefault();
     var previousGroup=controller.state.library_group;
-    var committed=dispatch(controller, action);
+    controller.scenarioOrigin=event.target;
+    var committed;
+    try { committed=dispatch(controller, action); } finally { controller.scenarioOrigin=null; }
     if (committed.ok && action.type==='set_library_group' && event.type==='click' && controller.library && controller.library.valid) {
       var library=controller.library, target;
       if (action.group_id) {
@@ -1514,6 +1747,7 @@
     var previousReducer = controller.reducer;
     var previousSerialized = controller.serializedQuery;
     var previousIssues = controller.issues;
+    var previousPending = controller.pendingScenario;
     var failed = true;
     try {
       if (controller.inspector) visuallyCloseInspector(controller, { release: true });
@@ -1522,6 +1756,16 @@
       controller.state = expanded.state;
       controller.issues = reported;
       controller.serializedQuery = replacement.serializeQuery(expanded.state).query;
+      if (previousPending) {
+        var rebound={intent:null,originFocus:previousPending.originFocus};
+        ['origin','target'].forEach(function(key) {
+          var query=previousReducer.serializeQuery(previousPending[key]);
+          var parsedPending=replacement.parseQuery(query.query);
+          if (!query.ok||!parsedPending.ok) throw new Error('Pending source rebind failed');
+          rebound[key]=parsedPending.state;
+        });
+        controller.pendingScenario=rebound;
+      }
       failed = false;
       return { ok: true, state: expanded.state, issues: reported, intent: { type: 'invalidate_source_bound_context' } };
     } catch (_) {
@@ -1531,6 +1775,7 @@
         controller.reducer = previousReducer;
         controller.state = previousState;
         controller.issues = previousIssues;
+        controller.pendingScenario = previousPending;
         controller.serializedQuery = previousSerialized;
         restoreRoot(controller.root, previousNodes);
         if (inspectorSnap) rehydrateInspector(controller, inspectorSnap);
@@ -1566,7 +1811,7 @@
     };
     var controller = {
       root: root, config: config, bindingVersion: bindingVersion, configWithSource: configWithSource, reducer: reducer, environment: { window: window },
-      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null
+      state: null, issues: [], serializedQuery: '', live: false, original: [], inspector: null, scenarioDraft:null, pendingScenario:null
     };
     controller.library = prepareLibrary(root,config);
     controller.inspectorHost = prepareInspector(controller);
@@ -1578,11 +1823,14 @@
       required(root, '[data-im-issues]').setAttribute('role', 'status');
       required(root, '[data-im-unavailable]');
       var parsed = reducer.parseQuery(window.location.search);
+      if (IntlWorkspaceScenario && owned(root,'[data-im-history-panel]').length) controller.scenarioDraft=IntlWorkspaceScenario.createDraft(scenarioContext(parsed.state));
       stageAndCommit(controller, parsed.state, parsed.issues, 'mount', false);
       controller.live = true;
       controller.onClick = function (event) { clickOrChange(controller, event); };
       controller.onChange = function (event) { clickOrChange(controller, event); };
-      controller.onLibraryEvent = function (event) { libraryEvent(controller,event); };
+      controller.onScenarioKeydown = function(event) { scenarioKeydown(controller,event); };
+      root.addEventListener('keydown',controller.onScenarioKeydown,false);
+      controller.onLibraryEvent = function (event) { if (!scenarioEvent(controller,event)) libraryEvent(controller,event); };
       controller.onPopstate = function () { popstate(controller); };
       controller.onResize = function () { dispatch(controller, {type:'resize'}); };
       controller.onInspectorCancel = function (event) { inspectorCancel(controller, event); };
@@ -1600,6 +1848,7 @@
       window.addEventListener('resize', controller.onResize, false);
       controller.observer = new window.MutationObserver(function () {
         repaintIssues(controller);
+        paintHistory(controller,controller.state);
         paintLibrary(controller,controller.state);
         var panels = panelFor(controller,controller.state);
         if (panels.length === 1 && !panels[0].hidden) paintCompare(controller,comparePlan(controller,panels[0],controller.state));
@@ -1626,6 +1875,7 @@
       if (controller.observer) controller.observer.disconnect();
       if (controller.onClick) root.removeEventListener('click', controller.onClick, false);
       if (controller.onChange) root.removeEventListener('change', controller.onChange, false);
+      if (controller.onScenarioKeydown) root.removeEventListener('keydown',controller.onScenarioKeydown,false);
       if (controller.onLibraryEvent) ['input','compositionstart','compositionend','submit'].forEach(function (type) { root.removeEventListener(type,controller.onLibraryEvent,false); });
       if (controller.onPopstate) window.removeEventListener('popstate', controller.onPopstate, false);
       if (controller.onResize) window.removeEventListener('resize', controller.onResize, false);
@@ -1639,10 +1889,13 @@
     controller.live = false;
     teardownInspector(controller);
     controller.state = null;
+    controller.scenarioDraft = null;
+    controller.pendingScenario = null;
     controller.reducer = null;
     if (controller.observer) controller.observer.disconnect();
     controller.root.removeEventListener('click', controller.onClick, false);
     controller.root.removeEventListener('change', controller.onChange, false);
+    controller.root.removeEventListener('keydown',controller.onScenarioKeydown,false);
     ['input','compositionstart','compositionend','submit'].forEach(function (type) { controller.root.removeEventListener(type,controller.onLibraryEvent,false); });
     controller.environment.window.removeEventListener('popstate', controller.onPopstate, false);
     controller.environment.window.removeEventListener('resize', controller.onResize, false);

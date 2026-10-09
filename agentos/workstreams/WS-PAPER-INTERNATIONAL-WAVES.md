@@ -99,8 +99,9 @@ waves:
   depends_on:
   - IM00
   - IM03
-  next_action: Typed reader, pure history projection and manual draft transitions independently accepted; parent/product
-    history95 and draft117/116 checks pass. Integrate the single-controller UI and ordinary publication next.
+  next_action: History/scenario UI and same-read publication are independently accepted. Actual-page matrix40,
+    canonical captures48 and focus24 pass. Projector/publication review37, integrated foundation1269 and
+    render/publication334 pass. Qualify real source inputs and complete served acceptance.
 - id: IM07
   title: Library and deterministic search
   status: in_progress
@@ -121,14 +122,17 @@ waves:
   - IM08
 - id: IM10
   title: Qualified policy comparison
-  status: todo
+  status: in_progress
+  next_action: Pure four-point comparison accepted with105 frozen checks. Source mappings, preview UI and
+    same-record Saved integration remain open.
   depends_on:
   - IM04
   - IM08
   - IM09
-next_action: Final-delta review accepted the exact snapshot and Library focus delta on PR8527; integrate/push the
-  reviewed source vertical. Continue prepared pure qualifier and bounded Inspector contract while respecting actual
-  admission and incumbent Saved boundaries.
+next_action: Publish the accepted History/scenario integration on PR8527, then qualify source-specific History,
+  Macro, Risk and equity inputs using response coverage and successful artifact-write witnesses. Continue
+  Investigation/Saved and policy comparison through the accepted incumbent interface. Hosted CI, merge,
+  served access and subsequent production publication remain separate acceptance gates.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
@@ -150,7 +154,7 @@ Native Sol CEO `01a11057-3134-76d2-bcd1-784d69cc17d3` has executed under the Cha
 
 The accepted implementation includes the scenario calculator, deterministic Library search, supplied-frame return and chart adapters, route state, qualification-aware Overview projection, actual macro-page DOM integration, and the pure Library catalogue/resolve consumer. Exact source hashes and review limits live in the per-component receipts under `research/paper_international_wave1_wave2/`. Numerical availability never grants current-data or access qualification. Stock mode and all legacy research remain available.
 
-The latest accepted source gate covers 94 numerical cases, 21 render/composition cases and 27 real Chrome controller/page cases. The page cases exercise 32 theme/language/width/text-scale states. Canonical committed visual evidence covers eight rest and eight real focus states; synthetic qualified/negative/denied examples are labeled as fixtures. Exact-head hosted CI, live rights and served publication remain separate. Four further workspace views remain disabled pending implementation; Overview and Library are mounted.
+The initial Overview source gate covered 94 numerical cases, 21 render/composition cases and 27 real Chrome controller/page cases. The page cases exercise 32 theme/language/width/text-scale states. Canonical committed visual evidence covers eight rest and eight real focus states; synthetic qualified/negative/denied examples are labeled as fixtures. Exact-head hosted CI, live rights and served publication remain separate. The current mounted views are Overview, Compare, Inspector, Macro, Risk, History/scenario and Library. Investigation/Saved integration and policy-preview UI remain unfinished.
 
 The full-GLM Overview template repair resolved six concrete rejected Flash defects. The Library Flash result was separately rejected for metric-descriptor loss, input-dependent ordering and malformed-input failures. Full GLM repaired all three; 23 pytest cases, 24 frozen assertions and 73 independent Sol checks passed. The accepted catalogue consumer now has a separately approved public metadata wrapper, actual-rendered destination bindings and a Library panel in the existing product. Numerical qualification remains independent and unknown where no receipt exists.
 
