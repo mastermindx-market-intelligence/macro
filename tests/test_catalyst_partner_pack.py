@@ -13,10 +13,12 @@ import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from types import SimpleNamespace
 from urllib.parse import parse_qs, urlsplit
 
 from engine.marketing.catalyst_partner_pack import (
-    PackRejected, build_partner_pack, write_partner_pack,
+    PackRejected, build_partner_pack, build_partner_pack_from_producer,
+    adapt_qualified_producer_event, write_partner_pack,
 )
 from scripts.build_catalyst_partner_pack import (
     DEMO_EVENT, DEMO_NOW, DEMO_PROFILES,
@@ -42,6 +44,104 @@ class CatalystPartnerPackTests(unittest.TestCase):
         with self.assertRaises(PackRejected) as caught:
             self.make(**kwargs)
         self.assertEqual(caught.exception.code, code)
+
+    def _qualified_session01_packet(self):
+        """Real Session 01 schema shape with clearly fictional issuer/source inputs."""
+        return {
+            "schema": "catalyst.public_event/v1", "schema_version": 1,
+            "event_id": "synthetic-semis-brief", "event_kind": "earnings",
+            "generation": 0, "correction": {"generation": 0, "status": "active"},
+            "correction_state": "CURRENT", "public_safe": True,
+            "public_disposition": "PUBLIC_READY",
+            "primary_subject": {"ticker": "EXA", "company_name": "Illustrative EXA"},
+            "event_time_utc": "2026-10-09T02:00:00Z",
+            "first_observed_at_utc": "2026-10-09T02:10:00Z",
+            "publication_time_utc": "2026-10-09T02:00:00Z",
+            "as_of_utc": "2026-10-09T03:30:00Z",
+            "cache_expires_at_utc": "2026-10-09T05:30:00Z",
+            "sources": [{
+                "source_id": "sec:0000012345:0000012345-26-000001",
+                "rights_receipt_id": "fixture-public-grant-001",
+                "display_rights": "ALLOWED",
+                "title": "Synthetic issuer filing for schema test only",
+                "url": "https://www.sec.gov/Archives/edgar/data/12345/fictional",
+                "published_at_utc": "2026-10-09T02:00:00Z",
+            }],
+            "evidence": [{"evidence_id": "synthetic-proof-1",
+                          "source_id": "sec:0000012345:0000012345-26-000001"}],
+            "what_changed": [{
+                "text": "Illustrative EXA filing reports only synthetic source facts.",
+                "evidence_ids": ["synthetic-proof-1"],
+            }],
+            "affected_tickers": [{
+                "ticker": "EXA", "relationship": "DIRECT",
+                "relation_evidence_ids": [], "relation_type": "issuer_filing",
+            }],
+            "missing_data": ["consensus_not_independently_evidenced"],
+        }
+
+    def _trusted_session01_ports(self, packet=None):
+        packet = packet or self._qualified_session01_packet()
+        s = packet["sources"][0]
+        grant = SimpleNamespace(
+            source_id=s["source_id"], receipt_id=s["rights_receipt_id"],
+            owner_ref="test-only-rights-owner", audience="public_anonymous",
+            effective_at_utc=DEMO_NOW - timedelta(days=1),
+            expires_at_utc=DEMO_NOW + timedelta(days=1),
+            display_link=True, display_title=True, display_facts=True,
+        )
+        return (lambda event, now: "admitted-event-fixture-0001",
+                lambda sid, now: grant if sid == s["source_id"] else None)
+
+    def test_real_producer_schema_adapter_compiles_held_candidate_without_rehost(self):
+        packet = self._qualified_session01_packet()
+        attest, rights = self._trusted_session01_ports(packet)
+        partner = copy.deepcopy(self.partner)
+        partner["profile_url"] = "https://example.com/fictional-research"
+        pack = build_partner_pack_from_producer(
+            packet, partner, ["EXA"], now_utc=DEMO_NOW,
+            attest_event=attest, resolve_rights=rights,
+        )
+        self.assertEqual(pack["publication_status"], "DRAFT_HOLD")
+        self.assertEqual(pack["event"]["correction_generation"], 0)
+        self.assertEqual(pack["event"]["headline_evidence_ids"],
+                         [packet["sources"][0]["source_id"]])
+        self.assertEqual(pack["claims"][0]["tickers"], ["EXA"])
+        self.assertEqual(pack["media_status"], "REHOST_RIGHTS_BLOCKED")
+        self.assertIsNone(pack["card_svg"])
+        self.assertTrue(pack["link_is_placeholder"])
+        self.assertIn("Synthetic", pack["newsletter"])
+        self.assertNotIn("PARTNER APPROVED", pack["newsletter"])
+
+    def test_producer_adapter_rejects_missing_attestation_and_withdrawn_grants(self):
+        p = self._qualified_session01_packet()
+        attest, rights = self._trusted_session01_ports(p)
+        common = {"now_utc": DEMO_NOW, "selected_tickers": ["EXA"]}
+        with self.assertRaises(PackRejected) as exc:
+            adapt_qualified_producer_event(
+                p, ["EXA"], now_utc=DEMO_NOW, attest_event=lambda *args: None,
+                resolve_rights=rights)
+        self.assertEqual(exc.exception.code, "EVENT_VERIFICATION_MISSING")
+        with self.assertRaises(PackRejected) as exc:
+            adapt_qualified_producer_event(
+                p, ["EXA"], now_utc=DEMO_NOW, attest_event=attest,
+                resolve_rights=lambda *args: None)
+        self.assertEqual(exc.exception.code, "SOURCE_RIGHTS_UNAVAILABLE")
+        with self.assertRaises(PackRejected) as exc:
+            adapt_qualified_producer_event(
+                {**p, "generation": -1}, ["EXA"], now_utc=DEMO_NOW,
+                attest_event=attest, resolve_rights=rights)
+        self.assertEqual(exc.exception.code, "INVALID_CORRECTION")
+        with self.assertRaises(PackRejected) as exc:
+            adapt_qualified_producer_event(
+                {**p, "public_disposition": "RETRACTED"}, ["EXA"],
+                now_utc=DEMO_NOW, attest_event=attest, resolve_rights=rights)
+        self.assertEqual(exc.exception.code, "BLOCKED_PUBLIC")
+        with self.assertRaises(PackRejected) as exc:
+            adapt_qualified_producer_event(
+                p, ["EXB"], now_utc=DEMO_NOW,
+                attest_event=attest, resolve_rights=rights)
+        self.assertEqual(exc.exception.code, "UNSUPPORTED_TICKER")
 
     def test_three_full_demo_previews_are_generated_with_unique_audience_copy(self):
         with tempfile.TemporaryDirectory() as temp:
