@@ -25,7 +25,7 @@ import secrets
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, unquote, urlsplit
 from uuid import UUID
 
 SCOPE = "catalyst_event_updates/v1"
@@ -38,6 +38,11 @@ _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$")
 _EVENT_ID = re.compile(r"[A-Za-z0-9_.:-]{1,128}\Z")
 _TICKER = re.compile(r"[A-Z][A-Z0-9.\-]{0,9}\Z")
 _TOUCH_KEYS = ("utm_source", "utm_medium", "utm_campaign", "utm_content", "partner_id")
+# Approved public source URLs must not embed identity, signing or subscriber secrets.
+_PRIVATE_URL_KEYS = frozenset({"email", "e_mail", "phone", "ip", "user_id", "token",
+                               "access_token", "auth", "authorization", "apikey",
+                               "api_key", "secret", "session", "password", "signature"})
+_EMAIL_IN_URL = re.compile(r"[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}", re.I)
 
 
 class FunnelGate(Exception):
@@ -89,6 +94,13 @@ def first_touch(values: dict[str, Any] | None) -> dict[str, str]:
         if value is None or value == "":
             continue
         if not isinstance(value, str) or len(value) > 96 or not _ID.fullmatch(value):
+            raise FunnelGate("INVALID_ATTRIBUTION", 400)
+        # Even an allowlisted untrusted UTM claim must not become an IP ledger.
+        try:
+            ipaddress.ip_address(value)
+        except ValueError:
+            pass
+        else:
             raise FunnelGate("INVALID_ATTRIBUTION", 400)
         clean[key] = value
     return clean
@@ -291,8 +303,34 @@ def _validate_revision(rev: PublicRevision) -> None:
     for url in rev.source_urls:
         if not isinstance(url, str) or len(url) > 1024:
             raise FunnelGate("SOURCE_RIGHTS_UNPROVEN", 403)
-        parsed = urlsplit(url)
-        if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
+        try:
+            parsed = urlsplit(url)
+            port = parsed.port  # also rejects malformed bracketed hosts/ports
+        except ValueError:
+            raise FunnelGate("SOURCE_RIGHTS_UNPROVEN", 403) from None
+        if (parsed.scheme != "https" or not parsed.hostname or parsed.username or
+                parsed.password or port not in (None, 443)):
+            raise FunnelGate("SOURCE_RIGHTS_UNPROVEN", 403)
+        # This follow-up goes into a real recipient email. A provider-approved
+        # source URL must still not leak subscriber/identity tokens when clicked.
+        # Decode nested escapes before checking path, query and fragment.
+        decoded = url
+        for _ in range(4):
+            nxt = unquote(decoded)
+            if nxt == decoded:
+                break
+            decoded = nxt
+        try:
+            decoded_url = urlsplit(decoded)
+        except ValueError:
+            raise FunnelGate("SOURCE_RIGHTS_UNPROVEN", 403) from None
+        if (decoded_url.scheme != parsed.scheme or
+                decoded_url.hostname != parsed.hostname or
+                _EMAIL_IN_URL.search(decoded) or
+                any(k.lower() in _PRIVATE_URL_KEYS for k, _ in
+                    (parse_qsl(decoded_url.query, keep_blank_values=True) +
+                     parse_qsl(decoded_url.fragment, keep_blank_values=True))) or
+                any(ord(ch) < 32 or ord(ch) == 127 for ch in decoded)):
             raise FunnelGate("SOURCE_RIGHTS_UNPROVEN", 403)
         # Public provider must have already checked rights; don't emit internal or local URLs.
         if parsed.hostname in ("localhost",) or parsed.hostname.endswith((".local", ".internal")):
