@@ -107,6 +107,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any, Iterable, Mapping, Sequence
 
 __all__ = [
@@ -121,10 +122,35 @@ __all__ = [
     "COHERENCE_VOCABULARY",
     "POSTURE_VOCABULARY",
     "canonical_json",
+    "live_market_freshness",
+    "LIVE_MARKET_FUTURE_TOLERANCE_S",
 ]
 
 SCHEMA = "mastermind.risk_envelope/v1"
 DEFINITION_ID = "grey-deer-v1-2026-08-19"
+
+LIVE_MARKET_FUTURE_TOLERANCE_S = 120.0
+
+
+def live_market_freshness(
+    *, live_active: bool, built_dt: datetime | None,
+    stale_after_min: float, now: datetime,
+) -> dict[str, Any]:
+    """The live owner's carrying-clock arithmetic; inputs are already parsed.
+
+    Both the producer and a qualified turn reader use this one rule. The producer
+    retains its parser/API; consumer type validation does not change that API.
+    All instants are supplied, so this helper performs no clock or I/O reads.
+    """
+    fresh_enough = bool(built_dt) and (now - built_dt).total_seconds() <= stale_after_min * 60.0
+    future_artifact = bool(built_dt) and (built_dt - now).total_seconds() > LIVE_MARKET_FUTURE_TOLERANCE_S
+    usable = live_active and fresh_enough and not future_artifact
+    return {
+        "live_active": live_active, "built_dt": built_dt,
+        "fresh_enough": fresh_enough, "future_artifact": future_artifact,
+        "usable": usable,
+    }
+
 
 # ── frozen vocabularies ────────────────────────────────────────────────────────
 # V0 descriptive stages only.  ARMED / TRIGGERING are anticipatory and are NOT here
@@ -607,7 +633,7 @@ def _rotation_context(sources: Sequence[SourceRead]) -> dict[str, Any]:
     usable = bool(src and src.role == ROLE_CONTEXT and src.usable and native
                   and native.get("state") in ROTATION_EARLY_STATES)
     confirmed = src.detail.get("confirmed_events") if src else None
-    return {
+    out = {
         "source_artifact": ROTATION_SOURCE_ID,
         "state": native.get("state") if usable else None,
         "as_of": src.as_of if src else None,
@@ -618,6 +644,10 @@ def _rotation_context(sources: Sequence[SourceRead]) -> dict[str, Any]:
         "excluded_reason": (src.detail.get("excluded_reason") if src else "source_missing"),
         "display_only": True,
     }
+    receipt = src.detail.get("source_clock_receipt") if src else None
+    if isinstance(receipt, Mapping) and receipt:
+        out["source_clock_receipt"] = dict(receipt)
+    return out
 
 
 def _lineage_strings(value: Any) -> tuple[list[str], bool]:
