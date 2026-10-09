@@ -27,7 +27,7 @@ _SLUG = re.compile(r"^[a-z][a-z0-9_-]{1,47}$")
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{1,95}$")
 _EMAIL = re.compile(r"[\w.+%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 _ALLOWED_RELATIONS = {"DIRECT", "EVIDENCED_INDIRECT"}
-_ALLOWED_KINDS = {"earnings", "event", "company_news", "ai_capex", "semiconductor"}
+_ALLOWED_KINDS = {"earnings", "event", "company_news", "ai_capex", "semiconductor", "semiconductor_event"}
 _ALLOWED_CHANNELS = {"newsletter", "community", "social", "research", "podcast"}
 _DEMO_SCAN_URL = "https://preview.invalid/catalyst/scan/"
 
@@ -611,6 +611,306 @@ def build_partner_pack(
         ],
     }
 
+
+
+def build_partner_pack_from_native_event(
+    native_event: dict, native_scan: dict, partner_profile: dict,
+    selected_tickers: list[str] | None = None,
+    *, now_utc: datetime | None = None, preview_only: bool = True,
+    scan_url: str | None = None, route_receipt: str | None = None,
+    angle_plan: dict | None = None,
+) -> dict:
+    """Bridge the Session 01 PUBLIC read-model to this held asset compiler.
+
+    Session 01 is the sole event/source/issuer/rights owner. This adapter
+    rechecks identity, provenance and public-scan correspondence; it NEVER
+    issues a new grant, claims that a fixture grant is licensed, or invents an
+    indirect issuer relationship. Native rights allow factual display/link
+    only: no native source row grants image rehosting, so SVG stays WITHHELD.
+    Both source owner and public scan must have been supplied by a trusted
+    server-side caller; an arbitrary request body is NOT an admitted source.
+    """
+    _require(preview_only is True, "PUBLICATION_UNAUTHORIZED")
+    _require(isinstance(native_event, dict) and isinstance(native_scan, dict),
+             "NATIVE_PACKET_INVALID")
+    _require(native_event.get("schema") == "catalyst.public_event/v1"
+             and type(native_event.get("schema_version")) is int
+             and native_event["schema_version"] == 1
+             and native_scan.get("schema") == "catalyst.scan/v1"
+             and type(native_scan.get("schema_version")) is int
+             and native_scan["schema_version"] == 1,
+             "NATIVE_SCHEMA_UNSUPPORTED")
+    _require(native_event.get("public_safe") is True
+             and native_event.get("public_disposition") == "PUBLIC_READY",
+             "NATIVE_PUBLIC_RIGHTS_BLOCKED")
+    _require(native_scan.get("publication_state") == "PUBLIC_QUALIFIED",
+             "NATIVE_SCAN_NOT_ALL_SUPPORTED")
+    if selected_tickers is None and isinstance(partner_profile, dict):
+        selected_tickers = partner_profile.get("selected_tickers")
+    ticks = _ticker_list(selected_tickers)
+    _require(native_scan.get("requested_tickers") == ticks,
+             "NATIVE_SCAN_TICKER_MISMATCH")
+    identity = _atom(native_event.get("event_id"), "NATIVE_EVENT_ID", 96)
+    _require(_ID.fullmatch(identity) is not None
+             and native_scan.get("event_id") == identity,
+             "NATIVE_EVENT_ID_MISMATCH")
+    generation = native_event.get("generation")
+    _require(type(generation) is int and generation >= 0
+             and native_scan.get("generation") == generation,
+             "NATIVE_GENERATION_MISMATCH")
+    revision = native_event.get("correction_state")
+    correction = native_event.get("correction")
+    _require(isinstance(correction, dict)
+             and correction.get("generation") == generation
+             and ((revision == "CURRENT" and generation == 0
+                   and correction.get("status") == "active")
+                  or (revision == "CORRECTED" and generation > 0
+                      and correction.get("status") == "corrected")),
+             "NATIVE_CORRECTION_NOT_CURRENT")
+    native_kind = _atom(native_event.get("event_kind"),
+                        "NATIVE_EVENT_KIND", 40)
+    _require(native_kind in ("earnings", "ai_capex", "semiconductor_event"),
+             "NATIVE_EVENT_KIND_UNSUPPORTED")
+    now = now_utc or datetime.now(_UTC)
+    _require(isinstance(now, datetime) and now.tzinfo is not None
+             and now.utcoffset() == timedelta(0), "INVALID_NOW")
+    event_asof = _stamp(native_event.get("as_of_utc"), "NATIVE_EVENT_AS_OF")
+    scan_asof = _stamp(native_scan.get("as_of_utc"), "NATIVE_SCAN_AS_OF")
+    expires = _stamp(native_event.get("cache_expires_at_utc"),
+                     "NATIVE_CACHE_EXPIRY")
+    _require(event_asof <= scan_asof <= now and now < expires
+             and now - event_asof <= timedelta(hours=72),
+             "NATIVE_STALE_OR_MISMATCHED_CLOCK")
+    subject = native_event.get("primary_subject")
+    _require(isinstance(subject, dict), "NATIVE_SUBJECT_INVALID")
+    primary_ticker = _atom(subject.get("ticker"),
+                           "NATIVE_SUBJECT_INVALID", 10)
+    _require(_TICKER.fullmatch(primary_ticker) is not None
+             and _atom(subject.get("issuer_id"),
+                       "NATIVE_SUBJECT_INVALID", 100),
+             "NATIVE_SUBJECT_INVALID")
+    company = _atom(subject.get("company_name"),
+                    "NATIVE_SUBJECT_INVALID", 120)
+
+    # Native source grant covers title/link/facts, never SVG rehosting. The
+    # receipt identifier is copied from the existing source owner untouched.
+    records = native_event.get("sources")
+    receipts = native_event.get("rights_receipt_ids")
+    _require(isinstance(records, list) and 1 <= len(records) <= 12
+             and isinstance(receipts, list) and bool(receipts)
+             and all(isinstance(r, str) and _ID.fullmatch(r)
+                     for r in receipts),
+             "NATIVE_SOURCE_GRANTS_MISSING")
+    _require(not any(r.lower().startswith(("fixture", "test", "fake"))
+                     for r in receipts),
+             "NATIVE_FIXTURE_RIGHTS_NOT_AUTHORIZED")
+    native_byid: dict[str, dict] = {}
+    normalized_sources: list[dict] = []
+    for row in records:
+        _require(isinstance(row, dict), "NATIVE_SOURCE_INVALID")
+        source_id = _atom(row.get("source_id"), "NATIVE_SOURCE_INVALID", 96)
+        _require(_ID.fullmatch(source_id) is not None
+                 and source_id not in native_byid, "NATIVE_SOURCE_INVALID")
+        source_receipt = _atom(row.get("rights_receipt_id"),
+                               "NATIVE_SOURCE_GRANTS_MISSING", 96)
+        _require(row.get("display_rights") == "ALLOWED"
+                 and source_receipt in receipts,
+                 "NATIVE_SOURCE_GRANTS_MISSING")
+        title = _atom(row.get("title"), "NATIVE_SOURCE_INVALID", 160)
+        link = _safe_https(row.get("url"), code="NATIVE_SOURCE_URL_INVALID")
+        published = _stamp(row.get("published_at_utc"),
+                           "NATIVE_SOURCE_PUBLISHED")
+        _require(published <= event_asof, "NATIVE_FUTURE_SOURCE")
+        native_byid[source_id] = {
+            "source_id": source_id, "url": link, "title": title,
+            "published_at_utc": _iso(published),
+            "display_rights": "ALLOWED", "rights_receipt_id": source_receipt,
+        }
+        normalized_sources.append({
+            "source_id": source_id, "title": title, "url": link,
+            "published_at_utc": _iso(published), "tier": "unverified",
+            "rights": {"public_display": True, "public_link": True,
+                       "public_rehost": False, "receipt_id": source_receipt},
+        })
+    _require(len(set(receipts)) == len(receipts)
+             and set(receipts) == {r["rights_receipt_id"]
+                                   for r in native_byid.values()},
+             "NATIVE_SOURCE_GRANTS_MISSING")
+
+    # The producer evidence ledger maps opaque evidence IDs to actually
+    # accepted source IDs. Never use a model-produced relation as an anchor.
+    evidence_lookup: dict[str, str] = {}
+    raw_evidence = native_event.get("evidence")
+    _require(isinstance(raw_evidence, list) and len(raw_evidence) <= 100,
+             "NATIVE_EVIDENCE_INVALID")
+    for row in raw_evidence:
+        _require(isinstance(row, dict), "NATIVE_EVIDENCE_INVALID")
+        eid = _atom(row.get("evidence_id"), "NATIVE_EVIDENCE_INVALID", 96)
+        sid = row.get("source_id")
+        _require(_ID.fullmatch(eid) is not None and sid in native_byid
+                 and eid not in evidence_lookup, "NATIVE_EVIDENCE_INVALID")
+        evidence_lookup[eid] = sid
+
+    def source_refs(claim: dict) -> list[str]:
+        _require(isinstance(claim, dict), "NATIVE_CLAIM_INVALID")
+        evidence_ids = claim.get("evidence_ids") or []
+        source_ids = claim.get("source_ids") or []
+        _require(isinstance(evidence_ids, list)
+                 and isinstance(source_ids, list)
+                 and all(isinstance(e, str) and e in evidence_lookup
+                         for e in evidence_ids)
+                 and all(isinstance(s, str) and s in native_byid
+                         for s in source_ids),
+                 "NATIVE_CLAIM_EVIDENCE_INVALID")
+        refs = sorted({evidence_lookup[e] for e in evidence_ids} |
+                      set(source_ids))
+        _require(bool(refs), "NATIVE_CLAIM_EVIDENCE_INVALID")
+        return refs
+
+    original = native_event.get("what_changed")
+    _require(isinstance(original, list) and len(original) <= 30,
+             "NATIVE_CLAIM_INVALID")
+    permitted_facts = set()
+    for claim in original:
+        text = _atom(claim.get("text") if isinstance(claim, dict) else None,
+                     "NATIVE_CLAIM_INVALID", 600)
+        permitted_facts.add((text, tuple(source_refs(claim))))
+
+    relations_raw = native_event.get("affected_tickers")
+    _require(isinstance(relations_raw, list), "NATIVE_RELATIONS_MISSING")
+    native_relations = {}
+    for rel in relations_raw:
+        _require(isinstance(rel, dict), "NATIVE_RELATIONS_MISSING")
+        ticker = _atom(rel.get("ticker"), "NATIVE_RELATIONS_MISSING", 10)
+        _require(_TICKER.fullmatch(ticker) and ticker not in native_relations,
+                 "NATIVE_RELATIONS_MISSING")
+        native_relations[ticker] = rel
+
+    out_claims: list[dict] = []
+    out_relations: list[dict] = []
+    headline_sources: set[str] = set()
+    results = native_scan.get("results")
+    _require(isinstance(results, list) and len(results) == len(ticks),
+             "NATIVE_SCAN_TICKER_MISMATCH")
+    for ticker, result in zip(ticks, results):
+        _require(isinstance(result, dict) and result.get("ticker") == ticker,
+                 "NATIVE_SCAN_TICKER_MISMATCH")
+        _require(result.get("status") == "SUPPORTED"
+                 and result.get("public_safe") is True
+                 and result.get("correction_state") == revision,
+                 "NATIVE_SCAN_NOT_ALL_SUPPORTED")
+        relation = native_relations.get(ticker)
+        kind = result.get("relationship")
+        _require(isinstance(relation, dict)
+                 and kind in _ALLOWED_RELATIONS
+                 and relation.get("relationship") == kind,
+                 "NATIVE_RELATION_UNSUPPORTED")
+        scanned_sources = result.get("sources")
+        _require(isinstance(scanned_sources, list)
+                 and len(scanned_sources) == len(native_byid)
+                 and all(isinstance(s, dict)
+                         and native_byid.get(s.get("source_id")) == {
+                             k: s.get(k) for k in native_byid.get(
+                                 s.get("source_id"), {}
+                             )
+                         } for s in scanned_sources),
+                 "NATIVE_SCAN_SOURCE_MISMATCH")
+        # All scan source IDs, including headline/indirect evidence, must
+        # correspond byte-for-byte to the rights-qualified source projection.
+        headlines = result.get("headline_evidence_ids")
+        _require(isinstance(headlines, list) and bool(headlines)
+                 and all(isinstance(s, str) and s in native_byid for s in headlines),
+                 "NATIVE_HEADLINE_UNSOURCED")
+        headline_sources.update(headlines)
+        relation_refs = result.get("relationship_evidence_ids") or []
+        _require(isinstance(relation_refs, list)
+                 and all(isinstance(s, str) and s in native_byid for s in relation_refs),
+                 "NATIVE_RELATION_UNSUPPORTED")
+        if kind == "EVIDENCED_INDIRECT":
+            raw_relation_ids = relation.get("relation_evidence_ids")
+            _require(isinstance(raw_relation_ids, list) and bool(raw_relation_ids)
+                     and set(relation_refs) == {evidence_lookup.get(e)
+                         for e in raw_relation_ids},
+                     "NATIVE_RELATION_UNSUPPORTED")
+
+        observations = result.get("what_changed")
+        _require(isinstance(observations, list)
+                 and 1 <= len(observations) <= 10,
+                 "NATIVE_CLAIM_INVALID")
+        relation_claim_ids = []
+        for i, observation in enumerate(observations):
+            text = _atom(
+                observation.get("text") if isinstance(observation, dict) else None,
+                "NATIVE_CLAIM_INVALID", 600,
+            )
+            claimed_refs = source_refs(observation)
+            allowed_fact = (text, tuple(claimed_refs)) in permitted_facts
+            if kind == "EVIDENCED_INDIRECT" and not allowed_fact:
+                summary = relation.get("summary")
+                allowed_fact = (
+                    isinstance(summary, str)
+                    and text == f"{summary}; any financial effect on {ticker} is unverified."
+                    and set(claimed_refs) == set(relation_refs)
+                )
+            _require(allowed_fact, "NATIVE_CLAIM_NOT_IN_PRODUCER")
+            claim_id = "native-" + hashlib.sha256(
+                json.dumps([identity, generation, ticker, i, text, claimed_refs],
+                           ensure_ascii=False, separators=(",", ":")
+                ).encode("utf-8")
+            ).hexdigest()[:20]
+            out_claims.append({
+                "claim_id": claim_id, "text": text,
+                "tickers": [ticker], "source_ids": claimed_refs,
+            })
+            relation_claim_ids.append(claim_id)
+        _require(bool(relation_claim_ids), "NATIVE_RELATION_UNSUPPORTED")
+        out_relations.append({
+            "ticker": ticker, "relationship": kind,
+            "evidence_ids": relation_claim_ids,
+        })
+
+    missing = native_event.get("missing_data") or []
+    _require(isinstance(missing, list) and len(missing) <= 10
+             and all(isinstance(x, str) and len(x) <= 300 for x in missing),
+             "NATIVE_MISSING_DATA_INVALID")
+    native_correction = native_event.get("correction")
+    corrections = ([{
+        "generation": generation,
+        "supersedes_generation": native_correction.get("supersedes_generation"),
+        "reason": native_correction.get("reason"),
+    }] if generation else [])
+    read_model = {
+        "schema_version": "catalyst.public_event/v1",
+        "event_id": identity,
+        "event_kind": native_kind,
+        "primary_subject": f"{company} ({primary_ticker}) — {native_kind.replace('_', ' ')}",
+        "event_time_utc": native_event.get("event_time_utc"),
+        "first_observed_at_utc": native_event.get("first_observed_at_utc"),
+        "publication_time_utc": native_event.get("publication_time_utc"),
+        "as_of_utc": native_event.get("as_of_utc"),
+        "expires_at_utc": native_event.get("cache_expires_at_utc"),
+        "status": "active",
+        "correction_generation": generation,
+        "corrections": corrections, "missing_data": missing,
+        "affected_tickers": out_relations,
+        "sources": normalized_sources,
+        "claims": out_claims,
+        "headline_evidence_ids": sorted(headline_sources),
+        "public_safe": "PUBLIC_SAFE",
+        "verification": {
+            # This is an upstream owner-asserted public read, NOT independent
+            # proof of a real-world license. The rights receipts are copied
+            # verbatim, never minted in this marketing adapter.
+            "status": "VERIFIED",
+            "source_owner": "engine.marketing.catalyst_packets",
+            "receipt_id": receipts[0],
+        },
+    }
+    return build_partner_pack(
+        read_model, partner_profile, ticks, preview_only=preview_only,
+        now_utc=now, scan_url=scan_url, route_receipt=route_receipt,
+        angle_plan=angle_plan,
+    )
 
 def write_partner_pack(pack: dict, destination: Path | str,
                        *, template_path: Path | str | None = None) -> list[Path]:
