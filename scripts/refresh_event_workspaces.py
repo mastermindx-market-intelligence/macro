@@ -669,7 +669,7 @@ def _acquire_results_filing_traced(*, cik: str, http_get: HttpGet,
                 pending = True
                 break
     else:
-        candidates = list(reversed(_fetch_submissions_candidates(cik, http_get=recorder)))
+        candidates = list(reversed(_fetch_submissions_candidates(cik, issuer=None, http_get=recorder)))
         submissions_url = _SUBMISSIONS_URL.format(cik=int(cik))
         status, body = recorder.responses[submissions_url]
         payload = json.loads(body.decode("utf-8"))
@@ -1319,7 +1319,7 @@ def _stated_period_end_candidates(exhibit_body: str) -> list[date]:
 
 
 def _fetch_submissions_candidates(
-    cik: str, *, issuer: IssuerIdentity, http_get: HttpGet,
+    cik: str, *, issuer: IssuerIdentity | None, http_get: HttpGet,
 ) -> list[dict[str, Any]]:
     """Every qualifying row from SEC submissions.recent, ASCENDING by
     acceptance_datetime (oldest first) — B1. Raises ``RefreshError`` only
@@ -1345,9 +1345,17 @@ def _fetch_submissions_candidates(
         raise RefreshError(f"SEC submissions JSON invalid: {exc}") from exc
     if not isinstance(submissions, dict):
         raise RefreshError("SEC submissions filings block invalid")
-    descending = _select_results_candidates(
-        submissions_rows(submissions, block="recent"), issuer=issuer,
-    )
+    rows = submissions_rows(submissions, block="recent")
+    if issuer is None:
+        # No identity is resolvable on the cik-keyed entry point
+        # (``acquire_results_filing`` -> ``_acquire_results_filing_traced``),
+        # so the admission test is the identity-free 8-K/2.02 rule — byte
+        # identical to what this path selected before the identity-aware
+        # dispatch existed. ``issuer`` is nullable but NOT defaulted: a
+        # silent default would hand a 6-K filer the 8-K rule.
+        descending = _select_newest_results_rows(list(rows))
+    else:
+        descending = _select_results_candidates(rows, issuer=issuer)
     return list(reversed(descending))
 
 
