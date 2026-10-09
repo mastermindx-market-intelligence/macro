@@ -77,7 +77,7 @@ def normalize_rth_minute_volume_reference(
     if _SYMBOL.fullmatch(ticker) is None:
         raise FrameContractError("invalid stock ticker")
     _id(session,"session")
-    if re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}:RTH",session) is None:
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}:RTH",session) is None:
         raise FrameContractError("RTH reference requires exact YYYY-MM-DD:RTH session")
     try:
         date.fromisoformat(session.split(":",1)[0])
