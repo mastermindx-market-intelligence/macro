@@ -24,7 +24,7 @@ import re
 import secrets
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Protocol
+from typing import Any, Callable, Protocol
 from urllib.parse import parse_qsl, unquote, urlsplit
 from uuid import UUID
 
@@ -171,6 +171,33 @@ class PublicRevision:
     correction_note: str = ""
 
 
+@dataclass(frozen=True)
+class SourceDisplayRights:
+    """A read-only projection of ONE existing source-rights owner's live grant.
+
+    This is NOT a minted grant or license. Only the incumbent rights adapter
+    may issue it after re-reading rights, not a public request or prior packet.
+    """
+    source_url: str
+    receipt_id: str
+    audience: str
+    effective_at_utc: str
+    expires_at_utc: str
+    display_link: bool
+    display_facts: bool
+    email_distribution: bool
+
+
+@dataclass(frozen=True)
+class PublicRightsSnapshot:
+    """Exact-event, exact-source rights decision from the admitted producer."""
+    event_id: str
+    generation: int
+    ticker: str
+    checked_at_utc: str
+    grants: tuple[SourceDisplayRights, ...]
+
+
 class ScanAuthority(Protocol):
     def require_public_scan(self, receipt: str) -> ScanEvidence: ...
 
@@ -212,6 +239,11 @@ class SuppressionAuthority(Protocol):
 
 class RevisionAuthority(Protocol):
     def is_current(self, event_id: str, generation: int) -> bool: ...
+
+    def read_public_rights(self, revision: PublicRevision,
+                           at_utc: datetime) -> PublicRightsSnapshot | None: ...
+    # Existing source/publication-rights owner MUST re-read current grants for
+    # every source URL and revision; this port has no new ledger/rights authority.
 
 
 class DeliveryAuthority(Protocol):
@@ -372,7 +404,8 @@ class FunnelService:
 
     def __init__(self, *, secret: str, scan: ScanAuthority, identity: OtpIdentityAuthority,
                  consent: ConsentOwner, suppression: SuppressionAuthority,
-                 revisions: RevisionAuthority, sender: DeliveryAuthority):
+                 revisions: RevisionAuthority, sender: DeliveryAuthority,
+                 rights_clock: Callable[[datetime], datetime] | None = None):
         self.secret = secret
         self.scan = scan
         self.identity = identity
@@ -380,6 +413,17 @@ class FunnelService:
         self.suppression = suppression
         self.revisions = revisions
         self.sender = sender
+        # Production reads real wall time separately for EACH rights check;
+        # deterministic tests may inject a frozen/advancing clock. A caller's
+        # initial batch "now" cannot extend a license across a long send.
+        self._rights_clock = rights_clock if rights_clock is not None else (
+            lambda _batch_now: datetime.now(timezone.utc))
+
+    def _rights_now(self, batch_now: datetime) -> datetime:
+        try:
+            return _utc(self._rights_clock(batch_now))
+        except Exception:
+            raise FunnelGate("SOURCE_RIGHTS_CLOCK_UNAVAILABLE") from None
 
     def _qualified_scan(self, receipt: str, *, now: datetime) -> ScanEvidence:
         """Recheck the current public source through the canonical ScanAuthority.
@@ -395,6 +439,60 @@ class FunnelService:
             raise
         except Exception:
             raise FunnelGate("SCAN_AUTHORITY_UNAVAILABLE") from None
+
+    def _require_live_rights(self, revision: PublicRevision, *, at_utc: datetime) -> None:
+        """Authorize exact public source links and email use at this send boundary.
+
+        Immutable revision booleans and "generation is current" are NOT live
+        rights. A missing owner, stale decision, missing source, denied email
+        reuse, source-rights expiry or withdrawal must stop delivery.
+        """
+        reader = getattr(self.revisions, "read_public_rights", None)
+        if not callable(reader):
+            raise FunnelGate("SOURCE_RIGHTS_OWNER_NOT_READY")
+        try:
+            proof = reader(revision, at_utc)
+        except Exception:
+            # Do not surface provider exception text, URLs or private rights.
+            raise FunnelGate("SOURCE_RIGHTS_OWNER_UNAVAILABLE") from None
+        if proof is None:
+            raise FunnelGate("SOURCE_RIGHTS_NOT_CURRENT", 403)
+        if not isinstance(proof, PublicRightsSnapshot):
+            raise FunnelGate("SOURCE_RIGHTS_PROTOCOL_MISMATCH")
+        if (proof.event_id != revision.event_id or
+                type(proof.generation) is not int or
+                proof.generation != revision.generation or
+                proof.ticker != revision.ticker or
+                not isinstance(proof.grants, tuple) or
+                len(proof.grants) != len(revision.source_urls)):
+            raise FunnelGate("SOURCE_RIGHTS_PROTOCOL_MISMATCH")
+        try:
+            checked = _timestamp(proof.checked_at_utc)
+            if not (at_utc - timedelta(seconds=30) <= checked <=
+                    at_utc + timedelta(seconds=30)):
+                raise FunnelGate("SOURCE_RIGHTS_NOT_CURRENT", 403)
+            urls = []
+            for grant in proof.grants:
+                if not isinstance(grant, SourceDisplayRights):
+                    raise FunnelGate("SOURCE_RIGHTS_PROTOCOL_MISMATCH")
+                urls.append(grant.source_url)
+                if (not isinstance(grant.receipt_id, str) or
+                        not re.fullmatch(r"[A-Za-z0-9:._-]{8,160}", grant.receipt_id)):
+                    raise FunnelGate("SOURCE_RIGHTS_PROTOCOL_MISMATCH")
+                start, end = (_timestamp(grant.effective_at_utc),
+                              _timestamp(grant.expires_at_utc))
+                if (grant.audience != "public_anonymous" or
+                        grant.display_link is not True or
+                        grant.display_facts is not True or
+                        grant.email_distribution is not True or
+                        not start <= at_utc < end):
+                    raise FunnelGate("SOURCE_RIGHTS_NOT_CURRENT", 403)
+            if tuple(urls) != revision.source_urls or len(set(urls)) != len(urls):
+                raise FunnelGate("SOURCE_RIGHTS_PROTOCOL_MISMATCH")
+        except FunnelGate as exc:
+            if exc.code == "INVALID_SOURCE_TIME":
+                raise FunnelGate("SOURCE_RIGHTS_PROTOCOL_MISMATCH") from None
+            raise
 
     def request(self, *, email: str, checked: bool, scan_receipt: str,
                 touch: dict[str, Any] | None, now: datetime) -> dict[str, str]:
@@ -556,6 +654,8 @@ class FunnelService:
         try:
             if self.revisions.is_current(revision.event_id, revision.generation) is not True:
                 raise FunnelGate("OUTDATED_OR_UNVERIFIED_REVISION", 409)
+            # Read authoritative public/email rights BEFORE roster retrieval.
+            self._require_live_rights(revision, at_utc=self._rights_now(now))
             subscribers = self.consent.interested(revision.event_id, limit)
         except FunnelGate:
             raise
@@ -575,18 +675,29 @@ class FunnelService:
                 elif self.revisions.is_current(revision.event_id, revision.generation) is not True:
                     state = "OUTDATED_OR_UNVERIFIED_REVISION"
                 else:
-                    idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{current.user_id}"
-                    raw = self.sender.deliver(current, revision, idem)
-                    state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
-                             "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
-                             "queued": "QUEUED_NOT_SENT", "failed": "SEND_FAILED",
-                             "effect_unknown": "EFFECT_UNKNOWN"}.get(raw, "SEND_UNCONFIRMED")
+                    # A grant may be withdrawn AFTER roster selection. Re-read
+                    # immediately before each sender call, not once per batch.
+                    try:
+                        self._require_live_rights(revision, at_utc=self._rights_now(now))
+                    except FunnelGate as exc:
+                        state = ("SOURCE_RIGHTS_NOT_CURRENT" if exc.status == 403
+                                 else "SOURCE_RIGHTS_UNAVAILABLE")
+                    else:
+                        idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{current.user_id}"
+                        raw = self.sender.deliver(current, revision, idem)
+                        state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
+                                 "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
+                                 "queued": "QUEUED_NOT_SENT", "failed": "SEND_FAILED",
+                                 "effect_unknown": "EFFECT_UNKNOWN"}.get(raw, "SEND_UNCONFIRMED")
             except Exception:  # transport could have fired; never call it a safe failure
                 state = "EFFECT_UNKNOWN"
             out.append({"user_ref": analytics_receipt(rec)["user_ref"], "state": state,
                         "event_id": revision.event_id, "generation": str(revision.generation),
                         **first_touch(rec.first_touch)})
-            if state == "EFFECT_UNKNOWN":  # hold batch until original ledger reconciles
+            if state in ("EFFECT_UNKNOWN", "SOURCE_RIGHTS_NOT_CURRENT",
+                         "SOURCE_RIGHTS_UNAVAILABLE"):
+                # Unknown transport effects freeze replay; changed or unproven
+                # public rights freeze the remaining batch before any new send.
                 break
         return out
 
