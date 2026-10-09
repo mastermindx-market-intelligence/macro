@@ -1,0 +1,61 @@
+{# Lane E compatibility surface: one shared presentation contract across lenses. #}
+{% macro _bi(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>{%- endmacro %}
+{% macro styles() -%}
+<link rel="stylesheet" href="theme_opportunity_context.css">
+<script src="theme_opportunity_context.js" defer></script>
+{%- endmacro %}
+{% macro mount(theme_id=none, basket_id=none, active_route='tracker', name=none, name_zh=none, theme_query_param=none, hidden=false) -%}
+<div class="toc-mount" data-theme-opportunity-mount
+  {% if theme_id %}data-theme-id="{{ theme_id }}"{% endif %}
+  {% if basket_id %}data-basket-id="{{ basket_id }}"{% endif %}
+  {% if active_route %}data-active-route="{{ active_route }}"{% endif %}
+  {% if name %}data-theme-name="{{ name }}"{% endif %}
+  {% if name_zh %}data-theme-name-zh="{{ name_zh }}"{% endif %}
+  {% if theme_query_param %}data-theme-query-param="{{ theme_query_param }}"{% endif %}
+  {% if hidden %}hidden{% endif %}>
+  <div class="toc-context toc-state-unavailable" data-theme-opportunity-fallback>{{ _bi('Theme context loading…','主题背景加载中…') }}</div>
+</div>
+{%- endmacro %}
+{% macro _dim(name, raw) -%}
+{%- set state = (raw.get('state','unknown') if raw else 'unknown')|lower -%}
+{%- set missing = state in ['unknown','unavailable','missing','none'] -%}
+{%- set stale = state == 'stale' -%}
+{%- set en = 'Unavailable' if missing else ('Stale inputs' if stale else (raw.get('en') or raw.get('label') or state|replace('_',' ')|title)) -%}
+{%- set zh = '暂不可用' if missing else ('输入过期' if stale else (raw.get('zh') or raw.get('label_zh') or en)) -%}
+{%- set reason_text = ((raw.get('reason_codes') or [])|join(' · ')) if raw else '' -%}
+{%- set tip_en = (raw.get('receipt_en') if raw else none) or reason_text or en -%}
+{%- set tip_zh = (raw.get('receipt_zh') if raw else none) or reason_text or zh -%}
+<div class="toc-dim toc-dim-{{ state|replace('_','-') }}" data-dimension="{{ name }}" data-state="{{ state }}"
+     data-tip-en="{{ tip_en }}" data-tip-zh="{{ tip_zh }}">
+  <span class="toc-k">{{ _bi(name|title, {'leadership':'领导力','thesis':'论点','crowding':'拥挤度','entry':'入场','health':'证据'}.get(name,name)) }}</span>
+  <strong>{{ _bi(en, zh) }}</strong>
+</div>
+{%- endmacro %}
+{% macro strip(theme_id, current_lens, dimensions, setup_id=none, as_of=none) -%}
+<div class="toc-context" data-mx-opportunity="{{ theme_id }}" data-current-lens="{{ current_lens }}">
+  {% if as_of %}<div class="toc-asof">{{ _bi('As of '~as_of, '截至 '~as_of) }}</div>{% endif %}
+  <div class="toc-grid">
+    {% for name in ['leadership','thesis','crowding','entry','health'] %}{{ _dim(name, dimensions.get(name, {})) }}{% endfor %}
+  </div>
+  <nav class="toc-routes" aria-label="Theme opportunity lenses">
+    {% set routes = [
+      ('tracker','state_of_themes.html#theme-'~theme_id,'Tracker','追踪'),
+      ('foresight','foresight.html#theme-'~theme_id,'Foresight','前瞻'),
+      ('radar','radar.html#theme-'~theme_id,'Radar','雷达')
+    ] %}
+    {% for key, href, en, zh in routes %}
+      {% if key == current_lens %}<span class="toc-route active" aria-current="page">{{ _bi(en,zh) }}</span>
+      {% else %}<a class="toc-route" href="{{ href }}">{{ _bi(en,zh) }}</a>{% endif %}
+    {% endfor %}
+    {% if setup_id %}<a class="toc-route" href="sector_central.html#theme-{{ setup_id }}">{{ _bi('Setup','结构') }}</a>
+    {% else %}<span class="toc-route" data-route-unavailable="setup">{{ _bi('Setup unavailable','结构暂不可用') }}</span>{% endif %}
+  </nav>
+  <p class="toc-boundary">{{ _bi('Theme-level context only. Member entries still require an individually qualified setup.','仅为主题级背景。个股入场仍需独立合格的个股结构。') }}</p>
+</div>
+{%- endmacro %}
+{% macro tracker_strip(theme_id, dimensions=none, setup_id=none, as_of=none, name=none, name_zh=none) -%}
+{% if dimensions is not none %}{{ strip(theme_id,'tracker',dimensions,setup_id,as_of) }}{% else %}{{ mount(theme_id=theme_id,active_route='tracker',name=name,name_zh=name_zh) }}{% endif %}
+{%- endmacro %}
+{% macro foresight_strip(theme_id, dimensions=none, setup_id=none, as_of=none, name=none, name_zh=none) -%}
+{% if dimensions is not none %}{{ strip(theme_id,'foresight',dimensions,setup_id,as_of) }}{% else %}{{ mount(theme_id=theme_id,active_route='foresight',name=name,name_zh=name_zh) }}{% endif %}
+{%- endmacro %}

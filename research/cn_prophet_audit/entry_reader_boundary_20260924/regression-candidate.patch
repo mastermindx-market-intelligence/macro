@@ -1,0 +1,104 @@
+diff --git a/tests/test_stock_board_v2.py b/tests/test_stock_board_v2.py
+index 5ed89d4aa9df..6bf2ab7000ef 100644
+--- a/tests/test_stock_board_v2.py
++++ b/tests/test_stock_board_v2.py
+@@ -1078,0 +1079,99 @@ def test_stale_setups_fallback_remains_descriptive_only():
++
++
++# Exact-e43 review repairs: entry presentation cannot invent a current owner date.
++def _entry_owner_source(owner, doc, *, now=NOW):
++    return EntryContextSource.from_documents(
++        standouts=doc if owner == "standouts" else None,
++        setups=doc if owner == "setups" else None, radar=None, now=now)
++
++
++@pytest.mark.parametrize("owner", ["standouts", "setups"])
++@pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
++                                  "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
++def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
++    doc = _standouts(as_of=bad)
++    doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
++    source = _entry_owner_source(owner, doc)
++    ctx = _context(source)
++    assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
++    assert ctx["stock_setup"]["availability_reason"]
++    assert ctx["qualification"]["stock_setup"] == "UNKNOWN"
++    assert ctx["expiry"]["state"] == "UNKNOWN"
++    assert ctx["routing"]["may_present_as_qualified_setup"] is False
++    assert source.contract()["sources"]["stock_setup"]["state"] == "UNAVAILABLE"
++    assert ctx["authority"] == AUTHORITY_BLOCK
++
++
++@pytest.mark.parametrize("owner", ["standouts", "setups"])
++@pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
++@pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
++def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
++    doc = _standouts()
++    doc[field] = value
++    source = _entry_owner_source(owner, doc)
++    ctx = _context(source)
++    assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
++    assert ctx["routing"]["may_present_as_qualified_setup"] is False
++    assert source.contract()["sources"]["stock_setup"]["state"] == "UNAVAILABLE"
++
++
++@pytest.mark.parametrize("owner", ["standouts", "setups"])
++def test_entry_owner_uses_supplied_intraday_cutoff_without_date_truncation(owner):
++    from datetime import datetime, timezone
++    doc = _standouts()
++    doc["available_at"] = "2026-09-19T16:00:00+02:00"  # 14:00 UTC
++    before = _entry_owner_source(owner, doc, now=datetime(2026, 9, 19, 13, tzinfo=timezone.utc))
++    after = _entry_owner_source(owner, doc, now=datetime(2026, 9, 19, 15, tzinfo=timezone.utc))
++    assert _context(before)["routing"]["may_present_as_qualified_setup"] is False
++    assert _context(after)["routing"]["may_present_as_qualified_setup"] is True
++
++
++@pytest.mark.parametrize("field", ["eligible", "buyable"])
++@pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
++def test_entry_member_permissions_require_real_booleans(field, bad):
++    gate = _member_gate()
++    if field == "eligible":
++        gate["eligible"] = bad
++    ctx = _context(_source(), member_gate=gate,
++                   member_eligible=bad if field == "eligible" else True,
++                   member_buyable=bad if field == "buyable" else True)
++    assert ctx["routing"]["may_present_as_qualified_setup"] is False
++    assert ctx["qualification"]["member_gate"] != "QUALIFIED"
++    assert ctx["authority"] == AUTHORITY_BLOCK
++
++
++@pytest.mark.parametrize("field", ["stock_eligible", "stock_buyable"])
++@pytest.mark.parametrize("bad", [None, "false", "true", 1, {}, {"yes": True}])
++def test_group_member_adapter_cannot_coerce_permission(field, bad, tmp_path):
++    reader = GroupContext(site=tmp_path / "site")
++    reader._entry_source = _source()
++    member = {"stock_eligible": True, "stock_buyable": True, "stock_tier": "T1"}
++    member[field] = bad
++    ctx = reader._entry_context_for_member("AAA", _group(), member)
++    assert ctx["routing"]["may_present_as_qualified_setup"] is False
++
++
++@pytest.mark.parametrize("owner", ["standouts", "setups"])
++@pytest.mark.parametrize("asof,expected", [("2026-09-18", "AVAILABLE"), ("2026-09-01", "STALE")])
++def test_entry_owner_preserves_fresh_and_stale_controls(owner, asof, expected):
++    source = _entry_owner_source(owner, _standouts(as_of=asof))
++    ctx = _context(source)
++    assert ctx["stock_setup"]["availability"] == expected
++    assert ctx["routing"]["may_present_as_qualified_setup"] is (expected == "AVAILABLE")
++    assert ctx["levels"]["invalidation"] == 95.0
++
++
++@pytest.mark.parametrize("eligible,buyable,expected", [(True, True, True), (True, False, False),
++                                                       (False, True, False), (False, False, False)])
++def test_entry_boolean_controls_preserve_independent_eligibility(eligible, buyable, expected):
++    ctx = _context(_source(), member_gate={**_member_gate(), "eligible": eligible},
++                   member_eligible=eligible, member_buyable=buyable)
++    assert ctx["routing"]["may_present_as_qualified_setup"] is expected
++    assert ctx["qualification"]["member_eligibility"] == ("QUALIFIED" if eligible else "NOT_QUALIFIED")
++
++
++@pytest.mark.parametrize("bad", ["false", "true", 1, {"yes": True}])
++def test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility(bad):
++    doc = _standouts()
++    doc["buy"][0]["signal"]["eligible"] = bad
++    assert _context(_entry_owner_source("standouts", doc))["routing"]["may_present_as_qualified_setup"] is False

@@ -1,0 +1,60 @@
+{
+  "schema": "theme_entry_reader.boundary_repair.v2",
+  "mission_complete": false,
+  "implemented": true,
+  "operation": "cn-entry-reader-boundary-recovery-20260924-sol-001",
+  "procedure_pin": "622d128d64a79c3e4dd45f748b8a8db7ec2e2741",
+  "source_head": "e43c769325311a06724ae211fdcc393ffcf05338",
+  "source_sha256": "ebb2c7df11c4fa8ec3be8857e103a9d98ce286ef00ddf353798112f2d68e1bb1",
+  "review": "PRR_kwDOS4LjIs8AAAABO07tAQ",
+  "pickup_comment": 5812263305,
+  "test_result": {
+    "failed": 58,
+    "passed": 12,
+    "deselected": 45,
+    "exit_code": 1,
+    "command": "python3 -m pytest tests/test_stock_board_v2.py -q -k \"entry_owner_ or entry_member_permissions_require or group_member_adapter_cannot or entry_boolean_controls or entry_source_signal_cannot\"",
+    "log_sha256": "e17f7d14d5272e02cec923f62fe2d4d6695686cc8c0a55cbb65b34454b3112ab",
+    "raw_log_sha256": "0d792faf20c271f419a42f0d1f20085d34bbe3ea7173a9bf66ca1ae930300e2c",
+    "normalization": "trailing whitespace only"
+  },
+  "test_patch_sha256": "ab5fb42d3ff44f1cbb6d2e46234245e89a314c7511d789ce34b9ece0036805f6",
+  "source_write": "IMPLEMENTED_ON_ORIGINAL_CARRIER",
+  "source_unchanged_on_readback": false,
+  "scope": "Reader-boundary repair only: valid nonfuture owner observation, supplied supporting clocks, strict JSON booleans; no rank/size/trade authority or China-native relabeling.",
+  "remaining": "Exact-head hosted CI + independent changed-head review; then native China identity/member/setup/confirmation/expiry join and EMERGING/ENTER policy work.",
+  "publication_scope": "diagnostic evidence and prospective test patch only; engine and active test suite unchanged in published commit",
+  "repair_base_head": "043eb15be4ffdf7d21d3d2142482f2653a04b49c",
+  "test_sha256": "8efa37a3bb3b2a0e935ed9614a6116866ddf6e08f68c659fef07b2a71427e9cc",
+  "green": {
+    "boundary": {
+      "passed": 70,
+      "failed": 0,
+      "deselected": 45,
+      "log": "reader-fix-boundary.txt",
+      "sha256": "2bd614b46a1c53ed5f406045a0532062fc2af7e114b56f4512f41ddd3f22aa57"
+    },
+    "stock_board_full": {
+      "passed": 115,
+      "failed": 0,
+      "log": "reader-fix-stock-board.txt",
+      "sha256": "7a2130f799780ee3ff821522d3442055e6fdcc88dc1c9a8fc6046a22dc1d872b"
+    },
+    "thematic_receipt": {
+      "passed": 7,
+      "failed": 0,
+      "log": "reader-fix-thematic.txt",
+      "sha256": "b3627c34eeccff5721fe95fa056f1fe3c918998646b1ad64eb1c596bc2326ad6"
+    }
+  },
+  "owner_job_local": {
+    "status": "NOT_QUALIFIED_SPARSE_CHECKOUT",
+    "observed": "1471 passed, 55 failed, 31 skipped, 3 errors",
+    "examples": [
+      "collectors not checked out",
+      "committed data/site artifacts absent",
+      "unrelated am_edition title lint"
+    ],
+    "acceptance_effect": "NONE; exact-head hosted CI remains required"
+  }
+}

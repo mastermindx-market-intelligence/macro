@@ -95,6 +95,74 @@ def test_funnel_skips_non_buyable_members():
     assert ff["double_buy"] == [] and ff["headwind_warn"] == []
 
 
+def test_group_entry_context_preserves_pending_and_extension_as_independent_dimensions():
+    ctx = sc._group_entry_context(
+        key="semiconductors",
+        label="Semiconductors",
+        kind="subsector",
+        as_of="2026-09-18",
+        cls="entry_now",
+        gate={
+            "tier_cascade": "T1",
+            "buyable": True,
+            "eligible": True,
+            "sub": "pending",
+            "reason": "buy fired; forward confirmation pending",
+        },
+        regime={"state": "EXTENDED", "headwind": False, "tailwind": False},
+    )
+    assert ctx["state"] == "QUALIFIED_PENDING_CONFIRMATION"
+    assert ctx["band"] == "EXTENDED"
+    assert ctx["value"] == "T1"
+    assert ctx["reason_code"] == "GROUP_ENTRY_QUALIFIED_PENDING_CONFIRMATION"
+    assert "ENTRY_TIER_T1" in ctx["reason_codes"]
+    assert "CONFIRMATION_PENDING" in ctx["reason_codes"]
+    assert "REGIME_EXTENDED" in ctx["reason_codes"]
+    assert ctx["source_records"] == [{
+        "ref": "site/marketdata/subsector_confluence.json",
+        "group_id": "semiconductors",
+        "group_kind": "subsector",
+        "as_of": "2026-09-18",
+    }]
+    assert ctx["clocks"]["observation"]["value"] == "2026-09-18"
+    assert ctx["context_only"] is True
+    assert not any(ctx["authority"].values())
+
+
+def test_group_entry_context_headwind_never_presents_as_qualified():
+    ctx = sc._group_entry_context(
+        key="semiconductors",
+        label="Semiconductors",
+        kind="subsector",
+        as_of="2026-09-18",
+        cls="headwind",
+        gate={"tier_cascade": "T1", "buyable": True, "eligible": True},
+        regime={"state": "TOPPING", "headwind": True, "tailwind": False},
+    )
+    assert ctx["state"] == "HEADWIND"
+    assert ctx["band"] == "TOPPING"
+    assert ctx["reason_code"] == "GROUP_HEADWIND"
+    assert "REGIME_HEADWIND" in ctx["reason_codes"]
+    assert not any(ctx["authority"].values())
+
+
+def test_group_entry_context_neutral_is_not_a_member_or_trade_permission():
+    ctx = sc._group_entry_context(
+        key="semiconductors",
+        label="Semiconductors",
+        kind="subsector",
+        as_of="2026-09-18",
+        cls="neutral",
+        gate={"tier_cascade": None, "buyable": False, "eligible": False},
+        regime={"state": "NEUTRAL", "headwind": False, "tailwind": False},
+    )
+    assert ctx["state"] == "NOT_QUALIFIED"
+    assert ctx["band"] == "NEUTRAL"
+    assert ctx["value"] is None
+    assert "GROUP_CLASS_NEUTRAL" in ctx["reason_codes"]
+    assert not any(ctx["authority"].values())
+
+
 # ---------------------------------------------------------------- integration ----
 
 def _has_ohlcv():
@@ -120,7 +188,60 @@ def test_score_group_real_subsector_semiconductors():
     assert "_candle" in g and not g["_candle"]["close"].dropna().empty
     # every member carries its own gate verdict shape
     for m in g["members"]:
-        assert "stock_tier" in m and "stock_buyable" in m
+        assert "stock_tier" in m and "stock_eligible" in m and "stock_buyable" in m
+
+
+def test_score_group_emits_lane_a_compatible_group_entry_context(monkeypatch):
+    import pandas as pd
+
+    idx = pd.bdate_range("2025-01-02", periods=300)
+    cand = pd.DataFrame({"close": [100.0 + i * 0.1 for i in range(300)]}, index=idx)
+    monkeypatch.setattr(
+        sc, "build_index",
+        lambda tickers: (cand, {
+            "coverage_pct": 1.0,
+            "n_live": len(tickers),
+            "start": str(idx.min().date()),
+        }),
+    )
+    monkeypatch.setattr(sc.signal_gate, "gate", lambda *args, **kwargs: {
+        "tier_cascade": "T1",
+        "weight": 0.9,
+        "tier_sub": None,
+        "ticks": 1,
+        "bars_to_cross": None,
+        "fresh_bars": 1,
+        "eligible": True,
+        "above200": True,
+        "sub": "pending",
+        "reason": "buy fired; forward confirmation pending",
+        "result": {},
+    })
+    monkeypatch.setattr(
+        sc.signal_gate, "is_buyable",
+        lambda verdict: bool(verdict and verdict.get("tier_cascade") == "T1"),
+    )
+    monkeypatch.setattr(sc.sector_signals, "sector_signal", lambda *args, **kwargs: {
+        "state": "EXTENDED",
+        "side": "avoid",
+        "label": "EXTENDED",
+        "ok": True,
+    })
+    monkeypatch.setattr(sc.sector_signals, "signal_line", lambda reg: "extended")
+
+    g = sc.score_group(
+        "semiconductors", "Semiconductors", "Technology",
+        ["AMD", "ADI", "NVDA"], None, {}, with_members=False,
+    )
+    assert g is not None
+    assert g["entry"]["sub"] == "pending"
+    ctx = g["entry_context"]
+    assert ctx["state"] == "QUALIFIED_PENDING_CONFIRMATION"
+    assert ctx["band"] == "EXTENDED"
+    assert ctx["value"] == "T1"
+    assert ctx["source_records"][0]["group_id"] == "semiconductors"
+    assert ctx["clocks"]["observation"]["value"] == str(idx.max().date())
+    assert not any(ctx["authority"].values())
 
 
 # ----------------------------------------------------- China 同花顺 (THS) desk ----

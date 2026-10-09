@@ -1,0 +1,2245 @@
+{
+  "asof": "2026-09-18",
+  "missing_members": [
+    "NVEC"
+  ],
+  "observation": {
+    "asof": "2026-09-18",
+    "bar_status": "CLOSED",
+    "basis": {
+      "bars": "COMPLETED_DAILY_SESSIONS_ONLY",
+      "corporate_action_basis": "OWNER_CLOSE_SERIES_UNVERIFIED",
+      "membership": "CURRENT_SOURCE_TREE_TECHNICAL_WINDOW",
+      "membership_is_point_in_time": false,
+      "parent_weighting": "EQUAL_WEIGHT_UNIQUE_INSTRUMENT_DAILY_REBALANCED",
+      "subtheme_weighting": "EQUAL_WEIGHT_UNIQUE_INSTRUMENT_DAILY_REBALANCED"
+    },
+    "benchmark": "SPY",
+    "is_context_only": true,
+    "is_forecast": false,
+    "permissions": {
+      "may_escalate": false,
+      "may_gate": false,
+      "may_rank": false,
+      "may_size": false,
+      "may_trade": false
+    },
+    "reason_codes": [
+      "DESCRIPTIVE_SHADOW_ONLY"
+    ],
+    "schema": "subsector_rotation.closed_session_leadership.v1",
+    "status": "PARTIAL",
+    "themes": {
+      "Semiconductors": {
+        "asof": "2026-09-18",
+        "bar_status": "CLOSED",
+        "is_context_only": true,
+        "is_forecast": false,
+        "parent": {
+          "acceleration": {
+            "change_pct_points": -7.2784,
+            "change_vs_parent_pct_points": null,
+            "current_excess_vs_market_pct": -0.0158,
+            "prior_excess_vs_market_pct": 7.2626,
+            "state": "DETERIORATING",
+            "window_sessions": 5
+          },
+          "coverage": {
+            "coverage_window_sessions": 60,
+            "current_session_members": 37,
+            "declared_member_assignments": 61,
+            "duplicate_members_removed": 14,
+            "internal_missing_member_sessions": 0,
+            "members_with_complete_window_history": 37,
+            "missing_member_sessions": 13,
+            "pre_listing_member_sessions": 0,
+            "priced_members": 46,
+            "short_history_members": [],
+            "stale_members": [
+              {
+                "lag_sessions": 2,
+                "last_observed_session": "2026-09-16",
+                "ticker": "SWKS"
+              },
+              {
+                "lag_sessions": 1,
+                "last_observed_session": "2026-09-17",
+                "ticker": "GFS"
+              },
+              {
+                "lag_sessions": 2,
+                "last_observed_session": "2026-09-16",
+                "ticker": "UMC"
+              },
+              {
+                "lag_sessions": 2,
+                "last_observed_session": "2026-09-16",
+                "ticker": "SNPS"
+              },
+              {
+                "lag_sessions": 1,
+                "last_observed_session": "2026-09-17",
+                "ticker": "CDNS"
+              },
+              {
+                "lag_sessions": 1,
+                "last_observed_session": "2026-09-17",
+                "ticker": "ASX"
+              },
+              {
+                "lag_sessions": 1,
+                "last_observed_session": "2026-09-17",
+                "ticker": "WOLF"
+              },
+              {
+                "lag_sessions": 2,
+                "last_observed_session": "2026-09-16",
+                "ticker": "MRAM"
+              },
+              {
+                "lag_sessions": 1,
+                "last_observed_session": "2026-09-17",
+                "ticker": "SIMO"
+              }
+            ],
+            "trailing_missing_member_sessions": 13,
+            "unique_members": 47,
+            "unpriced_members": [
+              "NVEC"
+            ]
+          },
+          "key": "Semiconductors",
+          "name": "Semiconductors",
+          "persistence": {
+            "measured_sessions": 10,
+            "positive_excess_session_share": 0.8,
+            "positive_vs_parent_session_share": null,
+            "window_sessions": 10
+          },
+          "reason_codes": [
+            "CORPORATE_ACTION_BASIS_INHERITED_UNVERIFIED",
+            "CURRENT_MEMBERSHIP_TECHNICAL_WINDOW_NOT_PIT",
+            "DESCRIPTIVE_SHADOW_ONLY",
+            "DUPLICATE_MEMBERS_DEDUPED",
+            "PARTIAL_MEMBER_COVERAGE",
+            "STALE_MEMBER_TAPE"
+          ],
+          "relationship_kind": "PARENT_SOURCE_GROUP",
+          "status": "PARTIAL",
+          "strength_level": {
+            "excess_vs_market_pct": 1.7675,
+            "state": "LEADING",
+            "window_sessions": 20
+          },
+          "volume_reclaim": {
+            "above_20d_mean_share": 0.5946,
+            "high_volume_positive_share": 0.7838,
+            "members_with_20d_reclaim_evidence": 37,
+            "members_with_volume": 37,
+            "reclaimed_20d_mean_share": 0.1892
+          },
+          "windows": {
+            "1": {
+              "excess_vs_market_pct": 2.7926,
+              "excess_vs_parent_pct": null,
+              "market_return_pct": 0.1287,
+              "parent_return_pct": null,
+              "participation": {
+                "beat_market_share": 0.8649,
+                "beat_parent_share": null,
+                "dispersion_pct": 2.946,
+                "positive_share": 0.8919,
+                "priced_members": 37,
+                "top_abs_move_share": 0.0845,
+                "top_abs_move_ticker": "SNDK"
+              },
+              "reason_codes": [],
+              "relative_strength": {
+                "change_vs_market_pct": 2.789,
+                "change_vs_parent_pct": null,
+                "slope_vs_market_pct_per_session": null,
+                "slope_vs_parent_pct_per_session": null
+              },
+              "return_pct": 2.9213
+            },
+            "10": {
+              "excess_vs_market_pct": 7.2391,
+              "excess_vs_parent_pct": null,
+              "market_return_pct": -1.2402,
+              "parent_return_pct": null,
+              "participation": {
+                "beat_market_share": 0.8378,
+                "beat_parent_share": null,
+                "dispersion_pct": 7.8179,
+                "positive_share": 0.7568,
+                "priced_members": 37,
+                "top_abs_move_share": 0.1034,
+                "top_abs_move_ticker": "COHU"
+              },
+              "reason_codes": [],
+              "relative_strength": {
+                "change_vs_market_pct": 7.33,
+                "change_vs_parent_pct": null,
+                "slope_vs_market_pct_per_session": -0.1813,
+                "slope_vs_parent_pct_per_session": null
+              },
+              "return_pct": 5.999
+            },
+            "20": {
+              "excess_vs_market_pct": 1.7675,
+              "excess_vs_parent_pct": null,
+              "market_return_pct": 0.1287,
+              "parent_return_pct": null,
+              "participation": {
+                "beat_market_share": 0.4865,
+                "beat_parent_share": null,
+                "dispersion_pct": 8.1738,
+                "positive_share": 0.4865,
+                "priced_members": 37,
+                "top_abs_move_share": 0.093,
+                "top_abs_move_ticker": "QRVO"
+              },
+              "reason_codes": [],
+              "relative_strength": {
+                "change_vs_market_pct": 1.7652,
+                "change_vs_parent_pct": null,
+                "slope_vs_market_pct_per_session": 0.0741,
+                "slope_vs_parent_pct_per_session": null
+              },
+              "return_pct": 1.8962
+            },
+            "3": {
+              "excess_vs_market_pct": 5.9823,
+              "excess_vs_parent_pct": null,
+              "market_return_pct": 0.8175,
+              "parent_return_pct": null,
+              "participation": {
+                "beat_market_share": 0.8919,
+                "beat_parent_share": null,
+                "dispersion_pct": 5.0188,
+                "positive_share": 0.9189,
+                "priced_members": 37,
+                "top_abs_move_share": 0.0645,
+                "top_abs_move_ticker": "SNDK"
+              },
+              "reason_codes": [],
+              "relative_strength": {
+                "change_vs_market_pct": 5.9338,
+                "change_vs_parent_pct": null,
+                "slope_vs_market_pct_per_session": 2.567,
+                "slope_vs_parent_pct_per_session": null
+              },
+              "return_pct": 6.7998
+            },
+            "5": {
+              "excess_vs_market_pct": -0.0158,
+              "excess_vs_parent_pct": null,
+              "market_return_pct": -0.0927,
+              "parent_return_pct": null,
+              "participation": {
+                "beat_market_share": 0.4054,
+                "beat_parent_share": null,
+                "dispersion_pct": 3.9906,
+                "positive_share": 0.4054,
+                "priced_members": 37,
+                "top_abs_move_share": 0.0821,
+                "top_abs_move_ticker": "SNDK"
+              },
+              "reason_codes": [],
+              "relative_strength": {
+                "change_vs_market_pct": -0.0158,
+                "change_vs_parent_pct": null,
+                "slope_vs_market_pct_per_session": 1.5914,
+                "slope_vs_parent_pct_per_session": null
+              },
+              "return_pct": -0.1085
+            },
+            "60": {
+              "excess_vs_market_pct": -20.3012,
+              "excess_vs_parent_pct": null,
+              "market_return_pct": 4.138,
+              "parent_return_pct": null,
+              "participation": {
+                "beat_market_share": 0.0811,
+                "beat_parent_share": null,
+                "dispersion_pct": 14.1971,
+                "positive_share": 0.0811,
+                "priced_members": 37,
+                "top_abs_move_share": 0.056,
+                "top_abs_move_ticker": "ON"
+              },
+              "reason_codes": [],
+              "relative_strength": {
+                "change_vs_market_pct": -19.4945,
+                "change_vs_parent_pct": null,
+                "slope_vs_market_pct_per_session": -0.3407,
+                "slope_vs_parent_pct_per_session": null
+              },
+              "return_pct": -16.1632
+            }
+          }
+        },
+        "reason_codes": [
+          "DESCRIPTIVE_SHADOW_ONLY"
+        ],
+        "schema": "subsector_rotation.closed_session_leadership.v1",
+        "status": "PARTIAL",
+        "subthemes": [
+          {
+            "acceleration": {
+              "change_pct_points": -5.4446,
+              "change_vs_parent_pct_points": 1.8338,
+              "current_excess_vs_market_pct": 2.7194,
+              "prior_excess_vs_market_pct": 8.1641,
+              "state": "DETERIORATING",
+              "window_sessions": 5
+            },
+            "coverage": {
+              "coverage_window_sessions": 60,
+              "current_session_members": 8,
+              "declared_member_assignments": 8,
+              "duplicate_members_removed": 0,
+              "internal_missing_member_sessions": 0,
+              "members_with_complete_window_history": 8,
+              "missing_member_sessions": 0,
+              "pre_listing_member_sessions": 0,
+              "priced_members": 8,
+              "short_history_members": [],
+              "stale_members": [],
+              "trailing_missing_member_sessions": 0,
+              "unique_members": 8,
+              "unpriced_members": []
+            },
+            "key": "semiscompute",
+            "name": "Compute",
+            "persistence": {
+              "measured_sessions": 10,
+              "positive_excess_session_share": 0.8,
+              "positive_vs_parent_session_share": 0.6,
+              "window_sessions": 10
+            },
+            "reason_codes": [
+              "CORPORATE_ACTION_BASIS_INHERITED_UNVERIFIED",
+              "CURRENT_MEMBERSHIP_TECHNICAL_WINDOW_NOT_PIT",
+              "DESCRIPTIVE_SHADOW_ONLY",
+              "SHORT_WINDOW_POSITIVE_LONG_WINDOW_NEGATIVE"
+            ],
+            "relationship_kind": "SUBTHEME_SOURCE_GROUP",
+            "status": "MEASURED",
+            "strength_level": {
+              "excess_vs_market_pct": 7.7068,
+              "state": "LEADING",
+              "window_sessions": 20
+            },
+            "volume_reclaim": {
+              "above_20d_mean_share": 0.875,
+              "high_volume_positive_share": 0.75,
+              "members_with_20d_reclaim_evidence": 8,
+              "members_with_volume": 8,
+              "reclaimed_20d_mean_share": 0.0
+            },
+            "windows": {
+              "1": {
+                "excess_vs_market_pct": 0.8109,
+                "excess_vs_parent_pct": -1.9817,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 2.9213,
+                "participation": {
+                  "beat_market_share": 0.75,
+                  "beat_parent_share": 0.25,
+                  "dispersion_pct": 2.8347,
+                  "positive_share": 0.75,
+                  "priced_members": 8,
+                  "top_abs_move_share": 0.2982,
+                  "top_abs_move_ticker": "QCOM"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 0.8099,
+                  "change_vs_parent_pct": -1.9254,
+                  "slope_vs_market_pct_per_session": null,
+                  "slope_vs_parent_pct_per_session": null
+                },
+                "return_pct": 0.9396
+              },
+              "10": {
+                "excess_vs_market_pct": 11.0667,
+                "excess_vs_parent_pct": 3.8275,
+                "market_return_pct": -1.2402,
+                "parent_return_pct": 5.999,
+                "participation": {
+                  "beat_market_share": 0.875,
+                  "beat_parent_share": 0.5,
+                  "dispersion_pct": 8.6762,
+                  "positive_share": 0.875,
+                  "priced_members": 8,
+                  "top_abs_move_share": 0.2692,
+                  "top_abs_move_ticker": "AMD"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 11.2056,
+                  "change_vs_parent_pct": 3.6109,
+                  "slope_vs_market_pct_per_session": 0.378,
+                  "slope_vs_parent_pct_per_session": 0.5593
+                },
+                "return_pct": 9.8265
+              },
+              "20": {
+                "excess_vs_market_pct": 7.7068,
+                "excess_vs_parent_pct": 5.9393,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 1.8962,
+                "participation": {
+                  "beat_market_share": 0.75,
+                  "beat_parent_share": 0.75,
+                  "dispersion_pct": 7.7934,
+                  "positive_share": 0.75,
+                  "priced_members": 8,
+                  "top_abs_move_share": 0.2747,
+                  "top_abs_move_ticker": "AMD"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 7.6969,
+                  "change_vs_parent_pct": 5.8288,
+                  "slope_vs_market_pct_per_session": 0.478,
+                  "slope_vs_parent_pct_per_session": 0.4039
+                },
+                "return_pct": 7.8355
+              },
+              "3": {
+                "excess_vs_market_pct": 6.2492,
+                "excess_vs_parent_pct": 0.2669,
+                "market_return_pct": 0.8175,
+                "parent_return_pct": 6.7998,
+                "participation": {
+                  "beat_market_share": 0.875,
+                  "beat_parent_share": 0.5,
+                  "dispersion_pct": 5.7119,
+                  "positive_share": 0.875,
+                  "priced_members": 8,
+                  "top_abs_move_share": 0.2059,
+                  "top_abs_move_ticker": "ARM"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 6.1986,
+                  "change_vs_parent_pct": 0.2499,
+                  "slope_vs_market_pct_per_session": 2.1209,
+                  "slope_vs_parent_pct_per_session": -0.4461
+                },
+                "return_pct": 7.0667
+              },
+              "5": {
+                "excess_vs_market_pct": 2.7194,
+                "excess_vs_parent_pct": 2.7352,
+                "market_return_pct": -0.0927,
+                "parent_return_pct": -0.1085,
+                "participation": {
+                  "beat_market_share": 0.75,
+                  "beat_parent_share": 0.75,
+                  "dispersion_pct": 3.339,
+                  "positive_share": 0.75,
+                  "priced_members": 8,
+                  "top_abs_move_share": 0.3082,
+                  "top_abs_move_ticker": "AMD"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 2.7219,
+                  "change_vs_parent_pct": 2.7382,
+                  "slope_vs_market_pct_per_session": 1.9861,
+                  "slope_vs_parent_pct_per_session": 0.3946
+                },
+                "return_pct": 2.6267
+              },
+              "60": {
+                "excess_vs_market_pct": -9.4504,
+                "excess_vs_parent_pct": 10.8508,
+                "market_return_pct": 4.138,
+                "parent_return_pct": -16.1632,
+                "participation": {
+                  "beat_market_share": 0.25,
+                  "beat_parent_share": 0.75,
+                  "dispersion_pct": 11.1995,
+                  "positive_share": 0.25,
+                  "priced_members": 8,
+                  "top_abs_move_share": 0.2612,
+                  "top_abs_move_ticker": "ARM"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -9.0749,
+                  "change_vs_parent_pct": 12.9427,
+                  "slope_vs_market_pct_per_session": -0.1733,
+                  "slope_vs_parent_pct_per_session": 0.1674
+                },
+                "return_pct": -5.3124
+              }
+            }
+          },
+          {
+            "acceleration": {
+              "change_pct_points": -0.8165,
+              "change_vs_parent_pct_points": 6.4619,
+              "current_excess_vs_market_pct": 3.4933,
+              "prior_excess_vs_market_pct": 4.3098,
+              "state": "DETERIORATING",
+              "window_sessions": 5
+            },
+            "coverage": {
+              "coverage_window_sessions": 60,
+              "current_session_members": 5,
+              "declared_member_assignments": 5,
+              "duplicate_members_removed": 0,
+              "internal_missing_member_sessions": 0,
+              "members_with_complete_window_history": 5,
+              "missing_member_sessions": 0,
+              "pre_listing_member_sessions": 0,
+              "priced_members": 5,
+              "short_history_members": [],
+              "stale_members": [],
+              "trailing_missing_member_sessions": 0,
+              "unique_members": 5,
+              "unpriced_members": []
+            },
+            "key": "semismemory",
+            "name": "Memory",
+            "persistence": {
+              "measured_sessions": 10,
+              "positive_excess_session_share": 0.6,
+              "positive_vs_parent_session_share": 0.5,
+              "window_sessions": 10
+            },
+            "reason_codes": [
+              "CORPORATE_ACTION_BASIS_INHERITED_UNVERIFIED",
+              "CURRENT_MEMBERSHIP_TECHNICAL_WINDOW_NOT_PIT",
+              "DESCRIPTIVE_SHADOW_ONLY",
+              "SHORT_WINDOW_POSITIVE_LONG_WINDOW_NEGATIVE"
+            ],
+            "relationship_kind": "SUBTHEME_SOURCE_GROUP",
+            "status": "MEASURED",
+            "strength_level": {
+              "excess_vs_market_pct": 1.2968,
+              "state": "LEADING",
+              "window_sessions": 20
+            },
+            "volume_reclaim": {
+              "above_20d_mean_share": 0.8,
+              "high_volume_positive_share": 1.0,
+              "members_with_20d_reclaim_evidence": 5,
+              "members_with_volume": 5,
+              "reclaimed_20d_mean_share": 0.4
+            },
+            "windows": {
+              "1": {
+                "excess_vs_market_pct": 5.4673,
+                "excess_vs_parent_pct": 2.6747,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 2.9213,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 0.8,
+                  "dispersion_pct": 3.1203,
+                  "positive_share": 1.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.3928,
+                  "top_abs_move_ticker": "SNDK"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 5.4603,
+                  "change_vs_parent_pct": 2.5988,
+                  "slope_vs_market_pct_per_session": null,
+                  "slope_vs_parent_pct_per_session": null
+                },
+                "return_pct": 5.596
+              },
+              "10": {
+                "excess_vs_market_pct": 7.9095,
+                "excess_vs_parent_pct": 0.6704,
+                "market_return_pct": -1.2402,
+                "parent_return_pct": 5.999,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 0.6,
+                  "dispersion_pct": 5.0382,
+                  "positive_share": 0.8,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.4663,
+                  "top_abs_move_ticker": "SNDK"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 8.0088,
+                  "change_vs_parent_pct": 0.6324,
+                  "slope_vs_market_pct_per_session": -0.7019,
+                  "slope_vs_parent_pct_per_session": -0.5206
+                },
+                "return_pct": 6.6693
+              },
+              "20": {
+                "excess_vs_market_pct": 1.2968,
+                "excess_vs_parent_pct": -0.4706,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 1.8962,
+                "participation": {
+                  "beat_market_share": 0.6,
+                  "beat_parent_share": 0.4,
+                  "dispersion_pct": 6.5194,
+                  "positive_share": 0.6,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.4263,
+                  "top_abs_move_ticker": "SNDK"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 1.2952,
+                  "change_vs_parent_pct": -0.4619,
+                  "slope_vs_market_pct_per_session": 0.0766,
+                  "slope_vs_parent_pct_per_session": 0.0025
+                },
+                "return_pct": 1.4255
+              },
+              "3": {
+                "excess_vs_market_pct": 9.2559,
+                "excess_vs_parent_pct": 3.2736,
+                "market_return_pct": 0.8175,
+                "parent_return_pct": 6.7998,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 0.8,
+                  "dispersion_pct": 4.0195,
+                  "positive_share": 1.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.3384,
+                  "top_abs_move_ticker": "SNDK"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 9.1809,
+                  "change_vs_parent_pct": 3.0652,
+                  "slope_vs_market_pct_per_session": 4.1891,
+                  "slope_vs_parent_pct_per_session": 1.6221
+                },
+                "return_pct": 10.0734
+              },
+              "5": {
+                "excess_vs_market_pct": 3.4933,
+                "excess_vs_parent_pct": 3.5091,
+                "market_return_pct": -0.0927,
+                "parent_return_pct": -0.1085,
+                "participation": {
+                  "beat_market_share": 0.8,
+                  "beat_parent_share": 0.8,
+                  "dispersion_pct": 3.7294,
+                  "positive_share": 0.8,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.5019,
+                  "top_abs_move_ticker": "SNDK"
+                },
+                "reason_codes": [
+                  "ONE_NAME_CONCENTRATION"
+                ],
+                "relative_strength": {
+                  "change_vs_market_pct": 3.4965,
+                  "change_vs_parent_pct": 3.5129,
+                  "slope_vs_market_pct_per_session": 1.9828,
+                  "slope_vs_parent_pct_per_session": 0.3913
+                },
+                "return_pct": 3.4006
+              },
+              "60": {
+                "excess_vs_market_pct": -19.7759,
+                "excess_vs_parent_pct": 0.5253,
+                "market_return_pct": 4.138,
+                "parent_return_pct": -16.1632,
+                "participation": {
+                  "beat_market_share": 0.0,
+                  "beat_parent_share": 0.6,
+                  "dispersion_pct": 11.7125,
+                  "positive_share": 0.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.3737,
+                  "top_abs_move_ticker": "WDC"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -18.9901,
+                  "change_vs_parent_pct": 0.6266,
+                  "slope_vs_market_pct_per_session": -0.3366,
+                  "slope_vs_parent_pct_per_session": 0.0041
+                },
+                "return_pct": -15.6379
+              }
+            }
+          },
+          {
+            "acceleration": {
+              "change_pct_points": -7.3522,
+              "change_vs_parent_pct_points": -0.0737,
+              "current_excess_vs_market_pct": -2.7144,
+              "prior_excess_vs_market_pct": 4.6378,
+              "state": "DETERIORATING",
+              "window_sessions": 5
+            },
+            "coverage": {
+              "coverage_window_sessions": 60,
+              "current_session_members": 7,
+              "declared_member_assignments": 7,
+              "duplicate_members_removed": 0,
+              "internal_missing_member_sessions": 0,
+              "members_with_complete_window_history": 7,
+              "missing_member_sessions": 0,
+              "pre_listing_member_sessions": 0,
+              "priced_members": 7,
+              "short_history_members": [],
+              "stale_members": [],
+              "trailing_missing_member_sessions": 0,
+              "unique_members": 7,
+              "unpriced_members": []
+            },
+            "key": "semisanalog",
+            "name": "Analog",
+            "persistence": {
+              "measured_sessions": 10,
+              "positive_excess_session_share": 0.6,
+              "positive_vs_parent_session_share": 0.4,
+              "window_sessions": 10
+            },
+            "reason_codes": [
+              "CORPORATE_ACTION_BASIS_INHERITED_UNVERIFIED",
+              "CURRENT_MEMBERSHIP_TECHNICAL_WINDOW_NOT_PIT",
+              "DESCRIPTIVE_SHADOW_ONLY"
+            ],
+            "relationship_kind": "SUBTHEME_SOURCE_GROUP",
+            "status": "MEASURED",
+            "strength_level": {
+              "excess_vs_market_pct": -1.8603,
+              "state": "LAGGING",
+              "window_sessions": 20
+            },
+            "volume_reclaim": {
+              "above_20d_mean_share": 0.5714,
+              "high_volume_positive_share": 0.8571,
+              "members_with_20d_reclaim_evidence": 7,
+              "members_with_volume": 7,
+              "reclaimed_20d_mean_share": 0.4286
+            },
+            "windows": {
+              "1": {
+                "excess_vs_market_pct": 2.4545,
+                "excess_vs_parent_pct": -0.3381,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 2.9213,
+                "participation": {
+                  "beat_market_share": 0.8571,
+                  "beat_parent_share": 0.5714,
+                  "dispersion_pct": 1.333,
+                  "positive_share": 1.0,
+                  "priced_members": 7,
+                  "top_abs_move_share": 0.228,
+                  "top_abs_move_ticker": "MPWR"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 2.4513,
+                  "change_vs_parent_pct": -0.3285,
+                  "slope_vs_market_pct_per_session": null,
+                  "slope_vs_parent_pct_per_session": null
+                },
+                "return_pct": 2.5832
+              },
+              "10": {
+                "excess_vs_market_pct": 1.8244,
+                "excess_vs_parent_pct": -5.4147,
+                "market_return_pct": -1.2402,
+                "parent_return_pct": 5.999,
+                "participation": {
+                  "beat_market_share": 0.5714,
+                  "beat_parent_share": 0.0,
+                  "dispersion_pct": 3.5601,
+                  "positive_share": 0.5714,
+                  "priced_members": 7,
+                  "top_abs_move_share": 0.2506,
+                  "top_abs_move_ticker": "ADI"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 1.8473,
+                  "change_vs_parent_pct": -5.1083,
+                  "slope_vs_market_pct_per_session": -0.1862,
+                  "slope_vs_parent_pct_per_session": -0.0049
+                },
+                "return_pct": 0.5843
+              },
+              "20": {
+                "excess_vs_market_pct": -1.8603,
+                "excess_vs_parent_pct": -3.6278,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 1.8962,
+                "participation": {
+                  "beat_market_share": 0.5714,
+                  "beat_parent_share": 0.1429,
+                  "dispersion_pct": 3.7895,
+                  "positive_share": 0.5714,
+                  "priced_members": 7,
+                  "top_abs_move_share": 0.3004,
+                  "top_abs_move_ticker": "MPWR"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -1.8579,
+                  "change_vs_parent_pct": -3.5603,
+                  "slope_vs_market_pct_per_session": -0.1138,
+                  "slope_vs_parent_pct_per_session": -0.1879
+                },
+                "return_pct": -1.7316
+              },
+              "3": {
+                "excess_vs_market_pct": 1.1563,
+                "excess_vs_parent_pct": -4.826,
+                "market_return_pct": 0.8175,
+                "parent_return_pct": 6.7998,
+                "participation": {
+                  "beat_market_share": 0.7143,
+                  "beat_parent_share": 0.0,
+                  "dispersion_pct": 3.32,
+                  "positive_share": 0.8571,
+                  "priced_members": 7,
+                  "top_abs_move_share": 0.2932,
+                  "top_abs_move_ticker": "MPWR"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 1.147,
+                  "change_vs_parent_pct": -4.5187,
+                  "slope_vs_market_pct_per_session": 1.4037,
+                  "slope_vs_parent_pct_per_session": -1.1632
+                },
+                "return_pct": 1.9738
+              },
+              "5": {
+                "excess_vs_market_pct": -2.7144,
+                "excess_vs_parent_pct": -2.6986,
+                "market_return_pct": -0.0927,
+                "parent_return_pct": -0.1085,
+                "participation": {
+                  "beat_market_share": 0.0,
+                  "beat_parent_share": 0.0,
+                  "dispersion_pct": 2.3481,
+                  "positive_share": 0.0,
+                  "priced_members": 7,
+                  "top_abs_move_share": 0.4031,
+                  "top_abs_move_ticker": "ON"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -2.7169,
+                  "change_vs_parent_pct": -2.7015,
+                  "slope_vs_market_pct_per_session": 0.29,
+                  "slope_vs_parent_pct_per_session": -1.3014
+                },
+                "return_pct": -2.8071
+              },
+              "60": {
+                "excess_vs_market_pct": -25.2298,
+                "excess_vs_parent_pct": -4.9286,
+                "market_return_pct": 4.138,
+                "parent_return_pct": -16.1632,
+                "participation": {
+                  "beat_market_share": 0.0,
+                  "beat_parent_share": 0.4286,
+                  "dispersion_pct": 10.0192,
+                  "positive_share": 0.0,
+                  "priced_members": 7,
+                  "top_abs_move_share": 0.2652,
+                  "top_abs_move_ticker": "ON"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -24.2273,
+                  "change_vs_parent_pct": -5.8788,
+                  "slope_vs_market_pct_per_session": -0.4504,
+                  "slope_vs_parent_pct_per_session": -0.1096
+                },
+                "return_pct": -21.0918
+              }
+            }
+          },
+          {
+            "acceleration": {
+              "change_pct_points": -12.1168,
+              "change_vs_parent_pct_points": -4.8384,
+              "current_excess_vs_market_pct": 0.189,
+              "prior_excess_vs_market_pct": 12.3059,
+              "state": "DETERIORATING",
+              "window_sessions": 5
+            },
+            "coverage": {
+              "coverage_window_sessions": 60,
+              "current_session_members": 5,
+              "declared_member_assignments": 6,
+              "duplicate_members_removed": 0,
+              "internal_missing_member_sessions": 0,
+              "members_with_complete_window_history": 5,
+              "missing_member_sessions": 2,
+              "pre_listing_member_sessions": 0,
+              "priced_members": 6,
+              "short_history_members": [],
+              "stale_members": [
+                {
+                  "lag_sessions": 2,
+                  "last_observed_session": "2026-09-16",
+                  "ticker": "SWKS"
+                }
+              ],
+              "trailing_missing_member_sessions": 2,
+              "unique_members": 6,
+              "unpriced_members": []
+            },
+            "key": "semiswireless",
+            "name": "Wireless",
+            "persistence": {
+              "measured_sessions": 10,
+              "positive_excess_session_share": 0.7,
+              "positive_vs_parent_session_share": 0.6,
+              "window_sessions": 10
+            },
+            "reason_codes": [
+              "CORPORATE_ACTION_BASIS_INHERITED_UNVERIFIED",
+              "CURRENT_MEMBERSHIP_TECHNICAL_WINDOW_NOT_PIT",
+              "DESCRIPTIVE_SHADOW_ONLY",
+              "SHORT_WINDOW_POSITIVE_LONG_WINDOW_NEGATIVE",
+              "STALE_MEMBER_TAPE"
+            ],
+            "relationship_kind": "SUBTHEME_SOURCE_GROUP",
+            "status": "PARTIAL",
+            "strength_level": {
+              "excess_vs_market_pct": 10.4689,
+              "state": "LEADING",
+              "window_sessions": 20
+            },
+            "volume_reclaim": {
+              "above_20d_mean_share": 0.8,
+              "high_volume_positive_share": 0.6,
+              "members_with_20d_reclaim_evidence": 5,
+              "members_with_volume": 5,
+              "reclaimed_20d_mean_share": 0.0
+            },
+            "windows": {
+              "1": {
+                "excess_vs_market_pct": -0.7962,
+                "excess_vs_parent_pct": -3.5888,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 2.9213,
+                "participation": {
+                  "beat_market_share": 0.4,
+                  "beat_parent_share": 0.2,
+                  "dispersion_pct": 3.0464,
+                  "positive_share": 0.6,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.477,
+                  "top_abs_move_ticker": "QCOM"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -0.7952,
+                  "change_vs_parent_pct": -3.4869,
+                  "slope_vs_market_pct_per_session": null,
+                  "slope_vs_parent_pct_per_session": null
+                },
+                "return_pct": -0.6675
+              },
+              "10": {
+                "excess_vs_market_pct": 12.5046,
+                "excess_vs_parent_pct": 5.2654,
+                "market_return_pct": -1.2402,
+                "parent_return_pct": 5.999,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 0.4,
+                  "dispersion_pct": 7.2608,
+                  "positive_share": 1.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.4133,
+                  "top_abs_move_ticker": "MRVL"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 12.6616,
+                  "change_vs_parent_pct": 4.9674,
+                  "slope_vs_market_pct_per_session": 0.9556,
+                  "slope_vs_parent_pct_per_session": 1.1369
+                },
+                "return_pct": 11.2644
+              },
+              "20": {
+                "excess_vs_market_pct": 10.4689,
+                "excess_vs_parent_pct": 8.7014,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 1.8962,
+                "participation": {
+                  "beat_market_share": 0.6,
+                  "beat_parent_share": 0.6,
+                  "dispersion_pct": 9.1503,
+                  "positive_share": 0.6,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.5417,
+                  "top_abs_move_ticker": "QRVO"
+                },
+                "reason_codes": [
+                  "ONE_NAME_CONCENTRATION"
+                ],
+                "relative_strength": {
+                  "change_vs_market_pct": 10.4555,
+                  "change_vs_parent_pct": 8.5395,
+                  "slope_vs_market_pct_per_session": 0.7614,
+                  "slope_vs_parent_pct_per_session": 0.6873
+                },
+                "return_pct": 10.5976
+              },
+              "3": {
+                "excess_vs_market_pct": 0.9591,
+                "excess_vs_parent_pct": -5.0232,
+                "market_return_pct": 0.8175,
+                "parent_return_pct": 6.7998,
+                "participation": {
+                  "beat_market_share": 0.6,
+                  "beat_parent_share": 0.2,
+                  "dispersion_pct": 5.3062,
+                  "positive_share": 0.6,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.4448,
+                  "top_abs_move_ticker": "MRVL"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 0.9514,
+                  "change_vs_parent_pct": -4.7034,
+                  "slope_vs_market_pct_per_session": 0.8205,
+                  "slope_vs_parent_pct_per_session": -1.7465
+                },
+                "return_pct": 1.7766
+              },
+              "5": {
+                "excess_vs_market_pct": 0.189,
+                "excess_vs_parent_pct": 0.2048,
+                "market_return_pct": -0.0927,
+                "parent_return_pct": -0.1085,
+                "participation": {
+                  "beat_market_share": 0.4,
+                  "beat_parent_share": 0.4,
+                  "dispersion_pct": 2.3554,
+                  "positive_share": 0.4,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.3237,
+                  "top_abs_move_ticker": "MRVL"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 0.1892,
+                  "change_vs_parent_pct": 0.205,
+                  "slope_vs_market_pct_per_session": 1.3621,
+                  "slope_vs_parent_pct_per_session": -0.2294
+                },
+                "return_pct": 0.0963
+              },
+              "60": {
+                "excess_vs_market_pct": -4.4368,
+                "excess_vs_parent_pct": 15.8643,
+                "market_return_pct": 4.138,
+                "parent_return_pct": -16.1632,
+                "participation": {
+                  "beat_market_share": 0.2,
+                  "beat_parent_share": 0.8,
+                  "dispersion_pct": 14.2201,
+                  "positive_share": 0.2,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.3147,
+                  "top_abs_move_ticker": "NXPI"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -4.2605,
+                  "change_vs_parent_pct": 18.9229,
+                  "slope_vs_market_pct_per_session": -0.014,
+                  "slope_vs_parent_pct_per_session": 0.3267
+                },
+                "return_pct": -0.2988
+              }
+            }
+          },
+          {
+            "acceleration": {
+              "change_pct_points": -7.273,
+              "change_vs_parent_pct_points": 0.0055,
+              "current_excess_vs_market_pct": 2.8027,
+              "prior_excess_vs_market_pct": 10.0757,
+              "state": "DETERIORATING",
+              "window_sessions": 5
+            },
+            "coverage": {
+              "coverage_window_sessions": 60,
+              "current_session_members": 2,
+              "declared_member_assignments": 4,
+              "duplicate_members_removed": 0,
+              "internal_missing_member_sessions": 0,
+              "members_with_complete_window_history": 2,
+              "missing_member_sessions": 3,
+              "pre_listing_member_sessions": 0,
+              "priced_members": 4,
+              "short_history_members": [],
+              "stale_members": [
+                {
+                  "lag_sessions": 1,
+                  "last_observed_session": "2026-09-17",
+                  "ticker": "GFS"
+                },
+                {
+                  "lag_sessions": 2,
+                  "last_observed_session": "2026-09-16",
+                  "ticker": "UMC"
+                }
+              ],
+              "trailing_missing_member_sessions": 3,
+              "unique_members": 4,
+              "unpriced_members": []
+            },
+            "key": "semisfoundries",
+            "name": "Foundries",
+            "persistence": {
+              "measured_sessions": 10,
+              "positive_excess_session_share": 0.7,
+              "positive_vs_parent_session_share": 0.5,
+              "window_sessions": 10
+            },
+            "reason_codes": [
+              "CORPORATE_ACTION_BASIS_INHERITED_UNVERIFIED",
+              "CURRENT_MEMBERSHIP_TECHNICAL_WINDOW_NOT_PIT",
+              "DESCRIPTIVE_SHADOW_ONLY",
+              "SHORT_WINDOW_POSITIVE_LONG_WINDOW_NEGATIVE",
+              "STALE_MEMBER_TAPE"
+            ],
+            "relationship_kind": "SUBTHEME_SOURCE_GROUP",
+            "status": "PARTIAL",
+            "strength_level": {
+              "excess_vs_market_pct": 12.9111,
+              "state": "LEADING",
+              "window_sessions": 20
+            },
+            "volume_reclaim": {
+              "above_20d_mean_share": 1.0,
+              "high_volume_positive_share": 0.5,
+              "members_with_20d_reclaim_evidence": 2,
+              "members_with_volume": 2,
+              "reclaimed_20d_mean_share": 0.0
+            },
+            "windows": {
+              "1": {
+                "excess_vs_market_pct": 0.2919,
+                "excess_vs_parent_pct": -2.5007,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 2.9213,
+                "participation": {
+                  "beat_market_share": 0.5,
+                  "beat_parent_share": 0.0,
+                  "dispersion_pct": 0.6044,
+                  "positive_share": 0.5,
+                  "priced_members": 2,
+                  "top_abs_move_share": 0.8479,
+                  "top_abs_move_ticker": "TSM"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 0.2915,
+                  "change_vs_parent_pct": -2.4297,
+                  "slope_vs_market_pct_per_session": null,
+                  "slope_vs_parent_pct_per_session": null
+                },
+                "return_pct": 0.4206
+              },
+              "10": {
+                "excess_vs_market_pct": 13.1193,
+                "excess_vs_parent_pct": 5.8802,
+                "market_return_pct": -1.2402,
+                "parent_return_pct": 5.999,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 0.5,
+                  "dispersion_pct": 6.9769,
+                  "positive_share": 1.0,
+                  "priced_members": 2,
+                  "top_abs_move_share": 0.8036,
+                  "top_abs_move_ticker": "INTC"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 13.2841,
+                  "change_vs_parent_pct": 5.5474,
+                  "slope_vs_market_pct_per_session": 0.4673,
+                  "slope_vs_parent_pct_per_session": 0.6486
+                },
+                "return_pct": 11.8792
+              },
+              "20": {
+                "excess_vs_market_pct": 12.9111,
+                "excess_vs_parent_pct": 11.1436,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 1.8962,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 1.0,
+                  "dispersion_pct": 6.5543,
+                  "positive_share": 1.0,
+                  "priced_members": 2,
+                  "top_abs_move_share": 0.7894,
+                  "top_abs_move_ticker": "INTC"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 12.8945,
+                  "change_vs_parent_pct": 10.9362,
+                  "slope_vs_market_pct_per_session": 0.673,
+                  "slope_vs_parent_pct_per_session": 0.5989
+                },
+                "return_pct": 13.0398
+              },
+              "3": {
+                "excess_vs_market_pct": 8.3427,
+                "excess_vs_parent_pct": 2.3603,
+                "market_return_pct": 0.8175,
+                "parent_return_pct": 6.7998,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 0.5,
+                  "dispersion_pct": 3.2297,
+                  "positive_share": 1.0,
+                  "priced_members": 2,
+                  "top_abs_move_share": 0.6885,
+                  "top_abs_move_ticker": "INTC"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 8.275,
+                  "change_vs_parent_pct": 2.2101,
+                  "slope_vs_market_pct_per_session": 2.3696,
+                  "slope_vs_parent_pct_per_session": -0.1974
+                },
+                "return_pct": 9.1601
+              },
+              "5": {
+                "excess_vs_market_pct": 2.8027,
+                "excess_vs_parent_pct": 2.8185,
+                "market_return_pct": -0.0927,
+                "parent_return_pct": -0.1085,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 1.0,
+                  "dispersion_pct": 2.4496,
+                  "positive_share": 1.0,
+                  "priced_members": 2,
+                  "top_abs_move_share": 0.9017,
+                  "top_abs_move_ticker": "INTC"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 2.8053,
+                  "change_vs_parent_pct": 2.8216,
+                  "slope_vs_market_pct_per_session": 2.2364,
+                  "slope_vs_parent_pct_per_session": 0.645
+                },
+                "return_pct": 2.71
+              },
+              "60": {
+                "excess_vs_market_pct": -24.0061,
+                "excess_vs_parent_pct": -3.705,
+                "market_return_pct": 4.138,
+                "parent_return_pct": -16.1632,
+                "participation": {
+                  "beat_market_share": 0.0,
+                  "beat_parent_share": 0.5,
+                  "dispersion_pct": 8.1879,
+                  "positive_share": 0.0,
+                  "priced_members": 2,
+                  "top_abs_move_share": 0.9392,
+                  "top_abs_move_ticker": "INTC"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -23.0522,
+                  "change_vs_parent_pct": -4.4193,
+                  "slope_vs_market_pct_per_session": -0.4554,
+                  "slope_vs_parent_pct_per_session": -0.1146
+                },
+                "return_pct": -19.8681
+              }
+            }
+          },
+          {
+            "acceleration": {
+              "change_pct_points": -4.5035,
+              "change_vs_parent_pct_points": 2.775,
+              "current_excess_vs_market_pct": -0.4698,
+              "prior_excess_vs_market_pct": 4.0336,
+              "state": "DETERIORATING",
+              "window_sessions": 5
+            },
+            "coverage": {
+              "coverage_window_sessions": 60,
+              "current_session_members": 4,
+              "declared_member_assignments": 6,
+              "duplicate_members_removed": 0,
+              "internal_missing_member_sessions": 0,
+              "members_with_complete_window_history": 4,
+              "missing_member_sessions": 3,
+              "pre_listing_member_sessions": 0,
+              "priced_members": 6,
+              "short_history_members": [],
+              "stale_members": [
+                {
+                  "lag_sessions": 2,
+                  "last_observed_session": "2026-09-16",
+                  "ticker": "SNPS"
+                },
+                {
+                  "lag_sessions": 1,
+                  "last_observed_session": "2026-09-17",
+                  "ticker": "CDNS"
+                }
+              ],
+              "trailing_missing_member_sessions": 3,
+              "unique_members": 6,
+              "unpriced_members": []
+            },
+            "key": "semisdesigntools",
+            "name": "Design Tools",
+            "persistence": {
+              "measured_sessions": 10,
+              "positive_excess_session_share": 0.7,
+              "positive_vs_parent_session_share": 0.3,
+              "window_sessions": 10
+            },
+            "reason_codes": [
+              "CORPORATE_ACTION_BASIS_INHERITED_UNVERIFIED",
+              "CURRENT_MEMBERSHIP_TECHNICAL_WINDOW_NOT_PIT",
+              "DESCRIPTIVE_SHADOW_ONLY",
+              "STALE_MEMBER_TAPE"
+            ],
+            "relationship_kind": "SUBTHEME_SOURCE_GROUP",
+            "status": "PARTIAL",
+            "strength_level": {
+              "excess_vs_market_pct": 0.4111,
+              "state": "LEADING",
+              "window_sessions": 20
+            },
+            "volume_reclaim": {
+              "above_20d_mean_share": 0.75,
+              "high_volume_positive_share": 0.75,
+              "members_with_20d_reclaim_evidence": 4,
+              "members_with_volume": 4,
+              "reclaimed_20d_mean_share": 0.25
+            },
+            "windows": {
+              "1": {
+                "excess_vs_market_pct": 1.8125,
+                "excess_vs_parent_pct": -0.98,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 2.9213,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 0.25,
+                  "dispersion_pct": 1.3337,
+                  "positive_share": 1.0,
+                  "priced_members": 4,
+                  "top_abs_move_share": 0.5207,
+                  "top_abs_move_ticker": "ARM"
+                },
+                "reason_codes": [
+                  "ONE_NAME_CONCENTRATION"
+                ],
+                "relative_strength": {
+                  "change_vs_market_pct": 1.8102,
+                  "change_vs_parent_pct": -0.9522,
+                  "slope_vs_market_pct_per_session": null,
+                  "slope_vs_parent_pct_per_session": null
+                },
+                "return_pct": 1.9412
+              },
+              "10": {
+                "excess_vs_market_pct": 3.5465,
+                "excess_vs_parent_pct": -3.6926,
+                "market_return_pct": -1.2402,
+                "parent_return_pct": 5.999,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 0.25,
+                  "dispersion_pct": 4.6571,
+                  "positive_share": 1.0,
+                  "priced_members": 4,
+                  "top_abs_move_share": 0.6034,
+                  "top_abs_move_ticker": "ARM"
+                },
+                "reason_codes": [
+                  "ONE_NAME_CONCENTRATION"
+                ],
+                "relative_strength": {
+                  "change_vs_market_pct": 3.5911,
+                  "change_vs_parent_pct": -3.4836,
+                  "slope_vs_market_pct_per_session": -0.183,
+                  "slope_vs_parent_pct_per_session": -0.0018
+                },
+                "return_pct": 2.3064
+              },
+              "20": {
+                "excess_vs_market_pct": 0.4111,
+                "excess_vs_parent_pct": -1.3564,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 1.8962,
+                "participation": {
+                  "beat_market_share": 0.5,
+                  "beat_parent_share": 0.5,
+                  "dispersion_pct": 5.7232,
+                  "positive_share": 0.5,
+                  "priced_members": 4,
+                  "top_abs_move_share": 0.4675,
+                  "top_abs_move_ticker": "ARM"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 0.4105,
+                  "change_vs_parent_pct": -1.3312,
+                  "slope_vs_market_pct_per_session": -0.1708,
+                  "slope_vs_parent_pct_per_session": -0.245
+                },
+                "return_pct": 0.5398
+              },
+              "3": {
+                "excess_vs_market_pct": 6.9831,
+                "excess_vs_parent_pct": 1.0008,
+                "market_return_pct": 0.8175,
+                "parent_return_pct": 6.7998,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 0.5,
+                  "dispersion_pct": 3.4125,
+                  "positive_share": 1.0,
+                  "priced_members": 4,
+                  "top_abs_move_share": 0.4295,
+                  "top_abs_move_ticker": "ARM"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 6.9265,
+                  "change_vs_parent_pct": 0.9371,
+                  "slope_vs_market_pct_per_session": 2.4614,
+                  "slope_vs_parent_pct_per_session": -0.1056
+                },
+                "return_pct": 7.8006
+              },
+              "5": {
+                "excess_vs_market_pct": -0.4698,
+                "excess_vs_parent_pct": -0.454,
+                "market_return_pct": -0.0927,
+                "parent_return_pct": -0.1085,
+                "participation": {
+                  "beat_market_share": 0.5,
+                  "beat_parent_share": 0.5,
+                  "dispersion_pct": 4.1554,
+                  "positive_share": 0.5,
+                  "priced_members": 4,
+                  "top_abs_move_share": 0.5293,
+                  "top_abs_move_ticker": "PDFS"
+                },
+                "reason_codes": [
+                  "ONE_NAME_CONCENTRATION"
+                ],
+                "relative_strength": {
+                  "change_vs_market_pct": -0.4703,
+                  "change_vs_parent_pct": -0.4545,
+                  "slope_vs_market_pct_per_session": 1.7671,
+                  "slope_vs_parent_pct_per_session": 0.1757
+                },
+                "return_pct": -0.5625
+              },
+              "60": {
+                "excess_vs_market_pct": -23.868,
+                "excess_vs_parent_pct": -3.5668,
+                "market_return_pct": 4.138,
+                "parent_return_pct": -16.1632,
+                "participation": {
+                  "beat_market_share": 0.0,
+                  "beat_parent_share": 0.25,
+                  "dispersion_pct": 10.1332,
+                  "positive_share": 0.0,
+                  "priced_members": 4,
+                  "top_abs_move_share": 0.3429,
+                  "top_abs_move_ticker": "PDFS"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -22.9196,
+                  "change_vs_parent_pct": -4.2545,
+                  "slope_vs_market_pct_per_session": -0.4127,
+                  "slope_vs_parent_pct_per_session": -0.0719
+                },
+                "return_pct": -19.73
+              }
+            }
+          },
+          {
+            "acceleration": {
+              "change_pct_points": -7.0111,
+              "change_vs_parent_pct_points": 0.2674,
+              "current_excess_vs_market_pct": -2.4397,
+              "prior_excess_vs_market_pct": 4.5714,
+              "state": "DETERIORATING",
+              "window_sessions": 5
+            },
+            "coverage": {
+              "coverage_window_sessions": 60,
+              "current_session_members": 5,
+              "declared_member_assignments": 5,
+              "duplicate_members_removed": 0,
+              "internal_missing_member_sessions": 0,
+              "members_with_complete_window_history": 5,
+              "missing_member_sessions": 0,
+              "pre_listing_member_sessions": 0,
+              "priced_members": 5,
+              "short_history_members": [],
+              "stale_members": [],
+              "trailing_missing_member_sessions": 0,
+              "unique_members": 5,
+              "unpriced_members": []
+            },
+            "key": "semislithography",
+            "name": "Lithography",
+            "persistence": {
+              "measured_sessions": 10,
+              "positive_excess_session_share": 0.4,
+              "positive_vs_parent_session_share": 0.3,
+              "window_sessions": 10
+            },
+            "reason_codes": [
+              "CORPORATE_ACTION_BASIS_INHERITED_UNVERIFIED",
+              "CURRENT_MEMBERSHIP_TECHNICAL_WINDOW_NOT_PIT",
+              "DESCRIPTIVE_SHADOW_ONLY"
+            ],
+            "relationship_kind": "SUBTHEME_SOURCE_GROUP",
+            "status": "MEASURED",
+            "strength_level": {
+              "excess_vs_market_pct": -7.8877,
+              "state": "LAGGING",
+              "window_sessions": 20
+            },
+            "volume_reclaim": {
+              "above_20d_mean_share": 0.0,
+              "high_volume_positive_share": 1.0,
+              "members_with_20d_reclaim_evidence": 5,
+              "members_with_volume": 5,
+              "reclaimed_20d_mean_share": 0.0
+            },
+            "windows": {
+              "1": {
+                "excess_vs_market_pct": 5.0366,
+                "excess_vs_parent_pct": 2.244,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 2.9213,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 1.0,
+                  "dispersion_pct": 1.4173,
+                  "positive_share": 1.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.2703,
+                  "top_abs_move_ticker": "LRCX"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 5.0301,
+                  "change_vs_parent_pct": 2.1803,
+                  "slope_vs_market_pct_per_session": null,
+                  "slope_vs_parent_pct_per_session": null
+                },
+                "return_pct": 5.1652
+              },
+              "10": {
+                "excess_vs_market_pct": 2.0439,
+                "excess_vs_parent_pct": -5.1952,
+                "market_return_pct": -1.2402,
+                "parent_return_pct": 5.999,
+                "participation": {
+                  "beat_market_share": 0.8,
+                  "beat_parent_share": 0.0,
+                  "dispersion_pct": 1.6706,
+                  "positive_share": 0.6,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.2636,
+                  "top_abs_move_ticker": "KLAC"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 2.0696,
+                  "change_vs_parent_pct": -4.9012,
+                  "slope_vs_market_pct_per_session": -1.1577,
+                  "slope_vs_parent_pct_per_session": -0.9764
+                },
+                "return_pct": 0.8038
+              },
+              "20": {
+                "excess_vs_market_pct": -7.8877,
+                "excess_vs_parent_pct": -9.6552,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 1.8962,
+                "participation": {
+                  "beat_market_share": 0.0,
+                  "beat_parent_share": 0.0,
+                  "dispersion_pct": 3.2521,
+                  "positive_share": 0.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.3216,
+                  "top_abs_move_ticker": "ACLS"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -7.8776,
+                  "change_vs_parent_pct": -9.4755,
+                  "slope_vs_market_pct_per_session": -0.5415,
+                  "slope_vs_parent_pct_per_session": -0.6156
+                },
+                "return_pct": -7.759
+              },
+              "3": {
+                "excess_vs_market_pct": 4.5721,
+                "excess_vs_parent_pct": -1.4102,
+                "market_return_pct": 0.8175,
+                "parent_return_pct": 6.7998,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 0.0,
+                  "dispersion_pct": 0.7399,
+                  "positive_share": 1.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.2367,
+                  "top_abs_move_ticker": "LRCX"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 4.5351,
+                  "change_vs_parent_pct": -1.3204,
+                  "slope_vs_market_pct_per_session": 2.2901,
+                  "slope_vs_parent_pct_per_session": -0.2768
+                },
+                "return_pct": 5.3896
+              },
+              "5": {
+                "excess_vs_market_pct": -2.4397,
+                "excess_vs_parent_pct": -2.4239,
+                "market_return_pct": -0.0927,
+                "parent_return_pct": -0.1085,
+                "participation": {
+                  "beat_market_share": 0.0,
+                  "beat_parent_share": 0.0,
+                  "dispersion_pct": 0.9269,
+                  "positive_share": 0.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.2847,
+                  "top_abs_move_ticker": "ACLS"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -2.442,
+                  "change_vs_parent_pct": -2.4265,
+                  "slope_vs_market_pct_per_session": 0.8706,
+                  "slope_vs_parent_pct_per_session": -0.7209
+                },
+                "return_pct": -2.5324
+              },
+              "60": {
+                "excess_vs_market_pct": -26.8795,
+                "excess_vs_parent_pct": -6.5784,
+                "market_return_pct": 4.138,
+                "parent_return_pct": -16.1632,
+                "participation": {
+                  "beat_market_share": 0.0,
+                  "beat_parent_share": 0.2,
+                  "dispersion_pct": 10.0296,
+                  "positive_share": 0.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.3102,
+                  "top_abs_move_ticker": "ACLS"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -25.8115,
+                  "change_vs_parent_pct": -7.8466,
+                  "slope_vs_market_pct_per_session": -0.5552,
+                  "slope_vs_parent_pct_per_session": -0.2144
+                },
+                "return_pct": -22.7415
+              }
+            }
+          },
+          {
+            "acceleration": {
+              "change_pct_points": -12.7125,
+              "change_vs_parent_pct_points": -5.4341,
+              "current_excess_vs_market_pct": 1.242,
+              "prior_excess_vs_market_pct": 13.9545,
+              "state": "DETERIORATING",
+              "window_sessions": 5
+            },
+            "coverage": {
+              "coverage_window_sessions": 60,
+              "current_session_members": 5,
+              "declared_member_assignments": 6,
+              "duplicate_members_removed": 0,
+              "internal_missing_member_sessions": 0,
+              "members_with_complete_window_history": 5,
+              "missing_member_sessions": 1,
+              "pre_listing_member_sessions": 0,
+              "priced_members": 6,
+              "short_history_members": [],
+              "stale_members": [
+                {
+                  "lag_sessions": 1,
+                  "last_observed_session": "2026-09-17",
+                  "ticker": "ASX"
+                }
+              ],
+              "trailing_missing_member_sessions": 1,
+              "unique_members": 6,
+              "unpriced_members": []
+            },
+            "key": "semispackaging",
+            "name": "Packaging",
+            "persistence": {
+              "measured_sessions": 10,
+              "positive_excess_session_share": 0.8,
+              "positive_vs_parent_session_share": 0.7,
+              "window_sessions": 10
+            },
+            "reason_codes": [
+              "CORPORATE_ACTION_BASIS_INHERITED_UNVERIFIED",
+              "CURRENT_MEMBERSHIP_TECHNICAL_WINDOW_NOT_PIT",
+              "DESCRIPTIVE_SHADOW_ONLY",
+              "SHORT_WINDOW_POSITIVE_LONG_WINDOW_NEGATIVE",
+              "STALE_MEMBER_TAPE"
+            ],
+            "relationship_kind": "SUBTHEME_SOURCE_GROUP",
+            "status": "PARTIAL",
+            "strength_level": {
+              "excess_vs_market_pct": 3.5011,
+              "state": "LEADING",
+              "window_sessions": 20
+            },
+            "volume_reclaim": {
+              "above_20d_mean_share": 1.0,
+              "high_volume_positive_share": 0.8,
+              "members_with_20d_reclaim_evidence": 5,
+              "members_with_volume": 5,
+              "reclaimed_20d_mean_share": 0.4
+            },
+            "windows": {
+              "1": {
+                "excess_vs_market_pct": 4.7995,
+                "excess_vs_parent_pct": 2.007,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 2.9213,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 1.0,
+                  "dispersion_pct": 0.8798,
+                  "positive_share": 1.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.2493,
+                  "top_abs_move_ticker": "FORM"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 4.7934,
+                  "change_vs_parent_pct": 1.95,
+                  "slope_vs_market_pct_per_session": null,
+                  "slope_vs_parent_pct_per_session": null
+                },
+                "return_pct": 4.9282
+              },
+              "10": {
+                "excess_vs_market_pct": 15.3426,
+                "excess_vs_parent_pct": 8.1034,
+                "market_return_pct": -1.2402,
+                "parent_return_pct": 5.999,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 1.0,
+                  "dispersion_pct": 7.901,
+                  "positive_share": 1.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.3545,
+                  "top_abs_move_ticker": "COHU"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 15.5352,
+                  "change_vs_parent_pct": 7.6448,
+                  "slope_vs_market_pct_per_session": 0.0127,
+                  "slope_vs_parent_pct_per_session": 0.194
+                },
+                "return_pct": 14.1024
+              },
+              "20": {
+                "excess_vs_market_pct": 3.5011,
+                "excess_vs_parent_pct": 1.7336,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 1.8962,
+                "participation": {
+                  "beat_market_share": 0.6,
+                  "beat_parent_share": 0.4,
+                  "dispersion_pct": 3.3038,
+                  "positive_share": 0.6,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.5029,
+                  "top_abs_move_ticker": "COHU"
+                },
+                "reason_codes": [
+                  "ONE_NAME_CONCENTRATION"
+                ],
+                "relative_strength": {
+                  "change_vs_market_pct": 3.4966,
+                  "change_vs_parent_pct": 1.7014,
+                  "slope_vs_market_pct_per_session": 0.2304,
+                  "slope_vs_parent_pct_per_session": 0.1563
+                },
+                "return_pct": 3.6298
+              },
+              "3": {
+                "excess_vs_market_pct": 11.9012,
+                "excess_vs_parent_pct": 5.9189,
+                "market_return_pct": 0.8175,
+                "parent_return_pct": 6.7998,
+                "participation": {
+                  "beat_market_share": 1.0,
+                  "beat_parent_share": 1.0,
+                  "dispersion_pct": 3.0003,
+                  "positive_share": 1.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.2615,
+                  "top_abs_move_ticker": "FORM"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 11.8047,
+                  "change_vs_parent_pct": 5.542,
+                  "slope_vs_market_pct_per_session": 4.3116,
+                  "slope_vs_parent_pct_per_session": 1.7446
+                },
+                "return_pct": 12.7187
+              },
+              "5": {
+                "excess_vs_market_pct": 1.242,
+                "excess_vs_parent_pct": 1.2578,
+                "market_return_pct": -0.0927,
+                "parent_return_pct": -0.1085,
+                "participation": {
+                  "beat_market_share": 0.6,
+                  "beat_parent_share": 0.6,
+                  "dispersion_pct": 2.1563,
+                  "positive_share": 0.6,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.3023,
+                  "top_abs_move_ticker": "FORM"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 1.2431,
+                  "change_vs_parent_pct": 1.2591,
+                  "slope_vs_market_pct_per_session": 2.9394,
+                  "slope_vs_parent_pct_per_session": 1.3479
+                },
+                "return_pct": 1.1493
+              },
+              "60": {
+                "excess_vs_market_pct": -17.9767,
+                "excess_vs_parent_pct": 2.3245,
+                "market_return_pct": 4.138,
+                "parent_return_pct": -16.1632,
+                "participation": {
+                  "beat_market_share": 0.0,
+                  "beat_parent_share": 0.6,
+                  "dispersion_pct": 10.9775,
+                  "positive_share": 0.0,
+                  "priced_members": 5,
+                  "top_abs_move_share": 0.4425,
+                  "top_abs_move_ticker": "AMKR"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -17.2624,
+                  "change_vs_parent_pct": 2.7726,
+                  "slope_vs_market_pct_per_session": -0.3254,
+                  "slope_vs_parent_pct_per_session": 0.0153
+                },
+                "return_pct": -13.8387
+              }
+            }
+          },
+          {
+            "acceleration": {
+              "change_pct_points": -7.5259,
+              "change_vs_parent_pct_points": -0.2475,
+              "current_excess_vs_market_pct": -1.4226,
+              "prior_excess_vs_market_pct": 6.1033,
+              "state": "DETERIORATING",
+              "window_sessions": 5
+            },
+            "coverage": {
+              "coverage_window_sessions": 60,
+              "current_session_members": 10,
+              "declared_member_assignments": 14,
+              "duplicate_members_removed": 0,
+              "internal_missing_member_sessions": 0,
+              "members_with_complete_window_history": 10,
+              "missing_member_sessions": 4,
+              "pre_listing_member_sessions": 0,
+              "priced_members": 13,
+              "short_history_members": [],
+              "stale_members": [
+                {
+                  "lag_sessions": 1,
+                  "last_observed_session": "2026-09-17",
+                  "ticker": "WOLF"
+                },
+                {
+                  "lag_sessions": 2,
+                  "last_observed_session": "2026-09-16",
+                  "ticker": "MRAM"
+                },
+                {
+                  "lag_sessions": 1,
+                  "last_observed_session": "2026-09-17",
+                  "ticker": "SIMO"
+                }
+              ],
+              "trailing_missing_member_sessions": 4,
+              "unique_members": 14,
+              "unpriced_members": [
+                "NVEC"
+              ]
+            },
+            "key": "semisnextgen",
+            "name": "Next-Gen",
+            "persistence": {
+              "measured_sessions": 10,
+              "positive_excess_session_share": 0.7,
+              "positive_vs_parent_session_share": 0.4,
+              "window_sessions": 10
+            },
+            "reason_codes": [
+              "CORPORATE_ACTION_BASIS_INHERITED_UNVERIFIED",
+              "CURRENT_MEMBERSHIP_TECHNICAL_WINDOW_NOT_PIT",
+              "DESCRIPTIVE_SHADOW_ONLY",
+              "PARTIAL_MEMBER_COVERAGE",
+              "STALE_MEMBER_TAPE"
+            ],
+            "relationship_kind": "SUBTHEME_SOURCE_GROUP",
+            "status": "PARTIAL",
+            "strength_level": {
+              "excess_vs_market_pct": -1.0821,
+              "state": "LAGGING",
+              "window_sessions": 20
+            },
+            "volume_reclaim": {
+              "above_20d_mean_share": 0.5,
+              "high_volume_positive_share": 0.7,
+              "members_with_20d_reclaim_evidence": 10,
+              "members_with_volume": 10,
+              "reclaimed_20d_mean_share": 0.1
+            },
+            "windows": {
+              "1": {
+                "excess_vs_market_pct": 1.3989,
+                "excess_vs_parent_pct": -1.3937,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 2.9213,
+                "participation": {
+                  "beat_market_share": 0.8,
+                  "beat_parent_share": 0.1,
+                  "dispersion_pct": 1.7651,
+                  "positive_share": 0.8,
+                  "priced_members": 10,
+                  "top_abs_move_share": 0.1492,
+                  "top_abs_move_ticker": "STM"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 1.3971,
+                  "change_vs_parent_pct": -1.3541,
+                  "slope_vs_market_pct_per_session": null,
+                  "slope_vs_parent_pct_per_session": null
+                },
+                "return_pct": 1.5276
+              },
+              "10": {
+                "excess_vs_market_pct": 4.6045,
+                "excess_vs_parent_pct": -2.6346,
+                "market_return_pct": -1.2402,
+                "parent_return_pct": 5.999,
+                "participation": {
+                  "beat_market_share": 0.6,
+                  "beat_parent_share": 0.3,
+                  "dispersion_pct": 9.7803,
+                  "positive_share": 0.5,
+                  "priced_members": 10,
+                  "top_abs_move_share": 0.3077,
+                  "top_abs_move_ticker": "AMD"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 4.6623,
+                  "change_vs_parent_pct": -2.4855,
+                  "slope_vs_market_pct_per_session": -0.3854,
+                  "slope_vs_parent_pct_per_session": -0.2041
+                },
+                "return_pct": 3.3643
+              },
+              "20": {
+                "excess_vs_market_pct": -1.0821,
+                "excess_vs_parent_pct": -2.8496,
+                "market_return_pct": 0.1287,
+                "parent_return_pct": 1.8962,
+                "participation": {
+                  "beat_market_share": 0.4,
+                  "beat_parent_share": 0.3,
+                  "dispersion_pct": 10.0548,
+                  "positive_share": 0.4,
+                  "priced_members": 10,
+                  "top_abs_move_share": 0.2395,
+                  "top_abs_move_ticker": "AMD"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -1.0807,
+                  "change_vs_parent_pct": -2.7965,
+                  "slope_vs_market_pct_per_session": -0.0529,
+                  "slope_vs_parent_pct_per_session": -0.127
+                },
+                "return_pct": -0.9534
+              },
+              "3": {
+                "excess_vs_market_pct": 4.6758,
+                "excess_vs_parent_pct": -1.3065,
+                "market_return_pct": 0.8175,
+                "parent_return_pct": 6.7998,
+                "participation": {
+                  "beat_market_share": 0.9,
+                  "beat_parent_share": 0.3,
+                  "dispersion_pct": 4.3998,
+                  "positive_share": 0.9,
+                  "priced_members": 10,
+                  "top_abs_move_share": 0.1768,
+                  "top_abs_move_ticker": "INTC"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": 4.6379,
+                  "change_vs_parent_pct": -1.2233,
+                  "slope_vs_market_pct_per_session": 2.2287,
+                  "slope_vs_parent_pct_per_session": -0.3382
+                },
+                "return_pct": 5.4933
+              },
+              "5": {
+                "excess_vs_market_pct": -1.4226,
+                "excess_vs_parent_pct": -1.4069,
+                "market_return_pct": -0.0927,
+                "parent_return_pct": -0.1085,
+                "participation": {
+                  "beat_market_share": 0.5,
+                  "beat_parent_share": 0.5,
+                  "dispersion_pct": 5.4936,
+                  "positive_share": 0.5,
+                  "priced_members": 10,
+                  "top_abs_move_share": 0.1722,
+                  "top_abs_move_ticker": "AMD"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -1.424,
+                  "change_vs_parent_pct": -1.4084,
+                  "slope_vs_market_pct_per_session": 1.3718,
+                  "slope_vs_parent_pct_per_session": -0.2197
+                },
+                "return_pct": -1.5154
+              },
+              "60": {
+                "excess_vs_market_pct": -26.9208,
+                "excess_vs_parent_pct": -6.6197,
+                "market_return_pct": 4.138,
+                "parent_return_pct": -16.1632,
+                "participation": {
+                  "beat_market_share": 0.2,
+                  "beat_parent_share": 0.3,
+                  "dispersion_pct": 17.4241,
+                  "positive_share": 0.2,
+                  "priced_members": 10,
+                  "top_abs_move_share": 0.1619,
+                  "top_abs_move_ticker": "ON"
+                },
+                "reason_codes": [],
+                "relative_strength": {
+                  "change_vs_market_pct": -25.8511,
+                  "change_vs_parent_pct": -7.8959,
+                  "slope_vs_market_pct_per_session": -0.4186,
+                  "slope_vs_parent_pct_per_session": -0.0779
+                },
+                "return_pct": -22.7828
+              }
+            }
+          }
+        ]
+      }
+    },
+    "windows_sessions": [
+      1,
+      3,
+      5,
+      10,
+      20,
+      60
+    ]
+  },
+  "present_member_count": 46,
+  "price_manifest_sha256": "f1a47938cae47d7709e3c1f052b581efe042757cf2fba1df69c671ddb37cdb81",
+  "requested_member_count": 47,
+  "schema": "theme_intelligence.lane_c_closed_session_proof.v1",
+  "subject_commit": "2208fe40039d356929fac0f96b626edc33d42288",
+  "summary": [
+    {
+      "acceleration_state": "DETERIORATING",
+      "current_session_members": 8,
+      "excess_vs_parent_5_session_pct": 2.7352,
+      "key": "semiscompute",
+      "name": "Compute",
+      "priced_members": 8,
+      "return_20_session_pct": 7.8355,
+      "return_5_session_pct": 2.6267,
+      "return_60_session_pct": -5.3124,
+      "rs_change_vs_market_5_session_pct": 2.7219,
+      "rs_slope_vs_market_5_session_pct_per_session": 1.9861,
+      "status": "MEASURED"
+    },
+    {
+      "acceleration_state": "DETERIORATING",
+      "current_session_members": 5,
+      "excess_vs_parent_5_session_pct": 3.5091,
+      "key": "semismemory",
+      "name": "Memory",
+      "priced_members": 5,
+      "return_20_session_pct": 1.4255,
+      "return_5_session_pct": 3.4006,
+      "return_60_session_pct": -15.6379,
+      "rs_change_vs_market_5_session_pct": 3.4965,
+      "rs_slope_vs_market_5_session_pct_per_session": 1.9828,
+      "status": "MEASURED"
+    },
+    {
+      "acceleration_state": "DETERIORATING",
+      "current_session_members": 7,
+      "excess_vs_parent_5_session_pct": -2.6986,
+      "key": "semisanalog",
+      "name": "Analog",
+      "priced_members": 7,
+      "return_20_session_pct": -1.7316,
+      "return_5_session_pct": -2.8071,
+      "return_60_session_pct": -21.0918,
+      "rs_change_vs_market_5_session_pct": -2.7169,
+      "rs_slope_vs_market_5_session_pct_per_session": 0.29,
+      "status": "MEASURED"
+    },
+    {
+      "acceleration_state": "DETERIORATING",
+      "current_session_members": 5,
+      "excess_vs_parent_5_session_pct": 0.2048,
+      "key": "semiswireless",
+      "name": "Wireless",
+      "priced_members": 6,
+      "return_20_session_pct": 10.5976,
+      "return_5_session_pct": 0.0963,
+      "return_60_session_pct": -0.2988,
+      "rs_change_vs_market_5_session_pct": 0.1892,
+      "rs_slope_vs_market_5_session_pct_per_session": 1.3621,
+      "status": "PARTIAL"
+    },
+    {
+      "acceleration_state": "DETERIORATING",
+      "current_session_members": 2,
+      "excess_vs_parent_5_session_pct": 2.8185,
+      "key": "semisfoundries",
+      "name": "Foundries",
+      "priced_members": 4,
+      "return_20_session_pct": 13.0398,
+      "return_5_session_pct": 2.71,
+      "return_60_session_pct": -19.8681,
+      "rs_change_vs_market_5_session_pct": 2.8053,
+      "rs_slope_vs_market_5_session_pct_per_session": 2.2364,
+      "status": "PARTIAL"
+    },
+    {
+      "acceleration_state": "DETERIORATING",
+      "current_session_members": 4,
+      "excess_vs_parent_5_session_pct": -0.454,
+      "key": "semisdesigntools",
+      "name": "Design Tools",
+      "priced_members": 6,
+      "return_20_session_pct": 0.5398,
+      "return_5_session_pct": -0.5625,
+      "return_60_session_pct": -19.73,
+      "rs_change_vs_market_5_session_pct": -0.4703,
+      "rs_slope_vs_market_5_session_pct_per_session": 1.7671,
+      "status": "PARTIAL"
+    },
+    {
+      "acceleration_state": "DETERIORATING",
+      "current_session_members": 5,
+      "excess_vs_parent_5_session_pct": -2.4239,
+      "key": "semislithography",
+      "name": "Lithography",
+      "priced_members": 5,
+      "return_20_session_pct": -7.759,
+      "return_5_session_pct": -2.5324,
+      "return_60_session_pct": -22.7415,
+      "rs_change_vs_market_5_session_pct": -2.442,
+      "rs_slope_vs_market_5_session_pct_per_session": 0.8706,
+      "status": "MEASURED"
+    },
+    {
+      "acceleration_state": "DETERIORATING",
+      "current_session_members": 5,
+      "excess_vs_parent_5_session_pct": 1.2578,
+      "key": "semispackaging",
+      "name": "Packaging",
+      "priced_members": 6,
+      "return_20_session_pct": 3.6298,
+      "return_5_session_pct": 1.1493,
+      "return_60_session_pct": -13.8387,
+      "rs_change_vs_market_5_session_pct": 1.2431,
+      "rs_slope_vs_market_5_session_pct_per_session": 2.9394,
+      "status": "PARTIAL"
+    },
+    {
+      "acceleration_state": "DETERIORATING",
+      "current_session_members": 10,
+      "excess_vs_parent_5_session_pct": -1.4069,
+      "key": "semisnextgen",
+      "name": "Next-Gen",
+      "priced_members": 13,
+      "return_20_session_pct": -0.9534,
+      "return_5_session_pct": -1.5154,
+      "return_60_session_pct": -22.7828,
+      "rs_change_vs_market_5_session_pct": -1.424,
+      "rs_slope_vs_market_5_session_pct_per_session": 1.3718,
+      "status": "PARTIAL"
+    }
+  ]
+}

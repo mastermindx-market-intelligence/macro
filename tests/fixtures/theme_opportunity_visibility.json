@@ -1,0 +1,48 @@
+{
+  "_fixture_only": true,
+  "_note": "Isolated display-contract fixtures. Never publish as live market data.",
+  "cases": [
+    {
+      "name": "qualified_entry",
+      "theme_id": "ai_semiconductors",
+      "setup_id": "ai_semiconductors",
+      "current_lens": "foresight",
+      "as_of": "2026-09-18",
+      "dimensions": {
+        "leadership": {"state": "unknown"},
+        "thesis": {"state": "positive", "en": "Confirming", "zh": "确认中", "receipt_en": "Supply and estimates are aligning.", "receipt_zh": "供给与预期正在对齐。"},
+        "crowding": {"state": "unknown"},
+        "entry": {"state": "positive", "en": "Qualified entry", "zh": "入场已确认", "receipt_en": "Fixture-only accepted entry field.", "receipt_zh": "仅用于夹具的已接受入场字段。"},
+        "health": {"state": "positive", "en": "Current", "zh": "当前", "receipt_en": "Snapshot is present.", "receipt_zh": "快照存在。"}
+      }
+    },
+    {
+      "name": "adverse_stale",
+      "theme_id": "defense_aerospace",
+      "setup_id": "defense",
+      "current_lens": "radar",
+      "as_of": "2026-09-18",
+      "dimensions": {
+        "leadership": {"state": "negative", "en": "Price leads activity", "zh": "价格领先活动"},
+        "thesis": {"state": "negative", "en": "Deteriorating", "zh": "正在恶化"},
+        "crowding": {"state": "warn", "en": "Heavy", "zh": "拥挤"},
+        "entry": {"state": "warn", "en": "Wait", "zh": "等待"},
+        "health": {"state": "stale", "en": "Stale inputs", "zh": "输入过期", "receipt_en": "At least one input is older than the snapshot.", "receipt_zh": "至少一个输入早于快照。"}
+      }
+    },
+    {
+      "name": "partial_unknown",
+      "theme_id": "copper_steel_electrify",
+      "setup_id": null,
+      "current_lens": "tracker",
+      "as_of": null,
+      "dimensions": {
+        "leadership": {"state": "unknown"},
+        "thesis": {"state": "positive", "en": "Early", "zh": "早期"},
+        "crowding": {"state": "unknown"},
+        "entry": {"state": "unknown"},
+        "health": {"state": "unknown"}
+      }
+    }
+  ]
+}
