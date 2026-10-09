@@ -374,7 +374,7 @@ def test_late_anchor_quote_cannot_retroactively_be_original_decision():
 
 
 def test_future_quote_after_label_evaluation_not_available():
-    r=label(quotes=[q("anchor",120),q("late",190,bid="102",ask="103",available=310)])
+    r=label(max_quote_age_ns=50, quotes=[q("anchor",120),q("late",190,bid="102",ask="103",available=310)])
     assert r["state"]=="UNOBSERVABLE"
     assert r["reason"]["forward"]=="STALE_NBBO"
 
