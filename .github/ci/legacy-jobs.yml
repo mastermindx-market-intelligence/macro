@@ -1501,6 +1501,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      # Rotation/risk context extends this owner's actual transitive read closure.
+      - "engine/neuralweb/rotation_risk_context.py"
       - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/market_observations.py"
@@ -4669,7 +4671,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml pandas pyarrow requests jsonschema
+        run: pip install pytest pyyaml pandas pyarrow requests jsonschema jinja2 plotly
       - name: synapse registry integrity (hard gate)
         run: python3 scripts/check_synapse_registry.py
       - name: synapse read-gate — warn tier + Article-2 hard fail
@@ -4679,7 +4681,7 @@ jobs:
       - name: factor boundary selftest (guard fires on planted violations)
         run: python3 scripts/check_factor_boundaries.py --selftest
       - name: synapse read-gate unit tests
-        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py -q
+        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py -q
       - name: factor deescalation shadow + boundary guard tests
         run: python -m pytest tests/test_factor_deescalation_shadow.py -q
       - name: edgar 8-K item-code expansion unit tests (LHB-R7)
@@ -5929,6 +5931,11 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      # Rotation/risk context extends this owner's actual transitive read closure.
+      - "engine/neuralweb/rotation_risk_context.py"
+      - "engine/risk_envelope.py"
+      - "scripts/build_risk_envelope.py"
+      - "site/marketdata/rotation_events.json"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -8393,6 +8400,88 @@ jobs:
     # Ratio Lens W1 (RL-R1..R16): AUTHORITY block, forbidden-key walk,
     # ledger gate, idempotency, builder exit-0, state-signature isolation,
     # anchor honesty. Display-tier oracle organ; no gauntlet.
+    # The PIT suites reach world_state through rotation fixtures. Their
+    # temporary-output traversals and the imported optional thematic dispatcher
+    # infer broad fallback roots, not reads of unrelated application/templates.
+    # Curate the tracked import/read closure plus the loaded pair registry;
+    # the shared closure guard keeps every concrete dependency selecting this job.
+    scope: exclusive
+    paths:
+      - "config/sector_legs.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_graph_identity_breaks.yml"
+      - "config/theme_sources.yml"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
+      - "contracts/theme_graph/theme_state.v2.schema.json"
+      - "contracts/theme_graph/theme_state_generation.v1.schema.json"
+      - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
+      - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
+      - "data/oracle/ratio_pairs.json"
+      - "engine/__init__.py"
+      - "engine/basket_index.py"
+      - "engine/basket_membership_pit.py"
+      - "engine/ledger_lane.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/_dates.py"
+      - "engine/neuralweb/_law.py"
+      - "engine/neuralweb/contradictions.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/rotation_risk_context.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/neuralweb/thematic_state.py"
+      - "engine/neuralweb/theme_state_adapter.py"
+      - "engine/neuralweb/theme_state_generation.py"
+      - "engine/neuralweb/theme_state_generation_reader.py"
+      - "engine/neuralweb/world_state.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/risk_envelope.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_legs.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/theme_graph/theme_state.py"
+      - "engine/theme_graph/theme_state_production.py"
+      - "engine/theme_graph/theme_state_use_reader.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/dataos/identity.py"
+      - "lib/nyse_calendar.py"
+      - "lib/procutil.py"
+      - "lib/store.py"
+      - "scripts/__init__.py"
+      - "scripts/build_oracle_ratio_lens.py"
+      - "scripts/build_risk_envelope.py"
+      - "scripts/build_thematic_state.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/oracle_state.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/factordata/us_standouts.json"
+      - "site/intelligence/briefing.json"
+      - "site/marketdata/rotation_events.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "tests/test_oracle_ratio_lens.py"
+      - "tests/test_rotation_early_context.py"
+      - "tests/test_rotation_events.py"
+      - "tests/test_rotation_events_v2.py"
+      - "tests/test_rotation_flow_pit.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8402,7 +8491,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy scipy pyyaml pyarrow
       - name: ratio lens test suite
-        run: python -m pytest tests/test_oracle_ratio_lens.py -q
+        run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_flow_pit.py -q
 
   hk-confirming-turn:
     if: ${{ false }}
@@ -8803,6 +8892,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Rotation/risk context extends this owner's actual transitive read closure.
+      - "engine/neuralweb/rotation_risk_context.py"
       - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/market_observations.py"
@@ -10412,6 +10503,11 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      # Rotation/risk context extends this owner's actual transitive read closure.
+      - "engine/neuralweb/rotation_risk_context.py"
+      - "engine/risk_envelope.py"
+      - "scripts/build_risk_envelope.py"
+      - "site/marketdata/rotation_events.json"
       - "lib/exchange_holidays.py"
       - "config/regime_outlook_mapping_v2.json"
       - "engine/rates_command_outlook.py"
@@ -12795,6 +12891,9 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      # Rotation/risk context extends this owner's actual transitive read closure.
+      - "scripts/build_risk_envelope.py"
+      - "site/marketdata/rotation_events.json"
       - "config/**"
       - "contracts/options/OPTIONS_INTEL_BRIEF_V1.md"
       - "data/**"
@@ -19196,6 +19295,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Rotation/risk context extends this owner's actual transitive read closure.
+      - "engine/neuralweb/rotation_risk_context.py"
       - "lib/us_cash_calendar.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/ci.yml"
