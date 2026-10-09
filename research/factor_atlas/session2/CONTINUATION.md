@@ -292,3 +292,51 @@ of workflow+receipt. Then consume new-head CI verdict and
 independent scientific/source ownership gates; remain Draft/HOLD,
 licensed cohort NOT_ADMITTED and all trading/publication authority
 false.
+
+## Independent S2-P4 candidate schema and shape-only CI
+
+Prior GitHub original-branch accepted head `f87300c835be44abb7689e0976ce9c1e6ff4fa9a`. Protected Mastermind
+`7d82b9adb839d54e4ab25378ca333e498dd83fcc`,
+Skillpack 1.0.1/bootstrap 1 compatible. Present Chairman intent is to
+advance the unfinished Factor Atlas Session 2 commission. Same original
+source writer and branch; no duplicate Job or publication plane.
+
+**Accepted new independent slice:** S2-P4 STRUCTURE-ONLY candidate JSON
+Schema for `factor_atlas.capital_pressure.read.v1`, one fabricated
+factor-window JSON example and receipt, `READ_CONTRACT_CANDIDATE.md`,
+and `test_read_contract_schema.py` with **24 passing structural tests**.
+The schema rejects 15 independently perturbed samples, retains null
+versus zero, incomplete window refusal, source-quality NOT_ADMITTED,
+all-five FALSE authority, no beneficial-owner fields, confidence or
+predicted-return overclaim. The focused GitHub Actions fixture workflow
+names nine suites and research requirements now pin jsonschema 4.26.0.
+**250/250** selected source + shape tests passed on M2 Python 3.12.
+The actual repository unrun auditor previously recognized all eight,
+and the ninth is explicitly named/triggered (full new-head check pending).
+Proof/digests in `evidence/native_read_contract_tests.json` and
+`evidence/capital_pressure_contract_validation.json`.
+
+**Explicitly NOT accepted / DO NOT PUBLISH:** uncommitted local
+`prototype/factor_read_model.py` and `test_factor_read_model.py`.
+Initial simple geometry 24 tests passed, then four additional integrity
+falsifiers failed (constituent category amount reconciliation,
+factor category sum, roster-version baseline key reuse, preclose
+source_known). The attempted exact code patch was explicitly **BLOCKED
+BY OPENAI SAFETY CHECKS** before a completion receipt. The targeted
+original file was read back unchanged. Never retry, split,
+delegate or switch tools/accounts/models/carriers to accomplish
+that denied patch. The two red experimental files are EXCLUDED from
+Git staging, manifest and hosted CI. Their exact local SHA-256
+identities are in the accepted research receipt solely for recovery.
+Schema-valid does NOT mean model integrity accepted or market rights.
+
+**Frontier after source publication:** verify remote head/manifest and
+new-head GitHub Actions. S2-P1 real AAPL/MSFT/NVDA/SPY minute source,
+rights, listing/calendar, first-seen reader and action-adjusted
+price*volume basis remain NOT_ADMITTED. Terminal #844 / Macro #8623
+original source owners stay Draft/HOLD at last observation; their
+work cannot be reassigned by this document. No source file denied
+earlier, benchmark edit, fresh-main source comparison, release,
+ranking/alert/sizing/trading or deployed UI work was performed.
+The true read integrity calculation and acceptance must await real
+platform-permitted recovery and incumbent scientific/consumer owners.

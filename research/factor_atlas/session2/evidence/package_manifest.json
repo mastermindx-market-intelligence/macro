@@ -2,15 +2,15 @@
   "ci_registration_receipt": "session2/evidence/ci_registration_preflight.json",
   "customer_publication_authorized": false,
   "external_ci_workflow_path": ".github/workflows/factor-atlas-reference.yml",
-  "external_ci_workflow_sha256": "9a37ca013fa429ba7e4e33c6ba23e57dc8a4dff299788cad93691f3c4b9945fc",
+  "external_ci_workflow_sha256": "020989390f0c51228614785c7012aa862c27be55196898da5ecad8405f5ce4b0",
   "files": {
     "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
-      "bytes": 89288,
-      "sha256": "cc3c67196c553cc9760f5b114bc0e3723042dec4d78f301cbaafd37fc23ce780"
+      "bytes": 93337,
+      "sha256": "f8dce29820ae0804b3f6494cad8f75c134e29125ab6c0f103b9080fe6af24ff2"
     },
     "session2/CONTINUATION.md": {
-      "bytes": 20173,
-      "sha256": "288f1ea913618119d1ad37adbebd1cfcf3ee5024bc0617f7ff68821da397e54c"
+      "bytes": 23085,
+      "sha256": "a49e2d2b8b59da2229f9ae390dfd37840d97efa9f93737c17337cca375201147"
     },
     "session2/CUMULATIVE_WINDOW_CONTRACT.md": {
       "bytes": 2197,
@@ -24,13 +24,29 @@
       "bytes": 5830,
       "sha256": "7f3e9a0e47acf39a20f34aa6a3020265e865aaa96441d6945c92db6b1516e874"
     },
+    "session2/READ_CONTRACT_CANDIDATE.md": {
+      "bytes": 5761,
+      "sha256": "8b7082cabb4b9860b4408d5138d17d84becf5d86c8e154ff20235cae66d49083"
+    },
     "session2/SOURCE_INTAKE_PREFLIGHT.md": {
       "bytes": 9998,
       "sha256": "1f6354c6fb870c33eb10e905895216f0d02a854a2d6b6f22420f7d8199b5c1e6"
     },
+    "session2/contracts/capital_pressure_read_v1_candidate.schema.json": {
+      "bytes": 19142,
+      "sha256": "7a0d4c9758417fb26617281f8464c23afbcb4a203acfd20f8a277d777dd2b7fd"
+    },
     "session2/evidence/benchmark.json": {
       "bytes": 1341,
       "sha256": "196e3b469c399c114fbde8f9e092ca920252ddac60c50ad4182be8105d7c60ac"
+    },
+    "session2/evidence/capital_pressure_contract_validation.json": {
+      "bytes": 1238,
+      "sha256": "6de471cd76f2ffcf4e679bfc3a713ca59e0fc11eb4e6ffe1819f8af40a4ec7b9"
+    },
+    "session2/evidence/capital_pressure_read_synthetic.json": {
+      "bytes": 6914,
+      "sha256": "3bf7717ad0e52fb1b2d5a9b4405643d134972791ada12597ed61a44bad059e71"
     },
     "session2/evidence/ci_registration_preflight.json": {
       "bytes": 3597,
@@ -51,6 +67,10 @@
     "session2/evidence/native_r2_tests.json": {
       "bytes": 1668,
       "sha256": "ceeeeb1cba09a1b91d3cee46fc73e8640ff34e95f7790bab4757d5542161f1e2"
+    },
+    "session2/evidence/native_read_contract_tests.json": {
+      "bytes": 3032,
+      "sha256": "8eca4bb371656266ad86e1d7e184e5dc83979d668c2da52a9dc9b714daed9af4"
     },
     "session2/evidence/native_source_preflight_tests.json": {
       "bytes": 2861,
@@ -108,6 +128,10 @@
       "bytes": 10233,
       "sha256": "a7eb61319530ac81c50214dfe69fd0b62051af488d65656254894dc616cb040e"
     },
+    "session2/prototype/test_read_contract_schema.py": {
+      "bytes": 3674,
+      "sha256": "e6a914384683558cbb6c49dbd59acd2a3de5a7b91ad593f4c16b2cbaaaed7570"
+    },
     "session2/prototype/test_source_preflight.py": {
       "bytes": 10144,
       "sha256": "c90b4dbd04e62dec18c7a0069450d330f963301f02174e43b9e48e58a9cfed9c"
@@ -137,23 +161,24 @@
       "sha256": "7078a1ba586f566a7e7b3c588fed45ee61b4c93ca50ccf761ced9e94da70a647"
     },
     "session2/requirements-research.txt": {
-      "bytes": 41,
-      "sha256": "30702d3dc61bc5d33853f1ff92cd2092a483a1d64f8a4f8f88c82295ca928bfe"
+      "bytes": 60,
+      "sha256": "63112f3d358ea616a22333518b73bb36d29e30e0dc83b1a20bf3f3b3a831d5c8"
     }
   },
   "market_pilot_admitted": false,
   "native_calibration_test_receipt": "session2/evidence/native_calibration_tests.json",
   "native_preflight_test_receipt": "session2/evidence/native_source_preflight_tests.json",
   "native_quote_test_receipt": "session2/evidence/native_quote_tests.json",
-  "native_scoped_tests_passed": 226,
+  "native_read_contract_test_receipt": "session2/evidence/native_read_contract_tests.json",
+  "native_scoped_tests_passed": 250,
   "native_test_receipt": "session2/evidence/native_window_tests.json",
-  "predecessor_commit": "a8b79bd03cd839bbc9b330542c4b932d31dcbad5",
-  "prepared_at_utc": "2026-10-09T09:15:17.720685+00:00",
+  "predecessor_commit": "f87300c835be44abb7689e0976ce9c1e6ff4fa9a",
+  "prepared_at_utc": "2026-10-09T09:56:06.467219+00:00",
   "report_structure_checks": {
     "external_source_records": 13,
     "implementation_packets": 7,
     "internal_source_records": 10,
-    "numbered_sections": 23
+    "numbered_sections": 24
   },
   "schema": "factor_atlas.session2.research_package.v1"
 }
