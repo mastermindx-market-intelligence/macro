@@ -368,6 +368,23 @@ def cohort_row_from_source_minutes(
         total=_shares(minute.get("source_all_printed_shares"),"source_all_printed_shares")
         if included+unknown+excluded != total:
             raise PilotEvidenceRefusal("source minute native share-volume denominator mismatch")
+        volume_counts=[
+            _int(minute.get(name),name) for name in (
+                "n_source_volume_included_prints",
+                "n_source_volume_excluded_prints",
+                "n_source_volume_unknown_prints",
+            )
+        ]
+        if sum(volume_counts)!=_int(minute.get("n_sampled_prints"),"n_sampled_prints"):
+            raise PilotEvidenceRefusal("source minute share eligibility counts inconsistent")
+        if any((amount==0) != (n==0) for amount,n in zip(
+            (included,excluded,unknown), volume_counts
+        )):
+            raise PilotEvidenceRefusal("source share quantities and print counts disagree")
+        if (_int(minute.get("max_quote_age_ns"),"max_quote_age_ns") <= 5_000_000_000
+                and _int(minute.get("n_lit_classified_quote_gt5s_prints"),
+                         "n_lit_classified_quote_gt5s_prints") > 0):
+            raise PilotEvidenceRefusal("impossible 5s quote-age bucket from tighter policy")
         source_volume+=included
         source_unknown_volume+=unknown
         receipts.append((start,end,decision,receipt,record_sha))
