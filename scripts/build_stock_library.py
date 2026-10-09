@@ -978,6 +978,9 @@ def _enrich_stock_technicals(rec: dict, close: pd.Series,
     prior = dict(rec.get("tech") or {})
     # If the new price has no valid date it cannot inherit the previous price's date.
     prior.pop("price_asof", None)
+    # The thin price's native unit cannot qualify a price from another observation.
+    # Only a unit actually returned by the richer source could survive this merge.
+    prior.pop("currency", None)
     rec["tech"] = _bind_price_clock({**prior, **rich}, source_close)
     if sq:
         rec["vol_squeeze"] = sq

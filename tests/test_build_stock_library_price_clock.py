@@ -86,6 +86,15 @@ def test_rich_invalid_price_cannot_inherit_the_thin_clock():
     assert "price_asof" not in rec["tech"]
 
 
+def test_rich_price_cannot_inherit_an_unqualified_thin_currency():
+    rec = seed(closes())
+    rec["tech"]["currency"] = "USD"
+    library._enrich_stock_technicals(rec, closes("2026-09-25") * 0.7, None, None)
+    assert rec["tech"]["price"] == 91.7
+    assert rec["tech"]["price_asof"] == "2026-09-25"
+    assert "currency" not in rec["tech"]
+
+
 @pytest.mark.parametrize("price", [None, True, "131", np.nan, np.inf, -1, 0, 999])
 def test_invalid_or_mismatched_price_has_no_borrowed_clock(price):
     original = {"price": price, "price_asof": "2099-01-01", "other": "untouched"}
