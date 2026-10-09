@@ -16,7 +16,7 @@ from threading import Lock
 from datetime import datetime, timedelta, timezone
 from importlib import import_module
 from typing import Any, Callable
-from urllib.parse import parse_qsl, urlsplit
+from urllib.parse import parse_qsl, unquote, urlsplit
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -25,6 +25,7 @@ from app import edge_client
 router = APIRouter()
 _TICKER = re.compile(r"[A-Z][A-Z0-9.\-]{0,9}\Z")
 _EVENT = re.compile(r"[A-Za-z0-9_.:\-]{1,128}\Z")
+_SOURCE_URL_EMAIL = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}", re.IGNORECASE)
 _STATUSES = {"SUPPORTED", "NOT_COVERED", "TEMPORARILY_UNAVAILABLE", "RIGHTS_BLOCKED"}
 _PUBLIC_COVERAGE = {
     "SUPPORTED": "Only rights-qualified public evidence is displayed; other sources may be excluded.",
@@ -162,9 +163,37 @@ def _public_url(raw: Any) -> str:
     # A public "source" link must never contain authentication or subscriber PII.
     forbidden_keys = {"email", "e_mail", "phone", "ip", "token", "access_token",
                       "auth", "authorization", "api_key", "apikey", "secret",
-                      "session", "user_id"}
-    if any(key.lower() in forbidden_keys for key, _ in parse_qsl(u.query, keep_blank_values=True)):
-        raise ValueError("private source query")
+                      "session", "user_id", "session_id", "signature", "password",
+                      "credential", "client_secret", "jwt", "bearer"}
+    # Source links may be forwarded to a third party by the browser. Inspect
+    # decoded path/query/fragment as well as the original spelling; a private
+    # parameter hidden under #token= or ?ref=ok%26token%3D... is still private.
+    # Never rewrite a safe provider URL; only accept the original or deny it.
+    decoded_url = raw
+    for _ in range(4):
+        try:
+            decoded_parts = urlsplit(decoded_url)
+        except ValueError:
+            raise ValueError("invalid encoded source URL") from None
+        fields = (parse_qsl(decoded_parts.query, keep_blank_values=True) +
+                  parse_qsl(decoded_parts.fragment, keep_blank_values=True))
+        if any(key.lower() in forbidden_keys for key, _ in fields):
+            raise ValueError("private source URL parameter")
+        if (_SOURCE_URL_EMAIL.search(decoded_url) or
+                any(ord(ch) < 32 or ord(ch) == 127 for ch in decoded_url)):
+            raise ValueError("identity or control in public source URL")
+        expanded = unquote(decoded_url)
+        if expanded == decoded_url:
+            break
+        decoded_url = expanded
+    else:
+        # Reject unbounded decoding rather than leave a fifth layer hiding
+        # private keys, recipient identifiers, or control characters.
+        if unquote(decoded_url) != decoded_url:
+            raise ValueError("excessive source URL encoding")
+    if (_SOURCE_URL_EMAIL.search(decoded_url) or
+            any(ord(ch) < 32 or ord(ch) == 127 for ch in decoded_url)):
+        raise ValueError("identity or control in public source URL")
     try:
         ipaddress.ip_address(u.hostname)
     except ValueError:
@@ -268,8 +297,15 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
                 or (relation == "EVIDENCED_INDIRECT" and not relation_ids)):
             raise ValueError("unsubstantiated relationship")
         dossier = item.get("dossier_path")
-        if dossier is not None and dossier != f"/stocks/{ticker}/":
+        # Existing canonical stock-page builder renders /stocks/<TICKER>.html.
+        # The isolated 01 producer originally emitted the legacy directory
+        # spelling; accept that *exact* one-symbol spelling only as an input,
+        # but always return the real published .html URL to the visitor.
+        canonical_dossier = f"/stocks/{ticker}.html"
+        if dossier not in (None, canonical_dossier, f"/stocks/{ticker}/"):
             raise ValueError("unsafe dossier path")
+        if dossier is not None:
+            dossier = canonical_dossier
         headline = item.get("headline")
         if not isinstance(headline, str) or not headline.strip() or len(headline) > 180:
             raise ValueError("invalid headline")
@@ -346,17 +382,26 @@ async def optin_request(request: Request):
     _require_enabled("CATALYST_PUBLIC_ENABLED")
     _require_enabled("CATALYST_OPTIN_ENABLED")
     _rate_or_429(request, "scan")
+    # Public consent requests must not be accepted as browser-simple form/text
+    # cross-origin POSTs. The verified sender/identity owners remain downstream.
+    content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    if content_type != "application/json":
+        raise HTTPException(415, "application/json required")
     body = await _read_json(request, max_bytes=4096)
     if not isinstance(body, dict):
         raise HTTPException(400, "Invalid opt-in request")
     # The *only* supported identity/OTP/consent implementation is Session 02.
     # No fallback: a missing module, owner RPC, or configured service yields 503.
     try:
-        from app.catalyst_optin import request_optin
+        from app.catalyst_optin import request_optin, _abuse_guard
         from engine.marketing.catalyst_lifecycle import FunnelGate
     except ImportError:
         raise HTTPException(503, "Verification service unavailable") from None
     try:
+        # Account-affecting OTP requests must use the SAME shared abuse owner
+        # as Session 02's verify route, not just the anonymous scan limiter.
+        # A missing shared guard is 503, never an unthrottled identity effect.
+        _abuse_guard(request)
         result = request_optin(body)
     except FunnelGate as exc:
         raise HTTPException(exc.status, exc.code) from None
@@ -391,10 +436,35 @@ def render_first_value(data: dict | None, value: str = "", error: str = "") -> s
             content += f'<section aria-label="{e(item["ticker"])}"><h2>{e(item["ticker"])} · {e(item["status"])}</h2>'
             if item["status"] == "SUPPORTED":
                 content += f'<h3>{e(item["headline"])}</h3>'
+                content += (
+                    f'<p>Evidence checked <time datetime="{e(item["as_of_utc"], quote=True)}">'
+                    f'{e(item["as_of_utc"])}</time>. '
+                    f'Relationship: {e(item["relationship"])}. '
+                    f'Correction state: {e(item["correction_state"])}.</p>'
+                )
+                content += '<h4>What changed</h4><ul>'
                 for claim in item["what_changed"]:
-                    content += f'<p>{e(claim["text"])}</p>'
+                    content += f'<li>{e(claim["text"])}</li>'
+                content += '</ul>'
+                if item["scenarios"]:
+                    content += '<h4>Conditional scenarios, not predictions</h4><ul>'
+                    for scenario in item["scenarios"]:
+                        content += f'<li>{e(scenario["case"])}: {e(scenario["trigger"])}</li>'
+                    content += '</ul>'
+                if item["invalidators"]:
+                    content += '<h4>What could invalidate this reading</h4><ul>'
+                    for invalidator in item["invalidators"]:
+                        content += f'<li>{e(invalidator["text"])}</li>'
+                    content += '</ul>'
+                content += '<h4>Public source references</h4><ul>'
                 for src in item["sources"]:
-                    content += f'<p>Source: <a rel="noopener noreferrer" href="{e(src["url"], quote=True)}">{e(src["title"])}</a></p>'
+                    content += (
+                        f'<li><a rel="noopener noreferrer" href="{e(src["url"], quote=True)}">'
+                        f'{e(src["title"])}</a> · published '
+                        f'<time datetime="{e(src["published_at_utc"], quote=True)}">'
+                        f'{e(src["published_at_utc"])}</time></li>'
+                    )
+                content += '</ul>'
                 if item["dossier_path"]:
                     content += f'<a href="{e(item["dossier_path"], quote=True)}">Public company dossier</a>'
                 content += '<p>Want a meaningful correction/update? Opt-in is optional and requires separate email verification.</p>'
