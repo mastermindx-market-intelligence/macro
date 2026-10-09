@@ -196,6 +196,12 @@ class InFlightNBBO:
             if quotes[k]["original_frame_received_ns"] <= decision_ns:
                 return null("AMBIGUOUS_PRIOR_QUOTE_ORDER")
             k -= 1
+        # A SIP-prior quote that arrived only AFTER the trade was not available
+        # when that print was received. Do not sign it against a hindsight
+        # reconstruction and call the result contemporaneous source pressure.
+        # The matured research/REST path may study later vintages separately.
+        if q["original_frame_received_ns"] > trade["original_frame_received_ns"]:
+            return null("QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT")
         age = stamp - q["sip_timestamp_ns"]
         if age > max_quote_age_ns:
             return null("QUOTE_STALE")
