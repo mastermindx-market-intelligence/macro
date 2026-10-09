@@ -22429,6 +22429,7 @@ jobs:
       - tests/conftest.py
       - tests/test_company_pinned_relationship_candidates.py
       - tests/test_company_relationship_candidates.py
+      - tests/test_company_relationship_review_set.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22438,4 +22439,4 @@ jobs:
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
       - name: File and pinned-source replay, manual boundary and temporal refusals
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py -q
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py -q
