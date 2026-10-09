@@ -54,11 +54,22 @@ log = logging.getLogger("audit_claim_accountability")
 # I/O HELPERS
 # ---------------------------------------------------------------------------
 
-def _read_jsonl(path: Path) -> list[dict]:
-    """Load a JSONL file; return empty list on any failure."""
+def _read_jsonl(path: Path, *, qledger_claims: bool = False) -> list[dict]:
+    """Keep legacy failure policy; native claims integrity failures propagate."""
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
     try:
-        lines = path.read_text(encoding="utf-8").splitlines()
+        if qledger_claims:
+            from engine.qledger_store import read_raw_lines
+
+            lines = read_raw_lines(path, missing_ok=False)
+        else:
+            lines = path.read_text(encoding="utf-8").splitlines()
         return [json.loads(line) for line in lines if line.strip()]
+    except SnapshotIntegrityError:
+        if qledger_claims:
+            raise
+        return []
     except Exception:
         return []
 
@@ -220,7 +231,7 @@ def run(root: Path | None = None, write: bool = True) -> dict:
     grades_path = root / "data" / "qledger" / "grades.jsonl"
     track_record_path = root / "site" / "qledger" / "track_record.json"
 
-    claims = _read_jsonl(claims_path)
+    claims = _read_jsonl(claims_path, qledger_claims=True)
     grades = _read_jsonl(grades_path)
     track_record = _read_json(track_record_path)
 

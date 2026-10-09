@@ -509,11 +509,22 @@ def _grader_wired(graders: list[str]) -> str:
     return ("Y:" + ",".join(graders)) if graders else "N"
 
 
-def _read_jsonl(path: Path) -> list[dict]:
-    """Load a JSONL file; return empty list on any failure."""
+def _read_jsonl(path: Path, *, qledger_claims: bool = False) -> list[dict]:
+    """Keep legacy failure policy; native claims integrity failures propagate."""
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
     try:
-        lines = path.read_text().splitlines()
+        if qledger_claims:
+            from engine.qledger_store import read_raw_lines
+
+            lines = read_raw_lines(path, missing_ok=False, encoding=None)
+        else:
+            lines = path.read_text().splitlines()
         return [json.loads(l) for l in lines if l.strip()]
+    except SnapshotIntegrityError:
+        if qledger_claims:
+            raise
+        return []
     except Exception:
         return []
 
@@ -574,8 +585,21 @@ def audit_entry(spec: dict, root: Path) -> dict:
 
     p = root / rel
 
+    from engine.qledger_store import uses_native_claims
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
+    native_claims = (
+        fmt == "jsonl"
+        and p == root / "data" / "qledger" / "claims.jsonl"
+        and uses_native_claims(p)
+    )
+
     # --- storage status ---
-    if fmt == "parquet_dir":
+    if native_claims:
+        # This is a logical read candidate, not a claim about a local file.
+        # Only the successful complete read below can publish native presence.
+        exists = True
+    elif fmt == "parquet_dir":
         exists = p.is_dir() and any(p.glob("*.jsonl"))
     else:
         exists = p.is_file()
@@ -602,7 +626,9 @@ def audit_entry(spec: dict, root: Path) -> dict:
 
     try:
         if fmt == "jsonl":
-            rows = _read_jsonl(p)
+            rows = _read_jsonl(
+                p, qledger_claims=(p == root / "data" / "qledger" / "claims.jsonl")
+            )
             n_logged = len(rows)
             if grade_field:
                 # non-null / truthy graded field = graded
@@ -636,6 +662,24 @@ def audit_entry(spec: dict, root: Path) -> dict:
             except Exception:
                 n_logged = 1  # file exists, parseable count uncertain
 
+    except SnapshotIntegrityError as exc:
+        log.warning("audit_grading_closure: claims integrity failed for %s: %s", key, exc)
+        return {
+            "key": key,
+            "path": rel,
+            "storage": "integrity-error",
+            "grader_wired": _grader_wired(graders),
+            "graders": graders,
+            "n_logged": None,
+            "n_graded": None,
+            "last_graded_at": None,
+            "tune_step": "Y" if tune_step else "N",
+            "verdict": "STORAGE-ERROR",
+            "logical_snapshot_complete": False,
+            "physical_local_inventory": "not-inspected",
+            "storage_error": str(exc),
+            "storage_error_code": exc.code,
+        }
     except Exception as exc:  # noqa: BLE001
         log.warning("audit_grading_closure: ledger read failed for %s: %s", key, exc)
 
@@ -699,10 +743,11 @@ def audit_entry(spec: dict, root: Path) -> dict:
 
     verdict = _verdict(spec, graders, n_logged, n_graded)
 
-    return {
+    result = {
         "key": key,
         "path": rel,
-        "storage": "present" if exists else (storage_note or "absent-locally"),
+        "storage": ("verified-native-snapshot" if native_claims
+                    else ("present" if exists else (storage_note or "absent-locally"))),
         "grader_wired": _grader_wired(graders),
         "graders": graders,
         "n_logged": n_logged,
@@ -711,6 +756,10 @@ def audit_entry(spec: dict, root: Path) -> dict:
         "tune_step": "Y" if tune_step else "N",
         "verdict": verdict,
     }
+    if native_claims:
+        result["logical_snapshot_complete"] = True
+        result["physical_local_inventory"] = "not-inspected"
+    return result
 
 
 def run(root: Path | None = None, write: bool = True) -> dict:

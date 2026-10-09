@@ -2041,24 +2041,37 @@ def register(claim: dict, root: Path | str | None = None,
     quadratic in ledger size.
     """
     root = _root(root)
-    stored = _prepare_claim(claim)
-    cid = stored["claim_id"]
+    from engine.qledger_store import _claims_mutation
 
-    p = root.joinpath(*_CLAIMS_FILE)
-    p.parent.mkdir(parents=True, exist_ok=True)
+    with _claims_mutation(root.joinpath(*_CLAIMS_FILE)) as storage:
+        stored = _prepare_claim(claim)
+        cid = stored["claim_id"]
 
-    if dedupe:
-        for existing in load_claims(root):
-            if existing.get("claim_id") == cid:
-                return existing  # idempotent — adapters re-run freely
+        p = root.joinpath(*_CLAIMS_FILE)
+        if storage is None:
+            p.parent.mkdir(parents=True, exist_ok=True)
 
-    with p.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(stored, ensure_ascii=False, default=_json_default) + "\n")
-    # P0d C3.1: the control evidence clock starts HERE, on the newly stored row
-    # only — a dedupe hit above returns before this, so re-registering a claim can
-    # never restart or re-stamp a clock.
-    _start_control_clocks_for([stored], root, today=today)
-    return stored
+        if dedupe:
+            for existing in (load_claims(root) if storage is None else storage.read_rows()):
+                if existing.get("claim_id") == cid:
+                    return existing  # idempotent — adapters re-run freely
+
+        if storage is None:
+            with p.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(stored, ensure_ascii=False, default=_json_default) + "\n")
+        else:
+            outcome = storage.append_serialized_rows(
+                (json.dumps(row, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8")
+                for row in [stored]
+            )
+        # P0d C3.1: the control evidence clock starts HERE, on the newly stored row
+        # only — a dedupe hit above returns before this, so re-registering a claim can
+        # never restart or re-stamp a clock.
+        if storage is None or outcome.status == "materialized":
+            if storage is not None:
+                storage.mark_clock_attempt()
+            _start_control_clocks_for([stored], root, today=today)
+        return stored
 
 
 def register_batch(claims: Iterable[dict], root: Path | str | None = None,
@@ -2081,39 +2094,52 @@ def register_batch(claims: Iterable[dict], root: Path | str | None = None,
     """
     root = _root(root)
     p = root.joinpath(*_CLAIMS_FILE)
-    p.parent.mkdir(parents=True, exist_ok=True)
+    from engine.qledger_store import _claims_mutation
 
-    existing_by_id: dict[str, dict] = {}
-    if dedupe:
-        for c in load_claims(root):          # ONE read for the whole batch
-            existing_by_id.setdefault(str(c.get("claim_id")), c)
+    with _claims_mutation(p) as storage:
+        if storage is None:
+            p.parent.mkdir(parents=True, exist_ok=True)
 
-    results: list[dict] = []
-    new_rows: list[dict] = []
-    for claim in claims:
-        try:
-            stored = _prepare_claim(claim)
-        except Exception as exc:  # noqa: BLE001 — isolate, never sink the batch
-            log.warning("register_batch: claim preparation failed: %s", exc)
-            results.append({"status": "error", "error": str(exc)})
-            continue
-        cid = stored["claim_id"]
-        if dedupe and cid in existing_by_id:
-            results.append(existing_by_id[cid])
-            continue
-        new_rows.append(stored)
+        existing_by_id: dict[str, dict] = {}
         if dedupe:
-            existing_by_id[cid] = stored
-        results.append(stored)
+            for c in (load_claims(root) if storage is None else storage.read_rows()):  # ONE read
+                existing_by_id.setdefault(str(c.get("claim_id")), c)
 
-    if new_rows:
-        with p.open("a", encoding="utf-8") as fh:  # ONE write for the batch
-            for row in new_rows:
-                fh.write(json.dumps(row, ensure_ascii=False, default=_json_default) + "\n")
-        # P0d C3.1: NEW rows only. A batch that deduped entirely against the
-        # store appends nothing and starts nothing.
-        _start_control_clocks_for(new_rows, root, today=today)
-    return results
+        results: list[dict] = []
+        new_rows: list[dict] = []
+        for claim in claims:
+            try:
+                stored = _prepare_claim(claim)
+            except Exception as exc:  # noqa: BLE001 — isolate, never sink the batch
+                log.warning("register_batch: claim preparation failed: %s", exc)
+                results.append({"status": "error", "error": str(exc)})
+                continue
+            cid = stored["claim_id"]
+            if dedupe and cid in existing_by_id:
+                results.append(existing_by_id[cid])
+                continue
+            new_rows.append(stored)
+            if dedupe:
+                existing_by_id[cid] = stored
+            results.append(stored)
+
+        if new_rows:
+            if storage is None:
+                with p.open("a", encoding="utf-8") as fh:  # ONE write for the batch
+                    for row in new_rows:
+                        fh.write(json.dumps(row, ensure_ascii=False, default=_json_default) + "\n")
+            else:
+                outcome = storage.append_serialized_rows(
+                    (json.dumps(row, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8")
+                    for row in new_rows
+                )
+            # P0d C3.1: NEW rows only. A batch that deduped entirely against the
+            # store appends nothing and starts nothing.
+            if storage is None or outcome.status == "materialized":
+                if storage is not None:
+                    storage.mark_clock_attempt()
+                _start_control_clocks_for(new_rows, root, today=today)
+        return results
 
 
 def backfill_regime_stamps(root: Path | str | None = None) -> dict:
@@ -2136,61 +2162,71 @@ def backfill_regime_stamps(root: Path | str | None = None) -> dict:
     """
     root = _root(root)
     p = root.joinpath(*_CLAIMS_FILE)
-    claims = _read_jsonl(p)
-    if not claims:
-        return {"n_claims": 0, "n_backfilled": 0, "n_unstamped": 0, "n_precoverage": 0}
+    from engine.qledger_store import _claims_mutation
 
-    # Guard: A-share and HK symbols must not receive US regime_vector rich stamps.
-    _SKIP_SUFFIXES = (".SS", ".SZ", ".HK")
-    n_skipped = 0
-    n_precoverage = 0
+    with _claims_mutation(p) as storage:
+        claims = _read_jsonl(p) if storage is None else storage.read_rows()
+        if not claims:
+            return {"n_claims": 0, "n_backfilled": 0, "n_unstamped": 0, "n_precoverage": 0}
 
-    n_backfilled = 0
-    for c in claims:
-        if c.get("vector_asof") is None:
-            scope_key = str((c.get("scope") or {}).get("key") or "")
-            if any(scope_key.endswith(sfx) for sfx in _SKIP_SUFFIXES):
-                n_skipped += 1
-                continue
-            stamp = _regime_stamp_for_asof(str(c.get("asof") or ""))
-            if stamp.get("vector_asof") is not None:
-                for k, v in stamp.items():
-                    if c.get(k) is None:
-                        c[k] = v
-                # R-CI3: mark as recomputed from history, never pit_live.
-                # keep-FIRST applies only to rows that already had vector_asof
-                # (genuinely PIT-stamped) — those rows are not reached here
-                # because the outer `if c.get("vector_asof") is None` gate
-                # excludes them.  Any basis label on a vector_asof=None row is
-                # a lying label: values are demonstrably being recomputed now.
-                # Always stamp 'recomputed_history'.
-                c["regime_stamp_basis"] = "recomputed_history"
-                n_backfilled += 1
+        # Guard: A-share and HK symbols must not receive US regime_vector rich stamps.
+        _SKIP_SUFFIXES = (".SS", ".SZ", ".HK")
+        n_skipped = 0
+        n_precoverage = 0
+
+        n_backfilled = 0
+        for c in claims:
+            if c.get("vector_asof") is None:
+                scope_key = str((c.get("scope") or {}).get("key") or "")
+                if any(scope_key.endswith(sfx) for sfx in _SKIP_SUFFIXES):
+                    n_skipped += 1
+                    continue
+                stamp = _regime_stamp_for_asof(str(c.get("asof") or ""))
+                if stamp.get("vector_asof") is not None:
+                    for k, v in stamp.items():
+                        if c.get(k) is None:
+                            c[k] = v
+                    # R-CI3: mark as recomputed from history, never pit_live.
+                    # keep-FIRST applies only to rows that already had vector_asof
+                    # (genuinely PIT-stamped) — those rows are not reached here
+                    # because the outer `if c.get("vector_asof") is None` gate
+                    # excludes them.  Any basis label on a vector_asof=None row is
+                    # a lying label: values are demonstrably being recomputed now.
+                    # Always stamp 'recomputed_history'.
+                    c["regime_stamp_basis"] = "recomputed_history"
+                    n_backfilled += 1
+                else:
+                    # asof predates regime_vector.parquet coverage — stays null
+                    n_precoverage += 1
+
+        if n_skipped:
+            log.info("backfill_regime_stamps: skipped %d A-share/HK claim(s) (.SS/.SZ/.HK)", n_skipped)
+        if n_precoverage:
+            log.info(
+                "backfill_regime_stamps: %d claim(s) predate regime_vector coverage — vector_asof stays null",
+                n_precoverage,
+            )
+
+        n_unstamped = sum(1 for c in claims if c.get("vector_asof") is None)
+        if n_backfilled:
+            if storage is None:
+                tmp = p.with_name(p.name + ".tmp")
+                with tmp.open("w", encoding="utf-8") as fh:
+                    for c in claims:
+                        fh.write(json.dumps(c, ensure_ascii=False, default=_json_default) + "\n")
+                tmp.replace(p)
             else:
-                # asof predates regime_vector.parquet coverage — stays null
-                n_precoverage += 1
-
-    if n_skipped:
-        log.info("backfill_regime_stamps: skipped %d A-share/HK claim(s) (.SS/.SZ/.HK)", n_skipped)
-    if n_precoverage:
-        log.info(
-            "backfill_regime_stamps: %d claim(s) predate regime_vector coverage — vector_asof stays null",
-            n_precoverage,
-        )
-
-    n_unstamped = sum(1 for c in claims if c.get("vector_asof") is None)
-    if n_backfilled:
-        tmp = p.with_name(p.name + ".tmp")
-        with tmp.open("w", encoding="utf-8") as fh:
-            for c in claims:
-                fh.write(json.dumps(c, ensure_ascii=False, default=_json_default) + "\n")
-        tmp.replace(p)
-    return {
-        "n_claims": len(claims),
-        "n_backfilled": n_backfilled,
-        "n_unstamped": n_unstamped,
-        "n_precoverage": n_precoverage,
-    }
+                storage.replace_serialized_rows(
+                    ((json.dumps(c, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8")
+                     for c in claims),
+                    expected_view_digest=storage.snapshot.root.logical_digest,
+                )
+        return {
+            "n_claims": len(claims),
+            "n_backfilled": n_backfilled,
+            "n_unstamped": n_unstamped,
+            "n_precoverage": n_precoverage,
+        }
 
 
 def make_claim(*, desk: str, asof: str, scope_type: str, scope_key: str,
