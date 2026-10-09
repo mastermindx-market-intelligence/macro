@@ -109,6 +109,39 @@ def test_public_http_uses_explicit_switch_and_no_signup(monkeypatch):
     assert client.post("/api/catalyst/optin", json={"email": "x@y.com"}).status_code == 404
 
 
+
+def test_first_value_html_shows_public_evidence_clocks_and_falsifiers():
+    data = ci.sanitize_public_scan(packet(), ["NVDA", "ZZZZ"], now_utc=NOW)
+    page = ci.render_first_value(data, "NVDA,ZZZZ")
+    assert "<h4>What changed</h4>" in page
+    assert "The fixture records a revised result" in page
+    assert "Conditional scenarios, not predictions" in page
+    assert "BASE: Watch the next company update" in page
+    assert "What could invalidate this reading" in page
+    assert "Another correction invalidates this fixture" in page
+    assert 'datetime="2026-10-09T02:00:00Z"' in page
+    assert 'datetime="2026-09-30T10:00:00Z"' in page
+    assert "Correction state: CORRECTED" in page
+    assert "Relationship: DIRECT" in page
+    assert "This ticker is not covered" in page
+    assert "No account required" in page
+    assert "name='email'" not in page.lower()
+
+
+def test_first_value_html_escapes_untrusted_headline_claims_and_source_title():
+    p = packet()
+    p["results"][0]["headline"] = '<script>alert("source")</script>'
+    p["results"][0]["what_changed"][0]["text"] = '<img src=x onerror=alert(1)>'
+    p["results"][0]["sources"][0]["title"] = '<svg onload="alert(1)">'
+    data = ci.sanitize_public_scan(p, ["NVDA", "ZZZZ"], now_utc=NOW)
+    page = ci.render_first_value(data)
+    assert '<script>alert("source")</script>' not in page
+    assert '<img src=x onerror=alert(1)>' not in page
+    assert '<svg onload="alert(1)">' not in page
+    assert "&lt;script&gt;" in page
+    assert "&lt;img" in page
+    assert "&lt;svg" in page
+
 def test_anon_rate_limits():
     ci._reset_rate_limits_for_tests()
     request = SimpleNamespace(headers={"eo-connecting-ip": "198.51.100.42"})
