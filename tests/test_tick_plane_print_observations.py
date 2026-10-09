@@ -268,5 +268,161 @@ class ProvisionalObservationTests(unittest.TestCase):
         self.assertEqual(result["quote_conditions_rules_ref"],
                          quote_policy()["policy_sha256"])
 
+
+from engine.tick_plane.captured_minute import (
+    compose_captured_minute, CapturedMinuteRefusal,
+)
+from engine.tick_plane.quote_condition_policy import (
+    parse_quote_policy, POLICY_SCHEMA as QPOLICY_SCHEMA,
+)
+from engine.tick_plane.minute_projection import MINUTE_NS
+
+
+def captured_synthetic_window(*, special_condition=None):
+    start=(BASE*1_000_000//MINUTE_NS)*MINUTE_NS
+    start_ms=start//1_000_000
+    end=start+MINUTE_NS
+    decision=end+2_000_000_000
+    trades=[
+        {"ev":"T","sym":"SPY","t":start_ms+20000,"q":101,
+         "x":11,"i":"synthetic-buyer","p":100.9,"s":10,"c":[0]},
+        {"ev":"T","sym":"SPY","t":start_ms+40000,"q":102,
+         "x":11,"i":"synthetic-seller","p":100.1,"s":10,"c":[0]},
+    ]
+    quote_events=[
+        {"ev":"Q","sym":"SPY","t":start_ms-2000,"q":1,
+         "bp":100,"bs":100,"bx":11,"ap":101,"as":200,"ax":12,
+         "c":0,"i":[604]},
+        {"ev":"Q","sym":"SPY","t":start_ms+15000,"q":2,
+         "bp":100,"bs":100,"bx":11,"ap":101,"as":100,"ax":12,
+         "c":0,"i":[604]},
+        {"ev":"Q","sym":"SPY","t":start_ms+55000,"q":3,
+         "bp":100,"bs":100,"bx":11,"ap":101,"as":190,"ax":12,
+         "c":0,"i":[604]},
+    ]
+    if special_condition is not None:
+        quote_events[1]["c"]=special_condition
+    groups=[
+        [quote_events[0]],[quote_events[1],trades[0]],
+        [trades[1]],[quote_events[2]],
+    ]
+    frames=[]
+    for i,group in enumerate(groups):
+        received=max(row["t"] for row in group)*1_000_000+1_000_000
+        frames.append({"raw_bytes":json.dumps(group).encode(),
+                       "frame_received_ns":received,
+                       "source_receipt_id":f"synthetic-original-frame-{i}"})
+    ref=parse_condition_reference(raw_response_bytes=json.dumps({
+        "status":"OK","request_id":"synthetic-conditions",
+        "results":[{"asset_class":"stocks","data_types":["trade"],
+            "type":"condition","id":0,"name":"Regular Sale",
+            "update_rules":{"consolidated":{
+                "updates_volume":True,"updates_high_low":True,
+                "updates_open_close":True}}}]}).encode(),
+        reference_received_ns=start-10_000_000_000,
+        source_receipt_id="synthetic-conditions-receipt")
+    exchange=parse_exchange_reference(raw_response_bytes=json.dumps({
+        "status":"OK","request_id":"synthetic-exchanges",
+        "results":[{"asset_class":"stocks","id":11,"type":"exchange"}]}).encode(),
+        available_ns=start-10_000_000_000,
+        source_receipt_id="synthetic-exchange-receipt")
+    policy=parse_quote_policy(original_policy_bytes=json.dumps({
+        "schema":QPOLICY_SCHEMA,
+        "source_reference_sha256":"c"*64,
+        "reviewer_receipt":"synthetic-quote-policy-review",
+        "unknown_action":"ABSTAIN",
+        "allowed_quote_conditions":[0],"allowed_nbbo_indicators":[604]}).encode(),
+        policy_received_ns=start-10_000_000_000,
+        policy_receipt_id="synthetic-quote-policy")
+    return {
+        "original_frames":frames,
+        "ticker":"SPY","session":SESSION,"start_ns":start,
+        "decision_ns":decision,
+        "source_complete_through_ns":end,
+        "watermark_available_ns":end+1_000_000_000,
+        "watermark_receipt_id":"synthetic-external-source-completeness",
+        "source_completeness_attested":True,
+        "max_quote_age_ns":25_000_000_000,
+        "trade_condition_reference":ref,
+        "exchange_reference":exchange,
+        "quote_condition_policy":policy,
+        "original_reference_custody_attested":True,
+    }
+
+
+class CapturedMinuteIntegrationTests(unittest.TestCase):
+    def test_original_frame_batch_reaches_provisional_minute(self):
+        args=captured_synthetic_window()
+        got=compose_captured_minute(**args)
+        self.assertEqual(got["state"],"PRIVATE_SOURCE_CONTEXT_ONLY")
+        minute=got["minute_private_only"]
+        self.assertEqual(minute["state"],"PROVISIONAL_MEASURED_CONTEXT")
+        self.assertEqual(minute["n_sampled_prints"],2)
+        self.assertEqual(minute["buy_proxy_notional_usd"],"1009.0")
+        self.assertEqual(minute["sell_proxy_notional_usd"],"1001.0")
+        self.assertEqual(minute["quote_condition_rules_sha256"],
+                         args["quote_condition_policy"]["policy_sha256"])
+        self.assertEqual(got["source_frame_count"],4)
+        self.assertEqual(got["source_event_count"],5)
+        self.assertIsNone(minute["absorption_signal"])
+        self.assertEqual(len(got["quote_verdicts_private_memory_only"]),3)
+        self.assertEqual(len(got["quotes_private_memory_only"]),3)
+
+    def test_nonfirm_new_quote_blocks_safe_assumption_of_signed_buy(self):
+        got=compose_captured_minute(**captured_synthetic_window(special_condition=20))
+        minute=got["minute_private_only"]
+        self.assertEqual(minute["n_unknown_venue"],0)
+        self.assertEqual(minute["n_unclassified"],1)
+        self.assertEqual(minute["unknown_notional_usd"],"1009.0")
+        self.assertEqual(minute["sell_proxy_notional_usd"],"1001.0")
+
+    def test_external_completeness_missing_yields_no_pseudo_zero_volume(self):
+        args=captured_synthetic_window()
+        args["source_completeness_attested"]=False
+        got=compose_captured_minute(**args)
+        self.assertEqual(got["state"],"SOURCE_NOT_QUALIFIED")
+        self.assertNotIn("minute_private_only",got)
+
+    def test_external_source_watermark_not_yet_mature(self):
+        args=captured_synthetic_window()
+        args["source_complete_through_ns"]-=1
+        got=compose_captured_minute(**args)
+        self.assertEqual(got["state"],"NOT_MATURE")
+
+    def test_source_frame_with_control_event_refused_atomically(self):
+        args=captured_synthetic_window()
+        args["original_frames"][1]["raw_bytes"]=json.dumps([
+            {"ev":"status","status":"auth_success"}]).encode()
+        with self.assertRaisesRegex(FrameContractError,"not T or Q"):
+            compose_captured_minute(**args)
+
+    def test_source_frame_receipt_must_be_original_and_predecision(self):
+        args=captured_synthetic_window()
+        args["original_frames"][1]["frame_received_ns"]=args["start_ns"]-10_000_000_000
+        with self.assertRaisesRegex(FrameContractError,"precedes vendor SIP"):
+            compose_captured_minute(**args)
+
+    def test_captured_quote_stream_has_no_public_publisher(self):
+        got=compose_captured_minute(**captured_synthetic_window())
+        self.assertIs(got["publication_authority"],False)
+        self.assertNotIn("publish_url",got)
+        self.assertNotIn("public_r2",got)
+        self.assertEqual(got["source_capture_authenticity"],
+                         "REQUIRES_ORIGINAL_OWNER_PROOF")
+
+    def test_original_source_digest_set_deterministic(self):
+        args=captured_synthetic_window()
+        first=compose_captured_minute(**args)
+        second=compose_captured_minute(**copy.deepcopy(args))
+        self.assertEqual(first["raw_frame_digest_set_sha256"],
+                         second["raw_frame_digest_set_sha256"])
+
+    def test_unqualified_reference_custody_cannot_become_signed_minute(self):
+        args=captured_synthetic_window()
+        args["original_reference_custody_attested"]=False
+        got=compose_captured_minute(**args)
+        self.assertEqual(got["state"],"SOURCE_NOT_QUALIFIED")
+        self.assertNotIn("minute_private_only",got)
+
 if __name__ == "__main__":
     unittest.main()
