@@ -361,6 +361,11 @@ async def optin_request(request: Request):
     _require_enabled("CATALYST_PUBLIC_ENABLED")
     _require_enabled("CATALYST_OPTIN_ENABLED")
     _rate_or_429(request, "scan")
+    # Public consent requests must not be accepted as browser-simple form/text
+    # cross-origin POSTs. The verified sender/identity owners remain downstream.
+    content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    if content_type != "application/json":
+        raise HTTPException(415, "application/json required")
     body = await _read_json(request, max_bytes=4096)
     if not isinstance(body, dict):
         raise HTTPException(400, "Invalid opt-in request")
