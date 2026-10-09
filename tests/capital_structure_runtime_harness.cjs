@@ -26,6 +26,10 @@ function bodyFor(url, options = {}) {
   const p = decodeURIComponent(parsed.pathname);
   if (p.endsWith('/coverage')) return envelope;
   if (p.endsWith('/overview')) return { ...envelope, records: Object.values(records), page: { next_cursor: null } };
+  if (p.endsWith('/resolve')) {
+    const ticker = parsed.searchParams.get('ticker').trim().toUpperCase();
+    return { ...envelope, query: { ticker }, issuer: records[ticker === 'BBBB' ? B : A] };
+  }
   const id = p.includes(B) ? B : A;
   if (p.endsWith('/events')) {
     const later = parsed.searchParams.has('cursor');
@@ -65,7 +69,14 @@ function stubDom() {
   doc.querySelectorAll = () => [];
   const win = new Element();
   win.location = { href: 'https://example.test/capital_structure.html', origin: 'https://example.test' };
-  win.history = { pushState(_s, _t, href) { win.location.href = new URL(href, win.location.href).href; }, replaceState(_s, _t, href) { win.location.href = new URL(href, win.location.href).href; } };
+  const history = [win.location.href];
+  let historyIndex = 0;
+  win.history = {
+    get length() { return history.length; },
+    pushState(_s, _t, href) { win.location.href = new URL(href, win.location.href).href; history.splice(++historyIndex); history.push(win.location.href); },
+    replaceState(_s, _t, href) { win.location.href = new URL(href, win.location.href).href; history[historyIndex] = win.location.href; },
+    back() { if (historyIndex > 0) { win.location.href = history[--historyIndex]; win.dispatchEvent({ type: 'popstate' }); } }
+  };
   win.requestAnimationFrame = fn => fn();
   win.CustomEvent = class { constructor(type, options) { this.type = type; this.detail = options.detail; } };
   win.document = doc;
@@ -88,7 +99,7 @@ async function desk(options = {}) {
   } else env = stubDom();
   const w = env.window;
   const d = w.document;
-  let hold = false;
+  let hold = options.initialHold === true;
   const queued = [];
   const calls = [];
   const response = (url, status) => ({ ok: status >= 200 && status < 300, status, json: () => Promise.resolve(bodyFor(url, options)) });
@@ -103,6 +114,13 @@ async function desk(options = {}) {
     if (native) d.querySelector('[data-issuer-id="' + id + '"]').click();
     else d.getElementById('cs-issuer-list').dispatchEvent({ type: 'click', target: { closest() { return { getAttribute() { return id; } }; } } });
   }
+  function selectVisible(id) {
+    if (native) {
+      const row = d.querySelector('[data-issuer-id="' + id + '"]');
+      assert.ok(row && row.isConnected && !row.disabled && !row.closest('[hidden], [inert]'), 'resolver scenario selects a reachable enabled row');
+    }
+    select(id);
+  }
   function language(value) {
     d.documentElement.setAttribute('data-lang', value);
     d.dispatchEvent(new w.CustomEvent('langchange', { detail: value }));
@@ -111,6 +129,7 @@ async function desk(options = {}) {
     const markup = d.getElementById('cs-issuer-list').innerHTML;
     const selected = native ? d.querySelector('[data-issuer-id][aria-current="true"]')?.getAttribute('data-issuer-id') : (markup.match(/data-issuer-id="([^"]+)" aria-current="true"/) || [])[1];
     return { url: new URL(w.location.href).searchParams.get('issuer'), selected,
+      query: d.getElementById('cs-search-input').value || '', notice: d.getElementById('cs-coverage-state').textContent, historyLength: w.history.length,
       visible: !d.getElementById('cs-dossier-body').hidden, emptyVisible: !d.getElementById('cs-empty-dossier').hidden,
       name: d.getElementById('cs-dossier-title-live').textContent, error: d.getElementById('cs-empty-dossier').innerHTML,
       events: d.getElementById('cs-event-list').innerHTML,
@@ -131,8 +150,36 @@ async function desk(options = {}) {
     }
     await flush();
   }
-  assert.equal(snapshot().name, 'Issuer A');
-  return { window: w, select, language, snapshot, takeRequests, settle, calls,
+  function type(value) {
+    const input = d.getElementById('cs-search-input');
+    assert.ok(!input.disabled, 'search input is enabled');
+    input.focus(); input.value = value;
+    input.dispatchEvent(native ? new w.InputEvent('input', { bubbles: true, inputType: 'insertText', data: value }) : { type: 'input' });
+  }
+  function enter() {
+    const input = d.getElementById('cs-search-input');
+    assert.ok(!input.disabled, 'search input is enabled');
+    input.dispatchEvent(native ? new w.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }) : { type: 'keydown', key: 'Enter' });
+  }
+  async function settleLookup(requests, outcome = 200) {
+    assert.equal(requests.length, 1, 'one exact-ticker resolver request');
+    assert.ok(requests[0].url.includes('/issuers/resolve?ticker='));
+    if (outcome === 'empty') requests[0].resolve({ ok: true, status: 200, json: () => Promise.resolve({ ...envelope, query: { ticker: 'BBBB' } }) });
+    else if (outcome === 409) requests[0].resolve({ ok: false, status: 409, json: () => Promise.resolve({ detail: { code: 'ambiguous_ticker', matches: [{ issuer_id: A }, { issuer_id: B }] } }) });
+    else await settle(requests, outcome);
+    await flush();
+  }
+  async function back() {
+    if (native) await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error('history Back did not emit popstate')), 1000);
+      w.addEventListener('popstate', () => { clearTimeout(timeout); resolve(); }, { once: true });
+      w.history.back();
+    });
+    else w.history.back();
+    await flush();
+  }
+  if (!options.initialHold) assert.equal(snapshot().name, 'Issuer A');
+  return { window: w, select, language, snapshot, takeRequests, settle, calls, type, enter, settleLookup, back, selectVisible,
     more() { d.getElementById('cs-more-events').click(); },
     openEvidence() { d.getElementById('cs-open-evidence').focus(); d.getElementById('cs-open-evidence').click(); },
     closeEvidence() { d.getElementById('cs-close-evidence').click(); },
@@ -258,6 +305,117 @@ function selected(snapshot, id) { assert.equal(snapshot.url, id); assert.equal(s
       assert.equal(app.snapshot().drawerHidden, true); assert.equal(app.snapshot().drawerOpen, false); assert.equal(app.snapshot().dossierFocused, true);
     } finally { app.close(); }
   });
+
+  for (const navigation of ['newer Enter', 'explicit row', 'browser Back']) {
+    for (const outcome of [200, 409, 401, 403, 'empty', 'network']) {
+      await test('superseded resolver ' + outcome + ' preserves ' + navigation, async () => {
+        const app = await desk();
+        try {
+          app.hold();
+          if (navigation === 'browser Back') { app.selectVisible(B); await app.settle(await app.takeRequests()); }
+          app.type('BBBB'); app.enter(); const old = await app.takeRequests();
+          let newer;
+          if (navigation === 'newer Enter') {
+            app.type('AAAA'); app.enter(); newer = await app.takeRequests();
+          } else {
+            app.type('');
+            if (navigation === 'explicit row') app.selectVisible(A); else await app.back();
+            await app.settle(await app.takeRequests());
+          }
+          const before = app.snapshot();
+          await app.settleLookup(old, outcome);
+          assert.deepEqual(app.snapshot(), before, 'obsolete resolver must not navigate, focus or replace the current notice');
+          assert.equal((await app.takeRequests()).length, 0, 'obsolete resolver must not fetch another dossier');
+          if (newer) {
+            await app.settleLookup(newer); await app.settle(await app.takeRequests());
+            selected(app.snapshot(), A); assert.equal(app.snapshot().name, 'Issuer A');
+          }
+        } finally { app.close(); }
+      });
+    }
+  }
+  await test('latest Enter also owns repeated same-ticker requests', async () => {
+    const app = await desk();
+    try {
+      app.hold(); app.type('BBBB'); app.enter(); const old = await app.takeRequests();
+      app.enter(); const newer = await app.takeRequests(); const before = app.snapshot();
+      await app.settleLookup(old); assert.deepEqual(app.snapshot(), before); assert.equal((await app.takeRequests()).length, 0);
+      await app.settleLookup(newer); await app.settle(await app.takeRequests());
+      selected(app.snapshot(), B); assert.equal(app.snapshot().name, 'Issuer B');
+    } finally { app.close(); }
+  });
+  for (const outcome of [200, 409, 401, 403, 503, 'empty', 'network']) {
+    await test(outcome === 200 ? 'current resolver success selects the canonical issuer' : 'current resolver ' + outcome + ' preserves failure handling and retry', async () => {
+      const app = await desk();
+      try {
+        app.hold(); app.type('  BBBB  '); app.enter(); const request = await app.takeRequests();
+        assert.ok(request[0].url.endsWith('ticker=BBBB'), 'exact ticker is trimmed before API resolution');
+        await app.settleLookup(request, outcome);
+        if (outcome !== 200) {
+          assert.equal(app.snapshot().url, A); assert.equal(app.snapshot().name, 'Issuer A');
+          assert.equal(app.snapshot().notice, outcome === 'empty' ? 'No observed issuer matched that ticker' : 'Ticker lookup is temporarily unavailable');
+          assert.equal((await app.takeRequests()).length, 0, 'failed or ambiguous lookup never guesses an issuer');
+          app.enter(); await app.settleLookup(await app.takeRequests());
+        }
+        const dossier = await app.takeRequests();
+        assert.equal(dossier.length, 2);
+        assert.ok(dossier.every(req => decodeURIComponent(req.url).includes('/issuers/' + B)), 'canonical API issuer ID owns dossier requests');
+        await app.settle(dossier); selected(app.snapshot(), B); assert.equal(app.snapshot().name, 'Issuer B');
+      } finally { app.close(); }
+    });
+  }
+  await test('query-only edits preserve an already submitted exact-ticker lookup', async () => {
+    const app = await desk();
+    try {
+      app.hold(); app.type('BBBB'); app.enter(); const request = await app.takeRequests();
+      app.type('AAAA'); await app.settleLookup(request); await app.settle(await app.takeRequests());
+      assert.equal(app.snapshot().query, 'AAAA'); assert.equal(app.snapshot().url, B); assert.equal(app.snapshot().name, 'Issuer B');
+    } finally { app.close(); }
+  });
+
+  for (const initialReady of [false, true]) {
+    for (const outcome of [200, 'empty', 409, 401, 403, 503, 'network']) {
+      await test('lookup submitted during startup survives automatic ' + (initialReady ? 'ready' : 'pending') + ' dossier: ' + outcome, async () => {
+        const app = await desk({ initialHold: true });
+        try {
+          const initial = await app.takeRequests(); assert.equal(initial.length, 2);
+          app.type('BBBB'); app.enter(); const lookup = await app.takeRequests();
+          await app.settle(initial); const automatic = await app.takeRequests(); assert.equal(automatic.length, 2);
+          if (initialReady) await app.settle(automatic);
+          await app.settleLookup(lookup, outcome);
+          if (outcome === 200) {
+            const resolved = await app.takeRequests(); assert.equal(resolved.length, 2, 'automatic initialization does not cancel an explicit lookup');
+            await app.settle(resolved);
+            if (!initialReady) await app.settle(automatic);
+            selected(app.snapshot(), B); assert.equal(app.snapshot().name, 'Issuer B');
+          } else {
+            assert.equal((await app.takeRequests()).length, 0, 'lookup failure does not fabricate a dossier');
+            assert.equal(app.snapshot().notice, outcome === 'empty' ? 'No observed issuer matched that ticker' : 'Ticker lookup is temporarily unavailable');
+            if (!initialReady) await app.settle(automatic);
+            assert.equal(app.snapshot().url, A); assert.equal(app.snapshot().name, 'Issuer A');
+            app.enter(); await app.settleLookup(await app.takeRequests()); await app.settle(await app.takeRequests());
+            selected(app.snapshot(), B); assert.equal(app.snapshot().name, 'Issuer B');
+          }
+        } finally { app.close(); }
+      });
+    }
+    for (const outcome of [200, 'empty', 401]) {
+      await test('explicit row supersedes startup lookup after automatic ' + (initialReady ? 'ready' : 'pending') + ' dossier: ' + outcome, async () => {
+        const app = await desk({ initialHold: true });
+        try {
+          const initial = await app.takeRequests();
+          app.type('BBBB'); app.enter(); const lookup = await app.takeRequests();
+          await app.settle(initial); const automatic = await app.takeRequests();
+          if (initialReady) await app.settle(automatic);
+          app.type(''); app.selectVisible(A); await app.settle(await app.takeRequests());
+          const before = app.snapshot(); await app.settleLookup(lookup, outcome);
+          assert.deepEqual(app.snapshot(), before); assert.equal((await app.takeRequests()).length, 0);
+          if (!initialReady) await app.settle(automatic);
+          selected(app.snapshot(), A); assert.equal(app.snapshot().name, 'Issuer A');
+        } finally { app.close(); }
+      });
+    }
+  }
   console.log(JSON.stringify({ mode: native ? 'jsdom' : 'dependency-free', results }, null, 2));
   if (results.some(item => !item.pass)) process.exitCode = 1;
 })().catch(error => { console.error(error); process.exitCode = 1; });

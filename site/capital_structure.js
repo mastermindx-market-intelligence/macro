@@ -18,7 +18,8 @@
     events: [],
     nextEventCursor: '',
     lastFocus: null,
-    loadToken: 0
+    loadToken: 0,
+    resolveToken: 0
   };
   var ui = {};
 
@@ -604,12 +605,19 @@
   function resolveTicker() {
     var ticker = state.query.trim();
     if (!ticker) return;
+    var token = ++state.resolveToken;
+    // Only later explicit lookup/navigation intent supersedes this request.
+    function isCurrent() { return token === state.resolveToken; }
     api('/issuers/resolve?ticker=' + encodeURIComponent(ticker)).then(function (data) {
+      if (!isCurrent()) return;
       var issuerId = resolveIssuerId(data);
       if (issuerId) return selectIssuer(issuerId, { focus: true });
       setNotice(copy('No observed issuer matched that ticker', '没有已观察发行人匹配该代码'), 'partial');
       return null;
-    }).catch(function () { setNotice(copy('Ticker lookup is temporarily unavailable', '代码查找暂时不可用'), 'degraded'); });
+    }).catch(function () {
+      if (!isCurrent()) return;
+      setNotice(copy('Ticker lookup is temporarily unavailable', '代码查找暂时不可用'), 'degraded');
+    });
   }
 
   function resolveIssuerId(data) {
@@ -708,7 +716,10 @@
     });
     ui.issuerList.addEventListener('click', function (event) {
       var row = event.target.closest('[data-issuer-id]');
-      if (row) selectIssuer(row.getAttribute('data-issuer-id'), { focus: true });
+      if (row) {
+        state.resolveToken++;
+        selectIssuer(row.getAttribute('data-issuer-id'), { focus: true });
+      }
     });
     ui.moreEvents.addEventListener('click', loadMoreEvents);
     ui.openEvidence.addEventListener('click', function () { setDrawer(true); });
@@ -719,7 +730,10 @@
       var issuerId = issuerFromLocation();
       if (!issuerId || issuerId === state.selectedIssuerId) return;
       var known = state.overview.some(function (item) { return identityFor(item).issuerId === issuerId; });
-      if (known) selectIssuer(issuerId, { updateUrl: false, focus: true });
+      if (known) {
+        state.resolveToken++;
+        selectIssuer(issuerId, { updateUrl: false, focus: true });
+      }
     });
     // theme.js owns the site-wide language control and dispatches `langchange`
     // on document after updating <html data-lang>. API-rendered labels must use

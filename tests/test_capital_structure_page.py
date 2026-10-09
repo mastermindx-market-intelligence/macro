@@ -174,7 +174,7 @@ def test_issuer_transitions_preserve_current_request_state() -> None:
     )
     assert result.returncode == 0, result.stdout + result.stderr
     report = json.loads(result.stdout)
-    assert len(report["results"]) == 17
+    assert len(report["results"]) == 64
     assert all(item["pass"] for item in report["results"])
 
 
