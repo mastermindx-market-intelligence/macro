@@ -2556,3 +2556,17 @@ try:
 except Exception as _marketing_exc:  # noqa: BLE001
     import logging as _logging  # noqa: PLC0415
     _logging.getLogger("macro.api").warning("marketing sweeper not armed: %r", _marketing_exc)
+
+
+# ---------------------------------------------------------------------------
+# Catalyst Loop Session 00 — anonymous public scan bridge (default OFF).
+# Read-only producer; the opt-in owner alone performs secure consent writes.
+# No automatic emailing or deployment is enabled by mounting the router.
+# ---------------------------------------------------------------------------
+try:
+    from app.catalyst_integration import router as catalyst_router  # noqa: E402
+    app.include_router(catalyst_router)
+except Exception as _catalyst_exc:  # noqa: BLE001
+    import logging as _logging  # noqa: PLC0415
+    _logging.getLogger("macro.api").error(
+        "catalyst public bridge not mounted (fail closed): %r", _catalyst_exc)
