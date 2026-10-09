@@ -1,5 +1,6 @@
 {% macro t(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
 {% macro value(v, decimals=1) -%}{{ ('%.*f'|format(decimals, v)) if v is not none else '—' }}{%- endmacro %}
+{% macro signed_value(v, decimals=1) -%}{{ ('%+.*f'|format(decimals, v)) if v is not none else '—' }}{%- endmacro %}
 {% set RADAR_EN = {'SUPPRESSED':'Rebuilding','QUIET_ACCUMULATION':'Quiet build','CATALYST_WINDOW':'Catalyst watch','BREAKAWAY':'Breaking out','LEADERSHIP':'Leading','CROWDED':'Crowded','FAILED':'Lost leadership','NONE':'No lifecycle read'} %}
 {% set RADAR_ZH = {'SUPPRESSED':'重建中','QUIET_ACCUMULATION':'悄然蓄势','CATALYST_WINDOW':'催化剂观察','BREAKAWAY':'正在突破','LEADERSHIP':'领先中','CROWDED':'拥挤','FAILED':'领先失效','NONE':'暂无生命周期判断'} %}
 {% set GAP_EN = {'QUALIFIED_PRE_RELEASE_EXPECTATION':'Pre-release expectation baseline','MATCHED_FORECAST_REVISIONS':'Matched analyst revisions','MATCHED_CONTRIBUTOR_REVISIONS':'Matched contributor revisions','ANALYST_CONSENSUS_COMPARISON':'Analyst consensus comparison','COMPARABLE_PROFITABILITY':'Comparable profitability','CURRENT_ENTRY_AND_MARKET_PERMISSION':'Current entry / market permission','CURRENT_MARKET_AND_PORTFOLIO_PERMISSION':'Current market / portfolio permission','PRICE_SENSITIVE_ENTRY_SCENARIO':'Price-sensitive entry scenario','MATCHED_PERIOD_CASH_FLOW_RECONCILIATION':'Matched-period cash-flow reconciliation'} %}
@@ -106,14 +107,17 @@
             {% set pg = peers[0] %}
             <div class="ll-peer-context">
               <strong>{{ t('Independent peer read', '独立同业比较') }} · {{ pg.name }}</strong>
-              {% if pg.legacy_alpha.independence_status == 'AVAILABLE' %}
-              <span>{{ t('Clean issuer independence available', '发行人独立性完整') }}</span>
-              <p>{{ t('Alpha vs peer median', 'Alpha 相对同业中位数') }} {{ '%+.2f'|format(pg.legacy_alpha.focal_minus_peer_median) }} ·
-                 {{ t('RS vs peer median', 'RS 相对同业中位数') }} {{ '%+.1f'|format(pg.legacy_rs.focal_minus_peer_median) }}</p>
-              {% else %}
-              <span>{{ t('Clean issuer independence unavailable', '发行人独立性不完整') }}</span>
+              <span>{{ t('Alpha peer measurement', 'Alpha 同业测量') }}
+                {% if pg.legacy_alpha.focal_minus_peer_median is not none %}{{ t('available', '可用') }}{% else %}{{ t('unavailable', '不可用') }}{% endif %} ·
+                {{ t('RS peer measurement', 'RS 同业测量') }}
+                {% if pg.legacy_rs.focal_minus_peer_median is not none %}{{ t('available', '可用') }}{% else %}{{ t('unavailable', '不可用') }}{% endif %}</span>
+              <p>{{ t('Alpha vs peer median', 'Alpha 相对同业中位数') }} {{ signed_value(pg.legacy_alpha.focal_minus_peer_median, 2) }} ·
+                 {{ t('RS vs peer median', 'RS 相对同业中位数') }} {{ signed_value(pg.legacy_rs.focal_minus_peer_median, 1) }}</p>
               <p>{{ t('Unknown issuer identities:', '未知发行人身份：') }} {{ pg.legacy_alpha.unknown_peer_identity|length }} ·
                  {{ t('observed independent peers', '已观察独立同业') }} {{ pg.legacy_alpha.observed_independent_peers }} / {{ pg.legacy_alpha.peer_denominator }}</p>
+              {% if pg.legacy_alpha.missing_market_observation or pg.legacy_rs.missing_market_observation %}
+              <p class="ll-note">{{ t('missing peer observations', '同业观测缺失') }} ·
+                 Alpha {{ pg.legacy_alpha.missing_market_observation|length }} · RS {{ pg.legacy_rs.missing_market_observation|length }}</p>
               {% endif %}
               <small>{{ t('Current membership; not historical PIT proof', '当前成员关系；不代表历史时点成员已验证') }}</small>
               {% if peers|length > 1 %}<small>+{{ peers|length - 1 }} {{ t('other peer groups', '个其他同业组') }}</small>{% endif %}
@@ -148,6 +152,12 @@
               </div>
               {% endif %}
               <small>{{ t('No continuation, catalyst, or re-rating probability is established.', '尚未建立延续、催化剂或重估概率。') }}</small>
+            </div>
+            {% elif earn %}
+            <div class="ll-earnings" role="note">
+              <strong>{% if earn.status == 'REFUSED' %}{{ t('Earnings evidence withheld', '盈利证据未获准展示') }}{% else %}{{ t('Earnings evidence unavailable', '盈利证据不可用') }}{% endif %}</strong>
+              <span>{{ earn.reason|default('OWNER_EVIDENCE_NOT_QUALIFIED') }}</span>
+              <small>{{ t('This is a source/identity qualification gap, not negative company evidence or a zero probability.', '这是来源或身份核验缺口，并非公司负面证据，也不代表概率为零。') }}</small>
             </div>
             {% endif %}
             {% set catalyst = row.current_context.catalyst|default(none) %}

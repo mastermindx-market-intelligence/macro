@@ -1,6 +1,6 @@
 # Leadership Lab — publication and continuation handoff
 
-Updated 2026-10-06. **NOT PUBLISHED: no source commit, push, PR, merge or deployment.**
+Updated 2026-10-08. Source baseline is **PUBLISHED TO DRAFT PR #8586** at `89dccdb458a425ca9bb85cfc728644b03fe8f963`. The current repair candidate is **NOT COMMITTED OR PUSHED**, and the PR remains unmerged, unreviewed and undeployed.
 The current outer Chairman request continues this existing program; this document alone does not transfer source custody or authorize another session to displace a live writer.
 
 ## Exact preserved carrier
@@ -8,7 +8,7 @@ The current outer Chairman request continues this existing program; this documen
 - Operation: `alpha-rs-leadership-recovery-20261005-astra-001`.
 - Workspace: `/Volumes/Mastermind/agent-workspaces/macro/web/alpha-rs-leadership-recovery-20261005-astra-001`.
 - Branch: `sol/web-alpha-rs-leadership-recovery-20261005-astra-001`.
-- Current integration base / local HEAD before the Lab commit: `309f88c6c209bdc9fb611de0018fb619d9351b37`.
+- Current source-workspace HEAD / remote PR head before repair: `89dccdb458a425ca9bb85cfc728644b03fe8f963`; parent implementation commit `2f8b9107fe4674d6c993274d0306409f03b27b35`, originally integrated against `309f88c6c209bdc9fb611de0018fb619d9351b37`.
 - Context-data source pin remains `2f2feec4851b45636f63a48ec61e6f0b02b8118a` (historical by design; mainline reconciliation does not refresh it).
 - Original recovery-data pin: `8a3310cdf03bc16704d51235172a5bbcf1f9a73e` (intentionally unchanged).
 - Current protected procedure: Mastermind `d8c302b8a8a65ab13e2afba98cc73481606ed4d0`; Skillpack content unchanged from `877b1e7f275da0b6d3558d2667778b32d628bf67`.
@@ -54,3 +54,9 @@ No reviewer, local Codex session or background worker is claimed to have accepte
 Macro's current repository visibility is public. The real-data review HTML above is therefore deliberately **ignored by Git and local-only**; do not add it forcibly or upload a privileged review ZIP to the public repository. The `.gitignore` boundary is covered by a failing-then-passing regression. Hash receipts and initial-screen screenshots are separate from the embedded episode payload.
 
 The real Earnings owner probe now has a concrete failure, not merely an untested integration: a native AAPL episode failed D5's later-generation clock guard after 135.76 seconds. Existing source-owner issue **7331**, verified comment **6010333048**, is the return carrier. Do not create a second repair PR, weaken the D5 guard, or repeat the expensive unchanged source walk. That diagnostic comment is published; the Lab's source code is not.
+
+## Current publication frontier (October 8, 2026; supersedes older instructions above)
+
+The source baseline is already on [Macro PR #8586](https://github.com/mastermindx-market-intelligence/macro/pull/8586). The repair candidate was aligned to remote head `89dccdb458a425ca9bb85cfc728644b03fe8f963` on the same registered worktree. All eight previous dirty changes are safely backed up and reapplied, including the original subject/clock safeguards. The current-source native CIK guard, honest older-year event handling, synthetic 24-state canonical screenshots, and CI append-conflict avoidance were then implemented on that carrier. Complete bounded suite: **420 passed**; Agent OS 0 errors; canonical visual gate 0 errors. Refer to last EXECUTION.md section for exact evidence refs and publisher/custody proof.
+
+**Next source effect:** publish only via the established repository-aware Studio C3 `studio_git_commit_current_changes(repository='macro')` and `studio_git_push_current_branch(repository='macro')` with exact expected-head fencing and status readback. This chat's registered action schema is Mastermind-only, but the *installed gateway* exposes Macro READY, previously used for the accepted original push; use one local Codex carrier for bounded typed calls only after a fresh preflight. No raw `git commit/push`, force-push, GitHub Contents rewrites, new worktree, authentication/config change, or owner displacement. If anything differs, reconcile instead of trying again. After push, check PR #8586 current SHA/mergeability/hosted CI and solicit exact-head independent review; do not merge/deploy without gates.

@@ -379,6 +379,12 @@ def _minimal_earnings_detail(view):
         "decision_cut": {
             "opened_at": episode["opened_at"],
             "opened_session": episode["opened_session"],
+            "anchor_time": episode["opened_at"],
+            "known_at": episode["opened_at"],
+            "tradable_at": {
+                "state": "NOT_ASSERTED", "value": None,
+                "basis": "no_us_availability_owner_and_b4_not_built",
+            },
         },
         "time_interpretation": "ORIGINAL_SOURCE_VINTAGE_RECONSTRUCTION_NOT_ORIGINAL_RECOMMENDATION",
         "method_scope": "RETROSPECTIVE_FACTUAL_RECONSTRUCTION_NO_AS_RUN_PROMOTION",
@@ -402,7 +408,7 @@ def _minimal_earnings_detail(view):
     }
 
 
-def test_programmatic_builder_can_attach_prebuilt_earnings_without_network(owner_repo):
+def test_programmatic_builder_refuses_earnings_without_verified_native_owner(owner_repo):
     repo, recovery_ref, _ = owner_repo
     context_ref = _commit_current_context(repo)
     module = builder()
@@ -414,10 +420,10 @@ def test_programmatic_builder_can_attach_prebuilt_earnings_without_network(owner
         recovery_ref, "2026-10-02", repo_root=repo, context_ref=context_ref,
         earnings_details={episode_id: detail})
     earnings = result["rows"][0]["current_context"]["earnings"]
-    assert earnings["status"] == "AVAILABLE"
-    assert earnings["headline"].startswith("Revenue improved")
-    assert earnings["forecast_probability"] is None
+    assert earnings == {"status": "REFUSED", "reason": "EARNINGS_EPISODE_GENERATION_UNVERIFIED"}
+    assert result["rows"][0]["legacy_alpha"] == 2.0
     assert result["current_context"]["earnings"]["mode"] == "EXISTING_OWNER_OUTPUT_ONLY"
+    assert result["current_context"]["sources"]["issuer_master"]["read_status"] == "UNAVAILABLE"
 
 
 def test_cli_has_no_earnings_network_or_source_discovery_option():
@@ -428,7 +434,7 @@ def test_cli_has_no_earnings_network_or_source_discovery_option():
     assert "read_event_source_revisions" not in source
 
 
-def test_html_renders_prebuilt_earnings_as_evidence_not_probability(owner_repo):
+def test_html_refuses_unverified_earnings_instead_of_showing_unsupported_facts(owner_repo):
     repo, recovery_ref, _ = owner_repo
     context_ref = _commit_current_context(repo)
     module = builder()
@@ -440,11 +446,9 @@ def test_html_renders_prebuilt_earnings_as_evidence_not_probability(owner_repo):
         recovery_ref, "2026-10-02", repo_root=repo, context_ref=context_ref,
         earnings_details={episode_id: detail})
     html = module.render_html(view)
-    assert "Business evidence" in html
-    assert "Revenue improved against the comparable prior-year period" in html
-    assert "Pre-release expectation baseline" in html
-    assert "Current entry / market permission" in html
-    assert "No continuation, catalyst, or re-rating probability is established" in html
+    assert "Earnings evidence withheld" in html
+    assert "EARNINGS_EPISODE_GENERATION_UNVERIFIED" in html
+    assert "Revenue improved against the comparable prior-year period" not in html
     assert "continuation probability: 0%" not in html.lower()
     assert "catalyst probability: 0%" not in html.lower()
 
@@ -472,7 +476,9 @@ def test_html_peer_read_discloses_identity_incompleteness_instead_of_confirmatio
     html = module.render_html(module.build_view(
         recovery_ref, "2026-10-02", repo_root=repo, context_ref=context_ref))
     assert "Independent peer read" in html
-    assert "Clean issuer independence unavailable" in html
+    assert "Alpha peer measurement" in html
+    assert "RS peer measurement" in html
+    assert "unavailable" in html
     assert "Unknown issuer identities:" in html
     assert "observed independent peers" in html
     assert "Current membership; not historical PIT proof" in html
@@ -584,3 +590,77 @@ def test_sanitized_reproduction_receipts_remain_committable():
     path = 'research/leadership_alpha_rs/evidence/browser_receipt_20261006.json'
     check = subprocess.run(['git', '-C', str(ROOT), 'check-ignore', '--no-index', '-q', path])
     assert check.returncode == 1
+
+
+def test_html_peer_deltas_render_missing_measurements_as_unavailable(owner_repo):
+    repo, recovery_ref, _ = owner_repo
+    context_ref = _commit_current_context(repo)
+    module = builder()
+    view = module.build_view(
+        recovery_ref, "2026-10-02", repo_root=repo, context_ref=context_ref)
+    peer = {
+        "group_id": "theme-1",
+        "name": "Theme One",
+        "category": "Theme",
+        "membership_basis": "RECOVERED_SOURCE_MEMBERSHIP_NOT_PIT_QUALIFIED",
+        "historical_membership_qualified": False,
+        "identity_basis": "CURRENT_PROPHET_EPISODE_COMPANY_ID_NOT_HISTORICAL",
+        "legacy_alpha": {
+            "state": "AVAILABLE", "independence_status": "AVAILABLE",
+            "peer_denominator": 1, "observed_independent_peers": 1,
+            "missing_market_observation": [], "unknown_peer_identity": [],
+            "excluded_same_issuer": ["A"], "peer_median": 1.0,
+            "focal_value": 2.0, "focal_minus_peer_median": 1.0,
+        },
+        "legacy_rs": {
+            "state": "UNAVAILABLE", "independence_status": "AVAILABLE",
+            "peer_denominator": 1, "observed_independent_peers": 0,
+            "missing_market_observation": ["B"], "unknown_peer_identity": [],
+            "excluded_same_issuer": ["A"], "peer_median": None,
+            "focal_value": 99.0, "focal_minus_peer_median": None,
+        },
+        "authority": {
+            "rank": False, "entry": False, "size": False,
+            "execution": False, "trade": False,
+        },
+    }
+    view["shortlist"][0]["current_context"]["peer_groups"] = [peer]
+    html = module.render_html(view)
+    assert "Alpha vs peer median" in html
+    assert "+1.00" in html
+    assert "RS vs peer median" in html
+    assert "—" in html
+    assert "missing peer observations" in html
+
+
+def test_synthetic_qualified_owner_fixture_can_render_earnings_evidence_without_authority(owner_repo):
+    # This is a template/unit fixture, NOT historical identity or source proof.
+    from lib.dataos.identity import IssuerMaster
+    from engine.leadership_lab.earnings import attach_earnings_evidence
+    repo, recovery_ref, _ = owner_repo
+    context_ref = _commit_current_context(repo)
+    module = builder()
+    view = module.build_view(
+        recovery_ref, "2026-10-02", repo_root=repo, context_ref=context_ref)
+    episode = view["rows"][0]["current_context"]["episode"]
+    episode_id = episode["episode_id"]
+    view["current_context"]["episode_book"]["source_validation"] = {
+        "status": "VALIDATED_CANONICAL_OWNER",
+    }
+    native = IssuerMaster.from_records([{
+        "security_id": episode["security_id"],
+        "issuer_id": episode["company_id"],
+        "issuer_cik": "0000001234",
+        "issuer_state": "RESOLVED",
+        "security_state": None,
+        "listing_key": "US-XNAS-A",
+    }])
+    output = attach_earnings_evidence(
+        view, {episode_id: _minimal_earnings_detail(view)}, issuer_master=native)
+    assert output["rows"][0]["current_context"]["earnings"]["status"] == "AVAILABLE"
+    html = module.render_html(output)
+    assert "Business evidence" in html
+    assert "Revenue improved against the comparable prior-year period" in html
+    assert "Pre-release expectation baseline" in html
+    assert "No continuation, catalyst, or re-rating probability is established" in html
+    assert "Current entry / market permission" in html

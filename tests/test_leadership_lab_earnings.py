@@ -37,6 +37,7 @@ def base_view():
             "episode_book": {
                 "status": "AVAILABLE",
                 "generation_id": "peg:" + "a" * 64,
+                "source_validation": {"status": "VALIDATED_CANONICAL_OWNER"},
             },
             "authority": {"rank": False, "entry": False, "size": False,
                           "execution": False, "trade": False},
@@ -65,6 +66,12 @@ def detail(*, authority=None, episode_id=None, generation_id=None,
         "decision_cut": {
             "opened_at": opened_at or "2026-07-30T20:33:00Z",
             "opened_session": opened_session or "2026-07-30",
+            "anchor_time": "2026-07-30T20:00:00Z",
+            "known_at": opened_at or "2026-07-30T20:33:00Z",
+            "tradable_at": {
+                "state": "NOT_ASSERTED", "value": None,
+                "basis": "no_us_availability_owner_and_b4_not_built",
+            },
         },
         "time_interpretation": "ORIGINAL_SOURCE_VINTAGE_RECONSTRUCTION_NOT_ORIGINAL_RECOMMENDATION",
         "method_scope": "RETROSPECTIVE_FACTUAL_RECONSTRUCTION_NO_AS_RUN_PROMOTION",
@@ -92,7 +99,12 @@ def detail(*, authority=None, episode_id=None, generation_id=None,
                 "basis": "gaap",
                 "signed_difference": 15381,
                 "change_pct": 16.356501765281383,
+                "issuer_id": "cik:0000320193",
+                "current_event_id": "evt_cik0000320193_2026q3_results",
+                "prior_event_id": "evt_cik0000320193_2026q3_results",
+                "decision_at": "2026-07-30T20:33:00Z",
                 "current_available_at": "2026-07-30T20:30:28Z",
+                "prior_available_at": "2026-07-30T20:30:28Z",
                 "source_contract_ref": "macro:8069:ref",
                 "private_path": "/must/not/leak",
             }],
@@ -136,10 +148,12 @@ def detail(*, authority=None, episode_id=None, generation_id=None,
 
 def attach(view=None, details=None):
     from engine.leadership_lab.earnings import attach_earnings_evidence
+    episode_id = "pe:SEC:US-XNAS-AAPL:epoch_0:sa:abc:1"
     return attach_earnings_evidence(
         base_view() if view is None else view,
-        {"pe:SEC:US-XNAS-AAPL:epoch_0:sa:abc:1": detail()}
-        if details is None else details,
+        {episode_id: detail()} if details is None else details,
+        subject_bindings_by_episode={episode_id: _owner_subject_binding()},
+        issuer_master=_native_issuer_master(),
     )
 
 
@@ -271,3 +285,195 @@ def test_earnings_projection_preserves_owner_reference_and_decision_cut():
     assert output['source_projection_id'] == payload['source_projection_id']
     assert output['decision_cut'] == payload['decision_cut']
     assert output['source_authentication'] == 'CALLER_SUPPLIED_OWNER_OUTPUT_NOT_INDEPENDENTLY_ATTESTED'
+
+
+def _owner_subject_binding():
+    return {
+        "state": "RESOLVED",
+        "episode_company_id": "ISS:US:320193",
+        "earnings_company_id": "cik:0000320193",
+        "owner_subject_id": "evt_cik0000320193_2026q3_results",
+    }
+
+
+def _attach_with_binding(payload):
+    from engine.leadership_lab.earnings import attach_earnings_evidence
+    episode_id = "pe:SEC:US-XNAS-AAPL:epoch_0:sa:abc:1"
+    return attach_earnings_evidence(
+        base_view(), {episode_id: payload},
+        subject_bindings_by_episode={episode_id: _owner_subject_binding()},
+        issuer_master=_native_issuer_master(),
+    )
+
+
+def test_nested_dossier_must_match_explicit_owner_subject_binding():
+    payload = detail()
+    payload["dossier"]["issuer_id"] = "cik:0000789019"
+    payload["dossier"]["event_id"] = "evt_cik0000789019_2026q3_results"
+    payload["evidence_brief"]["issuer_id"] = "cik:0000789019"
+    payload["evidence_brief"]["event_id"] = "evt_cik0000789019_2026q3_results"
+    result = _attach_with_binding(payload)
+    assert result["rows"][0]["current_context"]["earnings"] == {
+        "status": "REFUSED", "reason": "EARNINGS_NATIVE_ISSUER_MISMATCH",
+    }
+
+
+def test_missing_subject_binding_refuses_factual_dossier():
+    payload = detail()
+    from engine.leadership_lab.earnings import attach_earnings_evidence
+    episode_id = "pe:SEC:US-XNAS-AAPL:epoch_0:sa:abc:1"
+    result = attach_earnings_evidence(
+        base_view(), {episode_id: payload}, issuer_master=_native_issuer_master())
+    assert result["rows"][0]["current_context"]["earnings"] == {
+        "status": "REFUSED", "reason": "EARNINGS_SUBJECT_BINDING_UNAVAILABLE",
+    }
+
+
+@pytest.mark.parametrize("mutation", [
+    {"source_projection_id": None},
+    {"source_projection_id": "piv:not-a-content-id"},
+])
+def test_source_projection_reference_is_required_and_typed(mutation):
+    payload = detail()
+    payload["decision_cut"].update({
+        "anchor_time": "2026-07-30T20:00:00Z",
+        "known_at": "2026-07-30T20:33:00Z",
+        "tradable_at": {
+            "state": "NOT_ASSERTED", "value": None,
+            "basis": "no_us_availability_owner_and_b4_not_built",
+        },
+    })
+    payload.update(mutation)
+    result = _attach_with_binding(payload)
+    assert result["rows"][0]["current_context"]["earnings"]["status"] == "REFUSED"
+
+
+def test_full_decision_cut_must_preserve_owner_max_clock_invariant():
+    payload = detail()
+    payload["decision_cut"].update({
+        "anchor_time": "2099-01-01T00:00:00Z",
+        "known_at": "2099-01-01T00:00:00Z",
+        "tradable_at": {
+            "state": "NOT_ASSERTED", "value": None,
+            "basis": "no_us_availability_owner_and_b4_not_built",
+        },
+    })
+    result = _attach_with_binding(payload)
+    assert result["rows"][0]["current_context"]["earnings"] == {
+        "status": "REFUSED", "reason": "EPISODE_CLOCK_MISMATCH",
+    }
+
+
+def test_every_reported_comparison_availability_clock_must_precede_cut():
+    payload = detail()
+    payload["decision_cut"].update({
+        "anchor_time": "2026-07-30T20:00:00Z",
+        "known_at": "2026-07-30T20:33:00Z",
+        "tradable_at": {
+            "state": "NOT_ASSERTED", "value": None,
+            "basis": "no_us_availability_owner_and_b4_not_built",
+        },
+    })
+    payload["dossier"]["reported_changes"][0].update({
+        "issuer_id": "cik:0000320193",
+        "current_event_id": "evt_cik0000320193_2026q3_results",
+        "prior_event_id": "evt_cik0000320193_2026q3_results",
+        "decision_at": "2026-07-30T20:33:00Z",
+        "prior_available_at": "2026-07-31T00:00:00Z",
+    })
+    result = _attach_with_binding(payload)
+    assert result["rows"][0]["current_context"]["earnings"] == {
+        "status": "REFUSED", "reason": "EPISODE_CLOCK_MISMATCH",
+    }
+
+# L3A guard: never accept a caller-declared RESOLVED tuple as independent issuer proof.
+def _native_issuer_master(*, issuer_state="RESOLVED", security_state=None,
+                          cik="0000320193", issuer_id="ISS:US:320193"):
+    from lib.dataos.identity import IssuerMaster
+    return IssuerMaster.from_records([{
+        "security_id": "SEC:US-XNAS-AAPL",
+        "issuer_id": issuer_id,
+        "issuer_cik": cik,
+        "issuer_state": issuer_state,
+        "security_state": security_state,
+        "listing_key": "US-XNAS-AAPL",
+    }])
+
+
+def _attach_with_native_master(payload, *, issuer_master=None, binding=None):
+    from engine.leadership_lab.earnings import attach_earnings_evidence
+    episode_id = "pe:SEC:US-XNAS-AAPL:epoch_0:sa:abc:1"
+    return attach_earnings_evidence(
+        base_view(), {episode_id: payload},
+        subject_bindings_by_episode={episode_id: binding or _owner_subject_binding()},
+        issuer_master=_native_issuer_master() if issuer_master is None else issuer_master,
+    )
+
+
+def test_native_issuer_reader_qualifies_current_subject_without_historical_identity_claim():
+    row = _attach_with_native_master(detail())["rows"][0]["current_context"]["earnings"]
+    assert row["status"] == "AVAILABLE"
+    assert row["issuer_id"] == "cik:0000320193"
+    assert row["identity_scope"] == "CURRENT_ISSUER_MASTER_ONLY_NOT_PIT"
+    assert row["historical_identity_qualified"] is False
+    assert row["authority"]["trade"] is False
+
+
+def test_caller_declared_resolved_subject_cannot_override_canonical_issuer_cik():
+    payload = detail()
+    payload["dossier"]["issuer_id"] = "cik:0000000001"
+    payload["dossier"]["event_id"] = "evt_cik0000000001_2026q3_results"
+    payload["evidence_brief"]["issuer_id"] = payload["dossier"]["issuer_id"]
+    payload["evidence_brief"]["event_id"] = payload["dossier"]["event_id"]
+    for change in payload["dossier"]["reported_changes"]:
+        change["issuer_id"] = payload["dossier"]["issuer_id"]
+        change["current_event_id"] = payload["dossier"]["event_id"]
+        change["prior_event_id"] = payload["dossier"]["event_id"]
+    false_binding = {
+        "state": "RESOLVED", "episode_company_id": "ISS:US:320193",
+        "earnings_company_id": "cik:0000000001",
+        "owner_subject_id": "evt_cik0000000001_2026q3_results",
+    }
+    earnings = _attach_with_native_master(payload, binding=false_binding)["rows"][0]["current_context"]["earnings"]
+    assert earnings == {"status": "REFUSED", "reason": "EARNINGS_NATIVE_ISSUER_MISMATCH"}
+
+
+def test_caller_claim_without_native_issuer_reader_must_refuse_even_when_tuple_matches():
+    from engine.leadership_lab.earnings import attach_earnings_evidence
+    episode_id = "pe:SEC:US-XNAS-AAPL:epoch_0:sa:abc:1"
+    earnings = attach_earnings_evidence(
+        base_view(), {episode_id: detail()},
+        subject_bindings_by_episode={episode_id: _owner_subject_binding()},
+    )["rows"][0]["current_context"]["earnings"]
+    assert earnings == {"status": "REFUSED", "reason": "EARNINGS_NATIVE_ISSUER_UNAVAILABLE"}
+
+
+@pytest.mark.parametrize("master", [
+    _native_issuer_master(issuer_state="PROVISIONAL"),
+    _native_issuer_master(security_state="SUPERSEDED"),
+    _native_issuer_master(issuer_id="ISS:US:someone-else"),
+])
+def test_unresolved_superseded_or_cross_issuer_native_identity_fails_closed(master):
+    earnings = _attach_with_native_master(detail(), issuer_master=master)["rows"][0]["current_context"]["earnings"]
+    assert earnings == {"status": "REFUSED", "reason": "EARNINGS_NATIVE_ISSUER_MISMATCH"}
+
+
+def test_prior_year_event_may_be_distinct_from_current_results_event():
+    payload = detail()
+    payload["dossier"]["reported_changes"][0]["prior_event_id"] = "evt_cik0000320193_2025q3_results"
+    earnings = _attach_with_native_master(payload)["rows"][0]["current_context"]["earnings"]
+    assert earnings["status"] == "AVAILABLE"
+    assert earnings["reported_changes"][0]["metric"] == "revenue"
+
+
+def test_unvalidated_b1_episode_cannot_qualify_earnings_even_with_matching_current_cik():
+    from engine.leadership_lab.earnings import attach_earnings_evidence
+    view = base_view()
+    view["current_context"]["episode_book"]["source_validation"] = {"status": "NOT_VALIDATED"}
+    episode_id = "pe:SEC:US-XNAS-AAPL:epoch_0:sa:abc:1"
+    earnings = attach_earnings_evidence(
+        view, {episode_id: detail()},
+        subject_bindings_by_episode={episode_id: _owner_subject_binding()},
+        issuer_master=_native_issuer_master(),
+    )["rows"][0]["current_context"]["earnings"]
+    assert earnings == {"status": "REFUSED", "reason": "EARNINGS_EPISODE_GENERATION_UNVERIFIED"}

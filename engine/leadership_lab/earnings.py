@@ -10,8 +10,10 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from datetime import datetime
+import re
 
 from engine.leadership_lab.measurement import finite_number
+from lib.dataos.identity import IdentityError, IssuerMaster
 
 
 _AUTHORITY = {
@@ -25,6 +27,13 @@ _METHOD_SCOPE = "RETROSPECTIVE_FACTUAL_RECONSTRUCTION_NO_AS_RUN_PROMOTION"
 _TIME_INTERPRETATION = "ORIGINAL_SOURCE_VINTAGE_RECONSTRUCTION_NOT_ORIGINAL_RECOMMENDATION"
 _MAX_EVIDENCE_ROWS = 128
 _MAX_TEXT = 2048
+_PROJECTION_RE = re.compile(r"piv:[0-9a-f]{64}")
+_EARNINGS_ISSUER_RE = re.compile(r"cik:[0-9]{10}")
+_DECISION_CUT_KEYS = frozenset({"opened_at", "opened_session", "anchor_time", "known_at", "tradable_at"})
+_TRADABLE_AT = {
+    "state": "NOT_ASSERTED", "value": None,
+    "basis": "no_us_availability_owner_and_b4_not_built",
+}
 
 
 def _text(value: object) -> str | None:
@@ -50,6 +59,83 @@ def _aware_time(value: object) -> str | None:
 def _all_false(value: object) -> bool:
     return (isinstance(value, Mapping) and set(value) == set(_AUTHORITY)
             and all(flag is False for flag in value.values()))
+
+
+def _decision_cut(value: object, *, episode: Mapping) -> tuple[dict | None, str | None]:
+    if not isinstance(value, Mapping) or frozenset(value) != _DECISION_CUT_KEYS:
+        return None, "EPISODE_CLOCK_MISMATCH"
+    if value.get("tradable_at") != _TRADABLE_AT:
+        return None, "EPISODE_CLOCK_MISMATCH"
+    opened_text = _aware_time(value.get("opened_at"))
+    anchor_text = _aware_time(value.get("anchor_time"))
+    known_text = _aware_time(value.get("known_at"))
+    session = _text(value.get("opened_session"))
+    if None in (opened_text, anchor_text, known_text, session):
+        return None, "EPISODE_CLOCK_MISMATCH"
+    opened = datetime.fromisoformat(opened_text.replace("Z", "+00:00"))
+    anchor = datetime.fromisoformat(anchor_text.replace("Z", "+00:00"))
+    known = datetime.fromisoformat(known_text.replace("Z", "+00:00"))
+    if (
+        opened != max(anchor, known)
+        or session != opened.date().isoformat()
+        or opened_text != episode.get("opened_at")
+        or session != episode.get("opened_session")
+    ):
+        return None, "EPISODE_CLOCK_MISMATCH"
+    return deepcopy(dict(value)), None
+
+
+def _qualified_subject_binding(
+    value: object, *, episode: Mapping, event_id: str, issuer_id: str,
+) -> bool:
+    if not isinstance(value, Mapping) or set(value) != {
+        "state", "episode_company_id", "earnings_company_id", "owner_subject_id"
+    }:
+        return False
+    earnings_issuer = _text(value.get("earnings_company_id"))
+    return (
+        value.get("state") == "RESOLVED"
+        and value.get("episode_company_id") == episode.get("company_id")
+        and earnings_issuer is not None
+        and _EARNINGS_ISSUER_RE.fullmatch(earnings_issuer) is not None
+        and earnings_issuer == issuer_id
+        and value.get("owner_subject_id") == event_id
+    )
+
+
+def _current_native_issuer_cik(master: object, episode: Mapping) -> str | None:
+    """Reuse the canonical Data OS *current* issuer reader; never infer historical lineage.
+
+    A caller's RESOLVED subject tuple is only a claim. Both the security/issuer
+    relation and CIK must agree with the existing IssuerMaster. Superseded or
+    provisional records are ineligible. The source pin/loader is owned by the
+    builder; this pure function does not open files or allocate identities.
+    """
+    if not isinstance(master, IssuerMaster):
+        return None
+    security = _text(episode.get("security_id"))
+    company = _text(episode.get("company_id"))
+    if security is None or company is None:
+        return None
+    try:
+        if (
+            master.issuer_of_security(security) != company
+            or security not in master.securities_of_issuer(company)
+        ):
+            return None
+        matching = [row for row in master.rows if row.security_id == security]
+        if (
+            len(matching) != 1
+            or matching[0].issuer_state != "RESOLVED"
+            or matching[0].security_state not in (None, "")
+        ):
+            return None
+        cik = master.cik_of_issuer(company)
+    except IdentityError:
+        return None
+    if not isinstance(cik, str) or re.fullmatch(r"[0-9]{10}", cik) is None:
+        return None
+    return "cik:" + cik
 
 
 def _string_list(value: object, *, limit: int = _MAX_EVIDENCE_ROWS) -> list[str] | None:
@@ -136,11 +222,16 @@ def _reported_change(raw: object) -> dict | None:
 
 def _project_detail(
     payload: object, *, episode: Mapping, generation_id: str,
+    subject_binding: Mapping | None, issuer_master: IssuerMaster | None,
+    episode_generation_validated: bool,
 ) -> tuple[dict | None, str | None]:
     if not isinstance(payload, Mapping) or payload.get("schema") != "prophet.episode_earnings_detail/v1":
         return None, "OWNER_SCHEMA_MISMATCH"
     if not _all_false(payload.get("authority")):
         return None, "OWNER_AUTHORITY_DRIFT"
+    projection_id = _text(payload.get("source_projection_id"))
+    if projection_id is None or _PROJECTION_RE.fullmatch(projection_id) is None:
+        return None, "OWNER_PROJECTION_REFERENCE_INVALID"
     if (
         payload.get("method_scope") != _METHOD_SCOPE
         or payload.get("time_interpretation") != _TIME_INTERPRETATION
@@ -159,14 +250,17 @@ def _project_detail(
     ):
         return None, "EPISODE_IDENTITY_MISMATCH"
 
-    cut = payload.get("decision_cut")
-    if not isinstance(cut, Mapping):
-        return None, "EPISODE_CLOCK_MISMATCH"
-    if (
-        cut.get("opened_at") != episode.get("opened_at")
-        or cut.get("opened_session") != episode.get("opened_session")
-    ):
-        return None, "EPISODE_CLOCK_MISMATCH"
+    if not episode_generation_validated:
+        return None, "EARNINGS_EPISODE_GENERATION_UNVERIFIED"
+    if issuer_master is None:
+        return None, "EARNINGS_NATIVE_ISSUER_UNAVAILABLE"
+    expected_cik = _current_native_issuer_cik(issuer_master, episode)
+    if expected_cik is None:
+        return None, "EARNINGS_NATIVE_ISSUER_MISMATCH"
+
+    cut, cut_error = _decision_cut(payload.get("decision_cut"), episode=episode)
+    if cut_error is not None or cut is None:
+        return None, cut_error or "EPISODE_CLOCK_MISMATCH"
 
     headline = _text(payload.get("headline"))
     interpretation = _text(payload.get("interpretation"))
@@ -203,6 +297,14 @@ def _project_detail(
         issuer_id = _text(dossier.get("issuer_id"))
         if event_id is None or issuer_id is None:
             return None, "OWNER_PAYLOAD_INVALID"
+        if issuer_id != expected_cik:
+            return None, "EARNINGS_NATIVE_ISSUER_MISMATCH"
+        if subject_binding is None:
+            return None, "EARNINGS_SUBJECT_BINDING_UNAVAILABLE"
+        if not _qualified_subject_binding(
+            subject_binding, episode=episode, event_id=event_id, issuer_id=issuer_id
+        ):
+            return None, "EARNINGS_SUBJECT_BINDING_MISMATCH"
         changes = dossier.get("reported_changes")
         if (
             not isinstance(changes, Sequence) or isinstance(changes, (str, bytes))
@@ -210,12 +312,27 @@ def _project_detail(
         ):
             return None, "OWNER_PAYLOAD_INVALID"
         for raw in changes:
+            if not isinstance(raw, Mapping):
+                return None, "OWNER_PAYLOAD_INVALID"
+            if (
+                raw.get("issuer_id") != issuer_id
+                or raw.get("current_event_id") != event_id
+                or _text(raw.get("prior_event_id")) is None
+                or raw.get("decision_at") != decision_clock
+            ):
+                return None, "EARNINGS_SUBJECT_BINDING_MISMATCH"
+            current_available = _aware_time(raw.get("current_available_at"))
+            prior_available = _aware_time(raw.get("prior_available_at"))
+            if current_available is None or prior_available is None:
+                return None, "OWNER_PAYLOAD_INVALID"
+            if (
+                datetime.fromisoformat(current_available.replace("Z", "+00:00")) > decision_time
+                or datetime.fromisoformat(prior_available.replace("Z", "+00:00")) > decision_time
+            ):
+                return None, "EPISODE_CLOCK_MISMATCH"
             projected = _reported_change(raw)
             if projected is None:
                 return None, "OWNER_PAYLOAD_INVALID"
-            available = datetime.fromisoformat(projected["current_available_at"].replace("Z", "+00:00"))
-            if available > decision_time:
-                return None, "EPISODE_CLOCK_MISMATCH"
             reported.append(projected)
 
         brief = payload.get("evidence_brief")
@@ -251,10 +368,11 @@ def _project_detail(
 
     return {
         "status": "AVAILABLE",
-        "source_projection_id": _text(payload.get("source_projection_id")),
-        "decision_cut": {key: deepcopy(cut[key]) for key in
-                         ("opened_at", "opened_session", "anchor_time", "known_at") if key in cut},
+        "source_projection_id": projection_id,
+        "decision_cut": deepcopy(cut),
         "source_authentication": "CALLER_SUPPLIED_OWNER_OUTPUT_NOT_INDEPENDENTLY_ATTESTED",
+        "identity_scope": "CURRENT_ISSUER_MASTER_ONLY_NOT_PIT",
+        "historical_identity_qualified": False,
         "headline": headline,
         "interpretation": interpretation,
         "comparison_state": comparison_state,
@@ -272,7 +390,9 @@ def _project_detail(
 
 
 def attach_earnings_evidence(
-    view: Mapping, details_by_episode: Mapping[str, Mapping],
+    view: Mapping, details_by_episode: Mapping[str, Mapping], *,
+    subject_bindings_by_episode: Mapping[str, Mapping] | None = None,
+    issuer_master: IssuerMaster | None = None,
 ) -> dict:
     """Attach already-produced Earnings details through exact native episode ids."""
     if (
@@ -283,6 +403,10 @@ def attach_earnings_evidence(
         raise ValueError("Leadership Lab current-context view required")
     if not isinstance(details_by_episode, Mapping):
         raise ValueError("earnings detail mapping required")
+    if subject_bindings_by_episode is not None and not isinstance(subject_bindings_by_episode, Mapping):
+        raise ValueError("earnings subject-binding mapping required")
+    if issuer_master is not None and not isinstance(issuer_master, IssuerMaster):
+        raise ValueError("native Data OS IssuerMaster required")
 
     result = deepcopy(dict(view))
     episode_book = result["current_context"].get("episode_book")
@@ -290,6 +414,11 @@ def attach_earnings_evidence(
         _text(episode_book.get("generation_id"))
         if isinstance(episode_book, Mapping) and episode_book.get("status") == "AVAILABLE"
         else None
+    )
+    proof = episode_book.get("source_validation") if isinstance(episode_book, Mapping) else None
+    generation_validated = (
+        isinstance(proof, Mapping)
+        and proof.get("status") == "VALIDATED_CANONICAL_OWNER"
     )
 
     def enrich(raw: object) -> dict:
@@ -318,8 +447,14 @@ def attach_earnings_evidence(
                 "status": "UNAVAILABLE", "reason": "NO_EARNINGS_DETAIL"}
             row["current_context"] = current
             return row
+        binding = (
+            subject_bindings_by_episode.get(episode_id)
+            if isinstance(subject_bindings_by_episode, Mapping) else None
+        )
         projected, refusal = _project_detail(
-            payload, episode=episode, generation_id=generation_id)
+            payload, episode=episode, generation_id=generation_id,
+            subject_binding=binding, issuer_master=issuer_master,
+            episode_generation_validated=generation_validated)
         current["earnings"] = (
             projected if projected is not None
             else {"status": "REFUSED", "reason": refusal}
@@ -345,6 +480,8 @@ def attach_earnings_evidence(
         "refused_rows": statuses.count("REFUSED"),
         "unavailable_rows": statuses.count("UNAVAILABLE"),
         "probability_calibration": "NOT_CONNECTED",
+        "identity_scope": "CURRENT_ISSUER_MASTER_ONLY_NOT_PIT",
+        "historical_identity_qualified": False,
         "authority": dict(_AUTHORITY),
     }
     return result

@@ -197,3 +197,25 @@ def test_positive_rs_percentiles_are_not_positive_return_breadth():
     assert rs['positive_breadth_lower'] is None
     assert rs['positive_breadth_upper'] is None
     assert rs['breadth_interpretation'] == 'NOT_APPLICABLE_TO_PERCENTILE_LEVELS'
+
+
+def test_missing_rs_peer_measurement_keeps_alpha_available_and_rs_delta_null():
+    payload = view()
+    payload["rows"][1]["legacy_rs"] = None
+    payload["shortlist"][1]["legacy_rs"] = None
+    result = attach(payload)
+    group = _group(result, "A", "clean")
+    assert group["legacy_alpha"]["independence_status"] == "AVAILABLE"
+    assert group["legacy_alpha"]["focal_minus_peer_median"] == pytest.approx(1.0)
+    assert group["legacy_rs"]["focal_minus_peer_median"] is None
+    assert "B" in group["legacy_rs"]["missing_market_observation"]
+
+
+def test_committed_peer_evidence_is_explicitly_superseded():
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[1] / "research/leadership_alpha_rs/evidence/l2_peer_current_read.json"
+    payload = json.loads(path.read_text())
+    assert isinstance(payload, dict)
+    assert payload["status"] == "SUPERSEDED"
+    assert payload["do_not_use_for_current_semantics"] is True
+    assert "RS_PERCENTILE_SIGN_WAS_NOT_RETURN_BREADTH" in payload["reasons"]

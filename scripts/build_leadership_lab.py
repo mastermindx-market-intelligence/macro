@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import json
 from pathlib import Path
 import re
@@ -85,10 +86,49 @@ def _read_json_blob(repo_root: Path, ref: str, path: str, *, required: bool) -> 
     }
 
 
+def _read_current_issuer_master(repo_root: Path, ref: str):
+    """Read the canonical Data OS issuer snapshot at one immutable Git commit.
+
+    This is CURRENT issuer evidence only; its reader explicitly does not supply
+    historical issuer lineage at an earlier candidate/earnings decision cut.
+    Missing, corrupt, or oversized inputs fail closed for Earnings evidence.
+    """
+    source = "data/reference/security_master.parquet"
+    unavailable = {
+        "path": source, "read_status": "UNAVAILABLE",
+        "sha256": None, "git_blob": None, "bytes": None,
+        "identity_scope": "CURRENT_ONLY_NOT_HISTORICAL",
+    }
+    try:
+        raw = subprocess.check_output(
+            ["git", "-C", str(repo_root), "show", f"{ref}:{source}"],
+            stderr=subprocess.PIPE, timeout=20)
+        if not raw or len(raw) > 16_000_000:
+            raise ValueError("native issuer master source size invalid")
+        import pandas as pd
+        from lib.dataos.identity import IssuerMaster
+        records = pd.read_parquet(io.BytesIO(raw)).to_dict("records")
+        master = IssuerMaster.from_records(records)
+        if not master.rows:
+            raise ValueError("native issuer master empty")
+    except Exception:  # noqa: BLE001 — optional source read is fail-closed
+        # No fallback to ticker parsing or caller-declared issuer identity.
+        return None, unavailable
+    return master, {
+        "path": source, "read_status": "READ",
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "git_blob": hashlib.sha1(f"blob {len(raw)}".encode() + bytes([0]) + raw).hexdigest(),
+        "bytes": len(raw),
+        "identity_scope": "CURRENT_ONLY_NOT_HISTORICAL",
+    }
+
+
 def build_view(
     source_ref: str, reference_session: str, *, repo_root: Path = ROOT,
     limit: int = 40, sort_by: str = "legacy_alpha", context_ref: str | None = None,
-    earnings_details: dict | None = None, episode_store: Path | None = None,
+    earnings_details: dict | None = None,
+    earnings_subject_bindings: dict | None = None,
+    episode_store: Path | None = None,
 ) -> dict:
     """Read immutable recovery/context owner blobs; never use working-copy fallback."""
     repo_root = Path(repo_root)
@@ -107,7 +147,7 @@ def build_view(
         view["sources"].setdefault(label, {}).update(receipt)
 
     if context_ref is None:
-        if earnings_details is not None:
+        if earnings_details is not None or earnings_subject_bindings is not None:
             raise ValueError("earnings details require a native episode context")
         return view
 
@@ -156,8 +196,15 @@ def build_view(
     view = attach_independent_peer_context(view)
     view = attach_group_leadership(view)
     view = attach_catalyst_readiness(view, context_payloads["entry_radar_ledger"])
+    if earnings_subject_bindings is not None and earnings_details is None:
+        raise ValueError("earnings subject bindings require prebuilt owner details")
     if earnings_details is not None:
-        view = attach_earnings_evidence(view, earnings_details)
+        native_master, master_receipt = _read_current_issuer_master(repo_root, context_ref)
+        view["current_context"]["sources"]["issuer_master"] = master_receipt
+        view = attach_earnings_evidence(
+            view, earnings_details,
+            subject_bindings_by_episode=earnings_subject_bindings,
+            issuer_master=native_master)
     return view
 
 

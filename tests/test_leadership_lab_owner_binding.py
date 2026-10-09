@@ -118,3 +118,45 @@ def test_missing_native_binding_degrades_only_episode_trust(bound_git_store, tmp
     result = build_view(ref, '2026-11-27', repo_root=root, context_ref=ref, episode_store=tmp_path/'absent')
     assert result['recovered_count'] > 0
     assert result['current_context']['episode_book']['source_validation']['status'] == 'UNAVAILABLE'
+
+
+def test_builder_reads_only_exact_ref_current_issuer_master_and_never_claims_history(bound_git_store):
+    # The upstream native B1 fixture is an existing owner writer output; this
+    # later CIK observation is CURRENT identity only, not historical lineage.
+    import subprocess
+    import pandas as pd
+    from hashlib import sha256
+    from scripts.build_leadership_lab import build_view, _read_current_issuer_master
+    root, store, original_ref = bound_git_store
+    source = root / "data/reference/security_master.parquet"
+    old_master, old_receipt = _read_current_issuer_master(root, original_ref)
+    assert old_receipt["read_status"] == "READ"
+    assert old_master.cik_of_issuer("ISS:US-XNAS-ALFA") is None
+
+    rows = pd.read_parquet(source)
+    rows["issuer_cik"] = "0000123456"
+    rows["issuer_state"] = "RESOLVED"
+    rows.to_parquet(source, index=False)
+    subprocess.run(["git", "-C", str(root), "add", str(source.relative_to(root))], check=True)
+    subprocess.run([
+        "git", "-C", str(root), "-c", "user.name=Fixture", "-c",
+        "user.email=fixture@example.invalid", "-c", "core.hooksPath=/dev/null",
+        "commit", "-qm", "Current source CIK synthetic fixture"], check=True)
+    context_ref = subprocess.check_output(
+        ["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
+    master, receipt = _read_current_issuer_master(root, context_ref)
+    assert receipt["read_status"] == "READ"
+    assert receipt["sha256"] == sha256(source.read_bytes()).hexdigest()
+    assert receipt["identity_scope"] == "CURRENT_ONLY_NOT_HISTORICAL"
+    assert master.issuer_of_security("SEC:US-XNAS-ALFA") == "ISS:US-XNAS-ALFA"
+    assert master.cik_of_issuer("ISS:US-XNAS-ALFA") == "0000123456"
+
+    view = build_view(
+        original_ref, "2026-11-27", repo_root=root, context_ref=context_ref,
+        episode_store=store, earnings_details={})
+    assert view["current_context"]["sources"]["issuer_master"] == receipt
+    assert view["current_context"]["episode_book"]["source_validation"]["status"] == "VALIDATED_CANONICAL_OWNER"
+    assert view["current_context"]["earnings"]["historical_identity_qualified"] is False
+    assert view["authority"]["trade"] is False
+    assert _read_current_issuer_master(root, original_ref)[0].cik_of_issuer(
+        "ISS:US-XNAS-ALFA") is None
