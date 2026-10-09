@@ -22447,3 +22447,53 @@ jobs:
         run: pip install pytest pyyaml requests
       - name: File and pinned-source replay, manual boundary and temporal refusals
         run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py -q
+
+  gmi-source-diagnostic-kernel:
+    # WP02 deterministic artificial research model and structural-only refusals.
+    # Exact kernel/policy inputs plus shared pytest imports; no source acquisition.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - engine/__init__.py
+      - engine/basket_breadth_divergence.py
+      - engine/catalyst_tone.py
+      - engine/desk_ledger.py
+      - engine/gdelt_client.py
+      - engine/marketing/__init__.py
+      - engine/marketing/accounts.py
+      - engine/marketing/authority.py
+      - engine/marketing/chart_render.py
+      - engine/marketing/charter.py
+      - engine/marketing/claims.py
+      - engine/marketing/cmo.py
+      - engine/marketing/departments.py
+      - engine/marketing/economics.py
+      - engine/marketing/events.py
+      - engine/marketing/ledgers.py
+      - engine/marketing/logo_cache.py
+      - engine/marketing/opportunity_bus.py
+      - engine/marketing/publication.py
+      - engine/marketing/state.py
+      - engine/master_brain.py
+      - lib/__init__.py
+      - lib/config.py
+      - research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/source_diagnostic.py
+      - research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/synthetic_example.py
+      - research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_policy_adoption_v1/POLICY_ADOPTION.json
+      - research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_policy_v2/RECOMMENDED_SELECTION_POLICY.json
+      - scripts/__init__.py
+      - scripts/worktree_sparse.py
+      - tests/__init__.py
+      - tests/conftest.py
+      - tests/test_gmi_source_diagnostic_kernel.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install source diagnostic test dependencies
+        run: pip install pytest
+      - name: WP02 source diagnostic kernel contracts
+        run: python -m pytest tests/test_gmi_source_diagnostic_kernel.py -q

@@ -4641,6 +4641,9 @@ CURATED_EXCLUSIVE = {
     # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
     # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
     "company-relationship-candidates",
+    # WP02 source-diagnostic research kernel: exact inputs and shared pytest imports.
+    # Preserve closure audits, packing limits and incumbent owner declarations.
+    "gmi-source-diagnostic-kernel",
 }
 
 
