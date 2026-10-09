@@ -96,7 +96,7 @@ def _mapping(value: Any, name: str) -> dict:
 
 def _normalise(owner_inputs: Mapping[str, Any]) -> dict:
     data = deepcopy(_mapping(owner_inputs, "owner_inputs"))
-    for key in ("calendar", "prices", "identity", "pit_rosters", "decision_cutoffs", "rights", "identity_by_date"):
+    for key in ("calendar", "prices", "identity", "pit_rosters", "decision_cutoffs", "rights", "identity_by_date", "construction"):
         data[key] = _mapping(data.get(key, {}), key)
     for key, value in data["identity"].items():
         _mapping(value, f"identity.{key}")
@@ -167,8 +167,13 @@ def _validate_request(request: Mapping[str, Any], data: dict):
             raise ValueError("calendar close disagrees with the incumbent session owner")
     if any(clocks[b] <= clocks[a] for a, b in zip(days, days[1:])):
         raise ValueError("calendar close instants are not increasing")
-    if request["start"] != days[0] or request["end"] != days[-1]:
-        raise ValueError("request endpoints must equal the supplied complete calendar endpoints")
+    construction = data["construction"]
+    if not _ref(construction.get("owner_ref")):
+        raise ValueError("construction owner reference is required")
+    if construction.get("inception") != days[0]:
+        raise ValueError("complete calendar must start at the fixed construction inception")
+    if request["start"] not in days or request["end"] != days[-1] or request["start"] >= request["end"]:
+        raise ValueError("requested window needs an observed anchor and at least one return interval")
     expected = [days[0]] + [a for a, b in zip(days, days[1:]) if a[:7] != b[:7]]
     rebalances = cal.get("rebalance_dates")
     if not isinstance(rebalances, list) or sorted(rebalances) != sorted(set(expected)):
@@ -299,14 +304,14 @@ def _compound(values: list) -> float | None:
     return math.prod(1 + value for value in values) - 1
 
 
-def _analytics(points: list[dict]) -> dict:
+def _analytics(points: list[dict], *, anchor: float | None) -> dict:
     values = [point["return"] for point in points]
     out = {f"return_{n}": _compound(values[-n:]) if len(values) >= n else None for n in (1, 5, 10, 20, 60)}
     out["window_return"] = _compound(values)
-    levels = [100.0] + [point["index_level"] for point in points]
+    levels = [anchor] + [point["index_level"] for point in points]
     out["max_drawdown"] = None
     if all(level is not None for level in levels):
-        peak, drawdown = 100.0, 0.0
+        peak, drawdown = anchor, 0.0
         for level in levels:
             peak = max(peak, level)
             drawdown = min(drawdown, level / peak - 1)
@@ -342,6 +347,7 @@ def build_factor_read(request: Mapping[str, Any], *, owner_inputs: Mapping[str, 
     points, cohort_history = [], []
     weights, members, cohort_reasons, cohort_ref = None, [], [], None
     index_level = 100.0
+    index_by_date = {days[0]: index_level}
     segment = 0
     all_reasons = set(global_reasons)
     for previous, day in zip(days, days[1:]):
@@ -400,6 +406,7 @@ def build_factor_read(request: Mapping[str, Any], *, owner_inputs: Mapping[str, 
             if weights is None and not cohort_reasons:
                 reasons.append("VALUATION_CHAIN_UNAVAILABLE")
             weights, index_level = None, None
+        index_by_date[day] = index_level
         all_reasons.update(reasons)
         points.append({"date": day, "interval_start": clocks[previous].isoformat(),
                        "interval_end": clocks[day].isoformat(), "return": value,
@@ -410,30 +417,34 @@ def build_factor_read(request: Mapping[str, Any], *, owner_inputs: Mapping[str, 
                                     "weight_basis": "declared_start_weights"},
                        "breadth": breadth, "concentration": concentration,
                        "contributions": contributions, "reasons": sorted(set(reasons))})
+    points = [point for point in points if point["date"] > request["start"]]
+    anchor = index_by_date[request["start"]]
     valid_points = sum(point["return"] is not None for point in points)
     result = {
         "schema": SCHEMA, "release_state": "CANDIDATE_NOT_ADMITTED",
         "input_admission": "REFERENCE_CHECKS_ONLY_NOT_RECEIPT_AUTHENTICATION",
         "evidence_kind": data["evidence_kind"], "basket_id": request["basket_id"],
         "history_mode": request["history_mode"], "as_of": days[-1], "request": request,
+        "anchor": {"date": request["start"], "index_level": anchor},
         "method": {"weighting": "equal", "rebalance": "monthly", "between_rebalances": "drift",
                    "return_basis": AdjustmentBasis.TRADJ.value, "currency": "USD",
                    "session": Session.REGULAR.value, "venue_scope": VenueScope.CONSOLIDATED.value,
                    "dividends": "constituent_total_return_reinvestment", "costs": "gross_zero_cost",
-                   "base_index": 100.0, "minimum_held_weight_coverage": 1.0},
-        "status": "READY" if valid_points == len(points) else "PARTIAL" if valid_points else "UNAVAILABLE",
-        "reasons": sorted(all_reasons), "points": points, "analytics": _analytics(points),
+                   "base_index": 100.0, "minimum_held_weight_coverage": 1.0,
+                   "series_inception": data["construction"]["inception"], "window_semantics": "DISPLAY_WINDOW_NOT_RECONSTRUCTION"},
+        "status": "READY" if valid_points == len(points) and anchor is not None and all(p["index_level"] is not None for p in points) else "PARTIAL" if valid_points else "UNAVAILABLE",
+        "reasons": sorted(all_reasons), "points": points, "analytics": _analytics(points, anchor=anchor),
         "units": {"returns": "fraction", "volatility": "annualized_fraction", "coverage": "fraction"},
         "cohort_digest": _digest(cohort_history),
         "input_digest": _digest({"request": request, "owner_inputs": data}),
         "input_revision": data["input_revision"], "correction_of": data.get("correction_of"),
-        "source_refs": {"code": data["code_ref"], "calendar": data["calendar"]["ref"],
+        "source_refs": {"code": data["code_ref"], "construction": data["construction"]["owner_ref"], "calendar": data["calendar"]["ref"],
                         "rights": rights.get("owner_ref"), "cohorts": cohort_history,
                         "identity": data["identity"], "identity_by_date": data["identity_by_date"],
                         "prices": {sid: price_map.get(sid, {}).get("evidence")
                                    for sid in sorted({sid for row in cohort_history for sid in row["members"]})}},
         "authority": {"may_rank": False, "may_gate": False, "may_size": False,
-                      "may_trade": False, "may_publish": False},
+                      "may_trade": False, "may_publish": False, "may_escalate": False},
     }
     result["result_digest"] = _digest(result)
     return result

@@ -93,6 +93,7 @@ def _price_projection(result: Resolved, *, store_symbol: str,
 
 def build_from_owners(request: Mapping[str, Any], *,
                       membership_reader: Callable[[str], Mapping[str, Any]],
+                      construction: Mapping[str, str],
                       aliases: VendorAliasTable, alias_snapshot_ref: str,
                       price_reader: Callable[[str], Resolved],
                       decision_cutoffs: Mapping[str, str], rights: Mapping[str, Any],
@@ -118,7 +119,7 @@ def build_from_owners(request: Mapping[str, Any], *,
     if mode not in {"CURRENT_ROSTER", "PIT_AS_KNOWN"}:
         raise ValueError("unsupported history_mode")
     cutoff = utc(request["measurement_cutoff"])
-    calendar = owner_calendar(request["start"], request["end"], code_ref=code_ref)
+    calendar = owner_calendar(construction["inception"], request["end"], code_ref=code_ref)
     if mode == "CURRENT_ROSTER":
         if current_roster_asof is None or date.fromisoformat(current_roster_asof) > cutoff.date():
             raise ValueError("an explicit current roster date no later than measurement is required")
@@ -188,7 +189,7 @@ def build_from_owners(request: Mapping[str, Any], *,
                                        currency=currency_by_security.get(sid),
                                        corporate_action_ref=corporate_action_refs.get(sid))
     inputs = {"evidence_kind": evidence_kind, "code_ref": code_ref, "input_revision": input_revision,
-              "correction_of": None, "calendar": calendar, "decision_cutoffs": dict(decision_cutoffs),
+              "correction_of": None, "construction": dict(construction), "calendar": calendar, "decision_cutoffs": dict(decision_cutoffs),
               "current_roster": rosters[queries[0]] if mode == "CURRENT_ROSTER" else None,
               "pit_rosters": rosters if mode == "PIT_AS_KNOWN" else {},
               "identity": identities[queries[0]], "identity_by_date": identities,

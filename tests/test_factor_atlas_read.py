@@ -50,6 +50,7 @@ def case(dates=None, names=None):
     inputs = {
         "evidence_kind": "SYNTHETIC_FIXTURE", "code_ref": "fixture:native-code/v1",
         "input_revision": "fixture:inputs/v1", "correction_of": None,
+        "construction": {"inception": dates[0], "owner_ref": "fixture:basket-method/v1"},
         "calendar": {"ref": "fixture:XNYS-calendar/v1", "sessions": sessions,
                      "rebalance_dates": rebalances},
         "current_roster": current,
@@ -463,3 +464,40 @@ def test_qualified_looking_identity_clock_still_has_no_source_authentication():
     result = run(request, inputs)
     assert result["input_admission"] == "REFERENCE_CHECKS_ONLY_NOT_RECEIPT_AUTHENTICATION"
     assert result["source_refs"]["identity"][IDS[0]]["owner_ref"] == inputs["identity"][IDS[0]]["owner_ref"]
+
+
+def test_chart_window_keeps_weights_from_the_fixed_construction_inception():
+    request, inputs = case()
+    set_path(inputs, IDS[0], [100, 200, 100])
+    full = run(request, inputs)
+    request["start"] = "2026-01-29"
+    tail = run(request, inputs)
+    assert returns(tail) == pytest.approx([-0.25])
+    assert tail["points"][0]["return"] == full["points"][-1]["return"]
+    assert tail["points"][0]["index_level"] == full["points"][-1]["index_level"]
+    assert tail["anchor"]["index_level"] == pytest.approx(100 * 4 / 3)
+    assert tail["analytics"]["window_return"] == pytest.approx(-0.25)
+    assert tail["analytics"]["max_drawdown"] == pytest.approx(-0.25)
+    assert tail["method"]["series_inception"] == "2026-01-28"
+    assert tail["cohort_digest"] == full["cohort_digest"]
+
+
+def test_missing_construction_prefix_is_not_a_new_equal_weight_portfolio():
+    request, inputs = case()
+    inputs["construction"]["inception"] = "2026-01-27"
+    with pytest.raises(ValueError, match="inception"):
+        run(request, inputs)
+
+
+def test_construction_owner_reference_is_required():
+    request, inputs = case()
+    del inputs["construction"]["owner_ref"]
+    with pytest.raises(ValueError, match="construction"):
+        run(request, inputs)
+
+
+def test_requested_window_cannot_have_zero_return_intervals():
+    request, inputs = case()
+    request["start"] = request["end"]
+    with pytest.raises(ValueError, match="window"):
+        run(request, inputs)

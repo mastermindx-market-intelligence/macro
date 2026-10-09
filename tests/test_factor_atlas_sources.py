@@ -73,6 +73,7 @@ def owners(tmp_path, monkeypatch):
                                          allow_unadjusted=False, capture_evidence=True,
                                          start=DAYS[0], asof=DAYS[-1])
     options = dict(membership_reader=membership, aliases=aliases,
+                   construction={"inception": DAYS[0], "owner_ref": "fixture:method/v1"},
                    alias_snapshot_ref="fixture:vendor-aliases", price_reader=price,
                    code_ref="fixture:code/v1", input_revision="fixture:owner-input/v1",
                    evidence_kind="SYNTHETIC_FIXTURE",
