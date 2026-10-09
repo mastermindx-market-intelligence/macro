@@ -363,5 +363,94 @@ class OriginalExchangeReferenceTests(unittest.TestCase):
         with self.assertRaisesRegex(FrameContractError,"unknown reference venue"):
             exchange_ref(rows=[{"asset_class":"stocks","id":11,"type":"otc"}])
 
+from engine.tick_plane.stream_events import normalize_ws_frame, MAX_FRAME_EVENTS
+
+
+class BatchedOriginalFrameTests(unittest.TestCase):
+    def frame(self, rows):
+        return json.dumps(rows,separators=(",",":")).encode()
+
+    def decode(self, rows, **other):
+        frame=self.frame(rows)
+        args={"raw_frame_bytes":frame,"frame_received_ns":RECEIVED_NS,
+              "source_receipt_id":"original:batch:receipt",
+              "session":"2026-10-08:RTH","allowed_symbols":{"SPY"}}
+        args.update(other)
+        return normalize_ws_frame(**args)
+
+    def test_batch_byte_identical_to_single_event_normalizer(self):
+        values=[QUOTE,TRADE]
+        results=self.decode(values)
+        frame=self.frame(values)
+        for i,expected in enumerate(results):
+            other=normalize_ws_event(frame,event_index=i,
+                    frame_received_ns=RECEIVED_NS,source_receipt_id="original:batch:receipt",
+                    session="2026-10-08:RTH",allowed_symbols={"SPY"})
+            self.assertEqual(expected,other)
+        self.assertEqual(results[0]["frame_event_index"],0)
+        self.assertEqual(results[1]["frame_event_index"],1)
+        self.assertEqual(results[0]["source_frame_sha256"],results[1]["source_frame_sha256"])
+
+    def test_batch_parses_original_json_exactly_once(self):
+        from unittest.mock import patch
+        from engine.tick_plane import stream_events
+        with patch.object(stream_events.json, "loads", wraps=stream_events.json.loads) as loader:
+            frame=self.decode([QUOTE,TRADE,QUOTE])
+        self.assertEqual(loader.call_count,1)
+        self.assertEqual(len(frame),3)
+
+    def test_full_batch_refuses_mixed_status_control_frames(self):
+        values=[QUOTE,{"ev":"status","status":"auth_success"},TRADE]
+        with self.assertRaisesRegex(FrameContractError,"not T or Q"):
+            self.decode(values)
+
+    def test_full_batch_refuses_invalid_out_of_universe_row(self):
+        bad=copy.deepcopy(TRADE)
+        bad["sym"]="AAPL"
+        with self.assertRaisesRegex(FrameContractError,"outside the frozen pilot"):
+            self.decode([QUOTE,bad])
+
+    def test_bad_event_clock_refuses_whole_frame(self):
+        bad=copy.deepcopy(TRADE)
+        bad["t"]=TIME_MS+99999
+        with self.assertRaisesRegex(FrameContractError,"precedes vendor SIP"):
+            self.decode([QUOTE,bad])
+
+    def test_empty_and_nonlist_batch_are_not_valid_data(self):
+        for raw in (b"[]",b"{}",b"null",b""):
+            with self.subTest(raw=raw),self.assertRaises(FrameContractError):
+                normalize_ws_frame(raw,frame_received_ns=RECEIVED_NS,
+                        source_receipt_id="fixture",session="2026-10-08:RTH",
+                        allowed_symbols={"SPY"})
+
+    def test_bounded_frame_event_count_enforced(self):
+        many=[QUOTE]*(MAX_FRAME_EVENTS+1)
+        with self.assertRaisesRegex(FrameContractError,"bounded event budget"):
+            self.decode(many)
+
+    def test_batch_allows_multiple_same_ms_without_invented_order(self):
+        events=[QUOTE,copy.deepcopy(QUOTE)]
+        events[1]["q"]=101
+        batch=self.decode(events)
+        self.assertEqual(batch[0]["sip_timestamp_ns"],batch[1]["sip_timestamp_ns"])
+        self.assertEqual([r["frame_event_index"] for r in batch],[0,1])
+        self.assertNotIn("trade_aggressor_truth",str(batch))
+
+    def test_batch_precise_decimal_price_and_fractional_size(self):
+        tr=copy.deepcopy(TRADE)
+        tr["p"]=100.125
+        tr["s"]=0
+        tr["ds"]="0.375"
+        batch=self.decode([tr])
+        self.assertEqual(batch[0]["price"],"100.125")
+        self.assertEqual(batch[0]["decimal_size_shares"],"0.375")
+        self.assertEqual(batch[0]["correction_status"],
+                         "STREAM_PROVISIONAL_UNRECONCILED")
+
+    def test_batch_does_not_change_market_tape_status_on_error(self):
+        with self.assertRaises(FrameContractError):
+            self.decode([QUOTE,{"ev":"X","sym":"SPY"}])
+        self.assertEqual(len(self.decode([QUOTE])),1)
+
 if __name__ == "__main__":
     unittest.main()
