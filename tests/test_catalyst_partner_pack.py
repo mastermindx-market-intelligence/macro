@@ -584,6 +584,31 @@ class CatalystPartnerPackTests(unittest.TestCase):
             self.assertEqual(sentinel.read_text(encoding="utf-8"),
                              "DO_NOT_TOUCH")
 
+    def test_unhashable_evidence_and_ai_identifiers_refuse_typed(self):
+        self.event["headline_evidence_ids"] = [{}]
+        self.refused("HEADLINE_EVIDENCE_MISSING")
+        self.event = copy.deepcopy(DEMO_EVENT)
+        self.refused("AI_UNGROUNDED_CLAIM_SELECTION",
+                     angle_plan={"selected_claim_ids": [[]]})
+        self.refused("AI_UNGROUNDED_CLAIM_SELECTION",
+                     angle_plan={"selected_claim_ids": [{}]})
+
+    def test_later_output_symlink_preflight_prevents_partial_pack(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            out = root / "pack"
+            out.mkdir()
+            sentinel = root / "not-a-preview.txt"
+            sentinel.write_text("DO_NOT_TOUCH", encoding="utf-8")
+            (out / "social.txt").symlink_to(sentinel)
+            with self.assertRaises(PackRejected) as ctx:
+                write_partner_pack(self.make(), out)
+            self.assertEqual(ctx.exception.code, "UNSAFE_OUTPUT_PATH")
+            self.assertEqual(sentinel.read_text(encoding="utf-8"),
+                             "DO_NOT_TOUCH")
+            self.assertFalse((out / "index.html").exists())
+            self.assertFalse((out / "newsletter.md").exists())
+
     def test_no_real_outbound_or_publishing_capability(self):
         p = self.make()
         self.assertTrue(p["link_is_placeholder"])
