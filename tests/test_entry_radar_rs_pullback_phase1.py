@@ -695,5 +695,25 @@ class Phase1LeaderPivotConsumerSuiteTests(unittest.TestCase):
         self.assertEqual(errors, [], "pivot consumer errors: " + repr(errors[:2]))
 
 
+    def test_first_green_comparator_21_case_conformance(self):
+        """Run the separate first-green research comparator under the existing CI owner."""
+        from tests.test_entry_radar_first_green_descriptor import (
+            FirstGreenFormationTests, FirstGreenProgressTests,
+        )
+        suite = unittest.TestSuite(
+            unittest.defaultTestLoader.loadTestsFromTestCase(cls)
+            for cls in (FirstGreenFormationTests, FirstGreenProgressTests)
+        )
+        result = unittest.TestResult()
+        suite.run(result)
+        failures = [(case.id(), tb) for case, tb in result.failures]
+        errors = [(case.id(), tb) for case, tb in result.errors]
+        self.assertEqual(result.testsRun, 21, "first-green comparator case count drift")
+        self.assertEqual(result.skipped, [], "first-green comparator cases cannot skip")
+        self.assertEqual(failures, [], "first-green comparator failures: " + repr(failures[:2]))
+        self.assertEqual(errors, [], "first-green comparator errors: " + repr(errors[:2]))
+
+
+
 if __name__ == "__main__":
     unittest.main()
