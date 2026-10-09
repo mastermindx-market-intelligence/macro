@@ -59,6 +59,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from engine.market_ontology.theme_research_binding import (
     BundleUnavailable,
     ResearchRefusal,
+    validate_cutoff_format,
 )
 from engine.market_ontology.theme_research_registry import (
     VerticalRegistration,
@@ -261,7 +262,26 @@ def _body_to_query(
     accepts; the vertical owns the type and its literals, so a value this
     shell admitted by grammar but the vertical does not accept fails in the
     vertical. The shell constructs no vertical type itself.
+
+    A cutoff the engine cannot read is a fault in that SHARED grammar, so the
+    shell refuses it here — before the rights snapshot and the loader, for
+    every registered vertical — rather than leaving each composer to remember.
     """
+    # The Energy seat measured both faults this prevents over nuclear's route
+    # (#7870 issuecomment-5868018569 / 5869344590 / 5870740225): a bare
+    # ValueError raised inside a time gate, answered 503 `retry_later` by the
+    # catch-all, telling the caller to retry a string that can never work;
+    # and, where no gate read the value at all, a silent 200 that echoed the
+    # unreadable cutoff back with no limitation marking it. `cutoff_unreadable`
+    # already mapped to 400 above, but only the DETECTION lived in a vertical
+    # composer, so a vertical that omitted the call inherited the silent 200.
+    # FORMAT only: `validate_replay_cutoffs` stays vertical-owned, because
+    # which modes a vertical serves — and whether its loader refuses one
+    # outright before the composer runs — differs per vertical (see the
+    # `identity_vintage_unsupported` note on the refusal map). Idempotent for
+    # a vertical that validates too: the check is pure and raises only on a
+    # cutoff `le` could not compare.
+    validate_cutoff_format(body.source_cutoff, body.recorded_cutoff)
     return registration.build_query(
         anchor_theme_id=body.anchor_theme_id,
         slice_key=body.slice_key,

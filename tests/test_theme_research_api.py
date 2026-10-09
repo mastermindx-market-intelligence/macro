@@ -2010,6 +2010,59 @@ def test_a_wellformed_cutoff_is_never_refused_for_arriving_in_this_mode(
     assert response.status_code == 200, response.text
 
 
+@pytest.mark.parametrize("bad", ["not-a-date", "", "20261231", "2026-W53-4"])
+@pytest.mark.parametrize("field", ["source_cutoff", "recorded_cutoff"])
+def test_an_unreadable_cutoff_is_refused_for_a_vertical_that_never_validates(
+    entitled_client, monkeypatch, field, bad,
+):
+    """The refusal is the SHELL's, not a vertical's.
+
+    ``cutoff_unreadable`` has mapped to 400 since the Energy seat measured the
+    fault (#7870 issuecomment-5868018569 / 5869344590 / 5870740225), but only
+    the semiconductor composer ever raised it, so the shared dispatch carried
+    an envelope for a fault it never detected. Measured on this harness before
+    the fix: a malformed ``source_cutoff`` through the synthetic vertical
+    answered a silent **200** -- the second of the two faults that ruling
+    names -- and every consumer queued to register a second vertical inherited
+    it, because the obligation was "each composer must remember".
+
+    The synthetic registration's ``default_compose`` performs no cutoff
+    validation at all, which is exactly what makes this a test of the shell
+    rather than of a vertical. It is paired with the 200 control below:
+    asserting 400 alone would be satisfied by any other fault on this path.
+    """
+    _install_synthetic_registration(monkeypatch)
+    _empty_bundle_loader(monkeypatch)
+    body = _valid_body(
+        anchor_theme_id=_SYNTHETIC_ANCHOR, slice_key=_SYNTHETIC_SLICE, **{field: bad},
+    )
+    response = entitled_client.post("/api/themes/v1/research/query", json=body)
+    assert response.status_code == 400, response.text
+    _assert_private_headers(response)
+    error = response.json()["detail"]["error"]
+    assert error["code"] == "invalid_request"
+    assert error["action"] == "fix_request"
+    assert bad not in response.text or bad == "", "the unreadable value is not echoed"
+
+
+def test_a_vertical_that_never_validates_still_serves_a_wellformed_cutoff(
+    entitled_client, monkeypatch,
+):
+    """Control for the test above, on the same synthetic path.
+
+    One readable cutoff reaches ``default_compose`` and serves 200. Without
+    this, the 400 above could come from the synthetic body shape and the test
+    would pass for the wrong reason on both sides of the fix."""
+    _install_synthetic_registration(monkeypatch)
+    _empty_bundle_loader(monkeypatch)
+    body = _valid_body(
+        anchor_theme_id=_SYNTHETIC_ANCHOR, slice_key=_SYNTHETIC_SLICE,
+        source_cutoff="2026-12-31",
+    )
+    response = entitled_client.post("/api/themes/v1/research/query", json=body)
+    assert response.status_code == 200, response.text
+
+
 def _rewrite_scopes_to_canonical(monkeypatch) -> None:
     """Wrap the installed loader so every assertion's
     ``scope.canonical_theme_id`` is re-minted through the identity owner's
