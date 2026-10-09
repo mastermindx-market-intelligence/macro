@@ -21193,7 +21193,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest numpy pandas pyyaml
+        run: pip install pytest numpy pandas pyyaml pyarrow
       - name: SLR source qualification and incumbent identity/detector tests
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest

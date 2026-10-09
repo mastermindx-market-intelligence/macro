@@ -23,7 +23,7 @@ Proposed bounded code job (three focused suites, synthetic/current code only):
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest numpy pandas pyyaml
+        run: pip install pytest numpy pandas pyyaml pyarrow
       - name: SLR source qualification and incumbent identity/detector tests
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
@@ -55,3 +55,13 @@ Fresh local focused verification: 418 passed in 5.44s, exit 0. The adapter and
 synthetic-test digests remain identical to repair snapshot
 `9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0`. Evidence digests are recorded in
 LOCAL_TEST_RECEIPTS.json. Source admission remains NOT_ADMITTED.
+
+Hosted execution on candidate `46cc721ff7fd634a986f26e870f658585a43f306`
+proved the new job ran, but failed with 417 passes and one failure: the incumbent
+synthetic panel-output test requires a Parquet engine. The isolated job environment
+omitted `pyarrow`; the warmed parent environment had hidden that dependency.
+The hosted plan selects pack 8 and its canonical hash and job/step bindings were
+verified. This failure is repaired by adding `pyarrow` only to this job's install
+step, with isolated-environment red/green evidence recorded in LOCAL_TEST_RECEIPTS.
+No test is skipped or waived. Subsequent current-head hosted CI must pass before
+any merge; earlier passing contract/fence checks are not carried to a changed head.

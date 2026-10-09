@@ -135,5 +135,55 @@
         "sha256": "22b1f8d510d83c0a469de69a757477c42283e2b1dad89c0cf2a18f8dece5c10f"
       }
     ]
+  },
+  "ci_parquet_dependency_repair": {
+    "previous_candidate": "46cc721ff7fd634a986f26e870f658585a43f306",
+    "hosted_execution_proven": true,
+    "hosted_result": "1 failed, 417 passed in 6.27s",
+    "failure": "missing Parquet engine in new job dependency environment",
+    "repair": "add pyarrow solely to new job dependency install",
+    "isolated_red_exit_code": 1,
+    "isolated_red_summary": "1 failed, 417 passed in 14.05s",
+    "isolated_green_exit_code": 0,
+    "isolated_green_summary": "418 passed in 24.00s",
+    "manifest_validator_exit_code": 0,
+    "job_exec_sha256": "a9b2433e432d904d3a8e073cb97123ef886a0b7d9d17ae06fae87c96b2a78b85",
+    "semantic_steps": [
+      {
+        "proof_id": "SLR source qualification and incumbent identity/detector tests",
+        "step_spec_sha256": "a48e77b6209d9333c303037a27c6676d9dab040c53bc75cd40f5b87b7a200ec0"
+      }
+    ],
+    "new_head_hosted_execution_proven": false,
+    "artifacts": [
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/hosted-slr-execution-46cc721.json",
+        "sha256": "d2db75dae9145f97b32250beb460a207167892dc4489fcc55dd366659fd24668"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/hosted-slr-job-46cc721.txt",
+        "sha256": "4178e46343b07103e54f00d01d3237acdfe6d59b650636d06fee7002d47cb5de"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-dependency-red.txt",
+        "sha256": "d7afd4d333cab53776534ad1a667594575ff436df80ad5a86b326874db464848"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-dependency-green.txt",
+        "sha256": "79cafe1ee73c22cd8e6817519276e2cd1a9f5d2a33d174f1e110c052ddfc831b"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-dependency-environment.json",
+        "sha256": "6c658e968e498603fe48339ec7e2e829fc3b65a1990e9289fa872c553647ecac"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-pyarrow-validator.txt",
+        "sha256": "379f72e2ec31304956f8f8436f10729fcecc920e534327f31af84ce840bdc972"
+      }
+    ],
+    "verification_command": "ci-dependency-venv/bin/python -m pytest tests/test_slr_local_source_qualification.py tests/test_winner_autopsy.py tests/test_dataos_identity.py -q --tb=short --basetemp=<external evidence>/pytest-ci-dependency-red|green",
+    "install_red": "ci-dependency-venv/bin/python -m pip install pytest numpy pandas pyyaml",
+    "install_green": "ci-dependency-venv/bin/python -m pip install pyarrow",
+    "local_python": "3.14.7; hosted runner remains pinned to 3.12.13 and must independently pass"
   }
 }

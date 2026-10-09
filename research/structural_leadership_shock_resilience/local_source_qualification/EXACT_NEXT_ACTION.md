@@ -72,3 +72,17 @@ remains current; Macro main was freshly pinned to
 A fresh pool plan now reports one grant for the review class under the original
 root. This is a capacity observation, not admission; use the same retained
 follow-up id and rebind its packet to the actual newly committed candidate.
+
+Hosted CI return on the registration candidate `46cc721ff7fd634a986f26e870f658585a43f306`:
+contract-delta and authority/fences passed. The authoritative plan selects the job
+in pack 8; its canonical hash and exact merge/head/base binding were verified.
+The new logical job actually ran: 417 passed and one incumbent synthetic panel
+output test failed because the isolated CI install omitted a Parquet engine.
+The bounded repair adds `pyarrow` only to this job. A clean isolated environment
+reproduced the failure and then passed all 418 tests after adding that dependency.
+The parent environment had concealed it. See LOCAL_TEST_RECEIPTS.json for digests,
+Python/package versions, actual commands/results and hosted execution evidence.
+Push this repair on the retained PR and consume new exact-head plan, semantic
+fragment, test summary and concluded binding CI. Keep review admission blocked:
+the last same-id request returned NONE/no_pool_available with NOT_FOUND and no
+START. A candidate change is not a capacity event or permission to retry review.
