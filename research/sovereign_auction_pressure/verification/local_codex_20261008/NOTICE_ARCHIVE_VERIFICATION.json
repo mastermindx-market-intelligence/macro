@@ -51,8 +51,34 @@
     }
   ],
   "dependency_head": "fdc4239a67125fdbd96ddb889b3c60033f720272",
+  "exact_consumer_compatibility": {
+    "browser_rendering_verified": false,
+    "cases": 6,
+    "command": "python3 research/sovereign_auction_pressure/verification/local_codex_20261008/consumer_compatibility/check_readers.py",
+    "passed": true,
+    "production_http_verified": false,
+    "readers": 2
+  },
   "executive_ingress": "READONLY",
-  "hosted_ci": "NOT_YET_OBSERVED",
+  "h3_original_source_replay": {
+    "eligible_at_cutoff": 0,
+    "qualified_cash_claims": 0,
+    "report_sha256": "ec6615e5fb94c8b1f9272728d9002e8a0f7540c6c05492de62714c96c25b1727",
+    "status": "INSUFFICIENT_PIT",
+    "verified_original_sources": 12
+  },
+  "hosted_ci": {
+    "base_ref": "sol/web-sovereign-auction-pressure-20261008-sol-001",
+    "check_run_ids": [
+      113641727125,
+      113641729738
+    ],
+    "conclusion": "FAILURE",
+    "native_packs": "NOT_STARTED_FOR_UNSUPPORTED_STACKED_BASE",
+    "reason": "unsupported_base_ref",
+    "sampled_head": "d860e3c559e5be7c317374353cfd5ebb2437fdaf",
+    "security_gate_changed": false
+  },
   "import_dag_suite": {
     "command": "python3 -m pytest -q --tb=short tests/test_check_script_import_pinning.py tests/test_dag_conformance.py",
     "passed": 59
@@ -73,16 +99,24 @@
   },
   "schema": "sovereign_notice_archive_verification.v1",
   "source_blobs_sha256": {
-    "engine/treasury_auction_lifecycle.py": "2e590a27c4cefbdd4c0bbebfbc985afd3ad12234b7b62a11fa1dd931abc06283",
+    "engine/treasury_auction_lifecycle.py": "fdf73369863f2b2eda7d989e24b136d85bb351bf08eea044be4076f7be6a0092",
+    "engine/treasury_settlement_ledger.py": "83548013562ed698cb530b25f8c1ab026704a2d7959ee564055d39ae4346768d",
     "scripts/capture_treasury_auction_observations.py": "23c1c787ee897ba2e412ba930ab82f09e6c54492bc0bff9378b79ead7e581dd2",
-    "tests/test_treasury_auction_archive.py": "f59c05820413a6be95293d8b4a45a392cd38b24081ebcf760d9a10555bb35df1",
+    "tests/test_treasury_auction_archive.py": "3f66af722b73dd453458bf0fe3f0002d6f989fce17227f6e18ce6727397381bb",
     "tests/test_treasury_auction_lifecycle.py": "4c0899d5942445cef5c43f937a027340276270584d1f4b642424db7161ec9a3b",
-    "tests/test_treasury_auction_notices.py": "e947efee9fcc3daa7b86cf5b0963ed824c4f0690ffb8f570cd728e4f3874146b"
+    "tests/test_treasury_auction_notices.py": "e947efee9fcc3daa7b86cf5b0963ed824c4f0690ffb8f570cd728e4f3874146b",
+    "tests/test_treasury_settlement_ledger.py": "68597e5e858d3848612ef174c9ded20381139838d682193ab3ad02c222b5e6c9"
   },
   "source_suite": {
-    "command": "python3 -m pytest -q --tb=short tests/test_treasury_auction_archive.py tests/test_treasury_auction_notices.py tests/test_treasury_auction_lifecycle.py tests/test_treasury_auction_primitives.py tests/test_capture_treasury_auction_observations.py tests/test_sovereign_auction_feed.py tests/test_event_calendar.py tests/test_treasury_supply.py",
-    "passed": 106,
-    "subtests_passed": 76
+    "command": "python3 -m pytest -q --tb=short tests/test_treasury_settlement_ledger.py tests/test_treasury_auction_archive.py tests/test_treasury_auction_notices.py tests/test_treasury_auction_lifecycle.py tests/test_treasury_auction_primitives.py tests/test_capture_treasury_auction_observations.py tests/test_sovereign_auction_feed.py tests/test_event_calendar.py tests/test_treasury_supply.py",
+    "passed": 124,
+    "subtests_passed": 79
+  },
+  "special_notice_source_cases": {
+    "independent_acceptance": false,
+    "known_at_basis": "actual October 9 capture, never original release",
+    "original_official_pdfs": 3,
+    "parser_supported": false
   },
   "whole_mission_complete": false
 }

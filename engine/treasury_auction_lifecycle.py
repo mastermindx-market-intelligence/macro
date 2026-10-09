@@ -696,7 +696,7 @@ def build_context(envelopes: Iterable[dict], as_of: datetime | str, horizon_days
             "latest_failure_at": failure_at,
             "latest_failure_reasons": sorted({s.get("reason", "source_unavailable") for s in failed if s["observed_at"] == failure_at}),
             "freshness_basis": "receipt_time; build_time_never_refreshes_source",
-            "stale_after_seconds": budget, "freshness_status": freshness,
+            "stale_after_seconds": None, "context_age_budget_seconds": budget, "freshness_status": freshness,
             "source_age_policy": SOURCE_AGE_POLICY})
     if usable and any(s["freshness_status"] == "STALE" for s in source_health):
         status = "degraded"

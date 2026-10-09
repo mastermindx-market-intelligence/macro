@@ -1,0 +1,99 @@
+{
+  "capture_clock_basis": "actual October 9 body and verification; no retrospective eligibility",
+  "cases": [
+    {
+      "extracted_text_sha256": "a00a53b16c41950eb5f3d5b1e46f31f3800663eb76861690d3f14bdf14ad848e",
+      "historical_first_seen": null,
+      "known_at": "2026-10-09T02:43:28.868629+00:00",
+      "name": "postponement_20010911",
+      "official_publication_time": null,
+      "production_parser_supported": false,
+      "qualification": "PARENT_VISUAL_AND_TEXT_CHECKED_NOT_INDEPENDENTLY_ACCEPTED",
+      "source_body_sha256": "c1ae1e98770994d52431c2c96634ea947ec8ad239a52b140a8801c4cdcf24e2f",
+      "source_semantics": {
+        "competitive_deadline_utc": "2001-09-12T17:00:00+00:00",
+        "cusip": null,
+        "document_date": "2001-09-11",
+        "identity_basis": "explicit class/term/original-date notice scope; no CUSIP supplied",
+        "issue_date": null,
+        "noncompetitive_deadline_utc": "2001-09-12T16:00:00+00:00",
+        "notice_state": "POSTPONED",
+        "original_auction_date": "2001-09-11",
+        "replacement_auction_date": "2001-09-12",
+        "security_class": "Bill",
+        "security_term": "4-WEEK"
+      },
+      "source_url": "https://www.treasurydirect.gov/files/news/of-postpone-09-11-2001.pdf",
+      "v1_consumer_transition_supported": false
+    },
+    {
+      "extracted_text_sha256": "92761508f6df5d20fbe31119c8da5c23b8f8bc013e71c690b12d705981ce5fa6",
+      "historical_first_seen": null,
+      "known_at": "2026-10-09T02:43:29.349214+00:00",
+      "name": "cancellation_20010911",
+      "official_publication_time": null,
+      "production_parser_supported": false,
+      "qualification": "PARENT_VISUAL_AND_TEXT_CHECKED_NOT_INDEPENDENTLY_ACCEPTED",
+      "source_body_sha256": "6be2737e48e4c88497650387c4ddaa26859a3bcbf74226147ff112dcfb8e3646",
+      "source_semantics": {
+        "competitive_deadline_utc": null,
+        "cusip": null,
+        "document_date": "2001-09-11",
+        "identity_basis": "explicit original and earlier rescheduled dates; no CUSIP supplied",
+        "issue_date": null,
+        "noncompetitive_deadline_utc": null,
+        "notice_state": "CANCELLED",
+        "original_auction_date": "2001-09-11",
+        "previously_rescheduled_auction_date": "2001-09-12",
+        "replacement_auction_date": null,
+        "reschedule_plan": false,
+        "security_class": "Bill",
+        "security_term": "4-WEEK"
+      },
+      "source_url": "https://www.treasurydirect.gov/files/news/of-cancel-09-11-2001.pdf",
+      "v1_consumer_transition_supported": false
+    },
+    {
+      "extracted_text_sha256": "931b9254ba2856ebdac30cd96a8c5d93dc43200ae873d7abbc5c05c1a457cebe",
+      "historical_first_seen": null,
+      "known_at": "2026-10-09T02:43:29.756778+00:00",
+      "name": "postponement_20151022",
+      "official_publication_time": null,
+      "production_parser_supported": false,
+      "qualification": "PARENT_VISUAL_AND_TEXT_CHECKED_NOT_INDEPENDENTLY_ACCEPTED",
+      "source_body_sha256": "e6dc599ebfdf6d737f63618d9cd22c9341075b0c9fd80ce086151889149bdeec",
+      "source_semantics": {
+        "competitive_deadline_utc": null,
+        "cusip": null,
+        "document_date": "2015-10-22",
+        "identity_basis": "specific 2-year Note and original auction/issue dates; not the separately mentioned FRN",
+        "noncompetitive_deadline_utc": null,
+        "notice_state": "POSTPONEMENT_INTENT",
+        "official_release_raw": "Embargoed Until 9:00 A.M.; timezone unspecified",
+        "original_auction_date": "2015-10-27",
+        "original_issue_date": "2015-11-02",
+        "replacement_auction_date": null,
+        "security_class": "Note",
+        "security_term": "2-YEAR",
+        "unaffected_auctions": [
+          {
+            "auction_date": "2015-10-28",
+            "security_class": "Note",
+            "security_term": "5-YEAR"
+          },
+          {
+            "auction_date": "2015-10-29",
+            "security_class": "Note",
+            "security_term": "7-YEAR"
+          }
+        ]
+      },
+      "source_url": "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2015/BPD_SPL_20151022_1.pdf",
+      "v1_consumer_transition_supported": false
+    }
+  ],
+  "independent_acceptance": false,
+  "production_adoption": false,
+  "schema": "auction_special_notice_source_casebook.v1",
+  "source_only": true
+}

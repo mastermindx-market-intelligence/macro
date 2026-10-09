@@ -1,0 +1,77 @@
+{
+  "browser_rendering_verified": false,
+  "cases": [
+    {
+      "case": "original_four_receipts",
+      "expected_acceptance": true,
+      "mastermind_accepted": true,
+      "producer_events": 74,
+      "producer_status": "available",
+      "terminal_accepted": true
+    },
+    {
+      "case": "new_attended_notices",
+      "expected_acceptance": true,
+      "mastermind_accepted": true,
+      "producer_events": 2,
+      "producer_status": "available",
+      "terminal_accepted": true
+    },
+    {
+      "case": "combined_original_and_notices",
+      "expected_acceptance": true,
+      "mastermind_accepted": true,
+      "producer_events": 74,
+      "producer_status": "available",
+      "terminal_accepted": true
+    },
+    {
+      "case": "stale_original_sources",
+      "expected_acceptance": true,
+      "mastermind_accepted": true,
+      "producer_events": 72,
+      "producer_status": "degraded",
+      "terminal_accepted": true
+    },
+    {
+      "case": "missing_sources",
+      "expected_acceptance": true,
+      "mastermind_accepted": true,
+      "producer_events": 0,
+      "producer_status": "unavailable",
+      "terminal_accepted": true
+    },
+    {
+      "case": "hostile_prediction",
+      "expected_acceptance": false,
+      "mastermind_accepted": false,
+      "producer_events": 74,
+      "producer_status": "available",
+      "terminal_accepted": false
+    }
+  ],
+  "consumer_repositories_modified": false,
+  "independent_review": false,
+  "passed": true,
+  "production_http_verified": false,
+  "schema": "sovereign_auction_exact_reader_compatibility.v1",
+  "source_manifest": [
+    {
+      "git_blob": "dac37ffcac78684e6d10a1d496cfe9664c50ced4",
+      "head": "ac9117b3305ba992ebb673a99242cdd54e2046ef",
+      "repo": "mastermindx-market-intelligence/Mastermind",
+      "sha256": "1b2c11d38628b13f8ba5439f90f8ef9eefabf564cea5c3ed517398b1a4b5f276",
+      "snapshot_path": "research/sovereign_auction_pressure/verification/local_codex_20261008/consumer_compatibility/source_snapshots/mastermind_reader.py",
+      "source_path": "brain/sovereign_auction_context.py"
+    },
+    {
+      "git_blob": "86b06dcf356286a448d8325ffa8862a020c7099a",
+      "head": "95dcde542a6af3fb70b421c3c5f508ef0455c6fb",
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "sha256": "d949fbcdb50cc720d2e7c373177761c315c1e0fdcf0219f44066cfdd159aab9f",
+      "snapshot_path": "research/sovereign_auction_pressure/verification/local_codex_20261008/consumer_compatibility/source_snapshots/terminal_reader.ts",
+      "source_path": "terminal/lib/sovereignAuctionContext.ts"
+    }
+  ],
+  "source_only": true
+}

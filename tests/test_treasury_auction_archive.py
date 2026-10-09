@@ -91,7 +91,8 @@ class AuctionArchiveTests(unittest.TestCase):
         out = lifecycle.build_context([failure, good], NOW)
         health = out["source_health"][0]
         self.assertEqual(health["freshness_status"], "STALE")
-        self.assertEqual(health["stale_after_seconds"], 86400)
+        self.assertIsNone(health["stale_after_seconds"])
+        self.assertEqual(health["context_age_budget_seconds"], 86400)
         self.assertEqual(health["last_valid_observation_at"], "2026-10-06T20:00:00+00:00")
         self.assertEqual(out["status"], "degraded")
         self.assertEqual(len(out["events"]), 1)

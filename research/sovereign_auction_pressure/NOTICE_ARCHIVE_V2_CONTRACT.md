@@ -19,7 +19,7 @@ GitHub currently identifies #6819 as Market Ontology. The program remains in `WS
 
 ## Source age policy requiring independent acceptance
 
-`treasury_receipt_age.context.v1` uses context-display budgets of 24 hours for TreasuryDirect JSON, 8 days for pending schedules and 100 days for quarterly schedules. These are explicit display policy choices, not release cadence guarantees or collector activation. Immutable individual notices expose age without an expiring validity claim. A stale valid source degrades context; a later failed attempt never refreshes the last valid clock or deletes its facts. Collector cadence and production adoption require their existing owners and gates.
+`treasury_receipt_age.context.v1` uses context-display budgets of 24 hours for TreasuryDirect JSON, 8 days for pending schedules and 100 days for quarterly schedules. These are explicit display policy choices, not release cadence guarantees or collector activation. Immutable individual notices expose age without an expiring validity claim. The existing v1 `stale_after_seconds` remains null because both held strict consumers enforce that boundary. The new `context_age_budget_seconds` and `freshness_status` are producer evidence fields; current consumers may omit them until separately adopted. A stale valid source degrades context; a later failed attempt never refreshes the last valid clock or deletes its facts. Collector cadence and production adoption require their existing owners and gates.
 
 ## Evidence and remaining frontier
 
