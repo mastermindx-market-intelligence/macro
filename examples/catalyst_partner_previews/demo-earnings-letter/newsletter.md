@@ -2,6 +2,8 @@
 
 Unsolicited concept prepared for Illustrative earnings-letter audience (demo only). No partnership, endorsement, or approval is implied.
 
+Headline source evidence: source-synthetic-001.
+
 For readers following quarterly earnings coverage, this note tracks EXA against the same event evidence.
 
 ## Relationship scope

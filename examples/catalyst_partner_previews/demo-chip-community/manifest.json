@@ -32,6 +32,9 @@
     "event_time_utc": "2026-10-09T02:00:00Z",
     "expires_at_utc": "2026-10-10T02:00:00Z",
     "first_observed_at_utc": "2026-10-09T02:10:00Z",
+    "headline_evidence_ids": [
+      "source-synthetic-001"
+    ],
     "missing_data": [
       "Every issuer, affected symbol and claim is synthetic.",
       "The scan destination is an unregistered placeholder."

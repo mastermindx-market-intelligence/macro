@@ -2,6 +2,8 @@
 
 Unsolicited concept prepared for Illustrative chip-supply audience (demo only). No partnership, endorsement, or approval is implied.
 
+Headline source evidence: source-synthetic-001.
+
 For readers following supplier capacity and indirect exposure, this note tracks EXA, EXB against the same event evidence.
 
 ## Relationship scope

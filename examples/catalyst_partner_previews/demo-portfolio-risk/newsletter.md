@@ -2,6 +2,8 @@
 
 Unsolicited concept prepared for Illustrative portfolio-risk audience (demo only). No partnership, endorsement, or approval is implied.
 
+Headline source evidence: source-synthetic-001.
+
 For readers following exposure coverage and missing forward disclosures, this note tracks EXA, EXB, EXC against the same event evidence.
 
 ## Relationship scope
