@@ -1,0 +1,228 @@
+{
+  "created_at_utc": "2026-10-09T11:52:51.337022+00:00",
+  "file_count": 36,
+  "files": [
+    {
+      "bytes": 3747,
+      "path": "source_diagnostic_frame_v1/PACKAGE_MANIFEST.json",
+      "sha256": "f2bb5d6393ee6a82388062d00a883713cd2e45505d796aa87c8c0d4b911ccd6c"
+    },
+    {
+      "bytes": 31919,
+      "path": "source_diagnostic_frame_v1/WP02_SAMPLING_FRAME_ASSESSMENT.md",
+      "sha256": "9ab4ef6dcb81eb0a3185269a851f22d315a2ff45c0be5c67dfb154efa4cfc1e0"
+    },
+    {
+      "bytes": 578,
+      "path": "source_diagnostic_frame_v1/artifact_validation.json",
+      "sha256": "ec1d14e254bec6e628aba58574b334c4447160b41dc018d8f8266873abd4afcf"
+    },
+    {
+      "bytes": 3840,
+      "path": "source_diagnostic_frame_v1/extended_snapshot_profiles.json",
+      "sha256": "05facfe2ddfe6b411ee069c723da3de35d76dfdfc0e1fb8cce3782ef6604f3e1"
+    },
+    {
+      "bytes": 3046,
+      "path": "source_diagnostic_frame_v1/final_snapshot_details.json",
+      "sha256": "42068b51a19fad94132465edfcd410c7aebaa2a9823d97bd445d0765e2fc7a1b"
+    },
+    {
+      "bytes": 19114,
+      "path": "source_diagnostic_frame_v1/frame_deficiency_receipt.json",
+      "sha256": "78fd26201344c844cec1068d12f29038f3f9aded44e223d32d19e44f0da4b201"
+    },
+    {
+      "bytes": 30883,
+      "path": "source_diagnostic_frame_v1/inspection_source_manifest.json",
+      "sha256": "943fb98b83780c2ab664a4e4a26dc66a756ffca27e0a263f2dffdfc28330f83c"
+    },
+    {
+      "bytes": 2600,
+      "path": "source_diagnostic_frame_v1/native_process_completion_receipts.json",
+      "sha256": "1893cb663016d6b2f55916ff172cdcba529069a4ca62d3a3d206fa883c4e3768"
+    },
+    {
+      "bytes": 9917,
+      "path": "source_diagnostic_frame_v1/primary_source_route_register.json",
+      "sha256": "180f009c7e743f808e8658da4c9f46177825c1352b5e7008b1af4a16d703ae34"
+    },
+    {
+      "bytes": 4844,
+      "path": "source_diagnostic_frame_v1/reference_receipt_selected.json",
+      "sha256": "100f3c846e6c69dcbf83c8671d8b7a79966e304df00f100396d51b9b8e7b2b13"
+    },
+    {
+      "bytes": 7263,
+      "path": "source_diagnostic_frame_v1/required_field_mapping.json",
+      "sha256": "c75bd713d79d72d9a7ae986fd331aa645292fa392b3880af41382c9943d9700f"
+    },
+    {
+      "bytes": 17877,
+      "path": "source_diagnostic_frame_v1/snapshot_details.json",
+      "sha256": "156f4079d3c89330e3766e4d5168de84b2115b14047121ed7665cb5378048fb6"
+    },
+    {
+      "bytes": 34017,
+      "path": "source_diagnostic_frame_v1/snapshot_profiles.json",
+      "sha256": "3522ae1312a04fec3d5a5c3efe3d242eb0874894b981d1d0bedcfac44d7a69d2"
+    },
+    {
+      "bytes": 3362,
+      "path": "source_diagnostic_frame_v1/source_contract_bindings.json",
+      "sha256": "0b766ee5352e35c8690769c29b76094f82855efce1b4c1ae2837367fed9538d9"
+    },
+    {
+      "bytes": 16808,
+      "path": "source_diagnostic_frame_v1/source_contracts/build_polygon_universe.py",
+      "sha256": "a37b017558e5d331f448b3cae039df89b3524af3c5f9c36a1aa1e4ae0504ecf5"
+    },
+    {
+      "bytes": 3706,
+      "path": "source_diagnostic_frame_v1/source_contracts/canada_breadth.py",
+      "sha256": "d0afd1a9797eac1e6c14f83b3572f3b8812d16c785843a348118fd6af26dd90d"
+    },
+    {
+      "bytes": 12770,
+      "path": "source_diagnostic_frame_v1/source_contracts/canada_universe.py",
+      "sha256": "940c221ea6670e1cf5c92046a47f946fd91490298cd13159d19b26167742848f"
+    },
+    {
+      "bytes": 19954,
+      "path": "source_diagnostic_frame_v1/source_contracts/china_sectors.py",
+      "sha256": "b23be8f706033d84d548a1f0696f5bcfa2417c15c5a13c0cfdd91fb423265238"
+    },
+    {
+      "bytes": 50632,
+      "path": "source_diagnostic_frame_v1/source_contracts/dataset_registry.yml",
+      "sha256": "bb9b6975eeabebf630f73e632d307d280ea1d9e34f30953ac3989c65fc90f0a7"
+    },
+    {
+      "bytes": 16545,
+      "path": "source_diagnostic_frame_v1/source_contracts/hk_universe.py",
+      "sha256": "d3bda094cc3f82a3a6fe198e22cd88e26b53768cfdd21da8f7992f5e60442e67"
+    },
+    {
+      "bytes": 6637,
+      "path": "source_diagnostic_frame_v1/source_contracts/universe_history.py",
+      "sha256": "f1c26fbb2abfc405916a60e4adc3b09973181fa7e7b3b9d29225cd0e71f9b9d9"
+    },
+    {
+      "bytes": 2102,
+      "path": "source_diagnostic_policy_v1/ARTIFACT_VALIDATION.json",
+      "sha256": "8042fa90e6cd48d80abdcd9a171dcc462914ed2313b1e8dc2c2d0313fbe480c3"
+    },
+    {
+      "bytes": 1219,
+      "path": "source_diagnostic_policy_v1/PACKAGE_MANIFEST.json",
+      "sha256": "eee4790063d4ae92d3b1b97cd3730daa4f87f0a47ad906bf1b478d8dde20951d"
+    },
+    {
+      "bytes": 15881,
+      "path": "source_diagnostic_policy_v1/PRIMARY_SOURCE_REGISTER.json",
+      "sha256": "cf2521ad18316785ecd48c34cbdd132ab4606214041132548b0ff4898cfa2b43"
+    },
+    {
+      "bytes": 31323,
+      "path": "source_diagnostic_policy_v1/RECOMMENDED_SELECTION_POLICY.json",
+      "sha256": "03881ee568f6f08f06ef88a2fad0e33ff2fe14b3ab1db526c35221d642cfe9fd"
+    },
+    {
+      "bytes": 38864,
+      "path": "source_diagnostic_policy_v1/SELECTION_POLICY_ADJUDICATION_MEMO.md",
+      "sha256": "763f8724b1ec9e88a60b94dd65b3d61befe6af79ff28f64f472f0a87ecf9a582"
+    },
+    {
+      "bytes": 897,
+      "path": "source_diagnostic_policy_review_v1/FINAL_POLICY_BINDINGS.json",
+      "sha256": "5b8f455a1180daaafe69ef9f8198afca17c8f97f0ce342c6f86433b451ef4c2d"
+    },
+    {
+      "bytes": 3984,
+      "path": "source_diagnostic_policy_review_v1/FINDINGS.json",
+      "sha256": "ce6e7c2364fdd5db96cf47120e5dc14d79e036ffabc9d8f955bf94e2491af446"
+    },
+    {
+      "bytes": 3309,
+      "path": "source_diagnostic_policy_review_v1/METHOD_CHECKS.json",
+      "sha256": "c7bbdaf7b8acfd3008ff2f1fd4c630d75bfdc80fe4e15bd6c92f20a7b1892bf5"
+    },
+    {
+      "bytes": 17980,
+      "path": "source_diagnostic_policy_review_v1/METHOD_REVIEW.md",
+      "sha256": "e35cc6b4bffa57cb7203f126620b069e7b2944dd45e29f71c4e9bf827dc390b6"
+    },
+    {
+      "bytes": 1383,
+      "path": "source_diagnostic_policy_review_v1/REVIEW_MANIFEST.json",
+      "sha256": "e3319b04840b48866dba1c1414293c8f67068cc3d877570a7ffe22ef263042ec"
+    },
+    {
+      "bytes": 623,
+      "path": "source_diagnostic_policy_review_v1/SNAPSHOT_001.json",
+      "sha256": "cbf0cb01e400eb6e531c586d118fecf407b66883ff86f859376adaccf27aee08"
+    },
+    {
+      "bytes": 4095,
+      "path": "source_diagnostic_policy_review_v1/SOURCE_OBSERVATIONS.json",
+      "sha256": "d16eea19bd56f8cd59a7ad15d54148cda6990ced2f690cca30d6194e1a917af0"
+    },
+    {
+      "bytes": 15881,
+      "path": "source_diagnostic_policy_review_v1/input_snapshot_001/PRIMARY_SOURCE_REGISTER.json",
+      "sha256": "cf2521ad18316785ecd48c34cbdd132ab4606214041132548b0ff4898cfa2b43"
+    },
+    {
+      "bytes": 31323,
+      "path": "source_diagnostic_policy_review_v1/input_snapshot_001/RECOMMENDED_SELECTION_POLICY.json",
+      "sha256": "03881ee568f6f08f06ef88a2fad0e33ff2fe14b3ab1db526c35221d642cfe9fd"
+    },
+    {
+      "bytes": 38864,
+      "path": "source_diagnostic_policy_review_v1/input_snapshot_001/SELECTION_POLICY_ADJUDICATION_MEMO.md",
+      "sha256": "763f8724b1ec9e88a60b94dd65b3d61befe6af79ff28f64f472f0a87ecf9a582"
+    }
+  ],
+  "packages": [
+    {
+      "all_listed_bindings_verified": true,
+      "complete_inventory_verified": true,
+      "directory": "source_diagnostic_frame_v1",
+      "file_count": 21,
+      "manifest": {
+        "bytes": 3747,
+        "path": "source_diagnostic_frame_v1/PACKAGE_MANIFEST.json",
+        "sha256": "f2bb5d6393ee6a82388062d00a883713cd2e45505d796aa87c8c0d4b911ccd6c"
+      },
+      "total_bytes": 300059
+    },
+    {
+      "all_listed_bindings_verified": true,
+      "complete_inventory_verified": true,
+      "directory": "source_diagnostic_policy_v1",
+      "file_count": 5,
+      "manifest": {
+        "bytes": 1219,
+        "path": "source_diagnostic_policy_v1/PACKAGE_MANIFEST.json",
+        "sha256": "eee4790063d4ae92d3b1b97cd3730daa4f87f0a47ad906bf1b478d8dde20951d"
+      },
+      "total_bytes": 89389
+    },
+    {
+      "all_listed_bindings_verified": true,
+      "complete_inventory_verified": true,
+      "directory": "source_diagnostic_policy_review_v1",
+      "file_count": 10,
+      "manifest": {
+        "bytes": 1383,
+        "path": "source_diagnostic_policy_review_v1/REVIEW_MANIFEST.json",
+        "sha256": "e3319b04840b48866dba1c1414293c8f67068cc3d877570a7ffe22ef263042ec"
+      },
+      "total_bytes": 118339
+    }
+  ],
+  "schema": "research.gmi.wp02.policy_preservation_baseline/v2",
+  "scope": "Only the three explicitly named prior scratch artifact directories; no native or broader host enumeration. All prior manifest/snapshot/final bindings verified before v2 freeze.",
+  "status": "PRIOR_FROZEN_BYTES_VERIFIED",
+  "writes_to_prior_directories": false
+}

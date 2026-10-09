@@ -1,0 +1,28 @@
+{
+  "base_policy": {
+    "byte_length": 60312,
+    "path": "lanes/source_diagnostic_policy_v2/RECOMMENDED_SELECTION_POLICY.json",
+    "sha256": "d41422d76219b1c5d3a3c9cbb19a1bc3124433031200b09499033bd4dc30d522"
+  },
+  "created_at_utc": "2026-10-09T12:07:32.746860+00:00",
+  "exact_effective_normative_changed_pointers": [
+    "/capitalization/numeric_rule"
+  ],
+  "independent_review": {
+    "byte_length": 23737,
+    "path": "lanes/source_diagnostic_policy_review_v2/CORRECTIVE_METHOD_REVIEW.md",
+    "sha256": "8cafe4d8208d224d3ebf49b2f5db88785cc7543f48788ba5d1d347cff95945b8"
+  },
+  "independent_sidecar_review": "PENDING",
+  "numeric_control": {
+    "byte_length": 501,
+    "path": "lanes/source_diagnostic_policy_adoption_v1/NUMERIC_CLARIFICATION_CONTROL.json",
+    "sha256": "d6c19a783783c60ea506fe829e15ed90e06c7f6db27719fadd61b7085d1d95e1"
+  },
+  "prior_inputs_unchanged": true,
+  "real_cohort_or_native_code_executed": false,
+  "result": "PASS_BINDINGS_AND_SINGLE_NORMATIVE_OVERRIDE",
+  "root_read_full_v2_delta_and_independent_corrective_review": true,
+  "same_all_other_policy_values": true,
+  "schema": "research.gmi.wp02.principal_adoption_validation/v1"
+}
