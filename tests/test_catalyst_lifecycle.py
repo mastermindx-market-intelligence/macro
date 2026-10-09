@@ -339,10 +339,35 @@ def test_user_input_html_escaped_and_never_enters_headers_as_multiline():
     fails("INVALID_REVISION", lambda: format_revision(update(headline="hi\nBcc: evasion"), "https://mastermind-x.com"))
 
 
+@pytest.mark.parametrize("source_url", [
+    "https://www.sec.gov/Archives/edgar/example?email=reader%40example.com",
+    "https://www.sec.gov/Archives/edgar/example?key=reader%2540example.com",
+    "https://www.sec.gov/Archives/edgar/example#session=private-session",
+    "https://www.sec.gov/Archives/edgar/example?api%5Fkey=restricted",
+    "https://www.sec.gov/Archives/edgar/example?access_token=credential",
+    "https://www.sec.gov:8443/Archives/edgar/example",
+    "https://www.sec.gov/Archives/edgar/example?note=%0aBcc:bad",
+])
+def test_followup_links_never_expose_identity_credentials_or_headers(source_url):
+    fails("SOURCE_RIGHTS_UNPROVEN", lambda: format_revision(
+        update(source_urls=(source_url,)),
+        "https://www.mastermind-x.com/unsubscribe.html"))
+
+
+def test_source_provenance_links_with_public_accession_parameters_remain_valid():
+    link = "https://www.sec.gov/Archives/edgar/data/123/filing.htm?accession=000123&view=public"
+    subject, html, plain = format_revision(
+        update(source_urls=(link,)),
+        "https://www.mastermind-x.com/unsubscribe.html")
+    assert link in html and link in plain
+    assert subject.startswith("Update:")
+
+
 def test_attribution_strictly_allows_only_non_pii_tagged_first_touch():
     assert first_touch({"utm_source": "letter", "evil_email": EMAIL}) == {"utm_source": "letter"}
     fails("INVALID_ATTRIBUTION", lambda: first_touch({"partner_id": EMAIL}))
     fails("INVALID_ATTRIBUTION", lambda: first_touch({"utm_medium": "utm value containing spaces"}))
+    fails("INVALID_ATTRIBUTION", lambda: first_touch({"partner_id": "203.0.113.5"}))
 
 
 def test_future_source_and_wrong_ticker_are_not_delivered():
