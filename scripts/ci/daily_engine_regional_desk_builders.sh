@@ -41,6 +41,10 @@ if [ -z "$(find data/massive_stock_day -maxdepth 1 -name '*.parquet' -print -qui
 else
   echo "top_maturation: massive_stock_day store present locally — no R2 restore needed"
 fi
+# The store host publishes the skew ledger to R2. Copy it down before emit.
+# If the copy fails, emit still renders the committed ledger and reports that
+# ledger's as-of time. The failure is a warning, not a crash.
+python -m scripts.fetch_r2 --dirs options_skew || echo "::warning title=options-skew-hydrate::options_skew ledger restore from R2 failed - emit renders the committed ledger and reports its ledger_asof"
 # --- clusters: each internally ORDERED by its data deps; clusters mutually independent ---
 cl_markets() {
   brun commodities  "build commodity vector (build_commodities)"         scripts.build_commodities
@@ -78,7 +82,7 @@ cl_gex() {
   brun darkpool     "dark pool desk (build_darkpool_desk)"        scripts.build_darkpool_desk
   brun options_flow "options flow desk (build_options_flow)"     scripts.build_options_flow
   brun flow_desk    "group flow heatmap & market tide (build_flow_desk)" scripts.build_flow_desk
-  brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew
+  brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew --emit
   brun options_ivspread "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
   # AFTER skew+ivspread: it joins both ledgers into the neutralised feature panel.
   brun options_dislocation "options information-dislocation panel (build_options_dislocation)" scripts.build_options_dislocation
@@ -112,8 +116,13 @@ cl_baskets() {
   # ::warning): the plane is display-tier with all six authority booleans
   # false, so a contract breach must not take the collect lane down. CI runs
   # the same guard with --strict.
+  # Bind the actual checkout immediately before this producer, in this cluster only.
+  THEME_GRAPH_WITNESS_DIR=$(python -c 'from scripts.build_theme_graph import start_nightly_witness; print(start_nightly_witness())')
+  export THEME_GRAPH_WITNESS_ID="$(python -c 'import os, sys; print(os.path.basename(sys.argv[1]))' "$THEME_GRAPH_WITNESS_DIR")"
   brun theme_graph "theme graph nightly materialization (build_theme_graph)" scripts.build_theme_graph
   brun theme_graph_guard "theme graph contract guard (check_theme_graph_contracts)" scripts.check_theme_graph_contracts
+  # Capture now: an unrelated cluster can still exhaust the later wait barrier.
+  python -c 'import sys; from scripts.build_theme_graph import finish_nightly_witness; finish_nightly_witness(*sys.argv[1:])' "$THEME_GRAPH_WITNESS_DIR" "$ART" || echo "::warning::theme graph witness capture unavailable (non-fatal)"
   brun subsector_conf "subsector confluence desk + double-gated funnel (build_subsector_confluence)" scripts.build_subsector_confluence
   brun subsector_conf_ndx "nasdaq-100 subsector confluence desk (build_subsector_confluence --nasdaq)" scripts.build_subsector_confluence --nasdaq
   brun subsector_conf_rut "russell-2000 subsector confluence desk (build_subsector_confluence --russell)" scripts.build_subsector_confluence --russell

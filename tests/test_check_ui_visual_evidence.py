@@ -882,15 +882,50 @@ def test_tool_hash_coverage_attribution_resolves_on_sanctions_map_shape(tmp_path
 @pytest.mark.needs_full_checkout("mockups")
 def test_sanctions_map_manifest_tool_sha_list_default_element_is_first():
     """MINOR-4: the real committed sanctions_map manifest must satisfy the
-    attribution contract it documents — element 0 of tool.module_sha256 is
-    97b44358... (the default tool every unstamped cell implicitly used),
-    listed BEFORE 3301a5f9... (the tool sha only the one explicitly
-    re-captured theme_toggle_dark_to_light force_state cell carries). If this
-    order were ever wrong, fixing the manifest's list order is the ONLY
-    permitted manifest edit for this finding (ruling 4) — never the code."""
+    attribution contract it documents. Two lawful forms:
+
+    NAME NOTE (O28 R5): the test name predates the STRING form. Against the
+    live manifest (since 2026-10-03) the STRING branch below is the one that
+    runs; the LIST branch stays as the contract for any future mixed-tool
+    receipt and is exercised by the throwaway-manifest cases.
+
+    * LIST form (receipt of 2026-09-11 → 2026-10-02): element 0 of
+      tool.module_sha256 is 97b44358... (the default tool every unstamped
+      cell implicitly used), listed BEFORE 3301a5f9... (the tool sha only the
+      one explicitly re-captured theme_toggle_dark_to_light force_state cell
+      carries). If this order were ever wrong, fixing the manifest's list
+      order is the ONLY permitted manifest edit for this finding (ruling 4)
+      — never the code.
+    * STRING form (O28 R4, 2026-10-03, PR #8307): a FULL recapture of the
+      receipt by one run of one module writes that module's single sha, so
+      there is no default/stamped split left to order. Coherence is still
+      asserted — every per-cell `capture_tool_module_sha256` stamp (if any)
+      must name that same module; a string that does not cover a stamped
+      cell is the MINOR-4 defect reappearing and reds.
+
+    Either way the fix for a failure is the MANIFEST's attribution, never the
+    checker code."""
     manifest_path = guard.REPO_ROOT / "mockups" / "evidence" / "sanctions_map" / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     top_sha = manifest["tool"]["module_sha256"]
+    stamped = {
+        state.get("capture_tool_module_sha256")
+        for page in manifest["pages"]
+        for state in page["states"]
+        if state.get("capture_tool_module_sha256")
+    }
+    if isinstance(top_sha, str):
+        assert len(top_sha) == 64 and set(top_sha) <= set("0123456789abcdef"), (
+            f"sanctions_map manifest tool.module_sha256={top_sha!r} is not a sha256 hex digest")
+        assert top_sha == "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16", (
+            f"sanctions_map manifest tool.module_sha256={top_sha[:12]}... is not the 1.3.0 module "
+            "8d753e28... that made the 2026-10-03 full recapture (PR #8307) — a NEW full recapture "
+            "by a different module updates this pin together with the MANIFEST, never the checker")
+        assert stamped <= {top_sha}, (
+            f"sanctions_map manifest tool.module_sha256 is the single sha {top_sha[:12]}... but "
+            f"cells carry other stamps {sorted(s[:12] for s in stamped - {top_sha})} — list every "
+            "tool used (default first) in the MANIFEST, never the code")
+        return
     assert isinstance(top_sha, list) and len(top_sha) >= 1
     assert top_sha[0] == "97b4435815440fde008cd35b73c551cf704ba01ea71f18f04a2b23ebc7a0a6b7", (
         f"sanctions_map manifest tool.module_sha256[0]={top_sha[0]!r}, expected the default tool "
@@ -1330,19 +1365,48 @@ def _design_governance_steps():
     return jobs["design-governance"]["steps"]
 
 
+def _p0b_receipt_closure_steps():
+    import yaml
+
+    manifest = guard.REPO_ROOT / ".github" / "ci" / "legacy-jobs.yml"
+    jobs = yaml.safe_load(manifest.read_text(encoding="utf-8"))["jobs"]
+    assert "p0b-receipt-closure" in jobs, (
+        "the p0b-receipt-closure job is gone from .github/ci/legacy-jobs.yml; "
+        "the receipt-closure gate would then be wired to nothing (it left "
+        "design-governance on 2026-09-24 so a sibling gate's red can no longer "
+        "shadow its verdict — #6872)")
+    return jobs["p0b-receipt-closure"]["steps"]
+
+
 def test_diff_scoped_steps_fail_closed_without_a_comparison_base():
     base_dependent = [
         s for s in _design_governance_steps()
         if "merge-base" in (s.get("run") or "")
     ]
-    # Both TP-0 diff-scoped gates depend on the base: the forward-only design
+    # The diff-scoped design gates depend on the base: the forward-only design
     # ratchet and the visual-evidence gate. Deleting one to satisfy the
     # per-step assertions below fails here instead.
     assert len(base_dependent) == 2, (
         "expected exactly 2 base-dependent design-governance steps "
-        f"(forward-only ratchet + visual evidence), found {len(base_dependent)}")
+        "(forward-only ratchet + visual evidence), "
+        f"found {len(base_dependent)}")
+    # The p0b receipt-closure gate is base-dependent too, but lives in its OWN
+    # job since 2026-09-24 (#6872: as a trailing design-governance step it was
+    # skipped behind the ratchet's red and never printed its verdict). Pin it
+    # there with the same fail-closed contract, so moving it cannot drop it.
+    p0b_base_dependent = [
+        s for s in _p0b_receipt_closure_steps()
+        if "merge-base" in (s.get("run") or "")
+    ]
+    assert len(p0b_base_dependent) == 1, (
+        "expected exactly 1 base-dependent p0b-receipt-closure step "
+        f"(the receipt-closure gate), found {len(p0b_base_dependent)}")
+    assert "check_p0b_receipt_closure.py --diff-file" in p0b_base_dependent[0]["run"]
+    # The planner-handle branch must name the event: without it the gate
+    # refuses the `null` a main proof publishes (#7237 redded every one).
+    assert '--event "${GITHUB_EVENT_NAME:-}"' in p0b_base_dependent[0]["run"]
 
-    for step in base_dependent:
+    for step in base_dependent + p0b_base_dependent:
         run = step["run"]
         name = step.get("name", "<unnamed>")
         assert "exit 0" not in run, (

@@ -1,0 +1,33 @@
+{
+  "activate": true,
+  "importance": 74,
+  "banner_days": 4,
+  "tone": "tailwind",
+  "banner_title": "$6B+ federal-AI/compute push — NVIDIA, AMD, OpenAI lead; quantum, fusion, space-nuclear funded",
+  "banner_title_zh": "联邦AI/算力计划超60亿美元——英伟达、AMD、OpenAI领投；量子、聚变、太空核能获资助",
+  "summary": "The White House announced over $6 billion in coordinated science initiatives, including a $2.4B industry super-intelligence compute commitment (NVIDIA $1B, AMD $500M, OpenAI $200M) and a $1.8B virtual-biology program, plus new quantum, fusion, and space-nuclear missions.",
+  "summary_zh": "白宫宣布逾60亿美元协调科学计划，包括24亿美元产业超级智能算力承诺（英伟达10亿、AMD 5亿、OpenAI 2亿）和18亿美元虚拟生物学项目，以及新的量子、聚变和太空核能任务。",
+  "analysis": "The action channels over $6 billion across federal agencies, industry, academia, and philanthropy into compute infrastructure, quantum computing, fusion, space nuclear power, and AI-enabled biomedical research. The $2.4B Genesis Mission Consortium is a direct industry commitment—NVIDIA $1B, AMD $500M, OpenAI $200M, plus Anthropic, Google, AWS, Micron and others—to supply compute credits and scientific instrumentation to over 15 federal agencies. This is effectively a large, targeted procurement signal for AI-adjacent hardware and cloud capacity.\n\nThe transmission mechanism for markets is twofold. First, it validates continued demand for AI accelerator silicon and datacenter infrastructure: NVIDIA's and AMD's contributions are in-kind compute credits and tooling, but they reinforce the strategic centrality of their platforms in federal scientific workloads. Second, the national-mission language around quantum (a $215M fault-tolerant quantum competition), fusion, and space nuclear power (NASA/DOE MOU for a Mars reactor by 2028 and a lunar fission reactor) creates visible multi-year R&D pipelines that can flow to specialized contractors and supply chains.\n\nKey uncertainty is whether these figures represent net-new federal outlays or re-allocations of existing agency budgets—much of the federal-side funding appears to build on July and May announcements (Genesis Mission expansion, NSF X-Labs). The industry commitments are real but non-cash in several cases, so the immediate revenue impact on named partners is indirect. Still, the breadth across science infrastructure makes this a genuine tailwind for compute, quantum, and space-hardware exposure in a reflation regime with low macro risk.\n\nThe most structurally significant element for public equities is the fusion and space-nuclear thrust: it elevates nuclear-adjacent and space-prime contractors beyond the usual NASA budget cycle. The $1.8B virtual-biology initiative also signals sustained NIH/DOE appetite for AI-enabled drug discovery tooling.",
+  "sectors": [
+    {"name": "Semiconductors & AI compute", "impact": "tailwind", "rationale": "NVIDIA $1B and AMD $500M commitments, plus Micron, reinforce federal validation of AI accelerator and memory demand."},
+    {"name": "Cloud & AI platforms", "impact": "tailwind", "rationale": "Google, AWS, OpenAI, Anthropic compute commitments embed their platforms in federal scientific workloads."},
+    {"name": "Quantum computing", "impact": "tailwind", "rationale": "$215M fault-tolerant quantum competition plus NSF prize competitions create a funded pipeline for quantum hardware and software."},
+    {"name": "Space & defense primes", "impact": "tailwind", "rationale": "NASA/DOE Mars and lunar fission reactor missions create multi-year hardware contracts and nuclear-fuel supply chain demand."},
+    {"name": "Drug discovery & biotech AI", "impact": "tailwind", "rationale": "$1.8B virtual-biology initiative funds AI/ML modeling for cells and therapeutic discovery."},
+    {"name": "Nuclear / fusion", "impact": "tailwind", "rationale": "Space nuclear power and DOE fusion-adjacent missions elevate nuclear-engineering contractors."}
+  ],
+  "tickers": [
+    {"symbol": "NVDA", "direction": "benefit", "rationale": "$1B contribution to Genesis Mission reaffirms its accelerators as the default federal AI-science platform."},
+    {"symbol": "AMD", "direction": "benefit", "rationale": "$500M compute commitment and inclusion in federal science hubs strengthen its datacenter GPU positioning."},
+    {"symbol": "MSFT", "direction": "benefit", "rationale": "OpenAI's $200M participation indirectly extends its Azure compute into federal scientific missions."},
+    {"symbol": "GOOGL", "direction": "benefit", "rationale": "$150M Google commitment plus cloud credits tie its infrastructure to 15+ federal agencies' SI workloads."},
+    {"symbol": "AMZN", "direction": "benefit", "rationale": "AWS's $50M commitment supports its case for a larger share of federal scientific cloud spend."},
+    {"symbol": "MU", "direction": "benefit", "rationale": "$50M commitment and broader datacenter buildout reinforce memory demand tied to AI compute."},
+    {"symbol": "IONQ", "direction": "benefit", "rationale": "$215M fault-tolerant quantum prize competition and DOE priority applications increase funding visibility for quantum hardware."},
+    {"symbol": "QTUM", "direction": "benefit", "rationale": "Diversified quantum ETF stands to benefit from renewed federal quantum program momentum."},
+    {"symbol": "LMT", "direction": "benefit", "rationale": "NASA/DOE space nuclear propulsion and reactor missions likely flow to established space-prime and nuclear contractors."},
+    {"symbol": "BWXT", "direction": "benefit", "rationale": "Specialized nuclear fuel and reactor supplier is a direct fit for lunar and Mars fission reactor programs."},
+    {"symbol": "OKLO", "direction": "benefit", "rationale": "Advanced fission developer positioned for DOE space and terrestrial reactor initiatives."}
+  ],
+  "confidence": "medium"
+}

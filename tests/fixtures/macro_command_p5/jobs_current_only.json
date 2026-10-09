@@ -1,0 +1,23 @@
+{
+  "workspace": {
+    "id": "labor_markets",
+    "title": {"en": "Jobs", "zh": "就业"},
+    "subtitle": {"en": "", "zh": ""}
+  },
+  "region": {"code": "US", "display_name": "United States", "supported": true},
+  "availability": {"state": "CURRENT"},
+  "headline": {
+    "status": "PRESENT",
+    "state_id": "B",
+    "effective_date": "2026-09-04",
+    "state_label": {"en": "Scarce", "zh": "紧缺"}
+  },
+  "changes": {
+    "comparability": "COMPARABLE",
+    "prior_effective_date": "2026-09-04",
+    "deltas": [
+      {"metric_id": "labor_demand", "prior_value": 1.0, "current_value": 2.0, "delta": 1.0}
+    ]
+  },
+  "axes": {"items": []}
+}

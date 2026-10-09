@@ -1,0 +1,549 @@
+{
+  "kind": "reconstructed_current_calibration_replay",
+  "protocol_commit": "a3f85ff7b88c9361956f3f618915fea8f1b18201",
+  "base": "78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c",
+  "calibration": {
+    "bands": {
+      "watch": 55.0,
+      "caution": 68.0,
+      "elevated": 78.0,
+      "risk_off": 88.0
+    },
+    "legs": {
+      "credit_oas_roc": {
+        "lift_2020": 1.23,
+        "lift_full": 1.76,
+        "lead_d": 10,
+        "thr_pct": 0.9,
+        "era_robust": true
+      },
+      "credit_hyg_tlt": {
+        "lift_2020": 0.5,
+        "lift_full": 0.83,
+        "lead_d": 8,
+        "thr_pct": 0.9,
+        "era_robust": false
+      },
+      "rates_move": {
+        "lift_2020": 1.52,
+        "lift_full": 1.83,
+        "lead_d": 15,
+        "thr_pct": 0.9,
+        "era_robust": false
+      },
+      "rates_realrate": {
+        "lift_2020": 1.02,
+        "lift_full": 1.44,
+        "lead_d": 12,
+        "thr_pct": 0.9,
+        "era_robust": false
+      },
+      "bubble_ext": {
+        "lift_2020": 2.34,
+        "lift_full": 1.0,
+        "lead_d": 10,
+        "thr_pct": 0.9,
+        "era_robust": false
+      },
+      "bubble_leadership": {
+        "lift_2020": 0.38,
+        "lift_full": 0.85,
+        "lead_d": 12,
+        "thr_pct": 0.9,
+        "era_robust": false
+      },
+      "growth_defensives": {
+        "lift_2020": 1.62,
+        "lift_full": 0.78,
+        "lead_d": 12,
+        "thr_pct": 0.9,
+        "era_robust": false
+      },
+      "growth_cyc_def": {
+        "lift_2020": 1.63,
+        "lift_full": 1.41,
+        "lead_d": 12,
+        "thr_pct": 0.9,
+        "era_robust": false
+      },
+      "vol_term": {
+        "lift_2020": 0.44,
+        "lift_full": 0.85,
+        "lead_d": 8,
+        "thr_pct": 0.9,
+        "era_robust": false
+      },
+      "vol_putcall": {
+        "lift_2020": null,
+        "lift_full": null,
+        "lead_d": 5,
+        "thr_pct": 0.85,
+        "era_robust": false,
+        "accruing": true
+      },
+      "vol_gex": {
+        "lift_2020": null,
+        "lift_full": null,
+        "lead_d": 3,
+        "thr_pct": 0.85,
+        "era_robust": false,
+        "accruing": true
+      },
+      "global_breadth": {
+        "lift_2020": null,
+        "lift_full": null,
+        "lead_d": 21,
+        "thr_pct": 0.7,
+        "era_robust": false,
+        "accruing": true
+      },
+      "corr_floor_break": {
+        "lift_2020": null,
+        "lift_full": null,
+        "lead_d": 0,
+        "thr_pct": 0.85,
+        "era_robust": false,
+        "accruing": true,
+        "display_only": true,
+        "note": "CONFIRMER (not lead): COR1M extreme-low floor then spike; deeplink vol scare. Forward-graded before trusted. display_only=True: STRUCTURALLY UNABLE to move scare tier until gauntlet-promoted (VSB W6 doctrine)."
+      },
+      "ai_breadth_divergence": {
+        "lift_2020": null,
+        "lift_full": null,
+        "lead_d": 5,
+        "thr_pct": 0.85,
+        "era_robust": false,
+        "accruing": true,
+        "display_only": true,
+        "note": "AI vs non-AI breadth extreme divergence; Tier-B internals. Inert while data/breadth/breadth_split.parquet obs < 252. display_only=True: STRUCTURALLY UNABLE to move scare tier until gauntlet-promoted (VSB W6 doctrine)."
+      },
+      "nh_contraction": {
+        "lift_2020": 0.0,
+        "lift_full": 0.275,
+        "lead_d": 15,
+        "thr_pct": 0.85,
+        "era_robust": false,
+        "accruing": true
+      },
+      "jpy_carry": {
+        "lift_2020": null,
+        "measured_lift_2020": 1.45,
+        "lift_full": 1.188,
+        "lead_d": 5,
+        "thr_pct": 0.85,
+        "era_robust": false,
+        "accruing": true
+      }
+    },
+    "scares": {
+      "credit": {
+        "tier": "A",
+        "legs": [
+          [
+            "credit_oas_roc",
+            0.85
+          ],
+          [
+            "credit_hyg_tlt",
+            0.15
+          ]
+        ]
+      },
+      "rates": {
+        "tier": "A",
+        "legs": [
+          [
+            "rates_move",
+            0.8
+          ],
+          [
+            "rates_realrate",
+            0.2
+          ]
+        ]
+      },
+      "bubble": {
+        "tier": "A",
+        "legs": [
+          [
+            "bubble_ext",
+            0.85
+          ],
+          [
+            "bubble_leadership",
+            0.15
+          ]
+        ]
+      },
+      "growth": {
+        "tier": "A",
+        "legs": [
+          [
+            "growth_defensives",
+            0.5
+          ],
+          [
+            "growth_cyc_def",
+            0.5
+          ]
+        ]
+      },
+      "vol": {
+        "tier": "B",
+        "legs": [
+          [
+            "vol_term",
+            0.5
+          ],
+          [
+            "vol_putcall",
+            0.3
+          ],
+          [
+            "vol_gex",
+            0.2
+          ],
+          [
+            "corr_floor_break",
+            1.0
+          ]
+        ]
+      },
+      "global": {
+        "tier": "B",
+        "legs": [
+          [
+            "global_breadth",
+            0.7
+          ],
+          [
+            "jpy_carry",
+            0.3
+          ]
+        ]
+      },
+      "internals": {
+        "tier": "B",
+        "legs": [
+          [
+            "nh_contraction",
+            1.0
+          ],
+          [
+            "ai_breadth_divergence",
+            1.0
+          ]
+        ]
+      }
+    },
+    "prob_cal": {
+      "h5": {
+        "calm": 0.02,
+        "watch": 0.02,
+        "caution": 0.03,
+        "elevated": 0.05,
+        "risk-off": 0.08
+      },
+      "h10": {
+        "calm": 0.06,
+        "watch": 0.06,
+        "caution": 0.08,
+        "elevated": 0.12,
+        "risk-off": 0.17
+      },
+      "h21": {
+        "calm": 0.13,
+        "watch": 0.13,
+        "caution": 0.16,
+        "elevated": 0.25,
+        "risk-off": 0.33
+      }
+    },
+    "alert_from": "elevated"
+  },
+  "radar_source_sha256": "e5bf5baa7a8d9658937fa980fd40a4d9051e8728e563cfdaf7f2253d4fb64de4",
+  "replay_source_sha256": "a94d467d71ba687815872fb1da6806d3691eeec16528bea0553aa4731d74a6ac",
+  "signal_rows": 8467,
+  "signal_columns": [
+    "credit_oas_roc",
+    "credit_hyg_tlt",
+    "rates_move",
+    "rates_realrate",
+    "bubble_ext",
+    "bubble_leadership",
+    "growth_defensives",
+    "growth_cyc_def",
+    "vol_term",
+    "global_breadth",
+    "jpy_carry",
+    "nh_contraction",
+    "corr_floor_break",
+    "ai_breadth_divergence"
+  ],
+  "first_date": "1993-01-29 00:00:00",
+  "last_date": "2026-09-18 00:00:00",
+  "read_inputs": {
+    "data/yahoo/SPY.parquet": "cb67cebc79518e6c8de3c558c5a0c18ec252389054b2f8394b354e88a7af0ea0",
+    "data/fred/BAMLH0A0HYM2.parquet": "dd60951fe1ef3e88b9202e4a0bef7c4a56d96382d6e2b28056fdf615786e4690",
+    "data/yahoo/HYG.parquet": "b89d528b2c8d7e3d3c2fa8f64b2b6992e95ca0f8b0d58933876730a4a9c1c8da",
+    "data/yahoo/TLT.parquet": "3d09f656e49ba4d3ee5f205fcd8a7c650c36e3f46d98295d2b29b9e3256bccd5",
+    "data/yahoo/_MOVE.parquet": "03bd5adfbf7c4ca75bed2584159621a3d20ed62387365c8a92ab745831dff125",
+    "data/fred/DFII10.parquet": "99984d0539e17de3e07aac6b7db7b80913ca43352084cfb701ff6ad9d2c7e2c2",
+    "data/yahoo/SMH.parquet": "d9b0aa2d02b4a480876002fbb640384ce49c00a0093488b4259bf09abeaff81b",
+    "data/yahoo/XLU.parquet": "60ba05b2d9b202e21eaaa788aba8540c46cabcd0f2b4d3b32e6ca40263aed2be",
+    "data/yahoo/XLP.parquet": "bcbe35e985ce39b120b9a93d9a26432c7aced21cb7d9b46315278049091a610c",
+    "data/yahoo/XLY.parquet": "48ba37b15e76c8a20c1bcb64350c72c86a852a1f0d24e18ad4190178dfbc3b27",
+    "data/yahoo/_VIX.parquet": "7899aa84d8b4cb5de1845df541f552dce2096af0b981fc91b2e655095b987b6c",
+    "data/yahoo/_VIX3M.parquet": "0304d258dd25725e6a8c03d50ec1e109da5871844bd24cd6f659a972ab3030d1",
+    "data/yahoo/_VIX9D.parquet": "2cda964c2314c661b0322ce3aeae7be84cf013656588b51f7c918240258a9d07",
+    "data/cboe/putcall.parquet": "a53c2342ce72f7ff580213318ca307df7d753e70d7a97eee8defa1c6d9788e61",
+    "data/cboe/gex.parquet": "0bfb04b88db610c14b7fcbd74d0dfbbcb5ac4fa5509758ed1b12dd242a0b8c94",
+    "data/fred/DEXJPUS.parquet": "79704861e8c851c81b4bb1b35a0d849e2dbfb063ff92d47c02f4581411563003",
+    "data/breadth/breadth.parquet": "31554318c9b6ea80bd3be6d9f750d6ab5152630369669a0430e13bc3d35297af"
+  },
+  "missing_inputs": [],
+  "results": [
+    {
+      "window": "full",
+      "H": 5,
+      "before": {
+        "precision": 0.149,
+        "recall": 0.542,
+        "f1": 0.234,
+        "fire_rate": 0.1237,
+        "n_alert": 1047,
+        "n_days": 8462,
+        "n_unscored": 5
+      },
+      "after": {
+        "precision": 0.149,
+        "recall": 0.542,
+        "f1": 0.234,
+        "fire_rate": 0.1275,
+        "n_alert": 1047,
+        "n_days": 8211,
+        "n_unscored": 256,
+        "evaluation": {
+          "definition": "risk_radar_state_replay.v2",
+          "horizon_observations": 5,
+          "loss_threshold": 0.05,
+          "alert_from": "elevated",
+          "outcomes_sha256": "068bd8545ca554cfc2b792cf566dabd1b46f5ebf940bc7f641bd0082402e2aa1",
+          "from": "1994-01-26T00:00:00",
+          "through": "2026-09-11T00:00:00",
+          "n_events": 288,
+          "n_nonevents": 7923,
+          "confusion": {
+            "tp": 156,
+            "fp": 891,
+            "fn": 132,
+            "tn": 7032
+          }
+        }
+      }
+    },
+    {
+      "window": "since2020",
+      "H": 5,
+      "before": {
+        "precision": 0.132,
+        "recall": 0.6,
+        "f1": 0.216,
+        "fire_rate": 0.1623,
+        "n_alert": 273,
+        "n_days": 1682,
+        "n_unscored": 5
+      },
+      "after": {
+        "precision": 0.132,
+        "recall": 0.6,
+        "f1": 0.216,
+        "fire_rate": 0.1623,
+        "n_alert": 273,
+        "n_days": 1682,
+        "n_unscored": 5,
+        "evaluation": {
+          "definition": "risk_radar_state_replay.v2",
+          "horizon_observations": 5,
+          "loss_threshold": 0.05,
+          "alert_from": "elevated",
+          "outcomes_sha256": "ccb420875fa715f368e90a6e01618262c998207d065fca574a2aa123a8ade85e",
+          "from": "2020-01-02T00:00:00",
+          "through": "2026-09-11T00:00:00",
+          "n_events": 60,
+          "n_nonevents": 1622,
+          "confusion": {
+            "tp": 36,
+            "fp": 237,
+            "fn": 24,
+            "tn": 1385
+          }
+        }
+      }
+    },
+    {
+      "window": "full",
+      "H": 10,
+      "before": {
+        "precision": 0.258,
+        "recall": 0.387,
+        "f1": 0.309,
+        "fire_rate": 0.1238,
+        "n_alert": 1047,
+        "n_days": 8457,
+        "n_unscored": 10
+      },
+      "after": {
+        "precision": 0.258,
+        "recall": 0.387,
+        "f1": 0.309,
+        "fire_rate": 0.1276,
+        "n_alert": 1047,
+        "n_days": 8206,
+        "n_unscored": 261,
+        "evaluation": {
+          "definition": "risk_radar_state_replay.v2",
+          "horizon_observations": 10,
+          "loss_threshold": 0.05,
+          "alert_from": "elevated",
+          "outcomes_sha256": "e3875ca3d74abe20485ee7b5b3c3d62bb6987ddc28cbf2086ac5a76582947198",
+          "from": "1994-01-26T00:00:00",
+          "through": "2026-09-03T00:00:00",
+          "n_events": 698,
+          "n_nonevents": 7508,
+          "confusion": {
+            "tp": 270,
+            "fp": 777,
+            "fn": 428,
+            "tn": 6731
+          }
+        }
+      }
+    },
+    {
+      "window": "since2020",
+      "H": 10,
+      "before": {
+        "precision": 0.256,
+        "recall": 0.507,
+        "f1": 0.341,
+        "fire_rate": 0.1628,
+        "n_alert": 273,
+        "n_days": 1677,
+        "n_unscored": 10
+      },
+      "after": {
+        "precision": 0.256,
+        "recall": 0.507,
+        "f1": 0.341,
+        "fire_rate": 0.1628,
+        "n_alert": 273,
+        "n_days": 1677,
+        "n_unscored": 10,
+        "evaluation": {
+          "definition": "risk_radar_state_replay.v2",
+          "horizon_observations": 10,
+          "loss_threshold": 0.05,
+          "alert_from": "elevated",
+          "outcomes_sha256": "e3acaa6d7d8fe7b0db8ca3c1fde3619689b663a081689ad5b3aa3c3fa29e30af",
+          "from": "2020-01-02T00:00:00",
+          "through": "2026-09-03T00:00:00",
+          "n_events": 138,
+          "n_nonevents": 1539,
+          "confusion": {
+            "tp": 70,
+            "fp": 203,
+            "fn": 68,
+            "tn": 1336
+          }
+        }
+      }
+    },
+    {
+      "window": "full",
+      "H": 21,
+      "before": {
+        "precision": 0.412,
+        "recall": 0.298,
+        "f1": 0.346,
+        "fire_rate": 0.124,
+        "n_alert": 1047,
+        "n_days": 8446,
+        "n_unscored": 21
+      },
+      "after": {
+        "precision": 0.412,
+        "recall": 0.298,
+        "f1": 0.346,
+        "fire_rate": 0.1278,
+        "n_alert": 1047,
+        "n_days": 8195,
+        "n_unscored": 272,
+        "evaluation": {
+          "definition": "risk_radar_state_replay.v2",
+          "horizon_observations": 21,
+          "loss_threshold": 0.05,
+          "alert_from": "elevated",
+          "outcomes_sha256": "68f48021c4ef9e1a4f07207775ff4701818770c78f9a111f9a7b3d91aeb5346c",
+          "from": "1994-01-26T00:00:00",
+          "through": "2026-08-19T00:00:00",
+          "n_events": 1446,
+          "n_nonevents": 6749,
+          "confusion": {
+            "tp": 431,
+            "fp": 616,
+            "fn": 1015,
+            "tn": 6133
+          }
+        }
+      }
+    },
+    {
+      "window": "since2020",
+      "H": 21,
+      "before": {
+        "precision": 0.396,
+        "recall": 0.367,
+        "f1": 0.381,
+        "fire_rate": 0.1639,
+        "n_alert": 273,
+        "n_days": 1666,
+        "n_unscored": 21
+      },
+      "after": {
+        "precision": 0.396,
+        "recall": 0.367,
+        "f1": 0.381,
+        "fire_rate": 0.1639,
+        "n_alert": 273,
+        "n_days": 1666,
+        "n_unscored": 21,
+        "evaluation": {
+          "definition": "risk_radar_state_replay.v2",
+          "horizon_observations": 21,
+          "loss_threshold": 0.05,
+          "alert_from": "elevated",
+          "outcomes_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec",
+          "from": "2020-01-02T00:00:00",
+          "through": "2026-08-19T00:00:00",
+          "n_events": 294,
+          "n_nonevents": 1372,
+          "confusion": {
+            "tp": 108,
+            "fp": 165,
+            "fn": 186,
+            "tn": 1207
+          }
+        }
+      }
+    }
+  ],
+  "live_model_changed": false,
+  "publication_timing_verified": false,
+  "out_of_sample_validation": false,
+  "limits": [
+    "Current code and current calibration reconstructed over stored history.",
+    "Overlapping daily outcomes are not independent episodes.",
+    "No probability, calibration, policy or ledger modification."
+  ]
+}

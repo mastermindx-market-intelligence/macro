@@ -113,7 +113,19 @@ git clean -fd -- \
 # untouched.
 git clean -fd -- \
   data/prophet/origination_receipts \
+  data/prophet/origination_sources \
   data/prophet/legacy_shadow
+# The leader-pullback source has its own provenance-checked narrow checkpoint
+# immediately after the publisher and before build_site. Never let this late broad
+# commit bypass a refused same-path/source-contract gate or overwrite a newer source
+# publication during its -X theirs rebase. Rendered pages remain broad-owner output;
+# only the raw source artifact is restored/unstaged here.
+LEADER_SOURCE_PATH="site/anticipationdata/us_leader_pullback.json"
+if ! git checkout HEAD -- "$LEADER_SOURCE_PATH"; then
+  echo "::error title=Leader source safe restore failed::could not restore checkout-time source; aborting broad commit rather than publishing around the narrow checkpoint"
+  exit 1
+fi
+git reset -q -- "$LEADER_SOURCE_PATH"
 # Re-exclude both exact-published namespaces after the broad add.
 bash scripts/ci/options_signal_nightly.sh exclude-broad
 # W0b (2026-07-08 stale-HK incident): US engine job must NOT commit asia-owned
@@ -204,6 +216,10 @@ PUSH_MAX_ATTEMPTS=20   # let the 600s DEADLINE stop this loop, not the attempt c
                        # retries burn only ~2 min, so the raised budget above would never bind
 push_retry_init "engine outputs"
 while push_attempt; do
+  # Classify native pending work before the shared helper can clean or rebase.
+  qledger_before_rebase=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
+  push_qledger_guard pre-rebase --candidate "$qledger_before_rebase" \
+    --target-ref refs/heads/main || exit $?
   # Fetch the exact named ref before rebasing. The shared helper sees normal
   # AND ignored untracked collisions, quarantines only paths tracked by that
   # exact target under RUNNER_TEMP, and never removes unrelated runner data.
@@ -272,7 +288,9 @@ while push_attempt; do
         echo "::warning title=render-sync skipped::post-rebase site/templates scanned dirty (conflict markers) — follow-up commit skipped and offenders restored from HEAD; pushing the guarded engine commit only"
       fi
     fi
-    if push_do; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+    # This is the actual final candidate, including any render-sync commit.
+    qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
+    if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
   fi
   push_abort_rebase
   push_backoff

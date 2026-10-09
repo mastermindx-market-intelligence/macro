@@ -46,7 +46,9 @@ def _env() -> jinja2.Environment:
     # a render exercising us_prophet_book.plans does not crash on an undefined
     # global the real build always provides.
     from scripts.build_site import us_stance_projection  # noqa: PLC0415
+    from engine.macro_news import CHANNEL_LABEL  # noqa: PLC0415
     env.globals["us_stance_projection"] = us_stance_projection
+    env.globals["CHANNEL_LABEL"] = CHANNEL_LABEL
     return env
 
 
@@ -309,34 +311,123 @@ def test_stocks_mode_renders_without_exception():
 
 
 # --------------------------------------------------------------------------- #
-# UD-B1 hero include: macro mode mounts the hero (mode == 'macro'); the
-# hero MUST NOT appear in stocks mode. Pre-fix the include was gated
-# `mode != 'stocks'`, which technically worked but did not express the
-# intent — mode == 'macro' is the documented contract.
+# UD-B1 primary-route override (2026-09-20): keep the candidate component in
+# source, but do not stack it above the established macro decision surface.
 # --------------------------------------------------------------------------- #
 
-def test_macro_mode_includes_unified_dashboard_hero():
-    """mode == 'macro' MUST include the UD-B1 hero partial above legacy isles."""
+def test_macro_mode_keeps_unified_dashboard_candidate_off_primary_route():
+    """The primary macro route must open on the established regime radar."""
     html = _render("macro")
-    assert 'id="ud-hero"' in html, "macro mode must include #ud-hero"
-    # Hero precedes the legacy #regime-radar panel (per the include site).
-    hero_idx = html.find('id="ud-hero"')
-    radar_idx = html.find('id="regime-radar"')
-    assert hero_idx != -1 and radar_idx != -1, (
-        f"hero (#ud-hero) and regime-radar (#regime-radar) both must render in macro mode"
-    )
-    assert hero_idx < radar_idx, (
-        "UD-B1 hero must appear BEFORE the legacy #regime-radar panel"
-    )
-
-
-def test_stocks_mode_excludes_unified_dashboard_hero():
-    """mode == 'stocks' MUST NOT include the UD-B1 hero (it is macro-only)."""
-    html = _render("stocks")
     assert 'id="ud-hero"' not in html, (
-        "stocks mode must NOT include the UD-B1 hero — it is macro-only per "
-        "research/UNIFIED_DASHBOARD_DISPOSITION.md and the include condition"
+        "macro mode must not stack the held UD-B1 candidate above the current dashboard"
     )
+    assert 'id="regime-radar"' in html, (
+        "macro mode must retain the established #regime-radar decision surface"
+    )
+
+
+def test_stocks_mode_excludes_unified_dashboard_candidate():
+    """The held UD-B1 candidate is not part of the stocks route either."""
+    html = _render("stocks")
+    assert 'id="ud-hero"' not in html
+
+
+def _health_panel(html: str) -> str:
+    match = re.search(r'<details class="[^"]*health-strip[^"]*" id="health".*?</details>', html, re.S)
+    assert match, "macro render must contain the data-health panel"
+    return match.group(0)
+
+
+def test_macro_health_empty_is_unknown_not_green():
+    panel = _health_panel(_render("macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-unknown" in opening
+    assert "health-ok" not in opening
+    assert "health unavailable" in panel
+    assert "健康状态不可用" in panel
+    assert "Source health data is unavailable for this build." in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_macro_health_nonempty_all_ok_is_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Primary feed", "status": "ok", "rows": 12,
+        "last_date": "2026-07-04", "error": None,
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-ok" in opening
+    assert "health-unknown" not in opening
+    assert "health-neutral" not in opening
+    assert "all observed sources OK" in panel
+    assert "已观测数据源全部正常" in panel
+
+
+def test_macro_health_blocked_only_is_neutral_not_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Known limitation", "status": "blocked", "rows": 0,
+        "last_date": None, "error": "expected limitation",
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-neutral" in opening
+    assert "health-ok" not in opening
+    assert "health-warn" not in opening
+    assert "no active failures" in panel
+    assert "无活动故障" in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_macro_health_ok_plus_blocked_is_neutral_not_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [
+        {"name": "Primary feed", "status": "ok", "rows": 12,
+         "last_date": "2026-07-04", "error": None},
+        {"name": "Known limitation", "status": "blocked", "rows": 0,
+         "last_date": None, "error": "expected limitation"},
+    ]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-neutral" in opening
+    assert "health-ok" not in opening
+    assert "health-warn" not in opening
+    assert "no active failures" in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_committed_macro_health_projection_carries_truth_state_contract():
+    page = ROOT / "site" / "macro.html"
+    html = page.read_text(encoding="utf-8")
+    linked_css = []
+    for href in re.findall(r'<link[^>]+href="([^"]+\.css(?:\?[^"#]*)?)"', html):
+        rel = href.split("?", 1)[0]
+        if rel.startswith(("/", "http://", "https://")):
+            continue
+        css_path = page.parent / rel
+        if css_path.is_file():
+            linked_css.append(css_path.read_text(encoding="utf-8"))
+    projection = html + "\n" + "\n".join(linked_css)
+    assert "health-unknown" in projection
+    assert "health-neutral" in projection
+    assert "Observed health entries for data sources this dashboard depends on." in html
+    assert "No entries means health is unavailable, not healthy." in html
+    assert "Every data source this dashboard depends on. OK = fresh." not in html
+
+
+def test_macro_health_degraded_source_remains_attention_state():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Primary feed", "status": "stale", "rows": 12,
+        "last_date": "2026-07-03", "error": "late",
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-warn" in opening
+    assert "health-ok" not in opening
+    assert "1" in panel and "need attention" in panel
+    assert "需关注" in panel
 
 
 def test_us_track_record_filter_bar_stays_in_document_flow():
@@ -562,10 +653,12 @@ def test_macro_strip_has_six_tape_tiles_in_order():
     # Each price tile exists with the live-patch contract intact.
     positions = []
     for sym in _TAPE_SYMS:
-        needle = f'<div class="mx5-mkt-price nb-px" data-sym="{sym}" data-mkt="us"'
-        idx = html.find(needle)
-        assert idx != -1, f"tape price tile for {sym} missing from the strip"
-        positions.append(idx)
+        m = re.search(
+            rf'<div class="mx5-mkt-price nb-px[^"]*" data-sym="{re.escape(sym)}" data-mkt="us"',
+            html,
+        )
+        assert m, f"tape price tile for {sym} missing from the strip"
+        positions.append(m.start())
     # Strictly increasing => the six render in the specified order.
     assert positions == sorted(positions), f"tape tiles out of order: {positions}"
 
@@ -574,8 +667,8 @@ def test_macro_strip_tnx_display_transform_wired():
     """^TNX price AND delta carry data-fmt="tnx" so live.js divides the yield×10
     quote by 10 (%) and renders the delta in bps. Both nodes must be tagged."""
     html = _render("macro")
-    assert '<div class="mx5-mkt-price nb-px" data-sym="^TNX" data-mkt="us" data-fmt="tnx"' in html
-    assert 'nb-chg" data-sym="^TNX" data-mkt="us" data-fmt="tnx"' in html
+    assert re.search(r'<div class="mx5-mkt-price nb-px[^"]*" data-sym="\^TNX" data-mkt="us" data-fmt="tnx"', html)
+    assert re.search(r'nb-chg[^"]*" data-sym="\^TNX" data-mkt="us" data-fmt="tnx"', html)
 
 
 def test_macro_strip_labels_bilingual():
@@ -1197,3 +1290,282 @@ def test_strip_tables_mobile_column_contract():
     # scraping them from the page IS reading the hide list.
     hidden = set(re.findall(r"\.topsetups \.ts-tbl \.(c-[a-z]+)", html))
     assert hidden == (trigger | leaders) - _MOBILE_KEEP
+
+
+# --------------------------------------------------------------------------- #
+# MO-PAID-001_FIX_R1 — the two-axis "Regime — now & where it's headed" panel
+# is the labeled regime read served on us_stocks.html (F00C F01 ruling D15).
+# The OLD include lived INSIDE the macro-only `{% if mode == 'macro' %}` block
+# (~line 2622 → ~line 16081, no else) behind `mode != 'macro'`, so the guard
+# could never be true and the panel rendered on NO page. The new include sits
+# in the stocks block, immediately after `{% endif %}{# /market_state B4 #}`
+# and BEFORE `{% if action_board %}`. These four tests pin:
+#   T1 — stocks + base_effect fixture: panel renders with both axis labels.
+#   T2 — macro + SAME fixture: panel absent (the control — macro never hosts it).
+#   T3 — stocks with base_effect absent/partial: degrades silently, no crash.
+#   T4 — structural: exactly one include statement, on a line past the
+#   `{# /mode != 'stocks' #}` close (so a future move back into the dead
+#   macro-only section fails CI at detection).
+# --------------------------------------------------------------------------- #
+
+
+def _be_axis(q1: float, current_yoy: float, yoy_path: list[float] | None = None) -> dict:
+    """One base_effect axis (growth or inflation). Field census from
+    templates/_base_effect_strip.html.j2: q1/q2/q3 used in arithmetic + _iq
+    branches; yoy_path used by `_axnote` when current_yoy is set."""
+    return {
+        "q1": q1,
+        "q2": q1,            # shape-only; the template iterates ['q1','q2','q3']
+        "q3": q1,
+        "current_yoy": current_yoy,
+        "yoy_path": yoy_path if yoy_path is not None else [current_yoy, current_yoy, current_yoy],
+    }
+
+
+def _vm_with_base_effect(**overrides) -> dict:
+    """Base vm with both base_effect axes populated so the panel renders.
+    Pass growth_only=True / inflation_only=True to exercise the partial case."""
+    growth = overrides.pop("growth", _be_axis(0.5, 2.4))
+    inflation = overrides.pop("inflation", _be_axis(-0.3, 1.9))
+    if overrides.pop("growth_only", False):
+        inflation = None
+    if overrides.pop("inflation_only", False):
+        growth = None
+    base_effect = overrides.pop("base_effect", None)
+    vm = _base_vm()
+    if base_effect is not None:
+        vm["latest"]["base_effect"] = base_effect
+    else:
+        vm["latest"]["base_effect"] = {"growth": growth, "inflation": inflation}
+    vm.update(overrides)
+    return vm
+
+
+def _regime_read_section(html: str) -> str:
+    """The #regime-read panel slice (id="regime-read" ... </div> closing that
+    panel).  Pinning to the panel preserves bilingual parity: if the same
+    label appears elsewhere on the page, the assertions are still scoped."""
+    match = re.search(
+        r'<div class="panel span12 bfwd rr-combined" id="regime-read">.*?</div>\s*</div>',
+        html,
+        re.S,
+    )
+    assert match, "#regime-read panel missing — T1 / T2 / T3 assertions would be vacuous"
+    return match.group(0)
+
+
+def test_t1_stocks_renders_regime_read_panel_with_both_axes():
+    """T1: stocks mode + a populated base_effect (growth + inflation) renders
+    the #regime-read panel EXACTLY ONCE, with both EN and ZH axis labels."""
+    vm = _vm_with_base_effect()
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
+    assert html.count('id="regime-read"') == 1
+    section = _regime_read_section(html)
+    # Axis labels (EN + ZH), scoped to the panel — neither token appears
+    # anywhere else on us_stocks, so an unscoped grep is also safe.
+    assert "Growth" in section and "增长" in section
+    assert "Inflation" in section and "通胀" in section
+
+
+def test_t2_macro_does_not_host_the_regime_read_panel():
+    """T2: macro mode + the SAME fixture — the panel is stocks-only, so macro
+    must NEVER carry #regime-read. This is the control test: stocks renders,
+    macro does not, on identical input."""
+    vm = _vm_with_base_effect()
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="macro")
+    assert 'id="regime-read"' not in html
+
+
+def test_t3_stocks_degrades_silently_when_base_effect_missing_or_partial():
+    """T3: stocks mode + an absent or partial base_effect must render without
+    exception and WITHOUT emitting #regime-read. Two shapes exercised:
+    latest.base_effect entirely missing, and one axis present / the other None
+    (the partial case the include's `_has_be` guard was built for)."""
+    env = _env()
+    # Case A: base_effect key absent on latest.
+    vm_absent = _base_vm()
+    html_absent = env.get_template("dashboard.html.j2").render(**vm_absent, mode="stocks")
+    assert 'id="regime-read"' not in html_absent
+    # Case B: only growth (inflation None) — the include's `_has_be` guard
+    # checks BOTH axes, so the panel stays absent.
+    vm_growth_only = _vm_with_base_effect(inflation_only=False, inflation=None)
+    html_growth_only = env.get_template("dashboard.html.j2").render(**vm_growth_only, mode="stocks")
+    assert 'id="regime-read"' not in html_growth_only
+
+
+def test_t4_structural_exactly_one_include_past_macro_block_close():
+    """T4: the template source carries exactly one INCLUDE statement of
+    _regime_read_panel.html.j2, and that include's line number is strictly
+    past the closing `{# /mode != 'stocks' #}` of the nested stocks-only
+    block (which sits inside the macro-only block at ~line 2622 → ~16081).
+    A future move back into the dead section would push the include's line
+    number back below that close and fail CI loudly."""
+    src_path = ROOT / "templates" / "dashboard.html.j2"
+    src = src_path.read_text(encoding="utf-8")
+    lines = src.splitlines()
+
+    # Exactly one include statement (NOT one literal occurrence — the spec'd
+    # comment also names the file, so a raw string grep would over-fire; this
+    # pattern matches only the actual Jinja include).
+    include_hits = [i + 1 for i, line in enumerate(lines)
+                    if re.search(r'\{%\s*include\s+["\']_regime_read_panel\.html\.j2["\']\s*%\}', line)]
+    assert len(include_hits) == 1, (
+        f"expected exactly one include of _regime_read_panel.html.j2, found {len(include_hits)} "
+        f"on lines {include_hits}"
+    )
+    include_line = include_hits[0]
+
+    # Find the closing `{# /mode != 'stocks' #}` (the nested stocks-only
+    # block that the macro-only section used to enclose). The new include
+    # must sit past it — the dead-block site (~15538) sat well before it.
+    close_lines = [i + 1 for i, line in enumerate(lines)
+                   if re.search(r"\{#\s*/mode\s*!=\s*['\"]stocks['\"]\s*#\}", line)]
+    assert close_lines, "the nested `{# /mode != 'stocks' #}` close marker is missing — the test assumes the macro block still has this structure"
+    assert include_line > close_lines[0], (
+        f"include at line {include_line} sits BEFORE the {{# /mode != 'stocks' #}} close "
+        f"at line {close_lines[0]} — the include is back inside the macro-only block"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# E0-G (2026-10-04, #8317): the Fed dialog's Inflation Read keys its state
+# word on the transmission owner's inflation LEVEL token and its second clause
+# on the owner's EXPECTATIONS token — both carried verbatim, both null-safe.
+# The tests drive the owner's real producer through the Rates Command row into
+# the real template block (the serialized route), so a vocabulary move on
+# either side trips them.
+# --------------------------------------------------------------------------- #
+
+_INF_READ_START = "      {# ── d. Inflation Read"
+_INF_READ_END = "      {# ── e. Risk Indicators"
+
+
+def _inflation_read_block() -> str:
+    src = (ROOT / "templates/dashboard.html.j2").read_text()
+    start = src.index(_INF_READ_START)
+    end = src.index(_INF_READ_END, start)
+    return src[start:end]
+
+
+def _render_inflation_read(row: dict) -> str:
+    return jinja2.Environment(autoescape=True).from_string(_inflation_read_block()).render(_dlgrc_inf=row)
+
+
+def _inflation_read_via_owner(core_pce_yoy, wedge):
+    """Owner state (real producer) -> Rates Command row (real builder) -> real template block."""
+    import pandas as pd  # noqa: PLC0415
+    from engine import rate_inflation_transmission as rit  # noqa: PLC0415
+    from engine import rates_inflation_command as rc  # noqa: PLC0415
+
+    frame = pd.DataFrame({
+        "core_pce_yoy": [core_pce_yoy],
+        "infl_exp_5y": [2.5],
+        "breakeven_5y5y": [2.5 + wedge] if wedge is not None else [None],
+    })
+    state = rit.current_state(frame)
+    row = rc._build_inflation_row({"state": state}, [])
+    return row, _render_inflation_read(row)
+
+
+def _pill(en: str, zh: str) -> str:
+    return f'<span class="l-en">{en}</span><span class="l-zh">{zh}</span>'
+
+
+def test_inflation_read_at_target_with_zero_wedge_reads_near_target():
+    row, html = _inflation_read_via_owner(2.0, 0.0)
+    assert row["regime"] == "at target" and row["anchoring"] == "anchored"
+    assert _pill("Near target", "接近目标") in html
+    assert "Core prices are close to the Fed’s 2% target; longer-run expectations look steady." in html
+    assert "核心物价接近美联储2%目标；长期预期看起来稳定。" in html
+    assert "Above target" not in html and "At target" not in html and "points above" not in html
+    assert "(expectations: anchored)" in html and "（预期：锚定）" in html
+    assert "color:var(--up,#22d97a)" in html
+
+
+def test_inflation_read_above_target_drifting_up_is_the_wrong_way():
+    row, html = _inflation_read_via_owner(2.8, 0.31)
+    assert row["regime"] == "above target" and row["anchoring"] == "drifting up"
+    assert _pill("Above target", "高于目标") in html
+    assert "Core prices are still 0.8 points above the Fed’s 2% target; longer-run expectations are drifting up." in html
+    assert "核心物价仍高于美联储2%目标 0.8 个百分点；长期预期向上漂移。" in html
+    assert "(expectations: drifting up)" in html and "（预期：向上漂移）" in html
+    assert "color:var(--down,#ef4444)" in html
+
+
+def test_inflation_read_below_target_drifting_down_is_the_wrong_way():
+    row, html = _inflation_read_via_owner(1.5, -0.31)
+    assert row["regime"] == "below target" and row["anchoring"] == "drifting down"
+    assert _pill("Below target", "低于目标") in html
+    assert "Core prices are 0.5 points below the Fed’s 2% target; longer-run expectations are drifting down." in html
+    assert "核心物价低于美联储2%目标 0.5 个百分点；长期预期向下漂移。" in html
+    assert "(expectations: drifting down)" in html and "（预期：向下漂移）" in html
+    assert "color:var(--down,#ef4444)" in html
+
+
+def test_inflation_read_above_target_anchored_is_amber():
+    row, html = _inflation_read_via_owner(2.8, 0.0)
+    assert row["regime"] == "above target" and row["anchoring"] == "anchored"
+    assert _pill("Above target", "高于目标") in html
+    assert "still 0.8 points above the Fed’s 2% target; longer-run expectations look steady." in html
+    assert "color:var(--warn,#f59e0b)" in html
+
+
+def test_inflation_read_missing_expectations_model_discloses_plainly():
+    row, html = _inflation_read_via_owner(2.8, None)
+    assert row["regime"] == "above target" and row["anchoring"] is None
+    assert _pill("Above target", "高于目标") in html
+    assert "still 0.8 points above the Fed’s 2% target; the longer-run expectations read is being updated." in html
+    assert "长期预期读数更新中。" in html
+    assert "None" not in html
+    assert "expectations:" not in html and "预期：" not in html
+    assert "color:var(--warn,#f59e0b)" in html
+
+
+def test_inflation_read_unknown_tokens_are_never_rendered_as_words():
+    """A vocabulary move on the owner's side must read as 'being updated', never as a default word or the raw token."""
+    row = {
+        "core_pce_yoy": 2.8, "core_cpi_yoy": None, "core_pce_3m_ann": None, "vs_target_pp": 0.8,
+        "regime": "hot", "direction": None, "breakeven_10y": None, "breakeven_5y5y": None,
+        "anchoring": "unanchored", "nearest_cpi": None,
+    }
+    html = _render_inflation_read(row)
+    assert _pill("Being updated", "更新中") in html
+    assert "Core prices are being re-read against the Fed’s 2% target; the longer-run expectations read is being updated." in html
+    assert "hot" not in html and "unanchored" not in html
+    assert "Above target" not in html and "expectations:" not in html
+
+
+def test_inflation_read_mild_miss_with_steady_expectations_is_amber():
+    """Any miss of the target is amber now (the old block went green below a 0.5-point gap)."""
+    row, html = _inflation_read_via_owner(2.4, 0.0)
+    assert row["regime"] == "above target" and row["anchoring"] == "anchored"
+    assert "still 0.4 points above the Fed’s 2% target; longer-run expectations look steady." in html
+    assert "color:var(--warn,#f59e0b)" in html and "color:var(--up,#22d97a)" not in html
+
+
+def test_inflation_read_near_target_with_drifting_expectations_is_amber():
+    row, html = _inflation_read_via_owner(2.0, 0.31)
+    assert row["regime"] == "at target" and row["anchoring"] == "drifting up"
+    assert _pill("Near target", "接近目标") in html
+    assert "Core prices are close to the Fed’s 2% target; longer-run expectations are drifting up." in html
+    assert "color:var(--warn,#f59e0b)" in html
+    assert "color:var(--up,#22d97a)" not in html and "color:var(--down,#ef4444)" not in html
+
+
+def test_inflation_read_old_artifact_without_tokens_reads_being_updated():
+    """An artifact written before the owner published these keys renders quietly, never crashes."""
+    row = {"core_pce_yoy": 2.8, "core_cpi_yoy": None, "core_pce_3m_ann": None, "breakeven_10y": None, "nearest_cpi": None}
+    html = _render_inflation_read(row)
+    assert _pill("Being updated", "更新中") in html
+    assert "Core prices are being re-read against the Fed’s 2% target; the longer-run expectations read is being updated." in html
+    assert "color:var(--info,#60a5fa)" in html
+    assert "None" not in html and "Undefined" not in html and "expectations:" not in html and "预期：" not in html
+
+
+def test_inflation_read_block_carries_no_retired_vocabulary():
+    """Pins only the dead owner values and the retired English phrases; legitimate copy edits stay free."""
+    block = _inflation_read_block()
+    for word in ("'drifting'", "unanchored", "a touch loose", "unmoored", "略松动", "不稳", "_inf_above_"):
+        assert word not in block, word
+    for token in ("'above target'", "'at target'", "'below target'", "'anchored'", "'drifting up'", "'drifting down'"):
+        assert token in block, token

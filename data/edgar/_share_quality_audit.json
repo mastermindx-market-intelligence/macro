@@ -1,18 +1,26 @@
 {
-"applied": "2026-09-19T19:59:13.503566+00:00",
-"rows_flagged": 1079,
-"tickers_flagged": 658,
+"applied": "2026-10-04T06:35:18.760814+00:00",
+"rows_flagged": 1101,
+"tickers_flagged": 677,
 "by_flag": {
-"placeholder": 79,
-"pre_public": 841,
+"placeholder": 80,
+"pre_public": 862,
 "pre_public_tiny": 56,
 "unit_extreme": 27,
 "unit_level": 12,
 "unit_scale": 64
 },
 "repaired": 128,
-"nulled": 951,
+"nulled": 973,
 "rows": [
+{
+"ticker": "AADX",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 129678789.0,
+"repair": null,
+"note": "period_end<2026-05-02"
+},
 {
 "ticker": "AAP",
 "fy": 2009,
@@ -228,6 +236,14 @@
 "shares_raw": 249374000.0,
 "repair": null,
 "note": "period_end<2021-03-02"
+},
+{
+"ticker": "AGNC",
+"fy": 2010,
+"flag": "placeholder",
+"shares_raw": 64856.0,
+"repair": null,
+"note": "no clean flank snap"
 },
 {
 "ticker": "AGNT",
@@ -726,6 +742,14 @@
 "note": "period_end<2026-01-02"
 },
 {
+"ticker": "APMD",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 4781256.0,
+"repair": null,
+"note": "period_end<2026-06-01"
+},
+{
 "ticker": "ARAI",
 "fy": 2024,
 "flag": "pre_public",
@@ -956,6 +980,14 @@
 "shares_raw": 2236672.0,
 "repair": null,
 "note": "leading segment <2e+07"
+},
+{
+"ticker": "BE",
+"fy": 2017,
+"flag": "pre_public",
+"shares_raw": 10353269.0,
+"repair": null,
+"note": "period_end<2018-06-01"
 },
 {
 "ticker": "BEAM",
@@ -2486,6 +2518,38 @@
 "note": "period_end<2020-01-31"
 },
 {
+"ticker": "EMAT",
+"fy": 2021,
+"flag": "pre_public",
+"shares_raw": 2503750.0,
+"repair": null,
+"note": "period_end<2025-12-02"
+},
+{
+"ticker": "EMAT",
+"fy": 2022,
+"flag": "pre_public",
+"shares_raw": 2283976.0,
+"repair": null,
+"note": "period_end<2025-12-02"
+},
+{
+"ticker": "EMAT",
+"fy": 2023,
+"flag": "pre_public",
+"shares_raw": 2283976.0,
+"repair": null,
+"note": "period_end<2025-12-02"
+},
+{
+"ticker": "EMAT",
+"fy": 2024,
+"flag": "pre_public",
+"shares_raw": 2283976.0,
+"repair": null,
+"note": "period_end<2025-12-02"
+},
+{
 "ticker": "ENPH",
 "fy": 2011,
 "flag": "pre_public",
@@ -3278,6 +3342,14 @@
 "note": "period_end<2021-05-02"
 },
 {
+"ticker": "GMRS",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 22096835.0,
+"repair": null,
+"note": "period_end<2026-04-01"
+},
+{
 "ticker": "GNK",
 "fy": 2009,
 "flag": "pre_public",
@@ -3542,6 +3614,14 @@
 "note": "period_end<2014-11-01"
 },
 {
+"ticker": "HAWK",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 4168374.0,
+"repair": null,
+"note": "period_end<2026-04-01"
+},
+{
 "ticker": "HAYW",
 "fy": 2020,
 "flag": "pre_public",
@@ -3716,6 +3796,14 @@
 "shares_raw": 156206478.0,
 "repair": null,
 "note": "period_end<2021-06-01"
+},
+{
+"ticker": "HUBS",
+"fy": 2013,
+"flag": "pre_public",
+"shares_raw": 5301000.0,
+"repair": null,
+"note": "period_end<2014-09-01"
 },
 {
 "ticker": "HUMA",
@@ -3964,6 +4052,14 @@
 "shares_raw": 243076.0,
 "repair": null,
 "note": "period_end<2021-05-02"
+},
+{
+"ticker": "KARD",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 16351102.0,
+"repair": null,
+"note": "period_end<2026-05-02"
 },
 {
 "ticker": "KGS",
@@ -4246,6 +4342,14 @@
 "note": "period_end<2021-05-02"
 },
 {
+"ticker": "LFTO",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 123002518.0,
+"repair": null,
+"note": "period_end<2026-05-02"
+},
+{
 "ticker": "LIF",
 "fy": 2021,
 "flag": "pre_public",
@@ -4268,6 +4372,14 @@
 "shares_raw": 68155830.0,
 "repair": null,
 "note": "period_end<2024-05-02"
+},
+{
+"ticker": "LIME",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 10847267.0,
+"repair": null,
+"note": "period_end<2026-06-01"
 },
 {
 "ticker": "LIN",
@@ -4612,6 +4724,14 @@
 "shares_raw": 14247476.0,
 "repair": null,
 "note": "period_end<2025-04-01"
+},
+{
+"ticker": "MOBI",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 884030.0,
+"repair": null,
+"note": "period_end<2026-04-01"
 },
 {
 "ticker": "MPLT",
@@ -5350,6 +5470,14 @@
 "note": "period_end<2014-06-01"
 },
 {
+"ticker": "ODTX",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 2306207.0,
+"repair": null,
+"note": "period_end<2026-04-01"
+},
+{
 "ticker": "OFRM",
 "fy": 2025,
 "flag": "pre_public",
@@ -5612,6 +5740,14 @@
 "shares_raw": 28870167.0,
 "repair": null,
 "note": "period_end<2012-08-02"
+},
+{
+"ticker": "PBLS",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 2035357.0,
+"repair": null,
+"note": "period_end<2026-05-02"
 },
 {
 "ticker": "PBYI",
@@ -6182,12 +6318,28 @@
 "note": "period_end<2018-01-30"
 },
 {
+"ticker": "REA",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 14965987.0,
+"repair": null,
+"note": "period_end<2026-04-01"
+},
+{
 "ticker": "REAL",
 "fy": 2018,
 "flag": "pre_public",
 "shares_raw": 8593077.0,
 "repair": null,
 "note": "period_end<2019-05-02"
+},
+{
+"ticker": "REF",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 49784379.0,
+"repair": null,
+"note": "period_end<2026-06-01"
 },
 {
 "ticker": "RELY",
@@ -6492,6 +6644,14 @@
 "shares_raw": 24143500.0,
 "repair": null,
 "note": "period_end<2026-03-02"
+},
+{
+"ticker": "SCTX",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 2451167.0,
+"repair": null,
+"note": "period_end<2026-06-01"
 },
 {
 "ticker": "SD",
@@ -6934,12 +7094,28 @@
 "note": "period_end<2020-09-01"
 },
 {
+"ticker": "SPTX",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 2595342.0,
+"repair": null,
+"note": "period_end<2026-04-01"
+},
+{
 "ticker": "SRRK",
 "fy": 2017,
 "flag": "pre_public",
 "shares_raw": 3970586.0,
 "repair": null,
 "note": "period_end<2018-04-01"
+},
+{
+"ticker": "SSMR",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 116509480.0,
+"repair": null,
+"note": "period_end<2026-05-02"
 },
 {
 "ticker": "STAA",

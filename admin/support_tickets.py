@@ -195,21 +195,25 @@ def panel(status: str | None = None, q: str | None = None,
     summary_where = search_sql or "true"
 
     try:
-        count_rows = users._query(
-            f"select count(*)::int as n from public.support_tickets t where {where_sql}")
-        total = (count_rows or [{}])[0].get("n", 0)
-        rows = users._query(
-            "select t.id::text as id, "
-            "to_char(t.created_at,'YYYY-MM-DD HH24:MI') as created_at, "
-            "to_char(t.updated_at,'YYYY-MM-DD HH24:MI') as updated_at, "
-            "t.email, t.topic, t.subject, t.status, t.lang, t.tier, "
-            "(t.user_id is not null) as authed "
-            "from public.support_tickets t "
-            f"where {where_sql} "
-            f"order by t.created_at desc limit {page_size} offset {offset}")
-        summary = users._query(
-            "select t.status, count(*)::int as n from public.support_tickets t "
-            f"where {summary_where} group by 1 order by 1")
+        reads = users._parallel_reads(
+            count=lambda: users._query(
+                f"select count(*)::int as n from public.support_tickets t where {where_sql}"),
+            rows=lambda: users._query(
+                "select t.id::text as id, "
+                "to_char(t.created_at,'YYYY-MM-DD HH24:MI') as created_at, "
+                "to_char(t.updated_at,'YYYY-MM-DD HH24:MI') as updated_at, "
+                "t.email, t.topic, t.subject, t.status, t.lang, t.tier, "
+                "(t.user_id is not null) as authed "
+                "from public.support_tickets t "
+                f"where {where_sql} "
+                f"order by t.created_at desc limit {page_size} offset {offset}"),
+            summary=lambda: users._query(
+                "select t.status, count(*)::int as n from public.support_tickets t "
+                f"where {summary_where} group by 1 order by 1"),
+        )
+        total = (reads["count"] or [{}])[0].get("n", 0)
+        rows = reads["rows"]
+        summary = reads["summary"]
         counts = {r["status"]: r["n"] for r in (summary or []) if r.get("status")}
         return {
             "ok": True,

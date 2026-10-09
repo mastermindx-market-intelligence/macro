@@ -390,3 +390,41 @@ def test_evaluate_never_leaks_the_future():
                                    check_names=False)
     pd.testing.assert_series_equal(full["zone_high"].iloc[:cut], part["zone_high"],
                                    check_names=False)
+
+
+def test_warm_session_validation_is_vectorized_before_state_iteration(monkeypatch):
+    """Keep the real state machine; eliminate six scalar checks on every warm day."""
+    close = _leader_then_pullback(n_up=1500)
+    rs = _rs(close)
+    legs = lp._legs(close, None, rs)
+    expected = lp.evaluate(close, rs_pct=rs)
+    monkeypatch.setattr(lp, "_legs", lambda *args, **kwargs: legs)
+    scalar_checks = []
+    class NumpyObserver:
+        def __getattr__(self, name):
+            return getattr(np, name)
+        def isfinite(self, value, *args, **kwargs):
+            if np.isscalar(value):
+                scalar_checks.append(1)
+            return np.isfinite(value, *args, **kwargs)
+    monkeypatch.setattr(lp, "np", NumpyObserver())
+    actual = lp.evaluate(close, rs_pct=rs)
+    pd.testing.assert_frame_equal(actual, expected, check_exact=True)
+    assert len(scalar_checks) <= 5 * len(close), (
+        "all warm leg arrays must be checked once, not six times per daily state row"
+    )
+
+
+@pytest.mark.parametrize("column,label", (("ma", "200dma"), ("roll_hi_20", "20d_high"),
+    ("anchor_pos", "pullback_anchor"), ("k", "stoch_k"),
+    ("d", "stoch_d"), ("hist", "rsi_macd_hist")))
+def test_vectorized_warm_gate_keeps_the_exact_missing_leg_reason(monkeypatch, column, label):
+    close = _leader_then_pullback()
+    rs = _rs(close)
+    legs = lp._legs(close, None, rs)
+    legs[column] = legs[column].copy()
+    legs[column][-1] = np.nan
+    monkeypatch.setattr(lp, "_legs", lambda *args, **kwargs: legs)
+    row = lp.evaluate(close, rs_pct=rs).iloc[-1]
+    assert row["null_reason"] == "indicator not warm: " + label
+    assert pd.isna(row["state"])

@@ -422,7 +422,7 @@ jobs:
         # design; the `||` guard covers an import/interpreter failure it cannot catch.
         timeout-minutes: 12
         run: |
-          python -m scripts.backfill_yahoo_universe --cap 400 --budget-s 480 \
+          python -m scripts.backfill_yahoo_universe --cap 400 --batch-size 160 --refresh-all --budget-s 480 \
             || echo "::warning::yahoo universe backfill failed (non-fatal) — hub price coverage does not advance tonight"
       - name: audit massive_stock_day store (content tripwire — loud, never blocks the night)
         # This lane runs --exclude-group asia, and scripts/collect.py skips the WHOLE
@@ -2166,9 +2166,89 @@ jobs:
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: |
           python -m scripts.build_sp500_heatmap --refresh-caps-only || echo "::warning title=sp500 heatmap cap refresh::rc!=0 (non-fatal — previous cache/fallbacks remain)"
+      - name: Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)
+        # Publishes site/anticipationdata/us_leader_pullback.json: the engine.us_leader_pullback
+        # organ's per-name state over the graded universe, evaluated on a run-wide PIT
+        # cross-sectional RS percentile (the organ refuses to reach for one itself, so a
+        # single-name call can never leak a cross-section).
+        #
+        # ORDER IS LOAD-BEARING. engine.us_early_turn resolves the EARLY-TURN starter tier's
+        # LEADER licence from this file at ORIGINATION time. #5007 shipped the organ and #5105
+        # shipped the intake, but nothing published the artifact — so the leader half read {}
+        # on every production run and was structurally incapable of admitting anything, while
+        # the washout half (us_basket_turn) worked. The price-store freshness gate above
+        # settles/heals the only source this publisher reads (data/yahoo), so this runs
+        # BEFORE build_site. That makes the dashboard consume this run's truth instead of
+        # the prior committed artifact. The narrow checkpoint immediately below makes that
+        # truth durable before the long engine/render tail can strand it.
+        #
+        # DISPLAY TIER. Advances NO ledger and writes no data/ path. A degraded input
+        # publishes fewer names with their reasons printed; a RUN-WIDE data failure publishes
+        # nothing and leaves the previous artifact in place, because a board of nulls and a
+        # broken price store look identical from downstream. Measured 2026-08-09: ~39s over
+        # 680 graded names (budget 600s, self-reported and ::warning past it).
+        timeout-minutes: 12
+        continue-on-error: true
+        run: |
+          set +e
+          echo "::group::build_leader_pullback_coverage (EARLY-TURN leader licence)"
+          python -m scripts.build_leader_pullback_coverage > "$RUNNER_TEMP/leader_pullback_coverage.log" 2>&1; rc=$?
+          cat "$RUNNER_TEMP/leader_pullback_coverage.log"
+          echo "::endgroup::"
+          if [ "$rc" -ne 0 ]; then echo "::warning title=build_leader_pullback_coverage::rc=$rc (non-fatal — the intake keeps yesterday's coverage until tomorrow's run)"; fi
+          exit 0
+      - name: checkpoint leader-pullback source to main (durable before engine tail)
+        id: leader_checkpoint
+        # Same publisher, same artifact, same main branch: this is an early durability
+        # checkpoint for the source build above, not a second source/store/control plane.
+        # It validates the incumbent source contract and publishes ONLY the one existing
+        # leader artifact. A stale/failed source or same-path race is refused fail-closed.
+        continue-on-error: true
+        timeout-minutes: 10
+        run: bash scripts/ci/daily_engine_leader_checkpoint.sh
+      - name: restore accepted leader source for downstream consumers
+        id: leader_accepted_source
+        if: always()
+        timeout-minutes: 3
+        continue-on-error: true
+        # The publisher/checkpoint remains non-fatal to the wider nightly, but no
+        # dashboard or Prophet consumer may read runner-local leader bytes that were
+        # refused, raced, or failed to reach canonical main. Rehydrate this one existing
+        # source from current accepted main after the checkpoint attempt. If the
+        # checkpoint landed, these are its exact bytes; if it did not, these are the
+        # prior/newer accepted bytes. Either way downstream derivation is source-bound.
+        run: |
+          set -euo pipefail
+          LEADER_PATH="site/anticipationdata/us_leader_pullback.json"
+          EVENT_REF="${GITHUB_REF:-}"
+          SOURCE_BRANCH="$(git symbolic-ref --short -q HEAD || true)"
+          if [ "$EVENT_REF" != "refs/heads/main" ] \
+            || [ "$SOURCE_BRANCH" != "main" ]; then
+            echo "::warning title=Leader downstream source withheld::off-main event/checkout cannot advance leader-derived outputs"
+            exit 0
+          fi
+          git fetch origin +refs/heads/main:refs/remotes/origin/main
+          ACCEPTED_LEADER_SHA="$(git rev-parse origin/main)"
+          git checkout "$ACCEPTED_LEADER_SHA" -- "$LEADER_PATH"
+          RESTORE_MISMATCH=false
+          if ! git diff --cached --quiet "$ACCEPTED_LEADER_SHA" -- "$LEADER_PATH" \
+            || ! git diff --quiet -- "$LEADER_PATH"; then
+            RESTORE_MISMATCH=true
+          fi
+          # Keep accepted bytes in the worktree for downstream readers, but do not
+          # stage them against this job's older checkout-time HEAD.
+          git reset -q -- "$LEADER_PATH"
+          if [ "$RESTORE_MISMATCH" = "true" ]; then
+            echo "::error title=Leader downstream source mismatch::worktree could not be made byte-equivalent to accepted main; leader-derived outputs withheld"
+            exit 1
+          fi
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          echo "accepted_sha=$ACCEPTED_LEADER_SHA" >> "$GITHUB_OUTPUT"
+          echo "accepted_blob=$(git rev-parse "$ACCEPTED_LEADER_SHA:$LEADER_PATH")" >> "$GITHUB_OUTPUT"
       - name: timings band — engine-core (W2)
         run: python3 scripts/nightly_timings.py mark --band engine-core || echo "::warning::timings band mark failed (non-fatal)"
       - name: run regime engine + build dashboard + daily brief (resilient)
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # Self-diagnosing + deploy-resilient: each builder runs isolated; a failure
         # is surfaced as a ::error:: annotation (readable on the run page + via the
         # public check-runs API) AND appended to the run Summary with its traceback,
@@ -2262,38 +2342,35 @@ jobs:
           cat "$RUNNER_TEMP/flip_confirmation.log"
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_flip_confirmation::rc=$rc (non-fatal)"; fi
           exit 0
-      - name: Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)
-        # Publishes site/anticipationdata/us_leader_pullback.json: the engine.us_leader_pullback
-        # organ's per-name state over the graded universe, evaluated on a run-wide PIT
-        # cross-sectional RS percentile (the organ refuses to reach for one itself, so a
-        # single-name call can never leak a cross-section).
-        #
-        # ORDER IS LOAD-BEARING. engine.us_early_turn resolves the EARLY-TURN starter tier's
-        # LEADER licence from this file at ORIGINATION time. #5007 shipped the organ and #5105
-        # shipped the intake, but nothing published the artifact — so the leader half read {}
-        # on every production run and was structurally incapable of admitting anything, while
-        # the washout half (us_basket_turn) worked. Scheduled after build_site (the price
-        # store is settled) and immediately before the Prophet band.
-        #
-        # DISPLAY TIER. Advances NO ledger and writes no data/ path. A degraded input
-        # publishes fewer names with their reasons printed; a RUN-WIDE data failure publishes
-        # nothing and leaves the previous artifact in place, because a board of nulls and a
-        # broken price store look identical from downstream. Measured 2026-08-09: ~39s over
-        # 680 graded names (budget 600s, self-reported and ::warning past it).
-        timeout-minutes: 12
+      - name: Restore EquityDesk earnings history (read-only; BEFORE Prophet originates)
+        # The Prophet hold-leash's earnings arm reads EquityDesk's native
+        # earnings_call_sent from data/earnings_calls/history.parquet. This shim already
+        # ran on this runner — but ~840 lines LOWER, inside cl_stage, i.e. AFTER Prophet
+        # had already originated against an absent store, so every plan carried
+        # ec_source_state=unavailable and the promoted tilt could never become eligible
+        # (production logs, 2026-09-17). Hydrating here is the workflow half of the
+        # repair; the later call stays put and is a content-hash no-op.
+        # READ-ONLY: the shim only get_object/download_file. The Prophet generation step
+        # below still carries NO R2 credentials — that publish boundary is unchanged.
+        # NEVER FATAL: absent creds / absent object exit 0 and Prophet degrades to the
+        # documented honest null (leash 1.0, ec_source_state=unavailable + reason).
+        # Rationale in full: scripts/report_prophet_earnings_source.py.
+        timeout-minutes: 6
         continue-on-error: true
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
-          set +e
-          echo "::group::build_leader_pullback_coverage (EARLY-TURN leader licence)"
-          python -m scripts.build_leader_pullback_coverage > "$RUNNER_TEMP/leader_pullback_coverage.log" 2>&1; rc=$?
-          cat "$RUNNER_TEMP/leader_pullback_coverage.log"
-          echo "::endgroup::"
-          if [ "$rc" -ne 0 ]; then echo "::warning title=build_leader_pullback_coverage::rc=$rc (non-fatal — the intake keeps yesterday's coverage until tomorrow's run)"; fi
+          python -m scripts.fetch_earnings_scores || echo "::warning title=fetch_earnings_scores::rc≠0 before Prophet (non-fatal — the hold-tilt stays at leash 1.0 and every plan discloses ec_source_state=unavailable)"
+          python3 scripts/report_prophet_earnings_source.py || echo "::warning title=prophet_earnings_source::source report failed (non-fatal)"
           exit 0
       - name: timings band — prophet (W2)
         run: python3 scripts/nightly_timings.py mark --band prophet || echo "::warning::timings band mark failed (non-fatal)"
       - name: Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)
         id: prophet_nightly
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # AFTER build_site: reads site/factordata/us_standouts.json (just written).
         # Originates new prophet.trade_plan/v1 envelopes, runs the management engine
         # for every active plan, advances the forward outcome ledger (nightly is the
@@ -2324,6 +2401,7 @@ jobs:
         run: bash scripts/ci/daily_engine_prophet_nightly.sh
       - name: prophet-board-acceptance (post-publish alarm, never a gate)
         id: prophet_board_acceptance
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # Same job, same runner, same bytes as the "Prophet nightly" step just
         # above — placed immediately after it and BEFORE the checkpoint commit
         # below so there is no cross-job pull race and no window where a later
@@ -2660,6 +2738,7 @@ jobs:
           git clean -fd -- \
             site/prophet \
             data/prophet/origination_receipts \
+            data/prophet/origination_sources \
             data/prophet_arena \
             data/prophet_stage_shadow
           RESTORE_MISMATCH=false
@@ -3110,6 +3189,7 @@ jobs:
       - name: timings band — builders-parallel (W2)
         run: python3 scripts/nightly_timings.py mark --band builders-parallel || echo "::warning::timings band mark failed (non-fatal)"
       - name: regional + desk builders (parallelised — independent clusters, barrier before the hub)
+        id: regional_desk_builders
         # The ~22 builders between build_site and the landing hub split into mutually
         # INDEPENDENT clusters (each internally ordered by its own data deps). They used
         # to run strictly serially (~75 min of wall-clock); here each cluster runs in the
@@ -3163,6 +3243,24 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
         run: bash scripts/ci/daily_engine_regional_desk_builders.sh
+      - name: retain this run's Theme Graph generation witness (advisory)
+        if: ${{ always() && steps.regional_desk_builders.outputs.theme_graph_witness != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: theme-graph-witness-${{ github.run_id }}-${{ github.run_attempt }}-engine
+          path: ${{ steps.regional_desk_builders.outputs.theme_graph_witness }}
+          if-no-files-found: warn
+          retention-days: 14
+      # Durable core checkpoint (incident run 35547644919): the coherent builder
+      # band completed, but a later best-effort tail exhausted the 300-minute job
+      # cap before the sole broad publisher. Persist the core public tree here;
+      # the existing final publisher remains the second cut for later tail outputs.
+      - name: checkpoint core engine outputs to main (durable before tail desks)
+        if: always()
+        timeout-minutes: 25
+        continue-on-error: true
+        run: bash scripts/ci/daily_engine_commit_outputs.sh
       # Runs AFTER the band that contains `build_baskets --snapshot`, so it grades THIS
       # run's stamp rather than last night's. The plane it watches can die with every
       # signal green: both snapshot writers are content-deduped, so "membership has not
@@ -3208,7 +3306,27 @@ jobs:
         # cross-phase reasoning as M-CMD below. Never wired into closing-bell: the
         # directional OI leg cannot lawfully settle at 16:05 ET (source-clock law).
         # Additive/non-fatal: on failure the last committed artifact stands.
-        run: python -m scripts.build_options_intel_brief || echo "::warning::build_options_intel_brief non-fatal failure"
+        #
+        # AD-1T2 SINGLE-PRODUCER GUARD. This job runs on `macstudio` — the M2 Studio,
+        # which has NO ThetaData store — so this invocation resolves nothing and takes
+        # the off-host self-skip (exit 0) every night. That is why the brief froze at
+        # built_at_utc=2026-08-22 behind a green step. The real producer is the
+        # `options_intel` job in .github/workflows/options-intel.yml, on the
+        # store-bearing M1. When its activation variable is 'on' this step is skipped,
+        # so exactly ONE producer runs per night and this one can never race it or
+        # overwrite its output. While the variable is unset this step still runs and
+        # behaves exactly as it does today — the cutover and its rollback are both a
+        # single variable flip, owned by W4.
+        #
+        # The echo is the activation tell-tale. `vars.AD1_M1_LANE` must be exactly
+        # 'on'; a plausible-looking 'true'/'1'/'yes' leaves THIS step live and the M1
+        # lane skipped, which would be silent non-production — the precise failure
+        # class this work exists to end. If you flipped the variable and still see
+        # this notice, activation did not take.
+        if: vars.AD1_M1_LANE != 'on'
+        run: |
+          echo "::notice title=ad1-producer::in-engine (M2, store-less) producer is LIVE — AD1_M1_LANE='${{ vars.AD1_M1_LANE }}' (must be exactly 'on' to hand over to the M1 lane)"
+          python -m scripts.build_options_intel_brief || echo "::warning::build_options_intel_brief non-fatal failure"
       - name: OEU M-CMD — the Options workspace (build_options_command)
         # OEU M-CMD: options.html, the canonical options surface (4 modes). It is a
         # pure re-serialisation of stores four OTHER builders write, and those deps
@@ -3310,6 +3428,21 @@ jobs:
         # The extracted helper keeps the five-file candidate unreachable until the
         # metadata replay is accepted, and keeps this workflow below GitHub's cap.
         run: bash scripts/ci/options_signal_nightly.sh publish-episode
+      - name: OIP catalyst links — bind the session's events to earnings/FOMC catalysts (context-only)
+        id: options_catalyst_links
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        # consumes only the date-keyed events stage already read by the episode step
+        # writes site/options_catalyst_links/ only
+        # all authority false
+        # first production caller of engine/options_catalyst_link.py
+        run: python -m scripts.build_options_catalyst_links || echo "::warning::build_options_catalyst_links non-fatal failure"
       - name: OIP campaign v2 — checkpoint the exact three canonical ledgers
         id: options_signal_campaign_publish
         if: >-
@@ -3321,6 +3454,26 @@ jobs:
         # Campaign publication is interruption-safe and exact-path: the helper
         # never advances HEAD before origin/main accepts all three canonical files.
         run: bash scripts/ci/options_signal_nightly.sh publish-campaign
+      - name: Options Alpha — compose and publish the verified candidate pair
+        id: options_alpha_candidate_feed
+        # Existing candidate composer/publisher only; no Git or broad publication path.
+        # A missing activation receipt is a structured inactive success with zero R2 writes.
+        if: >-
+          always() &&
+          steps.options_signal_episode.outcome == 'success' &&
+          steps.options_signal_campaign.outcome == 'success' &&
+          steps.options_signal_episode_publish.outcome == 'success' &&
+          steps.options_signal_campaign_publish.outcome == 'success'
+        timeout-minutes: 5
+        continue-on-error: true
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: >-
+          python -m scripts.build_options_alpha_candidate_feed
+          --publication-lock "$HOME/.local/state/mastermind/options-alpha-candidate/publication.lock"
       - name: XSR W1 — US fast-sector rotation lens (build_us_sector_rotation)
         # XSR W1 (XSR-R2): display-tier fast rotation score for the 11 SPDR sector ETFs and
         # named US thematic baskets. Ported from China #2634. Reads sector_cycles
@@ -3761,7 +3914,20 @@ jobs:
         # landed by the "commit engine outputs" step below (git add data/ site/) — like every
         # sibling forward ledger, the committed store is what lets cohorts accrue night to
         # night. Idempotent per as_of. Resilient.
-        run: python -m scripts.grade_bottom_calls --nightly || true
+        #
+        # NOT `|| true` (2026-09-18). This step stays non-fatal to the nightly — nothing here
+        # gates the dashboard deploy — but a bare `|| true` made failure INVISIBLE, and that is
+        # not a hypothetical: the advancer raised `TypeError: Cannot compare tz-naive and
+        # tz-aware timestamps` on EVERY run from birth, before its first write, so neither
+        # data/bottom_ledger/rows.parquet nor site/factordata/us_bottom_ledger.json ever
+        # existed while this step reported success every night. The advancer now also stamps
+        # site/factordata/us_bottom_ledger.json with `advance.status` ∈ {advanced, read_only,
+        # failed}, so the artifact itself says whether tonight advanced — a failed run can no
+        # longer masquerade as a quiet one. Annotation must start the line (CLAUDE.md).
+        run: |
+          python -m scripts.grade_bottom_calls --nightly || {
+            echo "::error title=bottom-ledger-advance-failed::Bottom Ledger forward advance FAILED — no flag was accrued and no grade was frozen tonight. data/bottom_ledger/rows.parquet is unchanged and site/factordata/us_bottom_ledger.json carries advance.status=failed. Non-fatal to the nightly by design; fix scripts/grade_bottom_calls.py."
+          }
       - name: Options-state stamp on board ledger (Options Alpha W1.3; context-only)
         # Stamps the freshly-graded + accumulated retro_grades.parquet with the eight nullable
         # opt_* options-state columns (PIT: only positioning data with as-of ≤ each fire's as_of).
@@ -4740,6 +4906,7 @@ jobs:
           OIP_EPISODE_PUBLISH_OUTCOME: ${{ steps.options_signal_episode_publish.outcome }}
           OIP_CAMPAIGN_BUILD_OUTCOME: ${{ steps.options_signal_campaign.outcome }}
           OIP_CAMPAIGN_PUBLISH_OUTCOME: ${{ steps.options_signal_campaign_publish.outcome }}
+          OIP_CANDIDATE_BUILD_OUTCOME: ${{ steps.options_alpha_candidate_feed.outcome }}
         # continue-on-error above lets unrelated rendering finish; this terminal gate
         # makes any missing/failed build or exact-path publication fail the engine job.
         run: bash scripts/ci/options_signal_nightly.sh assert-integrity
@@ -5016,6 +5183,14 @@ jobs:
               line = f"tier {tier}: date_to={dt} ({age}d old)"
               print(f"::error::TM STALE — {line}" if age > 4 else f"TM fresh — {line}")
           PY
+      - name: GMI graph shadow theme state (gate 8 — off-render, non-fatal)
+        # Seat ruling G1-RC1: state-only compose; writes data/theme_graph/shadow_theme_state.v1.json only.
+        # RC1-R1: no engine.result gate — engine ends red on the post-commit OIP PIT fail-closed marker after its commit.
+        timeout-minutes: 12
+        continue-on-error: true
+        env:
+          COLLECT_LANE: nightly
+        run: python -m scripts.build_thematic_state --mode GRAPH_SHADOW_STATE
       - name: commit oracle Time Machine feed + ratio lens
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
@@ -5028,6 +5203,7 @@ jobs:
           # on 2026-07-13 and 2026-07-14). The commit is gated below by `git diff --cached
           # --quiet`, so tolerating the file's absence is safe.
           git add data/oracle/washout_counterread_ledger.jsonl 2>/dev/null || true
+          git add data/theme_graph/shadow_theme_state.v1.json 2>/dev/null || true
           if git diff --cached --quiet; then echo "no oracle Time Machine or ratio lens changes"; exit 0; fi
           git commit -m "oracle-tm: nightly Time Machine feed + ratio lens refresh $(date -u +%F)"
           # best-effort push (own files -> rebases clean; no other job writes site/oracledata/)

@@ -1511,3 +1511,20 @@ def test_counting_an_indented_label_never_reroutes_a_defect():
     assert occurrence_outcome(flood) == "LIMIT:field_occurrences:100:101"
     assert occurrence_outcome(VALID + "\n\n## Body\n"
                               + "\n".join("<!-- o\n-->   Workstream: WS:X" for _ in range(99))) == "ACCEPTED"
+
+
+def test_missing_field_and_present_invalid_values_remain_distinct_on_report_wire():
+    """Real corpus macro#7039: null normalization must not invent literal omissions."""
+    from tests.test_pr_linkage_validator import MANIFEST, VALID, observation
+    from lib import pr_linkage_validator as core
+    body = VALID.replace('Linear: MAS-28\n', '').replace(
+        'Authority: implementation', 'Authority: records-only').replace(
+        'Completion: built-not-proven',
+        'Completion: source-record publication, not product or runtime acceptance')
+    result = core.analyze(observation(body), MANIFEST)
+    core.validate_report(result)
+    assert result['semantic']['verdict'] == 'REFUSE_METADATA'
+    missing = [f for f in result['semantic']['findings'] if f['rule_id'] == 'R001']
+    assert len(missing) == 1
+    assert missing[0]['evidence']['missing_fields'] == ['Linear']
+    assert {'R011', 'R012'} <= {f['rule_id'] for f in result['semantic']['findings']}

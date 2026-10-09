@@ -34,6 +34,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from scripts.check_dag_conformance import _extract_steps_from_run
 from scripts.workflow_run_source import resolve_run_source
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -208,17 +209,45 @@ def _backoff_samples(cls: str, attempt: int, n: int = 30) -> list[int]:
     return [int(l.split()[1]) for l in r.stdout.splitlines() if l.startswith("SLEPT")]
 
 
-def test_contention_backs_off_faster_than_a_real_conflict():
-    """The core policy split: a lost ref race wants to retry INTO main's next gap; a
-    conflict wants main to settle first.
+def _backoff_complete_jitter_cycle(cls: str, attempt: int, period: int) -> list[int]:
+    """Exercise every residue in the declared jitter support, not a lucky sample.
 
-    Compared on the mean, not the extremes — the ladders are fully jittered, so their
-    ranges are allowed to overlap at the tails. What must hold is that spending ten
-    attempts on contention is far cheaper in wall-clock than spending ten on conflicts.
+    RANDOM is made an ordinary variable only in this disposable test subprocess.
+    The production policy is sourced unmodified. A fixed test clock prevents the
+    independent deadline cap from censoring the distribution under test.
     """
-    for attempt in (1, 3, 5, 8):
-        contention = _backoff_samples("contention", attempt, n=60)
-        conflict = _backoff_samples("rebase-conflict", attempt, n=60)
+    r = run_sh(
+        f"""
+        sleep() {{ echo "SLEPT $1"; }}
+        date() {{ echo 100; }}
+        unset RANDOM
+        for ((draw=0; draw<{period}; draw++)); do
+          RANDOM=$draw
+          push_retry_init "complete-jitter-cycle"
+          PUSH_ATTEMPT={attempt}
+          PUSH_FAIL_CLASS={cls}
+          push_backoff
+        done
+        """
+    )
+    assert r.returncode == 0, r.stderr
+    samples = [int(line.split()[1]) for line in r.stdout.splitlines() if line.startswith("SLEPT")]
+    assert len(samples) == period, r.stdout
+    return samples
+
+
+def test_contention_backs_off_faster_than_a_real_conflict():
+    """Compare complete jitter-support means; runtime jitter remains enabled.
+
+    Sixty independent random samples can violate this expectation inequality on
+    a correct policy (actual Bash seeds 57/7976 give sums 308/462 at attempt 1).
+    Enumerating the complete residues makes the same 1.5x policy test decisive
+    without retrying until green or weakening its threshold. The support sizes
+    below pin the intended uncapped/capped ladders; endpoint tests verify them.
+    """
+    for attempt, contention_period, conflict_period in ((1, 6, 9), (3, 12, 25), (5, 18, 41), (8, 21, 61)):
+        contention = _backoff_complete_jitter_cycle("contention", attempt, contention_period)
+        conflict = _backoff_complete_jitter_cycle("rebase-conflict", attempt, conflict_period)
         mean_c = sum(contention) / len(contention)
         mean_x = sum(conflict) / len(conflict)
         assert mean_c * 1.5 < mean_x, (
@@ -472,6 +501,106 @@ def _daily_engine_commit_step() -> tuple[dict, dict]:
     # source so these assertions keep reading what the step actually runs.
     step["run"] = resolve_run_source(step["run"], REPO_ROOT)
     return doc, step
+
+
+CORE_ENGINE_CHECKPOINT_NAME = (
+    "checkpoint core engine outputs to main (durable before tail desks)"
+)
+
+
+def _daily_engine_steps() -> list[dict]:
+    workflow = REPO_ROOT / ".github" / "workflows" / "daily.yml"
+    return yaml.safe_load(workflow.read_text())["jobs"]["engine"]["steps"]
+
+
+def test_daily_engine_checkpoints_core_outputs_before_tail_desks():
+    steps = _daily_engine_steps()
+    names = [step.get("name") for step in steps]
+    checkpoint_index = names.index(CORE_ENGINE_CHECKPOINT_NAME)
+    regional_index = next(
+        index
+        for index, name in enumerate(names)
+        if str(name).startswith("regional + desk builders")
+    )
+    membership_index = names.index(
+        "membership snapshot freshness tripwire (advisory)"
+    )
+    tail_index = names.index("timings band — tail-desks (W2)")
+
+    assert regional_index < checkpoint_index < membership_index < tail_index
+
+    checkpoint = steps[checkpoint_index]
+    assert checkpoint["if"] == "always()"
+    assert checkpoint["timeout-minutes"] == 25
+    assert checkpoint["continue-on-error"] is True
+    assert checkpoint["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh"
+
+
+def test_daily_engine_keeps_final_commit_after_core_checkpoint():
+    steps = _daily_engine_steps()
+    publisher_steps = [
+        step
+        for step in steps
+        if step.get("run") == "bash scripts/ci/daily_engine_commit_outputs.sh"
+    ]
+
+    assert [step.get("name") for step in publisher_steps] == [
+        CORE_ENGINE_CHECKPOINT_NAME,
+        "commit engine outputs",
+    ]
+    assert publisher_steps[0]["continue-on-error"] is True
+    assert publisher_steps[1]["if"] == "always()"
+
+
+def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
+    dag = yaml.safe_load((REPO_ROOT / "config" / "dag.yml").read_text())
+    engine = next(
+        lane
+        for lane in dag["lanes"]
+        if lane["workflow"] == ".github/workflows/daily.yml"
+        and lane["job"] == "engine"
+    )
+    steps = engine["steps"]
+    ids = [step.get("id") for step in steps]
+    start = ids.index("checkpoint_core_precommit_inject_data_base")
+    expected = [
+        ("checkpoint_core_precommit_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_precommit_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_precommit_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_precommit_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+        (
+            "checkpoint_core_gold_render_audit",
+            "scripts.audit_china_gold_premium",
+            ["--strict-render"],
+        ),
+        ("checkpoint_core_postrebase_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_postrebase_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_postrebase_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_postrebase_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+    ]
+
+    declared = steps[start : start + len(expected)]
+    assert [
+        (step.get("id"), step.get("module"), step.get("args"))
+        for step in declared
+    ] == expected
+
+    publisher_source = resolve_run_source(
+        "bash scripts/ci/daily_engine_commit_outputs.sh", REPO_ROOT
+    )
+    actual_modules = [
+        step.module for step in _extract_steps_from_run(publisher_source)
+    ]
+    assert [step.get("module") for step in declared] == actual_modules
+    assert steps[start + len(expected)]["id"] == "check_builder_failstreaks"
 
 
 def test_daily_engine_lane_uses_quarantine_helper_for_fast_main_retries():
@@ -2407,3 +2536,331 @@ def test_backfill_lane_block_fails_the_job_when_the_push_never_lands(tmp_path):
     assert r.returncode == 1, f"a backfill that published nothing concluded green:\n{combined}"
     assert "::error title=backfill NOT pushed" in combined
     assert "data/symbol_directory" not in _git_output(bare, "show", "--stat", "main")
+
+@pytest.mark.parametrize("kind,attempt,period,lo,hi", [
+    ("contention", 1, 6, 2, 7), ("rebase-conflict", 1, 9, 4, 12),
+    ("contention", 3, 12, 5, 16), ("rebase-conflict", 3, 25, 12, 36),
+    ("contention", 5, 18, 8, 25), ("rebase-conflict", 5, 41, 20, 60),
+    ("contention", 8, 21, 10, 30), ("rebase-conflict", 8, 61, 30, 90),
+])
+def test_complete_jitter_cycle_covers_policy_support(kind, attempt, period, lo, hi):
+    assert "_backoff_complete_jitter_cycle" in globals(), "exact jitter-domain proof is absent"
+    samples = _backoff_complete_jitter_cycle(kind, attempt, period)
+    assert samples == list(range(lo, hi + 1))
+    assert len(samples) == period
+
+
+def test_complete_jitter_cycle_is_reproducible_without_disabling_runtime_jitter():
+    assert "_backoff_complete_jitter_cycle" in globals(), "exact jitter-domain proof is absent"
+    first = _backoff_complete_jitter_cycle("contention", 1, 6)
+    assert first == _backoff_complete_jitter_cycle("contention", 1, 6)
+    assert len(set(first)) == 6
+
+
+
+# ---------------------------------------------------------------------------
+# GH001 is terminal for the current retry operation, with no cleanup authority.
+# All Git state below belongs to temporary synthetic repositories.
+# ---------------------------------------------------------------------------
+
+_GH001_ERROR = (
+    "remote: error: GH001: Large files detected.\n"
+    "error: failed to push some refs to 'synthetic-remote'"
+)
+
+
+def _gh001_env(tmp_path: Path, root: Path, *, rc: int = 42) -> dict[str, str]:
+    """Permit a fake rejected push only; any other Git call or sleep is a tripwire."""
+    bindir = tmp_path / "gh001-bin"
+    bindir.mkdir()
+    (bindir / "git").write_text(
+        r"""#!/bin/bash
+if [ "$(pwd -P)" != "$GH001_FIXTURE_ROOT" ]; then
+  echo "fixture Git escaped its temporary root" >&2
+  exit 97
+fi
+printf '%s\0' "$@" >> "$GH001_GIT_LOG"
+printf '\n' >> "$GH001_GIT_LOG"
+if [ "$1" = push ]; then
+  printf '%s\n' "$GH001_ERROR" >&2
+  exit "$GH001_RC"
+fi
+echo "unexpected Git call after terminal rejection" >&2
+exit 97
+"""
+    )
+    (bindir / "sleep").write_text(
+        '#!/bin/bash\nprintf "%s\\n" "$*" >> "$GH001_SLEEP_LOG"\n'
+        'echo "unexpected sleep after terminal rejection" >&2\nexit 96\n'
+    )
+    for name in ("git", "sleep"):
+        (bindir / name).chmod(0o755)
+    return {
+        "PATH": f"{bindir}:{os.environ['PATH']}",
+        "GH001_FIXTURE_ROOT": str(root.resolve()),
+        "GH001_GIT_LOG": str(tmp_path / "gh001-git.log"),
+        "GH001_SLEEP_LOG": str(tmp_path / "gh001-sleep.log"),
+        "GH001_ERROR": _GH001_ERROR,
+        "GH001_RC": str(rc),
+        "GITHUB_ACTIONS": "true",
+        "GITHUB_STEP_SUMMARY": str(tmp_path / "gh001-summary.md"),
+    }
+
+
+def _gh001_repository(tmp_path: Path, monkeypatch, *, rebase_kind: str) -> Path:
+    """Retain real index/stash objects and opaque interrupted-rebase bytes."""
+    root = tmp_path / "repo"
+    assert REPO_ROOT.resolve() not in root.resolve().parents
+    # Keep synthetic Git independent of the caller's repository, hooks and config.
+    for name in tuple(os.environ):
+        if name.startswith("GIT_"):
+            monkeypatch.delenv(name)
+    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", os.devnull)
+    monkeypatch.setenv("GIT_TERMINAL_PROMPT", "0")
+    _init_repo(root)
+    _git_output(root, "config", "core.hooksPath", os.devnull)
+    _git_output(root, "config", "commit.gpgsign", "false")
+    for name in ("staged.txt", "unstaged.txt", "mixed.txt"):
+        (root / name).write_text("base\n")
+    _git_output(root, "add", ".")
+    _git_output(root, "commit", "-qm", "synthetic base")
+    (root / "mixed.txt").write_text("retained autostash bytes\n")
+    _git_output(root, "stash", "push", "-qm", "autostash", "--", "mixed.txt")
+    stash = _git_output(root, "rev-parse", "refs/stash")
+    head = _git_output(root, "rev-parse", "HEAD")
+
+    (root / "staged.txt").write_text("staged suffix\n")
+    (root / "mixed.txt").write_text("staged mixed suffix\n")
+    _git_output(root, "add", "staged.txt", "mixed.txt")
+    (root / "mixed.txt").write_text("unstaged mixed suffix\n")
+    (root / "unstaged.txt").write_text("unstaged suffix\n")
+    (root / "untracked.bin").write_bytes(b"unpublished\x00suffix\n")
+    assert _git_output(root, "diff", "--cached", "--name-only")
+    assert _git_output(root, "diff", "--name-only")
+
+    metadata = root / ".git" / rebase_kind
+    metadata.mkdir()
+    for name, value in {
+        "head-name": "refs/heads/main\n",
+        "orig-head": head + "\n",
+        "onto": head + "\n",
+        "autostash": stash + "\n",
+        "git-rebase-todo": "opaque pending owner work\n",
+    }.items():
+        (metadata / name).write_text(value)
+    (metadata / "retained.bin").write_bytes(b"unknown\x00rebase\xffbytes")
+    return root
+
+
+def _gh001_tree_bytes(root: Path) -> dict[str, tuple]:
+    """Include every fixture file, mode and directory, including Git control state."""
+    return {
+        p.relative_to(root).as_posix(): (
+            p.stat().st_mode,
+            p.read_bytes() if p.is_file() else None,
+        )
+        for p in root.rglob("*")
+    }
+
+
+def _assert_gh001_one_push_and_no_sleep(tmp_path: Path) -> None:
+    assert (tmp_path / "gh001-git.log").read_bytes() == (
+        b"push\0origin\0synthetic-candidate:refs/heads/main\0\n"
+    )
+    assert not (tmp_path / "gh001-sleep.log").exists()
+
+
+@pytest.mark.parametrize("rc", [1, 128, 142])
+@pytest.mark.parametrize(
+    "suffix",
+    [
+        "",
+        "\nhint: Updates were rejected (non-fast-forward; fetch first)",
+        "\nremote: cannot lock ref 'refs/heads/main'",
+    ],
+)
+def test_gh001_retains_first_failure_and_outranks_contention_and_alarm(tmp_path, rc, suffix):
+    error = _GH001_ERROR + suffix
+    r = run_sh(
+        r"""
+        push_retry_init "synthetic rejection"
+        push_classify "$GH001_RC" "$GH001_ERROR"
+        push_classify 1 "remote: cannot lock ref 'refs/heads/main'"
+        printf '%s\0' "$PUSH_FAIL_CLASS" "${PUSH_TERMINAL_RC:-0}" \
+          "${PUSH_TERMINAL_OUTPUT:-}" "$PUSH_STOP" "$PUSH_N_OTHER"
+        """,
+        env={"GH001_RC": str(rc), "GH001_ERROR": error},
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    fields = r.stdout.split("\0")
+    assert fields[:3] == ["push-size-rejected", str(rc), error]
+    assert "GH001" in fields[3] and "automatic retry stopped" in fields[3]
+    assert fields[4:] == ["1", ""]
+
+
+@pytest.mark.parametrize(
+    "message",
+    ["fatal: missing GH001-report.txt", "GH001 appears in a local diagnostic"],
+)
+def test_gh001_word_without_server_error_does_not_latch(tmp_path, message):
+    r = run_sh(
+        r"""
+        push_retry_init "ordinary error"
+        push_classify 1 "$GH001_ERROR"
+        printf '%s\n' "$PUSH_FAIL_CLASS" "${PUSH_TERMINAL_RC:-0}"
+        """,
+        env={"GH001_ERROR": message},
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.splitlines() == ["push-error", "0"]
+
+
+def test_gh001_successful_push_output_is_not_a_rejection(tmp_path):
+    env = _gh001_env(tmp_path, tmp_path, rc=0)
+    r = run_sh(
+        """
+        push_retry_init "successful synthetic push"
+        push_attempt
+        push_do origin synthetic-candidate:refs/heads/main
+        push_won
+        push_lost
+        echo "terminal=${PUSH_TERMINAL_RC:-0}"
+        """,
+        env=env,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    assert "terminal=0" in r.stdout
+    assert "::error" not in r.stderr
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+
+
+@pytest.mark.parametrize("rebase_kind", ["rebase-merge", "rebase-apply"])
+def test_gh001_standalone_loop_preserves_all_git_and_worktree_bytes(
+    tmp_path, monkeypatch, rebase_kind
+):
+    root = _gh001_repository(tmp_path, monkeypatch, rebase_kind=rebase_kind)
+    before = _gh001_tree_bytes(root)
+    env = _gh001_env(tmp_path, root)
+    r = run_sh(
+        """
+        push_retry_init "synthetic retained suffix"
+        while push_attempt; do
+          if push_do origin synthetic-candidate:refs/heads/main; then
+            push_won
+            exit 0
+          fi
+          # Neither a wider budget nor a later recovery marker permits cleanup.
+          PUSH_MAX_ATTEMPTS=99
+          PUSH_DEADLINE=$((PUSH_DEADLINE + 999))
+          PUSH_ATTEMPT_INHERITED_REBASE=1
+          push_abort_rebase
+          push_backoff
+        done
+        echo "attempts=$PUSH_ATTEMPT recovery=$PUSH_RECOVERY_FAILED"
+        push_lost
+        echo "MASKED TERMINAL FAILURE"
+        """,
+        env=env,
+        cwd=root,
+    )
+    assert r.returncode == 42, (r.stdout, r.stderr)
+    assert "attempts=1 recovery=0" in r.stdout
+    assert "MASKED TERMINAL FAILURE" not in r.stdout
+    assert any(line.startswith("::error") and "GH001" in line for line in r.stderr.splitlines())
+    summary = (tmp_path / "gh001-summary.md").read_text()
+    assert "NOT pushed" in summary and "GH001" in summary and "attempts=1/99" in summary
+    assert "other=1" in summary
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+    assert _gh001_tree_bytes(root) == before
+
+
+@pytest.mark.parametrize(
+    ("helper", "expected_rc"),
+    [
+        ("push_abort_rebase", 0),
+        ("push_backoff", 0),
+        ("push_autostash_ok", 42),
+        ("push_fetch_main_for_rebase", 42),
+        ("push_prepare_inherited_rebase", 42),
+    ],
+)
+def test_gh001_terminal_helpers_do_not_inspect_or_mutate_retained_state(
+    tmp_path, monkeypatch, helper, expected_rc
+):
+    root = _gh001_repository(tmp_path, monkeypatch, rebase_kind="rebase-merge")
+    before = _gh001_tree_bytes(root)
+    env = _gh001_env(tmp_path, root)
+    r = run_sh(
+        f"""
+        push_retry_init "retained state"
+        push_attempt
+        if push_do origin synthetic-candidate:refs/heads/main; then exit 95; fi
+        PUSH_ATTEMPT_INHERITED_REBASE=1
+        if {helper}; then result=0; else result=$?; fi
+        echo "helper=$result terminal=$PUSH_TERMINAL_RC recovery=$PUSH_RECOVERY_FAILED"
+        if push_do origin different-candidate:refs/heads/main; then exit 95; else
+          echo "second_push=$?"
+        fi
+        """,
+        env=env,
+        cwd=root,
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    assert f"helper={expected_rc} terminal=42 recovery=0" in r.stdout
+    assert "second_push=42" in r.stdout
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+    assert _gh001_tree_bytes(root) == before
+
+
+def test_gh001_conditional_function_returns_terminal_failure_without_errexit(tmp_path):
+    env = _gh001_env(tmp_path, tmp_path)
+    r = run_sh(
+        """
+        synthetic_publish() {
+          push_retry_init "conditional synthetic caller"
+          while push_attempt; do
+            if push_do origin synthetic-candidate:refs/heads/main; then return 0; fi
+            push_abort_rebase
+            push_backoff
+          done
+          push_lost
+        }
+        # Bash suppresses errexit inside a function tested by if. Its explicit
+        # final nonzero result still has to reach the caller.
+        if synthetic_publish; then
+          echo "MASKED TERMINAL FAILURE"
+          exit 95
+        else
+          result=$?
+          echo "conditional_result=$result"
+          exit "$result"
+        fi
+        """,
+        env=env,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 42, (r.stdout, r.stderr)
+    assert "conditional_result=42" in r.stdout
+    assert "MASKED TERMINAL FAILURE" not in r.stdout
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+
+
+def test_gh001_new_explicit_retry_operation_clears_terminal_receipt(tmp_path):
+    r = run_sh(
+        r"""
+        push_retry_init "first operation"
+        push_classify 42 "$GH001_ERROR"
+        push_retry_init "new explicit operation"
+        push_attempt
+        printf '%s\0' "$PUSH_TERMINAL_RC" "$PUSH_TERMINAL_OUTPUT" \
+          "$PUSH_STOP" "$PUSH_N_OTHER" "$PUSH_ATTEMPT"
+        """,
+        env={"GH001_ERROR": _GH001_ERROR},
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.split("\0") == ["0", "", "", "0", "1", ""]

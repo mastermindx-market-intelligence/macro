@@ -1,0 +1,454 @@
+{
+  "market": "china",
+  "map_type": "stocks",
+  "source": "daily-close",
+  "asof": "2026-09-18",
+  "generated_utc": "2026-09-18 15:40",
+  "n_tiles": 5,
+  "default_tf": "1D",
+  "currency": "CNY",
+  "size_basis": "equal",
+  "timeframes": [
+    {
+      "key": "1D",
+      "en": "1D",
+      "zh": "1D",
+      "available": true
+    },
+    {
+      "key": "1W",
+      "en": "1W",
+      "zh": "1W",
+      "available": false
+    },
+    {
+      "key": "MTD",
+      "en": "MTD",
+      "zh": "MTD",
+      "available": false
+    },
+    {
+      "key": "1M",
+      "en": "1M",
+      "zh": "1M",
+      "available": false
+    },
+    {
+      "key": "3M",
+      "en": "3M",
+      "zh": "3M",
+      "available": false
+    },
+    {
+      "key": "6M",
+      "en": "6M",
+      "zh": "6M",
+      "available": false
+    },
+    {
+      "key": "YTD",
+      "en": "YTD",
+      "zh": "YTD",
+      "available": false
+    },
+    {
+      "key": "1Y",
+      "en": "1Y",
+      "zh": "1Y",
+      "available": false
+    }
+  ],
+  "sectors": [
+    {
+      "key": "Technology",
+      "en": "Technology",
+      "zh": "\u4fe1\u606f\u6280\u672f"
+    }
+  ],
+  "observation_coverage": {
+    "basis": "current_membership",
+    "membership_count": 5,
+    "current_observation_count": 4,
+    "timeframes": {
+      "1D": {
+        "valid_count": 3,
+        "missing_count": 2,
+        "denominator": 5,
+        "fraction": 0.6
+      },
+      "1W": {
+        "valid_count": 0,
+        "missing_count": 5,
+        "denominator": 5,
+        "fraction": 0.0
+      },
+      "MTD": {
+        "valid_count": 0,
+        "missing_count": 5,
+        "denominator": 5,
+        "fraction": 0.0
+      },
+      "1M": {
+        "valid_count": 0,
+        "missing_count": 5,
+        "denominator": 5,
+        "fraction": 0.0
+      },
+      "3M": {
+        "valid_count": 0,
+        "missing_count": 5,
+        "denominator": 5,
+        "fraction": 0.0
+      },
+      "6M": {
+        "valid_count": 0,
+        "missing_count": 5,
+        "denominator": 5,
+        "fraction": 0.0
+      },
+      "YTD": {
+        "valid_count": 0,
+        "missing_count": 5,
+        "denominator": 5,
+        "fraction": 0.0
+      },
+      "1Y": {
+        "valid_count": 0,
+        "missing_count": 5,
+        "denominator": 5,
+        "fraction": 0.0
+      }
+    }
+  },
+  "tiles": [
+    {
+      "t": "ALPHA",
+      "name": "ALPHA",
+      "sector": "Technology",
+      "size": 1.0,
+      "perf": {
+        "1D": 1.0,
+        "1W": null,
+        "MTD": null,
+        "1M": null,
+        "3M": null,
+        "6M": null,
+        "YTD": null,
+        "1Y": null
+      },
+      "observation": {
+        "schema": "china_heatmap_observations.v1",
+        "observation_session": "2026-09-18",
+        "current_status": "VALID",
+        "last_observed_session": "2026-09-18",
+        "last_observed_close": 101.0,
+        "timeframes": {
+          "1D": {
+            "status": "VALID",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-09-17"
+          },
+          "1W": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-09-11"
+          },
+          "MTD": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-08-31"
+          },
+          "1M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-08-18"
+          },
+          "3M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-06-18"
+          },
+          "6M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-03-18"
+          },
+          "YTD": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2025-12-31"
+          },
+          "1Y": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2025-09-18"
+          }
+        }
+      },
+      "px": 101.0
+    },
+    {
+      "t": "MISSING-TODAY",
+      "name": "MISSING TODAY",
+      "sector": "Technology",
+      "size": 1.0,
+      "perf": {
+        "1D": 0.77,
+        "1W": null,
+        "MTD": null,
+        "1M": null,
+        "3M": null,
+        "6M": null,
+        "YTD": null,
+        "1Y": null
+      },
+      "observation": {
+        "schema": "china_heatmap_observations.v1",
+        "observation_session": "2026-09-18",
+        "current_status": "VALID",
+        "last_observed_session": "2026-09-18",
+        "last_observed_close": 101.56,
+        "timeframes": {
+          "1D": {
+            "status": "VALID",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-09-17"
+          },
+          "1W": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-09-11"
+          },
+          "MTD": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-08-31"
+          },
+          "1M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-08-18"
+          },
+          "3M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-06-18"
+          },
+          "6M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-03-18"
+          },
+          "YTD": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2025-12-31"
+          },
+          "1Y": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2025-09-18"
+          }
+        }
+      },
+      "px": 101.56
+    },
+    {
+      "t": "MISSING-REF",
+      "name": "MISSING REF",
+      "sector": "Technology",
+      "size": 1.0,
+      "perf": {
+        "1D": null,
+        "1W": null,
+        "MTD": null,
+        "1M": null,
+        "3M": null,
+        "6M": null,
+        "YTD": null,
+        "1Y": null
+      },
+      "observation": {
+        "schema": "china_heatmap_observations.v1",
+        "observation_session": "2026-09-18",
+        "current_status": "VALID",
+        "last_observed_session": "2026-09-18",
+        "last_observed_close": 105.0,
+        "timeframes": {
+          "1D": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-09-17"
+          },
+          "1W": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-09-11"
+          },
+          "MTD": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-08-31"
+          },
+          "1M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-08-18"
+          },
+          "3M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-06-18"
+          },
+          "6M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-03-18"
+          },
+          "YTD": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2025-12-31"
+          },
+          "1Y": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2025-09-18"
+          }
+        }
+      },
+      "px": 105.0
+    },
+    {
+      "t": "FLAT",
+      "name": "FLAT",
+      "sector": "Technology",
+      "size": 1.0,
+      "perf": {
+        "1D": 0.0,
+        "1W": null,
+        "MTD": null,
+        "1M": null,
+        "3M": null,
+        "6M": null,
+        "YTD": null,
+        "1Y": null
+      },
+      "observation": {
+        "schema": "china_heatmap_observations.v1",
+        "observation_session": "2026-09-18",
+        "current_status": "VALID",
+        "last_observed_session": "2026-09-18",
+        "last_observed_close": 100.0,
+        "timeframes": {
+          "1D": {
+            "status": "VALID",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-09-17"
+          },
+          "1W": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-09-11"
+          },
+          "MTD": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-08-31"
+          },
+          "1M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-08-18"
+          },
+          "3M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-06-18"
+          },
+          "6M": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-03-18"
+          },
+          "YTD": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2025-12-31"
+          },
+          "1Y": {
+            "status": "REFERENCE_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2025-09-18"
+          }
+        }
+      },
+      "px": 100.0
+    },
+    {
+      "t": "NO-HISTORY",
+      "name": "NO HISTORY",
+      "sector": "Technology",
+      "size": 1.0,
+      "perf": {
+        "1D": null,
+        "1W": null,
+        "MTD": null,
+        "1M": null,
+        "3M": null,
+        "6M": null,
+        "YTD": null,
+        "1Y": null
+      },
+      "observation": {
+        "schema": "china_heatmap_observations.v1",
+        "observation_session": "2026-09-18",
+        "current_status": "MISSING",
+        "last_observed_session": null,
+        "last_observed_close": null,
+        "timeframes": {
+          "1D": {
+            "status": "CURRENT_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-09-17"
+          },
+          "1W": {
+            "status": "CURRENT_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-09-11"
+          },
+          "MTD": {
+            "status": "CURRENT_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-08-31"
+          },
+          "1M": {
+            "status": "CURRENT_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-08-18"
+          },
+          "3M": {
+            "status": "CURRENT_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-06-18"
+          },
+          "6M": {
+            "status": "CURRENT_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2026-03-18"
+          },
+          "YTD": {
+            "status": "CURRENT_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2025-12-31"
+          },
+          "1Y": {
+            "status": "CURRENT_MISSING",
+            "observation_session": "2026-09-18",
+            "reference_session": "2025-09-18"
+          }
+        }
+      }
+    }
+  ]
+}
