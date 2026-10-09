@@ -281,13 +281,43 @@ def test_send_receipt_idempotency_and_uncertainty_not_claimed_success():
     service, *_parts, sender = make()
     verified(service)
     assert service.deliver(update(), now=NOW + timedelta(hours=2))[0]["state"] == "PROVIDER_ACCEPTED"
-    assert sender.calls[0][2] == "catalyst:event-123:2:" + UID
+    assert sender.calls[0][2] == "catalyst:event-123:2:NVDA:" + UID
     for state, label in (("duplicate", "ALREADY_CLAIMED"), ("failed", "SEND_FAILED"),
                          ("queued", "QUEUED_NOT_SENT"), ("effect_unknown", "EFFECT_UNKNOWN"),
                          ("skipped_no_smtp", "SEND_BLOCKED")):
         sender.status = state
         assert service.deliver(update(), now=NOW + timedelta(hours=2))[0]["state"] == label
     assert len(set(x[2] for x in sender.calls)) == 1  # same canonical sender ledger key
+
+
+def test_same_event_different_ticker_delivery_keys_do_not_collide():
+    service, *_rest, sender = make()
+    verified(service)
+    assert service.deliver(update(ticker="NVDA"), now=NOW + timedelta(hours=2))[0]["state"] == "PROVIDER_ACCEPTED"
+    assert service.deliver(update(ticker="AMD"), now=NOW + timedelta(hours=2))[0]["state"] == "PROVIDER_ACCEPTED"
+    first_key, second_key = sender.calls[0][2], sender.calls[1][2]
+    assert first_key == "catalyst:event-123:2:NVDA:" + UID
+    assert second_key == "catalyst:event-123:2:AMD:" + UID
+    assert first_key != second_key
+    service.deliver(update(ticker="AMD"), now=NOW + timedelta(hours=2))
+    assert sender.calls[2][2] == second_key
+
+
+@pytest.mark.parametrize("elapsed_days", [8, 30, 90])
+def test_stale_public_revision_is_never_sent_even_when_generation_is_current(elapsed_days):
+    service, _, _, _, revisions, sender = make()
+    verified(service)
+    assert revisions.is_current("event-123", 2) is True
+    fails("STALE_SOURCE_REVISION", lambda: service.deliver(update(), now=NOW + timedelta(days=elapsed_days)))
+    assert sender.calls == []
+
+
+def test_revision_freshness_boundary_matches_public_scan_ceiling():
+    service, *_rest, sender = make()
+    verified(service)
+    at_ceiling = datetime.fromisoformat(update().as_of_utc) + timedelta(days=7)
+    assert service.deliver(update(), now=at_ceiling)[0]["state"] == "PROVIDER_ACCEPTED"
+    assert len(sender.calls) == 1
 
 
 def test_correction_and_retraction_print_latest_and_never_recycle_old_claims():
