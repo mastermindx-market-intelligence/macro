@@ -1,13 +1,16 @@
 {
+  "ci_registration_receipt": "session2/evidence/ci_registration_preflight.json",
   "customer_publication_authorized": false,
+  "external_ci_workflow_path": ".github/workflows/factor-atlas-reference.yml",
+  "external_ci_workflow_sha256": "77a4fa18460f024a0f6aebbaaccb02aa1cbf90fb13a398af9c3c56af803a1159",
   "files": {
     "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
-      "bytes": 83080,
-      "sha256": "2bc63e49df3d956dc4e2bedfd29a840f3584ca5f3d1b45e4c2e5949ffcd88b48"
+      "bytes": 86450,
+      "sha256": "b82638eecd16050ce66117bbbc59b7f67a91cb94ec7d8f1fe2aa152f379fc548"
     },
     "session2/CONTINUATION.md": {
-      "bytes": 14973,
-      "sha256": "60f3407c2f01a088b590cd923799df1c06b40c586642bb30ab863147b535de8d"
+      "bytes": 17104,
+      "sha256": "3f38128e8fd56f82a70614b5665538175746591f9a66b52944ea0c2afb4c11a7"
     },
     "session2/CUMULATIVE_WINDOW_CONTRACT.md": {
       "bytes": 2197,
@@ -28,6 +31,10 @@
     "session2/evidence/benchmark.json": {
       "bytes": 1341,
       "sha256": "196e3b469c399c114fbde8f9e092ca920252ddac60c50ad4182be8105d7c60ac"
+    },
+    "session2/evidence/ci_registration_preflight.json": {
+      "bytes": 2099,
+      "sha256": "be1787d89e6b328d81367e5ae37af519a4f195762ec485d7ebef48d542ccf41c"
     },
     "session2/evidence/local_terminal_default_path_census.json": {
       "bytes": 2875,
@@ -140,13 +147,13 @@
   "native_quote_test_receipt": "session2/evidence/native_quote_tests.json",
   "native_scoped_tests_passed": 226,
   "native_test_receipt": "session2/evidence/native_window_tests.json",
-  "predecessor_commit": "7ceb9225acb2e003be8c8bd1757314fd62ae8027",
-  "prepared_at_utc": "2026-10-09T05:09:02.175640+00:00",
+  "predecessor_commit": "c7b28ff2bead20487dcb6f90a6d20f89086be9d2",
+  "prepared_at_utc": "2026-10-09T07:53:28.927154+00:00",
   "report_structure_checks": {
     "external_source_records": 13,
     "implementation_packets": 7,
     "internal_source_records": 10,
-    "numbered_sections": 21
+    "numbered_sections": 22
   },
   "schema": "factor_atlas.session2.research_package.v1"
 }

@@ -1,0 +1,41 @@
+name: factor-atlas-reference
+# GitHub Actions owns the test execution; this is a focused, non-data job.
+# No provider calls, source admission, publication, or production endpoints.
+on:
+  pull_request:
+    paths:
+      - "research/factor_atlas/**"
+      - ".github/workflows/factor-atlas-reference.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: factor-atlas-reference-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-fixtures:
+    name: Factor Atlas deterministic research fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned research test dependencies
+        run: |
+          python -m pip install -r research/factor_atlas/session2/requirements-research.txt
+          python -m pip install "pandas>=2.3,<4"
+      - name: Run all eight Factor Atlas source and calendar falsifier suites
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest -c /dev/null -p no:cacheprovider -q \
+            research/factor_atlas/session2/prototype/test_pressure.py \
+            research/factor_atlas/session2/prototype/test_disclosed_profile.py \
+            research/factor_atlas/session2/prototype/test_witnesses.py \
+            research/factor_atlas/session2/prototype/test_window_pressure.py \
+            research/factor_atlas/session2/prototype/test_window_pipeline.py \
+            research/factor_atlas/session2/prototype/test_quote_reference.py \
+            research/factor_atlas/session2/prototype/test_quote_calibration.py \
+            research/factor_atlas/session2/prototype/test_source_preflight.py

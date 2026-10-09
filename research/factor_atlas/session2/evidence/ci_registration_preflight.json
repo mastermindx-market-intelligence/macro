@@ -1,0 +1,53 @@
+{
+  "current_research_source_modified": false,
+  "hosted_new_workflow_result": "PENDING_NEW_HEAD",
+  "legacy_jobs_manifest_modified": false,
+  "licensed_market_pilot_admitted": false,
+  "local_all_eight_suites_exit_code": 0,
+  "local_all_eight_suites_test_count": 226,
+  "local_native_log": {
+    "bytes": 340,
+    "sha256": "f0f637e6639ed6d7e60878dea7e032d961c3210cd58861f98f3651346a00e925"
+  },
+  "may_publish_or_trade": false,
+  "named_suites": [
+    "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
+    "research/factor_atlas/session2/prototype/test_pressure.py",
+    "research/factor_atlas/session2/prototype/test_quote_calibration.py",
+    "research/factor_atlas/session2/prototype/test_quote_reference.py",
+    "research/factor_atlas/session2/prototype/test_source_preflight.py",
+    "research/factor_atlas/session2/prototype/test_window_pipeline.py",
+    "research/factor_atlas/session2/prototype/test_window_pressure.py",
+    "research/factor_atlas/session2/prototype/test_witnesses.py"
+  ],
+  "native_local_python": "3.12",
+  "new_ci_owner": "GitHub Actions existing provider",
+  "new_workflow": ".github/workflows/factor-atlas-reference.yml",
+  "new_workflow_file": {
+    "bytes": 1740,
+    "sha256": "77a4fa18460f024a0f6aebbaaccb02aa1cbf90fb13a398af9c3c56af803a1159"
+  },
+  "parent_commit": "c7b28ff2bead20487dcb6f90a6d20f89086be9d2",
+  "protected_mastermind": "9ff27c3944a69598e88e0d93948b9cf096a76602",
+  "recorded_at_utc": "2026-10-09T07:53:28.913310+00:00",
+  "recorded_ci_failure": {
+    "ci_pack_0_job_id": 113680332943,
+    "conclusion": "failure",
+    "contract_delta_job_id": 113680066249,
+    "inherited_unrun_suites": 0,
+    "new_unrun_suites": 8,
+    "other_ci_packs_passed": 11,
+    "predecessor_fences_conclusion": "success",
+    "predecessor_fences_run_id": 37887224633,
+    "run_id": 37887224764
+  },
+  "runtime_packages": {
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "pytest": "9.1.1",
+    "scipy": "1.18.0"
+  },
+  "schema": "factor_atlas.ci_registration_preflight.v1",
+  "source_rights_qualified": false,
+  "unrun_test_waiver_added": false
+}

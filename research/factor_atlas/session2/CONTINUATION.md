@@ -199,3 +199,39 @@ code/test output remains unchanged at 226 passing scoped tests.
 Next real unblock is the incumbent provider/source/basis/reader owner's
 actual qualified four-name capture and selected revision receipt;
 a chart-data manifest is not that receipt.
+
+## Factor Atlas hosted-CI test ownership — exact eight-suite registration
+
+**Recovered GitHub CI defect.** Predecessor source head `c7b28ff2bead20487dcb6f90a6d20f89086be9d2`,
+PR #8677 Draft/HOLD. CI run 37887224764 completed FAILURE; fences
+37887224633 SUCCESS. Exact logs identify only eight *introduced*
+unregistered Factor Atlas research pytest suites as the contract-delta
+and ci-pack-0 common failure (0 inherited); other eleven packs pass.
+No empirical/research calculation failure is inferred from this red.
+
+**Same-branch modification:** add narrow GitHub Actions
+`.github/workflows/factor-atlas-reference.yml`, read-only checkout,
+Python 3.12, pinned native research dependencies and pandas; its
+pull_request filter is only Factor Atlas research and the workflow.
+All eight tracked suite paths are explicitly named by one `run:`
+step. No test waiver, no global legacy-jobs manifest, no replacement
+factor-ops backfill, no second CI lifecycle, no provider/data network.
+Local PyYAML schema/path validation matched **8/8** tracked suites,
+and the **exact proposed hosted test invocation** passed **226/226**
+on local M2 Python 3.12 using existing installed packages. The
+hosted lockfile environment and workflow results remain unproven
+until the new head is published and GitHub checks complete.
+Proof/identities: `evidence/ci_registration_preflight.json`
+and locally retained `.session2-proof/factor-atlas-py312-ci-local.txt`.
+
+Protected Mastermind `9ff27c3944a69598e88e0d93948b9cf096a76602`
+Skillpack 1.0.1 / bootstrap 1, protected blobs unchanged, freshly
+verified. Source process and PR custody original branch. Prior
+denied reads, denied benchmark repair and denied fresh-main/target
+comparison were **not** retried. The four-stock licensed source cohort
+still NOT_ADMITTED; no source adjustment or market-data acquisition.
+**Next:** one same-carrier commit+push after exact file/digest scope,
+then GitHub readback and new-head workflow/contract-delta check.
+If a workflow-permission barrier appears, preserve the local
+unpublished effect and do not change carrier/account to force push.
+Release remains Draft/HOLD.
