@@ -259,9 +259,10 @@ def _public_packet(packet: dict, now: datetime) -> tuple[dict, dict[str, dict], 
     sources = _sources(packet, as_of, demo_only=packet.get("demo_only") is True)
     headline_receipts = packet.get("headline_evidence_ids")
     _require(isinstance(headline_receipts, list) and bool(headline_receipts)
-             and len(headline_receipts) == len(set(headline_receipts))
              and all(isinstance(ref, str) and ref in sources
                      for ref in headline_receipts),
+             "HEADLINE_EVIDENCE_MISSING")
+    _require(len(headline_receipts) == len(set(headline_receipts)),
              "HEADLINE_EVIDENCE_MISSING")
     ticker_rows = packet.get("affected_tickers")
     _require(isinstance(ticker_rows, list), "MISSING_TICKER_RELATIONS")
@@ -365,7 +366,9 @@ def build_partner_pack(
         ids = angle_plan["selected_claim_ids"]
         available = {x["claim_id"] for x in claims}
         _require(isinstance(ids, list) and bool(ids)
-                 and len(ids) == len(set(ids)) and set(ids) <= available,
+                 and all(isinstance(ident, str) for ident in ids),
+                 "AI_UNGROUNDED_CLAIM_SELECTION")
+        _require(len(ids) == len(set(ids)) and set(ids) <= available,
                  "AI_UNGROUNDED_CLAIM_SELECTION")
         claims = [c for ident in ids for c in claims if c["claim_id"] == ident]
         _require(all(any(t in c["tickers"] for c in claims) for t in ticks),
@@ -655,10 +658,13 @@ def write_partner_pack(pack: dict, destination: Path | str,
                 if k not in ("card_svg", "newsletter", "social", "embed")}
     files["manifest.json"] = json.dumps(manifest, sort_keys=True, indent=2,
                                        ensure_ascii=False) + "\n"
+    # Refuse predictable unsafe destinations before writing *any* asset,
+    # including a symlink placed at a later output name.
+    _require(not any((base / name).is_symlink() for name in files),
+             "UNSAFE_OUTPUT_PATH")
     written: list[Path] = []
     for name, data in files.items():
         target = base / name
-        _require(not target.is_symlink(), "UNSAFE_OUTPUT_PATH")
         # Never write through a caller-planted predictable temp-file symlink.
         # A unique O_EXCL tempfile keeps the existing atomic per-file publish
         # behavior without touching any pre-existing .<name>.tmp path.
