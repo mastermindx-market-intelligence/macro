@@ -163,3 +163,36 @@ def test_frozen_json_contract_fixture():
     assert result["results"][1]["status"] == "NOT_COVERED"
     assert result["coverage_note"] != fixture["coverage_note"]
     assert "_fixture_warning" not in result
+
+
+def test_public_json_issues_scan_proof_only_after_qualified_result(monkeypatch):
+    """Contract bridge gives first value even without a receipt key."""
+    app = FastAPI()
+    app.include_router(ci.router)
+    client = TestClient(app)
+    ci._reset_rate_limits_for_tests()
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    current = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+    def current_fixture(tickers, event_id=None):
+        p = packet()
+        p["as_of_utc"] = current
+        p["results"][0]["as_of_utc"] = current
+        p["requested_tickers"] = list(tickers)
+        p["results"] = [row for row in p["results"] if row["ticker"] in tickers]
+        return ci.sanitize_public_scan(p, list(tickers))
+
+    monkeypatch.setattr(ci, "scan_with_reader", current_fixture)
+    monkeypatch.delenv("CATALYST_SCAN_RECEIPT_SECRET", raising=False)
+    no_secret = client.get("/api/catalyst/scan?tickers=NVDA,ZZZZ")
+    assert no_secret.status_code == 200
+    assert "scan_receipt" not in no_secret.json()
+    assert no_secret.json()["results"][0]["status"] == "SUPPORTED"
+
+    monkeypatch.setenv("CATALYST_SCAN_RECEIPT_SECRET", "t" * 40)
+    eligible = client.post("/api/catalyst/scan", json={"tickers": ["NVDA", "ZZZZ"]})
+    assert eligible.status_code == 200
+    assert eligible.json()["scan_receipt"].count(".") == 1
+    assert eligible.json()["results"][1]["status"] == "NOT_COVERED"
+    assert "email" not in eligible.text.lower()
+    ci._reset_rate_limits_for_tests()
