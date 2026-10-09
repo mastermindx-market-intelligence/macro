@@ -1,0 +1,37 @@
+{
+  "package": "CIE-PRO-AUDIT-20261003",
+  "validation_scope": "Documentation structure and exact-byte GitHub readback only",
+  "validated_document_commit": "391d083c29abea654fefc3ad0efb0005f7149270",
+  "repository": "mastermindx-market-intelligence/macro",
+  "directory": "research/china_alpha_intelligence/reviews/2026-10-03-information-edge",
+  "terminal_exit_code": 0,
+  "all_structural_checks_pass": true,
+  "checks": {
+    "relative_links_resolve": {"pass": true, "count": 13},
+    "unique_work_packets": {"pass": true, "count": 20},
+    "complete_acyclic_dependency_graph": {"pass": true, "nodes": 20},
+    "census_subjects": {"pass": true, "count": 30},
+    "signal_rows": {"pass": true, "count": 30},
+    "original_deliverables_mapped": {"pass": true, "count": 17},
+    "future_acceptance_items": {"pass": true, "count": 35},
+    "all_internal_source_ids_defined": {"pass": true},
+    "no_nonportable_session_citation_markers": {"pass": true},
+    "balanced_markdown_fences": {"pass": true}
+  },
+  "files": [
+    {"path": "README.md", "bytes": 5521, "git_blob_sha": "ce7a193bcad003c0900d7beef669547107ccf204", "sha256": "b50bb28a7df422d860748b71c27dbb20bf5705dcb275ce7694ed74bec7a9d9ac"},
+    {"path": "01_AUDIT.md", "bytes": 18461, "git_blob_sha": "ed8c09e526e22abedc034e95e1b3a286cb5da6cd", "sha256": "ebc3f922b51c60e4fa08dd6fe4e2af88612c6ad5ac4601047f6770c674e748b9"},
+    {"path": "02_CENSUS_AND_GAP_MAP.md", "bytes": 18361, "git_blob_sha": "58a67c3660369409cc94dc6f1b017a584a36ccb0", "sha256": "6e19d2bb43696b350774a79b11d411340228fcb2a7272749bd7110970e72af2c"},
+    {"path": "03_RESEARCH_SOURCE_AND_SIGNAL_REGISTERS.md", "bytes": 31831, "git_blob_sha": "65bb795cced22abbe545949b372c65aa50c5efad", "sha256": "330ccfeb3787a19c4572d1765a2c4e4d1287ecf629b0bd1ecaeb46deb180db1c"},
+    {"path": "04_MASTERPLAN.md", "bytes": 39340, "git_blob_sha": "fb1c912b92bb0048095c2e7d6f52ff858b046152", "sha256": "d912a3e8a4ecc4752c5abbc33bd1fffb9cdc53002eb6bbf27a94ea99dd2ed076"},
+    {"path": "05_CONTRACTS_AND_EVALUATION.md", "bytes": 23782, "git_blob_sha": "dc533cbe6a06e39bea4793b76acdc143ac357f38", "sha256": "de0236b63a0f1120467d327337933126188cb37e008ec8596b25698dd0bf099a"},
+    {"path": "06_ASTRA_CEO_HANDOFF.md", "bytes": 10883, "git_blob_sha": "113375c1b127b02312f27280719ac416d89c83f5", "sha256": "7b02aab22a0a22a0d6dc7c7ec5ce6ffb3f4314322d485682ddcf8f6cf56006e1"},
+    {"path": "07_ACCEPTANCE_AND_TRACEABILITY.md", "bytes": 18238, "git_blob_sha": "0fd350327de74230dfca1845fb5029667979af60", "sha256": "e2062e0391019b2a8ec99cf12eae57a00f6e5afaa52103e42e1cefd85c587ae5"}
+  ],
+  "limitations": [
+    "These checks do not establish correctness of product code or empirical findings.",
+    "No implementation tests, fresh return backtest, deployment verification, source-rights adjudication or worker dispatch was performed by this audit.",
+    "The document commit is immutable; this receipt is added in a descendant documentation-only commit.",
+    "External paper verification depth and unresolved source claims are disclosed in 03_RESEARCH_SOURCE_AND_SIGNAL_REGISTERS.md."
+  ]
+}
