@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261009T2150",
+  "current_capability_frontier_key": "current_capability_frontier_20261009T2205",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -4244,5 +4244,51 @@
     "current_blockers": "781freshCI/mergedsource/release/live; newA19C3 actualreturn/canonicalauthority; 804r2sameownerrepairreview;887explicithelperadmissionanswer; intendedexistingProidentity;889firstpreflightrefusal; A09public403/A12unsupportedartifactpath/oldA19modeguard/securityeffectunknowns and explicitexistingholds. No wholeoriginalmissionaccepted.",
     "next_safe_phase": "Consume existing A19 C3 exactsameID return/artifacts and existing804 sameowner return, adjudicate/concrete repair as needed. On actual781/839/873 terminalowner event qualify exact source/requiredCI/merge, reconcile canonical generation through existing owner then authorized delivery/live. On explicit887allow applyONLYreviewedone-line proposal/currentfreshpair through SAMEhelper; denial holds. No repeated polls/approval/push/refusedrelease or newobserver.",
     "continuation": "Sole verified nativeheartbeat sameoriginalchatACTIVE/15min. Actual804START supplies canonicalexecution; newFabricproviderSTART remainsunproved; bare55610handle notPID/futurewake and no ExecutiveRuntimeBinding inference. After save reassess safe ready phases; checkpoint is notcompletion."
+  },
+  "current_capability_frontier_20261009T2205": {
+    "observed_at": "2026-10-09T22:05:44.141698+00:00",
+    "supersedes": "current_capability_frontier_20261009T2150",
+    "settled_references_retained_in": "current_capability_frontier_20261009T2150",
+    "whole_original_mission_accepted": false,
+    "A19_original_C3_return": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-financial-admission-checkpoint-seam-return-20261009.txt",
+      "sha256": "74018d450de679e97d22b6708d70c1378bd81512fe71f52c7f45e9e17d647f52"
+    },
+    "A19_original_C3_parent_adjudication": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-seam-parent-adjudication-20261009.json",
+      "sha256": "02652063a6074f11a05e6f2b7f860c4424d2bcee06e32a78b19821e0e4c6d1ee"
+    },
+    "A19_original_parent_artifact_receipt": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-financial-admission-checkpoint-seam-artifacts-20261009/receipt.json",
+      "sha256": "35b3ad782adb45eb18a93902b2af7abe0e4dcc6090ec55ea8d82b767a7935483"
+    },
+    "A19_original_return_current": "ExactoriginalparentCOMPLETEall4artifactshashmatched; supplied16actualparentPASS, fiveadditionalactualmodulecases0PASS5FAIL. CONSUMED_REPAIR_REQUIRED/notaccepted; usefulfiveactualsourcehashes/PITfunctioninputs/missingoperationalprior_effect/UTCfirstintake/perplanowner findings retained. Simplifiedmodel_checkpoint notactual539f shell; late_follow stub notnativecausalproof. No producer/Globaladmission/fanout/intake_ready effects.",
+    "A19_typed_read_build_refusal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-typed-read-path-build-prestart-refusal-20261009.json",
+      "sha256": "550c78e43229ac5fc7e8df4d614c48973c3145446ccaa3cee29604ff33558227"
+    },
+    "A19_typed_read_parent_repair": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-typed-read-path-parent-proposal-20261009/qualification.json",
+      "sha256": "de480b675a1f0fa3236ad208a3b7d69732c5258e07dea77b44836147b3402e84"
+    },
+    "A19_current": "C2boundedbuild49716 returned75NONE/no_poolpreSTART/noeffect/sameIDNOT_FOUND/frozen/no retry. ParentNO_ELIGIBLE_PRE_EFFECT_WORKER detached2defectrepair module66d690468625200ce0be8cb375970fc4c75fa2ec47ae44fff2c9d3ac84ee0fae; typedGitLS observations proveABSENT onlysuccessfulvalidrefemptyquery, failuresUNAVAILABLE; exactstatepath/internalid/admission/computedidbind before recoverypersist, originalprior_effectheld. Parentnew26PASS0FAIL0SKIP=16supplied+same5causalold0/5→new5/5+5positive-negativecontrols. Initialonecontrol usedwrong0600workspace vs0644Gitbeforefingerprint; legitimateguardfailure retained, fixturecorrected andonly5controls rerun, assertionsunchanged. Exactembeddedacceptedhelpersunchanged. No canonicalwriter/adoption/authoritywidening.",
+    "A19_independent_review_request": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-typed-read-path-independent-review-admission-20261009.json",
+      "sha256": "d5d603b2edad81d56ef015fef502ea952b9f56af4073e9e1ce96e073a4334577"
+    },
+    "A19_review_current": "OneC2sameoriginalroot independentreview terminal-audit20-a19-checkpoint-typed-read-path-independent-review-20261009 requestsession82001/packet72779B7488ec0e. InitialcanonicalACTIVE_OR_WAITING/EXECUTION_NOT_ELIGIBLE/rootnull/resultfalse; actualrouteradmission/providerSTART unqualified, notvacancy/failure/acceptance. No duplicate/resubmit/kill/manuallease/deadline orbarehandlefuturewake. Consume exactoriginalreturn/declaredreview.json whenavailable; reviewcannotmaskdeclinedbuild.",
+    "IW2_accepted_next_START": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/iw2-T03i-accepted-T03j-canonical-START-parent-consumption-20261009.json",
+      "sha256": "ffac62ea1b1b05787a064ea2d24fd72dd2e1fce8ac5c837923410bab8fd2f642"
+    },
+    "IW2_current": "Peeraccepted8049a17b8d87133c63e85a52bdcb4ec4a7850d6a058 scopedclientreference recovery. Audit20matched11acceptedreceiptartifacthashes+7newfalsifierhashes andindependentreview0aacb65b; peeractualmounted3/3prior1/3/reviewerbase6fail63pass/M2d1fail68pass/89focused583investigation/cold3. No parentrerun/builder8325+45attributed. CanonicalT03j START6089573604 actualrunwf_0cf1ac05-e82/taskw61brmc0b/writera8b790cad8434f349/firstaction21:28:54.497/rootIW2/sourceowner03342. Actualoriginalargsd0e53e13 independentlyparentmatched root/owner/9a17base. FulloriginalrequestSQLreceiptbinding falsifier3b047695 actualbaseline0/4/inmemoryresult-onlyshortcut1/4 remainspeerowned; syntheticAPI notliveSQL. Currentcursor40peeractive/no nextheadaccepted. No duplicatewriter/sourcemutation/Stop; allDraft0030-32UNAPPLIED/API+SQL+rights+release holds.",
+    "A17_781_existing_owner_reconciliation": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a17-781-existing-owner-phase-reconciliation-20261009T2205.json",
+      "sha256": "2ab4e615e6ce3971da1047022ca25979b85580a6e91bcbc8648233824fd728ed"
+    },
+    "A17_current": "SinglepostrepairphasePRread22:03 exactpublished711stillOPEN/nativeautoTRUE/MOG+merge-blocked/mergeableTRUE/BEHIND/base4d. No newhead/mergeeffect/CIterminalinferred; no checksquery/repeatedCIpoll/PUT/dispatch. Existingcontroller/soleheartbeat owns wait; acceptedsource711/table15code/manifest4PNG/independentreview24909B755dd4e9 retained. FullfreshCI/merge/currentmaster/canonicalrelease/live/paidA17owed.",
+    "current_gates": "Currentdependent integration awaits single781owner terminalCI/merge, 804T03j review, A19independentreview+namedcanonicalauthority. 887explicitone-linehelperadmissionanswer and intendedexistingProidentity pending. 889firstprebuildrefusal remains with observedhealthy4d, no retry. OtherexplicitA09/A12/Fabric/security/source/paid/SQLholdsunchanged. Everyreadydetachedrepair/proof consumed; no furtherlocalconflictingmutation permitted.",
+    "next_safe_phase": "Consume A19independentreviewexactsameID/artifact and actual804sameownerreturnedhead/fullrequestfalsifier. On781terminalowner/source/mergedhead event qualify source/3CI/currentmaster/canonicalgeneration beforeproduction. Onexplicit887ALLOW applyONLYreviewableone-lineproposal thenSAMEexistinghelperfreshpair/exclusivereceipt; noapprovalwithoutanswer. Keep sourceauthorityholds/no globalgrant.",
+    "continuation": "DURABLE_EXECUTION_RUNNING supportedbyactualcanonical804T03jSTART+soleverifiednativeheartbeat sameoriginalchat ACTIVE/15min. NewFabricreviewrequestnotproviderSTART/wakeproof. Noall20completion/checkpoint-onlystop/duplicateobserver."
   }
 }
