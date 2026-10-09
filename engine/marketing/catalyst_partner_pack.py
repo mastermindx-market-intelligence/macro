@@ -24,7 +24,7 @@ _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{1,95}$")
 _EMAIL = re.compile(r"[\w.+%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 _ALLOWED_RELATIONS = {"DIRECT", "EVIDENCED_INDIRECT"}
 _ALLOWED_KINDS = {"earnings", "event", "company_news", "ai_capex", "semiconductor"}
-_ALLOWED_CHANNELS = {"newsletter", "community", "social", "research"}
+_ALLOWED_CHANNELS = {"newsletter", "community", "social", "research", "podcast"}
 _DEMO_SCAN_URL = "https://preview.invalid/catalyst/scan/"
 
 
