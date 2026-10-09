@@ -38,6 +38,7 @@ def _coarse_venue_class(exchange, trf_id):
     return "UNKNOWN" if exchange in _NON_LIT_EXCHANGE_IDS else "LIT"
 
 MAX_FRAME_BYTES = 2 * 1024 * 1024
+MAX_FRAME_EVENTS = 2000  # bound records within one delivered WS frame
 MAX_UNIVERSE = 600
 _SYMBOL = re.compile(r"^[A-Z][A-Z0-9.\-]{0,19}$")
 _SESSION = re.compile(r"^(\d{4}-\d{2}-\d{2}):(RTH|PRE|POST)$")
@@ -102,19 +103,9 @@ def _quote_side(event, price_key, size_key, exchange_key):
             "exchange": _integer(venue, exchange_key, optional=True)}
 
 
-def normalize_ws_event(
-    raw_frame_bytes: bytes, *, event_index: int,
-    frame_received_ns: int, source_receipt_id: str,
-    session: str, allowed_symbols,
-):
-    """Return one immutable-ready event record and its exact raw-frame digest.
-
-    The caller proves that raw bytes, frame receipt time and source subscription
-    genuinely came from the canonical singleton. They are not authenticated here.
-    The returned receipt is a HASH pointer, not an invitation to publish raw tape.
-    No quote/trade ordering, correction resolution or source completeness is
-    inferred from a single event's SIP sequence number.
-    """
+def _decode_source_frame(raw_frame_bytes: bytes, *, frame_received_ns,
+                         source_receipt_id, session, allowed_symbols):
+    """Parse once per original source frame, preserving its exact-byte digest."""
     if type(raw_frame_bytes) is not bytes or not raw_frame_bytes:
         raise FrameContractError("raw frame bytes are required")
     if len(raw_frame_bytes) > MAX_FRAME_BYTES:
@@ -142,9 +133,14 @@ def normalize_ws_event(
         raise FrameContractError("invalid original UTF-8 JSON frame") from exc
     if type(frame) is not list or not frame:
         raise FrameContractError("expected a nonempty vendor event array")
-    if type(event_index) is not int or event_index < 0 or event_index >= len(frame):
-        raise FrameContractError("invalid frame event index")
-    event = frame[event_index]
+    if len(frame) > MAX_FRAME_EVENTS:
+        raise FrameContractError("source frame exceeds the bounded event budget")
+    return frame, universe, hashlib.sha256(raw_frame_bytes).hexdigest()
+
+
+def _normalize_market_event(event, *, universe, session, frame_received_ns,
+                            source_receipt_id, event_index, digest):
+    """Normalize one already-parsed source row without reparsing the whole frame."""
     if not isinstance(event, dict) or event.get("ev") not in ("T", "Q"):
         raise FrameContractError("status/control/unknown event is not T or Q")
     symbol = event.get("sym")
@@ -155,7 +151,6 @@ def normalize_ws_event(
         raise FrameContractError("ingest receipt precedes vendor SIP time")
     sequence = _integer(event.get("q"), "native sequence")
     participant_ns = _millis(event.get("pt"), "participant timestamp", optional=True)
-    digest = hashlib.sha256(raw_frame_bytes).hexdigest()
     common = {
         "schema": SCHEMA, "ticker": symbol, "session": session,
         "source": "MASSIVE_STOCKS_SIP_WS", "event_type": event["ev"],
@@ -216,3 +211,47 @@ def normalize_ws_event(
             "trade_action": "UNRESOLVED_STREAM_ORIGINAL",
         })
     return common
+
+
+
+def normalize_ws_event(
+    raw_frame_bytes: bytes, *, event_index: int,
+    frame_received_ns: int, source_receipt_id: str,
+    session: str, allowed_symbols,
+):
+    """Preserve the incumbent one-event contract and original frame digest."""
+    frame, universe, digest = _decode_source_frame(
+        raw_frame_bytes, frame_received_ns=frame_received_ns,
+        source_receipt_id=source_receipt_id, session=session,
+        allowed_symbols=allowed_symbols)
+    if type(event_index) is not int or event_index < 0 or event_index >= len(frame):
+        raise FrameContractError("invalid frame event index")
+    return _normalize_market_event(
+        frame[event_index], universe=universe, session=session,
+        frame_received_ns=frame_received_ns, source_receipt_id=source_receipt_id,
+        event_index=event_index, digest=digest)
+
+
+def normalize_ws_frame(
+    raw_frame_bytes: bytes, *, frame_received_ns: int,
+    source_receipt_id: str, session: str, allowed_symbols,
+):
+    """Atomically normalize one batch of T/Q events after one JSON parse.
+
+    A status/control row or one malformed market row blocks the entire output;
+    no partial batch is returned and no caller-visible side effect occurs.
+    This helper does not connect, subscribe, persist, publish or infer capture
+    completeness. Original receipt identity and event indices are preserved.
+    """
+    frame, universe, digest = _decode_source_frame(
+        raw_frame_bytes, frame_received_ns=frame_received_ns,
+        source_receipt_id=source_receipt_id, session=session,
+        allowed_symbols=allowed_symbols)
+    return [
+        _normalize_market_event(
+            event, universe=universe, session=session,
+            frame_received_ns=frame_received_ns,
+            source_receipt_id=source_receipt_id,
+            event_index=index, digest=digest)
+        for index, event in enumerate(frame)
+    ]
