@@ -798,10 +798,17 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - engine/neuralweb/rotation_risk_context.py
+      - engine/neuralweb/world_state.py
+      - engine/neuralweb/brain_gateway.py
+      - engine/neuralweb/mastermind_context.py
+      - scripts/build_world_state.py
       - scripts/build_site.py
-    external_consumers: []
+    external_consumers:
+      - mastermind:brain/neural_web_context.py
+      - mastermind-terminal:ingest/pull_macro_risk.py
     qual_ladder_ref: null
-    notes: "Grey Deer GD-2 settled Risk Envelope. weights=none by construction: the composer SELECTS and CARRIES source-native states (market-state-latest verdict/score verbatim, leadership_crack state, the radar read on market-state) and mints NO new weighted number — the hazard stage is a max over an ordinal, never a mean, and a stale or missing source may only shrink confidence or null the stage, never cast a calm vote. Birth authority is DESCRIPTIVE ONLY (Sol ruling 2026-08-19): every authority boolean is hard-false, policy_actions_require_individual_authority is true, hazard_stage is restricted to NONE|FRAGILE|TRANSMITTING|BREAKDOWN|null (ARMED/TRIGGERING are anticipatory and reserved for promoted experts), and zero policies exist. engine/risk_state.py's frozen legacy fused score is excluded by contract and by regression test. Live provisional lane (site/live/risk_envelope.json) is GD-3, not yet built."
+    notes: "Grey Deer GD-2 settled Risk Envelope. weights=none by construction: the composer SELECTS and CARRIES source-native states (market-state-latest verdict/score verbatim, leadership_crack state, the radar read on market-state) and mints NO new weighted number — the hazard stage is a max over an ordinal, never a mean, and a stale or missing source may only shrink confidence or null the stage, never cast a calm vote. Birth authority is DESCRIPTIVE ONLY (Sol ruling 2026-08-19): every authority boolean is hard-false, policy_actions_require_individual_authority is true, hazard_stage is restricted to NONE|FRAGILE|TRANSMITTING|BREAKDOWN|null (ARMED/TRIGGERING are anticipatory and reserved for promoted experts), and zero policies exist. engine/risk_state.py's frozen legacy fused score is excluded by contract and by regression test. The live provisional lane is owned by scripts/build_live_risk_envelope.py at site/live/risk_envelope.json. Early rotation and lineage are descriptive context only; all capital authority remains separate."
 
   cycle-ontology-falsifiers:
     path: data/cycle_ontology/falsifiers.json
@@ -1927,11 +1934,14 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - scripts/build_risk_envelope.py
+      - scripts/build_live_risk_envelope.py
       - engine/market_state_audit.py
       - engine/market_state_tune.py
       - scripts/build_site.py
     external_consumers: []
     notes: "Producer: engine/market_state_audit.py append, idempotent by as-of."
+    # Risk Envelope carries only qualified first-writer logged_at receipts for recorded transitions; current snapshots remain separately qualified and are not reconstructed onset evidence.
 
   vol-regime-gate:
     path: data/vol_regime/gate.json
@@ -15848,6 +15858,8 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - scripts/build_risk_envelope.py
+      - scripts/build_live_risk_envelope.py
       - engine/neuralweb/world_state.py
     external_consumers: []
     notes: >
@@ -15867,6 +15879,7 @@ artifacts:
       inline); coldstart replay seeds data/rotation_events/coldstart_seed.jsonl
       (EXCLUDED from the graded census — see ROTATION_UNIVERSE_EXTENSION_PREREG).
       Display-only; authority.may_rank/gate/size/escalate=false.
+    # early_context.as_of is the actual price session; legacy as_of retains confirmed-event semantics. No early-state ledger, severity vote, or capital authority is added.
 
   data-rotation-events-ledger:
     path: data/rotation_events/events.jsonl
