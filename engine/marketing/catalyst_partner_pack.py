@@ -349,6 +349,224 @@ def _claims(packet: dict, tickers: list[str],
     return included
 
 
+
+
+def adapt_qualified_producer_event(
+    producer_packet: dict, selected_tickers: list[str], *,
+    now_utc: datetime,
+    attest_event: Any,
+    resolve_rights: Any,
+) -> dict:
+    """Convert Session 01's real public-event packet to the Session 04 draft schema.
+
+    `attest_event` and `resolve_rights` are mandatory trusted-owner ports:
+    no booleans/strings in caller data can substitute for independent authority.
+    The adapter itself performs no network work, sends nothing and never
+    asserts permission to rehost an image or a partner's brand.
+    """
+    _require(isinstance(producer_packet, dict)
+             and producer_packet.get("schema") == "catalyst.public_event/v1"
+             and producer_packet.get("schema_version") == 1,
+             "UNSUPPORTED_PRODUCER_SCHEMA")
+    _require(producer_packet.get("public_safe") is True
+             and producer_packet.get("public_disposition") == "PUBLIC_READY"
+             and producer_packet.get("correction_state") in ("CURRENT", "CORRECTED"),
+             "BLOCKED_PUBLIC")
+    event_id = _atom(producer_packet.get("event_id"), "INVALID_EVENT_ID", 96)
+    _require(_ID.fullmatch(event_id) is not None, "INVALID_EVENT_ID")
+    generation = producer_packet.get("generation")
+    _require(type(generation) is int and generation >= 0,
+             "INVALID_CORRECTION")
+    correction = producer_packet.get("correction")
+    _require(isinstance(correction, dict)
+             and correction.get("generation") == generation
+             and correction.get("status") == (
+                 "active" if generation == 0 else "corrected"
+             ), "INVALID_CORRECTION")
+    now = now_utc
+    _require(isinstance(now, datetime) and now.tzinfo is not None
+             and now.utcoffset() == timedelta(0), "INVALID_NOW")
+    as_of = _stamp(producer_packet.get("as_of_utc"), "AS_OF")
+    expires = _stamp(producer_packet.get("cache_expires_at_utc"), "EXPIRES")
+    event_time = _stamp(producer_packet.get("event_time_utc"), "EVENT_TIME")
+    observed = _stamp(producer_packet.get("first_observed_at_utc"), "OBSERVED_TIME")
+    _require(event_time <= as_of and observed <= as_of <= now
+             and now < expires and now - as_of <= timedelta(hours=72),
+             "STALE_OR_FUTURE_EVENT")
+    _require(callable(attest_event) and callable(resolve_rights),
+             "OWNER_ATTESTATION_UNAVAILABLE")
+    try:
+        proof = attest_event(producer_packet, now)
+    except Exception:
+        proof = None
+    _require(isinstance(proof, str) and _ID.fullmatch(proof) is not None,
+             "EVENT_VERIFICATION_MISSING")
+    tickers = _ticker_list(selected_tickers)
+    raw_sources = producer_packet.get("sources")
+    _require(isinstance(raw_sources, list) and 1 <= len(raw_sources) <= 12,
+             "MISSING_SOURCES")
+    mapped_sources = []
+    allowed: dict[str, dict] = {}
+    for row in raw_sources:
+        _require(isinstance(row, dict), "INVALID_SOURCE")
+        sid = _atom(row.get("source_id"), "INVALID_SOURCE_ID", 96)
+        _require(_ID.fullmatch(sid) is not None and sid not in allowed,
+                 "DUPLICATE_OR_INVALID_SOURCE_ID")
+        receipt = _atom(row.get("rights_receipt_id"), "RIGHTS_RECEIPT_MISSING", 128)
+        _require(row.get("display_rights") == "ALLOWED", "BLOCKED_PUBLIC_RIGHTS")
+        try:
+            grant = resolve_rights(sid, now)
+            effective = getattr(grant, "effective_at_utc", None)
+            expiry = getattr(grant, "expires_at_utc", None)
+            valid = (
+                getattr(grant, "source_id", None) == sid
+                and getattr(grant, "receipt_id", None) == receipt
+                and getattr(grant, "audience", None) == "public_anonymous"
+                and isinstance(getattr(grant, "owner_ref", None), str)
+                and bool(grant.owner_ref.strip())
+                and getattr(grant, "display_link", None) is True
+                and getattr(grant, "display_title", None) is True
+                and getattr(grant, "display_facts", None) is True
+                and isinstance(effective, datetime)
+                and isinstance(expiry, datetime)
+                and effective.tzinfo is not None and expiry.tzinfo is not None
+                and effective <= now < expiry
+            )
+        except Exception:
+            valid = False
+        _require(valid, "SOURCE_RIGHTS_UNAVAILABLE")
+        url = _safe_https(row.get("url"), code="UNSAFE_SOURCE_URL")
+        title = _atom(row.get("title"), "INVALID_SOURCE_TITLE", 150)
+        published = _stamp(row.get("published_at_utc"), "SOURCE_TIME")
+        _require(published <= as_of, "FUTURE_SOURCE")
+        mapped = {
+            "source_id": sid, "title": title, "url": url,
+            "published_at_utc": _iso(published),
+            "tier": "official_filing" if sid.startswith("sec:") else "public_event",
+            "rights": {
+                "public_display": True, "public_link": True,
+                # Display/link/facts rights in Session 01 do NOT confer
+                # permission to rehost generated media or a source's graphic.
+                "public_rehost": False, "receipt_id": receipt,
+            },
+        }
+        allowed[sid] = mapped
+        mapped_sources.append(mapped)
+
+    primary = producer_packet.get("primary_subject")
+    _require(isinstance(primary, dict), "INVALID_SUBJECT")
+    primary_ticker = _atom(primary.get("ticker"), "INVALID_TICKER", 10)
+    primary_subject = _atom(primary.get("company_name") or primary_ticker,
+                            "INVALID_SUBJECT", 140)
+    _require(primary_ticker in {r.get("ticker") for r in
+                               producer_packet.get("affected_tickers", [])
+                               if isinstance(r, dict)}, "MISSING_TICKER_RELATIONS")
+    # Only existing, validated source evidence can create a partner claim.
+    evidence = {}
+    for ev in producer_packet.get("evidence", []):
+        if isinstance(ev, dict) and isinstance(ev.get("evidence_id"), str):
+            sid = ev.get("source_id")
+            if sid in allowed:
+                evidence[ev["evidence_id"]] = sid
+    claims = []
+    for row in producer_packet.get("what_changed", []):
+        if not isinstance(row, dict):
+            continue
+        text = row.get("text")
+        if not isinstance(text, str) or not text.strip():
+            continue
+        source_ids = set()
+        for ev_id in row.get("evidence_ids", []):
+            if ev_id in evidence:
+                source_ids.add(evidence[ev_id])
+        for sid in row.get("source_ids", []):
+            if sid in allowed:
+                source_ids.add(sid)
+        _require(bool(source_ids), "UNSOURCED_CLAIM")
+        claim_id = "ev_" + hashlib.sha256(
+            (event_id + ":" + str(generation) + ":" + str(len(claims))
+             + ":" + text).encode("utf-8")
+        ).hexdigest()[:24]
+        claims.append({"claim_id": claim_id, "text": _atom(text, "EMPTY_CLAIM", 600),
+                       "source_ids": sorted(source_ids),
+                       "tickers": [primary_ticker]})
+    relations = []
+    for row in producer_packet.get("affected_tickers", []):
+        if not isinstance(row, dict) or row.get("ticker") not in tickers:
+            continue
+        ticker = row["ticker"]
+        kind = row.get("relationship")
+        _require(kind in _ALLOWED_RELATIONS, "UNSUPPORTED_OR_UNKNOWN_RELATION")
+        refs = [c["claim_id"] for c in claims if ticker in c["tickers"]]
+        if kind == "EVIDENCED_INDIRECT":
+            source_ids = {evidence[e] for e in row.get("relation_evidence_ids", [])
+                          if e in evidence}
+            _require(bool(source_ids) and isinstance(row.get("summary"), str),
+                     "RELATION_EVIDENCE_MISSING")
+            text = _atom(row["summary"], "INVALID_RELATION_SUMMARY", 250)
+            text += "; any financial effect on " + ticker + " remains unverified."
+            claim_id = "rel_" + hashlib.sha256(
+                (event_id + ":" + ticker + ":" + text).encode()
+            ).hexdigest()[:24]
+            claims.append({"claim_id": claim_id, "text": text,
+                           "source_ids": sorted(source_ids), "tickers": [ticker]})
+            refs = [claim_id]
+        _require(bool(refs), "RELATION_EVIDENCE_MISSING")
+        relations.append({"ticker": ticker, "relationship": kind,
+                          "evidence_ids": refs})
+    _require({r["ticker"] for r in relations} == set(tickers),
+             "UNSUPPORTED_TICKER")
+    _require(bool(mapped_sources) and bool(claims),
+             "MISSING_EVIDENCED_CLAIMS")
+    missing = producer_packet.get("missing_data") or []
+    _require(isinstance(missing, list) and len(missing) <= 10
+             and all(isinstance(s, str) and
+                     re.fullmatch(r"[a-z][a-z0-9_]{0,99}", s)
+                     for s in missing), "INVALID_MISSING_DATA")
+    corrected = (generation > 0)
+    correction_history = [correction] if corrected else []
+    return {
+        "event_id": event_id, "event_kind": producer_packet.get("event_kind"),
+        "status": "active", "public_safe": "PUBLIC_SAFE",
+        "verification": {
+            "status": "VERIFIED",
+            "source_owner": "engine.marketing.catalyst_packets",
+            "receipt_id": proof,
+        },
+        "correction_generation": generation,
+        "corrections": correction_history, "demo_only": False,
+        "primary_subject": primary_subject,
+        "event_time_utc": producer_packet["event_time_utc"],
+        "first_observed_at_utc": producer_packet["first_observed_at_utc"],
+        "as_of_utc": producer_packet["as_of_utc"],
+        "expires_at_utc": producer_packet["cache_expires_at_utc"],
+        "publication_time_utc": producer_packet.get("publication_time_utc"),
+        "headline_evidence_ids": [mapped_sources[0]["source_id"]],
+        "sources": mapped_sources, "claims": claims,
+        "affected_tickers": relations, "missing_data": missing,
+    }
+
+
+def build_partner_pack_from_producer(
+    producer_packet: dict, partner_profile: dict,
+    selected_tickers: list[str] | None = None, *,
+    now_utc: datetime,
+    attest_event: Any,
+    resolve_rights: Any,
+    preview_only: bool = True,
+) -> dict:
+    """Review-only Session 01 -> Session 04 composition with owner-resolved grants."""
+    _require(preview_only is True, "PUBLICATION_UNAUTHORIZED")
+    selected = selected_tickers
+    if selected is None and isinstance(partner_profile, dict):
+        selected = partner_profile.get("selected_tickers")
+    adapted = adapt_qualified_producer_event(
+        producer_packet, _ticker_list(selected), now_utc=now_utc,
+        attest_event=attest_event, resolve_rights=resolve_rights,
+    )
+    return build_partner_pack(adapted, partner_profile, selected,
+                              preview_only=True, now_utc=now_utc)
+
 def build_partner_pack(
     event_packet: dict, partner_profile: dict,
     selected_tickers: list[str] | None = None,
