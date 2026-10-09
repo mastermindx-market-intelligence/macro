@@ -340,6 +340,31 @@ class CatalystPartnerPackTests(unittest.TestCase):
         corrected = self.make()
         self.assertNotEqual(changed["pack_id"], corrected["pack_id"])
 
+    def test_session05_research_only_profiles_preserve_triplets_and_refuse_fake_coverage(self):
+        root = ROOT / "examples" / "catalyst_partner_previews" / "session05_candidate_profiles"
+        expected = {
+            "stockopine": ("MU", "AMD", "NVDA"),
+            "potential_multibaggers": ("NVDA", "MSFT", "AMD"),
+            "mbi_deep_dives": ("MSFT", "META", "NVDA"),
+            "scuttleblurb": ("NVDA", "AVGO", "SNPS"),
+            "the_canadian_investor": ("ORCL", "MSFT", "TSM"),
+        }
+        self.assertEqual({p.stem for p in root.glob("*.json")}, set(expected))
+        for slug, tickers in expected.items():
+            profile = json.loads((root / (slug + ".json")).read_text())
+            self.assertEqual(tuple(profile["selected_tickers"]), tickers)
+            self.assertEqual(profile["status"], "candidate")
+            self.assertTrue(profile["research_only"])
+            self.assertEqual(profile["publication_permission"], "NOT_GRANTED")
+            self.assertIsNone(profile["brand_permission_receipt"])
+            self.assertIn("8681", profile["research_ref"])
+            self.assertEqual(profile["channel"],
+                             "podcast" if slug == "the_canadian_investor" else "newsletter")
+            with self.assertRaises(PackRejected) as ctx:
+                build_partner_pack(self.event, profile, now_utc=DEMO_NOW)
+            self.assertEqual(ctx.exception.code, "UNSUPPORTED_TICKER")
+            self.assertNotIn("contact_email", profile)
+
     def test_public_text_and_source_urls_refuse_email_addresses(self):
         self.event["claims"][0]["text"] = "Contact insider@example.net about EXA."
         self.refused("EMPTY_CLAIM")
