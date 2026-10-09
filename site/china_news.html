@@ -312,18 +312,698 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans cautious. <b>12</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏谨慎。其中 <b>12</b> 条高影响，主导<b>股票市场</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-cautious"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>12</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-cautious" style="--ac:var(--warn)">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></div>
+        <div class="tg-z">-0.8</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="right:50%;width:16.6%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 119<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-10-09</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">9</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:89%"></i></span>
+          <span class="mx-n">8</span>
+        </div>
+        
+        
+        <div class="mx-row th-fiscal">
+          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+          <span class="mx-bar"><i style="width:44%"></i></span>
+          <span class="mx-n">4</span>
+        </div>
+        
+        
+        <div class="mx-row th-growth">
+          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+          <span class="mx-bar"><i style="width:22%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+        
+        <div class="mx-row th-credit">
+          <span class="mx-name"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+          <span class="mx-bar"><i style="width:11%"></i></span>
+          <span class="mx-n">1</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 17 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 4 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 3</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days">3</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
+        
+      </div>
+      <p class="nx-name"><span class="l-en">Money supply, RMB loans & TSF</span><span class="l-zh">货币供应、人民币贷款与社融</span></p>
+      <p class="nx-date"><span class="l-en">Oct 12</span><span class="l-zh">10月12日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-fiscal lead" href="https://wallstreetcn.com/livenews/3176260" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="high"
+           data-search="何立峰会见欧盟委员会贸易和经济安全委员谢夫乔维奇 he lifeng meets with european commission trade and economic security commissioner šefčovič 何立峰会见欧盟委员会贸易和经济安全委员谢夫乔维奇 中共中央政治局委员、国务院副总理何立峰9日下午在京会见欧盟委员会贸易和经济安全委员谢夫乔维奇，双方就中欧经贸关系交换了意见。 何立峰表示，中方始终高度重视发展同欧盟经贸关系，愿与欧方共同落实好双方领导人达成的重要共识。双方应充分发挥中欧贸易投资磋商机制作用，坚持稳定、平衡的中欧关键贸易伙伴关系新定位，持续对话，妥处分歧，推动双边经贸关系健康稳定发展。 谢夫乔维奇表示，中国是欧盟重要经贸合作伙伴，愿持续推进贸易投资磋商，加强沟通、共促合作。（新华社） on the afternoon of the 9th in beijing, he lifeng, member of the political bureau of the cpc central committee and vice premier of the state council, met with maroš šefčovič, european commissioner for trade and economic security, and the two sides exchanged views on china-eu economic and trade relations. he lifeng said china has always attached great importance to developing economic and trade relations with the eu and is willing to work with the eu to implement the important consensus reached by the leaders of both sides. the two sides should give full play to the role of the china-eu trade and investment consultation mechanism, adhere to the new positioning of a stable and balanced key trade partnership between china and the eu, maintain continued dialogue, properly handle differences, and promote the sound and stable development of bilateral economic and trade relations. šefčovič said china is an important economic and trade cooperation partner of the eu, and the eu is willing to continue advancing trade and investment consultations, strengthen communication and jointly promote cooperation. (xinhua) 中共中央政治局委员、国务院副总理何立峰9日下午在京会见欧盟委员会贸易和经济安全委员谢夫乔维奇，双方就中欧经贸关系交换了意见。 何立峰表示，中方始终高度重视发展同欧盟经贸关系，愿与欧方共同落实好双方领导人达成的重要共识。双方应充分发挥中欧贸易投资磋商机制作用，坚持稳定、平衡的中欧关键贸易伙伴关系新定位，持续对话，妥处分歧，推动双边经贸关系健康稳定发展。 谢夫乔维奇表示，中国是欧盟重要经贸合作伙伴，愿持续推进贸易投资磋商，加强沟通、共促合作。（新华社） 华尔街见闻 fiscal fiscal/trade 财政/贸易 ">
+          <time class="tp-when" data-t="2026-10-09T13:19:42+00:00" datetime="2026-10-09T13:19:42+00:00">10-09<br>13:19</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-09T13:19:42+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">He Lifeng meets with European Commission Trade and Economic Security Commissioner Šefčovič</span><span class="l-zh">何立峰会见欧盟委员会贸易和经济安全委员谢夫乔维奇</span></h2>
+            <p class="tp-sum"><span class="l-en">On the afternoon of the 9th in Beijing, He Lifeng, member of the Political Bureau of the CPC Central Committee and Vice Premier of the State Council, met with Maroš Šefčovič, European Commissioner for Trade and Economic Security, and the two sides exchanged views on China-EU economic and trade relations. He Lifeng said China has always attached great importance to developing economic and trade relations with the EU and is willing to work with the EU to implement the important consensus reached by the leaders of both sides. The two sides should give full play to the role of the China-EU trade and investment consultation mechanism, adhere to the new positioning of a stable and balanced key trade partnership between China and the EU, maintain continued dialogue, properly handle differences, and promote the sound and stable development of bilateral economic and trade relations. Šefčovič said China is an important economic and trade cooperation partner of the EU, and the EU is willing to continue advancing trade and investment consultations, strengthen communication and jointly promote cooperation. (Xinhua)</span><span class="l-zh">中共中央政治局委员、国务院副总理何立峰9日下午在京会见欧盟委员会贸易和经济安全委员谢夫乔维奇，双方就中欧经贸关系交换了意见。 何立峰表示，中方始终高度重视发展同欧盟经贸关系，愿与欧方共同落实好双方领导人达成的重要共识。双方应充分发挥中欧贸易投资磋商机制作用，坚持稳定、平衡的中欧关键贸易伙伴关系新定位，持续对话，妥处分歧，推动双边经贸关系健康稳定发展。 谢夫乔维奇表示，中国是欧盟重要经贸合作伙伴，愿持续推进贸易投资磋商，加强沟通、共促合作。（新华社）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/economy/china-economy/article/3369550/china-seen-doing-just-enough-targeted-fiscal-support-defend-gdp-growth?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="china seen doing ‘just enough’ with targeted fiscal support to defend gdp growth  中国被视为以定向财政支持做到‘恰到好处’以捍卫gdp增长 china’s finance minister has pledged to roll out incremental and targeted fiscal policies to help achieve leadership’s full-year growth target for the country, following a freshly announced package of supportive measures. however, analysts expect beijing to stop short of a major stimulus, providing only “just enough” support to meet the target.
+lan foan made the pledge in an article published on thursday in the communist party’s leading theoretical journal, qiushi, calling for the broadened...  中国财政部长承诺推出增量、有针对性的财政政策，以帮助实现领导层设定的全年增长目标，此前刚宣布了一系列支持性措施。然而，分析师预计北京不会推出大规模刺激，只会提供“恰好足够”的支持来实现目标。
+蓝佛安作出 scmp - china economy growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-02T09:00:06+00:00" datetime="2026-10-02T09:00:06+00:00">10-02<br>09:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-02T09:00:06+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>84</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China seen doing ‘just enough’ with targeted fiscal support to defend GDP growth</span><span class="l-zh">中国被视为以定向财政支持做到‘恰到好处’以捍卫GDP增长</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s finance minister has pledged to roll out incremental and targeted fiscal policies to help achieve leadership’s full-year growth target for the country, following a freshly announced package of supportive measures. However, analysts expect Beijing to stop short of a major stimulus, providing only “just enough” support to meet the target.
+Lan Foan made the pledge in an article published on Thursday in the Communist Party’s leading theoretical journal, Qiushi, calling for the broadened...</span><span class="l-zh">中国财政部长承诺推出增量、有针对性的财政政策，以帮助实现领导层设定的全年增长目标，此前刚宣布了一系列支持性措施。然而，分析师预计北京不会推出大规模刺激，只会提供“恰好足够”的支持来实现目标。
+蓝佛安作出</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103388325.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="人民币汇率被低估了吗？央行最新政策立场给出答案 部分西方经济体将中国外贸强势归因于人民币汇率被低估。央行选择此时发布政策立场，是对外部施压的正面回应，也为市场构建出一个准确、完整的人民币汇率叙事与立场。 is the rmb exchange rate undervalued? the pboc's latest policy stance provides the answer. some western economies attribute china's strong foreign trade to an undervalued rmb exchange rate. the pboc's choice to release its policy stance at this time is a direct response to external pressure and also constructs for the market an accurate, complete narrative and stance on the rmb exchange rate. 人民币汇率被低估了吗？央行最新政策立场给出答案 部分西方经济体将中国外贸强势归因于人民币汇率被低估。央行选择此时发布政策立场，是对外部施压的正面回应，也为市场构建出一个准确、完整的人民币汇率叙事与立场。    第一财经 pboc_liquidity yuan pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Is the RMB exchange rate undervalued? The PBOC's latest policy stance provides the answer. Some Western economies attribute China's strong foreign trade to an undervalued RMB exchange rate. The PBOC's choice to release its policy stance at this time is a direct response to external pressure and also constructs for the market an accurate, complete narrative and stance on the RMB exchange rate.</span><span class="l-zh">人民币汇率被低估了吗？央行最新政策立场给出答案 部分西方经济体将中国外贸强势归因于人民币汇率被低估。央行选择此时发布政策立场，是对外部施压的正面回应，也为市场构建出一个准确、完整的人民币汇率叙事与立场。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.cnstock.com/commonDetail/799569" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="中国人民银行明确人民币汇率政策立场 the people's bank of china clarifies its position on the rmb exchange rate policy 中国人民银行明确人民币汇率政策立场    上海证券报 pboc_liquidity yuan pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 cny 512800.ss 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The People's Bank of China clarifies its position on the RMB exchange rate policy</span><span class="l-zh">中国人民银行明确人民币汇率政策立场</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4210293.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会，最新发布！事关公募投资运作，吸引中长期资金入市 csrc, latest release! concerning public fund investment operations, attracting medium- and long-term capital into the market 证监会，最新发布！事关公募投资运作，吸引中长期资金入市    证券时报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC, latest release! Concerning public fund investment operations, attracting medium- and long-term capital into the market</span><span class="l-zh">证监会，最新发布！事关公募投资运作，吸引中长期资金入市</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4210443.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="突发！600576、603815，实控人被证监会立案 breaking! 600576 and 603815: actual controllers placed under csrc investigation 突发！600576、603815，实控人被证监会立案    证券时报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Breaking! 600576 and 603815: Actual controllers placed under CSRC investigation</span><span class="l-zh">突发！600576、603815，实控人被证监会立案</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/topicDetail/797461" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="专题 | “十五五”资本市场高质量发展座谈会 special topic | symposium on high-quality development of the capital market during the 15th five-year plan 专题 | “十五五”资本市场高质量发展座谈会    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Special topic | Symposium on high-quality development of the capital market during the 15th Five-Year Plan</span><span class="l-zh">专题 | “十五五”资本市场高质量发展座谈会</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/799996" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="交建股份：实际控制人收到中国证监会立案告知书 jiaojian co.: actual controller receives csrc investigation notice 交建股份：实际控制人收到中国证监会立案告知书    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Jiaojian Co.: Actual controller receives CSRC investigation notice</span><span class="l-zh">交建股份：实际控制人收到中国证监会立案告知书</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://www.scmp.com/business/banking-finance/article/3370125/retail-properties-offloaded-losses-weak-market-revaluations-spark-bank-concerns?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="high"
+           data-search="retail properties offloaded for losses in weak market as revaluations spark bank concerns  零售物业在疲软市场中被折价出售，重新估值引发银行担忧 several retail properties sold recently by prominent hong kong investors have been offloaded at a loss – a trend analysts attributed to banks maintaining a tough stance on debt collection.
+stanley poon chi-ming, managing director at centaline commercial, said retail property prices had fallen by 30 to 70 per cent from their 2018 peaks. that meant any sales in the current market – especially of properties bought around a decade ago – would essentially result in a loss.
+“many retail property...  香港知名投资者近期出售的多处零售物业均以亏损脱手——分析师将这一趋势归因于银行在债务催收方面保持强硬立场。
+中原工商铺董事总经理潘志明表示，零售物业价格已较2018年高峰期下跌30%至70%。这意味着任何出售交易都 scmp - business property consumer property 房地产 consumer 消费 512800.ss 512200.ss">
+          <time class="tp-when" data-t="2026-10-08T11:00:09+00:00" datetime="2026-10-08T11:00:09+00:00">10-08<br>11:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-08T11:00:09+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Retail properties offloaded for losses in weak market as revaluations spark bank concerns</span><span class="l-zh">零售物业在疲软市场中被折价出售，重新估值引发银行担忧</span></h2>
+            <p class="tp-sum"><span class="l-en">Several retail properties sold recently by prominent Hong Kong investors have been offloaded at a loss – a trend analysts attributed to banks maintaining a tough stance on debt collection.
+Stanley Poon Chi-ming, managing director at Centaline Commercial, said retail property prices had fallen by 30 to 70 per cent from their 2018 peaks. That meant any sales in the current market – especially of properties bought around a decade ago – would essentially result in a loss.
+“Many retail property...</span><span class="l-zh">香港知名投资者近期出售的多处零售物业均以亏损脱手——分析师将这一趋势归因于银行在债务催收方面保持强硬立场。
+中原工商铺董事总经理潘志明表示，零售物业价格已较2018年高峰期下跌30%至70%。这意味着任何出售交易都</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3176282" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="9月a股新开户191.19万户 1.9119 million new a-share accounts opened in september 9月a股新开户191.19万户 据上交所数据，2026年9月a股新开户191.19万户，同比去年9月293.72万户下降35.0%；2026年前9个月已累计新开2712.59万户，同比增长35.0%。 according to shanghai stock exchange data, 1.9119 million new a-share accounts were opened in september 2026, down 35.0% from 2.9372 million in september last year; in the first nine months of 2026, a cumulative 27.1259 million new accounts were opened, up 35.0% year on year. 据上交所数据，2026年9月a股新开户191.19万户，同比去年9月293.72万户下降35.0%；2026年前9个月已累计新开2712.59万户，同比增长35.0%。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-09T14:21:20+00:00" datetime="2026-10-09T14:21:20+00:00">10-09<br>14:21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-09T14:21:20+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">1.9119 million new A-share accounts opened in September</span><span class="l-zh">9月A股新开户191.19万户</span></h2>
+            <p class="tp-sum"><span class="l-en">According to Shanghai Stock Exchange data, 1.9119 million new A-share accounts were opened in September 2026, down 35.0% from 2.9372 million in September last year; in the first nine months of 2026, a cumulative 27.1259 million new accounts were opened, up 35.0% year on year.</span><span class="l-zh">据上交所数据，2026年9月A股新开户191.19万户，同比去年9月293.72万户下降35.0%；2026年前9个月已累计新开2712.59万户，同比增长35.0%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://news.10jqka.com.cn/20261009/c680542233.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="2026年9月a股新开户191.19万户 同比下降34.91% 2026年累计新开2712.6万户 1.9119 million new a-share accounts opened in september 2026, down 34.91% year-on-year; 27.126 million new accounts opened cumulatively in 2026 2026年9月a股新开户191.19万户 同比下降34.91% 2026年累计新开2712.6万户 上交所数据显示，2026年9月a股新开户191.19万户，环比下降20.25%，同比2025年9月的293.72万户下降34.91%。 2026年累计新开2712.6万户，同比增长34.63%。 shanghai stock exchange data shows that 1.9119 million new a-share accounts were opened in september 2026, down 20.25% month on month and down 34.91% from 2.9372 million in september 2025. a cumulative 27.126 million new accounts were opened in 2026, up 34.63% year on year. 上交所数据显示，2026年9月a股新开户191.19万户，环比下降20.25%，同比2025年9月的293.72万户下降34.91%。 2026年累计新开2712.6万户，同比增长34.63%。 同花顺 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-09T14:20:20+00:00" datetime="2026-10-09T14:20:20+00:00">10-09<br>14:20</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-09T14:20:20+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">1.9119 million new A-share accounts opened in September 2026, down 34.91% year-on-year; 27.126 million new accounts opened cumulatively in 2026</span><span class="l-zh">2026年9月A股新开户191.19万户 同比下降34.91% 2026年累计新开2712.6万户</span></h2>
+            <p class="tp-sum"><span class="l-en">Shanghai Stock Exchange data shows that 1.9119 million new A-share accounts were opened in September 2026, down 20.25% month on month and down 34.91% from 2.9372 million in September 2025. A cumulative 27.126 million new accounts were opened in 2026, up 34.63% year on year.</span><span class="l-zh">上交所数据显示，2026年9月A股新开户191.19万户，环比下降20.25%，同比2025年9月的293.72万户下降34.91%。 2026年累计新开2712.6万户，同比增长34.63%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://wallstreetcn.com/livenews/3176274" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="商务部新闻发言人就美国召集部分经济体发布应对所谓“结构性产能和生产过剩”问题部长级联合声明答记者问 mofcom spokesperson answers questions on the u.s. convening some economies to issue a joint ministerial statement addressing the so-called 'structural overcapacity and overproduction' issue 商务部新闻发言人就美国召集部分经济体发布应对所谓“结构性产能和生产过剩”问题部长级联合声明答记者问 问：美东时间10月7日，美贸易代表办公室（ustr）发布公告称，近期美国召集14个经济体高级官员举行会议，共同签署发布应对所谓“结构性产能和生产过剩”问题的部长级联合声明。请问商务部对此有何评论？ 答：我们注意到有关情况。中方已在不同场合多次阐明关于所谓“产能过剩”问题的看法，并于今年7月专门发布了有关立场文件。 中方一贯认为，看待产能问题要秉持全面、客观、公正的态度，不能出于对自身产业竞争力和市场地位的担忧，将经贸问题政治化。中方反对个别国家以所谓“产能过剩”为名，行贸易保护主义之实，这只会扰乱全球经贸秩序和产供链稳定，给世界经济增长带来长期风险。如果 q: on october 7, us eastern time, the office of the united states trade representative (ustr) issued an announcement stating that the united states recently convened senior officials from 14 economies for a meeting and jointly signed and issued a ministerial joint statement addressing the so-called "structural overcapacity and production" issue. what is the ministry of commerce's comment on this? a: we have noted the relevant situation. china has stated its views on the so-called "overcapacity" issue on multiple occasions and issued a dedicated position paper on this in july this year. china has always held that the overcapacity issue should be viewed in a comprehensive, objective and fair manner, and economic and trade issues should not be politicized out of concern for one's own industrial competitiveness and market position. china opposes certain countries using the pretext of so-called "overcapacity" to practice trade protectionism, which will only disrupt the global economic and trade order and the stability of industrial and supply chains and bring long-term risks to world economic growth. if 问：美东时间10月7日，美贸易代表办公室（ustr）发布公告称，近期美国召集14个经济体高级官员举行会议，共同签署发布应对所谓“结构性产能和生产过剩”问题的部长级联合声明。请问商务部对此有何评论？ 答：我们注意到有关情况。中方已在不同场合多次阐明关于所谓“产能过剩”问题的看法，并于今年7月专门发布了有关立场文件。 中方一贯认为，看待产能问题要秉持全面、客观、公正的态度，不能出于对自身产业竞争力和市场地位的担忧，将经贸问题政治化。中方反对个别国家以所谓“产能过剩”为名，行贸易保护主义之实，这只会扰乱全球经贸秩序和产供链稳定，给世界经济增长带来长期风险。如果 华尔街见闻 growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-09T14:00:57+00:00" datetime="2026-10-09T14:00:57+00:00">10-09<br>14:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-09T14:00:57+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">MOFCOM spokesperson answers questions on the U.S. convening some economies to issue a joint ministerial statement addressing the so-called 'structural overcapacity and overproduction' issue</span><span class="l-zh">商务部新闻发言人就美国召集部分经济体发布应对所谓“结构性产能和生产过剩”问题部长级联合声明答记者问</span></h2>
+            <p class="tp-sum"><span class="l-en">Q: On October 7, US Eastern Time, the Office of the United States Trade Representative (USTR) issued an announcement stating that the United States recently convened senior officials from 14 economies for a meeting and jointly signed and issued a ministerial joint statement addressing the so-called "structural overcapacity and production" issue. What is the Ministry of Commerce's comment on this? A: We have noted the relevant situation. China has stated its views on the so-called "overcapacity" issue on multiple occasions and issued a dedicated position paper on this in July this year. China has always held that the overcapacity issue should be viewed in a comprehensive, objective and fair manner, and economic and trade issues should not be politicized out of concern for one's own industrial competitiveness and market position. China opposes certain countries using the pretext of so-called "overcapacity" to practice trade protectionism, which will only disrupt the global economic and trade order and the stability of industrial and supply chains and bring long-term risks to world economic growth. If</span><span class="l-zh">问：美东时间10月7日，美贸易代表办公室（USTR）发布公告称，近期美国召集14个经济体高级官员举行会议，共同签署发布应对所谓“结构性产能和生产过剩”问题的部长级联合声明。请问商务部对此有何评论？ 答：我们注意到有关情况。中方已在不同场合多次阐明关于所谓“产能过剩”问题的看法，并于今年7月专门发布了有关立场文件。 中方一贯认为，看待产能问题要秉持全面、客观、公正的态度，不能出于对自身产业竞争力和市场地位的担忧，将经贸问题政治化。中方反对个别国家以所谓“产能过剩”为名，行贸易保护主义之实，这只会扰乱全球经贸秩序和产供链稳定，给世界经济增长带来长期风险。如果</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3176265" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="美股三大股指集体高开，道指涨0.05%，标普500指数涨0.27%，纳指涨0.54% the three major u.s. stock indexes opened collectively higher, with the dow up 0.05%, the s&p 500 up 0.27%, and the nasdaq up 0.54% 美股三大股指集体高开，道指涨0.05%，标普500指数涨0.27%，纳指涨0.54% 美股三大股指集体高开，道指涨0.05%，标普500指数涨0.27%，纳指涨0.54%。光通信股开盘普涨，lumentum涨超6%，康宁涨近3%；存储板块走高，美光、闪迪、sk海力士均涨超1%；spacex上涨3.3%，此前该公司达成协议，将收购全国性低频段频谱组合，t-mobile us下跌9.6%，at&t下跌8.2%；苹果下跌2.7%，报道称因需求疲软公司削减iphone 18 pro系列零部件产量。 the three major us stock indices opened collectively higher, with the dow up 0.05%, the s&p 500 up 0.27% and the nasdaq up 0.54%. optical communication stocks rose broadly at the open, with lumentum up more than 6% and corning up nearly 3%; memory chip stocks advanced, with micron, sandisk and sk hynix all up more than 1%; spacex rose 3.3% after reaching an agreement to acquire a nationwide low-band spectrum portfolio, while t-mobile us fell 9.6% and at&t fell 8.2%; apple fell 2.7% after a report said the company cut component production for the iphone 18 pro series due to weak demand. 美股三大股指集体高开，道指涨0.05%，标普500指数涨0.27%，纳指涨0.54%。光通信股开盘普涨，lumentum涨超6%，康宁涨近3%；存储板块走高，美光、闪迪、sk海力士均涨超1%；spacex上涨3.3%，此前该公司达成协议，将收购全国性低频段频谱组合，t-mobile us下跌9.6%，at&t下跌8.2%；苹果下跌2.7%，报道称因需求疲软公司削减iphone 18 pro系列零部件产量。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-09T13:31:00+00:00" datetime="2026-10-09T13:31:00+00:00">10-09<br>13:31</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-09T13:31:00+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The three major U.S. stock indexes opened collectively higher, with the Dow up 0.05%, the S&P 500 up 0.27%, and the Nasdaq up 0.54%</span><span class="l-zh">美股三大股指集体高开，道指涨0.05%，标普500指数涨0.27%，纳指涨0.54%</span></h2>
+            <p class="tp-sum"><span class="l-en">The three major US stock indices opened collectively higher, with the Dow up 0.05%, the S&P 500 up 0.27% and the Nasdaq up 0.54%. Optical communication stocks rose broadly at the open, with Lumentum up more than 6% and Corning up nearly 3%; memory chip stocks advanced, with Micron, SanDisk and SK Hynix all up more than 1%; SpaceX rose 3.3% after reaching an agreement to acquire a nationwide low-band spectrum portfolio, while T-Mobile US fell 9.6% and AT&T fell 8.2%; Apple fell 2.7% after a report said the company cut component production for the iPhone 18 Pro series due to weak demand.</span><span class="l-zh">美股三大股指集体高开，道指涨0.05%，标普500指数涨0.27%，纳指涨0.54%。光通信股开盘普涨，Lumentum涨超6%，康宁涨近3%；存储板块走高，美光、闪迪、SK海力士均涨超1%；SpaceX上涨3.3%，此前该公司达成协议，将收购全国性低频段频谱组合，T-Mobile US下跌9.6%，AT&T下跌8.2%；苹果下跌2.7%，报道称因需求疲软公司削减iPhone 18 Pro系列零部件产量。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.pbc.gov.cn/en/3688110/3688172/2026/2026093015565447786/index.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="pbocâ adjusts and improvesâ several monetary policy tools  中国人民银行调整和完善多项货币政策工具    pboc pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-09-29" datetime="2026-09-29">09-29</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-29"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">PBoC</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOCÂ Adjusts and ImprovesÂ Several Monetary Policy Tools</span><span class="l-zh">中国人民银行调整和完善多项货币政策工具</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.pbc.gov.cn/en/3688110/3688172/2026/2026100816022714082/index.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="pboc monetary policy committee holds q3 2026 meeting  中国人民银行货币政策委员会召开2026年第三季度会议    pboc pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-09-24" datetime="2026-09-24">09-24</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-24"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">PBoC</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC Monetary Policy Committee Holds Q3 2026 Meeting</span><span class="l-zh">中国人民银行货币政策委员会召开2026年第三季度会议</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.scmp.com/business/article/3370022/why-morgan-stanley-sees-more-upside-hong-kong-offices-new-york-towers?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="why morgan stanley sees more upside in hong kong offices than new york towers  为何摩根士丹利认为香港写字楼的上涨空间比纽约的摩天大楼更大 higher interest rates have weighed on property markets in both hong kong and new york, but morgan stanley sees greater upside potential in the asian financial hub – particularly the office segment – in the months ahead, according to its latest report.
+the us investment bank highlighted the similarities between two of the world’s leading financial centres, pointing out that hong kong’s monetary policy moved in lockstep with the us federal reserve, while both cities faced limited land supply,...  根据摩根士丹利最新报告，较高的利率对香港和纽约的房地产市场均构成压力，但摩根士丹利认为，未来几个月，亚洲金融中心香港的上涨潜力更大，尤其是写字楼板块。
+这家美国投资银行强调，全球两大领先金融中心之间存在相似之处， scmp - business property property 房地产 512200.ss">
+          <time class="tp-when" data-t="2026-10-07T09:00:12+00:00" datetime="2026-10-07T09:00:12+00:00">10-07<br>09:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-07T09:00:12+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Why Morgan Stanley sees more upside in Hong Kong offices than New York towers</span><span class="l-zh">为何摩根士丹利认为香港写字楼的上涨空间比纽约的摩天大楼更大</span></h2>
+            <p class="tp-sum"><span class="l-en">Higher interest rates have weighed on property markets in both Hong Kong and New York, but Morgan Stanley sees greater upside potential in the Asian financial hub – particularly the office segment – in the months ahead, according to its latest report.
+The US investment bank highlighted the similarities between two of the world’s leading financial centres, pointing out that Hong Kong’s monetary policy moved in lockstep with the US Federal Reserve, while both cities faced limited land supply,...</span><span class="l-zh">根据摩根士丹利最新报告，较高的利率对香港和纽约的房地产市场均构成压力，但摩根士丹利认为，未来几个月，亚洲金融中心香港的上涨潜力更大，尤其是写字楼板块。
+这家美国投资银行强调，全球两大领先金融中心之间存在相似之处，</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://flash.jin10.com/detail/20261009231732200800" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="德国拟放弃争夺欧洲央行行长职位，转而寻求保留执行委员会席位 germany plans to give up contesting the ecb presidency and instead seek to retain an executive board seat 德国拟放弃争夺欧洲央行行长职位，转而寻求保留执行委员会席位 金十数据10月9日讯，据英国《金融时报》报道，德国计划提名人选接替即将离任的欧洲央行执行委员会委员伊莎贝尔·施纳贝尔，这一决定意味着德国实际上将退出下一任欧洲央行行长的竞争。知情人士透露，德国财政部长周四晚间在卢森堡向其他欧元区国家财长表示，柏林将很快提出接替施纳贝尔的人选。施纳贝尔将于2027年1月提前离任，转赴国际货币基金组织（imf）担任货币与资本市场部门负责人。另外，现任行长拉加德预计可能在2027年10月正式任期结束前提前离任，而首席经济学家菲利普·莱恩（philip lane）将于2027年5月底结束任期。根据欧洲央行执行委员会成员任命中的不 jinshi data, october 9 — according to a financial times report, germany plans to nominate a candidate to succeed outgoing european central bank executive board member isabel schnabel, a decision that means germany will effectively withdraw from the race for the next ecb president. people familiar with the matter said germany's finance minister told other euro-area finance ministers in luxembourg on thursday evening that berlin would soon propose a replacement for schnabel. schnabel will leave early in january 2027 to head the monetary and capital markets department at the international monetary fund (imf). in addition, current president christine lagarde is expected to possibly leave early before her formal term ends in october 2027, while chief economist philip lane's term will end in late may 2027. according to the rules for appointing ecb executive board members, 金十数据10月9日讯，据英国《金融时报》报道，德国计划提名人选接替即将离任的欧洲央行执行委员会委员伊莎贝尔·施纳贝尔，这一决定意味着德国实际上将退出下一任欧洲央行行长的竞争。知情人士透露，德国财政部长周四晚间在卢森堡向其他欧元区国家财长表示，柏林将很快提出接替施纳贝尔的人选。施纳贝尔将于2027年1月提前离任，转赴国际货币基金组织（imf）担任货币与资本市场部门负责人。另外，现任行长拉加德预计可能在2027年10月正式任期结束前提前离任，而首席经济学家菲利普·莱恩（philip lane）将于2027年5月底结束任期。根据欧洲央行执行委员会成员任命中的不 金十数据 pboc_liquidity fiscal_trade pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-10-09T23:17:32+08:00" datetime="2026-10-09T23:17:32+08:00">10-09<br>23:17</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-09T23:17:32+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-medium"><b>57</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Germany plans to give up contesting the ECB presidency and instead seek to retain an Executive Board seat</span><span class="l-zh">德国拟放弃争夺欧洲央行行长职位，转而寻求保留执行委员会席位</span></h2>
+            <p class="tp-sum"><span class="l-en">Jinshi Data, October 9 — According to a Financial Times report, Germany plans to nominate a candidate to succeed outgoing European Central Bank Executive Board member Isabel Schnabel, a decision that means Germany will effectively withdraw from the race for the next ECB president. People familiar with the matter said Germany's finance minister told other euro-area finance ministers in Luxembourg on Thursday evening that Berlin would soon propose a replacement for Schnabel. Schnabel will leave early in January 2027 to head the Monetary and Capital Markets Department at the International Monetary Fund (IMF). In addition, current President Christine Lagarde is expected to possibly leave early before her formal term ends in October 2027, while Chief Economist Philip Lane's term will end in late May 2027. According to the rules for appointing ECB Executive Board members,</span><span class="l-zh">金十数据10月9日讯，据英国《金融时报》报道，德国计划提名人选接替即将离任的欧洲央行执行委员会委员伊莎贝尔·施纳贝尔，这一决定意味着德国实际上将退出下一任欧洲央行行长的竞争。知情人士透露，德国财政部长周四晚间在卢森堡向其他欧元区国家财长表示，柏林将很快提出接替施纳贝尔的人选。施纳贝尔将于2027年1月提前离任，转赴国际货币基金组织（IMF）担任货币与资本市场部门负责人。另外，现任行长拉加德预计可能在2027年10月正式任期结束前提前离任，而首席经济学家菲利普·莱恩（Philip Lane）将于2027年5月底结束任期。根据欧洲央行执行委员会成员任命中的不</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3176279" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="诺贝尔奖得主克鲁格曼：法国或已“大到救不了” nobel laureate krugman: france may already be 'too big to save' 诺贝尔奖得主克鲁格曼：法国或已“大到救不了” 诺贝尔奖得主、经济学家保罗·克鲁格曼表示，法国正面临潜在债务危机，对欧洲央行而言可能已经“大到救不了”。 法国学生因教育经费不足持续抗议，总理塞巴斯蒂安·勒科尔尼则在努力推动一份充满争议的2027年预算案，该预算案试图实施数百亿美元的财政紧缩。 克鲁格曼周四在其substack博客文章中写道，法国正走在“财政不可持续”的道路上，政府债务利息负担不断加重，而庞大的预算赤字又进一步推高了债务占gdp的比例。 nobel laureate and economist paul krugman said france is facing a potential debt crisis and may already be "too big to save" for the european central bank. french students have continued protesting over insufficient education funding, while prime minister sébastien lecornu is striving to push through a controversial 2027 budget that seeks to implement tens of billions of dollars in fiscal austerity. krugman wrote in his substack blog on thursday that france is on a path of "fiscal unsustainability," with the interest burden on government debt steadily increasing, while a massive budget deficit further pushes up the debt-to-gdp ratio. 诺贝尔奖得主、经济学家保罗·克鲁格曼表示，法国正面临潜在债务危机，对欧洲央行而言可能已经“大到救不了”。 法国学生因教育经费不足持续抗议，总理塞巴斯蒂安·勒科尔尼则在努力推动一份充满争议的2027年预算案，该预算案试图实施数百亿美元的财政紧缩。 克鲁格曼周四在其substack博客文章中写道，法国正走在“财政不可持续”的道路上，政府债务利息负担不断加重，而庞大的预算赤字又进一步推高了债务占gdp的比例。 华尔街见闻 pboc_liquidity fiscal_trade pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-10-09T14:06:52+00:00" datetime="2026-10-09T14:06:52+00:00">10-09<br>14:06</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-09T14:06:52+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>57</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Nobel laureate Krugman: France may already be 'too big to save'</span><span class="l-zh">诺贝尔奖得主克鲁格曼：法国或已“大到救不了”</span></h2>
+            <p class="tp-sum"><span class="l-en">Nobel laureate and economist Paul Krugman said France is facing a potential debt crisis and may already be "too big to save" for the European Central Bank. French students have continued protesting over insufficient education funding, while Prime Minister Sébastien Lecornu is striving to push through a controversial 2027 budget that seeks to implement tens of billions of dollars in fiscal austerity. Krugman wrote in his Substack blog on Thursday that France is on a path of "fiscal unsustainability," with the interest burden on government debt steadily increasing, while a massive budget deficit further pushes up the debt-to-GDP ratio.</span><span class="l-zh">诺贝尔奖得主、经济学家保罗·克鲁格曼表示，法国正面临潜在债务危机，对欧洲央行而言可能已经“大到救不了”。 法国学生因教育经费不足持续抗议，总理塞巴斯蒂安·勒科尔尼则在努力推动一份充满争议的2027年预算案，该预算案试图实施数百亿美元的财政紧缩。 克鲁格曼周四在其Substack博客文章中写道，法国正走在“财政不可持续”的道路上，政府债务利息负担不断加重，而庞大的预算赤字又进一步推高了债务占GDP的比例。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3176262" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="王文涛与欧委会贸易和经济安全委员谢夫乔维奇共同召开中欧贸易投资磋商机制第二次例会 wang wentao and european commission trade and economic security commissioner šefčovič jointly convene the second regular meeting of the china-eu trade and investment consultation mechanism 王文涛与欧委会贸易和经济安全委员谢夫乔维奇共同召开中欧贸易投资磋商机制第二次例会 10月8-9日，商务部部长王文涛在北京与欧委会贸易和经济安全委员谢夫乔维奇共同主持召开中欧贸易投资磋商机制第二次例会并发表联合声明。双方立足“稳定、平衡的中欧关键贸易伙伴”定位，共同盘点了首次会议以来机制项下贸易和投资平衡、出口管制、知识产权、世贸组织改革四个工作板块磋商进展，并就中欧经贸重要议题进行了对等、专业、建设性的讨论。 on october 8-9, minister of commerce wang wentao and european commissioner for trade and economic security maroš šefčovič co-chaired the second regular meeting of the china-eu trade and investment consultation mechanism in beijing and issued a joint statement. based on the positioning of a "stable and balanced key trade partnership between china and the eu," the two sides jointly reviewed the consultation progress under the mechanism's four working areas since the first meeting—trade and investment balance, export controls, intellectual property rights and wto reform—and held reciprocal, professional and constructive discussions on important china-eu economic and trade topics. 10月8-9日，商务部部长王文涛在北京与欧委会贸易和经济安全委员谢夫乔维奇共同主持召开中欧贸易投资磋商机制第二次例会并发表联合声明。双方立足“稳定、平衡的中欧关键贸易伙伴”定位，共同盘点了首次会议以来机制项下贸易和投资平衡、出口管制、知识产权、世贸组织改革四个工作板块磋商进展，并就中欧经贸重要议题进行了对等、专业、建设性的讨论。 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-10-09T13:27:05+00:00" datetime="2026-10-09T13:27:05+00:00">10-09<br>13:27</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-09T13:27:05+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Wang Wentao and European Commission Trade and Economic Security Commissioner Šefčovič jointly convene the second regular meeting of the China-EU Trade and Investment Consultation Mechanism</span><span class="l-zh">王文涛与欧委会贸易和经济安全委员谢夫乔维奇共同召开中欧贸易投资磋商机制第二次例会</span></h2>
+            <p class="tp-sum"><span class="l-en">On October 8-9, Minister of Commerce Wang Wentao and European Commissioner for Trade and Economic Security Maroš Šefčovič co-chaired the second regular meeting of the China-EU Trade and Investment Consultation Mechanism in Beijing and issued a joint statement. Based on the positioning of a "stable and balanced key trade partnership between China and the EU," the two sides jointly reviewed the consultation progress under the mechanism's four working areas since the first meeting—trade and investment balance, export controls, intellectual property rights and WTO reform—and held reciprocal, professional and constructive discussions on important China-EU economic and trade topics.</span><span class="l-zh">10月8-9日，商务部部长王文涛在北京与欧委会贸易和经济安全委员谢夫乔维奇共同主持召开中欧贸易投资磋商机制第二次例会并发表联合声明。双方立足“稳定、平衡的中欧关键贸易伙伴”定位，共同盘点了首次会议以来机制项下贸易和投资平衡、出口管制、知识产权、世贸组织改革四个工作板块磋商进展，并就中欧经贸重要议题进行了对等、专业、建设性的讨论。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.pbc.gov.cn/en/3688110/3688172/2026/2026100817112550958/index.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="pbocâs view on the rmb exchange rate  中国人民银行对人民币汇率的看法    pboc pboc_liquidity yuan pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="2026-10-08" datetime="2026-10-08">10-08</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-08"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">PBoC</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOCâs View on the RMB Exchange Rate</span><span class="l-zh">中国人民银行对人民币汇率的看法</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.scmp.com/business/article/3369937/hong-kongs-first-store-appeal-grows-more-japanese-south-korean-and-thai-brands-arrive?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="hong kong’s first-store appeal grows as more japanese, south korean and thai brands arrive  随着更多日本、韩国和泰国品牌进驻，香港首店吸引力上升 japanese, south korean and thai brands have increased their share of new entrants in hong kong’s retail property market by 7 percentage points to more than one-third in the first nine months of 2026, while the demand for shops from mainland chinese brands has slipped, according to cushman & wakefield.
+a slew of new brands helped lift the combined share of japanese, south korean and thai brands to a three-year high, according to cushman, which said it expected the trend to continue.
+this year,...  戴德梁行数据显示，2026年前九个月，日本、韩国和泰国品牌在香港零售物业市场新进驻租户中的占比上升了7个百分点，超过三分之一，而中国内地品牌对商铺的需求则有所下滑。一批新品牌的涌入推高了日 scmp - business property consumer property 房地产 consumer 消费 512200.ss">
+          <time class="tp-when" data-t="2026-10-06T23:00:08+00:00" datetime="2026-10-06T23:00:08+00:00">10-06<br>23:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-06T23:00:08+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Hong Kong’s first-store appeal grows as more Japanese, South Korean and Thai brands arrive</span><span class="l-zh">随着更多日本、韩国和泰国品牌进驻，香港首店吸引力上升</span></h2>
+            <p class="tp-sum"><span class="l-en">Japanese, South Korean and Thai brands have increased their share of new entrants in Hong Kong’s retail property market by 7 percentage points to more than one-third in the first nine months of 2026, while the demand for shops from mainland Chinese brands has slipped, according to Cushman & Wakefield.
+A slew of new brands helped lift the combined share of Japanese, South Korean and Thai brands to a three-year high, according to Cushman, which said it expected the trend to continue.
+This year,...</span><span class="l-zh">戴德梁行数据显示，2026年前九个月，日本、韩国和泰国品牌在香港零售物业市场新进驻租户中的占比上升了7个百分点，超过三分之一，而中国内地品牌对商铺的需求则有所下滑。一批新品牌的涌入推高了日</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3176223" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="特斯拉上海超级工厂9月交付新车环比增长10.7% tesla's shanghai gigafactory delivered 10.7% more new vehicles in september month-on-month 特斯拉上海超级工厂9月交付新车环比增长10.7% 乘联会最新统计数据显示，特斯拉上海超级工厂2026年9月交付新车超9.5万辆，环比增长10.7%；国内新车销量约6.5万辆，环比增长29.5%，交付量与国内销量均创下2026年新高。另外，据特斯拉方面汇总的数据，截至2026年8月，特斯拉已在韩国、澳大利亚等14个市场交付量超过2025年全年。（上证报） the latest statistics from the china passenger car association show that tesla's shanghai gigafactory delivered more than 95,000 new vehicles in september 2026, up 10.7% month on month; domestic new car sales were about 65,000, up 29.5% month on month, with both deliveries and domestic sales hitting new highs for 2026. in addition, according to data compiled by tesla, as of august 2026, tesla had delivered more vehicles in 14 markets including south korea and australia than in all of 2025. (shanghai securities news) 乘联会最新统计数据显示，特斯拉上海超级工厂2026年9月交付新车超9.5万辆，环比增长10.7%；国内新车销量约6.5万辆，环比增长29.5%，交付量与国内销量均创下2026年新高。另外，据特斯拉方面汇总的数据，截至2026年8月，特斯拉已在韩国、澳大利亚等14个市场交付量超过2025年全年。（上证报） 华尔街见闻 markets equity market 股票市场 510300.ss">
+          <time class="tp-when" data-t="2026-10-09T11:57:12+00:00" datetime="2026-10-09T11:57:12+00:00">10-09<br>11:57</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-09T11:57:12+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Tesla's Shanghai Gigafactory delivered 10.7% more new vehicles in September month-on-month</span><span class="l-zh">特斯拉上海超级工厂9月交付新车环比增长10.7%</span></h2>
+            <p class="tp-sum"><span class="l-en">The latest statistics from the China Passenger Car Association show that Tesla's Shanghai Gigafactory delivered more than 95,000 new vehicles in September 2026, up 10.7% month on month; domestic new car sales were about 65,000, up 29.5% month on month, with both deliveries and domestic sales hitting new highs for 2026. In addition, according to data compiled by Tesla, as of August 2026, Tesla had delivered more vehicles in 14 markets including South Korea and Australia than in all of 2025. (Shanghai Securities News)</span><span class="l-zh">乘联会最新统计数据显示，特斯拉上海超级工厂2026年9月交付新车超9.5万辆，环比增长10.7%；国内新车销量约6.5万辆，环比增长29.5%，交付量与国内销量均创下2026年新高。另外，据特斯拉方面汇总的数据，截至2026年8月，特斯拉已在韩国、澳大利亚等14个市场交付量超过2025年全年。（上证报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://www.stcn.com/article/detail/4209714.html" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="财政部发布！有力有效实施更加积极的财政政策 支持全方位扩大国内需求 ministry of finance issues notice! effectively implement a more proactive fiscal policy to support comprehensive expansion of domestic demand 财政部发布！有力有效实施更加积极的财政政策 支持全方位扩大国内需求    证券时报 fiscal_trade fiscal & trade 财政与贸易 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Ministry of Finance issues notice! Effectively implement a more proactive fiscal policy to support comprehensive expansion of domestic demand</span><span class="l-zh">财政部发布！有力有效实施更加积极的财政政策 支持全方位扩大国内需求</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://www.stcn.com/article/detail/4210133.html" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="财政部安排使用5500亿元地方政府债务结存限额 ministry of finance arranges the use of 550 billion yuan in local government debt carryover quota 财政部安排使用5500亿元地方政府债务结存限额    证券时报 fiscal_trade fiscal & trade 财政与贸易 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Ministry of Finance arranges the use of 550 billion yuan in local government debt carryover quota</span><span class="l-zh">财政部安排使用5500亿元地方政府债务结存限额</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">3</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">CREDIT</span><span class="l-en">Money supply, RMB loans & TSF</span><span class="l-zh">货币供应、人民币贷款与社融</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">6</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">MLF</span><span class="l-en">MLF operation (PBoC)</span><span class="l-zh">MLF 操作（央行中期借贷便利）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">CPI</span><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PPI</span><span class="l-en">PPI (producer prices)</span><span class="l-zh">PPI（工业生产者价格）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">10</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">ACTIVITY</span><span class="l-en">IP, FAI & retail sales</span><span class="l-zh">工业增加值、固投与社零</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">10</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">GDP</span><span class="l-en">GDP (quarterly)</span><span class="l-zh">GDP（季度）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">11</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">LPR</span><span class="l-en">LPR fix (loan prime rate)</span><span class="l-zh">LPR 报价（贷款市场报价利率）</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×7</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span><span class="ct">×3</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="ct">×3</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×2</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 
@@ -413,6 +1093,5 @@
 </script>
 
 <script src="theme.js?v=14bc9b37" defer></script>
-<script defer data-whb data-root="" src="wh_banner.js?v=b1207f44"></script>
 </body>
 </html>
