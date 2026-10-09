@@ -163,23 +163,37 @@ def _public_url(raw: Any) -> str:
     # A public "source" link must never contain authentication or subscriber PII.
     forbidden_keys = {"email", "e_mail", "phone", "ip", "token", "access_token",
                       "auth", "authorization", "api_key", "apikey", "secret",
-                      "session", "user_id"}
-    if any(key.lower() in forbidden_keys for key, _ in parse_qsl(u.query, keep_blank_values=True)):
-        raise ValueError("private source query")
-    # Key-only screening missed ?ref=person%40example.org: browsers copy and
-    # navigate the *whole* URL, disclosing the encoded identity to the source
-    # host and possibly to analytics/referrer systems. Decode a bounded number
-    # of times to defeat simple double-encoding without changing safe URLs.
+                      "session", "user_id", "session_id", "signature", "password",
+                      "credential", "client_secret", "jwt", "bearer"}
+    # Source links may be forwarded to a third party by the browser. Inspect
+    # decoded path/query/fragment as well as the original spelling; a private
+    # parameter hidden under #token= or ?ref=ok%26token%3D... is still private.
+    # Never rewrite a safe provider URL; only accept the original or deny it.
     decoded_url = raw
     for _ in range(4):
-        if _SOURCE_URL_EMAIL.search(decoded_url):
-            raise ValueError("identity in public source URL")
+        try:
+            decoded_parts = urlsplit(decoded_url)
+        except ValueError:
+            raise ValueError("invalid encoded source URL") from None
+        fields = (parse_qsl(decoded_parts.query, keep_blank_values=True) +
+                  parse_qsl(decoded_parts.fragment, keep_blank_values=True))
+        if any(key.lower() in forbidden_keys for key, _ in fields):
+            raise ValueError("private source URL parameter")
+        if (_SOURCE_URL_EMAIL.search(decoded_url) or
+                any(ord(ch) < 32 or ord(ch) == 127 for ch in decoded_url)):
+            raise ValueError("identity or control in public source URL")
         expanded = unquote(decoded_url)
         if expanded == decoded_url:
             break
         decoded_url = expanded
-    if _SOURCE_URL_EMAIL.search(decoded_url):
-        raise ValueError("identity in public source URL")
+    else:
+        # Reject unbounded decoding rather than leave a fifth layer hiding
+        # private keys, recipient identifiers, or control characters.
+        if unquote(decoded_url) != decoded_url:
+            raise ValueError("excessive source URL encoding")
+    if (_SOURCE_URL_EMAIL.search(decoded_url) or
+            any(ord(ch) < 32 or ord(ch) == 127 for ch in decoded_url)):
+        raise ValueError("identity or control in public source URL")
     try:
         ipaddress.ip_address(u.hostname)
     except ValueError:
