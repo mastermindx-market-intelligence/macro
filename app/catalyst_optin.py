@@ -446,6 +446,10 @@ def deliver_update(event_id: str, generation: int) -> dict:
 
     Revision source remains with the existing qualified producer. This adapter
     refuses to infer content from ticker/news or construct an approval receipt.
+    That same approved revision/rights owner must implement
+    read_public_rights(revision, at_utc) with CURRENT source-specific
+    public_anonymous display and email-distribution permissions, as checked
+    before roster read and each sender call. Missing port fails closed.
     """
     service = _active()
     if not isinstance(event_id, str) or not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", event_id):
@@ -462,7 +466,9 @@ def deliver_update(event_id: str, generation: int) -> dict:
     # All receipts are opaque and attribution-only; no recipient PII. Provider
     # acceptance is deliberately NOT called inbox delivery.
     states = {x["state"] for x in receipts}
+    rights_held = bool(states & {"SOURCE_RIGHTS_NOT_CURRENT", "SOURCE_RIGHTS_UNAVAILABLE"})
     return {"event_id": event_id, "generation": generation, "receipts": receipts,
             "status": "EFFECT_UNKNOWN" if "EFFECT_UNKNOWN" in states else
+                      "SOURCE_RIGHTS_HELD" if rights_held else
                       "PROVIDER_ACCEPTED" if "PROVIDER_ACCEPTED" in states else
                       "NO_CONFIRMED_DELIVERY"}
