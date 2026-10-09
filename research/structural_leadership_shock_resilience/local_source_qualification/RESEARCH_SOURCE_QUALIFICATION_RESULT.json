@@ -11,9 +11,30 @@
     "PUBLICATION_CLOCK_AND_HISTORICAL_SIZE_NOT_QUALIFIED",
     "TOTAL_RETURN_AND_TERMINAL_COVERAGE_NOT_PROVEN"
   ],
-  "CI": [],
-  "CODE_PR": null,
-  "COMMIT_SHA": null,
+  "CI": [
+    {
+      "conclusion": "SUCCESS",
+      "head_sha": "b3cf217b635f3edf9b3780ea483f58a46965637d",
+      "name": "ci-authority/main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113627393952"
+    },
+    {
+      "binding_on_main": false,
+      "conclusion": "FAILURE",
+      "head_sha": "b3cf217b635f3edf9b3780ea483f58a46965637d",
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "reason": "inactive_base_context",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113627392077"
+    },
+    {
+      "head_sha": "b3cf217b635f3edf9b3780ea483f58a46965637d",
+      "name": "ci",
+      "status": "IN_PROGRESS_AT_FIRST_OBSERVATION",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37870535355"
+    }
+  ],
+  "CODE_PR": "https://github.com/mastermindx-market-intelligence/macro/pull/8665",
+  "COMMIT_SHA": "268abb9c6491b9fab53391359ba4fe629aa79182",
   "DATA_SOURCE_RIGHTS": "UNKNOWN",
   "FROZEN_SPEC": "v1.0.1 plus pre-outcome v1.1 amendment",
   "INDEPENDENT_REVIEW": "OWED",
@@ -27,10 +48,26 @@
   "REAL_DATA_READ_SCOPE": "One public SEC submissions sample only; no private/reference host rows or SLR cohort read",
   "RESULT": "NOT_ADMITTED",
   "admission_granted": false,
-  "code_delivery_state": "LOCAL_TESTED_NOT_YET_PUBLISHED",
+  "code_commit_scope": "Tested implementation snapshot; later receipt-only commits do not change these code bytes",
+  "code_delivery_state": "PR_OPEN_CI_AND_IMPLEMENTATION_REVIEW_PENDING",
   "fixture_ids_executed": 16,
   "gics_dataset_rights": "UNKNOWN",
   "gics_delivered_source": "NOT_OBSERVED_IN_AUTHORIZED_SCOPE",
+  "implementation_review": {
+    "acceptance": null,
+    "requested_model": "grok-4.6",
+    "root": "01a11e3b-bf7b-7752-856d-9e5af1c51b02",
+    "source_commit": "b3cf217b635f3edf9b3780ea483f58a46965637d",
+    "stable_id": "slr-p0-review-01a11e3b",
+    "status": "ADMITTED_RETURN_PENDING"
+  },
+  "local_focused_tests": {
+    "exit_code": 0,
+    "incumbent_cases": 330,
+    "log": "green5.txt",
+    "new_synthetic_cases": 70,
+    "passed": 400
+  },
   "macro_base_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
   "massive_local_authenticated_access": "KEY_UNAVAILABLE",
   "massive_research_rights": "PASS_REPOSITORY_LICENSE_RECORD",

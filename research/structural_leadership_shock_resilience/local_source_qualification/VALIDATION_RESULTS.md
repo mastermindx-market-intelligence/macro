@@ -11,13 +11,17 @@ After implementation, one CLI firewall defect remained: it treated the metadata
 word PREOUTCOME as an outcome value. The correction retained outcome-column and
 protected-path rejection while accepting the frozen spec reference.
 
+Additional adversarial REDs exposed same-day timestamp leakage, omitted terminal
+cash, and protected-family file-name variants. Each was corrected after its
+failing fixture. The cooldown fixture also tests D+63 versus D+64 explicitly.
+
 Final focused command at this artifact revision:
 
 ```sh
-python3 -m pytest tests/test_slr_local_source_qualification.py tests/test_winner_autopsy.py tests/test_dataos_identity.py -q --tb=short --basetemp=/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/pytest-green3
+python3 -m pytest tests/test_slr_local_source_qualification.py tests/test_winner_autopsy.py tests/test_dataos_identity.py -q --tb=short --basetemp=/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/pytest-green5
 ```
 
-Result: **393 passed**, exit 0, 5.10 seconds. Of these, **63** are new synthetic
+Result: **400 passed**, exit 0, 5.54 seconds. Of these, **70** are new synthetic
 qualification tests and **330** are incumbent detector/identity tests. The first
 two runs had an unrelated pytest cleanup warning on an old temporary Chromium
 directory; isolated basetemp runs have no warning. No cleanup of that other
