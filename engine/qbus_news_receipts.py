@@ -165,6 +165,14 @@ def parse_rights_receipt(
         if not _bool(caps, required):
             raise NewsReceiptError(f"capability_{required}_required")
 
+    # This Tiingo consumer runs deterministic quality ranking, event clustering,
+    # and provider-article normalization. Those are derivative uses, not merely
+    # headline display. Deny Tiingo activation unless the contract owner
+    # explicitly licenses this processing; Benzinga\u0027s historic rules stay unchanged.
+    if requested_source == "tiingo" and not _bool(
+        caps, "derivative_processing", default=False
+    ):
+        raise NewsReceiptError("capability_derivative_processing_required")
     allow_url = _bool(caps, "source_link_display", default=False)
     allow_teaser = _bool(caps, "teaser_display", default=False)
 
