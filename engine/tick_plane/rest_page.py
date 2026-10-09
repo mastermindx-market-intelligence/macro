@@ -18,7 +18,7 @@ from datetime import date
 from decimal import Decimal, InvalidOperation
 
 from engine.tick_plane.stream_events import (
-    FrameContractError, _SESSION, _SYMBOL, _integer, _text,
+    FrameContractError, _SESSION, _SYMBOL, _integer, _text, _coarse_venue_class,
 )
 
 SCHEMA = "equity.tick_plane.historical_rest_page/v0"
@@ -97,8 +97,7 @@ def _trade(row, symbol):
         "correction_code": correction,
         "correction_status": ("CORRECTION_PRESENT_UNLINKED" if correction not in (None, 0)
                               else "CURRENT_VINTAGE_NOT_HISTORICALLY_FINAL"),
-        "venue_class": ("TRF" if exchange == 4 and trf is not None
-                        else "UNKNOWN" if exchange == 4 else "LIT"),
+        "venue_class": _coarse_venue_class(exchange, trf),
         "eligible_for_pressure": None,
     }
 
