@@ -153,13 +153,29 @@ def _retain_local(out_dir: Path, ref: retention.SnapshotReference, raw: bytes) -
     retention.verify_snapshot(ref, raw)
     path = out_dir / "history" / ref.root / f"{ref.sha256}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = None
     try:
-        with path.open("xb") as handle:
-            handle.write(raw)
-            handle.flush()
-            os.fsync(handle.fileno())
-    except FileExistsError:
-        pass
+        if not path.exists():
+            # Publish only a complete, synced inode. A failed preparation must
+            # never reserve the immutable final key with truncated bytes.
+            with tempfile.NamedTemporaryFile(
+                dir=path.parent, prefix=".matrix-history-", delete=False,
+            ) as handle:
+                temporary = Path(handle.name)
+                os.fchmod(handle.fileno(), 0o644)
+                if handle.write(raw) != len(raw):
+                    raise OSError("short local retained write")
+                handle.flush()
+                os.fsync(handle.fileno())
+            try:
+                os.link(temporary, path)
+            except FileExistsError:
+                # A racing key belongs to its existing writer. Verify below;
+                # never replace it, even when its bytes are corrupt.
+                pass
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
     with path.open("rb") as handle:
         retained = handle.read(ref.byte_length + 1)
     retention.verify_snapshot(ref, retained)
@@ -184,12 +200,27 @@ def _existing_usable_session(path: Path) -> tuple[str | None, str | None]:
     if not path.exists():
         return None, None
     try:
-        current = json.loads(path.read_text(encoding="utf-8"))
+        if path.stat().st_size > retention.MAX_MATRIX_BYTES:
+            raise retention.HistoricalUnavailable("existing matrix exceeds byte limit")
+        with path.open("rb") as handle:
+            raw = handle.read(retention.MAX_MATRIX_BYTES + 1)
+        if not 0 < len(raw) <= retention.MAX_MATRIX_BYTES:
+            raise retention.HistoricalUnavailable("existing matrix exceeds byte limit")
+        # Preserve legacy objects without modern schema/root fields, while
+        # sharing the retained-byte decoder's strict JSON and identity rules.
+        current = json.loads(
+            raw.decode("utf-8"), object_pairs_hook=retention._unique_object,
+            parse_constant=retention._nonfinite, parse_float=retention._finite_float,
+        )
+        session = retention.source_session(current)
+        if "schema" in current and current["schema"] != retention.SCHEMA:
+            raise retention.HistoricalUnavailable("existing matrix schema mismatch")
+        if "root" in current and retention.validate_root(current["root"]) != path.stem:
+            raise retention.HistoricalUnavailable("existing matrix root mismatch")
     except Exception as exc:  # noqa: BLE001
         return None, f"existing artifact unreadable: {exc}"
     if not current.get("cells") or current.get("spot") is None:
         return None, None
-    session = _payload_session(current)
     if session is None:
         return None, "existing usable artifact lacks a trustworthy source session"
     return session, None

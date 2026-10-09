@@ -414,3 +414,178 @@ def test_committed_engine_fixtures_round_trip_through_real_publisher(monkeypatch
         refs.append(ref)
     assert retention.load_snapshot(store, "fixture-bucket", refs[0]) == (fixtures / "a.json").read_bytes()
     assert store.objects["options_structure/matrix/SPY.json"] == (fixtures / "b.json").read_bytes()
+
+
+# Local publication must preserve identity under allocation and filesystem faults.
+def test_existing_head_oversize_is_rejected_before_open():
+    import scripts.build_options_matrix as builder
+    class OversizedHead:
+        def exists(self): return True
+        def stat(self):
+            return type("Info", (), {"st_size": retention.MAX_MATRIX_BYTES + 1})()
+        def open(self, *args, **kwargs):
+            pytest.fail("oversized head reached allocation")
+        def read_text(self, *args, **kwargs):
+            pytest.fail("oversized head reached unbounded read_text")
+    session, error = builder._existing_usable_session(OversizedHead())
+    assert session is None and error is not None
+
+
+def test_existing_head_growth_is_bounded(monkeypatch, tmp_path):
+    from pathlib import Path
+    import scripts.build_options_matrix as builder
+    path = tmp_path / "SPY.json"
+    path.write_bytes(encoded() + b" " * 1000)
+    cap = 512
+    monkeypatch.setattr(retention, "MAX_MATRIX_BYTES", cap)
+    original_stat, original_open = Path.stat, Path.open
+    reads = []
+    def short_stat(self, *args, **kwargs):
+        if self == path:
+            return type("Info", (), {"st_size": 1})()
+        return original_stat(self, *args, **kwargs)
+    class ReadGuard:
+        def __init__(self, handle): self.handle = handle
+        def __enter__(self): return self
+        def __exit__(self, *args): self.handle.close()
+        def __getattr__(self, name): return getattr(self.handle, name)
+        def read(self, size=-1):
+            assert 0 < size <= cap + 1, "unbounded current-head read"
+            reads.append(size)
+            return self.handle.read(size)
+    def guard_open(self, mode="r", *args, **kwargs):
+        handle = original_open(self, mode, *args, **kwargs)
+        return ReadGuard(handle) if self == path else handle
+    monkeypatch.setattr(Path, "stat", short_stat)
+    monkeypatch.setattr(Path, "open", guard_open)
+    session, error = builder._existing_usable_session(path)
+    assert session is None and error is not None
+    assert reads and sum(reads) <= cap + 1
+
+
+@pytest.mark.parametrize("raw", [
+    b'{"spot":100,"cells":[{}],"session":"2026-10-02","session":"2026-10-05"}',
+    b'{"spot":100,"cells":[{}],"_build_meta":{"asof_date":"2026-10-02","asof_date":"2026-10-05"}}',
+    b'{"spot":100,"cells":[{}],"root":"SPY","root":"QQQ","session":"2026-10-02"}',
+    b'{"spot":null,"cells":[],"session":true}',
+    b'{"spot":null,"cells":[],"_build_meta":[]}',
+    b'{"spot":100,"cells":[{}],"session":"2026-10-02","_build_meta":{"asof_date":"2026-10-05"}}',
+    b'{"spot":NaN,"cells":[{}],"session":"2026-10-02"}',
+    b'{"spot":1e9999,"cells":[{}],"session":"2026-10-02"}',
+    b'[]', b'null', b'\xff',
+])
+def test_existing_head_refuses_ambiguous_or_malformed_metadata(tmp_path, raw):
+    import scripts.build_options_matrix as builder
+    path = tmp_path / "SPY.json"
+    path.write_bytes(raw)
+    session, error = builder._existing_usable_session(path)
+    assert session is None and error is not None
+    assert path.read_bytes() == raw
+
+
+@pytest.mark.parametrize("doc,session", [
+    ({"spot":None,"cells":[]}, None),
+    ({"spot":100,"cells":[],"session":None}, None),
+    ({"spot":100,"cells":[{}],"_build_meta":{"asof_date":"2026-10-02"}}, "2026-10-02"),
+    ({"spot":100,"cells":[{}],"session":"2026-10-02"}, "2026-10-02"),
+])
+def test_existing_head_preserves_legacy_and_empty_compatibility(tmp_path, doc, session):
+    import scripts.build_options_matrix as builder
+    path = tmp_path / "SPY.json"
+    path.write_text(json.dumps(doc))
+    assert builder._existing_usable_session(path) == (session, None)
+
+
+def test_local_retention_fsync_failure_has_no_final_key_and_can_retry(monkeypatch, tmp_path):
+    import scripts.build_options_matrix as builder
+    raw = encoded()
+    ref = retention.reference_for_bytes("SPY", raw)
+    final = tmp_path / "history" / "SPY" / (ref.sha256 + ".json")
+    def fail_sync(fd): raise OSError("injected pre-publication fsync failure")
+    with monkeypatch.context() as fault:
+        fault.setattr(builder.os, "fsync", fail_sync)
+        with pytest.raises(OSError, match="injected"):
+            builder._retain_local(tmp_path, ref, raw)
+    assert not final.exists(), "failed preparation exposed an immutable final key"
+    assert list(final.parent.iterdir()) == [], "failed preparation leaked a temporary"
+    builder._retain_local(tmp_path, ref, raw)
+    assert final.read_bytes() == raw
+
+
+@pytest.mark.parametrize("same", [True, False])
+def test_local_retention_racing_key_is_verified_never_replaced(monkeypatch, tmp_path, same):
+    import scripts.build_options_matrix as builder
+    raw = encoded()
+    ref = retention.reference_for_bytes("SPY", raw)
+    final = tmp_path / "history" / "SPY" / (ref.sha256 + ".json")
+    linked = []
+    real_link = builder.os.link
+    def racing_link(src, dst, *args, **kwargs):
+        # A concurrently published immutable file is already complete.
+        assert not final.exists()
+        final.write_bytes(raw if same else b"other bytes")
+        linked.append(True)
+        return real_link(src, dst, *args, **kwargs)
+    monkeypatch.setattr(builder.os, "link", racing_link)
+    if same:
+        builder._retain_local(tmp_path, ref, raw)
+    else:
+        with pytest.raises(retention.HistoricalUnavailable):
+            builder._retain_local(tmp_path, ref, raw)
+    assert linked
+    assert final.read_bytes() == (raw if same else b"other bytes")
+    assert list(final.parent.iterdir()) == [final]
+
+
+@pytest.mark.parametrize("failure", ["interrupted", "short"])
+def test_interrupted_staged_history_preserves_heads_and_exact_retry(monkeypatch, tmp_path, failure):
+    import scripts.build_options_matrix as builder
+    store = Store()
+    _run_builder(monkeypatch, tmp_path, store, payload())
+    previous = (tmp_path / "SPY.json").read_bytes()
+    candidate = payload(session="2026-10-05")
+    raw = builder._serialize(candidate)
+    ref = retention.reference_for_bytes("SPY", raw)
+    final = tmp_path / "history" / "SPY" / (ref.sha256 + ".json")
+    original_temporary = builder.tempfile.NamedTemporaryFile
+    class InterruptedWriter:
+        def __init__(self, handle): self.handle = handle
+        def __enter__(self): self.handle.__enter__(); return self
+        def __exit__(self, *args): return self.handle.__exit__(*args)
+        def __getattr__(self, name): return getattr(self.handle, name)
+        def write(self, data):
+            self.handle.write(data[:8])
+            self.handle.flush()
+            if failure == "interrupted":
+                raise OSError("injected interrupted write after eight bytes")
+            return 8
+    with monkeypatch.context() as fault:
+        fault.setattr(builder.tempfile, "NamedTemporaryFile",
+                      lambda *args, **kwargs: InterruptedWriter(original_temporary(*args, **kwargs)))
+        with pytest.raises(SystemExit) as exc:
+            _run_builder(monkeypatch, tmp_path, store, candidate)
+        assert exc.value.code == 1
+    assert not final.exists()
+    assert not list(final.parent.glob(".matrix-history-*"))
+    assert (tmp_path / "SPY.json").read_bytes() == previous
+    assert store.objects["options_structure/matrix/SPY.json"] == previous
+    assert ref.key not in store.objects
+    _run_builder(monkeypatch, tmp_path, store, candidate)
+    assert final.read_bytes() == raw
+    assert (tmp_path / "SPY.json").read_bytes() == raw
+    assert store.objects[ref.key] == raw
+    assert store.objects["options_structure/matrix/SPY.json"] == raw
+
+
+@pytest.mark.parametrize("change", [
+    {"root":"QQQ"}, {"root":None}, {"root":"SPY\n"},
+    {"schema":"wrong"}, {"session":"2026-02-30", "cells":[], "spot":None},
+])
+def test_existing_head_supplied_identity_is_strict(tmp_path, change):
+    import scripts.build_options_matrix as builder
+    path = tmp_path / "SPY.json"
+    doc = payload(); doc.update(change)
+    raw = json.dumps(doc).encode(); path.write_bytes(raw)
+    session, error = builder._existing_usable_session(path)
+    assert session is None and error is not None
+    assert path.read_bytes() == raw

@@ -11,6 +11,20 @@ back the same bytes in the existing R2 bucket when `--publish` is requested, the
 advances the current local and R2 heads. Failure before verified retention leaves
 both prior heads intact. Local head replacement is atomic and preserves read mode.
 
+Local immutable publication prepares and fsyncs a sibling temporary file before
+an atomic no-replace hard link exposes the digest path. Interrupted/short writes
+and pre-publication fsync failures leave no final key, so an exact-key retry can
+succeed. A competing existing digest is verified and never replaced or removed.
+Caught failures clean the temporary; abrupt process termination may leave an
+unpublished temporary, but cannot expose partial bytes at the immutable key.
+
+Current local-head inspection checks the file size before allocation and then
+reads at most the byte ceiling plus one to detect growth. Strict UTF-8 JSON
+parsing refuses duplicate keys, nonfinite numbers and malformed or contradictory
+identity metadata. Legacy objects lacking modern schema/root fields and valid
+empty snapshots remain replaceable; supplied fields must be valid. A usable
+legacy snapshot still requires a trustworthy source session.
+
 History key: `options_structure/matrix/history/<ROOT>/<SHA256>.json`.
 Local equivalent: `<existing-out>/history/<ROOT>/<SHA256>.json`.
 No separate manifest, publisher, timer, consumer store or bucket is introduced.
