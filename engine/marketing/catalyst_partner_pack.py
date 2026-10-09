@@ -21,6 +21,7 @@ _UTC = timezone.utc
 _TICKER = re.compile(r"^[A-Z][A-Z0-9.-]{0,9}$")
 _SLUG = re.compile(r"^[a-z][a-z0-9-]{1,47}$")
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{1,95}$")
+_EMAIL = re.compile(r"[\w.+%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 _ALLOWED_RELATIONS = {"DIRECT", "EVIDENCED_INDIRECT"}
 _ALLOWED_KINDS = {"earnings", "event", "company_news", "ai_capex", "semiconductor"}
 _ALLOWED_CHANNELS = {"newsletter", "community", "social", "research"}
@@ -60,7 +61,8 @@ def _safe_https(value: Any, *, code: str = "UNSAFE_URL") -> str:
     u = urlsplit(value)
     _require(u.scheme == "https" and bool(u.hostname)
              and u.username is None and u.password is None and not u.fragment
-             and not any(c in value for c in '<>"\n\r\t\\'), code)
+             and not any(c in value for c in '<>"\n\r\t\\')
+             and not _EMAIL.search(value), code)
     return value  # Preserve case-sensitive source links and paths exactly.
 
 
@@ -68,7 +70,7 @@ def _atom(value: Any, code: str, max_len: int = 220) -> str:
     _require(isinstance(value, str), code)
     value = value.strip()
     _require(bool(value) and len(value) <= max_len and not any(
-        ord(c) < 32 for c in value), code)
+        ord(c) < 32 for c in value) and not _EMAIL.search(value), code)
     return value
 
 
@@ -180,9 +182,15 @@ def _public_packet(packet: dict, now: datetime) -> tuple[dict, dict[str, dict], 
     _require(state == "active", "RETRACTED_OR_SUPERSEDED_EVENT")
     generation = packet.get("correction_generation")
     _require(type(generation) is int and generation >= 0, "INVALID_CORRECTION")
+    corrections = packet.get("corrections") or []
+    _require(isinstance(corrections, list) and len(corrections) <= 20,
+             "INVALID_CORRECTION_HISTORY")
     if generation:
-        _require(isinstance(packet.get("corrections"), list)
-                 and bool(packet["corrections"]), "MISSING_CORRECTION_HISTORY")
+        _require(bool(corrections), "MISSING_CORRECTION_HISTORY")
+    missing = packet.get("missing_data") or []
+    _require(isinstance(missing, list) and len(missing) <= 10,
+             "INVALID_MISSING_DATA")
+    missing = [_atom(s, "INVALID_MISSING_DATA", 300) for s in missing]
     event_time = _stamp(packet.get("event_time_utc"), "EVENT_TIME")
     first_seen = _stamp(packet.get("first_observed_at_utc"), "OBSERVED_TIME")
     as_of = _stamp(packet.get("as_of_utc"), "AS_OF")
@@ -214,8 +222,10 @@ def _public_packet(packet: dict, now: datetime) -> tuple[dict, dict[str, dict], 
         "publication_time_utc": _iso(_stamp(publication, "PUBLICATION_TIME"))
                                  if publication else None,
         "correction_generation": generation,
-        "corrections": packet.get("corrections") or [],
-        "missing_data": packet.get("missing_data") or [],
+        # Never export upstream correction objects: they may carry internal
+        # evidence or editor details not cleared for partner re-distribution.
+        "correction_count": len(corrections),
+        "missing_data": missing,
         "demo_only": packet.get("demo_only") is True,
     }, sources, relations)
 
@@ -237,9 +247,10 @@ def _claims(packet: dict, tickers: list[str],
         related = row.get("tickers")
         _require(isinstance(related, list), "UNSCOPED_CLAIM")
         text = _atom(row.get("text"), "EMPTY_CLAIM", 600)
+        _require(all(isinstance(t, str) and _TICKER.fullmatch(t)
+                     for t in related), "INVALID_CLAIM_TICKERS")
         by_id[key] = {"claim_id": key, "text": text, "tickers": related,
-                      "source_ids": refs,
-                      "topics": row.get("topics") or []}
+                      "source_ids": refs}
     included: list[dict] = []
     for t in tickers:
         relation = relations.get(t)
