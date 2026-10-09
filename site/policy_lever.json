@@ -15,7 +15,7 @@
   },
   "jawboning": {
     "n_7d": 10,
-    "n_30d": 20,
+    "n_30d": 19,
     "last_alert_ts": "2026-10-08T19:44:36+00:00",
     "last_alert_summary": "Trump touts $15B steel plant, $200B Korea energy deal, defense shipyard surge \u2014 reshoring tailwinds",
     "last_alert_summary_zh": "\u7279\u6717\u666e\u529b\u63a8150\u4ebf\u7f8e\u5143\u94a2\u5382\u30012000\u4ebf\u7f8e\u5143\u97e9\u8d44\u80fd\u6e90\u534f\u8bae\u53ca\u9632\u52a1\u8239\u5382\u6269\u5f20\u2014\u2014\u672c\u571f\u5316\u6d6a\u6f6e"
@@ -31,13 +31,13 @@
       "name_zh": "\u4f0a\u6717/\u77f3\u6cb9",
       "asset": "CL=F",
       "arming": {
-        "stoch_k": 15.69,
-        "stoch_d": 6.87,
-        "stoch_curl": true,
-        "macd_curl": false,
+        "stoch_k": 1.59,
+        "stoch_d": 4.87,
+        "stoch_curl": false,
+        "macd_curl": true,
         "basing": false,
         "days_in_base": 0,
-        "flatness": 0.0151,
+        "flatness": 0.0371,
         "armed": false,
         "stoch_curl_recent": true,
         "stoch_traverse": false,
