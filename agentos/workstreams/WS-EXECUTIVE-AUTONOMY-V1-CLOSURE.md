@@ -68,29 +68,30 @@ waves:
       reproducibility gaps and one unproven root git-archive/safe.directory finding are recorded in
       the program file for the host owner.
   - id: P3
-    title: Canonical worker execution and independent two-worker acceptance
+    title: Qualify independent governed-worker identity and readiness for final fleet acceptance
     status: todo
     depends_on: [P1]
     wait:
       kind: external_action
       review_after: 2026-10-09
       condition: >
-        Full multi-worker fleet acceptance is held until a useful normal product parenting
-        loop is independently proven by the original native parent, and two distinct lawful
-        worker realms are identity-qualified. Source #811 immutable commission is already
-        merged, not pending repair. Codex-pro-01/02/03 remain unenrolled or unproven for
-        this acceptance; an AVAILABLE label does not prove second-worker eligibility.
+        A second distinct lawful worker realm and its provider/profile admission evidence
+        are not yet proven. Codex-pro-01/02/03 identity, ModernLuxe eligibility and
+        successful enrollment remain unresolved. This identity/readiness preparation
+        is independently executable NOW and does not wait on the original-parent
+        parenting-loop canary or the eventual multi-worker production acceptance.
     next_action: >
-      Preserve accepted #811 commission/effect fences and earlier Job/Attempt evidence.
-      Do not commission another #811 writer or repurpose JOB-002, JOB-003 or JOB-013.
-      After the original-parent zero-touch round trip succeeds, qualify a second real
-      provider/worker profile under the existing Capacity/Executive owners, then prove
-      at least two separately governed workers, including browser-backed user value,
-      with restart, duplicate-claim and bounded-retry negatives. See #1143/6070565507.
+      In parallel with P4 ingress/Relay installation, let existing Executive Capacity
+      and provider-profile owners perform the authorized exact-realm identity, permission
+      and readiness census; isolate genuine human credential or availability gates.
+      Preserve accepted #811 commission/effect fencing and JOB-002/003/013 history.
+      Never enroll by alias, infer a second worker from AVAILABLE, or summon a synthetic
+      canary. Preserve resulting exact evidence for P5; actual two-worker production
+      operation/recovery acceptance is downstream and remains unproven.
   - id: P4
     title: Prove lawful CEO ingress and full-autonomy coexistence at installed runtime
     status: todo
-    depends_on: [P3]
+    depends_on: [P1]
     wait:
       kind: external_action
       review_after: 2026-10-09
@@ -142,12 +143,17 @@ waves:
       one useful normal authorized CEO-parent to governed-child to correlated RESULT
       to SAME parent consumption canary with typed lost-response reconciliation.
       JOB-002/003/013 are historical and must never be reused; no synthetic proof Job.
-      Prove a second lawful worker, independent review/repair, disarm/re-arm,
+      P3 independent second-realm preparation may proceed while this first parenting
+      canary is blocked or running; P3 is not a gate on proving that one-child loop.
+      Consume P3 exact identity/readiness before final two-worker execution, then
+      prove a second lawful worker, independent review/repair, disarm/re-arm,
       capacity/fairness and zero routine Chairman message relay before declaring
       AUTONOMY_V1_PROVEN_LIVE. Current control: #1143/6070565507, #1143/6072446412.
 next_action: >
-  CURRENT FRONTIER 2026-10-09: do not dispatch another worker or replay installed
-  acceptance. The original native integration parent
+  CURRENT FRONTIER 2026-10-09: preserve parallel lanes. P3 lawful second-worker
+  identity/readiness census may proceed independently through the existing Capacity
+  owner; it does not wait for or authorize the P5 parenting canary. Do not dispatch
+  a replacement worker or replay installed acceptance. The original native integration parent
   mastermind-os-frontier-company-convergence-20260925-sol-001
   (task 01a0e0c7-1ed2-7fa0-a4b4-890d30ea6311, Mastermind #1143/6070565507)
   retains source/host/production acceptance custody. Consume #1286's accepted
