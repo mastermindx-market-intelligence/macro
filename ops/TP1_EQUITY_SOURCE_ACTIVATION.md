@@ -35,6 +35,15 @@ If current real-time slot ownership, connection state, host clock, source contra
 - Obtain and freeze the original-receipted condition, exchange and quote-condition/indicator reference vintages, their exact original source digests, source-review receipt and point-in-time admission policy **before** treating any observed print as classified. Unknown quote/indicator or nonlit route abstains.
 - Freeze an explicit small first cohort of symbols and RTH-only sessions (e.g. SPY and QQQ selected before seeing outcomes). Hard maximum 600 total Tier A names is **not** an initial pilot target. The 131,072-event quote-ring bound and source-part limits require measured real rates; do not silently increase them.
 
+### 2A. 2026-10-09 M2 Studio storage and rights preflight (read-only)
+
+Observed with an attended **read-only** `df -h` on `m2studio`:
+`/Volumes/Mastermind` = **3.6 TiB total, 3.4 TiB used, approximately 214 GiB free (95% full)**. The expected `/Volumes/Mastermind/data` root showed only `lse` at inspection; **no native Massive T/Q receipt directory was found there**. This was a bounded location census, not an exhaustive data-loss claim; a broad search across all Mastermind repositories was stopped after becoming expensive. `macro/main:data/massive/` currently contains only `capability_manifest.json`, not a real T/Q capture. Do not classify a synthetic repository test frame as market custody.
+
+**Storage gate**: do **not** begin a multi-terabyte vendor quote crawl, write a permanent quote tape or increase spool limits on this nearly full external volume. The first RTH pilot must use a frozen narrow cohort, measured bytes/minute, a verified private source owner, a reserved bounded quota and kill condition *before* archiving; the current pure `private_spool.py` does **not** implement global filesystem quotas or an R2 drainer. Source H2O/CPU availability on an unrelated worker is not production owner admission.
+
+**License evidence**: `research/licenses/MASSIVE_ENTITLEMENT_RECORD.md` records an operator-confirmed Enterprise Market Data License and Redistribution Addendum, effective 2026-08-09, with broad stock/quote/derived-data rights. The executed contract remains private and was **not inspected in this session**. Its operating notes explicitly defer to **feed-specific written vendor/exchange designations** (e.g. raw NBBO redistribution). Continue private derived-source work; specific raw feed publication and final public/browser projection still require the original license/source owner to confirm the relevant dataset restrictions. Do not invent a new vendor licensing bureaucracy where the established operator record already closes the global entitlement gate.
+
 ## 3. Incremental execution — under ONE admitted producer
 
 1. Verify clock sync and NTP/skew; the Massive masterplan defines a fail-closed threshold above 1 second. Confirm canonical secure env/host identity, private spool directory permissions and bounded disk/backlog capacity. Protect Terminal delayed quote service from disruption.
