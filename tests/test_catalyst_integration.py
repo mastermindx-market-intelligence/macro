@@ -71,6 +71,10 @@ def test_real_shape_first_value_and_fail_closed_private_fields():
     lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?ref=visitor%40example.org&doc=10k"),
     lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/visitor%2540example.org/filing"),
     lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?q=filing#visitor@example.org"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/filing?signature=not-public"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/filing#token=hidden-value"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/filing?ref=ok%26token%3Dsecret"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/filing?ref=ok%250Aevil"),
     lambda p: p["results"][0]["sources"].append(copy.deepcopy(p["results"][0]["sources"][0])),
 ])
 def test_claims_rights_clock_and_identity_negative(mutation):
