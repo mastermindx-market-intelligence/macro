@@ -398,6 +398,20 @@
     // Frozen ticker metadata can outlive its old overlay receipt. The newest
     // session receipt owns closure; the record still owns baseline health.
     var held = state === "unverified" || frozen || quality !== "current" || quoteState === "invalid";
+    // CSI 300 / ChiNext have deliberately empty baked tiles. During a verified
+    // closure there is nothing to preserve: restoring the carried skeleton hides
+    // an otherwise valid settled index print indefinitely. Admit ONLY these two
+    // true-index symbols when the source quote's exchange date is exactly the
+    // latest completed session; missing/invalid clocks and missed sessions stay held.
+    var closeOnlyIndex = sym === "000300.SS" || sym === "399006.SZ";
+    if (held && frozen && closeOnlyIndex && state !== "unverified" &&
+        quality === "current" && quoteState !== "invalid" &&
+        r.price != null && isFinite(r.price) && r.price > 0 &&
+        r.chg != null && isFinite(r.chg) && !r.invalidClock &&
+        sess && /^\\d{4}-\\d{2}-\\d{2}$/.test(sess.expected_session || "") &&
+        observationDay(r, sess) === sess.expected_session) {
+      held = false;
+    }
     return { held: held, frozen: frozen, state: state, quality: quality, quoteState: quoteState, sess: sess, ov: ov };
   }
   function paintHeldPrice(el, r, guard) {
