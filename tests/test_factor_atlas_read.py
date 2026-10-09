@@ -32,6 +32,8 @@ def case(dates=None, names=None):
         "basis": "current_membership", "source_shape": "membership",
         "collection_state": "COMPLETE", "known_at": "2026-01-27T20:00:00Z",
         "snapshot_ref": "fixture:current-roster/v1", "source_sha256": SHA,
+        "asof": dates[-1], "snapshot_date": "2026-01-27",
+        "effective_from": "2026-01-27", "effective_to": None,
     }
     prices = {}
     for sid in IDS:
@@ -52,10 +54,11 @@ def case(dates=None, names=None):
                      "rebalance_dates": rebalances},
         "current_roster": current,
         "pit_rosters": {day: {**deepcopy(current), "pit": True, "basis": "pit_snapshot",
-                              "snapshot_ref": "fixture:pit/" + day} for day in rebalances},
+                              "snapshot_ref": "fixture:pit/" + day, "asof": day} for day in rebalances},
         "decision_cutoffs": {day: day + "T20:59:00Z" for day in rebalances},
         "identity": {sid: {"owner_ref": "fixture:alias/" + sid,
-                           "known_at": "2026-01-01T00:00:00Z"} for sid in IDS},
+                           "known_at": "2026-01-01T00:00:00Z",
+                           "valid_from": "2026-01-01", "valid_to": None} for sid in IDS},
         "prices": prices,
         "rights": {"status": "QUALIFIED", "purpose": "internal_research",
                    "owner_ref": "fixture:rights/v1"},
@@ -320,3 +323,143 @@ def test_candidate_does_not_claim_production_or_authority():
     assert result["release_state"] == "CANDIDATE_NOT_ADMITTED"
     assert result["evidence_kind"] == "SYNTHETIC_FIXTURE"
     assert not any(result["authority"].values())
+
+
+@pytest.mark.parametrize("changes,reason", [
+    ({"asof": "2026-01-29"}, "MEMBERSHIP_QUERY_MISMATCH"),
+    ({"snapshot_date": "2026-01-29"}, "MEMBERSHIP_FUTURE_SNAPSHOT"),
+    ({"effective_from": "2026-01-29"}, "MEMBERSHIP_NOT_EFFECTIVE"),
+    ({"effective_to": "2026-01-28"}, "MEMBERSHIP_NOT_EFFECTIVE"),
+    ({"asof": None}, "MEMBERSHIP_QUERY_MISMATCH"),
+])
+def test_pit_effective_time_and_exact_query_are_checked(changes, reason):
+    request, inputs = case()
+    request["history_mode"] = "PIT_AS_KNOWN"
+    inputs["pit_rosters"][request["start"]].update(changes)
+    result = run(request, inputs)
+    assert returns(result) == [None, None]
+    assert reason in result["reasons"]
+
+
+def test_current_roster_effective_date_does_not_claim_historical_selection():
+    request, inputs = case()
+    inputs["current_roster"].update(effective_from="2026-01-30", snapshot_date="2026-01-30",
+                                   known_at="2026-01-30T20:00:00Z")
+    assert returns(run(request, inputs)) == [0, 0]
+
+
+@pytest.mark.parametrize("changes", [
+    {"valid_from": "2026-01-29"}, {"valid_to": "2026-01-28"},
+    {"valid_from": "invalid"},
+])
+def test_native_identity_interval_is_half_open(changes):
+    request, inputs = case()
+    request["history_mode"] = "PIT_AS_KNOWN"
+    inputs["identity"][IDS[0]].update(changes)
+    result = run(request, inputs)
+    assert returns(result) == [None, None]
+    assert "IDENTITY_NOT_EFFECTIVE" in result["reasons"]
+
+
+def test_missing_identity_interval_is_not_an_open_historical_grant():
+    request, inputs = case()
+    del inputs["identity"][IDS[0]]["valid_from"]
+    assert "IDENTITY_INTERVAL_UNAVAILABLE" in run(request, inputs)["reasons"]
+
+
+@pytest.mark.parametrize("path,value", [
+    (("pit_rosters",), []), (("prices",), []), (("calendar",), []),
+    (("current_roster", "members"), "AAA"), (("prices", IDS[0], "evidence"), []),
+    (("prices", IDS[0], "values"), []), (("identity", IDS[0]), []),
+    (("rights",), []),
+])
+def test_malformed_owner_shapes_are_typed_errors(path, value):
+    request, inputs = case()
+    target = inputs
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = value
+    with pytest.raises(ValueError):
+        run(request, inputs)
+
+
+def test_extreme_positive_price_cannot_overflow_a_qualified_return():
+    request, inputs = case()
+    inputs["prices"][IDS[0]]["values"]["2026-01-28"] = 1e-300
+    inputs["prices"][IDS[0]]["values"]["2026-01-29"] = 1e300
+    result = run(request, inputs)
+    assert result["points"][0]["return"] is None
+    assert "NONFINITE_CONSTITUENT_RETURN" in result["reasons"]
+
+
+def test_huge_integer_price_is_unavailable_not_an_uncaught_overflow():
+    request, inputs = case()
+    inputs["prices"][IDS[0]]["values"]["2026-01-29"] = 10 ** 400
+    result = run(request, inputs)
+    assert result["points"][0]["return"] is None
+    assert "MISSING_OR_INVALID_HELD_PRICE" in result["reasons"]
+
+
+def test_broken_full_history_never_reconnects_at_later_rebalance():
+    request, inputs = case(["2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03"])
+    inputs["prices"][IDS[0]]["values"]["2026-01-29"] = None
+    result = run(request, inputs)
+    assert returns(result) == [None, 0, 0]
+    assert [point["index_level"] for point in result["points"]] == [None, None, None]
+    assert result["analytics"]["window_return"] is None
+    assert result["analytics"]["return_1"] == 0
+
+
+def test_pure_compute_does_not_open_files_or_network(monkeypatch):
+    import builtins
+    import socket
+    module = importlib.import_module("engine.factor_atlas_read")
+    request, inputs = case()
+    def refused(*args, **kwargs):
+        raise AssertionError("pure calculation attempted I/O")
+    monkeypatch.setattr(builtins, "open", refused)
+    monkeypatch.setattr(socket, "socket", refused)
+    assert module.build_factor_read(request, owner_inputs=inputs)["status"] == "READY"
+
+
+def test_request_start_on_weekend_is_not_an_invented_regular_session():
+    request, inputs = case(["2026-01-24", "2026-01-26"])
+    with pytest.raises(ValueError, match="calendar"):
+        run(request, inputs)
+
+
+def test_missing_calendar_session_cannot_compress_a_daily_return():
+    request, inputs = case(["2026-01-28", "2026-01-30"])
+    with pytest.raises(ValueError, match="calendar"):
+        run(request, inputs)
+
+
+def test_non_session_holiday_is_not_an_observed_zero_return():
+    request, inputs = case(["2026-01-19", "2026-01-20"])
+    with pytest.raises(ValueError, match="calendar"):
+        run(request, inputs)
+
+
+def test_incorrect_close_clock_is_not_canonicalized_into_success():
+    request, inputs = case()
+    inputs["calendar"]["sessions"][1]["close_at"] = "2026-01-29T20:00:00Z"
+    with pytest.raises(ValueError, match="calendar"):
+        run(request, inputs)
+
+
+def test_identity_uses_each_decision_observation_not_one_old_alias():
+    request, inputs = case(["2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03"])
+    request["history_mode"] = "PIT_AS_KNOWN"
+    early, later = deepcopy(inputs["identity"]), deepcopy(inputs["identity"])
+    early[IDS[0]]["valid_to"] = "2026-01-30"
+    later[IDS[0]].update(valid_from="2026-01-30", known_at="2026-01-30T08:00:00Z")
+    inputs["identity"] = early
+    inputs["identity_by_date"] = {"2026-01-29": early, "2026-01-30": later}
+    assert returns(run(request, inputs)) == [0, 0, 0]
+
+
+def test_qualified_looking_identity_clock_still_has_no_source_authentication():
+    request, inputs = case()
+    result = run(request, inputs)
+    assert result["input_admission"] == "REFERENCE_CHECKS_ONLY_NOT_RECEIPT_AUTHENTICATION"
+    assert result["source_refs"]["identity"][IDS[0]]["owner_ref"] == inputs["identity"][IDS[0]]["owner_ref"]

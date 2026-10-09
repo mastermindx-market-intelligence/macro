@@ -41,3 +41,23 @@ These are native tests over synthetic owner projections, not real-data PIT proof
 Do not edit `research/factor_intelligence/`, `engine/theme_graph/`, incumbent basket/style calculations, ranking, entry, portfolio or membership stores. Do not promote the old research's source counts to current live coverage. Do not replay previously refused host read batches, change permission configuration, or claim that a mode switch clears a refusal.
 
 The current request authorizes this new source-only candidate workflow. It does not supply price redistribution rights, corporate-action attestations, historical collection completeness or consumer acceptance. Keep those gates separate from the independently implemented calculation layer.
+
+## Native owner-bridge milestone
+
+The original research is now committed and pushed at `24764ffea743bc4a8d29b36d983d63605ad59dc8` in PR **#8680**. `PUBLICATION_RECEIPT.json` verifies 23 original manifest entries byte-for-byte, with six raw logs explicitly omitted rather than pretending the source subset is the entire archive. `PUBLICATION.md` explains the original reports' retained historical status statements.
+
+`engine/factor_atlas_sources.py` adds an invocation-scoped bridge over the incumbent `members_asof` output, native `VendorAliasTable`, native `Resolved` price type and US cash/session-calendar owners. It does not collect or write source data. Historical membership names and current price-store keys stay separate. Missing aliases stop binding instead of shrinking a cohort; duplicate price labels refuse; adjustment/action/knowledge/rights fields are never filled from the current time. Per-decision identity observations preserve effective alias intervals.
+
+Further test-first changes close future/expired membership, exact as-of query, missing/expired identity interval, malformed shape, extreme numeric, missing calendar session, holiday and incorrect close-clock cases. Full-window NAV never reconnects after a missing valuation, even when local returns resume after a qualified rebalance.
+
+Verification:
+- Hardening RED: 18 failed, 46 passed; failures exposed the intended missing necessary checks.
+- Hardening GREEN: 64 passed.
+- Owner-bridge RED: 9 failed on the explicit missing native bridge assertion.
+- Owner-bridge GREEN: 73 passed across calculation and bridge tests.
+- Calendar/per-decision identity RED: 5 failed, 64 passed.
+- Current combined GREEN: `python3 -m pytest tests/test_factor_atlas_read.py tests/test_factor_atlas_sources.py -q --tb=short --basetemp=.factor-atlas-evidence/calendar-green` — **78 passed**.
+
+The bridge integration tests actually invoke the incumbent membership writer/readers and price resolver **only against isolated synthetic fixture stores**. They prove a 7% synthetic current/PIT return when fixture evidence is explicitly qualified and withheld returns when the native price evidence leaves its adjustment/session/observation fields unknown. They also prove no source-file changes during the adapter invocation and no network calls. They do not prove live rights, production source completeness or an accepted consumer feed.
+
+Current next step: native v1 schema, executable read-only invocation and source-only project continuity; then exact-head validation/review and the separately gated real-input/consumer qualifications. PR remains DRAFT / HOLD-FOR-SOL.

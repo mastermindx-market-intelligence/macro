@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from copy import deepcopy
-from datetime import date
+from datetime import date, datetime, timezone
 import hashlib
 import json
 import math
@@ -29,6 +29,8 @@ from engine.price_ladder import _basis_for_selected
 from lib.dataos.identity import parse_id
 from lib.dataos.price import AdjustmentBasis, Session, VenueScope
 from lib.dataos.temporal import utc
+from lib.market_session import _windows, calendar_verified
+from lib.us_cash_calendar import ET, sessions_between
 
 SCHEMA = "factor_atlas_read.v1"
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -57,7 +59,10 @@ def _sha(value: Any) -> bool:
 def _number(value: Any) -> float | None:
     if isinstance(value, bool) or not isinstance(value, (float, int)):
         return None
-    value = float(value)
+    try:
+        value = float(value)
+    except (ValueError, OverflowError):
+        return None
     return value if math.isfinite(value) and value > 0 else None
 
 
@@ -68,8 +73,43 @@ def _clock(value: Any):
         return None
 
 
+def _day(value: Any) -> str | None:
+    try:
+        return value if isinstance(value, str) and date.fromisoformat(value).isoformat() == value else None
+    except ValueError:
+        return None
+
+
+def _effective(on: str, start: Any, end: Any) -> bool:
+    if start is not None and (_day(start) is None or on < start):
+        return False
+    if end is not None and (_day(end) is None or on >= end):
+        return False
+    return not (start is not None and end is not None and start >= end)
+
+
+def _mapping(value: Any, name: str) -> dict:
+    if not isinstance(value, Mapping) or not all(isinstance(key, str) for key in value):
+        raise ValueError(f"{name} must be a string-keyed mapping")
+    return dict(value)
+
+
 def _normalise(owner_inputs: Mapping[str, Any]) -> dict:
-    data = deepcopy(dict(owner_inputs))
+    data = deepcopy(_mapping(owner_inputs, "owner_inputs"))
+    for key in ("calendar", "prices", "identity", "pit_rosters", "decision_cutoffs", "rights", "identity_by_date"):
+        data[key] = _mapping(data.get(key, {}), key)
+    for key, value in data["identity"].items():
+        _mapping(value, f"identity.{key}")
+    for on, entries in data["identity_by_date"].items():
+        for sid, entry in _mapping(entries, "identity_by_date").items():
+            _mapping(entry, f"identity_by_date.{on}.{sid}")
+    for key, value in data["prices"].items():
+        value = _mapping(value, f"prices.{key}")
+        _mapping(value.get("evidence", {}), "price evidence")
+        _mapping(value.get("values", {}), "price values")
+    for value in [data.get("current_roster")] + list(data["pit_rosters"].values()):
+        if value is not None:
+            _mapping(value, "roster")
     # Membership order is not a weight or identity. Preserve duplicates for refusal.
     rosters = [data.get("current_roster")] + list((data.get("pit_rosters") or {}).values())
     for roster in rosters:
@@ -77,7 +117,10 @@ def _normalise(owner_inputs: Mapping[str, Any]) -> dict:
             if not all(isinstance(sid, str) for sid in roster["members"]):
                 raise ValueError("membership identifiers must be strings")
             roster["members"] = sorted(roster["members"])
-    canonical_bytes(data)
+    try:
+        canonical_bytes(data)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("owner inputs must be finite JSON values") from exc
     return data
 
 
@@ -98,9 +141,12 @@ def _validate_request(request: Mapping[str, Any], data: dict):
         raise ValueError("a bounded owner calendar with an anchor and return sessions is required")
     days, clocks = [], {}
     for row in sessions:
-        day = row["date"]
+        row = _mapping(row, "calendar session")
+        day = row.get("date")
         if not isinstance(day, str) or date.fromisoformat(day).isoformat() != day:
             raise ValueError("invalid calendar session date")
+        if date.fromisoformat(day).weekday() >= 5:
+            raise ValueError("unsupported weekend in modern US regular-session calendar")
         clock = utc(row["close_at"])
         if clock.date().isoformat() != day or clock > cutoff:
             raise ValueError("calendar session close is outside its date or measurement cutoff")
@@ -108,6 +154,17 @@ def _validate_request(request: Mapping[str, Any], data: dict):
         clocks[day] = clock
     if days != sorted(set(days)):
         raise ValueError("duplicate or unordered calendar sessions")
+    first, last = date.fromisoformat(days[0]), date.fromisoformat(days[-1])
+    if (last - first).days > 1850:
+        raise ValueError("calendar window exceeds the bounded pilot")
+    expected_days = [day.isoformat() for day in sessions_between(first, last)]
+    if days != expected_days:
+        raise ValueError("calendar must contain every incumbent US cash session")
+    for day in days:
+        parsed = date.fromisoformat(day)
+        expected_close = datetime.combine(parsed, _windows("US", parsed)[-1][1], tzinfo=ET).astimezone(timezone.utc)
+        if clocks[day] != expected_close:
+            raise ValueError("calendar close disagrees with the incumbent session owner")
     if any(clocks[b] <= clocks[a] for a, b in zip(days, days[1:])):
         raise ValueError("calendar close instants are not increasing")
     if request["start"] != days[0] or request["end"] != days[-1]:
@@ -162,15 +219,31 @@ def _cohort(request: Mapping[str, Any], data: dict, day: str, cutoff):
         reasons.append("MEMBERSHIP_RECEIPT_UNAVAILABLE")
     if pit and (raw.get("pit") is not True or raw.get("basis") != "pit_snapshot"):
         reasons.append("CURRENT_ROSTER_FALLBACK")
+    query_day = _day(raw.get("asof"))
+    snapshot_day = _day(raw.get("snapshot_date"))
+    if query_day is None or (pit and query_day != day) or (not pit and query_day > cutoff.date().isoformat()):
+        reasons.append("MEMBERSHIP_QUERY_MISMATCH")
+    if snapshot_day is None:
+        reasons.append("MEMBERSHIP_SNAPSHOT_UNAVAILABLE")
+    elif query_day is not None and snapshot_day > query_day:
+        reasons.append("MEMBERSHIP_FUTURE_SNAPSHOT")
+    if "effective_from" not in raw or "effective_to" not in raw:
+        reasons.append("MEMBERSHIP_INTERVAL_UNAVAILABLE")
+    elif query_day is not None and not _effective(query_day, raw["effective_from"], raw["effective_to"]):
+        reasons.append("MEMBERSHIP_NOT_EFFECTIVE")
     known = _clock(raw.get("known_at"))
     selection_cutoff = utc(data["decision_cutoffs"][day]) if pit else cutoff
     if known is None:
         reasons.append("MEMBERSHIP_CLOCK_UNAVAILABLE")
     elif known > selection_cutoff:
         reasons.append("MEMBERSHIP_NOT_KNOWN_AT_DECISION" if pit else "MEMBERSHIP_NOT_KNOWN_AT_MEASUREMENT")
-    identity = data.get("identity") or {}
+    identity = (data.get("identity_by_date") or {}).get(day, data.get("identity") or {}) if pit else data.get("identity") or {}
     for sid in members:
         entry = identity.get(sid) or {}
+        if "valid_from" not in entry or "valid_to" not in entry:
+            reasons.append("IDENTITY_INTERVAL_UNAVAILABLE")
+        elif query_day is not None and not _effective(query_day, entry["valid_from"], entry["valid_to"]):
+            reasons.append("IDENTITY_NOT_EFFECTIVE")
         identity_known = _clock(entry.get("known_at"))
         if not _ref(entry.get("owner_ref")) or identity_known is None:
             reasons.append("IDENTITY_RECEIPT_UNAVAILABLE")
@@ -255,7 +328,7 @@ def build_factor_read(request: Mapping[str, Any], *, owner_inputs: Mapping[str, 
     stitched NAV. Local returns can resume only at an admitted rebalance after a
     broken valuation chain; the full-window index never silently reconnects.
     """
-    request = dict(request)
+    request = _mapping(request, "request")
     data = _normalise(owner_inputs)
     days, clocks, rebalances, cutoff = _validate_request(request, data)
     rights = data.get("rights") or {}
@@ -263,6 +336,8 @@ def build_factor_read(request: Mapping[str, Any], *, owner_inputs: Mapping[str, 
     if (rights.get("status") != "QUALIFIED" or rights.get("purpose") != request["purpose"]
             or not _ref(rights.get("owner_ref"))):
         global_reasons.append("RIGHTS_UNAVAILABLE")
+    if data["evidence_kind"] == "RETAINED_OWNER_INPUT" and not all(calendar_verified("US", date.fromisoformat(day).year) for day in days):
+        global_reasons.append("CALENDAR_NOT_OWNER_VERIFIED")
     price_map = data.get("prices") or {}
     points, cohort_history = [], []
     weights, members, cohort_reasons, cohort_ref = None, [], [], None
@@ -287,7 +362,11 @@ def build_factor_read(request: Mapping[str, Any], *, owner_inputs: Mapping[str, 
             start, end = _number(values.get(previous)), _number(values.get(day))
             if start is None or end is None:
                 failures.append("MISSING_OR_INVALID_HELD_PRICE")
-            per_member[sid] = None if failures else end / start - 1
+            value = None if failures else end / start - 1
+            if value is not None and not math.isfinite(value):
+                failures.append("NONFINITE_CONSTITUENT_RETURN")
+                value = None
+            per_member[sid] = value
             reasons.extend(failures)
         if len(vintages) > 1:
             reasons.append("MIXED_ADJUSTMENT_VINTAGES")
@@ -350,6 +429,7 @@ def build_factor_read(request: Mapping[str, Any], *, owner_inputs: Mapping[str, 
         "input_revision": data["input_revision"], "correction_of": data.get("correction_of"),
         "source_refs": {"code": data["code_ref"], "calendar": data["calendar"]["ref"],
                         "rights": rights.get("owner_ref"), "cohorts": cohort_history,
+                        "identity": data["identity"], "identity_by_date": data["identity_by_date"],
                         "prices": {sid: price_map.get(sid, {}).get("evidence")
                                    for sid in sorted({sid for row in cohort_history for sid in row["members"]})}},
         "authority": {"may_rank": False, "may_gate": False, "may_size": False,
