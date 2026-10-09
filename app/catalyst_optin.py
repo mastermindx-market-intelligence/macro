@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from typing import Any, Callable
 
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from engine.marketing.catalyst_lifecycle import (
@@ -86,7 +87,8 @@ def request_optin(body: dict) -> dict:
     if not isinstance(body, dict) or body.get("scope") != SCOPE or body.get("consent") is not True:
         raise FunnelGate("EXPLICIT_CONSENT_REQUIRED", 400)
     receipt = body.get("scan_receipt")
-    if not isinstance(receipt, str) or not 32 <= len(receipt) <= 1024:
+    if (not isinstance(receipt, str) or not 32 <= len(receipt) <= 1024
+            or not re.fullmatch(r"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+", receipt)):
         raise FunnelGate("SCAN_PROOF_REQUIRED", 400)
     accepted = _active().request(email=body.get("email"), checked=True,
                                  scan_receipt=receipt, touch=body.get("attribution"),
@@ -119,7 +121,7 @@ async def _read_bounded_optin_json(request: Request) -> dict:
 
 
 @router.post("/api/catalyst/optin/request", status_code=202)
-async def public_request_optin(request: Request) -> dict:
+async def public_request_optin(request: Request) -> JSONResponse:
     """Only opt-in request endpoint. Never grant consent or claim inbox delivery."""
     if (os.environ.get("CATALYST_PUBLIC_ENABLED") != "1"
             or os.environ.get("CATALYST_OPTIN_ENABLED") != "1"):
@@ -139,11 +141,15 @@ async def public_request_optin(request: Request) -> dict:
     if body.scope != SCOPE or body.consent_checked is not True:
         raise HTTPException(400, "EXPLICIT_CONSENT_REQUIRED")
     try:
-        return request_optin({"email": body.email, "scan_receipt": body.scan_receipt,
-                              "scope": body.scope, "consent": True,
-                              "attribution": body.first_touch})
+        ack = request_optin({"email": body.email, "scan_receipt": body.scan_receipt,
+                             "scope": body.scope, "consent": True,
+                             "attribution": body.first_touch})
+        return JSONResponse(ack, status_code=202,
+                            headers={"Cache-Control": "private, no-store",
+                                     "X-Content-Type-Options": "nosniff"})
     except FunnelGate as exc:
         raise _safe_gate(exc) from None
+
 
 class CanonicalPublicScanAuthority(ScanAuthority):
     """Re-use 00's actual serializer/rights/freshness gate; no duplicate feed.
