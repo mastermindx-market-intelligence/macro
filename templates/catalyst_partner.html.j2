@@ -164,8 +164,14 @@
           {% if pack.card_svg %}
           <img src="intelligence-card.svg" alt="Mastermind evidence card for {{ pack.event.primary_subject }}, sourced and dated.">
           {% else %}
-          <div class="no-media"><span aria-hidden="true">◌</span><strong>Image rehosting withheld</strong>
+          <div class="no-media"><span aria-hidden="true">◌</span>
+            {% if pack.media_status == "REHOST_RIGHTS_BLOCKED" %}
+            <strong>Image rehosting withheld</strong>
             <p>Source rights do not authorize this card to be reproduced. Text and source links remain available for review.</p>
+            {% else %}
+            <strong>Duplicate card withheld</strong>
+            <p>The proposed image would repeat the verified social observation without adding a new fact. Source-backed text remains available.</p>
+            {% endif %}
           </div>
           {% endif %}
           <figcaption>{{ pack.media_status|replace("_"," ") }}.
