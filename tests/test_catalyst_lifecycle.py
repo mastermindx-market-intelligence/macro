@@ -10,7 +10,8 @@ import pytest
 
 from engine.marketing.catalyst_lifecycle import (
     Confirmation, ConsentRecord, FunnelGate, FunnelService, PublicRevision, ScanEvidence,
-    SCOPE, VerifiedIdentity, analytics_receipt, first_touch, format_revision,
+    PublicRightsSnapshot, SourceDisplayRights, SCOPE, VerifiedIdentity, analytics_receipt,
+    first_touch, format_revision,
 )
 
 NOW = datetime(2026, 10, 9, 3, 0, tzinfo=timezone.utc)
@@ -106,11 +107,35 @@ class Suppression:
 
 
 class Revisions:
+    """Fixture adapter: a trusted existing rights owner, NEVER real licenses."""
+
     def __init__(self):
         self.generation = 2
+        self.rights_live = True
+        self.rights_down = False
+        self.rights_calls = []
 
     def is_current(self, event_id, generation):
         return event_id == "event-123" and generation == self.generation
+
+    def read_public_rights(self, revision, at_utc):
+        self.rights_calls.append((revision.event_id, revision.generation,
+                                  revision.ticker, tuple(revision.source_urls)))
+        if self.rights_down:
+            raise ConnectionError("rights owner unavailable / private payload")
+        if not self.rights_live:
+            return None
+        return PublicRightsSnapshot(
+            event_id=revision.event_id, generation=revision.generation,
+            ticker=revision.ticker, checked_at_utc=at_utc.isoformat(),
+            grants=tuple(SourceDisplayRights(
+                source_url=url, receipt_id=f"fixture-rights-receipt-{i}",
+                audience="public_anonymous",
+                effective_at_utc=(at_utc - timedelta(hours=1)).isoformat(),
+                expires_at_utc=(at_utc + timedelta(hours=1)).isoformat(),
+                display_link=True, display_facts=True, email_distribution=True,
+            ) for i, url in enumerate(revision.source_urls))
+        )
 
 
 class Sender:
@@ -130,7 +155,8 @@ class Sender:
 def make():
     otp, store, suppression, revision, sender = Otp(), Store(), Suppression(), Revisions(), Sender()
     service = FunnelService(secret=SECRET, scan=Scan(), identity=otp, consent=store,
-                            suppression=suppression, revisions=revision, sender=sender)
+                            suppression=suppression, revisions=revision, sender=sender,
+                            rights_clock=lambda now: now)
     return service, otp, store, suppression, revision, sender
 
 
@@ -397,6 +423,156 @@ def test_second_value_requires_new_evidence_and_source_rights_and_correct_ticker
     fails("INVALID_REVISION", lambda: service.deliver(update(generation=0), now=NOW))
     out = service.deliver(update(as_of_utc=NOW.isoformat()), now=NOW)
     assert out[0]["state"] == "NOT_SECOND_VALUE" and not sender.calls
+
+
+def test_ownerless_or_denied_live_source_rights_stop_before_roster_or_sender():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    called = []
+    store.interested = lambda eid, limit: called.append((eid, limit)) or []
+
+    # A stale immutable rights boolean is not a live authorization.
+    class CurrentOnly:
+        @staticmethod
+        def is_current(event_id, generation):
+            return True
+
+    service.revisions = CurrentOnly()
+    fails("SOURCE_RIGHTS_OWNER_NOT_READY", lambda: service.deliver(
+        update(external_rights_confirmed=True), now=NOW + timedelta(hours=2)))
+    service.revisions = rights
+    rights.rights_live = False
+    fails("SOURCE_RIGHTS_NOT_CURRENT", lambda: service.deliver(
+        update(external_rights_confirmed=True), now=NOW + timedelta(hours=2)))
+    rights.rights_live = True
+    rights.rights_down = True
+    fails("SOURCE_RIGHTS_OWNER_UNAVAILABLE", lambda: service.deliver(
+        update(external_rights_confirmed=True), now=NOW + timedelta(hours=2)))
+    assert called == [] and sender.calls == []
+
+
+@pytest.mark.parametrize("mutation,expected", [
+    (lambda p: replace(p, event_id="other-event"), "SOURCE_RIGHTS_PROTOCOL_MISMATCH"),
+    (lambda p: replace(p, generation=3), "SOURCE_RIGHTS_PROTOCOL_MISMATCH"),
+    (lambda p: replace(p, ticker="AMD"), "SOURCE_RIGHTS_PROTOCOL_MISMATCH"),
+    (lambda p: replace(p, checked_at_utc="2026-10-08T00:00:00+00:00"),
+     "SOURCE_RIGHTS_NOT_CURRENT"),
+    (lambda p: replace(p, grants=()), "SOURCE_RIGHTS_PROTOCOL_MISMATCH"),
+    (lambda p: replace(p, grants=(replace(p.grants[0], source_url="https://sec.gov/wrong"),)),
+     "SOURCE_RIGHTS_PROTOCOL_MISMATCH"),
+    (lambda p: replace(p, grants=(replace(p.grants[0], receipt_id="bad"),)),
+     "SOURCE_RIGHTS_PROTOCOL_MISMATCH"),
+    (lambda p: replace(p, grants=(replace(p.grants[0], audience="site_full"),)),
+     "SOURCE_RIGHTS_NOT_CURRENT"),
+    (lambda p: replace(p, grants=(replace(p.grants[0], display_facts=False),)),
+     "SOURCE_RIGHTS_NOT_CURRENT"),
+    (lambda p: replace(p, grants=(replace(p.grants[0], display_link=False),)),
+     "SOURCE_RIGHTS_NOT_CURRENT"),
+    (lambda p: replace(p, grants=(replace(p.grants[0], email_distribution=False),)),
+     "SOURCE_RIGHTS_NOT_CURRENT"),
+    (lambda p: replace(p, grants=(replace(p.grants[0], expires_at_utc="2026-10-08T00:00:00Z"),)),
+     "SOURCE_RIGHTS_NOT_CURRENT"),
+])
+def test_live_rights_decision_must_match_exact_source_window_and_email_capability(
+    mutation, expected
+):
+    service, _, _, _, rights, sender = make()
+    verified(service)
+    original = rights.read_public_rights
+    rights.read_public_rights = lambda revision, at_utc: mutation(
+        original(revision, at_utc))
+    fails(expected, lambda: service.deliver(
+        update(), now=NOW + timedelta(hours=2)))
+    assert sender.calls == []
+
+
+def test_roster_selection_cannot_race_a_public_rights_withdrawal_into_email():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    original = store.interested
+
+    def roster_then_revoke(event_id, limit):
+        rights.rights_live = False
+        return original(event_id, limit)
+
+    store.interested = roster_then_revoke
+    answer = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert len(rights.rights_calls) == 2
+    assert answer[0]["state"] == "SOURCE_RIGHTS_NOT_CURRENT"
+    assert sender.calls == []
+
+
+def test_rights_owner_unavailable_after_roster_selection_stops_batch_without_sender():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    original = store.interested
+
+    def roster_then_disconnect(event_id, limit):
+        rights.rights_down = True
+        return original(event_id, limit)
+
+    store.interested = roster_then_disconnect
+    out = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert out[0]["state"] == "SOURCE_RIGHTS_UNAVAILABLE"
+    assert sender.calls == []
+    assert len(rights.rights_calls) == 2
+
+
+def test_rights_rechecked_for_each_recipient_and_remaining_batch_stops_on_withdrawal():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    original = next(iter(store.records.values()))
+    second_uid = "dd35ac9d-0638-4be7-a4a8-6c4d59543b34"
+    store.records[(second_uid, "event-123")] = replace(
+        original, user_id=second_uid, email="second@example.com")
+    original_send = sender.deliver
+
+    def first_send_then_rights_revoked(record, revision, key):
+        status = original_send(record, revision, key)
+        rights.rights_live = False
+        return status
+
+    sender.deliver = first_send_then_rights_revoked
+    receipts = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in receipts] == [
+        "PROVIDER_ACCEPTED", "SOURCE_RIGHTS_NOT_CURRENT"]
+    assert len(sender.calls) == 1
+    assert len(rights.rights_calls) == 3
+    assert sender.calls[0][2] == "catalyst:event-123:2:NVDA:" + UID
+    assert "second@example.com" not in json.dumps(receipts)
+
+
+def test_fresh_clock_per_recipient_rejects_rights_expiring_inside_batch():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    initial = NOW + timedelta(hours=2)
+    expiry = NOW + timedelta(hours=3)
+    # The first granted URL expires while a batch remains in progress; a
+    # fresh rights read cannot continue to reuse the initial batch timestamp.
+    approved = rights.read_public_rights(update(), initial)
+    checked_times = []
+    clock_times = iter((initial, expiry))
+    service._rights_clock = lambda _: next(clock_times)
+
+    def grant_with_fixed_expiry(revision, checked_at):
+        checked_times.append(checked_at)
+        return replace(approved, checked_at_utc=checked_at.isoformat())
+
+    rights.read_public_rights = grant_with_fixed_expiry
+    result = service.deliver(update(), now=initial)
+    assert checked_times == [initial, expiry]
+    assert result[0]["state"] == "SOURCE_RIGHTS_NOT_CURRENT"
+    assert sender.calls == []
+
+
+def test_rights_clock_failure_never_falls_back_to_old_batch_time():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    service._rights_clock = lambda _: (_ for _ in ()).throw(
+        RuntimeError("system time unavailable"))
+    fails("SOURCE_RIGHTS_CLOCK_UNAVAILABLE", lambda: service.deliver(
+        update(), now=NOW + timedelta(hours=2)))
+    assert rights.rights_calls == [] and sender.calls == []
 
 
 def test_send_receipt_idempotency_and_uncertainty_not_claimed_success():
