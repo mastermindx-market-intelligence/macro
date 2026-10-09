@@ -2594,6 +2594,7 @@ jobs:
       # registration the transport dispatches through, and its suite.
       - "engine/market_ontology/theme_research_registry.py"
       - "tests/test_theme_research_registry.py"
+      - "tests/test_theme_sources_registry.py"
       # Shared hook 2 (same ruling): the leaf module that owns what a mount
       # renders — anchor, slices, schema ids, bilingual copy — read by BOTH
       # the registration and the page builders. It is a leaf on purpose: the
@@ -2818,6 +2819,8 @@ jobs:
         run: python -m pytest tests/test_theme_research_mount_context.py -q
       - name: theme tracker mounts (row-gated, page order, two verticals, failure never fails the build)
         run: python -m pytest tests/test_theme_tracker_research_mounts.py -q
+      - name: evidence source registry + rights binding (family enums, per-family review rows, path-scoped grandfather, prefix shadowing, recognition-only refusal, display-ok-never-redistributable)
+        run: python -m pytest tests/test_theme_sources_registry.py -q
 
   lens-tap-boundary:
     if: ${{ false }}
