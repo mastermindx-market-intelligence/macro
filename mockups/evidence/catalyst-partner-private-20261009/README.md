@@ -5,8 +5,9 @@
 an approved publisher partnership or an issuer event. No deployment, outreach,
 email, X activation or external publication occurred. Evidence generated from
 the Session 04 source branch at
-`bb8b655b69aa44f6ad44f8fa5b2b5ec6615f958c` before adding this evidence
-corpus; later evidence-only commits do not change the captured template.
+`d46fa53accce37cbe6a637351025c2fa9016a88b` as the content-addressed source code revision, before updating the three
+committed example snapshots and renewing this evidence corpus. The 24 images
+are genuine rerun captures of those updated example bytes.
 
 This folder reuses the existing canonical
 `mastermind.page_evidence_receipt.v1` and `mastermind.p0_evidence.v2`
@@ -52,3 +53,13 @@ no alternative lifecycle, data-rights or publication authority.
 **Next acceptance:** operator visual review, true Chinese copy translation if
 Chinese-language distribution is intended, admitted public-event/rights producer,
 Session 00 public HTML route and attribution proof, and Session 06 re-review.
+
+## Refresh after evidence and attribution regression repair
+
+This manifest supersedes the preceding historical 24-shot capture at an older
+pack identity. The verified sources and partner fixtures remain synthetic and
+unapproved; only the content-addressed `pack_id`/CTA and related evidence
+receipts changed. All 24 replacement screenshots were produced through the
+same canonical Chromium capture tool. They replace, rather than masquerade as,
+the earlier source-state screenshots. Re-run the source checker against this
+manifest at the eventual exact PR head before making any CI-green claim.

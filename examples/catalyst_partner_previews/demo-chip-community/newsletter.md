@@ -30,6 +30,6 @@ These are evidence-qualified relationships, not estimated market moves or tradin
 
 Information as of 2026-10-09T03:30:00Z; event dated 2026-10-09T02:00:00Z.
 Conditional context only. Not investment advice.
-Scan the cited event and selected tickers: https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-chip-community&utm_campaign=catalyst_scan&utm_content=cp_f9f6d7bb13d917c741&event_id=synthetic-semis-brief&tickers=EXA%2CEXB
+Scan the cited event and selected tickers: https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-chip-community&utm_campaign=catalyst_scan&utm_content=cp_3c2e70af91aa412140&event_id=synthetic-semis-brief&tickers=EXA%2CEXB
 
 DRAFT PREVIEW - NOT APPROVED FOR DISTRIBUTION.

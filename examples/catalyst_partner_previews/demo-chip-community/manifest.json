@@ -69,7 +69,7 @@
     "Independent rights, facts, freshness and copy review.",
     "Partner permission and editor signoff before any distribution."
   ],
-  "pack_id": "cp_f9f6d7bb13d917c741",
+  "pack_id": "cp_3c2e70af91aa412140",
   "partner": {
     "audience": "supplier capacity and indirect exposure",
     "channel": "community",
@@ -91,7 +91,7 @@
       "ticker": "EXB"
     }
   ],
-  "scan_link": "https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-chip-community&utm_campaign=catalyst_scan&utm_content=cp_f9f6d7bb13d917c741&event_id=synthetic-semis-brief&tickers=EXA%2CEXB",
+  "scan_link": "https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-chip-community&utm_campaign=catalyst_scan&utm_content=cp_3c2e70af91aa412140&event_id=synthetic-semis-brief&tickers=EXA%2CEXB",
   "schema": "marketing.catalyst_partner_pack.v1",
   "selected_tickers": [
     "EXA",

@@ -17,7 +17,7 @@ python3 scripts/build_catalyst_partner_pack.py --demo --out /tmp/catalyst-partne
 python3 -m unittest -v tests/test_catalyst_partner_pack.py
 ```
 
-Three exact identities are stable for these fixture inputs: `cp_df01f66b050ce320ca`, `cp_f9f6d7bb13d917c741`, and `cp_c09256aed277a51c68`. Generated assets are deterministic. They do not constitute a verified public market packet or production/browser acceptance.
+Three exact identities are stable for these fixture inputs: `cp_e3bfa042940ca4fcd8`, `cp_3c2e70af91aa412140`, and `cp_80f195c1281b0be6f1`. Generated assets are deterministic. They do not constitute a verified public market packet or production/browser acceptance.
 
 ## Replacing the fixture with actual approved evidence
 
@@ -45,7 +45,7 @@ These profiles can be given to `--partner` (tickers default to `selected_tickers
 
 The saved previews are built using the **existing Mastermind** `templates/theme.css` `:root` token definitions, extracted unchanged at generation time and embedded in each private HTML file. No page-local palette, radius or font authority was created. The chart uses the existing `render_breaking_card` renderer **and** the existing `card_earns_attachment` decision after rendering; it is withheld if it merely restates the selected social claim, with a distinct explanatory empty-state from rights refusal. Each synthetic demo fixture includes a separate verified-only-for-demo observation so its card adds useful information. The CLI pins the checkout root before importing house packages, avoiding sibling-checkout import hijacks.
 
-Focused offline suite: **34 tests passed**; new design-system scanner reported **0 added blocking findings**; compiler byte-check and README/example diff proof to be rerun at the current commit. Sampled offline Chrome viewport renderings at 1440×1080 and 320×980 showed the synthetic warning and editorial hold without horizontal clipping. This does **not** imply existing GitHub CI, production source rights, an approved partner or a live scan route.
+Focused offline suite: **41 tests passed**; new design-system scanner reported **0 added blocking findings**; compiler byte-check and README/example diff proof to be rerun at the current commit. Sampled offline Chrome viewport renderings at 1440×1080 and 320×980 showed the synthetic warning and editorial hold without horizontal clipping. This does **not** imply existing GitHub CI, production source rights, an approved partner or a live scan route.
 
 
 ### Source and destination safety
@@ -53,3 +53,13 @@ Focused offline suite: **34 tests passed**; new design-system scanner reported *
 The review-only compiler rejects source URLs with percent- or double-percent-encoded email addresses, local/private IP literals, localhost/internal hosts and fixture-only `.invalid` sources outside the explicit synthetic demo. These checks do not replace source-rights verification by the upstream evidence owner. The optional operator-supplied scan route is restricted to the anonymous-first **HTML** `GET /api/catalyst` destination; the machine `/api/catalyst/scan` JSON endpoint is intentionally refused for partner-facing links. Source 00 must separately verify the registered route, attribution and hosted consumer path; a string route receipt alone never grants publication.
 
 **Independent release review:** [Session 06 review at #8678](https://github.com/mastermindx-market-intelligence/macro/pull/8678#issuecomment-6074361233) identified missing rights-owner binding and schema mismatch between the provisional 01 event producer and this strictly gated partner read-model. Neither issue is concealed by the synthetic examples. An actual Session 01 public-event packet and source receipt are required for the next producer adapter test; the independently owned scan/consent/routes must remain OFF while absent.
+
+## Source-qualified rights, content identity and output custody (2026-10-09)
+
+The public read-model now includes **headline-only sources** in its cited source ledger and requires public rehosting permission from *every* contributing headline and claim source before generating the SVG. A text-only card denial preserves public source links; it does not claim licence rights. All rights receipts remain source-owner assertions awaiting independent evidence qualification.
+
+`pack_id` and `utm_content` are deterministically content-addressed over the sanitized event generation/time, actual public claim text, active sources, permitted ticker relationships, selected claim order and partner profile. Changing a material claim without changing its claim ID still rotates both the pack ID and tracking URL, avoiding silent attribution identity reuse. This does **not** create another attribution ledger or verify user conversions; `marketing.links.canonical_link` remains the UTM authority.
+
+Files are written through OS-exclusive, uniquely named temporary files and atomic replacements. The destination is preflighted for symlink outputs to prevent caller-placed links redirecting writes. Tests verify the old predictable `.index.html.tmp` symlink cannot overwrite a sentinel and that no partial pack is written if a later output path is a symlink. Malformed unhashable evidence lists and model-selected claim IDs fail with typed refusals, not an uncontrolled exception.
+
+The fixture identities listed above and all **18 generated files** are pinned by the exact byte-for-byte generator regression. The separate [canonical 24-state browser evidence](../../mockups/evidence/catalyst-partner-private-20261009/README.md) captures the content-addressed version. No real partner name, visual brand, source licence, live route or emails were activated.

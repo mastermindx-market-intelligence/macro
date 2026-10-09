@@ -32,6 +32,6 @@ These are evidence-qualified relationships, not estimated market moves or tradin
 
 Information as of 2026-10-09T03:30:00Z; event dated 2026-10-09T02:00:00Z.
 Conditional context only. Not investment advice.
-Scan the cited event and selected tickers: https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-portfolio-risk&utm_campaign=catalyst_scan&utm_content=cp_c09256aed277a51c68&event_id=synthetic-semis-brief&tickers=EXA%2CEXB%2CEXC
+Scan the cited event and selected tickers: https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-portfolio-risk&utm_campaign=catalyst_scan&utm_content=cp_80f195c1281b0be6f1&event_id=synthetic-semis-brief&tickers=EXA%2CEXB%2CEXC
 
 DRAFT PREVIEW - NOT APPROVED FOR DISTRIBUTION.

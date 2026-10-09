@@ -89,7 +89,7 @@
     "Independent rights, facts, freshness and copy review.",
     "Partner permission and editor signoff before any distribution."
   ],
-  "pack_id": "cp_c09256aed277a51c68",
+  "pack_id": "cp_80f195c1281b0be6f1",
   "partner": {
     "audience": "exposure coverage and missing forward disclosures",
     "channel": "research",
@@ -115,7 +115,7 @@
       "ticker": "EXC"
     }
   ],
-  "scan_link": "https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-portfolio-risk&utm_campaign=catalyst_scan&utm_content=cp_c09256aed277a51c68&event_id=synthetic-semis-brief&tickers=EXA%2CEXB%2CEXC",
+  "scan_link": "https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-portfolio-risk&utm_campaign=catalyst_scan&utm_content=cp_80f195c1281b0be6f1&event_id=synthetic-semis-brief&tickers=EXA%2CEXB%2CEXC",
   "schema": "marketing.catalyst_partner_pack.v1",
   "selected_tickers": [
     "EXA",
