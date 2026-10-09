@@ -7,18 +7,26 @@ an `--admin` merge mid-flight used to cancel the PR's own proof run (#3867) — 
 it turned every session into a CI hostage, holding its turn 20-60 minutes purely
 to watch packs it cannot influence.
 
-Every GitHub-native fix is structurally unavailable on this account:
+That original user-account topology had no safe GitHub-native queue path:
 
-  * A user-account ruleset cannot grant the github-actions app a bypass (422,
-    organization-only), so the lanes cannot be exempted from a rule.
-  * ANY required-status-check rule — ruleset or classic branch protection — would
-    also block the render/nightly lanes' direct `GITHUB_TOKEN` pushes to main,
-    breaking the deploy path to fix the merge path.
-  * `gh pr merge --auto --squash` is not a wait at all: with no branch protection
-    there are no required checks to gate on, so auto-merge merges IMMEDIATELY
-    (verified PR #3889, 2026-07-28 — merged ~1 min after arming, packs pending).
+  * a required-status rule would also block the render/nightly lanes' direct
+    `GITHUB_TOKEN` pushes to main;
+  * the GitHub Actions integration itself is not an eligible repository-ruleset
+    bypass actor (reconfirmed by GitHub HTTP 422 on 2026-10-03);
+  * with no required protection, `gh pr merge --auto --squash` merges immediately
+    rather than waiting for the proof set (verified PR #3889, 2026-07-28).
 
-So the release valve is account-side: a session arms its PR with the
+The repository is now organization-owned and a native merge queue can be staged,
+but activation is still gated on two concrete facts: merge-group CI must publish
+the same binding proof contexts, and the many intentional direct-main publishers
+need an accepted write identity that survives required-status enforcement. This
+module therefore detects queue state at runtime. No queue means the historical
+refresh + SHA-pinned squash behavior below. An active queue means an eligible
+head is enqueued with its exact expected head OID and GitHub owns current-base
+integration proof; an unreadable queue state fails closed instead of falling
+through to an admin-token direct merge.
+
+Until those repository settings are active, the release valve remains account-side: a session arms its PR with the
 `merge-on-green` label and stops; this sweeper wakes when `ci`, `fences`, or the
 source-main `integration-baseline` concludes, with a ten-minute cron retained as
 a recovery net. It performs the merge the session would otherwise have sat there
@@ -272,6 +280,7 @@ except ImportError:  # run as `python3 scripts/merge_on_green.py` (the workflow 
     )
 
 GITHUB_API = "https://api.github.com"
+GITHUB_GRAPHQL = "https://api.github.com/graphql"
 MERGE_ON_GREEN_LABEL = "merge-on-green"
 MERGE_BLOCKED_LABEL = "merge-blocked"
 MAIN_RED_REPAIR_LABEL = "main-red-repair"
@@ -566,6 +575,162 @@ def _api_message(payload: Any) -> str:
         if message:
             return message
     return ""
+
+
+
+def _graphql_data(
+    query: str,
+    variables: dict[str, Any],
+    token: str,
+) -> dict[str, Any]:
+    """Read one bounded GitHub GraphQL response or fail closed."""
+    status, body = _request(
+        "POST",
+        GITHUB_GRAPHQL,
+        token,
+        {"query": query, "variables": variables},
+    )
+    if status != 200:
+        raise RuntimeError(
+            f"GitHub GraphQL read failed: HTTP {status} {_api_message(body)[:240]}"
+        )
+    if not isinstance(body, dict):
+        raise RuntimeError("GitHub GraphQL read returned no object")
+    errors = body.get("errors")
+    if errors:
+        detail = "; ".join(
+            str(item.get("message") if isinstance(item, dict) else item)
+            for item in (errors if isinstance(errors, list) else [errors])
+        )
+        raise RuntimeError(f"GitHub GraphQL read returned errors: {detail[:240]}")
+    data = body.get("data")
+    if not isinstance(data, dict):
+        raise RuntimeError("GitHub GraphQL read returned no data object")
+    return data
+
+
+def active_merge_queue_id(repo: str, base_ref: str, token: str) -> str | None:
+    """Return the native queue id for base_ref, or None when no queue exists."""
+    if "/" not in repo:
+        raise RuntimeError("repository identity must be owner/name")
+    owner, name = repo.split("/", 1)
+    data = _graphql_data(
+        """
+        query($owner: String!, $name: String!, $branch: String!) {
+          repository(owner: $owner, name: $name) {
+            mergeQueue(branch: $branch) { id }
+          }
+        }
+        """,
+        {"owner": owner, "name": name, "branch": base_ref},
+        token,
+    )
+    repository = data.get("repository")
+    if not isinstance(repository, dict):
+        raise RuntimeError("GitHub GraphQL queue read returned no repository")
+    queue = repository.get("mergeQueue")
+    if queue is None:
+        return None
+    if not isinstance(queue, dict) or not queue.get("id"):
+        raise RuntimeError("GitHub GraphQL queue read returned malformed queue state")
+    return str(queue["id"])
+
+
+def merge_queue_entry_id(pull_request_id: str, token: str) -> str | None:
+    """Read one exact pull request native merge-queue entry."""
+    if not pull_request_id:
+        raise RuntimeError("pull request node id is required for queue reconciliation")
+    data = _graphql_data(
+        """
+        query($id: ID!) {
+          node(id: $id) {
+            ... on PullRequest {
+              mergeQueueEntry { id }
+            }
+          }
+        }
+        """,
+        {"id": pull_request_id},
+        token,
+    )
+    node = data.get("node")
+    if not isinstance(node, dict):
+        raise RuntimeError("GitHub GraphQL queue-entry read returned no pull request")
+    entry = node.get("mergeQueueEntry")
+    if entry is None:
+        return None
+    if not isinstance(entry, dict) or not entry.get("id"):
+        raise RuntimeError("GitHub GraphQL queue-entry read returned malformed state")
+    return str(entry["id"])
+
+
+def enqueue_pull_request_to_queue(
+    pull_request_id: str,
+    head_sha: str,
+    read_token: str,
+    merge_token: str,
+) -> tuple[str, str]:
+    """Enqueue an exact head, reconciling every non-success before any retry."""
+    existing = merge_queue_entry_id(pull_request_id, read_token)
+    if existing is not None:
+        return "already-queued", existing
+
+    query = """
+        mutation($pullRequestId: ID!, $expectedHeadOid: GitObjectID!) {
+          enqueuePullRequest(
+            input: {
+              pullRequestId: $pullRequestId
+              expectedHeadOid: $expectedHeadOid
+            }
+          ) {
+            mergeQueueEntry { id }
+          }
+        }
+    """
+    payload = {
+        "query": query,
+        "variables": {
+            "pullRequestId": pull_request_id,
+            "expectedHeadOid": head_sha,
+        },
+    }
+    status: int | None = None
+    body: Any = None
+    transport_error = ""
+    try:
+        status, body = _request("POST", GITHUB_GRAPHQL, merge_token, payload)
+    except Exception as exc:
+        transport_error = str(exc)[:240]
+
+    if status == 200 and isinstance(body, dict):
+        data = body.get("data")
+        mutation = data.get("enqueuePullRequest") if isinstance(data, dict) else None
+        entry = mutation.get("mergeQueueEntry") if isinstance(mutation, dict) else None
+        if isinstance(entry, dict) and entry.get("id"):
+            return "queued", str(entry["id"])
+
+    try:
+        reconciled = merge_queue_entry_id(pull_request_id, read_token)
+    except Exception as exc:
+        detail = transport_error or (
+            f"HTTP {status}: {_api_message(body)}" if status is not None else "unknown"
+        )
+        return "unknown", f"{detail[:180]}; readback failed: {str(exc)[:180]}"
+    if reconciled is not None:
+        return "queued", reconciled
+
+    if status is not None and 400 <= status < 500:
+        return "declined", f"HTTP {status}: {_api_message(body)[:220]}"
+    if status == 200 and isinstance(body, dict) and body.get("errors"):
+        errors = body.get("errors")
+        detail = "; ".join(
+            str(item.get("message") if isinstance(item, dict) else item)
+            for item in (errors if isinstance(errors, list) else [errors])
+        )
+        return "declined", f"GraphQL: {detail[:220]}"
+    if transport_error:
+        return "unknown", f"transport error: {transport_error}"
+    return "unknown", f"HTTP {status}: {_api_message(body)[:220]}"
 
 
 def rate_limit_refusal(
@@ -6371,6 +6536,8 @@ def sweep_pull(
     reconcile_only: bool = False,
     semantic_evidence: Any | None = None,
     check_runs: list[dict[str, Any]] | None = None,
+    merge_queue_id: str | None = None,
+    merge_queue_probe_error: str | None = None,
 ) -> str:
     """Judge and, when clean, merge one labeled pull request. Returns the verdict.
 
@@ -6746,17 +6913,34 @@ def sweep_pull(
         )
         return "freshness-deferred"
     if stale:
-        if settled_owner_generation:
+        if merge_queue_probe_error:
             _annotate(
-                "notice",
-                "merge-on-green refresh lease",
-                f"PR #{number}: its leased proof generation settled but main moved "
-                "again. Rotating the high-load lane before this pull request may "
-                "request another generation.",
+                "warning",
+                "merge-on-green queue probe",
+                f"PR #{number}: proof is stale but native queue state is unreadable "
+                f"({merge_queue_probe_error[:220]}). Left armed without branch mutation.",
             )
-            return "lease-rotation-deferred"
-        return reprove(repo, pull, reason, read_token, merge_token, budget)
-    print(f"PR #{number}: proof still current — {reason}.", flush=True)
+            return "merge-queue-unreadable"
+        if merge_queue_id is not None:
+            print(
+                f"PR #{number}: proof is stale ({reason}), but native merge queue "
+                f"{merge_queue_id} will revalidate the exact head against current main; "
+                "preserving the source branch instead of update-branch.",
+                flush=True,
+            )
+        else:
+            if settled_owner_generation:
+                _annotate(
+                    "notice",
+                    "merge-on-green refresh lease",
+                    f"PR #{number}: its leased proof generation settled but main moved "
+                    "again. Rotating the high-load lane before this pull request may "
+                    "request another generation.",
+                )
+                return "lease-rotation-deferred"
+            return reprove(repo, pull, reason, read_token, merge_token, budget)
+    else:
+        print(f"PR #{number}: proof still current — {reason}.", flush=True)
     # NOTE (item N5, round-3 adjudication, 2026-08-21): a stale-`merge-blocked`
     # cleanup used to run HERE, unconditionally. Round-2 (item m3) narrowed it
     # to skip when a cheap, network-free BODY-only pre-check thought the pull
@@ -6803,24 +6987,25 @@ def sweep_pull(
         )
         return "error"
     live_files, live_base_sha = live_state
-    if not freshness.snapshot_tip:
-        _annotate(
-            "warning",
-            "merge-on-green",
-            f"PR #{number}: freshness snapshot has no main tip; not merging.",
-        )
-        return "main-moved"
-    if not freshness.live_sha_is_skip_ci_current(live_base_sha):
-        _annotate(
-            "notice",
-            "merge-on-green",
-            f"PR #{number}: main moved from freshness snapshot "
-            f"{freshness.snapshot_tip[:12] or '?'} to {live_base_sha[:12]} before "
-            "the merge call, and the new commits are not skip-ci/data ticks. "
-            "The exact-head proof is intact, but this sweep has not classified "
-            "the new product base; left armed for a fresh snapshot.",
-        )
-        return "main-moved"
+    if merge_queue_id is None:
+        if not freshness.snapshot_tip:
+            _annotate(
+                "warning",
+                "merge-on-green",
+                f"PR #{number}: freshness snapshot has no main tip; not merging.",
+            )
+            return "main-moved"
+        if not freshness.live_sha_is_skip_ci_current(live_base_sha):
+            _annotate(
+                "notice",
+                "merge-on-green",
+                f"PR #{number}: main moved from freshness snapshot "
+                f"{freshness.snapshot_tip[:12] or '?'} to {live_base_sha[:12]} before "
+                "the merge call, and the new commits are not skip-ci/data ticks. "
+                "The exact-head proof is intact, but this sweep has not classified "
+                "the new product base; left armed for a fresh snapshot.",
+            )
+            return "main-moved"
     if live_files == 0:
         live_pull, authorization = live_authorized_pull(repo, pull, read_token)
         if live_pull is None:
@@ -6888,27 +7073,30 @@ def sweep_pull(
         return authorization
     pull = live_pull
 
-    # Narrow the merge endpoint's missing base-SHA fence to the final network
-    # round trip. GitHub can atomically fence only the head here; a true base CAS
-    # remains the reason native merge queue is the long-term end state.
-    final_main_sha = live_main_sha(repo, read_token)
-    if final_main_sha is None:
-        _annotate(
-            "warning",
-            "merge-on-green",
-            f"PR #{number}: final main-ref fence was unreadable; not merging on "
-            "partial base state.",
-        )
-        return "main-ref-unreadable"
-    if not freshness.live_sha_is_skip_ci_current(final_main_sha):
-        _annotate(
-            "notice",
-            "merge-on-green",
-            f"PR #{number}: main advanced to {final_main_sha[:12]} after final "
-            "authorization with a product commit; ending this snapshot before "
-            "the merge call.",
-        )
-        return "main-moved"
+    # Direct squash needs a final base fence because REST can atomically bind only
+    # the head. Native queue mode deliberately does not: GitHub creates and proves
+    # a merge-group head against the then-current base, which is the CAS this
+    # controller historically lacked.
+    final_main_sha = ""
+    if merge_queue_id is None:
+        final_main_sha = live_main_sha(repo, read_token) or ""
+        if not final_main_sha:
+            _annotate(
+                "warning",
+                "merge-on-green",
+                f"PR #{number}: final main-ref fence was unreadable; not merging on "
+                "partial base state.",
+            )
+            return "main-ref-unreadable"
+        if not freshness.live_sha_is_skip_ci_current(final_main_sha):
+            _annotate(
+                "notice",
+                "merge-on-green",
+                f"PR #{number}: main advanced to {final_main_sha[:12]} after final "
+                "authorization with a product commit; ending this snapshot before "
+                "the merge call.",
+            )
+            return "main-moved"
 
     # RECORDED-HOLD GUARD (2026-08-20, PR #6109 — see the module comment above
     # `recorded_hold`). Every other gate has now concluded clean, so this is the
@@ -7032,6 +7220,57 @@ def sweep_pull(
             f"PR #{number}: merge response was ambiguous ({cause}) and its outcome "
             f"could not be confirmed{detail}. No conflict/update action taken; "
             "ending this snapshot so the next sweep can re-read live state.",
+        )
+        return "merge-unknown"
+
+    if merge_queue_probe_error:
+        _annotate(
+            "warning",
+            "merge-on-green queue probe",
+            f"PR #{number}: native merge-queue state is unreadable "
+            f"({merge_queue_probe_error[:220]}). Direct merge is withheld because "
+            "an unreadable queue requirement is not permission to bypass it.",
+        )
+        return "merge-queue-unreadable"
+
+    if merge_queue_id is not None:
+        pull_request_id = str(pull.get("node_id") or "")
+        if not pull_request_id:
+            _annotate(
+                "warning",
+                "merge-on-green queue",
+                f"PR #{number}: native queue {merge_queue_id} is active but the "
+                "pull request node id is absent; left armed without mutation.",
+            )
+            return "merge-queue-unreadable"
+        state, detail = enqueue_pull_request_to_queue(
+            pull_request_id,
+            head_sha,
+            read_token,
+            merge_token,
+        )
+        if state in {"queued", "already-queued"}:
+            _annotate(
+                "notice",
+                "merge-on-green queue",
+                f"PR #{number}: {state} in native queue {merge_queue_id} "
+                f"(entry {detail}); GitHub now owns integration-head ordering/proof.",
+            )
+            clear_blocked(repo, pull, merge_token)
+            return state
+        if state == "declined":
+            _annotate(
+                "warning",
+                "merge-on-green queue",
+                f"PR #{number}: native queue declined exact head {head_sha[:12]} "
+                f"({detail}); left armed for fresh state.",
+            )
+            return "queue-declined"
+        _annotate(
+            "warning",
+            "merge-on-green queue",
+            f"PR #{number}: enqueue effect is uncertain ({detail}); ending this "
+            "immutable snapshot. The next sweep must reconcile the exact queue entry.",
         )
         return "merge-unknown"
 
@@ -7787,6 +8026,32 @@ def main() -> int:
         )
         return 0
 
+    merge_queue_id: str | None = None
+    merge_queue_probe_error: str | None = None
+    try:
+        merge_queue_id = active_merge_queue_id(repo, "main", read_token)
+    except Exception as exc:
+        merge_queue_probe_error = str(exc)
+        _annotate(
+            "warning",
+            "merge-on-green queue probe",
+            f"Could not establish native queue state ({str(exc)[:240]}). "
+            "Irreversible direct merges and stale-head refreshes will be withheld.",
+        )
+    else:
+        if merge_queue_id is not None:
+            print(
+                f"Native merge queue active for main: {merge_queue_id}. "
+                "Eligible green heads will be enqueued without source-branch refresh.",
+                flush=True,
+            )
+        else:
+            print(
+                "No native merge queue is active for main; retaining the existing "
+                "refresh + SHA-pinned squash path.",
+                flush=True,
+            )
+
     # GLOBAL workload backpressure, before any branch mutation. The old cap of eight
     # PER SWEEP still launched dozens of CI runs when completed workflows started a
     # new full sweep roughly every minute. Active ci.yml runs are the durable state
@@ -8081,6 +8346,8 @@ def main() -> int:
                 sweep_options["semantic_evidence"] = candidate_semantic
             if candidate_runs is not None:
                 sweep_options["check_runs"] = candidate_runs
+            sweep_options["merge_queue_id"] = merge_queue_id
+            sweep_options["merge_queue_probe_error"] = merge_queue_probe_error
             verdict = sweep_pull(
                 repo, pull, read_token, merge_token, freshness, proof, budget,
                 blocked_names, **sweep_options,
