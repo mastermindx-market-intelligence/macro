@@ -68,6 +68,9 @@ def test_real_shape_first_value_and_fail_closed_private_fields():
     lambda p: p.update(requested_tickers=["NVDA", "AAPL"]),
     lambda p: p["results"][0]["sources"][0].update(url="http://127.0.0.1/private"),
     lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?email=visitor%40example.org"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?ref=visitor%40example.org&doc=10k"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/visitor%2540example.org/filing"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?q=filing#visitor@example.org"),
     lambda p: p["results"][0]["sources"].append(copy.deepcopy(p["results"][0]["sources"][0])),
 ])
 def test_claims_rights_clock_and_identity_negative(mutation):
@@ -108,6 +111,47 @@ def test_public_http_uses_explicit_switch_and_no_signup(monkeypatch):
     assert page.headers["Cache-Control"] == "private, no-store"
     assert client.post("/api/catalyst/optin", json={"email": "x@y.com"}).status_code == 404
 
+
+
+def test_public_source_query_without_identity_remains_citable():
+    p = packet()
+    safe_url = "https://www.sec.gov/Archives/edgar/data/123/10-K?ref=0001&lang=en"
+    p["results"][0]["sources"][0]["url"] = safe_url
+    public = ci.sanitize_public_scan(p, ["NVDA", "ZZZZ"], now_utc=NOW)
+    assert public["results"][0]["sources"][0]["url"] == safe_url
+
+
+def test_first_value_html_shows_public_evidence_clocks_and_falsifiers():
+    data = ci.sanitize_public_scan(packet(), ["NVDA", "ZZZZ"], now_utc=NOW)
+    page = ci.render_first_value(data, "NVDA,ZZZZ")
+    assert "<h4>What changed</h4>" in page
+    assert "The fixture records a revised result" in page
+    assert "Conditional scenarios, not predictions" in page
+    assert "BASE: Watch the next company update" in page
+    assert "What could invalidate this reading" in page
+    assert "Another correction invalidates this fixture" in page
+    assert 'datetime="2026-10-09T02:00:00Z"' in page
+    assert 'datetime="2026-09-30T10:00:00Z"' in page
+    assert "Correction state: CORRECTED" in page
+    assert "Relationship: DIRECT" in page
+    assert "This ticker is not covered" in page
+    assert "No account required" in page
+    assert "name='email'" not in page.lower()
+
+
+def test_first_value_html_escapes_untrusted_headline_claims_and_source_title():
+    p = packet()
+    p["results"][0]["headline"] = '<script>alert("source")</script>'
+    p["results"][0]["what_changed"][0]["text"] = '<img src=x onerror=alert(1)>'
+    p["results"][0]["sources"][0]["title"] = '<svg onload="alert(1)">'
+    data = ci.sanitize_public_scan(p, ["NVDA", "ZZZZ"], now_utc=NOW)
+    page = ci.render_first_value(data)
+    assert '<script>alert("source")</script>' not in page
+    assert '<img src=x onerror=alert(1)>' not in page
+    assert '<svg onload="alert(1)">' not in page
+    assert "&lt;script&gt;" in page
+    assert "&lt;img" in page
+    assert "&lt;svg" in page
 
 def test_anon_rate_limits():
     ci._reset_rate_limits_for_tests()

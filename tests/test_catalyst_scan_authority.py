@@ -71,6 +71,37 @@ def test_forged_and_oversized_proofs_are_rejected_before_producer_use():
     assert not calls
 
 
+
+@pytest.mark.parametrize("malformed", ["x.x", "AAAAA.AAAAA", "x.AAAAA"])
+def test_malformed_base64_signed_shape_is_typed_invalid_proof_not_server_error(malformed):
+    called = []
+    auth = _owner(reader=lambda *a, **k: called.append(True))
+    with pytest.raises(Exception) as result:
+        auth.require_public_scan(malformed)
+    assert "INVALID_SCAN_PROOF" in str(result.value)
+    assert called == []
+
+
+
+def test_initial_generation_zero_scan_is_signed_and_verified():
+    # Real Session 01 first-publication semantics begin at generation zero.
+    # The producer/00 serializer admit this value; opt-in must not silently
+    # disappear until the first correction (generation one).
+    initial = copy.deepcopy(FIXTURE)
+    initial["generation"] = 0
+    scan = sanitize_public_scan(initial, ["NVDA", "ZZZZ"], now_utc=NOW)
+    authority = _owner(reader=lambda tickers, *, event_id=None, now_utc=None:
+                       _reader(tickers, event_id=event_id, now_utc=now_utc,
+                               packet=initial))
+    proof = authority.issue(scan)
+    assert isinstance(proof, str) and proof.count(".") == 1
+    accepted = authority.require_public_scan(proof)
+    assert accepted.public_safe and accepted.tickers == ("NVDA",)
+    assert accepted.event_id == scan["event_id"]
+    # A negative revision is not a legitimate original publication.
+    assert authority.issue({**scan, "generation": -1}) is None
+
+
 def test_receipt_expires_in_twenty_minutes_even_when_mac_was_valid():
     issued = _owner()
     proof = issued.issue(_public())
