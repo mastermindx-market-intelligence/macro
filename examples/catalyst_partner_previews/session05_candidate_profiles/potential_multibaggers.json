@@ -1,0 +1,21 @@
+{
+  "slug": "potential_multibaggers",
+  "name": "Potential Multibaggers",
+  "channel": "newsletter",
+  "audience": "long-horizon growth investors testing thesis durability",
+  "profile_url": "https://www.potentialmultibaggers.com/archive",
+  "selected_tickers": [
+    "NVDA",
+    "MSFT",
+    "AMD"
+  ],
+  "brief_angle": "AI infrastructure thesis durability, next issuer disclosures and falsifiers",
+  "status": "candidate",
+  "profile_verified_at_utc": "2026-10-08T04:00:00Z",
+  "profile_time_precision": "research-day-normalized, not exact observed clock",
+  "research_only": true,
+  "research_ref": "https://github.com/mastermindx-market-intelligence/macro/pull/8681",
+  "publication_permission": "NOT_GRANTED",
+  "brand_permission_receipt": null,
+  "notes": "Session 05 research, Draft/HOLD PR #8681, 2026-10-08; unaffiliated publisher candidate only"
+}
