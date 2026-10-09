@@ -227,18 +227,29 @@ def project_tp1_pressure_context(
         _id(q.get("source_receipt_id"), "source_receipt_id")
         slot = _int(q.get("frame_event_index"), "frame_event_index")
         policy = quote_condition_receipts.get(key)
+        # Consume the exact typed TP-1 quote verdict. Its quote/indicator
+        # content, original frame identity, policy vintage and decision cutoff
+        # must agree with the source quote; an old generic eligible=True is
+        # never a valid research receipt.
         if (not isinstance(policy, dict)
+                or policy.get("schema") != "equity.tick_plane.quote_condition_admission/v0"
+                or policy.get("authority") != "ORIGINAL_QUOTE_POLICY_CONTEXT_ONLY"
                 or policy.get("quote_id") != key
                 or policy.get("source_frame_sha256") != frame
-                or policy.get("original_frame_received_ns") != available):
+                or policy.get("original_frame_received_ns") != available
+                or policy.get("quote_condition") != q.get("quote_condition")
+                or policy.get("quote_indicators") != q.get("quote_indicators")):
             return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
                     "reason": "MISSING_OR_MISMATCHED_QUOTE_CONDITION_RECEIPT"}
         policy_available = _int(policy.get("policy_available_ns"),
                                 "policy_available_ns")
-        if policy_available > decision_ns:
+        policy_cutoff = _int(policy.get("decision_ns"), "policy.decision_ns")
+        if (policy_available > policy_cutoff or policy_cutoff < available
+                or policy_cutoff > decision_ns):
             return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
                     "reason": "QUOTE_CONDITION_POLICY_NOT_AVAILABLE_AT_DECISION"}
-        quote_refs.add(_sha(policy.get("rules_sha256"), "quote condition policy"))
+        quote_refs.add(_sha(policy.get("policy_rules_sha256"), "quote condition policy"))
+        _sha(policy.get("source_reference_sha256"), "native quote condition reference")
         if type(policy.get("eligible")) is not bool:
             return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
                     "reason": "QUOTE_CONDITION_ELIGIBILITY_UNKNOWN"}
