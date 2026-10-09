@@ -610,3 +610,40 @@ No existing production signing code, global CI job, test waiver or
 provider source was modified. The trigger/case paths were parsed locally
 and match exactly eight tracked suites; the same Python 3.12 226-pass
 recipe remains the local reference. Hosted checks are still distinct.
+
+## 23. Exact hosted CI outcomes and narrowed trigger closure
+
+Previous PR head `a8b79bd03cd839bbc9b330542c4b932d31dcbad5` completed its
+[dedicated native regression workflow](https://github.com/mastermindx-market-intelligence/macro/actions/runs/37902125741)
+**SUCCESS with 226 tests passing in hosted Python 3.12** and
+[fences](https://github.com/mastermindx-market-intelligence/macro/actions/runs/37902125680)
+SUCCESS. Full [CI](https://github.com/mastermindx-market-intelligence/macro/actions/runs/37902126432)
+failed on two *introduced trigger-path coverage* gaps, not any of
+those 226 native tests. The repo's trigger-closure rule detected literal
+reader and entitlement-contract dependencies of
+`test_source_preflight.py` that could not independently trigger its
+own research workflow.
+
+The additive, narrow `.github/workflows/factor-atlas-reference.yml`
+now includes exact trigger paths
+`engine/entry_radar/replay/terminal_minute_observations.py` and
+`research/licenses/MASSIVE_ENTITLEMENT_RECORD.md` in addition to
+the previously installed Factor Atlas and `engine/flow_signing.py`
+trigger paths. All eight suites are still executed together under a
+read-only checkout; no CI waiver or global workflow edit was needed.
+The hosted fixture result belongs to its earlier exact head;
+**this source-patch revision needs its own GitHub check result**.
+
+Other full-CI failures include ticker-news QBUS's
+`tests/test_build_qbus_news_universe.py` and Intelligence Hub's
+`tests/test_intelligence_hub_glance_copy.py`. Neither is part of the
+Factor Atlas source edits. Their base/inheritance status was not
+verified and must be handled by their current owners rather than
+loosening Factor Atlas's science or release gates. Prior explicitly
+denied source-read, benchmark repair and current-base comparison
+remain untouched. A local connector termination was reconciled
+against the original file before any next source effect.
+
+The licensed equity minute/trade/quote cohort is still
+**NOT_ADMITTED**, regardless of the fixture green results. This
+phase only closes a tested hosted CI integration dependency.

@@ -1,6 +1,29 @@
 {
   "current_research_source_modified": false,
-  "hosted_new_workflow_result": "PENDING_UPDATED_HEAD",
+  "full_ci_previous_head": {
+    "classification": "unrelated suite failures, base inheritance not established",
+    "missing_dependencies": [
+      "engine/entry_radar/replay/terminal_minute_observations.py",
+      "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+    ],
+    "other_failures_not_attributed_to_this_PR": [
+      "ticker-news-qbus: tests/test_build_qbus_news_universe.py",
+      "unrun-brain-desks: tests/test_intelligence_hub_glance_copy.py"
+    ],
+    "result": "FAILURE",
+    "run": 37902126432,
+    "trigger_gap_owner": "factor-atlas-reference.yml",
+    "trigger_path_gaps_introduced": 2
+  },
+  "hosted_new_workflow_result": "PENDING_NEW_HEAD",
+  "hosted_success_previous_head": {
+    "factor_atlas_workflow_run": 37902125741,
+    "fences": "SUCCESS",
+    "fences_run": 37902125680,
+    "head": "a8b79bd03cd839bbc9b330542c4b932d31dcbad5",
+    "native_tests_passed": 226,
+    "result": "SUCCESS"
+  },
   "legacy_jobs_manifest_modified": false,
   "licensed_market_pilot_admitted": false,
   "local_all_eight_suites_exit_code": 0,
@@ -9,6 +32,7 @@
     "bytes": 340,
     "sha256": "f0f637e6639ed6d7e60878dea7e032d961c3210cd58861f98f3651346a00e925"
   },
+  "market_pilot_admitted": false,
   "may_publish_or_trade": false,
   "named_suites": [
     "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
@@ -24,13 +48,14 @@
   "new_ci_owner": "GitHub Actions existing provider",
   "new_workflow": ".github/workflows/factor-atlas-reference.yml",
   "new_workflow_file": {
-    "bytes": 1818,
-    "sha256": "3f3a80f897113466be4c8bbe4ed737b91b8663c816ab832276bff97c4e2f0b43"
+    "bytes": 2011,
+    "sha256": "9a37ca013fa429ba7e4e33c6ba23e57dc8a4dff299788cad93691f3c4b9945fc"
   },
   "parent_commit": "c7b28ff2bead20487dcb6f90a6d20f89086be9d2",
   "previous_candidate_head": "b4c79bf75e62a97bb4a3bea679c87b56040062c8",
   "protected_mastermind": "9ff27c3944a69598e88e0d93948b9cf096a76602",
-  "recorded_at_utc": "2026-10-09T07:58:03.019139+00:00",
+  "protected_mastermind_latest": "7d82b9adb839d54e4ab25378ca333e498dd83fcc",
+  "recorded_at_utc": "2026-10-09T09:15:17.705614+00:00",
   "recorded_ci_failure": {
     "ci_pack_0_job_id": 113680332943,
     "conclusion": "failure",
@@ -49,10 +74,13 @@
     "scipy": "1.18.0"
   },
   "schema": "factor_atlas.ci_registration_preflight.v1",
+  "source_code_changed": false,
   "source_rights_qualified": false,
   "trigger_paths": [
     "research/factor_atlas/**",
     "engine/flow_signing.py",
+    "engine/entry_radar/replay/terminal_minute_observations.py",
+    "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
     ".github/workflows/factor-atlas-reference.yml"
   ],
   "trigger_reviewed_against_all_eight_tracked_suites": true,

@@ -253,3 +253,42 @@ was authored; a later head needs its own GitHub workflow results.
 Original source admission and prior denied-effect boundaries
 remain unchanged. MISSION_COMPLETE:false / DRAFT-HOLD /
 licensed-market pilot NOT_ADMITTED.
+
+## CI trigger closure — exact new head
+
+Recovered original draft/HOLD PR #8677 at a8b79bd03cd839bbc9b330542c4b932d31dcbad5; source checkout
+identical and tracked clean before this scoped change.
+Protected Mastermind 7d82b9adb839d54e4ab25378ca333e498dd83fcc
+uses unchanged compatible Skillpack 1.0.1 blobs.
+
+Exact-head GitHub results: fences 37902125680 SUCCESS; dedicated
+factor-atlas-reference 37902125741 SUCCESS, 226 passed in hosted
+Python 3.12. Full CI 37902126432 FAILED: contract-delta and pack0
+identify precisely two introduced missing PR trigger paths into
+the same workflow: engine/entry_radar/replay/terminal_minute_observations.py
+and research/licenses/MASSIVE_ENTITLEMENT_RECORD.md, both referenced
+by test_source_preflight.py. The workflow now names both exact files,
+plus its Factor Atlas research scope and the existing flow_signing.py
+dependency, without global workflow/waiver/production source changes.
+
+Pack5's ticker-news-qbus and pack11's Intelligence Hub copy tests
+also failed. These are outside the PR's changed Factor Atlas paths;
+base inheritance has NOT been verified, and no other-owner source
+change is authorized here. The previously denied fresh-main compare,
+four source reads and benchmark edit remain specifically held.
+
+An original Studio_Direct edit lost its connector response and its
+MCP session terminated. A direct read-only observation of the SAME
+M2 worktree using an authorized connected device proved the exact
+two-line workflow edit was already applied (EFFECT_CONFIRMED).
+There was no blind replay. The new read-only executor and planned
+publication use the already-known original source worktree, with
+no concurrent modifying effect or alternate account/permission
+escalation. Local fixture code unchanged; eight hosted suites
+passed on the predecessor, new head must be observed separately.
+
+Next: scoped commit/push on the original PR branch, remote readback
+of workflow+receipt. Then consume new-head CI verdict and
+independent scientific/source ownership gates; remain Draft/HOLD,
+licensed cohort NOT_ADMITTED and all trading/publication authority
+false.

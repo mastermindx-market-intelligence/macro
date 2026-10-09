@@ -5,7 +5,9 @@ on:
   pull_request:
     paths:
       - "research/factor_atlas/**"
-      - "engine/flow_signing.py" # referenced by quote-reference parity tests
+      - "engine/flow_signing.py" # quote-reference parity dependency
+      - "engine/entry_radar/replay/terminal_minute_observations.py" # S2-P1 retained-minute reader contract
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md" # S2-P1 rights-reference dependency
       - ".github/workflows/factor-atlas-reference.yml"
 
 permissions:
