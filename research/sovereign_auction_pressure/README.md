@@ -1,6 +1,8 @@
 # Sovereign Auction and Funding Pressure Intelligence
 
-**Initiated end to end through the first executable source vertical. All three delivery PRs are Draft/HOLD.** The program is owned within Macro's existing `WS:RATES-INFLATION-COMMAND` / #6819, under the Chairman's complete October 8 packet. Source implementation, research, native tests and isolated actual-page browser verification are complete for this vertical. Deployment, continuous collection, predictive promotion and portfolio decision use are not accepted or activated.
+**Initiated end to end through the first executable source vertical. All three delivery PRs are Draft/HOLD.** The program is owned within Macro's existing `WS:RATES-INFLATION-COMMAND`; the GitHub parent issue remains unverified, under the Chairman's complete October 8 packet. Source implementation, research, native tests and isolated actual-page browser verification are complete for this vertical. Deployment, continuous collection, predictive promotion and portfolio decision use are not accepted or activated.
+
+The local Codex continuation is recorded in [NOTICE_ARCHIVE_V2_CONTRACT.md](NOTICE_ARCHIVE_V2_CONTRACT.md). Current GitHub verification identifies #6819 as Market Ontology, so it is not the Rates and Inflation parent. Historical receipts are retained without rewriting them. The issue binding is `UNKNOWN` pending authoritative identification.
 
 ## Review and continuation entry points
 

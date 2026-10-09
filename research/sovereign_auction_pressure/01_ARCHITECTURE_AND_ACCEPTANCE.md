@@ -1,6 +1,8 @@
 # Sovereign Auction and Funding Pressure Intelligence — implementation architecture
 
-**Version:** `sovereign-auction-program.context.v1`, 2026-10-08. **Program owner:** the current Chairman-assigned CEO session, under Macro #6819 and `WS:RATES-INFLATION-COMMAND`. **Delivery posture:** source-only, Draft/HOLD; the attached commission excludes deployment, paid data acquisition and changes to trading, sizing or exit authority. This is an adopted implementation architecture, not an empirical signal verdict.
+**Version:** `sovereign-auction-program.context.v1`, 2026-10-08. **Program owner:** the current Chairman-assigned CEO session, under `WS:RATES-INFLATION-COMMAND`; the GitHub parent issue is `UNKNOWN` (#6819 currently identifies Market Ontology). **Delivery posture:** source-only, Draft/HOLD; the attached commission excludes deployment, paid data acquisition and changes to trading, sizing or exit authority. This is an adopted implementation architecture, not an empirical signal verdict.
+
+Current notice/archive extension: [NOTICE_ARCHIVE_V2_CONTRACT.md](NOTICE_ARCHIVE_V2_CONTRACT.md). The v1 sections below describe the accepted first vertical; the extension admits inspected v7 notices and adds a bounded local archive and explicit context-age policy. Independent review and production adoption remain open.
 
 ## 1. The first executable vertical
 

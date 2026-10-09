@@ -372,7 +372,7 @@ class TreasuryAuctionLifecycleTests(unittest.TestCase):
         self.assertEqual(bill["tentative_slot_ids"], [])
         self.assertEqual(sum(c["reason"] == "ambiguous_tentative_join" for c in out["conflicts"]), 2)
 
-    def test_snapshot_newest_files_survive_bounded_capture_retention(self):
+    def test_snapshot_receipt_clock_survives_bounded_capture_retention(self):
         import os
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); d = root / "treasury_auctions" / "observations"; d.mkdir(parents=True)
@@ -391,9 +391,9 @@ class TreasuryAuctionLifecycleTests(unittest.TestCase):
             self.assertIsNone(out["coverage"]["known_upcoming_count"])
             self.assertEqual(out["episodes"][0]["offering_amount_usd"], str(95000000000 + lifecycle.MAX_FILES))
             earlier = lifecycle.snapshot(root, "2026-10-08T20:00:00Z")
-            self.assertTrue(earlier["coverage"]["truncated"])
-            self.assertIsNone(earlier["coverage"]["known_upcoming_count"])
-            self.assertEqual(earlier["episodes"], [])
+            self.assertFalse(earlier["coverage"]["truncated"])
+            self.assertEqual(earlier["coverage"]["known_upcoming_count"], 1)
+            self.assertEqual(earlier["episodes"][0]["offering_amount_usd"], "95000000000")
 
     def test_first_observed_semantic_vintage_does_not_claim_publication(self):
         early = receipt(observed="2026-10-08T20:00:00Z")
