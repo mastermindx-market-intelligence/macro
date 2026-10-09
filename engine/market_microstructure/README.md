@@ -71,6 +71,12 @@ R0 test candidate `4be612b27edb5e25a3232e2f26471afc79e97acb` passed **92 tests**
 
 **Important temporal/authority boundary:** A user's or worker's claim of original availability is never equivalent to a source-operator receipt, despite typed fields and content digests. TP-1 still lacks admitted single-socket real-time production, source-authenticated feed completeness and private-R2 publication; PR #8660 has an outstanding contract-delta CI enrollment blocker. This branch must not be merged into real-time Terminal/Prophet consumers until the actual owner supplies production and independent review receipts.
 
+### Source-to-research quote-age policy agreement
+
+The newest TP-1 typed trade observation includes the `quote_age_limit_ns` used when deciding whether a trade had a sufficiently fresh prior NBBO. Its minute compiler preserves exactly one `max_quote_age_ns` admission policy for the full minute. The R0 `tp1_context` reader requires the source policy to be **at least as strict as** the study's `max_quote_age_ns`; otherwise `MINUTE_NOT_QUALIFIED / SOURCE_QUOTE_AGE_POLICY_TOO_LENIENT`. It also refuses mixed source age rules across constituent minutes. Thus an old upstream quote-rule classification cannot be relabeled as a tight quote-age sample after the fact.
+
+At R0 source head `a520da79ccfee637673f27c0d8cca6091f81ee04`, **95 tests passed** locally on M2 Studio. A direct cross-branch test with source TP-1 `04e737a2ad35e43f32719d47c37e9d3250b93ae8` accepted the same synthetic four original frame buffers, two trades and a 25-second source/research age limit while rejecting a one-second research interpretation. Buy/sell proxy notionals remained `1009.0/1001.0`, prediction null. Neither this source test nor the code's caller-supplied completeness flag proves genuine provider packet continuity or price-impact alpha.
+
 ## Real-data and production gates
 
 1. **Consume, do not repeat, the 2026-08-08 TP-0.5 socket experiment** recorded in Massive masterplan §3.1b.4: delayed and real-time are separate buckets, but opening a second real-time socket evicts the oldest. Verify the *current* Quote Hub `/health` effective cluster and original TP-1 live-slot owner without starting any rival RT WebSocket. Qualify T/Q real RTH frames, event/receipt clocks and remaining source gates only inside the admitted owner/maintenance path.
