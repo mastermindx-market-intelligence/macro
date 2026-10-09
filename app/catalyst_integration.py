@@ -25,9 +25,6 @@ from app import edge_client
 router = APIRouter()
 _TICKER = re.compile(r"[A-Z][A-Z0-9.\-]{0,9}\Z")
 _EVENT = re.compile(r"[A-Za-z0-9_.:\-]{1,128}\Z")
-_REF = re.compile(r"[A-Za-z0-9_\-]{8,128}\Z")
-_UTM = re.compile(r"[A-Za-z0-9_.:\-]{1,96}\Z")
-_EMAIL = re.compile(r"[^@\s\x00-\x1f]+@[^@\s\x00-\x1f.]+(?:\.[A-Za-z0-9\-]+)+\Z")
 _STATUSES = {"SUPPORTED", "NOT_COVERED", "TEMPORARILY_UNAVAILABLE", "RIGHTS_BLOCKED"}
 _PUBLIC_COVERAGE = {
     "SUPPORTED": "Only rights-qualified public evidence is displayed; other sources may be excluded.",
@@ -41,10 +38,10 @@ _HEADERS = {"Cache-Control": "private, no-store", "X-Content-Type-Options": "nos
 _HTML_HEADERS = {**_HEADERS, "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"}
 # Process-local guard only. The canonical edge/server remains responsible for
 # distributed anti-abuse; this protects worker resources before that gate.
-_RATE_LIMITS = {"scan": (30, 60.0), "optin": (5, 3600.0)}
+_RATE_LIMITS = {"scan": (30, 60.0)}
 # A looser trusted-Caddy-peer key bounds direct-origin spoofed visitor headers,
 # without turning legitimate CDN visitors into one tiny quota bucket.
-_PEER_LIMITS = {"scan": 2400, "optin": 180}
+_PEER_LIMITS = {"scan": 2400}
 _MAX_RATE_KEYS = 8192
 _RATE_LOCK = Lock()
 _RATE_BUCKETS: dict[tuple[str, str], deque[float]] = {}
@@ -318,42 +315,19 @@ def scan_with_reader(tickers: Any, event_id: Any = None, *,
         raise HTTPException(503, "Qualified event source unavailable") from exc
 
 
-def optin_with_owner(body: Any, *, owner: Callable[[dict], dict] | None = None) -> dict:
-    if not isinstance(body, dict) or body.get("consent") is not True or body.get("scope") != "catalyst_event_updates/v1":
-        raise HTTPException(400, "Explicit event-update consent required")
-    email = body.get("email")
-    if not isinstance(email, str) or len(email) > 254 or not _EMAIL.fullmatch(email.strip()):
-        raise HTTPException(400, "Invalid email address")
-    tickers = normalize_tickers(body.get("tickers"))
-    event = _event_id(body.get("event_id"))
-    if not event:
-        raise HTTPException(400, "Event reference required")
-    attrs = body.get("attribution") or {}
-    if not isinstance(attrs, dict) or set(attrs) - {"utm_source", "utm_medium", "utm_campaign", "utm_content"}:
-        raise HTTPException(400, "Invalid attribution")
-    first_touch = {}
-    for key, value in attrs.items():
-        if not isinstance(value, str) or not _UTM.fullmatch(value):
-            raise HTTPException(400, "Invalid attribution")
-        first_touch[key] = value
-    if owner is None:
-        try:
-            owner = import_module("app.catalyst_optin").request_optin
-        except (ImportError, AttributeError) as exc:
-            raise HTTPException(503, "Verification service unavailable") from exc
-    # Only the existing secure owner persists/validates/sends. The bridge keeps no PII.
+def public_scan_with_receipt(tickers: Any, event_id: Any = None) -> dict:
+    """Display facts come first; a receipt is optional and never proves consent.
+
+    The 02 opt-in router alone accepts consent and verification. An unsigned
+    or unconfigured scan still returns its public value, without a proof token.
+    """
+    scan = scan_with_reader(tickers, event_id)
     try:
-        receipt = owner({"email": email.strip(), "event_id": event, "tickers": tickers,
-                         "consent": True, "scope": "catalyst_event_updates/v1",
-                         "attribution": first_touch})
-    except Exception as exc:
-        raise HTTPException(503, "Verification service unavailable") from exc
-    if not isinstance(receipt, dict) or receipt.get("status") != "VERIFICATION_REQUIRED":
-        raise HTTPException(503, "Verification service unavailable")
-    ref = receipt.get("public_ref")
-    if not isinstance(ref, str) or not _REF.fullmatch(ref):
-        raise HTTPException(503, "Verification service unavailable")
-    return {"status": "VERIFICATION_REQUIRED", "public_ref": ref}
+        from app.catalyst_scan_authority import ScanReceiptAuthority
+        receipt = ScanReceiptAuthority().issue(scan)
+    except Exception:
+        receipt = None
+    return {**scan, "scan_receipt": receipt} if receipt else scan
 
 
 @router.post("/api/catalyst/scan")
@@ -363,23 +337,14 @@ async def scan_post(request: Request):
     body = await _read_json(request)
     if not isinstance(body, dict) or set(body) - {"tickers", "event_id"}:
         raise HTTPException(400, "Invalid scan request")
-    return JSONResponse(scan_with_reader(body.get("tickers"), body.get("event_id")), headers=_HEADERS)
+    return JSONResponse(public_scan_with_receipt(body.get("tickers"), body.get("event_id")), headers=_HEADERS)
 
 
 @router.get("/api/catalyst/scan")
 def scan_get(request: Request, tickers: str, event_id: str | None = None):
     _require_enabled("CATALYST_PUBLIC_ENABLED")
     _rate_or_429(request, "scan")
-    return JSONResponse(scan_with_reader(tickers, event_id), headers=_HEADERS)
-
-
-@router.post("/api/catalyst/optin")
-async def optin_post(request: Request):
-    _require_enabled("CATALYST_PUBLIC_ENABLED")
-    _require_enabled("CATALYST_OPTIN_ENABLED")
-    _rate_or_429(request, "optin")
-    body = await _read_json(request, max_bytes=4096)
-    return JSONResponse(optin_with_owner(body), status_code=202, headers=_HEADERS)
+    return JSONResponse(public_scan_with_receipt(tickers, event_id), headers=_HEADERS)
 
 
 def render_first_value(data: dict | None, value: str = "", error: str = "") -> str:
@@ -425,7 +390,7 @@ def first_value(request: Request, tickers: str = "", event_id: str | None = None
     if not tickers:
         return HTMLResponse(render_first_value(None), headers=_HTML_HEADERS)
     try:
-        data = scan_with_reader(tickers, event_id)
+        data = public_scan_with_receipt(tickers, event_id)
     except HTTPException as exc:
         # Never echo private producer details or unsupported claims in the HTML fallback.
         return HTMLResponse(render_first_value(None, tickers[:119], str(exc.detail)),
