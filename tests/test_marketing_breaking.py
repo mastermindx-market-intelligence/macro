@@ -1582,3 +1582,45 @@ def test_official_ack_refuses_directory_symlink_swap_after_preview(
             tmp_path, token, accepted_ids={item["id"]}
         )
     assert list(external_dir.iterdir()) == []
+
+
+def test_official_preview_rejects_same_agency_host_unregistered_feed(
+        tmp_path, monkeypatch):
+    feed, _, src, calls = _official_preview_fixture(monkeypatch)
+    src["url"] = "https://www.bls.gov/other/private-or-unreviewed.xml"
+    with pytest.raises(ValueError):
+        feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert calls == []
+
+
+def test_official_preview_rejects_userinfo_or_custom_port(
+        tmp_path, monkeypatch):
+    feed, _, src, calls = _official_preview_fixture(monkeypatch)
+    urls = (
+        "https://person@www.bls.gov/feed/bls_latest.rss",
+        "https://www.bls.gov:4443/feed/bls_latest.rss",
+    )
+    for url in urls:
+        src["url"] = url
+        with pytest.raises(ValueError):
+            feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert calls == []
+
+
+def test_official_preview_accepts_shipped_bea_rss_endpoint(
+        tmp_path, monkeypatch):
+    feed, item, src, calls = _official_preview_fixture(monkeypatch)
+    src.update({
+        "key": "bea_news",
+        "url": "https://apps.bea.gov/rss/rss.xml",
+        "source_name": "Bureau of Economic Analysis",
+    })
+    def fake_bea_poll(source_cfg, *, root, session_state):
+        calls.append(source_cfg["key"])
+        session_state[source_cfg["key"]] = {"etag": "bea-etag"}
+        return [{**item, "source": "bea_news",
+                 "source_name": "Bureau of Economic Analysis"}]
+    monkeypatch.setattr(feed, "poll_source", fake_bea_poll)
+    preview = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert [row["id"] for row in preview.items] == [item["id"]]
+    assert calls == ["bea_news"]

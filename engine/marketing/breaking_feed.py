@@ -38,7 +38,6 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, TypedDict
-from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -541,9 +540,9 @@ def poll_all(root: Path | str, cfg: dict) -> list[FeedItem]:
 # This is neither a parallel queue nor a second source/revision ledger.
 # ─────────────────────────────────────────────────────────────────────────────
 
-_OFFICIAL_PREVIEW_HOSTS = {
-    "bls_news": "bls.gov",
-    "bea_news": "bea.gov",
+_OFFICIAL_PREVIEW_URLS = {
+    "bls_news": "https://www.bls.gov/feed/bls_latest.rss",
+    "bea_news": "https://apps.bea.gov/rss/rss.xml",
 }
 
 
@@ -616,14 +615,13 @@ def preview_official_sources(
         if not isinstance(source, dict):
             continue
         key = str(source.get("key") or "")
-        expected_host = _OFFICIAL_PREVIEW_HOSTS.get(key)
-        if expected_host is None:
+        expected_url = _OFFICIAL_PREVIEW_URLS.get(key)
+        if expected_url is None:
             continue
-        url = str(source.get("url") or "")
-        parts = urlsplit(url)
-        host = (parts.hostname or "").lower()
-        if (parts.scheme != "https"
-                or (host != expected_host and not host.endswith("." + expected_host))
+        # Official domain identity alone does not qualify every hosted path,
+        # redirect, userinfo or alternate port. Accept exactly the incumbent
+        # registered agency RSS endpoints; do not expand the source register.
+        if (source.get("url") != expected_url
                 or source.get("kind", "rss") != "rss"
                 or source.get("tier") != "official"):
             raise ValueError("unqualified official feed source")
