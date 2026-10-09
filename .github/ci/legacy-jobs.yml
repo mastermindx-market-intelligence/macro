@@ -2916,6 +2916,10 @@ jobs:
       - "scripts/thematic_rotation_phase0.py"
       - "engine/prophet_lab/**"
       - "engine/research_vault/**"
+      # Qualitative Research W3 closure widening 2026-09-20: the
+      # existing Brain report consumer now reaches accepted W1/W2 code.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/**"
       - "engine/seasonality/**"
       - "engine/sector_intelligence/**"
       - "lib/*"
@@ -12225,6 +12229,10 @@ jobs:
       - "engine/prophet_live/**"
       - "engine/quant_lab/**"
       - "engine/research_vault/**"
+      # Qualitative Research W3 closure widening 2026-09-20: the
+      # existing Brain report consumer now reaches accepted W1/W2 code.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/**"
       - "engine/seasonality/**"
       - "engine/sector_intelligence/**"
       - "engine/signal_foundry/**"
@@ -12777,6 +12785,10 @@ jobs:
       - "scripts/thematic_rotation_phase0.py"
       - "engine/prophet_lab/**"
       - "engine/research_vault/**"
+      # Qualitative Research W3 closure widening 2026-09-20: the
+      # existing Brain report consumer now reaches accepted W1/W2 code.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/**"
       - "engine/seasonality/**"
       - "engine/sector_intelligence/**"
       - "lib/*"
@@ -14660,6 +14672,9 @@ jobs:
       - "engine/prophet_lab/**"
       - "engine/prophet_live/**"
       - "engine/research_vault/**"
+      # Qualitative Research W3 closure widening 2026-09-20: the
+      # existing Brain report consumer now reaches accepted W1/W2 code.
+      - "engine/research_intelligence/**"
       - "engine/seasonality/**"
       - "engine/sector_intelligence/**"
       - "engine/theme_graph/**"
@@ -19197,6 +19212,10 @@ jobs:
       - "scripts/thematic_rotation_phase0.py"
       - "engine/prophet_lab/**"
       - "engine/research_vault/**"
+      # Qualitative Research W3 closure widening 2026-09-20: the
+      # existing Brain report consumer now reaches accepted W1/W2 code.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/**"
       - "engine/seasonality/**"
       - "engine/sector_intelligence/**"
       - "lib/*"
