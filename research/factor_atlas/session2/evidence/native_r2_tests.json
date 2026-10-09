@@ -1,0 +1,54 @@
+{
+  "base_commit": "809ab2e2c9e712445b9d28e65e16faa783b0d65c",
+  "data": "CONTROLLED_FIXTURES_ONLY",
+  "files": {
+    "prototype/pressure.py": {
+      "bytes": 26552,
+      "sha256": "34cf424cdb33ac7edc2b1af83334f2117692b8b3569de93b6c632c6729a75edb"
+    },
+    "prototype/test_disclosed_profile.py": {
+      "bytes": 3083,
+      "sha256": "cf70779f659d5e4f22abfbbe5687cdbb73cdbc0b83cb1290211f7e99ac8f426b"
+    },
+    "prototype/test_pressure.py": {
+      "bytes": 15906,
+      "sha256": "057efcbd01db1ace2367449343d0a5bd556f245d20e1a4c703baf535aae35c79"
+    },
+    "prototype/test_witnesses.py": {
+      "bytes": 1362,
+      "sha256": "5f428647df39eceb2668d67ddc11f844bfd5d261efa3c8ab599f1ad963334f74"
+    },
+    "prototype/witnesses.py": {
+      "bytes": 5711,
+      "sha256": "7078a1ba586f566a7e7b3c588fed45ee61b4c93ca50ccf761ced9e94da70a647"
+    }
+  },
+  "liqn_numeric_parity": false,
+  "market_pilot_admitted": false,
+  "native_logs": {
+    "disclosed-green.txt": {
+      "bytes": 179,
+      "sha256": "13cea8c042b7cf36ff2bdd517c788fc66de31f92724ecfcfc69075216864ef8f"
+    },
+    "disclosed-red.txt": {
+      "bytes": 15072,
+      "sha256": "7c0b550fecea6e8b828709f2a7f3fc1dd714bdac0b58ffdabb58fbfa697cd3bd"
+    },
+    "recovered-tests.txt": {
+      "bytes": 99,
+      "sha256": "4bcf89c863bfd056152be8e9cbfe7089b0a52998a1c826a585fe2e172df2c311"
+    }
+  },
+  "observed_at_utc": "2026-10-09T03:43:27.700141+00:00",
+  "runtime": {
+    "host": "m2studio",
+    "python": "3.14.7"
+  },
+  "schema": "factor_atlas.native_fixture_receipt.v1",
+  "tests": {
+    "combined_passed": 79,
+    "disclosed_red_failed": 11,
+    "disclosed_red_passed": 1,
+    "recovered": 67
+  }
+}

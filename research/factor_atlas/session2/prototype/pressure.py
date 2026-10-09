@@ -2,7 +2,8 @@
 
 No I/O, ingest, calendar generation, identity registry, revision resolution or
 publication. Caller supplies qualified observations and incumbent-owner refs.
-Student-t(0.25) is a research profile, NOT verified LIQN implementation parity.
+The disclosed-core profile follows LIQN's public mathematical outline; numerical
+parity remains unproved because several vendor edge policies are undisclosed.
 All inferred pressure is descriptive; it does not identify beneficial owners.
 """
 from __future__ import annotations
@@ -120,6 +121,10 @@ class BVCConfig:
     cdf: str = 'student_t'
     degrees_freedom: float | None = 0.25
     zero_volatility: str = 'neutral'
+    change_basis: str = 'simple_return'
+    notional_basis: str = 'vwap_if_present'
+    history_scope: str = 'segment'
+    warmup_policy: str = 'unavailable'
 
     def validate(self) -> None:
         _integer(self.window_minutes, 'window_minutes')
@@ -127,10 +132,27 @@ class BVCConfig:
         if not 2 <= self.min_returns <= self.window_minutes <= 240:
             raise ValueError('invalid_history_configuration')
         _validate_cdf(self.cdf, self.degrees_freedom, self.zero_volatility)
+        for name, allowed in (('change_basis', ('simple_return', 'price_change')),
+                              ('notional_basis', ('vwap_if_present', 'close')),
+                              ('history_scope', ('segment', 'session')),
+                              ('warmup_policy', ('unavailable', 'neutral'))):
+            if getattr(self, name) not in allowed:
+                raise ValueError('unsupported_' + name)
 
     @property
     def identity(self) -> str:
-        return 'factor_atlas.bvc.prototype.v1:' + digest(asdict(self))
+        return 'factor_atlas.bvc.prototype.v2:' + digest(asdict(self))
+
+
+def disclosed_core_config() -> BVCConfig:
+    """Public LIQN outline, with explicit reconstruction assumptions.
+
+    Documented: price changes, t(.25), 60-minute same-session history, neutral
+    warmup, volume times close. Assumed: lagged ddof=1, 20 valid prior changes,
+    no gap bridge, neutral zero variance. This is not a vendor parity claim.
+    """
+    return BVCConfig(change_basis='price_change', notional_basis='close',
+                     history_scope='session', warmup_policy='neutral')
 
 
 def _validate_cdf(cdf: str, df: float | None, zero_volatility: str) -> None:
@@ -248,7 +270,9 @@ def bvc_series(bars: Iterable[Bar], config: BVCConfig, *, cutoff_utc_s: int,
         if identity in seen:
             raise ValueError('duplicate_bar_revision_requires_owner_resolution')
         seen.add(identity)
-        scope = (bar.security_id, bar.segment, bar.basis_id)
+        history_identity = (bar.segment.session_id, bar.segment.calendar_ref,
+                            bar.segment.session_class) if config.history_scope == 'session' else bar.segment
+        scope = (bar.security_id, history_identity, bar.basis_id)
         h = history.setdefault(scope, deque())
         lower = bar.end_utc_s - 60 * config.window_minutes
         while h and h[0][0] < lower:
@@ -260,9 +284,10 @@ def bvc_series(bars: Iterable[Bar], config: BVCConfig, *, cutoff_utc_s: int,
         p = None
         directionally_usable = False
         current_return = None
-        price = bar.vwap if bar.vwap is not None else bar.close
+        use_vwap = config.notional_basis == 'vwap_if_present' and bar.vwap is not None
+        price = bar.vwap if use_vwap else bar.close
         gross = _finite(price * bar.volume, 'derived_gross', nonnegative=True)
-        gross_basis = 'bar_vwap_x_volume_estimate' if bar.vwap is not None else 'bar_close_x_volume_proxy'
+        gross_basis = 'bar_vwap_x_volume_estimate' if use_vwap else 'bar_close_x_volume_proxy'
         if bar.volume == 0:
             p, state = .5, 'ZERO_VOLUME'
         elif is_first:
@@ -270,9 +295,11 @@ def bvc_series(bars: Iterable[Bar], config: BVCConfig, *, cutoff_utc_s: int,
         elif prev is None or prev.end_utc_s != bar.start_utc_s:
             p, state = .5, 'GAP_NEUTRAL'
         else:
-            current_return = _finite(bar.close / prev.close - 1., 'derived_return')
+            change = bar.close - prev.close if config.change_basis == 'price_change' else bar.close / prev.close - 1.
+            current_return = _finite(change, 'derived_change')
             if n < config.min_returns:
-                state = 'INSUFFICIENT_HISTORY'
+                p = .5 if config.warmup_policy == 'neutral' else None
+                state = 'WARMUP_NEUTRAL' if p is not None else 'INSUFFICIENT_HISTORY'
             else:
                 sigma = _finite(stdev(x[1] for x in h), 'derived_sigma', nonnegative=True)
                 p = buy_fraction(current_return, sigma, config.cdf,
@@ -512,10 +539,14 @@ def _validate_point(point: PressurePoint) -> None:
     if point.n_history < 0 or not isinstance(point.directionally_usable, bool):
         raise ValueError('invalid_direction_quality')
     bar = point.bar
-    expected_gross = (bar.vwap if bar.vwap is not None else bar.close) * bar.volume
-    expected_basis = 'bar_vwap_x_volume_estimate' if bar.vwap is not None else 'bar_close_x_volume_proxy'
+    if point.gross_basis not in ('bar_vwap_x_volume_estimate', 'bar_close_x_volume_proxy'):
+        raise ValueError('gross_basis_unknown')
+    use_vwap = point.gross_basis == 'bar_vwap_x_volume_estimate'
+    if use_vwap and bar.vwap is None:
+        raise ValueError('vwap_missing')
+    expected_gross = (bar.vwap if use_vwap else bar.close) * bar.volume
     gross = _finite(point.gross_usd, 'gross', nonnegative=True)
-    if point.gross_basis != expected_basis or gross != expected_gross:
+    if gross != expected_gross:
         raise ValueError('gross_accounting_mismatch')
     if point.buy_fraction is None:
         if any(v is not None for v in (point.buy_usd,point.sell_usd,point.net_usd)) or point.directionally_usable:
