@@ -1653,3 +1653,29 @@ def test_official_preview_rejects_source_url_with_spoofed_agency_hostname(
     with pytest.raises(ValueError):
         feed.preview_official_sources(tmp_path, {"sources": [src]})
     assert not (tmp_path / "data/marketing/breaking/state.json").exists()
+
+
+def test_official_preview_refuses_same_guid_changed_facts_in_one_batch(
+        tmp_path, monkeypatch):
+    feed, item, src, calls = _official_preview_fixture(monkeypatch)
+    def mixed(source_cfg, *, root, session_state):
+        calls.append(source_cfg["key"])
+        return [dict(item), {**item, "headline": "Corrected CPI release headline"}]
+    monkeypatch.setattr(feed, "poll_source", mixed)
+    with pytest.raises(ValueError):
+        feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert calls == ["bls_news"]
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+    assert not (tmp_path / "data/marketing/breaking/state.json").exists()
+
+
+def test_official_preview_identical_same_guid_repeat_is_one_first_print(
+        tmp_path, monkeypatch):
+    feed, item, src, calls = _official_preview_fixture(monkeypatch)
+    def repeated(source_cfg, *, root, session_state):
+        calls.append(source_cfg["key"])
+        return [dict(item), dict(item)]
+    monkeypatch.setattr(feed, "poll_source", repeated)
+    preview = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert [row["id"] for row in preview.items] == [item["id"]]
+    assert calls == ["bls_news"]

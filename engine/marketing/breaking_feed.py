@@ -638,6 +638,7 @@ def preview_official_sources(
     if not isinstance(breaking_cfg, dict):
         raise ValueError("invalid official feed config")
     items: list[FeedItem] = []
+    batch_by_id: dict[str, FeedItem] = {}
     for source in breaking_cfg.get("sources", []):
         if not isinstance(source, dict):
             continue
@@ -667,6 +668,15 @@ def preview_official_sources(
                 # Do not process it, advance its cursor or infer public rights
                 # from the transport or from a source_tier label alone.
                 raise ValueError("unqualified official feed item")
+            iid = str(item["id"])
+            prior = batch_by_id.get(iid)
+            if prior is not None and prior != item:
+                # One official response already contains conflicting facts
+                # at a keep-FIRST GUID. The current ledger cannot express
+                # revisions. Refuse the batch rather than silently accepting
+                # one version and consuming the source cursor past the other.
+                raise ValueError("same GUID changed facts: revision owner required")
+            batch_by_id.setdefault(iid, item)
             items.append(item)
     new_items, updated_seen = filter_new_items(
         items, root, seen_snapshot=before_seen,
