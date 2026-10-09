@@ -333,7 +333,7 @@ class SupabaseConsentRpcOwner(ConsentOwner):
                                 revoked_at_utc=raw.get("revoked_at_utc"))
             if (not 1 <= len(obj.tickers) <= 10 or
                     any(not isinstance(t, str) or
-                        not re.fullmatch(r"[A-Z][A-Z0-9.\\-]{0,9}", t)
+                        not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,9}", t)
                         for t in obj.tickers) or
                     len(set(obj.tickers)) != len(obj.tickers) or not obj.intent_id or
                     len(obj.intent_id) > 128 or
