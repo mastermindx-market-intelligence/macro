@@ -1,0 +1,2 @@
+# Exact schema-validation version used for this local evidence.
+jsonschema==4.26.0
