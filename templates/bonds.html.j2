@@ -630,6 +630,8 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
         <div class="flag info" style="margin-top:10px">ℹ {{ t('Context only. The same factors helped most with drawdown control, not precise return timing.', '仅供参考。同类因子主要帮助控制回撤，而非精确择时收益。') }}</div>
         {% endif %}
         <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of {{ as_of }}</span><span class="l-zh">截至 {{ as_of_zh or as_of }}</span></div>
+        <button type="button" class="gbtn gbtn-quiet bonds-duration-open" data-duration-open aria-haspopup="dialog" aria-controls="bonds-duration-dialog" disabled>{{ t('Preview price impact →', '预览价格影响 →') }}</button>
+        <p class="sub faint" data-duration-unavailable>{{ t('Preview unavailable: JavaScript and native dialog support are required. Market information is unaffected.', '预览不可用：需要 JavaScript 与原生对话框支持。市场信息不受影响。') }}</p>
       </div>
 
       <div class="panel" id="stress">
@@ -822,6 +824,54 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
       {{ charts.spreads | safe }}
     </div>
     <div class="sub faint" style="margin-top:8px">{{ t('10y−3m feeds the NY Fed model. The near-term forward spread is cleaner when markets price Fed cuts. The TP10 curve heuristic combines 2s10s with the 10y term-premium model estimate; it does not isolate expectations.', '10年−3月用于纽约联储模型。近端远期利差更能反映降息定价。TP10曲线启发式把2年/10年利差与10年期限溢价模型估计相加；它并不分离纯预期成分。') }}</div>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if explanation_view and explanation_view.get('mechanisms') %}
+  <section class="landing" id="bond-explanations">
+    <p class="landing-kicker">{{ t('WHY BONDS ARE MOVING', '债券为何波动') }}</p>
+    <div class="card">
+      <h2>{{ t('Competing explanations — keep the disagreement visible', '竞争性解释 — 保留分歧') }}</h2>
+      <p class="sub faint">{{ t(
+        'Five evidence rows from existing owners. They are descriptive/mechanical context, not probabilities, forecasts or a forced single story.',
+        '来自现有权威来源的五条证据路径。它们是描述性/机制性背景，不是概率、预测或强行归一的单一叙事。'
+      ) }}</p>
+      {% set _src = explanation_view.get('source_status', {}) %}
+      <p class="sub faint">{{ t('Source join', '来源连接') }} · {{ _src.get('state', 'unknown') }}{% if explanation_view.get('as_of') %} · {{ explanation_view.get('as_of') }}{% endif %}</p>
+
+      {% for row in explanation_view.get('mechanisms', []) %}
+      <details class="card" style="margin-top:10px">
+        <summary>
+          <b><span class="l-en">{{ row.get('label', {}).get('en') }}</span><span class="l-zh">{{ row.get('label', {}).get('zh') }}</span></b>
+          <span class="sub faint"> · {{ row.get('state', 'unknown') }}</span>
+        </summary>
+        <p class="sub" style="margin-top:8px"><span class="l-en">{{ row.get('summary', {}).get('en') }}</span><span class="l-zh">{{ row.get('summary', {}).get('zh') }}</span></p>
+        {% if row.get('withheld_reason') %}
+        <p class="sub faint"><b>{{ t('Withheld', '暂不判断') }}:</b> <span class="l-en">{{ row.get('withheld_reason', {}).get('en') }}</span><span class="l-zh">{{ row.get('withheld_reason', {}).get('zh') }}</span></p>
+        {% endif %}
+
+        {% for bucket, label_en, label_zh in [('supports','Supports','支持'), ('contradicts','Contradicts','反驳'), ('missing','Missing / withheld','缺失 / 暂不使用')] %}
+          {% set items = row.get(bucket, []) %}
+          {% if items %}
+          <div class="sub" style="margin-top:8px"><b>{{ t(label_en, label_zh) }}</b></div>
+          {% for item in items %}
+          <div class="sub faint" style="margin-top:4px">
+            <span class="l-en">{{ item.get('claim', {}).get('en') }}</span><span class="l-zh">{{ item.get('claim', {}).get('zh') }}</span>
+            <span> · {{ item.get('source') or 'source unavailable' }}{% if item.get('source_as_of') %} · {{ item.get('source_as_of') }}{% endif %}</span>
+            {% if item.get('limit') %}
+              <span> · </span><span class="l-en">{{ item.get('limit', {}).get('en') }}</span><span class="l-zh">{{ item.get('limit', {}).get('zh') }}</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </details>
+      {% endfor %}
+      <p class="sub faint" style="margin-top:10px">{{ t(
+        'Display-only evidence. No score, probability, alert, holding, trade or market state is changed here.',
+        '仅展示证据。本区不会改变评分、概率、提醒、持仓、交易或市场状态。'
+      ) }}</p>
     </div>
   </section>
   {% endif %}
@@ -1472,7 +1522,11 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
   </div>
 </div>
 
+{% include "_bonds_duration.html.j2" %}
 <script src="theme.js"></script>
+<script type="module">
+{% include "_bonds_duration.mjs.j2" %}
+</script>
 <script defer src="illus.js"></script>
 <script>
 /* scroll reveal — cards + hero rise into view (reduced-motion parks them shown) */
