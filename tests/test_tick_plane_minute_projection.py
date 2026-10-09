@@ -702,5 +702,46 @@ class PrivateServiceMinuteHandoffTests(unittest.TestCase):
             verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
                 expected_byte_length=len(raw),blob=raw)
 
+
+    def test_strict_readback_rejects_recomputed_hash_with_raw_quote_extra_field(self):
+        import hashlib,json
+        result=self.sealed()
+        document=json.loads(result["bytes_private_only"])
+        document["raw_quote_events"]=[{"vendor_key":"forbidden"}]
+        raw=(json.dumps(document,sort_keys=True,separators=(",",":"))+"\n").encode()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"distribution/authority"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                                        expected_byte_length=len(raw),blob=raw)
+
+    def test_strict_readback_rejects_extra_nested_native_trade_id(self):
+        import hashlib,json
+        result=self.sealed()
+        document=json.loads(result["bytes_private_only"])
+        document["counts"]["native_trade_ids"]=["private-print-id"]
+        raw=(json.dumps(document,sort_keys=True,separators=(",",":"))+"\n").encode()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"nested fields outside allowlist"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                                        expected_byte_length=len(raw),blob=raw)
+
+    def test_strict_readback_rejects_forged_final_market_tape_vintage(self):
+        import hashlib,json
+        result=self.sealed()
+        document=json.loads(result["bytes_private_only"])
+        document["correction_status"]="FINAL_VINTAGE"
+        raw=(json.dumps(document,sort_keys=True,separators=(",",":"))+"\n").encode()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"distribution/authority"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                                        expected_byte_length=len(raw),blob=raw)
+
+    def test_strict_readback_rejects_broken_native_digest_with_recomputed_hash(self):
+        import hashlib,json
+        result=self.sealed()
+        document=json.loads(result["bytes_private_only"])
+        document["source_manifest_sha256"]="unqualified-original-source"
+        raw=(json.dumps(document,sort_keys=True,separators=(",",":"))+"\n").encode()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"source_manifest_sha256"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                                        expected_byte_length=len(raw),blob=raw)
+
 if __name__=="__main__":
     unittest.main()
