@@ -19,9 +19,12 @@ import re
 import pytest
 
 from engine.theme_graph.rights import (
+    EMISSION_OK,
+    RIGHTS_CLASSES,
     RightsRefusal,
     _load,
     assert_current_emission_allowed,
+    assert_public_emission_allowed,
     load_registry,
     load_registry_snapshot,
     rights_class,
@@ -208,6 +211,151 @@ def test_real_registry_posture_under_the_current_snapshot():
             assert_current_emission_allowed([family], snapshot=(revision, families))
         assert family in str(ei.value)
         assert current[family] in str(ei.value)
+
+
+# ---------------------------------------------------------------------------
+# A2-F2 — the two gates, compared against EACH OTHER.
+#
+# The module docstring above claims these tests pin "that the gating decision is
+# exactly the legacy class -> EMISSION_OK decision", and
+# assert_current_emission_allowed's own docstring makes the stronger safety claim
+# that "a snapshot gate can never be more permissive than the legacy one". Before
+# this block neither was asserted anywhere: every test exercised ONE gate, and
+# test_real_registry_posture_under_the_current_snapshot reaches only the two
+# classes the shipped registry happens to use (direct_display_ok, internal_only)
+# through only the snapshot gate. derived_display_ok and unresolved were never
+# compared across both.
+#
+# The two gates agree today because both spell the permit decision
+# `cls not in EMISSION_OK`. They are not the SAME code, though: the legacy gate
+# delegates its unknown-family and out-of-enum checks to rights_class(), while
+# the snapshot gate reimplements both inline against the snapshot mapping. That
+# duplication is the divergence vector -- normalising or aliasing a class inside
+# rights_class() would move one verdict and not the other -- and it is what
+# these tests watch.
+# ---------------------------------------------------------------------------
+
+#: (class, whether a public emission is permitted). Deliberately a LOCAL table and
+#: not a comprehension over EMISSION_OK: a test that derives its expectation from
+#: the constant under test asserts only that the constant equals itself. The
+#: coverage guard below is what keeps this table honest against the real enum.
+_CLASS_VERDICTS: tuple[tuple[str, bool], ...] = (
+    ("direct_display_ok", True),
+    ("derived_display_ok", True),
+    ("internal_only", False),
+    ("unresolved", False),
+)
+
+
+def _both_gate_verdicts(path, family: str) -> tuple[bool, bool]:
+    """``(legacy_permits, snapshot_permits)`` for one family, read through both gates.
+
+    Each caller passes a DISTINCT file: ``assert_public_emission_allowed`` reads
+    through the ``@lru_cache``d ``load_registry``, which is keyed on the path, so
+    reusing one path with rewritten contents would compare a fresh snapshot against
+    a stale cache and measure the caching, not the verdicts.
+    """
+    try:
+        assert_public_emission_allowed(family, path=path)
+        legacy = True
+    except RightsRefusal:
+        legacy = False
+    try:
+        assert_current_emission_allowed([family], snapshot=load_registry_snapshot(path))
+        snapshot = True
+    except RightsRefusal:
+        snapshot = False
+    return legacy, snapshot
+
+
+@pytest.mark.parametrize("rights_cls,permitted", _CLASS_VERDICTS)
+def test_both_emission_gates_agree_for_every_rights_class(tmp_path, rights_cls, permitted):
+    """Same verdict from both gates, for every member of ``RIGHTS_CLASSES``."""
+    path = tmp_path / f"{rights_cls}.yml"
+    path.write_text(f"families:\n  witness:\n    rights_class: {rights_cls}\n")
+
+    legacy, snapshot = _both_gate_verdicts(path, "witness")
+
+    assert legacy == permitted, f"legacy gate disagrees with the table for {rights_cls}"
+    assert snapshot == legacy, (
+        f"the snapshot gate and the legacy gate DISAGREE for rights_class="
+        f"{rights_cls!r}: legacy permits={legacy}, snapshot permits={snapshot}. "
+        f"assert_current_emission_allowed's docstring claims it can never be more "
+        f"permissive than the legacy gate; one of them has moved")
+
+
+@pytest.mark.parametrize("family,contents", (
+    # Unknown family: no row at all.
+    ("ghost", "families:\n  witness:\n    rights_class: direct_display_ok\n"),
+    # A class outside the enum -- a typo must not read as a permission.
+    ("witness", "families:\n  witness:\n    rights_class: display_ok_probably\n"),
+))
+def test_both_emission_gates_agree_on_the_two_refusal_axes(tmp_path, family, contents):
+    """The axes where the gates do NOT share code: each implements these itself.
+
+    Bounded honestly: this pins the VERDICT, and for the out-of-enum axis the
+    verdict cannot distinguish the two guards. ``EMISSION_OK`` is a subset of
+    ``RIGHTS_CLASSES``, so a class outside the enum is necessarily outside
+    ``EMISSION_OK`` too, and the later check refuses it anyway. Measured: replacing
+    the snapshot gate's ``if cls not in RIGHTS_CLASSES`` with ``if False`` left this
+    file at 72 passed and the three rights suites the boundary job runs at 132
+    passed -- nothing noticed. The out-of-enum guard is therefore
+    defence-in-depth whose only observable effect is WHICH refusal message you
+    get; the test below is what makes that branch discriminable.
+    """
+    path = tmp_path / "axis.yml"
+    path.write_text(contents)
+
+    legacy, snapshot = _both_gate_verdicts(path, family)
+
+    assert legacy is False and snapshot is False, (
+        f"a fail-closed axis read as a permission: legacy={legacy}, "
+        f"snapshot={snapshot} for family={family!r}")
+
+
+def test_an_out_of_enum_class_gets_the_unreadable_class_diagnosis(tmp_path):
+    """The out-of-enum guard, pinned by its MESSAGE because its verdict is redundant.
+
+    Both of the snapshot gate's refusal branches name the family and the offending
+    class, so the existing
+    ``test_unknown_rights_class_in_a_snapshot_refuses_closed`` passes whichever one
+    fires -- which is why deleting the enum check was invisible. This asserts the
+    distinguishing half: a typo'd class must be diagnosed as UNREADABLE ("outside
+    the enum"), not merely reported as unpermitted, because the two call for
+    different repairs -- fix the row's spelling versus seek a rights decision.
+    """
+    path = tmp_path / "typo.yml"
+    path.write_text("families:\n  witness:\n    rights_class: display_ok_probably\n")
+
+    with pytest.raises(RightsRefusal) as excinfo:
+        assert_current_emission_allowed(["witness"], snapshot=load_registry_snapshot(path))
+
+    message = str(excinfo.value)
+    assert "outside" in message and "unreadable class" in message, message
+    assert "permitted:" not in message, (
+        "the out-of-enum class fell through to the EMISSION_OK branch, so the "
+        "specific 'unreadable class' diagnosis was lost: " + message)
+
+
+def test_the_verdict_table_covers_every_member_of_the_enum():
+    """Guard on the table above: a fifth rights class must not slip in uncovered.
+
+    Without this, adding a class to ``RIGHTS_CLASSES`` would leave the differential
+    test silently covering a subset -- the test would stay green and stop
+    discriminating, which is the failure mode the table's locality invites.
+    """
+    assert {cls for cls, _ in _CLASS_VERDICTS} == set(RIGHTS_CLASSES), (
+        "RIGHTS_CLASSES and _CLASS_VERDICTS have diverged; add the new class to the "
+        "table with its intended verdict rather than deleting this guard")
+
+
+def test_the_table_and_EMISSION_OK_describe_the_same_permission_set():
+    """The table's TRUE rows must be exactly ``EMISSION_OK``.
+
+    Separate from the test above on purpose: that one catches a missing class, this
+    one catches a class present but carrying the wrong intended verdict.
+    """
+    assert {cls for cls, ok in _CLASS_VERDICTS if ok} == set(EMISSION_OK)
 
 
 # ---------------------------------------------------------------------------
