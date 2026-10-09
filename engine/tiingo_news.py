@@ -8,6 +8,7 @@ clocks: historical Tiingo backfill never becomes a prospective first observation
 from __future__ import annotations
 
 from collections import Counter
+import re
 from datetime import datetime, timezone
 from urllib.parse import urlsplit
 from typing import Callable, Mapping
@@ -58,7 +59,8 @@ def normalize_article(raw: Mapping[str, object], *, received_at: datetime) -> di
     title = _bounded_text(raw.get("title"), "title", MAX_TITLE, required=True)
     url = _bounded_text(raw.get("url"), "url", 8192, required=True)
     parts = urlsplit(url)
-    if parts.scheme not in ("http", "https") or not parts.hostname or parts.username or parts.password:
+    if (parts.scheme not in ("http", "https") or not parts.hostname or parts.username or parts.password
+            or any(c in url for c in ("\\\"", "\x27", "<", ">", "\\x00", "\\n", "\\r", "\\t"))):
         raise TiingoArticleError("url_invalid")
     published = _utc(raw.get("publishedDate"), "published_at")
     crawled = _utc(raw.get("crawlDate"), "provider_crawled_at")
@@ -68,7 +70,7 @@ def normalize_article(raw: Mapping[str, object], *, received_at: datetime) -> di
     # For live / backfilled rows, our receipt is the conservative availability clock.
     available_at = max(received, crawled)
     source = _bounded_text(raw.get("source"), "source", 512) or parts.hostname.lower()
-    if any(c in source for c in ("/", "@", " ", "\\", "\x00")):
+    if not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?", source) or ".." in source:
         raise TiingoArticleError("source_invalid")
     # Do not score a low-quality URL using a different, prestigious source tag.
     # A live 100-row sample had matching source and URL hosts throughout; future
