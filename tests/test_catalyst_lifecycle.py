@@ -602,6 +602,60 @@ def test_consent_owner_identity_reply_mismatch_does_not_send(wrong_field):
     assert wrong[wrong_field] not in json.dumps(result)
 
 
+def test_initial_consent_owner_failure_is_not_misreported_as_smtp_uncertainty():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    store.current = lambda user_id, event_id: (_ for _ in ()).throw(
+        ConnectionError("db offline, private account details omitted"))
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in rows] == ["CONSENT_OWNER_UNAVAILABLE"]
+    assert len(rights.rights_calls) == 1
+    assert sender.calls == [] and EMAIL not in json.dumps(rows)
+
+
+@pytest.mark.parametrize("point", ["initial", "pre_send"])
+@pytest.mark.parametrize("bad_record", [{}, "invalid-current-record", None])
+def test_malformed_current_consent_port_reply_never_triggers_mail(point, bad_record):
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    original = store.current
+    calls = []
+
+    def malformed(user_id, event_id):
+        calls.append(1)
+        if ((point == "initial" and len(calls) == 1) or
+                (point == "pre_send" and len(calls) == 2)):
+            return bad_record
+        return original(user_id, event_id)
+
+    store.current = malformed
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    expected = "SUPPRESSED" if bad_record is None else "CONSENT_OWNER_PROTOCOL_MISMATCH"
+    assert [row["state"] for row in rows] == [expected]
+    assert sender.calls == []
+
+
+@pytest.mark.parametrize("point", ["initial", "pre_send"])
+def test_invalid_owner_email_does_not_become_effect_unknown(point):
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    original = store.current
+    calls = []
+
+    def malformed(user_id, event_id):
+        row = original(user_id, event_id)
+        calls.append(1)
+        if ((point == "initial" and len(calls) == 1) or
+                (point == "pre_send" and len(calls) == 2)):
+            return replace(row, email="malformed-address")
+        return row
+
+    store.current = malformed
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in rows] == ["CONSENT_OWNER_PROTOCOL_MISMATCH"]
+    assert sender.calls == []
+
+
 def test_consent_owner_fails_after_rights_lookup_without_effect_unknown():
     service, _, store, _, _, sender = make()
     verified(service)
