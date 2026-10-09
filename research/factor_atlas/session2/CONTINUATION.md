@@ -390,3 +390,59 @@ original branch, publish only the explicitly accepted files and
 verify GitHub readback/hosted checks. Follow-on production integration
 needs source-owner data admission and separate independent scientific
 consumer review; a passing fixture is not a release ruling.
+
+## S2-P6 paired OOS loss and source-independent scientific falsification
+
+**Same-branch parent:** `c0d3f40e40a44ac6439e7951682694c959970424`. Latest protected Mastermind
+`326c8469a21d7f50fc9ecb1848196bf1c6e66685`; compatible
+Skillpack 1.0.1 bootstrap 1 with unchanged procedure blobs.
+Latest exact-head Factor Atlas fixtures, repository fences and Macro
+full CI were confirmed **SUCCESS**. Original PR #8677 still OPEN,
+DRAFT/HOLD and unmerged. Distinct Terminal #844 and Macro #8623
+source-origin deliveries remain Draft and unmerged at last read.
+
+**New independent research advancement:** S2-P6 pre-registered
+source-independent OOS paired loss diagnostic
+`prototype/pressure_oos.py` + tests, protocol and synthetic
+receipt. Compares exogenously supplied frozen pressure-augmented
+model predictions against a purported flexible price/volatility/
+turnover control for a declared NEXT_30M_RESIDUAL_RETURN_BPS target.
+This module fits no models, obtains no data, qualifies no rights,
+asserts no true investor/hedge-fund buying, and creates no signal
+or sizing/trading authority. It requires PIT factor/roster, a
+development-to-holdout embargo >= 1800 sec, at least 20 different
+mature heldout sessions and >= 80 percent label coverage, true
+feature/prediction-known-by-decision receipts, exact delayed label
+clock and matched source basis. Daily equal-weight BPS^2 loss,
+negative results and descriptive leave-one-day-out sensitivity
+are reported; not significance, confidence or Alpha.
+
+TDD: first red missing implementation; new exact tests caught
+five additional source/order/label contradictions; now
+**41/41** new adversarial native tests and **325/325** full selected
+eleven-suite research tests pass locally M2 Python3.12. Synthetic
+fixture includes both falsely favorable and unfavorable twenty-day
+model results, missing labels and late label states, expressly
+not historical outcomes. The source/test/run SHA-256 evidence is
+`evidence/native_pressure_oos_tests.json`. Hosted workflow includes
+the eleventh test suite; new GitHub head requires its own checks.
+
+**DO_NOT_REDO / blocked source:** four previously platform-denied
+source reads, the denied benchmark-memory repair, denied main-base
+comparison and the separately denied S2-P4 read-model patch are
+unchanged. The two uncommitted WIP read-model source/test files
+are explicitly excluded, remain byte-identical to the prior proof
+and still have four known red integrity falsifiers. No workaround
+through another tool/account/actor occurred. This is independent
+forecast comparison machinery, not an alternate implementation of
+that blocked read-model patch.
+
+**Unmet:** genuine PIT membership and corporate-action basis;
+AAPL/MSFT/NVDA/SPY actual licensed minute and quote/trade capture,
+first-seen and correction receipts; independent model training and
+outcome labels; broad time history and scientific OOS acceptance.
+S2-P1/S2-P2 still NOT_ADMITTED. No scheduled job, publisher, feed,
+production UI, alert, ranking, sizing, trade, merge or deploy.
+Next: publish this bounded original-branch research source and
+verify exact remote blobs; consume new-head CI; only original
+source/data/model owners can admit real empirical studies.

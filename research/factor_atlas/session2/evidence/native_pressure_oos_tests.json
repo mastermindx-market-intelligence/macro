@@ -1,0 +1,87 @@
+{
+  "actual_labels_authenticated": false,
+  "ci_suite_paths": [
+    "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
+    "research/factor_atlas/session2/prototype/test_pressure.py",
+    "research/factor_atlas/session2/prototype/test_pressure_oos.py",
+    "research/factor_atlas/session2/prototype/test_quote_calibration.py",
+    "research/factor_atlas/session2/prototype/test_quote_reference.py",
+    "research/factor_atlas/session2/prototype/test_quote_study.py",
+    "research/factor_atlas/session2/prototype/test_read_contract_schema.py",
+    "research/factor_atlas/session2/prototype/test_source_preflight.py",
+    "research/factor_atlas/session2/prototype/test_window_pipeline.py",
+    "research/factor_atlas/session2/prototype/test_window_pressure.py",
+    "research/factor_atlas/session2/prototype/test_witnesses.py"
+  ],
+  "ci_workflow_sha256": "5143b074d944be21615289aaa368e96958aa8c4470b5b2f50d9b9a8f423d3307",
+  "control_capacity_equivalence_verified": false,
+  "customer_publication_authorized": false,
+  "exact_source_parent": "c0d3f40e40a44ac6439e7951682694c959970424",
+  "excluded_red_model_files": {
+    "research/factor_atlas/session2/prototype/factor_read_model.py": {
+      "bytes": 18940,
+      "sha256": "1ba24a632b5cb7cff8efa79ab4f1396e17282bfb11a0b01784adf7d6a27af3a8"
+    },
+    "research/factor_atlas/session2/prototype/test_factor_read_model.py": {
+      "bytes": 12219,
+      "sha256": "926f081610b933efdc11e90aa8e316cabcaf2e86f40929ead26b2a8dc44dd32d"
+    }
+  },
+  "full_eleven_suite_local_tests_passed": 325,
+  "libraries": {
+    "numpy": "2.5.1",
+    "pytest": "9.1.1",
+    "scipy": "1.18.0"
+  },
+  "licensed_market_pilot_executed": false,
+  "local_python": "3.12",
+  "method": "external_pre_frozen_forecast_pair_next30m_residual_return_bps",
+  "model_freeze_authenticated": false,
+  "native_host": "M2 Studio",
+  "new_scoped_native_tests_passed": 41,
+  "prepared_at_utc": "2026-10-09T20:37:32.182239+00:00",
+  "proof_logs": {
+    "oos-eleven-suite-green.txt": {
+      "bytes": 420,
+      "sha256": "1bfe2afbf74ebd2389bd2a695af3235953296586d74f27bf86d0ee07dd555fef"
+    },
+    "pressure-oos-adversarial-red.txt": {
+      "bytes": 3768,
+      "sha256": "90f107bba4e45bf501273bb2183cd62d2cfff4b6d9848d4bfc806b48927eac4a"
+    },
+    "pressure-oos-first-red.txt": {
+      "bytes": 2099,
+      "sha256": "f1e67e23ef644191e69a3dcd00b8f50c80d1d686a54786a774fb381b0a8dcd0b"
+    },
+    "pressure-oos-green.txt": {
+      "bytes": 99,
+      "sha256": "6dcb5a40ce7bc1e65c883bcbdb207444cc371f91c1d92aa3781a2c261d1cc325"
+    }
+  },
+  "protected_mastermind": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "real_equity_source_admitted": false,
+  "schema": "factor_atlas.native_pressure_oos_receipt.v1",
+  "skillpack": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
+  "source_files": {
+    "session2/OOS_PRESSURE_INCREMENTAL_TEST_PROTOCOL.md": {
+      "bytes": 5362,
+      "sha256": "60325238c026ab7060bd1919f95f9c4f665fd55539da4ef8607098ff4bb18985"
+    },
+    "session2/evidence/pressure_oos_synthetic_trial.json": {
+      "bytes": 22783,
+      "sha256": "a4d2aa0eb4d605e22c065645f5c0627dc781d2004ba066fb907f74fe3e58d4ef"
+    },
+    "session2/prototype/pressure_oos.py": {
+      "bytes": 12012,
+      "sha256": "eb013368978605bc461f59d26d66fc6ae06c6083df0a5fc8048b645411bee02c"
+    },
+    "session2/prototype/test_pressure_oos.py": {
+      "bytes": 13949,
+      "sha256": "597a1fd405025708c4077ebab3b3e21d8566c15a74f70b0695828a9f3d821151"
+    }
+  },
+  "source_population": "FABRICATED_FORECASTS_LABELS_AND_WEEKDAYS",
+  "statistical_accuracy_proven": false,
+  "tdd_adversarial_red_failures": 5,
+  "tdd_missing_implementation_red": true
+}
