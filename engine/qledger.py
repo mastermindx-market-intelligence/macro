@@ -2370,7 +2370,9 @@ def _read_jsonl(p: Path) -> list[dict]:
 
 
 def load_claims(root: Path | str | None = None) -> list[dict]:
-    return _read_jsonl(_root(root).joinpath(*_CLAIMS_FILE))
+    from engine.qledger_store import read_legacy_rows
+
+    return read_legacy_rows(_root(root).joinpath(*_CLAIMS_FILE))
 
 
 def load_grades(root: Path | str | None = None) -> list[dict]:

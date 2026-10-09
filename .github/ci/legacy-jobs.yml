@@ -1813,6 +1813,7 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -2734,6 +2735,7 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -6801,7 +6803,7 @@ jobs:
       # was named by NO legacy job, so every grading-path change shipped dark; it
       # is hermetic (tmp_path store + monkeypatched price layer, no data/** reads).
       - name: qledger contract regression suite
-        run: python -m pytest tests/test_qledger.py -q
+        run: python -m pytest tests/test_qledger.py tests/test_qledger_reader_compatibility.py -q
       - name: qledger explicit horizon-clock (P0a) + matched-control policy (P0d) contracts
         run: python -m pytest tests/test_qledger_horizon_clock.py tests/test_qledger_control_policy.py -q
       # P3 — the forward-only desk adapters and the evidence-clock writer. These
@@ -9414,6 +9416,7 @@ jobs:
       - engine/qbus.py
       - engine/qkernel.py
       - engine/qledger.py
+      - engine/qledger_store.py
       - engine/qledger_validity.py
       - engine/quant_lab/__init__.py
       - engine/quant_lab/legs.py
@@ -11110,6 +11113,7 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -11594,6 +11598,7 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -14143,6 +14148,7 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -15880,6 +15886,7 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
       - "engine/qledger_desk_adapter.py"
       - "engine/qledger_evidence_clock.py"
       - "engine/qledger_validity.py"
@@ -18018,6 +18025,7 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -19788,6 +19796,7 @@ jobs:
       - "engine/qbus_news_universe_snapshot.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
       - "engine/qledger_validity.py"
       - "engine/quote_resolution.py"
       - "engine/rate_inflation_transmission.py"
