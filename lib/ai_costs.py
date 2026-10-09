@@ -205,36 +205,132 @@ def _load_pricing(root: Path | None = None) -> dict[str, Any]:
         return {}
 
 
+def _matching_model_rates(
+    model: str | None,
+    pricing: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Return the longest-prefix pricing row for ``model``, or ``None``."""
+    if not model:
+        return None
+    per_mtok: dict[str, Any] = pricing.get("per_mtok") or {}
+    best_prefix = ""
+    best_rates: dict[str, Any] | None = None
+    for prefix, rates in per_mtok.items():
+        if (
+            isinstance(prefix, str)
+            and isinstance(rates, dict)
+            and model.startswith(prefix)
+            and len(prefix) > len(best_prefix)
+        ):
+            best_prefix = prefix
+            best_rates = rates
+    return best_rates
+
+
 def _resolve_model_rates(
     model: str | None,
     pricing: dict[str, Any],
 ) -> tuple[float, float, float, float] | None:
-    """Return (in_rate, out_rate, read_mult, write_mult) per MTok, or None.
+    """Legacy-compatible simple rate resolver.
 
-    Prefix-match: "claude-haiku-4-5-20251001" matches prefix "claude-haiku-4-5".
-    Longest prefix wins.
+    Returns ``(input, output, cache_read_multiplier, cache_write_multiplier)``.
+    Existing callers/tests keep the original behavior.  Rich model-specific
+    absolute cache rates and context tiers are resolved by
+    :func:`_resolve_metered_rates` for cost estimation.
     """
-    if not model:
+    best_rates = _matching_model_rates(model, pricing)
+    if best_rates is None or "context_tiers" in best_rates:
         return None
-    per_mtok: dict[str, Any] = pricing.get("per_mtok") or {}
     cache: dict[str, Any] = pricing.get("cache") or {}
-
-    read_mult: float = float(cache.get("read_multiplier", 0.10))
-    write_mult: float = float(cache.get("write_5m_multiplier", 1.25))
-
-    best_prefix = ""
-    best_rates: dict[str, float] | None = None
-    for prefix, rates in per_mtok.items():
-        if model.startswith(prefix) and len(prefix) > len(best_prefix):
-            best_prefix = prefix
-            best_rates = rates
-
-    if best_rates is None:
-        return None
-
+    read_mult = float(cache.get("read_multiplier", 0.10))
+    write_mult = float(cache.get("write_5m_multiplier", 1.25))
     in_rate = float(best_rates.get("input", 0.0))
     out_rate = float(best_rates.get("output", 0.0))
     return in_rate, out_rate, read_mult, write_mult
+
+
+def _absolute_cache_rate(
+    rates: dict[str, Any],
+    model_rates: dict[str, Any],
+    field: str,
+    *,
+    input_rate: float,
+    default_multiplier: float,
+) -> float | None:
+    """Resolve one absolute cache rate without inventing unpublished pricing.
+
+    ``null`` is an explicit UNKNOWN marker.  Missing fields inherit first from
+    the model row and then from the legacy global multiplier, preserving every
+    pre-existing pricing row byte-for-behavior.
+    """
+    if field in rates:
+        value = rates[field]
+        return None if value is None else float(value)
+    if field in model_rates:
+        value = model_rates[field]
+        return None if value is None else float(value)
+    cache: dict[str, Any] = model_rates.get("cache") or {}
+    if field in cache:
+        value = cache[field]
+        return None if value is None else float(value)
+    return input_rate * default_multiplier
+
+
+def _resolve_metered_rates(
+    model: str | None,
+    pricing: dict[str, Any],
+    *,
+    context_tokens: int,
+) -> tuple[float, float, float | None, float | None] | None:
+    """Return absolute USD/MTok rates for input/output/cache read/cache write.
+
+    Rich rows may define ``context_tiers``.  Tiers are closed, strictly
+    increasing upper bounds; a request above the largest published tier returns
+    unknown rather than silently using a cheaper rate.  A row may publish
+    absolute ``cache_read`` / ``cache_write`` prices.  Explicit ``null`` means
+    the provider has not published a usable rate, so a call that actually
+    reports that token class is unpriceable rather than guessed.
+    """
+    model_rates = _matching_model_rates(model, pricing)
+    if model_rates is None:
+        return None
+    cache_defaults: dict[str, Any] = pricing.get("cache") or {}
+    default_read = float(cache_defaults.get("read_multiplier", 0.10))
+    default_write = float(cache_defaults.get("write_5m_multiplier", 1.25))
+
+    rates = model_rates
+    tiers = model_rates.get("context_tiers")
+    if tiers is not None:
+        if not isinstance(tiers, list) or not tiers:
+            return None
+        selected: dict[str, Any] | None = None
+        previous = -1
+        for tier in tiers:
+            if not isinstance(tier, dict):
+                return None
+            ceiling = tier.get("max_context_tokens")
+            if isinstance(ceiling, bool) or not isinstance(ceiling, int) or ceiling <= previous:
+                return None
+            previous = ceiling
+            if selected is None and context_tokens <= ceiling:
+                selected = tier
+        if selected is None:
+            return None
+        rates = selected
+
+    if "input" not in rates or "output" not in rates:
+        return None
+    input_rate = float(rates["input"])
+    output_rate = float(rates["output"])
+    cache_read_rate = _absolute_cache_rate(
+        rates, model_rates, "cache_read",
+        input_rate=input_rate, default_multiplier=default_read,
+    )
+    cache_write_rate = _absolute_cache_rate(
+        rates, model_rates, "cache_write",
+        input_rate=input_rate, default_multiplier=default_write,
+    )
+    return input_rate, output_rate, cache_read_rate, cache_write_rate
 
 
 def estimate_cost_usd(
@@ -247,26 +343,32 @@ def estimate_cost_usd(
 ) -> float | None:
     """Estimate cost in USD for a call using config/ai_pricing.yml rates.
 
-    Formula (all per 1e6 tokens):
-        input * in_rate
-        + output * out_rate
-        + cache_read * in_rate * read_multiplier
-        + cache_creation * in_rate * write_5m_multiplier
+    Legacy rows use the global cache multipliers exactly as before. Rich rows
+    may publish absolute cache rates and context-priced tiers. ``context_tokens``
+    is derived from the three input-side token classes recorded by this ledger.
 
-    Returns None when the model is not found in the pricing table.
+    Returns None when the model/rate tier is unknown, or when a provider reports
+    a token class whose price is explicitly unpublished.
     Never raises.
     """
     try:
         pricing = _load_pricing(root)
-        rates = _resolve_model_rates(model, pricing)
+        context_tokens = max(0, int(input_tokens)) + max(0, int(cache_read_tokens)) + max(0, int(cache_creation_tokens))
+        rates = _resolve_metered_rates(
+            model, pricing, context_tokens=context_tokens,
+        )
         if rates is None:
             return None
-        in_rate, out_rate, read_mult, write_mult = rates
+        in_rate, out_rate, cache_read_rate, cache_write_rate = rates
+        if cache_read_tokens and cache_read_rate is None:
+            return None
+        if cache_creation_tokens and cache_write_rate is None:
+            return None
         cost = (
             input_tokens * in_rate / 1_000_000
             + output_tokens * out_rate / 1_000_000
-            + cache_read_tokens * in_rate * read_mult / 1_000_000
-            + cache_creation_tokens * in_rate * write_mult / 1_000_000
+            + cache_read_tokens * (cache_read_rate or 0.0) / 1_000_000
+            + cache_creation_tokens * (cache_write_rate or 0.0) / 1_000_000
         )
         return round(cost, 8)
     except Exception as exc:  # noqa: BLE001
