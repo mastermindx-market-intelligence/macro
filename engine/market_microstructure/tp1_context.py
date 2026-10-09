@@ -137,7 +137,7 @@ def project_tp1_pressure_context(
     amounts = {name: Decimal(0) for name in (
         "gross", "buy", "sell", "mid", "unknown", "ineligible", "trf"
     )}
-    minute_refs, condition_refs, exchange_refs = [], set(), set()
+    minute_refs, condition_refs, exchange_refs, minute_quote_refs = [], set(), set(), set()
     count_prints = count_unknown = 0
     for i, minute in enumerate(sorted(minute_observations, key=lambda m: m.get("start_ns", -1))):
         if not isinstance(minute, dict) or minute.get("schema") != TP1_MINUTE_SCHEMA:
@@ -168,6 +168,8 @@ def project_tp1_pressure_context(
         _id(minute.get("source_watermark_receipt"), "minute.watermark_receipt")
         condition_refs.add(_sha(minute.get("condition_rules_ref"), "condition_rules_ref"))
         exchange_refs.add(_sha(minute.get("exchange_reference_sha256"), "exchange_reference"))
+        minute_quote_refs.add(_sha(minute.get("quote_condition_rules_sha256"),
+                                   "minute.quote_condition_rules_sha256"))
         source_observation_sha = _sha(
             minute.get("source_observation_sha256"), "source_observation_sha256")
         # Bind every *individual minute's* measured original source generation,
@@ -204,7 +206,7 @@ def project_tp1_pressure_context(
             raise TP1ContextRefusal("source minute print denominators inconsistent")
         count_prints += minute["n_sampled_prints"]
         count_unknown += minute["n_unclassified"]
-    if len(condition_refs) != 1 or len(exchange_refs) != 1:
+    if len(condition_refs) != 1 or len(exchange_refs) != 1 or len(minute_quote_refs) != 1:
         raise TP1ContextRefusal("mixed condition or exchange source vintages")
     if amounts["trf"] > amounts["unknown"] or sum(amounts[k] for k in (
         "buy", "sell", "mid", "unknown", "ineligible"
@@ -290,6 +292,9 @@ def project_tp1_pressure_context(
     if len(quote_refs) != 1:
         return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
                 "reason": "MIXED_OR_MISSING_QUOTE_CONDITION_POLICY"}
+    if quote_refs != minute_quote_refs:
+        return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
+                "reason": "MINUTE_AND_QUOTE_POLICY_GENERATION_DISAGREEMENT"}
     if not normalized:
         return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
                 "reason": "NO_ELIGIBLE_SOURCE_QUOTE_UPDATES"}
