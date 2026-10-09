@@ -74,6 +74,22 @@ _SHARE_KEYS = (
 )
 
 
+_BODY_KEYS = frozenset((
+    "schema","source_schema","distribution_class","public_delivery_allowed",
+    "rank_trade_alert_authority","source_authenticity",
+    "live_capture_completeness","source_mode","correction_status",
+    "ticker","session","start_ns","end_ns","source_complete_through_ns",
+    "decision_ns","source_watermark_available_ns",
+    "source_latest_print_available_ns","max_quote_age_ns",
+    "source_watermark_receipt_sha256","source_manifest_sha256",
+    "source_observation_sha256","condition_policy_sha256",
+    "exchange_policy_sha256","quote_policy_sha256","counts",
+    "notional_usd","volume_shares","lit_quoted_notional_coverage",
+    "unknown_reason_counts","lit_unknown_reason_counts",
+    "price_response_bps","absorption_signal",
+))
+
+
 class PrivateMinuteRefusal(ValueError):
     """No private artifact may be emitted on an invalid source minute."""
 
@@ -260,13 +276,40 @@ def verify_private_minute_bytes(*, expected_sha256, expected_byte_length, blob):
         record=json.loads(blob.decode("utf-8"))
     except (ValueError,UnicodeDecodeError) as exc:
         raise PrivateMinuteRefusal("artifact JSON invalid") from exc
-    if (not isinstance(record,dict) or record.get("schema")!=SCHEMA
+    if (not isinstance(record,dict) or set(record)!=_BODY_KEYS
+            or record.get("schema")!=SCHEMA
+            or record.get("source_schema")!=SOURCE_SCHEMA
             or record.get("public_delivery_allowed") is not False
             or record.get("rank_trade_alert_authority") is not False
             or record.get("absorption_signal") is not None
+            or record.get("price_response_bps") is not None
+            or record.get("correction_status")!="STREAM_PROVISIONAL_UNRECONCILED"
+            or record.get("source_mode")!="ACTUAL_AS_SEEN_ONLY_WHEN_OWNER_PROVES_RECEIPTS"
+            or record.get("live_capture_completeness")!="UNVERIFIED_BY_PROJECTION"
             or record.get("source_authenticity")!="EXTERNAL_INCUMBENT_PROOF_REQUIRED"
             or record.get("distribution_class")!="PRIVATE_SERVICE_HOLD_PENDING_LICENSE_AND_CONSUMER_REVIEW"):
         raise PrivateMinuteRefusal("artifact distribution/authority not permitted")
+    if (not isinstance(record.get("counts"),dict)
+            or set(record["counts"])!=set(_COUNTER_KEYS)
+            or not isinstance(record.get("notional_usd"),dict)
+            or set(record["notional_usd"])!=set(_NOTIONAL_KEYS)
+            or not isinstance(record.get("volume_shares"),dict)
+            or set(record["volume_shares"])!=set(_SHARE_KEYS)):
+        raise PrivateMinuteRefusal("private artifact nested fields outside allowlist")
+    for field in ("source_watermark_receipt_sha256","source_manifest_sha256",
+                  "source_observation_sha256"):
+        _digest(record.get(field),field)
+    for field in ("condition_policy_sha256","exchange_policy_sha256",
+                  "quote_policy_sha256"):
+        _digest(record.get(field),field,optional=True)
+    for key in _COUNTER_KEYS:
+        _nonnegative_int(record["counts"][key],key)
+    for key in _NOTIONAL_KEYS:
+        _source_decimal(record["notional_usd"][key],key)
+    for key in _SHARE_KEYS:
+        _source_decimal(record["volume_shares"][key],key)
+    _reasons(record.get("unknown_reason_counts"),"unknown_reason_counts")
+    _reasons(record.get("lit_unknown_reason_counts"),"lit_unknown_reason_counts")
     if (json.dumps(record,sort_keys=True,separators=(",",":"),allow_nan=False)
             +"\n").encode("utf-8")!=blob:
         raise PrivateMinuteRefusal("artifact canonical bytes mismatched")
