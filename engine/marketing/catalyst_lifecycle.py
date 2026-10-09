@@ -668,6 +668,9 @@ class FunnelService:
                 if (current is None or current.revoked_at_utc or current.scope != SCOPE or
                         current.intent_id != rec.intent_id or revision.ticker not in current.tickers):
                     state = "SUPPRESSED"
+                elif (current.user_id != rec.user_id or current.event_id != revision.event_id or
+                      normalize_email(current.email) != normalize_email(rec.email)):
+                    state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
                 elif _timestamp(current.verified_at_utc) >= _timestamp(revision.as_of_utc):
                     state = "NOT_SECOND_VALUE"
                 elif self.suppression.is_suppressed(normalize_email(current.email), _uuid(current.user_id)):
@@ -683,21 +686,46 @@ class FunnelService:
                         state = ("SOURCE_RIGHTS_NOT_CURRENT" if exc.status == 403
                                  else "SOURCE_RIGHTS_UNAVAILABLE")
                     else:
-                        idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{current.user_id}"
-                        raw = self.sender.deliver(current, revision, idem)
-                        state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
-                                 "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
-                                 "queued": "QUEUED_NOT_SENT", "failed": "SEND_FAILED",
-                                 "effect_unknown": "EFFECT_UNKNOWN"}.get(raw, "SEND_UNCONFIRMED")
+                        # The rights lookup can take time. Re-check the canonical
+                        # scoped consent owner AFTER it, before transport effects:
+                        # a person may unsubscribe while their source is examined.
+                        # Never trust an unrelated/mismatched current() reply.
+                        try:
+                            latest = self.consent.current(rec.user_id, revision.event_id)
+                        except Exception:
+                            state = "CONSENT_OWNER_UNAVAILABLE"
+                        else:
+                            if (latest is None or latest.revoked_at_utc or
+                                    latest.scope != SCOPE or
+                                    revision.ticker not in latest.tickers or
+                                    latest.intent_id != rec.intent_id):
+                                state = "SUPPRESSED"
+                            elif (latest.user_id != rec.user_id or
+                                  latest.event_id != revision.event_id or
+                                  normalize_email(latest.email) != normalize_email(rec.email)):
+                                state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
+                            elif _timestamp(latest.verified_at_utc) >= revision_as_of:
+                                state = "NOT_SECOND_VALUE"
+                            elif self.revisions.is_current(revision.event_id, revision.generation) is not True:
+                                state = "OUTDATED_OR_UNVERIFIED_REVISION"
+                            else:
+                                idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{latest.user_id}"
+                                raw = self.sender.deliver(latest, revision, idem)
+                                state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
+                                         "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
+                                         "queued": "QUEUED_NOT_SENT", "failed": "SEND_FAILED",
+                                         "effect_unknown": "EFFECT_UNKNOWN"}.get(raw, "SEND_UNCONFIRMED")
             except Exception:  # transport could have fired; never call it a safe failure
                 state = "EFFECT_UNKNOWN"
             out.append({"user_ref": analytics_receipt(rec)["user_ref"], "state": state,
                         "event_id": revision.event_id, "generation": str(revision.generation),
                         **first_touch(rec.first_touch)})
             if state in ("EFFECT_UNKNOWN", "SOURCE_RIGHTS_NOT_CURRENT",
-                         "SOURCE_RIGHTS_UNAVAILABLE"):
-                # Unknown transport effects freeze replay; changed or unproven
-                # public rights freeze the remaining batch before any new send.
+                         "SOURCE_RIGHTS_UNAVAILABLE", "CONSENT_OWNER_UNAVAILABLE",
+                         "CONSENT_OWNER_PROTOCOL_MISMATCH",
+                         "OUTDATED_OR_UNVERIFIED_REVISION"):
+                # Stop on unknown transport effects; also stop when a shared
+                # consent, source or revision owner becomes untrustworthy.
                 break
         return out
 
