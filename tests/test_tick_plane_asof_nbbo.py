@@ -149,5 +149,70 @@ class NBBOAsOfTests(unittest.TestCase):
         with self.assertRaisesRegex(FrameContractError,"bounded maximum"):
             InFlightNBBO(session=S,symbols={"SPY"},per_symbol_cap=10_000)
 
+    def test_prior_same_ms_multiple_quote_updates_abstain(self):
+        self.ring.ingest_quote(quote(2, BASE, bp=100.2))
+        self.assertEqual(self.ring.match(self.t, **opts())["reason"],
+                         "AMBIGUOUS_PRIOR_QUOTE_ORDER")
+
+    def test_same_ms_future_arrival_does_not_poison_earlier_decision(self):
+        later=quote(2,BASE+20)
+        later["original_frame_received_ns"]=INGEST+100_000_000
+        self.ring.ingest_quote(later)
+        self.assertEqual(self.ring.match(self.t,**opts())["state"],
+                         "MATCHED_SOURCE_CONTEXT")
+
+    def test_out_of_order_prior_quote_selected_without_claiming_stream_order(self):
+        self.ring.ingest_quote(quote(3, BASE+30))
+        self.ring.ingest_quote(quote(2, BASE+10))
+        result=self.ring.match(self.t, **opts())
+        self.assertEqual(result["quote"]["native_sequence"], 2)
+        self.assertEqual(result["ring_out_of_order_updates"], 1)
+
+    def test_out_of_order_quote_before_evicted_history_quarantines_symbol(self):
+        ring=InFlightNBBO(session=S,symbols={"SPY"},per_symbol_cap=2)
+        for i in range(1,4):
+            ring.ingest_quote(quote(i, BASE+i))
+        with self.assertRaisesRegex(FrameContractError, "predates evicted history"):
+            ring.ingest_quote(quote(10, BASE))
+        self.assertEqual(ring.match(trade(BASE+9),**opts())["reason"],
+                         "SOURCE_GAP_QUARANTINED")
+
+    def test_global_capacity_is_explicit_and_fail_closed(self):
+        ring=InFlightNBBO(session=S,symbols={"SPY","QQQ"},per_symbol_cap=4,total_cap=2)
+        ring.ingest_quote(quote(1, BASE))
+        ring.ingest_quote(quote(2, BASE+1))
+        with self.assertRaisesRegex(FrameContractError,"global quote-ring budget"):
+            ring.ingest_quote(quote(3, BASE+2))
+        self.assertEqual(ring._active_total, 2)
+        self.assertEqual(ring.match(trade(BASE+10),**opts())["reason"],
+                         "SOURCE_GAP_QUARANTINED")
+
+    def test_global_capacity_allows_bounded_same_symbol_eviction(self):
+        ring=InFlightNBBO(session=S,symbols={"SPY"},per_symbol_cap=2,total_cap=2)
+        for i in range(1,5):
+            ring.ingest_quote(quote(i, BASE+i))
+        self.assertEqual(ring._active_total, 2)
+        self.assertEqual(ring.match(trade(BASE+10),**opts())["ring_dropped_old_updates"],2)
+
+    def test_logical_eviction_compacts_without_unbounded_overhang(self):
+        ring=InFlightNBBO(session=S,symbols={"SPY"},per_symbol_cap=64,total_cap=64)
+        for i in range(1,801):
+            ring.ingest_quote(quote(i, BASE+(i//4)))
+        self.assertEqual(ring._active_total,64)
+        self.assertEqual(ring._evicted["SPY"],736)
+        self.assertLessEqual(len(ring._quotes["SPY"]),128)
+        self.assertEqual(len(ring._keys["SPY"]),len(ring._quotes["SPY"]))
+
+    def test_global_capacity_configuration_has_hard_limit(self):
+        with self.assertRaisesRegex(FrameContractError,"global quote budget"):
+            InFlightNBBO(session=S,symbols={"SPY"},total_cap=131073)
+
+    def test_duplicate_sequence_does_not_inflate_global_count(self):
+        ring=InFlightNBBO(session=S,symbols={"SPY"},total_cap=1)
+        q=quote(1, BASE)
+        self.assertTrue(ring.ingest_quote(q))
+        self.assertFalse(ring.ingest_quote(copy.deepcopy(q)))
+        self.assertEqual(ring._active_total,1)
+
 if __name__ == "__main__":
     unittest.main()
