@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T19:49:28.072381+00:00",
+  "observed_at": "2026-10-09T20:01:21.507935+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261009T1950",
+  "current_capability_frontier_key": "current_capability_frontier_20261009T2000",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -4000,5 +4000,55 @@
     "IW2_current": "Peercompactcursor36 completed19:22 noT03ireturn; canonicalSTART6087195412/taskwft33jexf/runwf_214693a2-b83/writera9f086c915680f3be retainsactual804writer. T03jqueuednotSTARTED; SQL0030/31/32unapplied/Draftrelease+rights holds; message35queuednormalboundary no duplicatewriter/composer.",
     "holds": "Allprevious holds/refusals/effectunknowns/paidprincipalidentity retained exact. 883/853/NVDA/875/backup/Fabricsettledscopes notrerun. Noall20completion",
     "next_safe_phase": "Consume exactA11testreview andpublishacceptedtestfullchain; consumeexactnewA19adapteradmission/refusal/return andadjudicatewithoutsofteningguards; existing785nativeauto/MOG waits, thenexactmerge/source/controllerqualification ifready. Canonical438production restoredhealthy andliveproof scopedcomplete; no duplicatebuild. Consume804actualreturn whenexists. Checkpointnotstoppingpoint."
+  },
+  "current_capability_frontier_20261009T2000": {
+    "observed_at": "2026-10-09T20:01:21.507935+00:00",
+    "supersedes": "current_capability_frontier_20261009T1950",
+    "settled_references_retained_in": "current_capability_frontier_20261009T1950",
+    "whole_original_mission_accepted": false,
+    "A11_actual_release438_live": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-post643-heal-canonical-live-parent-acceptance-20261009.json",
+      "sha256": "642001ab745582399923583ed9fdbbb669ce2edf8001ec85d7ed30d1db4042ef"
+    },
+    "A11_test_independent_acceptance": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-fallback-horizon-independent-review-parent-acceptance-20261009.json",
+      "sha256": "b6fda4063e3e5aa5e125c428eaaeade0a14b7fa35270c4ca7af92f9a66e14ab9"
+    },
+    "A11_review_result": "OriginalsameID/rootparentACCEPTED/VALIDATED_OUTCOME reviewerONCE; full13102Breview9cbae2d2 actualretrieveddeclaredoriginalparent. Staticgitshow/hash/fixturearithmetic reviewer, no mount/TSCclaims; parentactual4PASS2phoneSKIP/mutantcausal75vs77+503control/TSC0targetedESLint0. Artifactfuture20:15at treateduntrustedclock; parentreceipt chronology. Exactspec1ba3ff30/patch84ed32d9/12actualdependencyhashes match; nonblockingfixturepin/sharedtoolbar limitations disclosed.",
+    "887_creation": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-fallback-horizon-PR-creation-effect-20261009.json",
+      "sha256": "005e573622dba62e893cdaf663412718fcd591fd8de3544ab48ea548e390b45f"
+    },
+    "887_auto_merge": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-fallback-horizon-887-auto-merge-effect-20261009.json",
+      "sha256": "c1684d233ff4295c0d2f0c5cc8fae316bd873d005088a8807e2cc33a9a14c7c5"
+    },
+    "887_initial_CI": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-fallback-horizon-887-initial-CI-20261009.json",
+      "sha256": "c10c7e2ee29600d7d94a424f1e6e01eaaad5b819b2239cc178c30c628b3e12bb"
+    },
+    "887_current": "NonDraftready/MOG/attached, head7cf5149d98caeb9eecb15ce75b0252e9a50fa055 onlynew94linespec;base438; pushed/readbacksame. NativeautoarmedONCE19:56:11, automatic37983365435 inprogress/noapprovalPOST/operatorcommand/newcredential/helperallowlistwidening. ExistingMOG/nativeauto/soleheartbeat wait; fullmerge/source/releasequalification owed, notcompletefromarmed.",
+    "A19_build_refusal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-financial-update-adapter-prestart-refusal-20261009.json",
+      "sha256": "fc016852abbb02d0696161affd2dbc90750916b3520b7309954741cfdbfdf3db"
+    },
+    "A19_parent_adapter": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-financial-update-parent-source-qualification-20261009.json",
+      "sha256": "21f4632304aeb8bdc50db01676594d8f887ef4da58261050e99f2f9999fac7df"
+    },
+    "A19_adapter_current": "NewC2build92152 settled75NONE/no_pool_available/preSTART/noeffect frozen. ParentboundedNO_ELIGIBLE_PRE_EFFECT_WORKER detachedadapterfee7171a/tests a1dac908 acceptedhelpera74bbyteexactunchanged. Actual19casesPASS0FAIL0SKIP/pandasengineactual onsyntheticprices/currentfinanceJan19invalidated advancesfromJan16hold whileexactoperationcutoff held. Sourcefreshness/engineomitconcordance/backwardsclock/corrupt/symlink/EACCES/lateunknown/renameactsraise/readbackfail/explicitpriorreceipt/no retryfences. GlobalfanoutSUPPRESS; no canonicalproducer/globalreceipt/sourcecustody/alertadoption.",
+    "A19_new_review": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-financial-update-adapter-independent-review-admission-20261009.json",
+      "sha256": "cb9a1731873e37cdde777f3a7cf66897f1ca9335e0c06b5a6cf7cb47ea150209"
+    },
+    "A19_review_state": "terminal-audit20-a19-financial-update-adapter-independent-review-20261009 normalGrok4.6ubuntu2 singlelaunch19:57/requestsession86547/support55308336/declaredreview.json; actualproviderSTART/result/acceptance NOTyetqualified. Consumeexactreturn/artifactonly/no duplicate/resubmit.",
+    "IW2_new_compact_owner_event": "Cursor43b1f899-6e05-49bc-97d0-8f8ee9094219:37 peeractive19:51turn01a12238; mountedrecoverytest finds36e5c5d7 choosing No layout selected after layoutreference refusal retainsref and preventsSave(create+revise); peer sendscausalcases existingT03ireviewer/writer. Parentnotrerun/fullhead/receiptpending; Draft/releasesource/migrationholdretained. Parentfouractualreceipt/testhashes matched; fullhead36e5c5d7adca4064d749c0d4dacd2e4d1f1f5adf; 1controlPASS2causalFAIL0SKIP/zeroPOSTunchangedstorage; no parentrerun, samewriterREQUEST_REPAIR.",
+    "785_state": "cd3a64e7/base438/7blobsbyteexact initialautomatictrusted37980793021; existingnativeauto/MOG ownwait; no furtherpoll orPOST/reapproval.",
+    "production_current": "Canonical438healthy+liveReplayscoped remains current; do notreleaseagain before actualnewmergedsource qualified; 883/853/NVDA/875/backup olderacceptances notrerun",
+    "next_safe_phase": "ConsumeactualA19review andrepair/adjudicate; sourcepublished887awaits existingnativeauto/MOG exactCImerge; afternewmergedsource/currentmaster qualifier canonicalbuilder+health/servedmarker/liveproof/reusevalidunchangedbehavior. Consume804causalreturn/repairthroughsolewriter. Noall20done orstopatcheckpoint.",
+    "IW2_exact_new_counterexample": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/iw2-T03i-retained-layout-clear-parent-consumption-20261009.json",
+      "sha256": "0b5c706860f813f58c6eee01b46b2eaa788f03475a366aaf518595dd56e399a3"
+    }
   }
 }
