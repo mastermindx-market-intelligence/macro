@@ -302,6 +302,8 @@ def verify_private_research_context_bytes(*, expected_sha256, expected_byte_leng
         record=json.loads(blob.decode("utf-8"),
                           parse_constant=reject_nonfinite,
                           parse_float=reject_float)
+    except PrivateContextRefusal:
+        raise
     except (UnicodeDecodeError,ValueError) as exc:
         raise PrivateContextRefusal("malformed private source JSON") from exc
     if (not isinstance(record,dict)
