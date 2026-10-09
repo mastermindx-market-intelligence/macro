@@ -131,7 +131,7 @@ def project_tp1_pressure_context(
     amounts = {name: Decimal(0) for name in (
         "gross", "buy", "sell", "mid", "unknown", "ineligible", "trf"
     )}
-    minute_refs, condition_refs, exchange_refs = set(), set(), set()
+    minute_refs, condition_refs, exchange_refs = [], set(), set()
     count_prints = count_unknown = 0
     for i, minute in enumerate(sorted(minute_observations, key=lambda m: m.get("start_ns", -1))):
         if not isinstance(minute, dict) or minute.get("schema") != TP1_MINUTE_SCHEMA:
@@ -160,10 +160,17 @@ def project_tp1_pressure_context(
             return {**head, "state": "MINUTE_NOT_KNOWABLE",
                     "reason": "ORIGINAL_MINUTE_SOURCE_RECEIPT_LATE"}
         _id(minute.get("source_watermark_receipt"), "minute.watermark_receipt")
-        minute_refs.add(minute["source_watermark_receipt"])
         condition_refs.add(_sha(minute.get("condition_rules_ref"), "condition_rules_ref"))
         exchange_refs.add(_sha(minute.get("exchange_reference_sha256"), "exchange_reference"))
-        _sha(minute.get("source_observation_sha256"), "source_observation_sha256")
+        source_observation_sha = _sha(
+            minute.get("source_observation_sha256"), "source_observation_sha256")
+        # Bind every *individual minute's* measured original source generation,
+        # not just a de-duplicated set of watermark strings.
+        minute_refs.append((
+            minute["start_ns"], minute["end_ns"], minute["decision_ns"],
+            minute["source_complete_through_ns"], minute["source_watermark_receipt"],
+            source_observation_sha,
+        ))
         for target, key in (
             ("gross", "gross_sampled_notional_usd"),
             ("buy", "buy_proxy_notional_usd"),
@@ -176,6 +183,19 @@ def project_tp1_pressure_context(
             amounts[target] += _money(minute.get(key), key)
         _int(minute.get("n_sampled_prints"), "minute.n_sampled_prints")
         _int(minute.get("n_unclassified"), "minute.n_unclassified")
+        if minute["n_sampled_prints"] == 0 or minute["n_unclassified"] > minute["n_sampled_prints"]:
+            raise TP1ContextRefusal("source minute contains contradictory print counts")
+        # The canonical TP-1 minute defines one venue and one classification
+        # bucket for each retained print. Detect counter substitution.
+        venue_total = 0
+        class_total = 0
+        for key in ("n_lit", "n_trf", "n_unknown_venue"):
+            venue_total += _int(minute.get(key), key)
+        for key in ("n_buy_proxy", "n_sell_proxy", "n_midpoint",
+                    "n_unclassified", "n_condition_ineligible"):
+            class_total += _int(minute.get(key), key)
+        if venue_total != minute["n_sampled_prints"] or class_total != minute["n_sampled_prints"]:
+            raise TP1ContextRefusal("source minute print denominators inconsistent")
         count_prints += minute["n_sampled_prints"]
         count_unknown += minute["n_unclassified"]
     if len(condition_refs) != 1 or len(exchange_refs) != 1:
@@ -282,9 +302,20 @@ def project_tp1_pressure_context(
     gross = amounts["gross"]
     receipt_digest = sha256(json.dumps(sorted(minute_refs),
                           separators=(",", ":"), ensure_ascii=True).encode()).hexdigest()
+    # The quote context has a DIFFERENT source dependency from the signed minute
+    # totals. Preserve its digest separately to prevent opaque output changes.
+    quoted_source = [
+        (q["id"], q["sip_ns"], q["available_ns"], q["source_receipt"],
+         _fmt(q["bid"]), _fmt(q["ask"]), q["bid_size"], q["ask_size"],
+         q.get("bid_exchange"), q.get("ask_exchange"))
+        for q in normalized
+    ]
+    quote_digest = sha256(json.dumps(quoted_source, sort_keys=True,
+                           separators=(",", ":"), ensure_ascii=True).encode()).hexdigest()
     return {
         **head, "state": "PROVISIONAL_RESEARCH_CONTEXT", "reason": None,
         "source_minutes_receipt_sha256": receipt_digest,
+        "source_quote_observations_sha256": quote_digest,
         "source_condition_rules_sha256": next(iter(condition_refs)),
         "source_exchange_rules_sha256": next(iter(exchange_refs)),
         "source_quote_condition_rules_sha256": next(iter(quote_refs)),
