@@ -34,6 +34,15 @@ class VerifyOptin(BaseModel):
     public_ref: str = Field(min_length=8, max_length=128)
     honeypot: str = Field(default="", max_length=100)
 
+class RequestOptin(BaseModel):
+    email: str = Field(max_length=254)
+    scan_receipt: str = Field(min_length=32, max_length=1024)
+    consent_checked: bool
+    scope: str = Field(default=SCOPE)
+    first_touch: dict[str, str] = Field(default_factory=dict)
+    honeypot: str = Field(default="", max_length=100)
+    form_elapsed_ms: int = Field(default=0, ge=0, le=600_000)
+
 
 def configure(service: FunnelService | None) -> None:
     """Integration owner mounts this router and injects only approved authorities."""
@@ -67,27 +76,67 @@ def _safe_gate(exc: FunnelGate) -> HTTPException:
 
 
 def request_optin(body: dict) -> dict:
-    """EXACT frozen Session 00 private seam, NOT a public route.
+    """Secure private owner seam. The caller MUST provide the signed 00 scan receipt.
 
-    00 owns input-size validation, rate protection and the public POST. We re-read
-    its canonical rights-qualified scan for the event/tickers: a browser claim is
-    not evidence. The response is the short opaque pending-consent handle only.
+    A browser's event/tickers are not evidence of a prior result. The injected
+    ScanAuthority must authenticate the token and re-check public source rights
+    and the current generation before any identity or consent effect.
     """
     if not isinstance(body, dict) or body.get("scope") != SCOPE or body.get("consent") is not True:
         raise FunnelGate("EXPLICIT_CONSENT_REQUIRED", 400)
-    event = body.get("event_id")
-    tickers = body.get("tickers")
-    if (not isinstance(event, str) or not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", event)
-            or not isinstance(tickers, list) or not 1 <= len(tickers) <= 10
-            or any(not isinstance(x, str) or not re.fullmatch(r"[A-Z][A-Z0-9.\-]{0,9}", x)
-                   for x in tickers) or len(set(tickers)) != len(tickers)):
+    receipt = body.get("scan_receipt")
+    if not isinstance(receipt, str) or not 32 <= len(receipt) <= 1024:
         raise FunnelGate("SCAN_PROOF_REQUIRED", 400)
-    receipt = json.dumps({"event_id": event, "tickers": tickers}, separators=(",", ":"))
     accepted = _active().request(email=body.get("email"), checked=True,
                                  scan_receipt=receipt, touch=body.get("attribution"),
                                  now=datetime.now(timezone.utc))
-    return {"status": "VERIFICATION_REQUIRED", "public_ref": accepted["public_ref"]}
+    ref = accepted.get("public_ref") if isinstance(accepted, dict) else None
+    if (not isinstance(ref, str) or
+            not re.fullmatch(r"[A-Za-z0-9_-]{8,128}", ref)):
+        raise FunnelGate("PENDING_CONSENT_PROTOCOL_MISMATCH")
+    return {"status": "VERIFICATION_REQUIRED", "public_ref": ref}
 
+
+async def _read_bounded_optin_json(request: Request) -> dict:
+    """Bound body before JSON parsing or a GoTrue/consent owner operation."""
+    data = bytearray()
+    async for part in request.stream():
+        if len(data) + len(part) > 4096:
+            raise HTTPException(413, "REQUEST_TOO_LARGE")
+        data.extend(part)
+    try:
+        body = json.loads(data)
+    except (ValueError, TypeError, UnicodeError):
+        raise HTTPException(400, "INVALID_JSON") from None
+    allowed = {"email", "scan_receipt", "consent_checked", "scope",
+               "first_touch", "honeypot", "form_elapsed_ms"}
+    if not isinstance(body, dict) or set(body) - allowed:
+        raise HTTPException(400, "INVALID_OPTIN_REQUEST")
+    return body
+
+
+@router.post("/api/catalyst/optin/request", status_code=202)
+async def public_request_optin(request: Request) -> dict:
+    """Only opt-in request endpoint. Never grant consent or claim inbox delivery."""
+    if (os.environ.get("CATALYST_PUBLIC_ENABLED") != "1"
+            or os.environ.get("CATALYST_OPTIN_ENABLED") != "1"):
+        raise HTTPException(503, "CATALYST_OPTIN_DISABLED")
+    _abuse_guard(request)
+    raw = await _read_bounded_optin_json(request)
+    try:
+        body = RequestOptin(**raw)
+    except (ValueError, TypeError):
+        raise HTTPException(400, "INVALID_OPTIN_REQUEST") from None
+    if body.honeypot or body.form_elapsed_ms < 3000:
+        raise HTTPException(400, "ABUSE_CHECK_FAILED")
+    if body.scope != SCOPE or body.consent_checked is not True:
+        raise HTTPException(400, "EXPLICIT_CONSENT_REQUIRED")
+    try:
+        return request_optin({"email": body.email, "scan_receipt": body.scan_receipt,
+                              "scope": body.scope, "consent": True,
+                              "attribution": body.first_touch})
+    except FunnelGate as exc:
+        raise _safe_gate(exc) from None
 
 class CanonicalPublicScanAuthority(ScanAuthority):
     """Re-use 00's actual serializer/rights/freshness gate; no duplicate feed.
@@ -115,6 +164,14 @@ class CanonicalPublicScanAuthority(ScanAuthority):
             return ScanEvidence(event_id, tuple(tickers), scan["as_of_utc"], True)
         except Exception:
             raise FunnelGate("SCAN_NOT_PUBLIC_SAFE", 403) from None
+
+
+
+class UnwiredScanAuthority:
+    """No signed source authority has been admitted: fail closed, not a JSON fallback."""
+
+    def require_public_scan(self, receipt: str):
+        raise FunnelGate("SIGNED_SCAN_AUTHORITY_NOT_READY", 503)
 
 
 @router.post("/api/catalyst/optin/verify")
@@ -416,7 +473,7 @@ def build_existing_owner_service(revisions: Any, *, scan: ScanAuthority | None =
     from app.account_actions import _anon_key, _supabase
     url, _service_role = _supabase()
     return FunnelService(secret=os.environ.get("MAIL_UNSUB_SECRET", ""),
-                         scan=scan if scan is not None else CanonicalPublicScanAuthority(),
+                         scan=scan if scan is not None else UnwiredScanAuthority(),
                          identity=identity or SupabaseOtpIdentity(endpoint=url, anon_key=_anon_key()),
                          consent=consent if consent is not None else SupabaseConsentRpcOwner(),
                          suppression=ExistingMailerSuppression(), revisions=revisions,
