@@ -105,3 +105,20 @@ def test_transport_uncertain_stops_and_logs_no_upstream_message(monkeypatch, cap
     assert status == mailer.EFFECT_UNKNOWN
     assert "EFFECT UNKNOWN" in caplog.text
     _assert_no_private_log_values(caplog)
+
+
+def test_database_suppression_reason_is_not_echoed_into_logs(monkeypatch, caplog):
+    # The address was blocked; suppress delivery, but do not trust reason as log-safe text.
+    monkeypatch.setattr(mailer, "_ledger_insert", lambda **kw: None)
+    monkeypatch.setattr(mailer, "_suppression_reason", lambda *args: ADDRESS)
+    monkeypatch.setattr(mailer, "_ledger_finish", lambda *args, **kwargs: None)
+    with caplog.at_level(logging.INFO, logger="macro.mailer"):
+        status = mailer.send(
+            template="catalyst_material_revision", cls="marketing",
+            to_email=ADDRESS, user_id=USER_ID,
+            subject="fixture", html="<p>fixture</p>", text="fixture",
+            idem_key=IDEM_KEY, strict_ledger=True,
+        )
+    assert status == "suppressed"
+    assert "suppressed by canonical marketing gate" in caplog.text
+    _assert_no_private_log_values(caplog)
