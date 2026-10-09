@@ -15,6 +15,8 @@ Proposed bounded code job (three focused suites, synthetic/current code only):
     paths:
       - research/structural_leadership_shock_resilience/local_source_qualification/**
       - tests/test_slr_local_source_qualification.py
+      - tests/test_winner_autopsy.py
+      - tests/test_dataos_identity.py
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -36,3 +38,8 @@ this proposal deliberately does not claim exclusive scope. Before applying it,
 validate the manifest and its inferred import closure using the existing checker,
 then obtain exact-head hosted CI and independent review. Preserve all existing
 jobs, dependencies, budgets and authority checks.
+
+The standalone proposal passed the incumbent `scripts/run_ci_pack.py --workflow
+<external ci-job-proposal.yml> --validate-only` validator, exit 0. The suite
+dependency analysis reports seven files and **no ambiguities**. This validates
+the prepared job shape; it does not execute hosted CI or authorize its installation.

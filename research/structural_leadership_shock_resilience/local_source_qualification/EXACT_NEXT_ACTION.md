@@ -32,3 +32,24 @@ Held non-goals: parent PR #8645, original v1.0.1/v1.1 text, private host audits
 previously refused, raw proprietary payloads, production signals/collectors,
 protected CR1/AF1/RH1 and SLR forward outcomes. No modifying effect is unresolved.
 No native child, Executive job, provider purchase or new control plane exists.
+
+Code-delivery frontier: code PR #8665, tested code commit
+`2824055ed10de68ca8488572c7f25ba2975d8ebf`, 401 local passes.
+The prepared CI job validates, but registering it in `.github/ci/legacy-jobs.yml`
+requires an extension of the commission's two-path write fence. A single exact
+scope question is pending; no non-answer counts as approval. Preserve the path
+fence until answered. Do not waive or grandfather the collecting suite.
+
+One retained Fabric review is active: `slr-p0-review-01a11e3b`, original root
+`01a11e3b-bf7b-7752-856d-9e5af1c51b02`, requested grok-4.6 via the incumbent
+adapter's admitted selection. Its packet covers the initial implementation
+`b3cf217b635f3edf9b3780ea483f58a46965637d`. Consume and adjudicate that exact return
+before any replacement or extension. The later timestamp/terminal-cash/identity
+repairs and test portability changes require a review delta bound to the actual
+candidate head; never call the old packet an exact-head approval.
+
+The one native heartbeat `slr-p0-8665-delivery-gates` owns CI/review return
+observation. It must stay quiet on unchanged state, act on material returns, and
+finish the permitted chain after the scope decision and actual checks/review.
+No auto-merge is armed. Do not delete this locked carrier or cancel the admitted
+review through a manual kill/lease release.
