@@ -796,3 +796,42 @@ def test_canary_refuses_symlinked_private_snapshot_into_site(tmp_path, monkeypat
     assert not target.exists()
     assert not (tmp_path / "state.json").exists()
     assert external == []
+
+
+def test_cli_one_shot_native_canary_accepts_into_private_desk_only(
+        tmp_path, monkeypatch):
+    """A real main(argv) turn reaches existing press scorer, store and snapshot."""
+    daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
+    monkeypatch.setenv(daemon._KILL_SWITCH_ENV, "1")
+    heartbeat = []
+    monkeypatch.setattr(daemon, "_touch_heartbeat",
+                        lambda now: heartbeat.append(now))
+    assert daemon.main(["--lane", "press", "--once"]) == 0
+    assert len(heartbeat) == 1
+    assert external == []
+    sink = tmp_path / "data/marketing/press/intelligence.json"
+    published = json.loads(sink.read_text(encoding="utf-8"))
+    assert item["id"] in {
+        row.get("event_id")
+        for story in published["stories"]
+        for row in story["evidence"]
+    }
+    assert ps.peek_spool(tmp_path).items == ()
+    assert (tmp_path / "data/marketing/press/intelligence.db").exists()
+    assert not (tmp_path / "seen.json").exists()
+    assert not list(tmp_path.rglob("items.jsonl"))
+
+
+def test_cli_one_shot_with_public_sink_refuses_without_source_effect(
+        tmp_path, monkeypatch):
+    daemon, press_cfg, external, item = _canary_setup(monkeypatch, tmp_path)
+    monkeypatch.setenv(daemon._KILL_SWITCH_ENV, "1")
+    press_cfg["wire"]["intelligence"]["snapshot_paths"] = [
+        "/var/lib/macro-live/public/live/intelligence.json",
+    ]
+    monkeypatch.setattr(daemon, "_touch_heartbeat", lambda now: None)
+    assert daemon.main(["--lane", "press", "--once"]) == 0
+    assert [row["id"] for row in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert external == []
+    assert not (tmp_path / "state.json").exists()
+    assert not (tmp_path / "data/marketing/press/intelligence.db").exists()
