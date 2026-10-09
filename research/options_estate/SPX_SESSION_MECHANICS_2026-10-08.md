@@ -185,14 +185,12 @@ yet passed a common point-in-time SPX evaluation in this assignment.
    itself is not floored at an hour. Vendor Greeks are not automatically suitable
    for final-hour inference. ES risk conversion additionally needs its own basis
    and contract evidence, not just a multiplier.
-5. **Independent review not started.** Executive exposed read-only server 1.4.0.
+5. **Scoped independent mechanics review now passes.** Executive exposed read-only server 1.4.0.
    The permitted manual Fabric adapter request
    `spx-01a11ee7-contract-review`, rooted at
    `01a11ee7-d9fe-71f1-b582-193891266722`, returned exit 75
    `ECONOMIC_POLICY_REFUSED: leaf_labor_requires_escalation` before launch.
-   The refusal was not retried through another carrier or native child. Parent
-   adversarial tests are not independent review. The existing capacity/review
-   owner must resolve admission before review can start.
+   The refusal was not retried through another carrier or native child. The separately user-assigned SPX principal reviewed exact `4e7e44bfcce3bf1292978266b813633bd6bbe5db` read-only, without retrying that dispatch or launching another worker. Its scoped numerical verdict is recorded below; Fabric admission, protected GitHub review and release remain separate.
 6. **Production acceptance unavailable.** Actual Chrome navigation to
    `https://app.mastermind-x.com/options?tab=gex` confirmed a signed-in account but
    displayed the Options subscription gate. No trial or subscription was started.
@@ -228,14 +226,93 @@ that existing owner's source/schema reconciliation.
 | Acceptance slice | Current scope |
 | --- | --- |
 | S1 source admission | Partial source/rights findings; actual fresh sample unavailable |
-| S2 mechanics | Implemented and locally verified; independent review outstanding |
+| S2 mechanics | Implemented; independent principal numerical/source-contract review PASS_SCOPED, protected release review remains |
 | S3 research verdict | F1/F2/F3 NOT_EVALUATED; previous negative results preserved |
-| S4 Terminal integration | Not integrated; original active component owners retained |
+| S4 Terminal integration | Typed consumer built/reviewed in Terminal #870; UI/transport not integrated, active owners retained |
 | S5 natural production proof | Not proven; source/release/entitlement gates remain |
 | S6 probabilistic promotion | NOT_QUALIFIED; disabled |
 
-Next critical dependency is existing source-owner access and the disjoint S1
-return. Then qualify the raw book/Flow/clock denominator, review this numerical
+Next critical dependency is existing source-owner access; the disjoint S1 source repair has now been integrated. Then qualify the raw book/Flow/clock denominator, review this numerical
 seam, and bind it through the already-owned transport and Options Workspace.
 Historical evaluation and UI acceptance remain separate gates. No merge,
 installation, production publication or deployment is claimed.
+
+
+## Source integration and independent numerical review — October 9 UTC
+
+Source donor `8027a8aec907369add8ec14e8d3abb77f0131755` is integrated by
+cherry-pick as `78d68942de59` on this existing branch. Six source/test/dossier
+files retain optional Greek source clocks, keep raw cache/storage evidence,
+and expose a deduplicated legacy economic projection. The existing daily test
+now resolves its own repository instead of a deleted author worktree. The
+[S1 dossier](SPX_SOURCE_ADMISSION_2026-10-09.md) records the exact separate
+559-pass/one-existing-path-failure run and repaired one-test pass, rather than
+claiming a single green 560-test run. Parent independent source review passed
+22 adversarial checks, exit 0; collector/store hashes match the donor commit.
+This is source retention and compatibility work, not admitted PIT evidence.
+
+The independent user-assigned SPX principal returned `PASS_SCOPED` on exact
+mechanics head `4e7e44bfcce3bf1292978266b813633bd6bbe5db`: **348/348 checks**,
+exit **0**. Its separate scalar `erfc` oracle covered 40 synthetic 24-contract
+books, varying rates/dividends, endpoint IVs and the final 20 seconds to fixing.
+Maximum absolute hedge-target error was `4.656612873077393e-10` SPX risk units.
+Four material mutants (one-hour floor, ignored spot move, reversed hedge sign,
+dropped contract) were killed. The review also checked attribution/cohort/expiry
+identities, selected expiry, permutation/content identity, conditional inventory,
+unknown inputs, fixing/availability refusals, finite JSON, authority flags and
+CLI duplicate-member rejection. No blocking finding was returned.
+
+Receipt SHA-256: `261d12f5cdd7cb1659b411b25d51399187ce02913d1d6ddb5e253f262e1f1623`.
+Runner SHA-256: `808298ad4f3734cb089c29a9bf58c2970de649e87c6c2236a8da974c3103b5b0`.
+Both live under `/Volumes/Mastermind/evidence/spx-session-mechanics-01a11ee7/source-admission/`:
+`mechanics-independent-review-4e7e44b.json` and `review_mechanics_4e7e44b.py`.
+Review provenance is principal `01a11eed-84cf-75e1-af19-fec04c4e4d5e`, independent
+of author/integrator `01a11ee7-d9fe-71f1-b582-193891266722`. The integrated source
+repair changes none of the reviewed mechanics, pricing kernel or CLI blobs.
+This review excludes source admission, forecasts, live ES conversion, the entire
+older scenario-surface implementation, runtime installation and browser/release
+acceptance. The old refused Fabric request was not retried or reclassified.
+
+Consumer clarification: `cancellation_ratio` is **abs(net)/gross**, so zero means
+maximal cancellation and one means no cancellation. Label it net/gross; do not
+present it as percent cancelled. No descriptive or predictive product acceptance
+is inferred from these synthetic results.
+
+Integrated parent regression command (the three mechanics suites plus collector,
+store, snapshot-poller suites and the repaired daily-path test) passed **502 tests**,
+one warning, exit **0**. Log: `/Volumes/Mastermind/evidence/spx-session-mechanics-01a11ee7/integrated-source-mechanics-tests.log`.
+
+
+## Terminal consumer return
+
+Draft [Terminal #870](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/870)
+is at `dd0284581b78751efbb333b7cff129a1d285c430`, branch
+`claude/ssd-spx-hedge-target-consumer-20261009-36bff18d9fffdb05`. Its only new
+production file is `terminal/lib/hedgeTargetContract.ts`, SHA-256
+`b721f5747dbbd39352a7af854036d148f98304336ae861eddb72a63bd24db4d4`.
+It validates and projects the existing Macro output; it does not price options,
+fetch/publish data, create a store or modify any existing UI-owner path.
+
+Local validation: **57 Vitest tests**, full repository typecheck after
+`next typegen`, changed-file ESLint and diff check all exit **0**.
+Independent principal review: **21 probes passed**, exit **0**, with six actual
+Macro-owner positive controls. Review found and repaired overflow comparison,
+microsecond causal ordering, invalid-calendar normalization, false cohort labels,
+contradictory Flow assumptions, and two inconsistent IV policies. Parent tests
+also prevent unvalidated extra numeric claims from entering the projection.
+All negative examples were reproduced before repair. The original review refusal
+and later passes are retained, not overwritten into a first-pass green claim.
+Final receipt `source-admission/terminal-independent-review-dd028458.json` has
+SHA-256 `f636150f52dbc3422d136aa981eb579686004b0ad4dde8105d393fedbbe3fa36`.
+
+This is a scoped source-contract result. No UI/transport integration, authenticated
+Options-content acceptance, theme/language/mobile proof or deployment occurred.
+Terminal CI run `37892039909` was pending at the initial exact-head read; the
+PR remains draft, labels empty and auto-merge null. The existing Options Workspace
+owner retains customer component integration. Explicit platform-required permission
+to message its separate user chat is still pending; no duplicate writer was started.
+
+Macro run `37889433748` succeeded on prior mechanics head `4e7e44b` at
+`2026-10-09T06:04:48Z`. The later source integration is not covered by that run.
+The existing Macro observer must follow the new pushed integration head, while
+source access, empirical outcomes, rights scope and real product proof stay open.
