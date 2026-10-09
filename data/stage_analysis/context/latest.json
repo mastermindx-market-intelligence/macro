@@ -2,7 +2,7 @@
   "schema": "stage_context.v1",
   "asof": "2026-10-09",
   "data_session": "2026-10-08",
-  "built": "2026-10-09T07:58:22Z",
+  "built": "2026-10-09T13:58:28Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
