@@ -408,7 +408,7 @@
         quality === "current" && quoteState !== "invalid" &&
         r.price != null && isFinite(r.price) && r.price > 0 &&
         r.chg != null && isFinite(r.chg) && !r.invalidClock &&
-        sess && /^\\d{4}-\\d{2}-\\d{2}$/.test(sess.expected_session || "") &&
+        sess && /^\d{4}-\d{2}-\d{2}$/.test(sess.expected_session || "") &&
         observationDay(r, sess) === sess.expected_session) {
       held = false;
     }
