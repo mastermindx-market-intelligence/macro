@@ -443,3 +443,297 @@ def test_invalid_time_and_quote_session_are_refused():
 def test_unrecognized_source_mode_rejected():
     with pytest.raises(ValueError,match="unrecognized source mode"):
         label(source_mode="LIVE_TODAY")
+
+from engine.market_microstructure.tp1_context import (
+    project_tp1_pressure_context, TP1ContextRefusal, MINUTE_NS as TP1_MINUTE_NS,
+)
+
+TP1_START=1_791_417_600_000_000_000
+TP1_START-=TP1_START%TP1_MINUTE_NS
+TP1_END=TP1_START+TP1_MINUTE_NS
+TP1_CUT=TP1_END+10_000_000_000
+TP1_SHA="a"*64
+TP1_EXCHANGE_SHA="b"*64
+TP1_QUOTE_POLICY_SHA="c"*64
+TP1_WATERMARK="source-owner:contiguous-tq-window-123"
+
+
+def tp1_minute(start=TP1_START, *, buy="1000", sell="500", mid="100",
+               unknown="200", ineligible="100", trf="100"):
+    from decimal import Decimal as D
+    gross=sum(map(D,(buy,sell,mid,unknown,ineligible)))
+    return {
+        "schema":"equity.tick_plane.minute_observation/v0",
+        "authority":"OBSERVATIONAL_PROVISIONAL_ONLY",
+        "ticker":"SPY","session":"2026-10-08:RTH",
+        "start_ns":start,"end_ns":start+TP1_MINUTE_NS,
+        "decision_ns":start+TP1_MINUTE_NS+1_000_000_000,
+        "source_complete_through_ns":start+TP1_MINUTE_NS,
+        "watermark_available_ns":start+TP1_MINUTE_NS+500_000_000,
+        "original_latest_available_ns":start+TP1_MINUTE_NS-500_000_000,
+        "source_watermark_receipt":TP1_WATERMARK,
+        "source_mode":"ACTUAL_AS_SEEN_ONLY_WHEN_OWNER_PROVES_RECEIPTS",
+        "correction_status":"STREAM_PROVISIONAL_UNRECONCILED",
+        "state":"PROVISIONAL_MEASURED_CONTEXT",
+        "absorption_signal":None,"rank_or_trade_authority":False,
+        "market_capture_coverage":None,
+        "condition_rules_ref":TP1_SHA,
+        "exchange_reference_sha256":TP1_EXCHANGE_SHA,
+        "source_observation_sha256":"d"*64,
+        "n_sampled_prints":10,"n_unclassified":2,
+        "gross_sampled_notional_usd":str(gross),
+        "buy_proxy_notional_usd":buy,
+        "sell_proxy_notional_usd":sell,
+        "midpoint_notional_usd":mid,
+        "unknown_notional_usd":unknown,
+        "ineligible_notional_usd":ineligible,
+        "trf_gross_notional_usd":trf,
+    }
+
+
+def tp1_source_q(name, stamp, *, bid="100", ask="101", bs=100, az=200,
+                 available=None, bx=11, ax=12, valid=True):
+    if available is None:
+        available=stamp+1_000_000
+    return {
+        "schema":"equity.tick_plane.stream_event/v0",
+        "source":"MASSIVE_STOCKS_SIP_WS",
+        "ticker":"SPY","session":"2026-10-08:RTH","event_type":"Q",
+        "quote_id":name,"sip_timestamp_ns":stamp,
+        "original_frame_received_ns":available,
+        "bid":bid,"ask":ask,"bid_size":bs,"ask_size":az,
+        "bid_exchange":bx,"ask_exchange":ax,
+        "source_frame_sha256":"e"*64,"source_receipt_id":"original-frame:"+name,
+        "frame_event_index":0,"valid_firm_nbbo":valid,
+        "correction_status":"STREAM_PROVISIONAL_UNRECONCILED",
+    }
+
+
+def tp1_quotes():
+    return [
+        tp1_source_q("before",TP1_START-10_000_000_000),
+        tp1_source_q("within",TP1_START+15_000_000_000,bs=90,az=100),
+        tp1_source_q("ending",TP1_END-5_000_000_000,bs=110,az=190),
+    ]
+
+
+def tp1_proofs(quotes):
+    return {
+        x["quote_id"]:{
+            "quote_id":x["quote_id"],"source_frame_sha256":x["source_frame_sha256"],
+            "original_frame_received_ns":x["original_frame_received_ns"],
+            "policy_available_ns":x["original_frame_received_ns"]+1000000,
+            "rules_sha256":TP1_QUOTE_POLICY_SHA,"eligible":True,
+        } for x in quotes
+    }
+
+
+def tp1_args(quotes=None, minute=None, **other):
+    qs=tp1_quotes() if quotes is None else quotes
+    args=dict(
+        ticker="SPY",session="2026-10-08:RTH",
+        start_ns=TP1_START,end_ns=TP1_END,decision_ns=TP1_CUT,
+        watermark_ns=TP1_END,watermark_received_ns=TP1_END+2_000_000_000,
+        watermark_receipt=TP1_WATERMARK,source_manifest="TP1:source:private",
+        source_completeness_attested=True,max_quote_age_ns=25_000_000_000,
+        minute_observations=[tp1_minute()] if minute is None else minute,
+        source_quotes=qs,quote_condition_receipts=tp1_proofs(qs),
+    )
+    args.update(other)
+    return args
+
+
+def tp1_context(**kwargs):
+    return project_tp1_pressure_context(**tp1_args(**kwargs))
+
+
+def test_tp1_bridge_reuses_existing_minute_signs_without_reclassifying_prints():
+    out=tp1_context()
+    assert out["state"]=="PROVISIONAL_RESEARCH_CONTEXT"
+    assert out["authority"]=="RESEARCH_CONTEXT_ONLY"
+    assert out["buy_proxy_notional_usd"]=="1000"
+    assert out["sell_proxy_notional_usd"]=="500"
+    assert out["unknown_notional_usd"]=="200"
+    assert out["trf_gross_notional_usd"]=="100"
+    assert out["pressure_balance"]==str(Decimal(500)/Decimal(1500))
+    assert out["midpoint_response_bps"]=="0"
+    assert out["classified_notional_coverage"]==str(Decimal(1500)/Decimal(1900))
+    assert out["absorption_signal"] is None
+    assert out["forward_outcome_label"] is None
+    assert out["source_qualification"]=="EXTERNAL_OWNER_RECEIPTS_REQUIRED"
+    assert out["n_source_minute_packets"]==1
+    assert out["source_quote_condition_rules_sha256"]==TP1_QUOTE_POLICY_SHA
+    assert "trade_id" not in out and "source_quotes" not in out
+
+
+def test_tp1_quote_exchange_numbers_project_to_research_string_format():
+    out=tp1_context()
+    assert out["state"]=="PROVISIONAL_RESEARCH_CONTEXT"
+    assert out["ask_size_recovery"]["state"]=="MEASURED_PROXY"
+    assert out["ask_size_recovery"]["recovered_shares"]==90
+
+
+def test_tp1_missing_original_completeness_abstains_before_calculation():
+    out=tp1_context(source_completeness_attested=False)
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+    assert "pressure_balance" not in out
+
+
+def test_tp1_source_watermark_not_mature():
+    out=tp1_context(watermark_ns=TP1_END-1)
+    assert out["state"]=="NOT_MATURE"
+    assert "midpoint_response_bps" not in out
+
+
+def test_tp1_provisional_correction_never_promoted_to_final_action():
+    out=tp1_context()
+    assert out["correction_status"]=="STREAM_PROVISIONAL_UNRECONCILED"
+    assert "trade_action" not in out
+    assert out["rank_authority"] is False
+
+
+def test_tp1_missing_quote_policy_receipt_fails_closed():
+    out=tp1_context(quote_condition_receipts={})
+    assert out["state"]=="QUOTE_REFERENCE_UNQUALIFIED"
+
+
+def test_tp1_future_quote_condition_receipt_is_not_backfilled():
+    data=tp1_args()
+    data["quote_condition_receipts"]["before"]["policy_available_ns"]=TP1_CUT+1
+    out=project_tp1_pressure_context(**data)
+    assert out["state"]=="QUOTE_REFERENCE_UNQUALIFIED"
+    assert out["reason"]=="QUOTE_CONDITION_POLICY_NOT_AVAILABLE_AT_DECISION"
+
+
+def test_tp1_mismatched_original_frame_identity_does_not_qualify():
+    data=tp1_args()
+    data["quote_condition_receipts"]["before"]["source_frame_sha256"]="f"*64
+    out=project_tp1_pressure_context(**data)
+    assert out["state"]=="QUOTE_REFERENCE_UNQUALIFIED"
+
+
+def test_tp1_unknown_quote_condition_never_becomes_firm_liquidity():
+    data=tp1_args()
+    data["quote_condition_receipts"]["ending"]["eligible"]=None
+    out=project_tp1_pressure_context(**data)
+    assert out["state"]=="QUOTE_REFERENCE_UNQUALIFIED"
+
+
+def test_tp1_nonfirm_latest_quote_blocks_older_valid_midpoint():
+    qs=tp1_quotes()
+    qs[-1]["valid_firm_nbbo"]=False
+    out=tp1_context(quotes=qs)
+    assert out["state"]=="PRICE_CONTEXT_UNOBSERVABLE"
+    assert out["reason"]["end"]=="INVALID_NBBO"
+
+
+def test_tp1_quote_after_cutoff_does_not_poison_older_decision():
+    qs=tp1_quotes()+[tp1_source_q("future",TP1_END-1_000_000_000,
+                                  bid="UNPARSABLE",available=TP1_CUT+1000000)]
+    out=tp1_context(quotes=qs)
+    assert out["state"]=="PROVISIONAL_RESEARCH_CONTEXT"
+
+
+def test_tp1_same_sip_timestamp_quotes_abstain_instead_of_ordering_by_id():
+    qs=tp1_quotes()+[tp1_source_q("tie",TP1_END-5_000_000_000,
+                                  bid="102",ask="103")]
+    out=tp1_context(quotes=qs)
+    assert out["state"]=="PRICE_CONTEXT_UNOBSERVABLE"
+    assert out["reason"]["end"]=="AMBIGUOUS_QUOTE_ORDER"
+
+
+def test_tp1_quote_source_session_mismatch_is_rejected():
+    qs=tp1_quotes()
+    qs[0]["ticker"]="QQQ"
+    with pytest.raises(TP1ContextRefusal,match="original identity"):
+        tp1_context(quotes=qs)
+
+
+def test_tp1_duplicate_quote_identity_rejected():
+    qs=tp1_quotes()+[deepcopy(tp1_quotes()[0])]
+    with pytest.raises(TP1ContextRefusal,match="duplicate source quote"):
+        tp1_context(quotes=qs)
+
+
+def test_tp1_two_minute_contiguity_and_policy_consistency():
+    minute1=tp1_minute(TP1_START)
+    minute2=tp1_minute(TP1_END)
+    # First packet retains its own original cutoff; second must mature by the study cutoff.
+    window_end=TP1_END+TP1_MINUTE_NS
+    cut=window_end+10_000_000_000
+    minute2["decision_ns"]=window_end+1_000_000_000
+    minute2["watermark_available_ns"]=window_end+500_000_000
+    minute2["original_latest_available_ns"]=window_end-500_000_000
+    quotes=tp1_quotes()+[tp1_source_q("later",window_end-5_000_000_000,
+                                      available=window_end-4_000_000_000)]
+    out=tp1_context(minute=[minute1,minute2],quotes=quotes,end_ns=window_end,
+                    decision_ns=cut,watermark_ns=window_end,
+                    watermark_received_ns=window_end+2_000_000_000,
+                    max_quote_age_ns=70_000_000_000)
+    assert out["state"]=="PROVISIONAL_RESEARCH_CONTEXT"
+    assert out["n_source_minute_packets"]==2
+    assert out["buy_proxy_notional_usd"]=="2000"
+
+
+def test_tp1_gap_in_minute_sequence_is_not_imputed():
+    minutes=[tp1_minute(TP1_START),tp1_minute(TP1_END+TP1_MINUTE_NS)]
+    with pytest.raises(TP1ContextRefusal,match="gap, duplicate"):
+        tp1_context(minute=minutes,end_ns=TP1_END+TP1_MINUTE_NS,
+                    decision_ns=TP1_CUT+TP1_MINUTE_NS,
+                    watermark_ns=TP1_END+TP1_MINUTE_NS,
+                    watermark_received_ns=TP1_END+TP1_MINUTE_NS+2_000_000_000)
+
+
+def test_tp1_mixed_source_reference_generations_rejected():
+    first=tp1_minute(TP1_START)
+    nextm=tp1_minute(TP1_END)
+    nextm["exchange_reference_sha256"]="f"*64
+    window_end=TP1_END+TP1_MINUTE_NS
+    nextm["decision_ns"]=window_end+1_000_000_000
+    nextm["watermark_available_ns"]=window_end+500_000_000
+    nextm["original_latest_available_ns"]=window_end-500_000_000
+    with pytest.raises(TP1ContextRefusal,match="mixed condition or exchange"):
+        tp1_context(minute=[first,nextm],end_ns=window_end,
+                    decision_ns=window_end+10_000_000_000,
+                    watermark_ns=window_end,
+                    watermark_received_ns=window_end+2_000_000_000)
+
+
+def test_tp1_wrong_correction_finality_is_not_accepted():
+    m=tp1_minute()
+    m["correction_status"]="FINAL"
+    r=tp1_context(minute=[m])
+    assert r["state"]=="MINUTE_NOT_QUALIFIED"
+
+
+def test_tp1_tampered_notional_denominators_rejected():
+    m=tp1_minute()
+    m["gross_sampled_notional_usd"]="9999"
+    with pytest.raises(TP1ContextRefusal,match="denominators inconsistent"):
+        tp1_context(minute=[m])
+
+
+def test_tp1_stale_quote_context_is_never_carried_to_price_response():
+    r=tp1_context(max_quote_age_ns=1_000_000_000)
+    assert r["state"]=="PRICE_CONTEXT_UNOBSERVABLE"
+    assert r["reason"]["start"]=="STALE_NBBO"
+
+
+def test_tp1_mixed_quote_policy_generations_rejected():
+    data=tp1_args()
+    data["quote_condition_receipts"]["ending"]["rules_sha256"]="f"*64
+    r=project_tp1_pressure_context(**data)
+    assert r["state"]=="QUOTE_REFERENCE_UNQUALIFIED"
+    assert r["reason"]=="MIXED_OR_MISSING_QUOTE_CONDITION_POLICY"
+
+
+def test_tp1_does_not_support_30_second_windows_with_minute_only_source():
+    with pytest.raises(TP1ContextRefusal,match="whole minutes"):
+        tp1_context(end_ns=TP1_START+30_000_000_000)
+
+
+def test_tp1_null_or_nonfinite_signed_notional_rejected():
+    m=tp1_minute()
+    m["buy_proxy_notional_usd"]="NaN"
+    with pytest.raises(TP1ContextRefusal,match="invalid notional"):
+        tp1_context(minute=[m])
