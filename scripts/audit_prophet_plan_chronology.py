@@ -165,10 +165,10 @@ def match_latest_price_basis(
 
 def session_lag(price_basis: date, recorded_on: date) -> int:
     """Completed market sessions after the price bar through the plan run date."""
-    publication_session = last_session_on_or_before(recorded_on)
-    if publication_session <= price_basis:
+    run_session = last_session_on_or_before(recorded_on)
+    if run_session <= price_basis:
         return 0
-    return len(sessions_between(price_basis + timedelta(days=1), publication_session))
+    return len(sessions_between(price_basis + timedelta(days=1), run_session))
 
 
 def _load_closes(path: Path) -> list[tuple[date, float]]:
@@ -594,7 +594,7 @@ def audit_plan(repo: Path, plan_path: Path) -> dict[str, Any]:
     board_last_marker = board_signal.get("last") or {}
     board_signal_tier = str(board_signal.get("tier_cascade") or "") or None
     board_source_marker_date = _canonical_date(board_last_marker.get("date"))
-    publication_session = last_session_on_or_before(recorded_on)
+    run_session = last_session_on_or_before(recorded_on)
     board_staleness = standouts.get("staleness") or {}
     board_price_basis = _canonical_date(board_staleness.get("price_through"))
     embedded_mixed_vintage = bool(
@@ -606,7 +606,7 @@ def audit_plan(repo: Path, plan_path: Path) -> dict[str, Any]:
     # ``as_of`` is wrapper/publication metadata. Compare the ranked-price watermark to
     # the last completed session, then preserve the embedded panel warning.
     mixed_vintage = embedded_mixed_vintage or bool(
-        board_price_basis != publication_session.isoformat()
+        board_price_basis != run_session.isoformat()
     )
 
     source: Path | None = None
@@ -684,7 +684,7 @@ def audit_plan(repo: Path, plan_path: Path) -> dict[str, Any]:
         # over a CURRENT store whose historical bars may since have been adjusted.
         if (
             not mixed_vintage
-            and board_price_basis == publication_session.isoformat()
+            and board_price_basis == run_session.isoformat()
             and board_difference is not None
             and board_difference <= decimal_tolerance(Decimal(plan["entry"]))
         ):
@@ -899,7 +899,7 @@ def _integrity_disposition(row: dict[str, Any]) -> tuple[str, str]:
     if status == "stale_price_basis":
         return (
             "quarantined",
-            ("outage-era plan was published after its entry-price session; "
+            ("outage-era plan run is later than its entry-price session; "
             "the hypothetical timely plan geometry cannot be reconstructed"),
         )
     if status in {"price_basis_unknown", "price_basis_unverified_current_fallback"}:
@@ -911,7 +911,7 @@ def _integrity_disposition(row: dict[str, Any]) -> tuple[str, str]:
     if status == "price_current_board_mixed_vintage":
         return (
             "audited_mixed_vintage",
-            ("entry price matches the publication session, but board inputs were "
+            ("entry price matches the run-date session, but board inputs were "
             "explicitly mixed-vintage"),
         )
     return (

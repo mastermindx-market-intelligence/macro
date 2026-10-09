@@ -257,6 +257,9 @@ def test_report_and_correction_evidence_retain_unresolved_clock_boundary(tmp_pat
         assert clocks["publication_status"] == "UNRESOLVED"
         assert clocks["origination_recorded_utc"] == "2026-08-08T08:00:00+00:00"
         assert clocks["executable_fill_at"] is None
+        if correction["field"] == "integrity_reason":
+            assert "published" not in correction["new_value"]
+            assert "publication session" not in correction["new_value"]
     old_row = dict(report["rows"][0])
     old_row.pop("clock_evidence")
     old_evidence = _correction_evidence(old_row, audit_receipt="legacy-audit.json")
@@ -306,7 +309,19 @@ def test_creation_blob_rule_reads_only_the_latest_available_close():
     assert read["match"]["date"] == "2026-08-05"
 
 
-def test_weekend_publication_has_zero_session_lag_from_friday_close():
+@pytest.mark.parametrize("integrity_status", [
+    "stale_price_basis", "price_current_board_mixed_vintage",
+])
+def test_disposition_does_not_promote_a_run_session_to_publication(integrity_status):
+    _, reason = _integrity_disposition({
+        "integrity_status": integrity_status,
+        "admission_integrity": "actionable_tier_proven",
+    })
+    assert "published" not in reason
+    assert "publication session" not in reason
+
+
+def test_weekend_run_has_zero_session_lag_from_friday_close():
     assert session_lag(date(2026, 8, 7), date(2026, 8, 8)) == 0
 
 

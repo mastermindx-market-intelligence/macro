@@ -46,7 +46,10 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m pytest \
   -q -p no:cacheprovider
 ```
 
-Result: **104 passed**. Chronology/correction subset: **48 passed**. The existing
+Initial result: **104 passed**. Initial chronology/correction subset: **48 passed**.
+CI infrastructure regression (`tests/test_ci_pack.py tests/test_ci_plan_workflow.py`):
+**194 passed, 2 skipped**. CI manifest validate-only passed for 177 jobs.
+Agent OS validation: 1,585 records, zero errors and 95 existing warnings. The existing
 `unrun-market-plumbing` CI lane now runs the chronology and immutable-correction
 suites; the workflow path filter reaches test-only changes. These are local results,
 not hosted CI, independent approval or production proof.
@@ -163,10 +166,18 @@ stable-handle Fabric adapter. No native children were launched.
 - `prophet-r6-b06-clock-build-01a11e89`: NONE/no_pool_available before launch.
   Parent implemented the bounded, independent audit change under the no-eligible-worker
   exception; this is not authority to serially implement the whole programme.
-- `prophet-r6-b06-clock-review-01a11e89`: independent semantic review requested
-  for the source and initial tests. No acceptance is asserted in this receipt;
-  current status and any later result belong to that same stable Fabric operation.
+- `prophet-r6-b06-clock-review-01a11e89`: Grok 4.6 / Ubuntu2 returned a scoped
+  PASS after independently reproducing 48 tests and 12 additional probes.
+  The exact binding and parent adjudication are in `SCOPED_REVIEW.md`. The review
+  artifact is accepted; final source approval and release remain separate.
+  Its low-severity source/publication prose leak was repaired with two RED cases.
+  Final chronology, immutable corrections and B1 intake/core regression: **106 passed**.
 
 Native source, CI, independent review, deployment, natural refresh and full programme
 acceptance remain separate. A queued or active transport handle is not background
 completion or a guaranteed future chat wakeup.
+
+Primary-source economic qualification is retained in
+`B06_ECONOMIC_SOURCE_QUALIFICATION.md`: the September 24 issuer update supersedes
+the earlier expected trading arrangements. This is retrospective evidence, not
+proof of historical system capture or a corrected shareholder return.
