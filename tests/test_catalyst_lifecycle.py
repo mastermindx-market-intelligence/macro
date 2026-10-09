@@ -155,7 +155,8 @@ class Sender:
 def make():
     otp, store, suppression, revision, sender = Otp(), Store(), Suppression(), Revisions(), Sender()
     service = FunnelService(secret=SECRET, scan=Scan(), identity=otp, consent=store,
-                            suppression=suppression, revisions=revision, sender=sender)
+                            suppression=suppression, revisions=revision, sender=sender,
+                            rights_clock=lambda now: now)
     return service, otp, store, suppression, revision, sender
 
 
@@ -539,6 +540,39 @@ def test_rights_rechecked_for_each_recipient_and_remaining_batch_stops_on_withdr
     assert len(rights.rights_calls) == 3
     assert sender.calls[0][2] == "catalyst:event-123:2:NVDA:" + UID
     assert "second@example.com" not in json.dumps(receipts)
+
+
+def test_fresh_clock_per_recipient_rejects_rights_expiring_inside_batch():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    initial = NOW + timedelta(hours=2)
+    expiry = NOW + timedelta(hours=3)
+    # The first granted URL expires while a batch remains in progress; a
+    # fresh rights read cannot continue to reuse the initial batch timestamp.
+    approved = rights.read_public_rights(update(), initial)
+    checked_times = []
+    clock_times = iter((initial, expiry))
+    service._rights_clock = lambda _: next(clock_times)
+
+    def grant_with_fixed_expiry(revision, checked_at):
+        checked_times.append(checked_at)
+        return replace(approved, checked_at_utc=checked_at.isoformat())
+
+    rights.read_public_rights = grant_with_fixed_expiry
+    result = service.deliver(update(), now=initial)
+    assert checked_times == [initial, expiry]
+    assert result[0]["state"] == "SOURCE_RIGHTS_NOT_CURRENT"
+    assert sender.calls == []
+
+
+def test_rights_clock_failure_never_falls_back_to_old_batch_time():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    service._rights_clock = lambda _: (_ for _ in ()).throw(
+        RuntimeError("system time unavailable"))
+    fails("SOURCE_RIGHTS_CLOCK_UNAVAILABLE", lambda: service.deliver(
+        update(), now=NOW + timedelta(hours=2)))
+    assert rights.rights_calls == [] and sender.calls == []
 
 
 def test_send_receipt_idempotency_and_uncertainty_not_claimed_success():
