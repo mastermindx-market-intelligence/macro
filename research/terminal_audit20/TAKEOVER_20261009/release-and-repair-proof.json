@@ -2,13 +2,23 @@
   "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
   "whole_mission_accepted": false,
   "terminal_release": {
-    "head": "505edf7872541075b5eee24691703a46d1151074",
+    "head": "a70cf2ad36bf05792c2a3cddac4ee491be0ff99c",
     "canonical_builder_rc": 0,
     "source_marker_public_agree": true,
     "healthy_services": true,
+    "free_bytes_after_release": 12553195520,
+    "installed_builder_sha256": "6cd5088d12b0ce4be5bf3c3b8b6ccf416864002ec4243056966e5ed81507b2d5",
     "receipt": {
-      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-terminal-release-receipt-20261009.json",
-      "sha256": "c7096aa72c8ab8c25456f5820b59383eda70f9278add001404c6ee9778565b1f"
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-terminal-release-a70-receipt-20261009.json",
+      "sha256": "ae9b90459333077c1578ae5410fd0289f18d4f10b987ebfc3c44479a6723ee1f"
+    },
+    "public_readback": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/terminal-a70-public-release-readback-20261009.json",
+      "sha256": "3632bc1c6df773374ef374f1f027036ce7cdcd6d87534c9947a447df5cb16e8f"
+    },
+    "compile_timeout_then_recovery": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/pine-a70-timeout-recovery-20261009.json",
+      "sha256": "c1c2a095445bcfe6fa475ed2ff788d28a08b4060411f8f5fc20c207f55187d18"
     }
   },
   "storage_emergency": {
@@ -19,45 +29,53 @@
     "additional_separate_phase": "DONE batches40-44; SSH controller rc0 consumed; independent terminal custody acceptance"
   },
   "a04": {
-    "head": "d0e6288727ef1951464f8efddb796789798e4e45",
+    "pr": 858,
+    "head": "7002217a45c2a7c959722c03da778070366d59d8",
     "draft": true,
     "migration_applied": false,
-    "unit_assertions": 82,
+    "source_accepted": false,
+    "assertions": 87,
     "unit_files": 10,
     "typecheck_rc": 0,
-    "browser_pass": 36,
+    "browser_pass": 42,
     "browser_skip": 0,
-    "excluded_browser_attempt": "port3157 reused an unrelated preexisting server; own run stopped rc130 and excluded",
-    "qualified_browser_port": 3196,
-    "postgresql17_11_causal_cases": 65,
-    "sql_unchanged_sha256": "0b046c0dd95c2a5d96d3e67987759d3d5321f3fea4471783ed4f8c51eab92477",
-    "fixture_cleaned": true,
-    "legacy_actual_modules_receipt": {
-      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-old-tab-causal-d0e628-20261009.json",
-      "sha256": "d93db35d01d5737c5316cb210a4825bc192c3ebc74ef916c9854a3ff524002f9"
+    "browser_port": 3196,
+    "postgresql_cases_unchanged_sql": 65,
+    "sql_sha256": "0b046c0dd95c2a5d96d3e67987759d3d5321f3fea4471783ed4f8c51eab92477",
+    "previous_review_child": "terminal-audit20-a04-alias-adjudication-20261009",
+    "previous_review": "REJECT candidate; useful artifact independently reproduced and accepted",
+    "red_findings": {
+      "physical_retirement": 2,
+      "direct_selection_discard": 1
     },
-    "previous_review": "REJECT reproduced with5 failures/25 controls; accepted as useful review artifact only",
-    "delta_review_child": "terminal-audit20-a04-alias-adjudication-20261009",
-    "delta_review_started": true,
-    "delta_review_accepted": false,
     "proofs": {
+      "physical_red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-physical-retirement-red-20261009.log",
+        "sha256": "1a1da7149814dd09129217e4d576e908c4abce85a5319708d2ad73bcadba8562"
+      },
+      "selection_red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-selected-discard-red-20261009.log",
+        "sha256": "9f40b2d416755f0ab8a960cbe28df24f461ecf2eda7c2f79c935e11775c0516c"
+      },
       "unit": {
-        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-import-alias-unit-20261009.log",
-        "sha256": "ad488c98eee2239e24fdb44bc49f1e968157719e85107e8bd54010c14645a2e8"
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-retirement-selection-unit-20261009.log",
+        "sha256": "bf66aa8cbec6ad8a4e626e1929ead3291cdc94100f79cb1c5796a5f8fc9bb1a0"
       },
       "typecheck": {
-        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-import-alias-tsc-20261009.log",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-retirement-selection-tsc-20261009.log",
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
       "browser": {
-        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-import-alias-responsive-r2-20261009.log",
-        "sha256": "e310fe4a121fd5806133c7647f4c294b2b0f7e52354da4e2e83d30eee111e029"
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-retirement-selection-responsive-20261009.log",
+        "sha256": "f5bfc3fdb4018994f56b9d9f5ac3ee8819e81cbe055f91599e42190059abbf4c"
       },
-      "red": {
-        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-import-two-handles-red-r2-20261009.log",
-        "sha256": "094732ebc2b884fa7109a7fc0dc4439692f4ebf028fe0f1b4ece705972d76351"
+      "old_module": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-old-tab-causal-7002217-20261009.json",
+        "sha256": "7d72ea2f8b91724af1ad0fddcb92906ef166e22aa68ddc54e8524ade4466b6ef"
       }
-    }
+    },
+    "delta_review_child": "terminal-audit20-a04-retirement-adjudication-20261009",
+    "delta_review_accepted": false
   },
   "brain": {
     "pr": 8526,
@@ -88,8 +106,8 @@
     "pr": 861,
     "head": "856f68e04bc85e265887d721854e2fa410314fdd",
     "base": "a70cf2ad36bf05792c2a3cddac4ee491be0ff99c",
-    "draft": true,
-    "source_accepted": false,
+    "draft": false,
+    "source_accepted": true,
     "native_react_assertions": 10,
     "cache_assertions": 9,
     "red_failures": 5,
@@ -98,7 +116,7 @@
     "browser_skip": 0,
     "browser_native_eventsource": true,
     "typecheck_rc": 0,
-    "review_child": "terminal-audit20-a05-transport-review-20261009",
+    "review_child": "terminal-audit20-a05-transport-review-repair-20261009",
     "proofs": {
       "red": {
         "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a05-mounted-transport-red-20261009.log",
@@ -116,7 +134,21 @@
         "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a05-native-transport-tsc-20261009.log",
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       }
-    }
+    },
+    "acceptance_scope": "Transport delta at856f68 only; parent actual mounted React/native EventSource proof plus independent source inspection/self-contained causal probe; no production acceptance",
+    "review_artifact_accepted": true,
+    "review_cleanup_proven": true,
+    "review_residual_count": 0,
+    "reviewer_native_test_limit": "Independent12-case probe is self-contained; native tests qualified by parent, not rerun by reviewer",
+    "review_observed_limits": "SSE does not write the shared cache; discarded HTTP may still commit that existing cache; this delta fences useFlowStream subscribers only",
+    "usage": "billed provider usage unavailable",
+    "review_return": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a05-transport-review-repair-return-20261009.txt",
+      "sha256": "b9d6a66208f3ab2aca55d3a78eb234d0a5285d20532e0415b47baee8e154f444"
+    },
+    "merge_on_green_armed": true,
+    "head_required_ci_green": true,
+    "merge_release_pending": true
   },
   "storage_additional": {
     "batches": 5,
@@ -133,11 +165,61 @@
       "sha256": "ddcde2063f65a8ed9831a3fbcdbd70cf6f1b44c674cd9639cf0ed21b7cf1b3d0"
     }
   },
-  "release_in_progress": {
-    "target": "a70cf2ad36bf05792c2a3cddac4ee491be0ff99c",
-    "includes": "merged rollback-space PR855",
-    "accepted": false,
-    "sole_attended_controller": 54009,
-    "existing_updater_lock": true
+  "a06": {
+    "pr": 862,
+    "head": "0d3365ece989a7a447abb6edf1df1c29ec5b65cd",
+    "base": "a70cf2ad36bf05792c2a3cddac4ee491be0ff99c",
+    "draft": true,
+    "source_accepted": false,
+    "assertions": 32,
+    "files": 3,
+    "red_failures": 6,
+    "red_controls": 1,
+    "typecheck_rc": 0,
+    "browser_pass": 3,
+    "browser_skip": 0,
+    "review_child": "terminal-audit20-a06-lifetime-source-review-20261009",
+    "proofs": {
+      "red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-lifetime-red-20261009.log",
+        "sha256": "5ff5db8eefd01012fc624b8733c325a312c74a083b257e533e53a812b60ad269"
+      },
+      "green": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-lifetime-green-20261009.log",
+        "sha256": "2197f52f7d32b2df6ab247bc7c227594b04b67b9030eb89075b6421f00f118de"
+      },
+      "typecheck": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-lifetime-tsc-20261009.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "browser": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-next-responsive-20261009.log",
+        "sha256": "9681d5db3d3bdcbd517e73a7908ae9f4fa23e7d2188111215615fa24785fed5a"
+      }
+    },
+    "review_return_accepted": false
+  },
+  "a09": {
+    "current_ref_terminal": "bacda5dcc30682f9327e037a2d4425bd9714ac3a",
+    "current_ref_macro": "cdbcd143dcfa419ab0637bc11dd4c80368143e2e",
+    "ordering_pr807": "MERGED ccbf164c50064bd26f713aba47a65576c3b29e38",
+    "routine_child": "terminal-audit20-a09-current-money-seam-20261009",
+    "routine_prelaunch_refusal": "pool minimax has no eligible mode on requested host",
+    "architecture_child": "terminal-audit20-a09-money-authority-design-20261009",
+    "architecture_c3_witness": "historical entry, current quote and reporting units across shared writers and existing FX authority",
+    "architecture_prelaunch_refusal": "no_pool_available",
+    "started": false,
+    "next": "parent retains additive contract adjudication; no FX or entry unit is inferred"
+  },
+  "continuation": {
+    "automation_id": "terminal-audit20-continuation",
+    "kind": "thread heartbeat",
+    "status": "ACTIVE",
+    "interval_minutes": 15,
+    "quiet_unchanged": true,
+    "same_root": true,
+    "normal_existing_gh_approval_self_service": true,
+    "duplicate_control_plane": false,
+    "exact_app_grant_pending": true
   }
 }

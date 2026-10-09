@@ -8,11 +8,12 @@ objective: >-
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: active
 blocked_by:
-  - Production505edf7 includes A02/A03; intended existing Pro-principal timeout/save/rename acceptance remains owed. Current new Google principal is Free; no entitlement has been changed.
-  - Terminal automation PR850 remains draft pending the exact one-time GitHub App grant; ordinary branch refreshes are now performed by the parent, not delegated to the user.
-  - A04 PR858 atb2ac1f8 is draft/unapplied; repaired-head independent review, protected CI, migration readback and actual authenticated concurrency remain unclosed.
-  - Seasonal PR853, rollback PR855 and USD CAP PR839 retain exact-head CI/release gates. Brain8526 merged74e14c61 with exact reviewed public assets and scoped new-Free-principal UI proof.
-  - Private identity, FX, producer and real-recipient contracts must be qualified before their original mission outcomes can be accepted.
+  - A02/A03 are live at a70cf2ad; protected production compile recovered after an enforced timeout. Intended existing Pro-principal editable timeout/save/rename acceptance remains owed.
+  - Terminal automation PR850 remains draft pending the exact one-time GitHub App grant. Ordinary authenticated workflow approvals are self-service and quiet automatic chat continuation is active.
+  - A04 PR858/7002217 repairs the third review's physical-handle resurrection and direct selection/discard findings; exact delta review, protected CI, reserved0031 readback and authenticated concurrency remain unclosed.
+  - A05 PR861/856f68 passed scoped independent review and head CI, is ready/merge-on-green armed, and awaits current-master convergence, canonical release and live acceptance. A06 PR862/0d3365 is draft awaiting its access-lifetime review and delivery.
+  - Seasonal PR853 and USD CAP PR839 retain their current-head CI/release gates. Rollback PR855 is merged and deployed at a70cf2ad. Brain8526 has exact served-asset and scoped live new-Free-principal proof.
+  - Remaining private identity, FX, producer and real-recipient contracts require qualification; missing historic sessions do not postpone in-scope recovery.
 program: terminal-charting
 repos: [terminal, macro]
 owner: ceo-sol
@@ -27,10 +28,11 @@ waves:
     title: Consume higher-level repairs and deliver accepted scoped changes
     status: in_progress
 next_action: >-
-  Consume independent Fabric alias review on A04 PR858/d0e628 and bounded A05 PR861/856f68, resolve causal findings,
-  require protected CI, and apply reserved0031 with pre/post receipts before canonical deployment and authenticated recovery acceptance.
-  Continue ordinary machine-operated GitHub approvals/releases for qualified Seasonal/rollback/USD CAP carriers and remaining original observable outcomes.
-  Preserve intended-account and exact App-grant boundaries; inactive historic owners are not receivers and this checkpoint is not a stopping instruction.
+  Consume retained independent A04 physical-retirement and A06 access-lifetime reviews, repair actual findings,
+  and advance source-accepted A05 through the existing merge-on-green controller with exact refreshed-head CI.
+  Apply reserved0031 only after source/review/CI qualification, then canonical release and authenticated recovery proof.
+  Continue the additive Portfolio monetary-authority decision after two honest prelaunch admission refusals;
+  preserve exact App-grant/intended-account boundaries. The active heartbeat resumes this same root automatically.
 owns_paths: []
 artifacts:
   - research/terminal_audit20/TAKEOVER_20261009/release-and-repair-proof.json
@@ -117,3 +119,15 @@ Oct9 next source delta: the second A04 Grok review rejected b2ac1f8 with duplica
 A05 source takeover from current mastera70cf2ad produced PR861/856f68e04bc85e265887d721854e2fa410314fdd. Five real mounted-React failures reproduced delayed-poll and retired-cache rollback; repaired10 lifecycle assertions+9 cache controls,TSC0 and6 browser cases pass. Three browser cases use native EventSource and an owned HTTP fixture with real failed connections/reconnection, shared consumers, delayed response and unmount; three existing Flow Desk freshness UI cases qualify desktop/tablet/mobile. The same shared cache and connection registry remain authoritative. Historical PR686 stays held. The ordinary current C2 review pick selected MiniMax-M3/mini2; childterminal-audit20-a05-transport-review-20261009 is submitted under the original root, not yet accepted.
 
 Additional lossless Git phase40–44 settledrc0 and independent terminal custody review accepted961984 packed IDs/646ba8bc,63 rehashed SSD preimages and append-only producer movement. Own DONE receipt records12,737,523,712 free bytes, custody000ae766 and active services. No further Git pass is requested. PR855 mergeda70cf2ad at01:15:45Z; its canonical attended release is now admitted under the existing updater lock and is not yet accepted. Controller-refreshed PR853/839 heads0ebe1a86/e0b27148 required new actions runs37869801986/37869591483; this parent completed both ordinary authenticated approvals without operator commands. Whole Audit20 acceptance remains false.
+
+Oct9 accepted release and new repair delta: canonical a70cf2ad36bf05792c2a3cddac4ee491be0ff99c completed under the incumbent updater lock, builder rc0, clean source and matching live/public marker, active Terminal/quote-hub/rsyslog,12,553,195,520 free bytes. Installed builder6cd5088d matches this merged release. Actual protected Scripts compile first reported the host's enforced1500ms timeout; ordinary Run/compile on the same untouched372-line buffer then returned no errors/10warnings. This is observed timeout/recovery, not the missing editable Pro acceptance.
+
+The third independent drawing review rejected d0e628 because hydrated physical import handles could resurrect a cross-tab discard; parent reproduced2 failures/32 controls and accepted the useful review artifact only. A separately observed direct Review-another/Use-cloud choice reproduced1 failing case. Same PR858 now7002217a45c2a7c959722c03da778070366d59d8 conserves physical retirement and changes acknowledgement active identity only to an observed selected copy, preserving original preimage hashes.87 native assertions/10files,TSC0,42 actual Next/shared-origin cases at1440/820/390 with0skip pass; frozen old505/new7002217 actual-module proof is clean and preserves both intents/exact operation. SQL0031 unchanged/65prior causal cases; DDL unapplied. Same-root independent retirement review remains active; candidate unaccepted.
+
+A05's first MiniMax reviewer reached cleanup with a model-generation/connection failure and no usable review; parent did not score the source from that result. Same-root C2 repair review automatically picked Grok/Ubuntu2 and returned PASS_SCOPED for856f68 with independent source inspection and12 self-contained causal probes, cleanup proven/residual0. Parent real mounted-React/native EventSource proof and exact-head protected CI are green. PR861 is ready and the existing merge-on-green/native auto-squash controller is armed. Shared cache writes remain their existing contract; the stream-subscriber generation fence is the accepted vertical, not a claim that SSE writes the cache. Release/live behavior remains owed.
+
+A06 takeover is PR862/0d3365ece989a7a447abb6edf1df1c29ec5b65cd from a70: actual live-options helper TTL45s revalidation, paused new delivery/latest pending frame,15s fail-closed deadline,8MiB shared pending/queued cap and unified teardown including synchronous warm overflow. Six actual-route causal failures/one control preceded the repair;32 assertions/TSC0/3 actual Next responsive cases pass. Independent C3 authority/lifecycle review is active; source and production unaccepted. Historical held668 scope remains excluded.
+
+A09 routine source-seam request was refused before launch because MiniMax had no eligible host mode. The separately bounded C3 monetary-authority decision was refused before launch with no_pool_available. Neither STARTed and no carrier was substituted. Current807 ordering carrier is merged; parent retains the architecture decision. The exact source pins are Terminalbacda5dc/Macrocdbcd143; no historical entry currency, FX rate or customer book was invented.
+
+One native thread heartbeat,terminal-audit20-continuation, is ACTIVE every15minutes with unchanged state quiet and the same original root. It resumes retained children and authorized delivery rather than asking the operator to run ordinary GitHub approvals. It introduces no alternate Fabric lifecycle or GitHub controller; exact one-time App grant remains pending. Whole original Audit20 acceptance remains false, and this save is not a stopping instruction.
