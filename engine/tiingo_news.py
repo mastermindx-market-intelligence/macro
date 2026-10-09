@@ -70,6 +70,13 @@ def normalize_article(raw: Mapping[str, object], *, received_at: datetime) -> di
     source = _bounded_text(raw.get("source"), "source", 512) or parts.hostname.lower()
     if any(c in source for c in ("/", "@", " ", "\\", "\x00")):
         raise TiingoArticleError("source_invalid")
+    # Do not score a low-quality URL using a different, prestigious source tag.
+    # A live 100-row sample had matching source and URL hosts throughout; future
+    # mismatches are quarantined for manual review, not silently tier-boosted.
+    url_host = parts.hostname.lower().removeprefix("www.")
+    source_host = source.lower().removeprefix("www.")
+    if url_host != source_host and not url_host.endswith("." + source_host):
+        raise TiingoArticleError("source_url_mismatch")
     def tags(field: str) -> list[str]:
         v = raw.get(field) or []
         if not isinstance(v, list) or len(v) > 512:
