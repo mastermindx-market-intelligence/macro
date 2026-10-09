@@ -262,5 +262,106 @@ class StreamEventContractTests(unittest.TestCase):
             record["trfi"] = code
             self.assertEqual(captured(record)["venue_class"], "TRF")
 
+
+from engine.tick_plane.exchange_reference import (
+    parse_exchange_reference, classify_trade_venue, FrameContractError as VenueError,
+)
+
+
+def exchange_ref(*, received=RECEIVED_NS-1000, rows=None):
+    if rows is None:
+        rows=[{"asset_class":"stocks","id":11,"type":"exchange"},
+              {"asset_class":"stocks","id":4,"type":"TRF"},
+              {"asset_class":"stocks","id":5,"type":"SIP"},
+              {"asset_class":"stocks","id":13,"type":"SIP"},
+              {"asset_class":"stocks","id":62,"type":"TRF"}]
+    raw=json.dumps({"status":"OK","request_id":"exchange-native-reference",
+                    "results":rows}).encode()
+    return parse_exchange_reference(raw_response_bytes=raw,
+           available_ns=received,source_receipt_id="original-exchange-reference")
+
+
+def venue(trade=None, reference=None, **kw):
+    t=captured(TRADE if trade is None else trade)
+    ref=exchange_ref() if reference is None else reference
+    args=dict(trade=t,reference=ref,decision_ns=RECEIVED_NS+2000,
+              original_reference_custody_attested=True)
+    args.update(kw)
+    return classify_trade_venue(**args)
+
+
+class OriginalExchangeReferenceTests(unittest.TestCase):
+    def test_reference_admits_only_known_native_exchange(self):
+        trade=copy.deepcopy(TRADE)
+        trade["x"]=11
+        trade.pop("trfi",None)
+        result=venue(trade)
+        self.assertEqual(result["venue_class"],"LIT")
+        self.assertTrue(result["lit_eligible"])
+        self.assertEqual(result["authority"],"VENUE_OBSERVATION_ONLY")
+        self.assertEqual(len(result["exchange_reference_sha256"]),64)
+
+    def test_named_trf_pipe_is_reporting_route_not_dark_pool_identity(self):
+        result=venue()
+        self.assertEqual(result["venue_class"],"TRF")
+        self.assertFalse(result["lit_eligible"])
+        self.assertIn("NOT_NAMED_ATS",result["reason"])
+
+    def test_orf_and_sip_remain_unknown_even_with_reference(self):
+        for exchange in (5,13,62):
+            record=copy.deepcopy(TRADE)
+            record["x"]=exchange
+            record.pop("trfi",None)
+            with self.subTest(exchange=exchange):
+                self.assertEqual(venue(record)["venue_class"],"UNKNOWN")
+
+    def test_unknown_exchange_never_assumes_lit(self):
+        tr=copy.deepcopy(TRADE)
+        tr["x"]=999
+        tr.pop("trfi",None)
+        self.assertEqual(venue(tr)["reason"],"EXCHANGE_MISSING_IN_REFERENCE")
+
+    def test_unrecognized_trf_code_cannot_be_lit(self):
+        tr=copy.deepcopy(TRADE)
+        tr["trfi"]=999
+        self.assertEqual(venue(tr)["venue_class"],"UNKNOWN")
+
+    def test_reference_after_decision_cannot_backfill(self):
+        late=exchange_ref(received=RECEIVED_NS+100000)
+        got=venue(reference=late)
+        self.assertEqual(got["reason"],"REFERENCE_OR_TRADE_NOT_KNOWN_AT_DECISION")
+
+    def test_unattested_reference_never_admits_lit(self):
+        tr=copy.deepcopy(TRADE);tr["x"]=11;tr.pop("trfi",None)
+        self.assertEqual(venue(tr,original_reference_custody_attested=False)["venue_class"],"UNKNOWN")
+
+    def test_trade_arriving_after_decision_abstains(self):
+        tr=captured(TRADE)
+        tr["original_frame_received_ns"]=RECEIVED_NS+500000
+        result=classify_trade_venue(trade=tr,reference=exchange_ref(),
+                                    decision_ns=RECEIVED_NS+1000,
+                                    original_reference_custody_attested=True)
+        self.assertEqual(result["reason"],"REFERENCE_OR_TRADE_NOT_KNOWN_AT_DECISION")
+
+    def test_source_type_conflict_cannot_relabel_orf_as_exchange(self):
+        recs=[{"asset_class":"stocks","id":62,"type":"exchange"}]
+        ref=exchange_ref(rows=recs)
+        tr=copy.deepcopy(TRADE);tr["x"]=62;tr.pop("trfi",None)
+        self.assertEqual(venue(tr,reference=ref)["reason"],"NONLIT_SOURCE_TYPE_CONFLICT")
+
+    def test_duplicated_conflicting_exchange_id_refused(self):
+        recs=[{"asset_class":"stocks","id":11,"type":"exchange"},
+              {"asset_class":"stocks","id":11,"type":"TRF"}]
+        with self.assertRaisesRegex(FrameContractError,"conflicting exchange"):
+            exchange_ref(rows=recs)
+
+    def test_bad_venue_reference_not_treated_as_empty(self):
+        with self.assertRaisesRegex(FrameContractError,"stock exchange reference"):
+            exchange_ref(rows=[{"asset_class":"options","id":11,"type":"exchange"}])
+
+    def test_invalid_venue_reference_type_fails_closed(self):
+        with self.assertRaisesRegex(FrameContractError,"unknown reference venue"):
+            exchange_ref(rows=[{"asset_class":"stocks","id":11,"type":"otc"}])
+
 if __name__ == "__main__":
     unittest.main()
