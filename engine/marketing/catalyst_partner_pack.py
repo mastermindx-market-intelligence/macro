@@ -343,12 +343,19 @@ def build_partner_pack(
     _require(len(dict(parse_qsl(urlsplit(scan_link).query))) == 6
              and len(parse_qsl(urlsplit(scan_link).query)) == 6,
              "DUPLICATE_OR_INVALID_UTM")
+    # Social and card readers must see distinct evidential value: the card may
+    # be withheld where a single claim would merely repeat the social draft.
+    lead_ticker = ticks[-1]
+    lead_claim = next(c for c in reversed(claims) if lead_ticker in c["tickers"])
+    social_hook = "$" + lead_ticker + ": " + lead_claim["text"]
     active_sources = {ref: sources[ref] for c in claims for ref in c["source_ids"]}
     # The SVG can only reproduce source material if ALL contributing receipts
     # affirm rehosting. Textual synthesis still requires public display/link.
     media_rights = all(s["public_rehost"] for s in active_sources.values())
     main_source = next(iter(active_sources.values()))
     card_svg = None
+    media_fit: dict[str, Any] = {}
+    media_status = "REHOST_RIGHTS_BLOCKED"
     if media_rights:
         from engine.marketing.chart_render import render_breaking_card
         card_svg = render_breaking_card(
@@ -358,8 +365,10 @@ def build_partner_pack(
             published_at=main_source["published_at_utc"],
             tickers=[{"ticker": t} for t in ticks],
             eyebrow="EVENT EVIDENCE", cta=False, suppress_cta=True,
+            fit=media_fit,
         )
-        _require(isinstance(card_svg, str)
+        _require("headline_drawn" in media_fit
+                 and isinstance(card_svg, str)
                  and card_svg.lstrip().startswith("<svg")
                  and "MASTERMIND" in card_svg
                  and len(card_svg) <= 250_000
@@ -428,9 +437,6 @@ def build_partner_pack(
     # Two individually length-checked draft posts prevent the long, canonical
     # attributed link from crowding out the ACTUAL verified observation.
     # Never clip a sentence: clipping may invert a material qualifier.
-    lead_ticker = ticks[-1]
-    lead_claim = next(c for c in claims if lead_ticker in c["tickers"])
-    social_hook = "$" + lead_ticker + ": " + lead_claim["text"]
     social_disclosure = (
         "Concept; no endorsement. " if partner["status"] == "candidate"
         else "Partner: " + partner["name"] + ". "
@@ -454,6 +460,22 @@ def build_partner_pack(
     violations = validate_copy(social_hook, "", ctx)
     violations += banned_language(social_disclosure)
     _require(not violations, "SOCIAL_COPY_REJECTED")
+    if card_svg:
+        # Reuse the incumbent card-value gate. Compare the SAME social
+        # message we propose to distribute against the text that renderer
+        # actually drew, never the untruncated producer claim.
+        from engine.marketing.breaking_summary import card_earns_attachment
+        attaches, _ = card_earns_attachment(
+            social_hook,
+            str(media_fit["headline_drawn"]),
+            str(media_fit.get("summary_drawn") or ""),
+            [],
+        )
+        if attaches:
+            media_status = "READY_FOR_REVIEW"
+        else:
+            card_svg = None
+            media_status = "CARD_WITHHELD_NO_ADDITIONAL_VALUE"
     draft = {"title": event["primary_subject"],
              "body_html": "<p>" + html.escape(" ".join(c["text"] for c in claims))
                           + "</p>"}
@@ -483,8 +505,7 @@ def build_partner_pack(
         "scan_link": scan_link,
         "link_is_placeholder": not route_live,
         "card_svg": card_svg,
-        "media_status": "READY_FOR_REVIEW" if media_rights
-                        else "REHOST_RIGHTS_BLOCKED",
+        "media_status": media_status,
         "newsletter": newsletter, "social": social,
         "embed": embed,
         "publication_status": "DRAFT_HOLD",
@@ -510,7 +531,26 @@ def write_partner_pack(pack: dict, destination: Path | str,
     )
     env = Environment(loader=FileSystemLoader(str(template_path.parent)),
                       autoescape=True, undefined=StrictUndefined)
-    page = env.get_template(template_path.name).render(pack=pack)
+    # These are the ACTUAL canonical theme tokens. Extract from theme.css,
+    # rather than declaring a second colour/font/radius palette in the new
+    # preview template. Copy only the :root token block into the self-contained
+    # private preview; nothing from third-party assets or request data.
+    token_path = Path(__file__).resolve().parents[2] / "templates" / "theme.css"
+    try:
+        canonical_css = token_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise PackRejected("DESIGN_TOKENS_UNAVAILABLE") from exc
+    first = canonical_css.find(":root {")
+    last = canonical_css.find("\n}\n", first)
+    _require(first >= 0 and last > first
+             and last - first < 25000, "DESIGN_TOKENS_INVALID")
+    theme_tokens = canonical_css[first:last + 2]
+    _require(all(name in theme_tokens for name in (
+                 "--font-ui:", "--bg:", "--panel:", "--text:", "--muted:"))
+             and "</style" not in theme_tokens.lower(), "DESIGN_TOKENS_INVALID")
+    page = env.get_template(template_path.name).render(
+        pack=pack, theme_tokens=theme_tokens,
+    )
     _require("DRAFT PREVIEW" in page and pack["scan_link"].replace("&", "&amp;") in page,
              "TEMPLATE_DISCLOSURE_OR_LINK_MISSING")
     files = {
