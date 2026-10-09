@@ -92,7 +92,7 @@ def compose_captured_minute(
                       per_symbol_cap=8192,total_cap=8192)
     quotes=[]
     trades=[]
-    frame_digests=[]
+    frame_receipts_in_order=[]
     n_events=0
     n_bytes=0
     for f in original_frames:
@@ -118,7 +118,7 @@ def compose_captured_minute(
         n_events+=len(batch)
         if n_events>MAX_BATCH_EVENTS:
             raise CapturedMinuteRefusal("original source event budget exhausted")
-        frame_digests.append(sha256(raw).hexdigest())
+        frame_receipts_in_order.append((seen, f["source_receipt_id"], sha256(raw).hexdigest()))
         for event in batch:
             if event["event_type"]=="Q":
                 # Keep a warmup quote before minute start, provided it is
@@ -180,11 +180,11 @@ def compose_captured_minute(
         "end_ns":start_ns+MINUTE_NS,
         "decision_ns":decision_ns,
         "original_watermark_receipt":watermark_receipt_id,
-        "source_frame_count":len(frame_digests),
+        "source_frame_count":len(frame_receipts_in_order),
         "source_event_count":n_events,
         "original_source_bytes":n_bytes,
-        "raw_frame_digest_set_sha256":sha256(json.dumps(
-            sorted(frame_digests),separators=(",",":")).encode()).hexdigest(),
+        "source_frame_order_sha256":sha256(json.dumps(
+            frame_receipts_in_order,separators=(",",":")).encode()).hexdigest(),
         "minute_private_only":minute,
         "quotes_private_memory_only":quotes,
         "quote_verdicts_private_memory_only":quote_verdicts,
