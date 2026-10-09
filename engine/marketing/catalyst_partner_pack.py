@@ -594,6 +594,26 @@ def write_partner_pack(pack: dict, destination: Path | str,
     _require(first >= 0 and last > first
              and last - first < 25000, "DESIGN_TOKENS_INVALID")
     theme_tokens = canonical_css[first:last + 2]
+    # Carry the exact stock light-palette override from the SAME canonical
+    # stylesheet, not a second invented palette. The first matching block
+    # only alters global buttons; the next one carries bg/panel/text tokens.
+    marker = 'html[data-theme="light"] {'
+    search_at = last + 2
+    light_block = ""
+    for _ in range(7):
+        offset = canonical_css.find(marker, search_at)
+        if offset < 0:
+            break
+        finish = canonical_css.find("\n}", offset)
+        _require(finish > offset and finish - offset < 8000,
+                 "DESIGN_TOKENS_INVALID")
+        block = canonical_css[offset:finish + 2]
+        search_at = finish + 2
+        if all(name in block for name in ("--bg:", "--panel:", "--text:")):
+            light_block = block
+            break
+    _require(bool(light_block), "DESIGN_TOKENS_INVALID")
+    theme_tokens += "\n" + light_block
     _require(all(name in theme_tokens for name in (
                  "--font-ui:", "--bg:", "--panel:", "--text:", "--muted:"))
              and "</style" not in theme_tokens.lower(), "DESIGN_TOKENS_INVALID")
