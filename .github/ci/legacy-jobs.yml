@@ -11135,6 +11135,8 @@ jobs:
         run: pip install pytest fastapi pydantic jinja2 pandas numpy pyarrow pyyaml requests
       - name: mailer transport + ledger tests (app/mailer.py)
         run: python -m pytest tests/test_mailer.py -v
+      - name: mailer redacted failure logging (private identity/uncertain transport)
+        run: python -m pytest tests/test_mailer_private_logging.py -v
       - name: public support intake tests (app/support.py)
         run: python -m pytest tests/test_support_api.py -v
       - name: plan-based support ticket routing (lib/help_directory.py route_for_tier, packet B-F13-3)
