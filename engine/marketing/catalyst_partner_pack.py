@@ -80,7 +80,8 @@ def _safe_https(
     _require(u.scheme == "https" and host
              and u.username is None and u.password is None
              and not u.fragment and port in (None, 443)
-             and not any(ch in value for ch in '<>"\n\r\t\\'),
+             and not any(ch in value for ch in '<>"\n\r\t\\[]`')
+             and not any(ch.isspace() for ch in value),
              code)
     decoded = value
     for _ in range(6):
@@ -116,6 +117,22 @@ def _atom(value: Any, code: str, max_len: int = 220) -> str:
     _require(bool(value) and len(value) <= max_len and not any(
         ord(c) < 32 for c in value) and not _EMAIL.search(value), code)
     return value
+
+
+def _markdown_text(value: str) -> str:
+    """Quote source-controlled prose for newsletter Markdown, not for facts.
+
+    Markdown inputs are immutable public source assertions. Brackets and raw
+    HTML must be displayed as inert text, never parsed as advertiser-authored
+    links, scripts or formatting that the event's sources did not authorize.
+    """
+    inert = html.escape(value, quote=False)
+    return re.sub(r"([\\\[\]`*_])", r"\\\1", inert)
+
+
+def _markdown_url(value: str) -> str:
+    """Keep approved URL bytes except link-delimiter parentheses in Markdown."""
+    return value.replace("(", "%28").replace(")", "%29")
 
 
 def _ticker_list(raw: Any) -> list[str]:
@@ -452,7 +469,8 @@ def build_partner_pack(
     # new numbers, causal relations, targets, odds or investment advice.
     ordered_sources = list(active_sources.values())
     citations = [
-        f'- [{s["title"]}]({s["url"]}) ({s["published_at_utc"]})'
+        f'- [{_markdown_text(s["title"])}]({_markdown_url(s["url"])}) '
+        f'({s["published_at_utc"]})'
         for s in ordered_sources
     ]
     direct = [t for t in ticks if relations[t]["relationship"] == "DIRECT"]
@@ -469,12 +487,12 @@ def build_partner_pack(
                            "Evidenced indirect relationship: "
                            + ", ".join(indirect) + ".")
     newsletter_lines = [
-        f'# {event["primary_subject"]}: sourced event brief',
+        f'# {_markdown_text(event["primary_subject"])}: sourced event brief',
         "",
-        partner["disclosure"], "",
+        _markdown_text(partner["disclosure"]), "",
         "Headline source evidence: " + ", ".join(event["headline_evidence_ids"]) + ".",
         "",
-        f'For readers following {partner["audience"]}, this note tracks '
+        f'For readers following {_markdown_text(partner["audience"])}, this note tracks '
         + ", ".join(ticks) + " against the same event evidence.",
         "",
         "## Relationship scope", "",
@@ -483,7 +501,7 @@ def build_partner_pack(
         "## Confirmed observations", "",
     ]
     newsletter_lines += [
-        f'- {c["text"]} [Evidence {c["claim_id"]}; '
+        f'- {_markdown_text(c["text"])} [Evidence {c["claim_id"]}; '
         + ", ".join(c["source_ids"]) + "]"
         for c in claims
     ]
@@ -496,7 +514,7 @@ def build_partner_pack(
     if event["missing_data"]:
         newsletter_lines += ["", "## Coverage limitations", ""]
         newsletter_lines += [
-            "- " + _atom(m, "INVALID_MISSING_DATA", 300)
+            "- " + _markdown_text(_atom(m, "INVALID_MISSING_DATA", 300))
             for m in event["missing_data"][:10] if isinstance(m, str)
         ]
     newsletter_lines += [
@@ -510,6 +528,8 @@ def build_partner_pack(
     # Two individually length-checked draft posts prevent the long, canonical
     # attributed link from crowding out the ACTUAL verified observation.
     # Never clip a sentence: clipping may invert a material qualifier.
+    _require(not re.search(r"<[^>]+>|\[[^]]+\]\([^)]+\)", social_hook),
+             "SOCIAL_UNSAFE_MARKUP")
     social_disclosure = (
         "Concept; no endorsement. " if partner["status"] == "candidate"
         else "Partner: " + partner["name"] + ". "
