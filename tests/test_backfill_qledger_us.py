@@ -571,3 +571,31 @@ class TestCrossDesk:
         assert len(dark) >= 1
         assert all(c["status"] == "open" for c in dark)
         assert all(c["direction"] == 0 for c in dark)
+
+
+def test_radar_batch_registration_errors_are_not_reported_as_success(src_root, monkeypatch):
+    import scripts.backfill_qledger_us as b
+    def errors(claims, root):
+        return [{"status":"error","error":"synthetic"} for _ in claims]
+    monkeypatch.setattr(b, "register_batch", errors)
+    with pytest.raises(RuntimeError, match="batch.*incomplete"):
+        b.backfill_radar(src_root)
+
+def test_policy_batch_registration_errors_are_not_reported_as_success(priceable_only_smh, monkeypatch):
+    import scripts.backfill_qledger_us as b
+    def errors(claims, root):
+        return [{"status":"error","error":"synthetic"} for _ in claims]
+    monkeypatch.setattr(b, "register_batch", errors)
+    with pytest.raises(RuntimeError, match="batch.*incomplete"):
+        b.backfill_policy(priceable_only_smh)
+
+def test_radar_partial_batch_results_are_not_reported_as_success(src_root, monkeypatch):
+    import scripts.backfill_qledger_us as b
+    monkeypatch.setattr(b, "register_batch", lambda claims, root: [])
+    with pytest.raises(RuntimeError, match="batch.*incomplete"):
+        b.backfill_radar(src_root)
+
+def test_radar_persisted_rejected_rows_are_still_valid_receipts(src_root, monkeypatch):
+    import scripts.backfill_qledger_us as b
+    monkeypatch.setattr(b, "register_batch", lambda claims, root: [{"status":"rejected"} for _ in claims])
+    assert b.backfill_radar(src_root) == 4

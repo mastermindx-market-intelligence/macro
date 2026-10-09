@@ -83,6 +83,18 @@ from lib import config  # noqa: E402
 
 log = logging.getLogger(__name__)
 
+
+def _require_complete_batch(rows: list[dict], expected: int, desk: str) -> None:
+    """An error slot is not a persisted claim; don't claim the batch succeeded."""
+    if (
+        not isinstance(rows, list)
+        or len(rows) != expected
+        or any(not isinstance(row, dict) or row.get("status") == "error" for row in rows)
+    ):
+        raise RuntimeError(f"qledger {desk} batch registration incomplete")
+
+
+
 # ---------------------------------------------------------------------------
 # Horizon constants
 # ---------------------------------------------------------------------------
@@ -516,6 +528,7 @@ def backfill_radar(root: Path, *, dry_run: bool = False) -> int:
 
     if not dry_run:
         stored_rows = register_batch(all_claims, root)
+        _require_complete_batch(stored_rows, len(all_claims), "radar")
         log.debug(
             "radar: batch registered %d source rows → %d stored rows",
             registered, len(stored_rows),
@@ -634,6 +647,7 @@ def backfill_policy(root: Path, *, dry_run: bool = False) -> int:
 
     if not dry_run:
         stored_rows = register_batch(all_claims, root)
+        _require_complete_batch(stored_rows, len(all_claims), "policy")
         log.debug(
             "policy: batch registered %d source rows → %d stored rows",
             registered, len(stored_rows),
