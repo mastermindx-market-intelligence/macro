@@ -8,13 +8,14 @@ objective: >-
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: active
 blocked_by:
-  - Actual current runtime marker9cfd3049 follows merged780. NVDA history is restored and real candles verified at three sizes; source safeguard873/ae6c7649 passed independent37focused/full1660native hostlimited and parent1673nativePASS/8skip/40subtests, allrequiredCI green. Ready/auto-merge armed; refreshedcd070 has unchangedatomicblobs and newlyapprovedCI37902711347queued. Installedguard/release remainopen.
-  - Ordinary839/853/873CI approvals are automatic through the qualified20-case helper bound to the existing quietheartbeat; new App850 enrollment is a distinct exact security grant, and CI/merge/release are independent gates.
-  - A04/0031 andA09/0032 stay unapplied behind0030/804. Actual nativeT03f is now sole modifying804 writer; IW2 independently reproduced cap races and delayed-original4002receipts. Denied792/B5/rights preserved.
-  - A06/862 retains explicitT07 sourcehold/livepickup; no duplicate writer or rearm.
-  - Macro8687/4df6828f has770nativePASS and36actualChromium cases/zero skips; source rejected5cd stale-PS money leak is repaired. Final exact-delta independent177PASS/0skip accepted; orderedDDL/production acceptance remainopen.
-  - Original A04 terminal result recovered by accepted installed Fabric sources; parent accept returned0 but canonical readback remainsfalse. Owner owns this discrepancy plus supported same-original zero-effectA09 re-admission engineering; no frozen run is replaced.
-  - A10 integrity875/481c4079 has8040nativePASS/4todo,91focused,TSC0 and6actualNext ENZHresponsive downloads/0skip; independentFabricreviewactive, wholearchiveincomplete. A11ea7 independentPASS covers cutoff only; actualT04 stillrepairs future-fill/Options leakage at792a0973 withsolewriter retained andfinalreview/squashheal gatesopen. Paid functional proof still needs the intended existing principal.
+  - Actualruntime9cfd3049 follows merged780; scoped NVDAdata/candles restored.873 reviewedae6 ready/auto, controllerrefreshcd070 unchangedatomicblobs and approvedCI37902711347; installedguard/canonicalrelease remainopen.
+  - Ordinary839/853/873/875CI approvals are automatic through qualified21-case helperSHA46779e53 bound to the samequietheartbeat; exactApp850 enrollment remains distinct, and CI/merge/deploy/live proof separate.
+  - Actual858T02f solewriter advanced675eeea2, independentOpusAPPROVE; new0031SHA51cf2c12 invalidates old358/777current-candidate qualification. Desktop-1red diagnosis/docP3 and ordered0030/31productiongate remain.
+  - Actual804T03g solewriter publisheda156f6be four-P3cleanup after28dgreen; finalreview/CI, exact0030b840approval and current-productionbackup/restore/readback remain. Denied792/B5/rights unchanged.
+  - A06/862 explicitT07hold/livewriter; no duplicate/rearm. Nativecustodymap qualifies only its ownroot bindings; otherrootsUNKNOWN/UNJOINED !=vacant.707/668/webhookholds unchanged.
+  - Macro8687/4df source770native36browser/independent177PASS; ordered0030/31/32merged-and-applied andproductionunitauthority remain. ExactUSpriceproducer can pairolderstoreprice/neweruniverseasof; priceclockleafrefusedbeforetransport, existingroutingownerqualifiescoherence/noeligible.
+  - InstalledFabricstrictdurableack nowreturns originalA04acceptedtrue withoutreaccept/rerun. Fourordinaryreviewacceptsreturned0 butstatusomitsmetadata; same-ownerreadonlyprojectionrepairactive. OriginalA09policyrefusal/uploadprefix andDCRuncertainty frozen, not zeroeffect.
+  - A10integrity875/481c has8040native/91focused/TSC0/sixactualNextdownloads plusindependent91PASS/TSC0; ready/autoarmed, sourceCI/releaseopen, wholearchiveincomplete. A11ea7 cutoffscopeonly; actualT04nowowner-reported7de6c96a stillfinalreview/squashheal. A12actualFreeOrderBlocksdisabledupgradegate; exactpaidprincipalneeded.
 program: terminal-charting
 repos: [terminal, macro]
 owner: ceo-sol
@@ -29,10 +30,9 @@ waves:
     title: Consume higher-level repairs and deliver accepted scoped changes
     status: in_progress
 next_action: >-
-  Consume873refreshedcd070 CI/merge via existingobserver, then canonicalrelease/installedproducerhash/liveproof. Macro8687/4df independentfinaldeltaaccepted; advanceits orderedDDL/exactCI/canonicalrelease gates.
-  Consume actualT04 finalfuture-fill/Optionsrepairs andsettledwriterdisposition; qualifyfinal643head andtruthfulpost-squashheal beforeactualreplayUIacceptance. Consume875/481c4079 retainedFabricreview andadvanceits normaldelivery; preservewholearchivegaps.
-  Continue804 via actualT03f writer andIW2 independentPG review. Retain862 T07hold and ordered merged AND applied0030/31/32, denied792/B5 and current rights.
-  Consume installed Fabric owner's exact A04 acceptance reconciliation and supported originalA09 recovery path. Continue ready independent export/product work while observers own external waits. Whole Audit20 acceptance remains false.
+  Consume873/875 and839/853existingobserver terminalCI/merge, thenparentcanonicalrelease/installedproducerhash/authenticatedproof; no repeatedapproval/merge/observer.
+  Consumeactual643T04 finalconsumerrepairs/disposition andtruthfulsquashheal,858T02f desktopred/docP3,804T03g independentcleanup/finalCI andIW2 current-productionbackup gate, preservingonewriter/orderedSQL/holds.
+  ConsumeexistingFabricowner ordinaryacceptanceprojection repair/same-IDreadbacks withoutreaccept, andqualifypriceclockleaf admissionboundary withoutweakeningpolicy. Continueindependent useful source/proof work; wholeAudit20acceptancefalse.
 owns_paths: []
 artifacts:
   - research/terminal_audit20/TAKEOVER_20261009/release-and-repair-proof.json
@@ -164,3 +164,5 @@ Oct9 08:29 frontier: independent final873 source review accepted the correctedan
 A10 newPR875/481c407908beb7d83852c0f4a2b6569db40d8b91 adds unkeyedSHA256 logicalpayload/collection/manifest receipts, honestretainedcounts/statuses andreadintervals, plus completeCSVbytebinding andembeddedcanonicalJSON forrelationshipfidelity. Legacywatchlist/position inventorycompleteness explicitlyunproven. Parent91focused/full8040PASS4todo492files,TSC0 and6actualNext ENZHxthree-sizes JSONCSVdownloads/0skip/nooverflow. Installedlockfiledependencies locally onapprovedSSD afterTurbopack rejectedcross-worktreesymlink; noinstallationpolicybypass. Normalpicker admittedexactsourceGrok4.6/ubuntu0 reviewchildterminal-audit20-a10-export-integrity-source-review-20261009 at08:21, noresult/acceptanceyet. PRremainsdraft andbroaderarchiveadapters/productionacceptanceopen.
 
 ActualnativeTop10 holds643T04 foradditional replayGapZonesfuture-fillP0/OptionsLevelsP1 repairs; ea7 independent14-probePASS iscutoff-only. NoAudit20branchmutation/successor untilactualwriterrelease. 80428d85501 receivedindependentAPPROVE/noP0-P2 andIW2unchanged12/12PGboundaryproof plusretained6/6candidate5/6baseline-failharness; same-ownerP3cleanup/CI/writerdispositionstillactive. Eightoldcarriercustodymaprequestedonce; queued!=returned/vacant. Thisdurablesaveisnotcompletionorastop.
+
+2026-10-09 material continuation delta: integrity875 independently PASS_SCOPED and ready/auto; helper expanded to four reviewed carriers with21preflightPASS and sameheartbeat native-update/readback. Fabric installed strict acknowledgement now projects originalA04 acceptance; four ordinary source reviews still need read-only metadata projection, never repeated accept. Exact native804/858writer/START and eight-lane map were consumed; latestSQL0030b840/003151cf remainunapplied. The US price contract return pinpoints a real price/date divergence but no same-observation currency; a whole-record asof rewrite would misattribute analysis and is not accepted. New two-file price-clock leaf was economically refused before transport, canonicalroutingowner commissioned, no alternatecarrier/retry. Actual Free OrderBlocks gate is captured; no plan/entitlement/purchase changes. Every source/test/CI/install/live claim remains scoped.
