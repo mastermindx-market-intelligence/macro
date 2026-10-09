@@ -78,12 +78,12 @@ class CatalystPartnerPackTests(unittest.TestCase):
                 self.assertNotIn("<script", svg)
                 social_text = (path / "social.txt").read_text()
                 self.assertIn("https://preview.invalid/", social_text)
-                self.assertIn("DRAFT THREAD 1/2\\n", social_text)
-                self.assertIn("DRAFT THREAD 2/2\\n", social_text)
-                parts = social_text.strip().split("\\n\\n")
+                self.assertIn("DRAFT THREAD 1/2\n", social_text)
+                self.assertIn("DRAFT THREAD 2/2\n", social_text)
+                parts = social_text.strip().split("\n\n")
                 self.assertEqual(len(parts), 2)
-                post_one = parts[0].split("\\n", 1)[1]
-                post_two = parts[1].split("\\n", 1)[1]
+                post_one = parts[0].split("\n", 1)[1]
+                post_two = parts[1].split("\n", 1)[1]
                 self.assertLessEqual(len(post_one), 275)
                 self.assertLessEqual(len(post_two), 275)
                 manifest = json.loads((path / "manifest.json").read_text())
