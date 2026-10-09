@@ -1,0 +1,41 @@
+{
+  "after_cutoff_D_count": null,
+  "blocked_by": [
+    "GICS_NOT_ADMITTED",
+    "HISTORICAL_IDENTITY_NOT_QUALIFIED",
+    "RETURN_BASIS_AND_TERMINAL_FLOWS_NOT_QUALIFIED",
+    "C_MINUS_1_CONTROL_CLOCKS_NOT_QUALIFIED"
+  ],
+  "complete_controls": null,
+  "effective_issuers": null,
+  "exclusion_counts": null,
+  "first_challenge_observable_count": null,
+  "occupied_63_session_blocks": null,
+  "original_population_count": null,
+  "parent_parity_counts": {
+    "BASIS_CONFLICT": null,
+    "DIFFERENT_ONSET": null,
+    "NO_LONGER_QUALIFIED": null,
+    "REPRODUCED_EXACTLY": null,
+    "UNOBSERVABLE_HISTORY": null
+  },
+  "primary_estimate": null,
+  "prior_published_audit_only": {
+    "broad_onsets_2014_2025": 1837,
+    "current_mapped_parent_upper_bound": 915,
+    "era_correct_rows_reported": 0,
+    "freshness": "Not re-audited; not a current or admitted cohort",
+    "names": 409,
+    "source_ref": "macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:research/structural_leadership_shock_resilience/SOURCE_DATA_AUDIT_2026-10-07.json"
+  },
+  "qualified_event_count": null,
+  "schema": "slr_p0.coverage_and_parity.v1",
+  "scope": "Current historical cohort NOT READ; unknown counts are null",
+  "sec_sample": {
+    "acceptance_timestamps": 1001,
+    "historical_economic_parent_links_proven": null,
+    "recent_filing_records": 1001
+  },
+  "sector_date_cells": null,
+  "shock_dates": null
+}

@@ -1,0 +1,315 @@
+{
+  "BLOCKERS": [
+    "DELISTED_UNIVERSE_NOT_QUALIFIED",
+    "GICS_NOT_ADMITTED",
+    "HISTORICAL_ALIAS_EVIDENCE_NOT_DELIVERED",
+    "HISTORICAL_ECONOMIC_ISSUER_NOT_PROVEN",
+    "HISTORICAL_INSTRUMENT_TYPE_NOT_QUALIFIED",
+    "HISTORICAL_RELEASE_CLOCK_NOT_QUALIFIED",
+    "LOCAL_MASSIVE_KEY_UNAVAILABLE",
+    "PREANNOUNCEMENT_HISTORY_NOT_QUALIFIED",
+    "PUBLICATION_CLOCK_AND_HISTORICAL_SIZE_NOT_QUALIFIED",
+    "TOTAL_RETURN_AND_TERMINAL_COVERAGE_NOT_PROVEN"
+  ],
+  "CI": [],
+  "CODE_PR": null,
+  "COMMIT_SHA": null,
+  "DATA_SOURCE_RIGHTS": "UNKNOWN",
+  "FROZEN_SPEC": "v1.0.1 plus pre-outcome v1.1 amendment",
+  "INDEPENDENT_REVIEW": "OWED",
+  "MISSION": "SLR-P0-SOURCE-QUALIFICATION",
+  "NEXT_ACTION": "Implementation lead: consume a positively permitted historical GICS field package with rights and valid-time owner links; qualify other fields and obtain independent Web scientific admission before population replay.",
+  "OUTCOMES_READ": false,
+  "PARENT_PARITY": "UNKNOWN",
+  "PARENT_PR": "https://github.com/mastermindx-market-intelligence/macro/pull/8645",
+  "PRODUCTION_CHANGED": false,
+  "REAL_DATA_READ": true,
+  "REAL_DATA_READ_SCOPE": "One public SEC submissions sample only; no private/reference host rows or SLR cohort read",
+  "RESULT": "NOT_ADMITTED",
+  "admission_granted": false,
+  "code_delivery_state": "LOCAL_TESTED_NOT_YET_PUBLISHED",
+  "fixture_ids_executed": 16,
+  "gics_dataset_rights": "UNKNOWN",
+  "gics_delivered_source": "NOT_OBSERVED_IN_AUTHORIZED_SCOPE",
+  "macro_base_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
+  "massive_local_authenticated_access": "KEY_UNAVAILABLE",
+  "massive_research_rights": "PASS_REPOSITORY_LICENSE_RECORD",
+  "primary_estimate": null,
+  "protected_mastermind_sha": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+  "qualified_event_count": null,
+  "science_state": "SOURCE_NOT_ADMITTED_HYPOTHESES_NOT_TESTED",
+  "sec_public_endpoint_access": "PASS_SAMPLE_ONLY",
+  "slr_population_read": false,
+  "source_results": [
+    {
+      "coverage_by_era": null,
+      "dataset_designation": "NOT_DELIVERED_HISTORICAL_FIELD_PACKAGE",
+      "economic_valid_from": null,
+      "economic_valid_to": null,
+      "evidence_refs": [
+        "SOURCE_RIGHTS_AND_CLOCKS.md",
+        "SEC_PUBLIC_CAPABILITY_RECEIPT.json"
+      ],
+      "exclusion_codes": [
+        "GICS_NOT_ADMITTED"
+      ],
+      "field_family": "gics",
+      "first_publication_or_filing_accepted_at": null,
+      "historical_identity_basis": "UNKNOWN",
+      "knowledge_basis": "UNKNOWN",
+      "license_or_permission_receipt_ref": null,
+      "observed_ingested_at": null,
+      "report_period_end": null,
+      "revision_generation": null,
+      "source_object_sha256": null,
+      "source_owner_interface": "historical GICS provider; feed not delivered",
+      "source_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
+      "status": "UNKNOWN",
+      "study_spec_ref": "macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md+PREOUTCOME_V1_1",
+      "vendor_asof_date": null
+    },
+    {
+      "coverage_by_era": null,
+      "dataset_designation": "NOT_DELIVERED_HISTORICAL_FIELD_PACKAGE",
+      "economic_valid_from": null,
+      "economic_valid_to": null,
+      "evidence_refs": [
+        "SOURCE_RIGHTS_AND_CLOCKS.md",
+        "SEC_PUBLIC_CAPABILITY_RECEIPT.json"
+      ],
+      "exclusion_codes": [
+        "HISTORICAL_ECONOMIC_ISSUER_NOT_PROVEN"
+      ],
+      "field_family": "identity",
+      "first_publication_or_filing_accepted_at": null,
+      "historical_identity_basis": "UNKNOWN",
+      "knowledge_basis": "UNKNOWN",
+      "license_or_permission_receipt_ref": null,
+      "observed_ingested_at": null,
+      "report_period_end": null,
+      "revision_generation": null,
+      "source_object_sha256": "9e857480653678d3de03ed2b00962c9dc47721c3eca9476ee250046169d4c150",
+      "source_owner_interface": "lib/dataos/identity.py::IssuerMaster (CURRENT ONLY)",
+      "source_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
+      "status": "UNKNOWN",
+      "study_spec_ref": "macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md+PREOUTCOME_V1_1",
+      "vendor_asof_date": null
+    },
+    {
+      "coverage_by_era": null,
+      "dataset_designation": "NOT_DELIVERED_HISTORICAL_FIELD_PACKAGE",
+      "economic_valid_from": null,
+      "economic_valid_to": null,
+      "evidence_refs": [
+        "SOURCE_RIGHTS_AND_CLOCKS.md",
+        "SEC_PUBLIC_CAPABILITY_RECEIPT.json"
+      ],
+      "exclusion_codes": [
+        "HISTORICAL_INSTRUMENT_TYPE_NOT_QUALIFIED"
+      ],
+      "field_family": "instrument_type",
+      "first_publication_or_filing_accepted_at": null,
+      "historical_identity_basis": "UNKNOWN",
+      "knowledge_basis": "UNKNOWN",
+      "license_or_permission_receipt_ref": null,
+      "observed_ingested_at": null,
+      "report_period_end": null,
+      "revision_generation": null,
+      "source_object_sha256": null,
+      "source_owner_interface": "config/dataset_registry.yml (existing source owners)",
+      "source_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
+      "status": "UNKNOWN",
+      "study_spec_ref": "macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md+PREOUTCOME_V1_1",
+      "vendor_asof_date": null
+    },
+    {
+      "coverage_by_era": null,
+      "dataset_designation": "NOT_DELIVERED_HISTORICAL_FIELD_PACKAGE",
+      "economic_valid_from": null,
+      "economic_valid_to": null,
+      "evidence_refs": [
+        "SOURCE_RIGHTS_AND_CLOCKS.md",
+        "SEC_PUBLIC_CAPABILITY_RECEIPT.json"
+      ],
+      "exclusion_codes": [
+        "HISTORICAL_ALIAS_EVIDENCE_NOT_DELIVERED"
+      ],
+      "field_family": "aliases",
+      "first_publication_or_filing_accepted_at": null,
+      "historical_identity_basis": "UNKNOWN",
+      "knowledge_basis": "UNKNOWN",
+      "license_or_permission_receipt_ref": null,
+      "observed_ingested_at": null,
+      "report_period_end": null,
+      "revision_generation": null,
+      "source_object_sha256": null,
+      "source_owner_interface": "lib/dataos/identity.py::VendorAliasTable",
+      "source_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
+      "status": "UNKNOWN",
+      "study_spec_ref": "macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md+PREOUTCOME_V1_1",
+      "vendor_asof_date": null
+    },
+    {
+      "coverage_by_era": null,
+      "dataset_designation": "NOT_DELIVERED_HISTORICAL_FIELD_PACKAGE",
+      "economic_valid_from": null,
+      "economic_valid_to": null,
+      "evidence_refs": [
+        "SOURCE_RIGHTS_AND_CLOCKS.md",
+        "SEC_PUBLIC_CAPABILITY_RECEIPT.json"
+      ],
+      "exclusion_codes": [
+        "TOTAL_RETURN_AND_TERMINAL_COVERAGE_NOT_PROVEN"
+      ],
+      "field_family": "total_returns",
+      "first_publication_or_filing_accepted_at": null,
+      "historical_identity_basis": "UNKNOWN",
+      "knowledge_basis": "UNKNOWN",
+      "license_or_permission_receipt_ref": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+      "observed_ingested_at": null,
+      "report_period_end": null,
+      "revision_generation": null,
+      "source_object_sha256": null,
+      "source_owner_interface": "engine/prophet_live/interval.py::ADJUSTED",
+      "source_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
+      "status": "UNKNOWN",
+      "study_spec_ref": "macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md+PREOUTCOME_V1_1",
+      "vendor_asof_date": null
+    },
+    {
+      "coverage_by_era": null,
+      "dataset_designation": "NOT_DELIVERED_HISTORICAL_FIELD_PACKAGE",
+      "economic_valid_from": null,
+      "economic_valid_to": null,
+      "evidence_refs": [
+        "SOURCE_RIGHTS_AND_CLOCKS.md",
+        "SEC_PUBLIC_CAPABILITY_RECEIPT.json"
+      ],
+      "exclusion_codes": [
+        "LOCAL_MASSIVE_KEY_UNAVAILABLE"
+      ],
+      "field_family": "corporate_actions",
+      "first_publication_or_filing_accepted_at": null,
+      "historical_identity_basis": "UNKNOWN",
+      "knowledge_basis": "UNKNOWN",
+      "license_or_permission_receipt_ref": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+      "observed_ingested_at": null,
+      "report_period_end": null,
+      "revision_generation": null,
+      "source_object_sha256": null,
+      "source_owner_interface": "engine/close_pass/massive_close.py::api_key",
+      "source_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
+      "status": "UNKNOWN",
+      "study_spec_ref": "macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md+PREOUTCOME_V1_1",
+      "vendor_asof_date": null
+    },
+    {
+      "coverage_by_era": null,
+      "dataset_designation": "NOT_DELIVERED_HISTORICAL_FIELD_PACKAGE",
+      "economic_valid_from": null,
+      "economic_valid_to": null,
+      "evidence_refs": [
+        "SOURCE_RIGHTS_AND_CLOCKS.md",
+        "SEC_PUBLIC_CAPABILITY_RECEIPT.json"
+      ],
+      "exclusion_codes": [
+        "DELISTED_UNIVERSE_NOT_QUALIFIED"
+      ],
+      "field_family": "membership",
+      "first_publication_or_filing_accepted_at": null,
+      "historical_identity_basis": "UNKNOWN",
+      "knowledge_basis": "UNKNOWN",
+      "license_or_permission_receipt_ref": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+      "observed_ingested_at": null,
+      "report_period_end": null,
+      "revision_generation": null,
+      "source_object_sha256": null,
+      "source_owner_interface": "config/dataset_registry.yml (existing source owners)",
+      "source_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
+      "status": "UNKNOWN",
+      "study_spec_ref": "macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md+PREOUTCOME_V1_1",
+      "vendor_asof_date": null
+    },
+    {
+      "coverage_by_era": null,
+      "dataset_designation": "NOT_DELIVERED_HISTORICAL_FIELD_PACKAGE",
+      "economic_valid_from": null,
+      "economic_valid_to": null,
+      "evidence_refs": [
+        "SOURCE_RIGHTS_AND_CLOCKS.md",
+        "SEC_PUBLIC_CAPABILITY_RECEIPT.json"
+      ],
+      "exclusion_codes": [
+        "PUBLICATION_CLOCK_AND_HISTORICAL_SIZE_NOT_QUALIFIED"
+      ],
+      "field_family": "market_cap",
+      "first_publication_or_filing_accepted_at": null,
+      "historical_identity_basis": "UNKNOWN",
+      "knowledge_basis": "UNKNOWN",
+      "license_or_permission_receipt_ref": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+      "observed_ingested_at": null,
+      "report_period_end": null,
+      "revision_generation": null,
+      "source_object_sha256": null,
+      "source_owner_interface": "config/dataset_registry.yml (existing source owners)",
+      "source_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
+      "status": "UNKNOWN",
+      "study_spec_ref": "macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md+PREOUTCOME_V1_1",
+      "vendor_asof_date": null
+    },
+    {
+      "coverage_by_era": null,
+      "dataset_designation": "NOT_DELIVERED_HISTORICAL_FIELD_PACKAGE",
+      "economic_valid_from": null,
+      "economic_valid_to": null,
+      "evidence_refs": [
+        "SOURCE_RIGHTS_AND_CLOCKS.md",
+        "SEC_PUBLIC_CAPABILITY_RECEIPT.json"
+      ],
+      "exclusion_codes": [
+        "HISTORICAL_RELEASE_CLOCK_NOT_QUALIFIED"
+      ],
+      "field_family": "events",
+      "first_publication_or_filing_accepted_at": null,
+      "historical_identity_basis": "UNKNOWN",
+      "knowledge_basis": "UNKNOWN",
+      "license_or_permission_receipt_ref": null,
+      "observed_ingested_at": null,
+      "report_period_end": null,
+      "revision_generation": null,
+      "source_object_sha256": null,
+      "source_owner_interface": "config/dataset_registry.yml (existing source owners)",
+      "source_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
+      "status": "UNKNOWN",
+      "study_spec_ref": "macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md+PREOUTCOME_V1_1",
+      "vendor_asof_date": null
+    },
+    {
+      "coverage_by_era": null,
+      "dataset_designation": "NOT_DELIVERED_HISTORICAL_FIELD_PACKAGE",
+      "economic_valid_from": null,
+      "economic_valid_to": null,
+      "evidence_refs": [
+        "SOURCE_RIGHTS_AND_CLOCKS.md",
+        "SEC_PUBLIC_CAPABILITY_RECEIPT.json"
+      ],
+      "exclusion_codes": [
+        "PREANNOUNCEMENT_HISTORY_NOT_QUALIFIED"
+      ],
+      "field_family": "earnings_schedule",
+      "first_publication_or_filing_accepted_at": null,
+      "historical_identity_basis": "UNKNOWN",
+      "knowledge_basis": "UNKNOWN",
+      "license_or_permission_receipt_ref": null,
+      "observed_ingested_at": null,
+      "report_period_end": null,
+      "revision_generation": null,
+      "source_object_sha256": null,
+      "source_owner_interface": "config/dataset_registry.yml (existing source owners)",
+      "source_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
+      "status": "UNKNOWN",
+      "study_spec_ref": "macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:SLR_P0_DEVELOPMENT_PREREG_2026-10-07.md+PREOUTCOME_V1_1",
+      "vendor_asof_date": null
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "logs": [
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/red.txt",
+      "sha256": "257460c026d0b4f8a172f8282186eba4d1b83c101632cd9e703f2118092fe69d",
+      "last_line": "1 failed, 1 warning in 1.50s"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/green-first.txt",
+      "sha256": "948538ff2aa1a42f2a474b8fd452b35820d8a25c46681842ec43ddd47404cd9d",
+      "last_line": "54 passed, 1 warning in 1.82s"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/focused.txt",
+      "sha256": "070546c614e734e3f3c7076dc3c00f57f499420d1ed153a528c4c5fbf7486173",
+      "last_line": "384 passed in 5.14s"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/red2.txt",
+      "sha256": "6a27a29eac1242869fde97cae8435ac9e8b4a7eae0ced7358d8b954136482fdc",
+      "last_line": "6 failed, 57 passed in 1.07s"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/green2.txt",
+      "sha256": "86de0a20aee64b7cba3f95ca741e098d740b37d5258c5b89e9c648b8feeb5449",
+      "last_line": "1 failed, 392 passed in 6.05s"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/green3.txt",
+      "sha256": "1bb35f67105518c3256d2094290aca219578ff0f6c57aacca2f8dc0cf69743a2",
+      "last_line": "393 passed in 5.10s"
+    }
+  ],
+  "raw_logs_in_repository": false
+}
