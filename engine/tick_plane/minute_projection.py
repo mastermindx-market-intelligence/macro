@@ -141,6 +141,7 @@ def project_provisional_minute(
     sums=Counter()
     counts=Counter()
     problems=Counter()
+    lit_unknown_reasons=Counter()
     policy_refs=set()
     venue_refs=set()
     quote_policy_refs=set()
@@ -199,8 +200,28 @@ def project_provisional_minute(
             if not isinstance(reason,str) or not reason:
                 raise MinuteProjectionRefusal("unqualified row missing typed reason")
             problems[reason]+=1
+        # Parent TP-1's 95% floor applies ONLY to source-eligible lit prints,
+        # not halts, TRF, unknown venues, or unknown sale/venue policies.
         if venue=="LIT" and state!="INELIGIBLE":
             sums["lit_observed"]+=gross
+            if (o["trade_condition_policy_reason"]=="CONSERVATIVE_PRICE_FORMING_CANDIDATE"
+                    and o["venue_admission_reason"]=="SOURCE_REFERENCE_EXCHANGE_CANDIDATE"):
+                counts["lit_eligible"]+=1
+                if state=="MEASURED_SOURCE_PROXY":
+                    age=_integer(o["quote_age_ns"],"qualified quote age")
+                    if age>limit:
+                        raise MinuteProjectionRefusal("source quote-age exceeds its declared limit")
+                    if age<=5_000_000_000:
+                        counts["lit_classified_le5s"]+=1
+                    else:
+                        counts["lit_classified_gt5s"]+=1
+                elif state=="UNKNOWN":
+                    counts["lit_unknown"]+=1
+                    lit_unknown_reasons[o["reason"]]+=1
+                else:
+                    raise MinuteProjectionRefusal("unexpected lit source eligibility state")
+            else:
+                counts["lit_source_unqualified"]+=1
         if venue=="TRF":
             sums["trf"]+=gross
         ref=o["trade_conditions_rules_ref"]
@@ -228,6 +249,9 @@ def project_provisional_minute(
         raise MinuteProjectionRefusal("mixed condition rule generations in one minute")
     known_lit=sums["buy"]+sums["sell"]+sums["mid"]
     lit_total=sums["lit_observed"]
+    if (counts["lit_eligible"]!=counts["lit_classified_le5s"]
+            +counts["lit_classified_gt5s"]+counts["lit_unknown"]):
+        raise MinuteProjectionRefusal("lit classification age denominator inconsistent")
     ordered=sorted(dedup.values(),key=lambda o:(o["trade_sip_timestamp_ns"],o["dedup_key"]))
     digest=sha256(json.dumps(ordered,sort_keys=True,separators=(",",":"),
                             ensure_ascii=True).encode()).hexdigest()
@@ -239,6 +263,12 @@ def project_provisional_minute(
             "n_condition_ineligible":counts["ineligible"],
             "n_buy_proxy":counts["buy"],"n_sell_proxy":counts["sell"],
             "n_midpoint":counts["mid"],
+            "n_lit_eligible_prints":counts["lit_eligible"],
+            "n_lit_classified_quote_le5s_prints":counts["lit_classified_le5s"],
+            "n_lit_classified_quote_gt5s_prints":counts["lit_classified_gt5s"],
+            "n_lit_unclassified_prints":counts["lit_unknown"],
+            "n_lit_source_unqualified_prints":counts["lit_source_unqualified"],
+            "lit_unknown_reason_counts":dict(sorted(lit_unknown_reasons.items())),
             "gross_sampled_notional_usd":_money(sums["observed"]),
             "buy_proxy_notional_usd":_money(sums["buy"]),
             "sell_proxy_notional_usd":_money(sums["sell"]),
