@@ -1,0 +1,68 @@
+{
+  "all_five_research_authority_flags": false,
+  "created_at_utc": "2026-10-09T05:04:54.644975+00:00",
+  "deferred_to_existing_owners": [
+    "Terminal minute source receipt and retention",
+    "Macro original reader completion and revision selector",
+    "Canonical listing, calendar, corporate-action and volume basis",
+    "Specific dataset conditions and input-bundle admission"
+  ],
+  "first_market_measurement_executed": false,
+  "market_data_admitted": false,
+  "market_publication_authority": false,
+  "observations": "SYNTHETIC_METADATA_ONLY",
+  "parent_exact_head": "8eaa58e018d015a2c8b96816723659a5c9c634da",
+  "protected_mastermind": "ad362ef45def043ee5970c2b131be9825fcea1ae",
+  "raw_logs": {
+    "cross_identity_red": {
+      "bytes": 1807,
+      "sha256": "c868e5dd6d955c33dabf0baf9456a8505cb077e2b8cbd94a33f0c97c0cc82e44"
+    },
+    "first_red": {
+      "bytes": 1306,
+      "sha256": "5266914607ed623adcc5da3fe176712aa6f8b2d7fc370a55950b8064ac589c87"
+    },
+    "full_green": {
+      "bytes": 340,
+      "sha256": "f5c10b8f0437a003663c7c0c81955b563fede6217196a010346c72ef509ba74f"
+    },
+    "read_clock_round_up_red": {
+      "bytes": 1295,
+      "sha256": "cb9f9334848979d6a88dddd3409128bae2752de5453a53975d7fd4f01b5650bd"
+    }
+  },
+  "runtime": "M2 Studio Python 3.14.7 scipy 1.18.0 numpy 2.5.2 pytest 9.1.1",
+  "schema": "factor_atlas.native_intake_preflight_receipt.v1",
+  "skillpack_schema": "mastermind.sol_skillpack.v1",
+  "skillpack_version": "1.0.1",
+  "source_files": {
+    "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
+      "bytes": 82288,
+      "sha256": "9b6375d434612927a42b0c15b4f8ade89634a82cf32502428f822aa402c47fb5"
+    },
+    "session2/SOURCE_INTAKE_PREFLIGHT.md": {
+      "bytes": 8342,
+      "sha256": "3f45a73b508c3098a8b29ddc1b937a3b6d23b022bac12b7889d5fd7b6aba4096"
+    },
+    "session2/evidence/source_intake_witness.json": {
+      "bytes": 1099,
+      "sha256": "1b660a613f2d203cf222d606615c10d764c7ac959a3fb46ca971dfef8ba48c18"
+    },
+    "session2/prototype/source_preflight.py": {
+      "bytes": 10441,
+      "sha256": "46a1b445e26d23cc389912caacb54e5f446c0f01d7610e3d611a4fd4fc630f4c"
+    },
+    "session2/prototype/test_source_preflight.py": {
+      "bytes": 10144,
+      "sha256": "c90b4dbd04e62dec18c7a0069450d330f963301f02174e43b9e48e58a9cfed9c"
+    }
+  },
+  "source_owner_qualified_real_cohort": false,
+  "test_first": {
+    "full_scoped_prototype_passed": 226,
+    "identity_drift_red_failed": 2,
+    "missing_implementation_failed": 1,
+    "new_preflight_tests": 42,
+    "reader_clock_roundup_red_failed": 1
+  }
+}

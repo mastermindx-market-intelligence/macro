@@ -110,3 +110,69 @@ Only S2-P1 source/right/basis/clock/coverage admission unlocks licensed
 S2-P2/S2-P3 calibration, then source-and-consumer release gates. The
 current finite quote prototype remains disposable research geometry
 until a production owner accepts integration.
+
+## Session 2 S2-P1 source preflight — bounded continuation
+
+**State:** MISSION_COMPLETE:false; real-market pilot NOT_ADMITTED;
+customer/trading/publication authority false. Source-head predecessor
+`8eaa58e018d015a2c8b96816723659a5c9c634da` remains a historical immutable accepted source effect on
+the same original PR #8677 / research branch. The active checkpoint
+is this exact `CONTINUATION.md` and evidence is in the source branch,
+not a second lifecycle or memory plane.
+
+Current protected Mastermind `ad362ef45def043ee5970c2b131be9825fcea1ae`
+and Skillpack 1.0.1/bootstrap 1 were freshly read and compatible.
+PR #8677 still Draft/HOLD; same-head fences `37886046025` were
+completed SUCCESS, CI `37886045936` last seen in progress. Terminal
+#844 and Macro #8623 remain separate Draft/unmerged source carriers,
+unchanged. Their reader retains source/read receipts but deliberately
+labels basis `TERMINAL_BASIS_UNPROVEN` and `basis_id=null`.
+
+**New allowed source effect:** a bounded, offline metadata *census* for
+S2-P1 under `session2/prototype/source_preflight.py`, test file,
+`SOURCE_INTAKE_PREFLIGHT.md`, synthetic witness and native receipt.
+Proposed population AAPL/MSFT/NVDA + SPY. It computes explicit
+one-minute expected/represented/unknown cells from **owner-supplied
+calendar segments** and refuses missing source/reader hashes, invalid
+request/response adjustment roles, null monetary basis, missing rights,
+revision or action-vintage receipts, contradictory event/receipt clocks,
+future reader availability, duplicate slot/revision, per-security
+listing/basis drift, and invalid/late source metadata.
+The incumbent reader's actual nanosecond completion is rounded
+**up** to supported microsecond decision clock before cutoff tests.
+
+The interface cannot admit data: even a synthetic fully populated
+12/12 sample returns owner-review candidate and `NOT_ADMITTED`,
+`may_execute_market_pilot=False`, all research authority false,
+all source/right/basis/custody checks explicitly unverified.
+This is *not* owner testimony, installed archive census, source
+rights verification, historical live signal or licensed data replay.
+
+**Evidence:** TDD first red missing implementation; 35 green new
+tests; two failing cross-minute listing/basis drift falsifiers then
+fixed; one precision-clock red falsifier then fixed; **226/226 full
+scoped prototype tests passing** (42 new), M2 Python 3.14.7.
+Synthetic witness has 12 claimed slots with owner review still
+required; empty population 12 missing, basis-null and late
+reader cases. Exact source/log digests under
+`evidence/native_source_preflight_tests.json` and manifest.
+
+**DO_NOT_REDO:** accepted 184-test BVC/quote/cumulative source,
+the denied four named source reads, denied benchmark repair
+and denied fresh-main source compatibility comparison are
+unchanged. Do not delegate, split, rephrase, switch accounts/tools
+or otherwise retry those denied effects. No new feed, source store,
+cohort enrollment, tenant service, reviewer worker, CI rerun,
+publisher, live user signal, merge, deployment or trading effect.
+No modifying effect remains uncertain.
+
+**Frontier:** persist this isolated source/evidence delta to the
+original PR branch; verify remote files and current-head checks.
+Then the true S2-P1 gate remains owner-qualified actual capture,
+immutable first-observed reader receipt, stable listing/calendar,
+rights and corporate-action/volume monetary basis, exact
+coverage and selected revisions. No source admission through
+self-asserted fixture metadata. Only after authentic source-owner
+positive admission can the designated offline licensed S2-P2
+pilot execute; other capital pressure/quote consumer and scientific
+acceptance gates follow.
