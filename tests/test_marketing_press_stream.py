@@ -411,3 +411,40 @@ def test_ack_keeps_spool_file_permissions_after_atomic_replace(tmp_path):
     before = ps.peek_spool(tmp_path)
     assert ps.ack_spool(tmp_path, before) is True
     assert path.stat().st_mode & 0o777 == 0o640
+
+
+def test_pending_partial_tail_is_preserved_on_ack(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "complete"}])
+    path = _snapshot_spool(tmp_path)
+    with path.open("ab") as fh:
+        fh.write(b'{"id":"unfinished"')
+    before = ps.peek_spool(tmp_path)
+    assert _snapshot_ids(before) == ["complete"]
+    assert before.blocked_reason == "partial_trailing_row"
+    assert before.byte_count < path.stat().st_size
+    assert ps.ack_spool(tmp_path, before) is True
+    assert path.read_bytes() == b'{"id":"unfinished"'
+
+
+def test_pending_malformed_complete_row_blocks_later_items(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "complete"}])
+    path = _snapshot_spool(tmp_path)
+    with path.open("ab") as fh:
+        fh.write(b'not-json\n{"id":"later"}\n')
+    before = ps.peek_spool(tmp_path)
+    assert _snapshot_ids(before) == ["complete"]
+    assert before.blocked_reason == "malformed_complete_row"
+    assert ps.ack_spool(tmp_path, before) is True
+    assert path.read_bytes() == b'not-json\n{"id":"later"}\n'
+
+
+def test_ack_denies_when_entire_spool_is_torn_row(tmp_path):
+    path = _snapshot_spool(tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b'{"id":"unfinished"')
+    snapshot = ps.peek_spool(tmp_path)
+    assert snapshot.items == ()
+    assert snapshot.byte_count == 0
+    assert snapshot.blocked_reason == "partial_trailing_row"
+    assert ps.ack_spool(tmp_path, snapshot) is False
+    assert path.read_bytes() == b'{"id":"unfinished"'

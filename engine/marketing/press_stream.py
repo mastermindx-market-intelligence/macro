@@ -438,6 +438,37 @@ class SpoolSnapshot:
     prefix_sha256: str
     device: int | None
     inode: int | None
+    blocked_reason: str | None = None
+
+
+def _qualified_prefix(raw: bytes) -> tuple[bytes, tuple[dict[str, Any], ...], str | None]:
+    """Admit only newline-terminated, parseable rows into the ack range.
+
+    A torn writer line or corrupt complete record is NEVER silently removed
+    by a downstream batch that did not actually accept it. Preserve the entire
+    unqualified suffix for explicit same-source recovery.
+    """
+    count = 0
+    items: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    chunks = raw.split(bytes((10,)))
+    for chunk in chunks[:-1]:
+        try:
+            record = json.loads(chunk.decode("utf-8"))
+        except (UnicodeError, ValueError):
+            return raw[:count], tuple(items), "malformed_complete_row"
+        if not isinstance(record, dict):
+            return raw[:count], tuple(items), "malformed_complete_row"
+        iid = str(record.get("id") or "")
+        if not iid:
+            return raw[:count], tuple(items), "malformed_complete_row"
+        count += len(chunk) + 1
+        if iid not in seen:
+            seen.add(iid)
+            items.append(record)
+    if chunks[-1]:
+        return raw[:count], tuple(items), "partial_trailing_row"
+    return raw[:count], tuple(items), None
 
 
 def peek_spool(root: Path | str) -> SpoolSnapshot:
@@ -453,12 +484,14 @@ def peek_spool(root: Path | str) -> SpoolSnapshot:
             raw = path.read_bytes()
         except FileNotFoundError:
             raw, stat = b"", None
+    qualified, items, blocked_reason = _qualified_prefix(raw)
     return SpoolSnapshot(
-        items=tuple(_decode_spool(raw.decode("utf-8"))),
-        byte_count=len(raw),
-        prefix_sha256=hashlib.sha256(raw).hexdigest(),
+        items=items,
+        byte_count=len(qualified),
+        prefix_sha256=hashlib.sha256(qualified).hexdigest(),
         device=stat.st_dev if stat is not None else None,
         inode=stat.st_ino if stat is not None else None,
+        blocked_reason=blocked_reason,
     )
 
 
@@ -472,7 +505,8 @@ def ack_spool(root: Path | str, snapshot: SpoolSnapshot) -> bool:
     if not isinstance(snapshot, SpoolSnapshot) or snapshot.byte_count < 0:
         return False
     if snapshot.byte_count == 0:
-        return True  # No prefix to remove or pending effect to repeat.
+        # An unqualified row is still pending even when no safe prefix exists.
+        return snapshot.blocked_reason is None
     path = _press_dir(root) / _SPOOL_NAME
     with _spool_lock(path):
         try:
