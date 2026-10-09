@@ -19,6 +19,8 @@ GEX FORMULA per prism_spec §2:
 OI TIMING LAW (absolute):
   Only OI[t-1] is ever used.  Same-day OI is a lookahead bug.
   delta_oi = OI[t-1] − OI[t-2] (both lagged; fully PIT-safe).
+  Both exact-side observations must be valid counts. Observed zero is 0;
+  missing or malformed OI is null and cannot qualify a numeric change.
 
 LENS STATUS:
   VEX is experimental and display-only pending greeks-path stability evidence.
@@ -105,6 +107,23 @@ def _f(x, n: int = 2) -> float | None:
     except (TypeError, ValueError):
         return None
     return round(v, n) if math.isfinite(v) else None
+
+
+def _observed_oi(value) -> int | None:
+    """A count is observed only when finite, nonnegative and integral.
+
+    Zero survives; absent/malformed values cannot become an observation through
+    truthiness or integer truncation. Booleans are never contract counts.
+    """
+    if isinstance(value, (bool, np.bool_)):
+        return None
+    try:
+        count = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not math.isfinite(count) or count < 0 or not count.is_integer():
+        return None
+    return int(count)
 
 
 def _load_oi(root: str, date_str: str, store) -> pd.DataFrame:
@@ -847,6 +866,10 @@ def build_matrix(
                 "put_vex":  0.0,   # VEX (experimental): put vanna exposure $mn
                 "call_oi_t2": 0,
                 "put_oi_t2":  0,
+                "_call_oi_observed": False,
+                "_put_oi_observed": False,
+                "_call_oi_t2_observed": False,
+                "_put_oi_t2_observed": False,
                 "_call_vol_observed": False,
                 "_put_vol_observed": False,
                 "_dte":     _dte(exp, asof),
@@ -864,10 +887,16 @@ def build_matrix(
     for _, row in oi_t1_w.iterrows():
         k   = float(row["strike"])
         exp = _to_iso_date(row.get("expiration", ""))
-        oi  = float(row.get("open_interest", 0) or 0)
+        oi = _observed_oi(row.get("open_interest"))
         right = str(row.get("right", "")).upper()[:1]
 
-        if oi <= 0 or not exp:
+        if oi is None or not exp or right not in ("C", "P"):
+            continue
+        cell = _get_cell(k, exp)
+        side = "call" if right == "C" else "put"
+        cell[f"_{side}_oi_observed"] = True
+        if oi == 0:
+            # Qualify the observation without adding a zero-weight pricing row.
             continue
 
         # IV for this contract: prefer greeks, else median_iv
@@ -900,15 +929,14 @@ def build_matrix(
         for _, row in oi_t2_w.iterrows():
             k   = float(row["strike"])
             exp = _to_iso_date(row.get("expiration", ""))
-            oi  = float(row.get("open_interest", 0) or 0)
+            oi = _observed_oi(row.get("open_interest"))
             right = str(row.get("right", "")).upper()[:1]
-            if not exp:
+            if oi is None or not exp or right not in ("C", "P"):
                 continue
             cell = _get_cell(k, exp)
-            if right == "C":
-                cell["call_oi_t2"] += int(oi)
-            elif right == "P":
-                cell["put_oi_t2"]  += int(oi)
+            side = "call" if right == "C" else "put"
+            cell[f"_{side}_oi_t2_observed"] = True
+            cell[f"{side}_oi_t2"] += oi
 
     # ── volume accumulation (EOD latest session) ──────────────────────────────
     if not current_volume_rows.empty:
@@ -973,7 +1001,7 @@ def build_matrix(
         # net GEX = call_gex − put_gex (dealer-short: calls +, puts −)
         net_gex = c["call_gex"] - c["put_gex"]
 
-        # delta_oi = OI[t-1] − OI[t-2] (both lagged; PIT-safe)
+        # delta_oi requires qualified observations for both lagged sessions.
         d_call = c["call_oi"] - c["call_oi_t2"]
         d_put  = c["put_oi"]  - c["put_oi_t2"]
 
@@ -997,13 +1025,13 @@ def build_matrix(
             "strike":   _f(k),
             "expiry":   exp,
             "gex":      _f(net_gex, 0),      # integer dollars is sufficient precision
-            "call_oi":  c["call_oi"]  or None,
-            "put_oi":   c["put_oi"]   or None,
+            "call_oi": c["call_oi"] if c["_call_oi_observed"] else None,
+            "put_oi": c["put_oi"] if c["_put_oi_observed"] else None,
             "call_vol": c["call_vol"] if c["_call_vol_observed"] else None,
             "put_vol":  c["put_vol"] if c["_put_vol_observed"] else None,
             "delta_oi": {
-                "call": d_call if c["call_oi"] > 0 or c["call_oi_t2"] > 0 else None,
-                "put":  d_put  if c["put_oi"]  > 0 or c["put_oi_t2"]  > 0 else None,
+                "call": d_call if c["_call_oi_observed"] and c["_call_oi_t2_observed"] else None,
+                "put":  d_put if c["_put_oi_observed"] and c["_put_oi_t2_observed"] else None,
             },
             "unusual": unusual,
             "vex_mn":   _f(net_vex, 4),      # experimental: vanna exposure $mn per 1% IV move

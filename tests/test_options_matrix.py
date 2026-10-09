@@ -1735,3 +1735,81 @@ def test_matrix_missing_same_session_underlying_price_is_unavailable(tmp_path, g
     assert payload["cells"] == []
     assert payload["_no_data_reason"] == f"spot unavailable on {asof}"
     assert validate_matrix(payload) == []
+
+
+@pytest.mark.parametrize("right,side", [("C", "call"), ("P", "put")])
+@pytest.mark.parametrize("previous,current,expected_oi,expected_delta", [
+    (10, 15, 15, 5),
+    (10, 0, 0, -10),
+    (10, None, None, None),
+    (0, 10, 10, 10),
+    (None, 10, 10, None),
+    (0, 0, 0, 0),
+    (None, None, None, None),
+    (10, 10, 10, 0),
+])
+def test_oi_delta_requires_two_observed_sides(
+    tmp_path, right, side, previous, current, expected_oi, expected_delta,
+):
+    """Real parquet rows: absent is unknown, explicitly observed zero is data."""
+    from engine.thetadata_store import clear_parquet_cache
+    store = _session_repair_store(tmp_path)
+    path = store / "oi" / "SPY" / "2026.parquet"
+    frame = pd.read_parquet(path)
+    for date, value in (("2026-09-21", previous), ("2026-09-22", current)):
+        target = ((frame["date"] == pd.Timestamp(date))
+                  & (frame["strike"] == 100.0) & (frame["right"] == right))
+        if value is None:
+            frame = frame.loc[~target].copy()
+        else:
+            frame.loc[target, "open_interest"] = value
+    frame.to_parquet(path, index=False)
+    clear_parquet_cache()
+    doc = build_matrix("SPY", store, asof="2026-09-22")
+    cell = next(c for c in doc["cells"] if c["strike"] == 100.0)
+    assert cell[f"{side}_oi"] == expected_oi
+    assert cell["delta_oi"][side] == expected_delta
+    # A different side and the deliberately large future publication cannot
+    # qualify the target observation or change its current/prior binding.
+    other = "put" if side == "call" else "call"
+    assert cell[f"{other}_oi"] == (100 if other == "put" else 200)
+    assert cell["delta_oi"][other] == (50 if other == "put" else 100)
+    assert doc["_build_meta"]["asof_date"] == "2026-09-22"
+
+
+@pytest.mark.parametrize("date", ["2026-09-21", "2026-09-22"])
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -1.0, 2.5])
+def test_invalid_oi_does_not_qualify_an_observation(tmp_path, date, value):
+    from engine.thetadata_store import clear_parquet_cache
+    store = _session_repair_store(tmp_path)
+    path = store / "oi" / "SPY" / "2026.parquet"
+    frame = pd.read_parquet(path)
+    frame["open_interest"] = frame["open_interest"].astype(float)
+    target = ((frame["date"] == pd.Timestamp(date))
+              & (frame["strike"] == 100.0) & (frame["right"] == "P"))
+    frame.loc[target, "open_interest"] = value
+    frame.to_parquet(path, index=False)
+    clear_parquet_cache()
+    doc = build_matrix("SPY", store, asof="2026-09-22")
+    cell = next(c for c in doc["cells"] if c["strike"] == 100.0)
+    assert cell["put_oi"] == (None if date == "2026-09-22" else 100)
+    assert cell["delta_oi"]["put"] is None
+    assert cell["call_oi"] == 200
+    assert cell["delta_oi"]["call"] == 100
+
+
+@pytest.mark.parametrize("value", [False, True])
+def test_boolean_oi_column_never_becomes_contract_counts(tmp_path, value):
+    from engine.thetadata_store import clear_parquet_cache
+    store = _session_repair_store(tmp_path)
+    path = store / "oi" / "SPY" / "2026.parquet"
+    frame = pd.read_parquet(path)
+    frame["open_interest"] = value
+    frame.to_parquet(path, index=False)
+    clear_parquet_cache()
+    doc = build_matrix("SPY", store, asof="2026-09-22")
+    assert doc["cells"]  # EOD volume remains independently available.
+    for cell in doc["cells"]:
+        assert cell["call_oi"] is None and cell["put_oi"] is None
+        assert cell["delta_oi"] == {"call": None, "put": None}
+        assert cell["call_vol"] == 10 and cell["put_vol"] == 10
