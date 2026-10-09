@@ -253,9 +253,12 @@ def _normalize_event_time(raw: Any, now: datetime) -> str | None:
         return None
     if dt.tzinfo is None:
         return None  # F5: naive clock -> never assumed UTC, dropped
-    if (dt - now).total_seconds() > _FUTURE_TOLERANCE_S:
-        return None  # F6: defense-in-depth future-clock guard
-    return _iso_z(dt)
+    try:
+        if (dt - now).total_seconds() > _FUTURE_TOLERANCE_S:
+            return None  # F6: defense-in-depth future-clock guard
+        return _iso_z(dt)
+    except (ValueError, OverflowError):
+        return None  # malformed offset must not abort the source projection
 
 
 def _live_session(built_dt: datetime | None) -> str | None:

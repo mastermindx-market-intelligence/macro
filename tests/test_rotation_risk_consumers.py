@@ -79,6 +79,19 @@ def test_context_code_changes_reach_the_running_api_through_existing_restart_own
     assert not _triggers_restart("data/risk_envelope/latest.json")
 
 
+@pytest.mark.parametrize("stamp", ["9999-12-31T23:00:00-02:00", "0001-01-01T00:00:00+02:00"])
+def test_out_of_range_clock_is_unavailable_across_source_and_consumers(stamp):
+    from scripts import build_risk_envelope as settled
+    from scripts import build_live_risk_envelope as live
+
+    native = envelope(); native["observed_at"] = stamp
+    result = rc.compact_context(native, now=NOW)
+    assert result["usable"] is False and result["reason"] == "unqualified_observed_at"
+    assert settled._instant(stamp) is None
+    assert settled._clock_reason({"produced_at": stamp}, "2026-10-06", "2026-10-06", NOW) == "malformed_source_clock"
+    assert live._normalize_event_time(stamp, NOW) is None
+
+
 @pytest.mark.parametrize("field,reason", [("measured_state", "measured_source_session_mismatch"),
                                         ("rotation_context", "rotation_source_session_mismatch")])
 def test_nested_usable_source_cannot_borrow_the_envelope_date(field, reason):

@@ -90,7 +90,7 @@ def _instant(value: Any) -> datetime | None:
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
         return parsed.astimezone(timezone.utc) if parsed.tzinfo is not None else None
-    except ValueError:
+    except (ValueError, OverflowError):
         return None
 
 
