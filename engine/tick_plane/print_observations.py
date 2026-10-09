@@ -14,6 +14,7 @@ from engine.flow_signing import classify_print
 from engine.tick_plane.asof_nbbo import InFlightNBBO, MATCH_SCHEMA
 from engine.tick_plane.condition_policy import POLICY_SCHEMA
 from engine.tick_plane.exchange_reference import VERDICT_SCHEMA as VENUE_SCHEMA
+from engine.tick_plane.quote_condition_policy import evaluate_quote_condition, POLICY_SCHEMA as QUOTE_POLICY_SCHEMA
 from engine.tick_plane.stream_events import SCHEMA as STREAM_SCHEMA
 
 SCHEMA = "equity.tick_plane.provisional_print_observation/v0"
@@ -35,7 +36,7 @@ def observe_provisional_trade(
     watermark_available_ns, watermark_receipt_id,
     source_completeness_attested, max_quote_age_ns,
     trade_condition_verdict, venue_reference_verdict,
-    quote_condition_eligible, quote_condition_rules_ref,
+    quote_condition_policy, original_quote_policy_custody_attested,
 ):
     """Return measured quote-location context with strict as-seen abstention.
 
@@ -62,7 +63,10 @@ def observe_provisional_trade(
                 trade_condition_verdict.get("reason")
                 if isinstance(trade_condition_verdict, dict) else None
             ),
-            "quote_conditions_rules_ref": quote_condition_rules_ref,
+            "quote_conditions_rules_ref": (
+                quote_condition_policy.get("policy_sha256")
+                if isinstance(quote_condition_policy, dict) else None
+            ),
             "quote_source_receipt_id": quote_receipt,
             "matched_quote_id": matched, "quote_age_ns": age,
             "source_trade_conditions": trade.get("trade_conditions") if isinstance(trade, dict) else None,
@@ -136,6 +140,14 @@ def observe_provisional_trade(
     if (v.get("venue_class") != "LIT" or v.get("lit_eligible") is not True
             or trade.get("venue_class") != "LIT"):
         return output("UNKNOWN", "TRF_OR_VENUE_CLOCK_UNQUALIFIED")
+    # The ring resolves ORIGINAL-AS-OF quote state; its legacy quote-condition
+    # args only permit lookup, NEVER authorize trade-side classification.
+    # A validated and source-bound typed quote verdict is required afterward.
+    if (not isinstance(quote_condition_policy, dict)
+            or quote_condition_policy.get("schema") != QUOTE_POLICY_SCHEMA
+            or quote_condition_policy.get("authority") != "SOURCE_POLICY_CANDIDATE_REQUIRES_CUSTODY"
+            or original_quote_policy_custody_attested is not True):
+        return output("UNKNOWN", "QUOTE_CONDITION_POLICY_UNQUALIFIED")
     matched = ring.match(
         trade, decision_ns=decision_ns,
         source_complete_through_ns=source_complete_through_ns,
@@ -143,12 +155,19 @@ def observe_provisional_trade(
         watermark_receipt_id=watermark_receipt_id,
         source_completeness_attested=source_completeness_attested,
         max_quote_age_ns=max_quote_age_ns,
-        quote_condition_eligible=quote_condition_eligible,
-        quote_condition_rules_ref=quote_condition_rules_ref,
+        quote_condition_eligible=True,  # lookup-only; source admission below
+        quote_condition_rules_ref="LOOKUP_ONLY_SOURCE_QUOTE_CONDITION_PENDING",
     )
     if matched.get("schema") != MATCH_SCHEMA or matched.get("state") != "MATCHED_SOURCE_CONTEXT":
         return output("UNKNOWN", matched.get("reason", "QUOTE_NOT_QUALIFIED"))
     quote = matched["quote"]
+    quote_verdict = evaluate_quote_condition(
+        quote=quote, policy=quote_condition_policy, decision_ns=decision_ns,
+        original_policy_custody_attested=original_quote_policy_custody_attested,
+    )
+    if quote_verdict.get("eligible") is not True:
+        return output("UNKNOWN", quote_verdict.get("reason") or "QUOTE_CONDITION_UNQUALIFIED",
+                      matched=quote["quote_id"], age=matched["quote_age_ns"])
     trade_receipt = trade["source_frame_sha256"] + ":" + str(trade["frame_event_index"])
     quote_receipt = quote["source_frame_sha256"] + ":" + str(quote["frame_event_index"])
     location = classify_print(
