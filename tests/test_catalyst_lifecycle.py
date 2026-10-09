@@ -324,6 +324,28 @@ def test_future_source_and_wrong_ticker_are_not_delivered():
     assert result[0]["state"] == "SUPPRESSED" and not sender.calls
 
 
+
+@pytest.mark.parametrize("elapsed_days", [8, 30, 90])
+def test_stale_public_revision_is_never_sent_even_when_generation_is_current(elapsed_days):
+    service, _, _, _, revisions, sender = make()
+    verified(service)
+    assert revisions.is_current("event-123", 2) is True  # generation alone is insufficient
+    fails(
+        "STALE_SOURCE_REVISION",
+        lambda: service.deliver(update(), now=NOW + timedelta(days=elapsed_days)),
+    )
+    assert sender.calls == []
+
+
+def test_revision_freshness_boundary_matches_public_scan_ceiling():
+    service, *_rest, sender = make()
+    verified(service)
+    at_ceiling = datetime.fromisoformat(update().as_of_utc) + timedelta(days=7)
+    receipt = service.deliver(update(), now=at_ceiling)
+    assert receipt[0]["state"] == "PROVIDER_ACCEPTED"
+    assert len(sender.calls) == 1
+
+
 def test_delivery_receipts_keep_first_touch_without_email_or_user_identity():
     service, *_rest, sender = make()
     req = consented(service, touch={"partner_id": "partnerA", "utm_source": "newsletter"})
