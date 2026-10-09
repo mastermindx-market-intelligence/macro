@@ -156,6 +156,9 @@ def _route(scan_url: str | None, route_receipt: str | None) -> tuple[str, bool]:
     _require(not parsed.query and not parsed.fragment and not u.endswith("//"),
              "DUPLICATE_OR_INVALID_UTM")
     _require(parsed.hostname != "preview.invalid", "ROUTE_RECEIPT_FOR_PLACEHOLDER")
+    _require(parsed.hostname in ("www.mastermind-x.com", "mastermind-x.com")
+             and parsed.path in ("/api/catalyst", "/api/catalyst/scan"),
+             "INVALID_SCAN_ROUTE")
     return u, True
 
 
@@ -271,15 +274,25 @@ def _claims(packet: dict, tickers: list[str],
 
 
 def build_partner_pack(
-    event_packet: dict, partner_profile: dict, selected_tickers: list[str],
-    *, now_utc: datetime, scan_url: str | None = None,
-    route_receipt: str | None = None, angle_plan: dict | None = None,
+    event_packet: dict, partner_profile: dict,
+    selected_tickers: list[str] | None = None,
+    *, preview_only: bool = True, now_utc: datetime | None = None,
+    scan_url: str | None = None, route_receipt: str | None = None,
+    angle_plan: dict | None = None,
 ) -> dict:
     """Compile a gated draft. No network, model, publication or side effects.
 
     Optional AI-assisted angle_plan is a bounded list of existing claim IDs;
     a model can SELECT evidence, never originate source facts or claim text.
     """
+    # Match the frozen Session 00 consumer signature, with its selected
+    # ticker list carried by the reviewed partner descriptor. Explicitly
+    # selected tickers remain permitted for test/CLI use. This is NEVER a
+    # publishing API, even if a caller attempts to toggle preview_only.
+    _require(preview_only is True, "PUBLICATION_UNAUTHORIZED")
+    if selected_tickers is None and isinstance(partner_profile, dict):
+        selected_tickers = partner_profile.get("selected_tickers")
+    now_utc = now_utc or datetime.now(_UTC)
     _require(isinstance(now_utc, datetime) and now_utc.tzinfo is not None
              and now_utc.utcoffset() == timedelta(0), "INVALID_NOW")
     now = now_utc.astimezone(_UTC)
@@ -307,10 +320,14 @@ def build_partner_pack(
          + "|" + partner["slug"] + "|" + ",".join(ticks)
          + "|" + ",".join(c["claim_id"] for c in claims)).encode("utf-8")
     ).hexdigest()[:18]
-    tagged = canonical_link(
+    canonical = canonical_link(
         "partner-" + partner["slug"], "catalyst_scan", pack_id,
         base_url=base_url, utm_source="partner",
     )
+    # links.canonical_link owns the query encoding but normalizes the base
+    # path with a slash; Session 00's exact FastAPI route /api/catalyst MUST
+    # not silently become /api/catalyst/ (redirect or unexpected 404).
+    tagged = base_url + "?" + canonical.split("?", 1)[1]
     _require(is_tagged_canonical(tagged, base_url=base_url),
              "CANONICAL_ATTRIBUTION_FAILED")
     _require(not parse_qsl(urlsplit(base_url).query), "DUPLICATE_OR_INVALID_UTM")
