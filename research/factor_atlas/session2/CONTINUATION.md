@@ -69,3 +69,44 @@ real tape accuracy claim without an owner-admitted source. Earlier denied
 four source reads, benchmark repair and main-base comparison remain held:
 do not retry, split, alternate carriers or delegate those effects.
 The current licensed-data S2-P1/S2-P2 pilot remains NOT_ADMITTED.
+
+## Extra High milestone — BVC-versus-quote comparator
+
+Recovered source candidate `e630173d49437e76247c07103e198c038f337052` (original PR8677 Draft/HOLD) was verified
+before new local edits. The same isolated M2 research worktree and original
+GitHub branch retain source custody; prior modifying effects are reconciled.
+Protected Mastermind `ad362ef45def043ee5970c2b131be9825fcea1ae`,
+Skillpack 1.0.1 compatible.
+
+A new **research-only** S2-P3 same-minute comparator exists at
+`prototype/quote_calibration.py`, with source/rights/money-basis provenance
+added to the previously published `TapeDetail`.
+`test_quote_calibration.py` confirms that matching BVC and quote
+proxies requires exact security/clock/phase/basis, source availability
+and separately visible trade classifications, unknown eligible dollars,
+quote coverage and close-based notional divergence. The signed ratio
+difference is PROXY DISAGREEMENT, never actual aggressor accuracy.
+
+Red-first evidence includes the missing comparator, two cross-source
+basis/provenance refusals, and an unrelated-future-print input-digest
+leak. The final native scoped suite passed **184/184** (164 predecessor
+tests + 20 comparator tests). Exact final source and test-log digests
+are in `evidence/native_calibration_tests.json`. Synthetic only; no
+market-data acquisition or owner takeover.
+
+Primary research report section 20 and `QUOTE_CALIBRATION_PROTOCOL.md`
+record the strict measurement/falsifier boundary and the provider's
+sale-condition-to-volume/price eligibility divergence; a numeric
+gross-proxy tolerance is not source-family proof. The vendor's September
+2026 Tape B historical metadata correction also applies to pilot
+identity/venue diagnostics until the incumbent source owner qualifies
+the relevant history. Previously denied four source reads, benchmark
+repair and current-base comparison remain specifically held and were
+not retried through another lane.
+
+**MISSION_COMPLETE:false / real equity pilot NOT_ADMITTED / no customer
+publication / no original quote-tape accuracy or predictive evidence.**
+Only S2-P1 source/right/basis/clock/coverage admission unlocks licensed
+S2-P2/S2-P3 calibration, then source-and-consumer release gates. The
+current finite quote prototype remains disposable research geometry
+until a production owner accepts integration.

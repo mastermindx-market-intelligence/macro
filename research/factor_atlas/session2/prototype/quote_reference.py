@@ -76,6 +76,9 @@ class TapeDetail:
     known_at_ns: int | None
     source_trade_revision: str
     source_quote_revision: str | None
+    monetary_basis: str
+    rights_ref: str
+    quote_rights_ref: str | None
 
 @dataclass(frozen=True)
 class TapeResult:
@@ -254,7 +257,8 @@ def _classify_tape_impl(trades: Iterable[TapeTrade], quotes: Iterable[TapeQuote]
         details.append(TapeDetail(t.trade_id,t.security_id,t.session_id,t.phase,
                     t.sip_ns,_amount(gross),sign,state,
                     q.sip_ns if q else None,age,known,t.revision_ref,
-                    q.revision_ref if q else None))
+                    q.revision_ref if q else None,t.basis,t.rights_ref,
+                    q.rights_ref if q else None))
     eligible=buy+sell+unknown;net=buy-sell
     if observed!=eligible+excluded or abs(net)>eligible:
         raise ValueError("tape_accounting_invalid")
