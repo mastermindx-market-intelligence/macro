@@ -26,7 +26,8 @@ _OBS_KEYS = frozenset({
     "quote_age_limit_ns",
     "source_trade_conditions", "venue_class", "venue_reference_sha256",
     "venue_admission_reason", "correction_status",
-    "gross_observed_notional_usd", "side_proxy", "signed_notional_usd",
+    "gross_observed_notional_usd", "gross_source_shares",
+    "trade_volume_eligible", "side_proxy", "signed_notional_usd",
     "authority", "forward_response_label", "absorption_signal",
 })
 
@@ -148,6 +149,21 @@ def project_provisional_minute(
     source_quote_age_limits=set()
     for o in dedup.values():
         gross=_decimal(o["gross_observed_notional_usd"],"gross notional")
+        shares=_decimal(o["gross_source_shares"],"native source shares")
+        volume_eligible=o["trade_volume_eligible"]
+        if type(volume_eligible) is bool:
+            if volume_eligible:
+                sums["source_volume_included_shares"]+=shares
+                counts["source_volume_included_prints"]+=1
+            else:
+                sums["source_volume_excluded_shares"]+=shares
+                counts["source_volume_excluded_prints"]+=1
+        elif volume_eligible is None:
+            sums["source_volume_unknown_shares"]+=shares
+            counts["source_volume_unknown_prints"]+=1
+        else:
+            raise MinuteProjectionRefusal("source volume eligibility must be boolean or unknown")
+        sums["source_all_printed_shares"]+=shares
         limit=_integer(o["quote_age_limit_ns"],"quote_age_limit_ns")
         source_quote_age_limits.add(limit)
         side=o["side_proxy"]
@@ -176,6 +192,8 @@ def project_provisional_minute(
                 raise MinuteProjectionRefusal("measured print lacks source sale/venue admission")
             if o["reason"] is not None:
                 raise MinuteProjectionRefusal("measured source has failure reason")
+            if volume_eligible is not True:
+                raise MinuteProjectionRefusal("classified print lacks volume-eligible source policy")
             signed=o["signed_notional_usd"]
             if side=="mid":
                 if signed is not None:
@@ -278,6 +296,13 @@ def project_provisional_minute(
             "midpoint_notional_usd":_money(sums["mid"]),
             "unknown_notional_usd":_money(sums["unknown"]),
             "ineligible_notional_usd":_money(sums["ineligible"]),
+            "source_all_printed_shares":_money(sums["source_all_printed_shares"]),
+            "source_volume_included_shares":_money(sums["source_volume_included_shares"]),
+            "source_volume_excluded_shares":_money(sums["source_volume_excluded_shares"]),
+            "source_volume_unknown_shares":_money(sums["source_volume_unknown_shares"]),
+            "n_source_volume_included_prints":counts["source_volume_included_prints"],
+            "n_source_volume_excluded_prints":counts["source_volume_excluded_prints"],
+            "n_source_volume_unknown_prints":counts["source_volume_unknown_prints"],
             "trf_gross_notional_usd":_money(sums["trf"]),
             "lit_quoted_notional_coverage":_money(known_lit/lit_total) if lit_total else None,
             "reason_counts":dict(sorted(problems.items())),
