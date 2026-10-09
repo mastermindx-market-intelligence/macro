@@ -50,6 +50,19 @@ The output has `authority=RESEARCH_OUTCOME_LABEL_ONLY` and leaves `absorption_si
 
 **Candidate acceptance:** At `9048a47caf90ea89e59ba71b2480a0db63ed1a81`, M2 Studio ran both existing R0 test suites including 16 new matured-response falsifiers: **58 passed**. Hosted exact-head CI, independent reviewer and real source evidence remain separate acceptance requirements.
 
+
+## TP-1 canonical minute-to-R0 compatibility bridge
+
+The additive pure research leaf `engine.market_microstructure.tp1_context.project_tp1_pressure_context` consumes the existing **TP-1 minute observations** (`equity.tick_plane.minute_observation/v0`) plus normalized SIP quote updates (`equity.tick_plane.stream_event/v0`). It deliberately does **not** transform correction-provisional WebSocket prints into the original R0 consumer's `revision=0/action=ORIGINAL` trade records, and it never reclassifies signed trades. Macro TP-1 remains the one signing and source-time owner.
+
+The bridge requires contiguous 1–5 minute packets; the original minute/source arrival cutoffs; condition and exchange-reference SHAs; no source-authority fields or future labels; per-quote original frame/receipt and versioned quote-condition eligibility; and separately attested TP-1 capture continuity. Invalid, absent or unqualified quote updates remain as invalid top-of-book states, not discarded updates that resurrect prior eligible BBOs. A 30-second study needs separately eligible sub-minute evidence; a minute rollup alone cannot supply it.
+
+Output `equity.pressure_response.tp1_context/v0` is **correction-provisional research context only**. It preserves gross/known/unknown/condition-excluded/TRF denominators, source-original timing, separate SHA-256 digests for each source-minute generation and for the quote observations, price-response bps, and NBBO top-size recovery **proxy**. `absorption_signal`, future outcome, trading execution, rank and any probability remain null/false. The source-condition and capture flags are externally asserted and are not cryptographic proof of completeness; no automatic production eligibility is implied.
+
+**Test evidence (October 8, 2026):** PR candidate `9ab3f85ce59f6fc8b9c7134d2e90d01d1366ac50` passed **85 tests** on M2 Studio against its exact source/test blobs (bridge blob `9b80f73ad82731bd40b142bffc34e002b8e7150f`, fixture blob `ec35b2b149a82cd36dc8ecd3b6b6e61604cb552b`). The 85 include 23 original TP-1 bridge falsifiers and 4 follow-up source-digest/count-integrity regressions. Separate cross-branch integration verified actual TP-1 `stream_events→condition_policy→exchange_reference→asof_nbbo→print_observations→minute_projection` at TP-1 `7f03ffd50ed3eb1c53f7998fe27adeae5211ace9`, then R0 bridge `8203e5e9ad53234c62f8e5fa7358fe0971afa507`, with two synthetic source-native prints, exact `$1009/$1001` buy/sell proxies, zero price response and null signal. Neither suite tests a live Massive frame, true original source completeness or forward edge.
+
+**Integration admission:** this adapter does not import unmerged TP-1 code in the R0 PR, so current standalone R0 tests remain CI-enrollable without a circular PR dependency. After TP-1 acceptance, the integration owner should rerun the cross-branch fixture against the accepted shared SHA and prove real source-to-consumer causality; do not invent a second signer or duplicate the stream.
+
 ## Real-data and production gates
 
 1. **Consume, do not repeat, the 2026-08-08 TP-0.5 socket experiment** recorded in Massive masterplan §3.1b.4: delayed and real-time are separate buckets, but opening a second real-time socket evicts the oldest. Verify the *current* Quote Hub `/health` effective cluster and original TP-1 live-slot owner without starting any rival RT WebSocket. Qualify T/Q real RTH frames, event/receipt clocks and remaining source gates only inside the admitted owner/maintenance path.
