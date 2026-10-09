@@ -7180,6 +7180,21 @@ jobs:
         run: pip install pytest jsonschema
       - name: options signal campaign v2 (effective-outcome view, strict v2 continuation C1-C4, checkpoint-last atomic-append idempotency)
         run: python -m pytest tests/test_options_signal_campaign_effective_view.py -q
+  quant-q07-fitted-har-vol:
+    if: ${{ false }}
+    gate: code
+    # Q07 fitted log-HAR volatility challenger: causality, embargo, label separation, QLIKE floors, block-bootstrap decision, no production effect
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q07 fitted HAR volatility research suite
+        run: python -m pytest tests/test_vol_fitted_har.py -q
+
   uk-policy-desk:
     if: ${{ false }}
     gate: code
@@ -22419,6 +22434,7 @@ jobs:
       - tests/conftest.py
       - tests/test_company_pinned_relationship_candidates.py
       - tests/test_company_relationship_candidates.py
+      - tests/test_company_relationship_review_set.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22428,4 +22444,4 @@ jobs:
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
       - name: File and pinned-source replay, manual boundary and temporal refusals
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py -q
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py -q
