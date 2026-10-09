@@ -736,7 +736,7 @@ def test_tp1_stale_quote_context_is_never_carried_to_price_response():
 
 def test_tp1_mixed_quote_policy_generations_rejected():
     data=tp1_args()
-    data["quote_condition_receipts"]["ending"]["rules_sha256"]="f"*64
+    data["quote_condition_receipts"]["ending"]["policy_rules_sha256"]="f"*64
     r=project_tp1_pressure_context(**data)
     assert r["state"]=="QUOTE_REFERENCE_UNQUALIFIED"
     assert r["reason"]=="MIXED_OR_MISSING_QUOTE_CONDITION_POLICY"
