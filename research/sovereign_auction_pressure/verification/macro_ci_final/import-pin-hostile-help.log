@@ -1,0 +1,13 @@
+usage: capture_treasury_auction_observations.py [-h] --data-dir DATA_DIR
+                                                [--source {announced,upcoming,tentative,pending}]
+
+One attended capture into Macro's existing Treasury auction data owner. No
+imports fetch data. No scheduler, collector registration or feed publication
+is installed by this command. Body receipt, publication and build clocks are
+distinct.
+
+options:
+  -h, --help            show this help message and exit
+  --data-dir DATA_DIR   Existing Macro data root, or an explicitly isolated
+                        verification root
+  --source {announced,upcoming,tentative,pending}

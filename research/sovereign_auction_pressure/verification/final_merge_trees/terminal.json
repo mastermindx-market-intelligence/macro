@@ -1,0 +1,15 @@
+{
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "source_head": "2de6d793326a6d8e340c08b0db342283984db820",
+  "remote_main_sample": "505edf7872541075b5eee24691703a46d1151074",
+  "verified_at": "2026-10-09T00:30:26.178592+00:00",
+  "exit_code": 0,
+  "merge_tree": "fe35d24fda3086018f18cb2827ae09f57da56d0f",
+  "actual_merge_performed": false,
+  "preserved": [
+    "runRenameScriptClick helper import and call",
+    "eventImpact malformed-held-calendar behavior and tests",
+    "baseline shared i18n"
+  ],
+  "auction_mount_count": 1
+}

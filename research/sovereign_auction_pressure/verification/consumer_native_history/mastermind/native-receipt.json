@@ -1,0 +1,27 @@
+[
+  {
+    "argv": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_sovereign_auction_context.py",
+      "tests/test_sovereign_auction_api.py",
+      "-q",
+      "-rs"
+    ],
+    "started_at": "2026-10-08T23:08:49.027001+00:00",
+    "ended_at": "2026-10-08T23:08:50.342787+00:00",
+    "exit_code": 0,
+    "log": "sovereign-auction-verification/native-1.txt"
+  },
+  {
+    "argv": [
+      "node",
+      "tests/test_sovereign_auction_renderer.cjs"
+    ],
+    "started_at": "2026-10-08T23:08:50.343125+00:00",
+    "ended_at": "2026-10-08T23:08:50.390430+00:00",
+    "exit_code": 0,
+    "log": "sovereign-auction-verification/native-2.txt"
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "job": 113597264914,
+  "source_head": "9ea66297a31688123ae62845c655a74db03fa9c1",
+  "retrieved_at": "2026-10-09T00:33:24.550553+00:00",
+  "exit_code": 0,
+  "full_log_sha256": "fffb72b8718a73bfd60c46e921cd6c422a439682eb3a4b766039da3a00c96982",
+  "full_log_lines": 2846,
+  "excerpt_lines": 40,
+  "excerpt_sha256": "809c660f589a12d21caee0a7a1e1e3b1d2c9cec41e154c9f549d6ce93c1b008c"
+}

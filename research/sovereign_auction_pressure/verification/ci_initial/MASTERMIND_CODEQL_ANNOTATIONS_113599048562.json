@@ -1,0 +1,81 @@
+{
+  "started_at": "2026-10-08T23:54:40.298402+00:00",
+  "completed_at": "2026-10-08T23:54:40.653144+00:00",
+  "url": "https://api.github.com/repos/mastermindx-market-intelligence/Mastermind/check-runs/113599048562/annotations",
+  "returncode": 0,
+  "data": [
+    {
+      "path": "research/sovereign_auction_context/presentation_final/preimages/test_sovereign_auction_renderer.cjs",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/42476573407fcb882c65a9388f98ed038801fc50/research/sovereign_auction_context/presentation_final/preimages/test_sovereign_auction_renderer.cjs",
+      "start_line": 8,
+      "start_column": 35,
+      "end_line": 8,
+      "end_column": 63,
+      "annotation_level": "failure",
+      "title": "Bad HTML filtering regexp",
+      "message": "This regular expression does not match upper case <SCRIPT> tags.",
+      "raw_details": null
+    },
+    {
+      "path": "tests/test_sovereign_auction_renderer.cjs",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/42476573407fcb882c65a9388f98ed038801fc50/tests/test_sovereign_auction_renderer.cjs",
+      "start_line": 8,
+      "start_column": 35,
+      "end_line": 8,
+      "end_column": 63,
+      "annotation_level": "failure",
+      "title": "Bad HTML filtering regexp",
+      "message": "This regular expression does not match upper case <SCRIPT> tags.",
+      "raw_details": null
+    },
+    {
+      "path": "research/sovereign_auction_context/presentation_final/preimages/market_view.html",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/42476573407fcb882c65a9388f98ed038801fc50/research/sovereign_auction_context/presentation_final/preimages/market_view.html",
+      "start_line": 361,
+      "start_column": 39,
+      "end_line": 361,
+      "end_column": 45,
+      "annotation_level": "warning",
+      "title": "Incomplete HTML attribute sanitization",
+      "message": "Cross-site scripting vulnerability as the output of [this final HTML sanitizer step](1) may contain double quotes when it reaches this attribute definition.",
+      "raw_details": null
+    },
+    {
+      "path": "research/sovereign_auction_context/verification/mastermind_loopback_harness.py",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/42476573407fcb882c65a9388f98ed038801fc50/research/sovereign_auction_context/verification/mastermind_loopback_harness.py",
+      "start_line": 254,
+      "start_column": 21,
+      "end_line": 254,
+      "end_column": 45,
+      "annotation_level": "failure",
+      "title": "Uncontrolled data used in path expression",
+      "message": "This path depends on a [user-provided value](1).",
+      "raw_details": null
+    },
+    {
+      "path": "research/sovereign_auction_context/verification/mastermind_loopback_harness.py",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/42476573407fcb882c65a9388f98ed038801fc50/research/sovereign_auction_context/verification/mastermind_loopback_harness.py",
+      "start_line": 255,
+      "start_column": 60,
+      "end_line": 255,
+      "end_column": 64,
+      "annotation_level": "failure",
+      "title": "Uncontrolled data used in path expression",
+      "message": "This path depends on a [user-provided value](1).",
+      "raw_details": null
+    },
+    {
+      "path": "research/sovereign_auction_context/verification/mastermind_loopback_harness.py",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/42476573407fcb882c65a9388f98ed038801fc50/research/sovereign_auction_context/verification/mastermind_loopback_harness.py",
+      "start_line": 257,
+      "start_column": 33,
+      "end_line": 257,
+      "end_column": 37,
+      "annotation_level": "failure",
+      "title": "Uncontrolled data used in path expression",
+      "message": "This path depends on a [user-provided value](1).",
+      "raw_details": null
+    }
+  ],
+  "stderr": ""
+}

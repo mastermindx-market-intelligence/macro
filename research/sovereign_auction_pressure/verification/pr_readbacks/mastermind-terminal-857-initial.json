@@ -1,0 +1,157 @@
+{
+  "baseRefOid": "f03aa5d019f1894210a7c6e40b8825ae28015198",
+  "headRefOid": "9292c7ca1e19e07ee70514b9a3cfb598ba5dd5b9",
+  "isDraft": true,
+  "mergeStateStatus": "BEHIND",
+  "mergeable": "MERGEABLE",
+  "reviewDecision": "",
+  "state": "OPEN",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:53:19Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861759089/job/113599240404",
+      "name": "Quote Hub tests",
+      "startedAt": "2026-10-08T23:53:05Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:52:39Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861755040/job/113598903629",
+      "name": "Analyze (actions)",
+      "startedAt": "2026-10-08T23:51:53Z",
+      "status": "COMPLETED",
+      "workflowName": "CodeQL"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861755040/job/113598903502",
+      "name": "Analyze (javascript-typescript)",
+      "startedAt": "2026-10-08T23:51:53Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "CodeQL"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:52:53Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861755040/job/113598903291",
+      "name": "Analyze (python)",
+      "startedAt": "2026-10-08T23:51:53Z",
+      "status": "COMPLETED",
+      "workflowName": "CodeQL"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861759089/job/113599240786",
+      "name": "Terminal unit + typecheck (shard)",
+      "startedAt": "2026-10-08T23:53:05Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861759089/job/113599240764",
+      "name": "Terminal e2e desktop-1 (shard)",
+      "startedAt": "2026-10-08T23:53:05Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861759089/job/113599240835",
+      "name": "Terminal e2e desktop-2 (shard)",
+      "startedAt": "2026-10-08T23:53:06Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861759089/job/113599240731",
+      "name": "Terminal e2e tablet (shard)",
+      "startedAt": "2026-10-08T23:53:05Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861759089/job/113599240684",
+      "name": "Terminal e2e mobile (shard)",
+      "startedAt": "2026-10-08T23:53:05Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861759089/job/113599240702",
+      "name": "Terminal e2e serial (shard)",
+      "startedAt": "2026-10-08T23:53:05Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861759089/job/113599240459",
+      "name": "Ingest + signal-layer tests",
+      "startedAt": "2026-10-08T23:53:05Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:53:22Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37861759089/job/113599240588",
+      "name": "Investigation PostgreSQL invariants",
+      "startedAt": "2026-10-08T23:53:05Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "StatusContext",
+      "context": "Vercel \u2013 macro-eiz4",
+      "startedAt": "2026-10-08T23:51:52Z",
+      "state": "FAILURE",
+      "targetUrl": "https://vercel.com/chriswong6031-creator?upgradeToPro=build-rate-limit"
+    },
+    {
+      "__typename": "StatusContext",
+      "context": "Vercel \u2013 mastermind-terminal",
+      "startedAt": "2026-10-08T23:51:52Z",
+      "state": "FAILURE",
+      "targetUrl": "https://vercel.com/chriswong6031-creator?upgradeToPro=build-rate-limit"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-08T23:52:34Z",
+      "conclusion": "NEUTRAL",
+      "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/runs/113599086982",
+      "name": "CodeQL",
+      "startedAt": "2026-10-08T23:52:30Z",
+      "status": "COMPLETED",
+      "workflowName": ""
+    }
+  ],
+  "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/857",
+  "observed_at": "2026-10-08T23:53:34.757943+00:00"
+}

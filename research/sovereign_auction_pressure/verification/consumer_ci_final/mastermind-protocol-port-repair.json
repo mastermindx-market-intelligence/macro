@@ -1,0 +1,9 @@
+{
+  "changed_at": "2026-10-09T00:51:36.163111+00:00",
+  "prior_head": "55198ba62ff47d2a371397567418cb43fd98892c",
+  "path": "brain/sovereign_auction_context.py",
+  "before_sha256": "7e9930bc77c1aafed2d8a3406e57af3558822c29cdb60c49d327c5685c6aac8e",
+  "after_sha256": "1b2c11d38628b13f8ba5439f90f8ef9eefabf564cea5c3ed517398b1a4b5f276",
+  "repair": "Use standard-library HTTPS_PORT protocol constant in official URL validation; scheme, host, credential, whitespace and port behavior unchanged",
+  "guard_or_registry_changed": false
+}

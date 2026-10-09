@@ -1,0 +1,28 @@
+diff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml
+index f7f190ded4e6..e2aa60760b0e 100644
+--- a/.github/workflows/daily.yml
++++ b/.github/workflows/daily.yml
+@@ -3189,6 +3189,7 @@ jobs:
+       - name: timings band — builders-parallel (W2)
+         run: python3 scripts/nightly_timings.py mark --band builders-parallel || echo "::warning::timings band mark failed (non-fatal)"
+       - name: regional + desk builders (parallelised — independent clusters, barrier before the hub)
++        id: regional_desk_builders
+         # The ~22 builders between build_site and the landing hub split into mutually
+         # INDEPENDENT clusters (each internally ordered by its own data deps). They used
+         # to run strictly serially (~75 min of wall-clock); here each cluster runs in the
+@@ -3242,6 +3243,15 @@ jobs:
+           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
+         run: bash scripts/ci/daily_engine_regional_desk_builders.sh
++      - name: retain this run's Theme Graph generation witness (advisory)
++        if: ${{ always() && steps.regional_desk_builders.outputs.theme_graph_witness != '' }}
++        continue-on-error: true
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
++        with:
++          name: theme-graph-witness-${{ github.run_id }}-${{ github.run_attempt }}-engine
++          path: ${{ steps.regional_desk_builders.outputs.theme_graph_witness }}
++          if-no-files-found: warn
++          retention-days: 14
+       # Durable core checkpoint (incident run 35547644919): the coherent builder
+       # band completed, but a later best-effort tail exhausted the 300-minute job
+       # cap before the sole broad publisher. Persist the core public tree here;

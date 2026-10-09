@@ -1,0 +1,71 @@
+{
+  "schema": "sovereign_auction_publication_bridge_verification_v1",
+  "verified_at": "2026-10-09T00:58:24.491580+00:00",
+  "source_head": "1eb1d44a0a54aad95d97bfb3128246803852c7a7",
+  "source_commit_checked": "1eb1d44a0a54aad95d97bfb3128246803852c7a7",
+  "artifact": "site/feeds/event_calendar.json",
+  "artifact_sha256": "45301353b7f8b5c900cc2c5fde15cb67625953429dc093abaac122fb06b35012",
+  "committed_artifact_sha256": "45301353b7f8b5c900cc2c5fde15cb67625953429dc093abaac122fb06b35012",
+  "served_simulation": "45301353b7f8b5c900cc2c5fde15cb67625953429dc093abaac122fb06b35012",
+  "mastermind_input_simulation": "45301353b7f8b5c900cc2c5fde15cb67625953429dc093abaac122fb06b35012",
+  "workflow_sha256": "fbb772e56112fa87ebec71985d2849b4bde1c26fc29631ed26f1b392dd00b072",
+  "workflow_order": [
+    {
+      "job": "engine",
+      "feed_index": 149,
+      "commit_index": 150,
+      "r2_index": 151
+    }
+  ],
+  "existing_schedule_unchanged": true,
+  "ignore_probe": {
+    "event_calendar.json": false,
+    "risk_radar.json": true,
+    "_manifest.json": true,
+    "nested/arbitrary.json": true
+  },
+  "dry_run_selected": [
+    "add 'site/feeds/event_calendar.json'"
+  ],
+  "receipt_sources": [
+    {
+      "path": "data/treasury_auctions/observations/20261008T225320956449Z-1ff0778ec045ff5445c303f27a52ebc75813b51f31f9ac28cedb3bbf240682e4.json",
+      "sha256": "1ff0778ec045ff5445c303f27a52ebc75813b51f31f9ac28cedb3bbf240682e4"
+    },
+    {
+      "path": "data/treasury_auctions/observations/20261008T225325572222Z-a74cfb26c437e0d9d2b3242df6ccdc5c997dad696f7074931cff71c9507b0916.json",
+      "sha256": "a74cfb26c437e0d9d2b3242df6ccdc5c997dad696f7074931cff71c9507b0916"
+    },
+    {
+      "path": "data/treasury_auctions/observations/20261008T225329204683Z-c00d73268eaab3bf3619040eb39f21be1a37d7abc7c74fbca524539459454aea.json",
+      "sha256": "c00d73268eaab3bf3619040eb39f21be1a37d7abc7c74fbca524539459454aea"
+    },
+    {
+      "path": "data/treasury_auctions/observations/20261008T225333744010Z-141d39b47bbd030b4cfbbdd32209f7e95477042ba753d0253175d28849ebeabf.json",
+      "sha256": "141d39b47bbd030b4cfbbdd32209f7e95477042ba753d0253175d28849ebeabf"
+    }
+  ],
+  "source_observed_at": "2026-10-08T22:53:33.744010+00:00",
+  "decision_cutoff_utc": "2026-10-08T23:37:47.058832+00:00",
+  "event_count": 74,
+  "legacy_array_counts": {
+    "us_macro": 10,
+    "high_impact": 5,
+    "commodity": 4
+  },
+  "actual_snapshot_equals_published_context": true,
+  "mastermind_reader": {
+    "reader_sha256": "1b2c11d38628b13f8ba5439f90f8ef9eefabf564cea5c3ed517398b1a4b5f276",
+    "status": "available",
+    "event_count": 74,
+    "transport": "explicit_temporary_input_path"
+  },
+  "capture_schedule_started": false,
+  "production_deployed": false,
+  "real_entitled_http_read_verified": false,
+  "existing_vendor_refresh_executed": false,
+  "limitations": [
+    "Temporary byte-copy proof is not deployment or runtime refresh acceptance.",
+    "Attended source capture only; no source freshness SLA or prospective statistical clock has started."
+  ]
+}

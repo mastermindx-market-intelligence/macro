@@ -1,0 +1,468 @@
+[
+  {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8657,
+    "head": "9ea66297a31688123ae62845c655a74db03fa9c1",
+    "started_at": "2026-10-09T01:08:52.219430+00:00",
+    "completed_at": "2026-10-09T01:08:54.680682+00:00",
+    "draft": true,
+    "state": "open",
+    "base_branch": "main",
+    "remote_base_sha": "e80339cb921ac6851ae972775f7e2d784bf62007",
+    "remote_base_object_available": true,
+    "mergeable_state": "unstable",
+    "checks": [
+      {
+        "id": 113609330029,
+        "name": "ci-gate",
+        "status": "completed",
+        "conclusion": "failure",
+        "annotations": 6,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113609330029"
+      },
+      {
+        "id": 113597265834,
+        "name": "trusted-ci",
+        "status": "completed",
+        "conclusion": "skipped",
+        "annotations": 0,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597265834"
+      },
+      {
+        "id": 113597264984,
+        "name": "ci-pack-9",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 15,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264984"
+      },
+      {
+        "id": 113597264962,
+        "name": "ci-pack-4",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 7,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264962"
+      },
+      {
+        "id": 113597264958,
+        "name": "ci-pack-1",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 3,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264958"
+      },
+      {
+        "id": 113597264949,
+        "name": "ci-pack-2",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 3,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264949"
+      },
+      {
+        "id": 113597264930,
+        "name": "ci-pack-11",
+        "status": "completed",
+        "conclusion": "failure",
+        "annotations": 16,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264930"
+      },
+      {
+        "id": 113597264923,
+        "name": "ci-pack-10",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 9,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264923"
+      },
+      {
+        "id": 113597264914,
+        "name": "ci-pack-8",
+        "status": "completed",
+        "conclusion": "failure",
+        "annotations": 7,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264914"
+      },
+      {
+        "id": 113597264884,
+        "name": "ci-pack-0",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 13,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264884"
+      },
+      {
+        "id": 113597264862,
+        "name": "ci-pack-6",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 7,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264862"
+      },
+      {
+        "id": 113597264854,
+        "name": "ci-pack-7",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 16,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264854"
+      },
+      {
+        "id": 113597264830,
+        "name": "ci-pack-5",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 6,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264830"
+      },
+      {
+        "id": 113597264818,
+        "name": "ci-pack-3",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 5,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113597264818"
+      },
+      {
+        "id": 113597073252,
+        "name": "grader-manifest",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 0,
+        "title": "grader-manifest: passed",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113597073252"
+      },
+      {
+        "id": 113597071101,
+        "name": "capability-broker",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 0,
+        "title": "capability-broker: passed",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113597071101"
+      },
+      {
+        "id": 113597068763,
+        "name": "self-mod-fence",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 0,
+        "title": "self-mod-fence: passed",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113597068763"
+      },
+      {
+        "id": 113596913428,
+        "name": "ci-plan",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 3,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113596913428"
+      },
+      {
+        "id": 113596913024,
+        "name": "contract-delta",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 2,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101577/job/113596913024"
+      },
+      {
+        "id": 113596783883,
+        "name": "ci-authority/main",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 0,
+        "title": "CI authority context accepted",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113596783883"
+      },
+      {
+        "id": 113596781513,
+        "name": "ci-authority/codex/merge-queue-pilot",
+        "status": "completed",
+        "conclusion": "failure",
+        "annotations": 0,
+        "title": "CI authority context rejected",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113596781513"
+      },
+      {
+        "id": 113596740795,
+        "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+        "status": "completed",
+        "conclusion": "skipped",
+        "annotations": 0,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596740795"
+      },
+      {
+        "id": 113596740776,
+        "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+        "status": "completed",
+        "conclusion": "skipped",
+        "annotations": 0,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596740776"
+      },
+      {
+        "id": 113596740253,
+        "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+        "status": "completed",
+        "conclusion": "skipped",
+        "annotations": 0,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596740253"
+      },
+      {
+        "id": 113596739287,
+        "name": "fence-pack",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 13,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861101310/job/113596739287"
+      },
+      {
+        "id": 113596726816,
+        "name": "ci-authority",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 2,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37861097171/job/113596726816"
+      }
+    ],
+    "statuses": []
+  },
+  {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "pr": 1284,
+    "head": "ac9117b3305ba992ebb673a99242cdd54e2046ef",
+    "started_at": "2026-10-09T01:08:54.681011+00:00",
+    "completed_at": "2026-10-09T01:08:56.887945+00:00",
+    "draft": true,
+    "state": "open",
+    "base_branch": "master",
+    "remote_base_sha": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+    "remote_base_object_available": true,
+    "mergeable_state": "behind",
+    "checks": [
+      {
+        "id": 113618120771,
+        "name": "CodeQL",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 0,
+        "title": "No new alerts in code changed by this pull request",
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/runs/113618120771"
+      },
+      {
+        "id": 113617960083,
+        "name": "test",
+        "status": "in_progress",
+        "conclusion": null,
+        "annotations": 0,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37867592576/job/113617960083"
+      },
+      {
+        "id": 113617949433,
+        "name": "Analyze (actions)",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 1,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37867588161/job/113617949433"
+      },
+      {
+        "id": 113617949327,
+        "name": "Analyze (rust)",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 1,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37867588161/job/113617949327"
+      },
+      {
+        "id": 113617949237,
+        "name": "Analyze (javascript-typescript)",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 1,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37867588161/job/113617949237"
+      },
+      {
+        "id": 113617949044,
+        "name": "Analyze (python)",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 1,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/37867588161/job/113617949044"
+      }
+    ],
+    "statuses": []
+  },
+  {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "pr": 857,
+    "head": "95dcde542a6af3fb70b421c3c5f508ef0455c6fb",
+    "started_at": "2026-10-09T01:08:56.888142+00:00",
+    "completed_at": "2026-10-09T01:08:59.365268+00:00",
+    "draft": true,
+    "state": "open",
+    "base_branch": "master",
+    "remote_base_sha": "505edf7872541075b5eee24691703a46d1151074",
+    "remote_base_object_available": true,
+    "mergeable_state": "behind",
+    "checks": [
+      {
+        "id": 113615131109,
+        "name": "Ingest + signal-layer tests",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 2,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615131109"
+      },
+      {
+        "id": 113615131086,
+        "name": "Terminal e2e serial (shard)",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 3,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615131086"
+      },
+      {
+        "id": 113615131058,
+        "name": "Terminal e2e desktop-1 (shard)",
+        "status": "in_progress",
+        "conclusion": null,
+        "annotations": 0,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615131058"
+      },
+      {
+        "id": 113615131048,
+        "name": "Terminal unit + typecheck (shard)",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 5,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615131048"
+      },
+      {
+        "id": 113615131005,
+        "name": "Terminal e2e desktop-2 (shard)",
+        "status": "in_progress",
+        "conclusion": null,
+        "annotations": 0,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615131005"
+      },
+      {
+        "id": 113615130994,
+        "name": "Terminal e2e mobile (shard)",
+        "status": "in_progress",
+        "conclusion": null,
+        "annotations": 0,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615130994"
+      },
+      {
+        "id": 113615130980,
+        "name": "Terminal e2e tablet (shard)",
+        "status": "in_progress",
+        "conclusion": null,
+        "annotations": 0,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615130980"
+      },
+      {
+        "id": 113615130872,
+        "name": "Quote Hub tests",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 2,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615130872"
+      },
+      {
+        "id": 113615130696,
+        "name": "Investigation PostgreSQL invariants",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 2,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866664788/job/113615130696"
+      },
+      {
+        "id": 113615014738,
+        "name": "CodeQL",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 0,
+        "title": "No new alerts in code changed by this pull request",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/runs/113615014738"
+      },
+      {
+        "id": 113614883785,
+        "name": "Analyze (javascript-typescript)",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 1,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866661783/job/113614883785"
+      },
+      {
+        "id": 113614883684,
+        "name": "Analyze (actions)",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 1,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866661783/job/113614883684"
+      },
+      {
+        "id": 113614883540,
+        "name": "Analyze (python)",
+        "status": "completed",
+        "conclusion": "success",
+        "annotations": 1,
+        "title": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37866661783/job/113614883540"
+      }
+    ],
+    "statuses": [
+      {
+        "context": "Vercel \u2013 mastermind-terminal",
+        "state": "failure",
+        "description": "Deployment rate limited \u2014 retry in 24 hours.",
+        "target_url": "https://vercel.com/chriswong6031-creator?upgradeToPro=build-rate-limit"
+      },
+      {
+        "context": "Vercel \u2013 macro-eiz4",
+        "state": "failure",
+        "description": "Deployment rate limited \u2014 retry in 24 hours.",
+        "target_url": "https://vercel.com/chriswong6031-creator?upgradeToPro=build-rate-limit"
+      }
+    ]
+  }
+]
