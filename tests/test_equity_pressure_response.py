@@ -916,7 +916,14 @@ def test_private_context_decimal_quote_recovery_is_exact_text_not_json_float():
     assert recovered["final_shares"]=="190"
     assert recovered["source_best_exchange"]=="12"
     assert recovered["source_best_price"]=="101"
-    assert body["bid_size_recovery_proxy"]["state"]=="UNKNOWN"
+    bid=body["bid_size_recovery_proxy"]
+    assert bid["state"]=="MEASURED_NBBO_SIZE_PROXY_NOT_ORDER_REPLENISHMENT"
+    assert bid["depletion_shares"]=="10"
+    assert bid["recovered_shares"]=="20"
+    assert bid["original_shares"]=="100"
+    assert bid["final_shares"]=="110"
+    assert bid["source_best_exchange"]=="11"
+    assert bid["source_best_price"]=="100"
 
 
 def test_private_context_source_manifest_and_receipt_literals_not_serialized():
