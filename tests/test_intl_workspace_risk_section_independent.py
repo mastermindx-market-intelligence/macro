@@ -557,5 +557,3 @@ def test_inputs_detached_and_production_helper_has_no_io(monkeypatch, capsys):
     captured = capsys.readouterr()
     assert captured.out == ""
     assert captured.err == ""
-
-
