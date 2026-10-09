@@ -586,6 +586,76 @@ No paid worker was launched, no active worker was restarted, no merge
 or fleet-wide installation occurred. Previously safety-refused leased-GLM
 continuation override and automatic C2/C3 Go reroute remain fenced.
 
+### 2026-10-08 versioned native compaction observation — local source verified
+
+The continued source-owner audit found that the strict native Codex usage
+receipt reported **cumulative tokens**, but had no native context-compaction
+observation. In particular, 6.15M cumulative tokens on the real C2
+`glm-codex` `rc=77` case do **not** establish a 6M context window
+or a compaction event. Current Codex rollout serializes native durable
+compaction checkpoints as typed `{"type":"compacted","payload":...}`
+records. Counting only those records yields a bounded observational signal;
+a model's self-reported statement is not treated as proof.
+
+**One incumbent receipt, explicit version migration, no second memory plane.**
+`codex_usage.py` keeps the exact `mastermind.codex_usage.v1`
+contract by default; a new explicit `--with-native-compactions`
+option emits `mastermind.codex_usage.v2` with the same validated
+usage fields plus `native_compaction_records` (nonnegative integer
+when exactly one usable native session is observed; otherwise null).
+It counts native `compacted` records during the same private-session
+scan used for cumulative usage. Malformed/unrelated/quoted status events
+are ignored; raw JSONL history remains private and is deleted by
+the incumbent wrapper cleanup. The field is **record count**, not
+a claim of unique semantic compaction operations or a guaranteed
+900K-token firing threshold.
+
+The original GLM and MiniMax Codex wrappers **explicitly opt into v2**
+at EXIT while preserving their provider exit codes and the existing
+0600 atomic usage-receipt write. The same original `remote_sub.sh`
+controller now strictly validates v1 **or** v2 exact-key contracts.
+It preserves verified token totals regardless of a malformed optional
+v2 count; valid v2 native counts produce only
+`CODEX_COMPACTION_OBSERVED native_records=N` scalar diagnostics,
+and malformed v2 counts remain typed UNKNOWN. The pool ledger's
+usage fields/schema, worker lifetime, leases, credentials, permissions,
+publication protocol and native provider compaction mechanism are unchanged.
+No new transcript DB, scheduler, watcher, context store or transport was
+introduced.
+
+**Verified together on the original M2 source carrier:**
+`bash -n` on the changed wrappers/controller,
+`py_compile` on the parser, and the existing parser, usage
+capture, Codex continuation, remote transport and support-publication
+test suites: **194 passed, 32 subtests passed**. Earlier intentionally
+red v2-acceptance tests were corrected by the implementation; final
+run completed with zero test failures and eight unrelated pre-existing
+pytest Chromium temporary-cleanup warnings. Hermetic scenarios cover
+v1 exact compatibility, valid/malformed v2 count, missing/ambiguous
+session ID, non-native/quoted events, 0 or positive native checkpoints,
+private capture, worker rc0/rc3, and v2 count not erasing known billing
+totals.
+
+Exact current M2 SHA-256:
+- `ext/codex_usage.py` `8f06f5f7195917db02e5a2bc406ca5f28c8f8fb1c5432ccc7bc12921e1db3b7a`
+- `ext/glm_codex_exec.sh` `df2db87ce9fce63d78fb76388d20d8f7a876d71ce453a844255edec044b21c98`
+- `ext/mm_codex_exec.sh` `8875be8db4ecdf0a16529687de7062d5215da43ba8f7c1481283f042bb218e9a`
+- `ext/remote_sub.sh` `cb479543f88ea1f30be5846b374be329b11fd21ca014dc1bfbb824643850f960`
+- `ext/tests/test_codex_usage.py` `d31e0058f0c28f7be90ca703b80e259221c6d475c489da3a782d6cf7f020fc0c`
+- `ext/tests/test_usage_capture_chain.py` `9ee6dadaf52a4664330e2f3bfd44d46e236138bc55ea76ebcbf1457fecb4b734`
+
+The newly calculated **next natural worker code-support digest** is
+`d4d9fc75553f4c2e87ac2d53fe4ad2823f01de2b9e8ab49b675a8ba25b66e154`.
+The prior `a811c5a...` release is confirmed already installed on
+Ubuntu2 and Mini2, but **does not** contain these new v2 parser/wrapper bytes.
+No new worker or paid model canary was launched to claim their execution.
+The new telemetry is **LOCAL_VERIFIED / REMOTE_SELECTION_NOT_YET_PROVEN**.
+Actual native auto-compaction firing and quality of the worker's final
+response remain separate production acceptance requirements. No
+fleet-wide installation, merge or deployment occurred in this evidence
+update. Previously denied automatic Go reroute and leased-GLM changes
+remain untouched and fenced.
+
 ### Verification boundary
 
 Directly observed current green evidence:
