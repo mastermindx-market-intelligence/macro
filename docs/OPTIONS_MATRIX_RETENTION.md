@@ -70,6 +70,36 @@ not the separate strikes array. Duplicate cell coordinates caused by rounding ar
 unselectable. This helper does not establish call/put side availability, canonical
 subject binding, rights or runtime admission. Consumers retain those gates.
 
+## Observed call/put sides
+
+`matrix_observed_side_tokens(ref, raw)` supplies `(expiry, strike-string, side)`
+tuples in source-cell order, call before put. It reuses the unchanged coordinate
+helper and its exact reference/hash/length/schema/root/session and duplicate-cell
+validation. A side requires at least one of its own OI or volume observations:
+`call_oi`/`call_vol` for `call`, `put_oi`/`put_vol` for `put`. Explicit zero is an
+observation; absent/null counts are not. Both counts on both sides are validated,
+so one valid count cannot hide a malformed supplied field. Any nonnumeric,
+boolean, negative, fractional or nonfinite supplied count refuses the whole result.
+
+Counts are reparsed from exact bytes as Decimal and checked by coefficient and
+exponent without ambient rounding, integer expansion or fixed-point rendering.
+Fractions such as `9007199254740992.5`, `1.000000000000000000000000000001` and
+`1e-400` refuse even when binary-float decoding loses their fraction. Numerical
+zero, including `0e-400`, and trailing-zero integral values remain observations.
+The work stays bounded by source coefficient length, not exponent magnitude.
+
+Opposite-side counts, aggregate/derived exposure, delta OI, unusual metadata and
+top-level strike/expiration lists cannot establish membership. Empty matrices
+return no witnesses. Observed membership establishes neither a security-contract
+identity nor availability of any other metric, rights or runtime admission. A
+future resolver must return `HISTORICAL_UNAVAILABLE` for missing primary or
+comparison membership rather than silently filtering or substituting selections.
+Save remains disabled; publication behavior, schemas and storage are unchanged.
+
+Focused regression command: `python3 -m pytest -q -p no:cacheprovider tests/test_options_matrix_retention.py -k observed_side`.
+The suite includes real `build_matrix` and publisher serialization over synthetic
+parquet with independently missing or explicit-zero call/put OI and volume.
+
 ## Reproducible fixture evidence
 
 `tests/fixtures/options_matrix_retention/a.json` and `b.json` are exact outputs of

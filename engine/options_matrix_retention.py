@@ -264,3 +264,37 @@ def matrix_coordinate_tokens(ref: SnapshotReference, raw: bytes) -> tuple[tuple[
         seen.add(key)
         keys.append(key)
     return tuple(keys)
+
+
+def matrix_observed_side_tokens(ref: SnapshotReference, raw: bytes) -> tuple[tuple[str, str, str], ...]:
+    """Return exact (expiry, strike-decimal, call|put) observation witnesses.
+
+    An own-side OI or volume count, including zero, witnesses the side. Missing
+    and null counts are absent; any malformed supplied count refuses the whole
+    result. This establishes neither contract identity, metric availability,
+    rights nor Saved Research admission.
+    """
+    coordinates = matrix_coordinate_tokens(ref, raw)
+    payload = json.loads(raw.decode("utf-8"), parse_float=Decimal, parse_int=Decimal,
+                         object_pairs_hook=_unique_object, parse_constant=_nonfinite)
+    observed = []
+    for (expiry, strike), cell in zip(coordinates, payload["cells"]):
+        for side in ("call", "put"):
+            present = False
+            for measure in ("oi", "vol"):
+                value = cell.get(f"{side}_{measure}")
+                if value is None:
+                    continue
+                if not isinstance(value, Decimal) or not value.is_finite() or value < 0:
+                    raise HistoricalUnavailable("invalid source observation count")
+                # Inspect the exact coefficient: float parsing can round a
+                # fraction to an integer or underflow it to zero. Slicing is
+                # bounded by coefficient length, even for extreme exponents;
+                # no context rounding, integer expansion or fixed-point format.
+                _, digits, exponent = value.as_tuple()
+                if exponent < 0 and any(digits[max(0, len(digits) + exponent):]):
+                    raise HistoricalUnavailable("fractional source observation count")
+                present = True
+            if present:
+                observed.append((expiry, strike, side))
+    return tuple(observed)

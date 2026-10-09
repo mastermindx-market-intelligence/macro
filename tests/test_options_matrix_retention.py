@@ -589,3 +589,135 @@ def test_existing_head_supplied_identity_is_strict(tmp_path, change):
     session, error = builder._existing_usable_session(path)
     assert session is None and error is not None
     assert path.read_bytes() == raw
+
+
+def _observed_side_raw(fields, *, strike="500.0"):
+    raw = encoded().replace(b'"gex": 1', fields.encode())
+    return raw.replace(b'500.0, "expiry"', (strike + ', "expiry"').encode())
+
+
+@pytest.mark.parametrize("field,side", [
+    ("call_oi", "call"), ("call_vol", "call"),
+    ("put_oi", "put"), ("put_vol", "put"),
+])
+@pytest.mark.parametrize("token", ["0", "-0.0", "0e-999999999", "17", "1.000000000000000000000000000000", "1e308"])
+def test_observed_side_accepts_exact_integral_counts_including_zero(field, side, token):
+    raw = _observed_side_raw(f'"{field}":{token}')
+    ref = retention.reference_for_bytes("SPY", raw)
+    assert retention.matrix_observed_side_tokens(ref, raw) == (("2026-10-16", "500", side),)
+
+
+@pytest.mark.parametrize("field", ["call_oi", "call_vol", "put_oi", "put_vol"])
+@pytest.mark.parametrize("token", [
+    "true", "false", '"0"', "[]", "{}", "-1", "0.5",
+    "9007199254740992.5", "1.000000000000000000000000000001",
+    "1e-400", "1e-999999999", "NaN", "Infinity", "-Infinity", "1e400",
+])
+def test_observed_side_refuses_any_malformed_count_even_with_valid_witness(field, token):
+    # Other fields witness both sides; none may short-circuit this refusal.
+    fields = {name: "1" for name in ("call_oi", "call_vol", "put_oi", "put_vol")}
+    fields[field] = token
+    raw = _observed_side_raw(",".join(f'"{name}":{value}' for name, value in fields.items()))
+    ref = retention.SnapshotReference("SPY", hashlib.sha256(raw).hexdigest(), len(raw), "2026-10-02")
+    with pytest.raises(retention.HistoricalUnavailable):
+        retention.matrix_observed_side_tokens(ref, raw)
+
+
+@pytest.mark.parametrize("fields,sides", [
+    ('"gex":1,"vex_mn":2,"delta_oi":{"call":0,"put":2},"unusual":{"call":{"ratio":3}}', ()),
+    ('"call_oi":null,"call_vol":null,"put_oi":null,"put_vol":null', ()),
+    ('"call_oi":0,"put_vol":0', ("call", "put")),
+    ('"call_oi":null,"call_vol":0,"put_oi":null', ("call",)),
+    ('"put_oi":0,"put_vol":null,"call_vol":null', ("put",)),
+])
+def test_observed_side_uses_only_own_nonnull_observation(fields, sides):
+    raw = _observed_side_raw(fields)
+    ref = retention.reference_for_bytes("SPY", raw)
+    assert retention.matrix_observed_side_tokens(ref, raw) == tuple(
+        ("2026-10-16", "500", side) for side in sides)
+
+
+@pytest.mark.parametrize("precision,emin", [(6, -9), (28, -999999), (50, -999999)])
+def test_observed_side_exact_precision_and_coordinate_integration(precision, emin):
+    from decimal import localcontext
+    with localcontext() as context:
+        context.prec, context.Emin = precision, emin
+        raw = _observed_side_raw('"put_vol":0e-999999999', strike="999999999999.12345678")
+        ref = retention.reference_for_bytes("SPY", raw)
+        assert retention.matrix_observed_side_tokens(ref, raw) == (
+            ("2026-10-16", "999999999999.12345678", "put"),)
+        for token in ("9007199254740992.5", "1.000000000000000000000000000001", "1e-999999999"):
+            raw = _observed_side_raw(f'"call_oi":{token}')
+            ref = retention.reference_for_bytes("SPY", raw)
+            with pytest.raises(retention.HistoricalUnavailable):
+                retention.matrix_observed_side_tokens(ref, raw)
+
+
+def test_observed_side_isolates_coordinates_and_ignores_top_level_lists():
+    doc = payload()
+    doc["strikes"], doc["expirations"] = [500, 501, 502], ["2026-10-16", "2026-10-23"]
+    doc["cells"] = [
+        {"expiry": "2026-10-16", "strike": 500, "call_oi": 0},
+        {"expiry": "2026-10-16", "strike": 501, "put_oi": 0},
+        {"expiry": "2026-10-23", "strike": 500, "put_vol": 0},
+        {"expiry": "2026-10-23", "strike": 501, "gex": 100},
+    ]
+    raw = json.dumps(doc).encode()
+    assert retention.matrix_observed_side_tokens(retention.reference_for_bytes("SPY", raw), raw) == (
+        ("2026-10-16", "500", "call"), ("2026-10-16", "501", "put"),
+        ("2026-10-23", "500", "put"))
+    doc["cells"] = []
+    raw = json.dumps(doc).encode()
+    assert retention.matrix_observed_side_tokens(retention.reference_for_bytes("SPY", raw), raw) == ()
+
+
+@pytest.mark.parametrize("fault", ["duplicate", "bad_expiry", "digest", "length", "session", "root", "schema"])
+def test_observed_side_preserves_existing_exact_source_gates(fault):
+    doc = payload()
+    doc["cells"][0]["call_oi"] = 0
+    if fault == "duplicate":
+        doc["cells"].append({"expiry": "2026-10-16", "strike": 500, "put_oi": 0})
+    if fault == "bad_expiry": doc["cells"][0]["expiry"] = "2026-02-30"
+    if fault == "schema": doc["schema"] = "unrecognized"
+    raw = json.dumps(doc).encode()
+    ref = retention.SnapshotReference(
+        "QQQ" if fault == "root" else "SPY",
+        "0" * 64 if fault == "digest" else hashlib.sha256(raw).hexdigest(),
+        len(raw) + (fault == "length"),
+        "2026-10-01" if fault == "session" else "2026-10-02")
+    with pytest.raises(retention.HistoricalUnavailable):
+        retention.matrix_observed_side_tokens(ref, raw)
+
+
+@pytest.mark.parametrize("right,side,other", [("C", "call", "put"), ("P", "put", "call")])
+@pytest.mark.parametrize("oi,volume", [(None, None), (None, 0), (0, None), (0, 0)])
+def test_observed_side_real_builder_distinguishes_missing_from_zero(tmp_path, right, side, other, oi, volume):
+    import pandas as pd
+    from tests.test_options_matrix import _session_repair_store
+    from engine.options_matrix import build_matrix
+    from engine.thetadata_store import clear_parquet_cache
+    from scripts.build_options_matrix import _serialize
+    store = _session_repair_store(tmp_path)
+    for tier, column, value in (("oi", "open_interest", oi), ("eod", "volume", volume)):
+        path = store / tier / "SPY" / "2026.parquet"
+        frame = pd.read_parquet(path)
+        target = ((frame["date"] == pd.Timestamp("2026-09-22"))
+                  & (frame["strike"] == 100.0) & (frame["right"] == right))
+        if value is None:
+            frame = frame.loc[~target].copy()
+        else:
+            frame.loc[target, column] = value
+        frame.to_parquet(path, index=False)
+    clear_parquet_cache()
+    try:
+        doc = build_matrix("SPY", store, asof="2026-09-22")
+        cell = next(c for c in doc["cells"] if c["strike"] == 100.0)
+        assert cell[f"{side}_oi"] == oi and cell[f"{side}_vol"] == volume
+        raw = _serialize(doc)
+        tokens = retention.matrix_observed_side_tokens(retention.reference_for_bytes("SPY", raw), raw)
+        assert (("2026-10-16", "100", side) in tokens) == (oi is not None or volume is not None)
+        assert ("2026-10-16", "100", other) in tokens
+        assert ("2026-10-16", "95", side) in tokens
+        assert ("2026-10-16", "105", side) in tokens
+    finally:
+        clear_parquet_cache()
