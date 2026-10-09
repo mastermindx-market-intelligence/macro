@@ -1564,6 +1564,7 @@ def test_matrix_publisher_replaces_legacy_empty_artifact_with_usable_session(tmp
         json.dumps({"root": "SPY", "spot": None, "cells": [], "_no_data_reason": "old null"})
     )
     candidate = {
+        "schema": "options_structure.matrix/v1",
         "root": "SPY", "session": "2026-09-22", "spot": 100.0,
         "cells": [{"strike": 100.0, "gex": 5}],
         "_build_meta": {"asof_date": "2026-09-22"},
@@ -1592,8 +1593,10 @@ def test_matrix_publisher_finishes_healthy_root_but_reports_partial_failure(tmp_
     import engine.thetadata_store as td
     monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
     monkeypatch.setattr(builder, "_r2_client", lambda: object())
+    # This test isolates current-head delivery; retention has a real fake-store suite.
+    monkeypatch.setattr(builder, "retain_snapshot", lambda *args: None)
     monkeypatch.setenv("R2_BUCKET", "fixture-bucket")
-    good = {"root": "MU", "session": "2026-09-22", "spot": 100.0, "cells": [{"strike": 100, "gex": 5}]}
+    good = {"schema": "options_structure.matrix/v1", "root": "MU", "session": "2026-09-22", "spot": 100.0, "cells": [{"strike": 100, "gex": 5}]}
     monkeypatch.setattr(builder, "build_matrix", lambda root, **kwargs:
                         good if root == "MU" else _null_payload(root, "2026-09-24", "source missing"))
     uploads = []
@@ -1622,8 +1625,10 @@ def test_matrix_publisher_all_healthy_roots_distinguishes_delivery_success(tmp_p
     import engine.thetadata_store as td
     monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
     monkeypatch.setattr(builder, "_r2_client", lambda: object())
+    # This test isolates current-head delivery; retention has a real fake-store suite.
+    monkeypatch.setattr(builder, "retain_snapshot", lambda *args: None)
     monkeypatch.setenv("R2_BUCKET", "fixture-bucket")
-    doc = {"root": "MU", "session": "2026-09-22", "spot": 100.0, "cells": [{"strike": 100, "gex": 5}]}
+    doc = {"schema": "options_structure.matrix/v1", "root": "MU", "session": "2026-09-22", "spot": 100.0, "cells": [{"strike": 100, "gex": 5}]}
     monkeypatch.setattr(builder, "build_matrix", lambda root, **kwargs: doc)
     uploads = []
     def deliver(client, bucket, path, key):

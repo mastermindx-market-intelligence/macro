@@ -3,6 +3,7 @@
 Builds options_structure.matrix/v1 payloads for one or more roots from the
 ThetaData EOD store and optionally publishes to R2 under the key
     options_structure/matrix/<ROOT>.json
+Exact bytes are retained first under matrix/history/<ROOT>/<SHA256>.json.
 
 Usage:
     python -m scripts.build_options_matrix [--roots SPY QQQ ...] [--publish]
@@ -43,7 +44,8 @@ import json
 import logging
 import os
 import sys
-from datetime import date
+import stat
+import tempfile
 from pathlib import Path
 
 # ── repo path ─────────────────────────────────────────────────────────────────
@@ -51,6 +53,8 @@ _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
 
 from engine.options_matrix import build_matrix
+from engine import options_matrix_retention as retention
+from engine.options_matrix_retention import retain_snapshot
 from engine.thetadata_store import clear_parquet_cache
 
 log = logging.getLogger(__name__)
@@ -103,15 +107,11 @@ def _r2_client():
         return None
 
 
-def _upload_r2(s3, bucket: str, local_path: Path, r2_key: str) -> bool:
-    """Upload a local file to R2. Returns True on success."""
+def _upload_r2(s3, bucket: str, raw: bytes, r2_key: str) -> bool:
+    """Advance the head using the exact bytes already retained and read back."""
     try:
-        s3.upload_file(
-            str(local_path),
-            bucket,
-            r2_key,
-            ExtraArgs={"ContentType": "application/json"},
-        )
+        s3.put_object(Bucket=bucket, Key=r2_key, Body=raw,
+                      ContentType="application/json")
         log.info("options_matrix_builder: R2 upload ok → %s", r2_key)
         return True
     except Exception as e:  # noqa: BLE001
@@ -119,21 +119,58 @@ def _upload_r2(s3, bucket: str, local_path: Path, r2_key: str) -> bool:
         return False
 
 
-def _write_json(path: Path, data: dict) -> None:
+def _serialize(data: dict) -> bytes:
+    """Serialize once, rejecting oversize output before any artifact write."""
+    raw = bytearray()
+    for chunk in json.JSONEncoder(allow_nan=False, default=str).iterencode(data):
+        part = chunk.encode("utf-8")
+        if len(raw) + len(part) > retention.MAX_MATRIX_BYTES:
+            raise retention.HistoricalUnavailable("matrix exceeds byte limit")
+        raw.extend(part)
+    return bytes(raw)
+
+
+def _write_bytes(path: Path, raw: bytes) -> None:
+    """Replace a local mutable head atomically only after retention succeeds."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, allow_nan=False, default=str), encoding="utf-8")
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(dir=path.parent, prefix=".matrix-", delete=False) as handle:
+            temporary = Path(handle.name)
+            mode = stat.S_IMODE(path.stat().st_mode) if path.exists() else 0o644
+            os.fchmod(handle.fileno(), mode)
+            handle.write(raw)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
+def _retain_local(out_dir: Path, ref: retention.SnapshotReference, raw: bytes) -> None:
+    """Retain beside the existing output, without another producer or manifest."""
+    retention.verify_snapshot(ref, raw)
+    path = out_dir / "history" / ref.root / f"{ref.sha256}.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with path.open("xb") as handle:
+            handle.write(raw)
+            handle.flush()
+            os.fsync(handle.fileno())
+    except FileExistsError:
+        pass
+    with path.open("rb") as handle:
+        retained = handle.read(ref.byte_length + 1)
+    retention.verify_snapshot(ref, retained)
+    if retained != raw:
+        raise retention.HistoricalUnavailable("local retained byte collision")
 
 
 def _payload_session(data: dict) -> str | None:
-    """Return an ISO source session from a matrix payload, if it is trustworthy."""
-    raw = data.get("session")
-    if raw is None:
-        raw = (data.get("_build_meta") or {}).get("asof_date")
-    if raw is None:
-        return None
     try:
-        return date.fromisoformat(str(raw)).isoformat()
-    except (TypeError, ValueError):
+        return retention.source_session(data)
+    except retention.HistoricalUnavailable:
         return None
 
 
@@ -227,6 +264,7 @@ def main() -> None:
         root = root.upper()
         try:
             try:
+                retention.validate_root(root)
                 payload = build_matrix(root, store=theta_store, asof=args.date)
             except Exception as e:  # noqa: BLE001
                 log.error("options_matrix_builder: build failed for %s — %s", root, e)
@@ -272,9 +310,15 @@ def main() -> None:
                 }
                 continue
 
-            # write local JSON only after source/session and anti-regression gates pass
+            # Both immutable copies precede either mutable head. A failed or
+            # uncertain retention operation preserves the prior current matrix.
             try:
-                _write_json(local_path, payload)
+                raw = _serialize(payload)
+                ref = retention.reference_for_bytes(root, raw)
+                _retain_local(out_dir, ref, raw)
+                if args.publish:
+                    retain_snapshot(s3, bucket, ref, raw)
+                _write_bytes(local_path, raw)
                 log.info(
                     "options_matrix_builder: wrote %s (%d cells, session=%s)",
                     local_path, len(payload.get("cells", [])), new_session,
@@ -288,7 +332,7 @@ def main() -> None:
             uploaded = False
             if args.publish and s3 and bucket:
                 r2_key = f"{R2_PREFIX}{root}.json"
-                uploaded = _upload_r2(s3, bucket, local_path, r2_key)
+                uploaded = _upload_r2(s3, bucket, raw, r2_key)
 
             n_cells = len(payload.get("cells", []))
             results[root] = {
@@ -297,6 +341,7 @@ def main() -> None:
                 "error":     "R2 publication failed" if args.publish and not uploaded else None,
                 "no_data":   None,
                 "session":   new_session,
+                "version_ref": ref.version_ref,
             }
         finally:
             # Bound memory even when a build/write/source guard raises or continues.
