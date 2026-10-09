@@ -16,27 +16,48 @@
     "packed_objects": 949184,
     "oid_sha256": "7f7e0a7f7f5be8d11788ad55a6a5a282b4a3cf78d00655d580754b08d212320f",
     "refs_reflogs_preserved": true,
-    "additional_separate_phase": "max5 batches40-44 or13GiB under nonblocking incumbent lock; active, not accepted"
+    "additional_separate_phase": "DONE batches40-44; SSH controller rc0 consumed; independent terminal custody acceptance"
   },
   "a04": {
-    "head": "b2ac1f8ff0d00e44d7ea1679cb387dcf2603f49d",
+    "head": "d0e6288727ef1951464f8efddb796789798e4e45",
     "draft": true,
     "migration_applied": false,
-    "unit_assertions": 76,
+    "unit_assertions": 82,
     "unit_files": 10,
     "typecheck_rc": 0,
-    "browser_pass": 27,
+    "browser_pass": 36,
     "browser_skip": 0,
+    "excluded_browser_attempt": "port3157 reused an unrelated preexisting server; own run stopped rc130 and excluded",
+    "qualified_browser_port": 3196,
     "postgresql17_11_causal_cases": 65,
+    "sql_unchanged_sha256": "0b046c0dd95c2a5d96d3e67987759d3d5321f3fea4471783ed4f8c51eab92477",
     "fixture_cleaned": true,
     "legacy_actual_modules_receipt": {
-      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-old-tab-causal-green-final-20261009.json",
-      "sha256": "27ac76ef6492992468b4147ebcb74fbe7655c646e896c00e8860b924fa007d10"
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-old-tab-causal-d0e628-20261009.json",
+      "sha256": "d93db35d01d5737c5316cb210a4825bc192c3ebc74ef916c9854a3ff524002f9"
     },
-    "source_review_old": "useful artifact accepted; M2/L4 repaired",
-    "delta_review_child": "terminal-audit20-a04-repair-review-20261009",
+    "previous_review": "REJECT reproduced with5 failures/25 controls; accepted as useful review artifact only",
+    "delta_review_child": "terminal-audit20-a04-alias-adjudication-20261009",
     "delta_review_started": true,
-    "delta_review_accepted": false
+    "delta_review_accepted": false,
+    "proofs": {
+      "unit": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-import-alias-unit-20261009.log",
+        "sha256": "ad488c98eee2239e24fdb44bc49f1e968157719e85107e8bd54010c14645a2e8"
+      },
+      "typecheck": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-import-alias-tsc-20261009.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "browser": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-import-alias-responsive-r2-20261009.log",
+        "sha256": "e310fe4a121fd5806133c7647f4c294b2b0f7e52354da4e2e83d30eee111e029"
+      },
+      "red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-import-two-handles-red-r2-20261009.log",
+        "sha256": "094732ebc2b884fa7109a7fc0dc4439692f4ebf028fe0f1b4ece705972d76351"
+      }
+    }
   },
   "brain": {
     "pr": 8526,
@@ -56,9 +77,67 @@
     },
     "normal_github_approval_post_rc0_runs": [
       37864329933,
-      37864820430
+      37864820430,
+      37869801986,
+      37869591483
     ],
     "app_enrollment_still_pending": true
   },
-  "remaining": "Exact current-head protected CI/review, A04 migration/readback and real user paths; original per-mission contracts remain separate."
+  "remaining": "Exact current-head protected CI/review, A04 migration/readback and real user paths; original per-mission contracts remain separate.",
+  "a05": {
+    "pr": 861,
+    "head": "856f68e04bc85e265887d721854e2fa410314fdd",
+    "base": "a70cf2ad36bf05792c2a3cddac4ee491be0ff99c",
+    "draft": true,
+    "source_accepted": false,
+    "native_react_assertions": 10,
+    "cache_assertions": 9,
+    "red_failures": 5,
+    "red_controls": 5,
+    "browser_pass": 6,
+    "browser_skip": 0,
+    "browser_native_eventsource": true,
+    "typecheck_rc": 0,
+    "review_child": "terminal-audit20-a05-transport-review-20261009",
+    "proofs": {
+      "red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a05-mounted-transport-red-20261009.log",
+        "sha256": "e0ac68ad6f6572d07c41bdb9d007c534b898fb2f9dcbb64edfc5fcb80a6d06a5"
+      },
+      "green": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a05-mounted-transport-green-20261009.log",
+        "sha256": "0373c459c94401a242a7f746aadd174b45ef479bf3466f406a24f7f6e054a95a"
+      },
+      "browser": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a05-native-transport-responsive-20261009.log",
+        "sha256": "d56809c8b4bc554e905887bcd9f1df498145e86f626fd2a851c8e90f28638cc8"
+      },
+      "typecheck": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a05-native-transport-tsc-20261009.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "storage_additional": {
+    "batches": 5,
+    "free_bytes": 12737523712,
+    "packed_objects": 961984,
+    "oid_sha256": "646ba8bc4265c925fb07a14beb2ab1568aea1c8fc8598b5ff94496d1b0778d9f",
+    "source_custody_sha256": "000ae766e7ebf0e1b0991e7ce68dce9eab08bfc441187be1293a453b1bc6dd02",
+    "controller_rc": 0,
+    "independent_terminal_review": true,
+    "services_active": true,
+    "verified_ssd_preimages_preserved": true,
+    "receipt": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/incremental-repack-additional-receipt-20261009.json",
+      "sha256": "ddcde2063f65a8ed9831a3fbcdbd70cf6f1b44c674cd9639cf0ed21b7cf1b3d0"
+    }
+  },
+  "release_in_progress": {
+    "target": "a70cf2ad36bf05792c2a3cddac4ee491be0ff99c",
+    "includes": "merged rollback-space PR855",
+    "accepted": false,
+    "sole_attended_controller": 54009,
+    "existing_updater_lock": true
+  }
 }
