@@ -77,8 +77,8 @@ def normalize_rth_minute_volume_reference(
     if _SYMBOL.fullmatch(ticker) is None:
         raise FrameContractError("invalid stock ticker")
     _id(session,"session")
-    if not session.endswith(":RTH"):
-        raise FrameContractError("RTH reference requires explicit RTH session")
+    if re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}:RTH",session) is None:
+        raise FrameContractError("RTH reference requires exact YYYY-MM-DD:RTH session")
     try:
         date.fromisoformat(session.split(":",1)[0])
     except ValueError as exc:
@@ -113,6 +113,8 @@ def normalize_rth_minute_volume_reference(
         raise FrameContractError("aggregate ticker differs from frozen source query")
     if native.get("next_url"):
         raise FrameContractError("source pagination incomplete")
+    if ("adjusted" in native and type(native["adjusted"]) is not bool):
+        raise FrameContractError("ambiguous native adjusted flag")
     if native.get("adjusted") is True:
         raise FrameContractError("adjusted aggregate volume not admitted")
     native_count=native.get("resultsCount")
