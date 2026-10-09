@@ -49,10 +49,19 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m pytest \
 Initial result: **104 passed**. Initial chronology/correction subset: **48 passed**.
 CI infrastructure regression (`tests/test_ci_pack.py tests/test_ci_plan_workflow.py`):
 **194 passed, 2 skipped**. CI manifest validate-only passed for 177 jobs.
-Agent OS validation: 1,585 records, zero errors and 95 existing warnings. The existing
-`unrun-market-plumbing` CI lane now runs the chronology and immutable-correction
-suites; the workflow path filter reaches test-only changes. These are local results,
-not hosted CI, independent approval or production proof.
+Agent OS validation: 1,585 records, zero errors and 95 existing warnings. The initial
+test step was placed in `unrun-market-plumbing`, a data-gated nightly job. The green
+PR run therefore did not execute that step. Before merge, parent inspection of run
+37879731051's semantic plan exposed this eligibility gap: its 177 code jobs excluded
+`unrun-market-plumbing`. The step is now in the existing code-gated
+`unrun-grading-board` job; the workflow path filter reaches test-only changes.
+A new regression fails on the old placement and verifies one code-gated owner plus
+selection for each suite and the audit script. The targeted gate checks pass (4 tests).
+The full infrastructure run had 194 passes, 2 skips and one closure failure: the
+new regression's audit-script filename was interpreted as an imported dependency.
+The existing filename-as-data annotation fixes that classification; both affected
+checks (exclusive import closure and the new eligibility regression) then passed.
+Fresh candidate review and hosted evidence of this exact step remain required.
 
 Real retained evidence was read without generating corrections:
 

@@ -27,7 +27,14 @@ changed:
       Added discriminating source/exposure, late-capture, original-receipt, malformed-clock,
       forged-report and disposition-language cases.
   - path: .github/ci/legacy-jobs.yml
-    what: Existing unrun-market-plumbing lane now runs chronology and immutable-correction tests.
+    what: >
+      The chronology/correction step was moved from the nightly data-gated
+      unrun-market-plumbing job to the existing code-gated unrun-grading-board job
+      after hosted semantic evidence proved it was excluded from the PR merge gate.
+  - path: tests/test_ci_pack.py
+    what: >
+      Regression proves exactly one code-gated owner for the two audit suites and
+      selection when either suite or the audit script changes. It failed on the old placement.
   - path: .github/workflows/ci.yml
     what: Existing CI path filter includes the two owning test files.
   - path: research/prophet_v4/r6_rescue_20261008/
@@ -99,9 +106,9 @@ unresolved:
   - "#8444 remains the held shared product carrier with its original source/effect gates."
   - "B00-B28/Q01-Q24 scientific, product, alerts, reliability, portfolio, release, rollback and natural-refresh obligations remain incomplete."
 next_actions:
-  - "Consume the exact #8670 CI event and the same retained B04 proposal-review result; repair only verified findings within current custody."
-  - "Final #8670 code review requires actual new admission after the recorded host-capacity refusal is resolved; do not replay the terminal run or assume another host is allowed."
-  - "After final review and required exact-head checks, complete #8670's admitted merge and verify main blobs; do not label the full rescue complete."
+  - "Complete the CI-gate repair validation and consume prophet-r6-code-gate-review-01a11e89; publish the exact repaired head on existing PR8670, still draft."
+  - "Consume the separate scratch-only prophet-r6-fabric-terminal-repair-proposal-01a11e89; review any proposal before canonical same-run accounting recovery. Never replay the completed source-clock review or fabricate its DONE line."
+  - "After fresh independent review and required checks, require hosted proof of the exact Prophet source clocks and immutable correction provenance step, then complete #8670's admitted merge and main-blob readback. Old head1013 green CI omitted the data-gated step and is insufficient."
   - "Adopt the independently accepted B04 correction on #7869 only after canonical source custody recovery; preserve #7426/#8004 integration gates."
   - "Continue B06 economic qualification and B02 forward identity acceptance through their existing owners, then product and release proof."
 do_not_redo:
@@ -118,6 +125,46 @@ danger_areas:
 ---
 
 # Incomplete local R6 delivery boundary
+
+## 2026-10-09 pre-merge repair delta
+
+The final source review `prophet-r6-b06-clock-final-review-r2-01a11e89` returned PASS
+for head1013's four source/test/CI blobs (50 tests and 30 probes). Parent consumed and
+adjudicated it at PR8670 comment6073915549. Subsequent hosted evidence review exposed
+a CI eligibility defect that the earlier review missed: run37879731051 passed all
+177 code jobs, but excluded the new audit step's data-gated job. PR8670 was briefly
+made ready, then returned to DRAFT before any merge. The step is now in the existing
+code-gated grading job; the new regression failed at old placement and four targeted
+gate tests passed after repair. A full infrastructure run had 194 passes, 2 skips and
+one failure in exclusive import closure. The existing filename-as-data annotation
+fixed the new regression's literal classification; both affected checks then passed
+(2 passed, 166 deselected). Fresh review and hosted step proof are required.
+
+The same source review's native terminal receipt
+`fadcfd85387f7fa91d94b21aa7a7f0d301291b639987e82ed6d631c35b336a80`
+proves START, rc0, full output and cleanup with zero residuals. Read-only canonical
+broker lookup proves lease `01bca183cf1a` released under this root. The controller
+exited with an unmatched-quote EOF at remote_sub.sh:997 before writing a ledger row
+or DONE line, so the adapter still says SETTLING. This is a controller-accounting
+failure, not an unknown worker effect. Neither historical log nor ledger was edited.
+The installed controller later changed and passed syntax checking; that does not
+retroactively settle this retained run.
+
+Two distinct bounded Fabric operations retain the original root: CI delta review
+`prophet-r6-code-gate-review-01a11e89` and scratch-only runtime repair proposal
+`prophet-r6-fabric-terminal-repair-proposal-01a11e89`. Neither is a replay of the
+completed review. The repair-proposal request was refused before worker start at
+Mini2's 1/1 physical-lane cap, and its retained refusal was consumed without reroute.
+The CI review packet predates the one-line filename annotation, which still needs
+explicit final adjudication. No proposal installs runtime code or transfers source custody.
+B04 proposal revision2 is recorded on original PR7869 comment6073806963; the old
+proposal review returned REQUEST_CHANGES and was consumed. Revision2 remains
+unreviewed/unratified, with #7426/#8004 integration holds unchanged.
+
+The verified pre-merge defect receipt is PR8670 comment6074214349. One existing
+observer follows the same source delivery and retained return obligations. The
+earlier verified/unverified entries describe their original checkpoint;
+this delta and the current next_actions supersede their old pending-return status.
 
 MISSION_COMPLETE: false. This handoff preserves the live assignment; it does not end
 or narrow the Prophet rescue. The immediate source candidate is BUILT_NOT_PROVEN.
