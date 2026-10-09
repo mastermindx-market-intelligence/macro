@@ -1,0 +1,159 @@
+{
+  "active_children": 0,
+  "automatic_wake_claimed": false,
+  "changed_blobs": [
+    {
+      "git_blob": "3016c194589a4cbf1d56246cbe8da2eb9d0b928c",
+      "path": "engine/treasury_auction_lifecycle.py"
+    },
+    {
+      "git_blob": "373f34f24963bf59dbddad5edac3e609ae70bc71",
+      "path": "engine/treasury_settlement_ledger.py"
+    },
+    {
+      "git_blob": "27b1ce63bbed09a17298bae0bcff27940c98bf18",
+      "path": "research/sovereign_auction_pressure/NOTICE_ARCHIVE_V2_CONTRACT.md"
+    },
+    {
+      "git_blob": "064cbbcd81bb4a4ff799cd3a492973207f5d28c1",
+      "path": "research/sovereign_auction_pressure/SETTLEMENT_LEDGER_INPUT_CONTRACT.md"
+    },
+    {
+      "git_blob": "afd107ae1559d7dd8f15ba11bd0dde0fca736379",
+      "path": "tests/test_treasury_auction_archive.py"
+    },
+    {
+      "git_blob": "523c5e0f8e251494ec9b39b14effa89334dd09e3",
+      "path": "tests/test_treasury_auction_lifecycle.py"
+    },
+    {
+      "git_blob": "c7e8cdca58881715ce6befe227752494f4624043",
+      "path": "tests/test_treasury_auction_notices.py"
+    },
+    {
+      "git_blob": "1fb971583af246bce29ce780a02ad038a3acd349",
+      "path": "tests/test_treasury_settlement_ledger.py"
+    }
+  ],
+  "current_integration": {
+    "base_movement": "No changed paths in declared auction/primitives/calendar/supply/capture/source-contract dependency scope.",
+    "conflict_free": true,
+    "hosted_check_run": 113656172939,
+    "hosted_ci_allowed": false,
+    "hosted_ci_reason": "unsupported_base_ref",
+    "integrated_tree": "d69c138ee8a893a7ab26204e0dbd2a1b1473b7d6",
+    "native_packs_started": false,
+    "observed_macro_main": "c0e6d406ab84b0466e6e5ee6b84225e4dd018801",
+    "pr_base": "sol/web-sovereign-auction-pressure-20261008-sol-001",
+    "pr_draft": true,
+    "previous_observed_main": "59910d89c89fde0d6eac948d71d41100f387f70f"
+  },
+  "finalization": "ALL_SCOPED_LANES_BLOCKED",
+  "followup_review": {
+    "adapter_exit": 75,
+    "adapter_request_result": "NONE reason=pool minimax has no eligible mode on requested host",
+    "candidate": "ce0211e3fc0bb98181615063faae5f0616e12c45",
+    "current_picker_observed": "POOL=minimax MODEL=MiniMax-M3 HOST=mini2 MODE=minimax",
+    "current_review_reuse": "FULL_REREVIEW_REQUIRED",
+    "effect_unknown": false,
+    "next_action": "When current eligible capacity exists, submit this same stable child/packet/root through the same admitted adapter; consume exact result and independently accept repaired source. Do not replay the settled first review or raise capacity/bypass a refusal.",
+    "packet_bytes": 109852,
+    "packet_path": "/Volumes/Mastermind/evidence/sovereign-auction-funding-local-codex-20261008-001/review-20261009/review-02-compact-packet.txt",
+    "packet_sha256": "8b82ae2983dda5261f3e15a88920e71f5b938f5064ed775cd0df61576bb6686a",
+    "refusal_class": "CURRENT_HOST_ELIGIBILITY_PRE_LAUNCH",
+    "run_state": "NOT_FOUND",
+    "stable_child_id": "sovereign-source-repair-review-20261009-02",
+    "started": false
+  },
+  "holds": [
+    "SLF006_NO_GO",
+    "D2_FAIL",
+    "TERMINAL_KILL",
+    "PR8657_DRAFT_HOLD",
+    "PR1284_DRAFT_HOLD",
+    "PR857_DRAFT_HOLD",
+    "PR8668_DRAFT_HOLD",
+    "NO_PRODUCTION_DEPLOY",
+    "NO_VERCEL",
+    "NO_RISK_PROMOTION"
+  ],
+  "independent_review": {
+    "artifact_bytes": 12595,
+    "child_id": "sovereign-notice-archive-review-20261008-01",
+    "cleanup_proven": true,
+    "dialogue": "NOT_WATCHER_ENABLED",
+    "host": "ubuntu2",
+    "model_requested": "grok-4.6",
+    "parent_reproduced_findings": [
+      "missing_or_invalid_competitive_deadline_admits_same_day_result_before_close",
+      "later_effective_date_can_relabel_stale_economic_observation"
+    ],
+    "pool_requested": "grok",
+    "retained_artifact": "/Volumes/Mastermind/evidence/sovereign-auction-funding-local-codex-20261008-001/review-20261009/FABRIC_REVIEW_01.txt",
+    "review_artifact_sha256": "b30d732c8704af0482a07a1e254cc603477c7511f93f4fbc5d686001eb5d602a",
+    "review_task_return_accepted_by": "reviewer",
+    "reviewed_head": "8e347f8e7374de1dae2361a3a3c7312cbee43bf5",
+    "served_model_attested": false,
+    "source_or_release_accepted_by_this_edge": false,
+    "state": "TERMINAL",
+    "transport_rc": 0,
+    "verdict": "CHANGES_REQUIRED",
+    "worker_limits": [
+      "pytest unavailable",
+      "one unittest lacked source_receipt fixture",
+      "full source_audit/lifecycle fixture set absent; supplied parent counts not claimed as worker execution"
+    ]
+  },
+  "mission_complete": false,
+  "operation": "sovereign-auction-funding-local-codex-20261008-001",
+  "original_root": "01a11e6d-efdc-78a0-a489-9c1a7891df0a",
+  "pr": 8668,
+  "protected_mastermind": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+  "repairs": [
+    {
+      "area": "result_eligibility",
+      "effect": "Quarantine every result-bearing row without a qualified competitive close; retain pre-close exclusion and unknown announcement deadlines."
+    },
+    {
+      "area": "economic_day",
+      "effect": "Require qualified Observation.as_of UTC date to match effective_date; preserve next-morning release eligibility."
+    },
+    {
+      "area": "immutable_vintage",
+      "effect": "Bind immutable economic/provenance metadata before refetch dedup; withhold contradictory identity independent of input order."
+    },
+    {
+      "area": "release_basis",
+      "effect": "Withhold latest-date vintages with incomparable exact/body-bound release bases instead of promoting a later old fetch."
+    },
+    {
+      "area": "capture_causality",
+      "effect": "Reject request-after-parse even when body clock is unknown."
+    },
+    {
+      "area": "bounded_archive_io",
+      "effect": "Use opened-descriptor regular-file validation plus no-follow/nonblocking and byte bounds; reject FIFO and symlink races."
+    }
+  ],
+  "schema": "sovereign_fabric_review_repair_receipt.v1",
+  "source_acceptance": "BUILT_NOT_PROVEN",
+  "source_semantic_head": "ce0211e3fc0bb98181615063faae5f0616e12c45",
+  "verification": {
+    "consumer_command": "python3 research/sovereign_auction_pressure/verification/local_codex_20261008/consumer_compatibility/check_readers.py",
+    "consumer_http_or_browser_proof": false,
+    "eligible_original_receipts": 0,
+    "funding_command": "python3 research/sovereign_auction_pressure/funding_audit/qualify_funding_casebook.py --check",
+    "h3": "INSUFFICIENT_PIT",
+    "h3_report_sha256": "ec6615e5fb94c8b1f9272728d9002e8a0f7540c6c05492de62714c96c25b1727",
+    "held_reader_composition_cases": 6,
+    "import_dag_passed": 59,
+    "import_dag_reuse": "Final guard edits add no imports or script/DAG edges after that successful scoped check.",
+    "original_source_hashes": 12,
+    "predictive_outputs": null,
+    "qualified_cash_claims": 0,
+    "source_command": "python3 -m pytest -q --tb=short tests/test_treasury_settlement_ledger.py tests/test_treasury_auction_archive.py tests/test_treasury_auction_notices.py tests/test_treasury_auction_lifecycle.py tests/test_treasury_auction_primitives.py tests/test_capture_treasury_auction_observations.py tests/test_sovereign_auction_feed.py tests/test_event_calendar.py tests/test_treasury_supply.py",
+    "source_passed": 132,
+    "subtests_passed": 91,
+    "test_warning": "Inherited unrelated retained Chromium pytest cleanup PermissionError; foreign directory preserved."
+  }
+}

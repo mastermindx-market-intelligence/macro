@@ -41,6 +41,14 @@ class TreasuryAuctionLifecycleTests(unittest.TestCase):
                 day = case["expected"]["auction_date"]
                 obs = f"{day}T23:59:00+00:00"
                 out = context([record], observed=obs, as_of=obs)
+                self.assertEqual(hashlib.sha256((FIXTURES / Path(case["fixture"]).name).read_bytes()).hexdigest(), case["fixture_sha256"])
+                if case["case_id"] == "historical_tips_missing_fields":
+                    # Genuine 1997 row values do not qualify this synthetic
+                    # intraday receipt: the competitive close is absent.
+                    self.assertFalse(out["episodes"])
+                    self.assertTrue(any(q["reason"] == "result_requires_qualified_competitive_deadline"
+                                        for q in out["quarantine"]))
+                    continue
                 event = out["episodes"][0]
                 for field in ("normalized_class", "issued_cusip", "announced_cusip", "auction_date", "issue_date", "competitive_deadline_utc", "offering_amount_usd"):
                     self.assertEqual(event[field], case["expected"][field], field)
@@ -372,7 +380,7 @@ class TreasuryAuctionLifecycleTests(unittest.TestCase):
         self.assertEqual(bill["tentative_slot_ids"], [])
         self.assertEqual(sum(c["reason"] == "ambiguous_tentative_join" for c in out["conflicts"]), 2)
 
-    def test_snapshot_newest_files_survive_bounded_capture_retention(self):
+    def test_snapshot_receipt_clock_survives_bounded_capture_retention(self):
         import os
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); d = root / "treasury_auctions" / "observations"; d.mkdir(parents=True)
@@ -391,9 +399,9 @@ class TreasuryAuctionLifecycleTests(unittest.TestCase):
             self.assertIsNone(out["coverage"]["known_upcoming_count"])
             self.assertEqual(out["episodes"][0]["offering_amount_usd"], str(95000000000 + lifecycle.MAX_FILES))
             earlier = lifecycle.snapshot(root, "2026-10-08T20:00:00Z")
-            self.assertTrue(earlier["coverage"]["truncated"])
-            self.assertIsNone(earlier["coverage"]["known_upcoming_count"])
-            self.assertEqual(earlier["episodes"], [])
+            self.assertFalse(earlier["coverage"]["truncated"])
+            self.assertEqual(earlier["coverage"]["known_upcoming_count"], 1)
+            self.assertEqual(earlier["episodes"][0]["offering_amount_usd"], "95000000000")
 
     def test_first_observed_semantic_vintage_does_not_claim_publication(self):
         early = receipt(observed="2026-10-08T20:00:00Z")

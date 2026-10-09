@@ -1,0 +1,175 @@
+{
+  "accepted_inventory_count": 0,
+  "dataset_freeze": "NOT_ADMITTED",
+  "eligible_original_receipt_count": 0,
+  "financing_baseline": {
+    "canonical_liquidity_baseline": "EXTERNAL_OWNER_REQUIRED",
+    "conflicts": [],
+    "decision_cutoff_utc": "2026-10-05T20:00:00+00:00",
+    "excluded": [],
+    "method_version": "financing_vintage_selection.v1",
+    "missing_series": [
+      "DEALER_INVENTORY",
+      "GOVERNMENT_MMF_AUM",
+      "IORB",
+      "ON_RRP",
+      "RESERVES",
+      "SOFR",
+      "TGCR"
+    ],
+    "probabilities": null,
+    "selected": {},
+    "selection_policy": "latest_eligible_effective_date_then_qualified_release_availability; original_vintages_not_refreshed",
+    "status": "INSUFFICIENT_PIT"
+  },
+  "missing_source_contract": [
+    "complete private bill/CMB and coupon cash claims",
+    "same-cohort SOMA treatment exactly once",
+    "private redemption payment inventory",
+    "funded buyback payments not already included in redemptions, or sourced zeros",
+    "independently accepted exact inventory",
+    "eligible released financing vintages including IORB",
+    "canonical prior-known liquidity, dealer/MMF and calendar baselines"
+  ],
+  "models_fitted": false,
+  "net_private_cash_usd": null,
+  "operation": "sovereign-auction-funding-local-codex-20261008-001",
+  "outcome_values_inspected": false,
+  "prior_verdicts": {
+    "D2": "FAIL",
+    "SLF006": "NO-GO",
+    "Terminal": "KILL"
+  },
+  "private_cash_cohort": {
+    "channels": {
+      "BILL_CMB": null,
+      "COUPON": null
+    },
+    "cohort_id": "US_PRIVATE_MARKETABLE:2026-10-06",
+    "decision_cutoff_utc": "2026-10-05T20:00:00+00:00",
+    "input_contract_status": "INSUFFICIENT_PIT",
+    "inventory_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "is_context_only": true,
+    "method_version": "settlement_cohort_input_gate.v1",
+    "net_private_cash_usd": null,
+    "null_reasons": [
+      "missing_accepted_inventory",
+      "missing_inventory:BILL_CMB:FUNDED_BUYBACK_OUTLAY",
+      "missing_inventory:BILL_CMB:PRIVATE_MARKETABLE_REDEMPTION",
+      "missing_inventory:BILL_CMB:PRIVATE_PROCEEDS_EX_SOMA",
+      "missing_inventory:COUPON:FUNDED_BUYBACK_OUTLAY",
+      "missing_inventory:COUPON:PRIVATE_MARKETABLE_REDEMPTION",
+      "missing_inventory:COUPON:PRIVATE_PROCEEDS_EX_SOMA"
+    ],
+    "probabilities": null,
+    "research_admission": "REQUIRES_INDEPENDENT_SOURCE_PIT_REVIEW_AND_DATASET_FREEZE",
+    "reserve_pressure": null,
+    "settlement_date": "2026-10-06"
+  },
+  "probabilities": null,
+  "prospective_evaluation_started": false,
+  "qualified_cash_claim_count": 0,
+  "reserve_pressure": null,
+  "schema_version": "h3_outcome_blind_input_coverage.v1",
+  "source_casebook_sha256": "f64acecce2414726448fcfc9214431ce782cbb8090283e4b96af4c09606b544d",
+  "source_hashes_verified": 12,
+  "sources": [
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:33.785920+00:00",
+      "published_at": null,
+      "source_digest": "e6cb93ff233da9b54f85c73c54f9bb80a7fe6f04dd954d52449ab92e97670eb7",
+      "source_id": "borrowing_aug3_2026"
+    },
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:37.316377+00:00",
+      "published_at": null,
+      "source_digest": "4946c072e4aa907c7ea59ecac754aeee0eb38dd875a1c550e94c1ae9ff568c65",
+      "source_id": "dealer_publication"
+    },
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:39.029475+00:00",
+      "published_at": null,
+      "source_digest": "9a6157f2e09e77a6c4cb067e3c59a2feb1991aad33b31df96dd95f1b8d3b3a2e",
+      "source_id": "dts_oct6"
+    },
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:29.942677+00:00",
+      "published_at": null,
+      "source_digest": "62ffe3fd20b6be16bf9032c610bc6519a4c67a306e2abfdd01efb310930110a0",
+      "source_id": "dts_oct6_cash"
+    },
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:29.795981+00:00",
+      "published_at": null,
+      "source_digest": "b0b94aa828bbccdb3569cfe4d7da73bc875ce7566fe714c426be4bdc4e4047c2",
+      "source_id": "dts_oct6_marketable"
+    },
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:30.100106+00:00",
+      "published_at": null,
+      "source_digest": "fbfc9a92a2e209227fa4dc1c5df76422d223f686ce89d0a1128a2696d2982337",
+      "source_id": "dts_tga_earliest"
+    },
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:29.911271+00:00",
+      "published_at": null,
+      "source_digest": "c388e2f5b145b487886bf8f22ef83fd7a7549be6d0ad0870d20c470c68bc5657",
+      "source_id": "dts_tga_latest"
+    },
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:35.418811+00:00",
+      "published_at": null,
+      "source_digest": "be758c3a876678ae5e4e9994b3d2f590a4b4aca4d27b25e8bd4b8877dd68584d",
+      "source_id": "nyfed_latest_rates"
+    },
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:37.634438+00:00",
+      "published_at": null,
+      "source_digest": "8504d51f3c946d17adb9d398bfd9fd5d2937d479e853cb7cb51d408aaf9a0ae6",
+      "source_id": "reference_rates_policy"
+    },
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:33.860501+00:00",
+      "published_at": null,
+      "source_digest": "72631461826a85f2acc0f3ef782559daee51a0e562cb9c6ad6c6326909e18684",
+      "source_id": "refunding_aug5_2026"
+    },
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:37.468966+00:00",
+      "published_at": null,
+      "source_digest": "a96c3af46677f3dc8a82dddf11fd7c088c35f50c1c1811674e0065dd1e346ab9",
+      "source_id": "soma_holdings"
+    },
+    {
+      "eligible_at_cutoff": false,
+      "historical_first_release_verified": false,
+      "known_at": "2026-10-08T22:27:35.199773+00:00",
+      "published_at": null,
+      "source_digest": "bc9257917b9d0679efda838cb0564b2705253110352d29bc0fad96273606960c",
+      "source_id": "tgcr_first_week"
+    }
+  ],
+  "status": "INSUFFICIENT_PIT"
+}

@@ -10,10 +10,11 @@ import base64
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
@@ -95,7 +96,7 @@ def _persist(directory, receipt):
     return {"path": str(target), "receipt_sha256": digest, "bytes": len(raw)}
 
 
-def capture(data_dir, *, source_names=None, fetcher=None, clock=None):
+def capture(data_dir, *, source_names=None, notice_names=None, fetcher=None, clock=None):
     """Capture fixed official endpoints. Fetch/parse failures remain visible receipts.
 
     Inject fetcher/clock for bounded offline tests. This function does not infer a
@@ -104,12 +105,21 @@ def capture(data_dir, *, source_names=None, fetcher=None, clock=None):
     """
     fetcher, clock = fetcher or _fetch, clock or _now
     names = list(SOURCES) if source_names is None else list(source_names)
-    if not names or len(names) > len(SOURCES) or len(set(names)) != len(names) or any(n not in SOURCES for n in names):
+    if len(names) > len(SOURCES) or len(set(names)) != len(names) or any(n not in SOURCES for n in names):
         raise ValueError("source_names must be a nonempty unique subset of the fixed official sources")
+    notices = list(notice_names or [])
+    if len(notices) > 32 or len(set(notices)) != len(notices) or not (names or notices):
+        raise ValueError("at most 32 unique individual notices per attended capture")
+    requests = [(name, *SOURCES[name]) for name in names]
+    for name in notices:
+        match = re.fullmatch(r"[AR]_(\d{4})(\d{2})(\d{2})_[1-9]\d{0,3}\.xml", name)
+        if not match:
+            raise ValueError("notice name must be an official A/R date-number XML basename")
+        date(*map(int, match.groups()))
+        requests.append((name, "treasury_auction_notice_xml", "https://www.treasurydirect.gov/xml/" + name))
     directory = Path(data_dir) / "treasury_auctions" / "observations"
     writes = []
-    for name in names:
-        kind, url = SOURCES[name]
+    for name, kind, url in requests:
         started = _clock(clock())
         body = None
         metadata = {}
@@ -166,8 +176,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-dir", type=Path, required=True, help="Existing Macro data root, or an explicitly isolated verification root")
     parser.add_argument("--source", action="append", choices=tuple(SOURCES), dest="sources")
+    parser.add_argument("--notice", action="append", dest="notices", help="Attended official A/R date-number XML basename; maximum 32")
     args = parser.parse_args()
-    result = capture(args.data_dir, source_names=args.sources)
+    result = capture(args.data_dir, source_names=([] if args.notices and args.sources is None else args.sources), notice_names=args.notices)
     print(json.dumps(result, indent=2, allow_nan=False))
     return 1 if any(c["status"] != "available" for c in result["captures"]) else 0
 

@@ -1,0 +1,122 @@
+{
+  "attended_projection": {
+    "event_count": 2,
+    "known_at_basis": "actual October 9 capture, not historical publication",
+    "status": "available",
+    "valid_rows_by_source": [
+      {
+        "source_url": "https://www.treasurydirect.gov/xml/R_20250225_2.xml",
+        "valid_rows": 1
+      },
+      {
+        "source_url": "https://www.treasurydirect.gov/xml/R_20261008_3.xml",
+        "valid_rows": 1
+      },
+      {
+        "source_url": "https://www.treasurydirect.gov/xml/A_20261008_1.xml",
+        "valid_rows": 1
+      }
+    ]
+  },
+  "captures": [
+    {
+      "body_received_at": "2026-10-09T02:21:56.581752+00:00",
+      "body_sha256": "d680bbb7f2319c572af35e811b17b064a49906b10282d0f90bf53aec67a35941",
+      "historical_publication_at": null,
+      "known_at": "2026-10-09T02:21:56.586124+00:00",
+      "path": "research/sovereign_auction_pressure/verification/local_codex_20261008/attended_capture/treasury_auctions/observations/20261009T022156586124Z-09f27937ddf1cb8c7a42886c41d5f9113b57b3180205e6d857ba37cc77655e8b.json",
+      "receipt_sha256": "09f27937ddf1cb8c7a42886c41d5f9113b57b3180205e6d857ba37cc77655e8b",
+      "request_started_at": "2026-10-09T02:21:56.185018+00:00",
+      "source_url": "https://www.treasurydirect.gov/xml/A_20261008_1.xml"
+    },
+    {
+      "body_received_at": "2026-10-09T02:21:56.897240+00:00",
+      "body_sha256": "2461ceb3a0b9b76b254420695e7a85fede58ad8ca569737150dbbb993fa4e8a2",
+      "historical_publication_at": null,
+      "known_at": "2026-10-09T02:21:56.898049+00:00",
+      "path": "research/sovereign_auction_pressure/verification/local_codex_20261008/attended_capture/treasury_auctions/observations/20261009T022156898049Z-36307f8f89a067590fb6eb015b7309405bafa5a741280e4fa18e66f3223b7f16.json",
+      "receipt_sha256": "36307f8f89a067590fb6eb015b7309405bafa5a741280e4fa18e66f3223b7f16",
+      "request_started_at": "2026-10-09T02:21:56.587478+00:00",
+      "source_url": "https://www.treasurydirect.gov/xml/R_20261008_3.xml"
+    },
+    {
+      "body_received_at": "2026-10-09T02:21:57.288437+00:00",
+      "body_sha256": "991abb84387b36d1ff800a44263d6befa618d25e171d6c4dd6b4647c68069a87",
+      "historical_publication_at": null,
+      "known_at": "2026-10-09T02:21:57.289180+00:00",
+      "path": "research/sovereign_auction_pressure/verification/local_codex_20261008/attended_capture/treasury_auctions/observations/20261009T022157289180Z-e48d87b2aa30401e94aeae9298261de2caac749dba6fac6de2fa0c108f188f0e.json",
+      "receipt_sha256": "e48d87b2aa30401e94aeae9298261de2caac749dba6fac6de2fa0c108f188f0e",
+      "request_started_at": "2026-10-09T02:21:56.899277+00:00",
+      "source_url": "https://www.treasurydirect.gov/xml/R_20250225_2.xml"
+    }
+  ],
+  "dependency_head": "fdc4239a67125fdbd96ddb889b3c60033f720272",
+  "exact_consumer_compatibility": {
+    "browser_rendering_verified": false,
+    "cases": 6,
+    "command": "python3 research/sovereign_auction_pressure/verification/local_codex_20261008/consumer_compatibility/check_readers.py",
+    "passed": true,
+    "production_http_verified": false,
+    "readers": 2
+  },
+  "executive_ingress": "READONLY",
+  "h3_original_source_replay": {
+    "eligible_at_cutoff": 0,
+    "qualified_cash_claims": 0,
+    "report_sha256": "ec6615e5fb94c8b1f9272728d9002e8a0f7540c6c05492de62714c96c25b1727",
+    "status": "INSUFFICIENT_PIT",
+    "verified_original_sources": 12
+  },
+  "hosted_ci": {
+    "base_ref": "sol/web-sovereign-auction-pressure-20261008-sol-001",
+    "check_run_ids": [
+      113641727125,
+      113641729738
+    ],
+    "conclusion": "FAILURE",
+    "native_packs": "NOT_STARTED_FOR_UNSUPPORTED_STACKED_BASE",
+    "reason": "unsupported_base_ref",
+    "sampled_head": "d860e3c559e5be7c317374353cfd5ebb2437fdaf",
+    "security_gate_changed": false
+  },
+  "import_dag_suite": {
+    "command": "python3 -m pytest -q --tb=short tests/test_check_script_import_pinning.py tests/test_dag_conformance.py",
+    "passed": 59
+  },
+  "independent_review": "BLOCKED_NO_POOL_AVAILABLE",
+  "operation": "sovereign-auction-funding-local-codex-20261008-001",
+  "original_root": "01a11e6d-efdc-78a0-a489-9c1a7891df0a",
+  "parent_issue": "UNKNOWN",
+  "production_proof": false,
+  "protected_procedure_head": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+  "release": "HOLD",
+  "review_admission": {
+    "result": "NONE reason=no_pool_available",
+    "subject_pool": "codex",
+    "task_class": "review",
+    "task_complexity": "C2_COMPLEX_BOUNDED",
+    "worker_launched": false
+  },
+  "schema": "sovereign_notice_archive_verification.v1",
+  "source_blobs_sha256": {
+    "engine/treasury_auction_lifecycle.py": "fdf73369863f2b2eda7d989e24b136d85bb351bf08eea044be4076f7be6a0092",
+    "engine/treasury_settlement_ledger.py": "83548013562ed698cb530b25f8c1ab026704a2d7959ee564055d39ae4346768d",
+    "scripts/capture_treasury_auction_observations.py": "23c1c787ee897ba2e412ba930ab82f09e6c54492bc0bff9378b79ead7e581dd2",
+    "tests/test_treasury_auction_archive.py": "3f66af722b73dd453458bf0fe3f0002d6f989fce17227f6e18ce6727397381bb",
+    "tests/test_treasury_auction_lifecycle.py": "4c0899d5942445cef5c43f937a027340276270584d1f4b642424db7161ec9a3b",
+    "tests/test_treasury_auction_notices.py": "e947efee9fcc3daa7b86cf5b0963ed824c4f0690ffb8f570cd728e4f3874146b",
+    "tests/test_treasury_settlement_ledger.py": "68597e5e858d3848612ef174c9ded20381139838d682193ab3ad02c222b5e6c9"
+  },
+  "source_suite": {
+    "command": "python3 -m pytest -q --tb=short tests/test_treasury_settlement_ledger.py tests/test_treasury_auction_archive.py tests/test_treasury_auction_notices.py tests/test_treasury_auction_lifecycle.py tests/test_treasury_auction_primitives.py tests/test_capture_treasury_auction_observations.py tests/test_sovereign_auction_feed.py tests/test_event_calendar.py tests/test_treasury_supply.py",
+    "passed": 124,
+    "subtests_passed": 79
+  },
+  "special_notice_source_cases": {
+    "independent_acceptance": false,
+    "known_at_basis": "actual October 9 capture, never original release",
+    "original_official_pdfs": 3,
+    "parser_supported": false
+  },
+  "whole_mission_complete": false
+}

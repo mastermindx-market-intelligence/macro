@@ -1,0 +1,18 @@
+[
+  {
+    "repo": "mastermindx-market-intelligence/Mastermind",
+    "head": "ac9117b3305ba992ebb673a99242cdd54e2046ef",
+    "source_path": "brain/sovereign_auction_context.py",
+    "snapshot_path": "research/sovereign_auction_pressure/verification/local_codex_20261008/consumer_compatibility/source_snapshots/mastermind_reader.py",
+    "git_blob": "dac37ffcac78684e6d10a1d496cfe9664c50ced4",
+    "sha256": "1b2c11d38628b13f8ba5439f90f8ef9eefabf564cea5c3ed517398b1a4b5f276"
+  },
+  {
+    "repo": "mastermindx-market-intelligence/mastermind-terminal",
+    "head": "95dcde542a6af3fb70b421c3c5f508ef0455c6fb",
+    "source_path": "terminal/lib/sovereignAuctionContext.ts",
+    "snapshot_path": "research/sovereign_auction_pressure/verification/local_codex_20261008/consumer_compatibility/source_snapshots/terminal_reader.ts",
+    "git_blob": "86b06dcf356286a448d8325ffa8862a020c7099a",
+    "sha256": "d949fbcdb50cc720d2e7c373177761c315c1e0fdcf0219f44066cfdd159aab9f"
+  }
+]
