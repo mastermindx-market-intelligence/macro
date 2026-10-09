@@ -284,7 +284,7 @@ class SameScopeRTHMinuteReferenceTests(unittest.TestCase):
             reference(rows=[outside])
 
     def test_unadjusted_daily_aggregate_is_not_minute_reference(self):
-        daily={"status":"OK","ticker":"SPY",
+        daily={"status":"OK","ticker":"SPY","adjusted":False,
                "results":[{"T":RTH_START//1_000_000,"v":1000}],
                "resultsCount":1}
         with self.assertRaisesRegex(RTHReferenceError,"native integer"):
