@@ -20126,6 +20126,9 @@ jobs:
       - scripts/tiingo_reference_audit.py
       - tests/test_tiingo_reference_audit.py
       - tests/test_tiingo_planning.py
+      - scripts/tiingo_corpus_audit.py
+      - tests/test_tiingo_corpus_audit.py
+      - tests/test_tiingo_additional_history.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -20141,7 +20144,8 @@ jobs:
           tests/test_tiingo_archive.py tests/test_tiingo_views.py
           tests/test_tiingo_reader.py tests/test_tiingo_vendor_cohort.py
           tests/test_tiingo_ingestion_integrity.py
-          tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py -q
+          tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
+          tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py -q
 
   dataos-foundation:
     scope: exclusive

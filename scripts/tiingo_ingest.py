@@ -165,7 +165,7 @@ def plan(sources: list[str], symbols: list[str], start: date | None,
                         params: dict[str, Any] = {"startDate": lo.isoformat(), "endDate": hi.isoformat()}
                         if src != "eod-bars":
                             params["resampleFreq"] = "1min"
-                        if src == "boats-bars":
+                        if src in {"boats-bars", "iex-bars"}:
                             params["columns"] = "open,high,low,close,volume"
                         if src == "crypto-bars":
                             params["tickers"] = group

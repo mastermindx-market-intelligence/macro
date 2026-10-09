@@ -4381,6 +4381,9 @@ on:
       - "scripts/tiingo_reference_audit.py"
       - "tests/test_tiingo_reference_audit.py"
       - "tests/test_tiingo_planning.py"
+      - "scripts/tiingo_corpus_audit.py"
+      - "tests/test_tiingo_corpus_audit.py"
+      - "tests/test_tiingo_additional_history.py"
       # Job: dataos-identity-seams (.github/ci/legacy-jobs.yml). DOS-1.2. Both halves
       # again: the suite AND the surfaces it measures. config/** and lib/** catch-alls
       # would cover most of these, but a catch-all is provenance by accident — an edit

@@ -86,3 +86,8 @@ def test_plan_cli_page_never_invokes_collector(monkeypatch, capsys):
     out = json.loads(capsys.readouterr().out)
     assert out["items"][0]["symbol"] == "NVDA"
     assert out["network"] is False
+
+
+def test_iex_historical_volume_is_explicitly_requested():
+    tasks = ing.plan(["iex-bars"], ["AMD"], D0, D1)
+    assert all(t.params["columns"] == "open,high,low,close,volume" for t in tasks)

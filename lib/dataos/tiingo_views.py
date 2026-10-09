@@ -203,4 +203,176 @@ def research_rows(raw: bytes, receipt: dict[str, Any]) -> list[dict[str, Any]] |
         return fundamentals_statements(json.loads(raw), receipt)
     if source == "fund-daily":
         return fundamentals_daily(json.loads(raw), receipt)
+    if source in _INTRADAY_SOURCES:
+        return intraday_history(json.loads(raw), receipt)
+    if source == "crypto-bars":
+        return crypto_history(json.loads(raw), receipt)
+    if source in {"splits", "distributions"}:
+        return corporate_action_history(json.loads(raw), receipt)
+    if source in {"fund-fee-history", "distribution-yield"}:
+        return historical_metrics(json.loads(raw), receipt)
     return None
+
+
+# Additional historical products remain VENDOR views, not canonical price bases.
+# In particular an FX/composite reference bar is not an exchange execution print.
+# The existing raw archive, clock, identity and publication owners are unchanged.
+_INTRADAY_SOURCES = {
+    "boats-bars": ("BOATS", "single_ats", "overnight", "shares"),
+    "iex-bars": ("IEX", "single_exchange", "vendor_request_session", "shares"),
+    "equity-intraday-bars": (None, "vendor_equity_reference", "unqualified", "unqualified"),
+    "forex-bars": (None, "vendor_fx_aggregation", "unqualified", "not_provided"),
+}
+
+
+def _vendor_number(value: Any) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        raise ValueError("boolean is not a vendor numeric value")
+    result = float(value)
+    if not math.isfinite(result):
+        raise ValueError("non-finite vendor number")
+    return result
+
+
+def _source_symbol(receipt: dict[str, Any]) -> str:
+    value = receipt.get("symbol")
+    if not isinstance(value, str) or not value:
+        raise ValueError("historical source requires its exact vendor symbol")
+    return value
+
+
+def intraday_history(payload: Any, receipt: dict[str, Any]) -> list[dict[str, Any]]:
+    """Source OHLC, not a fabricated canonical raw/adjusted or executable price."""
+    from lib.dataos.temporal import utc
+    source = receipt["source"]
+    venue, scope, session, volume_unit = _INTRADAY_SOURCES[source]
+    symbol = _source_symbol(receipt)
+    ctx = receipt_context(receipt)
+    query = parse_qs(urlsplit(receipt.get("request_path", "")).query)
+    output = []
+    for item in _required_rows(payload):
+        if "ticker" in item and item["ticker"] != symbol:
+            raise ValueError("historical bar ticker does not match source request")
+        instant = item.get("date")
+        utc(instant)  # validate only; preserve the original source text/nanoseconds
+        record = {
+            **ctx, "ticker_vendor": symbol, "bar_at_vendor": instant,
+            "source_date_label": _date(instant), "venue": venue,
+            "venue_scope": scope, "session": session,
+            "requested_resample_frequency": query.get("resampleFreq", [None])[-1],
+            "requested_after_hours": query.get("afterHours", [None])[-1],
+            "is_nbbo": False, "executable_price_proven": False,
+            "canonical_price_basis_admitted": False,
+            "volume_unit_vendor": volume_unit,
+            "volume_available": item.get("volume") is not None,
+            "vendor_volume": _vendor_number(item.get("volume")),
+            "projection_version": "tiingo.additional_history.v1",
+        }
+        for field in OHLC:
+            record["vendor_" + field] = _vendor_number(item.get(field))
+        output.append(record)
+    return output
+
+
+def crypto_history(payload: Any, receipt: dict[str, Any]) -> list[dict[str, Any]]:
+    """Flatten nested pair bars without dropping currency or exchange scope."""
+    from lib.dataos.temporal import utc
+    ctx = receipt_context(receipt)
+    query = parse_qs(urlsplit(receipt.get("request_path", "")).query)
+    requested = set(query.get("tickers", [""])[-1].split(","))
+    if not requested or "" in requested:
+        raise ValueError("crypto historical view requires an explicit requested cohort")
+    output = []
+    seen = set()
+    for pair in _required_rows(payload):
+        symbol = pair.get("ticker")
+        if not isinstance(symbol, str) or symbol not in requested or symbol in seen:
+            raise ValueError("crypto response has unrequested/duplicated pair")
+        seen.add(symbol)
+        for item in _required_rows(pair.get("priceData")):
+            instant = item.get("date")
+            utc(instant)
+            record = {
+                **ctx, "ticker_vendor": symbol, "base_currency_vendor": pair.get("baseCurrency"),
+                "quote_currency_vendor": pair.get("quoteCurrency"),
+                "bar_at_vendor": instant, "source_date_label": _date(instant),
+                "venue_scope": "vendor_crypto_aggregation", "is_nbbo": False,
+                "requested_resample_frequency": query.get("resampleFreq", [None])[-1],
+                "executable_price_proven": False, "canonical_price_basis_admitted": False,
+                "volume_base_currency": _vendor_number(item.get("volume")),
+                "volume_quote_currency": _vendor_number(item.get("volumeNotional")),
+                "trades_done_vendor": _vendor_number(item.get("tradesDone")),
+                "raw_exchange_detail_present": bool(pair.get("exchangeData")),
+                "projection_version": "tiingo.additional_history.v1",
+            }
+            for field in OHLC:
+                record["vendor_" + field] = _vendor_number(item.get(field))
+            output.append(record)
+    return output
+
+
+def corporate_action_history(payload: Any, receipt: dict[str, Any]) -> list[dict[str, Any]]:
+    """Retain cancellations and dates. This never creates adjustment factors."""
+    source = receipt["source"]
+    ctx = receipt_context(receipt)
+    symbol = _source_symbol(receipt)
+    output = []
+    for item in _required_rows(payload):
+        if item.get("ticker", symbol) != symbol:
+            raise ValueError("corporate action ticker does not match source request")
+        ex_date = _date(item.get("exDate"))
+        record = {
+            **ctx, "ticker_vendor": symbol, "permaticker_vendor": item.get("permaTicker"),
+            "ex_date_vendor": ex_date, "event_kind": source,
+            "actual_upstream_available_at_utc": None,
+            "eligible_for_factor_construction": False,
+            "projection_version": "tiingo.additional_history.v1",
+        }
+        if source == "splits":
+            record.update(
+                split_from_vendor=_vendor_number(item.get("splitFrom")),
+                split_to_vendor=_vendor_number(item.get("splitTo")),
+                split_factor_vendor=_vendor_number(item.get("splitFactor")),
+                split_status_vendor=item.get("splitStatus"),
+                cancellation_reported=item.get("splitStatus") == "c",
+            )
+        else:
+            record.update(
+                distribution_vendor=_vendor_number(item.get("distribution")),
+                distribution_frequency_vendor=item.get("distributionFrequency"),
+                cancellation_reported=item.get("distributionFrequency") == "c",
+                declaration_date_vendor=item.get("declarationDate"),
+                payment_date_vendor=item.get("paymentDate"),
+                record_date_vendor=item.get("recordDate"),
+                distribution_currency_status="NOT_ESTABLISHED_FROM_THIS_RESPONSE",
+            )
+        output.append(record)
+    return output
+
+
+def historical_metrics(payload: Any, receipt: dict[str, Any]) -> list[dict[str, Any]]:
+    """Fee/yield metrics are kept in vendor units; percentages are not rescaled."""
+    ctx = receipt_context(receipt)
+    symbol = _source_symbol(receipt)
+    date_field = "prospectusDate" if receipt["source"] == "fund-fee-history" else "date"
+    output = []
+    for item in _required_rows(payload):
+        dated = _date(item.get(date_field))
+        if "ticker" in item and item["ticker"] != symbol:
+            raise ValueError("metric ticker does not match source request")
+        for code, value in item.items():
+            if code in {date_field, "ticker", "permaTicker"}:
+                continue
+            if isinstance(value, (dict, list, bool)):
+                raise ValueError("unreviewed metric structure; retain original raw evidence")
+            output.append({
+                **ctx, "ticker_vendor": symbol, "source_date_label": dated,
+                "source_date_role": date_field, "metric_code": code,
+                "metric_value_vendor": _vendor_number(value),
+                "metric_unit_status": "VENDOR_UNITS_NOT_REINTERPRETED",
+                "actual_upstream_available_at_utc": None,
+                "projection_version": "tiingo.additional_history.v1",
+            })
+    return output
