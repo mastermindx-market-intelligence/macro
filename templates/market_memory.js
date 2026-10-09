@@ -315,6 +315,7 @@
 
   function loadSymbol(raw) {
     var requestId = ++state.symbolRequest;
+    state.symbol = null;  // A new intent invalidates evidence before validation or loading.
     var ticker = normalizeTicker(raw);
     if (!ticker) {
       ui.symbolSummary.innerHTML = empty('Check the ticker', '请检查代码', 'Use a canonical market symbol such as AAPL, BRK-B or BTC-USD.', '请输入 AAPL、BRK-B 或 BTC-USD 等标准市场代码。');
@@ -401,3 +402,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 }());
+
