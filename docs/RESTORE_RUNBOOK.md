@@ -361,7 +361,13 @@ python -m pytest tests/test_backup_user_tables.py -q
 - A missing protected table fails the dump (unless `--allow-missing` on a
   scratch drill). Partial archives are not published.
 - `openssl` missing → refuse. Plaintext is never stored.
-- Restoring over a scratch database that already has rows may duplicate.
-  Prefer an empty scratch project.
+- Start with an empty scratch database. SQL restore compares exact row multisets
+  inside its transaction and rolls back a content mismatch; legacy REST restore
+  can leave partial writes or duplicates.
+- A failed SQL client or missing commit acknowledgement is `EFFECT_UNKNOWN`,
+  not proof of rollback. If COMMIT succeeded but its count output is invalid,
+  the script reports that committed state. In either case, inspect the exact
+  destination and reconcile its contents before any retry; never start a
+  replacement restore merely because the command returned an error.
 - Losing the encryption key loses the R2 copies. The vendor backup (once
   confirmed) is then the only recovery path.

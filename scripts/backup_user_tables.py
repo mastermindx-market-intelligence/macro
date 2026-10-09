@@ -819,14 +819,22 @@ def pg_insert_jsonl(db_url: str, tables: dict[str, TableDump], *, timezone: str 
         input=sql, capture_output=True, text=True, check=False,
     )
     if proc.returncode:
-        raise BackupError("scratch restore or content verification failed; transaction rolled back")
+        # A lost connection can occur after COMMIT reached the server. Never
+        # turn a client failure into permission to replay an uncertain write.
+        raise BackupError(
+            "scratch restore EFFECT_UNKNOWN: psql failed; reconcile the exact "
+            "scratch destination before retrying (COMMIT may have succeeded)"
+        )
     try:
         result = json.loads(proc.stdout)
         if (not isinstance(result, dict) or set(result) != set(order)
                 or any(type(n) is not int or n != len(tables[name].rows) for name, n in result.items())):
             raise ValueError("counts")
     except (ValueError, TypeError) as exc:
-        raise BackupError("invalid scratch restore readback") from exc
+        raise BackupError(
+            "scratch restore committed but readback is invalid; reconcile the "
+            "exact scratch destination before retrying"
+        ) from exc
     return result
 
 

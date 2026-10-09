@@ -1,8 +1,8 @@
 """MMX-001 / GATE-1 — customer-table backup + restore guards.
 
 These tests prove the repo-side machinery. They do NOT claim a scratch-Supabase
-restore happened; that gate stays OPERATOR-BLOCKED until a real scratch project
-is used. See docs/RESTORE_RUNBOOK.md.
+restore happened. The historical nine-table drill and the separate, still-open
+IW2 recovery gate are recorded in docs/RESTORE_RUNBOOK.md.
 """
 from __future__ import annotations
 

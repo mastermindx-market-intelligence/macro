@@ -154,12 +154,12 @@ def test_real_postgres_snapshot_restore_and_atomic_failure(postgres):
     assert {n: t.rows for n, t in again.items()} == {n: t.rows for n, t in tables.items()}
     sql('TRUNCATE ' + ','.join(bak.IW2_TABLES) + ';')
     sql("ALTER TABLE investigation_mutation_receipts ADD CONSTRAINT reject_receipt CHECK (id <> 'investigation_mutation_receipts');")
-    with pytest.raises(bak.BackupError, match='rolled back'): bak.pg_insert_jsonl(url, tables)
+    with pytest.raises(bak.BackupError, match='scratch restore'): bak.pg_insert_jsonl(url, tables)
     assert all(not t.rows for t in bak.parse_snapshot(sql(bak.snapshot_query(REF)).encode(), REF)[0].values())
     sql('ALTER TABLE investigation_mutation_receipts DROP CONSTRAINT reject_receipt;')
     changed = copy.deepcopy(tables)
     changed['profiles'].rows[0]['unexpected_column'] = 'cannot round trip'
-    with pytest.raises(bak.BackupError, match='rolled back'): bak.pg_insert_jsonl(url, changed)
+    with pytest.raises(bak.BackupError, match='scratch restore'): bak.pg_insert_jsonl(url, changed)
     assert sql('SELECT count(*) FROM profiles;').strip() == '0'
 
 
@@ -177,6 +177,27 @@ def test_legacy_rest_restore_preserves_decimal_type(monkeypatch):
     assert bak.write_via_rest('chart_layouts', rows, base_url='https://scratch.invalid', service_key='synthetic') == 1
     assert json.loads(sent[0], parse_float=Decimal) == rows
     assert b'"1.123456789012345678901"' not in sent[0]
+
+
+@pytest.mark.parametrize('returncode', [2, 3])
+def test_failed_psql_never_claims_rollback_or_permits_replay(monkeypatch, returncode):
+    tables = {name: bak.dump_table(name, []) for name in bak.IW2_TABLES}
+    monkeypatch.setattr(bak.shutil, 'which', lambda _: '/synthetic/psql')
+    monkeypatch.setattr(bak.subprocess, 'run', lambda *a, **kw: subprocess.CompletedProcess(
+        a[0], returncode, stdout='', stderr='connection lost after server commit'))
+    with pytest.raises(bak.BackupError, match='EFFECT_UNKNOWN') as raised:
+        bak.pg_insert_jsonl('postgresql://scratch.invalid/postgres', tables)
+    assert 'rolled back' not in str(raised.value)
+    assert 'reconcile the exact scratch destination before retrying' in str(raised.value)
+
+
+def test_successful_commit_with_invalid_stdout_requires_reconciliation(monkeypatch):
+    tables = {name: bak.dump_table(name, []) for name in bak.IW2_TABLES}
+    monkeypatch.setattr(bak.shutil, 'which', lambda _: '/synthetic/psql')
+    monkeypatch.setattr(bak.subprocess, 'run', lambda *a, **kw: subprocess.CompletedProcess(
+        a[0], 0, stdout='not the expected JSON counts', stderr=''))
+    with pytest.raises(bak.BackupError, match='committed but readback is invalid'):
+        bak.pg_insert_jsonl('postgresql://scratch.invalid/postgres', tables)
 
 
 def test_typed_iw2_links_and_source_timezone_survive(postgres):
