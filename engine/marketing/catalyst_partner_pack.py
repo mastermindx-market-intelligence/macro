@@ -395,12 +395,37 @@ def adapt_qualified_producer_event(
              "STALE_OR_FUTURE_EVENT")
     _require(callable(attest_event) and callable(resolve_rights),
              "OWNER_ATTESTATION_UNAVAILABLE")
+    # The incumbent producer's event attestation must bind the EXACT packet,
+    # generation, public audience and observation window. A bare "VERIFIED"
+    # string or a receipt for pre-correction text is not proof.
     try:
+        packet_digest = hashlib.sha256(json.dumps(
+            producer_packet, ensure_ascii=False, sort_keys=True,
+            separators=(",", ":"), allow_nan=False,
+        ).encode("utf-8")).hexdigest()
         proof = attest_event(producer_packet, now)
     except Exception:
         proof = None
-    _require(isinstance(proof, str) and _ID.fullmatch(proof) is not None,
-             "EVENT_VERIFICATION_MISSING")
+        packet_digest = None
+    try:
+        expiry_time = _stamp(proof.get("expires_at_utc"), "ADMISSION_EXPIRY") if isinstance(proof, dict) else None
+    except PackRejected:
+        expiry_time = None
+    verified = (
+        isinstance(proof, dict)
+        and proof.get("source_owner") == "engine.marketing.catalyst_packets"
+        and proof.get("event_id") == event_id
+        and type(proof.get("generation")) is int
+        and proof["generation"] == generation
+        and proof.get("audience") == "public_anonymous"
+        and isinstance(proof.get("packet_sha256"), str)
+        and proof["packet_sha256"] == packet_digest
+        and isinstance(proof.get("receipt_id"), str)
+        and _ID.fullmatch(proof["receipt_id"]) is not None
+        and expiry_time is not None and now < expiry_time <= expires
+    )
+    _require(verified, "EVENT_VERIFICATION_MISSING")
+    receipt_id = proof["receipt_id"]
     tickers = _ticker_list(selected_tickers)
     raw_sources = producer_packet.get("sources")
     _require(isinstance(raw_sources, list) and 1 <= len(raw_sources) <= 12,
@@ -531,7 +556,7 @@ def adapt_qualified_producer_event(
         "verification": {
             "status": "VERIFIED",
             "source_owner": "engine.marketing.catalyst_packets",
-            "receipt_id": proof,
+            "receipt_id": receipt_id,
         },
         "correction_generation": generation,
         "corrections": correction_history, "demo_only": False,
