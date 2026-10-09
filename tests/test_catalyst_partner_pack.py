@@ -248,11 +248,11 @@ class CatalystPartnerPackTests(unittest.TestCase):
             self.assertIn(root_theme[first:last+2], page)
             light_marker = 'html[data-theme="light"] {'
             light_blocks = root_theme.split(light_marker)[1:]
-            light_palette = next((light_marker + block.split("\\n}", 1)[0] + "\\n}"
+            light_palette = next((light_marker + block.split(chr(10) + "}", 1)[0] + chr(10) + "}"
                                   for block in light_blocks
                                   if all(k in block for k in ("--bg:", "--panel:", "--text:"))), None)
             self.assertIsNotNone(light_palette)
-            self.assertIn(light_palette, page)
+            self.assertTrue(light_palette in page, "canonical light palette missing")
             self.assertIn('html[data-theme="light"] {color-scheme:light;}', page)
             self.assertIn("font-family:var(--font-ui)", page)
             self.assertIn("var(--r-card", page)
