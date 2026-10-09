@@ -1,0 +1,216 @@
+{
+  "checks": [
+    {
+      "actual": "500.00",
+      "expected": "500",
+      "id": "R1_matched_cells",
+      "passed": true
+    },
+    {
+      "actual": "500.00",
+      "expected": "500",
+      "id": "R1_metadata_invariance_10",
+      "passed": true
+    },
+    {
+      "actual": "500.00",
+      "expected": "500",
+      "id": "R1_metadata_invariance_100",
+      "passed": true
+    },
+    {
+      "actual": "500.00",
+      "expected": "500",
+      "id": "R1_metadata_invariance_999",
+      "passed": true
+    },
+    {
+      "actual": "16000.0",
+      "expected": "16000",
+      "id": "R1_prospective_available_rate",
+      "passed": true
+    },
+    {
+      "actual": "16000",
+      "expected": "16000",
+      "id": "R1_prospective_scheduled_rate",
+      "passed": true
+    },
+    {
+      "actual": "ValueError",
+      "expected": "ValueError",
+      "id": "R1_refuse_duplicate_availability_argument",
+      "passed": true
+    },
+    {
+      "actual": "ValueError",
+      "expected": "ValueError",
+      "id": "R1_refuse_invalid_availability",
+      "passed": true
+    },
+    {
+      "actual": "None",
+      "expected": "None",
+      "id": "R1_missing_price_is_unknown",
+      "passed": true
+    },
+    {
+      "actual": "None",
+      "expected": "None",
+      "id": "R1_missing_availability_is_unknown",
+      "passed": true
+    },
+    {
+      "actual": "575.00",
+      "expected": "575",
+      "id": "R1_separate_nondelivery_revenue",
+      "passed": true
+    },
+    {
+      "actual": "137",
+      "expected": "137",
+      "id": "R2_integrated_exposure",
+      "passed": true
+    },
+    {
+      "actual": "182",
+      "expected": "182",
+      "id": "R2_endpoint_exposure",
+      "passed": true
+    },
+    {
+      "actual": "37812",
+      "expected": "37812",
+      "id": "R2_integrated_energy_hypothesis",
+      "passed": true
+    },
+    {
+      "actual": "182",
+      "expected": "182",
+      "id": "R2_constant_count_special_case",
+      "passed": true
+    },
+    {
+      "actual": "98705880",
+      "expected": "98705880",
+      "id": "R2_reviewed_endpoint_arithmetic_only",
+      "passed": true
+    },
+    {
+      "actual": "ValueError",
+      "expected": "ValueError",
+      "id": "R2_refuse_invalid_interval",
+      "passed": true
+    },
+    {
+      "actual": "300",
+      "expected": "300",
+      "id": "R3_operating_profit",
+      "passed": true
+    },
+    {
+      "actual": "100",
+      "expected": "100",
+      "id": "R3_direct_cash",
+      "passed": true
+    },
+    {
+      "actual": "100",
+      "expected": "100",
+      "id": "R3_profit_to_cash_bridge",
+      "passed": true
+    },
+    {
+      "actual": "250",
+      "expected": "250",
+      "id": "R3_DA_change_affects_profit",
+      "passed": true
+    },
+    {
+      "actual": "100",
+      "expected": "100",
+      "id": "R3_DA_change_not_second_cash_cost",
+      "passed": true
+    },
+    {
+      "actual": "100",
+      "expected": "100",
+      "id": "R3_separate_financing",
+      "passed": true
+    },
+    {
+      "actual": "175",
+      "expected": "175",
+      "id": "R3_offset_gross_presentation",
+      "passed": true
+    },
+    {
+      "actual": "175",
+      "expected": "175",
+      "id": "R3_offset_net_presentation",
+      "passed": true
+    },
+    {
+      "actual": "None",
+      "expected": "None",
+      "id": "R3_missing_NWC_not_zero",
+      "passed": true
+    }
+  ],
+  "negative_formula_variants": [
+    {
+      "correct": "500.00",
+      "detected": true,
+      "id": "R1_wrong_measured_energy_times_stalls_availability",
+      "wrong": "4500.000"
+    },
+    {
+      "correct": "16000",
+      "detected": true,
+      "id": "R1_double_availability_on_scheduled_rate",
+      "wrong": "12800.0"
+    },
+    {
+      "correct": "137",
+      "detected": true,
+      "id": "R2_endpoint_is_not_integrated",
+      "wrong": "182"
+    },
+    {
+      "correct": "37812",
+      "detected": true,
+      "id": "R2_endpoint_energy_overstates_hypothesis",
+      "wrong": "50232"
+    },
+    {
+      "correct": "100",
+      "detected": true,
+      "id": "R3_no_DA_addback_before_capex",
+      "wrong": "0"
+    },
+    {
+      "correct": "100",
+      "detected": true,
+      "id": "R3_double_interest",
+      "wrong": "80"
+    },
+    {
+      "correct": "175",
+      "detected": true,
+      "id": "R3_double_offset",
+      "wrong": "250"
+    }
+  ],
+  "operation": "gmi-theme-research-automation-mobility-deployment-20260924-001",
+  "reviewed_head": "28b517561187412b8ea9b32b6001bcdb1a68b1af",
+  "ruling_comment": 5810356948,
+  "scope": "offline synthetic arithmetic and negative variants; not issuer audit or product tests",
+  "script_git_blob": "299479ccda2e5a21e10dc4c2fd63513a975f6f70",
+  "script_sha256": "08595c637349d837743949863c294266c4ebaff8f078d830e4a96eb3230ef57e",
+  "summary": {
+    "checks_failed": 0,
+    "checks_passed": 26,
+    "negative_variants_detected": 7,
+    "negative_variants_missed": 0
+  }
+}
