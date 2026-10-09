@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261009T2000",
+  "current_capability_frontier_key": "current_capability_frontier_20261009T2026",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -4050,5 +4050,54 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/iw2-T03i-retained-layout-clear-parent-consumption-20261009.json",
       "sha256": "0b5c706860f813f58c6eee01b46b2eaa788f03475a366aaf518595dd56e399a3"
     }
+  },
+  "current_capability_frontier_20261009T2026": {
+    "observed_at": "2026-10-09T20:25:31.517640+00:00",
+    "supersedes": "current_capability_frontier_20261009T2000",
+    "settled_references_retained_in": "current_capability_frontier_20261009T2000",
+    "whole_original_mission_accepted": false,
+    "A11_live_cross_timeframe_layout": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-live-replay-cross-timeframe-layout-parent-acceptance-20261009.json",
+      "bytes": 3590,
+      "sha256": "82637b2c0ff270936460e07c609ef1a9d34f4dae1ba5bd8a28810c6a667dd1af"
+    },
+    "A11_live_scope": "Actual438 signed-in Free default1520x1162:3D2245/D6735/W1396/3D2245; 3D/Dclose202.41/originalOHLCreturns. Tablet820x1180 same3D-Droundtrip. Split2exits Replay/entrydisabled explanatorysinglecharttitle/drawingcreation intentionallymultichartdisabled/restoring1reenables. Nooverflow; finalNVDA3D/original4studies/Replayoff/defaultrestored, protected372Scriptsuntouched. TimestampnotexposedbyUI/weeklyexactbucketnotindependentlyadmitted/no hiddenstate. Phoneexistingnoentry boundary retained; wholeA11false.",
+    "A19_adapter_independent_review": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-financial-update-adapter-independent-review-parent-adjudication-20261009.json",
+      "bytes": 3806,
+      "sha256": "e46be8e5625f12a131dac966aeccbe7bd80384188477122e443daacfbb0e23a1"
+    },
+    "A19_sameID_acceptance": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-financial-update-adapter-independent-review-acceptance-readback-20261009.json",
+      "bytes": 419,
+      "sha256": "2a931d984713eb68feee7ece89772ac1703be8c7364e7f960d62594a6ceff8fa"
+    },
+    "A19_current": "OriginalparentCOMPLETEreview12005B8115f13d exactreturn5008Bfe34b25d; all8parenthashesmatch. Independent19provided+15adversarial34PASS0FAIL0SKIP actualpandasengine/syntheticprices. FinancialStateStore.update advancesfinancewhileonlypriorimmutableadmission held; acceptedhelperunchanged/inheritedfreeze remainsoldfinance. SameIDrevieweracceptONCE/canonicalVALIDATED_OUTCOME. Explicitcallerprior_effectreceipt/sourcefreshness/onewriter/directoryorcrosshost/globalwinner/API/SMTPunproved; detachednotwired/globalfanoutSUPPRESS. BuildNONE75stillfrozen/notmasked.",
+    "785_exact_head_CI": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-current-head-required-CI-qualification-20261009T2020.json",
+      "bytes": 3211,
+      "sha256": "e8e8ae5813a3761671ff1fd1cbaec716e3b230e7cf0ecb6ff71154b291533625"
+    },
+    "785_protected_merge": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-parent-protected-merge-effect-20261009.json",
+      "bytes": 415,
+      "sha256": "c5774051cc3c21939f49b3b93bbaf7e8f70d2d3aae3f2c703074d46977bf9a0b"
+    },
+    "785_canonical_merge_readback": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-protected-merge-canonical-readback-20261009.json",
+      "bytes": 274,
+      "sha256": "cf919ef0d6d2b206d48f1e58169a8e4dabf46088ff8e21917c167123ad7f0faf"
+    },
+    "785_merged_source_acceptance": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-mergedmaster-source-parent-acceptance-20261009.json",
+      "bytes": 1730,
+      "sha256": "b8ee9f8720e790852c514594d9d265915353e7b02814a45c9986f698dd4d5533"
+    },
+    "785_current": "Exact3requiredApp15368CI37980793021SUCCESS/headcd3a64e7/base438. OrdinarySHA-matchedsquashmergeONCE/noadmin succeeded20:22:10 actual4d6a9ac81d01ac9f14c22fd3180f5d00f0239000=currentmaster; wholecandidate treeand7accepted8763blobs match. CanonicalwrapperSTART20:23 target4d; logGIT-GATEDaccepted/stagingNextbuildactive. Samephase mustfinishrestorehealth/source/runtime/publicmarker; notacceptedfrommerge/buildSTART. ExistingMOGnowusesnewdefaultbranchsource; no newcontroller/dispatch/securityactivation.",
+    "785_release_effect_current_path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-canonical-release-effect-20261009.json",
+    "785_release_log_current_path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-canonical-release-20261009.log",
+    "887_state": "Own7cf5149d/base438/readyMOGnativeauto retains initial37983365435;20:20boundedphaseobservation unit/serial/Quote/IngestSUCCESS, fourresponsive shardsIN_PROGRESS. Upstream785mergeinvalidatesbase freshnessonly; existingMOG ownsnextbranchrefresh/automaticnewCI, no repeatpoll/POST/approval/helperallowlistwiden.",
+    "IW2_current": "Latestcompactcursor43b1f899-6e05-49bc-97d0-8f8ee9094219:38 peeractive20:21/turn01a12253: originalcoordinatorreproduced2layoutclearfailures, stuckcompacting15min/read-onlylastcommandcompleted/checkoutclean/previousworkflowfinished; existingpeerapplying recovery skill toSAMEcoordinator. No duplicatewriter/parentcomposer/sourceacceptance/SQL0030-32.",
+    "next_safe_phase": "Finishsinglecanonical4drelease+servicehealth/publicmarker/currentgeneration. ConsumeexistingMOG887realCI/refresh/mergeevent andqualify/releaseacceptednewsource. Existing804sameownerrecovery/repair/returnedsource awaitsactualverdict; no all20completion or stoppedservice."
   }
 }
