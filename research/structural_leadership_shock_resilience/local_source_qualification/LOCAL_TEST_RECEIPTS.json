@@ -1,0 +1,189 @@
+{
+  "blocked_cli": {
+    "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/blocked-cli.json",
+    "exit_code": 2,
+    "sha256": "77a25b6089eede9bebbdb5b6459989b0a26650661edd67da9a0e6629935e4b68"
+  },
+  "ci_job_proposal_validation": {
+    "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-job-validation.txt",
+    "exit_code": 0,
+    "sha256": "9da7ce0d74b6f9d83dc05bc283ef250c1fea7329892e210fea20bd5143ac20b6"
+  },
+  "code_file_digests": {
+    "research/structural_leadership_shock_resilience/local_source_qualification/adapter.py": "186825dc98073409b1ed159979bbc4dc1d2ab528fbce63276fc31d2278cb3a92",
+    "tests/test_slr_local_source_qualification.py": "2a7c14536c3efec5740a063f69c297bbc9ea3e13d8c7f9cbb46fc0a0732c2096"
+  },
+  "code_snapshot": "9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0",
+  "initial_review_result": {
+    "adjudication": "USEFUL_FINDINGS_ACCEPTED_NOT_CODE_APPROVAL",
+    "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/review-initial.txt",
+    "sha256": "4870726add97b3adeaaa72802e9371d6423936240b42d6baed182e4b84532dc8",
+    "verdict": "CHANGES_REQUIRED"
+  },
+  "logs": [
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/red.txt",
+      "last_line": "1 failed, 1 warning in 1.50s",
+      "sha256": "257460c026d0b4f8a172f8282186eba4d1b83c101632cd9e703f2118092fe69d"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/green-first.txt",
+      "last_line": "54 passed, 1 warning in 1.82s",
+      "sha256": "948538ff2aa1a42f2a474b8fd452b35820d8a25c46681842ec43ddd47404cd9d"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/focused.txt",
+      "last_line": "384 passed in 5.14s",
+      "sha256": "070546c614e734e3f3c7076dc3c00f57f499420d1ed153a528c4c5fbf7486173"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/red2.txt",
+      "last_line": "6 failed, 57 passed in 1.07s",
+      "sha256": "6a27a29eac1242869fde97cae8435ac9e8b4a7eae0ced7358d8b954136482fdc"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/green2.txt",
+      "last_line": "1 failed, 392 passed in 6.05s",
+      "sha256": "86de0a20aee64b7cba3f95ca741e098d740b37d5258c5b89e9c648b8feeb5449"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/green3.txt",
+      "last_line": "393 passed in 5.10s",
+      "sha256": "1bb35f67105518c3256d2094290aca219578ff0f6c57aacca2f8dc0cf69743a2"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/red4.txt",
+      "last_line": "3 failed, 63 passed in 1.27s",
+      "sha256": "8c9f492f0489fcec6e5822d25c7ef5bd7777c1e250b6aae9e2d7f862d0a5c5f5"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/green4.txt",
+      "last_line": "396 passed in 5.64s",
+      "sha256": "35feaae024c28d2cbe1a5885a07474b0c3a17a46ee55a3ac1db47b5840f0ea6f"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/red5.txt",
+      "last_line": "3 failed, 67 passed in 1.40s",
+      "sha256": "05f8e7c10bd8e03bf31e757155d01a7b978db4af85242dc72557f4b587491870"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/green5.txt",
+      "last_line": "400 passed in 5.54s",
+      "sha256": "a4a8a87e273bfd3b851f6f84b824a07773a7a7a38b7681cf0a5aed1c37dcaf44"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/static-imports.txt",
+      "last_line": "70 passed in 1.32s",
+      "sha256": "cbee4c3accfcf4d70738ddc838097e0b97320e7d416c8aaac46c0cbc66b0cb47"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-portable.txt",
+      "last_line": "400 passed in 5.69s",
+      "sha256": "84b8639557c867ab10bd4f7cf52ec7125aea14fbceae1aa44ee4e2ee6e658244"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/red6.txt",
+      "last_line": "1 failed, 70 passed in 2.88s",
+      "sha256": "a2d2925fc51b1ea3c71fc1a59a9ed5442aaaaf9a33b0e06079442bbae8617cd5"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/green6.txt",
+      "last_line": "401 passed in 5.86s",
+      "sha256": "40cb899105d8c692c22afb00e0cf0d908b6bf85b730935ed4f6ff47667d94983"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/review-red.txt",
+      "last_line": "12 failed, 71 passed in 1.06s",
+      "sha256": "bd300bd3cf30854929828fe269f297f2d3577abcbaf3927a32656f1b85e61592"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/review-green.txt",
+      "last_line": "1 failed, 412 passed in 5.12s",
+      "sha256": "1167afd0bd570dd251ebfc6ca5d2d34711c26e2e809837084aa924cebd51a7f6"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/review-green2.txt",
+      "last_line": "418 passed in 5.48s",
+      "sha256": "a37a3b6eeedf340c1271aaddef2c6afbf5ffc167970d98145dcc787f1a799733"
+    }
+  ],
+  "raw_logs_in_repository": false,
+  "ci_registration": {
+    "chairman_scope_extension": "EXPLICIT_SINGLE_MANIFEST_PATH",
+    "manifest": ".github/ci/legacy-jobs.yml",
+    "logical_job": "slr-local-source-qualification",
+    "validator_exit_code": 0,
+    "tests_exit_code": 0,
+    "tests_passed": 418,
+    "local_plan_advisory_only": true,
+    "hosted_execution_proven": false,
+    "artifacts": [
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-registration-tests.txt",
+        "sha256": "e4a88881bebbc0b0f7778d97e9b2298faebe752c00d1973c302ba27f4409e5e6"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-registration-validator.txt",
+        "sha256": "379f72e2ec31304956f8f8436f10729fcecc920e534327f31af84ce840bdc972"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-registration-plan.json",
+        "sha256": "8ea64c957a917139c3dc6d98b7b0399ab027d68372fd9e7900ba4fad8d4650d6"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-registration-closure.json",
+        "sha256": "22b1f8d510d83c0a469de69a757477c42283e2b1dad89c0cf2a18f8dece5c10f"
+      }
+    ]
+  },
+  "ci_parquet_dependency_repair": {
+    "previous_candidate": "46cc721ff7fd634a986f26e870f658585a43f306",
+    "hosted_execution_proven": true,
+    "hosted_result": "1 failed, 417 passed in 6.27s",
+    "failure": "missing Parquet engine in new job dependency environment",
+    "repair": "add pyarrow solely to new job dependency install",
+    "isolated_red_exit_code": 1,
+    "isolated_red_summary": "1 failed, 417 passed in 14.05s",
+    "isolated_green_exit_code": 0,
+    "isolated_green_summary": "418 passed in 24.00s",
+    "manifest_validator_exit_code": 0,
+    "job_exec_sha256": "a9b2433e432d904d3a8e073cb97123ef886a0b7d9d17ae06fae87c96b2a78b85",
+    "semantic_steps": [
+      {
+        "proof_id": "SLR source qualification and incumbent identity/detector tests",
+        "step_spec_sha256": "a48e77b6209d9333c303037a27c6676d9dab040c53bc75cd40f5b87b7a200ec0"
+      }
+    ],
+    "new_head_hosted_execution_proven": false,
+    "artifacts": [
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/hosted-slr-execution-46cc721.json",
+        "sha256": "d2db75dae9145f97b32250beb460a207167892dc4489fcc55dd366659fd24668"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/hosted-slr-job-46cc721.txt",
+        "sha256": "4178e46343b07103e54f00d01d3237acdfe6d59b650636d06fee7002d47cb5de"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-dependency-red.txt",
+        "sha256": "d7afd4d333cab53776534ad1a667594575ff436df80ad5a86b326874db464848"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-dependency-green.txt",
+        "sha256": "79cafe1ee73c22cd8e6817519276e2cd1a9f5d2a33d174f1e110c052ddfc831b"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-dependency-environment.json",
+        "sha256": "6c658e968e498603fe48339ec7e2e829fc3b65a1990e9289fa872c553647ecac"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-pyarrow-validator.txt",
+        "sha256": "379f72e2ec31304956f8f8436f10729fcecc920e534327f31af84ce840bdc972"
+      }
+    ],
+    "verification_command": "ci-dependency-venv/bin/python -m pytest tests/test_slr_local_source_qualification.py tests/test_winner_autopsy.py tests/test_dataos_identity.py -q --tb=short --basetemp=<external evidence>/pytest-ci-dependency-red|green",
+    "install_red": "ci-dependency-venv/bin/python -m pip install pytest numpy pandas pyyaml",
+    "install_green": "ci-dependency-venv/bin/python -m pip install pyarrow",
+    "local_python": "3.14.7; hosted runner remains pinned to 3.12.13 and must independently pass"
+  }
+}
