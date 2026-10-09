@@ -745,3 +745,54 @@ def test_cli_dry_run_cannot_promote_canary_to_consuming_tick(monkeypatch):
     monkeypatch.setattr(daemon, "_log_press_tick", lambda *args, **kwargs: None)
     assert daemon.main(["--lane", "press", "--once", "--dry-run"]) == 0
     assert calls == [(True, False)]
+
+
+def test_canary_refuses_public_desk_snapshot_destination_before_any_source_write(
+        tmp_path, monkeypatch):
+    """X-relay acquisition is not a public-display rights receipt."""
+    daemon, press_cfg, external, item = _canary_setup(monkeypatch, tmp_path)
+    press_cfg["wire"]["intelligence"]["snapshot_paths"] = [
+        "/var/lib/macro-live/public/live/intelligence.json",
+        "data/marketing/press/intelligence.json",
+    ]
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
+    assert result["_durable_stream_canary"] == "PUBLIC_DESTINATION_NOT_ADMITTED"
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert not (tmp_path / "state.json").exists()
+    assert not (tmp_path / "data/marketing/press/intelligence.db").exists()
+    assert external == []
+
+
+def test_canary_refuses_path_traversal_into_public_site(tmp_path, monkeypatch):
+    daemon, press_cfg, external, item = _canary_setup(monkeypatch, tmp_path)
+    press_cfg["wire"]["intelligence"]["snapshot_paths"] = [
+        "data/marketing/press/../../../site/live/intelligence.json",
+    ]
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
+    assert result["_durable_stream_canary"] == "PUBLIC_DESTINATION_NOT_ADMITTED"
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert not (tmp_path / "state.json").exists()
+    assert external == []
+
+
+def test_canary_refuses_unqualified_default_desk_paths(tmp_path, monkeypatch):
+    daemon, press_cfg, external, item = _canary_setup(monkeypatch, tmp_path)
+    press_cfg["wire"]["intelligence"].pop("snapshot_paths", None)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
+    assert result["_durable_stream_canary"] == "PUBLIC_DESTINATION_NOT_ADMITTED"
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert external == []
+
+
+def test_canary_refuses_symlinked_private_snapshot_into_site(tmp_path, monkeypatch):
+    daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
+    target = tmp_path / "site" / "live" / "intelligence.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    private_sink = tmp_path / "data" / "marketing" / "press" / "intelligence.json"
+    private_sink.symlink_to(target)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
+    assert result["_durable_stream_canary"] == "PUBLIC_DESTINATION_NOT_ADMITTED"
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert not target.exists()
+    assert not (tmp_path / "state.json").exists()
+    assert external == []

@@ -528,6 +528,34 @@ def _run_press_stream_acceptance_canary(
         PACKET_SCHEMA, update_intelligence_desk,
     )
 
+    # Acquiring a relay event does not establish public display/redistribution
+    # rights. This canary has no independently admitted X rights receipt.
+    # Restrict its only store/serve effect to the incumbent Desk's *private*
+    # development paths, explicitly selected as sole targets. Refuse the
+    # production config (which offers a public live/intelligence.json sink),
+    # implicit fallbacks, path traversal, and symlink escape before source
+    # inspection or ANY identity/store/offset write.
+    desk_cfg = ((press_cfg.get("wire") or {}).get("intelligence") or {})
+    private_dir = "data/marketing/press"
+    private_db = f"{private_dir}/intelligence.db"
+    private_snapshot = f"{private_dir}/intelligence.json"
+    private_real = (Path(root).resolve() / private_dir)
+    destinations_private = (
+        isinstance(desk_cfg, dict)
+        and desk_cfg.get("db_paths") == [private_db]
+        and desk_cfg.get("snapshot_paths") == [private_snapshot]
+        and (Path(root) / private_dir).resolve() == private_real
+        and (Path(root) / private_db).resolve() == private_real / "intelligence.db"
+        and (Path(root) / private_snapshot).resolve() == private_real / "intelligence.json"
+    )
+    if not destinations_private:
+        return {
+            "_emit_allowed": False,
+            "_durable_stream_canary": "PUBLIC_DESTINATION_NOT_ADMITTED",
+            "_durable_stream_scope": "x_push_only",
+            "_durable_stream_count": 0,
+        }
+
     try:
         source = press_stream.peek_spool(root)
     except (OSError, ValueError) as exc:
