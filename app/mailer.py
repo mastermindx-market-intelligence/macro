@@ -241,7 +241,7 @@ def _ledger_finish(idem_key: str, status: str, detail: str | None = None) -> Non
             body={"status": status, "detail": detail},
             prefer="return=minimal")
     except Exception as exc:  # noqa: BLE001
-        log.warning("mailer: ledger finish %s -> %s failed (%s)", idem_key, status, type(exc).__name__)
+        log.warning("mailer: ledger finish to %s failed (%s)", status, type(exc).__name__)
 
 
 def _ledger_finish_if_current(idem_key: str, status: str, detail: str | None, *,
@@ -269,14 +269,14 @@ def _ledger_finish_if_current(idem_key: str, status: str, detail: str | None, *,
                    body={"status": status, "detail": detail},
                    prefer="return=representation")
         if not isinstance(rows, list) or len(rows) != 1:
-            log.info("mailer: conditional finish %s -> %s lost race (%s rows)",
-                     idem_key, status,
+            log.info("mailer: conditional finish to %s lost race (%s rows)",
+                     status,
                      len(rows) if isinstance(rows, list) else "unknown")
             return False
         return True
     except Exception as exc:  # noqa: BLE001
-        log.warning("mailer: conditional finish %s -> %s failed (%s)",
-                    idem_key, status, type(exc).__name__)
+        log.warning("mailer: conditional finish to %s failed (%s)",
+                    status, type(exc).__name__)
         return False
 
 
@@ -316,13 +316,13 @@ def _ledger_mark_attempting(idem_key: str, *, expected_status: str | None = None
         # therefore does not prove that the marker is durable; representation is the
         # acknowledgement that the claimed row actually matched and was updated.
         if not isinstance(rows, list) or len(rows) != 1:
-            log.warning("mailer: attempt marker for %s matched %s ledger rows -- NOT sending",
-                        idem_key, len(rows) if isinstance(rows, list) else "an unknown number of")
+            log.warning("mailer: attempt marker matched %s ledger rows -- NOT sending",
+                        len(rows) if isinstance(rows, list) else "an unknown number of")
             return False
         return True
     except Exception as exc:  # noqa: BLE001
-        log.warning("mailer: could not mark %s as attempting (%s) -- NOT sending",
-                    idem_key, type(exc).__name__)
+        log.warning("mailer: could not mark outbound attempt (%s) -- NOT sending",
+                    type(exc).__name__)
         return False
 
 
@@ -343,7 +343,7 @@ def _suppression_reason(to_email: str, user_id: str | None) -> str | None:
         try:
             rows = _pg("GET", f"email_suppression?email=eq.{urllib.parse.quote(addr, safe='')}&select=email,reason")
         except Exception as exc:  # noqa: BLE001
-            log.warning("mailer: suppression lookup failed for %s (%s)", addr, type(exc).__name__)
+            log.warning("mailer: address suppression lookup failed (%s)", type(exc).__name__)
             raise SuppressionUnavailable(type(exc).__name__) from None
         if rows:
             return str(rows[0].get("reason") or "suppressed")
@@ -352,7 +352,7 @@ def _suppression_reason(to_email: str, user_id: str | None) -> str | None:
             rows = _pg("GET", f"email_prefs?user_id=eq.{urllib.parse.quote(str(user_id), safe='')}"
                               "&select=marketing_opt_out")
         except Exception as exc:  # noqa: BLE001
-            log.warning("mailer: prefs lookup failed for %s (%s)", user_id, type(exc).__name__)
+            log.warning("mailer: marketing preference lookup failed (%s)", type(exc).__name__)
             raise SuppressionUnavailable(type(exc).__name__) from None
         if rows and rows[0].get("marketing_opt_out"):
             return "marketing_opt_out"
@@ -642,7 +642,7 @@ def send(*, template: str, cls: str, to_email: str, subject: str, html: str, tex
         _ledger_insert(idem_key=idem_key, template=template, cls=cls,
                        to_email=to_email, user_id=user_id)
     except DuplicateKey:
-        log.info("mailer: %s duplicate idem_key %s — not sending", template, idem_key)
+        log.info("mailer: %s duplicate idempotency claim — not sending", template)
         return "duplicate"
     except Exception as exc:  # noqa: BLE001
         if strict_ledger:
@@ -726,8 +726,8 @@ def send(*, template: str, cls: str, to_email: str, subject: str, html: str, tex
         # the ledger genuinely unreachable, and then the documented degraded mode
         # applies -- send without idempotency rather than drop the message.
         if not strict_ledger:
-            log.warning("mailer: sending %s with NO effect-boundary marker -- ledger "
-                        "unreachable; a duplicate is possible if this process dies", idem_key)
+            log.warning("mailer: sending with NO effect-boundary marker -- ledger "
+                        "unreachable; a duplicate is possible if this process dies")
             return True
         return False
 
@@ -749,7 +749,7 @@ def send(*, template: str, cls: str, to_email: str, subject: str, html: str, tex
             # because a retry here is a second delivery of a message that may already
             # be in the recipient's inbox.
             log.warning("mailer: %s EFFECT UNKNOWN after %s — not retried, not failed",
-                        template, exc)
+                        template, type(exc).__name__)
             return EFFECT_UNKNOWN
         except _PERMANENT as exc:   # listed first: these subclass OSError, see above
             last = exc
