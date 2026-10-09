@@ -21175,3 +21175,21 @@ jobs:
           pbd_python="$(python -c 'import sys; print(sys.executable)')"
           cd /tmp
           bash "$pbd_launcher" --python "$pbd_python"
+
+
+  company-relationship-candidates:
+    # Pure analyst inspection; no source ingestion, admission or publication.
+    # The canonical pack selector derives this job's import/read scope from the
+    # focused suite. ci.yml already starts on all repository paths.
+    if: ${{ false }}
+    gate: code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install candidate inspection test dependencies
+        run: pip install pytest pyyaml
+      - name: Source replay, manual review boundary and native temporal refusals
+        run: python -m pytest tests/test_company_relationship_candidates.py -q
