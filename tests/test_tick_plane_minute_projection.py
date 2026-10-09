@@ -25,7 +25,8 @@ def row(key="t1", *,t=None,state="MEASURED_SOURCE_PROXY",side="buy",
            "trade_condition_policy_reason":"CONSERVATIVE_PRICE_FORMING_CANDIDATE",
            "quote_conditions_rules_ref":"c"*64,
            "quote_source_receipt_id":"quote-ref","matched_quote_id":"Q1",
-           "quote_age_ns":500_000,"source_trade_conditions":[0],
+           "quote_age_ns":500_000,"quote_age_limit_ns":50_000_000,
+           "source_trade_conditions":[0],
            "venue_class":venue,
            "venue_reference_sha256":"b"*64,
            "venue_admission_reason":"SOURCE_REFERENCE_EXCHANGE_CANDIDATE",
@@ -229,6 +230,24 @@ class ProjectionTests(unittest.TestCase):
         self.assertEqual(result["state"],"PROVISIONAL_MEASURED_CONTEXT")
         self.assertIsNone(result["quote_condition_rules_sha256"])
         self.assertEqual(result["unknown_notional_usd"],"100.50")
+
+
+    def test_minute_retains_actual_source_quote_age_policy(self):
+        result=run()
+        self.assertEqual(result["max_quote_age_ns"],50_000_000)
+
+    def test_two_prints_with_mixed_quote_age_policy_fail_closed(self):
+        first=row("first")
+        second=row("second")
+        second["quote_age_limit_ns"]=1_000_000_000
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"mixed quote-age"):
+            run([first,second])
+
+    def test_unqualified_quote_age_policy_never_promotes_signed_print(self):
+        first=row()
+        first["quote_age_limit_ns"]=None
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"nonnegative integer"):
+            run([first])
 
 if __name__=="__main__":
     unittest.main()
