@@ -268,7 +268,7 @@ def _open_intent(secret: str, token: str, email: str, now: datetime) -> dict:
     return payload
 
 
-def _validate_scan(scan: ScanEvidence) -> None:
+def _validate_scan(scan: ScanEvidence, *, now: datetime) -> None:
     _event_id(scan.event_id)
     if scan.public_safe is not True:
         raise FunnelGate("SCAN_NOT_PUBLIC_SAFE", 403)
@@ -276,7 +276,15 @@ def _validate_scan(scan: ScanEvidence) -> None:
         not isinstance(t, str) or not _TICKER.fullmatch(t) for t in scan.tickers
     ) or len(set(scan.tickers)) != len(scan.tickers):
         raise FunnelGate("INVALID_SCAN_TICKERS", 400)
-    _timestamp(scan.as_of_utc)
+    observed = _timestamp(scan.as_of_utc)
+    # Defense in depth: even an injected ScanAuthority implementation cannot
+    # qualify an ancient/future first-value read as a current marketing event.
+    # The canonical 00 scan issuer separately enforces its own stronger signed
+    # receipt/generation/source-rights invariants.
+    if observed > now + timedelta(minutes=5):
+        raise FunnelGate("FUTURE_SCAN_PROOF", 403)
+    if now - observed > PUBLIC_REVISION_MAX_AGE:
+        raise FunnelGate("STALE_SCAN_PROOF", 403)
 
 
 def _validate_revision(rev: PublicRevision) -> None:
@@ -384,7 +392,7 @@ class FunnelService:
         if not isinstance(scan_receipt, str) or not 1 <= len(scan_receipt) <= 1024:
             raise FunnelGate("SCAN_PROOF_REQUIRED", 400)
         scan = self.scan.require_public_scan(scan_receipt)
-        _validate_scan(scan)
+        _validate_scan(scan, now=now)
         # Check the incumbent address-level unsubscribe/bounce/complaint owner
         # BEFORE storing a pending intent or asking GoTrue to email a code.
         # No user ID exists yet, so the shared mailer checks the address-level
