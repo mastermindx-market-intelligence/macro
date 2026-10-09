@@ -509,6 +509,81 @@ class CatalystPartnerPackTests(unittest.TestCase):
         self.assertNotIn("PRIVATE_TOPIC_TOKEN", serialized)
         self.assertNotIn("PRIVATE_FEED_TOKEN", serialized)
 
+    def test_headline_only_nonrehost_source_withholds_card_and_stays_cited(self):
+        self.event["sources"].append({
+            "source_id": "headline-only",
+            "title": "Synthetic headline source with rehosting denied",
+            "url": "https://example.invalid/headline-case",
+            "published_at_utc": "2026-10-09T02:00:00Z",
+            "tier": "unverified",
+            "rights": {
+                "public_display": True, "public_link": True,
+                "public_rehost": False,
+                "receipt_id": "synthetic-no-rehost-headline",
+            },
+        })
+        self.event["headline_evidence_ids"] = ["headline-only"]
+        result = self.make()
+        self.assertEqual(result["media_status"], "REHOST_RIGHTS_BLOCKED")
+        self.assertIsNone(result["card_svg"])
+        self.assertIn("headline-only",
+                      {s["source_id"] for s in result["sources"]})
+        self.assertIn("Synthetic headline source with rehosting denied",
+                      result["newsletter"])
+        with tempfile.TemporaryDirectory() as td:
+            written = write_partner_pack(result, td)
+            self.assertNotIn("intelligence-card.svg",
+                             {path.name for path in written})
+
+    def test_changed_claim_or_partner_copy_rotates_content_tracking_id(self):
+        original = self.make()
+        initial_claim_id = self.event["claims"][0]["claim_id"]
+        self.event["claims"][0]["text"] = (
+            "In the synthetic scenario, EXA describes unchanged product demand."
+        )
+        updated = self.make()
+        self.assertEqual(self.event["claims"][0]["claim_id"], initial_claim_id)
+        self.assertNotEqual(original["pack_id"], updated["pack_id"])
+        self.assertNotEqual(original["scan_link"], updated["scan_link"])
+        self.assertIn(updated["pack_id"], updated["scan_link"])
+        self.partner["audience"] = "illustrative long-horizon earnings readers"
+        tailored = self.make()
+        self.assertNotEqual(updated["pack_id"], tailored["pack_id"])
+        self.assertNotEqual(tailored["pack_id"], original["pack_id"])
+
+    def test_legacy_temp_symlink_cannot_redirect_preview_writes(self):
+        pack = self.make()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            out = root / "pack"
+            out.mkdir()
+            sentinel = root / "not-a-preview.txt"
+            sentinel.write_text("DO_NOT_TOUCH", encoding="utf-8")
+            legacy_temp = out / ".index.html.tmp"
+            legacy_temp.symlink_to(sentinel)
+            files = write_partner_pack(pack, out)
+            self.assertEqual(sentinel.read_text(encoding="utf-8"),
+                             "DO_NOT_TOUCH")
+            self.assertTrue(legacy_temp.is_symlink())
+            self.assertIn("index.html", {p.name for p in files})
+            self.assertEqual({p.name for p in files},
+                             {p.name for p in out.iterdir()
+                              if p.is_file() and not p.is_symlink()})
+
+    def test_existing_output_symlink_refuses_without_touching_target(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            out = root / "pack"
+            out.mkdir()
+            sentinel = root / "not-a-preview.txt"
+            sentinel.write_text("DO_NOT_TOUCH", encoding="utf-8")
+            (out / "index.html").symlink_to(sentinel)
+            with self.assertRaises(PackRejected) as ctx:
+                write_partner_pack(self.make(), out)
+            self.assertEqual(ctx.exception.code, "UNSAFE_OUTPUT_PATH")
+            self.assertEqual(sentinel.read_text(encoding="utf-8"),
+                             "DO_NOT_TOUCH")
+
     def test_no_real_outbound_or_publishing_capability(self):
         p = self.make()
         self.assertTrue(p["link_is_placeholder"])
