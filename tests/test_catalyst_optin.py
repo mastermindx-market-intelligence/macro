@@ -36,25 +36,83 @@ def web(monkeypatch):
     catalyst_optin.configure(None)
 
 
-def test_session00_exact_private_request_contract_without_duplicate_public_route(web):
+def test_optin_request_is_disabled_until_admitted_and_requires_explicit_scan_proof(web, monkeypatch):
     client, service = web
-    assert client.post("/api/catalyst/optin/request", json={}).status_code == 404
-    data = {"email": "investor@example.com", "event_id": "event-123", "tickers": ["NVDA"],
-            "consent": True, "scope": catalyst_optin.SCOPE,
-            "attribution": {"utm_content": "post-02", "utm_medium": "partner-1"}}
-    out = catalyst_optin.request_optin(data)
-    assert out == {"status": "VERIFICATION_REQUIRED", "public_ref": "opaque_testref_1234"}
+    receipt = "signed.public-scan-receipt-" + "x" * 64
+    data = {"email": "investor@example.com", "scan_receipt": receipt,
+            "consent_checked": True, "scope": catalyst_optin.SCOPE,
+            "first_touch": {"utm_content": "post-02", "utm_medium": "partner-1"},
+            "form_elapsed_ms": 4000}
+    # Registered but always inert unless BOTH public and opt-in feature gates pass.
+    assert client.post("/api/catalyst/optin/request", json=data).status_code == 503
+    assert service.requests == []
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
+    reply = client.post("/api/catalyst/optin/request", json=data)
+    assert reply.status_code == 202
+    assert reply.json() == {"status": "VERIFICATION_REQUIRED", "public_ref": "opaque_testref_1234"}
     assert len(service.requests) == 1
-    assert service.requests[0]["touch"] == data["attribution"]
+    assert service.requests[0]["scan_receipt"] == receipt
+    assert service.requests[0]["touch"] == data["first_touch"]
     assert service.requests[0]["checked"] is True
-    import json
-    assert json.loads(service.requests[0]["scan_receipt"]) == {
-        "event_id": "event-123", "tickers": ["NVDA"]}
-    for bad in ({**data, "consent": False}, {**data, "scope": "all_marketing"},
-                {**data, "tickers": ["NVDA", "NVDA"]}):
-        with pytest.raises(FunnelGate):
-            catalyst_optin.request_optin(bad)
+    assert "investor@example.com" not in str(reply.json())
+
+    # Even the internal adapter cannot synthesize a receipt from event/ticker hints.
+    with pytest.raises(FunnelGate) as absent:
+        catalyst_optin.request_optin({"email": data["email"], "event_id": "event-123",
+                                     "tickers": ["NVDA"], "scope": catalyst_optin.SCOPE,
+                                     "consent": True})
+    assert absent.value.code == "SCAN_PROOF_REQUIRED"
+    bad_inputs = (
+        {**data, "consent_checked": False},
+        {**data, "consent_checked": "true"},
+        {**data, "scope": "all_marketing"},
+        {**data, "scan_receipt": ""},
+        {**data, "honeypot": "bot-filled"},
+        {**data, "form_elapsed_ms": 100},
+        {**data, "extra_private_parameter": "no"},
+    )
+    for bad in bad_inputs:
+        assert client.post("/api/catalyst/optin/request", json=bad).status_code == 400
     assert len(service.requests) == 1
+
+
+def test_optin_request_bounds_body_and_requires_json_before_owner_call(web, monkeypatch):
+    client, service = web
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
+    oversized = {"email": "investor@example.com", "scan_receipt": "a" * 64,
+                 "consent_checked": True, "form_elapsed_ms": 4000,
+                 "first_touch": {"untrusted": "x" * 5000}}
+    assert client.post("/api/catalyst/optin/request", json=oversized).status_code == 413
+    assert client.post("/api/catalyst/optin/request", data='{"email":"investor@example.com"}',
+                       headers={"Content-Type": "text/plain"}).status_code == 415
+    assert not service.requests
+
+
+def test_no_signed_scan_authority_refuses_descriptor_without_identity_side_effects(web, monkeypatch):
+    client, _ = web
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
+
+    class NoScanAuthorityService:
+        def __init__(self):
+            self.called = 0
+
+        def request(self, **kw):
+            self.called += 1
+            return catalyst_optin.UnwiredScanAuthority().require_public_scan(kw["scan_receipt"])
+
+    service = NoScanAuthorityService()
+    catalyst_optin.configure(service)
+    data = {"email": "investor@example.com",
+            "scan_receipt": '{"event_id":"event-123","tickers":["NVDA"]}',
+            "consent_checked": True, "scope": catalyst_optin.SCOPE,
+            "form_elapsed_ms": 4000}
+    response = client.post("/api/catalyst/optin/request", json=data)
+    assert response.status_code == 503
+    assert response.json()["detail"] == "SIGNED_SCAN_AUTHORITY_NOT_READY"
+    assert service.called == 1
 
 
 def test_bots_rejected_before_otp_verification_owner(web):
@@ -234,7 +292,7 @@ def test_first_value_scan_is_owned_by_00_no_email_wall_or_duplicate_route(web):
     client, svc = web
     assert client.get("/api/catalyst/scan").status_code == 404
     assert client.post("/api/catalyst/optin", json={}).status_code == 404
-    assert client.post("/api/catalyst/optin/request", json={}).status_code == 404
+    assert client.post("/api/catalyst/optin/request", json={}).status_code == 503
     assert svc.requests == []
 
 
