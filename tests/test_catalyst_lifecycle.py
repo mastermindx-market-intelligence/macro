@@ -542,6 +542,85 @@ def test_rights_rechecked_for_each_recipient_and_remaining_batch_stops_on_withdr
     assert "second@example.com" not in json.dumps(receipts)
 
 
+def test_scoped_consent_revoked_during_live_rights_check_has_no_send():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    original = rights.read_public_rights
+
+    def revoke_during_source_check(revision, at_utc):
+        proof = original(revision, at_utc)
+        if len(rights.rights_calls) == 2:
+            assert store.revoke(UID, "event-123", at_utc.isoformat())
+        return proof
+
+    rights.read_public_rights = revoke_during_source_check
+    receipts = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [r["state"] for r in receipts] == ["SUPPRESSED"]
+    assert len(rights.rights_calls) == 2
+    assert store.current(UID, "event-123").revoked_at_utc
+    assert sender.calls == []
+
+
+def test_new_revision_during_live_rights_check_is_not_emitted_as_current():
+    service, _, _, _, rights, sender = make()
+    verified(service)
+    original = rights.read_public_rights
+
+    def revision_replaced_during_read(revision, at_utc):
+        proof = original(revision, at_utc)
+        if len(rights.rights_calls) == 2:
+            rights.generation = 3
+        return proof
+
+    rights.read_public_rights = revision_replaced_during_read
+    receipts = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [r["state"] for r in receipts] == ["OUTDATED_OR_UNVERIFIED_REVISION"]
+    assert sender.calls == []
+
+
+@pytest.mark.parametrize("wrong_field", ["user_id", "event_id", "email"])
+def test_consent_owner_identity_reply_mismatch_does_not_send(wrong_field):
+    service, _, store, _, _, sender = make()
+    verified(service)
+    original = store.current
+    calls = []
+    wrong = {
+        "user_id": "11223344-5566-4777-8888-123456789abc",
+        "event_id": "other-event",
+        "email": "somebody-else@example.com",
+    }
+
+    def swapped_after_rights(user_id, event_id):
+        row = original(user_id, event_id)
+        calls.append(1)
+        return replace(row, **{wrong_field: wrong[wrong_field]}) if len(calls) == 2 else row
+
+    store.current = swapped_after_rights
+    result = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert result[0]["state"] == "CONSENT_OWNER_PROTOCOL_MISMATCH"
+    assert len(calls) == 2 and sender.calls == []
+    assert wrong[wrong_field] not in json.dumps(result)
+
+
+def test_consent_owner_fails_after_rights_lookup_without_effect_unknown():
+    service, _, store, _, _, sender = make()
+    verified(service)
+    original = store.current
+    calls = []
+
+    def unavailable_after_rights(user_id, event_id):
+        calls.append(1)
+        if len(calls) == 2:
+            raise ConnectionError("owner down / private address leaked")
+        return original(user_id, event_id)
+
+    store.current = unavailable_after_rights
+    result = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert result[0]["state"] == "CONSENT_OWNER_UNAVAILABLE"
+    assert len(calls) == 2 and sender.calls == []
+    assert EMAIL not in json.dumps(result)
+
+
 def test_fresh_clock_per_recipient_rejects_rights_expiring_inside_batch():
     service, _, store, _, rights, sender = make()
     verified(service)
