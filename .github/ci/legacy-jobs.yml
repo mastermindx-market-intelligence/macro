@@ -20542,6 +20542,7 @@ jobs:
       - "engine/earnings_catalyst.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
+      - "engine/marketing/attribution.py"
       - "engine/marketing/catalyst_scan.py"
       - "engine/earnings_narrative/biocatalyst_transcript_adapter.py"
       - "engine/earnings_narrative/context_packets.py"
