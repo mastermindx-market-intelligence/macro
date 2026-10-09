@@ -175,6 +175,7 @@ def test_public_json_issues_scan_proof_only_after_qualified_result(monkeypatch):
     current = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
     def current_fixture(tickers, event_id=None):
+        tickers = ci.normalize_tickers(tickers)
         p = packet()
         p["as_of_utc"] = current
         p["results"][0]["as_of_utc"] = current
