@@ -244,6 +244,14 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
             "consent_checked": True, "scope": SCOPE, "form_elapsed_ms": 4000,
             "first_touch": {"utm_source": "synthetic_fixture"},
         }
+        # A cross-site browser-simple POST cannot trigger the OTP owner even
+        # with a valid signed first-scan receipt, because it is not JSON-typed.
+        for mime in ("text/plain", "application/x-www-form-urlencoded"):
+            rejected = client.post("/api/catalyst/optin/request",
+                                   content=json.dumps(body), headers={"Content-Type": mime})
+            assert rejected.status_code == 415
+            assert otp.requested == []
+            assert pending.pending == []
         request = client.post("/api/catalyst/optin/request", json=body)
         assert request.status_code == 202
         assert request.json() == {
