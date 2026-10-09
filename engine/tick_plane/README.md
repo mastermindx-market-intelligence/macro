@@ -26,6 +26,14 @@ Both live and historical normalizers share `_coarse_venue_class`. Exchange 4 wit
 
 `print_observations.observe_provisional_trade` invokes the ONE canonical `engine.flow_signing.classify_print` only after original as-seen trade/quote and condition checks. Output remains observational, correction-provisional, and explicitly null for directional alpha or future markouts. Lit and TRF are separate populations. Unknown-side notional must remain unknown—not a silent zero.
 
+### Versioned exchange reference gate
+
+`exchange_reference.parse_exchange_reference` consumes the original response bytes to the existing vendor `/v3/reference/exchanges` source and records its receipt time, request ID and SHA-256. `classify_trade_venue` binds ticker-scoped native trade identity, exchange/TRF identifiers, decision cutoff and original reference availability. It grants a **lit-market candidate** only when the versioned reference identifies a genuine exchange. FINRA ORF 62, SIP 5/13, unknown reporting codes and any unexplained mismatches abstain.
+
+`observe_provisional_trade` now requires this typed verdict, not just the decoder's coarse `venue_class` label; a future/mismatched reference cannot backfill a previously unavailable print. The minute evidence compiler preserves one reference digest and refuses mixed source-reference generations. It remains observational and correction-provisional; a caller-supplied custody flag cannot independently authenticate a host source receipt.
+
+**2026-10-08 source-head verification:** `746bdc985824111b431fa3039676785ac225a0ae` passed **251 pytest tests plus 42 subtests** on M2 Studio against the actual source modules. The corrected test explicitly distinguishes a trade received after decision time from a venue-qualification failure. This is not production approval.
+
 ### Private provisional 1-minute derived evidence
 
 `condition_policy.parse_condition_reference` and `evaluate_trade_conditions` bind source-native trade-condition codes to an original response digest, true reference availability and conservative price/volume eligibility. The resulting decision is required by `observe_provisional_trade`; a bare caller-supplied `eligible=True` is not accepted.
@@ -39,7 +47,7 @@ Both live and historical normalizers share `_coarse_venue_class`. Exchange 4 wit
 PYTHONPATH=. python3 -m pytest -q tests/test_tp1_qualified_print_classifier.py tests/test_tick_plane_*.py
 ```
 
-At source candidate `d6eeb39f2f1529cdee1fb1d71467ad3d2dfed900`, M2 Studio completed 233 pytest cases and 39 subtests on the actual shared classifier plus all source modules. The local synthetic test result does not satisfy hosted CI, independent review, actual vendor-source coverage or production acceptance.
+At source candidate `746bdc985824111b431fa3039676785ac225a0ae`, M2 Studio completed 251 pytest cases and 42 subtests on the actual shared classifier plus all source modules. The local synthetic test result does not satisfy hosted CI, independent review, actual vendor-source coverage or production acceptance.
 
 
 
