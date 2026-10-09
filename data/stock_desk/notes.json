@@ -1,29 +1,82 @@
 {
   "schema": "stock_desk.v1",
   "as_of": "2026-10-08",
-  "generated_at": "2026-10-09T14:41:03.824849+00:00",
+  "generated_at": "2026-10-09T16:19:50.648073+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-10-08-MSCI-20261009144103-1",
+      "id": "2026-10-08-MSCI-20261009161950-1",
       "ticker": "MSCI",
       "name": "MSCI",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The deterministic verdict finds no clear edge: the daily turn is improving, but the weekly trend remains mixed. The validated risk controls also flag elevated macro risk and a deteriorating sector basket, leaving insufficient support for a relative directional call.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Daily bottoming, but weekly timeframe has not turned",
+        "Entry unblocked; price back above rising 10-day average",
+        "Macro-risk elevated and Financials basket deteriorating",
+        "Quality axis z -2.94"
+      ],
+      "dissent": "The rejected swing low, positive MACD and move back above the 10-day average could develop into sustained relative strength.",
+      "falsifier": {
+        "text": "A confirmed weekly upturn accompanied by sustained outperformance versus the S&P 500.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-11-05",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-10-08-ADSK-20261009161950-2",
+      "ticker": "ADSK",
+      "name": "Autodesk",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The bottoming setup and clean quality profile are constructive inputs, but the deterministic verdict remains neutral and the larger trend has not turned. With selection weak and no validated directional edge, this is a watch rather than a relative bet.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Quality axis z 1.145 with clean accounting",
+        "Daily turn signaled and MACD positive",
+        "Weekly timeframe remains mixed",
+        "Selection axis z -0.394"
+      ],
+      "dissent": "Strong profitability and quality, plus a rejected low and improving daily momentum, could drive meaningful relative recovery.",
+      "falsifier": {
+        "text": "A confirmed weekly uptrend with the shares holding above both the 50-day and 200-day averages while outperforming the S&P 500.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-11-05",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-10-08-MCK-20261009161950-3",
+      "ticker": "MCK",
+      "name": "Mckesson Corp",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The constructive base-building verdict is supported by an unblocked entry and a daily turn above the 10-day average, but the mixed weekly trend, deteriorating sector basket and weak quality axis keep confidence low. This is a risk-shaped conditional view, not a claim that its board rank predicts outperformance.",
+      "thesis": "The constructive verdict is supported by the validated entry framework: a fresh buy zone, an unblocked entry and agreement between daily and weekly trends. Conviction stays low because the desk's prior constructive calls have weak directional accuracy and the accounting-quality flag deserves respect.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base",
-        "Entry unblocked; turn signaled after 535.95 swing low",
-        "Weekly timeframe not yet turned",
-        "Quality axis 14%; Financials basket deteriorating"
+        "Fresh buy; daily and weekly trends bullish",
+        "Entry axis unblocked, percentile 57",
+        "Above both 50-day and 200-day averages",
+        "Accounting quality: watch"
       ],
-      "dissent": "The daily bounce may fail because the larger trend remains mixed and price is still below the 200-day average.",
+      "dissent": "Weak factor quality, thin margins and the accounting watch flag could overwhelm the favorable trend setup.",
       "falsifier": {
-        "text": "A close below the 535.95 swing low followed by continued underperformance versus the S&P 500.",
+        "text": "The shares lose the 50-day average and underperform the S&P 500 over the horizon.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "MSCI",
+          "subject_ticker": "MCK",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
@@ -34,76 +87,23 @@
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-10-08-ADSK-20261009144103-2",
-      "ticker": "ADSK",
-      "name": "Autodesk",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The deterministic verdict finds no clear edge: improving daily momentum and clean quality are offset by a still-mixed weekly trend, negative residual momentum and price below the 200-day average. The unblocked entry avoids a bearish call, but the evidence is insufficient for a constructive relative view.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Quality axis 67% with clean accounting",
-        "Residual momentum z -1.83",
-        "Weekly trend mixed; below 200-day average"
-      ],
-      "dissent": "The rejected low, positive MACD and improving 10-day average could develop into sustained relative outperformance before the weekly signal confirms.",
-      "falsifier": {
-        "text": "A confirmed bullish weekly turn accompanied by sustained outperformance versus the S&P 500.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-11-05",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-10-08-MCK-20261009144103-3",
-      "ticker": "MCK",
-      "name": "Mckesson Corp",
-      "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 30,
-      "thesis": "The constructive verdict aligns with the strongest trend structure in this group: a fresh-buy state, bullish weekly confirmation and an unblocked entry above both major averages. Confidence remains capped by the accounting-quality watch and the poor historical directional accuracy of constructive leans.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Fresh buy with bullish weekly agreement",
-        "Above 50-day and 200-day averages; MACD positive",
-        "Accounting quality flagged watch"
-      ],
-      "dissent": "Weak factor quality and thin margins could matter quickly if the recent cycle turn loses momentum.",
-      "falsifier": {
-        "text": "A break below the 853.81 cycle low with relative performance versus the S&P 500 turning negative over the horizon.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "MCK",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 30
-        }
-      },
-      "check_by": "2026-11-19",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-10-08-PAHC-20261009144103-4",
+      "id": "2026-10-08-PAHC-20261009161950-4",
       "ticker": "PAHC",
       "name": "Phibro Animal Health",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The constructive base-building verdict is supported by an unblocked new daily cycle and positive revisions context, but the weekly trend has not turned and price remains well below its 200-day average. Those risk controls make this only a tentative relative-outperformance lean.",
+      "thesis": "The constructive base-building verdict is supported by an unblocked entry and a new daily cycle with improving momentum. The lean is deliberately modest because the weekly trend is still mixed, the shares remain below the 200-day average and prior constructive calls have underperformed their calibration bar.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base",
-        "New daily cycle; entry unblocked",
+        "New daily cycle; swing low rejected",
+        "Entry axis unblocked, percentile 57",
         "Revisions z 1.35",
-        "Weekly trend mixed; 9.1% below 200-day average"
+        "9.1% below 200-day average; weekly trend not turned"
       ],
-      "dissent": "The bounce may be only a countertrend move within a damaged long-term structure, especially with below-average quality and low-volatility factors.",
+      "dissent": "The late investor phase, below-200-day position and weak composite quality may make this only a countertrend bounce.",
       "falsifier": {
-        "text": "A renewed move below the recent swing structure with price remaining under the 200-day average and lagging the S&P 500.",
+        "text": "The daily turn fails, the shares fall back below the 50-day average and lag the S&P 500.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "PAHC",
@@ -117,22 +117,23 @@
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-10-08-ABBV-20261009144103-5",
+      "id": "2026-10-08-ABBV-20261009161950-5",
       "ticker": "ABBV",
       "name": "Abbvie Inc",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The neutral verdict should govern despite bullish trend confirmation: the stock is at its 52-week high and the entry axis explicitly includes an extension brake. Momentum remains intact, so the proper interpretation is watch without chasing rather than a directional short.",
+      "thesis": "The trend is bullish, but the deterministic verdict finds no clear edge and the entry framework identifies extension at the 52-week high. Because extension alone is not a bearish signal in a strong leader, the risk control argues against chasing rather than for shorting relative performance.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Board state: HOLD \u2014 EXTENDED",
-        "Bullish weekly trend; above both major averages",
-        "Quality axis 74% with clean accounting"
+        "Fresh-buy ladder with bullish daily and weekly trends",
+        "At 52-week high and 18.2% above 200-day average",
+        "Entry axis approximately neutral with extension present",
+        "Quality axis z 1.70 with clean accounting"
       ],
-      "dissent": "Strong trend alignment, positive MACD and high quality could sustain relative leadership without offering a pullback.",
+      "dissent": "The aligned trend, positive momentum and strong quality could sustain further outperformance despite the extended entry.",
       "falsifier": {
-        "text": "A decisive breakout to new highs that is sustained alongside continued outperformance versus the S&P 500.",
+        "text": "A controlled pullback holds the rising trend and is followed by renewed highs with continued S&P 500 outperformance.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
@@ -142,22 +143,23 @@
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-08-ZS-20261009144103-6",
+      "id": "2026-10-08-ZS-20261009161950-6",
       "ticker": "ZS",
       "name": "Zscaler",
       "lean": "cautious",
       "conviction": "low",
       "horizon_d": 15,
-      "thesis": "The entry brake is unusually strong and cycle-blocked: price is 30.6% above its 200-day average after a straight-up move, while the weekly picture remains mixed and residual selection is weak. This is a low-conviction relative caution based on the blocked cycle and crowded risk profile, not extension alone.",
+      "thesis": "The validated risk reshape blocks entry: the shares are far above their long-term trend, the cybersecurity basket is crowded and the cycle still argues for waiting. This is a low-conviction relative caution\u2014not an extension-only short\u2014because the explicit cycle block and unconfirmed weekly turn add genuine timing risk.",
       "evidence": [
         "Verdict: Extended \u2014 wait for a pullback",
-        "Entry blocked; entry axis 16%",
-        "Cycle blocked with weekly timeframe not turned",
-        "30.6% above 200-day average; cybersecurity basket crowded and stretched"
+        "Entry blocked; entry z -2.72",
+        "30.6% above 200-day average",
+        "Cycle blocked and weekly timeframe not turned",
+        "Cybersecurity basket crowded and stretched"
       ],
-      "dissent": "The stock remains above both major averages with positive momentum, and strong leaders can continue outperforming despite extreme extension.",
+      "dissent": "The stock remains above both major averages with positive MACD, and strong momentum can persist much longer than extension measures imply.",
       "falsifier": {
-        "text": "Continued outperformance versus the S&P 500 while holding above the 50-day average through the horizon.",
+        "text": "The shares continue making higher highs and outperform the S&P 500 without first resetting toward their intermediate or long-term trend.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "ZS",

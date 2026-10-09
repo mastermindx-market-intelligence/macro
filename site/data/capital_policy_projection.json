@@ -39,10 +39,33 @@
       "label_zh": "政府举债",
       "more_en": "",
       "more_zh": "",
-      "reason_en": "No dated step is pending right now.",
-      "reason_zh": "目前没有待办的既定日期节点。",
-      "rows": [],
-      "state": "empty",
+      "reason_en": "",
+      "reason_zh": "",
+      "rows": [
+        {
+          "date": "2026-10-21",
+          "days_out": 12,
+          "event_en": "Treasury auctions 20-Year Bond",
+          "event_zh": "财政部拍卖20年期长期国债",
+          "is_context_only": true,
+          "source_label_en": "TreasuryDirect",
+          "source_label_zh": "国债直销",
+          "source_url": "https://www.treasurydirect.gov/auctions/upcoming/",
+          "window_id": "treasury_supply"
+        },
+        {
+          "date": "2026-10-22",
+          "days_out": 13,
+          "event_en": "Treasury auctions 5-Year Note",
+          "event_zh": "财政部拍卖5年期中期国债",
+          "is_context_only": true,
+          "source_label_en": "TreasuryDirect",
+          "source_label_zh": "国债直销",
+          "source_url": "https://www.treasurydirect.gov/auctions/upcoming/",
+          "window_id": "treasury_supply"
+        }
+      ],
+      "state": "present",
       "window_id": "treasury_supply"
     },
     {
@@ -70,8 +93,8 @@
     {
       "label_en": "Disclosure rules",
       "label_zh": "披露规则",
-      "more_en": "16 more dated steps are not shown.",
-      "more_zh": "另有 16 个既定日期节点未展示。",
+      "more_en": "18 more dated steps are not shown.",
+      "more_zh": "另有 18 个既定日期节点未展示。",
       "reason_en": "",
       "reason_zh": "",
       "rows": [
@@ -172,28 +195,6 @@
           "source_label_en": "Federal Register",
           "source_label_zh": "联邦公报",
           "source_url": "https://www.federalregister.gov/d/2026-19495",
-          "window_id": "disclosure_regulatory"
-        },
-        {
-          "date": "2026-10-26",
-          "days_out": 17,
-          "event_en": "Comment periods close on 5 Federal Register documents",
-          "event_zh": "5 份联邦公报文件的意见征询期截止",
-          "is_context_only": true,
-          "source_label_en": "Federal Register",
-          "source_label_zh": "联邦公报",
-          "source_url": "https://www.federalregister.gov/d/2026-10752",
-          "window_id": "disclosure_regulatory"
-        },
-        {
-          "date": "2026-10-27",
-          "days_out": 18,
-          "event_en": "Comment period closes",
-          "event_zh": "意见征询期截止",
-          "is_context_only": true,
-          "source_label_en": "Federal Register",
-          "source_label_zh": "联邦公报",
-          "source_url": "https://www.federalregister.gov/d/2026-17598",
           "window_id": "disclosure_regulatory"
         }
       ],

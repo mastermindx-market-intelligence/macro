@@ -2,8 +2,8 @@
   "schema": "stock_desk.v1",
   "as_of": "2026-10-09",
   "scored_total": 220,
-  "open": 129,
-  "unscored_neutral": 355,
+  "open": 132,
+  "unscored_neutral": 358,
   "overall": {
     "n": 220,
     "hits": 146,
@@ -64,7 +64,7 @@
       "dir_accuracy": 0.0
     }
   },
-  "calibration_note": "220 leans scored, hit-rate 0.664 (directional accuracy 0.473). Chance alone would land a hit-rate near 0.7483 (directional accuracy near 0.5058) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "220 leans scored, hit-rate 0.664 (directional accuracy 0.473). Chance alone would land a hit-rate near 0.7477 (directional accuracy near 0.5057) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
     {
       "id": "2026-09-08-AN-20260909132229-1",
