@@ -19,7 +19,7 @@ from urllib.parse import parse_qsl, quote, urlsplit
 PACK_SCHEMA = "marketing.catalyst_partner_pack.v1"
 _UTC = timezone.utc
 _TICKER = re.compile(r"^[A-Z][A-Z0-9.-]{0,9}$")
-_SLUG = re.compile(r"^[a-z][a-z0-9-]{1,47}$")
+_SLUG = re.compile(r"^[a-z][a-z0-9_-]{1,47}$")
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{1,95}$")
 _EMAIL = re.compile(r"[\w.+%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 _ALLOWED_RELATIONS = {"DIRECT", "EVIDENCED_INDIRECT"}
