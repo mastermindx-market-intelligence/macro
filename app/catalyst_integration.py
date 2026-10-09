@@ -7,8 +7,12 @@ from __future__ import annotations
 
 import html
 import ipaddress
+import json
 import os
 import re
+import time
+from collections import deque
+from threading import Lock
 from datetime import datetime, timedelta, timezone
 from importlib import import_module
 from typing import Any, Callable
@@ -16,6 +20,7 @@ from urllib.parse import urlsplit
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
+from app import edge_client
 
 router = APIRouter()
 _TICKER = re.compile(r"[A-Z][A-Z0-9.\-]{0,9}\Z")
@@ -34,6 +39,58 @@ _LIMIT = 10
 _FRESHNESS = timedelta(days=7)
 _HEADERS = {"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"}
 _HTML_HEADERS = {**_HEADERS, "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"}
+# Process-local guard only. The canonical edge/server remains responsible for
+# distributed anti-abuse; this protects worker resources before that gate.
+_RATE_LIMITS = {"scan": (30, 60.0), "optin": (5, 3600.0)}
+_MAX_RATE_KEYS = 8192
+_RATE_LOCK = Lock()
+_RATE_BUCKETS: dict[tuple[str, str], deque[float]] = {}
+
+
+def _allow_request(request: Request, lane: str, *, now: float | None = None) -> bool:
+    limit, window = _RATE_LIMITS[lane]
+    current = time.monotonic() if now is None else float(now)
+    # Share a stable trusted-edge key between no-JS, GET and POST scan routes.
+    key = (lane, edge_client.client_ip(request.headers))
+    with _RATE_LOCK:
+        bucket = _RATE_BUCKETS.get(key)
+        if bucket is None:
+            if len(_RATE_BUCKETS) >= _MAX_RATE_KEYS:
+                oldest = min(_RATE_BUCKETS, key=lambda k: _RATE_BUCKETS[k][-1])
+                del _RATE_BUCKETS[oldest]
+            bucket = deque()
+            _RATE_BUCKETS[key] = bucket
+        cutoff = current - window
+        while bucket and bucket[0] <= cutoff:
+            bucket.popleft()
+        if len(bucket) >= limit:
+            return False
+        bucket.append(current)
+        return True
+
+
+def _rate_or_429(request: Request, lane: str) -> None:
+    if not _allow_request(request, lane):
+        raise HTTPException(429, "Request limit exceeded", headers={"Retry-After": "60"})
+
+
+async def _read_json(request: Request, *, max_bytes: int = 8192) -> Any:
+    # Reject oversized bodies while streaming, before JSON parsing or owner calls.
+    chunks = bytearray()
+    async for chunk in request.stream():
+        if len(chunks) + len(chunk) > max_bytes:
+            raise HTTPException(413, "Request too large")
+        chunks.extend(chunk)
+    try:
+        return json.loads(chunks)
+    except (ValueError, UnicodeError, TypeError):
+        raise HTTPException(400, "Invalid JSON") from None
+
+
+def _reset_rate_limits_for_tests() -> None:
+    with _RATE_LOCK:
+        _RATE_BUCKETS.clear()
+
 
 
 def _enabled(name: str) -> bool:
@@ -281,18 +338,17 @@ def optin_with_owner(body: Any, *, owner: Callable[[dict], dict] | None = None) 
 @router.post("/api/catalyst/scan")
 async def scan_post(request: Request):
     _require_enabled("CATALYST_PUBLIC_ENABLED")
-    try:
-        body = await request.json()
-    except (ValueError, UnicodeError):
-        raise HTTPException(400, "Invalid JSON") from None
+    _rate_or_429(request, "scan")
+    body = await _read_json(request)
     if not isinstance(body, dict) or set(body) - {"tickers", "event_id"}:
         raise HTTPException(400, "Invalid scan request")
     return JSONResponse(scan_with_reader(body.get("tickers"), body.get("event_id")), headers=_HEADERS)
 
 
 @router.get("/api/catalyst/scan")
-def scan_get(tickers: str, event_id: str | None = None):
+def scan_get(request: Request, tickers: str, event_id: str | None = None):
     _require_enabled("CATALYST_PUBLIC_ENABLED")
+    _rate_or_429(request, "scan")
     return JSONResponse(scan_with_reader(tickers, event_id), headers=_HEADERS)
 
 
@@ -300,10 +356,8 @@ def scan_get(tickers: str, event_id: str | None = None):
 async def optin_post(request: Request):
     _require_enabled("CATALYST_PUBLIC_ENABLED")
     _require_enabled("CATALYST_OPTIN_ENABLED")
-    try:
-        body = await request.json()
-    except (ValueError, UnicodeError):
-        raise HTTPException(400, "Invalid JSON") from None
+    _rate_or_429(request, "optin")
+    body = await _read_json(request, max_bytes=4096)
     return JSONResponse(optin_with_owner(body), status_code=202, headers=_HEADERS)
 
 
@@ -344,8 +398,9 @@ def render_first_value(data: dict | None, value: str = "", error: str = "") -> s
 
 
 @router.get("/api/catalyst", response_class=HTMLResponse)
-def first_value(tickers: str = "", event_id: str | None = None):
+def first_value(request: Request, tickers: str = "", event_id: str | None = None):
     _require_enabled("CATALYST_PUBLIC_ENABLED")
+    _rate_or_429(request, "scan")
     if not tickers:
         return HTMLResponse(render_first_value(None), headers=_HTML_HEADERS)
     try:
