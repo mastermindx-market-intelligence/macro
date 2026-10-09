@@ -246,6 +246,14 @@ class CatalystPartnerPackTests(unittest.TestCase):
             first = root_theme.index(":root {")
             last = root_theme.index("\n}\n", first)
             self.assertIn(root_theme[first:last+2], page)
+            light_marker = 'html[data-theme="light"] {'
+            light_blocks = root_theme.split(light_marker)[1:]
+            light_palette = next((light_marker + block.split("\\n}", 1)[0] + "\\n}"
+                                  for block in light_blocks
+                                  if all(k in block for k in ("--bg:", "--panel:", "--text:"))), None)
+            self.assertIsNotNone(light_palette)
+            self.assertIn(light_palette, page)
+            self.assertIn('html[data-theme="light"] {color-scheme:light;}', page)
             self.assertIn("font-family:var(--font-ui)", page)
             self.assertIn("var(--r-card", page)
 
