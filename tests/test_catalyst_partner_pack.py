@@ -6,6 +6,7 @@ credentials or third-party co-brand authority is exercised by this suite.
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import subprocess
 import sys
@@ -90,7 +91,21 @@ class CatalystPartnerPackTests(unittest.TestCase):
             expires_at_utc=DEMO_NOW + timedelta(days=1),
             display_link=True, display_title=True, display_facts=True,
         )
-        return (lambda event, now: "admitted-event-fixture-0001",
+        def attest_event(event, now):
+            digest = hashlib.sha256(json.dumps(
+                event, ensure_ascii=False, sort_keys=True,
+                separators=(",", ":"), allow_nan=False,
+            ).encode("utf-8")).hexdigest()
+            return {
+                "receipt_id": "admitted-event-fixture-0001",
+                "source_owner": "engine.marketing.catalyst_packets",
+                "event_id": event["event_id"],
+                "generation": event["generation"],
+                "packet_sha256": digest,
+                "audience": "public_anonymous",
+                "expires_at_utc": (now + timedelta(minutes=10)).isoformat(),
+            }
+        return (attest_event,
                 lambda sid, now: grant if sid == s["source_id"] else None)
 
     def test_real_producer_schema_adapter_compiles_held_candidate_without_rehost(self):
@@ -121,6 +136,13 @@ class CatalystPartnerPackTests(unittest.TestCase):
             adapt_qualified_producer_event(
                 p, ["EXA"], now_utc=DEMO_NOW, attest_event=lambda *args: None,
                 resolve_rights=rights)
+        self.assertEqual(exc.exception.code, "EVENT_VERIFICATION_MISSING")
+        with self.assertRaises(PackRejected) as exc:
+            adapt_qualified_producer_event(
+                p, ["EXA"], now_utc=DEMO_NOW,
+                attest_event=lambda event, now: {
+                    **attest(event, now), "packet_sha256": "0" * 64,
+                }, resolve_rights=rights)
         self.assertEqual(exc.exception.code, "EVENT_VERIFICATION_MISSING")
         with self.assertRaises(PackRejected) as exc:
             adapt_qualified_producer_event(
