@@ -1518,17 +1518,37 @@ def test_reference_id_is_deterministic_and_has_no_join_write_clock() -> None:
     assert "join_recorded_at" not in payload and "join_as_of" not in payload
 
 
-def test_k1_changed_file_inventory_creates_no_physical_mesh_store() -> None:
+def test_k1_no_physical_mesh_store_is_tracked_or_created() -> None:
     assert isinstance(missing_dirs(ROOT), list)  # observed, never used as absence proof
-    commands = (
-        ["git", "diff", "--name-only", "origin/main...HEAD"],
-        ["git", "diff", "--name-only"],
-        ["git", "diff", "--cached", "--name-only"],
-        ["git", "ls-files", "--others", "--exclude-standard"],
-    )
-    changed: set[str] = set()
-    for command in commands:
-        result = subprocess.run(command, cwd=ROOT, check=True, capture_output=True, text=True)
-        changed.update(result.stdout.splitlines())
     forbidden_prefixes = ("data/evidence_mesh/", "data/evidence_foundation/", "engine/evidence_mesh/")
-    assert not [path for path in sorted(changed) if any(path.startswith(prefix) for prefix in forbidden_prefixes)]
+
+    def _git_paths(*args: str) -> list[str]:
+        result = subprocess.run(
+            ["git", *args], cwd=ROOT, check=True, capture_output=True, text=True
+        )
+        return [line for line in result.stdout.splitlines() if line]
+
+    # Base-ref free on purpose: the first version shelled `git diff
+    # origin/main...HEAD` with check=True, which exits 128 at the packs'
+    # fetch-depth 1 (run 37952191363, ci-pack-9) and got this guard deselected
+    # out of its only job. `ls-files` reads the INDEX, so a sparse checkout that
+    # never materialises these paths still reports them when they are tracked.
+    # Control first: an empty answer from a broken instrument and an empty
+    # answer from a clean tree are the same bytes.
+    assert _git_paths("ls-files", "--", "contracts/evidence_foundation/"), (
+        "the tracked-file probe found none of this foundation's own contracts, "
+        "so no absence it reports below is evidence"
+    )
+    observed = {
+        "tracked": _git_paths("ls-files", "--", *forbidden_prefixes),
+        "staged": _git_paths("diff", "--cached", "--name-only", "--", *forbidden_prefixes),
+        "unstaged": _git_paths("diff", "--name-only", "--", *forbidden_prefixes),
+        "untracked": _git_paths(
+            "ls-files", "--others", "--exclude-standard", "--", *forbidden_prefixes
+        ),
+    }
+    offenders = {probe: paths for probe, paths in observed.items() if paths}
+    assert not offenders, (
+        "the evidence foundation stays a contract over existing owners and never "
+        f"a second physical store: {offenders}"
+    )
