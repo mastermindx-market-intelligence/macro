@@ -522,6 +522,70 @@ and cannot count as selection of these later bytes. No new paid provider
 request, remote worker restart or deployment occurred. Acceptance remains
 local verified, remote selection of the new revision unproven.
 
+### 2026-10-08 terminal-status recovery and bounded unaccepted-report preservation
+
+**Current assignment and source custody.** Chairman explicitly assigned this continuing
+subagent-fabric hardening lane to the active session as source owner. This makes old
+`mastermindx-2` GitHub commit authorship **historical evidence**, not a live lease or
+reason to ask the Chairman to locate an archived session. Executive OS still owns
+runtime/admission; the M2 account-local kit remains the original executable source;
+this existing Agent OS discovery PR remains an evidence carrier, **not** code publication.
+Protected procedure pin: Mastermind `732cf7be88e7159b4995a8885fbd381cd1484e3e`,
+Skillpack 1.0.1.
+
+**Naturally dispatched failure distinguished from timeout.** A C2 GLM 5.3 Codex worker
+`paper-01a1101f-im06-history-projector-build-r1` on Mini2 completed after approximately
+17 minutes with typed `rc=77 reason=terminal_status_missing`. Its remote cleanup and
+lease settlement were proven; the provider did not hit the increased worker timeout.
+Native cumulative usage receipt reported `total_tokens=6145652`, predominantly
+cached input. These values are **cumulative usage**, not a 6M-token context window
+and not proof that auto-compaction fired. The substantive final report was missing
+the required first-line `STATUS: COMPLETE/BLOCKED`.
+
+**Existing GLM/MiniMax wrapper hardening verified locally.** Both original M2
+`glm_codex_exec.sh` and `mm_codex_exec.sh` now check the **first nonblank
+line only** for terminal status (no false success from a buried quoted status).
+Their bounded same-session continuation prompt instructs the model to avoid
+repeating completed work or tools and to produce a concise evidence-grounded
+terminal report. On continued absence of valid status, the worker still exits
+`rc=77`, never success or an invented verdict.
+
+When Codex overwrites its `last_message.txt` on continuation, the existing
+private scratch directory preserves at most one substantive **earlier unaccepted
+report** (32 KiB at capture; at most 80 prefixed lines emitted into the
+incumbent parent-visible output). The excerpt appears only on `rc=77`,
+is labeled `UNACCEPTED_EARLIER_REPORT reference_only=1`, and never changes
+the worker's return code, creates a memory ledger, or counts as acceptance.
+The tested path excludes short progress notes and does not emit the archive
+for a genuinely successful terminal response.
+
+**Tests and exact source revisions:** the GLM/MiniMax/Go wrapper suite passed
+**86 tests** after these changes, including eight targeted report-recovery
+cases; separately the unchanged support-publication invariants passed 38
+tests, and four focused remote transport/ledger checks passed. The existing
+unrelated pytest Chromium temporary-cleanup warnings do not falsify these.
+Current M2 source SHA-256 were read back again on this continuation:
+
+- `ext/glm_codex_exec.sh`
+  `4042580329983903e7cceb1d26fc21837d6043b5b172c525f6ee24c560efff57`
+- `ext/mm_codex_exec.sh`
+  `7177d8e3f46b6a428b9be7bfff3cace872535cafa44739cac36aac6d1f94e3fb`
+- `ext/tests/test_codex_exec_autocontinue.py`
+  `030286a719f4217bb210443632c841abccaf94b9f963be33c5300f1e381132d3`
+
+**Acceptance boundary:** source is **LOCAL_VERIFIED** on M2, not yet
+fleet-wide accepted. The code-distribution owner is still the incumbent
+versioned per-launch support-bundle mechanism. Earlier completed worker
+manifests cannot be relabeled as selecting the new hashes. A future
+naturally qualified GLM/MiniMax worker must select them and produce an
+accepted terminal result for `PROVEN_LIVE` worker acceptance. Native
+Codex rollout `compacted` events may support later aggregate-only
+compaction telemetry; current billing usage receipt does **not**
+measure compaction and must not be silently expanded into a new schema.
+No paid worker was launched, no active worker was restarted, no merge
+or fleet-wide installation occurred. Previously safety-refused leased-GLM
+continuation override and automatic C2/C3 Go reroute remain fenced.
+
 ### Verification boundary
 
 Directly observed current green evidence:
