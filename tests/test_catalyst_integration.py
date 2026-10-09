@@ -187,3 +187,20 @@ def test_optin_http_ack_only_verification_required(monkeypatch):
     assert res.json() == {"status": "VERIFICATION_REQUIRED", "public_ref": "opaque_123456789"}
     assert "reader@" not in res.text
     ci._reset_rate_limits_for_tests()
+
+
+def test_trusted_peer_limits_spoofed_ip_rotation(monkeypatch):
+    ci._reset_rate_limits_for_tests()
+    monkeypatch.setitem(ci._PEER_LIMITS, "scan", 3)
+    for count in range(3):
+        request = SimpleNamespace(headers={
+            "eo-connecting-ip": f"203.0.113.{count + 10}",
+            "x-mm-peer": "198.51.100.99",
+        })
+        assert ci._allow_request(request, "scan", now=count)
+    another_ip_same_peer = SimpleNamespace(headers={
+        "eo-connecting-ip": "203.0.113.40",
+        "x-mm-peer": "198.51.100.99",
+    })
+    assert not ci._allow_request(another_ip_same_peer, "scan", now=4)
+    ci._reset_rate_limits_for_tests()
