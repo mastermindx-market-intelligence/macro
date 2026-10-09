@@ -469,7 +469,7 @@ class FunnelService:
                 elif self.revisions.is_current(revision.event_id, revision.generation) is not True:
                     state = "OUTDATED_OR_UNVERIFIED_REVISION"
                 else:
-                    idem = f"catalyst:{revision.event_id}:{revision.generation}:{current.user_id}"
+                    idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{current.user_id}"
                     raw = self.sender.deliver(current, revision, idem)
                     state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
                              "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
