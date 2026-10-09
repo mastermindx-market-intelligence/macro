@@ -13,7 +13,7 @@
 
 **Free offer:** "Check 1–10 supported stocks against the next verified earnings / AI-infrastructure catalyst. Get sourced facts and the conditions that would change the read **before** signing up. If useful, separately opt in to one material post-event update, verify the address, and unsubscribe whenever you choose." No recommendation, sizing, performance claim, guaranteed timeliness, unsupported ticker, proprietary rehost, or implicit affiliate/partner endorsement.
 
-**First partner / first asset decision:** Start with **StockOpine** (Oct 2 AMD and Micron coverage) and **Potential Multibaggers** (Oct 6 current, Sep 28 "The First AI Crack?"), each with a finished unfalsified private asset. If either does not agree, **MBI Deep Dives** and **Scuttleblurb** are independent research-editor alternates. Use **The Canadian Investor** as a separate-format optional second pilot if the official advertising/suggestions contact confirms an allowed unpaid editorial option; otherwise do not invent a free podcast slot. The Options Insider is an optional podcast alternate only with explicit producer approval and rights clearance. **No target qualifies for public distribution on this research alone.**
+**First partner / first asset decision:** First show **StockOpine** (Oct 2 AMD and Micron coverage) and **Potential Multibaggers** (Oct 6 current, Sep 28 "The First AI Crack?"), each with a finished source-qualified private asset. **StockOpine's homepage has existing Fiscal.ai and Koyfin affiliate promotions; ask about compatibility and any exclusivity before offering a partner presentation**. If either does not agree, **MBI Deep Dives** and **Scuttleblurb** are independent research-editor alternates. Use **The Canadian Investor** as a separate-format optional second pilot if the official advertising/suggestions contact confirms an allowed unpaid editorial option; otherwise do not invent a free podcast slot. The Options Insider is an optional podcast alternate only with explicit producer approval and rights clearance. **No target qualifies for public distribution on this research alone.**
 
 ### 1.1 The two proposed placement experiments
 
@@ -115,7 +115,7 @@ Each is a **single professional inquiry template**, not a bulk email/DM sequence
 > Would a short no-fee research appendix ever be useful for your readers? Editorial control stays entirely with you; no coverage or endorsement is assumed. I can share a source list and a preview for review if appropriate: [PRIVATE REVIEW LINK — ONLY AFTER 04 RIGHTS CHECK].  
 > [SIGNATURE]
 
-**Operator gate:** Substack author professional message/reply route; confirm external link permission. Do not claim the demo already works until verified.
+**Operator gate:** Substack author professional message/reply route; confirm external link permission and resolve competing Fiscal.ai/Koyfin affiliate context visible on the publisher homepage. No implied exclusivity or guaranteed slot. Do not claim the demo already works until verified.
 
 ### D02 Potential Multibaggers — thesis health
 
