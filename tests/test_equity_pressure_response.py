@@ -308,3 +308,138 @@ def test_zero_ask_size_quote_is_unusable_for_classification():
     obs = measure(trades=[t("only", 130)], quotes=qs)
     assert obs["n_unclassified"] == {"INVALID_NBBO": 1}
     assert obs["ask_size_recovery"]["reason"] == "INVALID_INTERVENING_NBBO"
+
+
+# Matured response labels are OUTCOMES ONLY, never original live features.
+from decimal import Decimal
+from engine.market_microstructure.matured_response import measure_matured_response
+
+
+def label_payload(**overrides):
+    data = dict(
+        ticker="SPY", session="2026-10-08:RTH",
+        original_decision_ns=140, anchor_ns=130, label_end_ns=200,
+        evaluation_cutoff_ns=300,
+        source_watermark_ns=205, watermark_received_ns=230,
+        watermark_receipt="later-tq-watermark-v1",
+        source_manifest="source:original:record",
+        source_mode="ACTUAL_AS_SEEN",
+        max_quote_age_ns=100, market_health="NORMAL",
+        market_health_receipt="market-health-original",
+        quotes=[q("anchor",120,available=121),
+                q("future",190,bid="102",ask="103",available=220)],
+    )
+    data.update(overrides)
+    return data
+
+
+def label(**overrides):
+    return measure_matured_response(**label_payload(**overrides))
+
+
+def test_matured_response_produces_evaluation_only():
+    o=label()
+    assert o["state"]=="MATURED_EVALUATION_LABEL"
+    expected=(Decimal("102.5")/Decimal("100.5")-1)*10000
+    assert Decimal(o["midpoint_response_bps"])==expected
+    assert o["authority"]=="RESEARCH_OUTCOME_LABEL_ONLY"
+    assert o["label_first_knowable_ns"]==230
+    assert o["forward_label_not_available_to_original_decision"] is True
+    assert o["absorption_signal"] is None and o["trade_fill"] is None
+    assert o["execution_adjusted_return"] is None
+
+
+def test_future_label_does_not_exist_before_horizon():
+    r=label(evaluation_cutoff_ns=199)
+    assert r["state"]=="NOT_MATURE"
+    assert "midpoint_response_bps" not in r
+
+
+def test_unmatured_watermark_never_imputes_forward_response():
+    r=label(source_watermark_ns=199)
+    assert r["state"]=="NOT_MATURE"
+    assert "midpoint_response_bps" not in r
+
+
+def test_watermark_after_evaluation_not_known():
+    r=label(watermark_received_ns=301)
+    assert r["state"]=="NOT_MATURE"
+
+
+def test_late_anchor_quote_cannot_retroactively_be_original_decision():
+    r=label(quotes=[q("anchor",120,available=150),
+                    q("future",190,bid="102",ask="103",available=220)])
+    assert r["state"]=="UNOBSERVABLE"
+    assert r["reason"]["anchor"]=="NO_PRIOR_QUOTE"
+
+
+def test_future_quote_after_label_evaluation_not_available():
+    r=label(quotes=[q("anchor",120),q("late",190,bid="102",ask="103",available=310)])
+    assert r["state"]=="UNOBSERVABLE"
+    assert r["reason"]["forward"]=="STALE_NBBO"
+
+
+def test_future_malformed_quote_does_not_poison_earlier_outcome():
+    future_bad=q("revision",195,bid="invalid",available=500)
+    result=label(quotes=[q("anchor",120),q("future",190,bid="102",ask="103",
+                               available=220),future_bad])
+    assert result["state"]=="MATURED_EVALUATION_LABEL"
+
+
+def test_locked_quote_blocks_stale_earlier_good_quote():
+    r=label(quotes=[q("anchor",120),
+                    q("future",180,bid="102",ask="103",available=220),
+                    q("locked",195,bid="103",ask="103",available=230)])
+    assert r["state"]=="UNOBSERVABLE"
+    assert r["reason"]["forward"]=="INVALID_NBBO"
+
+
+def test_tie_at_forward_endpoint_is_unorderable():
+    r=label(quotes=[q("anchor",120),q("future",200,bid="102",ask="103",available=220)])
+    assert r["reason"]["forward"]=="CLOCK_TIE"
+
+
+def test_multiple_latest_quotes_at_same_sip_time_abstain():
+    r=label(quotes=[q("anchor",120),q("future1",190,bid="102",ask="103",
+                                  available=220),
+                    q("future2",190,bid="103",ask="104",available=221)])
+    assert r["reason"]["forward"]=="AMBIGUOUS_QUOTE_ORDER"
+
+
+def test_halt_or_unknown_market_status_censors_endpoint():
+    for x in ("HALTED","UNKNOWN"):
+        r=label(market_health=x)
+        assert r["state"]=="CENSORED"
+        assert "midpoint_response_bps" not in r
+
+
+def test_stale_forward_endpoint_not_carried_as_executable_price():
+    r=label(max_quote_age_ns=5)
+    assert r["reason"]["forward"]=="STALE_NBBO"
+    assert "midpoint_response_bps" not in r
+
+
+def test_final_vintage_remains_exploratory_not_as_seen():
+    r=label(source_mode="FINAL_VINTAGE")
+    assert r["source_mode"]=="FINAL_VINTAGE"
+    assert r["authority"]=="RESEARCH_OUTCOME_LABEL_ONLY"
+
+
+def test_future_label_retains_private_source_receipts():
+    r=label()
+    assert r["quote_receipts_private_only"]=={"anchor":"q:anchor","label":"q:future"}
+    assert r["source_quality"]=="REQUIRES_ORIGINAL_SOURCE_OWNER_PROOF"
+
+
+def test_invalid_time_and_quote_session_are_refused():
+    with pytest.raises(ValueError,match="invalid original decision"):
+        label(original_decision_ns=120)
+    wrong=q("future",190,bid="102",ask="103")
+    wrong["ticker"]="QQQ"
+    with pytest.raises(ValueError,match="symbol/session"):
+        label(quotes=[q("anchor",120),wrong])
+
+
+def test_unrecognized_source_mode_rejected():
+    with pytest.raises(ValueError,match="unrecognized source mode"):
+        label(source_mode="LIVE_TODAY")
