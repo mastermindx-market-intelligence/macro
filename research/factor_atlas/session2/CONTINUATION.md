@@ -1,50 +1,35 @@
 # Factor Atlas Session 2 — cumulative execution frontier
 
-Operation label: `factor-atlas-capital-pressure-20261008-c1-001` (not an Executive Job).
-Chairman outcome: source-grounded capital-pressure methodology, actual capability census, complete implementation plan and a bounded native licensed-data measurement pilot where admitted.
+PR: macro#8677. Branch: `claude/factor-atlas-capital-pressure-20261008`. Operation label: `factor-atlas-capital-pressure-20261008-c1-001`, not an Executive Job. Current Chairman intent: resume the original complete research-plus-bounded-native-pilot commission. **MISSION_COMPLETE:false; PARTIAL; market pilot NOT_ADMITTED; customer publication false.**
 
-**MISSION_COMPLETE: false. Capability: PARTIAL / research reference BUILT_NOT_PROVEN. Market pilot: NOT_ADMITTED. Customer publication and trading authority: false.**
+## Source and custody
 
-## Canonical identities and custody
+Protected Mastermind `732cf7be88e7159b4995a8885fbd381cd1484e3e`, compatible Skillpack 1.0.1/bootstrap 1; INDEX/ACTIVE_EXECUTION/SESSION_RELIABILITY same-pin recovery. Prior loaded COLD_START/WEB_CEO_DELEGATION/CLOSEOUT remain the same source revision. Macro analysis `cdbcd143dcfa419ab0637bc11dd4c80368143e2e`; Terminal analysis `bacda5dcc30682f9327e037a2d4425bd9714ac3a`. No denied fresh-main comparison is repeated.
 
-- Protected Mastermind: `732cf7be88e7159b4995a8885fbd381cd1484e3e`; compatible Skillpack 1.0.1/bootstrap 1. INDEX, COLD_START, ACTIVE_EXECUTION, SESSION_RELIABILITY, WEB_CEO_DELEGATION and CLOSEOUT loaded at that pin.
-- Macro analysis base: `cdbcd143dcfa419ab0637bc11dd4c80368143e2e`.
-- Terminal analysis: `bacda5dcc30682f9327e037a2d4425bd9714ac3a`.
-- Original source carrier: Macro branch `claude/factor-atlas-capital-pressure-20261008`.
-- Last verified source milestone: `80231c289e284f702e2aba5e69394829c784c1e1`; report and this frontier are the subsequent documentation-only publication.
-- Native isolated worktree: `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/factor-atlas-capital-pressure-20261008`. Owned raw test logs remain untracked under `.session2-proof/`; do not claim a fully clean untracked tree or delete them as somebody else's debris.
-- GitHub owns source/evidence; existing Terminal/Macro capture, identity, calendar, basis, revision, private storage and publication owners are unchanged. No new workstream identity is asserted.
+Last published predecessor: `28a59ff16e59da6af4f8b0389935d4800f4b2ed1`; earlier source milestone `80231c289e284f702e2aba5e69394829c784c1e1`. This cumulative-window delta is published through the original Studio carrier on the same branch. Exact resulting SHA belongs in PR readback, not a circular self-hash.
 
-## Verified results — do not redo without a material invalidator
+Owned native workspace: `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/factor-atlas-capital-pressure-20261008`. Original tracked state and hashes matched the predecessor before edits. Raw proof logs remain untracked in `.session2-proof/`; do not claim whole-tree cleanliness or remove unrelated files. No worker, live writer or uncertain effect is displaced.
 
-The interrupted remote update at `809ab2e2c9e712445b9d28e65e16faa783b0d65c` was read back before continuation. No prior write was replayed. The missing conversation scratch state was not treated as surviving proof.
+## Verified delta / DO_NOT_REDO
 
-Exact recovered source passed 67 controlled-fixture tests on the native M2. A new disclosed-core profile was test-first: 11 failed / 1 passed before implementation; the complete scoped prototype then passed **79/79**. Native runtime: Python 3.14.7, scipy 1.18.0, numpy 2.5.2, pytest 9.1.1. `evidence/native_r2_tests.json` binds source and log hashes. These are scoped author tests, not whole-repository tests, independent review, hosted CI, market fidelity or production acceptance.
+Prior: 79 native controlled-fixture tests; independently callable BVC, baseline and per-clock factor aggregation. Now: original formula source unchanged, plus a pure multi-factor cumulative-window reducer and full BVC -> window -> baseline fixture composition.
 
-Current `prototype/pressure.py` SHA-256: `34cf424cdb33ac7edc2b1af83334f2117692b8b3569de93b6c632c6729a75edb`.
+Test-first new reducer: **24 failed**, then **103 passed** combined. Full-window witness missing: **1 failed / 9 passed**, then **116 passed** in the complete scoped prototype suite after implementation/composition guards. **5/5 deliberate new-window defects caught.** The witness has **21,105 SYNTHETIC security-minutes**, 20 explicit prior sessions, a 04:00–09:35 window, independent gross-Z arithmetic, deterministic reversed replay, future-prefix identity and unique-union overlap accounting. No market-data or economic result is claimed.
 
-The public LIQN team reply at `https://feedback.liqn.ai/p/flow-calc` supersedes the earlier conclusion that vendor methodology was inaccessible. It discloses price changes, t-CDF df 0.25, 60-minute same-session scale, neutral warmup, volume times close, plain constituent sums, 04:00 accumulation and current-roster matched-clock cumulative median/MAD baselines. Exact numerical edge policies remain unknown.
+Evidence: `evidence/native_window_tests.json`, `evidence/window_pipeline.json`, `evidence/window_mutations.json`; exact file hashes in the package manifest. Original pressure SHA-256 remains `34cf424cdb33ac7edc2b1af83334f2117692b8b3569de93b6c632c6729a75edb`. The old 79-test receipt and historical Linux benchmark remain separately attributed to their source. New proof is not independent review, complete Macro regression, hosted CI, vendor parity or market admission.
 
-`disclosed_core_config()` follows the disclosed outline with explicit lagged ddof=1, 20-valid-change, gap and zero-scale assumptions. The original conservative percentage-return/segment-reset/null-warmup profile remains separately selectable. Neither is certified against LIQN output.
+The report now includes section 18; original 17-section research and seven native packets remain preserved. The full-window addition advances an independent safe dependency; the previous all-lanes-blocked statement did not preclude this newly identified pure calculation work. Direct execution rationale: LOWER_TOTAL_OVERHEAD for the bounded owned reference; no worker dispatch or bypass is implied.
 
-The report `../02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md` contains 17 sections, all five research tracks and seven bounded native packets. Its SHA-256 is `674ccf0f468acfc47a907e277b7867c4d7eb2c3d76493bb52b7a5561d74ebdb6` (66,544 bytes; 8,507 words). It includes exact mathematical/read/clock/null/overlap contracts, alternative-estimator studies, incumbent source findings, explicit capacity assumptions and falsifiers. The package manifest pins the published bytes.
+## Preserved blocked effects and source gates
 
-## Unresolved source, effect and admission boundaries
+- Four prior mandatory reads remain denied/unread: Massive integration masterplan, LIVE_DATA_POLYGON, build_polygon_intraday and massive_flatfiles. Do not retry, split, delegate or switch carriers/accounts/models to obtain those refused effects.
+- The prior benchmark-memory-unit/test/interpreter repair remains denied and unapplied. `witnesses.py`, `test_witnesses.py`, `mutation_check.py` are unchanged. The new mutation proof targets only the new window reducer, not that old operation.
+- The prior fresh-main fetch/target comparison remains denied; no current-base compatibility or semantic merge acceptance is asserted.
+- No rights/basis/clock/coverage-qualified one-minute cohort has been established. Existing enterprise rights are real; do not reopen the global license gate. Installed capture, exact adjustment/volume basis and actual first-seen receipts remain separate. The inspected retained-minute reader left basis unproved and used 900-second finality. Terminal#844 / Macro#8623 remain separately owned source-delivery dependencies.
+- Prior Executive preflight was readonly. No worker Job, watcher, new feed, daemon, provider purchase, source activation, raw-data/public payload, rank/alert/size/trade change, merge or deployment is created. All modifying effects must be reconciled on the original carrier before replay or succession.
 
-1. A prior Studio Direct READ batch was denied before dispatch for four mandatory Macro files: `research/MASSIVE_ADVANCED_INTEGRATION_MASTERPLAN_BY_FABLE.md`, `research/LIVE_DATA_POLYGON.md`, `scripts/build_polygon_intraday.py`, `collectors/massive_flatfiles.py`. They remain unread. Do not retry, split, delegate or change carriers/accounts/models to obtain that denied effect. Mandatory source census remains partial until actual platform-permitted recovery.
-2. A later attempted native benchmark-memory-unit/test/interpreter repair was denied before a process receipt. It did not modify `prototype/witnesses.py`, `prototype/test_witnesses.py` or `prototype/mutation_check.py`; unchanged hashes were verified. Do not retry or route around it. The historical Linux benchmark is not current-source or native-Mac throughput/RAM proof. No fresh native six-mutant result is claimed.
-3. Existing enterprise rights support the recorded research use, but neither the August probe nor static history proves current capture, per-observation availability or monetary-basis admission. The selected one-minute cohort has not been qualified. Terminal's retained-minute contract leaves basis unproved and includes a 900-second finality lag; a caller label cannot close that gate.
-4. Terminal #844 and Macro #8623 are independent source-delivery/custody dependencies. This source does not replace them, accept their delivery or read their held outcomes. Historical Terminal 5m inventory is not a 1m archive or current fleet census.
-5. No real market outcome, quote-signing accuracy or predictive edge was computed. No worker submission, pickup/START, watcher, daemon, provider purchase, source activation, public payload, merge or deployment was performed. Observed Executive interface was read-only; no alternate provider-spawn route was attempted.
+## Frontier
 
-There is no unresolved modifying effect. Explicit denials are not EFFECT_UNKNOWN and grant no retry permission.
+Publish and verify this source/evidence delta, keeping PR8677 Draft/HOLD and unarmed. Preserve old CI37882116352 / fences37882115950 as predecessor evidence; a new head needs its own checks. The predecessor fences were observed successful on this resume; CI remained unresolved at the last check. No polling-only or background Web execution claim.
 
-## Next action and acceptance
-
-First verify this documentation publication and its exact remote bytes; preserve Draft/HOLD until required checks and independent review are complete. Do not arm automatic merge or customer release.
-
-Then execute S2-P1 only when the exact source-owner/action gates permit: obtain an existing input bundle for explicitly selected AAPL/MSFT/NVDA plus SPY with actual one-minute observations, rights binding, compatible unadjusted price/volume basis, original event/source/reader clocks, coverage and immutable revision receipts. The existing qualifier and revision selector remain the owners. Missing data returns NOT_ADMITTED; no fabricated bars, availability or restored-history claim.
-
-Only that admitted bundle unlocks S2-P2's bounded offline replay consumer. S2-P3 quote-reference comparison, S2-P4 reusable factor projection, S2-P5 authenticated product proof and S2-P6 independent acceptance follow their recorded dependencies. No generic request for someone to start the build substitutes for the existing precise packets.
-
-The read-contract and report are deliverables, not final market-pilot or product acceptance. Finalization must report the actual remaining gates and verified frontier; no background continuation is claimed.
+Then inspect only material existing-source dependency progress. S2-P1 requires an existing owner-qualified AAPL/MSFT/NVDA + SPY minute bundle with compatible monetary basis, actual source/reader clocks, immutable revisions and coverage. Only positive source admission unlocks licensed S2-P2 replay. The pure reducer does not authenticate input metadata or create another qualifier, calendar, ingest or identity owner. Hold source/consumer promotion and all denied effects.
