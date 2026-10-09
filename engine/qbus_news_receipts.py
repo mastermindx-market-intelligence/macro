@@ -116,6 +116,7 @@ def parse_rights_receipt(
     *,
     now: datetime,
     audience: str = "site_full",
+    source: str = _SOURCE,
 ) -> QualifiedNewsRights:
     """Qualify an owner-issued source receipt for the current product use."""
 
@@ -124,7 +125,10 @@ def parse_rights_receipt(
         raise NewsReceiptError("rights_schema")
     if _text(obj.get("status"), "rights_status", maximum=32).lower() != "approved":
         raise NewsReceiptError("rights_not_approved")
-    if _text(obj.get("source"), "rights_source", maximum=64).lower() != _SOURCE:
+    requested_source = _text(source, "rights_source_requested", maximum=64).lower()
+    if requested_source not in ("benzinga", "tiingo"):
+        raise NewsReceiptError("rights_source_unsupported")
+    if _text(obj.get("source"), "rights_source", maximum=64).lower() != requested_source:
         raise NewsReceiptError("rights_source")
     receipt_id = _text(obj.get("receipt_id"), "rights_receipt_id", maximum=256)
     owner_ref = _text(obj.get("owner_ref"), "rights_owner_ref", maximum=1024)
@@ -174,13 +178,13 @@ def parse_rights_receipt(
     return QualifiedNewsRights(
         receipt_id=receipt_id,
         owner_ref=owner_ref,
-        source=_SOURCE,
+        source=requested_source,
         product_id=product_id,
         audience=requested_audience,
         effective_at=effective_at,
         expires_at=expires_at,
         rights=NewsReadRights(
-            allowed_sources=frozenset({_SOURCE}),
+            allowed_sources=frozenset({requested_source}),
             allow_title=True,
             allow_url=allow_url,
             allow_teaser=allow_teaser,
@@ -193,13 +197,14 @@ def load_rights_receipt(
     *,
     now: datetime,
     audience: str = "site_full",
+    source: str = _SOURCE,
 ) -> QualifiedNewsRights | None:
     """Read an owner-provided receipt; every read/parse/qualification fault denies."""
 
     receipt_path = Path(path)
     try:
         raw = json.loads(receipt_path.read_text(encoding="utf-8"))
-        return parse_rights_receipt(raw, now=now, audience=audience)
+        return parse_rights_receipt(raw, now=now, audience=audience, source=source)
     except (OSError, ValueError, TypeError, NewsReceiptError):
         return None
 
