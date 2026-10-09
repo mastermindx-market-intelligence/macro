@@ -164,7 +164,9 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
     import hmac
     from dataclasses import replace
     from datetime import timedelta
+    from urllib.parse import urlsplit, parse_qsl
     from app import catalyst_optin
+    from engine.marketing.links import canonical_link
     from engine.marketing import catalyst_scan
     from engine.marketing.catalyst_packets import PublicSourceGrant, build_event_packet
     from engine.marketing.catalyst_lifecycle import (
@@ -322,7 +324,18 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
         assert first["results"][0]["status"] == "SUPPORTED"
         assert first["results"][0]["sources"][0]["url"].startswith("https://www.sec.gov/Archives/")
         # User sees the same material facts before offering any email form.
-        public_html = client.get("/api/catalyst?tickers=PFE")
+        # Use the existing D07 canonical UTM link encoder; this is a fake
+        # partner claim, not proof of an editor contract or paid conversion.
+        campaign_link = canonical_link(
+            "partner-editor-demo", "catalyst_scan", "cp_synthetic_00",
+            base_url="https://www.mastermind-x.com/api/catalyst",
+            utm_source="partner",
+        )
+        first_touch = dict(parse_qsl(urlsplit(campaign_link).query))
+        assert set(first_touch) == {
+            "utm_source", "utm_medium", "utm_campaign", "utm_content",
+        }
+        public_html = client.get("/api/catalyst?tickers=PFE&" + urlsplit(campaign_link).query)
         assert public_html.status_code == 200
         assert "Evidence checked" in public_html.text
         assert 'href="/stocks/PFE.html"' in public_html.text
@@ -333,7 +346,7 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
         body = {
             "email": "test_user@example.invalid", "scan_receipt": token,
             "consent_checked": True, "scope": SCOPE, "form_elapsed_ms": 4000,
-            "first_touch": {"utm_source": "synthetic_fixture"},
+            "first_touch": first_touch,
         }
         # A cross-site browser-simple POST cannot trigger the OTP owner even
         # with a valid signed first-scan receipt, because it is not JSON-typed.
@@ -368,7 +381,8 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
         assert verified["status"] == "verified"
         assert verified["event_id"] == first["event_id"]
         assert verified["scope"] == SCOPE
-        assert verified["attribution"]["utm_source"] == "synthetic_fixture"
+        assert all(verified["attribution"][key] == value
+                   for key, value in first_touch.items())
         assert verified["attribution"]["user_ref"].startswith("u_")
         assert "test_user@" not in confirmation.text
         assert "9507e687" not in confirmation.text
@@ -416,7 +430,8 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
         sent = service.deliver(revision, now=now + timedelta(minutes=4))
         assert revisions.rights_reads == 2  # before roster and before sender
         assert sent[0]["state"] == "PROVIDER_ACCEPTED"
-        assert sent[0]["utm_source"] == "synthetic_fixture"
+        assert all(sent[0][key] == value
+                   for key, value in first_touch.items())
         assert "email" not in sent[0] and "9507e687" not in str(sent)
         assert len(sender.calls) == 1
         assert sender.calls[0][2] == (
