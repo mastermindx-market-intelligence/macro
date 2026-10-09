@@ -8,13 +8,13 @@ objective: >-
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: active
 blocked_by:
-  - Actual current runtime marker9cfd3049 follows merged780. NVDA history is restored and real candles verified at three sizes; source safeguard873/ae6c7649 has1673nativePASS/8skip/40subtests, but final independent review/CI/release remain open.
-  - Ordinary839/853CI approvals are automatic through the qualified18-case helper bound to the existing quietheartbeat; new App850 enrollment is a distinct exact security grant, and CI/merge/release are independent gates.
+  - Actual current runtime marker9cfd3049 follows merged780. NVDA history is restored and real candles verified at three sizes; source safeguard873/ae6c7649 passed independent37focused/full1660native hostlimited and parent1673nativePASS/8skip/40subtests, allrequiredCI green. Ready/auto-merge armed; refreshedcd070 has unchangedatomicblobs and newlyapprovedCI37902711347queued. Installedguard/release remainopen.
+  - Ordinary839/853/873CI approvals are automatic through the qualified20-case helper bound to the existing quietheartbeat; new App850 enrollment is a distinct exact security grant, and CI/merge/release are independent gates.
   - A04/0031 andA09/0032 stay unapplied behind0030/804. Actual nativeT03f is now sole modifying804 writer; IW2 independently reproduced cap races and delayed-original4002receipts. Denied792/B5/rights preserved.
   - A06/862 retains explicitT07 sourcehold/livepickup; no duplicate writer or rearm.
-  - Macro8687/4df6828f has770nativePASS and36actualChromium cases/zero skips; source rejected5cd stale-PS money leak is repaired. Final exact-delta review and orderedDDL/production acceptance remain open.
+  - Macro8687/4df6828f has770nativePASS and36actualChromium cases/zero skips; source rejected5cd stale-PS money leak is repaired. Final exact-delta independent177PASS/0skip accepted; orderedDDL/production acceptance remainopen.
   - Original A04 terminal result recovered by accepted installed Fabric sources; parent accept returned0 but canonical readback remainsfalse. Owner owns this discrepancy plus supported same-original zero-effectA09 re-admission engineering; no frozen run is replaced.
-  - Current-principal JSON/CSV export bytes match, but whole research archive is incomplete. A11 current643/ea7c8995 is independently reviewing the nativeT04 repair; source-writer join and squash evidence gate remain open. Paid functional proof still needs the intended existing principal.
+  - A10 integrity875/481c4079 has8040nativePASS/4todo,91focused,TSC0 and6actualNext ENZHresponsive downloads/0skip; independentFabricreviewactive, wholearchiveincomplete. A11ea7 independentPASS covers cutoff only; actualT04 stillrepairs future-fill/Options leakage at792a0973 withsolewriter retained andfinalreview/squashheal gatesopen. Paid functional proof still needs the intended existing principal.
 program: terminal-charting
 repos: [terminal, macro]
 owner: ceo-sol
@@ -29,8 +29,8 @@ waves:
     title: Consume higher-level repairs and deliver accepted scoped changes
     status: in_progress
 next_action: >-
-  Consume873/ae6c7649 and8687/4df6828f independent final reviews, reproduce/fix findings, then advance exact CI and authorized release gates.
-  Consume retained643 T04 source review and actual nativeTop10 writer disposition before mutation; resolve its squash evidence ancestry failure truthfully and qualify the actual replay UI.
+  Consume873refreshedcd070 CI/merge via existingobserver, then canonicalrelease/installedproducerhash/liveproof. Macro8687/4df independentfinaldeltaaccepted; advanceits orderedDDL/exactCI/canonicalrelease gates.
+  Consume actualT04 finalfuture-fill/Optionsrepairs andsettledwriterdisposition; qualifyfinal643head andtruthfulpost-squashheal beforeactualreplayUIacceptance. Consume875/481c4079 retainedFabricreview andadvanceits normaldelivery; preservewholearchivegaps.
   Continue804 via actualT03f writer andIW2 independentPG review. Retain862 T07hold and ordered merged AND applied0030/31/32, denied792/B5 and current rights.
   Consume installed Fabric owner's exact A04 acceptance reconciliation and supported originalA09 recovery path. Continue ready independent export/product work while observers own external waits. Whole Audit20 acceptance remains false.
 owns_paths: []
@@ -158,3 +158,9 @@ Macro8687/4df6828f closes independently reproduced stale-state monetary leakage.
 A11 actual signed-in3D→D replay retained index2245 while changing2325bars/close202.41 to6971bars/close0.8292 underREPLAY. Parent recorded the counterexample then restored3D/replayoff without touching user drawings or the protectedScripts buffer. NativeT04 had already returned the repair on existing643/ea7c8995; parent joined the recovered nativeTop10 coordinator throughIW2, routed immutable Fabric review and awaits actual writer disposition before mutation. The known squash/capturedAtHead ancestry failure is an explicit release gate. Source-lane and production proof remain separate.
 
 Fabric owner installed independently qualified durable-publication/default-path repairs and recovered originalA04's2759-byte result with original root/parent, exact six hashes, released lease and no reexecution/fabricatedDONE. Parent acceptance command returned0 once, but subsequent canonicalstatus stillaccepted:false; no repeat or manual ledger alteration. Exact discrepancy and still-unsupported original zero-effectA09 recovery engineering are commissioned to that owner. Ordinary GitHubCI helper18adversarial checks and two actual06:53POST_SUCCEEDED/QUEUED runs are bound to the sameACTIVE15-minute quietheartbeat; no operator command or second scheduler. This record is a material save and does not end the mission.
+
+Oct9 08:29 frontier: independent final873 source review accepted the correctedanchor pin and atomicpublisher; requiredCI37898775034green, PRready/merge-on-green/nativeauto-merge requested once. Controllermergedcurrent9cfd intoit ascd070; allthree atomicblobs remainbyte-identical. Extended20-check ordinaryapprovalhelper to873 and approvedtrustedassociated refreshedrun37902711347, readbackqueued, sameauthenticatedcredential/nooperatorcommand. Existingquiet15-minuteheartbeatupdated/readbackverified; nosecondobserver. Macro8687 final4df independent177PASS accepted the seven-file stale-qualifier delta, withno producerunit/DDL/releaseclaim.
+
+A10 newPR875/481c407908beb7d83852c0f4a2b6569db40d8b91 adds unkeyedSHA256 logicalpayload/collection/manifest receipts, honestretainedcounts/statuses andreadintervals, plus completeCSVbytebinding andembeddedcanonicalJSON forrelationshipfidelity. Legacywatchlist/position inventorycompleteness explicitlyunproven. Parent91focused/full8040PASS4todo492files,TSC0 and6actualNext ENZHxthree-sizes JSONCSVdownloads/0skip/nooverflow. Installedlockfiledependencies locally onapprovedSSD afterTurbopack rejectedcross-worktreesymlink; noinstallationpolicybypass. Normalpicker admittedexactsourceGrok4.6/ubuntu0 reviewchildterminal-audit20-a10-export-integrity-source-review-20261009 at08:21, noresult/acceptanceyet. PRremainsdraft andbroaderarchiveadapters/productionacceptanceopen.
+
+ActualnativeTop10 holds643T04 foradditional replayGapZonesfuture-fillP0/OptionsLevelsP1 repairs; ea7 independent14-probePASS iscutoff-only. NoAudit20branchmutation/successor untilactualwriterrelease. 80428d85501 receivedindependentAPPROVE/noP0-P2 andIW2unchanged12/12PGboundaryproof plusretained6/6candidate5/6baseline-failharness; same-ownerP3cleanup/CI/writerdispositionstillactive. Eightoldcarriercustodymaprequestedonce; queued!=returned/vacant. Thisdurablesaveisnotcompletionorastop.
