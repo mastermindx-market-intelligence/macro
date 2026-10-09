@@ -1,0 +1,25 @@
+{
+  "capability": "Requested-width browser acceptance rejects expanded mobile layout viewports",
+  "source_commit": "00e192d21cb5347f7e020fe9798aac176ca553e3",
+  "previous_head": "9f6b536f3a720b9c249d5d6dd24018b630869200",
+  "product_template_and_model_changed": false,
+  "red": "10 failed / 3 controls passed",
+  "green": "150 passed",
+  "browser": "32/32 R1 synthetic captures fit requested widths",
+  "observed_existing_page": {
+    "kind": "retained R2-only archived-builder output without R1 prerequisite",
+    "desktop_controls": 4,
+    "mobile_rejected": 4,
+    "requested_mobile_width": 390,
+    "actual_english_width": 518,
+    "actual_chinese_width": 425
+  },
+  "evidence_manifest": "mockups/evidence/commodities-requested-viewport-r1/manifest.json",
+  "tests_log": "........................................................................ [ 48%]\n........................................................................ [ 96%]\n......                                                                   [100%]\n150 passed in 20.72s\n",
+  "production_proven": false,
+  "remaining_gates": [
+    "independent exact-source review",
+    "applicable current-head CI",
+    "integrated full page and served data proof"
+  ]
+}

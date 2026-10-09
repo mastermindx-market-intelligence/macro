@@ -21,6 +21,8 @@ from pathlib import Path
 import pandas as pd
 import pytest
 from jinja2 import Environment
+from scripts import build_commodities as b
+from engine import commodity_mtf as m
 
 _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
@@ -304,6 +306,7 @@ def _breadth(n_up=12, n_bull=10, n_members=17, diversity=0.2) -> dict:
         "n_members": n_members,
         "n_up_trend": n_up,
         "n_bull_momentum": n_bull,
+        "n_low_risk": n_members,  # complete synthetic coverage; not a live reading
         "trend_diversity": diversity,
     }
 
@@ -344,9 +347,9 @@ def test_hero_act_uses_the_same_sync_truth() -> None:
     st_sync = sector_stance(conf, _breadth(diversity=0.2))
     st_many = sector_stance(conf, _breadth(diversity=0.8))
     assert st_sync["tone"] == "act"
-    assert st_sync["word_en"] == "Act"
-    assert "in sync" in st_sync["sub_en"]
-    assert st_many["tone"] == "act"
+    assert st_sync["word_en"] == "Broad trend strength"
+    assert "dispersion is low" in st_sync["sub_en"]
+    assert st_many["tone"] == "watch"
     assert "in sync" not in st_many["sub_en"]
     assert "different stories" in st_many["sub_en"]
 
@@ -356,7 +359,7 @@ def test_take_profits_row_blocks_act_hero() -> None:
     members = _board({"corn": "Blowing off — extended"})
     st = sector_stance({"members": members}, _breadth(diversity=0.2))
     assert st["tone"] == "selective"
-    assert st["word_en"] == "In favour"
+    assert st["word_en"] == "Mixed conditions"
     assert "in sync" not in st["sub_en"].lower()
     assert "Act" not in st["word_en"]
     assert st["tone"] != "protect"
@@ -385,8 +388,8 @@ def test_hero_three_way_act_zero_stretched() -> None:
     """Branch 1: all Neutral, in-sync, broad+mom → Act."""
     st = sector_stance({"members": _board(["Neutral"] * 17)}, _breadth(diversity=0.2))
     assert st["tone"] == "act"
-    assert st["word_en"] == "Act"
-    assert "in sync" in st["sub_en"]
+    assert st["word_en"] == "Broad trend strength"
+    assert "dispersion is low" in st["sub_en"]
 
 
 def test_hero_three_way_selective_one_and_four() -> None:
@@ -396,10 +399,10 @@ def test_hero_three_way_selective_one_and_four() -> None:
         _breadth(diversity=0.2),
     )
     assert one["tone"] == "selective"
-    assert one["word_en"] == "In favour"
-    assert one["word_zh"] == "倾向做多"
+    assert one["word_en"] == "Mixed conditions"
+    assert one["word_zh"] == "品种分化"
     assert "1 of 17 stretched" in one["sub_en"]
-    assert "trim that" in one["sub_en"]
+    assert "asset-specific warning" in one["sub_en"]
     assert "in sync" not in one["sub_en"]
     assert "are " not in one["sub_en"]
 
@@ -414,7 +417,7 @@ def test_hero_three_way_selective_one_and_four() -> None:
     )
     assert four["tone"] == "selective"
     assert "4 of 17 stretched" in four["sub_en"]
-    assert "trim those" in four["sub_en"]
+    assert "asset-specific warnings" in four["sub_en"]
     assert four["tone"] != "protect"
     assert 4 / 17 < FRAC_TOP_PROTECT <= 5 / 17
 
@@ -425,7 +428,7 @@ def test_hero_three_way_protect_five_of_seventeen() -> None:
     states = {n: "Blowing off — extended" for n in names}
     st = sector_stance({"members": _board(states)}, _breadth(diversity=0.2))
     assert st["tone"] == "protect"
-    assert st["word_en"] == "Protect gains"
+    assert st["word_en"] == "Widespread overextension"
     assert "5 of 17 commodities are stretched" in st["sub_en"]
     assert "in sync" not in st["sub_en"]
 
@@ -450,7 +453,7 @@ def test_hero_protect_on_index_blowoff_even_with_zero_stretched() -> None:
         index_shock="blowoff",
     )
     assert st["tone"] == "protect"
-    assert "index itself is blowing off" in st["sub_en"].lower()
+    assert "index-level warning" in st["sub_en"].lower()
     assert "in sync" not in st["sub_en"]
 
 
@@ -481,7 +484,7 @@ def test_hero_current_shaped_board_is_selective() -> None:
         index_shock="normal",
     )
     assert st["tone"] == "selective"
-    assert st["word_en"] == "In favour"
+    assert st["word_en"] == "Mixed conditions"
     assert "3 of 17 stretched" in st["sub_en"]
     assert "Heating Oil" not in st["sub_en"]
     assert "Corn" not in st["sub_en"]
@@ -912,3 +915,225 @@ def test_extended_zh_state_word_is_unified() -> None:
     legend = _legend_block()
     assert "超涨延伸" in legend
     assert _heat_cell("normal", "bull", "Extended — late cycle")[2] == "超涨延伸"
+
+
+# Chairman-approved R1: asset-first guidance; numerical policy unchanged.
+NAMES = ['oil','natgas','gasoline','heating_oil','gold','silver','platinum','palladium','copper','corn','wheat','soybeans','live_cattle','coffee','sugar','cocoa','cotton']
+
+def board():
+    return {'members': [{'name': n, 'state': 'Neutral'} for n in NAMES]}
+
+def breadth(mom=8):
+    return {'n_members':17,'n_up_trend':13,'n_bull_momentum':mom,'n_low_risk':4,'trend_diversity':0.8}
+
+def tape(state='RALLY ON', down=('D','3D')):
+    tf={k:{'macd_pos':k not in down,'macd_cross_dn':k in down,'rsi14':40 if k in down else 60} for k in ('D','3D','W','2W','ME')}
+    return {'mtf':tf,'ladder':{'regime':'bull','state':state},'cycle':{}}
+
+def test_screenshot_breadth_never_grants_sector_entry():
+    v=b.sector_stance(board(),breadth(),in_sync=False)
+    assert v['word_en']=='Mixed conditions'
+    assert v['tone']!='act'
+    assert '8/17' in v['sub_en']
+
+@pytest.mark.parametrize('conf', [{}, {'members':[]}, {'members':[{'name':'gold','state':'Neutral'}]}])
+def test_partial_confluence_is_not_clearance(conf):
+    assert b.sector_stance(conf,breadth())['word_en']=='Data incomplete'
+
+@pytest.mark.parametrize('value',[None,float('nan'),float('inf'),-1,'bad'])
+def test_invalid_dispersion_is_unknown(value):
+    assert b._sync_read(value)['in_sync'] is None
+
+@pytest.mark.parametrize('key,value',[('n_members',0),('n_members',True),('n_up_trend',18),('n_bull_momentum',-1),('n_low_risk',None)])
+def test_invalid_breadth_is_incomplete(key,value):
+    br=breadth(); br[key]=value
+    assert b.sector_stance(board(),br)['word_en']=='Data incomplete'
+
+@pytest.mark.parametrize('state',['Neutral','Blowing off — extended','Extended — late cycle','Euphoric top — rolling over','Washout bottom forming'])
+def test_sector_labels_are_descriptions_not_instructions(state):
+    c=board(); c['members'][0]['state']=state
+    v=b.sector_stance(c,breadth(17),in_sync=True)
+    assert v['word_en'] not in ('Act','In favour','Protect gains','Get ready','Stand aside')
+    assert 'trim' not in v['sub_en'].lower()
+
+@pytest.mark.parametrize('state',['RALLY ON','FRESH BUY','TURN SIGNALED','DECLINE'])
+def test_bearish_daily_three_day_never_becomes_aligned_or_buyable(state):
+    v=m.confluence_verdict(tape(state),'gold')
+    assert v['grade'] not in ('TREND-FOLLOW','BUY-THE-DIP')
+    assert 'Aligned uptrend' not in v['headline']
+    assert 'Healthy pullback' not in v['headline']
+    assert v['per_tf']['D']=='down' and v['per_tf']['3D']=='down'
+
+@pytest.mark.parametrize('missing',['D','3D','W','2W','ME'])
+def test_missing_timeframe_cannot_claim_alignment(missing):
+    a=tape(down=()); del a['mtf'][missing]
+    v=m.confluence_verdict(a,'gold')
+    assert v['grade']!='TREND-FOLLOW'
+    assert 'Aligned uptrend' not in v['headline']
+
+def test_truly_aligned_control_is_preserved():
+    v=m.confluence_verdict(tape(down=()),'gold')
+    assert v['grade']=='TREND-FOLLOW'
+    assert v['short_sign']==1 and v['long_sign']==1
+
+def test_fx_alias_is_not_changed_by_commodity_repair():
+    assert m.confluence_verdict(tape(),'EURUSD')['grade']=='TREND-FOLLOW'
+
+def test_pullback_is_not_automatically_an_entry():
+    v=m.confluence_verdict(tape('DECLINE'),'silver')
+    assert v['grade']=='WAIT'
+    assert 'unconfirmed' in v['headline'].lower()
+
+def _template():
+    return (Path(__file__).resolve().parents[1]/'templates/commodities.html.j2').read_text()
+
+@pytest.mark.parametrize('shock',[None,'unexpected','',False])
+def test_missing_or_unknown_index_shock_is_not_calm(shock):
+    src=_template(); start=src.index('{# 4 — shock state #}'); end=src.index('<!-- ========================= LIVE PRICE STRIP',start)
+    html=Environment().from_string(src[start:end]).render(ix={'shock_state':shock,'shock_en':'Unknown','shock_zh':'未知'},t=lambda en,zh:en)
+    assert 'Calm' not in html
+    assert 'unavailable' in html.lower()
+
+def test_price_proxy_does_not_claim_measured_stagflation():
+    src=_template()
+    assert 'gold and silver usually hold up' not in src
+    assert 'Price-derived context' in src
+
+
+@pytest.mark.parametrize('shock,expected', [('blowoff','Index overextension'),('exogenous_bid','Index upside shock')])
+def test_index_only_warning_does_not_claim_widespread_member_stress(shock,expected):
+    v=b.sector_stance(board(),breadth(17),in_sync=True,index_shock=shock)
+    assert v['word_en']==expected
+    assert 'Widespread' not in v['word_en']
+
+@pytest.mark.parametrize('shock', ['washout', 'exogenous_pressure'])
+def test_index_downside_shock_cannot_be_broad_strength(shock):
+    v=b.sector_stance(board(),breadth(17),in_sync=True,index_shock=shock)
+    assert v['word_en']=='Index downside shock'
+    assert v['tone']!='act'
+
+def test_unrecognized_identity_cannot_fill_member_coverage():
+    c=board(); c['members'][0]['name']='not-a-configured-commodity'
+    assert b.sector_stance(c,breadth())['word_en']=='Data incomplete'
+
+def test_conflicting_duplicate_is_incomplete():
+    c=board(); c['members'].append({'name':'gold','state':'Blowing off — extended'})
+    assert b.sector_stance(c,breadth())['word_en']=='Data incomplete'
+
+def test_identical_duplicate_does_not_inflate_coverage():
+    c=board(); c['members'].append(dict(c['members'][0]))
+    assert b.sector_stance(c,breadth())['word_en']=='Mixed conditions'
+
+@pytest.mark.parametrize('state,short', [('RALLY ON',1),('DECLINE',-1)])
+def test_display_guard_preserves_numerical_mtf_votes(state,short):
+    v=m.confluence_verdict(tape(state),'gold')
+    assert (v['short_sign'],v['mid_sign'],v['long_sign'])==(short,1,1)
+    assert (v['driver_lean'],v['trend_lean'])==(0,0)
+
+def test_bearish_macd_state_survives_expired_cross_event():
+    a=tape(); a['mtf']['D']['macd_cross_dn']=False; a['mtf']['3D']['macd_cross_dn']=False
+    v=m.confluence_verdict(a,'silver')
+    assert v['grade']=='WAIT' and v['per_tf']['3D']=='down'
+
+
+@pytest.mark.parametrize('grade,expected', [
+    ('TREND-FOLLOW', 'Timeframes trending up'),
+    ('BUY-THE-DIP', 'Pullback within structural uptrend'),
+    ('AVOID', 'Defensive conditions'),
+    ('new-unknown-state', 'Timeframe read unavailable'),
+    (None, 'Timeframe read unavailable'),
+    (False, 'Timeframe read unavailable'),
+])
+def test_index_timeframe_chip_is_descriptive_not_an_instruction(grade, expected):
+    en, zh = b._mtf_grade_plain(grade)
+    assert en == expected
+    assert zh and zh != en
+
+
+# R1 browser acceptance: a captured PNG is not proof that warnings fit the page.
+@pytest.mark.parametrize("geometry", [
+    {"width":390,"scroll":390}, {"width":1440,"scroll":1440},
+    {"width":390,"scroll":391},
+])
+def test_browser_evidence_accepts_fitting_document(geometry):
+    from scripts.capture_commodities_w6_evidence import assert_document_fits
+    assert_document_fits(geometry)
+
+@pytest.mark.parametrize("geometry", [
+    {"width":390,"scroll":517}, {"width":390,"scroll":415},
+    {"width":0,"scroll":0}, {"width":390,"scroll":float("nan")},
+    {"width":390,"scroll":float("inf")}, {"width":True,"scroll":390}, {},
+])
+def test_browser_evidence_rejects_overflow_or_unknown_geometry(geometry):
+    from scripts.capture_commodities_w6_evidence import assert_document_fits
+    with pytest.raises(ValueError):
+        assert_document_fits(geometry)
+
+
+def test_capture_wires_document_fit_check_before_screenshot():
+    from scripts.capture_commodities_w6_evidence import _capture
+    src=inspect.getsource(_capture)
+    assert src.index("assert_document_fits(geometry)") < src.index("png = page.screenshot")
+
+
+def test_mobile_warning_layout_keeps_reasons_below_name_and_score():
+    src=_tpl()
+    assert '.brow .st { grid-column: 1 / -1; grid-row: 2;' in src
+    assert '.brow .meter { grid-column: 2; grid-row: 1;' in src
+
+
+
+def test_capture_fixture_uses_current_descriptive_index_projection():
+    from scripts.capture_commodities_w6_evidence import fixture_vm
+    from scripts.build_commodities import _mtf_grade_plain
+    index = fixture_vm()["vm"]["index"]
+    assert (index["mtf_en"], index["mtf_zh"]) == _mtf_grade_plain("TREND-FOLLOW")
+
+
+def test_r1_incomplete_fixture_uses_real_safe_producer():
+    from scripts.capture_commodities_w6_evidence import fixture_vm
+    context = fixture_vm(scenario="r1-incomplete")
+    assert context["vm"]["stance"]["word_en"] == "Data incomplete"
+    assert context["vm"]["index"]["shock_state"] is None
+    assert "Synthetic" in context["as_of"]
+
+
+def test_r1_gold_fixture_computes_disagreement_instead_of_inventing_verdict():
+    from scripts.capture_commodities_w6_evidence import fixture_vm
+    context = fixture_vm(scenario="r1-gold-conflict")
+    gold = next(row for row in context["vm"]["detail"] if row["name"] == "gold")
+    assert gold["verdict"]["grade"] == "WAIT"
+    assert gold["verdict"]["short_sign"] == 1  # numeric policy remains unchanged
+    assert gold["verdict"]["per_tf"]["3D"] == "down"
+    assert gold["mtf_rows"][1]["trend"] == "down"
+
+
+def test_capture_rejects_unknown_r1_fixture_scenario():
+    from scripts.capture_commodities_w6_evidence import fixture_vm
+    with pytest.raises(ValueError):
+        fixture_vm(scenario="unrecognized")
+
+
+@pytest.mark.parametrize("width", [518, 425, 1440])
+def test_document_fit_rejects_expanded_requested_viewport(width):
+    from scripts.capture_commodities_w6_evidence import assert_document_fits
+    with pytest.raises(ValueError, match="viewport"):
+        assert_document_fits({"width":width,"scroll":width,"viewport_width":390})
+
+@pytest.mark.parametrize("viewport", [None, True, 0, -1, float("nan"), float("inf")])
+def test_document_fit_rejects_invalid_requested_viewport(viewport):
+    from scripts.capture_commodities_w6_evidence import assert_document_fits
+    with pytest.raises(ValueError):
+        assert_document_fits({"width":390,"scroll":390,"viewport_width":viewport})
+
+@pytest.mark.parametrize("width,scroll,viewport", [(390,390,390),(391,391,390),(1440,1440,1440)])
+def test_document_fit_accepts_exact_requested_viewport(width,scroll,viewport):
+    from scripts.capture_commodities_w6_evidence import assert_document_fits
+    assert_document_fits({"width":width,"scroll":scroll,"viewport_width":viewport})
+
+
+def test_capture_binds_requested_viewport_before_geometry_gate():
+    from scripts.capture_commodities_w6_evidence import _capture
+    src=inspect.getsource(_capture)
+    assert 'geometry["viewport_width"] = job["width"]' in src
+    assert src.index('geometry["viewport_width"] = job["width"]') < src.index("assert_document_fits(geometry)")
