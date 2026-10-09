@@ -6,6 +6,10 @@ from decimal import Decimal
 from engine.tick_plane.minute_projection import (
     MINUTE_NS, MinuteProjectionRefusal, project_provisional_minute,
 )
+from engine.tick_plane.private_minute_artifact import (
+    project_private_minute, verify_private_minute_bytes,
+    PrivateMinuteRefusal, SCHEMA as PRIVATE_MINUTE_SCHEMA,
+)
 from engine.tick_plane.pilot_diagnostics import (
     cohort_row_from_source_minutes, summarize_tp1_soak_evidence,
     PilotEvidenceRefusal,
@@ -525,6 +529,178 @@ class NativeVolumePilotIntegrationTests(unittest.TestCase):
         first=native_pilot_row(minute=a)
         second=native_pilot_row(minute=b)
         self.assertNotEqual(first["source_receipt"],second["source_receipt"])
+
+
+class PrivateServiceMinuteHandoffTests(unittest.TestCase):
+    def sealed(self, original=None):
+        return project_private_minute(
+            source_minute=run() if original is None else original,
+            source_manifest_sha256="e"*64)
+
+    def test_canonical_minute_can_render_private_service_bytes(self):
+        receipt=self.sealed()
+        self.assertEqual(receipt["state"],"NOT_PUBLISHED")
+        self.assertEqual(receipt["authority"],"PRIVATE_DERIVED_HANDOFF_ONLY")
+        self.assertFalse(receipt["is_public_delivery_authorized"])
+        self.assertFalse(receipt["source_custody_proven"])
+        body=verify_private_minute_bytes(
+            expected_sha256=receipt["sha256"],
+            expected_byte_length=receipt["byte_length"],
+            blob=receipt["bytes_private_only"])
+        self.assertEqual(body["schema"],PRIVATE_MINUTE_SCHEMA)
+        self.assertEqual(body["distribution_class"],
+                         "PRIVATE_SERVICE_HOLD_PENDING_LICENSE_AND_CONSUMER_REVIEW")
+        self.assertEqual(body["counts"]["n_sampled_prints"],1)
+        self.assertEqual(body["volume_shares"]["source_volume_included_shares"],"1.00")
+        self.assertIsNone(body["absorption_signal"])
+
+    def test_private_projection_never_contains_original_vendor_or_source_receipt(self):
+        record=run()
+        record["source_watermark_receipt"]="SENSITIVE_ORIGINAL_SOURCE_RECEIPT_DO_NOT_COPY"
+        receipt=self.sealed(record)
+        payload=receipt["bytes_private_only"]
+        self.assertNotIn(b"SENSITIVE_ORIGINAL_SOURCE",payload)
+        self.assertNotIn(b"raw_frame_bytes",payload)
+        self.assertNotIn(b"source_quote",payload)
+        self.assertNotIn(b"trade_id",payload)
+        self.assertNotIn(b"api_key",payload)
+        self.assertNotIn(b"public_url",payload)
+        self.assertNotIn(b"source_watermark_receipt\":\"SENSITIVE",payload)
+
+    def test_repeat_render_is_byte_stable(self):
+        a=self.sealed()
+        b=self.sealed(copy.deepcopy(run()))
+        self.assertEqual(a["sha256"],b["sha256"])
+        self.assertEqual(a["bytes_private_only"],b["bytes_private_only"])
+
+    def test_source_generation_changes_private_artifact_identity(self):
+        record=run()
+        record["source_observation_sha256"]="f"*64
+        a=self.sealed()
+        b=self.sealed(record)
+        self.assertNotEqual(a["sha256"],b["sha256"])
+
+    def test_unknown_quote_flow_remains_unknown_and_not_actionable(self):
+        m=run([row(state="UNKNOWN",reason="QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT")])
+        sealed=self.sealed(m)
+        decoded=verify_private_minute_bytes(
+            expected_sha256=sealed["sha256"],
+            expected_byte_length=sealed["byte_length"],
+            blob=sealed["bytes_private_only"])
+        self.assertEqual(decoded["counts"]["n_unclassified"],1)
+        self.assertEqual(decoded["notional_usd"]["unknown_notional_usd"],"100.50")
+        self.assertFalse(decoded["rank_trade_alert_authority"])
+        self.assertIsNone(decoded["price_response_bps"])
+
+    def test_mutated_source_shape_may_not_smuggle_raw_tape(self):
+        m=run()
+        m["raw_vendor_quote"]={"secret":"payload"}
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"strict source contract"):
+            self.sealed(m)
+
+    def test_empty_or_not_matured_minute_not_exportable(self):
+        for record in (
+            run([]),
+            run(source_completeness_attested=False),
+            run(source_complete_through_ns=M+MINUTE_NS-1),
+        ):
+            with self.subTest(state=record["state"]):
+                with self.assertRaises(PrivateMinuteRefusal):
+                    self.sealed(record)
+
+    def test_source_replay_cannot_claim_final_correction(self):
+        m=run()
+        m["correction_status"]="FINAL"
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"source state"):
+            self.sealed(m)
+
+    def test_future_labels_and_signals_refused(self):
+        for label in ("absorption_signal","forward_return_label",
+                      "price_response_label","market_capture_coverage"):
+            with self.subTest(field=label):
+                m=run()
+                m[label]="FAKE_ACTIONABLE"
+                with self.assertRaisesRegex(PrivateMinuteRefusal,"future"):
+                    self.sealed(m)
+
+    def test_rank_gate_permission_cannot_be_upgraded_in_private_view(self):
+        m=run()
+        m["rank_or_trade_authority"]=True
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"authority"):
+            self.sealed(m)
+
+    def test_invalid_source_manifest_digest_refused(self):
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"source_manifest_sha256"):
+            project_private_minute(source_minute=run(),source_manifest_sha256="short")
+
+    def test_unqualified_original_availability_rejected(self):
+        m=run()
+        m["original_latest_available_ns"]=m["decision_ns"]+1
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"time/receipt"):
+            self.sealed(m)
+
+    def test_notional_and_share_conservation_tested_before_serialization(self):
+        for field in ("gross_sampled_notional_usd","source_volume_included_shares"):
+            with self.subTest(field=field):
+                m=run()
+                m[field]="999999"
+                with self.assertRaisesRegex(PrivateMinuteRefusal,"conservation"):
+                    self.sealed(m)
+
+    def test_tampered_lit_or_volume_counters_refused(self):
+        for field in ("n_lit","n_source_volume_included_prints",
+                      "n_lit_classified_quote_le5s_prints"):
+            with self.subTest(field=field):
+                m=run()
+                m[field]+=1
+                with self.assertRaisesRegex(PrivateMinuteRefusal,"denominators"):
+                    self.sealed(m)
+
+    def test_untyped_reason_key_cannot_contain_secret_or_raw_path(self):
+        m=run([row(state="UNKNOWN",reason="SOURCE_UNQUALIFIED")])
+        m["reason_counts"]={"SENSITIVE /home/secret":1}
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"free text"):
+            self.sealed(m)
+
+    def test_nonfinite_notional_never_serialized(self):
+        for bad in ("NaN","Infinity","-1"):
+            with self.subTest(value=bad):
+                m=run()
+                m["buy_proxy_notional_usd"]=bad
+                with self.assertRaises(PrivateMinuteRefusal):
+                    self.sealed(m)
+
+    def test_wrong_readback_bytes_length_refused(self):
+        a=self.sealed()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"byte length"):
+            verify_private_minute_bytes(expected_sha256=a["sha256"],
+                expected_byte_length=a["byte_length"]-1,
+                blob=a["bytes_private_only"])
+
+    def test_wrong_readback_sha_refused(self):
+        a=self.sealed()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"digest mismatch"):
+            verify_private_minute_bytes(expected_sha256="f"*64,
+                expected_byte_length=a["byte_length"],
+                blob=a["bytes_private_only"])
+
+    def test_readback_rejects_forged_distribution_even_with_matching_sha(self):
+        import json,hashlib
+        a=self.sealed()
+        parsed=json.loads(a["bytes_private_only"])
+        parsed["public_delivery_allowed"]=True
+        raw=(json.dumps(parsed,sort_keys=True,separators=(",",":"))+"\n").encode()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"distribution/authority"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                expected_byte_length=len(raw),blob=raw)
+
+    def test_readback_noncanonical_extra_whitespace_rejected(self):
+        import hashlib
+        a=self.sealed()
+        raw=a["bytes_private_only"].replace(b'":"',b'": "')
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"canonical bytes"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                expected_byte_length=len(raw),blob=raw)
 
 if __name__=="__main__":
     unittest.main()
