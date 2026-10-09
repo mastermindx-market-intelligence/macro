@@ -95,6 +95,11 @@ def observe_provisional_trade(
         return output("UNKNOWN", "UNQUALIFIED_CORRECTION_STATE")
     if _money(trade) is None:
         return output("UNKNOWN", "INVALID_TRADE_NOTIONAL")
+    if (type(decision_ns) is not int or decision_ns < 0
+            or type(trade.get("original_frame_received_ns")) is not int):
+        return output("UNKNOWN", "TRADE_CLOCK_UNQUALIFIED")
+    if trade["original_frame_received_ns"] > decision_ns:
+        return output("UNKNOWN", "TRADE_NOT_AVAILABLE_AT_DECISION")
     if (not isinstance(trade_condition_verdict, dict)
             or trade_condition_verdict.get("schema") != POLICY_SCHEMA
             or trade_condition_verdict.get("authority") != "OBSERVATIONAL_ONLY"
