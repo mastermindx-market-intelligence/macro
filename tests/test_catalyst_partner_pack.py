@@ -80,7 +80,7 @@ class CatalystPartnerPackTests(unittest.TestCase):
                 manifest = json.loads((path / "manifest.json").read_text())
                 self.assertTrue(manifest["event"]["demo_only"])
                 self.assertEqual(manifest["publication_status"], "DRAFT_HOLD")
-                self.assertFalse(manifest["card_svg"]) if "card_svg" in manifest else None
+                self.assertNotIn("card_svg", manifest)
                 self.assertEqual(set(manifest["selected_tickers"]),
                                  set(p["partner"] == "demo-earnings-letter" and ["EXA"]
                                      or p["partner"] == "demo-chip-community"
@@ -260,6 +260,12 @@ class CatalystPartnerPackTests(unittest.TestCase):
         p = self.make()
         self.assertIn("revised generation", p["newsletter"])
         self.assertEqual(p["event"]["correction_generation"], 2)
+        self.assertEqual(p["event"]["correction_count"], 1)
+        self.assertNotIn("corrections", p["event"])
+        # Upstream correction objects may contain non-public operator details.
+        self.event["corrections"][0]["private_contact"] = "insider@example.net"
+        rendered = self.make()
+        self.assertNotIn("insider@example.net", json.dumps(rendered))
 
     def test_ai_angle_selection_may_only_reorder_existing_evidence(self):
         self.tickers = ["EXA", "EXB"]
@@ -287,9 +293,29 @@ class CatalystPartnerPackTests(unittest.TestCase):
         corrected = self.make()
         self.assertNotEqual(changed["pack_id"], corrected["pack_id"])
 
+    def test_public_text_and_source_urls_refuse_email_addresses(self):
+        self.event["claims"][0]["text"] = "Contact insider@example.net about EXA."
+        self.refused("EMPTY_CLAIM")
+        self.event = copy.deepcopy(DEMO_EVENT)
+        self.event["sources"][0]["url"] += "?ref=insider@example.net"
+        self.refused("UNSAFE_SOURCE_URL")
+        self.event = copy.deepcopy(DEMO_EVENT)
+        self.partner["name"] = "Contact insider@example.net"
+        self.refused("INVALID_PARTNER_NAME")
+
+    def test_public_export_contains_only_allowlisted_claim_and_event_fields(self):
+        self.event["claims"][0]["internal_source_excerpt"] = "PRIVATE_RESEARCH_TOKEN"
+        self.event["claims"][0]["topics"] = ["PRIVATE_TOPIC_TOKEN"]
+        self.event["private_raw_feed"] = "PRIVATE_FEED_TOKEN"
+        p = self.make()
+        serialized = json.dumps(p)
+        self.assertNotIn("PRIVATE_RESEARCH_TOKEN", serialized)
+        self.assertNotIn("PRIVATE_TOPIC_TOKEN", serialized)
+        self.assertNotIn("PRIVATE_FEED_TOKEN", serialized)
+
     def test_no_real_outbound_or_publishing_capability(self):
         p = self.make()
-        self.assertFalse(p["link_is_placeholder"] is False)
+        self.assertTrue(p["link_is_placeholder"])
         self.assertEqual(p["publication_status"], "DRAFT_HOLD")
         self.assertNotIn("sent_at", p)
         self.assertNotIn("published_at", p)
