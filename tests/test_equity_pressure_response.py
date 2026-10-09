@@ -875,7 +875,8 @@ def test_tp1_mixed_source_quote_age_policies_refused():
                     watermark_received_ns=end+2_000_000_000)
 
 from engine.market_microstructure.private_context_view import (
-    project_private_research_context, PrivateContextRefusal, SCHEMA as PRIVATE_CONTEXT_SCHEMA,
+    project_private_research_context, verify_private_research_context_bytes,
+    PrivateContextRefusal, SCHEMA as PRIVATE_CONTEXT_SCHEMA,
 )
 
 
@@ -1055,3 +1056,155 @@ def test_private_context_source_receipt_fingerprint_does_not_change_price():
     b=json.loads(private_context(obj)["bytes_private_only"])
     assert a["completed_window_midpoint_response_bps"]==b["completed_window_midpoint_response_bps"]
     assert a["source_watermark_receipt_sha256"]!=b["source_watermark_receipt_sha256"]
+
+
+def private_readback(receipt):
+    return verify_private_research_context_bytes(
+        expected_sha256=receipt["sha256"],
+        expected_byte_length=receipt["content_length"],
+        blob=receipt["bytes_private_only"],
+    )
+
+
+def forged_private_blob(document):
+    import json, hashlib
+    raw=(json.dumps(document,sort_keys=True,separators=(",",":"),allow_nan=False)+"\n").encode()
+    return {"sha256":hashlib.sha256(raw).hexdigest(),
+            "content_length":len(raw),"bytes_private_only":raw}
+
+
+def test_private_readback_accepts_actual_allowlisted_source_context():
+    result=private_readback(private_context())
+    assert result["schema"]==PRIVATE_CONTEXT_SCHEMA
+    assert result["bid_size_recovery_proxy"]["state"]==(
+        "MEASURED_NBBO_SIZE_PROXY_NOT_ORDER_REPLENISHMENT")
+    assert result["ask_size_recovery_proxy"]["recovered_shares"]=="90"
+    assert result["market_capture_completeness"]=="NOT_PROVEN_BY_RESEARCH_MATH"
+    assert result["absorption_signal"] is None
+
+
+def test_private_readback_rejects_raw_tape_added_even_with_recomputed_digest():
+    import json
+    data=json.loads(private_context()["bytes_private_only"])
+    data["raw_vendor_quotes"]=[{"tick":"private-licensed-tape"}]
+    with pytest.raises(PrivateContextRefusal,match="shape/authority"):
+        private_readback(forged_private_blob(data))
+
+
+def test_private_readback_rejects_native_trade_id_added_to_aggregate_counts():
+    import json
+    data=json.loads(private_context()["bytes_private_only"])
+    data["n_observations"]["native_trade_id"]="raw-trade-id"
+    with pytest.raises(PrivateContextRefusal,match="nested fields outside allowlist"):
+        private_readback(forged_private_blob(data))
+
+
+def test_private_readback_rejects_recomputed_public_delivery_bit():
+    import json
+    data=json.loads(private_context()["bytes_private_only"])
+    data["public_delivery_allowed"]=True
+    with pytest.raises(PrivateContextRefusal,match="shape/authority"):
+        private_readback(forged_private_blob(data))
+
+
+def test_private_readback_refuses_claim_of_vendor_authenticity():
+    import json
+    data=json.loads(private_context()["bytes_private_only"])
+    data["source_authenticity"]="CONFIRMED_VENDOR_ORIGINAL"
+    with pytest.raises(PrivateContextRefusal,match="shape/authority"):
+        private_readback(forged_private_blob(data))
+
+
+def test_private_readback_rejects_outcome_labels_after_hash_recompute():
+    import json
+    data=json.loads(private_context()["bytes_private_only"])
+    data["absorption_signal"]=0.95
+    with pytest.raises(PrivateContextRefusal,match="shape/authority"):
+        private_readback(forged_private_blob(data))
+
+
+def test_private_readback_rejects_forged_order_replenishment_label():
+    import json
+    data=json.loads(private_context()["bytes_private_only"])
+    data["bid_size_recovery_proxy"]["state"]="ORDER_LEVEL_REPLENISHMENT"
+    with pytest.raises(PrivateContextRefusal,match="recovery label unknown"):
+        private_readback(forged_private_blob(data))
+
+
+def test_private_readback_rejects_unqualified_source_digest():
+    import json
+    data=json.loads(private_context()["bytes_private_only"])
+    data["source_manifest_sha256"]="not-a-source-digest"
+    with pytest.raises(PrivateContextRefusal,match="source_manifest_sha256"):
+        private_readback(forged_private_blob(data))
+
+
+def test_private_readback_rejects_invalid_decimal_recovered_size():
+    import json
+    data=json.loads(private_context()["bytes_private_only"])
+    data["ask_size_recovery_proxy"]["final_shares"]="999"
+    with pytest.raises(PrivateContextRefusal,match="recovery amount inconsistent"):
+        private_readback(forged_private_blob(data))
+
+
+def test_private_readback_rejects_unqualified_best_quote_exchange():
+    import json
+    data=json.loads(private_context()["bytes_private_only"])
+    data["ask_size_recovery_proxy"]["source_best_exchange"]="VENUE:TOKEN"
+    with pytest.raises(PrivateContextRefusal,match="exchange code"):
+        private_readback(forged_private_blob(data))
+
+
+def test_private_readback_rejects_wrong_byte_length_or_digest():
+    a=private_context()
+    with pytest.raises(PrivateContextRefusal,match="byte length"):
+        verify_private_research_context_bytes(
+            expected_sha256=a["sha256"],expected_byte_length=a["content_length"]-1,
+            blob=a["bytes_private_only"])
+    with pytest.raises(PrivateContextRefusal,match="digest mismatch"):
+        verify_private_research_context_bytes(
+            expected_sha256="f"*64,expected_byte_length=a["content_length"],
+            blob=a["bytes_private_only"])
+
+
+def test_private_readback_rejects_noncanonical_whitespace_even_with_digest():
+    import json, hashlib
+    r=private_context()
+    data=json.loads(r["bytes_private_only"])
+    raw=(json.dumps(data,sort_keys=True,indent=2)+"\n").encode()
+    with pytest.raises(PrivateContextRefusal,match="noncanonical"):
+        verify_private_research_context_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                                              expected_byte_length=len(raw),blob=raw)
+
+
+def test_private_readback_rejects_invalid_market_day_and_window():
+    import json
+    data=json.loads(private_context()["bytes_private_only"])
+    data["session"]="2026-10-08:POST:RTH"
+    with pytest.raises(PrivateContextRefusal,match="symbol/session"):
+        private_readback(forged_private_blob(data))
+    data=json.loads(private_context()["bytes_private_only"])
+    data["end_ns"]=data["start_ns"]+30_000_000_000
+    with pytest.raises(PrivateContextRefusal,match="window or cutoff"):
+        private_readback(forged_private_blob(data))
+
+
+def test_private_readback_requires_canonical_decimals_not_raw_json_floats():
+    import hashlib
+    a=private_context()
+    raw=a["bytes_private_only"].replace(b'"source_best_price":"101"',b'"source_best_price":101.0')
+    assert raw!=a["bytes_private_only"]
+    with pytest.raises(PrivateContextRefusal,match="JSON native float"):
+        verify_private_research_context_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                                              expected_byte_length=len(raw),blob=raw)
+
+
+def test_private_readback_rejects_nonfinite_recomputed_source():
+    import hashlib
+    a=private_context()
+    raw=a["bytes_private_only"].replace(b'"completed_window_midpoint_response_bps":"0"',
+                                        b'"completed_window_midpoint_response_bps":NaN')
+    assert raw!=a["bytes_private_only"]
+    with pytest.raises(PrivateContextRefusal,match="JSON nonfinite"):
+        verify_private_research_context_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                                              expected_byte_length=len(raw),blob=raw)
