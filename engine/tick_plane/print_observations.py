@@ -51,6 +51,7 @@ def observe_provisional_trade(
             "trade_id": trade.get("trade_id") if isinstance(trade, dict) else None,
             "dedup_key": trade.get("dedup_key") if isinstance(trade, dict) else None,
             "original_available_ns": trade.get("original_frame_received_ns") if isinstance(trade, dict) else None,
+            "trade_sip_timestamp_ns": trade.get("sip_timestamp_ns") if isinstance(trade, dict) else None,
             "decision_ns": decision_ns, "source_watermark_receipt": watermark_receipt_id,
             "trade_conditions_rules_ref": (
                 trade_condition_verdict.get("conditions_rules_ref")
