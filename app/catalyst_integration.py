@@ -42,6 +42,9 @@ _HTML_HEADERS = {**_HEADERS, "Content-Security-Policy": "default-src 'none'; sty
 # Process-local guard only. The canonical edge/server remains responsible for
 # distributed anti-abuse; this protects worker resources before that gate.
 _RATE_LIMITS = {"scan": (30, 60.0), "optin": (5, 3600.0)}
+# A looser trusted-Caddy-peer key bounds direct-origin spoofed visitor headers,
+# without turning legitimate CDN visitors into one tiny quota bucket.
+_PEER_LIMITS = {"scan": 2400, "optin": 180}
 _MAX_RATE_KEYS = 8192
 _RATE_LOCK = Lock()
 _RATE_BUCKETS: dict[tuple[str, str], deque[float]] = {}
@@ -50,23 +53,30 @@ _RATE_BUCKETS: dict[tuple[str, str], deque[float]] = {}
 def _allow_request(request: Request, lane: str, *, now: float | None = None) -> bool:
     limit, window = _RATE_LIMITS[lane]
     current = time.monotonic() if now is None else float(now)
-    # Share a stable trusted-edge key between no-JS, GET and POST scan routes.
-    key = (lane, edge_client.client_ip(request.headers))
+    # Both claimed visitor and trusted TCP peer buckets book the attempt. An
+    # attacker hitting the origin directly cannot evade the peer bucket simply
+    # by rotating forged EO-Connecting-IP headers.
+    claimed = edge_client.client_ip(request.headers)
+    peer = edge_client.trusted_peer(request.headers)
+    keys = [((lane, "ip:" + claimed), limit)]
+    if peer:
+        keys.append(((lane, "peer:" + peer), _PEER_LIMITS[lane]))
     with _RATE_LOCK:
-        bucket = _RATE_BUCKETS.get(key)
-        if bucket is None:
-            if len(_RATE_BUCKETS) >= _MAX_RATE_KEYS:
-                oldest = min(_RATE_BUCKETS, key=lambda k: _RATE_BUCKETS[k][-1])
-                del _RATE_BUCKETS[oldest]
-            bucket = deque()
-            _RATE_BUCKETS[key] = bucket
+        new_keys = sum(k not in _RATE_BUCKETS for k, _ in keys)
+        while len(_RATE_BUCKETS) + new_keys > _MAX_RATE_KEYS:
+            oldest = min(_RATE_BUCKETS, key=lambda k: _RATE_BUCKETS[k][-1])
+            del _RATE_BUCKETS[oldest]
         cutoff = current - window
-        while bucket and bucket[0] <= cutoff:
-            bucket.popleft()
-        if len(bucket) >= limit:
-            return False
-        bucket.append(current)
-        return True
+        permitted = True
+        for key, cap in keys:
+            bucket = _RATE_BUCKETS.setdefault(key, deque())
+            while bucket and bucket[0] <= cutoff:
+                bucket.popleft()
+            if len(bucket) >= cap:
+                permitted = False
+            else:
+                bucket.append(current)
+        return permitted
 
 
 def _rate_or_429(request: Request, lane: str) -> None:
