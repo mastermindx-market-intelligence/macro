@@ -345,7 +345,7 @@ class ProjectionTests(unittest.TestCase):
         excluded["gross_source_shares"]="8"
         excluded["trade_volume_eligible"]=False
         report=run([excluded])
-        self.assertEqual(report["source_volume_included_shares"],"0")
+        self.assertEqual(Decimal(report["source_volume_included_shares"]),Decimal(0))
         self.assertEqual(report["source_volume_excluded_shares"],"8")
         self.assertEqual(report["n_source_volume_excluded_prints"],1)
 
@@ -355,7 +355,7 @@ class ProjectionTests(unittest.TestCase):
         unknown["gross_source_shares"]="2.5"
         summary=run([unknown])
         self.assertEqual(summary["source_volume_unknown_shares"],"2.5")
-        self.assertEqual(summary["source_volume_included_shares"],"0")
+        self.assertEqual(Decimal(summary["source_volume_included_shares"]),Decimal(0))
         self.assertEqual(summary["n_source_volume_unknown_prints"],1)
 
     def test_unknown_quote_condition_does_not_remove_trade_from_known_volume(self):
