@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import shutil
 import subprocess
@@ -168,6 +169,74 @@ const noEvidence = () => {assert.ok(!summary().includes('mm-symbol-ticker'),summ
 '''
     result = subprocess.run(
         [node, "-e", script, str(ROOT / relative)],
+        capture_output=True, text=True, timeout=20, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("relative", ["templates/market_memory.js", "site/market_memory.js"])
+@pytest.mark.parametrize("invalid", ["", "A APL"])
+@pytest.mark.parametrize("sign_out", [False, True])
+def test_auth_retry_keeps_latest_submitted_symbol_intent(
+    relative: str, invalid: str, sign_out: bool
+) -> None:
+    """A former 401 cannot authorize retry after a newer invalid submission."""
+    node = shutil.which("node")
+    assert node is not None, "Node is required for the Market Memory client contract"
+    script = r'''
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const scenario = JSON.parse(process.argv[2]);
+const ids = ['mm-macro-state', 'mm-macro-query', 'mm-macro-episodes', 'mm-macro-note', 'mm-symbol-form', 'mm-symbol-input', 'mm-symbol-summary', 'mm-grid-list'];
+const elements = Object.fromEntries(ids.map(id => [id, {innerHTML:'', textContent:'', value:'', className:'', events:{}, addEventListener(type, fn){this.events[type]=fn;}}]));
+const events = {};
+const pending = [];
+const stored = {};
+let lang = 'en';
+let authChanged;
+const location = new URL('https://mastermind-x.com/market_memory.html?ticker=AAPL&view=memory');
+const document = {readyState:'complete', documentElement:{getAttribute:()=>lang}, getElementById:id=>elements[id], addEventListener(type,fn){events[type]=fn;}};
+const context = {document, location, URL, localStorage:{getItem:key=>stored[key], setItem(key,value){stored[key]=value;}}, history:{replaceState(_,__,url){location.href=new URL(url,location).href;}}, fetch:url=>new Promise(resolve=>pending.push({url,resolve})), window:{MDXAuth:{onChange(fn){authChanged=fn;}}}};
+vm.runInNewContext(fs.readFileSync(process.argv[1], 'utf8'), context);
+const tick = () => new Promise(resolve => setImmediate(resolve));
+const summary = () => elements['mm-symbol-summary'].innerHTML;
+const submit = ticker => {elements['mm-symbol-input'].value=ticker;elements['mm-symbol-form'].events.submit({preventDefault(){}});};
+const changeLanguage = () => {lang=lang==='en'?'zh':'en';events.langchange();};
+const requests = suffix => pending.filter(p=>p.url.endsWith(suffix));
+const reply = (suffix, status) => {const item=requests(suffix).find(p=>!p.done);assert.ok(item, 'request '+suffix);item.done=true;item.resolve({ok:status===200,status,json:()=>Promise.resolve({})});};
+(async () => {
+ await tick(); reply('/symbol/AAPL',401); reply('/macro?limit=6',401); await tick();
+ submit(scenario.invalid); const invalidSummary=summary(); changeLanguage();
+ assert.equal(summary(),invalidSummary); assert.ok(summary().includes('Check the ticker'));
+ if(scenario.signOut) {authChanged(null); changeLanguage();}
+ const beforeSignIn=summary();
+ authChanged({id:'controlled-user'}); await tick();
+ assert.equal(requests('/symbol/AAPL').length,1,'superseded AAPL must not retry after invalid submit');
+ assert.equal(elements['mm-symbol-input'].value,scenario.invalid,'auth must preserve invalid input');
+ assert.equal(summary(),beforeSignIn,'auth must not replace current feedback with old-ticker loading');
+ assert.equal(elements['mm-grid-list'].innerHTML,'');
+ assert.equal(location.search,'?ticker=AAPL&view=memory','invalid input keeps previous shareable URL');
+ assert.equal(stored.market_memory_ticker,'AAPL','invalid input keeps previous stored ticker');
+ assert.equal(requests('/macro?limit=6').length,2,'macro 401 retry is independent');
+ reply('/macro?limit=6',200); await tick();
+ authChanged({id:'controlled-user'}); await tick();
+ assert.equal(requests('/symbol/AAPL').length,1,'later auth callback must not resurrect invalidated intent');
+ submit(' nvda '); await tick();
+ authChanged({id:'controlled-user'}); await tick();
+ assert.equal(requests('/symbol/NVDA').length,1,'new pending intent is not an old auth retry');
+ reply('/symbol/NVDA',401); await tick(); authChanged({id:'controlled-user'}); await tick();
+ assert.equal(requests('/symbol/NVDA').length,2,'latest valid 401 remains recoverable');
+ assert.equal(elements['mm-symbol-input'].value,'NVDA');
+ assert.equal(location.search,'?ticker=NVDA&view=memory');
+ authChanged({id:'controlled-user'}); await tick();
+ assert.equal(requests('/symbol/NVDA').length,2,'pending recovery is not duplicated');
+ console.log('auth retry respects invalid and newer valid intents; macro retry stays independent');
+})().catch(error => {console.error(error);process.exitCode=1;});
+'''
+    result = subprocess.run(
+        [node, "-e", script, str(ROOT / relative),
+         json.dumps({"invalid": invalid, "signOut": sign_out})],
         capture_output=True, text=True, timeout=20, check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
