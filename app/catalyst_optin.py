@@ -1,13 +1,14 @@
 """Additive opt-in routes for the anonymous-first Catalyst Scan.
 
-UNMOUNTED until the public-experience owner includes ``router`` and configures
-its canonical scan, consent and current-revision authorities. No new auth,
-mail service or DB schema is created here. See ``FunnelService`` contract.
+The public request route is OWNED by Session 00, which calls our synchronous
+``request_optin(body: dict)``; this module exposes only a separately gated OTP
+verification router. No second public opt-in route, auth, mail service or DB.
 """
 from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -27,20 +28,10 @@ router = APIRouter(tags=["catalyst-optin"])
 _service: FunnelService | None = None
 
 
-class RequestOptin(BaseModel):
-    email: str = Field(max_length=254)
-    scan_receipt: str = Field(min_length=1, max_length=1024)
-    consent_checked: bool
-    scope: str = Field(default=SCOPE)
-    first_touch: dict[str, str] = Field(default_factory=dict)
-    honeypot: str = Field(default="", max_length=100)
-    form_elapsed_ms: int = Field(default=0, ge=0, le=600_000)
-
-
 class VerifyOptin(BaseModel):
     email: str = Field(max_length=254)
     otp: str = Field(max_length=12)
-    intent: str = Field(max_length=4096)
+    public_ref: str = Field(min_length=8, max_length=128)
     honeypot: str = Field(default="", max_length=100)
 
 
@@ -75,20 +66,55 @@ def _safe_gate(exc: FunnelGate) -> HTTPException:
     return HTTPException(status_code=exc.status, detail=exc.code)
 
 
-@router.post("/api/catalyst/optin/request")
-def request_optin(body: RequestOptin, request: Request) -> dict:
-    # A suspected bot must not reach GoTrue or consume a verification send.
-    if body.honeypot or body.form_elapsed_ms < 3000:
-        raise HTTPException(status_code=400, detail="ABUSE_CHECK_FAILED")
-    if body.scope != SCOPE:
-        raise HTTPException(status_code=400, detail="UNSUPPORTED_CONSENT_SCOPE")
-    _abuse_guard(request)
-    try:
-        return _active().request(email=body.email, checked=body.consent_checked,
-                                 scan_receipt=body.scan_receipt, touch=body.first_touch,
+def request_optin(body: dict) -> dict:
+    """EXACT frozen Session 00 private seam, NOT a public route.
+
+    00 owns input-size validation, rate protection and the public POST. We re-read
+    its canonical rights-qualified scan for the event/tickers: a browser claim is
+    not evidence. The response is the short opaque pending-consent handle only.
+    """
+    if not isinstance(body, dict) or body.get("scope") != SCOPE or body.get("consent") is not True:
+        raise FunnelGate("EXPLICIT_CONSENT_REQUIRED", 400)
+    event = body.get("event_id")
+    tickers = body.get("tickers")
+    if (not isinstance(event, str) or not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", event)
+            or not isinstance(tickers, list) or not 1 <= len(tickers) <= 10
+            or any(not isinstance(x, str) or not re.fullmatch(r"[A-Z][A-Z0-9.\-]{0,9}", x)
+                   for x in tickers) or len(set(tickers)) != len(tickers)):
+        raise FunnelGate("SCAN_PROOF_REQUIRED", 400)
+    receipt = json.dumps({"event_id": event, "tickers": tickers}, separators=(",", ":"))
+    accepted = _active().request(email=body.get("email"), checked=True,
+                                 scan_receipt=receipt, touch=body.get("attribution"),
                                  now=datetime.now(timezone.utc))
-    except FunnelGate as exc:
-        raise _safe_gate(exc) from None
+    return {"status": "VERIFICATION_REQUIRED", "public_ref": accepted["public_ref"]}
+
+
+class CanonicalPublicScanAuthority(ScanAuthority):
+    """Re-use 00's actual serializer/rights/freshness gate; no duplicate feed.
+
+    The event/ticker 'receipt' is an internal lookup descriptor, *not* a signed
+    visitor proof: 00 deliberately does not freeze a public scan receipt token.
+    We therefore RE-READ 00's current public scan rather than trust this JSON.
+    """
+
+    def require_public_scan(self, receipt: str):
+        from engine.marketing.catalyst_lifecycle import ScanEvidence
+        try:
+            descriptor = json.loads(receipt)
+            if not isinstance(descriptor, dict) or set(descriptor) != {"event_id", "tickers"}:
+                raise ValueError("bad descriptor")
+            from app import catalyst_integration as bridge
+            tickers = bridge.normalize_tickers(descriptor["tickers"])
+            event_id = descriptor["event_id"]
+            scan = bridge.scan_with_reader(tickers, event_id=event_id)
+            if (scan.get("event_id") != event_id or
+                    scan.get("publication_state") not in ("PUBLIC_QUALIFIED", "PARTIAL") or
+                    any(row.get("status") != "SUPPORTED" for row in scan.get("results", [])) or
+                    len(scan.get("results", [])) != len(tickers)):
+                raise ValueError("not currently public-qualified")
+            return ScanEvidence(event_id, tuple(tickers), scan["as_of_utc"], True)
+        except Exception:
+            raise FunnelGate("SCAN_NOT_PUBLIC_SAFE", 403) from None
 
 
 @router.post("/api/catalyst/optin/verify")
@@ -98,7 +124,7 @@ def verify_optin(body: VerifyOptin, request: Request) -> dict:
     _abuse_guard(request)
     try:
         return _active().verify(email=body.email, otp=body.otp,
-                                intent=body.intent, now=datetime.now(timezone.utc))
+                                public_ref=body.public_ref, now=datetime.now(timezone.utc))
     except FunnelGate as exc:
         raise _safe_gate(exc) from None
 
@@ -233,8 +259,12 @@ class ExistingMailerDelivery(DeliveryAuthority):
 class SupabaseConsentRpcOwner(ConsentOwner):
     """Adapter to *existing Supabase email-consent owner's* service-role RPC.
 
-    Contract version 1 (not currently provisioned at main's email_prefs schema):
-      POST rpc/catalyst_consent_contract {} -> {owner:"email_consent", version:1}
+    Contract version 2 (not currently provisioned at main's email_prefs schema):
+      POST rpc/catalyst_consent_contract {} -> {owner:"email_consent", version:2}
+      POST rpc/catalyst_consent_begin {p_intent,p_email_tag,p_expires_at_utc}
+        -> {public_ref:opaque 8..128 char handle, CSPRNG >=128-bit}
+      POST rpc/catalyst_consent_resolve {p_public_ref,p_email_tag}
+        -> {intent:original signed intent}, only while pending and unexpired
       POST rpc/catalyst_consent_confirm {p_user_id,p_event_id,p_scope,
           p_tickers,p_intent_id,p_verified_at_utc,p_first_touch}
         -> {created:bool,record:{user_id,email,event_id,tickers,scope,
@@ -274,9 +304,26 @@ class SupabaseConsentRpcOwner(ConsentOwner):
     def available(self) -> bool:
         try:
             result = self._one(self._rpc("catalyst_consent_contract", {}))
-            return result.get("owner") == "email_consent" and result.get("version") == 1
+            return result.get("owner") == "email_consent" and result.get("version") == 2
         except Exception:
             return False
+
+    def begin_pending_intent(self, intent: str, email_tag: str, expires_at_utc: str) -> str:
+        result = self._one(self._rpc("catalyst_consent_begin", {
+            "p_intent": intent, "p_email_tag": email_tag,
+            "p_expires_at_utc": expires_at_utc}))
+        ref = result.get("public_ref")
+        if not isinstance(ref, str) or not re.fullmatch(r"[A-Za-z0-9_-]{8,128}", ref):
+            raise FunnelGate("PENDING_CONSENT_PROTOCOL_MISMATCH")
+        return ref
+
+    def resolve_pending_intent(self, public_ref: str, email_tag: str) -> str:
+        result = self._one(self._rpc("catalyst_consent_resolve", {
+            "p_public_ref": public_ref, "p_email_tag": email_tag}))
+        intent = result.get("intent")
+        if not isinstance(intent, str) or not 1 <= len(intent) <= 4096:
+            raise FunnelGate("PENDING_CONSENT_UNAVAILABLE")
+        return intent
 
     @staticmethod
     def _record(raw: Any) -> ConsentRecord:
@@ -343,6 +390,12 @@ class UnwiredConsentOwner(ConsentOwner):
     def available(self) -> bool:
         return False
 
+    def begin_pending_intent(self, intent, email_tag, expires_at_utc):
+        raise FunnelGate("CONSENT_OWNER_NOT_READY")
+
+    def resolve_pending_intent(self, public_ref, email_tag):
+        raise FunnelGate("CONSENT_OWNER_NOT_READY")
+
     def confirm(self, record):
         raise FunnelGate("CONSENT_OWNER_NOT_READY")
 
@@ -356,14 +409,42 @@ class UnwiredConsentOwner(ConsentOwner):
         raise FunnelGate("CONSENT_OWNER_NOT_READY")
 
 
-def build_existing_owner_service(scan: ScanAuthority, revisions: Any, *,
+def build_existing_owner_service(revisions: Any, *, scan: ScanAuthority | None = None,
                                  consent: ConsentOwner | None = None,
                                  identity: OtpIdentityAuthority | None = None) -> FunnelService:
     """Explicit integration seam. Does NOT install/mount/start anything itself."""
     from app.account_actions import _anon_key, _supabase
     url, _service_role = _supabase()
-    return FunnelService(secret=os.environ.get("MAIL_UNSUB_SECRET", ""), scan=scan,
+    return FunnelService(secret=os.environ.get("MAIL_UNSUB_SECRET", ""),
+                         scan=scan if scan is not None else CanonicalPublicScanAuthority(),
                          identity=identity or SupabaseOtpIdentity(endpoint=url, anon_key=_anon_key()),
                          consent=consent if consent is not None else SupabaseConsentRpcOwner(),
                          suppression=ExistingMailerSuppression(), revisions=revisions,
                          sender=ExistingMailerDelivery())
+
+
+def deliver_update(event_id: str, generation: int) -> dict:
+    """EXACT frozen 00 private seam. No public email-trigger route.
+
+    Revision source remains with the existing qualified producer. This adapter
+    refuses to infer content from ticker/news or construct an approval receipt.
+    """
+    service = _active()
+    if not isinstance(event_id, str) or not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", event_id):
+        raise FunnelGate("INVALID_SCAN_EVENT", 400)
+    if not isinstance(generation, int) or isinstance(generation, bool) or generation < 1:
+        raise FunnelGate("INVALID_REVISION", 400)
+    loader = getattr(service.revisions, "load_public_revision", None)
+    if not callable(loader):
+        raise FunnelGate("REVISION_OWNER_NOT_READY")
+    revision = loader(event_id, generation)
+    if not isinstance(revision, PublicRevision) or revision.event_id != event_id or revision.generation != generation:
+        raise FunnelGate("REVISION_OWNER_PROTOCOL_MISMATCH")
+    receipts = service.deliver(revision, now=datetime.now(timezone.utc))
+    # All receipts are opaque and attribution-only; no recipient PII. Provider
+    # acceptance is deliberately NOT called inbox delivery.
+    states = {x["state"] for x in receipts}
+    return {"event_id": event_id, "generation": generation, "receipts": receipts,
+            "status": "EFFECT_UNKNOWN" if "EFFECT_UNKNOWN" in states else
+                      "PROVIDER_ACCEPTED" if "PROVIDER_ACCEPTED" in states else
+                      "NO_CONFIRMED_DELIVERY"}

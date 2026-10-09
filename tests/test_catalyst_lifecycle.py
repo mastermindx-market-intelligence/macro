@@ -1,5 +1,7 @@
 """Hermetic contracts. Fake owner models an ATOMIC secure Supabase consent port."""
 import json
+import hmac
+import secrets
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
@@ -45,11 +47,23 @@ class Store:
     def __init__(self):
         self.records = {}
         self.by_nonce = {}
+        self.pending = {}
         self.ready = True
         self.raise_on_confirm = False
 
     def available(self):
         return self.ready
+
+    def begin_pending_intent(self, intent, email_tag, expires_at_utc):
+        ref = "opaque_" + secrets.token_urlsafe(20)
+        self.pending[ref] = (intent, email_tag, expires_at_utc)
+        return ref
+
+    def resolve_pending_intent(self, public_ref, email_tag):
+        row = self.pending.get(public_ref)
+        if not row or not hmac.compare_digest(row[1], email_tag):
+            raise FunnelGate("INVALID_VERIFICATION_INTENT", 400)
+        return row[0]
 
     def confirm(self, rec):
         if self.raise_on_confirm:
@@ -127,7 +141,7 @@ def consented(service, email=EMAIL, touch=None, now=NOW):
 
 def verified(service, touch=None):
     intent = consented(service, touch=touch)
-    return service.verify(email=EMAIL, otp="123456", intent=intent["intent"], now=NOW)
+    return service.verify(email=EMAIL, otp="123456", public_ref=intent["public_ref"], now=NOW)
 
 
 def update(**kwargs):
@@ -162,9 +176,9 @@ def test_invalid_address_and_unverified_never_becomes_a_lead():
     for bad in ("bad", "a@b", "a@b.com\nBcc:other@example.com", "x" * 256 + "@e.com"):
         fails("INVALID_EMAIL", lambda: service.request(
             email=bad, checked=True, scan_receipt="scan-public-verified", touch={}, now=NOW))
-    token = consented(service)["intent"]
+    token = consented(service)["public_ref"]
     assert store.records == {}
-    fails("IDENTITY_UNVERIFIED", lambda: service.verify(email=EMAIL, otp="000000", intent=token, now=NOW))
+    fails("IDENTITY_UNVERIFIED", lambda: service.verify(email=EMAIL, otp="000000", public_ref=token, now=NOW))
     assert store.records == {}
 
 
@@ -172,13 +186,13 @@ def test_signed_intent_binds_email_time_scope_and_attribution_without_email_leak
     service, _, store, *_ = make()
     req = consented(service, touch={"utm_source": "letter", "utm_campaign": "earnings",
                                            "utm_content": "post01", "partner_id": "partner-A"})
-    token = req["intent"]
+    token = req["public_ref"]
     assert EMAIL not in token and EMAIL not in str(req)
     assert req["status"] == "verification_requested"
-    fails("INVALID_VERIFICATION_INTENT", lambda: service.verify(email="other@example.com", otp="123456", intent=token, now=NOW))
-    fails("INVALID_VERIFICATION_INTENT", lambda: service.verify(email=EMAIL, otp="123456", intent=token[:-2] + "AA", now=NOW))
-    fails("EXPIRED_VERIFICATION_INTENT", lambda: service.verify(email=EMAIL, otp="123456", intent=token, now=NOW + timedelta(minutes=21)))
-    assert service.verify(email=EMAIL, otp="123456", intent=token, now=NOW)["status"] == "verified"
+    fails("INVALID_VERIFICATION_INTENT", lambda: service.verify(email="other@example.com", otp="123456", public_ref=token, now=NOW))
+    fails("INVALID_VERIFICATION_INTENT", lambda: service.verify(email=EMAIL, otp="123456", public_ref=token[:-2] + "AA", now=NOW))
+    fails("EXPIRED_VERIFICATION_INTENT", lambda: service.verify(email=EMAIL, otp="123456", public_ref=token, now=NOW + timedelta(minutes=21)))
+    assert service.verify(email=EMAIL, otp="123456", public_ref=token, now=NOW)["status"] == "verified"
     row = next(iter(store.records.values()))
     assert row.scope == SCOPE and row.first_touch["partner_id"] == "partner-A"
     assert row.verified_at_utc and row.intent_id
@@ -191,10 +205,10 @@ def test_signed_intent_binds_email_time_scope_and_attribution_without_email_leak
 def test_duplicate_verification_is_idempotent_and_immutable_first_touch():
     service, *_ = make()
     first = consented(service, touch={"partner_id": "partner-A"})
-    assert service.verify(email=EMAIL, otp="123456", intent=first["intent"], now=NOW)["status"] == "verified"
-    assert service.verify(email=EMAIL, otp="123456", intent=first["intent"], now=NOW)["status"] == "already_verified"
+    assert service.verify(email=EMAIL, otp="123456", public_ref=first["public_ref"], now=NOW)["status"] == "verified"
+    assert service.verify(email=EMAIL, otp="123456", public_ref=first["public_ref"], now=NOW)["status"] == "already_verified"
     later = consented(service, touch={"partner_id": "partner-B"})
-    assert service.verify(email=EMAIL, otp="123456", intent=later["intent"], now=NOW)["status"] == "already_verified"
+    assert service.verify(email=EMAIL, otp="123456", public_ref=later["public_ref"], now=NOW)["status"] == "already_verified"
     assert service.consent.current(UID, "event-123").first_touch == {"partner_id": "partner-A"}
 
 
@@ -204,32 +218,32 @@ def test_secure_owner_down_does_not_consume_otp_or_forge_success():
     fails("CONSENT_OWNER_NOT_READY", lambda: consented(service))
     assert otp.requests == []
     store.ready = True
-    intent = consented(service)["intent"]
+    intent = consented(service)["public_ref"]
     store.ready = False
-    fails("CONSENT_OWNER_NOT_READY", lambda: service.verify(email=EMAIL, otp="123456", intent=intent, now=NOW))
+    fails("CONSENT_OWNER_NOT_READY", lambda: service.verify(email=EMAIL, otp="123456", public_ref=intent, now=NOW))
     assert otp.checks == []
     store.ready = True
     store.raise_on_confirm = True
-    fails("CONSENT_WRITE_UNCONFIRMED", lambda: service.verify(email=EMAIL, otp="123456", intent=intent, now=NOW))
+    fails("CONSENT_WRITE_UNCONFIRMED", lambda: service.verify(email=EMAIL, otp="123456", public_ref=intent, now=NOW))
 
 
 def test_suppressed_or_unavailable_suppression_refuses_grant():
     service, otp, _, suppression, *_ = make()
-    token = consented(service)["intent"]
+    token = consented(service)["public_ref"]
     suppression.blocked = True
-    fails("ADDRESS_SUPPRESSED", lambda: service.verify(email=EMAIL, otp="123456", intent=token, now=NOW))
+    fails("ADDRESS_SUPPRESSED", lambda: service.verify(email=EMAIL, otp="123456", public_ref=token, now=NOW))
     suppression.blocked = False
     suppression.down = True
-    fails("SUPPRESSION_CHECK_UNAVAILABLE", lambda: service.verify(email=EMAIL, otp="123456", intent=token, now=NOW))
+    fails("SUPPRESSION_CHECK_UNAVAILABLE", lambda: service.verify(email=EMAIL, otp="123456", public_ref=token, now=NOW))
 
 
 def test_optout_prevents_delivery_and_old_code_cannot_reactivate():
     service, _, store, _, _, sender = make()
-    token = consented(service)["intent"]
+    token = consented(service)["public_ref"]
     verified(service)  # same event, different request
     assert service.revoke(user_id=UID, event_id="event-123", now=NOW)["status"] == "unsubscribed"
     assert service.revoke(user_id=UID, event_id="event-123", now=NOW)["changed"] == "no"
-    fails("CONSENT_REVOKED", lambda: service.verify(email=EMAIL, otp="123456", intent=token, now=NOW))
+    fails("CONSENT_REVOKED", lambda: service.verify(email=EMAIL, otp="123456", public_ref=token, now=NOW))
     out = service.deliver(update(), now=NOW + timedelta(hours=1))
     assert out[0]["state"] == "SUPPRESSED" and sender.calls == []
 
@@ -313,7 +327,7 @@ def test_future_source_and_wrong_ticker_are_not_delivered():
 def test_delivery_receipts_keep_first_touch_without_email_or_user_identity():
     service, *_rest, sender = make()
     req = consented(service, touch={"partner_id": "partnerA", "utm_source": "newsletter"})
-    service.verify(email=EMAIL, otp="123456", intent=req["intent"], now=NOW)
+    service.verify(email=EMAIL, otp="123456", public_ref=req["public_ref"], now=NOW)
     out = service.deliver(update(), now=NOW + timedelta(hours=2))[0]
     assert out["state"] == "PROVIDER_ACCEPTED" and out["partner_id"] == "partnerA"
     assert out["utm_source"] == "newsletter" and EMAIL not in json.dumps(out)

@@ -28,12 +28,13 @@ from typing import Any, Protocol
 from urllib.parse import urlsplit
 from uuid import UUID
 
-SCOPE = "catalyst_material_event_updates_v1"
+SCOPE = "catalyst_event_updates/v1"
 INTENT_TTL = timedelta(minutes=20)
 _TOKEN_PREFIX = b"mastermind.catalyst.intent.v1\x00"
 _EMAIL = re.compile(r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$")
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$")
-_TICKER = re.compile(r"^[A-Z]{1,6}(?:[.-][A-Z]{1,2})?$")
+_EVENT_ID = re.compile(r"[A-Za-z0-9_.:-]{1,128}\Z")
+_TICKER = re.compile(r"[A-Z][A-Z0-9.\-]{0,9}\Z")
 _TOUCH_KEYS = ("utm_source", "utm_medium", "utm_campaign", "utm_content", "partner_id")
 
 
@@ -92,7 +93,7 @@ def first_touch(values: dict[str, Any] | None) -> dict[str, str]:
 
 
 def _event_id(value: str) -> str:
-    if not isinstance(value, str) or not _ID.fullmatch(value):
+    if not isinstance(value, str) or not _EVENT_ID.fullmatch(value):
         raise FunnelGate("INVALID_SCAN_EVENT", 400)
     return value
 
@@ -182,6 +183,9 @@ class ConsentOwner(Protocol):
     """
 
     def available(self) -> bool: ...
+    def begin_pending_intent(self, intent: str, email_tag: str,
+                             expires_at_utc: str) -> str: ...
+    def resolve_pending_intent(self, public_ref: str, email_tag: str) -> str: ...
     def confirm(self, record: ConsentRecord) -> Confirmation: ...
     def current(self, user_id: str, event_id: str) -> ConsentRecord | None: ...
     def interested(self, event_id: str, limit: int) -> list[ConsentRecord]: ...
@@ -342,18 +346,40 @@ class FunnelService:
                 "issued_at": now.isoformat(), "event_id": scan.event_id,
                 "tickers": list(scan.tickers), "first_touch": first_touch(touch)}
         intent = _sign(self.secret, data)
+        # Durable *pending* intent, not an early grant or another auth database.
+        # The existing consent owner returns the short opaque handle frozen by 00.
+        # It is written BEFORE GoTrue sends OTP; a failed claim cannot leave a
+        # useless confirmation email in the person's inbox.
+        try:
+            public_ref = self.consent.begin_pending_intent(
+                intent, _email_tag(self.secret, addr), (now + INTENT_TTL).isoformat())
+        except FunnelGate:
+            raise
+        except Exception as exc:
+            raise FunnelGate("PENDING_CONSENT_NOT_DURABLE") from exc
+        if (not isinstance(public_ref, str) or
+                not re.fullmatch(r"[A-Za-z0-9_-]{8,128}", public_ref)):
+            raise FunnelGate("PENDING_CONSENT_PROTOCOL_MISMATCH")
         # GoTrue is the existing email-identity owner. Accepted request != inbox receipt.
         if self.identity.request_otp(addr) is not True:
             raise FunnelGate("IDENTITY_VERIFICATION_UNAVAILABLE")
-        return {"status": "verification_requested", "intent": intent,
+        return {"status": "verification_requested", "public_ref": public_ref,
                 "scope": SCOPE, "expires_at_utc": (now + INTENT_TTL).isoformat()}
 
-    def verify(self, *, email: str, otp: str, intent: str, now: datetime) -> dict[str, Any]:
+    def verify(self, *, email: str, otp: str, public_ref: str, now: datetime) -> dict[str, Any]:
         now = _utc(now)
         addr = normalize_email(email)
-        payload = _open_intent(self.secret, intent, addr, now)
         if not self.consent.available():  # BEFORE consuming a one-use GoTrue code
             raise FunnelGate("CONSENT_OWNER_NOT_READY")
+        if not isinstance(public_ref, str) or not re.fullmatch(r"[A-Za-z0-9_-]{8,128}", public_ref):
+            raise FunnelGate("INVALID_VERIFICATION_REF", 400)
+        try:
+            intent = self.consent.resolve_pending_intent(public_ref, _email_tag(self.secret, addr))
+        except FunnelGate:
+            raise
+        except Exception as exc:
+            raise FunnelGate("PENDING_CONSENT_UNAVAILABLE") from exc
+        payload = _open_intent(self.secret, intent, addr, now)
         if not isinstance(otp, str) or not re.fullmatch(r"[0-9]{6,8}", otp):
             raise FunnelGate("INVALID_VERIFICATION_CODE", 400)
         who = self.identity.verify_otp(addr, otp)

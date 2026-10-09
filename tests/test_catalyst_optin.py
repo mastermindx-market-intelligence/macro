@@ -18,7 +18,7 @@ class Service:
 
     def request(self, **kw):
         self.requests.append(kw)
-        return {"status": "verification_requested", "scope": "catalyst_material_event_updates_v1"}
+        return {"status": "verification_requested", "public_ref": "opaque_testref_1234"}
 
     def verify(self, **kw):
         self.verifies.append(kw)
@@ -36,38 +36,43 @@ def web(monkeypatch):
     catalyst_optin.configure(None)
 
 
-def test_optin_does_not_wall_first_scan_and_requires_checked_scope(web):
+def test_session00_exact_private_request_contract_without_duplicate_public_route(web):
     client, service = web
-    assert client.get("/api/catalyst/optin/request").status_code == 405
-    data = {"email": "investor@example.com", "scan_receipt": "signed", "scope": "catalyst_material_event_updates_v1",
-            "consent_checked": True, "form_elapsed_ms": 4000, "first_touch": {"partner_id": "A"}}
-    assert client.post("/api/catalyst/optin/request", json=data).json()["status"] == "verification_requested"
+    assert client.post("/api/catalyst/optin/request", json={}).status_code == 404
+    data = {"email": "investor@example.com", "event_id": "event-123", "tickers": ["NVDA"],
+            "consent": True, "scope": catalyst_optin.SCOPE,
+            "attribution": {"utm_content": "post-02", "utm_medium": "partner-1"}}
+    out = catalyst_optin.request_optin(data)
+    assert out == {"status": "VERIFICATION_REQUIRED", "public_ref": "opaque_testref_1234"}
     assert len(service.requests) == 1
-    data["consent_checked"] = False
-    assert client.post("/api/catalyst/optin/request", json=data).status_code == 200  # service decides and rejects; fake only tests routing
-    data["scope"] = "all_marketing"
-    assert client.post("/api/catalyst/optin/request", json=data).status_code == 400
+    assert service.requests[0]["touch"] == data["attribution"]
+    assert service.requests[0]["checked"] is True
+    import json
+    assert json.loads(service.requests[0]["scan_receipt"]) == {
+        "event_id": "event-123", "tickers": ["NVDA"]}
+    for bad in ({**data, "consent": False}, {**data, "scope": "all_marketing"},
+                {**data, "tickers": ["NVDA", "NVDA"]}):
+        with pytest.raises(FunnelGate):
+            catalyst_optin.request_optin(bad)
+    assert len(service.requests) == 1
 
 
-def test_bots_rejected_before_identity_or_lead_owner(web):
+def test_bots_rejected_before_otp_verification_owner(web):
     client, service = web
-    d = {"email": "investor@example.com", "scan_receipt": "signed", "consent_checked": True,
-         "form_elapsed_ms": 200, "honeypot": ""}
-    assert client.post("/api/catalyst/optin/request", json=d).status_code == 400
-    d["form_elapsed_ms"] = 4000
-    d["honeypot"] = "Filled"
-    assert client.post("/api/catalyst/optin/request", json=d).status_code == 400
-    assert not service.requests
+    d = {"email": "investor@example.com", "otp": "123456",
+         "public_ref": "opaque_testref_1234", "honeypot": "filled"}
+    assert client.post("/api/catalyst/optin/verify", json=d).status_code == 400
+    assert not service.verifies
 
 
 def test_verify_requires_post_valid_otp_and_safe_unconfigured_gate(web):
     client, service = web
     assert client.post("/api/catalyst/optin/verify", json={
-        "email": "investor@example.com", "otp": "123456", "intent": "signed"}).json()["status"] == "verified"
+        "email": "investor@example.com", "otp": "123456", "public_ref": "opaque_testref_1234"}).json()["status"] == "verified"
     assert len(service.verifies) == 1
     catalyst_optin.configure(None)
     assert client.post("/api/catalyst/optin/verify", json={
-        "email": "investor@example.com", "otp": "123456", "intent": "signed"}).json()["detail"] == "CATALYST_INTEGRATION_NOT_READY"
+        "email": "investor@example.com", "otp": "123456", "public_ref": "opaque_testref_1234"}).json()["detail"] == "CATALYST_INTEGRATION_NOT_READY"
 
 
 def test_otp_adapter_verifies_real_gotrue_response_not_just_request_acceptance():
@@ -134,7 +139,7 @@ def test_canonical_mailer_used_marketing_with_strict_ledger_and_one_click():
     assert sender.permitted()
     from engine.marketing.catalyst_lifecycle import ConsentRecord
     record = ConsentRecord(UID, "investor@example.com", "event-123", ("NVDA",),
-                           "catalyst_material_event_updates_v1", "2026-10-09T02:00:00+00:00", "nonce",
+                           "catalyst_event_updates/v1", "2026-10-09T02:00:00+00:00", "nonce",
                            {"partner_id": "A"})
     revision = PublicRevision("event-123", 1, "2026-10-09T03:00:00+00:00",
                               "2026-10-09T02:00:00+00:00", "NVDA", "Material update", "Guidance changed",
@@ -155,7 +160,7 @@ def test_live_mailer_fail_closed_on_exceptions_not_fake_success():
     sender = catalyst_optin.ExistingMailerDelivery(mailer, FakeMarketing(), enabled=lambda: True)
     from engine.marketing.catalyst_lifecycle import ConsentRecord
     record = ConsentRecord(UID, "investor@example.com", "event-123", ("NVDA",),
-                           "catalyst_material_event_updates_v1", "2026-10-09T02:00:00+00:00", "nonce", {})
+                           "catalyst_event_updates/v1", "2026-10-09T02:00:00+00:00", "nonce", {})
     revision = PublicRevision("event-123", 1, "2026-10-09T03:00:00+00:00",
                               "2026-10-09T02:00:00+00:00", "NVDA", "Material update", "Changed",
                               ("https://www.sec.gov/",), True, True, True, True)
@@ -180,7 +185,11 @@ def test_supabase_consent_owner_rpc_contract_and_first_touch_are_exact():
     def pg(method, path, body):
         calls.append((method, path, body))
         if path.endswith("contract"):
-            return {"owner": "email_consent", "version": 1}
+            return {"owner": "email_consent", "version": 2}
+        if path.endswith("begin"):
+            return {"public_ref": "opaque_testref_1234"}
+        if path.endswith("resolve"):
+            return {"intent": "signed-long-private-intent"}
         if path.endswith("confirm"):
             return {"created": True, "record": row}
         if path.endswith("current"):
@@ -193,6 +202,8 @@ def test_supabase_consent_owner_rpc_contract_and_first_touch_are_exact():
 
     owner = catalyst_optin.SupabaseConsentRpcOwner(pg=pg)
     assert owner.available()
+    assert owner.begin_pending_intent("signed-long-private-intent", "email_hmac", "2026-10-09T03:20:00+00:00") == "opaque_testref_1234"
+    assert owner.resolve_pending_intent("opaque_testref_1234", "email_hmac") == "signed-long-private-intent"
     assert owner.confirm(record).record.first_touch == {"partner_id": "partnerA"}
     assert owner.current(UID, "event-123") == record
     assert owner.interested("event-123", 1) == [record]
@@ -204,7 +215,7 @@ def test_supabase_consent_owner_rpc_contract_and_first_touch_are_exact():
 
 
 def test_consent_rpc_missing_owner_version_bad_reply_or_leaky_email_is_fail_closed():
-    owner = catalyst_optin.SupabaseConsentRpcOwner(pg=lambda method, path, body: {"owner": "email_consent", "version": 2})
+    owner = catalyst_optin.SupabaseConsentRpcOwner(pg=lambda method, path, body: {"owner": "email_consent", "version": 1})
     assert owner.available() is False
     owner = catalyst_optin.SupabaseConsentRpcOwner(pg=lambda method, path, body: None)
     assert owner.available() is False
@@ -219,13 +230,67 @@ def test_consent_rpc_missing_owner_version_bad_reply_or_leaky_email_is_fail_clos
     assert error.value.code == "CONSENT_OWNER_PROTOCOL_MISMATCH"
 
 
-def test_first_value_router_and_consent_check_are_separate(web):
+def test_first_value_scan_is_owned_by_00_no_email_wall_or_duplicate_route(web):
     client, svc = web
-    # Neither opt-in route accepts scan input or requires an auth session; the
-    # first actual public scan is owned by the independent scan service/UI.
     assert client.get("/api/catalyst/scan").status_code == 404
-    result = client.post("/api/catalyst/optin/request", json={
-        "email": "investor@example.com", "scan_receipt": "valid", "consent_checked": False,
-        "form_elapsed_ms": 3000}).json()
-    assert result["status"] == "verification_requested"  # fake HTTP fixture only
-    assert svc.requests[0]["checked"] is False
+    assert client.post("/api/catalyst/optin", json={}).status_code == 404
+    assert client.post("/api/catalyst/optin/request", json={}).status_code == 404
+    assert svc.requests == []
+
+
+def test_reuses_exact_00_public_scan_rights_and_freshness_gate(monkeypatch):
+    import json
+    import sys
+    from types import SimpleNamespace
+    from app import catalyst_optin
+    seen = []
+    def read(tickers, *, event_id):
+        seen.append((tickers, event_id))
+        return {"event_id": event_id, "as_of_utc": "2026-10-09T03:00:00+00:00",
+                "publication_state": "PUBLIC_QUALIFIED",
+                "results": [{"ticker": t, "status": "SUPPORTED"} for t in tickers]}
+    owner = SimpleNamespace(scan_with_reader=read, normalize_tickers=lambda ts: ts)
+    monkeypatch.setitem(sys.modules, "app.catalyst_integration", owner)
+    from app import catalyst_optin as app_module
+    monkeypatch.setattr(__import__("app"), "catalyst_integration", owner, raising=False)
+    adapter = catalyst_optin.CanonicalPublicScanAuthority()
+    rec = json.dumps({"event_id": "event-123", "tickers": ["NVDA", "AMD"]})
+    evidence = adapter.require_public_scan(rec)
+    assert evidence.public_safe and evidence.event_id == "event-123"
+    assert evidence.tickers == ("NVDA", "AMD")
+    assert seen == [(["NVDA", "AMD"], "event-123")]
+    owner.scan_with_reader = lambda ts, *, event_id: {
+        "event_id": event_id, "as_of_utc": "2026-10-09T03:00:00+00:00",
+        "publication_state": "PARTIAL",
+        "results": [{"ticker": "NVDA", "status": "SUPPORTED"},
+                    {"ticker": "AMD", "status": "RIGHTS_BLOCKED"}]}
+    with pytest.raises(FunnelGate) as error:
+        adapter.require_public_scan(rec)
+    assert error.value.code == "SCAN_NOT_PUBLIC_SAFE"
+
+
+def test_00_private_delivery_seam_needs_an_authoritative_revision_loader():
+    from engine.marketing.catalyst_lifecycle import PublicRevision
+    class Loader:
+        def load_public_revision(self, event_id, generation):
+            return PublicRevision(event_id, generation, "2026-10-09T04:00:00+00:00",
+                                  "2026-10-09T03:00:00+00:00", "NVDA", "Material update",
+                                  "New source update", ("https://www.sec.gov/",), True, True, True, True)
+    class ServiceStub:
+        def __init__(self): self.revisions, self.calls = Loader(), []
+        def deliver(self, revision, now):
+            self.calls.append((revision, now))
+            return [{"user_ref": "u_opaque", "state": "PROVIDER_ACCEPTED", "event_id": revision.event_id}]
+    from app import catalyst_optin
+    service=ServiceStub()
+    catalyst_optin.configure(service)
+    try:
+        result=catalyst_optin.deliver_update("event-123", 2)
+        assert result["status"] == "PROVIDER_ACCEPTED" and result["generation"] == 2
+        assert result["receipts"][0]["user_ref"] == "u_opaque" and service.calls
+        service.revisions=object()
+        with pytest.raises(FunnelGate) as error:
+            catalyst_optin.deliver_update("event-123", 2)
+        assert error.value.code == "REVISION_OWNER_NOT_READY"
+    finally:
+        catalyst_optin.configure(None)
