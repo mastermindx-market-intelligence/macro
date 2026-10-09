@@ -684,7 +684,7 @@ def send(*, template: str, cls: str, to_email: str, subject: str, html: str, tex
                         template, exc)
             return _finish("queued", "suppression_lookup_failed")
         if reason:
-            log.info("mailer: %s suppressed (%s)", template, reason)
+            log.info("mailer: %s suppressed by canonical marketing gate", template)
             return _finish("suppressed", reason)
 
     # ---- 3. mail-off ------------------------------------------------------------
