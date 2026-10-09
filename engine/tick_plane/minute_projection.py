@@ -171,6 +171,9 @@ def project_provisional_minute(
         elif state=="MEASURED_SOURCE_PROXY":
             if venue!="LIT" or side not in ("buy","sell","mid"):
                 raise MinuteProjectionRefusal("signed off-exchange/unknown or invalid side")
+            if (o["trade_condition_policy_reason"]!="CONSERVATIVE_PRICE_FORMING_CANDIDATE"
+                    or o["venue_admission_reason"]!="SOURCE_REFERENCE_EXCHANGE_CANDIDATE"):
+                raise MinuteProjectionRefusal("measured print lacks source sale/venue admission")
             if o["reason"] is not None:
                 raise MinuteProjectionRefusal("measured source has failure reason")
             signed=o["signed_notional_usd"]
