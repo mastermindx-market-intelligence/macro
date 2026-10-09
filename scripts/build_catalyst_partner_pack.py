@@ -23,9 +23,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-# Direct-script import is supported without editing global package entrypoints.
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+# Pin this checkout before ANY repo import (scripts/** import-hygiene law).
+# Conditional path insertion cannot defend against a foreign installed package.
+_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_ROOT))
 
 from engine.marketing.catalyst_partner_pack import (
     PackRejected, build_partner_pack, write_partner_pack,
