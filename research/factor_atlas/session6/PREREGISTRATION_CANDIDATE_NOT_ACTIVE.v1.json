@@ -37,6 +37,11 @@
     {
       "family": "K3E-EVAL-1",
       "policy": "Post activation single T1 expectation question, owner-controlled forward partitions, no borrowing"
+    },
+    {
+      "family": "Mastermind TREND-PERSISTENCE V1/V2/B2/C1",
+      "holdout": "stock-level V2/B2 formation 2022-07-06..2026-06-02 exhausted; sector-level C1 development C1-NULL; C2 dropped",
+      "policy": "H04 requires separate NEW protected Mastermind preregistration and a distinct PIT intraday theme participation mechanism before any trial; neither old holdout nor C1/C2 may be rerun"
     }
   ],
   "families": [
@@ -83,7 +88,8 @@
     "power": "Declared before freeze; at least 12 contributing calendar months for multi-session, 60 independent sessions and 80pct eligible dollars for minute quote/pressure claim, or UNESTIMABLE",
     "intraday_baseline": "Strictly prior matched-minute source-known vintages; never same bar",
     "unavailable": "Distinct UNESTIMABLE / SOURCE_DENIED / STALE / CENSORED; not zero",
-    "release": "No rank, alert, gate, sizing or trading; matched OOS gain alone not product acceptance"
+    "release": "No rank, alert, gate, sizing or trading; matched OOS gain alone not product acceptance",
+    "existing_protected_negatives": "Trend Persistence B2 and C1-NULL; SUE deep-history negative; Group Flow display_only; subsector nonpositive; source licenses unresolved"
   },
   "hypotheses": [
     {
@@ -152,7 +158,13 @@
       "primary_falsifier": "No return gain after lagged price and sector controls",
       "source_admission": "OWNER_BOUND_AT_FREEZE",
       "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
-      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+      "status": "NOT_ESTIMATED_NOT_ACTIVE",
+      "prior_family_collision_gate": {
+        "status": "BLOCKED_UNTIL_NEW_MASTERMIND_PREREG",
+        "distinguishing_mechanism": "PIT, source-known intraday multi-theme participation transitions and leader-identity retention, not stock path shape or 11-GICS-sector 20/60 session group path",
+        "excluded_old_formation": "2022-07-06..2026-06-02",
+        "required_proof": "mastermind protected prereg, fresh forward cohort, Eval OS comparison of trial overlap and 5-session horizon incremental baseline"
+      }
     },
     {
       "id": "FA6-H05",
@@ -203,7 +215,8 @@
       "primary_falsifier": "No incremental event-cluster improvement or future expectation/article contamination",
       "source_admission": "OWNER_BOUND_AT_FREEZE",
       "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
-      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+      "status": "NOT_ESTIMATED_NOT_ACTIVE",
+      "prior_superseded_evidence": "SUE deep 2011-2026 IC 0.0005, HAC t 0.061; shallow 2023-2025 claimed edge and v2 survivor superseded. First-known issuer release, later conference call and K3E data are separate clocks."
     },
     {
       "id": "FA6-H08",
@@ -257,5 +270,5 @@
       "status": "NOT_ESTIMATED_NOT_ACTIVE"
     }
   ],
-  "amendment_rule": "New version/digest/owner acceptance and new prospective activation required; preserve this outcome-blind proposal and all rejected trials"
+  "amendment_rule": "New version/digest/owner acceptance and new prospective activation required; preserve this outcome-blind proposal and all rejected trials H04 must remain blocked if the separate protected successor preregistration is not admitted; reduce registered trial family before activation, never by selectively dropping a post-hoc null."
 }
