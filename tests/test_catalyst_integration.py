@@ -229,6 +229,15 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
                             suppression=SuppressionOwner(),
                             revisions=object(), sender=object())
     catalyst_optin.configure(service)
+    guard_allowed = {"yes": True}
+    guard_calls = []
+
+    def shared_guard(request):
+        guard_calls.append(1)
+        if not guard_allowed["yes"]:
+            raise HTTPException(503, "RATE_GUARD_UNAVAILABLE")
+
+    monkeypatch.setattr(catalyst_optin, "_abuse_guard", shared_guard)
     app = FastAPI()
     app.include_router(ci.router)
     client = TestClient(app)
@@ -256,8 +265,15 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
             assert rejected.status_code == 415
             assert otp.requested == []
             assert pending.pending == []
+        assert guard_calls == []  # malformed/simple posts stop before OTP guard
+        guard_allowed["yes"] = False
+        guard_unavailable = client.post("/api/catalyst/optin/request", json=body)
+        assert guard_unavailable.status_code == 503
+        assert otp.requested == pending.pending == []
+        guard_allowed["yes"] = True
         request = client.post("/api/catalyst/optin/request", json=body)
         assert request.status_code == 202
+        assert len(guard_calls) == 2
         assert request.json() == {
             "status": "VERIFICATION_REQUIRED", "public_ref": "opaque_fixture_ref_123456789",
         }
