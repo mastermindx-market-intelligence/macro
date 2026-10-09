@@ -90,29 +90,6 @@ def test_prevalidate_abuse_and_dedupe_without_calling_producer():
             ci.normalize_tickers(bad)
 
 
-def test_explicit_optin_and_opaque_attribution_only():
-    owner_calls = []
-    good = {"email": "reader@example.org", "event_id": "fixture-earnings-20261008", "tickers": ["nvda"],
-            "consent": True, "scope": "catalyst_event_updates/v1",
-            "attribution": {"utm_source": "newsletter", "utm_medium": "partner_7",
-                            "utm_campaign": "earnings", "utm_content": "post-002"}}
-    owner = lambda body: (owner_calls.append(body) or {"status": "VERIFICATION_REQUIRED", "public_ref": "opaque_testref_1234"})
-    assert ci.optin_with_owner(good, owner=owner) == {"status": "VERIFICATION_REQUIRED", "public_ref": "opaque_testref_1234"}
-    assert owner_calls[0]["tickers"] == ["NVDA"]
-    assert owner_calls[0]["attribution"]["utm_content"] == "post-002"
-    for bad in ({**good, "consent": False}, {**good, "scope": "daily_campaigns"},
-                {**good, "attribution": {"utm_content": "https://bad"}}):
-        with pytest.raises(HTTPException) as exc:
-            ci.optin_with_owner(bad, owner=owner)
-        assert exc.value.status_code == 400
-    assert len(owner_calls) == 1
-    for bad_owner in (lambda x: {"status": "VERIFIED", "public_ref": "opaque_testref_1234"},
-                      lambda x: {"status": "VERIFICATION_REQUIRED", "public_ref": "reader@example.org"}):
-        with pytest.raises(HTTPException) as exc:
-            ci.optin_with_owner(good, owner=bad_owner)
-        assert exc.value.status_code == 503
-
-
 def test_public_http_uses_explicit_switch_and_no_signup(monkeypatch):
     app = FastAPI()
     app.include_router(ci.router)
@@ -129,32 +106,16 @@ def test_public_http_uses_explicit_switch_and_no_signup(monkeypatch):
     assert "<form" in page.text and "name='email'" not in page.text.lower() and "reader@example.org" not in page.text
     assert "frame-ancestors 'none'" in page.headers["Content-Security-Policy"]
     assert page.headers["Cache-Control"] == "private, no-store"
-    assert client.post("/api/catalyst/optin", json={"email": "x@y.com"}).status_code == 503
+    assert client.post("/api/catalyst/optin", json={"email": "x@y.com"}).status_code == 404
 
 
-def test_optin_http_owner_down_never_reports_verified(monkeypatch):
-    app = FastAPI()
-    app.include_router(ci.router)
-    client = TestClient(app)
-    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
-    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
-    payload = {"email": "reader@example.org", "tickers": ["NVDA"], "event_id": "fixture-earnings-20261008",
-               "consent": True, "scope": "catalyst_event_updates/v1"}
-    assert client.post("/api/catalyst/optin", json=payload).status_code == 503
-    assert client.post("/api/catalyst/optin", json={**payload, "consent": False}).status_code == 400
-
-
-def test_anon_rate_limits_and_distinct_lanes():
+def test_anon_rate_limits():
     ci._reset_rate_limits_for_tests()
     request = SimpleNamespace(headers={"eo-connecting-ip": "198.51.100.42"})
     for t in range(30):
         assert ci._allow_request(request, "scan", now=t / 10)
     assert not ci._allow_request(request, "scan", now=4)
-    for t in range(5):
-        assert ci._allow_request(request, "optin", now=t)
-    assert not ci._allow_request(request, "optin", now=5)
     assert ci._allow_request(request, "scan", now=61)
-    assert ci._allow_request(request, "optin", now=3602)
     ci._reset_rate_limits_for_tests()
 
 
@@ -163,33 +124,13 @@ def test_anon_http_body_caps_and_json_prevalidation(monkeypatch):
     app.include_router(ci.router)
     client = TestClient(app)
     monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
-    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
     ci._reset_rate_limits_for_tests()
     # The oversized body must be rejected before any producer/consent owner.
     assert client.post("/api/catalyst/scan", json={"tickers": ["NVDA"], "padding": "x" * 9000}).status_code == 413
-    assert client.post("/api/catalyst/optin", json={"email": "reader@example.org", "x": "x" * 5000}).status_code == 413
+    # Insecure legacy direct submission was removed in favor of Session 02 OTP.
+    assert client.post("/api/catalyst/optin", json={"email": "reader@example.org"}).status_code == 404
     assert client.post("/api/catalyst/scan", content="{bad", headers={"Content-Type": "application/json"}).status_code == 400
     assert client.post("/api/catalyst/scan", json={"tickers": ["AAPL"] * 11}).status_code == 400
-    ci._reset_rate_limits_for_tests()
-
-
-def test_optin_http_ack_only_verification_required(monkeypatch):
-    app = FastAPI()
-    app.include_router(ci.router)
-    client = TestClient(app)
-    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
-    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
-    ci._reset_rate_limits_for_tests()
-    monkeypatch.setattr(ci, "import_module", lambda name: SimpleNamespace(
-        request_optin=lambda body: {"status": "VERIFICATION_REQUIRED", "public_ref": "opaque_123456789"}
-    ))
-    payload = {"email": "reader@example.org", "tickers": ["NVDA"],
-               "event_id": "fixture-earnings-20261008", "scope": "catalyst_event_updates/v1",
-               "consent": True, "attribution": {"utm_content": "post-002"}}
-    res = client.post("/api/catalyst/optin", json=payload)
-    assert res.status_code == 202
-    assert res.json() == {"status": "VERIFICATION_REQUIRED", "public_ref": "opaque_123456789"}
-    assert "reader@" not in res.text
     ci._reset_rate_limits_for_tests()
 
 
