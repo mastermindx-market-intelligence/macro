@@ -4600,6 +4600,10 @@ CURATED_EXCLUSIVE = {
     # reaches through dynamic importlib loads); widening is always the
     # safe direction.
     "options-alpha-candidate-feed",
+    # 2026-10-05: the recovered Alpha/RS view owns its two new suites and
+    # legacy owner regressions. Exact dependencies are curated so unrelated
+    # dashboard/Prophet edits do not acquire another always-on job.
+    "leadership-lab-recovery",
     # 2026-10-03 PR #8350: options-signal-campaign-v2 is the gate:code owner
     # of tests/test_options_signal_campaign_effective_view.py. scope:
     # exclusive replaces inference, so the declared job must be pinned here
@@ -4611,10 +4615,6 @@ CURATED_EXCLUSIVE = {
     # opaque code fallback, so every ordinary code PR selected it. The exact
     # closure is now declared; packing ceilings remain unchanged.
     "regime-outlook-mapping",
-    # 2026-10-05: the recovered Alpha/RS view owns its two new suites and
-    # legacy owner regressions. Exact dependencies are curated so unrelated
-    # dashboard/Prophet edits do not acquire another always-on job.
-    "leadership-lab-recovery",
 }
 
 
