@@ -72,7 +72,7 @@ def _supported(scan: dict) -> tuple[str, ...]:
             or scan.get("publication_state") not in ("PUBLIC_QUALIFIED", "PARTIAL")
             or not isinstance(scan.get("event_id"), str)
             or not _EVENT.fullmatch(scan["event_id"])
-            or type(scan.get("generation")) is not int or scan["generation"] < 1):
+            or type(scan.get("generation")) is not int or scan["generation"] < 0):
         return ()
     results = scan.get("results")
     if not isinstance(results, list):
@@ -152,7 +152,7 @@ class ScanReceiptAuthority:
             generation, issued_at = payload.get("generation"), payload.get("issued_at")
             as_of = payload.get("as_of_utc")
             if (not isinstance(event_id, str) or not _EVENT.fullmatch(event_id)
-                    or type(generation) is not int or generation < 1
+                    or type(generation) is not int or generation < 0
                     or type(issued_at) is not int
                     or not isinstance(as_of, str) or len(as_of) > 40
                     or not isinstance(tickers, list) or not 1 <= len(tickers) <= 10
