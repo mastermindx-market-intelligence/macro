@@ -1,233 +1,143 @@
 {
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
-  "as_of": "2026-10-05",
-  "generated_utc": "2026-10-06T07:35:16Z",
+  "as_of": "2026-10-07",
+  "generated_utc": "2026-10-08T22:37:23Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
-    "n": 4,
-    "n_eff": 4.0,
+    "n": 3,
+    "n_eff": 2.99,
     "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 4 candidates \u2248 4.0 independent bets."
+    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 3 candidates \u2248 2.99 independent bets."
   },
   "same_thesis_groups": [],
-  "earnings_coverage_frac": 0.75,
+  "earnings_coverage_frac": 1.0,
   "by_ticker": {
-    "SCHL": {
+    "AAPL": {
       "verdict": "new",
-      "max_similarity": 0.0,
-      "basis": "membership-only:r2=0.06<0.2",
+      "max_similarity": 0.0697,
+      "basis": "membership+high-tier-factor",
       "nearest": [
         {
-          "ticker": "MCK",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [],
-          "same_earnings_week": null
-        },
-        {
           "ticker": "XOM",
-          "combined": 0.0,
+          "combined": 0.0697,
           "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [],
-          "same_earnings_week": null
-        },
-        {
-          "ticker": "COKE",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [],
-          "same_earnings_week": null
-        }
-      ],
-      "earnings_leg": {
-        "next_date": null,
-        "same_week_peers": [],
-        "has_data": false
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer MCK at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 MCK\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
-    },
-    "MCK": {
-      "verdict": "new",
-      "max_similarity": 0.0,
-      "basis": "membership-only:r2=0.18<0.2",
-      "nearest": [
-        {
-          "ticker": "SCHL",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "XOM",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.18<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "COKE",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.18<0.2",
+          "factor_cosine": 0.0697,
+          "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
           "same_earnings_week": true
+        },
+        {
+          "ticker": "BKH",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.09<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
         }
       ],
       "earnings_leg": {
-        "next_date": "2026-11-04",
+        "next_date": "2026-10-29",
         "same_week_peers": [
-          "COKE"
+          "XOM"
         ],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer SCHL at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 SCHL\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+      "why_en": "Distinct bet \u2014 nearest peer XOM at 7% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 XOM\uff0c\u76f8\u4f3c\u5ea6 7%\u3002"
+    },
+    "BKH": {
+      "verdict": "new",
+      "max_similarity": 0.0,
+      "basis": "membership-only:r2=0.09<0.2",
+      "nearest": [
+        {
+          "ticker": "AAPL",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.09<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "XOM",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.09<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-11-04",
+        "same_week_peers": [],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Distinct bet \u2014 nearest peer AAPL at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 AAPL\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
     },
     "XOM": {
       "verdict": "new",
-      "max_similarity": 0.0,
+      "max_similarity": 0.0697,
       "basis": "membership+high-tier-factor",
       "nearest": [
         {
-          "ticker": "SCHL",
-          "combined": 0.0,
+          "ticker": "AAPL",
+          "combined": 0.0697,
           "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
+          "factor_cosine": 0.0697,
+          "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
-          "same_earnings_week": false
+          "same_earnings_week": true
         },
         {
-          "ticker": "MCK",
+          "ticker": "BKH",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.18<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "COKE",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
+          "factor_basis": "beta-read-thin:r2=0.09<0.2",
           "shared_groups": [],
           "same_earnings_week": false
         }
       ],
       "earnings_leg": {
         "next_date": "2026-10-30",
-        "same_week_peers": [],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer SCHL at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 SCHL\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
-    },
-    "COKE": {
-      "verdict": "new",
-      "max_similarity": 0.0,
-      "basis": "membership-only:r2=0.06<0.2",
-      "nearest": [
-        {
-          "ticker": "SCHL",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "MCK",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.18<0.2",
-          "shared_groups": [],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "XOM",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
         "same_week_peers": [
-          "MCK"
+          "AAPL"
         ],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer SCHL at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 SCHL\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+      "why_en": "Distinct bet \u2014 nearest peer AAPL at 7% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 AAPL\uff0c\u76f8\u4f3c\u5ea6 7%\u3002"
     }
   },
   "pair_basis": {
-    "SCHL__MCK": {
+    "AAPL__BKH": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.06<0.2",
+      "factor_basis": "beta-read-thin:r2=0.09<0.2",
       "shared_groups": []
     },
-    "SCHL__XOM": {
+    "AAPL__XOM": {
       "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.06<0.2",
+      "factor_cosine": 0.0697,
+      "combined": 0.0697,
+      "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     },
-    "SCHL__COKE": {
+    "BKH__XOM": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.06<0.2",
-      "shared_groups": []
-    },
-    "MCK__XOM": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.18<0.2",
-      "shared_groups": []
-    },
-    "MCK__COKE": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.18<0.2",
-      "shared_groups": []
-    },
-    "XOM__COKE": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.06<0.2",
+      "factor_basis": "beta-read-thin:r2=0.09<0.2",
       "shared_groups": []
     }
   },
@@ -240,7 +150,7 @@
   },
   "n_eff_by_lane": {
     "entry_open": 3.0,
-    "setting_up": 1.0
+    "setting_up": null
   },
   "source_passport": {
     "factor_betas": {
@@ -251,7 +161,7 @@
     "us_standouts_v2": {
       "path": "site/factordata/us_standouts_v2.json",
       "found": true,
-      "as_of": "2026-10-05"
+      "as_of": "2026-10-07"
     },
     "membership": {
       "path": "data/baskets/membership.json",

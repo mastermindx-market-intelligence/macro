@@ -53,6 +53,12 @@ def _publication_date(value: date | datetime | str) -> date:
         raise ValueError("published_at must be a date/datetime/ISO string")
     raw = value.strip()
     if "T" in raw:
+        # Validate the whole timestamp first: a malformed clock must not reach
+        # identity resolution as a plausible date. The WRITTEN date is kept.
+        try:
+            datetime.fromisoformat(raw)
+        except ValueError as exc:
+            raise ValueError("published_at must be a valid ISO date or timestamp") from exc
         raw = raw.split("T", 1)[0]
     # Strict extended form only: date.fromisoformat accepts the basic ``YYYYMMDD``
     # spelling on Python >= 3.11, which the contract treats as an unusable clock.

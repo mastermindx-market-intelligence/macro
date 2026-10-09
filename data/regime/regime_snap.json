@@ -1,56 +1,25 @@
 {
   "snap": false,
   "relief_magnitude": null,
-  "roro": 0.096,
+  "roro": 0.148,
   "cap_recent": false,
   "fear_built": 0.335,
-  "roro_velocity": 0.263,
-  "vel_pctile": 0.905,
-  "legs_up": 2,
+  "roro_velocity": 0.08,
+  "vel_pctile": 0.661,
+  "legs_up": 0,
   "legs_total": 7,
-  "flipped_legs": [
-    "hy_oas",
-    "copper_gold"
-  ],
-  "days_since_last_snap": 81,
+  "flipped_legs": [],
+  "days_since_last_snap": 82,
   "fear_rebuilding": false,
-  "vix_term": 0.862,
-  "status": "building",
+  "vix_term": 0.851,
+  "status": "dormant",
   "gates": {
-    "velocity": true,
+    "velocity": false,
     "legs": false,
     "fear": false,
     "washout": false
   },
   "min_legs": 4,
-  "flipped_legs_named": [
-    {
-      "key": "hy_oas",
-      "en": "HY credit spread",
-      "zh": "\u9ad8\u6536\u76ca\u4fe1\u7528\u5229\u5dee"
-    },
-    {
-      "key": "copper_gold",
-      "en": "Copper/Gold",
-      "zh": "\u94dc\uff0f\u91d1 \u6bd4"
-    }
-  ],
-  "magnitude_band": null,
-  "veto": {
-    "schema": "regime_snap_veto.v1",
-    "is_context_only": true,
-    "lean": "unclear",
-    "confidence": "low",
-    "checks": {
-      "catalyst": "No legible structural or verbal macro catalyst; the move is narrow AI/semis leadership rather than a signed deal, policy shift, or hard broad-market surprise.",
-      "premium": "Little fear premium appears decisively unwound: only 2 of 7 legs have flipped and the snap is still building.",
-      "washout": "No real capitulation is evident; cap_recent is false and fear_built is modest at 0.335.",
-      "follow_through": "Next-session confirmation is doubtful because participation is narrow, only credit spreads and copper/gold have turned, and oil/yield pressure remains."
-    },
-    "read": "This is not yet a durable relief signal, but the catalyst is too unclear to call it definitively fragile. The absence of capitulation and broad cross-asset participation argues against fading fear aggressively.",
-    "model": "deepseek-v4-pro",
-    "generated_at": "2026-10-06T06:07:47.947009+00:00",
-    "degraded_reason": null,
-    "disclaimer": "AI durability read \u2014 context only, never scored or sized. The snap detector is coincident; this is a fallible judgement on whether the relief is structural or a dead-cat, not a trade recommendation."
-  }
+  "flipped_legs_named": [],
+  "magnitude_band": null
 }

@@ -32,9 +32,12 @@ artifacts:
   - research/theme_graph/D2E_PRE_ACCEPTANCE_CENSUS_2026-10-05.md
 discoveries:
   - DSC:A-STACKED-PR-ON-A-NON-MAIN-BASE-GETS-NO-PULL-REQUEST-CI
+  - DSC:DAILY-ENGINE-RESULT-IS-FAILURE-AFTER-ITS-COMMIT
   - DSC:GMI-D1-SEAMS-IMPORT-WAVE-C-RIGHTS-USE
   - DSC:GMI-D2C-AND-D2D-CARRIERS-CONFLICT-IN-LEGACY-JOBS-YML
   - DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION
+  - DSC:LEGACY-THEMATIC-COMPOSE-AGES-FIXTURES-ON-THE-WALL-CLOCK
+  - DSC:W3C-COHORT-CAPTURE-IS-REFUSED-BY-THE-RIGHTS-GATE-BY-DESIGN
 waves:
   - id: W0
     title: Graph scaffolding
@@ -76,30 +79,41 @@ waves:
   - id: D2E
     title: "Rights / coverage / D2 acceptance — gmi-theme-accept-d2e-20260827-sol-001"
     status: in_progress
-    pr: 8488
+    pr: 8540
     depends_on: [D2C, D2D]
     next_action: >
-      D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc), so acceptance is live as a
-      seat-commissioned lane in three phases: P1 acceptance against current main; P2
-      reconciliation of the D2B3 natural-proof clause against the 2026-10-07 nightly receipt
-      (daily.yml crons 30 22 and 30 23 UTC); P3 an independent read-only review. Acceptance
-      closes only on P2 natural evidence; the merged census #8488 (192a46de8be8) and green PRs
-      are inputs, not acceptance. Gate #2 (rights class) is closed by #8509 (wave G2); gate #5
-      (ontology-action authority) is #8507 (wave G5).
+      D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc). Acceptance runs as three phases on
+      the gate-matrix carrier #8540 (DRAFT, held until the natural receipt). P1, acceptance
+      against current main, is ACCEPTED. P2 reconciles the D2B3 natural-proof clause against
+      the first real nightly that carries #8544 and #8539: 2026-10-07, a run usually created
+      about 01:00-02:30Z rather than at the 30 22 / 30 23 UTC crons. P2 includes the VMRK
+      suppression and lifecycle row from #8544 (ebe35dc916de: the VMRK rename re-mint merges
+      into the incumbent co:us:EQR node through config/theme_graph_duplicate_mints.yml, D2A
+      re-pinned; DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE). P3 is an
+      independent read-only review. The merged census #8488 (192a46de8be8) and green PRs are
+      inputs, not acceptance. Gate #2 (rights class) is closed by #8509 (wave G2); gate #5
+      (ontology-action authority) by #8507 (wave G5).
   - id: W3B
     title: "Sole local + canonical ThemeState — gmi-theme-state-w3b-20260827-sol-001"
     status: in_progress
     depends_on: [D2E]
     next_action: >
       Substrate landed without a third producer: #8455 (731a23fb64b9) recovered the sealed
-      state owner and the accepted-generation reader. In flight: #8539 (gate #8 G1, DRAFT)
-      makes the existing LEGACY publish also write the validated graph theme_state/v1 shadow
-      through generation.write_atomic inside generation.family_lock, because the production
-      nightly never calls publish_generation
-      (DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION). Legacy
+      state owner and the accepted-generation reader. #8539 (gate #8 G1, seat ruling G1-RC1)
+      MERGED 2026-10-06T23:32:45Z as squash f8d4da2aceadf15df41329c71a15b8071b3ca7ae at exact head 47c1e7dcd3d9. Its narrow
+      `--mode GRAPH_SHADOW_STATE` of scripts/build_thematic_state.py composes state only from
+      the owner bundle (theme_state_adapter.compose_state_only_from_owner_bundle), validates
+      it, and writes data/theme_graph/shadow_theme_state.v1.json through
+      generation.write_atomic inside generation.family_lock. It runs as one non-fatal step of
+      the off-render oracle_offrender job in daily.yml (timeout 12 minutes, continue-on-error,
+      a tolerant git add in that job's commit step; dag node build_graph_shadow_theme_state)
+      and took 237 s on ubuntu1. The engine step stays LEGACY byte for byte
+      (DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION), so legacy
       neuralweb.theme_state.v1 and CTE consumers stay compatible during migration (gate #8
-      ruling). W3B is accepted only after D2E acceptance and a nightly receipt showing the
-      shadow state written.
+      ruling). Known limits: lag 1 (build_site reads night N-1's shadow); it composes from
+      main's latest committed owner state with a truthful PIT known_at; and it adds about
+      10 MB per night to the repo until an R2 follow-up. W3B is accepted only after D2E
+      acceptance and a nightly receipt showing the shadow written and committed.
   - id: W3C
     title: "Selection Cohort Intelligence — gmi-theme-cohort-w3c-20260827-sol-001"
     status: in_progress
@@ -109,15 +123,30 @@ waves:
       readers), #8486 (072475fe21c2, selection-clock qualified_reads), #8524 (f255148cf9c7,
       gate #8 lane A read-only US/CN selection-cohort product projection), #8538
       (accd1db56f8d, gate #8 phase 2, qualified_reads wired into the US W3C read through a
-      3-key adapter). In flight: #8539 (G1 shadow write), a reads-owner repair from the Wave G
-      pass-1 audit (M1: a typed OWNER_UNAVAILABLE row instead of a raise; M2:
-      instant-precision PIT visibility, so a fact computed after known_at stays invisible) and
-      the Terminal US projection (gate #8 lane B on ubuntu1, per gate #6). Then a Wave G
-      pass-2 read-only integrator audit over the landed tree, and production proof on the
-      first nightly after the last landing. Invariant: source order and reasons preserved and
-      the six authority flags in engine/theme_graph/selection_cohort.py stay False
-      (authority_ceiling research_internal_only); no candidate insertion, ranking, readiness,
-      sizing or board mutation.
+      3-key adapter), #8542 (ce094fa56e91, the Wave G pass-1 M1/M2 repair: a typed
+      OWNER_UNAVAILABLE row instead of a raise, and instant-precision PIT visibility so a
+      fact computed after known_at stays invisible), #8539 (the G1 shadow write, see W3B),
+      and Terminal lane B on ubuntu1 (gate #6): mastermind-terminal #837 (38a5a7da096a, a
+      read-only "Shared themes / latest U.S. picks" card, counts only) and #838
+      (ad36a332cd4b, /api/nw relays the caller's own Supabase session and drops the shared
+      cache). Both are live on the production Terminal VPS: deployment ad36a332cd4b, service
+      restarted 2026-10-06 22:28:41Z, an anonymous /api/nw?f=market_plane answers 401
+      sign_in_required with Cache-Control private, no-store and Vary: Cookie, and all 30 chunk
+      refs in the live HTML resolve. Lane B is U.S. only. Both selection-cohort projections
+      read unavailable on main by design: every production capture is refused by the rights
+      gate (DSC:W3C-COHORT-CAPTURE-IS-REFUSED-BY-THE-RIGHTS-GATE-BY-DESIGN), so an available
+      projection needs a Chairman capture-rights ruling, not a wiring fix. #8554 (gate #8
+      reason preservation, MERGED 2026-10-07T01:22:43Z as squash 5622c1cb9256 at exact head 9b2c53424b85, ci-gate SUCCESS, all four files blob-identical on main; served proof waits for the next render) carries the builders' typed refusal into the projection,
+      so us.json and cn.json read SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE instead of
+      WRAPPER_MISSING while the internal bindings stay None. The China card stays deferred
+      until cn.json reads available. The Wave G pass-2 read-only integrator audit passed
+      over the integrated tree (0 blockers, 0 majors, 1 minor, a stale config/dag.yml note
+      since corrected; invariants I1-I12 each pass). W3C closes on production proof from the
+      first nightly after the last landing; until a capture-rights ruling, that proof is the
+      typed fail-closed projection. Invariant: source order and reasons preserved
+      and the six authority flags in engine/theme_graph/selection_cohort.py stay False
+      (authority_ceiling research_internal_only); no candidate insertion, ranking,
+      readiness, sizing or board mutation.
   - id: W-A
     title: "ThemeState owner adapter + CTE-v3 lineage on the state carrier (#8455)"
     status: done
@@ -172,6 +201,25 @@ waves:
       exact head); both census paths blob-verified on origin/main. DO_NOT_REDO.
       The v2/cohort Terminal consumer is a Sol/Chairman product decision,
       not a lane to spawn; re-census only if the Terminal pin or the C0 writer moves.
+  - id: W-G3
+    title: "F04 consumability census and the store_meta provenance fix (#8552)"
+    status: done
+    pr: 8552
+    next_action: >
+      A read-only census (grok pool, run-1791323013, checked head 04514a2c51a0) asked whether
+      F04 can consume the canonical readers with no duplicate theme, state or graph truth
+      plane. It found no duplicate writer, a consistent Neural Web registry, and that the
+      shadow ThemeState is not an authority. B1 was confirmed as a latent gate #2 blocker:
+      engine/market_ontology/exposure_map.py copied the whole data/theme_graph/_meta.json into
+      provenance.store_meta, so internal-only finviz/ths structure would leave in any F04
+      emission (no production emitter exists today). M1 was refuted: the strict store reader
+      raise is deliberate and typed at the publication seam, so F04 consumes selection cohorts
+      only through read_finalized_cohort and consume_*_source, never raw qualified_reads. m1
+      was confirmed: config/synapse.yml omitted scripts/correct_gmi_identity_lineage.py as a
+      known extra writer. #8552 (authored commit 950de975eb01, a ubuntu1 cursor composer-2.5 lane) fixes
+      B1 with an allowlist projection (_STORE_META_PUBLIC_KEYS, _public_store_meta) and m1;
+      MERGED 2026-10-07T01:31:36Z as squash 02ad6fee4cc5 at exact head 7d2cf2a9b180 (950de975eb01 plus three update-branch merges of main; ci-gate SUCCESS; blob ok=4; tree-verified: _STORE_META_PUBLIC_KEYS and _public_store_meta in origin/main engine/market_ontology/exposure_map.py, known_extra_writers in config/synapse.yml). The fix is latent until an F04 emitter exists, so it has no production
+      proof to read. DO_NOT_REDO the census.
   - id: G2
     title: "Chairman gate #2: finviz_themes and ths_concepts retained internal_only (#8509)"
     status: done
@@ -250,20 +298,30 @@ landmines:
     path exists, every watcher-enabled child requires explicit CONTINUE/STOP semantics;
     terminal STOP disarms both temporary watchers and does not authorize the next child.
   - >-
-    The production nightly runs scripts/build_thematic_state.py with no --mode, so LEGACY never
-    calls publish_generation: any state that must reach production is written through
-    generation.write_atomic inside generation.family_lock in the LEGACY branch, and an audit
-    that expects publish_generation there will mis-judge it
-    (DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION).
+    The engine job runs scripts/build_thematic_state.py with no --mode, so LEGACY never calls
+    publish_generation, and the engine step stays LEGACY byte for byte. The graph shadow
+    reaches production only through the separate --mode GRAPH_SHADOW_STATE step in the
+    off-render oracle_offrender job (generation.write_atomic inside generation.family_lock).
+    A new nightly artifact gets its own narrow mode in an off-render job; never flip the
+    default mode, and an audit that expects publish_generation in production will mis-judge
+    it (DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION).
+  - >-
+    The daily engine job concludes failure on every recent nightly, and only on its final OIP
+    integrity step, which runs after "commit engine outputs" has succeeded. A step or job
+    gated on needs.engine.result == 'success' is therefore skipped every night. Use needs
+    plus the job-level if: always() && needs.et_gate.outputs.run != 'false' idiom
+    (DSC:DAILY-ENGINE-RESULT-IS-FAILURE-AFTER-ITS-COMMIT).
 next_action: >
   Seat 6f14c2da (Meta-CEO, Chairman handoff on #8324 comment 5991777960) carries the program;
   resume from agentos/handoffs/GMI-THEME-GRAPH-2026-10-06.md. Landed 2026-10-06: #8509, #8417,
-  #8486, #8455, #8524, #8432, #8435, #8538, #8507. Next, in order: land #8539 (gate #8 G1) on
-  concluded green at its exact head; land the reads-owner repair (Wave G pass-1 M1/M2) and the
-  Terminal US projection (gate #8 lane B); run the Wave G pass-2 read-only integrator audit over
-  that tree; then read the 2026-10-07 nightly as the natural receipt for D2E acceptance P2, the G1
-  shadow state and the projection artifact. W3B and W3C close only on that production evidence.
-  Remaining operator acts (mini4 credential install, mini2 disk) are never seat work.
+  #8486, #8455, #8524, #8432, #8435, #8538, #8507, #8542, #8544 and #8539, plus
+  mastermind-terminal #837 and #838; on 2026-10-07 #8559 (the main-red clock-pin heal), #8554
+  and #8552; the Wave G pass-2 integrator audit passed. Next: read the
+  first real nightly (2026-10-07) by artifact for D2E P2 (the committed G1 shadow, the VMRK
+  suppression and lifecycle row, and the U.S. projection), then run D2E P3 and land #8540. W3B
+  and W3C close only on that production evidence; the China projection stays deferred until
+  cn.json reads available. Operator acts (mini4 credential install, mini2 disk, VPS disk) are
+  never seat work, and the nightly OIP integrity failure belongs to the OIP lane.
 ---
 
 ## Current production substrate

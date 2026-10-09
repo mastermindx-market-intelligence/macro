@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-06",
+  "date": "2026-10-07",
   "regime": "mixed / no clear trend",
   "breadth": 0.15,
   "favored": [
@@ -9,7 +9,7 @@
     "equity_intl"
   ],
   "correlation": "diversified",
-  "asof": "2026-10-06",
+  "asof": "2026-10-07",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
@@ -177,23 +177,23 @@
         "pair": "copper_gold",
         "ratio": 0.002,
         "trend": "elevated",
-        "pctile": 91.0
+        "pctile": 90.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 68.141,
+        "ratio": 67.928,
         "trend": "mid",
-        "pctile": 33.0
+        "pctile": 32.0
       },
       {
         "pair": "oil_gold",
         "ratio": 0.022,
         "trend": "mid",
-        "pctile": 70.0
+        "pctile": 71.0
       },
       {
         "pair": "stocks_gold",
-        "ratio": 0.187,
+        "ratio": 0.186,
         "trend": "mid",
         "pctile": 75.0
       }
@@ -204,7 +204,7 @@
           "key": "rates_term",
           "label_en": "Rates term-spread (10y-3m)",
           "label_zh": "\u5229\u7387\u671f\u9650\u5229\u5dee (10\u5e74-3\u6708)",
-          "value": 1.27,
+          "value": 1.26,
           "unit": "%",
           "state": "positive carry"
         },
@@ -279,15 +279,15 @@
       "impulse_13w": null
     },
     "funding_stress": {
-      "asof": "2026-10-02",
+      "asof": "2026-10-05",
       "state": "calm",
-      "score": 33.0,
-      "spread_bp": 0.0
+      "score": 40.0,
+      "spread_bp": 1.0
     },
     "confirm": {
       "verdict": "diverge",
       "agree_pct": 0,
-      "n_blind_flags": 2,
+      "n_blind_flags": 3,
       "flags_top": [
         {
           "key": "credit",
@@ -306,9 +306,18 @@
           "owner": "bonds",
           "lead": "coincident",
           "equity_blind": true
+        },
+        {
+          "key": "fx_risk_off",
+          "en": "Dollar-smile in risk-off (haven bid for USD/JPY/CHF) \u2014 FX positioning defensive (a coincident global-risk-off read, not a forecaster).",
+          "zh": "\u7f8e\u5143\u5fae\u7b11\u5904\u4e8e\u907f\u9669\u4fa7\uff08\u7f8e\u5143/\u65e5\u5143/\u745e\u90ce\u907f\u9669\u4e70\u76d8\uff09\u2014 \u5916\u6c47\u4ed3\u4f4d\u9632\u5fa1\uff08\u540c\u6b65\u7684\u5168\u7403\u907f\u9669\u8bfb\u6570\uff0c\u975e\u9884\u6d4b\uff09\u3002",
+          "severity": "medium",
+          "owner": "fx",
+          "lead": "coincident",
+          "equity_blind": true
         }
       ],
-      "asof": "2026-10-02"
+      "asof": "2026-10-05"
     },
     "dollar": {
       "usd_dir": "flat",
@@ -332,7 +341,7 @@
       "fx_stress": {
         "dominant": "dollar_wrecking_ball",
         "top_key": "dollar_wrecking_ball",
-        "top_val": 62.5
+        "top_val": 62.4
       }
     },
     "shadow": {

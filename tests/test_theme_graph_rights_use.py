@@ -168,6 +168,21 @@ def test_relation_event_source_prefix_maps_only_accepted_v2_artifact():
     ) is None
 
 
+def test_duplicate_mint_and_identity_break_registry_fragments_map_mastermind_curated():
+    assert rights.family_for_source_ref(
+        "config/theme_graph_identity_breaks.yml#us:GOLD") == "mastermind_curated"
+    assert rights.family_for_source_ref(
+        "config/theme_graph_duplicate_mints.yml#co:us:VMRK") == "mastermind_curated"
+    assert rights.family_for_source_ref(
+        "gmi:entity_type_conflict:co:us:IBIT") == "mastermind_curated"
+    assert rights.family_for_source_ref(
+        "config/theme_graph_identity_breaks.yml") is None
+    assert rights.family_for_source_ref(
+        "config/theme_graph_duplicate_mints.yml") is None
+    assert rights.family_for_source_ref(
+        "config/theme_graph_identity_breaks.yml.bak#x") is None
+
+
 def test_registry_missing_between_phases(tmp_path):
     p = _write_registry(tmp_path, _registry_bytes())
     cap = capture_capability(path=p)

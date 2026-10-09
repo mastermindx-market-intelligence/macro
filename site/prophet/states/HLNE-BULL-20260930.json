@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HLNE-BULL-20260930",
-  "asof": "2026-10-06",
+  "asof": "2026-10-08",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 68.2,
-  "raw_confidence": 69.3,
-  "delta_vs_base": 8.2,
+  "management_confidence": 49.8,
+  "raw_confidence": 35.4,
+  "delta_vs_base": -10.2,
   "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
-    "validity": 100.0,
-    "progress": 17.6,
-    "pace": 100.0,
+    "validity": 3.4,
+    "progress": 0.0,
+    "pace": 85.8,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.247,
-    "dist_to_t1_r": 1.253,
-    "dist_to_t2_r": 2.753,
-    "horizon_pct_used": 13.3,
-    "p1": 0.1649,
-    "p2": 0.0825,
+    "dist_to_stop_r": 0.126,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 17.8,
+    "p1": -0.5825,
+    "p2": -0.2912,
     "p3": null,
-    "move_r": 0.247,
+    "move_r": -0.874,
     "mfe_r": 0.9,
-    "mae_r": 0.0
+    "mae_r": -0.874
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Nearing Invalidation",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.7099996948242193,
-  "_mae": 0.0,
+  "_mae": -1.660003051757812,
   "_max_p1": 0.5999998929207799,
   "_first_trigger_ts": "2026-10-01",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 6,
-  "tau": 0.1333
+  "days_elapsed": 8,
+  "tau": 0.1778
 }

@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.covariance_spine.v1",
-  "as_of": "2026-10-06",
+  "as_of": "2026-10-07",
   "display_only": true,
   "authority": "context",
   "descriptive_not_gauntleted": true,
@@ -8,19 +8,19 @@
     "rates": {
       "dominant_pc_share": 0.8265,
       "first3_var": 0.9635,
-      "effective_dimension_pr": 1.4402,
+      "effective_dimension_pr": 1.4405,
       "pc3_to_pc4_gap": null,
       "oos_pctile_vs_null": null,
       "curvature_stability_tag": "stable",
       "vol_match_multipliers": {
         "pc2": 2.95,
-        "pc3": 4.43
+        "pc3": 4.42
       },
       "source": "data/regime/latest.json#yield_curve"
     },
     "factors": {
-      "dominant_factor_pc_share": 0.5949,
-      "effective_factor_bets_pr": 2.5109,
+      "dominant_factor_pc_share": 0.595,
+      "effective_factor_bets_pr": 2.5098,
       "n_factors_used": 7,
       "n_obs_used": 252,
       "caveat": "~3y history, annual fundamentals; descriptive only",
@@ -29,10 +29,10 @@
     "dispersion": {
       "state": "lean_out",
       "dispersion_pctile": 0.32,
-      "avg_corr": 0.07,
-      "dominant_equity_pc_share": 0.1708,
-      "effective_universe_bets_pr": 23.53,
-      "idio_dispersion_share": 0.7634
+      "avg_corr": 0.06,
+      "dominant_equity_pc_share": 0.1706,
+      "effective_universe_bets_pr": 23.59,
+      "idio_dispersion_share": 0.7789
     },
     "lobes": {
       "effective_independent_lobes": 1.0,
@@ -56,7 +56,7 @@
         "unmeasurable": {
           "altdata": 16,
           "altdata_conv": 3,
-          "basket_turn.v1": 8,
+          "basket_turn.v1": 9,
           "ca_board": 15,
           "china_news": 3,
           "china_special_sits": 14,
@@ -65,15 +65,15 @@
           "cn_importance_v0_pit": 16,
           "demand_chain": 5,
           "desk:ai_desk": 12,
-          "desk:narrative_brain": 5,
+          "desk:narrative_brain": 6,
           "desk:policy_intent": 6,
-          "desk:radar": 3,
+          "desk:radar": 4,
           "desk:stock_desk": 14,
           "desk:thematic_desk": 12,
           "hk_board": 15,
           "intel_hub": 14,
           "macro_context": 15,
-          "narrative": 11,
+          "narrative": 12,
           "options_entry": 6,
           "policy": 10,
           "radar": 14,
@@ -103,7 +103,7 @@
     "unmeasurable": {
       "altdata": 16,
       "altdata_conv": 3,
-      "basket_turn.v1": 8,
+      "basket_turn.v1": 9,
       "ca_board": 15,
       "china_news": 3,
       "china_special_sits": 14,
@@ -112,15 +112,15 @@
       "cn_importance_v0_pit": 16,
       "demand_chain": 5,
       "desk:ai_desk": 12,
-      "desk:narrative_brain": 5,
+      "desk:narrative_brain": 6,
       "desk:policy_intent": 6,
-      "desk:radar": 3,
+      "desk:radar": 4,
       "desk:stock_desk": 14,
       "desk:thematic_desk": 12,
       "hk_board": 15,
       "intel_hub": 14,
       "macro_context": 15,
-      "narrative": 11,
+      "narrative": 12,
       "options_entry": 6,
       "policy": 10,
       "radar": 14,
