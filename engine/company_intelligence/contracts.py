@@ -682,3 +682,266 @@ def validate_manifest(payload: object, *, allow_unmaterialized_files: bool = Fal
             for key, value in observed_map.items():
                 if key not in _OBSERVED_COUNT_KEYS or isinstance(value, bool) or not isinstance(value, int) or value < 0:
                     raise ContractError(f"manifest.source.{name}.observed_counts invalid")
+
+# ---------------------------------------------------------------------------
+# company_catalyst_event.v1 -- bounded non-fiscal disclosure read port
+# ---------------------------------------------------------------------------
+
+COMPANY_CATALYST_EVENT_CONTRACT = "company_catalyst_event.v1"
+COMPANY_CATALYST_EVENT_SCHEMA_VERSION = "1.0.0"
+CATALYST_EVENT_FAMILIES = frozenset({
+    "issuer_readout_guidance",
+    "regulatory_target_disclosed",
+    "advisory_meeting_disclosed",
+    "result_announced",
+    "regulatory_action",
+})
+# R1B's first executable producer is issuer disclosure. Additional namespaces
+# are admitted only with their owner-native key grammar and source proof; this
+# bounded set must not become a permissive catch-all.
+CATALYST_SOURCE_NAMESPACES = frozenset({"issuer_disclosure"})
+CATALYST_OCCURRENCE_STATES = frozenset({
+    "uncorroborated", "corroborated", "cancelled", "withdrawn"
+})
+CATALYST_TIMING_STATES = frozenset({"consistent", "conflicted", "missing"})
+CATALYST_TIMING_SOURCE_CLASSES = frozenset({
+    "issuer_guided", "regulator_disclosed", "unresolved"
+})
+CATALYST_TIMING_PRECISIONS = frozenset({
+    "day", "month", "quarter", "year", "window", "unknown"
+})
+CATALYST_SOURCE_FACT_AUTHORITY = {
+    "classification": "source_fact",
+    "decision_authority": False,
+    "allowed_uses": ["display", "context", "explain"],
+    "forbidden_uses": [
+        "originate_signal",
+        "rank_security",
+        "select_security",
+        "size_position",
+        "gate_decision",
+        "execute_trade",
+        "raise_authority",
+    ],
+}
+_CATALYST_EVENT_KEYS = frozenset({
+    "contract_id", "schema_version", "event_id", "company_id", "issuer_cik",
+    "event_family", "native_identity", "revision_ref", "revision_is_current",
+    "occurrence", "timing", "source_available_at", "observed_at",
+    "document_refs", "public_evidence", "asset_mentions", "relationship_claims",
+    "authority",
+})
+_CATALYST_NATIVE_IDENTITY_KEYS = frozenset({"source_namespace", "native_event_key"})
+_CATALYST_TIMING_KEYS = frozenset({
+    "state", "source_class", "lower_date", "upper_date", "precision",
+    "source_timezone", "source_wording", "evidence_refs",
+})
+_CATALYST_SOURCE_EVENT_ID_RE = re.compile(r"^evt_source_[0-9a-f]{64}$")
+_COMPANY_CIK_ID_RE = re.compile(r"^cik:(?P<cik>[0-9]{10})$")
+_CIK10_RE = re.compile(r"^[0-9]{10}$")
+
+
+def _strict_knowledge_timestamp(value: object, *, field: str) -> tuple[str, datetime]:
+    """Normalize a real offset-bearing instant; never invent a source timezone."""
+    if not isinstance(value, str):
+        raise ContractError(f"{field} requires an explicit timezone")
+    text = value.strip()
+    if "T" not in text:
+        raise ContractError(f"{field} requires an explicit timezone")
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ContractError(f"{field} requires an explicit timezone") from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ContractError(f"{field} requires an explicit timezone")
+    utc = parsed.astimezone(timezone.utc)
+    return utc.isoformat(timespec="seconds").replace("+00:00", "Z"), utc
+
+
+def _catalyst_ref_list(value: object, *, field: str, allow_empty: bool = True) -> list[str]:
+    if not isinstance(value, list):
+        raise ContractError(f"{field} must be a list")
+    if not allow_empty and not value:
+        raise ContractError(f"{field} must not be empty")
+    if len(value) > 256:
+        raise ContractError(f"{field} too large")
+    if any(not isinstance(item, str) or not item or len(item) > 512 for item in value):
+        raise ContractError(f"{field} contains an invalid reference")
+    if len(value) != len(set(value)):
+        raise ContractError(f"{field} contains duplicate references")
+    return list(value)
+
+
+def _validate_catalyst_timing(value: object) -> dict[str, Any]:
+    item = _require_mapping(value, name="timing")
+    _require_exact_keys(item, _CATALYST_TIMING_KEYS, name="timing")
+    state = item.get("state")
+    source_class = item.get("source_class")
+    precision = item.get("precision")
+    if state not in CATALYST_TIMING_STATES:
+        raise ContractError("timing.state invalid")
+    if source_class not in CATALYST_TIMING_SOURCE_CLASSES:
+        raise ContractError("timing.source_class invalid")
+    if precision not in CATALYST_TIMING_PRECISIONS:
+        raise ContractError("timing.precision invalid")
+    lower_raw = item.get("lower_date")
+    upper_raw = item.get("upper_date")
+
+    def exact_date(raw: object, *, field: str) -> str | None:
+        if raw is None:
+            return None
+        if not isinstance(raw, str) or len(raw) != 10:
+            raise ContractError(f"timing.{field} invalid")
+        parsed = parse_date(raw, field=f"timing.{field}")
+        if raw != parsed.isoformat():
+            raise ContractError(f"timing.{field} invalid")
+        return raw
+
+    lower = exact_date(lower_raw, field="lower_date")
+    upper = exact_date(upper_raw, field="upper_date")
+    if state == "conflicted" and (lower is not None or upper is not None):
+        raise ContractError("timing conflicted summary must not choose bounds")
+    if state == "missing" and (lower is not None or upper is not None):
+        raise ContractError("timing missing summary must not carry bounds")
+    if lower is not None and upper is not None and lower > upper:
+        raise ContractError("timing lower_date exceeds upper_date")
+    source_timezone = item.get("source_timezone")
+    if source_timezone is not None and (
+        not isinstance(source_timezone, str) or not source_timezone or len(source_timezone) > 80
+    ):
+        raise ContractError("timing.source_timezone invalid")
+    source_wording = item.get("source_wording")
+    if source_wording is not None and (
+        not isinstance(source_wording, str) or not source_wording or len(source_wording) > 2_000
+    ):
+        raise ContractError("timing.source_wording invalid")
+    refs = _catalyst_ref_list(item.get("evidence_refs"), field="timing.evidence_refs")
+    return {
+        "state": state,
+        "source_class": source_class,
+        "lower_date": lower,
+        "upper_date": upper,
+        "precision": precision,
+        "source_timezone": source_timezone,
+        "source_wording": source_wording,
+        "evidence_refs": refs,
+    }
+
+
+def validate_company_catalyst_event(
+    payload: object,
+    *,
+    generation_cutoff: object | None = None,
+) -> dict[str, Any]:
+    """Validate the first bounded Company Intelligence non-fiscal event port.
+
+    This validator owns identity/clock/authority semantics. The first executable
+    slice intentionally admits issuer-disclosure identity and timing only;
+    relationship/asset/public-evidence projections stay empty until their
+    separately frozen owner objects are implemented rather than accepting an
+    arbitrary JSON blob here.
+    """
+    item = _require_mapping(payload, name="company_catalyst_event")
+    _require_exact_keys(item, _CATALYST_EVENT_KEYS, name="company_catalyst_event")
+    if item.get("contract_id") != COMPANY_CATALYST_EVENT_CONTRACT:
+        raise ContractError("company_catalyst_event contract_id invalid")
+    if item.get("schema_version") != COMPANY_CATALYST_EVENT_SCHEMA_VERSION:
+        raise ContractError("company_catalyst_event schema_version invalid")
+
+    company_id = item.get("company_id")
+    company_match = _COMPANY_CIK_ID_RE.fullmatch(str(company_id or ""))
+    if company_match is None or company_match.group("cik") == "0000000000":
+        raise ContractError("company_catalyst_event company_id invalid")
+    issuer_cik = item.get("issuer_cik")
+    if not isinstance(issuer_cik, str) or _CIK10_RE.fullmatch(issuer_cik) is None:
+        raise ContractError("company_catalyst_event issuer_cik invalid")
+    if issuer_cik == "0000000000" or issuer_cik != company_match.group("cik"):
+        raise ContractError("company_catalyst_event issuer_cik does not match company_id")
+
+    event_family = item.get("event_family")
+    if event_family not in CATALYST_EVENT_FAMILIES:
+        raise ContractError("company_catalyst_event event_family invalid")
+    native = _require_mapping(item.get("native_identity"), name="native_identity")
+    _require_exact_keys(native, _CATALYST_NATIVE_IDENTITY_KEYS, name="native_identity")
+    source_namespace = native.get("source_namespace")
+    native_event_key = native.get("native_event_key")
+    if source_namespace not in CATALYST_SOURCE_NAMESPACES:
+        raise ContractError("company_catalyst_event source_namespace invalid")
+    _require_text(native_event_key, field="native_identity.native_event_key", limit=1_024, allow_null=False)
+
+    identity = {
+        "company_id": company_id,
+        "source_namespace": source_namespace,
+        "native_event_key": native_event_key,
+        "event_family": event_family,
+    }
+    expected_event_id = "evt_source_" + canonical_json_sha256(identity)
+    event_id = item.get("event_id")
+    if not isinstance(event_id, str) or _CATALYST_SOURCE_EVENT_ID_RE.fullmatch(event_id) is None:
+        raise ContractError("company_catalyst_event event_id invalid")
+    if event_id != expected_event_id:
+        raise ContractError("company_catalyst_event event_id is not canonical")
+
+    revision_ref = item.get("revision_ref")
+    _require_text(revision_ref, field="revision_ref", limit=512, allow_null=False)
+    if not isinstance(item.get("revision_is_current"), bool):
+        raise ContractError("revision_is_current must be boolean")
+    occurrence = item.get("occurrence")
+    if occurrence not in CATALYST_OCCURRENCE_STATES:
+        raise ContractError("occurrence invalid")
+    timing = _validate_catalyst_timing(item.get("timing"))
+
+    source_available_at, source_available_time = _strict_knowledge_timestamp(
+        item.get("source_available_at"), field="source_available_at"
+    )
+    observed_at, observed_time = _strict_knowledge_timestamp(
+        item.get("observed_at"), field="observed_at"
+    )
+    if observed_time < source_available_time:
+        raise ContractError("observed_at precedes source_available_at")
+    if generation_cutoff is not None:
+        _cutoff_text, cutoff_time = _strict_knowledge_timestamp(
+            generation_cutoff, field="generation_cutoff"
+        )
+        if source_available_time > cutoff_time or observed_time > cutoff_time:
+            raise ContractError("knowledge timestamp exceeds generation cutoff")
+
+    document_refs = _catalyst_ref_list(
+        item.get("document_refs"), field="document_refs", allow_empty=False
+    )
+    for field in ("public_evidence", "asset_mentions", "relationship_claims"):
+        value = item.get(field)
+        if value != []:
+            raise ContractError(f"{field} is not admitted in the first producer slice")
+    authority = item.get("authority")
+    if authority != CATALYST_SOURCE_FACT_AUTHORITY:
+        raise ContractError("company_catalyst_event authority invalid")
+
+    return {
+        "contract_id": COMPANY_CATALYST_EVENT_CONTRACT,
+        "schema_version": COMPANY_CATALYST_EVENT_SCHEMA_VERSION,
+        "event_id": event_id,
+        "company_id": company_id,
+        "issuer_cik": issuer_cik,
+        "event_family": event_family,
+        "native_identity": {
+            "source_namespace": source_namespace,
+            "native_event_key": native_event_key,
+        },
+        "revision_ref": revision_ref,
+        "revision_is_current": item["revision_is_current"],
+        "occurrence": occurrence,
+        "timing": timing,
+        "source_available_at": source_available_at,
+        "observed_at": observed_at,
+        "document_refs": document_refs,
+        "public_evidence": [],
+        "asset_mentions": [],
+        "relationship_claims": [],
+        "authority": {
+            "classification": "source_fact",
+            "decision_authority": False,
+            "allowed_uses": ["display", "context", "explain"],
+            "forbidden_uses": list(CATALYST_SOURCE_FACT_AUTHORITY["forbidden_uses"]),
+        },
+    }
