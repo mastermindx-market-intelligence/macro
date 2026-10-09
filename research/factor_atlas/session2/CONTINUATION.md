@@ -235,3 +235,21 @@ then GitHub readback and new-head workflow/contract-delta check.
 If a workflow-permission barrier appears, preserve the local
 unpublished effect and do not change carrier/account to force push.
 Release remains Draft/HOLD.
+
+## Follow-on CI trigger-closure amendment
+
+With the original branch at `b4c79bf75e62a97bb4a3bea679c87b56040062c8`,
+a static import census identified the **only outside-research Python
+source dependency** among all eight native test suites:
+`engine.flow_signing.quote_rule_sign` from `engine/flow_signing.py`.
+The newly added PR-scoped `factor-atlas-reference.yml` workflow
+therefore also triggers for that source path. This is test coverage,
+not a second signing engine or change in source custody.
+The workflow remains `contents:read` with no waiver.
+Eight named suite paths and the prior exact local Python 3.12
+226-pass recipe were revalidated; science code is unchanged.
+Earlier head checks were in progress when this bounded closure
+was authored; a later head needs its own GitHub workflow results.
+Original source admission and prior denied-effect boundaries
+remain unchanged. MISSION_COMPLETE:false / DRAFT-HOLD /
+licensed-market pilot NOT_ADMITTED.

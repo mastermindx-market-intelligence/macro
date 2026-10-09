@@ -599,3 +599,14 @@ The eight unrun suites are `test_pressure.py`, `test_disclosed_profile.py`, `tes
 Before publication the workflow was locally parsed by PyYAML and its eight explicitly named run-step paths were checked exactly against the eight test files tracked at the PR head; **8/8 matched**. Its exact test command passed **226/226 native tests** on local M2 Python **3.12** (pytest 9.1.1, scipy 1.18.0, numpy 2.5.1, pandas 3.0.5). Hosted GitHub uses the pinned requirements versions; this local test does **not** establish hosted execution, hosted green, current-base semantic compatibility, deployment, source admission or production acceptance. The new workflow must be observed after the source push and any actual failure must be diagnosed at its exact head; one cannot infer all green from YAML syntax or a local author run.
 
 CI registration is critical engineering infrastructure for the **named Factor Atlas scientific reference**, not a release gate bypass. Source S2-P1 remains `NOT_ADMITTED`, and the specific previously denied source reads, benchmark repair and current-main fetch/target comparison are still not retried. The original PR stays **Draft/HOLD** until real current-head check results, exact-head independent review and permitted release admission. Evidence is in `session2/evidence/ci_registration_preflight.json` and the original GitHub Actions job logs.
+
+**CI trigger closure:** A targeted static import census found that `test_quote_reference.py`
+imports `engine.flow_signing.quote_rule_sign` for six incumbent-method
+parity tests. The new Factor Atlas research-workflow `pull_request.paths`
+therefore includes **`engine/flow_signing.py`** in addition to its own
+workflow and `research/factor_atlas/**`. A change to the shared primitive
+alone can no longer leave those reference regression tests untriggered.
+No existing production signing code, global CI job, test waiver or
+provider source was modified. The trigger/case paths were parsed locally
+and match exactly eight tracked suites; the same Python 3.12 226-pass
+recipe remains the local reference. Hosted checks are still distinct.

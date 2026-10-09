@@ -2,15 +2,15 @@
   "ci_registration_receipt": "session2/evidence/ci_registration_preflight.json",
   "customer_publication_authorized": false,
   "external_ci_workflow_path": ".github/workflows/factor-atlas-reference.yml",
-  "external_ci_workflow_sha256": "77a4fa18460f024a0f6aebbaaccb02aa1cbf90fb13a398af9c3c56af803a1159",
+  "external_ci_workflow_sha256": "3f3a80f897113466be4c8bbe4ed737b91b8663c816ab832276bff97c4e2f0b43",
   "files": {
     "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
-      "bytes": 86450,
-      "sha256": "b82638eecd16050ce66117bbbc59b7f67a91cb94ec7d8f1fe2aa152f379fc548"
+      "bytes": 87186,
+      "sha256": "a6e17d03281c83eca75be7ed86b446a6c826c14af06f1f7792709c0f5a0449a2"
     },
     "session2/CONTINUATION.md": {
-      "bytes": 17104,
-      "sha256": "3f38128e8fd56f82a70614b5665538175746591f9a66b52944ea0c2afb4c11a7"
+      "bytes": 18062,
+      "sha256": "61cf01f9180a27f67bd80d740cba487dcdce7dc786e8b179eccfae14da776fda"
     },
     "session2/CUMULATIVE_WINDOW_CONTRACT.md": {
       "bytes": 2197,
@@ -33,8 +33,8 @@
       "sha256": "196e3b469c399c114fbde8f9e092ca920252ddac60c50ad4182be8105d7c60ac"
     },
     "session2/evidence/ci_registration_preflight.json": {
-      "bytes": 2099,
-      "sha256": "be1787d89e6b328d81367e5ae37af519a4f195762ec485d7ebef48d542ccf41c"
+      "bytes": 2470,
+      "sha256": "875e880e01ce32e666eef55267fedf746ea91bc0c8e72adb8a6dd43d81f09dcb"
     },
     "session2/evidence/local_terminal_default_path_census.json": {
       "bytes": 2875,
@@ -147,8 +147,8 @@
   "native_quote_test_receipt": "session2/evidence/native_quote_tests.json",
   "native_scoped_tests_passed": 226,
   "native_test_receipt": "session2/evidence/native_window_tests.json",
-  "predecessor_commit": "c7b28ff2bead20487dcb6f90a6d20f89086be9d2",
-  "prepared_at_utc": "2026-10-09T07:53:28.927154+00:00",
+  "predecessor_commit": "b4c79bf75e62a97bb4a3bea679c87b56040062c8",
+  "prepared_at_utc": "2026-10-09T07:58:03.031161+00:00",
   "report_structure_checks": {
     "external_source_records": 13,
     "implementation_packets": 7,

@@ -1,6 +1,6 @@
 {
   "current_research_source_modified": false,
-  "hosted_new_workflow_result": "PENDING_NEW_HEAD",
+  "hosted_new_workflow_result": "PENDING_UPDATED_HEAD",
   "legacy_jobs_manifest_modified": false,
   "licensed_market_pilot_admitted": false,
   "local_all_eight_suites_exit_code": 0,
@@ -24,12 +24,13 @@
   "new_ci_owner": "GitHub Actions existing provider",
   "new_workflow": ".github/workflows/factor-atlas-reference.yml",
   "new_workflow_file": {
-    "bytes": 1740,
-    "sha256": "77a4fa18460f024a0f6aebbaaccb02aa1cbf90fb13a398af9c3c56af803a1159"
+    "bytes": 1818,
+    "sha256": "3f3a80f897113466be4c8bbe4ed737b91b8663c816ab832276bff97c4e2f0b43"
   },
   "parent_commit": "c7b28ff2bead20487dcb6f90a6d20f89086be9d2",
+  "previous_candidate_head": "b4c79bf75e62a97bb4a3bea679c87b56040062c8",
   "protected_mastermind": "9ff27c3944a69598e88e0d93948b9cf096a76602",
-  "recorded_at_utc": "2026-10-09T07:53:28.913310+00:00",
+  "recorded_at_utc": "2026-10-09T07:58:03.019139+00:00",
   "recorded_ci_failure": {
     "ci_pack_0_job_id": 113680332943,
     "conclusion": "failure",
@@ -49,5 +50,12 @@
   },
   "schema": "factor_atlas.ci_registration_preflight.v1",
   "source_rights_qualified": false,
+  "trigger_paths": [
+    "research/factor_atlas/**",
+    "engine/flow_signing.py",
+    ".github/workflows/factor-atlas-reference.yml"
+  ],
+  "trigger_reviewed_against_all_eight_tracked_suites": true,
+  "trigger_source_dependency": "engine/flow_signing.py (six scalar quote-rule parity cases)",
   "unrun_test_waiver_added": false
 }

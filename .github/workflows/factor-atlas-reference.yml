@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - "research/factor_atlas/**"
+      - "engine/flow_signing.py" # referenced by quote-reference parity tests
       - ".github/workflows/factor-atlas-reference.yml"
 
 permissions:
