@@ -86,6 +86,7 @@ def test_backfill_and_future_crawl_never_backdate_local_availability():
     {"url": "file:///etc/passwd"},
     {"url": "https://user:pass@reuters.com/a"},
     {"source": "reuters.com/../../bad"},
+    {"source": "bloomberg.com"},  # source-host disagreement cannot borrow credibility
     {"publishedDate": "2026-10-09T07:00:00"},
     {"crawlDate": "not-a-date"},
     {"publishedDate": "2026-10-10T07:00:00Z"},
@@ -139,7 +140,7 @@ def test_fetch_unavailable_and_bad_response_fail_closed():
 
 def test_audit_records_bad_rows_without_article_text():
     bad = article(id=False)
-    report = tn.audit_sample([article(), bad, article(id=81235, source="bloomberg.com")], received_at=NOW)
+    report = tn.audit_sample([article(), bad, article(id=81235, source="bloomberg.com", url="https://bloomberg.com/story/81235")], received_at=NOW)
     assert report["sample_rows"] == 3
     assert report["valid_rows"] == 2
     assert report["invalid_reasons"]["id_invalid"] == 1
