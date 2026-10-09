@@ -219,6 +219,8 @@ def freeze_peers(rows: list[dict], subject_issuer: str, sector: str,
     Real qualification must supply the independently calendar-qualified C-1
     decision instant. Never derives issuer IDs from CIK.
     """
+    if not isinstance(subject_issuer, str) or not subject_issuer.startswith('ISS:'):
+        raise NotQualified('SUBJECT_ISSUER_IDENTITY_UNKNOWN')
     parse_id(subject_issuer)
     cutoff = _utc(decision_at or lagged_session + 'T00:00:00Z')
     if cutoff.date().isoformat() != lagged_session:

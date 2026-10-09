@@ -1,25 +1,15 @@
 """Frozen F01-F16 and supplementary, synthetic only; no source-store reads."""
 from datetime import date
-import importlib
 import json
 
 import numpy as np
 import pandas as pd
 import pytest
 
-MODULE = 'research.structural_leadership_shock_resilience.local_source_qualification.adapter'
-
-
 @pytest.fixture
 def q():
-    class Adapter:
-        def __getattr__(self, name):
-            try:
-                module = importlib.import_module(MODULE)
-            except ModuleNotFoundError:
-                raise AssertionError('research adapter not implemented') from None
-            return getattr(module, name)
-    return Adapter()
+    from research.structural_leadership_shock_resilience.local_source_qualification import adapter
+    return adapter
 
 
 def evidence(q, family='gics', **changes):
@@ -334,34 +324,39 @@ def test_primary_report_never_grants_review_or_zero_alpha(q):
     assert report['primary_estimate'] is None
 
 
-def test_cli_default_is_reproducible_blocked_result(q,tmp_path):
-    from subprocess import run
+def cli(q,monkeypatch,capsys,*,packet=None):
+    import io
+    import sys
+    monkeypatch.setattr(sys,'argv',['slr-qualification']+(['--stdin'] if packet is not None else []))
+    monkeypatch.setattr(sys,'stdin',io.StringIO(json.dumps(packet) if packet is not None else ''))
+    code=q.main()
+    return code,json.loads(capsys.readouterr().out)
+
+
+def test_cli_default_is_reproducible_blocked_result(q,monkeypatch,capsys):
     outputs=[]
     for _ in range(2):
-        result=run(['python3','-m',MODULE],capture_output=True,text=True,check=False)
-        assert result.returncode == 2
-        outputs.append(json.loads(result.stdout))
+        code,report=cli(q,monkeypatch,capsys)
+        assert code == 2
+        outputs.append(report)
     assert outputs[0] == outputs[1]
     assert outputs[0]['RESULT'] == 'NOT_ADMITTED'
 
 
-def test_cli_qualifies_stdin_packet_and_cannot_skip_outcome_firewall(q):
-    from subprocess import run
+def test_cli_qualifies_stdin_packet_and_cannot_skip_outcome_firewall(q,monkeypatch,capsys):
     from dataclasses import asdict
     sources=[]
     for family in q.FAMILIES:
         r,p=evidence(q,family)
         sources.append({'receipt':asdict(r),'source_object':p})
     packet={'decision_at':'2014-01-02T20:00:00Z','sources':sources,'synthetic':True}
-    result=run(['python3','-m',MODULE,'--stdin'],input=json.dumps(packet),
-               capture_output=True,text=True,check=False)
-    assert result.returncode == 0
-    assert json.loads(result.stdout)['admission_granted'] is False
+    code,report=cli(q,monkeypatch,capsys,packet=packet)
+    assert code == 0
+    assert report['admission_granted'] is False
     packet['sources'][0]['source_object']['forward_return_21d']=.2
-    result=run(['python3','-m',MODULE,'--stdin'],input=json.dumps(packet),
-               capture_output=True,text=True,check=False)
-    assert result.returncode == 2
-    assert 'INPUT_GRAPH' in result.stdout
+    code,report=cli(q,monkeypatch,capsys,packet=packet)
+    assert code == 2
+    assert 'INPUT_GRAPH' in report['BLOCKERS'][0]
 
 
 def test_complete_lookback_requires_504_master_sessions(q):
@@ -459,3 +454,8 @@ def test_full_prefix_cooldown_exact_63_boundary(q):
     candidates.iloc[[63,126,127,190,191]]=True
     # A fire at exactly D+63 stays in the prior episode; D+64 starts a new one.
     assert q._onsets(candidates) == [dates[63],dates[127],dates[191]]
+
+
+def test_peer_subject_must_be_economic_issuer_not_security_identifier(q):
+    with pytest.raises(q.NotQualified,match='SUBJECT_ISSUER'):
+        q.freeze_peers([peer(1)],'SEC:US-XNYS-SUBJECT','Information Technology','2014-01-02')

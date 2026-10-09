@@ -64,9 +64,9 @@
   "local_focused_tests": {
     "exit_code": 0,
     "incumbent_cases": 330,
-    "log": "green5.txt",
-    "new_synthetic_cases": 70,
-    "passed": 400
+    "log": "green6.txt",
+    "new_synthetic_cases": 71,
+    "passed": 401
   },
   "macro_base_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
   "massive_local_authenticated_access": "KEY_UNAVAILABLE",
