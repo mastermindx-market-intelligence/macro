@@ -1,0 +1,110 @@
+{
+  "operation": "market-tide-research-20260924-sol-001",
+  "carrier": "macro#7929",
+  "procedure_pin": "Mastermind@819abc8c23609cdded2b33f6e1bfc7854bd5c847",
+  "tested_code_head": "d3cdbb93d48c3bc9542c97668ab8c531dccef730",
+  "previous_candidate": "1096e2a38bdc36ecd6ec8dc02a96001fc3c01246",
+  "mission_complete": false,
+  "market_observations_used": 0,
+  "capability_delta": "A supplied-input wrapper now adds fixed predicted-versus-observed risk bands, separately mature 1/3/10-session path descriptions, and unpooled cross-instrument report composition around the unchanged C1-M1 numerical core.",
+  "pre_results_diagnostic_choices": {
+    "bands": "[0,0.5), [0.5,1), [1,2), [2,infinity) of predicted dimensionless Y5; fixed before market outcomes; not optimized quantiles, operational labels, probabilities or action thresholds",
+    "maturity": "Each band counts issued and mature-scored predictions separately; prediction/actual means and errors use the same mature observations. Empty or unscored bins retain null means.",
+    "horizons": "1,3,10 sessions only; all intervening supplied total-return closes required; normalized close-path downside uses origin v20*sqrt(h), signed log return is the endpoint ratio, RMS is uncentered daily log-return RMS without annualization.",
+    "horizon_exclusions": "Absent path, wrong basis/reference/origin, duplicate or missing endpoint, impossible source clock, immature intermediate/terminal endpoint and invalid price remain explicit. Shorter available horizons do not require a mature 10-session outcome.",
+    "forecast_separation": "The five-session prediction is not scored as a forecast for another horizon; diagnostic paths do not alter prepared y5, features, fitting, primary scores or acceptance hurdles.",
+    "transfer": "SPY/QQQ/IWM reports remain instrument-specific; missing instruments disclosed; duplicate symbols, mixed synthetic/retrospective evidence, different evaluation cutoffs and unexpectedly granted authority are rejected; no pooled score or independent-replication count."
+  },
+  "source_identity": {
+    "unchanged_core": {
+      "path": "research/options_estate/market_tide_c1.py",
+      "bytes": 20074,
+      "blob": "4cd4200a040d2cfbe372fd07a7d7694bdb129ea2",
+      "sha256": "a1d507100615319f9c02db9dfb8ca71fac3d199a1a2aca27165c124f7caf06f4"
+    },
+    "diagnostics": {
+      "path": "research/options_estate/market_tide_c1_diagnostics.py",
+      "bytes": 12262,
+      "blob": "86bf2bdc7a37eccd4b16ace96942ae75c5c3b368",
+      "sha256": "02e398833d1a3b276159bcfc8efaa694bdeea47f227446c33c90e9f56edc26e4"
+    },
+    "tests": {
+      "path": "tests/test_market_tide_c1_diagnostics.py",
+      "bytes": 12343,
+      "blob": "c930056c28319e4da1e308aff59c8e66495e313a",
+      "sha256": "b4fec6076d7e0131f1c59a4489b1ba5ea6e643e3712e228b91b58c2319f0a9af"
+    }
+  },
+  "native": {
+    "device": "2b8a329e-0a82-413c-b9d0-958a7de6d836",
+    "workspace": "/Users/chriswong/lanes/repos/macro/.claude/worktrees/market-tide-research-20260924-sol-001",
+    "interpreter": "/Users/chriswong/lanes/venv/bin/python",
+    "dependency_installations": 0,
+    "new_workspaces": 0,
+    "source_writer": "existing GitHub branch; native detached locked verification checkout receives clean exact-commit fast-forwards only",
+    "red_commit": "09842ff5bf1094aa84c655972868a0d4560c58c8",
+    "red_process": 27903,
+    "red_result": "28 failures: diagnostic consumer absent, asserted before implementation",
+    "green_process": 32243,
+    "green_command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/lanes/venv/bin/python -m unittest discover -s tests -p 'test_market_tide_c1*.py'",
+    "green_tests": 68,
+    "new_diagnostic_tests": 28,
+    "failures": 0,
+    "errors": 0,
+    "exit": 0,
+    "scope": "focused native tests with actual complete repository imports, not the entire repository suite, independent review, CI enrollment or empirical verification",
+    "cleanliness_process": 33126,
+    "cleanliness": "git diff --check clean; git status --short empty; exact HEAD d3cdbb93d48c3bc9542c97668ab8c531dccef730; only new diagnostic module and suite differ from previous candidate"
+  },
+  "synthetic_cli": {
+    "process": 32739,
+    "exit": 0,
+    "stderr": "",
+    "command": "python -m research.options_estate.market_tide_c1_diagnostics --input /dev/stdin --evaluation-at 2022-01-20T00:00:00Z",
+    "recipe": "Start tests/test_market_tide_c1.py::synthetic_packet. Generate levels[j]=100*exp(0.0001*j+0.018*sin(j/6)+0.009*cos(j/17)) for len(calendar)+63 values. For origin i update measured values with core.measure_closes(levels[i:i+64],levels[i:i+69]); diagnostic origin is levels[i+63], and available next-session points j=1..min(10,remaining roster) use levels[i+j+63], the same price_ref and calendar close+5min. All data and the weekday roster are synthetic. Serialize sort_keys=True/allow_nan=False into subprocess stdin; do not read a market file.",
+    "prepared_origins": 1310,
+    "held_out_predictions": 528,
+    "monthly_fits": 25,
+    "available_horizons": {"1": 528, "3": 528, "10": 523},
+    "all_horizons_common_origins": 523,
+    "PEI_band_issued_counts": [229, 105, 49, 145],
+    "primary_predictions_fits_and_all_numerical_summary_fields_equal_to_unmodified_core_on_same_input": true,
+    "input_bytes": 2467124,
+    "input_sha256": "061698bac624e51ac974e499c0c0dc112eb405a72ec1a468fb39a6e0e881f98b",
+    "output_bytes": 620106,
+    "output_sha256": "fe9ae3004bb3d0d31545ddd0e82adae86e438dc27327a40b8788c150c26e8714",
+    "missing_instruments": ["QQQ", "IWM"],
+    "source_admitted": false,
+    "may_trade": false
+  },
+  "existing_data_inquiries": {
+    "MAS-204": "Latest returned comment remains fffe9f72-7379-40e9-a117-580bbb26d404; no newer reply returned in newest-first read",
+    "MAS-94": "Latest returned comment remains 356dafb3-8370-486c-b768-7db190757188; no newer reply returned in newest-first read",
+    "interpretation": "Saved reference requests are not active workers or complete source qualification. No new market-data acquisition or owner restart."
+  },
+  "CI_enrollment": {
+    "configuration_changed": false,
+    "target": ".github/ci/legacy-jobs.yml::unrun-factor-research",
+    "gap": "Exact shared-file source ownership/collisions not established",
+    "read_probe_1": "Native read-only GraphQL census process23214 returned HTTP502; no modifying effect",
+    "read_probe_2": "One smaller same-carrier technical recovery, process23235, returned null/noniterable data; no third equivalent probe or collision-clear inference",
+    "coordination": "MAS-202 comment af76a357-b53b-4342-a3b9-f0b3da381efd requests current applicable custody or successor-owner reference only; explicitly preserves parked C2 EFFECT_UNKNOWN and does not commission its execution",
+    "latest_file_commit_observed": "ac61896da96c65b66c8162a6830c6fc9c4c86335 (#6872); not ownership permission",
+    "observed_code_head_workflows": {"ci": {"run": 36077088011, "state": "in_progress"}, "fences": {"run": 36077087457, "state": "completed", "conclusion": "success"}},
+    "scope": "These are observations for d3cdbb93d48c3bc9542c97668ab8c531dccef730 only, not all-checks-green or proof these unenrolled suites ran in CI. Later record commits need their own release evidence."
+  },
+  "remaining": [
+    "Independent statistical/code review of the numerical core plus diagnostic wrapper",
+    "Reconcile shared CI ownership and enroll all three C1 test suites through the existing job; no replacement workflow",
+    "Owner-qualified input bridge, historical price/event eligibility and actual C1-M1 market evaluation",
+    "Source/record acceptance, eventual real consumer/page integration and production proof"
+  ],
+  "holds": {
+    "earlier_denied_operations": "R0 acquisition/write, R1 native footer/hash, combined local Agent OS validation/options-manifest read, and the preceding turn's update of issue comment5812208225 all remain pre-dispatch EFFECT_NONE; none retried/rephrased/moved/delegated",
+    "issue_comment_5812208225": "stale at3774cd2cc40b9e4e7e11c34c90e7fccd4b4bd294; current continuation is the already-existing Agent OS candidate and PR metadata, not a replacement comment",
+    "new_safety_refusal": false,
+    "unresolved_modifying_effect": false,
+    "worker_or_watcher_started": false,
+    "production_or_trade_change": false
+  }
+}
