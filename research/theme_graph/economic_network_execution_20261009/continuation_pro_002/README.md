@@ -269,3 +269,26 @@ repair paths; it is not a universal runtime lease census. Historical owner names
 are not proof of an active worker. This change releases no preserved hold on shared
 Theme Research, private publication, Technology economic change, K3-D, D2E, W-C7,
 or Terminal #796.
+
+## Subsequent upstream integration before publication
+
+The first clean source freeze was commit
+`23002372c45a4543dac9f1650e4be1107d35896c`. Its actual principal source receipt
+verified 30 owned files and 71 dependencies. The strict five-call NVIDIA replay
+passed at 09:51:21Z, and the real mixed review-set CLI proof passed at 09:53:07Z:
+11 guarded fresh processes and three literal CLI processes, with complete
+expected outputs, four retained cases and unchanged source/input state.
+
+The pre-push check then detected accepted QLedger PR #8693,
+`1b08293becb8ea5a6295844dd1880fd2db0ade40`, in fresh main
+`25d6652168d23a1ecfb606b6c58451399762a753`. Its only overlap with this change was
+the shared CI manifest. The principal integrated that accepted source normally,
+preserving every QLedger change and the two relationship-test enrollments. All
+eight application/test files retained their independently reviewed hashes.
+
+The source verifier's two source-selection constants now identify that integrated
+base and the composed CI manifest. Its reviewed validation logic is unchanged;
+the prior v2 verifier remains available at the first frozen Git commit. The later
+source receipt and release evidence must bind the actual final commit rather than
+reuse the earlier commit's proof as current composition. The implementing PR's
+receipts record that refresh, hosted CI and accepted-source verification.

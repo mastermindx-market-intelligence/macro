@@ -25,9 +25,9 @@ ROOT = Path('/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-network
 CACHE = Path('/Users/chriswong/Library/Caches/Mastermind/economic-network-native-reader-20261009/principal')
 REPOSITORY = 'mastermindx-market-intelligence/macro'
 OPERATION = 'gmi-economic-network-native-reader-20261009-pro-002'
-BASE = '41c1516fa803504c30ca2d5d067a71899fca3e8d'
+BASE = '25d6652168d23a1ecfb606b6c58451399762a753'
 FROZEN = {
-    '.github/ci/legacy-jobs.yml': '62598df9610b898e182abfae61da60bb06e417416125314d72379f9dd2706a64',
+    '.github/ci/legacy-jobs.yml': '8754604c46e236023fab35aa6914196bc2462d9308772d406efed96c58dce7b2',
     'collectors/sec_document_spine.py': '1c6fec647373372858f4ad5fc0b6a88d9da84d605f5d14e8e148ac2ee7e8a3e5',
     'engine/fundamental_forensics/sec_document_spine.py': 'ee240863943823e598083f45164c6a288e9098292a47a454cc70898c2bdf8366',
     'engine/fundamental_forensics/filing_attestation.py': '1b2693a9bbff66761a573a8c1bd5d32b352a2d43719407e2864fda6e725d0a47',
