@@ -23,7 +23,7 @@ def row(key="t1", *,t=None,state="MEASURED_SOURCE_PROXY",side="buy",
            "decision_ns":CUT,"source_watermark_receipt":WM,
            "trade_conditions_rules_ref":RULE,
            "trade_condition_policy_reason":"CONSERVATIVE_PRICE_FORMING_CANDIDATE",
-           "quote_conditions_rules_ref":"policy-ref",
+           "quote_conditions_rules_ref":"c"*64,
            "quote_source_receipt_id":"quote-ref","matched_quote_id":"Q1",
            "quote_age_ns":500_000,"source_trade_conditions":[0],
            "venue_class":venue,
@@ -203,6 +203,32 @@ class ProjectionTests(unittest.TestCase):
     def test_exchange_reference_receipt_retained_in_minute_projection(self):
         output=run()
         self.assertEqual(output["exchange_reference_sha256"],"b"*64)
+
+
+    def test_quote_policy_generation_is_required_for_signed_print(self):
+        r=row()
+        r["quote_conditions_rules_ref"]=None
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"measured print missing"):
+            run([r])
+
+    def test_mixed_quote_condition_policy_generations_refused(self):
+        a=row("a")
+        b=row("b")
+        b["quote_conditions_rules_ref"]="d"*64
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"mixed quote condition"):
+            run([a,b])
+
+    def test_quote_policy_digest_is_preserved_in_minute(self):
+        result=run()
+        self.assertEqual(result["quote_condition_rules_sha256"],"c"*64)
+
+    def test_unknown_print_without_qualified_quote_policy_stays_unknown(self):
+        value=row(state="UNKNOWN",reason="QUOTE_CONDITION_POLICY_UNQUALIFIED")
+        value["quote_conditions_rules_ref"]=None
+        result=run([value])
+        self.assertEqual(result["state"],"PROVISIONAL_MEASURED_CONTEXT")
+        self.assertIsNone(result["quote_condition_rules_sha256"])
+        self.assertEqual(result["unknown_notional_usd"],"100.50")
 
 if __name__=="__main__":
     unittest.main()
