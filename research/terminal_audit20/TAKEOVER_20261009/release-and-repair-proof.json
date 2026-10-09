@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261009T2205",
+  "current_capability_frontier_key": "current_capability_frontier_20261009T2210",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -4290,5 +4290,20 @@
     "current_gates": "Currentdependent integration awaits single781owner terminalCI/merge, 804T03j review, A19independentreview+namedcanonicalauthority. 887explicitone-linehelperadmissionanswer and intendedexistingProidentity pending. 889firstprebuildrefusal remains with observedhealthy4d, no retry. OtherexplicitA09/A12/Fabric/security/source/paid/SQLholdsunchanged. Everyreadydetachedrepair/proof consumed; no furtherlocalconflictingmutation permitted.",
     "next_safe_phase": "Consume A19independentreviewexactsameID/artifact and actual804sameownerreturnedhead/fullrequestfalsifier. On781terminalowner/source/mergedhead event qualify source/3CI/currentmaster/canonicalgeneration beforeproduction. Onexplicit887ALLOW applyONLYreviewableone-lineproposal thenSAMEexistinghelperfreshpair/exclusivereceipt; noapprovalwithoutanswer. Keep sourceauthorityholds/no globalgrant.",
     "continuation": "DURABLE_EXECUTION_RUNNING supportedbyactualcanonical804T03jSTART+soleverifiednativeheartbeat sameoriginalchat ACTIVE/15min. NewFabricreviewrequestnotproviderSTART/wakeproof. Noall20completion/checkpoint-onlystop/duplicateobserver."
+  },
+  "current_capability_frontier_20261009T2210": {
+    "observed_at": "2026-10-09T22:12:11.567687+00:00",
+    "supersedes": "current_capability_frontier_20261009T2205",
+    "settled_references_retained_in": "current_capability_frontier_20261009T2205",
+    "whole_original_mission_accepted": false,
+    "IW2_acceptance_criterion_correction": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/iw2-T03j-owner-acceptance-criterion-correction-parent-consumption-20261009.json",
+      "sha256": "52689e9c7e275b26e648586d20c1d6af101ebfb7837b0ce41ea52f33f5288118"
+    },
+    "capability_delta": "Resolved contradictory T03j acceptance assertion. Olddiagnostic42810993 requiredresult-onlyGET; adaptedownerharness8450686a permitsautomatic or explicitCheckoriginaloutcome but requiresunchangedfulloriginalrequestSQLreceipt forpersistedinvalid_payload beforefreshPOST. Ordinaryuncertainstatecontrol maylookuporfullreconcile. Originalfourcasebindingtrap remainsmandatory. Sixactualpeerartifacthashes andadaptationdiff independentlymatched; actualpeer9a17baseline1PASS1FAIL/0SKIP retainsduplicate-savebugred; no parentrerun/productionproof/sourcewriting.",
+    "incumbent_execution": "Samecanonical804T03jSTART6089573604/runwf_0cf1ac05-e82/taskw61brmc0b/writera8b790cad8434f349/rootIW2. Latestpeerreturncursor41 proves21:53 actualwriter24m54/14tools; originalbindingcriterion reachedwriter21:33:57. Correctiondeliveredexistingcomment6073734152 at21:53:17/nativecoordinatormessage43; latestcorrectionworkerconsumptionNOTclaimed. No duplicate/restart/Stop/sourceedit.",
+    "A19_current": "Same-IDinitialheartbeatread22:09 remainsACTIVE_OR_WAITING/resultfalse/rootnull/providerSTARTunqualified. Parentdetached26PASSrepair unchanged/independentreviewrequested82001, no secondpoll/retry/acceptance/effect orproviderabsenceinferred.",
+    "next_safe_phase": "Consume original A19independentreview and canonical804exacthead/review; useadaptedownerharness plusoriginalbinding/API/SQL/regression proofs. Existing781/839/873 MOG/nativeauto wait; exact887scope/paididentityquestionsstillpending; first889refusal/security/source/SQLholds unchanged.",
+    "continuation": "DURABLE_EXECUTION_RUNNING viaactual804T03jSTART andsoleoriginalchatnativeheartbeatACTIVE15min; no newobserver. No usefulparentconflictingsourcephase beforeactualreturn/gateanswer; checkpointnotcompletion."
   }
 }
