@@ -24,6 +24,12 @@ from engine.market_microstructure.pressure_response import (
 SCHEMA = "equity.pressure_response.tp1_context/v0"
 TP1_MINUTE_SCHEMA = "equity.tick_plane.minute_observation/v0"
 TP1_QUOTE_SCHEMA = "equity.tick_plane.stream_event/v0"
+_QUOTE_VERDICT_KEYS = frozenset({
+    "schema", "authority", "eligible", "reason", "quote_id",
+    "source_frame_sha256", "original_frame_received_ns",
+    "quote_condition", "quote_indicators", "decision_ns",
+    "policy_available_ns", "policy_rules_sha256", "source_reference_sha256",
+})
 MINUTE_NS = 60_000_000_000
 MAX_MINUTES = 5
 MAX_QUOTES = 20000
@@ -232,6 +238,7 @@ def project_tp1_pressure_context(
         # must agree with the source quote; an old generic eligible=True is
         # never a valid research receipt.
         if (not isinstance(policy, dict)
+                or set(policy) != _QUOTE_VERDICT_KEYS
                 or policy.get("schema") != "equity.tick_plane.quote_condition_admission/v0"
                 or policy.get("authority") != "ORIGINAL_QUOTE_POLICY_CONTEXT_ONLY"
                 or policy.get("quote_id") != key
