@@ -1,0 +1,64 @@
+{
+  "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+  "whole_mission_accepted": false,
+  "terminal_release": {
+    "head": "505edf7872541075b5eee24691703a46d1151074",
+    "canonical_builder_rc": 0,
+    "source_marker_public_agree": true,
+    "healthy_services": true,
+    "receipt": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-terminal-release-receipt-20261009.json",
+      "sha256": "c7096aa72c8ab8c25456f5820b59383eda70f9278add001404c6ee9778565b1f"
+    }
+  },
+  "storage_emergency": {
+    "free_bytes": 11079020544,
+    "packed_objects": 949184,
+    "oid_sha256": "7f7e0a7f7f5be8d11788ad55a6a5a282b4a3cf78d00655d580754b08d212320f",
+    "refs_reflogs_preserved": true,
+    "additional_separate_phase": "max5 batches40-44 or13GiB under nonblocking incumbent lock; active, not accepted"
+  },
+  "a04": {
+    "head": "b2ac1f8ff0d00e44d7ea1679cb387dcf2603f49d",
+    "draft": true,
+    "migration_applied": false,
+    "unit_assertions": 76,
+    "unit_files": 10,
+    "typecheck_rc": 0,
+    "browser_pass": 27,
+    "browser_skip": 0,
+    "postgresql17_11_causal_cases": 65,
+    "fixture_cleaned": true,
+    "legacy_actual_modules_receipt": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-old-tab-causal-green-final-20261009.json",
+      "sha256": "27ac76ef6492992468b4147ebcb74fbe7655c646e896c00e8860b924fa007d10"
+    },
+    "source_review_old": "useful artifact accepted; M2/L4 repaired",
+    "delta_review_child": "terminal-audit20-a04-repair-review-20261009",
+    "delta_review_started": true,
+    "delta_review_accepted": false
+  },
+  "brain": {
+    "pr": 8526,
+    "merge": "74e14c61a5134e0d3dec4b149dbfacb503165904",
+    "public_asset_identity": true,
+    "scoped_live_ui": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/brain-8526-live-ui-20261009.json",
+      "sha256": "21f1bed12cee687189151717be94de8f51bee8ea9956d76532a6ccb864aa70dc"
+    }
+  },
+  "ci_approval_repair": {
+    "classification_only": true,
+    "causal_checks": 9,
+    "installed": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ci-approve-classifier-repair-20261009/installed-receipt.json",
+      "sha256": "0293edc2a006e9c5d991b7b60b8b4cfbe8dfc30daf82926b43af54d6a3ce4281"
+    },
+    "normal_github_approval_post_rc0_runs": [
+      37864329933,
+      37864820430
+    ],
+    "app_enrollment_still_pending": true
+  },
+  "remaining": "Exact current-head protected CI/review, A04 migration/readback and real user paths; original per-mission contracts remain separate."
+}

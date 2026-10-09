@@ -8,10 +8,10 @@ objective: >-
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: active
 blocked_by:
-  - Production release waits for the retained lossless Git consolidation writer to finish with measured build reserve; source/marker remain old52b9107 and services are healthy.
+  - Production505edf7 includes A02/A03; intended existing Pro-principal timeout/save/rename acceptance remains owed. Current new Google principal is Free; no entitlement has been changed.
   - Terminal automation PR850 remains draft pending the exact one-time GitHub App grant; ordinary branch refreshes are now performed by the parent, not delegated to the user.
-  - A04 PR858 migration application, cumulative source review and actual authenticated concurrency acceptance remain unclosed; no SQL has been applied.
-  - Current CI and release gates for Seasonal PR853, rollback PR855, USD CAP PR839 and Brain PR8526 remain independent.
+  - A04 PR858 atb2ac1f8 is draft/unapplied; repaired-head independent review, protected CI, migration readback and actual authenticated concurrency remain unclosed.
+  - Seasonal PR853, rollback PR855 and USD CAP PR839 retain exact-head CI/release gates. Brain8526 merged74e14c61 with exact reviewed public assets and scoped new-Free-principal UI proof.
   - Private identity, FX, producer and real-recipient contracts must be qualified before their original mission outcomes can be accepted.
 program: terminal-charting
 repos: [terminal, macro]
@@ -27,13 +27,13 @@ waves:
     title: Consume higher-level repairs and deliver accepted scoped changes
     status: in_progress
 next_action: >-
-  Consume the same retained production consolidation writer and verify build reserve,
-  then deploy a qualified merged Terminal master through its canonical builder and prove A02/A03 with the now-authenticated browser.
-  Finish the A04 multi-tab recovery repair on PR858, review its cumulative source and apply only the admitted migration with pre/post receipts before product acceptance.
-  Consume terminal current-head CI through the existing observers/controllers, release qualified carriers, and continue remaining original observable outcomes.
-  Do not wait for inactive source sessions or ask the Chairman to perform ordinary GitHub refresh/login commands.
+  Consume independent Fabric repaired-head review on A04 PR858/b2ac1f8, resolve causal findings,
+  require protected CI, and apply reserved0031 with pre/post receipts before canonical deployment and authenticated recovery acceptance.
+  Continue ordinary machine-operated GitHub approvals/releases for qualified Seasonal/rollback/USD CAP carriers and remaining original observable outcomes.
+  Preserve intended-account and exact App-grant boundaries; inactive historic owners are not receivers and this checkpoint is not a stopping instruction.
 owns_paths: []
 artifacts:
+  - research/terminal_audit20/TAKEOVER_20261009/release-and-repair-proof.json
   - research/terminal_audit20/CI_AUTOMATION_PR850/reviewed-proof-20261008.json
   - agentos/discoveries/DSC-TERMINAL-GITHUB-TOKEN-REFRESH-REQUIRES-WORKFLOW-APPROVAL.md
   - research/terminal_audit20/A01_EDITOR_PROOF/actual-editor-20261007.json
@@ -103,3 +103,11 @@ Brain PR8526 at85055df3f6d7736dfef49017eb9b24b20cb9a66d has complementary indepe
 The Google login obstacle was repaired and verified without human commands: existing Supabase management credentials showed a bare Terminal callback allowlist while the actual login requested its onboarding next query. The parent added only that exact existing HTTPS callback/query, preserved all prior destinations/site URL/Google configuration, and verified ordinary Google return to Terminal with the existing signed-in MastermindX account. Receipt /Volumes/Mastermind/evidence/terminal-audit20-01a10f92/supabase-auth-callback-repair-20261009.json retains no auth codes, cookies or tokens. This proves Terminal login, not application acceptance or other OAuth return paths.
 
 Production space recovery preserves reachable history: the retained macro-update lock prevents overlapping producer writes; redundant packs/indices are SHA-verified on the external SSD before normal Git MIDX expiration. Current949184 object IDs match baseline7f7e0a7f7f5be8d11788ad55a6a5a282b4a3cf78d00655d580754b08d212320f; all945375 prior IDs are retained, with3809 legitimate producer admissions before the new locked baseline. Refs/reflogs remain unchanged. Batch33 left7,485,636,608 free bytes; batch34 continues toward10GiB. Terminal/quote-hub/rsyslog stayed active. This is active maintenance, not final storage or release acceptance. Same-run receipts/backups are retained outside source under /Volumes/Mastermind/evidence/terminal-audit20-01a10f92.
+
+Oct9 released frontier: lossless emergency consolidation settled14 batches26–39 with all949184 packed IDs preserved, unchanged refs/reflogs, verified SSD preimages and11,079,020,544 free bytes. Independent disk triage accepted custody; subsequent normal producer append-only refs/reflog movement was reconciled. Canonical Terminal505edf7872541075b5eee24691703a46d1151074 then built/swap/restarted normally under the incumbent updater lock,rc0, clean source and matching live/public generation, services active,11,074,310,144 free bytes. A02/A03 are deployed. Actual authenticated protected372-line Worker compile returned0errors/10warnings; editable timeout/save/rename acceptance still needs the intended existing Pro principal. The newly signed-in Google principal is Free; no entitlement was changed.
+
+A04 independent Grok source review actually STARTed/returned/cleaned and was consumed as a useful review artifact. It exposed legacy-tab pending-copy erasure and stale account-return recovery. PR858/b2ac1f8 repairs both with a v2 durable journal, untouched readonly v1 imports, exact-content acknowledgement receipts and fresh owner reconciliation. Current proof:76 unit assertions in10files,TSC0,27 real browser cases at1440/820/390 with0skip,65 causal PG17.11 cases and owned fixture cleanup. Actual PG17.6 UPDATE/RLS prerequisites are true, and migration refuses missing prerequisites before RPC publication. Independent delta childterminal-audit20-a04-repair-review-20261009 STARTed via automatic Grok/Ubuntu2 placement under the original root; its acceptance is pending. Migration remains unapplied.
+
+Brain8526 merged74e14c61 after all required canonical CI and complementary source review. Production Macro e80339cb is a GitHub-proven descendant; reviewed widget/theme hashes agree at origin and publicHTTPS. The current authenticated Free principal obtained one bounded live answer explicitly describing missing evidence as unknown, with no recommendations; actual1440/820/390 UI has no horizontal overflow and naturally scrolled mobile header/composer/answer controls meet their44px/reachability scope. This does not replace old-principal history or Pro acceptance.
+
+The installed anti-poll hook incorrectly classified a normal actions/runs/N/approve POST as a repeated status read. A backed-up two-regex classifier repair passed9 causal checks while retaining repeat-read and watcher-mutation refusal; it grants no identity/permission. Normal authenticated GitHub approvals for current PR853/839 runs now returned0 without Chairman commands. Source automation850's separate exact App-grant gate remains pending. A separately verified Chairman cleanup request admitted at most5 additional lossless batches or13GiB under the nonblocking incumbent lock; it is active and unaccepted.
