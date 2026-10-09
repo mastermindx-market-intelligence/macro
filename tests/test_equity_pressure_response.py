@@ -479,6 +479,7 @@ def tp1_minute(start=TP1_START, *, buy="1000", sell="500", mid="100",
         "market_capture_coverage":None,
         "condition_rules_ref":TP1_SHA,
         "exchange_reference_sha256":TP1_EXCHANGE_SHA,
+        "quote_condition_rules_sha256":TP1_QUOTE_POLICY_SHA,
         "source_observation_sha256":"d"*64,
         "n_sampled_prints":10,"n_unclassified":2,
         "n_lit":9,"n_trf":1,"n_unknown_venue":0,
@@ -828,3 +829,18 @@ def test_tp1_quote_policy_decision_before_source_receipt_rejected():
     data["quote_condition_receipts"]["ending"]["decision_ns"]=TP1_START
     result=project_tp1_pressure_context(**data)
     assert result["reason"]=="QUOTE_CONDITION_POLICY_NOT_AVAILABLE_AT_DECISION"
+
+
+def test_tp1_minute_and_quote_policy_generation_must_match():
+    m=tp1_minute()
+    m["quote_condition_rules_sha256"]="9"*64
+    output=tp1_context(minute=[m])
+    assert output["state"]=="QUOTE_REFERENCE_UNQUALIFIED"
+    assert output["reason"]=="MINUTE_AND_QUOTE_POLICY_GENERATION_DISAGREEMENT"
+
+
+def test_tp1_rejects_missing_minute_quote_policy_generation():
+    m=tp1_minute()
+    m["quote_condition_rules_sha256"]=None
+    with pytest.raises(TP1ContextRefusal,match="minute.quote_condition_rules_sha256"):
+        tp1_context(minute=[m])
