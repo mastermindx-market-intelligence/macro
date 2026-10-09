@@ -55,3 +55,11 @@ observation. It must stay quiet on unchanged state, act on material returns, and
 finish the permitted chain after the scope decision and actual checks/review.
 No auto-merge is armed. Do not delete this locked carrier or cancel the admitted
 review through a manual kill/lease release.
+
+Follow-up admission observation: the prepared `slr-p0-review-r2-01a11e3b`
+request returned `NONE reason=no_pool_available`; status is NOT_FOUND. No
+follow-up worker, lease, START or review approval is claimed. Retain this stable
+id and packet, but do not retry unchanged capacity, bypass the pool, switch
+carriers or substitute parent self-review. A real capacity/admission change is
+required before a bounded request can resume. Rebind its exact candidate head
+and code digests before submission; receipt-only commits preserve repair bytes.

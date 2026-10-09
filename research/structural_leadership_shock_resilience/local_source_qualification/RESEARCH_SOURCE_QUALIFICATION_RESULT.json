@@ -70,7 +70,8 @@
   "code_delivery_blockers": [
     "CI_REGISTRATION_OUTSIDE_COMMISSIONED_PATHS_DECISION_PENDING",
     "BINDING_SEMANTIC_CI_NOT_CONCLUDED",
-    "EXACT_HEAD_INDEPENDENT_IMPLEMENTATION_REVIEW_OWED"
+    "EXACT_HEAD_INDEPENDENT_IMPLEMENTATION_REVIEW_OWED",
+    "FOLLOWUP_REVIEW_ADMISSION_NO_POOL_AVAILABLE"
   ],
   "code_delivery_state": "PR_OPEN_CI_AND_IMPLEMENTATION_REVIEW_PENDING",
   "fixture_ids_executed": 16,
@@ -78,8 +79,9 @@
   "gics_delivered_source": "NOT_OBSERVED_IN_AUTHORIZED_SCOPE",
   "implementation_review": {
     "acceptance": "USEFUL_REVIEW_FINDINGS_ACCEPTED_DETERMINISTICALLY_NOT_CODE_APPROVAL",
+    "followup_candidate_head": "d4d9af90b96ba16caab6698b8c8f8fcebfe25fcc",
     "followup_stable_id": "slr-p0-review-r2-01a11e3b",
-    "followup_status": "PREPARED_NOT_SUBMITTED",
+    "followup_status": "NO_POOL_AVAILABLE_PRE_EFFECT_NO_WORKER_STARTED",
     "repair_code_commit": "9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0",
     "requested_model": "grok-4.6",
     "reviewed_source_is_older_than_candidate": true,
