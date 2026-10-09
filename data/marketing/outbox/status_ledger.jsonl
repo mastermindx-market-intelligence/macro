@@ -9862,3 +9862,10 @@
 {"id":"ob-2026-10-09-367703d886","from":"approved","to":"quarantined","at":"2026-10-09T18:53:21Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
 {"id":"ob-2026-10-09-f399546a7e","from":"approved","to":"posting","at":"2026-10-09T18:53:21Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-09-f399546a7e","from":"posting","to":"posted","at":"2026-10-09T18:53:22Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ac93822bba9419ccbda05d0","external_url":null,"at":"2026-10-09T18:53:16Z","booked_at":"2026-10-09T18:53:16Z"}}
+{"id":"ob-2026-10-09-1192aff201","from":"queued","to":"approved","at":"2026-10-09T18:58:58Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-09-2a77f3b43e","from":"queued","to":"approved","at":"2026-10-09T18:58:58Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-09-bf17d2c9a9","from":"queued","to":"approved","at":"2026-10-09T18:58:58Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-09-1192aff201","from":"approved","to":"posting","at":"2026-10-09T18:59:01Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-10-09-1192aff201","from":"posting","to":"posted","at":"2026-10-09T18:59:02Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ac93976f91f772d456c80ed","external_url":null,"at":"2026-10-09T18:58:57Z","booked_at":"2026-10-09T18:58:57Z"}}
+{"id":"ob-2026-10-09-2a77f3b43e","from":"approved","to":"quarantined","at":"2026-10-09T18:59:02Z","actor":"publisher","note":"reads too technical / banned language: banned vocab: 'rsi'","receipt":null}
+{"id":"ob-2026-10-09-bf17d2c9a9","from":"approved","to":"quarantined","at":"2026-10-09T18:59:02Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
