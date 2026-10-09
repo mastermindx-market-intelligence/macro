@@ -10,7 +10,7 @@ import json
 import unittest
 from datetime import timedelta
 
-from test_entry_radar_rs_pullback_phase1 import candidate, clock, fixture, iso
+from tests.test_entry_radar_rs_pullback_phase1 import candidate, clock, fixture, iso
 from engine.entry_radar.replay.leader_pivot_descriptor import describe_candidate
 from engine.entry_radar.replay.rs_pullback_launch_data import InputContractError, digest
 

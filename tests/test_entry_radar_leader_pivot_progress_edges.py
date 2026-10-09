@@ -2,9 +2,9 @@
 from __future__ import annotations
 import copy
 import unittest
-import test_entry_radar_leader_pivot_progress as helpers
-from test_entry_radar_leader_pivot_descriptor import witness
-from test_entry_radar_rs_pullback_phase1 import candidate
+from tests import test_entry_radar_leader_pivot_progress as helpers
+from tests.test_entry_radar_leader_pivot_descriptor import witness
+from tests.test_entry_radar_rs_pullback_phase1 import candidate
 from engine.entry_radar.replay import leader_pivot_descriptor as owner
 from engine.entry_radar.replay.rs_pullback_launch_data import InputContractError
 

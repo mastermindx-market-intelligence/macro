@@ -672,9 +672,9 @@ class Phase1LeaderPivotConsumerSuiteTests(unittest.TestCase):
     """
 
     def test_pivot_consumer_65_case_conformance(self):
-        from test_entry_radar_leader_pivot_descriptor import LeaderPivotDescriptorTests
-        from test_entry_radar_leader_pivot_progress import LeaderPivotProgressTests
-        from test_entry_radar_leader_pivot_progress_edges import LeaderPivotProgressEdgeTests
+        from tests.test_entry_radar_leader_pivot_descriptor import LeaderPivotDescriptorTests
+        from tests.test_entry_radar_leader_pivot_progress import LeaderPivotProgressTests
+        from tests.test_entry_radar_leader_pivot_progress_edges import LeaderPivotProgressEdgeTests
 
         classes = (
             LeaderPivotDescriptorTests,
