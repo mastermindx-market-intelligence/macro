@@ -24,6 +24,26 @@ A live quote or off-lane re-render can show a newer **settled** Risk Radar state
 
 This is a **cross-workstream blocker**. It must be resolved through the existing QLedger + nightly delivery owners, not by creating a new risk ledger, notification service or publishing queue.
 
+## Additional VERIFIED finding: repeated same-day heartbeat erases a stalled alert
+
+Existing `scripts/check_ledger_advance.py` is *already* the risk-forward-ledger liveness detector. Its `run_check` compares newest ledger as-of with its prior committed checkpoint and records `stalled_since`. It deduplicates alerts when `last_check_date == today`. But the same-day no-alert branch **unconditionally assigns `stalled_since=None`**, even when the ledger has not advanced and the prior state contains a genuine stall. This is a source and actual-state problem, not a proposal for a new watcher.
+
+Immutable Git snapshots demonstrate the defect on the real risk ledger path:
+
+| Heartbeat source commit | Actual UTC update | Risk forward ledger as-of | last_check_date | stalled_since |
+|---|---|---|---|---|
+| `f2e831e534c3` | 2026-10-07 10:30:14Z | 2026-10-06 | Oct 7 | null |
+| `49418b034729` | 2026-10-08 15:05:48Z | 2026-10-06 | Oct 8 | **2026-10-07** |
+| `e65335239332` | 2026-10-08 16:17:04Z | 2026-10-06 | Oct 8 | **null** |
+
+The **same as-of was unchanged**, and the second heartbeat reset the existing stall evidence. Independent temporary-root execution of the shipped `run_check` with the previous checked state reproduced `old_stalled_since=2026-10-07`, `new_stalled_since=None`, `same_day_result_count=0`. Its unit suite documents same-day no-duplicate alerts but does not exercise preservation of an already open `stalled_since`.
+
+**Narrow repair proposal for the existing heartbeat owner**: preserve the earlier `stalled_since` on same-day unchanged or regressed `curr_asof`; clear it only on a genuine forward advance or explicitly qualified resolution. Keep no-duplicate emission behavior. Red-first regression: a first run on Oct 8 detects a frozen Oct6 risk ledger; a second same-day run must not send a duplicate alert **and** must preserve the first stall's age; a genuine newer as-of must clear it. Add an out-of-order and missing-file case and confirm the existing Ops Alert Command Center semantic path remains unchanged.
+
+**Wider proof gap**: the heartbeat only compares to *prior as-of*, not authoritative expected completed NYSE session, and its workflow passes `--render-happened` unconditionally, rather than validating an exact successful git push receipt. It is also fail-open by contract. An outdated-but-advancing ledger may therefore look healthy without proving today's intended issue, and a complete publication failure can be mistaken for a republish. These are proposed consumer-liveness repairs, not grounds to add a new monitoring service or change alert architecture without the relevant owner.
+
+The heartbeat incident is **independent** of QLedger GH001: correcting heartbeat state does not make an oversized QLedger blob publishable, and partitioning QLedger alone does not cure the same-day stall-erasure. Both must be acceptance-tested.
+
 ## Existing contracts and collision boundaries
 
 - `engine/qledger.py::register` and `register_batch` both append to one `data/qledger/claims.jsonl`; `load_claims` reads the same file. The grade/control/evidence-clock/read paths and other consumers use the same logical ledger.
