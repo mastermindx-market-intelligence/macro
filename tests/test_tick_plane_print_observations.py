@@ -276,6 +276,9 @@ from engine.tick_plane.quote_condition_policy import (
     parse_quote_policy, POLICY_SCHEMA as QPOLICY_SCHEMA,
 )
 from engine.tick_plane.minute_projection import MINUTE_NS
+from engine.tick_plane.pilot_diagnostics import (
+    cohort_row_from_source_minutes, summarize_tp1_soak_evidence,
+)
 
 
 def captured_synthetic_window(*, special_condition=None):
@@ -481,6 +484,57 @@ class CapturedMinuteIntegrationTests(unittest.TestCase):
         self.assertEqual(minute["n_buy_proxy"],1)
         self.assertEqual(minute["n_sell_proxy"],1)
         self.assertEqual(minute["buy_proxy_notional_usd"],"1009.0")
+
+    def test_actual_quote_age_bands_not_overridden_by_two_signed_prints(self):
+        args=captured_synthetic_window()
+        minute=compose_captured_minute(**args)["minute_private_only"]
+        # Q at +15s signs the +20s BUY at exactly 5s; the +40s SELL
+        # uses the same Q at 25s. Both are signed but only one passes
+        # the separate TP-1 acceptance clock ceiling.
+        self.assertEqual(minute["n_lit_eligible_prints"],2)
+        self.assertEqual(minute["n_lit_classified_quote_le5s_prints"],1)
+        self.assertEqual(minute["n_lit_classified_quote_gt5s_prints"],1)
+        self.assertEqual(minute["n_lit_unclassified_prints"],0)
+        self.assertEqual(minute["source_volume_included_shares"],"20")
+        row=cohort_row_from_source_minutes(
+            ticker="SPY",session=SESSION,
+            minute_observations=[minute],expected_session_minutes=1,
+            reference_volume_shares="20",reference_scope="RTH",
+            reference_receipt="synthetic:grouped-rth-reference")
+        self.assertEqual(row["state"],"ELIGIBLE")
+        report=summarize_tp1_soak_evidence(
+            session=SESSION,expected_session_seconds=60,connected_seconds=60,
+            measurement_cutoff_ns=args["decision_ns"]+1,
+            source_manifest_sha256="e"*64,
+            source_manifest_known_ns=args["decision_ns"],cohort=[row])
+        self.assertEqual(report["numeric_checks"]["connected_seconds"],"NUMERIC_MET")
+        self.assertEqual(report["numeric_checks"]["eligible_volume_names_le2pct"],
+                         "NUMERIC_MET")
+        self.assertEqual(report["numeric_checks"]["qualified_lit_quote_le5s"],
+                         "NUMERIC_NOT_MET")
+        self.assertEqual(report["lit_5s_classification_coverage"],"0.5")
+        self.assertIsNone(report["production_source_acceptance"])
+
+    def test_unqualified_quote_conditions_lower_true_lit_coverage_not_share_volume(self):
+        args=captured_synthetic_window(special_condition=20)
+        minute=compose_captured_minute(**args)["minute_private_only"]
+        self.assertEqual(minute["n_lit_eligible_prints"],2)
+        self.assertEqual(minute["n_lit_unclassified_prints"],2)
+        self.assertEqual(minute["n_lit_classified_quote_le5s_prints"],0)
+        self.assertEqual(minute["source_volume_included_shares"],"20")
+        row=cohort_row_from_source_minutes(
+            ticker="SPY",session=SESSION,minute_observations=[minute],
+            expected_session_minutes=1,reference_volume_shares="20",
+            reference_scope="RTH",reference_receipt="synthetic:grouped")
+        self.assertEqual(row["lit_unclassified_prints"],2)
+        report=summarize_tp1_soak_evidence(
+            session=SESSION,expected_session_seconds=60,connected_seconds=60,
+            measurement_cutoff_ns=args["decision_ns"]+1,
+            source_manifest_sha256="e"*64,
+            source_manifest_known_ns=args["decision_ns"],cohort=[row])
+        self.assertEqual(report["lit_5s_classification_coverage"],"0")
+        self.assertEqual(report["n_volume_within_2pct"],1)
+        self.assertIsNone(report["production_source_acceptance"])
 
     def test_unqualified_reference_custody_cannot_become_signed_minute(self):
         args=captured_synthetic_window()
