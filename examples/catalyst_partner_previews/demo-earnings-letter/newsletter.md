@@ -4,6 +4,11 @@ Unsolicited concept prepared for Illustrative earnings-letter audience (demo onl
 
 For readers following quarterly earnings coverage, this note tracks EXA against the same event evidence.
 
+## Relationship scope
+
+Direct event relationship: EXA.
+These are evidence-qualified relationships, not estimated market moves or trading recommendations.
+
 ## Confirmed observations
 
 - In the synthetic scenario, EXA discusses a shift in product demand. [Evidence fixture-claim-exa; source-synthetic-001]
