@@ -67,6 +67,8 @@ def test_real_shape_first_value_and_fail_closed_private_fields():
     lambda p: p.update(as_of_utc="2026-09-01T02:00:00Z"),
     lambda p: p.update(requested_tickers=["NVDA", "AAPL"]),
     lambda p: p["results"][0]["sources"][0].update(url="http://127.0.0.1/private"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?email=visitor%40example.org"),
+    lambda p: p["results"][0]["sources"].append(copy.deepcopy(p["results"][0]["sources"][0])),
 ])
 def test_claims_rights_clock_and_identity_negative(mutation):
     p = packet()
