@@ -251,3 +251,146 @@ def project_private_research_context(*, research_context, source_manifest_sha256
         "bytes_private_only":raw,
         "public_delivery_allowed":False,
     }
+
+
+_PRIVATE_KEYS = frozenset((
+    "schema","source_schema","distribution_class","public_delivery_allowed",
+    "rank_trade_alert_authority","source_authenticity",
+    "market_capture_completeness","ticker","session","start_ns","end_ns",
+    "decision_ns","source_quote_age_limit_ns","source_manifest_sha256",
+    "source_manifest_name_sha256","source_watermark_receipt_sha256",
+    "minute_observations_sha256","quote_observations_sha256",
+    "source_condition_rules_sha256","source_exchange_rules_sha256",
+    "source_quote_condition_rules_sha256","n_observations","notional_usd",
+    "classified_notional_coverage","pressure_balance",
+    "completed_window_midpoint_response_bps","bid_size_recovery_proxy",
+    "ask_size_recovery_proxy","absorption_signal","forward_label",
+))
+_PRIVATE_COUNTER_KEYS = frozenset((
+    "n_source_minute_packets","n_sampled_prints","n_unclassified",
+    "n_quote_updates","n_quote_condition_unqualified",
+))
+_PRIVATE_RECOVERY_KEYS = frozenset((
+    "state","depletion_shares","recovered_shares","original_shares",
+    "final_shares","source_best_exchange","source_best_price",
+))
+
+
+def verify_private_research_context_bytes(*, expected_sha256, expected_byte_length, blob):
+    """Validate an exact private *content* readback; never authenticate source.
+
+    The actual private store, authorization, vendor rights and private object
+    routing belong to incumbent operators. A matching SHA alone is insufficient
+    to make altered or raw fields safe for consumer distribution.
+    """
+    _sha(expected_sha256,"expected_sha256")
+    _int(expected_byte_length,"expected_byte_length")
+    if type(blob) is not bytes or not 0 < len(blob) <= MAX_BYTES:
+        raise PrivateContextRefusal("invalid bounded private research bytes")
+    if len(blob)!=expected_byte_length:
+        raise PrivateContextRefusal("private research readback byte length differs")
+    if hashlib.sha256(blob).hexdigest()!=expected_sha256:
+        raise PrivateContextRefusal("private research readback digest mismatch")
+
+    def reject_nonfinite(text):
+        raise PrivateContextRefusal("JSON nonfinite constant may not enter private source data")
+
+    def reject_float(text):
+        raise PrivateContextRefusal("JSON native float may not enter private source data")
+
+    try:
+        record=json.loads(blob.decode("utf-8"),
+                          parse_constant=reject_nonfinite,
+                          parse_float=reject_float)
+    except (UnicodeDecodeError,ValueError) as exc:
+        raise PrivateContextRefusal("malformed private source JSON") from exc
+    if (not isinstance(record,dict)
+            or set(record)!=_PRIVATE_KEYS
+            or record.get("schema")!=SCHEMA
+            or record.get("source_schema")!=SOURCE_SCHEMA
+            or record.get("distribution_class")!="PRIVATE_SERVICE_HOLD_PENDING_LICENSE_REVIEW"
+            or record.get("public_delivery_allowed") is not False
+            or record.get("rank_trade_alert_authority") is not False
+            or record.get("source_authenticity")!="ORIGINAL_TQ_RECEIPTS_REQUIRE_EXTERNAL_OWNER_PROOF"
+            or record.get("market_capture_completeness")!="NOT_PROVEN_BY_RESEARCH_MATH"
+            or record.get("absorption_signal") is not None
+            or record.get("forward_label") is not None):
+        raise PrivateContextRefusal("private research payload shape/authority invalid")
+
+    ticker=_str(record.get("ticker"),"ticker")
+    session=_str(record.get("session"),"session")
+    if _SYMBOL.fullmatch(ticker) is None or re.fullmatch(r"\d{4}-\d{2}-\d{2}:RTH",session) is None:
+        raise PrivateContextRefusal("private research symbol/session invalid")
+    from datetime import date
+    try:
+        date.fromisoformat(session[:10])
+    except ValueError as exc:
+        raise PrivateContextRefusal("private research session date invalid") from exc
+    start=_int(record.get("start_ns"),"start_ns")
+    end=_int(record.get("end_ns"),"end_ns")
+    cutoff=_int(record.get("decision_ns"),"decision_ns")
+    _int(record.get("source_quote_age_limit_ns"),"source_quote_age_limit_ns")
+    if (start%MINUTE_NS or not start<end<=cutoff
+            or (end-start)%MINUTE_NS or (end-start)>5*MINUTE_NS):
+        raise PrivateContextRefusal("private research window or cutoff invalid")
+    for field in (
+        "source_manifest_sha256","source_manifest_name_sha256",
+        "source_watermark_receipt_sha256","minute_observations_sha256",
+        "quote_observations_sha256","source_condition_rules_sha256",
+        "source_exchange_rules_sha256","source_quote_condition_rules_sha256",
+    ):
+        _sha(record.get(field),field)
+    counts=record.get("n_observations")
+    notional=record.get("notional_usd")
+    if (not isinstance(counts,dict) or set(counts)!=_PRIVATE_COUNTER_KEYS
+            or not isinstance(notional,dict) or set(notional)!=set(_MONEY_FIELDS)):
+        raise PrivateContextRefusal("private research nested fields outside allowlist")
+    for key in _PRIVATE_COUNTER_KEYS:
+        _int(counts[key],key)
+    if (counts["n_source_minute_packets"]!=(end-start)//MINUTE_NS
+            or counts["n_sampled_prints"]==0
+            or counts["n_unclassified"]>counts["n_sampled_prints"]
+            or counts["n_quote_condition_unqualified"]>counts["n_quote_updates"]):
+        raise PrivateContextRefusal("private research count denominators inconsistent")
+    money={key:Decimal(_decimal(notional[key],key)) for key in _MONEY_FIELDS}
+    if (money["buy_proxy_notional_usd"]+money["sell_proxy_notional_usd"]
+            +money["midpoint_notional_usd"]+money["unknown_notional_usd"]
+            +money["ineligible_notional_usd"]!=money["gross_sampled_notional_usd"]):
+        raise PrivateContextRefusal("private research notional conservation invalid")
+    for key in ("classified_notional_coverage","pressure_balance"):
+        val=record.get(key)
+        if val is not None:
+            dec=Decimal(_signed(val,key)) if key=="pressure_balance" else Decimal(_decimal(val,key))
+            if (dec < -1 if key=="pressure_balance" else dec < 0) or dec>1:
+                raise PrivateContextRefusal("private research ratio exceeds valid range")
+    _signed(record.get("completed_window_midpoint_response_bps"),"midpoint_response_bps")
+    for side in ("bid","ask"):
+        proxy=record.get(side+"_size_recovery_proxy")
+        if not isinstance(proxy,dict):
+            raise PrivateContextRefusal("private source recovery proxy invalid")
+        if proxy.get("state")=="UNKNOWN":
+            if (set(proxy)!={"state","reason"}
+                    or not isinstance(proxy.get("reason"),str)
+                    or _REASONS.fullmatch(proxy["reason"]) is None):
+                raise PrivateContextRefusal("private source recovery abstention invalid")
+        elif proxy.get("state")=="MEASURED_NBBO_SIZE_PROXY_NOT_ORDER_REPLENISHMENT":
+            if set(proxy)!=_PRIVATE_RECOVERY_KEYS:
+                raise PrivateContextRefusal("private source recovery has extra fields")
+            initial=Decimal(_decimal(proxy["original_shares"],"original_shares",positive=True))
+            final=Decimal(_decimal(proxy["final_shares"],"final_shares",positive=True))
+            depleted=Decimal(_decimal(proxy["depletion_shares"],"depletion_shares",positive=True))
+            recovered=Decimal(_decimal(proxy["recovered_shares"],"recovered_shares"))
+            _decimal(proxy["source_best_price"],"source_best_price",positive=True)
+            venue=proxy.get("source_best_exchange")
+            if (not isinstance(venue,str)
+                    or re.fullmatch(r"[0-9]{1,5}",venue) is None):
+                raise PrivateContextRefusal("private source recovery venue not an exchange code")
+            if depleted>initial or final!=initial-depleted+recovered:
+                raise PrivateContextRefusal("private source recovery amount inconsistent")
+        else:
+            raise PrivateContextRefusal("private source recovery label unknown")
+
+    canonical=(json.dumps(record,sort_keys=True,separators=(",",":"),allow_nan=False)+"\n").encode("utf-8")
+    if canonical!=blob:
+        raise PrivateContextRefusal("private source JSON readback is noncanonical")
+    return record
