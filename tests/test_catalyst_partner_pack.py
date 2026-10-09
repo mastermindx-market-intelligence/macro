@@ -311,7 +311,7 @@ class CatalystPartnerPackTests(unittest.TestCase):
     def test_social_uses_selected_ticker_anchored_fact_not_generic_clickbait(self):
         self.tickers = ["EXA", "EXB"]
         p = self.make()
-        self.assertIn("EXB describes supplier lead times", p["social"])
+        self.assertIn("EXB supplier capacity assumption", p["social"])
         self.assertNotIn("EXC reports", p["social"])
         self.assertIn("Evidenced indirect relationship: EXB", p["newsletter"])
         self.assertIn("Direct event relationship: EXA", p["newsletter"])
@@ -319,7 +319,8 @@ class CatalystPartnerPackTests(unittest.TestCase):
         self.assertEqual(len(p["social"].split("DRAFT THREAD 2/2")), 2)
 
     def test_social_refuses_truncated_or_overlong_evidence(self):
-        self.event["claims"][0]["text"] = "A " * 160
+        # A source claim selected into the thread cannot be silently clipped.
+        self.event["claims"][3]["text"] = "A " * 160
         self.refused("SOCIAL_CHARACTER_BUDGET")
 
     def test_ai_angle_selection_may_only_reorder_existing_evidence(self):
@@ -335,10 +336,13 @@ class CatalystPartnerPackTests(unittest.TestCase):
                      angle_plan={"selected_claim_ids": ["fixture-claim-exa"]})
 
     def test_editorial_blocklist_rejects_promotional_advice_in_verified_claim(self):
-        self.event["claims"][0]["text"] = "Guaranteed profits. Buy now."
+        # Social-specific validator catches the actually selected lead claim.
+        self.event["claims"][3]["text"] = "Guaranteed profits. Buy now."
         self.refused("SOCIAL_COPY_REJECTED")
-        # Also prove the separate long-form Press lexicon catches a claim
-        # excluded from the social thread but still in the newsletter body.
+        # Press validator also checks every other included claim, not just the
+        # one selected for the short social message.
+        self.event = copy.deepcopy(DEMO_EVENT)
+        self.event["claims"][0]["text"] = "Guaranteed profits. Buy now."
         self.tickers = ["EXA", "EXB"]
         self.refused("EDITORIAL_COPY_REJECTED")
 
