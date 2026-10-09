@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import re
+import stat
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
@@ -370,6 +371,8 @@ def _normalize(row, receipt: dict, index: int, coverage: dict, as_of: datetime) 
         if _number(row.get(field)) is not None:
             result_evidence.append(field)
     observed = _aware(receipt["observed_at"], "observed_at")
+    if result_evidence and deadline is None:
+        raise ValueError("result_requires_qualified_competitive_deadline")
     if result_evidence and (auction > observed.astimezone(ET_ZONE).date().isoformat() or
                             (deadline and observed < _aware(deadline, "deadline"))):
         raise ValueError("future_result_bearing_contradiction")
@@ -543,6 +546,10 @@ def build_context(envelopes: Iterable[dict], as_of: datetime | str, horizon_days
                 raise ValueError("request_started_after_body_receipt")
             if body_at and clocks.get("parse_completed_at", observed) < body_at:
                 raise ValueError("parse_completed_before_body_receipt")
+            if (clocks.get("request_started_at") is not None
+                    and clocks.get("parse_completed_at") is not None
+                    and clocks["request_started_at"] > clocks["parse_completed_at"]):
+                raise ValueError("request_started_after_parse_completion")
             info["body_received_at"] = body_at.isoformat() if body_at else None
             if receipt.get("status") == "unavailable":
                 states.append({**info, "status": "unavailable", "reason": str(receipt.get("error", "source_unavailable"))})
@@ -753,12 +760,17 @@ def snapshot(data_dir: Path | None = None, as_of: datetime | str | None = None,
             try:
                 if path.is_symlink():
                     raise ValueError("symlink_receipt_rejected")
-                size = path.stat().st_size
-                total += size
-                if size > MAX_RECEIPT_BYTES or total > MAX_TOTAL_BYTES:
-                    truncated = True
-                    raise ValueError("receipt_file_size_limit")
-                with path.open("rb") as stream:
+                # Check the opened descriptor, not only the path: a FIFO must
+                # not block and a replaced symlink must never be followed.
+                descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+                with os.fdopen(descriptor, "rb") as stream:
+                    info = os.fstat(stream.fileno())
+                    if not stat.S_ISREG(info.st_mode):
+                        raise ValueError("nonregular_receipt_rejected")
+                    total += info.st_size
+                    if info.st_size > MAX_RECEIPT_BYTES or total > MAX_TOTAL_BYTES:
+                        truncated = True
+                        raise ValueError("receipt_file_size_limit")
                     raw = stream.read(MAX_RECEIPT_BYTES + 1)
                 if len(raw) > MAX_RECEIPT_BYTES:
                     truncated = True

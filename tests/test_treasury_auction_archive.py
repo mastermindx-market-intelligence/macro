@@ -3,8 +3,11 @@ import json
 import os
 from pathlib import Path
 import random
+import subprocess
+import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from engine import treasury_auction_lifecycle as lifecycle
 from tests.test_treasury_auction_lifecycle import receipt, row, NOW
@@ -104,6 +107,49 @@ class AuctionArchiveTests(unittest.TestCase):
             out = lifecycle.build_context([env], NOW)
             self.assertEqual(out["events"], [])
             self.assertTrue(out["quarantine"])
+
+    def test_missing_body_does_not_admit_request_after_parse(self):
+        env = receipt(observed="2026-10-08T20:40:00Z")
+        env["metadata"].update({"request_started_at": "2026-10-08T20:30:00Z",
+                                "parse_completed_at": "2026-10-08T20:20:00Z"})
+        out = lifecycle.build_context([env], NOW)
+        self.assertFalse(out["events"])
+        self.assertTrue(any(q["reason"] == "request_started_after_parse_completion"
+                            for q in out["quarantine"]))
+        self.assertIsNone(out["source_states"][0]["body_received_at"])
+
+    @unittest.skipUnless(hasattr(os, "mkfifo"), "POSIX file kinds")
+    def test_fifo_receipt_is_rejected_without_blocking(self):
+        with tempfile.TemporaryDirectory() as root:
+            d = Path(root) / "treasury_auctions/observations"; d.mkdir(parents=True)
+            os.mkfifo(d / "receipt.json")
+            # A regression must fail within a bounded child deadline, not hang
+            # the whole test process on the named pipe.
+            run = subprocess.run([sys.executable, "-c",
+                "import json,sys; from pathlib import Path; "
+                "from engine.treasury_auction_lifecycle import snapshot; "
+                "print(json.dumps(snapshot(Path(sys.argv[1]), sys.argv[2])))",
+                root, NOW], cwd=Path(__file__).parents[1],
+                capture_output=True, text=True, timeout=5, check=True)
+        out = json.loads(run.stdout)
+        self.assertFalse(out["events"])
+        self.assertTrue(any(q["reason"] == "nonregular_receipt_rejected"
+                            for q in out["quarantine"]))
+        self.assertFalse(out["coverage"]["bounded_local_history_complete"])
+
+    def test_opened_receipt_cannot_follow_a_replaced_symlink(self):
+        with tempfile.TemporaryDirectory() as root:
+            d = Path(root) / "treasury_auctions/observations"; d.mkdir(parents=True)
+            target = Path(root) / "real-receipt"
+            target.write_text(json.dumps(receipt()))
+            (d / "receipt.json").symlink_to(target)
+            # Model replacement after the preliminary path-level check. The
+            # opened descriptor still owes a no-follow guarantee.
+            with patch.object(Path, "is_symlink", return_value=False):
+                out = lifecycle.snapshot(Path(root), NOW)
+        self.assertFalse(out["events"])
+        self.assertTrue(out["quarantine"])
+        self.assertFalse(out["coverage"]["bounded_local_history_complete"])
 
 
 if __name__ == "__main__":

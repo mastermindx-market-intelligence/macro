@@ -41,6 +41,14 @@ class TreasuryAuctionLifecycleTests(unittest.TestCase):
                 day = case["expected"]["auction_date"]
                 obs = f"{day}T23:59:00+00:00"
                 out = context([record], observed=obs, as_of=obs)
+                self.assertEqual(hashlib.sha256((FIXTURES / Path(case["fixture"]).name).read_bytes()).hexdigest(), case["fixture_sha256"])
+                if case["case_id"] == "historical_tips_missing_fields":
+                    # Genuine 1997 row values do not qualify this synthetic
+                    # intraday receipt: the competitive close is absent.
+                    self.assertFalse(out["episodes"])
+                    self.assertTrue(any(q["reason"] == "result_requires_qualified_competitive_deadline"
+                                        for q in out["quarantine"]))
+                    continue
                 event = out["episodes"][0]
                 for field in ("normalized_class", "issued_cusip", "announced_cusip", "auction_date", "issue_date", "competitive_deadline_utc", "offering_amount_usd"):
                     self.assertEqual(event[field], case["expected"][field], field)

@@ -105,6 +105,21 @@ class OfficialNoticeTests(unittest.TestCase):
         self.assertFalse(out["events"])
         self.assertEqual(out["quarantine"][0]["reason"], "future_result_bearing_contradiction")
 
+    def test_result_without_qualified_close_cannot_enter_auction_morning(self):
+        original = notice("R_20261008_3")["raw_text"]
+        for closing in ("", "noon"):
+            with self.subTest(closing=closing):
+                raw = original.replace("<CompetitiveClosingTime>13:00",
+                    "<CompetitiveClosingTime>" + closing)
+                env = lifecycle.make_observation(raw,
+                    source_kind="treasury_auction_notice_xml",
+                    source_url="https://www.treasurydirect.gov/xml/R_20261008_3.xml",
+                    observed_at="2026-10-08T12:00:00Z")
+                out = lifecycle.build_context([env], AT)
+                self.assertFalse(out["events"])
+                self.assertTrue(any(q["reason"] == "result_requires_qualified_competitive_deadline"
+                                    for q in out["quarantine"]))
+
     def test_notice_capture_is_bounded_and_uses_actual_receipt_clock(self):
         import tempfile
         ticks = iter([datetime(2026, 10, 9, 1, tzinfo=timezone.utc) + timedelta(seconds=i) for i in range(3)])

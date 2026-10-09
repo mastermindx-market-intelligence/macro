@@ -40,7 +40,7 @@ def qualify(values, certificate=True):
 
 
 def vintage(series='TGCR', value='4.5', released=BEFORE, known=BEFORE, identity='first', **kwargs):
-    a = Observation(Decimal(value), 'PERCENT', None, known, BEFORE,
+    a = Observation(Decimal(value), 'PERCENT', None, known, BEFORE.replace(day=2),
         'fixture:rate', 'literal-release-vintage', InputRole.QUALIFIED)
     return ledger.FinancingVintage(series, date(2026, 10, 2), a, released, known, SHA, identity, **kwargs)
 
@@ -142,6 +142,42 @@ class SettlementLedgerTests(unittest.TestCase):
 
 
 class FinancingBaselineTests(unittest.TestCase):
+    def test_old_observation_cannot_win_by_relabeled_effective_date(self):
+        values = []
+        for series, unit in ledger.SERIES_UNITS.items():
+            v = vintage(series)
+            values.append(replace(v, observation=replace(v.observation,
+                unit=unit, currency='USD' if unit == 'USD' else None)))
+        forged = replace(vintage(value='9.9', identity='relabeled'),
+            effective_date=date(2026, 10, 4),
+            observation=replace(vintage(value='9.9').observation, as_of=BEFORE.replace(day=1)))
+        out = ledger.financing_baseline_at(values + [forged], AT)
+        self.assertEqual(out['selected']['TGCR']['value'], '4.5')
+        self.assertEqual(out['status'], 'SOURCE_CONTRACT_SATISFIED')
+        self.assertTrue(any('baseline_effective_date_mismatch' in e['reasons']
+                            for e in out['excluded']))
+
+    def test_next_morning_release_preserves_the_observed_economic_day(self):
+        released = BEFORE.replace(day=3, hour=11)
+        v = vintage(released=released, known=released)
+        out = ledger.financing_baseline_at([v], AT)
+        self.assertEqual(out['selected']['TGCR']['effective_date'], '2026-10-02')
+        self.assertEqual(out['selected']['TGCR']['value'], '4.5')
+        self.assertFalse(out['excluded'])
+
+    def test_old_body_upper_bound_cannot_outrank_exact_released_revision(self):
+        old = replace(vintage(), release_at=None,
+            release_clock_basis='QUALIFIED_OFFICIAL_BODY_AVAILABILITY_BOUND')
+        release = BEFORE.replace(hour=18)
+        received = BEFORE.replace(hour=18, minute=30)
+        revised = replace(vintage(value='4.8', released=release, known=received,
+            identity='revision', revision=True), source_digest='b' * 64)
+        for values in ([old, revised], [revised, old]):
+            out = ledger.financing_baseline_at(values, AT)
+            self.assertNotIn('TGCR', out['selected'])
+            self.assertEqual(out['conflicts'], [{'series': 'TGCR',
+                'reason': 'mixed_release_clock_bases_cannot_order_revisions'}])
+
     def test_future_iorb_release_never_uses_old_effective_date_to_enter_cutoff(self):
         later = vintage('IORB', released=AT.replace(hour=20, minute=30), known=AT.replace(hour=20, minute=31))
         out = ledger.financing_baseline_at([vintage(), later], AT)
@@ -179,6 +215,24 @@ class FinancingBaselineTests(unittest.TestCase):
             body_received_at=later, observation=replace(first.observation, value=Decimal('4.8'), known_at=later), revision=True)
         out = ledger.financing_baseline_at([repeat, revision, first], AT)
         self.assertEqual(out['selected']['TGCR']['value'], '4.8')
+
+    def test_one_immutable_vintage_cannot_change_economic_metadata_by_input_order(self):
+        first = vintage()
+        mutations = (
+            replace(first, effective_date=date(2026, 10, 5),
+                observation=replace(first.observation, as_of=BEFORE)),
+            replace(first, observation=replace(first.observation, as_of=BEFORE.replace(day=2, hour=18))),
+            replace(first, observation=replace(first.observation, value=Decimal('9.9'))),
+            replace(first, observation=replace(first.observation, source_ref='different:source')),
+            replace(first, revision=True),
+        )
+        for changed in mutations:
+            for values in ([first, changed], [changed, first]):
+                with self.subTest(changed=changed, reverse=values[0] is changed):
+                    out = ledger.financing_baseline_at(values, AT)
+                    self.assertNotIn('TGCR', out['selected'])
+                    self.assertEqual(out['conflicts'], [{'series': 'TGCR',
+                        'reason': 'immutable_vintage_metadata_conflict'}])
 
     def test_missing_release_and_interpolation_are_not_synthetic_knowledge(self):
         for v in (replace(vintage(), release_at=None), replace(vintage(), interpolated=True),

@@ -293,6 +293,8 @@ def financing_baseline_at(vintages: Sequence[FinancingVintage], decision_at: dat
             released = _clock(v.release_at, "release_at") if v.release_at is not None else body
             if released > body or body > known or economic > known:
                 reasons.append("baseline_clock_order_invalid")
+            if economic.date() != v.effective_date:
+                reasons.append("baseline_effective_date_mismatch")
             if any(clock > at for clock in (released, body, known, economic)) or v.effective_date > at.date():
                 reasons.append("baseline_not_known_at_cutoff")
         if reasons:
@@ -301,6 +303,20 @@ def financing_baseline_at(vintages: Sequence[FinancingVintage], decision_at: dat
             eligible.setdefault(v.series, []).append(v)
     selected, conflicts = {}, []
     for series, rows in sorted(eligible.items()):
+        # One immutable source/vintage identity cannot acquire a different
+        # economic date, value or provenance on a repeat fetch. Receipt and
+        # knowledge clocks may advance; the source facts may not.
+        facts = {}
+        for v in rows:
+            identity = (v.vintage_id, v.source_digest)
+            a = v.observation
+            signature = (v.effective_date, Decimal(str(a.value)), a.unit, a.currency,
+                _clock(a.as_of, "as_of"), a.source_ref, a.input_method, a.role,
+                v.release_at, v.release_clock_basis, v.revision)
+            facts.setdefault(identity, set()).add(signature)
+        if any(len(versions) != 1 for versions in facts.values()):
+            conflicts.append({"series": series, "reason": "immutable_vintage_metadata_conflict"})
+            continue
         # Re-fetching one immutable vintage cannot advance its first observed
         # availability or create a new revision. Keep the earliest eligible copy.
         unique = {}
@@ -309,6 +325,14 @@ def financing_baseline_at(vintages: Sequence[FinancingVintage], decision_at: dat
             if key not in unique or _clock(v.observation.known_at, "known_at") < _clock(unique[key].observation.known_at, "known_at"):
                 unique[key] = v
         rows = list(unique.values())
+        newest_date = max(v.effective_date for v in rows)
+        newest = [v for v in rows if v.effective_date == newest_date]
+        if len({v.release_clock_basis for v in newest}) > 1:
+            # A body-availability upper bound is not an exact release time.
+            # A later fetch of an old print cannot outrank a real revision.
+            conflicts.append({"series": series,
+                "reason": "mixed_release_clock_bases_cannot_order_revisions"})
+            continue
         rank = lambda v: (v.effective_date, _clock(v.release_at or v.body_received_at, "release_available_by"))
         best = max(map(rank, rows))
         tied = [v for v in rows if rank(v) == best]
