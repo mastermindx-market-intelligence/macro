@@ -1619,8 +1619,37 @@ def test_official_preview_accepts_shipped_bea_rss_endpoint(
         calls.append(source_cfg["key"])
         session_state[source_cfg["key"]] = {"etag": "bea-etag"}
         return [{**item, "source": "bea_news",
-                 "source_name": "Bureau of Economic Analysis"}]
+                 "source_name": "Bureau of Economic Analysis",
+                 "url": "https://www.bea.gov/news/2026/agency-release"}]
     monkeypatch.setattr(feed, "poll_source", fake_bea_poll)
     preview = feed.preview_official_sources(tmp_path, {"sources": [src]})
     assert [row["id"] for row in preview.items] == [item["id"]]
     assert calls == ["bea_news"]
+
+
+def test_official_preview_rejects_third_party_item_inside_bls_feed(
+        tmp_path, monkeypatch):
+    from engine.marketing import breaking_feed as feed
+    src = dict(BLS_SOURCE_CFG)
+    rows = parse_feed(_load_fixture("rss_mixed.xml"), src)
+    assert any("entertainment.example.com" in r["url"] for r in rows)
+    calls = []
+    def inject(source_cfg, *, root, session_state):
+        calls.append(source_cfg["key"])
+        return rows
+    monkeypatch.setattr(feed, "poll_source", inject)
+    with pytest.raises(ValueError):
+        feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert calls == ["bls_news"]
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+
+
+def test_official_preview_rejects_source_url_with_spoofed_agency_hostname(
+        tmp_path, monkeypatch):
+    feed, item, src, _ = _official_preview_fixture(monkeypatch)
+    def spoof(source_cfg, *, root, session_state):
+        return [{**item, "url": "https://www.bls.gov.evil.example/fake"}]
+    monkeypatch.setattr(feed, "poll_source", spoof)
+    with pytest.raises(ValueError):
+        feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert not (tmp_path / "data/marketing/breaking/state.json").exists()

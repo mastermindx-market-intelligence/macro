@@ -38,6 +38,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, TypedDict
+from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -545,6 +546,32 @@ _OFFICIAL_PREVIEW_URLS = {
     "bea_news": "https://apps.bea.gov/rss/rss.xml",
 }
 
+_OFFICIAL_ITEM_DOMAINS = {
+    "bls_news": "bls.gov",
+    "bea_news": "bea.gov",
+}
+
+
+def _qualified_official_item_url(url: object, source_key: str) -> bool:
+    """A same-feed item is not agency-authored merely because RSS listed it."""
+    if not isinstance(url, str) or not url:
+        return False
+    agency = _OFFICIAL_ITEM_DOMAINS.get(source_key)
+    if not agency:
+        return False
+    try:
+        parsed = urlsplit(url)
+        host = (parsed.hostname or "").lower()
+        return (
+            parsed.scheme == "https"
+            and (host == agency or host.endswith("." + agency))
+            and parsed.username is None and parsed.password is None
+            and parsed.port in (None, 443)
+            and not parsed.fragment
+        )
+    except ValueError:
+        return False
+
 
 @dataclass(frozen=True, slots=True)
 class OfficialFeedPreview:
@@ -634,7 +661,11 @@ def preview_official_sources(
         for item in fetched:
             if (not isinstance(item, dict) or not str(item.get("id") or "")
                     or item.get("source") != key
-                    or item.get("source_tier") != "official"):
+                    or item.get("source_tier") != "official"
+                    or not _qualified_official_item_url(item.get("url"), key)):
+                # An apparently official feed can relay third-party material.
+                # Do not process it, advance its cursor or infer public rights
+                # from the transport or from a source_tier label alone.
                 raise ValueError("unqualified official feed item")
             items.append(item)
     new_items, updated_seen = filter_new_items(
