@@ -125,7 +125,9 @@ def build_witness_nest(tmp_dir, *, tickers=("TSM", "ON"), periods=(1, 2)) -> dic
 
     workspaces = witness_workspace_payloads(tickers=tickers, periods=periods)
     out = Path(tmp_dir) / "company_intelligence"
-    write_workspace_generation(out, workspaces, generated_at="2026-09-24T15:00:00Z", status="ready")
+    # The nest clock is DERIVED from the rows' own observation clocks upstream
+    # (event_workspace._generation_clocks); supplying generated_at is refused.
+    write_workspace_generation(out, workspaces, status="ready")
     return nest_files(out)
 
 
