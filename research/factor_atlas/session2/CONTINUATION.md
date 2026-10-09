@@ -340,3 +340,53 @@ earlier, benchmark edit, fresh-main source comparison, release,
 ranking/alert/sizing/trading or deployed UI work was performed.
 The true read integrity calculation and acceptance must await real
 platform-permitted recovery and incumbent scientific/consumer owners.
+
+
+## Scientific S2-P3 day-clustered diagnostic — bounded native extension
+
+Accepted original PR head at phase start:
+`003d4b0e33e8443f07dca0ecda087ac505194bee`; same Mastermind protected `7d82b9adb839d54e4ab25378ca333e498dd83fcc`,
+Skillpack 1.0.1/bootstrap 1. Full mission remains incomplete and
+original PR #8677 remains DRAFT/HOLD. The independently useful next
+readiness layer for real signed-pressure evaluation is a genuine
+day-clustered `quote_study.py` diagnostic, not a replacement source,
+calendar, options signer, scientific acceptance owner or study database.
+
+Input only caller-declared security/minute/session slots and existing
+read-only `MinuteComparison`; exact policy/population/mode and cutoff
+are mandatory, and missing expected minutes remain explicit. Output
+counts not-comparable states and eligible/classified/unknown quote
+dollars separately, computes equal-weight per-session mean of
+proxy-reference absolute pressure-ratio gaps, and a leave-one-day-out
+stability range (NOT a confidence interval). At least three distinct
+comparable sessions required for reporting; one sampled day of many
+correlated minutes cannot count as three days. Source/right/admission
+authority remains universally false. No empirical market/signing claim.
+
+**Proof:** synthetic source `prototype/quote_study.py`,
+34 native tests in `test_quote_study.py`, fabricated 3-day/missing
+witness `evidence/quote_day_cluster_synthetic.json`, doc
+`QUOTE_STUDY_PROTOCOL.md` and native receipt
+`evidence/native_quote_study_tests.json`. Initial missing
+implementation red, focused 34 green, and full **284/284** selected
+ten-suite regression green on local M2 Python 3.12. The focused GitHub
+Actions workflow now explicitly includes test ten. New head still
+requires its own hosted verdict.
+
+**DO_NOT_REDO:** the four previously denied source reads, benchmark
+edit, fresh-main/target comparison and recently platform-denied
+read-model integrity patch are held. Two local uncommitted read-model
+files remain exactly byte-identical to the recorded prior receipt and
+remain EXCLUDED from manifest, staged tree, hosted CI or accepted
+software. Their 4/30 adversarial red status is not waived.
+Source rights, listing/calendar, corporate-action and volume
+basis, as-observed capture/reader clocks and a real qualified equity
+1m+tape+quote cohort remain NOT_ADMITTED (S2-P1/S2-P2).
+No source owner, alert/ranker, customer publication, exchange permission,
+trading or production deployment changed.
+
+**Next:** reconcile this exact source/evidence package with the
+original branch, publish only the explicitly accepted files and
+verify GitHub readback/hosted checks. Follow-on production integration
+needs source-owner data admission and separate independent scientific
+consumer review; a passing fixture is not a release ruling.

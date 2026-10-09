@@ -1,0 +1,73 @@
+{
+  "actual_market_data_admitted": false,
+  "calibrated_statistical_accuracy": false,
+  "created_at_utc": "2026-10-09T10:04:55.006137+00:00",
+  "customer_publication_authorized": false,
+  "full_ten_suite_local_passed": 284,
+  "is_confidence_interval": false,
+  "new_scoped_study_tests_passed": 34,
+  "parent_accepted_head": "003d4b0e33e8443f07dca0ecda087ac505194bee",
+  "prior_blocked_readmodel_patch_was_not_retried": true,
+  "protected_mastermind": "7d82b9adb839d54e4ab25378ca333e498dd83fcc",
+  "schema": "factor_atlas.quote_day_cluster_native_receipt.v1",
+  "source_class": "SYNTHETIC_ONLY_NO_TAPE_TRUTH",
+  "source_files": {
+    "session2/QUOTE_STUDY_PROTOCOL.md": {
+      "bytes": 6212,
+      "sha256": "8ce803a41288e37292810141c0005a6e43616335e7048a253072a799e5bb6ca0"
+    },
+    "session2/evidence/quote_day_cluster_synthetic.json": {
+      "bytes": 3415,
+      "sha256": "9e3159c097bb4c9cff9eacf9c166368ebaf23a2f7cd3adaf46ffb6954f848e38"
+    },
+    "session2/prototype/quote_study.py": {
+      "bytes": 10118,
+      "sha256": "52b21a8eff9e39e1e023dff0c32860dd4ca344c6dc9b8f6c073aa4d8444c18c4"
+    },
+    "session2/prototype/test_quote_study.py": {
+      "bytes": 10850,
+      "sha256": "2cb8d36c9937058b6725c9146903d294fbeb52bab800cde24fdbe55c3be2f86c"
+    }
+  },
+  "tdd_initial_implementation_red": 1,
+  "test_logs": {
+    "quote-study-adversarial.txt": {
+      "bytes": 99,
+      "sha256": "021e305444025655ded9c7f249fc61e8b04fb1da04c8636a3a7bfa42c5cc8350"
+    },
+    "quote-study-first.txt": {
+      "bytes": 73003,
+      "sha256": "032d73cb44c776a289544f57eaf5d47a6b1dd29cd8708aefdd3785177c4d0257"
+    },
+    "quote-study-green.txt": {
+      "bytes": 99,
+      "sha256": "ece6bd7028376aba334ef4dd60dceb04ae962e8cf68876b7c265d77d53ed2f8c"
+    },
+    "quote-study-red.txt": {
+      "bytes": 1865,
+      "sha256": "6584bb04027400e2fe636a50e14a4ce8d76dddcc0a4d6ecdbf15598765e9f63e"
+    },
+    "quote-study-ten-suite-green.txt": {
+      "bytes": 340,
+      "sha256": "6d396dbfba022a5ddca0dabe26e9619a978803a857fb4f6ec716db322976fa16"
+    }
+  },
+  "uncommitted_failing_source_excluded": true,
+  "workflow": {
+    "path": ".github/workflows/factor-atlas-reference.yml",
+    "sha256": "6227ccc425d8cc5d3c464a235658dba443163e63c4ca6c8f957fd218169cf631",
+    "suite_count": 10,
+    "suite_paths": [
+      "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
+      "research/factor_atlas/session2/prototype/test_pressure.py",
+      "research/factor_atlas/session2/prototype/test_quote_calibration.py",
+      "research/factor_atlas/session2/prototype/test_quote_reference.py",
+      "research/factor_atlas/session2/prototype/test_quote_study.py",
+      "research/factor_atlas/session2/prototype/test_read_contract_schema.py",
+      "research/factor_atlas/session2/prototype/test_source_preflight.py",
+      "research/factor_atlas/session2/prototype/test_window_pipeline.py",
+      "research/factor_atlas/session2/prototype/test_window_pressure.py",
+      "research/factor_atlas/session2/prototype/test_witnesses.py"
+    ]
+  }
+}

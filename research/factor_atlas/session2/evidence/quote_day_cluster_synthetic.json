@@ -1,0 +1,125 @@
+{
+  "actual_tape_truth": false,
+  "empty_census": {
+    "authority": {
+      "may_alert": false,
+      "may_publish": false,
+      "may_rank": false,
+      "may_size": false,
+      "may_trade": false
+    },
+    "comparable_minutes": 0,
+    "customer_publishable": false,
+    "equal_day_mean_proxy_disagreement": null,
+    "expected_minutes": 3,
+    "expected_session_clusters": 3,
+    "input_digest": "517c105e4102edc0c51b6a65b64171b5a6937ef461de8a3d27b4f6c69134b8bf",
+    "is_confidence_interval": false,
+    "is_statistical_accuracy_study": false,
+    "knowledge_class": "BAR_VS_QUOTE_PROXY_DISAGREEMENT_NOT_TAPE_TRUTH",
+    "leave_one_day_out_high": null,
+    "leave_one_day_out_low": null,
+    "market_pilot_admitted": false,
+    "missing_minutes": 3,
+    "mode": null,
+    "not_comparable_minutes": 0,
+    "observed_minutes": 0,
+    "per_day": [
+      [
+        "2026-06-01",
+        0,
+        1,
+        null
+      ],
+      [
+        "2026-06-02",
+        0,
+        1,
+        null
+      ],
+      [
+        "2026-06-03",
+        0,
+        1,
+        null
+      ]
+    ],
+    "policy_ref": null,
+    "population_ref": null,
+    "quote_classified_gross_observed_usd": "0",
+    "quote_classified_share_observed": null,
+    "quote_eligible_gross_observed_usd": "0",
+    "quote_unknown_gross_observed_usd": "0",
+    "rights_verified": false,
+    "session_clusters_with_comparables": 0,
+    "source_receipts_verified": false,
+    "source_scope": "OWNER_SUPPLIED_EXPECTED_SLOTS_UNVERIFIED",
+    "status": "INSUFFICIENT_SESSION_CLUSTERS",
+    "status_counts": []
+  },
+  "licensed_market_pilot_admitted": false,
+  "schema": "factor_atlas.quote_day_cluster_fixture.v1",
+  "source": "FABRICATED_EXPECTED_SLOTS_AND_PROXIES",
+  "three_day_stability": {
+    "authority": {
+      "may_alert": false,
+      "may_publish": false,
+      "may_rank": false,
+      "may_size": false,
+      "may_trade": false
+    },
+    "comparable_minutes": 3,
+    "customer_publishable": false,
+    "equal_day_mean_proxy_disagreement": 0.19999999999999998,
+    "expected_minutes": 3,
+    "expected_session_clusters": 3,
+    "input_digest": "5bcf48e71474b56368fdb6a0d49981bbb0b565ce756e4364d2269423aa3a9c55",
+    "is_confidence_interval": false,
+    "is_statistical_accuracy_study": false,
+    "knowledge_class": "BAR_VS_QUOTE_PROXY_DISAGREEMENT_NOT_TAPE_TRUTH",
+    "leave_one_day_out_high": 0.25,
+    "leave_one_day_out_low": 0.15000000000000002,
+    "market_pilot_admitted": false,
+    "missing_minutes": 0,
+    "mode": "as_observed",
+    "not_comparable_minutes": 0,
+    "observed_minutes": 3,
+    "per_day": [
+      [
+        "2026-06-01",
+        1,
+        1,
+        0.1
+      ],
+      [
+        "2026-06-02",
+        1,
+        1,
+        0.2
+      ],
+      [
+        "2026-06-03",
+        1,
+        1,
+        0.3
+      ]
+    ],
+    "policy_ref": "quoted_tape_v1",
+    "population_ref": "COHORT:PRE-REGISTERED",
+    "quote_classified_gross_observed_usd": "900.375",
+    "quote_classified_share_observed": "1",
+    "quote_eligible_gross_observed_usd": "900.375",
+    "quote_unknown_gross_observed_usd": "0",
+    "rights_verified": false,
+    "session_clusters_with_comparables": 3,
+    "source_receipts_verified": false,
+    "source_scope": "OWNER_SUPPLIED_EXPECTED_SLOTS_UNVERIFIED",
+    "status": "DESCRIPTIVE_STABILITY_AVAILABLE",
+    "status_counts": [
+      [
+        "COMPARABLE_PROXY_DIAGNOSTIC",
+        3
+      ]
+    ]
+  }
+}

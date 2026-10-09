@@ -31,7 +31,7 @@ jobs:
         run: |
           python -m pip install -r research/factor_atlas/session2/requirements-research.txt
           python -m pip install "pandas>=2.3,<4"
-      - name: Run all nine Factor Atlas research suites and read contract guards
+      - name: Run all ten Factor Atlas research and scientific falsifier suites
         run: |
           PYTHONDONTWRITEBYTECODE=1 python -m pytest -c /dev/null -p no:cacheprovider -q \
             research/factor_atlas/session2/prototype/test_pressure.py \
@@ -42,4 +42,5 @@ jobs:
             research/factor_atlas/session2/prototype/test_quote_reference.py \
             research/factor_atlas/session2/prototype/test_quote_calibration.py \
             research/factor_atlas/session2/prototype/test_source_preflight.py \
+            research/factor_atlas/session2/prototype/test_quote_study.py \
             research/factor_atlas/session2/prototype/test_read_contract_schema.py
