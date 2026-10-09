@@ -4284,6 +4284,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "push-retry-policy",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
     # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
@@ -4637,6 +4638,9 @@ CURATED_EXCLUSIVE = {
     # Exact inventory only; scope audits and packing ceilings remain unchanged.
     "dataos-prospective-reference",
     "ratio-lens",
+    # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
+    # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
+    "company-relationship-candidates",
 }
 
 
