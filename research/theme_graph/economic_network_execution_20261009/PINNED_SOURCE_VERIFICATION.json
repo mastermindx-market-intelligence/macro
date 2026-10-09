@@ -1,0 +1,119 @@
+{
+  "schema": "gmi.economic_network.pinned_source_execution_verification/v1",
+  "recorded_at": "2026-10-09T02:56:08.213519+00:00",
+  "operation_id": "gmi-economic-network-execution-20261009-pro-001",
+  "checkpoint": "reviewed native adapter and CI repair before final extension publication",
+  "research_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/8661",
+  "implementation_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/8667",
+  "current_published_head": "d68678701b0e58924ae9dd5cf1b7f45b1c598538",
+  "fresh_main_for_integration": "94a20f53cdb2d866d07089df50567f059bf1073e",
+  "file_sha256": {
+    "engine/company_intelligence/relationship_candidates.py": "27543f4a37202820f34071607b5cbdb1e48a04c30577a876ba1f803e1c41891d",
+    "tests/test_company_relationship_candidates.py": "0a8c73d5e5b968fd3795fed1e08305597f9c254cc5702b9946b702b8f31bdbd4",
+    "engine/company_intelligence/pinned_relationship_candidates.py": "1000497dcfef316f1ad0726c08bcba7ba12dbe305175887e191d6f96512649bd",
+    "tests/test_company_pinned_relationship_candidates.py": "3c85ace77022c2b37c8abfab915ae8bf97ee711a8f315ea9e3b6f27d01872406",
+    ".github/ci/legacy-jobs.yml": "195921e289363a9ecc6036c9b53fbcbb6c991df8ad8d08138b51fe23b63f2d64",
+    "research/theme_graph/economic_network_execution_20261009/PINNED_SOURCE_EXECUTION.md": "294958b47fc384673048d9c6512ac46380ee938abfff10fae2e106f4968f2797",
+    "research/theme_graph/economic_network_execution_20261009/EXECUTION_STATUS.md": "184dd300d4531fd57ecadc4e39851c0db8e2ef0c644e2dec9b4725c5ceb13247",
+    "research/theme_graph/economic_network_execution_20261009/README.md": "c90f49b5e28094269b8da0193aad644f04cc897c8d822f967552d2faa0a5718a",
+    "research/theme_graph/economic_network_execution_20261009/NATIVE_SOURCE_ADAPTER_SEAM.md": "8eb3934edabadbeb0322afec787a2c5df076d10e5b9d6b49fafc3b948b8817a5",
+    "agentos/decisions/DEC-GMI-ECONOMIC-RELATIONSHIP-CANDIDATE-EXECUTION.md": "6e5ae5515302e801fa39f0131dda60847cca1f99da9683703c508225f53c674f",
+    "research/theme_graph/economic_network_execution_20261009/CI_SCOPE_REPAIR.json": "5db9ce5bab290c164cbca15545305360ec3d68545bc531489d40defda509cfb9",
+    "research/theme_graph/economic_network_execution_20261009/PINNED_SOURCE_INDEPENDENT_REVIEW.md": "26f0572b47e87ce52e5649c7a28ecf528fd494b8299c82e61486dffa0d17849e",
+    "research/theme_graph/economic_network_execution_20261009/EXECUTION_FRONTIER_ADJUDICATION.md": "6b2d21fec9228fcd885ca68f38c7a40de8d115ee97e60ab343d932c107ce4e9e"
+  },
+  "validation": {
+    "builder": {
+      "tests_passed": 150,
+      "inspector_cases": 107,
+      "pinned_cases": 43,
+      "warnings": 8,
+      "exit_code": 0,
+      "seconds": 2.75,
+      "classification": "actual native execution on synthetic pinned stores and source/candidate test fixtures"
+    },
+    "independent": {
+      "tests_passed": 153,
+      "extra_native_source_reader_cases": 3,
+      "warnings": 8,
+      "exit_code": 0,
+      "seconds": 3.61,
+      "stderr_empty": true,
+      "additional_probes": [
+        "duplicate selected document",
+        "forged cached authority and read overrides",
+        "invalid exact authority and support flags",
+        "historical refusals without current views",
+        "default support text omission"
+      ],
+      "source_review": "PASS",
+      "ci_repair_review": "PASS",
+      "report": "PINNED_SOURCE_INDEPENDENT_REVIEW.md"
+    },
+    "warnings_scope": "preexisting pytest temporary Chromium-directory cleanup warnings, not adapter assertion failures",
+    "agentos": {
+      "records": 1585,
+      "errors": 0,
+      "warnings": 138,
+      "exit_code": 0,
+      "warnings_scope": "preexisting estate records"
+    },
+    "git_diff_check_exit_code": 0,
+    "manifest_validate_only": {
+      "command": "python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --validate-only",
+      "exit_code": 0,
+      "definitions": 250,
+      "pack_execution": false
+    }
+  },
+  "ci": {
+    "initial_run": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37873602283",
+    "initial_head": "d68678701b0e58924ae9dd5cf1b7f45b1c598538",
+    "contract_delta": "failed on three introduced packing job-count ceilings",
+    "ci_pack_0": "same three ceilings in test_exclusive_curation_narrows_ordinary_code_prs; 1 failed, 591 passed in that step",
+    "other_initial_packs_passed": 11,
+    "repair": "68 explicit executed inputs; exclusive scope; no inferred fallback",
+    "positive_probes_passed": 68,
+    "negative_probes_excluded": 3,
+    "own_job_semantic_invalidation_selected": true,
+    "intermediate_36_input_scope": "rejected for missing 32 executed imports/hooks/configuration inputs; repaired",
+    "incumbent_manifest_preserved": true,
+    "global_ceilings_or_other_jobs_changed": false,
+    "native_selector_receipt": "CI_SCOPE_REPAIR.json",
+    "final_hosted_run": "not yet run at this authored checkpoint",
+    "merge": "not yet performed at this authored checkpoint"
+  },
+  "real_evidence": {
+    "micron_file_input": "actual native CLI/replay harness executed successfully using exact 2026-10-09 capture of issuer 2024-02-26 announcement",
+    "micron_receipt": "MICRON_REPLAY_RECEIPT.json",
+    "native_pinned_source": "synthetic fixture proof only; real retained-runtime journey not run",
+    "availability_scope": "no known exact retained pointer or owner archive/operator paths in the two inspected roots; dedicated reader configuration absent in the checked process; deployed runtime and private buckets unverified"
+  },
+  "authority_limits": {
+    "admission": "NOT_ADMITTED",
+    "canonical_identity": false,
+    "registered_relationship_dataset": false,
+    "historical_served_state_replay": false,
+    "rights_grant": false,
+    "graph1": false,
+    "prediction_or_trade_authority": false,
+    "production_or_product_deployment": false
+  },
+  "next_required_real_witness": {
+    "reader": "existing owner-managed exact PinnedSourceAuthority over strict bounded reader",
+    "selectors": [
+      "exact ffsecsrc snapshot_id",
+      "canonical native manifest_key",
+      "exact native document_id"
+    ],
+    "candidate": "source-local manual annotations and complete native flat receipt over original bytes",
+    "evidence": [
+      "manifest and complete receipt-sidecar replay",
+      "pinned outer gzip and raw body hash/length",
+      "exact span and document metadata match",
+      "metadata-only receipt",
+      "purpose and temporal refusals kept separate"
+    ]
+  },
+  "scope": "Extends private source custody replay without new acquisition, registry, identity, rights, graph store, publisher, owner takeover or held-carrier change. Source review does not supply hosted release or real retained-source acceptance."
+}

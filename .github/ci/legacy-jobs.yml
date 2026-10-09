@@ -3610,6 +3610,661 @@ jobs:
       - name: options + render assertions that read committed data (the data_gate half)
         run: python -m pytest tests/test_options_session_guards.py tests/test_options_unit_seams.py tests/test_render_dead_asset_gate.py -m data_gate -q
 
+  international-workspace-pure-js:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "tests/intl_workspace_scenario_draft.test.cjs"
+      - "tests/intl_workspace_scenario_draft_independent.test.cjs"
+      - "templates/intl_workspace_scenario.js"
+      - "tests/intl_workspace_scenario_math.test.cjs"
+      - "templates/intl_library_search.js"
+      - "tests/intl_library_search.test.cjs"
+      - "tests/fixtures/intl_library_search_catalogue.json"
+      - "templates/intl_workspace_state.js"
+      - "tests/intl_workspace_state.test.cjs"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: International manual scenario arithmetic and locale parsing
+        run: node --test tests/intl_workspace_scenario_math.test.cjs tests/intl_workspace_scenario_draft.test.cjs tests/intl_workspace_scenario_draft_independent.test.cjs
+      - name: International Library search and reply identity
+        run: node --test tests/intl_library_search.test.cjs
+      - name: International research context and route state
+        run: node --test tests/intl_workspace_state.test.cjs
+
+  international-workspace-foundation:
+    # Supplied-frame numerical records use the existing performance owner.
+    # Scope includes the measured first-party import closure and config input.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "lib/intl_history_mount.py"
+      - "tests/test_intl_history_mount.py"
+      - "lib/intl_workspace_history.py"
+      - "tests/test_intl_workspace_history.py"
+      - "tests/test_intl_workspace_history_independent.py"
+      - "tests/fixtures/intl_workspace/history_cases.json"
+      - "tests/test_intl_policy_comparison.py"
+      - "tests/test_intl_policy_comparison_independent.py"
+      - "tests/test_intl_workspace_risk_section_independent.py"
+      - "lib/intl_workspace_risk_section.py"
+      - "lib/intl_risk_mount.py"
+      - "tests/test_intl_workspace_risk_section.py"
+      - "tests/test_intl_risk_mount.py"
+      - lib/intl_workspace_risk.py
+      - lib/intl_workspace_risk_pressure.py
+      - tests/test_intl_workspace_risk_pressure.py
+      - tests/test_intl_workspace_risk_pressure_independent.py
+      - lib/intl_workspace_risk_currency.py
+      - tests/test_intl_workspace_risk_currency.py
+      - tests/fixtures/intl_workspace/risk_currency_overview.json
+      - tests/test_intl_workspace_risk_currency_independent.py
+      - tests/test_intl_workspace_risk_currency_numerical.py
+      - tests/test_intl_workspace_risk.py
+      - tests/test_intl_workspace_risk_regression.py
+      - tests/fixtures/intl_workspace/risk_cases.json
+      - lib/us_cash_calendar.py
+      - collectors/china_filings.py
+      - collectors/china_visits.py
+      - lib/dataos/identity.py
+      - lib/exchange_holidays.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/tsx_calendar.py
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/indicators.py"
+      - "engine/intl_inputs.py"
+      - "engine/intl_market_state.py"
+      - "engine/intl_performance.py"
+      - "engine/intl_performance_records.py"
+      - "engine/intl_performance_charts.py"
+      - "engine/intl_workspace_overview.py"
+      - "engine/international_macro_dashboard.py"
+      - "engine/intl_regime.py"
+      - "engine/intl_run.py"
+      - "tests/test_intl_cycle_component_evidence.py"
+      - "tests/test_intl_regime.py"
+      - "tests/test_intl_compare.py"
+      - "engine/europe_news_intel.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "tests/test_intl_history_read_receipt.py"
+      - "tests/test_intl_history_read_projection.py"
+      - "tests/test_intl_history_projection_regression.py"
+      - "tests/test_intl_history_projection_independent.py"
+      - "engine/technicals.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/store.py"
+      - "config.yml"
+      - "tests/conftest.py"
+      - "tests/test_intl_performance_records.py"
+      - "tests/test_intl_source_snapshot.py"
+      - "tests/test_intl_source_qualification.py"
+      - "tests/test_intl_performance_charts.py"
+      - "tests/test_intl_workspace_overview.py"
+      - "lib/intl_library_view.py"
+      - "lib/intl_library_mount.py"
+      - "lib/intl_inspector_view.py"
+      - "lib/intl_inspector_mount.py"
+      - "lib/intl_compare_mount.py"
+      - "lib/intl_workspace_binding.py"
+      - "tests/test_intl_inspector_view.py"
+      - "lib/intl_compare_view.py"
+      - "tests/test_intl_compare_view.py"
+      - "tests/test_intl_compare_mount.py"
+      - "config/intl_library_catalogue.json"
+      - "tests/test_intl_library_mount.py"
+      - "tests/test_intl_library_view.py"
+      - "tests/test_intl_library_public_copy.py"
+      # Static import closure includes intl_run ledger modules; tests call only country_record.
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_news.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/metabolism_budget.yml"
+      - "engine/ai_desk.py"
+      - "engine/ai_desk_scorer.py"
+      - "engine/altdata_ledger.py"
+      - "engine/altdata_models.py"
+      - "engine/altdata_picks.py"
+      - "engine/altdata_signals.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/catalyst_tone.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_discovery.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_intel_bus.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/desk_ledger.py"
+      - "engine/desk_scorer.py"
+      - "engine/election_cycle.py"
+      - "engine/entity_resolver.py"
+      - "engine/event_calendar.py"
+      - "engine/extension.py"
+      - "engine/forward_calendar_context.py"
+      - "engine/gdelt_client.py"
+      - "engine/inputs.py"
+      - "engine/intl_compare.py"
+      - "engine/intl_equity_risk.py"
+      - "engine/ledger_lane.py"
+      - "engine/llm_auth.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/master_brain.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/name_resolver.py"
+      - "engine/narrative_crossmarket.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brief_context.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/constitution.py"
+      - "engine/neuralweb/governance.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/read.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/ollama_provider.py"
+      - "engine/opex.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/passport.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/pooling.py"
+      - "engine/provider_health.py"
+      - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
+      - "engine/qledger_validity.py"
+      - "engine/rebalance_calendar.py"
+      - "engine/regime.py"
+      - "engine/regime_label.py"
+      - "engine/regime_one.py"
+      - "engine/regime_vector.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_intl.py"
+      - "engine/risk_radar_intl_audit.py"
+      - "engine/risk_radar_intl_tune.py"
+      - "engine/rri_shadow.py"
+      - "engine/session_anchor.py"
+      - "engine/smart_money.py"
+      - "engine/spine.py"
+      - "engine/ticker_shape.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "engine/yield_momentum.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/filing_value_units.py"
+      - "lib/hk_calendar.py"
+      - "lib/nyse_calendar.py"
+      - "lib/ticker_aliases.py"
+      - "scripts/validate_regime_fwd.py"
+      - "lib/intl_workspace_macro.py"
+      - "tests/test_intl_workspace_macro.py"
+      - "tests/test_intl_ecb_deposit_admission.py"
+      - "engine/cb_desk.py"
+      - "collectors/edgar_deadname_prices.py"
+      - "collectors/edgar_deadnames.py"
+      - "collectors/edgar_delisting.py"
+      - "collectors/edgar_eps.py"
+      - "engine/anticipation.py"
+      - "engine/bar_derive.py"
+      - "engine/baskets.py"
+      - "engine/baskets_canada.py"
+      - "engine/baskets_china.py"
+      - "engine/baskets_hk.py"
+      - "engine/baskets_intl.py"
+      - "engine/baskets_region.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/confluence_tiers.py"
+      - "engine/contagion.py"
+      - "engine/contagion_links.py"
+      - "engine/conviction_accrual.py"
+      - "engine/cross_asset.py"
+      - "engine/cross_asset_trend.py"
+      - "engine/cycles.py"
+      - "engine/equity_factors.py"
+      - "engine/flow_regime.py"
+      - "engine/forward_dist.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading.py"
+      - "engine/hk_global.py"
+      - "engine/hk_global_beta.py"
+      - "engine/hysteresis.py"
+      - "engine/i18n.py"
+      - "engine/index_direction.py"
+      - "engine/intl_bonds.py"
+      - "engine/intl_market_confirmation.py"
+      - "engine/intl_rates.py"
+      - "engine/intl_recovery_quality.py"
+      - "engine/intl_risk.py"
+      - "engine/intl_rotation.py"
+      - "engine/intl_stocks.py"
+      - "engine/ird_velocity.py"
+      - "engine/market_state.py"
+      - "engine/name_direction.py"
+      - "engine/name_score.py"
+      - "engine/name_score_grader.py"
+      - "engine/narrative_rotation.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/ohlc_reconstruct.py"
+      - "engine/prophet_board_since.py"
+      - "engine/residual_alpha.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/setups.py"
+      - "engine/signal_archive.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/stock_score.py"
+      - "engine/stock_technicals.py"
+      - "engine/stock_view.py"
+      - "engine/sue.py"
+      - "engine/theme_crowding.py"
+      - "engine/theme_validation.py"
+      - "engine/valuation.py"
+      - "engine/velocity.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/vol_squeeze.py"
+      - "lib/global_regime_fragment.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
+      - "lib/ticker_popularity.py"
+      - "scripts/__init__.py"
+      - "scripts/build_chart_data.py"
+      - "scripts/build_international_macro.py"
+      - "scripts/build_intl.py"
+      - "scripts/build_intl_library.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "site/factordata/basket_washout_state.json"
+      - "lib/intl_macro_mount.py"
+      - "lib/intl_macro_publication.py"
+      - "tests/test_intl_macro_mount.py"
+      - "tests/test_intl_macro_publication.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install numerical test dependencies
+        run: pip install pytest pandas numpy pyyaml pyarrow
+      - name: International return identity, windows and observation provenance
+        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py -q
+
+  international-workspace-browser:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "lib/intl_history_mount.py"
+      - "lib/intl_workspace_history.py"
+      - "tests/test_intl_history_mount.py"
+      - "tests/test_intl_history_publication_build.py"
+      - "tests/test_intl_history_publication_independent.py"
+      - "tests/test_intl_workspace_history_ui_independent.py"
+      - "tests/intl_workspace_history_independent.test.cjs"
+      - "tests/test_intl_workspace_history_render.py"
+      - "tests/history_browser_fixture.py"
+      - "tests/intl_workspace_history_controller.test.cjs"
+      - "tests/fixtures/intl_workspace/history_cases.json"
+      - "templates/intl_workspace_scenario.js"
+      - "templates/intl_workspace_history.css"
+      - "templates/intl_workspace/history.html.j2"
+      - "lib/intl_workspace_risk.py"
+      - "lib/intl_workspace_risk_currency.py"
+      - "lib/intl_workspace_risk_pressure.py"
+      - "lib/intl_workspace_risk_section.py"
+      - "lib/intl_risk_mount.py"
+      - "tests/test_intl_workspace_risk_section.py"
+      - "tests/test_intl_risk_mount.py"
+      - "tests/test_intl_risk_publication_build.py"
+      - "tests/test_intl_workspace_risk_render.py"
+      - "tests/test_intl_workspace_risk_ui_independent.py"
+      - "tests/intl_workspace_risk_controller.test.cjs"
+      - "templates/intl_workspace/risk.html.j2"
+      - "templates/intl_workspace_risk.css"
+      - "tests/fixtures/intl_workspace/risk_render.json"
+      - "tests/fixtures/intl_workspace/risk_currency_overview.json"
+      - lib/us_cash_calendar.py
+      - collectors/china_filings.py
+      - collectors/china_visits.py
+      - lib/dataos/identity.py
+      - lib/exchange_holidays.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/tsx_calendar.py
+      - "templates/intl*"
+      - "templates/_site_nav.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/navigation-refresh.css"
+      - "templates/nav_market.js"
+      - "templates/theme.*"
+      - "templates/dashboard-icons*"
+      - "templates/product-nav-icons.css"
+      - "templates/live.js"
+      - "templates/live_config.js"
+      - "templates/logo_config.js"
+      - "templates/stock-logos.js"
+      - "templates/tablesort.js"
+      - "templates/account.js"
+      - "templates/terminal_overlay.js"
+      - "scripts/build_intl.py"
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/indicators.py"
+      - "engine/intl_inputs.py"
+      - "engine/intl_market_state.py"
+      - "engine/intl_performance.py"
+      - "engine/intl_performance_records.py"
+      - "engine/intl_workspace_overview.py"
+      - "engine/technicals.py"
+      - "lib/__init__.py"
+      - "lib/intl_library_view.py"
+      - "lib/intl_library_mount.py"
+      - "lib/intl_inspector_view.py"
+      - "lib/intl_inspector_mount.py"
+      - "lib/intl_compare_mount.py"
+      - "lib/intl_workspace_binding.py"
+      - "lib/intl_compare_view.py"
+      - "tests/test_intl_compare_integration.py"
+      - "tests/test_intl_compare_mount.py"
+      - "tests/test_intl_workspace_generation_mount.py"
+      - "tests/test_intl_workspace_overview.py"
+      - "tests/test_intl_source_qualification.py"
+      - "tests/test_intl_workspace_compare_render.py"
+      - "tests/test_intl_inspector_view.py"
+      - "tests/test_intl_inspector_mount.py"
+      - "tests/test_intl_workspace_inspector_render.py"
+      - "config/intl_library_catalogue.json"
+      - "lib/config.py"
+      - "lib/store.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
+      - "config.yml"
+      - "tests/conftest.py"
+      - "tests/test_intl_workspace_overview_render.py"
+      - "tests/test_intl_workspace_library_render.py"
+      - "tests/test_intl_workspace_integration.py"
+      - "tests/intl_workspace_controller.test.cjs"
+      - "tests/intl_workspace_compare_controller.test.cjs"
+      - "tests/intl_workspace_generation_controller.test.cjs"
+      - "tests/intl_workspace_generation_integration.test.cjs"
+      - "tests/intl_workspace_inspector_integration.test.cjs"
+      - "tests/intl_workspace_page.test.cjs"
+      - "tests/intl_workspace_legacy_navigation.test.cjs"
+      - "tests/intl_workspace_library_controller.test.cjs"
+      - "lib/intl_macro_mount.py"
+      - "lib/intl_macro_publication.py"
+      - "lib/intl_workspace_macro.py"
+      - "tests/test_intl_workspace_macro_render.py"
+      - "tests/test_intl_macro_publication_build.py"
+      - "tests/test_intl_ecb_deposit_admission.py"
+      - "engine/cb_desk.py"
+      # Measured import closure of the normal publication owner and actual render tests.
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_news.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_deadname_prices.py"
+      - "collectors/edgar_deadnames.py"
+      - "collectors/edgar_delisting.py"
+      - "collectors/edgar_eps.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/metabolism_budget.yml"
+      - "engine/ai_desk.py"
+      - "engine/ai_desk_scorer.py"
+      - "engine/altdata_ledger.py"
+      - "engine/altdata_models.py"
+      - "engine/altdata_picks.py"
+      - "engine/altdata_signals.py"
+      - "engine/anticipation.py"
+      - "engine/axes.py"
+      - "engine/bar_derive.py"
+      - "engine/base_effect.py"
+      - "engine/baskets.py"
+      - "engine/baskets_canada.py"
+      - "engine/baskets_china.py"
+      - "engine/baskets_hk.py"
+      - "engine/baskets_intl.py"
+      - "engine/baskets_region.py"
+      - "engine/catalyst_tone.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_discovery.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_intel_bus.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/confluence_tiers.py"
+      - "engine/contagion.py"
+      - "engine/contagion_links.py"
+      - "engine/conviction_accrual.py"
+      - "engine/cross_asset.py"
+      - "engine/cross_asset_trend.py"
+      - "engine/cycles.py"
+      - "engine/desk_ledger.py"
+      - "engine/desk_scorer.py"
+      - "engine/election_cycle.py"
+      - "engine/entity_resolver.py"
+      - "engine/equity_factors.py"
+      - "engine/europe_news_intel.py"
+      - "engine/event_calendar.py"
+      - "engine/extension.py"
+      - "engine/flow_regime.py"
+      - "engine/forward_calendar_context.py"
+      - "engine/forward_dist.py"
+      - "engine/gdelt_client.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading.py"
+      - "engine/hk_global.py"
+      - "engine/hk_global_beta.py"
+      - "engine/hysteresis.py"
+      - "engine/index_direction.py"
+      - "engine/inputs.py"
+      - "engine/international_macro_dashboard.py"
+      - "engine/intl_bonds.py"
+      - "engine/intl_compare.py"
+      - "engine/intl_equity_risk.py"
+      - "engine/intl_market_confirmation.py"
+      - "engine/intl_rates.py"
+      - "engine/intl_recovery_quality.py"
+      - "engine/intl_regime.py"
+      - "engine/intl_risk.py"
+      - "engine/intl_rotation.py"
+      - "engine/intl_run.py"
+      - "engine/intl_stocks.py"
+      - "engine/ird_velocity.py"
+      - "engine/ledger_lane.py"
+      - "engine/llm_auth.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/market_state.py"
+      - "engine/master_brain.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/name_direction.py"
+      - "engine/name_resolver.py"
+      - "engine/name_score.py"
+      - "engine/name_score_grader.py"
+      - "engine/narrative_crossmarket.py"
+      - "engine/narrative_rotation.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brief_context.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/constitution.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/governance.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/read.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/ohlc_reconstruct.py"
+      - "engine/ollama_provider.py"
+      - "engine/opex.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/passport.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/pooling.py"
+      - "engine/prophet_board_since.py"
+      - "engine/provider_health.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
+      - "engine/qledger_validity.py"
+      - "engine/rebalance_calendar.py"
+      - "engine/regime.py"
+      - "engine/regime_label.py"
+      - "engine/regime_one.py"
+      - "engine/regime_vector.py"
+      - "engine/residual_alpha.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_intl.py"
+      - "engine/risk_radar_intl_audit.py"
+      - "engine/risk_radar_intl_tune.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/rri_shadow.py"
+      - "engine/session_anchor.py"
+      - "engine/setups.py"
+      - "engine/signal_archive.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/smart_money.py"
+      - "engine/spine.py"
+      - "engine/stock_score.py"
+      - "engine/stock_technicals.py"
+      - "engine/stock_view.py"
+      - "engine/sue.py"
+      - "engine/theme_crowding.py"
+      - "engine/theme_validation.py"
+      - "engine/ticker_shape.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "engine/valuation.py"
+      - "engine/velocity.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/vol_squeeze.py"
+      - "engine/yield_momentum.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/filing_value_units.py"
+      - "lib/global_regime_fragment.py"
+      - "lib/hk_calendar.py"
+      - "lib/nyse_calendar.py"
+      - "lib/ticker_aliases.py"
+      - "lib/ticker_popularity.py"
+      - "scripts/__init__.py"
+      - "scripts/build_chart_data.py"
+      - "scripts/build_international_macro.py"
+      - "scripts/build_intl_library.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/validate_regime_fwd.py"
+      - "site/factordata/basket_washout_state.json"
+      - "templates/intl_workspace/macro.html.j2"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install render test dependencies
+        run: pip install pytest pandas numpy pyyaml jinja2 pyarrow
+      - name: install browser test dependencies
+        run: |
+          npm install --no-save --package-lock=false playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Actual International builder and template contracts
+        run: python -m pytest tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py -q
+      - name: Actual DOM controller and page entry in Chromium
+        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs
+
   stock-dashboard-first-frame:
     if: ${{ false }}
     gate: code
@@ -4846,6 +5501,26 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/intl_history_mount.py"
+      - "lib/intl_workspace_history.py"
+      - "lib/intl_risk_mount.py"
+      - "lib/intl_workspace_risk.py"
+      - "lib/intl_workspace_risk_currency.py"
+      - "lib/intl_workspace_risk_pressure.py"
+      - "lib/intl_workspace_risk_section.py"
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_macro.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
       - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "lib/market_observations.py"
@@ -5751,6 +6426,7 @@ jobs:
       - "tests/test_tsx_calendar.py"
       - "tests/test_cn_calendar.py"
       - "tests/test_exchange_holiday_notices.py"
+      - "tests/test_jpx_exchange_notice.py"
       - "tests/test_market_session.py"
       - "tests/test_first_party_import_names.py"
       - "tests/test_sp1_trading_day_index.py"
@@ -5795,7 +6471,7 @@ jobs:
       # so its rule arithmetic must not be UNRUN the way test_nyse_calendar.py was
       # until 2026-07-27.
       - name: registered legacy + current cash calendars, real W2C bindings and import names
-        run: python -m pytest tests/test_nyse_calendar.py tests/test_tsx_calendar.py tests/test_cn_calendar.py tests/test_exchange_holiday_notices.py tests/test_market_session.py tests/test_first_party_import_names.py -q
+        run: python -m pytest tests/test_nyse_calendar.py tests/test_tsx_calendar.py tests/test_cn_calendar.py tests/test_exchange_holiday_notices.py tests/test_jpx_exchange_notice.py tests/test_market_session.py tests/test_first_party_import_names.py -q
       # SP1-B: restrict_to_nyse_sessions must refuse a weekend-contaminated
       # price index. Belongs HERE — the filter is session_rows + is_session,
       # which this job already owns. Hermetic (synthetic dates, no data/).
@@ -8858,6 +9534,248 @@ jobs:
   itr-turn-rotation:
     if: ${{ false }}
     gate: data
+    # Explicit measured closure: avoid unrelated opaque fallback selection.
+    scope: exclusive
+    paths:
+      - "lib/intl_history_mount.py"
+      - "lib/intl_workspace_history.py"
+      - "lib/intl_risk_mount.py"
+      - "lib/intl_workspace_risk.py"
+      - "lib/intl_workspace_risk_currency.py"
+      - "lib/intl_workspace_risk_pressure.py"
+      - "lib/intl_workspace_risk_section.py"
+      - collectors/china_filings.py
+      - collectors/china_visits.py
+      - lib/dataos/identity.py
+      - lib/exchange_holidays.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/tsx_calendar.py
+      - lib/us_cash_calendar.py
+      - collectors/__init__.py
+      - collectors/_drip.py
+      - collectors/base.py
+      - collectors/china_analyst.py
+      - collectors/china_news.py
+      - collectors/edgar.py
+      - collectors/edgar_13f.py
+      - collectors/edgar_deadname_prices.py
+      - collectors/edgar_deadnames.py
+      - collectors/edgar_delisting.py
+      - collectors/edgar_eps.py
+      - collectors/edgar_flow_quality.py
+      - collectors/edgar_share_quality.py
+      - collectors/edgar_stock_quality.py
+      - collectors/fred.py
+      - collectors/openfigi.py
+      - config/ai_pricing.yml
+      - config/capability_manifest.yml
+      - config/intl_library_catalogue.json
+      - config/metabolism_budget.yml
+      - engine/__init__.py
+      - engine/ai_desk.py
+      - engine/ai_desk_scorer.py
+      - engine/altdata_ledger.py
+      - engine/altdata_models.py
+      - engine/altdata_picks.py
+      - engine/altdata_signals.py
+      - engine/anticipation.py
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/baskets.py
+      - engine/baskets_canada.py
+      - engine/baskets_china.py
+      - engine/baskets_hk.py
+      - engine/baskets_intl.py
+      - engine/baskets_region.py
+      - engine/canon.py
+      - engine/catalyst_tone.py
+      - engine/cb_desk.py
+      - engine/china_altdata.py
+      - engine/china_basket_spine.py
+      - engine/china_conviction.py
+      - engine/china_crowding.py
+      - engine/china_discovery.py
+      - engine/china_event_calendar.py
+      - engine/china_extras.py
+      - engine/china_intel_bus.py
+      - engine/china_news.py
+      - engine/china_news_intel.py
+      - engine/china_pboc_stance.py
+      - engine/china_radar.py
+      - engine/china_radar_ledger.py
+      - engine/china_signal_lab.py
+      - engine/china_validation.py
+      - engine/cn_newswires.py
+      - engine/codex_lane/runner.py
+      - engine/codex_provider.py
+      - engine/conditions.py
+      - engine/confluence_tiers.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/conviction_accrual.py
+      - engine/cross_asset.py
+      - engine/cross_asset_trend.py
+      - engine/cycles.py
+      - engine/desk_ledger.py
+      - engine/desk_scorer.py
+      - engine/election_cycle.py
+      - engine/entity_resolver.py
+      - engine/equity_factors.py
+      - engine/europe_news_intel.py
+      - engine/event_calendar.py
+      - engine/extension.py
+      - engine/flow_regime.py
+      - engine/forward_calendar_context.py
+      - engine/forward_dist.py
+      - engine/gdelt_client.py
+      - engine/global_liquidity.py
+      - engine/grading.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/hysteresis.py
+      - engine/i18n.py
+      - engine/index_direction.py
+      - engine/indicators.py
+      - engine/inputs.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_inputs.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_market_state.py
+      - engine/intl_performance.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_recovery_quality.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/ledger_lane.py
+      - engine/llm_auth.py
+      - engine/macro_surprise.py
+      - engine/manager_lag.py
+      - engine/manager_quality.py
+      - engine/manager_trades.py
+      - engine/market_state.py
+      - engine/master_brain.py
+      - engine/metabolism/__init__.py
+      - engine/metabolism/budget_gate.py
+      - engine/name_direction.py
+      - engine/name_resolver.py
+      - engine/name_score.py
+      - engine/name_score_grader.py
+      - engine/narrative_crossmarket.py
+      - engine/narrative_rotation.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brief_context.py
+      - engine/neuralweb/capability_broker.py
+      - engine/neuralweb/constitution.py
+      - engine/neuralweb/envelope.py
+      - engine/neuralweb/governance.py
+      - engine/neuralweb/key_pool.py
+      - engine/neuralweb/read.py
+      - engine/neuralweb/synapse.py
+      - engine/news_common.py
+      - engine/news_translate.py
+      - engine/ohlc_reconstruct.py
+      - engine/ollama_provider.py
+      - engine/opex.py
+      - engine/oracle/__init__.py
+      - engine/oracle/washout_counterread.py
+      - engine/passport.py
+      - engine/pit.py
+      - engine/pit_lag_recorder.py
+      - engine/pooling.py
+      - engine/prophet_board_since.py
+      - engine/provider_health.py
+      - engine/qbus.py
+      - engine/qkernel.py
+      - engine/qledger.py
+      - engine/qledger_store.py
+      - engine/qledger_store_native.py
+      - engine/qledger_store_protocol.py
+      - engine/qledger_store_sources.py
+      - engine/qledger_validity.py
+      - engine/rebalance_calendar.py
+      - engine/regime.py
+      - engine/regime_label.py
+      - engine/regime_one.py
+      - engine/regime_vector.py
+      - engine/residual_alpha.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/rri_shadow.py
+      - engine/session_anchor.py
+      - engine/setups.py
+      - engine/signal_archive.py
+      - engine/signal_gate.py
+      - engine/signal_quality.py
+      - engine/smart_money.py
+      - engine/spine.py
+      - engine/stock_score.py
+      - engine/stock_technicals.py
+      - engine/stock_view.py
+      - engine/sue.py
+      - engine/technicals.py
+      - engine/theme_crowding.py
+      - engine/theme_validation.py
+      - engine/ticker_shape.py
+      - engine/trial_ledger.py
+      - engine/tushare_freshness.py
+      - engine/universe_history.py
+      - engine/validation.py
+      - engine/valuation.py
+      - engine/velocity.py
+      - engine/vol_forecast.py
+      - engine/vol_regime.py
+      - engine/vol_squeeze.py
+      - engine/yield_momentum.py
+      - lib/__init__.py
+      - lib/ai_costs.py
+      - lib/closes_panel.py
+      - lib/cn_calendar.py
+      - lib/config.py
+      - lib/filing_value_units.py
+      - lib/global_regime_fragment.py
+      - lib/hk_calendar.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_macro.py
+      - lib/nyse_calendar.py
+      - lib/pages.py
+      - lib/site_assets.py
+      - lib/store.py
+      - lib/ticker_aliases.py
+      - lib/ticker_popularity.py
+      - scripts/__init__.py
+      - scripts/build_chart_data.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
+      - scripts/thematic_rotation_phase0.py
+      - scripts/validate_regime_fwd.py
+      - site/factordata/basket_washout_state.json
+      - tests/test_intl_market_state.py
+      - tests/test_intl_rotation.py
     # ITR-W1 (research/INTL_TURN_ROTATION_REVAMP.md): per-market turn state
     # machine (crash/breaking/topping/... incl. KOSPI replay goldens on the
     # committed _KS11 store) + fast rotation re-rank + ITR-R6 benchmark
@@ -8902,6 +9820,50 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/intl_history_mount.py"
+      - "lib/intl_workspace_history.py"
+      - "lib/intl_risk_mount.py"
+      - "lib/intl_workspace_risk.py"
+      - "lib/intl_workspace_risk_currency.py"
+      - "lib/intl_workspace_risk_pressure.py"
+      - "lib/intl_workspace_risk_section.py"
+      - config/intl_library_catalogue.json
+      - engine/cb_desk.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_performance.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/rri_shadow.py
+      - lib/intl_compare_mount.py
+      - lib/intl_compare_view.py
+      - lib/intl_inspector_mount.py
+      - lib/intl_inspector_view.py
+      - lib/intl_library_mount.py
+      - lib/intl_library_view.py
+      - lib/intl_macro_mount.py
+      - lib/intl_macro_publication.py
+      - lib/intl_workspace_binding.py
+      - lib/intl_workspace_macro.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "lib/us_cash_calendar.py"
@@ -10841,6 +11803,33 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - engine/cb_desk.py
+      - engine/contagion.py
+      - engine/contagion_links.py
+      - engine/europe_news_intel.py
+      - engine/flow_regime.py
+      - engine/hk_global.py
+      - engine/hk_global_beta.py
+      - engine/international_macro_dashboard.py
+      - engine/intl_bonds.py
+      - engine/intl_compare.py
+      - engine/intl_equity_risk.py
+      - engine/intl_market_confirmation.py
+      - engine/intl_performance.py
+      - engine/intl_performance_records.py
+      - engine/intl_rates.py
+      - engine/intl_regime.py
+      - engine/intl_risk.py
+      - engine/intl_rotation.py
+      - engine/intl_run.py
+      - engine/intl_stocks.py
+      - engine/intl_workspace_overview.py
+      - engine/ird_velocity.py
+      - engine/risk_radar_intl_tune.py
+      - engine/rri_shadow.py
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
@@ -15402,6 +16391,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/intl_performance_records.py"
+      - "engine/intl_workspace_overview.py"
       # MO-PAID-006 closure widening 2026-10-02 (#8276): engine/international_macro_dashboard.py
       # now reads the optional UK stance through engine.uk_policy_brain (lazy, degrade-never-raise),
       # so the dossier plane pulls that module into this job's closure.
@@ -20602,6 +21593,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - scripts/build_international_macro.py
+      - scripts/build_intl.py
+      - scripts/build_intl_library.py
       # The eight suites the step runs, plus helper suites they import.
       - "tests/test_dashboard_template_render.py"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
@@ -21314,3 +22308,92 @@ jobs:
           pbd_python="$(python -c 'import sys; print(sys.executable)')"
           cd /tmp
           bash "$pbd_launcher" --python "$pbd_python"
+
+
+  company-relationship-candidates:
+    # Pure analyst inspection; no source ingestion, admission or publication.
+    # Curated native imports/reads, package initialization and shared pytest hooks.
+    # Avoid broad runtime-input fallbacks selecting this utility for unrelated
+    # homepage/strategy changes; contract-delta keeps those packing limits.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - collectors/__init__.py
+      - collectors/edgar_forensics.py
+      - collectors/fundamental_forensics_acquisition.py
+      - collectors/fundamental_forensics_companyfacts.py
+      - collectors/sec_document_spine.py
+      - collectors/sec_filing_parser.py
+      - config/dataset_registry.yml
+      - config/fundamental_forensics_disclosure_diff.v1.json
+      - engine/__init__.py
+      - engine/basket_breadth_divergence.py
+      - engine/catalyst_tone.py
+      - engine/company_intelligence/__init__.py
+      - engine/company_intelligence/contracts.py
+      - engine/company_intelligence/health.py
+      - engine/company_intelligence/pinned_relationship_candidates.py
+      - engine/company_intelligence/relationship_candidates.py
+      - engine/company_intelligence/views.py
+      - engine/desk_ledger.py
+      - engine/earnings_release/__init__.py
+      - engine/earnings_release/receipts.py
+      - engine/fundamental_forensics/__init__.py
+      - engine/fundamental_forensics/detectors.py
+      - engine/fundamental_forensics/disclosure_diff.py
+      - engine/fundamental_forensics/filing_attestation.py
+      - engine/fundamental_forensics/filing_package.py
+      - engine/fundamental_forensics/ixbrl_extraction.py
+      - engine/fundamental_forensics/models.py
+      - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - engine/fundamental_forensics/sec_document_spine.py
+      - engine/fundamental_forensics/source_sync.py
+      - engine/gdelt_client.py
+      - engine/marketing/__init__.py
+      - engine/marketing/accounts.py
+      - engine/marketing/authority.py
+      - engine/marketing/chart_render.py
+      - engine/marketing/charter.py
+      - engine/marketing/claims.py
+      - engine/marketing/cmo.py
+      - engine/marketing/departments.py
+      - engine/marketing/economics.py
+      - engine/marketing/events.py
+      - engine/marketing/ledgers.py
+      - engine/marketing/logo_cache.py
+      - engine/marketing/opportunity_bus.py
+      - engine/marketing/publication.py
+      - engine/marketing/state.py
+      - engine/master_brain.py
+      - engine/research_vault/__init__.py
+      - engine/research_vault/r2_store.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/dataos/__init__.py
+      - lib/dataos/identity.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/quality.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json
+      - research/theme_graph/economic_network_execution_20261009/replay_micron_witness.py
+      - scripts/__init__.py
+      - scripts/worktree_sparse.py
+      - tests/__init__.py
+      - tests/conftest.py
+      - tests/test_company_pinned_relationship_candidates.py
+      - tests/test_company_relationship_candidates.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install candidate inspection test dependencies
+        run: pip install pytest pyyaml requests
+      - name: File and pinned-source replay, manual boundary and temporal refusals
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py -q
