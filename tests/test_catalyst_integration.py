@@ -68,6 +68,13 @@ def test_real_shape_first_value_and_fail_closed_private_fields():
     lambda p: p.update(requested_tickers=["NVDA", "AAPL"]),
     lambda p: p["results"][0]["sources"][0].update(url="http://127.0.0.1/private"),
     lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?email=visitor%40example.org"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?ref=visitor%40example.org&doc=10k"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/visitor%2540example.org/filing"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?q=filing#visitor@example.org"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/filing?signature=not-public"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/filing#token=hidden-value"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/filing?ref=ok%26token%3Dsecret"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/filing?ref=ok%250Aevil"),
     lambda p: p["results"][0]["sources"].append(copy.deepcopy(p["results"][0]["sources"][0])),
 ])
 def test_claims_rights_clock_and_identity_negative(mutation):
@@ -107,6 +114,49 @@ def test_public_http_uses_explicit_switch_and_no_signup(monkeypatch):
     assert "frame-ancestors 'none'" in page.headers["Content-Security-Policy"]
     assert page.headers["Cache-Control"] == "private, no-store"
     assert client.post("/api/catalyst/optin", json={"email": "x@y.com"}).status_code == 404
+
+
+
+def test_public_source_query_without_identity_remains_citable():
+    p = packet()
+    safe_url = "https://www.sec.gov/Archives/edgar/data/123/10-K?ref=0001&lang=en"
+    p["results"][0]["sources"][0]["url"] = safe_url
+    public = ci.sanitize_public_scan(p, ["NVDA", "ZZZZ"], now_utc=NOW)
+    assert public["results"][0]["sources"][0]["url"] == safe_url
+
+
+def test_first_value_html_shows_public_evidence_clocks_and_falsifiers():
+    data = ci.sanitize_public_scan(packet(), ["NVDA", "ZZZZ"], now_utc=NOW)
+    page = ci.render_first_value(data, "NVDA,ZZZZ")
+    assert "<h4>What changed</h4>" in page
+    assert "The fixture records a revised result" in page
+    assert "Conditional scenarios, not predictions" in page
+    assert "BASE: Watch the next company update" in page
+    assert "What could invalidate this reading" in page
+    assert "Another correction invalidates this fixture" in page
+    assert 'datetime="2026-10-09T02:00:00Z"' in page
+    assert 'datetime="2026-09-30T10:00:00Z"' in page
+    assert "Correction state: CORRECTED" in page
+    assert "Relationship: DIRECT" in page
+    assert "This ticker is not covered" in page
+    assert "No account required" in page
+    assert "name='email'" not in page.lower()
+
+
+def test_first_value_html_escapes_untrusted_headline_claims_and_source_title():
+    p = packet()
+    p["results"][0]["headline"] = '<script>alert("source")</script>'
+    p["results"][0]["what_changed"][0]["text"] = '<img src=x onerror=alert(1)>'
+    p["results"][0]["sources"][0]["title"] = '<svg onload="alert(1)">'
+    data = ci.sanitize_public_scan(p, ["NVDA", "ZZZZ"], now_utc=NOW)
+    page = ci.render_first_value(data)
+    assert '<script>alert("source")</script>' not in page
+    assert '<img src=x onerror=alert(1)>' not in page
+    assert '<svg onload="alert(1)">' not in page
+    assert "&lt;script&gt;" in page
+    assert "&lt;img" in page
+    assert "&lt;svg" in page
+
 
 
 def test_anon_rate_limits():
@@ -197,3 +247,37 @@ def test_public_json_issues_scan_proof_only_after_qualified_result(monkeypatch):
     assert eligible.json()["results"][1]["status"] == "NOT_COVERED"
     assert "email" not in eligible.text.lower()
     ci._reset_rate_limits_for_tests()
+
+def test_public_dossier_deep_link_rewrites_legacy_one_ticker_path():
+    """Macro's actual site builder publishes /stocks/TICKER.html, not /TICKER/."""
+    p = packet()
+    legacy = ci.sanitize_public_scan(p, ["NVDA", "ZZZZ"], now_utc=NOW)
+    assert legacy["results"][0]["dossier_path"] == "/stocks/NVDA.html"
+    html_page = ci.render_first_value(legacy, "NVDA,ZZZZ")
+    assert 'href="/stocks/NVDA.html"' in html_page
+    assert 'href="/stocks/NVDA/"' not in html_page
+
+    p["results"][0]["dossier_path"] = "/stocks/NVDA.html"
+    canonical = ci.sanitize_public_scan(p, ["NVDA", "ZZZZ"], now_utc=NOW)
+    assert canonical["results"][0]["dossier_path"] == "/stocks/NVDA.html"
+
+
+@pytest.mark.parametrize("bad", [
+    "/stocks/NVDA/index.html", "/stocks/nvda.html",
+    "/stocks/AMD.html", "/stocks/NVDA/../AMD.html",
+    "//evil.example/stocks/NVDA.html",
+    "https://evil.example/stocks/NVDA.html", "/stocks/NVDA.html?token=secret",
+])
+def test_public_dossier_denies_untrusted_paths(bad):
+    p = packet()
+    p["results"][0]["dossier_path"] = bad
+    with pytest.raises(HTTPException) as err:
+        ci.scan_with_reader(["NVDA", "ZZZZ"], reader=lambda *args, **kwargs: p, now_utc=NOW)
+    assert err.value.status_code == 503
+
+
+def test_obsolete_unsafe_optin_path_not_mounted():
+    app = FastAPI()
+    app.include_router(ci.router)
+    client = TestClient(app)
+    assert client.post("/api/catalyst/optin", json={"email": "reader@example.com"}).status_code == 404
