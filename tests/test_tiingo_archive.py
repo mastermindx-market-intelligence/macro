@@ -255,3 +255,76 @@ def test_security_search_requires_explicit_text():
 def test_news_source_bounded_and_symbol_scoped():
     tasks = plan(["news"], ["AMD", "NVDA"], None, None)
     assert tasks[0].params == {"limit": 100, "tickers": "AMD,NVDA"}
+
+
+def test_offline_mock_boats_stream_durable_segments_no_secret(lake, monkeypatch):
+    import sys
+    import types
+    import scripts.tiingo_ingest as ing
+
+    token = "dummy-testing-only-not-real"
+    frames = [
+        json.dumps({"service": "boats", "data": [
+            "Q", "2026-10-09T01:00:00Z", 77, "NVDA",
+            10, 100, 100.1, 100.2, 10]}),
+        json.dumps({"service": "boats", "data": [
+            "T", "2026-10-09T01:00:01Z", 78, "NVDA",
+            100.1, 20, "@", "", "", ""]}),
+    ]
+    sent = []
+    class FakeSocket:
+        def __init__(self):
+            self.frames = list(frames)
+        def settimeout(self, secs):
+            assert secs == 3
+        def send(self, msg):
+            sent.append(msg)
+        def recv(self):
+            return self.frames.pop(0)
+        def close(self):
+            pass
+    fake = types.SimpleNamespace(
+        create_connection=lambda *a, **kw: FakeSocket(),
+        WebSocketException=RuntimeError,
+        WebSocketTimeoutException=TimeoutError)
+    monkeypatch.setitem(sys.modules, "websocket", fake)
+    monkeypatch.setattr(ing, "read_key", lambda: token)
+    outcome = ing.boats_stream(max_seconds=10, max_messages=2,
+                               batch_messages=100, flush_seconds=2, archive=lake)
+    assert outcome["raw_messages"] == 2
+    assert outcome["segments"] == 1
+    assert outcome["transport_breaks"] == 0
+    assert outcome["coverage_proven"] is False
+    assert json.loads(sent[0])["eventData"]["thresholdLevel"] == 3
+    raw = next((lake.root / "raw" / "boats-firehose").rglob("*.ndjson.gz"))
+    body = gzip.decompress(raw.read_bytes())
+    assert token.encode() not in body
+    assert body.count(b"\n") == 2
+
+
+def test_mock_boats_auth_rejection_stops_before_archive(lake, monkeypatch):
+    import sys
+    import types
+    import scripts.tiingo_ingest as ing
+
+    class FakeSocket:
+        def settimeout(self, secs):
+            pass
+        def send(self, msg):
+            pass
+        def recv(self):
+            return json.dumps({"service": "error", "messageType": "E",
+                               "privateDetails": "DO_NOT_LOG"})
+        def close(self):
+            pass
+    fake = types.SimpleNamespace(
+        create_connection=lambda *a, **kw: FakeSocket(),
+        WebSocketException=RuntimeError,
+        WebSocketTimeoutException=TimeoutError)
+    monkeypatch.setitem(sys.modules, "websocket", fake)
+    monkeypatch.setattr(ing, "read_key", lambda: "dummy-testing-only-not-real")
+    with pytest.raises(a.TiingoArchiveError) as exc:
+        ing.boats_stream(max_seconds=10, max_messages=100,
+                         batch_messages=100, flush_seconds=2, archive=lake)
+    assert "DO_NOT_LOG" not in str(exc.value)
+    assert not (lake.root / "raw" / "boats-firehose").exists()

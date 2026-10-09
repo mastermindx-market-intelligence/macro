@@ -27,6 +27,8 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterable, Iterator
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from collectors.tiingo_archive import (
     Archive, BOATS_WS, DEFAULT_ARCHIVE, SOURCES, TiingoArchiveError,
     collect_one, decode_boats, read_key, request_path, symbol_path, utc_now,
@@ -80,10 +82,12 @@ def load_symbols(spec: str, symbol_file: str | None) -> list[str]:
         if not val or val.startswith("#"):
             continue
         symbol_path(val)
-        val = val.upper()
-        if val not in seen:
+        # Preserve the vendor identifier verbatim; permaTicker is not just a
+        # presentation ticker and may have case-sensitive future namespaces.
+        key = val.casefold()
+        if key not in seen:
             found.append(val)
-            seen.add(val)
+            seen.add(key)
     if len(found) > MAX_SYMBOLS:
         raise ValueError("max 12000 symbols per run")
     return found
@@ -251,6 +255,18 @@ def boats_stream(*, max_seconds: int, max_messages: int,
                     if key in raw:
                         raise TiingoArchiveError(
                             "websocket response included sensitive authentication material")
+                    # Entitlement/authentication rejection is terminal, not an
+                    # ordinary market-data frame. Never echo the vendor body.
+                    try:
+                        envelope = json.loads(raw)
+                    except (ValueError, TypeError):
+                        envelope = None
+                    if isinstance(envelope, dict) and (
+                        envelope.get("messageType") in {"E", "error"}
+                        or envelope.get("eventName") == "error"
+                        or envelope.get("service") == "error"
+                    ):
+                        raise TiingoArchiveError("BOATS subscription rejected by vendor")
                     received = utc_now()
                     # Raw first: never rewrite the original event timestamp.
                     buffer.append((received, raw))

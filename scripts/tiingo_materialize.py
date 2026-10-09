@@ -15,10 +15,13 @@ import argparse
 import gzip
 import hashlib
 import json
+import sys
 import os
 import tempfile
 from pathlib import Path
 from typing import Any
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from collectors.tiingo_archive import (
     DEFAULT_ARCHIVE, MIN_FREE_BYTES, TiingoArchiveError, _publish_once,
@@ -73,11 +76,14 @@ def materialize_one(root: Path, receipt: dict[str, Any], *,
     source = receipt.get("source") or "boats-firehose"
     digest = receipt["raw_sha256"]
     dest = root / "normalized" / source / day / (digest + ".parquet")
-    if dest.is_file():
+    manifest_path = root / "manifests" / source / day / (digest + ".json")
+    file_exists = dest.is_file()
+    if file_exists and manifest_path.is_file():
         return {"status": "EXISTS", "rows": len(rows),
                 "source": source, "path": dest.relative_to(root).as_posix()}
     if dry_run:
-        return {"status": "WOULD_WRITE", "rows": len(rows), "source": source,
+        return {"status": "WOULD_REPAIR" if file_exists else "WOULD_WRITE",
+                "rows": len(rows), "source": source,
                 "path": dest.relative_to(root).as_posix()}
     try:
         import pyarrow as pa  # type: ignore[import-not-found]
@@ -89,24 +95,33 @@ def materialize_one(root: Path, receipt: dict[str, Any], *,
     # drops fields present only in later rows (loss of sale-condition or quotes).
     keys = sorted({k for row in rows for k in row})
     table = pa.Table.from_pylist([{k: row.get(k) for k in keys} for row in rows])
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(prefix=".parquet-", dir=str(dest.parent))
-    os.close(fd)
-    try:
-        pq.write_table(table, tmp, compression="zstd")
-        with open(tmp, "rb") as fp:
-            os.fsync(fp.fileno())
+    if file_exists:
+        # A crash may leave a fully written Parquet without its manifest.
+        # Repair only after comparing exact normalized source row content.
+        if pq.read_table(dest).to_pylist() != table.to_pylist():
+            raise TiingoArchiveError("orphaned Parquet disagrees with raw source")
+        created = False
+    else:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        fd, tmp = tempfile.mkstemp(prefix=".parquet-", dir=str(dest.parent))
+        os.close(fd)
         try:
-            os.link(tmp, dest)
-            created = True
-        except FileExistsError:
-            created = False
-    finally:
-        Path(tmp).unlink(missing_ok=True)
-    out = {"status": "WRITTEN" if created else "EXISTS",
+            pq.write_table(table, tmp, compression="zstd")
+            with open(tmp, "rb") as fp:
+                os.fsync(fp.fileno())
+            try:
+                os.link(tmp, dest)
+                created = True
+            except FileExistsError:
+                created = False
+        finally:
+            Path(tmp).unlink(missing_ok=True)
+        if not created and pq.read_table(dest).to_pylist() != table.to_pylist():
+            raise TiingoArchiveError("concurrent Parquet disagrees with raw source")
+    out = {"status": "WRITTEN" if created else "REPAIRED_MANIFEST",
            "source": source, "rows": len(rows),
            "path": dest.relative_to(root).as_posix()}
-    if created:
+    if created or not manifest_path.is_file():
         manifest = {
             "schema": "mastermind.tiingo.materialized_receipt.v1",
             "source_sha256": digest,
@@ -123,7 +138,7 @@ def materialize_one(root: Path, receipt: dict[str, Any], *,
                                       or receipt.get("first_received_at_utc"),
         }
         _publish_once(
-            root / "manifests" / source / day / (digest + ".json"),
+            manifest_path,
             (json.dumps(manifest, sort_keys=True) + "\n").encode("utf-8"))
     return out
 
@@ -160,6 +175,7 @@ def materialize_many(root: Path = DEFAULT_ARCHIVE, *,
             bucket = {
                 "WRITTEN": "written", "EXISTS": "existing", "RAW_ONLY": "raw_only",
                 "EMPTY_NORMALIZED": "empty", "WOULD_WRITE": "would_write",
+                "WOULD_REPAIR": "would_write", "REPAIRED_MANIFEST": "written",
             }[status]
             result[bucket] += 1
         except (OSError, ValueError, KeyError, TiingoArchiveError) as err:

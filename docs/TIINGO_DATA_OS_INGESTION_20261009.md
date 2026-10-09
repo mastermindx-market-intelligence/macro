@@ -7,20 +7,22 @@ temporal.py, registry.py, config/dataset_registry.yml.
 **Physical archive:** /Volumes/Mastermind/market-data/tiingo
 **Credential:** operator-only /Volumes/Mastermind/.mastermind_private/tiingo/api_key,
 file permissions 0600. Never check secrets into Git or print them.
-**Claimed commercial plan:** Chairman reports Business Advanced with full redistribution;
-actual per-product rights/limits are not independently established.
+**Commercial authority:** Chairman states Business Advanced is live with full redistribution.
+That present attestation is recorded; this is not a request to repurchase or reapprove it.
+Actual endpoint activation, rate limits, historical availability and production proof
+remain technically unverified, distinct from the Chairman's rights attestation.
 
 ## Current truthful states
 
 | Capability | Current state | Proof vs pending |
 |---|---|---|
 | Tiingo credentials available to source adapter | BUILT_NOT_PROVEN | Owner-only file exists, but vendor authentication **not attempted successfully** |
-| Historical EOD ingestion | BUILT_NOT_PROVEN | Bounded REST path, raw archive, fake-response tests; no live response |
-| Fundamentals metadata/statements/daily | BUILT_NOT_PROVEN | REST source paths; as-reported default, research Parquet; add-on not verified |
+| Historical EOD ingestion | BROKEN | Raw producer exists, but context/corruption/clock regressions block activation; no live response |
+| Fundamentals metadata/statements/daily | PARTIAL | Source routes and offline permaTicker cohorts exist; capture integrity and real history are unproven |
 | BOATS snapshots / historical bars | BUILT_NOT_PROVEN | Vendor path and 1m bar builder; entitlement not verified |
 | BOATS trade/quote/break websocket | BUILT_NOT_PROVEN | Bounded streaming client and immutable segmented raw receipts; not connected |
 | IEX / equity intraday / FX / crypto / news / corporate actions / fund fees | BUILT_NOT_PROVEN | Documented REST source paths, raw archive; no live data |
-| L1 research Parquet | BUILT_NOT_PROVEN | Offline materialization passing fixture tests; four families only |
+| L1 research Parquet | BROKEN | Happy-path fixtures pass, but content-only output names alias distinct tickers/query contexts; reader now quarantines ambiguity |
 | Complete historical corpus / full symbol census | NOT_BUILT | No vendor entitlement probe; no production collector/backfill |
 | Canonical L2 Data OS enrollment | NOT_BUILT | Requires as-of identity/rights/availability/quality and owning consumer gate |
 | Recurring durable capture and research publication | NOT_BUILT | Must use an incumbent runtime / publication owner, not new cron or lifecycle |
@@ -179,3 +181,155 @@ Admission evidence before calling this complete:
 bytes written by tests are not sourced vendor data. Data OS registry rows
 should remain PROPOSED until actual production artifacts and valid receipts
 exist; no downstream feed should be labeled PROVEN_LIVE from the code alone.
+
+
+## Audited research consumer seam (no silent hindsight promotion)
+
+Consumers can open a *specific* immutable source vintage from
+lib/dataos/tiingo_reader.py::read_research_view(source, date, digest).
+The reader verifies the materialization manifest's Parquet SHA-256, source
+digest, recorded row count, source vendor, exact archive partition path,
+and each row's source digest. A missing manifest means NO DATA, not
+assumed successful publication.
+
+The default INSPECTION purpose is noncanonical. The
+RETROSPECTIVE_EXPLORATORY purpose requires acknowledge_hindsight=True.
+PIT_BACKTEST always refuses in this research-only reader. A local manifest flag
+cannot grant point-in-time or canonical-identity admission; that remains with
+the existing canonical Data OS owner, not this L1 inspection API.
+An R&D experiment may explore retrospectively retrieved historic returns
+but must not call the result out-of-sample, live eligible, or PIT proven.
+
+Example of a future offline reader after real source receipts exist:
+
+    from lib.dataos.tiingo_reader import read_research_view
+    view = read_research_view(
+        "eod-bars", "2026-10-09", "<exact 64-char source SHA-256>",
+        purpose="RETROSPECTIVE_EXPLORATORY",
+        acknowledge_hindsight=True,
+    )
+    # view.rows preserves close_raw, close_tradj, capture vintage, and flags.
+
+The materializer can also repair an interrupted write of a missing manifest
+only after verifying that the extant Parquet rows agree with the immutable
+raw source projection. Divergent orphan files are refused, not overwritten.
+
+Live BOATS websocket support uses an optional, isolated dependency:
+requirements/tiingo.txt. This package is not installed by the source
+addition, and no vendor connection or live service was started.
+
+## Cumulative execution checkpoint — 2026-10-09 continuation
+
+MISSION_COMPLETE: false. This is an implementation/recovery checkpoint, not
+production acceptance. Original carrier remains Macro PR #8698, branch
+`sol/tiingo-data-archive-20261009`, worktree
+`/Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009`.
+Recovery began from published commit `22adbf2a9304564f3977b9d791cf943bf61b2383`.
+Current protected procedure was read from Mastermind
+`326c8469a21d7f50fc9ecb1848196bf1c6e66685`, compatible skillpack 1.0.1 / bootstrap 1.
+
+### Verified deltas in this continuation
+
+- Recovered the earlier uncommitted research reader, cohort builder, bounded
+  WebSocket rejection tests and interrupted-Parquet-manifest recovery code.
+- Added a consumer-only quarantine for identical raw body hashes claimed by
+  different ticker/request/capture contexts. The reader refuses ambiguous
+  evidence instead of returning the wrong ticker's prices. This does NOT
+  repair the producer's content-only normalized output key.
+- Removed the false point-in-time admission path: setting a manifest boolean
+  can no longer authorize PIT_BACKTEST. Inspection rejects asserted PIT or
+  canonical identity flags, and row/source capture clocks must agree.
+- Added delisted/inactive permaTicker cohort tests, including ambiguous IDs,
+  missing identifiers, duplicate rows, checksum failure and dry-run behavior.
+  These are current vendor-reference acquisition cohorts, not historical
+  security membership or canonical Data OS aliases.
+- Fixed repo-root import pinning for all three Tiingo executable scripts.
+  Their offline catalog/help modes now run from outside the Macro directory.
+- Wired ALL Tiingo tests, including the still-failing integrity regressions,
+  into the existing `dataos-prospective-reference` CI job. Kept the deliberately
+  thin `dataos-foundation` dependency environment unchanged. No waiver, xfail,
+  skipped integrity suite, replacement scheduler or extra CI job was added.
+
+### Evidence, with passing and failing denominators kept separate
+
+1. Archive/views/reader/cohort/registry tests: **107 passed**, 8 warnings.
+   Exact command: `python3 -m pytest tests/test_tiingo_archive.py
+   tests/test_tiingo_views.py tests/test_tiingo_reader.py
+   tests/test_tiingo_vendor_cohort.py tests/test_dataos_registry.py -q
+   --tb=short --disable-warnings`. Studio process 87890 exited 0.
+2. Repository-root import guard: **11 passed**, 8 warnings.
+   `python3 -m pytest tests/test_check_script_import_pinning.py -q
+   --tb=short --disable-warnings`; process 88942.
+3. New ingestion-integrity regression suite: **11 failed, 1 passed**.
+   `python3 -m pytest tests/test_tiingo_ingestion_integrity.py -q
+   --tb=no --disable-warnings`; process 88942 ended with exit 1.
+   The manifest-only PIT escalation now fails closed. The other tests remain
+   real red release gates, not tests waived to obtain a green result.
+4. Existing CI scope functions infer **34 concrete dependency paths** for
+   `dataos-prospective-reference`, with **zero uncovered paths**. Existing
+   `gated_unrun_suites()` reports zero unwired Tiingo suites and zero other
+   unwired suites in this observed source tree. Process 92979 exited 0.
+   This is local ownership/closure evidence, not full hosted CI acceptance.
+5. Direct offline entrypoint proofs were run from `/Volumes/Mastermind`:
+   `python3 <worktree>/scripts/tiingo_ingest.py catalog`, and `--help` for
+   `tiingo_materialize.py` and `tiingo_vendor_cohort.py` succeeded.
+   No provider request, credential read, live stream or production import ran.
+
+### Material unresolved defects
+
+The original producer and normalizer are NOT safe for an unrestricted backfill.
+The red tests demonstrate that identical body bytes can alias two tickers or two
+asReported query selections into one normalized file; existing corrupted raw or
+normalized files can be reported as idempotently present; capture clocks are not
+validated as aware timestamps; and source/endpoint checking accepts a mere prefix
+instead of exact ticker/query context. Source-observation identity also needs a
+stable context binding rather than the body checksum alone. Eleven failing test
+cases represent these related defects, not eleven independent root causes.
+
+The read-side quarantine prevents ambiguous evidence from being consumed; it does
+not make the raw writer or full backfill ready. Additional scope remains: true
+resumable acquisition progress instead of repeatedly starting a bounded prefix,
+endpoint-specific date parameters, complete vendor-symbol/earliest-date census,
+real record quality/coverage measurements, historical availability and Data OS
+identity admission, durable runtime enrollment, and downstream production proof.
+
+### Actual tool gates and effect reconciliation
+
+The earlier authenticated Tiingo probe was explicitly refused by the connected
+tool safety boundary before dispatch. Its result is NOT a Tiingo 401/403 and does
+not show a subscription or key failure. This continuation did not replay it.
+
+A source rewrite of `collectors/tiingo_archive.py` was also explicitly refused by
+OpenAI's safety checks before dispatch in this continuation. Readback confirms
+that file is unchanged at SHA-256
+`1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d`.
+No accepted part of that proposed rewrite exists. Do not recreate the same denied
+change through smaller patches, another helper/file, a second tool, account,
+provider, worker or session. Any resumption of that effect requires a genuinely
+permitted resolution at the controlling permission boundary; a routine Continue,
+mode change, new chat or ordinary user authorization is not effect clearance.
+
+Independent changes were limited to CI/import wiring, tests, documentation and
+read-only consumer refusal. No production data, user-visible prices, live alerts,
+trades, source aliases, runtime state or installed service was changed. There are
+no active child workers, background imports, scheduled tasks or unresolved remote
+writes associated with this checkpoint.
+
+### Ownership and next action
+
+Tiingo News Intelligence already has a separate open carrier, Macro PR #8697,
+`sol/tiingo-news-quality-20261009`; preserve its existing financial_news/qbus
+ownership and do not duplicate its identity, historical-observation or publisher
+work here. PR #8698 owns this archive/research ingestion work only.
+
+Next critical action is resolution of the precise collector-write permission
+gate, followed by a reviewed source/observation-integrity repair that turns all
+red regression cases green. Only after those code gates, independent review and
+required hosted CI pass may the separate authenticated live-probe gate be
+resolved and live endpoint/BOATS qualification, measured storage pilot, complete
+backfill and canonical consumer activation proceed.
+
+DO_NOT_REDO: do not recreate a second Tiingo branch or key file, repeat a denied
+probe/write, silently accept content-only identity, discard the red regressions,
+claim current metadata is a historical universe, or declare code/test success to
+be live-data delivery. Preserve this same PR and its exact published revision.

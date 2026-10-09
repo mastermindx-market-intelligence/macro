@@ -20110,6 +20110,19 @@ jobs:
       - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
       - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
       - tests/test_dataos_prospective_reference.py
+      # Tiingo raw-vintage/read-only research proofs; no live provider calls.
+      - .github/workflows/ci.yml
+      - collectors/__init__.py
+      - collectors/tiingo_archive.py
+      - scripts/tiingo_ingest.py
+      - scripts/tiingo_materialize.py
+      - scripts/tiingo_vendor_cohort.py
+      - requirements/tiingo.txt
+      - tests/test_tiingo_archive.py
+      - tests/test_tiingo_views.py
+      - tests/test_tiingo_reader.py
+      - tests/test_tiingo_vendor_cohort.py
+      - tests/test_tiingo_ingestion_integrity.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -20120,7 +20133,11 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: prospective reference clocks, refusals and consumer compatibility
-        run: python -m pytest tests/test_dataos_prospective_reference.py -q
+        run: >-
+          python -m pytest tests/test_dataos_prospective_reference.py
+          tests/test_tiingo_archive.py tests/test_tiingo_views.py
+          tests/test_tiingo_reader.py tests/test_tiingo_vendor_cohort.py
+          tests/test_tiingo_ingestion_integrity.py -q
 
   dataos-foundation:
     scope: exclusive

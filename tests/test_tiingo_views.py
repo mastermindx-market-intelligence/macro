@@ -177,3 +177,35 @@ def test_materialize_many_offline_reread(lake):
     repeat = materialize_many(lake.root, check_mount=False, free_floor=0,
                               dry_run=False, max_receipts=50)
     assert repeat["existing"] == 1 and repeat["raw_only"] == 1
+
+
+def test_missing_output_manifest_is_verified_and_repaired(lake):
+    rec = _receipt(lake, "eod-bars", "AMD", [
+        {"date": "2026-10-08", "close": 25, "adjClose": 25}])
+    saved = materialize_one(lake.root, rec, free_floor=0)
+    assert saved["status"] == "WRITTEN"
+    manifest = next((lake.root / "manifests").rglob("*.json"))
+    manifest.unlink()
+    dry = materialize_one(lake.root, rec, free_floor=0, dry_run=True)
+    assert dry["status"] == "WOULD_REPAIR"
+    repaired = materialize_one(lake.root, rec, free_floor=0)
+    assert repaired["status"] == "REPAIRED_MANIFEST"
+    assert manifest.is_file()
+
+
+def test_orphaned_output_with_incorrect_prices_is_not_repaired(lake):
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    rec = _receipt(lake, "eod-bars", "AMD", [
+        {"date": "2026-10-08", "close": 25}])
+    saved = materialize_one(lake.root, rec, free_floor=0)
+    manifest = next((lake.root / "manifests").rglob("*.json"))
+    manifest.unlink()
+    parquet_path = lake.root / saved["path"]
+    vals = pq.read_table(parquet_path).to_pylist()
+    vals[0]["close_raw"] = 999999
+    pq.write_table(pa.Table.from_pylist(vals), parquet_path, compression="zstd")
+    with pytest.raises(a.TiingoArchiveError, match="disagrees"):
+        materialize_one(lake.root, rec, free_floor=0)
+    assert not manifest.exists()
