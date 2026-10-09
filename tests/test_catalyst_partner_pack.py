@@ -76,7 +76,16 @@ class CatalystPartnerPackTests(unittest.TestCase):
                 self.assertIn("<svg", svg)
                 self.assertIn("MASTERMIND", svg)
                 self.assertNotIn("<script", svg)
-                self.assertIn("https://preview.invalid/", (path / "social.txt").read_text())
+                social_text = (path / "social.txt").read_text()
+                self.assertIn("https://preview.invalid/", social_text)
+                self.assertIn("DRAFT THREAD 1/2\\n", social_text)
+                self.assertIn("DRAFT THREAD 2/2\\n", social_text)
+                parts = social_text.strip().split("\\n\\n")
+                self.assertEqual(len(parts), 2)
+                post_one = parts[0].split("\\n", 1)[1]
+                post_two = parts[1].split("\\n", 1)[1]
+                self.assertLessEqual(len(post_one), 275)
+                self.assertLessEqual(len(post_two), 275)
                 manifest = json.loads((path / "manifest.json").read_text())
                 self.assertTrue(manifest["event"]["demo_only"])
                 self.assertEqual(manifest["publication_status"], "DRAFT_HOLD")
@@ -267,6 +276,20 @@ class CatalystPartnerPackTests(unittest.TestCase):
         rendered = self.make()
         self.assertNotIn("insider@example.net", json.dumps(rendered))
 
+    def test_social_uses_selected_ticker_anchored_fact_not_generic_clickbait(self):
+        self.tickers = ["EXA", "EXB"]
+        p = self.make()
+        self.assertIn("EXB describes supplier lead times", p["social"])
+        self.assertNotIn("EXC reports", p["social"])
+        self.assertIn("Evidenced indirect relationship: EXB", p["newsletter"])
+        self.assertIn("Direct event relationship: EXA", p["newsletter"])
+        self.assertIn("Evidence fixture-claim-exb", p["newsletter"])
+        self.assertEqual(len(p["social"].split("DRAFT THREAD 2/2")), 2)
+
+    def test_social_refuses_truncated_or_overlong_evidence(self):
+        self.event["claims"][0]["text"] = "A " * 160
+        self.refused("SOCIAL_CHARACTER_BUDGET")
+
     def test_ai_angle_selection_may_only_reorder_existing_evidence(self):
         self.tickers = ["EXA", "EXB"]
         p = self.make(angle_plan={
@@ -281,6 +304,10 @@ class CatalystPartnerPackTests(unittest.TestCase):
 
     def test_editorial_blocklist_rejects_promotional_advice_in_verified_claim(self):
         self.event["claims"][0]["text"] = "Guaranteed profits. Buy now."
+        self.refused("SOCIAL_COPY_REJECTED")
+        # Also prove the separate long-form Press lexicon catches a claim
+        # excluded from the social thread but still in the newsletter body.
+        self.tickers = ["EXA", "EXB"]
         self.refused("EDITORIAL_COPY_REJECTED")
 
     def test_different_event_identity_and_generation_change_pack_id(self):
