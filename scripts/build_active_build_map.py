@@ -309,44 +309,54 @@ def _run_gh(args: list[str], timeout: int = 30) -> Any | None:
         return None
 
 
-_OPEN_PR_FETCH_LIMIT = 100
+_OPEN_PR_PAGE_SIZE = 100
 
 
 def _collect_open_prs() -> tuple[list[dict] | None, bool]:
-    """Fetch open PRs via gh CLI.
+    """Fetch the complete open-PR set through paginated REST pages.
 
-    Returns ``(prs, truncated)``; ``(None, False)`` on failure.  ``truncated`` matters:
-    the fetch is capped, main takes roughly 35 merges a day, and an unflagged cap makes
-    a missing PR indistinguishable from a PR that does not exist — so every consumer of
-    ``active_builds.v1`` silently under-reports open work with no way to detect it.  The
-    merged-window fetch has carried this flag since it shipped; the open-PR fetch did not.
+    ``gh pr list`` uses one GraphQL query whose requested node count can hit GitHub
+    resource limits well before a busy repository's open-PR population.  The Agent OS
+    join must distinguish "no matching PR" from "PR omitted by collection", so fetch
+    all REST pages instead of imposing a silent list ceiling.  The schema retains the
+    historical ``open_prs_truncated`` field; a successful paginated fetch is complete
+    and therefore returns ``False`` for that flag.
     """
-    data = _run_gh([
-        "pr", "list",
-        "--state", "open",
-        "--limit", str(_OPEN_PR_FETCH_LIMIT),
-        "--json", "number,title,headRefName,updatedAt,isDraft,mergeStateStatus",
-    ])
-    if data is None:
+    pages = _run_gh([
+        "api",
+        "--method", "GET",
+        "--paginate",
+        "--slurp",
+        "-f", "state=open",
+        "-f", f"per_page={_OPEN_PR_PAGE_SIZE}",
+        "repos/{owner}/{repo}/pulls",
+    ], timeout=60)
+    if pages is None:
         return None, False
-    truncated = len(data) >= _OPEN_PR_FETCH_LIMIT
-    if truncated:
-        print(
-            f"::warning title=active-build-map::open PR list hit the "
-            f"{_OPEN_PR_FETCH_LIMIT} fetch cap — active_builds.v1 under-reports open work",
-            flush=True,
-        )
+    if not isinstance(pages, list) or any(not isinstance(page, list) for page in pages):
+        log.warning("paginated open-PR response has an unexpected shape")
+        return None, False
+
     prs: list[dict] = []
-    for item in data:
-        prs.append({
-            "number": item.get("number"),
-            "title": item.get("title", ""),
-            "head_ref": item.get("headRefName", ""),
-            "updated_at": item.get("updatedAt", ""),
-            "is_draft": bool(item.get("isDraft", False)),
-            "merge_state": item.get("mergeStateStatus", ""),
-        })
-    return prs, truncated
+    for page in pages:
+        for item in page:
+            if not isinstance(item, dict):
+                log.warning("paginated open-PR response contains a non-object row")
+                return None, False
+            head = item.get("head")
+            head_ref = head.get("ref", "") if isinstance(head, dict) else ""
+            prs.append({
+                "number": item.get("number"),
+                "title": item.get("title", ""),
+                "head_ref": head_ref,
+                "updated_at": item.get("updated_at", ""),
+                "is_draft": bool(item.get("draft", False)),
+                # REST list metadata does not carry GitHub's GraphQL merge-state
+                # status.  The existing per-PR view below remains the authority and
+                # fills this field during enrichment.
+                "merge_state": "",
+            })
+    return prs, False
 
 
 def _collect_pr_files(pr_number: int) -> tuple[list[str], bool, bool, str | None]:
