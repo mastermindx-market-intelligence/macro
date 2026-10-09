@@ -67,54 +67,48 @@ def _safe_gate(exc: FunnelGate) -> HTTPException:
 
 
 def request_optin(body: dict) -> dict:
-    """EXACT frozen Session 00 private seam, NOT a public route.
+    """Private Session 00 callback: require an actual signed first-value scan.
 
-    00 owns input-size validation, rate protection and the public POST. We re-read
-    its canonical rights-qualified scan for the event/tickers: a browser claim is
-    not evidence. The response is the short opaque pending-consent handle only.
+    A browser-provided event/ticker descriptor is NOT a scan receipt. The
+    injected ScanAuthority must validate 00's HMAC token, TTL, generation,
+    current source rights and supported names before an OTP is requested.
+    This does not add a second public request route or an identity store.
     """
-    if not isinstance(body, dict) or body.get("scope") != SCOPE or body.get("consent") is not True:
+    allowed = {"email", "scope", "consent_checked", "scan_receipt",
+               "first_touch", "honeypot", "form_elapsed_ms"}
+    if not isinstance(body, dict) or set(body) - allowed:
+        raise FunnelGate("INVALID_OPTIN_REQUEST", 400)
+    try:
+        if len(json.dumps(body, ensure_ascii=False).encode("utf-8")) > 4096:
+            raise FunnelGate("INVALID_OPTIN_REQUEST", 413)
+    except (TypeError, ValueError):
+        raise FunnelGate("INVALID_OPTIN_REQUEST", 400) from None
+    if body.get("scope") != SCOPE or body.get("consent_checked") is not True:
         raise FunnelGate("EXPLICIT_CONSENT_REQUIRED", 400)
-    event = body.get("event_id")
-    tickers = body.get("tickers")
-    if (not isinstance(event, str) or not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", event)
-            or not isinstance(tickers, list) or not 1 <= len(tickers) <= 10
-            or any(not isinstance(x, str) or not re.fullmatch(r"[A-Z][A-Z0-9.\-]{0,9}", x)
-                   for x in tickers) or len(set(tickers)) != len(tickers)):
+    elapsed = body.get("form_elapsed_ms")
+    if (body.get("honeypot", "") != "" or type(elapsed) is not int
+            or not 3000 <= elapsed <= 86_400_000):
+        raise FunnelGate("ABUSE_CHECK_FAILED", 400)
+    receipt = body.get("scan_receipt")
+    if (not isinstance(receipt, str) or not 1 <= len(receipt) <= 1024
+            or not re.fullmatch(r"[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+", receipt)):
         raise FunnelGate("SCAN_PROOF_REQUIRED", 400)
-    receipt = json.dumps({"event_id": event, "tickers": tickers}, separators=(",", ":"))
     accepted = _active().request(email=body.get("email"), checked=True,
-                                 scan_receipt=receipt, touch=body.get("attribution"),
+                                 scan_receipt=receipt, touch=body.get("first_touch"),
                                  now=datetime.now(timezone.utc))
     return {"status": "VERIFICATION_REQUIRED", "public_ref": accepted["public_ref"]}
 
 
-class CanonicalPublicScanAuthority(ScanAuthority):
-    """Re-use 00's actual serializer/rights/freshness gate; no duplicate feed.
+class UnwiredScanAuthority(ScanAuthority):
+    """Fail-closed placeholder. Session 00 must inject ScanReceiptAuthority().
 
-    The event/ticker 'receipt' is an internal lookup descriptor, *not* a signed
-    visitor proof: 00 deliberately does not freeze a public scan receipt token.
-    We therefore RE-READ 00's current public scan rather than trust this JSON.
+    Do not import an unmerged sibling module from this standalone funnel
+    branch. A strong HMAC scan receipt is required; JSON event/ticker
+    descriptors must never become a fallback proof.
     """
 
     def require_public_scan(self, receipt: str):
-        from engine.marketing.catalyst_lifecycle import ScanEvidence
-        try:
-            descriptor = json.loads(receipt)
-            if not isinstance(descriptor, dict) or set(descriptor) != {"event_id", "tickers"}:
-                raise ValueError("bad descriptor")
-            from app import catalyst_integration as bridge
-            tickers = bridge.normalize_tickers(descriptor["tickers"])
-            event_id = descriptor["event_id"]
-            scan = bridge.scan_with_reader(tickers, event_id=event_id)
-            if (scan.get("event_id") != event_id or
-                    scan.get("publication_state") not in ("PUBLIC_QUALIFIED", "PARTIAL") or
-                    any(row.get("status") != "SUPPORTED" for row in scan.get("results", [])) or
-                    len(scan.get("results", [])) != len(tickers)):
-                raise ValueError("not currently public-qualified")
-            return ScanEvidence(event_id, tuple(tickers), scan["as_of_utc"], True)
-        except Exception:
-            raise FunnelGate("SCAN_NOT_PUBLIC_SAFE", 403) from None
+        raise FunnelGate("SCAN_AUTHORITY_NOT_WIRED", 503)
 
 
 @router.post("/api/catalyst/optin/verify")
@@ -416,7 +410,7 @@ def build_existing_owner_service(revisions: Any, *, scan: ScanAuthority | None =
     from app.account_actions import _anon_key, _supabase
     url, _service_role = _supabase()
     return FunnelService(secret=os.environ.get("MAIL_UNSUB_SECRET", ""),
-                         scan=scan if scan is not None else CanonicalPublicScanAuthority(),
+                         scan=scan if scan is not None else UnwiredScanAuthority(),
                          identity=identity or SupabaseOtpIdentity(endpoint=url, anon_key=_anon_key()),
                          consent=consent if consent is not None else SupabaseConsentRpcOwner(),
                          suppression=ExistingMailerSuppression(), revisions=revisions,
