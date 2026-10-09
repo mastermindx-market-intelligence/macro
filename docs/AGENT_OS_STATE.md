@@ -2,14 +2,14 @@
 
 # Agent OS state
 
-Generated: 2026-10-09T05:12:12Z  |  82 workstreams (56 active · 1 awaiting_ci · 2 awaiting_review · 8 blocked · 11 done · 4 parked)
+Generated: 2026-10-09T08:19:33Z  |  82 workstreams (56 active · 1 awaiting_ci · 2 awaiting_review · 8 blocked · 11 done · 4 parked)
 
 | Input | Value |
 |---|---|
-| active_builds | data/governance/active_builds.json@2026-10-09T05:12:12.687328+00:00 |
+| active_builds | data/governance/active_builds.json@2026-10-09T08:19:32.491227+00:00 |
 | active_builds age | 0.0h |
 | worktrees | 1 |
-| records | 82 WS · 424 DEC · 471 DSC · 610 handoffs |
+| records | 82 WS · 424 DEC · 472 DSC · 611 handoffs |
 
 ## Degraded inputs
 
@@ -228,6 +228,9 @@ Generated: 2026-10-09T05:12:12Z  |  82 workstreams (56 active · 1 awaiting_ci �
 - agentos/decisions/DEC-D0R-RED-TEAM-ADJUDICATION-2026-08-17.md: [review-overdue] review_by 2026-08-18 has passed
 - agentos/decisions/DEC-E3-EVENT-INTELLIGENCE-COMPILER-NOT-SCORER.md: [review-overdue] review_by 2026-08-23 has passed
 - agentos/decisions/DEC-F07-VALUATION-SOURCE-IS-SEC-COMPANYFACTS-V1.md: [review-overdue] review_by 2026-10-06 has passed
+- agentos/decisions/DEC-FINANCE-EVIDENCE-GRAMMAR-MIRRORS-SHARED-ASSERTION-NEVER-FORKS.md: [review-overdue] review_by 2026-10-08 has passed
+- agentos/decisions/DEC-FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE.md: [review-overdue] review_by 2026-10-08 has passed
+- agentos/decisions/DEC-FINANCE-SEC-EVIDENCE-RIGHTS-HELD-UNTIL-FAMILY-ADMITTED.md: [review-overdue] review_by 2026-10-08 has passed
 - agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md: [review-overdue] review_by 2026-09-13 has passed
 - agentos/decisions/DEC-PROPHET-US-PERMANENCE-NET.md: [review-overdue] review_by 2026-09-10 has passed
 - agentos/decisions/DEC-PROPHET-V4-THEIA-SOURCE-RIGHTS.md: [review-overdue] review_by 2026-10-01 has passed
