@@ -142,6 +142,7 @@ def project_provisional_minute(
     problems=Counter()
     policy_refs=set()
     venue_refs=set()
+    quote_policy_refs=set()
     for o in dedup.values():
         gross=_decimal(o["gross_observed_notional_usd"],"gross notional")
         side=o["side_proxy"]
@@ -184,6 +185,9 @@ def project_provisional_minute(
                     raise MinuteProjectionRefusal("signed notional disagrees with exact gross")
                 sums[side]+=gross
             counts[side]+=1
+            if (not isinstance(o["quote_conditions_rules_ref"],str)
+                    or len(o["quote_conditions_rules_ref"])!=64):
+                raise MinuteProjectionRefusal("measured print missing source quote policy")
         else:
             raise MinuteProjectionRefusal("unrecognized source observation state")
         if state in ("UNKNOWN","INELIGIBLE"):
@@ -205,6 +209,13 @@ def project_provisional_minute(
             if not isinstance(venue_ref,str) or len(venue_ref)!=64:
                 raise MinuteProjectionRefusal("invalid source venue reference digest")
             venue_refs.add(venue_ref)
+        quote_ref=o["quote_conditions_rules_ref"]
+        if quote_ref is not None:
+            if not isinstance(quote_ref,str) or len(quote_ref)!=64:
+                raise MinuteProjectionRefusal("invalid source quote policy digest")
+            quote_policy_refs.add(quote_ref)
+    if len(quote_policy_refs)>1:
+        raise MinuteProjectionRefusal("mixed quote condition policy generations in one minute")
     if len(venue_refs)>1:
         raise MinuteProjectionRefusal("mixed exchange reference generations in one minute")
     if len(policy_refs)>1:
@@ -233,6 +244,7 @@ def project_provisional_minute(
             "reason_counts":dict(sorted(problems.items())),
             "condition_rules_ref":next(iter(policy_refs),None),
             "exchange_reference_sha256":next(iter(venue_refs),None),
+            "quote_condition_rules_sha256":next(iter(quote_policy_refs),None),
             "original_latest_available_ns":latest,
             "source_observation_sha256":digest,
             "absorption_signal":None,
