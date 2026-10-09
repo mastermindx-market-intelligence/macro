@@ -359,10 +359,35 @@ def render_first_value(data: dict | None, value: str = "", error: str = "") -> s
             content += f'<section aria-label="{e(item["ticker"])}"><h2>{e(item["ticker"])} · {e(item["status"])}</h2>'
             if item["status"] == "SUPPORTED":
                 content += f'<h3>{e(item["headline"])}</h3>'
+                content += (
+                    f'<p>Evidence checked <time datetime="{e(item["as_of_utc"], quote=True)}">'
+                    f'{e(item["as_of_utc"])}</time>. '
+                    f'Relationship: {e(item["relationship"])}. '
+                    f'Correction state: {e(item["correction_state"])}.</p>'
+                )
+                content += '<h4>What changed</h4><ul>'
                 for claim in item["what_changed"]:
-                    content += f'<p>{e(claim["text"])}</p>'
+                    content += f'<li>{e(claim["text"])}</li>'
+                content += '</ul>'
+                if item["scenarios"]:
+                    content += '<h4>Conditional scenarios, not predictions</h4><ul>'
+                    for scenario in item["scenarios"]:
+                        content += f'<li>{e(scenario["case"])}: {e(scenario["trigger"])}</li>'
+                    content += '</ul>'
+                if item["invalidators"]:
+                    content += '<h4>What could invalidate this reading</h4><ul>'
+                    for invalidator in item["invalidators"]:
+                        content += f'<li>{e(invalidator["text"])}</li>'
+                    content += '</ul>'
+                content += '<h4>Public source references</h4><ul>'
                 for src in item["sources"]:
-                    content += f'<p>Source: <a rel="noopener noreferrer" href="{e(src["url"], quote=True)}">{e(src["title"])}</a></p>'
+                    content += (
+                        f'<li><a rel="noopener noreferrer" href="{e(src["url"], quote=True)}">'
+                        f'{e(src["title"])}</a> · published '
+                        f'<time datetime="{e(src["published_at_utc"], quote=True)}">'
+                        f'{e(src["published_at_utc"])}</time></li>'
+                    )
+                content += '</ul>'
                 if item["dossier_path"]:
                     content += f'<a href="{e(item["dossier_path"], quote=True)}">Public company dossier</a>'
                 content += '<p>Want a meaningful correction/update? Opt-in is optional and requires separate email verification.</p>'
