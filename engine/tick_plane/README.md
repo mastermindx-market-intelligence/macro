@@ -8,16 +8,30 @@ The source owner must provide the exact private raw T/Q WebSocket frame bytes, o
 
 Trade IDs are source-scoped by **ticker × exchange × TRF**, additionally bound to the SIP clock for the captured event. They are not global per ticker. Vendor WebSocket messages **do not include corrections**. All live prints remain STREAM_PROVISIONAL_UNRECONCILED until a separate source-owned REST/flat-file correction review. Never replace original as-seen evidence with a final-vintage record.
 
-`InFlightNBBO` holds only bounded in-memory normalized NBBO updates for one exact session. Ingestion gaps poison the ring until an independently qualified new ring/session. One-sided, zero-size, crossed, stale or same-millisecond ambiguous quote states fail closed; the presence of a source quote is not proof of its eligibility. The caller must attest source-contiguous T/Q event scope, condition-policy coverage, and original available-at watermark before invoking `match`. **SIP message sequence gaps are not automatically dropped-event proof** because documented sequence values need not be consecutive.
+`InFlightNBBO` holds only bounded in-memory normalized NBBO updates for one exact session. Ingestion gaps poison the ring until an independently qualified new ring/session. One-sided, zero-size, crossed, stale or same-millisecond ambiguous quote states fail closed; the presence of a source quote is not proof of its eligibility. The caller must attest source-contiguous T/Q event scope, condition-policy coverage, and original available-at watermark before invoking `match`. **SIP message sequence gaps are not automatically dropped-event proof** because documented sequence values may increase nonconsecutively and reset daily.
+
+The ring uses an append-first ordered index and a logical head for amortized eviction; genuinely out-of-order events use a bounded insertion path. It has a hard total capacity ceiling of 131,072 active observations across its subscribed symbols (plus bounded per-symbol compaction overhang). A capacity breach quarantines the affected symbol rather than silently asserting a continuous valid NBBO. Default 4,096 per-symbol allowance is only a memory cap, **not a production throughput admission**. On Mini4 synthetic observations, 9,000 same-symbol insertions completed in 145 ms versus 6,466 ms for the older implementation; this is not a live exchange-load SLO.
 
 `rest_corrections.compare_rest_trade` consumes a fully fetched, privately held REST response (no network) and returns typed mismatch/correction/ambiguity evidence without changing the original stream row. REST fields include a correction indicator; zero or absent correction in a later REST snapshot is not independent proof of historically final execution. Missing REST records are not automatically cancellations.
 
 `print_observations.observe_provisional_trade` invokes the ONE canonical `engine.flow_signing.classify_print` only after original as-seen trade/quote and condition checks. Output remains observational, correction-provisional, and explicitly null for directional alpha or future markouts. Lit and TRF are separate populations. Unknown-side notional must remain unknown—not a silent zero.
 
-**Local tests (from the Macro repository root):**
+### Private provisional 1-minute derived evidence
+
+`condition_policy.parse_condition_reference` and `evaluate_trade_conditions` bind source-native trade-condition codes to an original response digest, true reference availability and conservative price/volume eligibility. The resulting decision is required by `observe_provisional_trade`; a bare caller-supplied `eligible=True` is not accepted.
+
+`minute_projection.project_provisional_minute` consumes those existing, strictly shaped `equity.tick_plane.provisional_print_observation/v0` records. It emits `equity.tick_plane.minute_observation/v0` only for an owner-attested, already-matured half-open UTC minute and one original decision cutoff. Buy/sell quote-location proxies, midpoint notional, unknown/condition-excluded prints and TRF notional are separated; native identities stay behind a content digest, with raw paid T/Q messages excluded.
+
+`source_completeness_attested=True` is a required **external owner assertion**, not a self-authenticating completeness proof. The pure function cannot discover a dropped SIP event, qualify original point-in-time source possession, reconstruct corrections or measure independent market-wide capture. Outputs preserve provisional correction status, source receipt, null forward-response labels and `absorption_signal=None`; they neither implement nor override R0's statistical price-response experiment in PR #8659. The eventual private R2/dedicated API publisher must project allowed fields through existing delivery/security owners—this code publishes nothing.
+
+**Tests (Macro root, exact TP-1 candidate):**
 ```
-PYTHONPATH=. python3 -m pytest -q tests/test_tp1_qualified_print_classifier.py tests/test_tick_plane_stream_events.py tests/test_tick_plane_asof_nbbo.py tests/test_tick_plane_rest_corrections.py tests/test_tick_plane_print_observations.py
+PYTHONPATH=. python3 -m pytest -q tests/test_tp1_qualified_print_classifier.py tests/test_tick_plane_*.py
 ```
+
+At source candidate `1133c11f0170f05bc4e6a27850dfad4185b5d55d`, M2 Studio completed 207 pytest cases and 30 subtests on the actual shared classifier plus all source modules. The local synthetic test result does not satisfy hosted CI, independent review, actual vendor-source coverage or production acceptance.
+
+
 
 Preliminary stdlib-only normalization/ring/REST tests can also run with `PYTHONPATH=. python3 tests/test_tick_plane_stream_events.py` etc. Passing a source-contract fixture does **not** prove capture completeness, native condition-rule correctness, actual source availability, historical correction lineage or production behavior.
 
