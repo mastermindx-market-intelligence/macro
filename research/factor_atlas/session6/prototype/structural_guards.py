@@ -204,6 +204,10 @@ class PrintQuoteClaim:
 
 def assess_quote_reference(row: PrintQuoteClaim) -> Assessment:
     reasons: set[str] = set()
+    if row.print_time_ns > row.cutoff_ns:
+        reasons.add("PRINT_AFTER_CUTOFF")
+    if row.source_receipt_ns is not None and row.source_receipt_ns < row.print_time_ns:
+        reasons.add("RECEIPT_BEFORE_PRINT")
     if row.quote_time_ns is None or row.source_receipt_ns is None:
         reasons.add("UNKNOWN_QUOTE_OR_RECEIPT")
     else:
