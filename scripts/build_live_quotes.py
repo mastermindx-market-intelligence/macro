@@ -428,13 +428,24 @@ def _to_ms(quote_ts: str | None) -> int | None:
         return None
 
 
-def to_worker_quotes(raw: dict) -> dict:
-    """engine.live_quotes {sym: {price, quote_ts, source, price_basis, prev_close,
-    currency, delay_min, day_volume, day_high, day_low}} -> the Worker /quotes shape.
+def to_worker_quotes(
+    raw: dict,
+    *,
+    include_private_provenance: bool = False,
+) -> dict:
+    """Project engine.live_quotes records into the long-standing Worker shape.
 
-    New fields (IFT A1): vol, hi, lo — from the same Yahoo/Polygon batch response,
-    zero extra requests.  Size estimate: +~68KB over full ~1942-symbol universe
-    (343KB projected vs 500KB budget) — fields carried for all symbols.
+    The default/public contract intentionally stays narrow: epoch-ms ``ts``,
+    ``basis`` and display fields only. The VPS root-readable ``quotes_full.json``
+    may opt into the source-native ``quote_ts`` and ``quote_ts_synthetic`` fields
+    that provenance-sensitive server consumers require. It also retains the
+    source-native session-open/NBBO fields when supplied by the engine, without
+    re-deriving prices or clocks. These are evidence only: identity, session, freshness and
+    strategy fillability remain the downstream owner's responsibility. Missing
+    evidence is preserved as ``None`` and never inferred from price or timestamps.
+
+    New display fields (IFT A1): vol, hi, lo — from the same Yahoo/Polygon batch
+    response, zero extra requests.
     """
     out: dict[str, dict] = {}
     for sym, q in (raw or {}).items():
@@ -456,6 +467,16 @@ def to_worker_quotes(raw: dict) -> dict:
         }
         if q.get("quote_ts_synthetic"):
             entry["tsSynthetic"] = True
+        if include_private_provenance:
+            synthetic = q.get("quote_ts_synthetic")
+            entry["quote_ts"] = q.get("quote_ts")
+            entry["quote_ts_synthetic"] = (
+                synthetic if type(synthetic) is bool else None
+            )
+            # Preserve the engine's source-native evidence only in the private
+            # full snapshot. No clock fallback, spread policy or gate verdict.
+            for field in ("day_open", "bid_price", "ask_price", "nbbo_ts", "nbbo_source"):
+                entry[field] = q.get(field)
         # IFT A1: intraday volume + range from same batch response.
         # Keys kept short (vol/hi/lo) to minimise payload bytes.
         dv = q.get("day_volume")
@@ -484,8 +505,15 @@ def _validate_symbols(syms: list[str]) -> list[str]:
     return ordered
 
 
-def build(site_dir: Path, *, offline: bool = False, extra: list[str] | None = None,
-          cap: int = 3000, symbols: list[str] | None = None) -> dict:
+def build(
+    site_dir: Path,
+    *,
+    offline: bool = False,
+    extra: list[str] | None = None,
+    cap: int = 3000,
+    symbols: list[str] | None = None,
+    include_private_provenance: bool = False,
+) -> dict:
     now = datetime.now(timezone.utc)
     lcfg = config.load().get("live") or {}
     # symbols= builds an EXACT-universe snapshot (bypasses CORE + site scrape +
@@ -495,7 +523,10 @@ def build(site_dir: Path, *, offline: bool = False, extra: list[str] | None = No
                 else build_universe(site_dir, extra=extra, cap=cap))
     diag: dict = {}
     raw = live_quotes.fetch_quotes(universe, offline=offline, diag=diag)
-    quotes = to_worker_quotes(raw)
+    quotes = to_worker_quotes(
+        raw,
+        include_private_provenance=include_private_provenance,
+    )
     # The incumbent fast snapshot runs around the clock, including Asia hours
     # and weekends. Calendar receipts must not depend on the US-hours overlay.
     from lib.market_session import session_status
@@ -537,6 +568,15 @@ def main() -> None:
                          "same-origin site/live/quotes.json producer preset used by the "
                          "VPS fast lane (60s), btc-live (hourly 24/7) and "
                          "intraday-fastpath (30-min)")
+    ap.add_argument(
+        "--private-provenance",
+        action="store_true",
+        help=(
+            "preserve source-native quote_ts and quote_ts_synthetic in the "
+            "root-readable/private snapshot; never enable this for the public "
+            "browser/live-data Worker contract"
+        ),
+    )
     args = ap.parse_args()
 
     site_dir = (Path(args.site) if args.site
@@ -548,8 +588,14 @@ def main() -> None:
         log.info("display universe: %d tiles + %d board symbols from %s",
                  len(DISPLAY_SYMBOLS), len(symbols) - len(DISPLAY_SYMBOLS),
                  ", ".join(DISPLAY_BOARD_PAGES))
-    snap = build(site_dir, offline=args.offline, extra=extra, cap=args.max,
-                 symbols=symbols)
+    snap = build(
+        site_dir,
+        offline=args.offline,
+        extra=extra,
+        cap=args.max,
+        symbols=symbols,
+        include_private_provenance=args.private_provenance,
+    )
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

@@ -4063,6 +4063,11 @@ def _dispatch_brain_tool(
 
     # Delegate to ask_brain dispatcher for the inherited read tools
     from engine.neuralweb.ask_brain import _dispatch_read_tool  # noqa: PLC0415
+    if tool_name in {"read_world_state", "read_artifact"}:
+        return _dispatch_read_tool(
+            tool_name, tool_params, root,
+            include_risk_context=_ontology_evidence_allowed(user_id, root),
+        )
     return _dispatch_read_tool(tool_name, tool_params, root)
 
 
@@ -4756,6 +4761,25 @@ def _seed_tool_plan(message: str) -> str:
             return ""
         return _SEED_PLAN_LINE.format(tools=", ".join(ordered[:3]))
     except Exception:  # noqa: BLE001
+        return ""
+
+
+def _rotation_risk_grounding_digest(
+    root: Path, *, user_id: str, now: datetime, lang: str = "en",
+) -> str:
+    """Reuse the existing site-full gate before reading the canonical joint view.
+
+    This additive context has no cache or risk arithmetic. Both actual chat loops
+    call this same boundary; free/guest turns perform zero envelope reads. Source
+    clocks and shared-evidence limits remain part of the model's context.
+    """
+    if not _ontology_evidence_allowed(user_id, root):
+        return ""
+    try:
+        from engine.neuralweb.rotation_risk_context import read_context, render_context
+        return render_context(read_context(root, now=now), lang=lang)
+    except Exception as exc:  # noqa: BLE001 — one context failure cannot abort chat
+        log.warning("brain_gateway: rotation/risk context unavailable (%s)", type(exc).__name__)
         return ""
 
 
@@ -6776,6 +6800,7 @@ def _run_brain_loop(
     _digests = [
         digest for digest in (
             _grounding_digest(root, lang=turn_lang),
+            _rotation_risk_grounding_digest(root, user_id=user_id, now=turn_as_of, lang=turn_lang),
             _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
             ontology_digest,
         ) if digest
@@ -7704,6 +7729,7 @@ def _run_brain_loop_stream(
     _digests = [
         digest for digest in (
             _grounding_digest(root, lang=turn_lang),
+            _rotation_risk_grounding_digest(root, user_id=user_id, now=turn_as_of, lang=turn_lang),
             _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
             ontology_digest,
         ) if digest
