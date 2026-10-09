@@ -1,0 +1,261 @@
+{
+  "schema": "factor_atlas.session6.preregistration_candidate.v1",
+  "status": "INACTIVE_NOT_REGISTERED_NO_EMPIRICAL_OUTCOMES_READ",
+  "created_on": "2026-10-09",
+  "artifact_owner": "Factor Atlas Session 6 isolated research lane",
+  "registration_owner": "Existing Mastermind Evaluation OS and TrialLedger, not this proposal",
+  "proposal_only": true,
+  "explicit_no_authority": {
+    "source_authentication": false,
+    "trial_activation": false,
+    "p_value_authority": false,
+    "rank": false,
+    "gate": false,
+    "alert": false,
+    "size": false,
+    "trade": false,
+    "customer_publish": false
+  },
+  "source_pins": {
+    "mastermind_protected": "cc5b608ba46b1260e804cbbb663b934fba6a83f2",
+    "macro_main": "740efe14802e63dd2d11b30653febccf8ab73741",
+    "factor_atlas_s1_candidate": "8bbc0944a0a5a1bf4ffb14d98786ae31e59cde82",
+    "factor_atlas_s2_candidate": "c7b28ff2bead20487dcb6f90a6d20f89086be9d2"
+  },
+  "separate_locked_owners": [
+    {
+      "family": "factor_intelligence_v1",
+      "count": 5,
+      "locked": "2026-07-05",
+      "policy": "No modifications, no borrowing trial budget, BH withheld pending full owner family"
+    },
+    {
+      "family": "K3E-EVAL-0",
+      "holdout": "2023-01-03..2026-08-21",
+      "policy": "No reuse as Atlas holdout or tuning"
+    },
+    {
+      "family": "K3E-EVAL-1",
+      "policy": "Post activation single T1 expectation question, owner-controlled forward partitions, no borrowing"
+    }
+  ],
+  "families": [
+    {
+      "id": "FA6-MEAS-v1",
+      "proposed_primary_n": 2,
+      "hypotheses": [
+        "FA6-H01",
+        "FA6-H03"
+      ],
+      "multiple_testing": "BENJAMINI_YEKUTIELI",
+      "q": 0.1,
+      "registration_status": "PROPOSAL_ONLY"
+    },
+    {
+      "id": "FA6-PRED-v1",
+      "proposed_primary_n": 8,
+      "hypotheses": [
+        "FA6-H02",
+        "FA6-H04",
+        "FA6-H05",
+        "FA6-H06",
+        "FA6-H07",
+        "FA6-H08",
+        "FA6-H09",
+        "FA6-H10"
+      ],
+      "multiple_testing": "BENJAMINI_YEKUTIELI",
+      "q": 0.1,
+      "registration_status": "PROPOSAL_ONLY"
+    }
+  ],
+  "proposed_common_gates": {
+    "first_eligible_forward_cutoff": null,
+    "machine_digest_approved_by_owner": null,
+    "source_admission_receipts": [],
+    "outcome_inspection_allowed": false,
+    "one_primary_horizon_per_test": true,
+    "tuning_trials_counted": true,
+    "resample_seed": "MUST_BE_LOCKED_BY_OWNER_BEFORE_OUTCOME_ACCESS",
+    "primary_bootstrap_replicates_min": 2000,
+    "primary_inference": "paired calendar-month and network/event clustered loss difference; date-block sensitivity; preserve entire dependence",
+    "primary_confidence_interval": "95_percent_excludes_zero_in_favorable_direction_in_validation_and_forward_holdout",
+    "power": "Declared before freeze; at least 12 contributing calendar months for multi-session, 60 independent sessions and 80pct eligible dollars for minute quote/pressure claim, or UNESTIMABLE",
+    "intraday_baseline": "Strictly prior matched-minute source-known vintages; never same bar",
+    "unavailable": "Distinct UNESTIMABLE / SOURCE_DENIED / STALE / CENSORED; not zero",
+    "release": "No rank, alert, gate, sizing or trading; matched OOS gain alone not product acceptance"
+  },
+  "hypotheses": [
+    {
+      "id": "FA6-H01",
+      "family": "FA6-MEAS-v1",
+      "primary_target": "Next-30-eligible-RTH-minute log1p dollar volume",
+      "primary_loss": "squared_error",
+      "horizon": 30,
+      "horizon_unit": "minutes",
+      "primary_contrast": "BVC pressure vs flexible prior price, volume, volatility, session clock and sector",
+      "materiality_proposed": {
+        "minimum_relative_loss_improvement": 0.02,
+        "additional_requirement": "both_validation_and_forward_holdout"
+      },
+      "primary_falsifier": "No additional paired out-of-time activity loss reduction",
+      "source_admission": "OWNER_BOUND_AT_FREEZE",
+      "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
+      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+    },
+    {
+      "id": "FA6-H02",
+      "family": "FA6-PRED-v1",
+      "primary_target": "Next-5-session factor excess direction >0",
+      "primary_loss": "brier",
+      "horizon": 5,
+      "horizon_unit": "NYSE_sessions",
+      "primary_contrast": "BVC vs B and flexible raw price-volume controls",
+      "materiality_proposed": {
+        "minimum_relative_loss_improvement": 0.02,
+        "additional_requirement": "both_validation_and_forward_holdout"
+      },
+      "primary_falsifier": "No positive incremental held-out Brier gain; contemporaneous bar leakage",
+      "source_admission": "OWNER_BOUND_AT_FREEZE",
+      "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
+      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+    },
+    {
+      "id": "FA6-H03",
+      "family": "FA6-MEAS-v1",
+      "primary_target": "Identical eligible 1-minute quote-signed-dollar-share proxy",
+      "primary_loss": "dollar_weighted_abs_disagreement",
+      "horizon": 1,
+      "horizon_unit": "minute",
+      "primary_contrast": "BVC vs simple tick-rule signing matched to strictly-prior quoted prints",
+      "materiality_proposed": {
+        "minimum_relative_loss_improvement": 0.05,
+        "additional_requirement": "at_least_80pct_quote_eligible_dollars_and_60_admitted_sessions"
+      },
+      "primary_falsifier": "Not better vs quote proxy; insufficient true quote-eligible dollar denominator",
+      "source_admission": "OWNER_BOUND_AT_FREEZE",
+      "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
+      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+    },
+    {
+      "id": "FA6-H04",
+      "family": "FA6-PRED-v1",
+      "primary_target": "Next-5-session factor excess direction >0",
+      "primary_loss": "brier",
+      "horizon": 5,
+      "horizon_unit": "NYSE_sessions",
+      "primary_contrast": "Breadth and leadership persistence vs price/volatility and incumbent rotation",
+      "materiality_proposed": {
+        "minimum_relative_loss_improvement": 0.02,
+        "additional_requirement": "both_validation_and_forward_holdout"
+      },
+      "primary_falsifier": "No return gain after lagged price and sector controls",
+      "source_admission": "OWNER_BOUND_AT_FREEZE",
+      "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
+      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+    },
+    {
+      "id": "FA6-H05",
+      "family": "FA6-PRED-v1",
+      "primary_target": "Next-10-session factor drawdown above minus five percent",
+      "primary_loss": "brier",
+      "horizon": 10,
+      "horizon_unit": "NYSE_sessions",
+      "primary_contrast": "Broad vs concentrated participation vs HHI/beta/megacap/sector controls",
+      "materiality_proposed": {
+        "minimum_relative_loss_improvement": 0.02,
+        "additional_requirement": "both_validation_and_forward_holdout"
+      },
+      "primary_falsifier": "No incremental risk discrimination; overlap or size alone explains signal",
+      "source_admission": "OWNER_BOUND_AT_FREEZE",
+      "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
+      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+    },
+    {
+      "id": "FA6-H06",
+      "family": "FA6-PRED-v1",
+      "primary_target": "Next-5-session realized variance",
+      "primary_loss": "qlike",
+      "horizon": 5,
+      "horizon_unit": "NYSE_sessions",
+      "primary_contrast": "Options magnitude/positioning vs volume/OI and underlying vol baselines; signed dealer inventory excluded",
+      "materiality_proposed": {
+        "minimum_relative_loss_improvement": 0.02,
+        "additional_requirement": "both_validation_and_forward_holdout"
+      },
+      "primary_falsifier": "No QLIKE improvement; stale options expiry/OI clock",
+      "source_admission": "OWNER_BOUND_AT_FREEZE",
+      "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
+      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+    },
+    {
+      "id": "FA6-H07",
+      "family": "FA6-PRED-v1",
+      "primary_target": "Next-21-session issuer event excess-return direction >0",
+      "primary_loss": "brier",
+      "horizon": 21,
+      "horizon_unit": "NYSE_sessions",
+      "primary_contrast": "Pre-known economic catalyst plus expectation context vs momentum and industry consensus-known controls",
+      "materiality_proposed": {
+        "minimum_relative_loss_improvement": 0.02,
+        "additional_requirement": "both_validation_and_forward_holdout"
+      },
+      "primary_falsifier": "No incremental event-cluster improvement or future expectation/article contamination",
+      "source_admission": "OWNER_BOUND_AT_FREEZE",
+      "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
+      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+    },
+    {
+      "id": "FA6-H08",
+      "family": "FA6-PRED-v1",
+      "primary_target": "Next-5-session follower factor excess direction >0",
+      "primary_loss": "brier",
+      "horizon": 5,
+      "horizon_unit": "NYSE_sessions",
+      "primary_contrast": "PIT directed graph economic relation vs leader return, beta/industry and undirected co-movement",
+      "materiality_proposed": {
+        "minimum_relative_loss_improvement": 0.02,
+        "additional_requirement": "both_validation_and_forward_holdout"
+      },
+      "primary_falsifier": "No improvement beyond placebos or graph edge is future-known",
+      "source_admission": "OWNER_BOUND_AT_FREEZE",
+      "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
+      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+    },
+    {
+      "id": "FA6-H09",
+      "family": "FA6-PRED-v1",
+      "primary_target": "Next-5-session factor excess direction >0",
+      "primary_loss": "brier",
+      "horizon": 5,
+      "horizon_unit": "NYSE_sessions",
+      "primary_contrast": "Locked joint candidate vs strongest single eligible B/C/D feature and baseline",
+      "materiality_proposed": {
+        "minimum_relative_loss_improvement": 0.02,
+        "additional_requirement": "both_validation_and_forward_holdout"
+      },
+      "primary_falsifier": "Correlated ensemble fails paired OOS gain against strongest comparator",
+      "source_admission": "OWNER_BOUND_AT_FREEZE",
+      "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
+      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+    },
+    {
+      "id": "FA6-H10",
+      "family": "FA6-PRED-v1",
+      "primary_target": "Next-5-session factor excess direction >0",
+      "primary_loss": "brier",
+      "horizon": 5,
+      "horizon_unit": "NYSE_sessions",
+      "primary_contrast": "Frozen regime interactions vs frozen unconditional pooled H09 model",
+      "materiality_proposed": {
+        "minimum_relative_loss_improvement": 0.02,
+        "additional_requirement": "both_validation_and_forward_holdout"
+      },
+      "primary_falsifier": "Regime splits not stable across independent forward eras",
+      "source_admission": "OWNER_BOUND_AT_FREEZE",
+      "population": "PIT_SOURCE_AND_CLOCK_QUALIFIED_MATCHED",
+      "status": "NOT_ESTIMATED_NOT_ACTIVE"
+    }
+  ],
+  "amendment_rule": "New version/digest/owner acceptance and new prospective activation required; preserve this outcome-blind proposal and all rejected trials"
+}
