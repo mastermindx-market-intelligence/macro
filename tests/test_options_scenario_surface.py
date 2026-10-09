@@ -5,6 +5,8 @@ import copy
 import importlib
 import importlib.util
 import json
+import math
+from datetime import datetime, timedelta, timezone
 import subprocess
 import sys
 
@@ -21,6 +23,263 @@ from engine.options_scenario_surface import (
 
 OBS = "2026-09-18T14:00:00.123456Z"
 SPOT = 100.0
+
+
+def _endpoint_inputs():
+    return {
+        "contracts": [{
+            "contract_id": "SPXW:2026-10-08:C:6000", "option_root": "SPXW",
+            "expiry": "2026-10-08", "right": "C", "strike": 6000.0,
+            "multiplier": 100.0, "iv": 0.20, "settlement": "PM",
+            "fixing_at": "2026-10-08T20:00:00Z",
+        }],
+        "observed_at": "2026-10-08T18:00:00Z", "as_of": "2026-10-08T18:00:02Z",
+        "spot": 6000.0, "target_spot": 5979.0,
+        "target_at": "2026-10-08T18:20:00Z", "iv_shift": 0.012,
+        "expected_contract_ids": ["SPXW:2026-10-08:C:6000"],
+        "universe_ref": "fixture:complete-one-contract-book",
+        "source_receipt": {
+            "source_ref": "fixture:source-1", "source_observed_at": "2026-10-08T18:00:00Z",
+            "received_at": "2026-10-08T18:00:01Z",
+            "consumer_available_at": "2026-10-08T18:00:02Z",
+        },
+        "inventory": {
+            "scenario_id": "fixture:short-call", "evidence_class": "SCENARIO",
+            "starting": {"SPXW:2026-10-08:C:6000": -100.0},
+            "ending": {"SPXW:2026-10-08:C:6000": -110.0},
+        },
+    }
+
+
+def _endpoint(**changes):
+    from engine import options_scenario_surface as owner
+    assert hasattr(owner, "build_hedge_target_change"), "missing incumbent endpoint repricing seam"
+    kwargs = _endpoint_inputs()
+    kwargs.update(changes)
+    return owner.build_hedge_target_change(**kwargs)
+
+
+def test_endpoint_reprices_book_and_does_not_trade_existing_hedge_revaluation():
+    out = _endpoint()
+    delta0 = float(bs_greeks_vec(6000., 6000., 120 / (365 * 1440), .2, True)[0])
+    delta1 = float(bs_greeks_vec(5979., 6000., 100 / (365 * 1440), .212, True)[0])
+    b0, b1 = 10000 * delta0, 11000 * delta1
+    assert out["hedge"]["target_change"] == pytest.approx(b1 - b0)
+    assert out["hedge"]["reference_notional_usd"] == pytest.approx(5979 * (b1 - b0))
+    assert out["hedge"]["reference_notional_usd"] != pytest.approx(5979 * b1 - 6000 * b0)
+    assert out["attribution"]["repricing"] + out["attribution"]["inventory"] == pytest.approx(b1 - b0)
+    assert out["evidence_class"] == "SCENARIO"
+    assert out["authority"]["calibrated_probability"] is False
+    assert out["coverage"]["scope"] == "supplied_universe"
+
+
+@pytest.mark.parametrize("field,value", [
+    ("consumer_available_at", "2026-10-08T18:00:03Z"),
+    ("received_at", "2026-10-08T18:00:03Z"),
+    ("source_observed_at", "2026-10-08T18:01:00Z"),
+    ("consumer_available_at", None),
+])
+def test_endpoint_rejects_late_or_unknown_availability(field, value):
+    receipt = _endpoint_inputs()["source_receipt"]
+    receipt[field] = value
+    with pytest.raises(ValueError):
+        _endpoint(source_receipt=receipt)
+
+
+def test_endpoint_missing_contract_and_fixing_crossing_are_unavailable_not_zero():
+    missing = _endpoint(expected_contract_ids=["SPXW:2026-10-08:C:6000", "missing"])
+    assert missing["status"] == "unavailable"
+    assert missing["hedge"] is None
+    fixed = _endpoint(target_at="2026-10-08T20:00:00Z")
+    assert fixed["status"] == "unavailable"
+    assert "fixing_boundary" in fixed["unavailable_reasons"]
+
+
+def test_inventory_scenario_uses_qualified_flow_once_and_preserves_unknown():
+    from engine import options_scenario_surface as owner
+    assert hasattr(owner, "build_inventory_scenario"), "missing deterministic inventory seam"
+    out = owner.build_inventory_scenario(
+        {"c": -10, "p": 20}, {"c": 8, "p": -6},
+        dealer_fraction=.5, scenario_id="half-participation",
+    )
+    assert out["ending"] == {"c": -14, "p": 23}
+    assert out["evidence_class"] == "SCENARIO"
+    with pytest.raises(ValueError):
+        owner.build_inventory_scenario({"c": None}, {"c": 0}, dealer_fraction=.5, scenario_id="unknown")
+
+
+@pytest.mark.parametrize("seconds", [1, 60, 300, 900, 1800, 3599, 3600, 3601])
+@pytest.mark.parametrize("right", ["C", "P"])
+def test_endpoint_exact_final_hour_matches_independent_erf_delta(seconds, right):
+    args = _endpoint_inputs()
+    row = args["contracts"][0]
+    row["right"] = right
+    # Same endpoint spot/time with a position increment isolates exact-time delta.
+    anchor = datetime(2026, 10, 8, 20, tzinfo=timezone.utc) - timedelta(seconds=seconds)
+    args.update(observed_at=anchor.isoformat(), as_of=anchor.isoformat(),
+                target_at=anchor.isoformat(), target_spot=6000.1, spot=6000.1, iv_shift=0., r=0., q=0.)
+    args["source_receipt"].update({k: anchor.isoformat() for k in
+                                ["source_observed_at", "received_at", "consumer_available_at"]})
+    args["inventory"]["starting"][row["contract_id"]] = 0.
+    args["inventory"]["ending"][row["contract_id"]] = 1.
+    from engine.options_scenario_surface import build_hedge_target_change
+    out = build_hedge_target_change(**args)
+    t = seconds / (365 * 86400)
+    d1 = (math.log(6000.1 / 6000) + .5 * .2**2 * t) / (.2 * math.sqrt(t))
+    independent = .5 * (1 + math.erf(d1 / math.sqrt(2))) - (right == "P")
+    assert out["hedge"]["target_change"] == pytest.approx(-100 * independent, abs=1e-5)
+
+
+@pytest.mark.parametrize("position", [-100., 0., 100.])
+def test_endpoint_unchanged_state_is_zero_for_either_inventory_sign(position):
+    inv = _endpoint_inputs()["inventory"]
+    inv["starting"] = inv["ending"] = {"SPXW:2026-10-08:C:6000": position}
+    out = _endpoint(inventory=inv, target_at="2026-10-08T18:00:00Z", target_spot=6000., iv_shift=0.)
+    assert out["hedge"]["target_change"] == 0
+    assert out["hedge"]["reference_notional_usd"] == 0
+
+
+def test_endpoint_missing_inventory_cannot_be_an_empty_position():
+    inv = _endpoint_inputs()["inventory"]
+    inv["ending"] = {}
+    out = _endpoint(inventory=inv)
+    assert out["hedge"] is None
+    assert "unknown_inventory" in out["unavailable_reasons"]
+
+
+def test_endpoint_scope_and_identity_preserve_all_expiry_denominator():
+    args = _endpoint_inputs()
+    other = dict(args["contracts"][0], contract_id="later", expiry="2026-10-09",
+                 fixing_at="2026-10-09T20:00:00Z")
+    args["contracts"].append(other)
+    args["expected_contract_ids"].append("later")
+    args["inventory"]["starting"]["later"] = 50
+    args["inventory"]["ending"]["later"] = 50
+    from engine.options_scenario_surface import build_hedge_target_change
+    all_exp = build_hedge_target_change(**args)
+    args["contracts"].reverse()
+    args["expected_contract_ids"].reverse()
+    assert build_hedge_target_change(**args)["content_id"] == all_exp["content_id"]
+    selected = build_hedge_target_change(**args, expiry_scope=["2026-10-08"])
+    assert selected["coverage"]["selected"] == 1
+    assert selected["coverage"]["received"] == 2
+    assert selected["content_id"] != all_exp["content_id"]
+    assert selected["hedge"]["target_change"] == pytest.approx(_endpoint()["hedge"]["target_change"])
+    assert sum(x["target_change"] for x in all_exp["by_expiry"]) == pytest.approx(all_exp["hedge"]["target_change"])
+
+
+@pytest.mark.parametrize("field,value", [("iv", None), ("iv", float("nan")), ("iv", True)])
+def test_endpoint_invalid_iv_is_unavailable(field, value):
+    rows = _endpoint_inputs()["contracts"]
+    rows[0][field] = value
+    out = _endpoint(contracts=rows)
+    assert out["hedge"] is None
+    assert "invalid_iv" in out["unavailable_reasons"]
+    json.dumps(out, allow_nan=False)
+
+
+def test_endpoint_rejects_duplicate_economic_identity_and_nonstandard_deliverable():
+    args = _endpoint_inputs()
+    args["contracts"].append(dict(args["contracts"][0], contract_id="alias"))
+    args["expected_contract_ids"].append("alias")
+    with pytest.raises(ValueError, match="economic"):
+        _endpoint(contracts=args["contracts"], expected_contract_ids=args["expected_contract_ids"])
+    row = _endpoint_inputs()["contracts"][0]
+    row["multiplier"] = 10
+    with pytest.raises(ValueError, match="deliverable"):
+        _endpoint(contracts=[row])
+
+
+def test_endpoint_stale_source_and_invalid_target_iv_never_emit_hedge():
+    assert "stale_source" in _endpoint(as_of="2026-10-08T18:02:00Z")["unavailable_reasons"]
+    assert "invalid_target_iv" in _endpoint(iv_shift=-.2)["unavailable_reasons"]
+
+
+def test_endpoint_existing_cli_supports_same_pure_contract(tmp_path):
+    src = tmp_path / "book.json"
+    src.write_text(json.dumps(_endpoint_inputs()))
+    proc = subprocess.run([sys.executable, "scripts/build_options_scenario_surface.py",
+                           "--mode", "hedge-target", "--input", str(src)],
+                          capture_output=True, text=True)
+    assert proc.returncode == 0, proc.stderr
+    assert json.loads(proc.stdout) == _endpoint()
+
+
+def test_endpoint_path_net_telescopes_but_does_not_claim_turnover():
+    from engine.options_scenario_surface import build_hedge_target_change
+    a = _endpoint_inputs()
+    b = copy.deepcopy(a)
+    b.update(observed_at=a["target_at"], as_of=a["target_at"], spot=a["target_spot"],
+             target_at="2026-10-08T18:40:00Z", target_spot=6010., iv_shift=-.012)
+    b["contracts"][0]["iv"] += a["iv_shift"]
+    b["inventory"]["starting"] = dict(a["inventory"]["ending"])
+    b["inventory"]["ending"] = dict(a["inventory"]["starting"])
+    b["source_receipt"].update({k: b["observed_at"] for k in
+                                ["source_observed_at", "received_at", "consumer_available_at"]})
+    direct = copy.deepcopy(a)
+    direct.update(target_at=b["target_at"], target_spot=b["target_spot"], iv_shift=0.)
+    direct["inventory"]["ending"] = dict(b["inventory"]["ending"])
+    qa = build_hedge_target_change(**a)["hedge"]["target_change"]
+    qb = build_hedge_target_change(**b)["hedge"]["target_change"]
+    qdirect = build_hedge_target_change(**direct)["hedge"]["target_change"]
+    assert qa + qb == pytest.approx(qdirect)
+    assert abs(qa) + abs(qb) > abs(qdirect)
+
+
+def test_endpoint_near_cancellation_retains_gross_and_symmetric_inventory_identity():
+    args = _endpoint_inputs()
+    row = dict(args["contracts"][0], contract_id="put", right="P")
+    args["contracts"].append(row)
+    args["expected_contract_ids"].append("put")
+    args["inventory"]["starting"]["put"] = 100.
+    args["inventory"]["ending"]["put"] = 110.
+    from engine.options_scenario_surface import build_hedge_target_change
+    out = build_hedge_target_change(**args, q=0.)
+    assert out["hedge"]["target_change"] == pytest.approx(1000.)
+    assert out["hedge"]["gross_contract_target_changes"] > 1000.
+    assert 0 < out["hedge"]["cancellation_ratio"] < 1
+    assert out["attribution"]["identity_residual"] == pytest.approx(0., abs=1e-10)
+
+
+def test_endpoint_overflow_refuses_numeric_result_instead_of_serializing_infinity():
+    inv = _endpoint_inputs()["inventory"]
+    inv["ending"]["SPXW:2026-10-08:C:6000"] = 1e308
+    out = _endpoint(inventory=inv)
+    assert out["hedge"] is None
+    assert "nonfinite_repricing" in out["unavailable_reasons"]
+    json.dumps(out, allow_nan=False)
+
+
+def test_inventory_scenario_rejects_partial_flow_or_authority_claim():
+    from engine.options_scenario_surface import build_inventory_scenario
+    with pytest.raises(ValueError, match="universe"):
+        build_inventory_scenario({"c": 1, "p": 1}, {"c": 0}, dealer_fraction=0, scenario_id="zero")
+    inv = _endpoint_inputs()["inventory"]
+    inv["evidence_class"] = "OBSERVED"
+    with pytest.raises(ValueError, match="SCENARIO"):
+        _endpoint(inventory=inv)
+
+
+def test_conditioned_inventory_assumptions_survive_endpoint_and_cannot_be_tampered():
+    from engine.options_scenario_surface import build_inventory_scenario
+    key = "SPXW:2026-10-08:C:6000"
+    inv = build_inventory_scenario({key: -100}, {key: 20}, dealer_fraction=.5, scenario_id="half")
+    out = _endpoint(inventory=inv)
+    assert out["inventory_assumptions"]["dealer_fraction"] == .5
+    assert out["inventory_assumptions"]["signed_flow"][key] == 20
+    inv["ending"][key] = -120
+    with pytest.raises(ValueError, match="conditioned inventory"):
+        _endpoint(inventory=inv)
+
+
+def test_endpoint_cli_rejects_duplicate_json_members(tmp_path):
+    src = tmp_path / "ambiguous.json"
+    raw = json.dumps(_endpoint_inputs())
+    src.write_text(raw[:-1] + ',"target_spot":1234}')
+    proc = subprocess.run([sys.executable, "scripts/build_options_scenario_surface.py",
+                           "--mode", "hedge-target", "--input", str(src)], capture_output=True, text=True)
+    assert proc.returncode != 0
+    assert "duplicate JSON member" in proc.stderr
 
 
 def _contracts():

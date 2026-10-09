@@ -1,0 +1,41 @@
+{
+  "contracts": [
+    {
+      "contract_id": "SPXW:2026-10-08:C:6000",
+      "option_root": "SPXW",
+      "expiry": "2026-10-08",
+      "right": "C",
+      "strike": 6000.0,
+      "multiplier": 100.0,
+      "iv": 0.2,
+      "settlement": "PM",
+      "fixing_at": "2026-10-08T20:00:00Z"
+    }
+  ],
+  "observed_at": "2026-10-08T18:00:00Z",
+  "as_of": "2026-10-08T18:00:02Z",
+  "spot": 6000.0,
+  "target_spot": 5979.0,
+  "target_at": "2026-10-08T18:20:00Z",
+  "iv_shift": 0.012,
+  "expected_contract_ids": [
+    "SPXW:2026-10-08:C:6000"
+  ],
+  "universe_ref": "fixture:complete-one-contract-book",
+  "source_receipt": {
+    "source_ref": "fixture:source-1",
+    "source_observed_at": "2026-10-08T18:00:00Z",
+    "received_at": "2026-10-08T18:00:01Z",
+    "consumer_available_at": "2026-10-08T18:00:02Z"
+  },
+  "inventory": {
+    "scenario_id": "fixture:short-call",
+    "evidence_class": "SCENARIO",
+    "starting": {
+      "SPXW:2026-10-08:C:6000": -100.0
+    },
+    "ending": {
+      "SPXW:2026-10-08:C:6000": -110.0
+    }
+  }
+}

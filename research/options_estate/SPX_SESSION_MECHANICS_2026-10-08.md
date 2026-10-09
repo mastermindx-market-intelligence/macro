@@ -1,0 +1,172 @@
+# SPX session mechanics: implemented calculation and recovery receipt
+
+This is a bounded engineering checkpoint, not product acceptance. The new code is
+a pure, non-publishing extension of `engine/options_scenario_surface.py` and uses
+the incumbent `engine.intraday_greeks.bs_greeks_vec`. It creates no collector,
+pricing kernel, source store, forecast lifecycle, or event ledger.
+
+## Source and custody
+
+- Protected Mastermind procedure pin:
+  `ad362ef45def043ee5970c2b131be9825fcea1ae`; same-commit Skillpack INDEX,
+  ACTIVE_EXECUTION, SESSION_RELIABILITY and delegation procedure were consumed.
+- Implementation base: Macro `4fd2d0e2b2fb0eeb5d98222e01c4a8b36d9e9396`.
+  Carrier: `claude/spx-session-mechanics-20261008`, in the existing protected SSD
+  worktree. This additive scenario calculation does not replace the Outlook
+  carrier or republish its outputs.
+- MAS-260 Macro branch `claude/mas260-exposure-baseline-20260918` survives at
+  `b281fe529717656e070abaa15651c75fb74bf93f`. The issue's `700a33c2` frontier is
+  older. The later commit already incorporates the separately developed
+  calibration lane. Original Macro PR [#7328](https://github.com/mastermindx-market-intelligence/macro/pull/7328)
+  remains open, labelled `hold`, at remote head
+  `9515f2558a006c913a7c0eb30d966c47fa1a143b`; its local-only/CI-deferral history
+  has not been treated as a new publication grant.
+- Retained Terminal consumer branch
+  `claude/mas260-exposure-outlook-terminal-consumer-20260921` is at
+  `be92323426d9971ebd881ce3df6c529f182dc22d`. The separate original worktree
+  `mas260-exposure-outlook-terminal-20260921` is at
+  `6610c157c2498692b1550ed21be10e7d6f7f01ec` and still contains two untracked
+  exposureOutlook files. Both branches and those files were preserved.
+- Research PR [#8555](https://github.com/mastermindx-market-intelligence/macro/pull/8555)
+  is draft at `82bc91ba18684f4a2c7f7f83ffd0c8d2a80625a6`, with native auto-merge
+  null. Its `HOLD-FOR-SOL / DO NOT MERGE` boundary remains intact. Its dealer
+  pressure corpus and the October 3 Options Intelligence contracts informed this
+  bounded calculation; neither is a merge or data-rights grant.
+
+## Implemented behavior
+
+`build_inventory_scenario` conditions explicitly supplied signed positions on an
+already-qualified customer-initiated signed Flow aggregate. Every contract needs
+an explicit observation, including measured zero. For assumed dealer participation
+`a`, the endpoint position is `n1 = n0 - a * signed_flow`. This is a scenario, not
+inferred actual dealer ownership. The Flow owner retains signing, corrections,
+packages, deduplication and source availability qualification.
+
+`build_hedge_target_change` reprices both endpoints of every selected member of
+the supplied contract universe. It computes `B0 = -sum(n0 * multiplier * delta0)`,
+`B1 = -sum(n1 * multiplier * delta1)`, and `Q = B1 - B0`. Its USD reference
+notional is `target_SPX * Q`; it is not the change in dollar delta, actual trading
+cash, or a count of ES contracts. Symmetric inventory/repricing attribution sums
+back to Q, with an explicit numerical residual. A linear Greek approximation and
+its residual remain diagnostics. Gross contract changes and the net/gross ratio
+disclose cancellation; they do not estimate path turnover or market impact.
+
+The calculation requires explicit SPX/AM or SPXW/PM identity, expiry, fixing
+instant, right, strike, $100 multiplier, positive IV, signed start/end positions,
+an expected contract-ID denominator, and a causal source receipt. It uses exact
+time remaining in seconds, not a vendor one-hour floor. At or across fixing it
+returns unavailable pending a separately qualified settlement/unwind model.
+Missing contracts, unknown selected inventory/IV, stale sources, empty expiry
+selection and nonfinite repricing cannot become zero exposure. Ambiguous identity,
+duplicate economic contracts, duplicate JSON keys and impossible availability
+ordering are rejected.
+
+The receipt's clocks and reference are caller assertions. A successful calculation
+does not independently qualify those assertions, data entitlements or distribution
+rights. Coverage means the supplied universe only. Optional selected expiries are
+shown alongside expected/received/selected counts. The output always denies
+publication, calibrated-probability, observed-inventory, executed-flow and trading
+authority. The old scenario-surface function/schema and default CLI mode remain.
+
+## Reproducible local evidence
+
+Synthetic fixture: `research/options_estate/SPX_HEDGE_TARGET_FIXTURE_2026-10-08.json`.
+It is one invented SPXW contract and has no observed-market evidentiary value.
+
+```sh
+python3 scripts/build_options_scenario_surface.py --mode hedge-target \
+  --input research/options_estate/SPX_HEDGE_TARGET_FIXTURE_2026-10-08.json \
+  --output /Volumes/Mastermind/evidence/spx-session-mechanics-01a11ee7/synthetic-hedge-target.json
+python3 -m pytest tests/test_options_scenario_surface.py tests/test_intraday_greeks.py tests/test_gex_engine.py -q --disable-warnings --maxfail=2
+```
+
+CLI exit 0; fixture output SHA-256
+`8deedff8b7c10c0d0f8b7f87c02e618ed7e2c4a1714a66413b2d43b55592786d`.
+Target change is -3741.9617374099907 SPX index-equivalent risk units; attribution
+residual is 2.2737367544323206e-13. This is an arithmetic demonstration only.
+The regression command passed **173 tests**, one warning, exit 0. Tests include
+independent scalar normal-CDF deltas through the final hour, puts/calls, both
+inventory signs, zero moves, telescoping endpoints versus path turnover,
+large-move linear residuals, netting, overflow, missing data, stale/late clocks,
+fixing boundaries, expiry selection, conditional Flow and CLI compatibility.
+Existing `options-data` CI enrollment already includes this test suite.
+
+`python3 scripts/check_contract_delta.py --base 4fd2d0e2b2fb0eeb5d98222e01c4a8b36d9e9396`
+exited 0; its log is retained outside the repository at
+`/Volumes/Mastermind/evidence/spx-session-mechanics-01a11ee7/contract-delta.log`.
+`python3 scripts/agentos.py validate` exited 0 with zero errors and 97 warnings
+on other existing records. `git diff --check` exited 0. A prepublication fetch
+advanced `origin/main` to `1f1580ef4f09`; none of the three modified code/test files
+or the parent workstream changed between the pinned base and that revision.
+
+## Recovered scientific findings
+
+These are recovered historical results, not experiments rerun in this session:
+
+- At Macro `b281fe52`, `EXPOSURE_OUTLOOK_CROSS_INSTRUMENT_ABLATION_2026-09-21.json`
+  has SHA-256 `5f241659cda73bb9283de75875b630ee79482ff318df674fb3541f095541b975`.
+  QQQ's static local-GEX 120-minute mean CRPS improvement is negative
+  (-0.00007751462099308137; day-block interval excludes zero); IWM has only one
+  eligible exposure record. The state challenger also worsens Brier score.
+  Exploratory SPY performance is not robust cross-instrument forecasting proof.
+- At the same commit, `EXPOSURE_OUTLOOK_CALIBRATION_REPLAY_2026-09-21.json`
+  has SHA-256 `2b66127aaa59f89dc1a37e6107898d4a6c18b9e0610ef6ac46de3a75a83bfbc6`.
+  Widening-only and signed-CQR adjustments both failed the proper interval-score
+  gate. Historical consumer availability remains unverified. Raw uncalibrated
+  quantiles must not be promoted to calibrated probabilities.
+
+The new SPX targets remain separately **NOT_EVALUATED**: 15-minute excursion,
+remaining-session high/low, and closing outcome. The recovered negative evidence
+neither licenses their publication nor proves a null for these new hypotheses.
+No unsigned-OI, public Flow reconstruction, or participant-informed contender has
+yet passed a common point-in-time SPX evaluation in this assignment.
+
+## Current external gates and exact return conditions
+
+1. **Commission unavailable.** The named
+   `SPX_SESSION_MECHANICS_CODEX_EXECUTION_COMMISSION_2026-10-08.md` was absent from
+   the chat attachment surface, workspace and searched download/attachment paths.
+   Its contents have not been read. The user was asked for its path/Page/link.
+   Broader contracts, scientific target definitions and product composition need
+   reconciliation against that file before adoption.
+2. **Raw source access unproven.** The existing local ThetaData owner's health read
+   at configured 127.0.0.1:25503 returned ConnectionError. A single read-only request
+   through incumbent `m1` transport failed before execution with exit 255,
+   `exec request failed on channel 0`. No lease, service or credentials were changed.
+   This does not prove that SPX history is absent or that licensing was refused.
+   Resume source qualification when the existing source owner can serve a raw
+   SPX/SPXW reference/quote/history sample with genuine availability clocks.
+3. **Aggregate is not raw/live proof.** Committed `site/gex/SPX.json` is dated
+   2026-10-08; `site/options_structure/gex_state/SPX.json` is dated
+   2026-10-08T16:00:00-04:00. These are aggregate artifacts, not an independently
+   qualified intraday book, live SSE chain or dealer inventory. No one-minute
+   data was manufactured from candles.
+4. **Entitlements/rights unqualified.** No participant-tagged historical dataset,
+   ES basis/history sample or customer redistribution rights were established.
+   No purchase was made. Standard identity follows
+   [Cboe's SPX specification](https://www.cboe.com/tradable-products/sp-500/spx-options/spx-specifications/).
+   [ThetaData's Greek-history documentation](https://thetadata.net/docs/operations/option_history_greeks_all.html)
+   makes its time-to-expiry convention a qualification question; the local kernel
+   itself is not floored at an hour. Vendor Greeks are not automatically suitable
+   for final-hour inference. ES risk conversion additionally needs its own basis
+   and contract evidence, not just a multiplier.
+5. **Independent review not started.** Executive exposed read-only server 1.4.0.
+   The permitted manual Fabric adapter request
+   `spx-01a11ee7-contract-review`, rooted at
+   `01a11ee7-d9fe-71f1-b582-193891266722`, returned exit 75
+   `ECONOMIC_POLICY_REFUSED: leaf_labor_requires_escalation` before launch.
+   The refusal was not retried through another carrier or native child. Parent
+   adversarial tests are not independent review. The existing capacity/review
+   owner must resolve admission before review can start.
+6. **Production acceptance unavailable.** Actual Chrome navigation to
+   `https://app.mastermind-x.com/options?tab=gex` confirmed a signed-in account but
+   displayed the Options subscription gate. No trial or subscription was started.
+   Screenshot: `/Volumes/Mastermind/evidence/spx-session-mechanics-01a11ee7/production-options-entitlement.png`.
+   This proves current access behavior only. No new source-to-API-to-browser,
+   EN/ZH, mobile or deployed-product acceptance has occurred.
+
+Next critical dependency is the complete commission and existing source-owner
+access. Then qualify the raw book/Flow/clock denominator, review this numerical
+seam, and bind it through the already-owned transport and Options Workspace.
+Historical evaluation and UI acceptance remain separate gates. No merge,
+installation, production publication or deployment is claimed.
