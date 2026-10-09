@@ -111,6 +111,28 @@ def test_receipt_expires_in_twenty_minutes_even_when_mac_was_valid():
     assert "INVALID_SCAN_PROOF" in str(err.value)
 
 
+
+def test_producer_reread_clock_compares_actual_utc_instants():
+    initial = _public()
+    proof = _owner().issue(initial)
+    assert proof
+    def authority_with_clock(clock):
+        changed = copy.deepcopy(FIXTURE)
+        changed["as_of_utc"] = clock
+        return _owner(reader=lambda tickers, *, event_id=None, now_utc=None:
+                      _reader(tickers, event_id=event_id, now_utc=now_utc,
+                              packet=changed))
+    # Within the same second this is LATER, although the literal string
+    # "....00.100Z" sorts before "....00Z". It must remain valid.
+    newer = authority_with_clock("2026-10-09T02:00:00.100000Z")
+    assert newer.require_public_scan(proof).public_safe
+    # The opposite direction must still invalidate even a signed token.
+    older = authority_with_clock("2026-10-09T01:59:59.900000Z")
+    with pytest.raises(Exception) as error:
+        older.require_public_scan(proof)
+    assert "SCAN_PROOF_STALE" in str(error.value)
+
+
 def test_rights_removed_or_correction_generation_changed_invalidates_live_proof():
     proof = _owner().issue(_public())
     bad_rights = copy.deepcopy(FIXTURE)

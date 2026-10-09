@@ -180,7 +180,18 @@ class ScanReceiptAuthority:
                 or tuple(_supported(current_public)) != tuple(tickers)):
             raise _fail("SCAN_PROOF_SUPERSEDED", 403)
         current_clock = current_public.get("as_of_utc", "")
-        if not isinstance(current_clock, str) or current_clock < as_of:
+        # ISO UTC spellings do not sort by time when one has fractional
+        # seconds: "...00.100Z" sorts before "...00Z" despite being newer.
+        # Compare parsed instants and keep malformed/non-UTC values denied.
+        try:
+            current_stamp = datetime.fromisoformat(current_clock.replace("Z", "+00:00"))
+            receipt_stamp = datetime.fromisoformat(as_of.replace("Z", "+00:00"))
+        except (AttributeError, TypeError, ValueError):
+            raise _fail("SCAN_PROOF_STALE", 403) from None
+        if (current_stamp.tzinfo is None or receipt_stamp.tzinfo is None
+                or current_stamp.utcoffset() != timedelta(0)
+                or receipt_stamp.utcoffset() != timedelta(0)
+                or current_stamp < receipt_stamp):
             raise _fail("SCAN_PROOF_STALE", 403)
         return ScanEvidence(event_id=event_id, tickers=tuple(tickers),
                             as_of_utc=current_clock, public_safe=True)
