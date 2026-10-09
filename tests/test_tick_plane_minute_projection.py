@@ -6,6 +6,10 @@ from decimal import Decimal
 from engine.tick_plane.minute_projection import (
     MINUTE_NS, MinuteProjectionRefusal, project_provisional_minute,
 )
+from engine.tick_plane.pilot_diagnostics import (
+    cohort_row_from_source_minutes, summarize_tp1_soak_evidence,
+    PilotEvidenceRefusal,
+)
 
 M=1_791_417_600_000_000_000
 M-=M%MINUTE_NS
@@ -390,6 +394,137 @@ class ProjectionTests(unittest.TestCase):
         del sample["gross_source_shares"]
         with self.assertRaisesRegex(MinuteProjectionRefusal,"exact incumbent"):
             run([sample])
+
+
+def native_pilot_row(minute=None, *, expected_minutes=1, **options):
+    chosen=run() if minute is None else minute
+    d=dict(ticker="SPY",session="2026-10-08:RTH",
+           minute_observations=[chosen] if isinstance(chosen,dict) else chosen,
+           expected_session_minutes=expected_minutes,
+           reference_volume_shares="1.00",reference_scope="RTH",
+           reference_receipt="source:grouped:matched-rth")
+    d.update(options)
+    return cohort_row_from_source_minutes(**d)
+
+
+class NativeVolumePilotIntegrationTests(unittest.TestCase):
+    def test_real_tp1_minute_fields_feed_source_soak_ratios(self):
+        row=native_pilot_row()
+        self.assertEqual(row["state"],"ELIGIBLE")
+        self.assertEqual(row["source_volume_shares"],"1.00")
+        self.assertEqual(row["lit_classified_quote_le5s_prints"],1)
+        self.assertEqual(row["lit_eligible_prints"],1)
+        self.assertTrue(row["source_receipt"].startswith("tp1-minute-cohort:"))
+        result=summarize_tp1_soak_evidence(
+            session="2026-10-08:RTH",expected_session_seconds=60,
+            connected_seconds=60,measurement_cutoff_ns=CUT+1,
+            source_manifest_sha256="d"*64,source_manifest_known_ns=CUT,
+            cohort=[row])
+        self.assertEqual(result["provisional_numeric_state"],"NUMERIC_THRESHOLDS_MET")
+        self.assertIsNone(result["production_source_acceptance"])
+
+    def test_partial_minute_coverage_cannot_prove_full_pilot_session(self):
+        row=native_pilot_row(expected_minutes=2)
+        self.assertEqual(row["state"],"SOURCE_UNQUALIFIED")
+        self.assertIn("PARTIAL_MINUTE_COVERAGE",row["carveout_reason"])
+        diag=summarize_tp1_soak_evidence(
+            session="2026-10-08:RTH",expected_session_seconds=120,
+            connected_seconds=120,measurement_cutoff_ns=CUT+1,
+            source_manifest_sha256="d"*64,source_manifest_known_ns=CUT,
+            cohort=[row])
+        self.assertEqual(diag["provisional_numeric_state"],
+                         "INSUFFICIENT_COMPARABLE_EVIDENCE")
+
+    def test_source_volume_unknown_from_conditions_blocks_reconciliation(self):
+        value=row(state="UNKNOWN",reason="TRADE_CONDITION_POLICY_UNQUALIFIED")
+        value["trade_volume_eligible"]=None
+        minute=run([value])
+        pilot=native_pilot_row(minute=minute)
+        self.assertEqual(pilot["state"],"SOURCE_UNQUALIFIED")
+        self.assertIn("UNKNOWN_SOURCE_VOLUME_CONDITION",pilot["carveout_reason"])
+        self.assertEqual(pilot["source_volume_shares"],"0")
+
+    def test_session_scope_mismatch_reaches_report_as_uncomparable(self):
+        selected=native_pilot_row(reference_scope="FULL_DAY")
+        diag=summarize_tp1_soak_evidence(
+            session="2026-10-08:RTH",expected_session_seconds=60,
+            connected_seconds=60,measurement_cutoff_ns=CUT+1,
+            source_manifest_sha256="d"*64,source_manifest_known_ns=CUT,
+            cohort=[selected])
+        self.assertEqual(diag["n_mismatched_reference_scope"],1)
+        self.assertEqual(diag["n_volume_comparable_symbols"],0)
+
+    def test_two_contiguous_minute_packets_aggregate_original_share_volume(self):
+        a=run()
+        b=copy.deepcopy(a)
+        b["start_ns"]=a["end_ns"]
+        b["end_ns"]+=MINUTE_NS
+        b["decision_ns"]+=MINUTE_NS
+        b["source_complete_through_ns"]+=MINUTE_NS
+        b["watermark_available_ns"]+=MINUTE_NS
+        b["source_observation_sha256"]="e"*64
+        cohort=native_pilot_row(minute=[a,b],expected_minutes=2,
+                                reference_volume_shares="2.00")
+        self.assertEqual(cohort["state"],"ELIGIBLE")
+        self.assertEqual(cohort["source_volume_shares"],"2.00")
+        self.assertEqual(cohort["lit_eligible_prints"],2)
+
+    def test_missing_or_duplicated_minute_rejected_by_source_composer(self):
+        a=run()
+        b=copy.deepcopy(a)
+        with self.assertRaisesRegex(PilotEvidenceRefusal,"duplicate source minute"):
+            native_pilot_row(minute=[a,b],expected_minutes=2)
+
+    def test_mixed_original_quote_policy_generations_mark_source_unqualified(self):
+        a=run()
+        b=copy.deepcopy(a)
+        b["start_ns"]=a["end_ns"]
+        b["end_ns"]+=MINUTE_NS
+        b["decision_ns"]+=MINUTE_NS
+        b["source_complete_through_ns"]+=MINUTE_NS
+        b["watermark_available_ns"]+=MINUTE_NS
+        b["quote_condition_rules_sha256"]="e"*64
+        rowout=native_pilot_row(minute=[a,b],expected_minutes=2,
+                                reference_volume_shares="2.00")
+        self.assertEqual(rowout["state"],"SOURCE_UNQUALIFIED")
+        self.assertIn("MIXED_OR_MISSING_SOURCE_POLICY_GENERATION",
+                      rowout["carveout_reason"])
+
+    def test_source_trade_conditions_volume_only_participates_in_daily_volume(self):
+        regular=row("reg")
+        special=row("special",state="INELIGIBLE",
+                    reason="VOLUME_ONLY_OR_NON_PRICE_FORMING")
+        special["gross_source_shares"]="12.375"
+        special["trade_volume_eligible"]=True
+        m=run([regular,special])
+        out=native_pilot_row(minute=m,reference_volume_shares="13.375")
+        self.assertEqual(out["source_volume_shares"],"13.375")
+        self.assertEqual(out["lit_classified_quote_le5s_prints"],1)
+
+    def test_forged_source_minute_classification_counters_rejected(self):
+        candidate=run()
+        candidate["n_lit_classified_quote_le5s_prints"]+=1
+        with self.assertRaisesRegex(PilotEvidenceRefusal,"counters inconsistent"):
+            native_pilot_row(minute=candidate)
+
+    def test_grouped_reference_missing_preserves_partial_evidence(self):
+        candidate=native_pilot_row(reference_volume_shares=None,
+                                   reference_receipt=None,reference_scope=None)
+        self.assertEqual(candidate["state"],"ELIGIBLE")
+        self.assertIsNone(candidate["reference_volume_shares"])
+
+    def test_halt_reason_cannot_promote_numeric_gate(self):
+        candidate=native_pilot_row(halt_reopen_reason="HALT_CARVEOUT_REQUIRED")
+        self.assertEqual(candidate["state"],"HALT_REOPEN_CARVEOUT")
+        self.assertEqual(candidate["carveout_reason"],"HALT_CARVEOUT_REQUIRED")
+
+    def test_minute_receipt_digest_changes_when_original_source_digest_changes(self):
+        a=run()
+        b=copy.deepcopy(a)
+        b["source_observation_sha256"]="f"*64
+        first=native_pilot_row(minute=a)
+        second=native_pilot_row(minute=b)
+        self.assertNotEqual(first["source_receipt"],second["source_receipt"])
 
 if __name__=="__main__":
     unittest.main()
