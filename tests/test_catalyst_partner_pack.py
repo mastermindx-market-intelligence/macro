@@ -282,6 +282,61 @@ class CatalystPartnerPackTests(unittest.TestCase):
             self.assertIn("font-family:var(--font-ui)", page)
             self.assertIn("var(--r-card", page)
 
+    def test_rights_withdrawal_retires_stale_svg_from_same_review_folder(self):
+        earlier = self.make()
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            first = write_partner_pack(earlier, folder)
+            self.assertIn("intelligence-card.svg", {p.name for p in first})
+            self.assertTrue((folder / "intelligence-card.svg").is_file())
+
+            # The generation/claim may still exist when a licensed source
+            # revokes only image-rehosting rights. Never leave earlier media
+            # accessible beside the new rights-denied manifest.
+            self.event["sources"][0]["rights"]["public_rehost"] = False
+            next_pack = self.make()
+            self.assertEqual(next_pack["media_status"], "REHOST_RIGHTS_BLOCKED")
+            current = write_partner_pack(next_pack, folder)
+            self.assertNotIn("intelligence-card.svg",
+                             {p.name for p in current})
+            self.assertFalse((folder / "intelligence-card.svg").exists())
+            self.assertIn("Image rehosting withheld",
+                          (folder / "index.html").read_text())
+            manifest = json.loads((folder / "manifest.json").read_text())
+            self.assertEqual(manifest["media_status"], "REHOST_RIGHTS_BLOCKED")
+            self.assertEqual(manifest["pack_id"], next_pack["pack_id"])
+
+    def test_duplicate_value_card_retires_previous_svg(self):
+        original = self.make()
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            write_partner_pack(original, folder)
+            self.assertTrue((folder / "intelligence-card.svg").is_file())
+            self.event["affected_tickers"][0]["evidence_ids"] = [
+                "fixture-claim-exa",
+            ]
+            next_pack = self.make()
+            self.assertEqual(next_pack["media_status"],
+                             "CARD_WITHHELD_NO_ADDITIONAL_VALUE")
+            write_partner_pack(next_pack, folder)
+            self.assertFalse((folder / "intelligence-card.svg").exists())
+
+    def test_rights_withdrawal_rejects_stale_media_symlink_before_any_writes(self):
+        self.event["sources"][0]["rights"]["public_rehost"] = False
+        held = self.make()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            folder = root / "pack"
+            folder.mkdir()
+            sentinel = root / "protected-media.txt"
+            sentinel.write_text("DO_NOT_DELETE", encoding="utf-8")
+            (folder / "intelligence-card.svg").symlink_to(sentinel)
+            with self.assertRaises(PackRejected) as ctx:
+                write_partner_pack(held, folder)
+            self.assertEqual(ctx.exception.code, "UNSAFE_OUTPUT_PATH")
+            self.assertEqual(sentinel.read_text(), "DO_NOT_DELETE")
+            self.assertFalse((folder / "index.html").exists())
+
     def test_rights_fail_closed_and_dont_rehost_without_positive_receipt(self):
         self.event["sources"][0]["rights"]["public_display"] = False
         self.refused("BLOCKED_PUBLIC_RIGHTS")
