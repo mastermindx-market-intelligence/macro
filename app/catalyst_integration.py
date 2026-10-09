@@ -16,7 +16,7 @@ from threading import Lock
 from datetime import datetime, timedelta, timezone
 from importlib import import_module
 from typing import Any, Callable
-from urllib.parse import parse_qsl, urlsplit
+from urllib.parse import parse_qsl, unquote, urlsplit
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -25,6 +25,9 @@ from app import edge_client
 router = APIRouter()
 _TICKER = re.compile(r"[A-Z][A-Z0-9.\-]{0,9}\Z")
 _EVENT = re.compile(r"[A-Za-z0-9_.:\-]{1,128}\Z")
+# Scan-owned public links may not leak addresses through arbitrary query keys,
+# URL paths, fragments, or percent-encoded values.
+_SOURCE_URL_EMAIL = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}", re.IGNORECASE)
 _STATUSES = {"SUPPORTED", "NOT_COVERED", "TEMPORARILY_UNAVAILABLE", "RIGHTS_BLOCKED"}
 _PUBLIC_COVERAGE = {
     "SUPPORTED": "Only rights-qualified public evidence is displayed; other sources may be excluded.",
@@ -165,6 +168,20 @@ def _public_url(raw: Any) -> str:
                       "session", "user_id"}
     if any(key.lower() in forbidden_keys for key, _ in parse_qsl(u.query, keep_blank_values=True)):
         raise ValueError("private source query")
+    # Key-only screening missed ?ref=person%40example.org: browsers copy and
+    # navigate the *whole* URL, disclosing the encoded identity to the source
+    # host and possibly to analytics/referrer systems. Decode a bounded number
+    # of times to defeat simple double-encoding without changing safe URLs.
+    decoded_url = raw
+    for _ in range(4):
+        if _SOURCE_URL_EMAIL.search(decoded_url):
+            raise ValueError("identity in public source URL")
+        expanded = unquote(decoded_url)
+        if expanded == decoded_url:
+            break
+        decoded_url = expanded
+    if _SOURCE_URL_EMAIL.search(decoded_url):
+        raise ValueError("identity in public source URL")
     try:
         ipaddress.ip_address(u.hostname)
     except ValueError:

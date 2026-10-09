@@ -8,6 +8,7 @@ rechecks the current public producer. No token is minted without a strong secret
 from __future__ import annotations
 
 import base64
+import binascii
 import hashlib
 import hmac
 import json
@@ -71,7 +72,7 @@ def _supported(scan: dict) -> tuple[str, ...]:
             or scan.get("publication_state") not in ("PUBLIC_QUALIFIED", "PARTIAL")
             or not isinstance(scan.get("event_id"), str)
             or not _EVENT.fullmatch(scan["event_id"])
-            or type(scan.get("generation")) is not int or scan["generation"] < 1):
+            or type(scan.get("generation")) is not int or scan["generation"] < 0):
         return ()
     results = scan.get("results")
     if not isinstance(results, list):
@@ -151,7 +152,7 @@ class ScanReceiptAuthority:
             generation, issued_at = payload.get("generation"), payload.get("issued_at")
             as_of = payload.get("as_of_utc")
             if (not isinstance(event_id, str) or not _EVENT.fullmatch(event_id)
-                    or type(generation) is not int or generation < 1
+                    or type(generation) is not int or generation < 0
                     or type(issued_at) is not int
                     or not isinstance(as_of, str) or len(as_of) > 40
                     or not isinstance(tickers, list) or not 1 <= len(tickers) <= 10
@@ -162,7 +163,7 @@ class ScanReceiptAuthority:
             lag = current - datetime.fromtimestamp(issued_at, tz=timezone.utc)
             if lag > _TTL or lag < -timedelta(seconds=30):
                 raise ValueError("expired or future proof")
-        except (ValueError, TypeError, KeyError, OverflowError):
+        except (ValueError, TypeError, KeyError, OverflowError, binascii.Error):
             raise _fail("INVALID_SCAN_PROOF") from None
 
         # A MAC is NOT a promise of evergreen rights. Always ask the canonical
@@ -179,7 +180,18 @@ class ScanReceiptAuthority:
                 or tuple(_supported(current_public)) != tuple(tickers)):
             raise _fail("SCAN_PROOF_SUPERSEDED", 403)
         current_clock = current_public.get("as_of_utc", "")
-        if not isinstance(current_clock, str) or current_clock < as_of:
+        # ISO UTC spellings do not sort by time when one has fractional
+        # seconds: "...00.100Z" sorts before "...00Z" despite being newer.
+        # Compare parsed instants and keep malformed/non-UTC values denied.
+        try:
+            current_stamp = datetime.fromisoformat(current_clock.replace("Z", "+00:00"))
+            receipt_stamp = datetime.fromisoformat(as_of.replace("Z", "+00:00"))
+        except (AttributeError, TypeError, ValueError):
+            raise _fail("SCAN_PROOF_STALE", 403) from None
+        if (current_stamp.tzinfo is None or receipt_stamp.tzinfo is None
+                or current_stamp.utcoffset() != timedelta(0)
+                or receipt_stamp.utcoffset() != timedelta(0)
+                or current_stamp < receipt_stamp):
             raise _fail("SCAN_PROOF_STALE", 403)
         return ScanEvidence(event_id=event_id, tickers=tuple(tickers),
                             as_of_utc=current_clock, public_safe=True)
