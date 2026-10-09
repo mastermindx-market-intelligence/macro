@@ -438,6 +438,50 @@ class CapturedMinuteIntegrationTests(unittest.TestCase):
         self.assertNotEqual(first["source_frame_order_sha256"],
                             second["source_frame_order_sha256"])
 
+    def test_quote_received_after_first_trade_cannot_retro_sign_buy(self):
+        args=captured_synthetic_window()
+        combined=json.loads(args["original_frames"][1]["raw_bytes"])
+        self.assertEqual([event["ev"] for event in combined],["Q","T"])
+        early_quote, first_trade=combined
+        first_frame=args["original_frames"][1]
+        first_frame["raw_bytes"]=json.dumps([first_trade]).encode()
+        # The quote's SIP clock predates the print, but its ORIGINAL host
+        # receipt came 5ms AFTER the print. The minute watermark sees both.
+        args["original_frames"].insert(2,{
+            "raw_bytes":json.dumps([early_quote]).encode(),
+            "frame_received_ns":first_frame["frame_received_ns"]+5_000_000,
+            "source_receipt_id":"late-prior-sip-quote-original-receipt",
+        })
+        outcome=compose_captured_minute(**args)
+        minute=outcome["minute_private_only"]
+        self.assertEqual(minute["state"],"PROVISIONAL_MEASURED_CONTEXT")
+        self.assertEqual(minute["n_sampled_prints"],2)
+        self.assertEqual(minute["n_unclassified"],1)
+        self.assertEqual(minute["reason_counts"],
+                         {"QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT":1})
+        self.assertEqual(minute["unknown_notional_usd"],"1009.0")
+        self.assertEqual(minute["sell_proxy_notional_usd"],"1001.0")
+        self.assertEqual(minute["n_buy_proxy"],0)
+        self.assertEqual(len(outcome["quotes_private_memory_only"]),3)
+        self.assertIsNone(minute["absorption_signal"])
+
+    def test_earlier_received_prior_quote_keeps_first_trade_qualified(self):
+        args=captured_synthetic_window()
+        combined=json.loads(args["original_frames"][1]["raw_bytes"])
+        prior_quote,first_trade=combined
+        args["original_frames"][1]["raw_bytes"]=json.dumps([prior_quote]).encode()
+        args["original_frames"][1]["frame_received_ns"]=(
+            prior_quote["t"]*1_000_000+1_000_000)
+        args["original_frames"].insert(2,{
+            "raw_bytes":json.dumps([first_trade]).encode(),
+            "frame_received_ns":first_trade["t"]*1_000_000+1_000_000,
+            "source_receipt_id":"pretrade-original-receipt",
+        })
+        minute=compose_captured_minute(**args)["minute_private_only"]
+        self.assertEqual(minute["n_buy_proxy"],1)
+        self.assertEqual(minute["n_sell_proxy"],1)
+        self.assertEqual(minute["buy_proxy_notional_usd"],"1009.0")
+
     def test_unqualified_reference_custody_cannot_become_signed_minute(self):
         args=captured_synthetic_window()
         args["original_reference_custody_attested"]=False
