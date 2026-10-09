@@ -155,11 +155,11 @@ Each is a **single professional inquiry template**, not a bulk email/DM sequence
 **Subject:** Free evidence-first US-stock earnings scan concept for TCI listeners
 
 > Hello The Canadian Investor team,  
-> Your recent U.S.-stock and AI-capex episodes made me think a practical listener tool could help: an ORCL/MSFT/TSM three-ticker scan that shows sourced event dates, what each reporting company actually said, and what is *not* confirmed. People see the first result before signing up, and only actively verified subscribers can request later updates.  
+> Your October 8 episode on Micron's AI spending and your recent AI-capex discussions made me think a practical listener tool could help: our current private ORCL/MSFT/TSM three-ticker concept shows sourced event dates, what the reporting companies actually said, and what remains *unconfirmed*. We also have a proposed MU/AMD/NVDA evidence-led version better aligned with that episode, but it would require separate ticker/source verification and editor choice. People see the first result before signing up, and only actively verified subscribers can request later updates.  
 > Is a no-fee educational show-note demo or short on-air concept something you consider? We understand your contact form also handles advertising; this is **not** a booked sponsorship, and any paid discussion would be separate. Here is a private concept to review if you wish: [PRIVATE REVIEW LINK — ONLY AFTER 04 RIGHTS CHECK].  
 > [SIGNATURE]
 
-**Operator gate:** official advertising/suggestions form, host approval and applicable Canadian financial promotion/CASL check; no assumption of free airtime or user portfolio data.
+**Operator gate:** official advertising/suggestions form, host approval and applicable Canadian financial promotion/CASL check; no assumption of free airtime or user portfolio data. The October 8 Micron topic is a first-party [published episode](https://thecanadianinvestorpodcast.com/podcast/the-canadian-investor), not a publisher invitation or approval; keep the 04 JSON profile untouched unless its owner explicitly selects the alternative after verification.
 
 ## 6. Tracking, privacy, contact economics, and correction test
 
