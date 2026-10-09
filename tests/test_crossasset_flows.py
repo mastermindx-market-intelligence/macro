@@ -60,20 +60,34 @@ def test_hero_has_all_bilingual_keys():
             assert isinstance(h[key], str) and h[key], f"key {key!r} empty for ({breadth},{concentration})"
 
 
-def test_hero_unknown_concentration_degrades_to_breadth_row():
-    """unknown concentration should fall back to breadth-only row (no KeyError)."""
-    h_unk = _compose_hero(0.5, "unknown")
-    h_div = _compose_hero(0.5, "diversified")
-    # unknown falls through to diversified variant (breadth-only fallback per spec)
-    assert h_unk["tone"] == h_div["tone"]
-    assert h_unk["headline_en"] == h_div["headline_en"]
+@pytest.mark.parametrize("concentration", ["unknown", None, "", "unrecognized"])
+@pytest.mark.parametrize("breadth,tone,headline_en,headline_zh", [
+    (0.5, "green", "Upward trends are broader", "上涨趋势更广泛"),
+    (0.0, "amber", "Trends remain mixed", "趋势仍然分化"),
+    (-0.5, "red", "Downward trends are broader", "下跌趋势更广泛"),
+])
+def test_hero_unknown_concentration_is_breadth_only(
+    breadth, concentration, tone, headline_en, headline_zh,
+):
+    """CA-W3-R6: absent correlation cannot imply independent markets in either locale.
+
+    Supersedes the old unknown == diversified test: those rows made correlation
+    claims, so their wording was not actually a breadth-only fallback.
+    """
+    h = _compose_hero(breadth, concentration)
+    assert h == {
+        "tone": tone,
+        "headline_en": headline_en,
+        "headline_zh": headline_zh,
+        "sub_en": "Correlation data is unavailable; we can't tell whether markets are moving independently.",
+        "sub_zh": "暂无相关性数据，无法判断各市场是否独立运行。",
+        "stance_en": "Watch — diversification is unverified.",
+        "stance_zh": "留意——分散化效果尚不明确。",
+    }
 
 
-def test_hero_unknown_concentration_none_verdict():
-    """None verdict also degrades gracefully."""
-    h = _compose_hero(-0.5, None)
-    assert h["tone"] == "red"
-    assert isinstance(h["headline_en"], str)
+def test_hero_missing_breadth_and_correlation_keep_mixed_breadth_default():
+    assert _compose_hero(None, None) == _compose_hero(0.0, "unknown")
 
 
 def test_hero_none_breadth_defaults_to_mixed():
