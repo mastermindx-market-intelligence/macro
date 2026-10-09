@@ -162,10 +162,16 @@ def _public_packet(packet: dict, now: datetime) -> tuple[dict, dict[str, dict], 
     _require(packet.get("public_safe") in ("PUBLIC_SAFE", "APPROVED_PUBLIC", "ALLOWED"),
              "BLOCKED_PUBLIC")
     v = packet.get("verification")
-    _require(isinstance(v, dict) and v.get("status") == "VERIFIED"
-             and v.get("source_owner") == "engine.marketing.catalyst_packets"
-             and isinstance(v.get("receipt_id"), str)
-             and bool(v["receipt_id"].strip()), "EVENT_VERIFICATION_MISSING")
+    if packet.get("demo_only") is True:
+        _require(isinstance(v, dict)
+                 and v.get("status") == "SYNTHETIC_FIXTURE"
+                 and v.get("source_owner") == "fixture.only",
+                 "INVALID_SYNTHETIC_FIXTURE")
+    else:
+        _require(isinstance(v, dict) and v.get("status") == "VERIFIED"
+                 and v.get("source_owner") == "engine.marketing.catalyst_packets"
+                 and isinstance(v.get("receipt_id"), str)
+                 and bool(v["receipt_id"].strip()), "EVENT_VERIFICATION_MISSING")
     event_id = _atom(packet.get("event_id"), "INVALID_EVENT_ID", 96)
     _require(_ID.fullmatch(event_id) is not None, "INVALID_EVENT_ID")
     kind = _atom(packet.get("event_kind"), "INVALID_EVENT_KIND", 35).lower()
@@ -384,10 +390,10 @@ def build_partner_pack(
     violations = validate_copy(social_head, social_body.rstrip(), ctx)
     _require(not violations, "SOCIAL_COPY_REJECTED")
     draft = {"title": event["primary_subject"],
-             "body": "<p>" + html.escape(" ".join(c["text"] for c in claims))
-                     + "</p>"}
+             "body_html": "<p>" + html.escape(" ".join(c["text"] for c in claims))
+                          + "</p>"}
     for gate in (check_banned_lexicon, check_advice_lexicon, check_cheese_test):
-        _require(gate(draft, {}, {}).get("passed") is True,
+        _require(gate(draft, {}, {}).get("ok") is True,
                  "EDITORIAL_COPY_REJECTED")
     # Embed is an operator-reviewed concept, not an installed widget/publisher.
     embed = (
