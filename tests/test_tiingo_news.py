@@ -207,7 +207,7 @@ def test_financial_integration_filters_sources_and_uses_single_qbus_batch(monkey
     monkeypatch.setattr(fin._tiingo_news_api, "fetch_articles", lambda *a, **kw: (raw, "ok"))
     stored = []
     monkeypatch.setattr(fin._qbus, "append_items", lambda rows: stored.append(rows))
-    items, state, audit = fin._tiingo_articles(NOW)
+    items, state, audit = fin._tiingo_articles(NOW, _received_at=NOW)
     assert state == "ok" and len(items) == 1
     assert items[0]["provider_id"] == 81234
     assert items[0]["url"] == ""  # rights denied source-link display
@@ -218,6 +218,23 @@ def test_financial_integration_filters_sources_and_uses_single_qbus_batch(monkey
     assert audit["filtered_source"] == 1
     assert audit["filtered_untagged"] == 1
     assert audit["eligible_articles"] == 1
+
+
+def test_rights_revoked_while_fetching_deny_commit(monkeypatch, tmp_path):
+    from engine import financial_news as fin
+    path = tmp_path / "test-rights.json"
+    path.write_text(json.dumps(receipt()), encoding="utf-8")
+    env = {"TIINGO_NEWS_ENABLED": "1", "TIINGO_NEWS_RIGHTS_FILE": str(path),
+           "TIINGO_API_KEY": "test-token"}
+    monkeypatch.setattr(fin.config, "secret", lambda name: env.get(name))
+
+    def revoked_during_fetch(*a, **kw):
+        path.write_text(json.dumps(receipt(status="denied")), encoding="utf-8")
+        return [article()], "ok"
+
+    monkeypatch.setattr(fin._tiingo_news_api, "fetch_articles", revoked_during_fetch)
+    monkeypatch.setattr(fin._qbus, "append_items", lambda *a, **kw: pytest.fail("revoked feed stored"))
+    assert fin._tiingo_articles(NOW, _received_at=NOW)[1] == "rights_changed"
 
 
 def test_tiingo_stories_flow_into_ticker_index_without_changing_other_provider_schema(
