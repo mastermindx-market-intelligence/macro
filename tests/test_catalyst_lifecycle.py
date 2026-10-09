@@ -359,7 +359,7 @@ def test_source_provenance_links_with_public_accession_parameters_remain_valid()
     subject, html, plain = format_revision(
         update(source_urls=(link,)),
         "https://www.mastermind-x.com/unsubscribe.html")
-    assert link in html and link in plain
+    assert link in plain and link.replace("&", "&amp;") in html
     assert subject.startswith("Update:")
 
 
