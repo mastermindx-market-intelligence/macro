@@ -648,7 +648,7 @@ def _run_press_stream_acceptance_canary(
     )
 
 
-def _run_press_tick(*, dry_run: bool) -> dict:
+def _run_press_tick(*, dry_run: bool, canary_once: bool = False) -> dict:
     """Run one press-lane tick: poll wire RSS + press providers, then process.
 
     Emission is DOUBLE-gated: --dry-run OR MARKETING_PUBLISH_ENABLED-unset both
@@ -685,7 +685,8 @@ def _run_press_tick(*, dry_run: bool) -> dict:
     # G1 opt-in source-acceptance pilot. This is the SAME daemon, press scorer,
     # spool and Intelligence Desk — NOT a second collector/publisher/scheduler.
     # Refuse unsafe combinations before polling or any incidental source write.
-    if os.environ.get("PRESS_STREAM_ACCEPTANCE_CANARY", "").strip() == "1":
+    if (canary_once
+            and os.environ.get("PRESS_STREAM_ACCEPTANCE_CANARY", "").strip() == "1"):
         if dry_run:
             return {"_emit_allowed": False,
                     "_durable_stream_canary": "REFUSED_DRY_RUN"}
@@ -1839,7 +1840,18 @@ def main(argv: list[str] | None = None) -> int:
                 result = _run_one_tick(dry_run=args.dry_run, armed=armed, spool=args.spool)
                 _log_tick(result, now, dry_run=args.dry_run)
             if args.lane in ("press", "all"):
-                press_result = _run_press_tick(dry_run=args.dry_run)
+                # The acceptance canary may replace exactly one deliberate
+                # --once --lane press pass; it is NEVER a looping-mode toggle.
+                # A flag accidentally inherited by a production daemon cannot
+                # starve RSS/REST collection by short-circuiting every tick.
+                if (args.once and args.lane == "press"
+                        and not args.dry_run
+                        and os.environ.get("PRESS_STREAM_ACCEPTANCE_CANARY") == "1"):
+                    press_result = _run_press_tick(
+                        dry_run=False, canary_once=True
+                    )
+                else:
+                    press_result = _run_press_tick(dry_run=args.dry_run)
                 _log_press_tick(press_result, now, dry_run=args.dry_run)
             if args.lane in ("reply", "all"):
                 # XG-W6 reply-desk producer. Its own config gate

@@ -500,7 +500,7 @@ def _canary_setup(monkeypatch, root, *, floor=0.0):
 
 def test_canary_actual_press_packet_to_existing_sqlite_and_snapshot(tmp_path, monkeypatch):
     daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
-    result = daemon._run_press_tick(dry_run=False)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert result["_durable_stream_canary"] == "ACCEPTED"
     assert result["_emit_allowed"] is False
     assert external == []
@@ -529,7 +529,7 @@ def test_canary_desk_snapshot_failure_retains_source_then_replays_without_duplic
 
     with monkeypatch.context() as ctx:
         ctx.setattr(desk, "_atomic_json", fail_projection)
-        failed = daemon._run_press_tick(dry_run=False)
+        failed = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert failed["_durable_stream_canary"] == "STORE_OR_PROJECTION_FAILED"
     assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
     assert "story_spine" in json.loads((tmp_path / "state.json").read_text())
@@ -541,7 +541,7 @@ def test_canary_desk_snapshot_failure_retains_source_then_replays_without_duplic
             __import__("datetime").timezone.utc))["stories"]) == 1
     finally:
         store.close()
-    recovered = daemon._run_press_tick(dry_run=False)
+    recovered = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert recovered["_durable_stream_canary"] == "ACCEPTED"
     snapshot = json.loads((tmp_path /
                            "data/marketing/press/intelligence.json").read_text())
@@ -555,7 +555,7 @@ def test_canary_does_not_ack_below_intelligence_threshold(tmp_path, monkeypatch)
     daemon, _, external, item = _canary_setup(
         monkeypatch, tmp_path, floor=101.0
     )
-    result = daemon._run_press_tick(dry_run=False)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert result["_durable_stream_canary"] == "SOURCE_NOT_QUALIFIED"
     assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
     assert external == []
@@ -566,7 +566,7 @@ def test_canary_refuses_publisher_armed_before_poll_or_drain(tmp_path, monkeypat
     from engine.marketing import sentinel
     daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
     monkeypatch.setattr(sentinel, "publish_enabled", lambda: True)
-    result = daemon._run_press_tick(dry_run=False)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert result["_durable_stream_canary"] == "REFUSED_PUBLISH_ARMED"
     assert result["_emit_allowed"] is False
     assert external == []
@@ -579,7 +579,7 @@ def test_canary_accepts_qualified_prefix_without_deleting_torn_suffix(
     path = _snapshot_spool(tmp_path)
     with path.open("ab") as output:
         output.write(b'{"id":"torn-row"')
-    result = daemon._run_press_tick(dry_run=False)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert result["_durable_stream_canary"] == "ACCEPTED_WITH_BLOCKED_SUFFIX"
     assert path.read_bytes() == b'{"id":"torn-row"'
     assert external == []
@@ -599,7 +599,7 @@ def test_canary_identity_checkpoint_never_advances_existing_providers_or_outbox_
         "wire_headroom": {"day": "2026-10-09", "exhausted": 0},
     }
     (tmp_path / "state.json").write_text(json.dumps(original))
-    result = daemon._run_press_tick(dry_run=False)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert result["_durable_stream_canary"] == "ACCEPTED"
     saved = json.loads((tmp_path / "state.json").read_text())
     for key, value in original.items():
@@ -617,7 +617,7 @@ def test_canary_refuses_before_store_when_identity_checkpoint_fails(
         raise OSError("simulated host-local identity writer unavailable")
 
     monkeypatch.setattr(daemon, "_save_press_state", deny_checkpoint)
-    result = daemon._run_press_tick(dry_run=False)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert result["_durable_stream_canary"] == "IDENTITY_CHECKPOINT_FAILED"
     assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
     assert not (tmp_path / "data/marketing/press/intelligence.db").exists()
@@ -631,7 +631,7 @@ def test_canary_refuses_ack_when_served_snapshot_drops_event(
     def no_visible_event(*args, **kwargs):
         return {"stories": [], "health": {"state": "quiet"}}
     monkeypatch.setattr(desk, "update_intelligence_desk", no_visible_event)
-    result = daemon._run_press_tick(dry_run=False)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert result["_durable_stream_canary"] == "SOURCE_NOT_SERVED"
     assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
     assert external == []
@@ -645,7 +645,7 @@ def test_canary_never_invokes_llm_summarizer(tmp_path, monkeypatch):
         calls.append("provider called")
         return None
     monkeypatch.setattr(breaking_summary, "_llm_summarize", fake_llm)
-    result = daemon._run_press_tick(dry_run=False)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert result["_durable_stream_canary"] == "ACCEPTED"
     assert calls == []
     assert external == []
@@ -659,7 +659,7 @@ def test_canary_unavailable_spool_read_fails_closed_without_consumption(
         raise OSError("simulated inaccessible source file")
     with monkeypatch.context() as ctx:
         ctx.setattr(ps, "peek_spool", deny_read)
-        result = daemon._run_press_tick(dry_run=False)
+        result = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert result["_durable_stream_canary"] == "SOURCE_READ_FAILED"
     assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
     assert external == []
@@ -672,7 +672,7 @@ def test_canary_press_pipeline_failure_preserves_original_spool(
     def deny_scoring(*args, **kwargs):
         raise RuntimeError("simulated scoring engine failure")
     monkeypatch.setattr(press_lane, "run_press_tick", deny_scoring)
-    result = daemon._run_press_tick(dry_run=False)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert result["_durable_stream_canary"] == "PIPELINE_FAILED"
     assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
     assert external == []
@@ -688,7 +688,7 @@ def test_canary_malformed_desk_packet_fails_closed(
             "id": "story-bad", "evidence": None,
         }]}
     monkeypatch.setattr(press_lane, "run_press_tick", malformed)
-    result = daemon._run_press_tick(dry_run=False)
+    result = daemon._run_press_tick(dry_run=False, canary_once=True)
     assert result["_durable_stream_canary"] == "SOURCE_NOT_QUALIFIED"
     assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
     assert external == []
@@ -707,3 +707,41 @@ def test_canary_log_has_explicit_source_acceptance_outcome(caplog):
             datetime.now(timezone.utc), dry_run=False,
         )
     assert "stream_canary=SOURCE_NOT_QUALIFIED" in caplog.text
+
+
+def test_canary_env_flag_alone_cannot_displace_regular_press_collectors(
+        tmp_path, monkeypatch):
+    """An inherited flag must not silently starve the ordinary looping feed."""
+    daemon, _, external, _ = _canary_setup(monkeypatch, tmp_path)
+    result = daemon._run_press_tick(dry_run=False)
+    assert "_durable_stream_canary" not in result
+    assert "wire" in external
+    assert "providers" in external
+
+
+def test_cli_explicit_one_shot_press_routes_only_one_canary_tick(monkeypatch):
+    from scripts import marketing_fastlane_daemon as daemon
+    monkeypatch.setenv(daemon._KILL_SWITCH_ENV, "1")
+    monkeypatch.setenv("PRESS_STREAM_ACCEPTANCE_CANARY", "1")
+    calls = []
+    def record_tick(*, dry_run, canary_once=False):
+        calls.append((dry_run, canary_once))
+        return {"_emit_allowed": False}
+    monkeypatch.setattr(daemon, "_run_press_tick", record_tick)
+    monkeypatch.setattr(daemon, "_log_press_tick", lambda *args, **kwargs: None)
+    monkeypatch.setattr(daemon, "_touch_heartbeat", lambda *args, **kwargs: None)
+    assert daemon.main(["--lane", "press", "--once"]) == 0
+    assert calls == [(False, True)]
+
+
+def test_cli_dry_run_cannot_promote_canary_to_consuming_tick(monkeypatch):
+    from scripts import marketing_fastlane_daemon as daemon
+    monkeypatch.setenv("PRESS_STREAM_ACCEPTANCE_CANARY", "1")
+    calls = []
+    def record_tick(*, dry_run, canary_once=False):
+        calls.append((dry_run, canary_once))
+        return {"_emit_allowed": False}
+    monkeypatch.setattr(daemon, "_run_press_tick", record_tick)
+    monkeypatch.setattr(daemon, "_log_press_tick", lambda *args, **kwargs: None)
+    assert daemon.main(["--lane", "press", "--once", "--dry-run"]) == 0
+    assert calls == [(True, False)]
