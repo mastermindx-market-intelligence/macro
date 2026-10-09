@@ -480,6 +480,7 @@ def tp1_minute(start=TP1_START, *, buy="1000", sell="500", mid="100",
         "condition_rules_ref":TP1_SHA,
         "exchange_reference_sha256":TP1_EXCHANGE_SHA,
         "quote_condition_rules_sha256":TP1_QUOTE_POLICY_SHA,
+        "max_quote_age_ns":25_000_000_000,
         "source_observation_sha256":"d"*64,
         "n_sampled_prints":10,"n_unclassified":2,
         "n_lit":9,"n_trf":1,"n_unknown_venue":0,
@@ -729,10 +730,10 @@ def test_tp1_tampered_notional_denominators_rejected():
         tp1_context(minute=[m])
 
 
-def test_tp1_stale_quote_context_is_never_carried_to_price_response():
+def test_tp1_stale_source_quote_policy_is_not_requalified_retroactively():
     r=tp1_context(max_quote_age_ns=1_000_000_000)
-    assert r["state"]=="PRICE_CONTEXT_UNOBSERVABLE"
-    assert r["reason"]["start"]=="STALE_NBBO"
+    assert r["state"]=="MINUTE_NOT_QUALIFIED"
+    assert r["reason"]=="SOURCE_QUOTE_AGE_POLICY_TOO_LENIENT"
 
 
 def test_tp1_mixed_quote_policy_generations_rejected():
@@ -844,3 +845,31 @@ def test_tp1_rejects_missing_minute_quote_policy_generation():
     m["quote_condition_rules_sha256"]=None
     with pytest.raises(TP1ContextRefusal,match="minute.quote_condition_rules_sha256"):
         tp1_context(minute=[m])
+
+
+def test_tp1_source_quote_age_policy_is_in_research_output():
+    v=tp1_context()
+    assert v["source_quote_age_limit_ns"]==25_000_000_000
+
+
+def test_tp1_stricter_upstream_quote_age_policy_is_compatible():
+    minute=tp1_minute()
+    minute["max_quote_age_ns"]=5_000_000_000
+    v=tp1_context(minute=[minute])
+    assert v["state"]=="PROVISIONAL_RESEARCH_CONTEXT"
+    assert v["source_quote_age_limit_ns"]==5_000_000_000
+
+
+def test_tp1_mixed_source_quote_age_policies_refused():
+    first=tp1_minute(TP1_START)
+    nextm=tp1_minute(TP1_END)
+    nextm["max_quote_age_ns"]=5_000_000_000
+    end=TP1_END+TP1_MINUTE_NS
+    nextm["decision_ns"]=end+1_000_000_000
+    nextm["watermark_available_ns"]=end+500_000_000
+    nextm["original_latest_available_ns"]=end-500_000_000
+    with pytest.raises(TP1ContextRefusal,match="mixed source quote-age policies"):
+        tp1_context(minute=[first,nextm],end_ns=end,
+                    decision_ns=end+10_000_000_000,
+                    watermark_ns=end,
+                    watermark_received_ns=end+2_000_000_000)
