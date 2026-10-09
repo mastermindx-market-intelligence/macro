@@ -42,7 +42,7 @@ _TOUCH_KEYS = ("utm_source", "utm_medium", "utm_campaign", "utm_content", "partn
 _PRIVATE_URL_KEYS = frozenset({"email", "e_mail", "phone", "ip", "user_id", "token",
                                "access_token", "auth", "authorization", "apikey",
                                "api_key", "secret", "session", "password", "signature"})
-_EMAIL_IN_URL = re.compile(r"[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}", re.I)
+_EMAIL_IN_URL = re.compile(r"[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", re.I)
 
 
 class FunnelGate(Exception):
