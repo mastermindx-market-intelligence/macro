@@ -20,7 +20,8 @@ def packet():
         "private_body": "DO NOT EXPOSE", "email": "secret@example.org",
         "results": [{
             "ticker": "NVDA", "status": "SUPPORTED", "relationship": "DIRECT", "public_safe": True,
-            "relationship_evidence_ids": ["sec-1"], "headline": "Test fixture: filed results available",
+            "relationship_evidence_ids": ["sec-1"], "headline_evidence_ids": ["sec-1"],
+            "headline": "Test fixture: filed results available",
             "as_of_utc": "2026-10-09T02:00:00Z", "correction_state": "CORRECTED",
             "what_changed": [{"text": "The fixture records a revised result.", "evidence_ids": ["sec-1"]}],
             "scenarios": [{"case": "BASE", "trigger": "Watch the next company update", "evidence_ids": ["sec-1"]}],
@@ -48,12 +49,15 @@ def test_real_shape_first_value_and_fail_closed_private_fields():
     assert "secret" not in str(scan).lower()
     assert "private" not in str(scan).lower()
     assert "internal_score" not in str(scan)
+    assert "Not in the qualified public set" not in str(scan)
+    assert "Test-only fixture, not a market-data read" not in str(scan)
     assert scan["generation"] == 2
 
 
 @pytest.mark.parametrize("mutation", [
     lambda p: p["results"][0]["sources"][0].update(display_rights="UNKNOWN"),
     lambda p: p["results"][0]["sources"][0].pop("rights_receipt_id"),
+    lambda p: p["results"][0].update(headline_evidence_ids=["invented-source"]),
     lambda p: p["results"][0]["what_changed"][0].update(evidence_ids=["hallucinated"]),
     lambda p: p["results"][0].update(correction_state="RETRACTED"),
     lambda p: p["results"][0].update(relationship="EVIDENCED_INDIRECT", relationship_evidence_ids=[]),
@@ -117,7 +121,7 @@ def test_public_http_uses_explicit_switch_and_no_signup(monkeypatch):
     page = client.get("/api/catalyst?tickers=NVDA,ZZZZ")
     assert page.status_code == 200
     assert "The fixture records a revised result" in page.text
-    assert "Not in the qualified public set" in page.text
+    assert "This ticker is not covered" in page.text
     assert "<form" in page.text and "name='email'" not in page.text.lower() and "reader@example.org" not in page.text
     assert "frame-ancestors 'none'" in page.headers["Content-Security-Policy"]
     assert page.headers["Cache-Control"] == "private, no-store"
