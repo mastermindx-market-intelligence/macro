@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T20:01:21.507935+00:00",
+  "observed_at": "2026-10-09T20:58:10.586485+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261009T2026",
+  "current_capability_frontier_key": "current_capability_frontier_20261009T2100",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -4106,5 +4106,54 @@
     },
     "A19_composed_scope": "Parent actual5acceptedmodules/pinnedengine sourcehashes match; syntheticprices actualengine hold -> invalidated and unchangedJan16T21:05UTC cutoff; native-shaped pre/at follows send,1secondlate/Jan19newfollow/deletedpre suppress, originaltuplekeyunchanged/globalSUPPRESS. 5newseamcasechecks, not repeated34review or25helper suites; no API/SMTP/producer/globalreceiptadmission.",
     "785_build_progress": "Sameattempt20:23release compiledsuccessfully9.2min; finalswap/services/currentgeneration notyetaccepted; no secondbuilder or publicliveacceptancefromcompile."
+  },
+  "current_capability_frontier_20261009T2100": {
+    "observed_at": "2026-10-09T20:58:10.584002+00:00",
+    "supersedes": "current_capability_frontier_20261009T2026",
+    "settled_references_retained_in": "current_capability_frontier_20261009T2026",
+    "whole_original_mission_accepted": false,
+    "production_current": "4d6a9ac81d01ac9f14c22fd3180f5d00f0239000",
+    "785_delivery_acceptance": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-canonical-release-and-existing-controller-parent-acceptance-20261009.json",
+      "sha256": "718ffba1f325d18dab385cdf1b864598590abd3d0a06bff1c9cae6af7046d0a7"
+    },
+    "785_current": "SCOPED_DONE exactheadCI/squash4d/currentmaster/fulltree+7acceptedblobs. Single canonicalbuild20:23:11\u201320:39:35rc0/clean source-runtime-marker4d/TerminalQuoteHubLoggingACTIVE/free11074121728. PublicHTTP200/dpl4d actualsignedinNVDA3D/original4studies/Replayoff/default/nooverflow. Product4dtrees byteequal438 qualifies earlier643liveproof, no repeatbuild. No queue/security activation orall20claim.",
+    "785_automatic_existing_controller": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-existing-controller-actual-return-20261009T2035.json",
+      "sha256": "93299fb83e693559f85bb7a93815b413196fb6069171864a5372fcd5bf66bd4d"
+    },
+    "controller_current": "Realexisting workflow_run37987486933 on4d completedSUCCESS20:31:38/checkout4d logged. Concrete26classification notices replace blanketmergeabilitypending; 781actualconflict,839/873/887missingTerminalaggregate. This proves installedsource+actualcontrollerclassification only, not unobservedbranchrefresh/mergeeffects. No dispatch/newcontroller/repeatedCIpoll.",
+    "A17_781_conflict": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a17-781-current-conflict-tree-proposal-20261009.json",
+      "sha256": "7fc7915383c0af326cf76b19cd7a8f43821f478d967563612536c5b282f2e753"
+    },
+    "A17_781_native_source_START": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a17-781-owned-merge-source-recapture-START-20261009.json",
+      "sha256": "9d9a66539fe85b19957bfa1b10f2b0fa72724ac3b3972691b64ebe7ae427ee8d"
+    },
+    "A17_781_source_current": "Same originalparent canonicalcustody6078892201/sourceacceptance6079223641. ExistingapprovedSSDpr-781-75d422553bd33b91 clean FF-only bb2->e5, master4d merge--no-commit--no-ff expectedONEbinaryOptionsHubView-1440 conflict. Parent sourceSTARTcomment6088966871 no newwriter/PR/provider/root. Frozenbuild75NONE/no_poolpreSTART allows boundedparent work; separateindependentreview doesnotmaskrefusedbuild.",
+    "A17_781_build_refusal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a17-781-current-crop-conflict-prestart-refusal-20261009.json",
+      "sha256": "88bcbbf604e007024fecf6c7d3ae9a70192cd1f28a97cc1d01eb6b0e759ae9ae"
+    },
+    "A17_781_capture_effect": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a17-781-owned-scoped-options-capture-effect-20261009.json",
+      "sha256": "957d6834bb29c2ff49a7e86b0349fd040820b69d686402ec0378bfb4f4e013ec"
+    },
+    "A17_781_source_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a17-781-scoped-recapture-source-parent-qualification-20261009.json",
+      "sha256": "64198f7ffa2de8e8acc583c3db0638f0e82f50f2ae79314f562bd2b8be2503ab"
+    },
+    "A17_781_candidate": "Actualhouse scoped4ENZHdesktopmobile captures20:47rc0/port3631restoredfree. Preserve rawglobalgeneratedmanifest separately; narrowCURRENTmastermanifest update onlyactualOptionslock+truthfulscopecomments, originalglobalheader/8otherlocks/20PNGs exactmaster. All15acceptedPRcodehashes match includingmath5e1a; newcandidate tree408582c1835a0555c789e71f3f3095f49e093a2c/currentmasterdiff17paths=15acceptedcode+manifest+onePNG. Fourfreshcaptures include3identicaltomaster. Actualnativecropgate4PASS0FAIL0SKIP/diffchecks0/unmergedpathsnone. Parentviewed4actualimages, EN/ZHdifferentScreenerselector subsets/mobileclippedcrop; no mountedPayoff/fullpageoverflow/productionpaidinference. Notcommitted/published/newCI/merged/released yet.",
+    "A17_781_independent_review_admission": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a17-781-scoped-recapture-review-admission-20261009.json",
+      "sha256": "b3f2db717b4521f30e995c152879e7272120e175289e2a64bdc509f3301d8357"
+    },
+    "A17_review_current": "terminal-audit20-a17-781-scoped-recapture-integration-review-20261009 originalrootparent normalrouterGrokubuntu1 requesthandle33580/reservedleasepacket/SAME-IDACTIVE_OR_WAITING. ActualproviderSTART/resultnotqualified. Declaredreview.json; packet20985B/59c7afc6 narrow source/evidence review, explicitly no suppliedPNGbytes/ownrender claim. Consume exactresult beforepublication; no duplicate/resubmit/kill/lease release.",
+    "A11_A19_settled_scopes": "Prior438livecross-timeframe/layout receipts retained and productsourcebyteequal4d; A19independent34cases+fiveparentcomposedseam acceptedsourceonly/globalSUPPRESS/canonicalcallerreceipt/sourcefreshness/checkpoint/API/SMTPstillunproved. No repeats.",
+    "887_current": "Existingready/nativeauto/MOG at7cf/base438; automatic37983365435 and upstream785freshness wait owned byexistingcontroller; actual20:31 missingTerminalaggregate. No approvalPOST/helperallowlistwidening/newwatcher/repeatedpoll.",
+    "IW2_current": "Priorcompactcursor38 existingpeerrecoversSAME804coordinator after2actuallayoutclearfailures/compactionstall; no duplicatewriter/parentcomposer/sourceacceptance/migrations. SQL0030/31/32unapplied/Draftrelease+rights holds.",
+    "holds": "All prior explicitrefusals/security/paididentity/sourceadmission/effectunknowns preserved. All20originalchildrenconsumed no wholemission accepted.",
+    "next_safe_phase": "Consume single781independentreview; fix concretedefects ifreturned; acceptedcandidatecommit/push SAMEPR781 thenautomaticexactheadCI/existingnativeauto-MOG/mergedsource/currentmaster/canonicalrelease/livequalification. Continue existing887/IW2 actualterminalreturns whenready. Checkpointnotstop."
   }
 }
