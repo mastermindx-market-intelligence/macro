@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T17:20:49.988227+00:00",
+  "observed_at": "2026-10-09T17:37:40.721562+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261009T1720",
+  "current_capability_frontier_key": "current_capability_frontier_20261009T1738",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -3692,6 +3692,71 @@
     "heartbeat": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/native-heartbeat-current-readback-20261009T1720.json",
       "sha256": "d0a444f11d02cb6c41d51a73947d0e267dcd6384859598e9615a8cb89079dad7"
+    }
+  },
+  "current_capability_frontier_20261009T1738": {
+    "observed_at": "2026-10-09T17:37:40.721562+00:00",
+    "supersedes": "current_capability_frontier_20261009T1720",
+    "whole_original_mission_accepted": false,
+    "settled_references_retained_in": "current_capability_frontier_20261009T1720",
+    "785_source_recovery": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog-785-canonical-source-recovery-20261009.json",
+      "sha256": "042f384ed456e0d2adc0164b091abb1aa8432b466778f1e92fff224f681499ac"
+    },
+    "785_START_comment": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog-785-recovery-START-comment-effect-20261009.json",
+      "sha256": "7a1004d992cc5752c01fa564a0ae43c7cfba298a8be811768f7e0eda77bfe2d7"
+    },
+    "785_accepted_controller_publication": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog-785-controller-source-publication-effect-20261009.json",
+      "sha256": "dce073fcb589276d14ca78efc4b8d8c87e68ba1bb700c12ba1f3eb91bdf156c5"
+    },
+    "785_frozen_base_source": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-frozen-base-parent-source-qualification-20261009.json",
+      "sha256": "3cece811134916350ce46e360d6ee47cdad26506163a7d9f852750caba77855c"
+    },
+    "785_frozen_base_publication": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-frozen-base-source-publication-effect-20261009.json",
+      "sha256": "e07fa5a53515e96d4bbe155acb4bb391fbecf0fafdb33c97a1d2a9abe9cc3aad"
+    },
+    "785_current_source_head": "00ada0ca5fd1e0d8f42585b31af8b0589e41aca7",
+    "785_build_prestart_refusal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-frozen-ci-contract-prestart-refusal-parent-disposition-20261009.json",
+      "sha256": "5c4c9e11024d0e9aba7134bac00d22e858d2a6267ec39983b187e6b728e929dd"
+    },
+    "785_new_reviews": [
+      {
+        "run_id": "terminal-audit20-mog785-membership-authority-judgment-20261009",
+        "purpose": "Pure C3 canonical immutable membership judgment, not implementation",
+        "state": "Admitted normalGrok/ubuntu0, controller waiting; actual provider START/result unqualified"
+      },
+      {
+        "run_id": "terminal-audit20-mog785-frozen-base-independent-review-20261009",
+        "purpose": "C2 exact parent-built source independent review",
+        "state": "Admitted normalGrok/ubuntu2, controller waiting; actual provider START/result unqualified"
+      }
+    ],
+    "785_holds": "Existing queue migration-owner finding unqualified; frozen base repair pending independent review; no MOG/auto/queue/security rules activation",
+    "883_merge_source_CI": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-owned-export-merge-currentmaster-release-qualification-20261009.json",
+      "sha256": "39b333c86c81f409eae50bdb4c47af198acd8c5efa342a15e40bf757545ab4ec"
+    },
+    "883_release_target": "19334a9400407bc2dbe73096c4a0f89d0e214e00",
+    "883_canonical_release": {
+      "state": "ACTUAL_BUILDER_STARTED_NEXT_COMPILE_PENDING",
+      "session_id": 37566,
+      "log_path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-owned-export-canonical-release-20261009.log",
+      "initial_available_bytes": 11218280448,
+      "old_clean_source_runtime": "0d27ab27cd2e4711468a255522cb60aa7e2b5707",
+      "updater_lock_held": true,
+      "second_builder_or_effect_replay": false,
+      "accepted_generation_and_health": false,
+      "phase_required_next": "Finish same builder restore/health/publicmarker then actual privateJSONCSV v2 downloads all3sizes; no release acceptance inferred from compile START"
+    },
+    "browser": "ProofTab1925913411 Accountdialog open to prepare export controls, protected372unsavedScripts untouched; restoreTerminalsettings/NVDA3D4indsReplayoff/defaultviewport afterproof",
+    "heartbeat": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/native-heartbeat-current-readback-20261009T1738.json",
+      "sha256": "1b82549351632e370918c40cea64c1dd9b4f7bce1578937c83ec6259b3b1e8a4"
     }
   }
 }
