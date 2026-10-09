@@ -85,6 +85,8 @@ def test_backfill_and_future_crawl_never_backdate_local_availability():
     {"title": "   "},
     {"url": "file:///etc/passwd"},
     {"url": "https://user:pass@reuters.com/a"},
+    {"url": "https://reuters.com/article?q=\u0022onclick"},
+    {"source": "reuters.com<svg>"},
     {"source": "reuters.com/../../bad"},
     {"source": "bloomberg.com"},  # source-host disagreement cannot borrow credibility
     {"publishedDate": "2026-10-09T07:00:00"},
