@@ -9,12 +9,14 @@ from __future__ import annotations
 
 import hashlib
 import html
+import ipaddress
 import json
 import re
+import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qsl, quote, urlsplit
+from urllib.parse import parse_qsl, quote, unquote, urlsplit
 
 PACK_SCHEMA = "marketing.catalyst_partner_pack.v1"
 _UTC = timezone.utc
@@ -56,14 +58,54 @@ def _iso(dt: datetime) -> str:
     return dt.isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
-def _safe_https(value: Any, *, code: str = "UNSAFE_URL") -> str:
-    _require(isinstance(value, str) and len(value) <= 1000, code)
-    u = urlsplit(value)
-    _require(u.scheme == "https" and bool(u.hostname)
-             and u.username is None and u.password is None and not u.fragment
-             and not any(c in value for c in '<>"\n\r\t\\')
-             and not _EMAIL.search(value), code)
-    return value  # Preserve case-sensitive source links and paths exactly.
+def _safe_https(
+    value: Any, *, code: str = "UNSAFE_URL",
+    allow_fixture_hosts: bool = False,
+) -> str:
+    """Public-facing HTTPS link validation; never fetch or normalize the URL.
+
+    The public scan privacy review exposed percent-encoded emails in innocent
+    query keys. Decode only for inspection, including bounded nested encoding,
+    while preserving case-sensitive original URLs verbatim in valid outputs.
+    """
+    _require(isinstance(value, str) and 0 < len(value) <= 1000, code)
+    try:
+        u = urlsplit(value)
+        host = (u.hostname or "").lower().rstrip(".")
+        port = u.port
+    except ValueError as exc:
+        raise PackRejected(code) from exc
+    _require(u.scheme == "https" and host
+             and u.username is None and u.password is None
+             and not u.fragment and port in (None, 443)
+             and not any(ch in value for ch in '<>"\n\r\t\\'),
+             code)
+    decoded = value
+    for _ in range(6):
+        unwrapped = unquote(decoded)
+        if unwrapped == decoded:
+            break
+        decoded = unwrapped
+    _require(unquote(decoded) == decoded, code)
+    folded = unicodedata.normalize("NFKC", decoded)
+    _require(not _EMAIL.search(folded)
+             and not any(ch in folded for ch in '<>"\n\r\t\\'), code)
+    # HTML anchor links may be opened by public readers; block local/private
+    # destinations even though this compiler itself performs no network fetch.
+    _require(bool(re.fullmatch(r"[a-z0-9.-]+", host))
+             and "." in host
+             and not host.startswith(".") and not host.endswith(".")
+             and not any(host == suffix or host.endswith("." + suffix)
+                         for suffix in ("localhost", "local", "internal", "test"))
+             and (allow_fixture_hosts or not (
+                 host == "invalid" or host.endswith(".invalid"))), code)
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        pass
+    else:
+        raise PackRejected(code)
+    return value  # Source link/path casing and allowed query are unchanged.
 
 
 def _atom(value: Any, code: str, max_len: int = 220) -> str:
@@ -83,7 +125,7 @@ def _ticker_list(raw: Any) -> list[str]:
     return values
 
 
-def _sources(packet: dict, as_of: datetime) -> dict[str, dict]:
+def _sources(packet: dict, as_of: datetime, *, demo_only: bool) -> dict[str, dict]:
     raw = packet.get("sources")
     _require(isinstance(raw, list) and 1 <= len(raw) <= 30,
              "MISSING_SOURCES")
@@ -104,7 +146,8 @@ def _sources(packet: dict, as_of: datetime) -> dict[str, dict]:
         sources[key] = {
             "source_id": key,
             "title": _atom(row.get("title"), "INVALID_SOURCE_TITLE", 160),
-            "url": _safe_https(row.get("url"), code="UNSAFE_SOURCE_URL"),
+            "url": _safe_https(row.get("url"), code="UNSAFE_SOURCE_URL",
+                               allow_fixture_hosts=demo_only),
             "published_at_utc": _iso(published),
             "tier": str(row.get("tier") or "unverified").lower(),
             "public_rehost": rights.get("public_rehost") is True,
@@ -112,7 +155,7 @@ def _sources(packet: dict, as_of: datetime) -> dict[str, dict]:
     return sources
 
 
-def _partner(raw: Any, now: datetime) -> dict:
+def _partner(raw: Any, now: datetime, *, demo_only: bool) -> dict:
     _require(isinstance(raw, dict), "INVALID_PARTNER")
     slug = _atom(raw.get("slug"), "INVALID_PARTNER_SLUG", 48)
     _require(_SLUG.fullmatch(slug) is not None, "INVALID_PARTNER_SLUG")
@@ -120,7 +163,8 @@ def _partner(raw: Any, now: datetime) -> dict:
     _require(status in ("candidate", "approved"), "INVALID_PARTNER_STATUS")
     channel = raw.get("channel")
     _require(channel in _ALLOWED_CHANNELS, "INVALID_PARTNER_CHANNEL")
-    _safe_https(raw.get("profile_url"), code="INVALID_PARTNER_PROFILE_URL")
+    _safe_https(raw.get("profile_url"), code="INVALID_PARTNER_PROFILE_URL",
+                allow_fixture_hosts=demo_only)
     verified = _stamp(raw.get("profile_verified_at_utc"),
                       "PARTNER_PROFILE_TIME")
     _require(verified <= now and now - verified <= timedelta(days=90),
@@ -205,7 +249,7 @@ def _public_packet(packet: dict, now: datetime) -> tuple[dict, dict[str, dict], 
     if publication:
         _require(_stamp(publication, "PUBLICATION_TIME") <= as_of,
                  "FUTURE_PUBLICATION")
-    sources = _sources(packet, as_of)
+    sources = _sources(packet, as_of, demo_only=packet.get("demo_only") is True)
     headline_receipts = packet.get("headline_evidence_ids")
     _require(isinstance(headline_receipts, list) and bool(headline_receipts)
              and len(headline_receipts) == len(set(headline_receipts))
@@ -305,7 +349,7 @@ def build_partner_pack(
     now = now_utc.astimezone(_UTC)
     ticks = _ticker_list(selected_tickers)
     event, sources, relations = _public_packet(event_packet, now)
-    partner = _partner(partner_profile, now)
+    partner = _partner(partner_profile, now, demo_only=event["demo_only"])
     claims = _claims(event_packet, ticks, relations, sources)
     if angle_plan is not None:
         _require(isinstance(angle_plan, dict)
