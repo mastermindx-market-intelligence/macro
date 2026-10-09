@@ -13,6 +13,7 @@ from decimal import Decimal, InvalidOperation
 from engine.flow_signing import classify_print
 from engine.tick_plane.asof_nbbo import InFlightNBBO, MATCH_SCHEMA
 from engine.tick_plane.condition_policy import POLICY_SCHEMA
+from engine.tick_plane.exchange_reference import VERDICT_SCHEMA as VENUE_SCHEMA
 from engine.tick_plane.stream_events import SCHEMA as STREAM_SCHEMA
 
 SCHEMA = "equity.tick_plane.provisional_print_observation/v0"
@@ -33,7 +34,7 @@ def observe_provisional_trade(
     trade, ring: InFlightNBBO, *, decision_ns, source_complete_through_ns,
     watermark_available_ns, watermark_receipt_id,
     source_completeness_attested, max_quote_age_ns,
-    trade_condition_verdict,
+    trade_condition_verdict, venue_reference_verdict,
     quote_condition_eligible, quote_condition_rules_ref,
 ):
     """Return measured quote-location context with strict as-seen abstention.
@@ -66,6 +67,14 @@ def observe_provisional_trade(
             "matched_quote_id": matched, "quote_age_ns": age,
             "source_trade_conditions": trade.get("trade_conditions") if isinstance(trade, dict) else None,
             "venue_class": trade.get("venue_class") if isinstance(trade, dict) else None,
+            "venue_reference_sha256": (
+                venue_reference_verdict.get("exchange_reference_sha256")
+                if isinstance(venue_reference_verdict, dict) else None
+            ),
+            "venue_admission_reason": (
+                venue_reference_verdict.get("reason")
+                if isinstance(venue_reference_verdict, dict) else None
+            ),
             "correction_status": trade.get("correction_status") if isinstance(trade, dict) else None,
             "gross_observed_notional_usd": _money(trade) if isinstance(trade, dict) else None,
             "side_proxy": bucket,
@@ -106,7 +115,21 @@ def observe_provisional_trade(
         return output("UNKNOWN", "TRADE_CONDITION_POLICY_UNQUALIFIED")
     if not trade_condition_eligible:
         return output("INELIGIBLE", "TRADE_CONDITION_EXCLUDED")
-    if trade.get("venue_class") != "LIT":
+    v = venue_reference_verdict
+    if (not isinstance(v, dict) or v.get("schema") != VENUE_SCHEMA
+            or v.get("authority") != "VENUE_OBSERVATION_ONLY"
+            or v.get("trade_dedup_key") != trade.get("dedup_key")
+            or v.get("native_exchange_id") != trade.get("exchange")
+            or v.get("native_trf_id") != trade.get("trf_id")
+            or v.get("trade_original_available_ns") != trade.get("original_frame_received_ns")
+            or v.get("decision_ns") != decision_ns
+            or not isinstance(v.get("exchange_reference_sha256"), str)
+            or len(v["exchange_reference_sha256"]) != 64
+            or type(v.get("exchange_reference_received_ns")) is not int
+            or v["exchange_reference_received_ns"] > decision_ns):
+        return output("UNKNOWN", "VENUE_REFERENCE_UNQUALIFIED")
+    if (v.get("venue_class") != "LIT" or v.get("lit_eligible") is not True
+            or trade.get("venue_class") != "LIT"):
         return output("UNKNOWN", "TRF_OR_VENUE_CLOCK_UNQUALIFIED")
     matched = ring.match(
         trade, decision_ns=decision_ns,

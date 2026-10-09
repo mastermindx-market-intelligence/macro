@@ -27,6 +27,8 @@ def row(key="t1", *,t=None,state="MEASURED_SOURCE_PROXY",side="buy",
            "quote_source_receipt_id":"quote-ref","matched_quote_id":"Q1",
            "quote_age_ns":500_000,"source_trade_conditions":[0],
            "venue_class":venue,
+           "venue_reference_sha256":"b"*64,
+           "venue_admission_reason":"SOURCE_REFERENCE_EXCHANGE_CANDIDATE",
            "correction_status":"STREAM_PROVISIONAL_UNRECONCILED",
            "gross_observed_notional_usd":gross,
            "side_proxy":side,
@@ -190,6 +192,17 @@ class ProjectionTests(unittest.TestCase):
         record["signed_notional_usd"]="Infinity"
         with self.assertRaisesRegex(MinuteProjectionRefusal,"disagrees"):
             run([record])
+
+
+    def test_mixed_exchange_reference_generations_refused(self):
+        other=row("other")
+        other["venue_reference_sha256"]="c"*64
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"mixed exchange"):
+            run([row(),other])
+
+    def test_exchange_reference_receipt_retained_in_minute_projection(self):
+        output=run()
+        self.assertEqual(output["exchange_reference_sha256"],"b"*64)
 
 if __name__=="__main__":
     unittest.main()

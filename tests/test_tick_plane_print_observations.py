@@ -8,6 +8,7 @@ from engine.tick_plane.stream_events import normalize_ws_event
 from engine.tick_plane.asof_nbbo import InFlightNBBO
 from engine.tick_plane.print_observations import observe_provisional_trade
 from engine.tick_plane.condition_policy import parse_condition_reference, evaluate_trade_conditions
+from engine.tick_plane.exchange_reference import parse_exchange_reference, classify_trade_venue
 
 BASE=1_791_417_600_000
 RECV=BASE*1_000_000+100_000_000
@@ -47,6 +48,17 @@ def condition_verdict(trade, *, decision=RECV+20_000_000):
         reference=snapshot,decision_ns=decision,original_reference_custody_attested=True)
 
 
+def venue_verdict(trade, *, decision=RECV+20_000_000):
+    records=[{"asset_class":"stocks","id":11,"type":"exchange"},
+             {"asset_class":"stocks","id":4,"type":"TRF"}]
+    ref=parse_exchange_reference(raw_response_bytes=json.dumps({
+        "status":"OK","request_id":"fixture-exchange-reference","results":records}).encode(),
+        available_ns=RECV-1_000_000,
+        source_receipt_id="fixture:original-exchange-reference")
+    return classify_trade_venue(trade=trade,reference=ref,decision_ns=decision,
+                                original_reference_custody_attested=True)
+
+
 def input_args(trade=None,**updates):
     trade = t() if trade is None else trade
     kw=dict(decision_ns=RECV+20_000_000,
@@ -56,6 +68,7 @@ def input_args(trade=None,**updates):
             source_completeness_attested=True,
             max_quote_age_ns=50_000_000,
             trade_condition_verdict=condition_verdict(trade),
+            venue_reference_verdict=venue_verdict(trade),
             quote_condition_eligible=True,
             quote_condition_rules_ref="quote_conditions@source-sha")
     kw.update(updates)
@@ -188,6 +201,29 @@ class ProvisionalObservationTests(unittest.TestCase):
         self.assertEqual(r["trade_condition_policy_reason"],
                          "CONSERVATIVE_PRICE_FORMING_CANDIDATE")
 
+
+    def test_no_versioned_venue_verdict_never_signs(self):
+        r=self.observed(venue_reference_verdict=None)
+        self.assertEqual(r["reason"],"VENUE_REFERENCE_UNQUALIFIED")
+        self.assertIsNone(r["signed_notional_usd"])
+
+    def test_tampered_venue_identity_abstains(self):
+        bad=venue_verdict(t())
+        bad["native_exchange_id"]=62
+        r=self.observed(venue_reference_verdict=bad)
+        self.assertEqual(r["reason"],"VENUE_REFERENCE_UNQUALIFIED")
+
+    def test_future_exchange_reference_cannot_backfill(self):
+        bad=venue_verdict(t())
+        bad["exchange_reference_received_ns"]=RECV+50_000_000
+        r=self.observed(venue_reference_verdict=bad)
+        self.assertEqual(r["reason"],"VENUE_REFERENCE_UNQUALIFIED")
+
+    def test_positive_source_venue_receipt_survives_observation(self):
+        r=self.observed()
+        self.assertEqual(len(r["venue_reference_sha256"]),64)
+        self.assertEqual(r["venue_admission_reason"],
+                         "SOURCE_REFERENCE_EXCHANGE_CANDIDATE")
 
 if __name__ == "__main__":
     unittest.main()
