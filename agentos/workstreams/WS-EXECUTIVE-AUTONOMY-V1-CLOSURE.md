@@ -45,26 +45,28 @@ artifacts:
   - agentos/discoveries/DSC-MCP-GENERATION-HAS-NO-ARMED-PUBLISHER-ON-MASTER.md
 waves:
   - id: P1
-    title: Reconcile inherited source estate and accepted implementation predecessors
+    title: Reconcile the inherited source estate (#811 #1145 #1041 #1157 #1166 #1169 #1204 and adjacent #1219 #1178 #1176 #1175)
     status: done
     next_action: >
-      COMPLETED_DO_NOT_REPEAT. Mastermind #811 protected at 1fc040f, #784 C1 release
-      rebind protected at f74e912, #1283 CEO-submit/full-autonomy source coexistence protected
-      at 6b5bac, #1219 gateway-refresh protected at 760f51, #1220 installed read contract
-      protected at ee120e8, and #1251 V3 same-request reconciliation protected at 7c12c39.
-      These source predecessors are DONE; remaining proof is installed runtime, live relay,
-      original-parent return and two governed worker realms, not another #811 repair.
-      Historical rulings and pre-merge evidence remain on Mastermind #1143 and in Git history.
+      COMPLETED_DO_NOT_REPEAT. Dispositions ruled 2026-10-04 and posted on every carrier
+      (DEC:AUTONOMY-V1-CLOSURE-SOURCE-ESTATE-DISPOSITION). Successor train = protected master
+      a2646f45 (installed) + repaired #811, optionally + repaired #1219 with its MCP generation
+      producer. UPDATE 2026-10-05: #1219 source blockers (1) expected-release binding and (3)
+      disabled-service semantics are closed at head 4513fd77 (integrator adjudication Mastermind
+      #1219 issuecomment-5990732208); the generation-producer pairing is owed by the release/host
+      owner (DSC:MCP-GENERATION-HAS-NO-ARMED-PUBLISHER-ON-MASTER); Sol owns its review gate (one
+      P1: accept an absent print-disabled row as default-enabled); after #1257 it must re-merge
+      master (usage-string conflict only, issuecomment-5991833933). UPDATE 2026-10-06: #1225 MERGED d8c302b8 and #1251 MERGED 7c12c394; #1219 head 7723ece3 closed the three gateway-refresh P1s (a7f829bf/307c4e7f, exact-head hosted gate green), must re-merge 7c12c394 (one comment-only hunk in tests/test_executive_mcp_web_ceo_v3.py; seat note #1219 issuecomment-6011249322) and carries Sol's in-flight full-resource preflight repair (issuecomment-6011068351); Sol is the active writer on that carrier. Reopen only for a changed head
+      or a writer objection on the carrier.
   - id: P2
     title: Release-owner and install reproducibility without a second release controller
     status: done
     next_action: >
-      COMPLETED_DO_NOT_REPEAT. Full installed 6b5bac Executive host acceptance completed
-      once at 2026-10-09T00:27:48Z (Mastermind #1143/6070565507), preserving prior carry
-      material and original host receipts; C1 rebind passed on that release. The old
-      installed 5b and 1fc recovery chain is historical evidence, not a new installer task.
-      Subsequent #1286 source release and selected network MCP 1.5 publication remain
-      distinct pending effects. Preserve the normal installer/read-side and release owners.
+      Nothing from the install set is required for the next host cycle; ops/executive_os/install.sh
+      is the live installer and ran both the 03f7ca04 and a2646f45 cycles. #1157/#1166/#1169 stay
+      parked pending a Sol ruling on install.sh versus release-owner exclusivity. Twelve by-hand
+      reproducibility gaps and one unproven root git-archive/safe.directory finding are recorded in
+      the program file for the host owner.
   - id: P3
     title: Canonical worker execution and independent two-worker acceptance
     status: todo
@@ -95,7 +97,10 @@ waves:
       condition: >
         The historical source-level mutual-exclusion claim is superseded by #1283,
         protected and installed at 6b5bac with accepted coexistence/CAS semantics.
-        Source/install are not a full-arm/live-operation acceptance receipt: current
+        The installed CEO-submit, COO autonomy/harness, worker harness and
+        dialogue/return arms remain false at the native parent checkpoint; do not
+        infer an arm from source coexistence or host acceptance. Source/install are
+        not a full-arm/live-operation acceptance receipt: current
         arming, authoritative Sol turn, COO/Worker admission and original-parent return
         must still be observed on the selected installed generation.
     next_action: >
@@ -128,8 +133,8 @@ waves:
         Source creation, CI, Slack delivery, acceptance Jobs 014/015 and a READY worker
         never substitute for original-parent return consumption.
     next_action: >
-      Native parent root 01a0e0c7-1ed2-7fa0-a4b4-890d30ea6311 consumes the sole
-      independent #1286 review, completes its protected merge-queue/security gate,
+      Native parent root 01a0e0c7-1ed2-7fa0-a4b4-890d30ea6311 preserves the already
+      accepted independent #1286 review and completes its protected security/integration gate,
       performs the reviewed successor installation and safe C1/A2/MCP transition,
       verifies exact shared A2 enrollment without credential re-exposure, refreshes
       genuine provider readiness at the next effect boundary, publishes and selects
@@ -153,11 +158,15 @@ next_action: >
   not yet V3 1.5 / 12 tools. Three-scope Slack-admin migration and 6b host/C1
   acceptance are already DONE. The 6b Codex01 readiness evidence has EXPIRED,
   so require a fresh exact-grant proof before any provider effect. Second real worker
-  realm and final Autonomy V1 acceptance remain unproven. Preserve exact existing
+  realm binding and final Autonomy V1 acceptance remain unproven. The latest parent
+  checkpoint resolves profile names but leaves ModernLuxe availability and successful
+  codex-pro-01 enrollment pending; no second-worker credential/readiness was produced.
+  Preserve exact existing
   source carriers and effects; no alternative lifecycle, session store or relay.
   Current-source pointers: Mastermind #1143/6070565507,
   #1143/6072446412 and #1143/6072865956.
 landmines:
+  - "MISSION_COMPLETE:false. Original Auth0 DCR f70314691a5d6549d6265509baee7d3b5a733bc6084e0018558cad80d40667d7 remains EFFECT_UNKNOWN on #633; no retry, alternate client or carrier is authorized by this records repair."
   - "AUTONOMY_V1_PROVEN_LIVE requires one useful original-parent/child/return/consumption journey plus multi-worker and recovery evidence; source merge, CI, installed host acceptance, Slack transport and JOB-014/015 are not final proof."
   - "Source mutual-exclusion finding is historical: accepted #1283 at installed 6b supersedes the old code limitation. Do not bypass present CAS, transaction/admission, source authority or exact current Sol target fences."
   - "The existing shared Slack Executive Relay app A0BTCKA7GSY, bot U0BT71H4FQE, completed the exact three-scope admin ceremony after C1 rebind. Never repeat scope reinstall or request a new token; A2 shared enrollment is still absent after pre-effect TLS/JSON failure."
@@ -168,8 +177,6 @@ landmines:
   - "Original parent owns the active operation. A Slack watcher, branch, PR, Agent OS claim or fresh chat cannot transfer an active native writer or unknown effect. Existing Executive OS remains sole Job/Attempt/Worker/Event authority."
   - "Public Mastermind OS DNS/edge/Auth0 adoption is an additional product rollout gate; it cannot be implied by this separate Executive Autonomy V1 cutover or substitute for the original-parent canary."
 do_not_redo:
-  - "Do not rerun completed 6b host acceptance, C1 rebind, exact three-scope Slack ceremony, or the expired 2026-10-09 Codex01 readiness grant."
-  - "Do not use JOB-002, JOB-003, JOB-013, JOB-014 or JOB-015 as proof of the useful native original-parent canary; distinguish host-preservation checks from zero-touch autonomy."
   - "Do not re-post the C3 1fc040f readback (Mastermind #1143 issuecomment-6032388623); amend it in place only. Do not treat the 1fc040f control install as the C1-rebind install, and never run rebind-release from a source checkout."
   - "Do not re-post the #1219 C3 acceptance (Mastermind #1219 issuecomment-6025565788) the Slack receipt delta (Mastermind #1143 issuecomment-6027309991) or the shared-relay integration note (Mastermind #1143 issuecomment-6028181298); #1219 is merged as 760f51b5 and its controller hardening is not reopened."
   - "Do not reopen Mastermind #1191 (merged 2026-10-04T20:59Z as 5b244a2b) or #1227; the three convergence blockers are closed on master and installed."
