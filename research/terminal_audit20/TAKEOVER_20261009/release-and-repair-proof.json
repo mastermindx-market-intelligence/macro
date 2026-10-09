@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T15:20:36.880609+00:00",
+  "observed_at": "2026-10-09T16:17:49.845440+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3421,5 +3421,198 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/native-heartbeat-current-readback-20261009T1504.json",
       "sha256": "fa479574342a8ce8cb1316475490900c66f4939dd2ac6025a97c3039a5c0ebe0"
     }
-  }
+  },
+  "current_capability_frontier_20261009T1616": {
+    "observed_at": "2026-10-09T16:17:49.845440+00:00",
+    "supersedes": "current_capability_frontier_20261009T1520",
+    "whole_original_mission_accepted": false,
+    "seasonal853": {
+      "state": "ACCEPTED_SCOPED_CANONICAL_PRODUCTION_AND_ACTUAL_RESPONSIVE_BEHAVIOR",
+      "squash_release": "0d27ab27cd2e4711468a255522cb60aa7e2b5707",
+      "pr_head": "0123df25c99bd040aedd7138650e6fbcca7344d6",
+      "required_ci_run": 37936174549,
+      "all_three_required_success": true,
+      "actual_viewports": [
+        "1440x900",
+        "820x1180",
+        "390x844"
+      ],
+      "canonical_health_restored": true,
+      "actual_tooltip_tick_and_table_behavior_qualified": true,
+      "before_live_failure_reproduced": false,
+      "chart_restored": true,
+      "receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/seasonal853-canonical-live-parent-acceptance-20261009.json",
+        "sha256": "3caac5964ce6958c5151e60cf8a46b657fb4c33368daab75eabcd65e9bdb62d3"
+      },
+      "live_behavior": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/seasonal853-live-responsive-behavior-20261009.json",
+        "sha256": "7ebeed2b960e1b59b30e71675ce3b0c38bcc2805d97517af009445895d0a2543"
+      }
+    },
+    "a11_native_owner_recovery": {
+      "original_root": "03342a8d-ffe5-4ca8-9b69-5c22441080a9",
+      "original_workflow": "wf_2b2799a6-418",
+      "original_task": "wn65hiefp",
+      "same_workflow_resumed_task": "w9h04e62n",
+      "original_source": "95013f082d09f98122d06ec317a2b992dae4390a",
+      "canonical_recovery_START_proven": true,
+      "sole_live_repair2_writer": "a1cce3d0bd2ead8ba",
+      "cached_repair1_review1_replayed_not_rerun": true,
+      "dead_repair2_zero_tools_no_effect": true,
+      "receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-native-canonical-recovery-start-parent-consumption-20261009.json",
+        "sha256": "ae5930e7a7433aea1f02d399bd7de17ba7a43b14f098e353e98c953dfd6e2dc7"
+      },
+      "canonical_comment": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/643#issuecomment-6084128198",
+      "proposal_owner_applied_short_commit": "f3443a1e",
+      "proposal_final_acceptance": false,
+      "owner_found_additional_defects": [
+        "3D chip opening date differs from marker closeTime horizon",
+        "intraday epoch versus date comparison admits all"
+      ],
+      "house_capture_exact_head_independent_review_and_runtime_owed": true,
+      "post_squash_f12_9_head_only_evidence_heal_required": true
+    },
+    "a19_recipient_consent": {
+      "state": "ACCEPTED_SCOPED_DETACHED_NATIVE_SHAPED_PROPOSAL",
+      "review_run": "terminal-audit20-a19-native-shaped-consent-review-20261009",
+      "independent_tests": {
+        "provided": 11,
+        "adversarial": 16,
+        "passed": 27,
+        "failed": 0,
+        "skipped": 0
+      },
+      "acceptance_readback": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-native-shaped-consent-review-acceptance-readback-20261009.json",
+        "sha256": "a0e6aef13b3303f921140479efea0e5afd499539963a07a94571ae5dd9154c1b"
+      },
+      "adjudication": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-native-shaped-consent-review-parent-adjudication-20261009.json",
+        "sha256": "2f6a389f6d65b1881cd593209cad115b4c33037c10c93175a1b20ccbbde32000"
+      },
+      "source_wired": false,
+      "actual_producer_read_counterexamples": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-actual-producer-state-read-counterexamples-20261009.json",
+        "sha256": "9983752e53845d3b9d869b3b2d67c3a12f6004cd89bc259f2e56f873b77b6423"
+      },
+      "producer_counterexamples": "Absent, corrupt JSON and read PermissionError all collapse to None; existing path.write_text is non-atomic",
+      "next_c3": "terminal-audit20-a19-producer-freeze-authority-review-20261009",
+      "next_c3_source_blob": "5deae6e78aaf5b60e8356a61b61757ab2a59975e",
+      "next_c3_state": "ACTIVE_OR_WAITING; child START/result not yet qualified",
+      "next_c3_witness": "Canonical state retention/writer/publication across cold hosts, typed missing versus unavailable, preserved frozen admission, atomic persistence/readback and suppression of uncertain fanout",
+      "request_packet": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/commissions/terminal-audit20-a19-producer-freeze-authority-review-20261009.txt",
+        "sha256": "2d6f288ee15d9b76baa85e296a225e52c5882e16826a0e03e8b79f447fa61b2d"
+      },
+      "source_live_alert_or_whole_A19_accepted": false
+    },
+    "a12_closed_confirmation": {
+      "five_exact_source_blobs_independently_accepted": true,
+      "caller_wired": false,
+      "corrected_c3_run": "terminal-audit20-a12-source-finality-clock-repair-20261009",
+      "corrected_c3_state": "CONSUMED_UNACCEPTED_PENDING_EXACT_EXECUTABLE_ARTIFACTS",
+      "stdout_bytes": 5721,
+      "stdout_sha256": "c787555daa21cc08904b1edf089fc034fe46fe74ba747579a71dabcced24dd2d",
+      "adjudication": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a12-source-finality-clock-return-parent-adjudication-20261009.json",
+        "sha256": "5413970bd6ea79bf7db3d82bab8ccb8cf40a232a74710132abe9ed5f7a88b1dd"
+      },
+      "installed_same_run_artifact_attempt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a12-clock-exact-artifact-retrieval-20261009.log",
+        "sha256": "c2befec7933ce79e8565e79248d3dfe9acccafe1b220d7d5b52806205734486a"
+      },
+      "first_artifact_refusal_preserved": true,
+      "diagnosis": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a12-artifact-export-local-refusal-diagnosis-20261009.json",
+        "sha256": "34edecbcc21b33074eb8e70b034faba56db555efd7aa328c00404c439399c0af"
+      },
+      "diagnosed_cause": "Initial reader supports /tmp/DIR/FILE, not reported /home/ubuntu0/lanes/evidence paths; zero transport calls, no technical bug proven",
+      "source_files_not_retrieved_or_declared_lost": true,
+      "no_retry_relocation_permission_change_or_alternate_transport": true,
+      "paid_forming_or_whole_A12_accepted": false
+    },
+    "a09_publication": {
+      "owner_phase": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-owner-publisher-phase-20261009T1604.json",
+        "sha256": "f771c6dfe4a59086c42039eb69886249df231d521636f8824d1c73e1f680af99"
+      },
+      "corrected_run": 37934675596,
+      "corrected_head": "3bb1ee47939d9caa1db10a4e764365d3a2ee5b77",
+      "corrected_run_and_stockdata_publish_success": true,
+      "corrected_publish_completed_at": "2026-10-09T15:36:16Z",
+      "older_daily_run": 37874656026,
+      "older_engine_job": "COMPLETED_FAILURE",
+      "older_stockdata_publish_completed_at": "2026-10-09T15:31:44Z",
+      "older_workflow_overall": "QUEUED/null; not settled",
+      "corrected_known_publish_follows_older_known_heavy_write": true,
+      "fresh_public_artifact_read": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-public-producer-artifact-readback-20261009T1608-refusal.json",
+        "sha256": "86606ef0c533b7e996d2c5c69d0b3d02ce495f431319e3e4bb976b3544c91c58"
+      },
+      "fresh_public_read": "HTTP403; zero bytes; remaining two artifacts not requested",
+      "refusal_preserved_no_retry_or_alternate_principal": true,
+      "actual_emitted_fields_native_units_consumer_or_whole_A09_accepted": false
+    },
+    "fabric_same_run_artifact_read": {
+      "state": "ACCEPTED_SCOPED_INSTALLED_SAME_RUN_ARTIFACT_CAPABILITY",
+      "owner_thread": "01a11e90-4b5d-7f53-b966-8aaaad38701f",
+      "parent_consumption": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/fabric-installed-artifact-capability-parent-consumption-20261009.json",
+        "sha256": "12a1263172b80af0b149fc1162e79db123b25bdba2842dfc688896a6f2c2a631"
+      },
+      "installed_files_rehashed": 4,
+      "actual_canary_files_rehashed": 2,
+      "owner_tests_reported": 259,
+      "independent_checks_reported": 102,
+      "parent_did_not_rerun_owner_tests": true,
+      "original_a19_five_artifacts": "All UNAVAILABLE/directory_owner_or_mode; zero bytes; first refusal preserved/no retry",
+      "native_RuntimeBinding_or_automatic_return_proven": false,
+      "protected_config_denial_DCR_unknown_and_source_writer_gate_preserved": true
+    },
+    "merge_observer_and_self_service_approval": {
+      "existing_controller_recovery_run": 37951921523,
+      "existing_controller_recovery": "COMPLETED_SUCCESS; one stale-owner recovery only",
+      "recovery_receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/existing-merge-controller-recovery-result-20261009T1534.json",
+        "sha256": "fbbd8f92abb93db549436eb3131f0e3f8f8f3ea922977657ca4c225caf001885"
+      },
+      "refreshed_781_head": "689e4427dd72fa411c03b13be160e2b1b8fb8b9d",
+      "all_20_reviewed_781_source_blobs_unchanged": true,
+      "source_qualification": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a17-controller-recovery-refreshed-source-qualification-20261009T1535.json",
+        "sha256": "a2e48a1f3134f8319d88a59b9161216a9e474bd8c0e24a3feb38aae927bac302"
+      },
+      "associated_781_run": 37951989029,
+      "approval": "POST_SUCCEEDED/queued; exactly once15:35:38",
+      "approval_receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-781-controller-recovery-20261009T1535.json",
+        "sha256": "6a8448a9f9da021b064d06608b43f74f4b790cf1a7cb8b15130343aa715271d3"
+      },
+      "existing_observer_owns_future_CI_merge": true,
+      "883_required_ci_green_but_merge_refresh_release_and_actual_downloads_owed": true
+    },
+    "iw2_804_calendar_context": {
+      "coordinator": "01a104c8-6e11-7e52-93c1-6b8dbc45bb9c",
+      "peer_mounted_component_tests": "6PASS/2FAIL on original804 a156 and prior retry proposal; parent did not rerun",
+      "causal_gaps": [
+        "Saved legacy calendar research_as_of silently dropped on edit",
+        "Ordinary Save after not_applied fence can bypass retry refusal and create an undated replacement"
+      ],
+      "receipt_path": "/Volumes/Mastermind/evidence/iw2-initiation-01a104c8/iw2-calendar-context-counterexample-20261009.json",
+      "receipt_sha256": "d90d1691b154b31f24f34934cbb7df3de3d700fd9e9b9ee904198dae957e9950",
+      "canonical_comment": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/804#issuecomment-6073734152",
+      "same_original_native_owner_next_phase_packet_queued_and_pickup_reported": true,
+      "804_exact_source_START_yet_qualified": false,
+      "no_duplicate_source_or_SQL_writer": true,
+      "backup_scope_done_no_redo": true,
+      "SQL0030_0031_0032_applied": false
+    },
+    "heartbeat": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/native-heartbeat-current-readback-20261009T1614.json",
+      "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
+    }
+  },
+  "current_capability_frontier_key": "current_capability_frontier_20261009T1616"
 }
