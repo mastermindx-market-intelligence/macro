@@ -59,6 +59,14 @@ Implications for TP-1's binding **within-2%-on-90%-of-comparable-symbols** test:
 
 **Effect state:** this section changes only the activation/reconciliation instructions. It does not open Massive REST/WS, collect licensed bytes, grant a source lease, approve vendor access or promote R0 to a live signal.
 
+### RTH minute-volume reference adapter — source-owned, zero-network
+
+`engine/tick_plane/rth_minute_reference.py::normalize_rth_minute_volume_reference` is a **pure** compatibility adapter for a response already obtained by the existing Massive REST owner (an independent capability exists per `data/massive/capability_manifest.json:rest.aggs_minute` as of the dated 2026-08-08 entitlement probe). It takes original bounded response bytes and actual `source_received_ns`, a vendor query receipt, market-calendar receipt, native volume-condition equivalence review receipt, a frozen ticker/session and *exact* RTH UTC minute start/end. It **does not fetch**, create a new collector, store quote history, authenticate vendor/source provenance or grant an all-day numerical gate.
+
+The adapter can emit `reference_volume_shares` only as `CANDIDATE_SAME_SCOPE_EXTERNAL_PROOF_REQUIRED` when **all** of calendar scope, exact queried range, complete paging and minute-volume semantics have affirmative, externally attributable review evidence. Otherwise it returns `UNQUALIFIED_MISSING_SOURCE_REVIEW` with **no comparable share-volume value**. It rejects full-day bars inside the declared RTH query, adjusted or ambiguous response flags, duplicate minutes, malformed/overlarge responses, nonfinite/future/misaligned clocks and venue/ticker mismatches. Sparse returned minutes remain sparse, with no invented full-session completeness. No original intraday availability is imputed from the later REST response; source receipt authenticity and acceptance stay explicitly unproven.
+
+**Source test proof:** TP-1 commit `de1f6f3ed084f8060b04f743946c2c9932519ce9` passed **385 pytest cases plus 74 subtests** on M2 Studio, including 20 dedicated RTH-reference regression cases in the existing pilot diagnostics test file and original native TP-1 classifier suites. Exact reference source blob `fad57481dbc8ed671c60372bc8481140128db52e` and test blob `853bbdff318e41590d3564e48da76093c61343ea`. A synthetic response passed exact decimal aggregation but was still tagged `REQUIRES_INCUMBENT_OWNER_VERIFICATION`. No actual RTH source response, credentialed host acquisition, production CI acceptance or vendor correction reconciliation is claimed.
+
 ## 4. Acceptance evidence that counts
 
 Collect immutable exact generation/digest, original clock/receipt, source environment, technical reviewer, production installed identity and genuine market-session evidence (not artificial test frames). The parent TP-1 specification requires, among its gates:
