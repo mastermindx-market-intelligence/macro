@@ -17,6 +17,7 @@ Reference: research/MASSIVE_ADVANCED_INTEGRATION_MASTERPLAN_BY_FABLE.md §0.
 from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation
+from engine.tick_plane.minute_projection import SCHEMA as TP1_MINUTE_SCHEMA, MINUTE_NS
 from hashlib import sha256
 import json
 import re
@@ -249,4 +250,171 @@ def summarize_tp1_soak_evidence(
         "absorption_signal":None,
         "cohort_metrics_sha256":sha256(json.dumps(canonical,sort_keys=True,separators=(",",":")).encode()).hexdigest(),
         "per_symbol_metrics":canonical,
+    }
+
+
+
+def cohort_row_from_source_minutes(
+    *, ticker, session, minute_observations, expected_session_minutes,
+    reference_volume_shares, reference_scope, reference_receipt,
+    halt_reopen_reason=None,
+):
+    """Project TP-1 native minute shares/ages into a pilot diagnostic row.
+
+    This is a NON-AUTHENTICATING convenience projection of incumbent TP-1
+    evidence, not an RTH clock, receipt validator or independent data source.
+    A missing minute, unknown source volume, quote/venue/sale-policy generation
+    ambiguity, or incomplete source policy disqualifies numeric acceptance.
+    """
+    _str(ticker, "ticker")
+    if _TICKER.fullmatch(ticker) is None:
+        raise PilotEvidenceRefusal("invalid pilot ticker")
+    _str(session, "session")
+    if not session.endswith(":RTH"):
+        raise PilotEvidenceRefusal("pilot input requires RTH scope")
+    _int(expected_session_minutes, "expected_session_minutes", min_value=1)
+    if expected_session_minutes > 390:
+        raise PilotEvidenceRefusal("RTH minute budget exceeds a regular session")
+    if not isinstance(minute_observations, (list,tuple)) or not minute_observations:
+        raise PilotEvidenceRefusal("at least one source minute required")
+    if len(minute_observations)>390:
+        raise PilotEvidenceRefusal("unbounded source minute cohort")
+    if reference_scope not in (*_SCOPES, None):
+        raise PilotEvidenceRefusal("invalid grouped reference scope")
+    _shares(reference_volume_shares,"reference_volume_shares",optional=True)
+    if (reference_volume_shares is None)!=(reference_receipt is None):
+        raise PilotEvidenceRefusal("grouped reference shares and receipt mismatch")
+    if reference_receipt is not None:
+        _str(reference_receipt,"reference_receipt")
+    if halt_reopen_reason is not None:
+        _str(halt_reopen_reason,"halt_reopen_reason")
+
+    minutes=sorted(minute_observations,key=lambda m:m.get("start_ns",-1)
+                   if isinstance(m,dict) else -1)
+    counters={
+        "lit_eligible_prints":0,
+        "lit_classified_quote_le5s_prints":0,
+        "lit_classified_quote_gt5s_prints":0,
+        "lit_unclassified_prints":0,
+        "trf_prints":0,
+        "unknown_venue_prints":0,
+    }
+    conditions=set()
+    exchanges=set()
+    quotes=set()
+    ages=set()
+    source_volume=Decimal(0)
+    source_unknown_volume=Decimal(0)
+    lit_source_unqualified=0
+    reasons={}
+    receipts=[]
+    first=None
+    for minute in minutes:
+        if not isinstance(minute,dict) or minute.get("schema")!=TP1_MINUTE_SCHEMA:
+            raise PilotEvidenceRefusal("source minute schema not TP-1")
+        if (minute.get("state")!="PROVISIONAL_MEASURED_CONTEXT"
+                or minute.get("authority")!="OBSERVATIONAL_PROVISIONAL_ONLY"
+                or minute.get("correction_status")!="STREAM_PROVISIONAL_UNRECONCILED"
+                or minute.get("ticker")!=ticker or minute.get("session")!=session
+                or minute.get("source_mode")!="ACTUAL_AS_SEEN_ONLY_WHEN_OWNER_PROVES_RECEIPTS"
+                or minute.get("absorption_signal") is not None):
+            raise PilotEvidenceRefusal("source minute identity/authority/finality mismatch")
+        start=_int(minute.get("start_ns"),"minute.start_ns")
+        end=_int(minute.get("end_ns"),"minute.end_ns")
+        if end-start!=MINUTE_NS or start%MINUTE_NS:
+            raise PilotEvidenceRefusal("unqualified minute event window")
+        if first is None:
+            first=start
+        if start != first + MINUTE_NS*len(receipts):
+            raise PilotEvidenceRefusal("missing or duplicate source minute")
+        decision=_int(minute.get("decision_ns"),"minute.decision_ns")
+        wm=_int(minute.get("watermark_available_ns"),"minute.watermark_available_ns")
+        complete=_int(minute.get("source_complete_through_ns"),"minute.source_complete_through_ns")
+        if complete < end or wm<complete or wm>decision:
+            raise PilotEvidenceRefusal("source minute completeness receipt not matured")
+        record_sha=minute.get("source_observation_sha256")
+        if not isinstance(record_sha,str) or re.fullmatch("[0-9a-f]{64}",record_sha) is None:
+            raise PilotEvidenceRefusal("source minute missing original observation digest")
+        receipt=_str(minute.get("source_watermark_receipt"),"source_watermark_receipt")
+        for output_name,source_name in (
+            ("lit_eligible_prints","n_lit_eligible_prints"),
+            ("lit_classified_quote_le5s_prints","n_lit_classified_quote_le5s_prints"),
+            ("lit_classified_quote_gt5s_prints","n_lit_classified_quote_gt5s_prints"),
+            ("lit_unclassified_prints","n_lit_unclassified_prints"),
+            ("trf_prints","n_trf"),
+            ("unknown_venue_prints","n_unknown_venue"),
+        ):
+            counters[output_name]+=_int(minute.get(source_name),source_name)
+        lit_source_unqualified+=_int(minute.get("n_lit_source_unqualified_prints"),
+                                      "n_lit_source_unqualified_prints")
+        r=minute.get("lit_unknown_reason_counts")
+        if not isinstance(r,dict) or len(r)>100:
+            raise PilotEvidenceRefusal("source minute unknown lit reasons not tracked")
+        for k,v in r.items():
+            _str(k,"lit unknown reason")
+            reasons[k]=reasons.get(k,0)+_int(v,"lit unknown reason count")
+        for group,key in ((conditions,"condition_rules_ref"),
+                          (exchanges,"exchange_reference_sha256"),
+                          (quotes,"quote_condition_rules_sha256")):
+            value=minute.get(key)
+            if value is not None:
+                if not isinstance(value,str) or re.fullmatch("[0-9a-f]{64}",value) is None:
+                    raise PilotEvidenceRefusal("unqualified reference digest")
+                group.add(value)
+        ages.add(_int(minute.get("max_quote_age_ns"),"minute.max_quote_age_ns"))
+        included=_shares(minute.get("source_volume_included_shares"),"source_volume_included_shares")
+        unknown=_shares(minute.get("source_volume_unknown_shares"),"source_volume_unknown_shares")
+        excluded=_shares(minute.get("source_volume_excluded_shares"),"source_volume_excluded_shares")
+        total=_shares(minute.get("source_all_printed_shares"),"source_all_printed_shares")
+        if included+unknown+excluded != total:
+            raise PilotEvidenceRefusal("source minute native share-volume denominator mismatch")
+        source_volume+=included
+        source_unknown_volume+=unknown
+        receipts.append((start,end,decision,receipt,record_sha))
+    if (sum(reasons.values())!=counters["lit_unclassified_prints"]
+            or counters["lit_eligible_prints"] != sum(counters[k] for k in (
+                "lit_classified_quote_le5s_prints",
+                "lit_classified_quote_gt5s_prints",
+                "lit_unclassified_prints",
+            ))):
+        raise PilotEvidenceRefusal("source minute lit classification counters inconsistent")
+
+    bad=[]
+    if len(minutes)!=expected_session_minutes:
+        bad.append("PARTIAL_MINUTE_COVERAGE")
+    if source_unknown_volume:
+        bad.append("UNKNOWN_SOURCE_VOLUME_CONDITION")
+    if lit_source_unqualified:
+        bad.append("LIT_SOURCE_POLICY_UNQUALIFIED")
+    if any(len(g)!=1 for g in (conditions,exchanges,quotes,ages)):
+        bad.append("MIXED_OR_MISSING_SOURCE_POLICY_GENERATION")
+    if halt_reopen_reason is not None:
+        state="HALT_REOPEN_CARVEOUT"
+        note=halt_reopen_reason
+    elif bad:
+        state="SOURCE_UNQUALIFIED"
+        note=";".join(bad)
+    else:
+        state="ELIGIBLE"
+        note=None
+    receipt_digest=sha256(json.dumps({
+        "source_minute_receipts":receipts,
+        "expected_session_minutes":expected_session_minutes,
+        "source_volume_shares":_fmt(source_volume),
+        "source_unknown_volume_shares":_fmt(source_unknown_volume),
+        "conditions":sorted(conditions),
+        "exchanges":sorted(exchanges),
+        "quote_policies":sorted(quotes),
+        "quote_age_limits":sorted(ages),
+    },sort_keys=True,separators=(",",":")).encode()).hexdigest()
+    return {
+        "ticker":ticker,"state":state,
+        "session_scope":"RTH", "reference_scope":reference_scope,
+        **counters,
+        "lit_unknown_reason_counts":dict(sorted(reasons.items())),
+        "source_volume_shares":_fmt(source_volume),
+        "reference_volume_shares":reference_volume_shares,
+        "carveout_reason":note,
+        "source_receipt":"tp1-minute-cohort:"+receipt_digest,
+        "reference_receipt":reference_receipt,
     }
