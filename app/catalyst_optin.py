@@ -159,9 +159,16 @@ class SupabaseOtpIdentity(OtpIdentityAuthority):
         if not self.anon_key or not self.endpoint.startswith("https://"):
             raise FunnelGate("IDENTITY_VERIFICATION_UNAVAILABLE")
         try:
-            self._transport("/auth/v1/otp", {"email": normalize_email(email),
-                                             "create_user": True})
-            return True  # OTP request accepted; not a claim that an inbox received it
+            reply = self._transport("/auth/v1/otp", {"email": normalize_email(email),
+                                                    "create_user": True})
+            # GoTrue normally returns an empty JSON object on accepted requests.
+            # A test adapter, proxy or changed provider protocol must not turn a
+            # semantically rejected/error response into "OTP requested" success.
+            if (not isinstance(reply, dict) or
+                    any(reply.get(key) for key in ("error", "error_code", "error_description")) or
+                    reply.get("status") in ("error", "failed")):
+                raise FunnelGate("IDENTITY_VERIFICATION_UNAVAILABLE")
+            return True  # Provider accepted; never claim inbox receipt here
         except FunnelGate:
             raise
         except Exception:
@@ -190,7 +197,7 @@ class ExistingMailerSuppression(SuppressionAuthority):
     def __init__(self, mailer: Any | None = None):
         self._mailer = mailer
 
-    def is_suppressed(self, email: str, user_id: str) -> bool:
+    def is_suppressed(self, email: str, user_id: str | None) -> bool:
         if self._mailer is not None:
             owner = self._mailer
         else:

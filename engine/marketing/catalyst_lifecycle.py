@@ -207,7 +207,7 @@ class ConsentOwner(Protocol):
 
 
 class SuppressionAuthority(Protocol):
-    def is_suppressed(self, email: str, user_id: str) -> bool: ...
+    def is_suppressed(self, email: str, user_id: str | None) -> bool: ...
 
 
 class RevisionAuthority(Protocol):
@@ -268,7 +268,7 @@ def _open_intent(secret: str, token: str, email: str, now: datetime) -> dict:
     return payload
 
 
-def _validate_scan(scan: ScanEvidence) -> None:
+def _validate_scan(scan: ScanEvidence, *, now: datetime) -> None:
     _event_id(scan.event_id)
     if scan.public_safe is not True:
         raise FunnelGate("SCAN_NOT_PUBLIC_SAFE", 403)
@@ -276,7 +276,15 @@ def _validate_scan(scan: ScanEvidence) -> None:
         not isinstance(t, str) or not _TICKER.fullmatch(t) for t in scan.tickers
     ) or len(set(scan.tickers)) != len(scan.tickers):
         raise FunnelGate("INVALID_SCAN_TICKERS", 400)
-    _timestamp(scan.as_of_utc)
+    observed = _timestamp(scan.as_of_utc)
+    # Defense in depth: even an injected ScanAuthority implementation cannot
+    # qualify an ancient/future first-value read as a current marketing event.
+    # The canonical 00 scan issuer separately enforces its own stronger signed
+    # receipt/generation/source-rights invariants.
+    if observed > now + timedelta(minutes=5):
+        raise FunnelGate("FUTURE_SCAN_PROOF", 403)
+    if now - observed > PUBLIC_REVISION_MAX_AGE:
+        raise FunnelGate("STALE_SCAN_PROOF", 403)
 
 
 def _validate_revision(rev: PublicRevision) -> None:
@@ -373,6 +381,21 @@ class FunnelService:
         self.revisions = revisions
         self.sender = sender
 
+    def _qualified_scan(self, receipt: str, *, now: datetime) -> ScanEvidence:
+        """Recheck the current public source through the canonical ScanAuthority.
+
+        No rights/issuer/generation decision is copied into the consent store;
+        00's signed receipt verifier owns source-specific rights/currentness.
+        """
+        try:
+            scan = self.scan.require_public_scan(receipt)
+            _validate_scan(scan, now=now)
+            return scan
+        except FunnelGate:
+            raise
+        except Exception:
+            raise FunnelGate("SCAN_AUTHORITY_UNAVAILABLE") from None
+
     def request(self, *, email: str, checked: bool, scan_receipt: str,
                 touch: dict[str, Any] | None, now: datetime) -> dict[str, str]:
         """After anonymous scan only; does not register or grant consent."""
@@ -383,13 +406,27 @@ class FunnelService:
             raise FunnelGate("CONSENT_OWNER_NOT_READY")
         if not isinstance(scan_receipt, str) or not 1 <= len(scan_receipt) <= 1024:
             raise FunnelGate("SCAN_PROOF_REQUIRED", 400)
-        scan = self.scan.require_public_scan(scan_receipt)
-        _validate_scan(scan)
+        scan = self._qualified_scan(scan_receipt, now=now)
+        # Check the incumbent address-level unsubscribe/bounce/complaint owner
+        # BEFORE storing a pending intent or asking GoTrue to email a code.
+        # No user ID exists yet, so the shared mailer checks the address-level
+        # suppression list now and checks per-user preferences after GoTrue proof.
+        # Do not disclose suppression membership to an anonymous requester.
+        try:
+            if self.suppression.is_suppressed(addr, None):
+                raise FunnelGate("VERIFICATION_UNAVAILABLE")
+        except Exception:
+            raise FunnelGate("VERIFICATION_UNAVAILABLE") from None
         data = {"v": 1, "scope": SCOPE, "nonce": secrets.token_urlsafe(24),
                 "email_tag": _email_tag(self.secret, addr),
                 "issued_at": now.isoformat(), "event_id": scan.event_id,
-                "tickers": list(scan.tickers), "first_touch": first_touch(touch)}
+                "tickers": list(scan.tickers), "first_touch": first_touch(touch),
+                # Private, HMAC-bound pending intent. Never serialize this
+                # verification capability into public/analytics/UTM receipts.
+                "scan_receipt": scan_receipt}
         intent = _sign(self.secret, data)
+        if len(intent) > 4096:
+            raise FunnelGate("PENDING_CONSENT_PROTOCOL_MISMATCH")
         # Durable *pending* intent, not an early grant or another auth database.
         # The existing consent owner returns the short opaque handle frozen by 00.
         # It is written BEFORE GoTrue sends OTP; a failed claim cannot leave a
@@ -426,6 +463,16 @@ class FunnelService:
         payload = _open_intent(self.secret, intent, addr, now)
         if not isinstance(otp, str) or not re.fullmatch(r"[0-9]{6,8}", otp):
             raise FunnelGate("INVALID_VERIFICATION_CODE", 400)
+        # A valid pending HMAC/OTP does NOT make rights permanent. Revisit the
+        # exact original signed first-value proof while the OTP is still unused:
+        # a correction, retraction, source-rights revocation or unqualified
+        # current clock must prevent a new positive consent record.
+        signed_scan = payload.get("scan_receipt")
+        if not isinstance(signed_scan, str) or not 1 <= len(signed_scan) <= 1024:
+            raise FunnelGate("SCAN_PROOF_REQUIRED", 400)
+        latest = self._qualified_scan(signed_scan, now=now)
+        if latest.event_id != payload["event_id"] or list(latest.tickers) != payload["tickers"]:
+            raise FunnelGate("SCAN_PROOF_SUPERSEDED", 403)
         who = self.identity.verify_otp(addr, otp)
         uid = _uuid(who.user_id)
         if normalize_email(who.email) != addr or _timestamp(who.verified_at_utc) > now + timedelta(seconds=30):

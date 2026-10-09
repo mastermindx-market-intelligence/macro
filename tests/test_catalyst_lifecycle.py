@@ -171,6 +171,35 @@ def test_anonymous_first_scan_stays_separate_from_registration():
     assert not otp.requests
 
 
+@pytest.mark.parametrize("observed_offset,expected_code", [
+    (timedelta(days=-8), "STALE_SCAN_PROOF"),
+    (timedelta(days=-30), "STALE_SCAN_PROOF"),
+    (timedelta(minutes=6), "FUTURE_SCAN_PROOF"),
+])
+def test_stale_or_future_signed_scan_clock_refuses_optin_even_with_trusted_authority(
+    observed_offset, expected_code
+):
+    service, otp, store, *_ = make()
+
+    class SignedButBadClock:
+        def require_public_scan(self, receipt):
+            return ScanEvidence("event-123", ("NVDA",),
+                                (NOW + observed_offset).isoformat(), True)
+
+    service.scan = SignedButBadClock()
+    fails(expected_code, lambda: consented(service))
+    assert otp.requests == [] and store.pending == {} and store.records == {}
+
+
+def test_seven_day_scan_freshness_boundary_retains_optin_without_extra_registration():
+    service, otp, store, *_ = make()
+    service.scan.require_public_scan = lambda _: ScanEvidence(
+        "event-123", ("NVDA",), (NOW - timedelta(days=7)).isoformat(), True)
+    response = consented(service)
+    assert response["status"] == "verification_requested"
+    assert len(otp.requests) == 1 and len(store.pending) == 1
+
+
 def test_invalid_address_and_unverified_never_becomes_a_lead():
     service, otp, store, *_ = make()
     for bad in ("bad", "a@b", "a@b.com\nBcc:other@example.com", "x" * 256 + "@e.com"):
@@ -200,6 +229,48 @@ def test_signed_intent_binds_email_time_scope_and_attribution_without_email_leak
     assert safe["user_ref"].startswith("u_") and EMAIL not in json.dumps(safe)
     assert UID not in json.dumps(safe) and "intent" not in safe
     assert safe["utm_campaign"] == "earnings"
+
+
+def test_current_public_rights_are_rechecked_before_consuming_one_use_otp():
+    service, otp, store, *_ = make()
+    pending = consented(service)
+    assert otp.requests == [EMAIL]
+    calls = []
+
+    def withdrawn(receipt):
+        calls.append(receipt)
+        raise FunnelGate("SCAN_PROOF_SUPERSEDED", 403)
+
+    service.scan.require_public_scan = withdrawn
+    fails("SCAN_PROOF_SUPERSEDED", lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=pending["public_ref"], now=NOW))
+    assert calls == ["scan-public-verified"]
+    assert otp.checks == [] and store.records == {}
+
+
+@pytest.mark.parametrize("changed", [
+    ScanEvidence("wrong-event", ("NVDA", "AMD"), NOW.isoformat(), True),
+    ScanEvidence("event-123", ("NVDA",), NOW.isoformat(), True),
+    ScanEvidence("event-123", ("NVDA", "AMD"), (NOW - timedelta(days=8)).isoformat(), True),
+])
+def test_changed_event_generation_interest_or_freshness_refuses_consent_before_otp(changed):
+    service, otp, store, *_ = make()
+    pending = consented(service)
+    service.scan.require_public_scan = lambda _: changed
+    code = "STALE_SCAN_PROOF" if changed.as_of_utc < (NOW - timedelta(days=7)).isoformat() else "SCAN_PROOF_SUPERSEDED"
+    fails(code, lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=pending["public_ref"], now=NOW))
+    assert otp.checks == [] and store.records == {}
+
+
+def test_unavailable_scan_reader_at_verification_is_typed_and_fail_closed():
+    service, otp, store, *_ = make()
+    pending = consented(service)
+    service.scan.require_public_scan = lambda _: (_ for _ in ()).throw(
+        RuntimeError("upstream private feed path / internal recipient"))
+    fails("SCAN_AUTHORITY_UNAVAILABLE", lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=pending["public_ref"], now=NOW))
+    assert otp.checks == [] and store.records == {}
 
 
 def test_duplicate_verification_is_idempotent_and_immutable_first_touch():
@@ -260,6 +331,22 @@ def test_secure_owner_down_does_not_consume_otp_or_forge_success():
     store.ready = True
     store.raise_on_confirm = True
     fails("CONSENT_WRITE_UNCONFIRMED", lambda: service.verify(email=EMAIL, otp="123456", public_ref=intent, now=NOW))
+
+
+def test_anonymous_optin_suppression_prevents_otp_and_pending_intent():
+    service, otp, store, suppression, *_ = make()
+    suppression.blocked = True
+    # Anonymous callers cannot distinguish a known unsubscriber from a
+    # temporarily unavailable suppression owner by probing arbitrary emails.
+    fails("VERIFICATION_UNAVAILABLE", lambda: consented(service))
+    assert otp.requests == [] and store.pending == {} and store.records == {}
+    suppression.blocked = False
+    suppression.down = True
+    fails("VERIFICATION_UNAVAILABLE", lambda: consented(service))
+    assert otp.requests == [] and store.pending == {} and store.records == {}
+    suppression.down = False
+    consented(service)
+    assert len(otp.requests) == 1 and len(store.pending) == 1
 
 
 def test_suppressed_or_unavailable_suppression_refuses_grant():
