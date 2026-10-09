@@ -411,12 +411,32 @@ class CapturedMinuteIntegrationTests(unittest.TestCase):
         self.assertEqual(got["source_capture_authenticity"],
                          "REQUIRES_ORIGINAL_OWNER_PROOF")
 
-    def test_original_source_digest_set_deterministic(self):
+    def test_original_source_receipt_sequence_digest_deterministic(self):
         args=captured_synthetic_window()
         first=compose_captured_minute(**args)
         second=compose_captured_minute(**copy.deepcopy(args))
-        self.assertEqual(first["raw_frame_digest_set_sha256"],
-                         second["raw_frame_digest_set_sha256"])
+        self.assertEqual(first["source_frame_order_sha256"],
+                         second["source_frame_order_sha256"])
+        self.assertEqual(len(first["source_frame_order_sha256"]),64)
+
+    def test_original_frame_order_change_mutates_capture_receipt_digest(self):
+        args=captured_synthetic_window()
+        first=compose_captured_minute(**args)
+        reordered=copy.deepcopy(args)
+        reordered["original_frames"][0],reordered["original_frames"][1]=(
+            reordered["original_frames"][1],reordered["original_frames"][0])
+        second=compose_captured_minute(**reordered)
+        self.assertNotEqual(first["source_frame_order_sha256"],
+                            second["source_frame_order_sha256"])
+
+    def test_original_receipt_id_change_mutates_capture_receipt_digest(self):
+        args=captured_synthetic_window()
+        first=compose_captured_minute(**args)
+        variant=copy.deepcopy(args)
+        variant["original_frames"][0]["source_receipt_id"]="different-source-receipt"
+        second=compose_captured_minute(**variant)
+        self.assertNotEqual(first["source_frame_order_sha256"],
+                            second["source_frame_order_sha256"])
 
     def test_unqualified_reference_custody_cannot_become_signed_minute(self):
         args=captured_synthetic_window()
