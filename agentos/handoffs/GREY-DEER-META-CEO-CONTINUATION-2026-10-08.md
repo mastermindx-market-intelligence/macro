@@ -22,6 +22,20 @@ Current protected law: Mastermind `732cf7be88e7159b4995a8885fbd381cd1484e3e`, in
 
 **DO_NOT_REDO:** Oct 8 incident audit, original v1.0 masterplan, existing #8132 work, prior 76 pipeline tests, original denied writes/diagnostics, old invalidated replays, QLedger unrecorded claim data, and any new parallel queue/store. Parent mission `PARTIAL` and `MISSION_COMPLETE:false`.
 
+### Corrected and extended evidence after checkpoint (2026-10-09 UTC)
+
+The GH001 publication defect occurred **twice** inside October 8 US nightly run `37716729584` / engine job `113158877653`: the **early** core checkpoint logged SIX rejected pushes and exit1 at 13:21:02 UTC but its GitHub step was reported SUCCESS because `continue-on-error:true`. The **later** main commit logged FIVE rejected pushes and exit1 at 14:29:53 UTC and correctly reported FAILURE. **Neither produced accepted publication proof.** This corrects the prior shorthand that the early checkpoint succeeded. Owning incident doc commit `e68d23995d87a4913eb0c1686252259a6d659913`, blob `64b8ccd2bb8ec826a5a166667a22bd90e266973a`.
+
+A second, independent liveness defect was VERIFIED in `scripts/check_ledger_advance.py::run_check`: same-day duplicate suppression clears `stalled_since` even when the ledger as-of does not advance. Immutable heartbeat commits:
+`f2e831e534c3` (Oct7 asof Oct6 / no stall),
+`49418b034729` (Oct8 asof still Oct6 / stalled_since Oct7),
+`e65335239332` (Oct8 same asof / stalled_since reset to null).
+Source-pinned synthetic execution reproduced `old_stalled_since=2026-10-07`, `new_stalled_since=None`, no new issue. The liveness monitor is *existing*, not an invitation to create another watcher. Its repair should preserve open stall age and avoid duplicate notifications; prospective expected-session and real-publisher SHA checks are additionally owed. Simply fixing the monitor does not cure QLedger GH001, nor does partitioning QLedger cure this heartbeat erasure.
+
+Owner coordination: Macro #8128 issue comment `6072401693` communicates both corrections and directs work to incumbent QLedger/CI/heartbeat owners. No actual source mutation/release/worker dispatch occurred. Exact same native local diagnostic workspace remains PRESERVED_DIRTY, two files, 38 tests passed; its Studio typed publication path refused NOT_APPLIED. No rerouting of denials.
+
+**Current order:** 1) QLedger publisher writer/lease/effect reconciliation and one proven GitHub-size-safe QLedger-native continuation, 2) heartbeat same-day stall retention + publisher acknowledgement tests through its original source owner, 3) genuine nightly issue and matched publication proof, 4) #8132 human-warning integration when its independent safety/source permissions are cleared, 5) terminal consumer release #849/#852 through original review/publication owners, 6) qualified proactive mechanisms. All standing DO_NOT_REDO remain.
+
 ## Mission and controlling sources
 
 Users must receive prominent, persistent and source-backed fragility warnings, current scoped break observations, and honest repair/relapse updates across Macro, Prophet, Terminal and permitted Portfolio consumers. Reuse the existing Risk Envelope, Alert Command Center, Chronicle/Reflex/QLedger and policy owners. No new fused score, event store, scheduler, automatic V1 held-position exit, hidden Prophet mutation or model-generated sizing coefficient.
