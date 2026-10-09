@@ -104,7 +104,7 @@ function entry(extra = {}) {
 function quote(price = 99, extra = {}) {
   return { price, source: "tencent", ts: NOW, prevClose: 10, changePct: 890, delayMin: 0, ...extra };
 }
-async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"], sessions = { cn: session() }, tickers = {}, quotes, ws = false, snapshotSessions, overlay, workerQuotes, rowDates = {} } = {}) {
+async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"], sessions = { cn: session() }, tickers = {}, quotes, ws = false, snapshotSessions, overlay, workerQuotes, rowDates = {}, liveOnlySymbols = [] } = {}) {
   let now = NOW;
   const root = element("html", { "data-lang": "en" });
   const head = root.appendChild(element("head")), body = root.appendChild(element("body"));
@@ -114,8 +114,13 @@ async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"]
   for (const sym of symbols) {
     const row = main.appendChild(element("div"));
     const mkt = /\.HK$/.test(sym) ? "hk" : /\.(SS|SZ|BJ)$/.test(sym) ? "cn" : /\.(TO|V)$/.test(sym) ? "ca" : "us";
-    px[sym] = row.appendChild(element("span", { class: "nb-px", "data-sym": sym, "data-mkt": mkt, ...(rowDates[sym] ? { "data-through": rowDates[sym] } : {}) }, "10.00"));
-    chg[sym] = row.appendChild(element("span", { class: "nb-chg up", "data-sym": sym, "data-mkt": mkt }, "+1.00%"));
+    const liveOnly = liveOnlySymbols.includes(sym);
+    px[sym] = row.appendChild(element("span", { class: liveOnly ? "nb-px mx-skel" : "nb-px",
+      "data-sym": sym, "data-mkt": mkt, ...(rowDates[sym] ? { "data-through": rowDates[sym] } : {}),
+      ...(liveOnly ? { "aria-busy": "true" } : {}) }, liveOnly ? "" : "10.00"));
+    chg[sym] = row.appendChild(element("span", { class: liveOnly ? "nb-chg mx-skel" : "nb-chg up",
+      "data-sym": sym, "data-mkt": mkt,
+      ...(liveOnly ? { "aria-busy": "true" } : {}) }, liveOnly ? "" : "+1.00%"));
     row.appendChild(element("span", { class: "nb-dvg alert" }, "old divergence"));
   }
   const events = {}, intervals = [];
@@ -555,4 +560,68 @@ test("an explicit row date survives and takes precedence over a later quote obse
   assert.equal(c.px["600519.SS"].getAttribute("data-data-state"), "late");
   assert.match(c.px["600519.SS"].getAttribute("data-tip-en"), /Prices through 2026-09-29/);
   assert.match(c.px["600519.SS"].getAttribute("data-tip-en"), /Quote time: 2026-09-30/);
+});
+
+
+test("CSI 300 and ChiNext load validated closing levels into otherwise empty China tiles", async () => {
+  const symbols = ["000300.SS", "399006.SZ"];
+  const closedAt = Date.parse("2026-09-30T07:00:00Z");
+  const quotes = {
+    "000300.SS": quote(4317.25, { ts: closedAt, prevClose: 4310.28, changePct: 0.16 }),
+    "399006.SZ": quote(3043.33, { ts: closedAt, prevClose: 3036.66, changePct: 0.22 }),
+  };
+  const c = await client({
+    pathname: "/china.html", symbols, liveOnlySymbols: symbols, quotes, tickers: {},
+    sessions: { cn: session() },
+  });
+  for (const sym of symbols) {
+    assert.equal(c.px[sym].textContent, quotes[sym].price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    assert.equal(c.chg[sym].textContent, "+" + quotes[sym].changePct.toFixed(2) + "%");
+    assert.equal(c.px[sym].classList.contains("mx-skel"), false, sym);
+    assert.equal(c.chg[sym].classList.contains("mx-skel"), false, sym);
+    assert.equal(c.px[sym].hasAttribute("aria-busy"), false, sym);
+    assert.equal(c.chg[sym].hasAttribute("aria-busy"), false, sym);
+    assert.equal(c.px[sym].getAttribute("data-live"), "closed", sym);
+    assert.equal(c.px[sym].getAttribute("data-source"), "tencent", sym);
+  }
+});
+
+test("China live-only exception rejects wrong-session, malformed, synthetic and percentless prints", async () => {
+  const sym = "000300.SS";
+  const lastClose = Date.parse("2026-09-30T07:00:00Z");
+  const invalids = [
+    ["prior session", { ts: Date.parse("2026-09-29T07:00:00Z") }],
+    ["missing clock", { ts: null }],
+    ["synthetic clock", { ts: lastClose, tsSynthetic: true }],
+    ["future clock", { ts: NOW + 300000 }],
+    ["missing percentage", { ts: lastClose, changePct: null, prevClose: null }],
+    ["invalid price", { ts: lastClose, price: -5 }],
+  ];
+  for (const [reason, extra] of invalids) {
+    const c = await client({ pathname: "/china.html", symbols: [sym], liveOnlySymbols: [sym],
+      quotes: { [sym]: quote(4317.25, { ts: lastClose, prevClose: 4310.28, changePct: 0.16, ...extra }) },
+      sessions: { cn: session() }, tickers: {} });
+    assert.equal(c.px[sym].classList.contains("mx-skel"), true, reason);
+    assert.equal(c.px[sym].hasAttribute("aria-busy"), true, reason);
+    assert.equal(c.chg[sym].classList.contains("mx-skel"), true, reason);
+  }
+});
+
+test("China live-only exception preserves unverified calendar and other cash index freezes", async () => {
+  const lastClose = Date.parse("2026-09-30T07:00:00Z");
+  const symbols = ["000300.SS", "399006.SZ", "000001.SS", "600519.SS"];
+  const quotes = Object.fromEntries(symbols.map(sym => [sym, quote(4317.25,
+    { ts: lastClose, prevClose: 4310.28, changePct: 0.16 })]));
+  const blocked = await client({
+    pathname: "/china.html", symbols, quotes, liveOnlySymbols: symbols,
+    sessions: { cn: session("cn", { state: "unverified", calendar_verified: false, data_frozen: true }) },
+    tickers: {},
+  });
+  for (const sym of symbols) assert.equal(blocked.px[sym].classList.contains("mx-skel"), true, sym);
+  const frozen = await client({ pathname: "/china.html", symbols, quotes, liveOnlySymbols: symbols,
+    sessions: { cn: session() }, tickers: {} });
+  for (const sym of ["000001.SS", "600519.SS"]) {
+    assert.equal(frozen.px[sym].classList.contains("mx-skel"), true, sym);
+    assert.equal(frozen.chg[sym].classList.contains("mx-skel"), true, sym);
+  }
 });
