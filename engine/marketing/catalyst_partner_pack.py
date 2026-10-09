@@ -349,12 +349,28 @@ def build_partner_pack(
         f'- [{s["title"]}]({s["url"]}) ({s["published_at_utc"]})'
         for s in ordered_sources
     ]
+    direct = [t for t in ticks if relations[t]["relationship"] == "DIRECT"]
+    indirect = [t for t in ticks
+                if relations[t]["relationship"] == "EVIDENCED_INDIRECT"]
+    scope_lines = [
+        "These are evidence-qualified relationships, not estimated market "
+        "moves or trading recommendations.",
+    ]
+    if direct:
+        scope_lines.insert(0, "Direct event relationship: " + ", ".join(direct) + ".")
+    if indirect:
+        scope_lines.insert(1 if direct else 0,
+                           "Evidenced indirect relationship: "
+                           + ", ".join(indirect) + ".")
     newsletter_lines = [
         f'# {event["primary_subject"]}: sourced event brief',
         "",
         partner["disclosure"], "",
         f'For readers following {partner["audience"]}, this note tracks '
         + ", ".join(ticks) + " against the same event evidence.",
+        "",
+        "## Relationship scope", "",
+        *scope_lines,
         "",
         "## Confirmed observations", "",
     ]
@@ -383,22 +399,34 @@ def build_partner_pack(
         "", "DRAFT PREVIEW - NOT APPROVED FOR DISTRIBUTION.",
     ]
     newsletter = "\n".join(newsletter_lines) + "\n"
-    social_head = event["event_kind"].replace("_", " ").capitalize()
-    social_head += " evidence for " + " ".join("$" + t for t in ticks)
-    social_body = (
+    # Two individually length-checked draft posts prevent the long, canonical
+    # attributed link from crowding out the ACTUAL verified observation.
+    # Never clip a sentence: clipping may invert a material qualifier.
+    lead_ticker = ticks[-1]
+    lead_claim = next(c for c in claims if lead_ticker in c["tickers"])
+    social_hook = "$" + lead_ticker + ": " + lead_claim["text"]
+    social_disclosure = (
         "Concept; no endorsement. " if partner["status"] == "candidate"
-        else "Partner distribution with " + partner["name"] + ". "
+        else "Partner: " + partner["name"] + ". "
     )
-    social = social_head + "\n" + social_body + scan_link
-    _require(len(social) <= 275, "SOCIAL_CHARACTER_BUDGET")
+    social_link_post = social_disclosure + scan_link
+    _require(len(social_hook) <= 275 and len(social_link_post) <= 275,
+             "SOCIAL_CHARACTER_BUDGET")
+    social = ("DRAFT THREAD 1/2\n" + social_hook
+              + "\n\nDRAFT THREAD 2/2\n" + social_link_post)
     # Existing publisher/press lexicons and the shared social copy validator.
-    from engine.marketing.copywriter import build_context, validate_copy
+    # Number tokens in this exact, verified source claim are not LLM inventions.
+    from engine.marketing.copywriter import (
+        _extract_number_tokens, banned_language, build_context, validate_copy,
+    )
     from engine.press.validators import (
         check_advice_lexicon, check_banned_lexicon, check_cheese_test,
     )
-    ctx = build_context({"type": "chart", "ticker": ticks[0],
+    ctx = build_context({"type": "chart", "ticker": lead_ticker,
                          "account": partner["slug"]})
-    violations = validate_copy(social_head, social_body.rstrip(), ctx)
+    ctx["numbers_whitelist"] = _extract_number_tokens(lead_claim["text"])
+    violations = validate_copy(social_hook, "", ctx)
+    violations += banned_language(social_disclosure)
     _require(not violations, "SOCIAL_COPY_REJECTED")
     draft = {"title": event["primary_subject"],
              "body_html": "<p>" + html.escape(" ".join(c["text"] for c in claims))
