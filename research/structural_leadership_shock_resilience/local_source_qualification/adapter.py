@@ -178,8 +178,9 @@ def validate_input_graph(value: Any) -> None:
             validate_input_graph(child)
     elif isinstance(value, str):
         path = value.lower().replace('\\', '/')
-        if any(d in path for d in ('cr1/', 'af1/', 'rh1/', 'personality_timing',
-                                  'winner_episodes.parquet', 'winner_autopsy_panel')):
+        if (re.search(r'(?:^|/)(?:cr1|af1|rh1)(?:[^a-z0-9]|$)', path)
+                or any(d in path for d in ('personality_timing',
+                                          'winner_episodes.parquet', 'winner_autopsy_panel'))):
             raise NotQualified('INPUT_GRAPH_FORBIDDEN_PATH_OR_VALUE')
 
 
@@ -212,9 +213,16 @@ def check_benchmark_inception(on: str, first_session: str) -> None:
 
 
 def freeze_peers(rows: list[dict], subject_issuer: str, sector: str,
-                 lagged_session: str) -> tuple[list[dict], dict[str, int]]:
-    """Consumes historical owner assertions; never derives issuer IDs from CIK."""
+                 lagged_session: str, *, decision_at: str | None = None) -> tuple[list[dict], dict[str, int]]:
+    """Freeze at an explicit instant; absent cutoff uses conservative UTC midnight.
+
+    Real qualification must supply the independently calendar-qualified C-1
+    decision instant. Never derives issuer IDs from CIK.
+    """
     parse_id(subject_issuer)
+    cutoff = _utc(decision_at or lagged_session + 'T00:00:00Z')
+    if cutoff.date().isoformat() != lagged_session:
+        raise NotQualified('PEER_CUTOFF_NOT_LAGGED_SESSION')
     excluded: Counter = Counter()
     selected: dict[str, dict] = {}
     for row in rows:
@@ -239,7 +247,7 @@ def freeze_peers(rows: list[dict], subject_issuer: str, sector: str,
             elif (not row.get('valid_from') or row['valid_from'] > lagged_session
                   or (row.get('valid_to') and lagged_session >= row['valid_to'])):
                 reason = 'IDENTITY_NOT_VALID'
-            elif _utc(row['known_at']).date().isoformat() > lagged_session:
+            elif _utc(row['known_at']) > cutoff:
                 reason = 'IDENTITY_NOT_KNOWN'
             elif row.get('sector') != sector:
                 reason = 'OTHER_SECTOR'
@@ -286,7 +294,7 @@ def economic_return(previous: float, close: float | None, *, cash: float = 0,
     if close is None:
         if not _finite(terminal_proceeds) or terminal_proceeds < 0:
             raise NotQualified('TERMINAL_UNRESOLVED')
-        wealth = terminal_proceeds
+        wealth = terminal_proceeds + cash
     elif _finite(close) and close > 0:
         wealth = close + cash
     else:

@@ -57,6 +57,11 @@ different from the original D. Static-sector fixtures compare both paths with
 the incumbent detector/watch code. Synthetic fixtures use a synthetic business
 day index and do not prove NYSE source-calendar coverage.
 
+Peer freezing accepts an exact C-1 `decision_at` instant; the absent-cutoff
+default is conservative UTC midnight, never an end-of-day assumption. Real
+qualification must supply the independently calendar-qualified instant. Terminal
+cash distributions are included once, in matching split-adjusted share units.
+
 The census reports identifying cells and occupied, nonoverlapping 63-session
 blocks from a fixed master-calendar origin. These are input diagnostics, never
 an estimate of predictive power, alpha or source admission. No forward label is

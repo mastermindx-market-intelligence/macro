@@ -426,3 +426,36 @@ def test_exact_200_complete_lagged_factor_observations(q):
     r[52]=np.nan
     with pytest.raises(q.NotQualified,match='FACTOR_COVERAGE'):
         q.expected_move(r,p,m,subject_C=0,peer_C=0,market_C=0)
+
+
+def test_peer_publication_clock_compares_instant_not_calendar_day(q):
+    rows=[peer(1,known_at='2014-01-02T21:01:00Z'),
+          peer(2,known_at='2014-01-02T20:59:00Z')]
+    chosen,excluded=q.freeze_peers(rows,'ISS:US-XNYS-SUBJECT','Information Technology',
+                                  '2014-01-02',decision_at='2014-01-02T21:00:00Z')
+    assert [r['security_id'] for r in chosen] == ['SEC:US-XNYS-S2']
+    assert excluded['IDENTITY_NOT_KNOWN'] == 1
+
+
+def test_terminal_cash_distribution_is_preserved_in_split_adjusted_units(q):
+    assert q.economic_return(100,None,cash=1,basis='split_adjusted',terminal_proceeds=40) == pytest.approx(-.59)
+
+
+def test_explicit_peer_cutoff_cannot_be_after_lagged_session(q):
+    with pytest.raises(q.NotQualified,match='PEER_CUTOFF'):
+        q.freeze_peers([peer(1)],'ISS:US-XNYS-SUBJECT','Information Technology',
+                       '2014-01-02',decision_at='2014-01-03T21:00:00Z')
+
+
+@pytest.mark.parametrize('path',['data/cr1.parquet','data/AF1_history.csv','data/RH1.json'])
+def test_input_graph_protected_family_file_names(q,path):
+    with pytest.raises(q.NotQualified,match='INPUT_GRAPH'):
+        q.validate_input_graph({'source_path':path})
+
+
+def test_full_prefix_cooldown_exact_63_boundary(q):
+    dates=pd.bdate_range('2014-01-01',periods=200)
+    candidates=pd.Series(False,index=dates)
+    candidates.iloc[[63,126,127,190,191]]=True
+    # A fire at exactly D+63 stays in the prior episode; D+64 starts a new one.
+    assert q._onsets(candidates) == [dates[63],dates[127],dates[191]]
