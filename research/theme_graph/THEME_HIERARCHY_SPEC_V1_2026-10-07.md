@@ -102,10 +102,31 @@ G0.13's four objects stay separate: semantic membership (group-level), economic 
 unchanged), basket weight (labelled construction).
 
 ## 7. Consumer order (all display-tier)
-W-C2b tier-guard in ThemeState / selection_cohort / exposure_map readers (byte-identical today) → W-C6
-structural_navigation `hierarchy_paths` → W-C7 us_context_vector shadow `theme_category_ids` keyed to belief_time →
-W-C8 F04 exposure_map `ancestors` (MO amendment; closes MO-DELTA-004) → W-C9 Evaluation OS E1 pre-registration
-("child accelerates before parent confirms") — runs only after accrual.
+**Records correction, 2026-10-08 — R-J.10/R9 and merged E1 Amendment A1.** W-C2b tier-guards precede
+W-C6 read-time `hierarchy_paths`. W-C8 adds the optional F04 `ancestors` projection over that reader. W-C9 is the
+[merged E1 preregistration and A1](THEME_HIERARCHY_E1_CHILD_LEADS_PARENT_PREREG_2026-10-07.md)
+(PRs #8621/#8628); it has no W-C7 dependency. R-J.10 dropped the stored per-ticker `theme_category_ids` shadow
+under `DNR:HOLD-TICKER-EXPOSURE-TAGS`. The later classification-context proposal #8643 remains a separately
+scoped draft; it neither reinstates the dropped stored shadow nor gates E1.
+
+E1a accrues only once W0 exists from the production graph's `macro_category → theme` belief and nonempty
+as-known US curated `MEMBER_OF`/`EXPRESSES` composition (preregistration §4). A source merge alone does not
+establish W0. E1b remains dormant until its separate merged basket→micro wiring trigger and honest window.
+The preregistration §§1–5 and A1 govern the as-of-D reads, ≥50 matured counted episodes **and** ≥250 NYSE
+trading days after excluding frozen intervals, and the permitted pre-gate telemetry. This correction does
+not start either clock, authorize micro membership, or change any measurement or authority rule.
+
+MO-DELTA-004 remains **PARTIAL**, as the
+[existing F04 additive note](../market_intelligence_productization/MARKET_ONTOLOGY_F04_EXPOSURE_MAP_ANCESTORS_ADDITIVE_NOTE_2026-10-07.md)
+records. W-C8's optional contract and tests do not supply the real shock→accepted-owner-edges→company
+exposure product surface, typed refusals and evidence links required by the incumbent F04 closure map §2.1.
+
+**Historical sequence, superseded only on the dependencies and closure claim corrected above:**
+
+> W-C2b tier-guard in ThemeState / selection_cohort / exposure_map readers (byte-identical today) → W-C6
+> structural_navigation `hierarchy_paths` → W-C7 us_context_vector shadow `theme_category_ids` keyed to belief_time →
+> W-C8 F04 exposure_map `ancestors` (MO amendment; closes MO-DELTA-004) → W-C9 Evaluation OS E1 pre-registration
+> ("child accelerates before parent confirms") — runs only after accrual.
 
 ## 8. Wave plan
 | Wave | Owned files | Acceptance | Depends |
@@ -118,9 +139,16 @@ W-C8 F04 exposure_map `ancestors` (MO amendment; closes MO-DELTA-004) → W-C9 E
 | W-C4 | config/theme_crosswalk.yml (populate block from the seat-frozen table); tests/test_theme_graph_crosswalk.py (production block validates; every basket category accounted) | production build: PARENT_OF count = frozen table; all valid_from=asserted_on; ThemeState/cohort/exposure outputs unchanged | W-C2 + W-C2b merged |
 | W-C5 | tests/test_theme_registry_hierarchy_parity.py | #7870 slice_keys ⊆ crosswalk micros | #7870 merged + owner countersign |
 | W-C6 | engine/theme_graph/structural_navigation.py; tests/test_theme_graph_hierarchy_paths.py | rights receipts present; no vendor node ever a parent; as-of respected | W-C4 |
-| W-C7 | engine/us_context_vector.py; its contract; tests/test_us_context_vector.py | shadow field empty before admission date | W-C6 |
+| W-C7 stored shadow — DROPPED-BY-RULING R-J.10 | No implementation from this historical row | Stored per-ticker `theme_category_ids` is refused; any later classification-context proposal retains its own scope | — |
 | W-C8 | engine/market_ontology/exposure_map.py; contracts/market_ontology/exposure_map.v1.schema.json; tests/test_market_ontology_exposure_map.py | `ancestors` display-only, MO amendment recorded | W-C6 |
+| W-C9 | Existing E1 preregistration and A1 (#8621/#8628) | E1a/E1b and gates as registered; A1 governs endpoint and freeze accounting | No W-C7 dependency (R-J.10/R9); accrual only from each arm's production W0 under §7 |
+
+Historical W-C7 and W-C9 rows retained verbatim; the corrected rows above govern (R-J.10/R9):
+
+```text
+| W-C7 | engine/us_context_vector.py; its contract; tests/test_us_context_vector.py | shadow field empty before admission date | W-C6 |
 | W-C9 | Evaluation OS E1 pre-registration doc | gates pre-registered; no run before accrual | W-C7 |
+```
 
 ## 9. Pre-mortem tripwires
 1. Document date bump re-ids every edge → test: EXPRESSES edge_id set unchanged; validator refuses missing asserted_on.
