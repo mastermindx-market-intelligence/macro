@@ -21,7 +21,7 @@ from engine.marketing.catalyst_lifecycle import (
     Confirmation, ConsentOwner, ConsentRecord, DeliveryAuthority, FunnelGate,
     FunnelService, OtpIdentityAuthority, PublicRevision, SCOPE, ScanAuthority,
     SuppressionAuthority, VerifiedIdentity,
-    format_revision, normalize_email,
+    first_touch, format_revision, normalize_email,
 )
 
 router = APIRouter(tags=["catalyst-optin"])
@@ -322,16 +322,24 @@ class SupabaseConsentRpcOwner(ConsentOwner):
     @staticmethod
     def _record(raw: Any) -> ConsentRecord:
         try:
-            if not isinstance(raw, dict) or raw.get("scope") != SCOPE:
-                raise ValueError("not scoped")
+            if (not isinstance(raw, dict) or raw.get("scope") != SCOPE or
+                    not isinstance(raw.get("tickers"), (list, tuple))):
+                raise ValueError("not scoped or not typed")
             obj = ConsentRecord(user_id=str(raw["user_id"]), email=normalize_email(raw["email"]),
                                 event_id=str(raw["event_id"]), tickers=tuple(raw["tickers"]),
                                 scope=raw["scope"], verified_at_utc=str(raw["verified_at_utc"]),
                                 intent_id=str(raw["intent_id"]),
                                 first_touch=dict(raw["first_touch"]),
                                 revoked_at_utc=raw.get("revoked_at_utc"))
-            if not obj.tickers or not obj.intent_id:
-                raise ValueError("not populated")
+            if (not 1 <= len(obj.tickers) <= 10 or
+                    any(not isinstance(t, str) or
+                        not re.fullmatch(r"[A-Z][A-Z0-9.\\-]{0,9}", t)
+                        for t in obj.tickers) or
+                    len(set(obj.tickers)) != len(obj.tickers) or not obj.intent_id or
+                    len(obj.intent_id) > 128 or
+                    not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", obj.event_id) or
+                    first_touch(obj.first_touch) != obj.first_touch):
+                raise ValueError("invalid consent projection")
             return obj
         except (KeyError, TypeError, ValueError, FunnelGate) as exc:
             raise FunnelGate("CONSENT_OWNER_PROTOCOL_MISMATCH") from exc
@@ -346,7 +354,16 @@ class SupabaseConsentRpcOwner(ConsentOwner):
         saved = self._record(result.get("record"))
         if (saved.user_id != record.user_id or saved.email != record.email or
                 saved.event_id != record.event_id or saved.scope != record.scope or
-                type(result.get("created")) is not bool):
+                type(result.get("created")) is not bool or
+                len(saved.tickers) != len(record.tickers) or
+                any(t not in record.tickers for t in saved.tickers) or
+                saved.revoked_at_utc is not None):
+            raise FunnelGate("CONSENT_OWNER_PROTOCOL_MISMATCH")
+        # A genuinely new owner grant must attest the signed intent and the
+        # immutable first touch; replayed grants may retain their old values.
+        if result["created"] is True and (
+                saved.intent_id != record.intent_id or
+                saved.first_touch != record.first_touch):
             raise FunnelGate("CONSENT_OWNER_PROTOCOL_MISMATCH")
         return Confirmation(saved, result["created"])
 
