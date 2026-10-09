@@ -377,6 +377,66 @@ This newer hash supersedes the earlier `783db4d5...` slot hash only for **subseq
 launches**; the already launched Ubuntu2 worker retains its immutable, older
 `783db4d5...` support-package receipt.
 
+### 2026-10-08 remote Codex configuration parity — verified local repair
+
+A follow-up red-team showed **remote Codex configuration parity was not established by
+M2's local TOML files**: `ubuntu1`, `ubuntu2`, and `mini2` each retained
+host-stable `codex_glm/config.toml` and `codex_minimax/config.toml` files
+that lacked `model_context_window=1000000` and
+`model_auto_compact_token_limit=900000`. All three reported matching stable
+config SHA prefixes (`999f2b0146dd` for GLM and `74b450758efa` for MiniMax).
+The incumbent `support_bundle.py` intentionally versions `mm_codex_exec.sh`/
+`glm_codex_exec.sh` but symlinks those config directories back to host-stable
+files; therefore the earlier `codex doctor` proof on M2 alone was not enough to
+claim remote 1M/900K compaction selection.
+
+The two **existing** M2 worker entrypoints have now been repaired, without
+creating a new compaction or control plane. For qualified `MiniMax-M3`,
+`glm-5.3`, and `glm-5.3-flash` models, both initial `codex exec`
+and `codex exec resume` explicitly receive the bounded Codex
+`-c model_context_window=1000000` and
+`-c model_auto_compact_token_limit=900000` settings. Caller-supplied
+`POOL_MAX_CONTEXT_TOKENS` and `POOL_AUTO_COMPACT_WINDOW_TOKENS` remain
+per-task bounds, may tighten within known limits, and are validated before
+provider execution. Invalid, non-decimal/leading-zero, oversized, or
+above-context overrides return typed rc78; unqualified models cannot claim
+the qualified 1M policy. The wrappers do not change authentication, model
+admission, lease scope, provider credentials, or the security-limited Go bearer.
+
+**Verification:** shell syntax plus the pre-final edit hermetic wrapper suite
+passed **46** tests. After rejecting ambiguous leading-zero inputs, a
+focused set of **22** context-specific tests passed with **46** other tests
+deselected. The hermetic fake Codex CLI logs both initial and resumed argv and
+proves that the `-c` flags are present even when a copied CODEX_HOME config
+contains no context keys; override/bounds/error cases are also covered.
+The first targeted run exposed two test-only expectation mismatches for
+the raw `0` refusal reason; the assertions were corrected and the focused
+set passed on rerun. No paid provider inference or remote canary was dispatched.
+The ordinary pytest temporary Chromium cleanup warnings do not change these
+behavior assertions.
+
+Current M2 local SHA-256 (new source, not yet a GitHub code distribution):
+`ext/mm_codex_exec.sh
+b402b232c87ec97339c690000257cd78759b9f7d7cb445174d6e6d12cb6f2db0`;
+`ext/glm_codex_exec.sh
+36afcaffedb614fe2ec9bbb81d77b7150ada950b2076c279ddce1fe31aea0508`;
+`ext/tests/test_codex_exec_autocontinue.py
+cc49a2148832d2c888846ea5714e4e55c4d262b4823c055f62876df060ef5413`.
+The already established immutable per-launch support pipeline lists both
+wrappers. Their new hashes can be selected by a **future** qualified launch
+without changing existing workers, but remote **selection of the new hashes and
+actual provider compaction remain NOT PROVEN**. This evidence update is not an
+instruction to launch duplicate/premium canaries or overwrite stable host configs.
+
+A bounded historical scan of 38 recent remote-controller logs found 31
+`rc=0`, two still active at sampling, three `rc=75`, one `rc=124`,
+and one `rc=1`. The timeout was a C1 DeepSeek/Go request using its
+intentionally short capability. Two `rc=75` responses identified
+`active_count=2, max_active=2` host admission (not worker timeout);
+the rc1 MiniMax trace showed `ECONNRESET` (transport/provider failure).
+This is diagnostic evidence, **not** Executive OS's authoritative live job
+state or acceptance of the other worker outputs.
+
 ### Verification boundary
 
 Directly observed current green evidence:
