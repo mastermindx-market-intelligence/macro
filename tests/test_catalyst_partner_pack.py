@@ -172,6 +172,10 @@ class CatalystPartnerPackTests(unittest.TestCase):
             "source_owner": "engine.marketing.catalyst_packets",
             "receipt_id": "test-receipt-not-production",
         }
+        # Non-demo documents must not hide under fixture-only .invalid hosts.
+        self.event["sources"][0]["url"] = (
+            "https://www.sec.gov/Archives/edgar/data/fixture-case")
+        self.partner["profile_url"] = "https://example.com/research"
         result = self.make()
         self.assertFalse(result["event"]["demo_only"])
 
@@ -306,6 +310,44 @@ class CatalystPartnerPackTests(unittest.TestCase):
         self.partner = copy.deepcopy(DEMO_PROFILES[0][0])
         self.partner["slug"] = "../bad"
         self.refused("INVALID_PARTNER_SLUG")
+
+    def test_source_link_encoded_email_and_private_hosts_are_rejected(self):
+        for bad in (
+            "https://www.sec.gov/Archives/ref?key=visitor%40example.org",
+            "https://www.sec.gov/Archives/ref/visitor%2540example.org",
+            "https://www.sec.gov/Archives/ref?note=a%252540example.org",
+            "https://127.0.0.1/filing",
+            "https://10.0.0.7/filing",
+            "https://localhost/filing",
+            "https://service.internal/filing",
+            "https://www.sec.gov/Archives/x%0aHeader",
+        ):
+            with self.subTest(url=bad):
+                self.event["sources"][0]["url"] = bad
+                self.refused("UNSAFE_SOURCE_URL")
+        self.event = copy.deepcopy(DEMO_EVENT)
+        self.event["sources"][0]["url"] = (
+            "https://www.sec.gov/Archives/Edgar/MixedCase?doc=One&cat=10K")
+        self.assertEqual(self.make()["sources"][0]["url"],
+                         self.event["sources"][0]["url"])
+
+    def test_partner_profile_link_rejects_encoded_contact_leak(self):
+        self.partner["profile_url"] = (
+            "https://publisher.example.com/about?ref=editor%40example.org")
+        self.refused("INVALID_PARTNER_PROFILE_URL")
+        self.partner["profile_url"] = "https://192.168.0.1/about"
+        self.refused("INVALID_PARTNER_PROFILE_URL")
+
+    def test_fixture_hosts_never_promote_to_real_event_sources(self):
+        self.event["demo_only"] = False
+        self.event["verification"] = {
+            "status": "VERIFIED",
+            "source_owner": "engine.marketing.catalyst_packets",
+            "receipt_id": "synthetic-test-only",
+        }
+        self.refused("UNSAFE_SOURCE_URL")
+        self.event["sources"][0]["url"] = "https://www.sec.gov/search"
+        self.refused("INVALID_PARTNER_PROFILE_URL")
 
     def test_source_urls_preserve_case_and_are_rendered_escaped(self):
         self.partner["name"] = 'Research <script>alert("x")</script> Profile'
