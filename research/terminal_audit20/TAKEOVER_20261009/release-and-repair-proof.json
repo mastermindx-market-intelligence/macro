@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T16:17:49.845440+00:00",
+  "observed_at": "2026-10-09T17:20:49.988227+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,5 +3614,84 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261009T1616"
+  "current_capability_frontier_key": "current_capability_frontier_20261009T1720",
+  "current_capability_frontier_20261009T1720": {
+    "observed_at": "2026-10-09T17:20:49.988227+00:00",
+    "supersedes": "current_capability_frontier_20261009T1616",
+    "whole_original_mission_accepted": false,
+    "settled_capability_references_remain_in": "current_capability_frontier_20261009T1616",
+    "a11_repair": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-native-recovery-source-review-parent-consumption-20261009.json",
+      "sha256": "be68423b7176346e240aa04d7f38b9739bf9e99a7fdc20c2ee6ab037cca30f8f"
+    },
+    "a11_next": "Same original native T04g writer actually integrating master/#871 with recaptures/delta review; no duplicate writer, parent final-source/CI/squash/head-only evidence heal/install/live owed",
+    "iw2_804_source": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/iw2-804-native-source-review-return-parent-consumption-20261009.json",
+      "sha256": "b3836f07653874ab5e05beb365eb76c14c4591a8c9620914d09920016e3bbfc3"
+    },
+    "iw2_804_START": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/iw2-804-native-canonical-START-parent-consumption-20261009.json",
+      "sha256": "0c56ef0f9e224c8a5e830954b6b93c11bf1b0c711b3914b6511fdb6d11d6c932"
+    },
+    "iw2_cutover": "Native coordinator final receipt pending; source review only; Draft/rights/entitlement/0030 cutover holds intact",
+    "a10_883_refresh": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-owned-branch-refresh-effect-20261009.json",
+      "sha256": "522fe83d124078d73ab11055841e1d32a1ee2e07809e7afb8b4786aadb1e8ffa"
+    },
+    "a10_883_source": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-owned-branch-refresh-source-qualification-20261009.json",
+      "sha256": "c7fea74460e0e776dd131a2ac711acfb975ac24d3626e32470eb99cfdeb89509"
+    },
+    "a10_883_automatic_CI_approval": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-883-owned-refresh-20261009T1632.json",
+      "sha256": "cbf10431ddd5d3a7bcaf9889bf4fcc198d64bfaabcc3f853f12b9063606fb296"
+    },
+    "a10_883_current_head": "d52931c8df28d4c1b28842e16b343860ceb62584",
+    "a10_883_run": 37959567341,
+    "a10_883_state": "Required CI/merge/install/actual private v2 downloads unaccepted; existing observer owns wait",
+    "mog_current_proposal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog-transient-pending-parent-proposal-qualification-20261009.json",
+      "sha256": "409e7f2096669e6a1d91cd902aa86a99305475cea42ae041c319921355cca851"
+    },
+    "mog_independent_adjudication": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog-transient-pending-independent-review-parent-adjudication-20261009.json",
+      "sha256": "3788698ed529ae13f95be1df4b54e754f8c28fe67f0231db41d416b7a4dd9de5"
+    },
+    "mog_acceptance_readback": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog-transient-pending-independent-review-acceptance-readback-20261009.json",
+      "sha256": "2ba0670f2d04e7515cf2b9f178c33204a762fdd98f9d36bcfb40652e31d86210"
+    },
+    "mog_integration": "Five exact artifacts accepted detached; existing785 writer/recovery still unqualified. Existing merge-group migration/plainlanguage findings require repair before queue readiness; no new controller/security rules",
+    "a19_first_producer_repair_required": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-producer-freeze-authority-parent-adjudication-20261009.json",
+      "sha256": "d8588c82f798290638fadae01b40b9a9a6da5a8fcd3a787b7348ba04ec5fa428"
+    },
+    "a19_actual_clock_causal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-source-date-cutoff-late-follow-causal-counterexample-20261009.json",
+      "sha256": "976ecbabda32e944a810382c56c98254fbff32ce2c9a3daf6e65af394bc5821e"
+    },
+    "a19_correction_consumed": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-operational-freeze-checkpoint-review-parent-adjudication-20261009.json",
+      "sha256": "9a80c4092b38d98ad501ff147223e969f16d4d971677360ed99edc2a9ff8ca72"
+    },
+    "a19_correction_state": "Terminal rc0, missing complete inline helper/tests/patch; advertised unsupported home paths; no export attempt/no source or production acceptance",
+    "a19_original_file_refusal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-original-artifact-export-parent-refusal-consumption-20261009.json",
+      "sha256": "c17c86dfc744ee1f2f3e677a7b06948e9e2a22623ddd6a0bcb5f28a0dd6a80ee"
+    },
+    "paid_principal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-principal-visible-plan-readback-20261009T1636.json",
+      "sha256": "d6e4ac80fdd4bbef8265f19caf7650fa5b6fc842060d11f30dc61fbd66dfa4e4"
+    },
+    "paid_lane": "Actual current Free; async intended existing Pro identity question pending, normal on-machine login already authorized; no guesses or spend",
+    "Executive_current_read": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/executive-v3-current-readonly-capability-20261009T1715.json",
+      "sha256": "09b5b284d0f0eacb1444b3a7b3bcd1adda8f1d7c00720fcea90b3e33a2d42a7c"
+    },
+    "protected_current_source": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+    "heartbeat": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/native-heartbeat-current-readback-20261009T1720.json",
+      "sha256": "d0a444f11d02cb6c41d51a73947d0e267dcd6384859598e9615a8cb89079dad7"
+    }
+  }
 }
