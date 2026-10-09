@@ -100,3 +100,42 @@ Company Intelligence hosts this analyst utility. Existing specialists retain adm
 The module is a pure opt-in API/CLI with no scheduler, source ingestion, network access, graph materialization, publisher or trade control. If withdrawn, revert its owned source and CI registration while preserving lawful source evidence and the independent review record. Existing economic facts, ThemeState, product behavior and held carriers do not depend on it.
 
 Do not rebuild the completed research, create another clock/identity/rights authorizer, reinterpret source labels as authenticated metadata, or relabel this inspection as a served economic graph. Continue from the exact Git source, actual receipts and the unresolved owner gates above.
+
+## Subsequent execution: native retained-source adapter
+
+After the initial checkpoint above, the source and evidence were published in
+[PR #8667](https://github.com/mastermindx-market-intelligence/macro/pull/8667) at
+`d68678701b0e58924ae9dd5cf1b7f45b1c598538`. Execution continued on the same
+unarmed carrier with a bounded adapter over Fundamental Forensics' existing
+pinned SEC reader.
+
+The new module and dedicated tests are implemented; combined native validation
+passes 150 tests. This advances the private source-provenance portion of WP01
+and WP03. [PINNED_SOURCE_EXECUTION.md](PINNED_SOURCE_EXECUTION.md) records its API,
+native-source trust boundary, error states and remaining retained-runtime
+acceptance requirement. No work package is promoted to production complete.
+
+The scoped availability check found no owner FF archive/operator pointer in
+either known project root or dedicated reader configuration in the checked
+process. No real retained snapshot was read. Existing deployed-owner data
+remains unverified, and the original Micron current file-input witness remains
+distinct from synthetic native-reader proof.
+
+Subsequent independent review and hosted release results belong to their
+exact source hashes and the implementation PR. The initial verification receipt
+continues to describe its authored stage; it is not a claim that earlier hashes
+cover later source additions.
+
+### CI integration repair
+
+The initial hosted run found three introduced packing-ceiling failures: broad
+inferred runtime-input fallbacks selected this new utility job for unrelated
+homepage and strategy changes. The final job therefore has an explicit
+68-input scope covering the full inferred dependency set, exact witness, package
+initializers and their imports/configuration reads, shared pytest fixtures and
+the sparse-check collection hook. Independent inspection rejected the intermediate
+36-input scope for missing 32 dependencies. Native probes preserve all 68 positive
+inputs and own-job manifest invalidation and exclude the three unrelated paths;
+global ceilings and unrelated jobs remain unchanged. The final independent
+repair record identifies the exact manifest and documentation hashes. The earlier non-exclusive descriptions record the initial
+stage, and the final hosted run must verify the repaired head before merge.

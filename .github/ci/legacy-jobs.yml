@@ -21280,10 +21280,81 @@ jobs:
 
   company-relationship-candidates:
     # Pure analyst inspection; no source ingestion, admission or publication.
-    # The canonical pack selector derives this job's import/read scope from the
-    # focused suite. ci.yml already starts on all repository paths.
+    # Curated native imports/reads, package initialization and shared pytest hooks.
+    # Avoid broad runtime-input fallbacks selecting this utility for unrelated
+    # homepage/strategy changes; contract-delta keeps those packing limits.
     if: ${{ false }}
     gate: code
+    scope: exclusive
+    paths:
+      - collectors/__init__.py
+      - collectors/edgar_forensics.py
+      - collectors/fundamental_forensics_acquisition.py
+      - collectors/fundamental_forensics_companyfacts.py
+      - collectors/sec_document_spine.py
+      - collectors/sec_filing_parser.py
+      - config/dataset_registry.yml
+      - config/fundamental_forensics_disclosure_diff.v1.json
+      - engine/__init__.py
+      - engine/basket_breadth_divergence.py
+      - engine/catalyst_tone.py
+      - engine/company_intelligence/__init__.py
+      - engine/company_intelligence/contracts.py
+      - engine/company_intelligence/health.py
+      - engine/company_intelligence/pinned_relationship_candidates.py
+      - engine/company_intelligence/relationship_candidates.py
+      - engine/company_intelligence/views.py
+      - engine/desk_ledger.py
+      - engine/earnings_release/__init__.py
+      - engine/earnings_release/receipts.py
+      - engine/fundamental_forensics/__init__.py
+      - engine/fundamental_forensics/detectors.py
+      - engine/fundamental_forensics/disclosure_diff.py
+      - engine/fundamental_forensics/filing_attestation.py
+      - engine/fundamental_forensics/filing_package.py
+      - engine/fundamental_forensics/ixbrl_extraction.py
+      - engine/fundamental_forensics/models.py
+      - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - engine/fundamental_forensics/sec_document_spine.py
+      - engine/fundamental_forensics/source_sync.py
+      - engine/gdelt_client.py
+      - engine/marketing/__init__.py
+      - engine/marketing/accounts.py
+      - engine/marketing/authority.py
+      - engine/marketing/chart_render.py
+      - engine/marketing/charter.py
+      - engine/marketing/claims.py
+      - engine/marketing/cmo.py
+      - engine/marketing/departments.py
+      - engine/marketing/economics.py
+      - engine/marketing/events.py
+      - engine/marketing/ledgers.py
+      - engine/marketing/logo_cache.py
+      - engine/marketing/opportunity_bus.py
+      - engine/marketing/publication.py
+      - engine/marketing/state.py
+      - engine/master_brain.py
+      - engine/research_vault/__init__.py
+      - engine/research_vault/r2_store.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/dataos/__init__.py
+      - lib/dataos/identity.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/quality.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json
+      - research/theme_graph/economic_network_execution_20261009/replay_micron_witness.py
+      - scripts/__init__.py
+      - scripts/worktree_sparse.py
+      - tests/__init__.py
+      - tests/conftest.py
+      - tests/test_company_pinned_relationship_candidates.py
+      - tests/test_company_relationship_candidates.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21291,6 +21362,6 @@ jobs:
         with:
           python-version: "3.12"
       - name: install candidate inspection test dependencies
-        run: pip install pytest pyyaml
-      - name: Source replay, manual review boundary and native temporal refusals
-        run: python -m pytest tests/test_company_relationship_candidates.py -q
+        run: pip install pytest pyyaml requests
+      - name: File and pinned-source replay, manual boundary and temporal refusals
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py -q

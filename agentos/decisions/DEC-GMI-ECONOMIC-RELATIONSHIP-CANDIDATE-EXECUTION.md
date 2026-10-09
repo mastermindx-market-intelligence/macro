@@ -101,3 +101,37 @@ legal-party crosswalk and temporal profile can justify a later adapter. Its actu
 owner must specify the consumer contract and demonstrate natural receipt and
 correction behavior. A passing inspector, a manually supplied flag, or a locally
 constructed DatasetContract does not supply that adoption.
+
+## Continuation: existing pinned SEC source custody
+
+The Chairman-authorized execution now also includes an additive
+`engine/company_intelligence/pinned_relationship_candidates.py` adapter and its
+focused tests. The selected source boundary is Fundamental Forensics'
+`PinnedSourceAuthority`, canonical filing manifest and complete retained
+document receipt. This is reuse of the existing source owner, not a new source
+store, acquisition route, authoritative relationship dataset or graph owner.
+
+The adapter binds one explicit snapshot/manifest/document through the native
+reader and provides a separately labeled source-custody witness to the existing
+manual candidate inspection. It preserves native recording/retrieval/filing
+metadata, uses existing UTC validation for capture causality and never invents
+an earnings event or registered knowability clock. Source-local CIK/document
+identifiers do not become canonical counterparty identity.
+
+The supplied reader is not independently authenticated as a production runtime
+by this API. Native receipt consistency, manual economic meaning, identity,
+temporal adoption and purpose rights remain separate. All results remain
+NOT_ADMITTED with null Graph1 and false authority. No source witnesses are
+returned for refused or excluded inspections.
+
+This extends D01/D02/D04/D05 at private source-inspection scope. It does not
+change D03's temporal ownership, D06's manual-admission boundary, D07's null
+quantities or D08-D10's evaluation/neural/sourcing gates. The GMI registry's
+emission restrictions do not retro-gate existing native source-owner products;
+no blanket internal, retention, training or public right is inferred.
+
+The exact retained production snapshot/reader was not available in the two
+bounded known-root/process checks. Synthetic native-reader validation is
+recorded as such. A real retained-store replay and the later native admission
+decisions remain explicit acceptance evidence, not paperwork presumed supplied
+by an input class or successful unit test.

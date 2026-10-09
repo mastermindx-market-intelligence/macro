@@ -177,3 +177,31 @@ dataset/fact-admission decision, purpose-specific rights, legal-party and histor
 identity evidence, an adopted temporal/correction contract, and the incumbent
 consumer's accepted transport. The held K3-D carrier and shared private publisher
 are not modified or released by this utility.
+
+## Native retained SEC source adapter
+
+The same execution carrier now adds
+`engine/company_intelligence/pinned_relationship_candidates.py`. Its
+`inspect_pinned_candidate` API accepts an existing native
+`PinnedSourceAuthority` plus exact snapshot, manifest and document selectors.
+It reuses Fundamental Forensics' canonical manifest, independently retained
+receipt sidecar, pinned gzip-object and original-byte checks before calling the
+manual inspector.
+
+Successful current inspection includes a separate `native_source_binding`
+that is explicitly relative to the supplied native reader. Reader deployment,
+SEC authorship, economic semantics, canonical identity, temporal adoption and
+source rights are not certified by that binding. Every refusal or exclusion
+suppresses current native source witnesses. No native reader configuration or
+new source store is added.
+
+[PINNED_SOURCE_EXECUTION.md](PINNED_SOURCE_EXECUTION.md) gives the exact API,
+metadata contract, test evidence, error states and actual retained-runtime
+acceptance gap. The two focused suites passed 150 tests. The real Micron
+file-input witness and the synthetic pinned-reader tests are separate evidence.
+The latter do not establish access to a production retained-source snapshot.
+
+The delivery carrier is [PR #8667](https://github.com/mastermindx-market-intelligence/macro/pull/8667).
+Its final exact-head hosted checks and post-merge receipt control release status;
+the earlier checkpoint in this directory remains dated evidence of the initial
+implementation stage.
