@@ -508,6 +508,146 @@ def _log_reply_tick(result: dict, now: datetime, *, dry_run: bool) -> None:
 # Single press tick (PRESS-FEEDS B1)
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _run_press_stream_acceptance_canary(
+    *, root: Path, now: datetime, marketing_cfg: dict, press_cfg: dict,
+    state: dict,
+) -> dict:
+    """Default-off X-push-only admission pilot through the INCUMBENT Desk.
+
+    No collector cursors, source seen ledger, X publisher, corpus, wires rail,
+    marketing outbox, new store, or LLM enrichment are advanced here. The
+    operator must deliberately arm PRESS_STREAM_ACCEPTANCE_CANARY=1 while
+    outbound posting is dark. This canary does not replace the normal press
+    tick or qualify any REST/RSS/news-provider source. It is a bounded
+    native integration test of spool -> press scoring -> durable Desk ->
+    served Desk snapshot -> exact spool-prefix acknowledgement.
+    """
+    from engine.marketing import press_stream
+    from engine.marketing.press_lane import run_press_tick
+    from engine.marketing.intelligence_desk import (
+        PACKET_SCHEMA, update_intelligence_desk,
+    )
+
+    try:
+        source = press_stream.peek_spool(root)
+    except (OSError, ValueError) as exc:
+        logger.error("[press] stream canary source unavailable: %s",
+                     type(exc).__name__)
+        return {"_emit_allowed": False,
+                "_durable_stream_canary": "SOURCE_READ_FAILED",
+                "_durable_stream_scope": "x_push_only",
+                "_durable_stream_count": 0}
+    base = {
+        "_emit_allowed": False,
+        "_durable_stream_scope": "x_push_only",
+        "_durable_stream_count": len(source.items),
+    }
+
+    def _status(reason: str, *, result: dict | None = None) -> dict:
+        return {**(result or {}), **base, "_durable_stream_canary": reason}
+
+    if not source.items:
+        return _status("SOURCE_BLOCKED" if source.blocked_reason else "NO_ITEMS")
+
+    # Replays need the incumbent story-spine + claim identities: fresh state
+    # mints a new story ID as the run clock changes. Keep all score/budget
+    # computations in a deep copy so the pilot cannot advance the ordinary
+    # publisher's quota, provider cursor or source-corroboration state.
+    from copy import deepcopy  # noqa: PLC0415
+    working_state = deepcopy(state)
+    scoped_cfg = dict(marketing_cfg)
+    breaking = dict(scoped_cfg.get("breaking") or {})
+    breaking["llm"] = {"enabled": False}
+    scoped_cfg["breaking"] = breaking
+    try:
+        result = run_press_tick(
+            list(source.items),
+            root=root, now=now, cfg=scoped_cfg, press_cfg=press_cfg,
+            state=working_state, seen_ids=set(), dry_run=True, prime=False,
+            spool=False,
+            # Explicit deterministic fallback: no summarizer provider is
+            # contacted, even if a broader configuration later arms one.
+            llm_override=lambda _item, _cfg: None,
+        )
+    except Exception as exc:  # noqa: BLE001
+        # No source progress or customer-facing publication has happened yet.
+        logger.error("[press] stream canary scorer unavailable: %s",
+                     type(exc).__name__)
+        return _status("PIPELINE_FAILED")
+
+    # A ranked/filtered item is not automatically an accepted event. Require
+    # an actual existing Desk packet for EVERY item in this exact stream
+    # prefix; otherwise leave all source bytes for the current owner.
+    expected = {str(item["id"]) for item in source.items}
+    packets = result.get("intelligence")
+    if not isinstance(packets, list):
+        return _status("SOURCE_NOT_QUALIFIED", result=result)
+    offered = {
+        str(e.get("event_id"))
+        for packet in packets
+        if isinstance(packet, dict) and packet.get("schema") == PACKET_SCHEMA
+        for e in (packet.get("evidence")
+                  if isinstance(packet.get("evidence"), list) else [])
+        if isinstance(e, dict) and e.get("event_id")
+    }
+    if not expected.issubset(offered):
+        return _status("SOURCE_NOT_QUALIFIED", result=result)
+
+    # SOURCE NOT CONSUMED. Checkpoint ONLY the incumbent identity owners
+    # before SQLite/projection: another tick can replay the same source without
+    # minting a second story. This is provisional observation, NOT source
+    # acceptance. Preserve every unrelated provider/budget/corroboration key.
+    if not all(isinstance(working_state.get(k), dict)
+               for k in ("story_spine", "intel_claims")):
+        return _status("IDENTITY_CONTEXT_UNAVAILABLE", result=result)
+    identity_state = dict(state)
+    for key in ("story_spine", "intel_claims"):
+        identity_state[key] = working_state[key]
+    try:
+        _save_press_state(identity_state)
+    except OSError as exc:
+        logger.error("[press] stream canary identity checkpoint failed: %s",
+                     type(exc).__name__)
+        return _status("IDENTITY_CHECKPOINT_FAILED", result=result)
+
+    desk_cfg = ((press_cfg.get("wire") or {}).get("intelligence") or {})
+    try:
+        served = update_intelligence_desk(
+            packets, root=root, now=now, cfg=desk_cfg,
+        )
+    except Exception as exc:  # noqa: BLE001
+        # The SQLite upsert MAY already be committed even when the JSON
+        # projection fails. Preserve the exact spool prefix for replay.
+        logger.error("[press] stream canary desk acceptance uncertain: %s",
+                     type(exc).__name__)
+        return _status("STORE_OR_PROJECTION_FAILED", result=result)
+
+    # A successful update call alone is not enough: this is a read/serve pilot.
+    # Require that the exported CURRENT snapshot references every source id.
+    # Snapshot truncation/expiry/rights withholding must not eat a prefix.
+    visible_stories = (served.get("stories") if isinstance(served, dict)
+                       and isinstance(served.get("stories"), list) else [])
+    observable = {
+        str(e.get("event_id"))
+        for story in visible_stories
+        if isinstance(story, dict)
+        for e in (story.get("evidence")
+                  if isinstance(story.get("evidence"), list) else [])
+        if isinstance(e, dict) and e.get("event_id")
+    }
+    if not expected.issubset(observable):
+        return _status("SOURCE_NOT_SERVED", result=result)
+
+    if not press_stream.ack_spool(root, source):
+        return _status("ACK_WITHHELD", result=result)
+
+    result["_intelligence_health"] = served.get("health", {})
+    return _status(
+        "ACCEPTED_WITH_BLOCKED_SUFFIX" if source.blocked_reason else "ACCEPTED",
+        result=result,
+    )
+
+
 def _run_press_tick(*, dry_run: bool) -> dict:
     """Run one press-lane tick: poll wire RSS + press providers, then process.
 
@@ -541,6 +681,23 @@ def _run_press_tick(*, dry_run: bool) -> dict:
     # advances the Intelligence Desk.
     emit_allowed = publish_enabled() and not dry_run
     effective_dry = not emit_allowed
+
+    # G1 opt-in source-acceptance pilot. This is the SAME daemon, press scorer,
+    # spool and Intelligence Desk — NOT a second collector/publisher/scheduler.
+    # Refuse unsafe combinations before polling or any incidental source write.
+    if os.environ.get("PRESS_STREAM_ACCEPTANCE_CANARY", "").strip() == "1":
+        if dry_run:
+            return {"_emit_allowed": False,
+                    "_durable_stream_canary": "REFUSED_DRY_RUN"}
+        if emit_allowed:
+            logger.error("[press] stream acceptance canary refuses publishing")
+            return {"_emit_allowed": False,
+                    "_durable_stream_canary": "REFUSED_PUBLISH_ARMED"}
+        return _run_press_stream_acceptance_canary(
+            root=ROOT, now=now,
+            marketing_cfg=marketing_cfg, press_cfg=press_cfg,
+            state=state,
+        )
 
     # DRY-RUN must be non-consuming: an inspection run may never advance the wire
     # seen-ledger / provider cursors, or it would silently dedupe those items away
@@ -1531,9 +1688,15 @@ def _log_press_tick(result: dict, now: datetime, *, dry_run: bool) -> None:
             health.get("confirmed", "?"),
             health.get("draft_ready", "?"),
         )
+    canary_state = result.get("_durable_stream_canary")
+    canary_note = (
+        f" | stream_canary={canary_state}"
+        if isinstance(canary_state, str) else ""
+    )
     logger.info(
-        "[press] tick%s | emitted=%d skipped=%d digest=%d blocked=%d%s | %s",
+        "[press] tick%s | emitted=%d skipped=%d digest=%d blocked=%d%s | %s%s",
         dry_tag, emitted_n, skipped_n, digest_n, blocked_n, desk, ts,
+        canary_note,
     )
     for item in result.get("emitted", []):
         # XG-W2 item shape — see _src(). This loop runs on EVERY emitting tick

@@ -448,3 +448,262 @@ def test_ack_denies_when_entire_spool_is_torn_row(tmp_path):
     assert snapshot.blocked_reason == "partial_trailing_row"
     assert ps.ack_spool(tmp_path, snapshot) is False
     assert path.read_bytes() == b'{"id":"unfinished"'
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WEB-P1 G1: default-OFF in-daemon stream-only acceptance pilot
+# No provider, X outbox, or second intelligence store may be created.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _canary_setup(monkeypatch, root, *, floor=0.0):
+    from datetime import datetime, timezone
+    from scripts import marketing_fastlane_daemon as daemon
+    from engine.marketing import breaking_feed, press_providers, sentinel
+
+    now = datetime.now(timezone.utc)
+    item = {
+        "id": "canary-source-001", "source": "x_MarketDesk",
+        "source_name": "Market Desk", "source_tier": "x_relay",
+        "x_handle": "MarketDesk", "corroboration_class": "hearsay",
+        "headline": "Company ABC files updated financial guidance",
+        "body_snippet": "Company ABC files updated financial guidance and detailed revenue context.",
+        "url": "https://twitter.com/MarketDesk/status/1234",
+        "published_at": now.isoformat(), "route": "wire",
+        "matched": {"tickers": ["ABC"]},
+    }
+    intel = {
+        "salience_floor": floor,
+        "max_packets_per_tick": 10,
+        "db_paths": ["data/marketing/press/intelligence.db"],
+        "snapshot_paths": ["data/marketing/press/intelligence.json"],
+    }
+    press_cfg = {"wire": {"intelligence": intel}}
+    marketing_cfg = {"breaking": {"llm": {"enabled": False}}}
+    monkeypatch.setattr(daemon, "ROOT", root)
+    monkeypatch.setattr(daemon, "_PRESS_STATE_PATH", root / "state.json")
+    monkeypatch.setattr(daemon, "_PRESS_SEEN_PATH", root / "seen.json")
+    monkeypatch.setattr(daemon, "_load_yaml", lambda p: (
+        press_cfg if p.name == "press_sources.yml" else marketing_cfg
+    ))
+    monkeypatch.setenv("PRESS_STREAM_ACCEPTANCE_CANARY", "1")
+    monkeypatch.setattr(sentinel, "publish_enabled", lambda: False)
+    other_sources = []
+    monkeypatch.setattr(breaking_feed, "poll_all",
+                        lambda *a, **k: other_sources.append("wire") or [])
+    monkeypatch.setattr(press_providers, "poll_all",
+                        lambda *a, **k: other_sources.append("providers") or [])
+    monkeypatch.setattr(daemon, "_write_wires_sink",
+                        lambda *a, **k: other_sources.append("publisher") or [])
+    ps.append_spool(root, [item])
+    return daemon, press_cfg, other_sources, item
+
+
+def test_canary_actual_press_packet_to_existing_sqlite_and_snapshot(tmp_path, monkeypatch):
+    daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
+    result = daemon._run_press_tick(dry_run=False)
+    assert result["_durable_stream_canary"] == "ACCEPTED"
+    assert result["_emit_allowed"] is False
+    assert external == []
+    assert ps.peek_spool(tmp_path).items == ()
+    sink = tmp_path / "data/marketing/press/intelligence.json"
+    snapshot = json.loads(sink.read_text(encoding="utf-8"))
+    assert item["id"] in {
+        e["event_id"] for story in snapshot["stories"] for e in story["evidence"]
+    }
+    # Story identity is persisted before the Desk write for crash-safe replay;
+    # source consumption and provider cursors are NOT checkpointed here.
+    assert (tmp_path / "state.json").exists()
+    assert "story_spine" in json.loads((tmp_path / "state.json").read_text())
+    assert not (tmp_path / "seen.json").exists()
+    assert not list(tmp_path.rglob("items.jsonl"))
+
+
+def test_canary_desk_snapshot_failure_retains_source_then_replays_without_duplicate(
+        tmp_path, monkeypatch):
+    from engine.marketing import intelligence_desk as desk
+    daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
+    real_writer = desk._atomic_json
+
+    def fail_projection(*args, **kwargs):
+        raise OSError("simulated committed-store / failed-public-snapshot split")
+
+    with monkeypatch.context() as ctx:
+        ctx.setattr(desk, "_atomic_json", fail_projection)
+        failed = daemon._run_press_tick(dry_run=False)
+    assert failed["_durable_stream_canary"] == "STORE_OR_PROJECTION_FAILED"
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert "story_spine" in json.loads((tmp_path / "state.json").read_text())
+    store = desk.IntelligenceStore(
+        tmp_path / "data/marketing/press/intelligence.db"
+    )
+    try:
+        assert len(store.snapshot(now=__import__("datetime").datetime.now(
+            __import__("datetime").timezone.utc))["stories"]) == 1
+    finally:
+        store.close()
+    recovered = daemon._run_press_tick(dry_run=False)
+    assert recovered["_durable_stream_canary"] == "ACCEPTED"
+    snapshot = json.loads((tmp_path /
+                           "data/marketing/press/intelligence.json").read_text())
+    assert len(snapshot["stories"]) == 1
+    assert ps.peek_spool(tmp_path).items == ()
+    assert external == []
+    assert real_writer is desk._atomic_json
+
+
+def test_canary_does_not_ack_below_intelligence_threshold(tmp_path, monkeypatch):
+    daemon, _, external, item = _canary_setup(
+        monkeypatch, tmp_path, floor=101.0
+    )
+    result = daemon._run_press_tick(dry_run=False)
+    assert result["_durable_stream_canary"] == "SOURCE_NOT_QUALIFIED"
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert external == []
+    assert not (tmp_path / "data/marketing/press/intelligence.json").exists()
+
+
+def test_canary_refuses_publisher_armed_before_poll_or_drain(tmp_path, monkeypatch):
+    from engine.marketing import sentinel
+    daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
+    monkeypatch.setattr(sentinel, "publish_enabled", lambda: True)
+    result = daemon._run_press_tick(dry_run=False)
+    assert result["_durable_stream_canary"] == "REFUSED_PUBLISH_ARMED"
+    assert result["_emit_allowed"] is False
+    assert external == []
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+
+
+def test_canary_accepts_qualified_prefix_without_deleting_torn_suffix(
+        tmp_path, monkeypatch):
+    daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
+    path = _snapshot_spool(tmp_path)
+    with path.open("ab") as output:
+        output.write(b'{"id":"torn-row"')
+    result = daemon._run_press_tick(dry_run=False)
+    assert result["_durable_stream_canary"] == "ACCEPTED_WITH_BLOCKED_SUFFIX"
+    assert path.read_bytes() == b'{"id":"torn-row"'
+    assert external == []
+
+
+
+def test_canary_identity_checkpoint_never_advances_existing_providers_or_outbox_counters(
+        tmp_path, monkeypatch):
+    daemon, _, external, _ = _canary_setup(monkeypatch, tmp_path)
+    original = {
+        "providers": {"alpaca_news": {"since": "2026-10-08T12:00:00Z",
+                                      "last_poll": "2026-10-08T12:01:00Z",
+                                      "spend_usd": 4.5}},
+        "wire_day_counts": {"day": "2026-10-09", "counts": {"flagship": 3}},
+        "flagship_counter": {"day": "2026-10-09", "count": 3},
+        "corroboration": {"existing": {"sources": ["fixture"]}},
+        "wire_headroom": {"day": "2026-10-09", "exhausted": 0},
+    }
+    (tmp_path / "state.json").write_text(json.dumps(original))
+    result = daemon._run_press_tick(dry_run=False)
+    assert result["_durable_stream_canary"] == "ACCEPTED"
+    saved = json.loads((tmp_path / "state.json").read_text())
+    for key, value in original.items():
+        assert saved[key] == value, key
+    assert "story_spine" in saved and "intel_claims" in saved
+    assert external == []
+
+
+
+def test_canary_refuses_before_store_when_identity_checkpoint_fails(
+        tmp_path, monkeypatch):
+    daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
+
+    def deny_checkpoint(_state):
+        raise OSError("simulated host-local identity writer unavailable")
+
+    monkeypatch.setattr(daemon, "_save_press_state", deny_checkpoint)
+    result = daemon._run_press_tick(dry_run=False)
+    assert result["_durable_stream_canary"] == "IDENTITY_CHECKPOINT_FAILED"
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert not (tmp_path / "data/marketing/press/intelligence.db").exists()
+    assert external == []
+
+
+def test_canary_refuses_ack_when_served_snapshot_drops_event(
+        tmp_path, monkeypatch):
+    from engine.marketing import intelligence_desk as desk
+    daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
+    def no_visible_event(*args, **kwargs):
+        return {"stories": [], "health": {"state": "quiet"}}
+    monkeypatch.setattr(desk, "update_intelligence_desk", no_visible_event)
+    result = daemon._run_press_tick(dry_run=False)
+    assert result["_durable_stream_canary"] == "SOURCE_NOT_SERVED"
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert external == []
+
+
+def test_canary_never_invokes_llm_summarizer(tmp_path, monkeypatch):
+    from engine.marketing import breaking_summary
+    daemon, _, external, _ = _canary_setup(monkeypatch, tmp_path)
+    calls = []
+    def fake_llm(*args, **kwargs):
+        calls.append("provider called")
+        return None
+    monkeypatch.setattr(breaking_summary, "_llm_summarize", fake_llm)
+    result = daemon._run_press_tick(dry_run=False)
+    assert result["_durable_stream_canary"] == "ACCEPTED"
+    assert calls == []
+    assert external == []
+
+
+
+def test_canary_unavailable_spool_read_fails_closed_without_consumption(
+        tmp_path, monkeypatch):
+    daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
+    def deny_read(_root):
+        raise OSError("simulated inaccessible source file")
+    with monkeypatch.context() as ctx:
+        ctx.setattr(ps, "peek_spool", deny_read)
+        result = daemon._run_press_tick(dry_run=False)
+    assert result["_durable_stream_canary"] == "SOURCE_READ_FAILED"
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert external == []
+
+
+def test_canary_press_pipeline_failure_preserves_original_spool(
+        tmp_path, monkeypatch):
+    from engine.marketing import press_lane
+    daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
+    def deny_scoring(*args, **kwargs):
+        raise RuntimeError("simulated scoring engine failure")
+    monkeypatch.setattr(press_lane, "run_press_tick", deny_scoring)
+    result = daemon._run_press_tick(dry_run=False)
+    assert result["_durable_stream_canary"] == "PIPELINE_FAILED"
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert external == []
+
+
+def test_canary_malformed_desk_packet_fails_closed(
+        tmp_path, monkeypatch):
+    from engine.marketing import press_lane, intelligence_desk
+    daemon, _, external, item = _canary_setup(monkeypatch, tmp_path)
+    def malformed(*args, **kwargs):
+        return {"intelligence": [{
+            "schema": intelligence_desk.PACKET_SCHEMA,
+            "id": "story-bad", "evidence": None,
+        }]}
+    monkeypatch.setattr(press_lane, "run_press_tick", malformed)
+    result = daemon._run_press_tick(dry_run=False)
+    assert result["_durable_stream_canary"] == "SOURCE_NOT_QUALIFIED"
+    assert [x["id"] for x in ps.peek_spool(tmp_path).items] == [item["id"]]
+    assert external == []
+
+
+
+def test_canary_log_has_explicit_source_acceptance_outcome(caplog):
+    import logging
+    from datetime import datetime, timezone
+    from scripts import marketing_fastlane_daemon as daemon
+    with caplog.at_level(logging.INFO, logger="fastlane_daemon"):
+        daemon._log_press_tick(
+            {"_emit_allowed": False,
+             "_durable_stream_canary": "SOURCE_NOT_QUALIFIED",
+             "_durable_stream_count": 1},
+            datetime.now(timezone.utc), dry_run=False,
+        )
+    assert "stream_canary=SOURCE_NOT_QUALIFIED" in caplog.text
