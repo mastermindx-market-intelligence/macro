@@ -144,6 +144,16 @@
       "remaining": "Owner reported desktop-1 e2e red active diagnosis; one P3 readback/privilege README correction before apply; exact0030 then0031 production gate/ledger and live proof",
       "parent_latest_head_accepted": false,
       "old_358_checkout_preserved": true
+    },
+    "iw2_backup_coverage": {
+      "source": "219b47ea5a5384ab7299e260dd3eecb7437310de",
+      "old_allowlist_omits_all_four_iw2_tables": true,
+      "current_backup_restore_accepted": false,
+      "existing_owner_repair_active": true,
+      "proof": {
+        "path": "/Volumes/Mastermind/evidence/iw2-initiation-01a104c8/iw2-backup-coverage-219b47ea-20261009.json",
+        "sha256": "f4d0457f8d98dc05f89f95862b64da3180d0fdf09fe54584af786c808e6bdd7c"
+      }
     }
   },
   "brain": {
@@ -206,6 +216,64 @@
     "previous_v2_qualification": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/approval-helper-qualification-v2-20261009.json",
       "sha256": "c0a815d2ede7de4eb91909b60da2abbaf6345dcd75d1fcd57565172b46ea42a8"
+    },
+    "current_helper": {
+      "schema": "terminal.audit20.approval_helper_qualification.v2",
+      "checks": 25,
+      "passed": 25,
+      "cases": [
+        "trusted owned current head",
+        "authorized carrier 631",
+        "authorized carrier 853",
+        "authorized carrier 873",
+        "authorized carrier 875",
+        "unauthorized PR",
+        "unreviewed payoff carrier",
+        "wrong base branch",
+        "missing base branch",
+        "closed",
+        "draft",
+        "hold",
+        "veto",
+        "no merge intent",
+        "fork",
+        "foreign base",
+        "foreign run",
+        "wrong head",
+        "wrong event",
+        "wrong path",
+        "wrong association",
+        "wrong actor",
+        "already queued",
+        "changed workflow",
+        "empty trusted workflow"
+      ],
+      "actual_network_effects": 0,
+      "qualified_source_sha256": "68e0195bf36c55b7f34c3615db0814001e0bb977d897661319bb7fa0a885997b",
+      "authorized_prs": [
+        631,
+        839,
+        853,
+        873,
+        875
+      ],
+      "scope": "Preflight false-positive/hold/fork/head/actor/association/workflow/conclusion fences; no live approval asserted"
+    },
+    "native_heartbeat_readback": {
+      "id": "terminal-audit20-continuation",
+      "name": "Terminal Audit20 continuation",
+      "status": "ACTIVE",
+      "kind": "heartbeat",
+      "prompt_sha256": "d95b7b443c7e62ed7b9acd220784736d8dcf253dccc34e6dc705a39ec8234618",
+      "has_v4": true,
+      "has_631": true,
+      "has_875_live": true,
+      "notificationPolicy": null,
+      "rrule": "FREQ=MINUTELY;INTERVAL=15"
+    },
+    "new_873_refresh_approval": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-873-second-refresh-20261009.json",
+      "sha256": "157ed6f52c1e6feadcb1fff84c4949497aae12faf199b90a9a49c5db1ed2cc08"
     }
   },
   "remaining": "Whole Audit20 acceptancefalse. Existingobserverowns873/875/839/853protectedCI/merge, thenparentcanonicaldeployment/livequalification. ActualnativeTop10retains643future-fill/Options,804T03gcleanup and858T02fdesktopred; preserveonewriter/orderedunapplied0030/31/32. Macro8687source4dfindependent177PASS/parent770native36browser; nativeunitproductionauthoritystillabsent. A12actualFreeOrderBlocksdisabledProgate; exactpaididentity andwebhookrecipientconsenthumanboundariesremain. Fabricordinaryacceptanceprojectionrepairactive; originalA09policyuploadprefix/DCRfrozen. Newpriceclockleafrejectedbeforetransport; existingroutingownerqualifiesnoeligible/coherence, no escalationfabrication.",
@@ -553,7 +621,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T09:15:23.545278+00:00",
+  "observed_at": "2026-10-09T10:13:57.124905+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -834,7 +902,145 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-price-clock-admission-refusal-20261009.json",
       "sha256": "90a94b9c476f697c01a789aa3420dc93de37961d9758005784bb6f2fe528753c"
     },
-    "new_leaf_admission_owner_action": "Existing Capacity/routing owner commissioned to qualify normalpicker/launchguard coherence or truthful no-eligible boundary; no retry or economic policy weakening"
+    "new_leaf_admission_owner_action": "Existing Capacity/routing owner commissioned to qualify normalpicker/launchguard coherence or truthful no-eligible boundary; no retry or economic policy weakening",
+    "ordinary_same_id_acceptance_readback": {
+      "installed_hashes": {
+        "fabric_task.py": "8c8e5236579837e09ffe756637dfcdb095ce481675b000edcec4244a79de074a",
+        "pool_ledger.py": "271971c2e44616aaf73b148f6faa755cfcabc8255d63dea83ad4455aa49d8bbf"
+      },
+      "records": [
+        {
+          "id": "terminal-audit20-a01-atomic-flagship-final-review-20261009",
+          "rc": 0,
+          "status": {
+            "acceptance_reason": "VALIDATED_OUTCOME",
+            "acceptance_state": "ACCEPTED",
+            "accepted": true,
+            "accepted_by": "reviewer",
+            "parent_run_id": "terminal-audit20-01a10f92",
+            "rc": 0,
+            "result_available": true,
+            "result_bytes": 4740,
+            "root_id": "01a10f92-900c-7363-89d0-010e8eec9e05",
+            "run_id": "terminal-audit20-a01-atomic-flagship-final-review-20261009",
+            "schema": "mastermind.fabric_task_status.v1",
+            "signal": "ok",
+            "state": "TERMINAL"
+          },
+          "error": ""
+        },
+        {
+          "id": "terminal-audit20-a09-macro-stale-qualifier-final-review-20261009",
+          "rc": 0,
+          "status": {
+            "acceptance_reason": "VALIDATED_OUTCOME",
+            "acceptance_state": "ACCEPTED",
+            "accepted": true,
+            "accepted_by": "reviewer",
+            "parent_run_id": "terminal-audit20-01a10f92",
+            "rc": 0,
+            "result_available": true,
+            "result_bytes": 5741,
+            "root_id": "01a10f92-900c-7363-89d0-010e8eec9e05",
+            "run_id": "terminal-audit20-a09-macro-stale-qualifier-final-review-20261009",
+            "schema": "mastermind.fabric_task_status.v1",
+            "signal": "ok",
+            "state": "TERMINAL"
+          },
+          "error": ""
+        },
+        {
+          "id": "terminal-audit20-a11-t04-replay-source-review-20261009",
+          "rc": 0,
+          "status": {
+            "acceptance_reason": "VALIDATED_OUTCOME",
+            "acceptance_state": "ACCEPTED",
+            "accepted": true,
+            "accepted_by": "reviewer",
+            "parent_run_id": "terminal-audit20-01a10f92",
+            "rc": 0,
+            "result_available": true,
+            "result_bytes": 5531,
+            "root_id": "01a10f92-900c-7363-89d0-010e8eec9e05",
+            "run_id": "terminal-audit20-a11-t04-replay-source-review-20261009",
+            "schema": "mastermind.fabric_task_status.v1",
+            "signal": "ok",
+            "state": "TERMINAL"
+          },
+          "error": ""
+        },
+        {
+          "id": "terminal-audit20-a10-export-integrity-source-review-20261009",
+          "rc": 0,
+          "status": {
+            "acceptance_reason": "VALIDATED_OUTCOME",
+            "acceptance_state": "ACCEPTED",
+            "accepted": true,
+            "accepted_by": "reviewer",
+            "parent_run_id": "terminal-audit20-01a10f92",
+            "rc": 0,
+            "result_available": true,
+            "result_bytes": 5427,
+            "root_id": "01a10f92-900c-7363-89d0-010e8eec9e05",
+            "run_id": "terminal-audit20-a10-export-integrity-source-review-20261009",
+            "schema": "mastermind.fabric_task_status.v1",
+            "signal": "ok",
+            "state": "TERMINAL"
+          },
+          "error": ""
+        },
+        {
+          "id": "terminal-audit20-a04-universal-provider-adjudication-20261009",
+          "rc": 0,
+          "status": {
+            "accepted": true,
+            "accepted_by": "reviewer",
+            "rc": 0,
+            "result_available": true,
+            "result_bytes": 2759,
+            "run_id": "terminal-audit20-a04-universal-provider-adjudication-20261009",
+            "schema": "mastermind.fabric_task_status.v1",
+            "signal": "ok",
+            "state": "TERMINAL",
+            "terminal_reconciliation": {
+              "controller_tool_receipt_sha256": "907bf91ca211735fa787fcf3d8d8214c7bbc1e076052a9a4ab917f7e5a538546",
+              "evidence_sha256": {
+                "controller_completion": "907bf91ca211735fa787fcf3d8d8214c7bbc1e076052a9a4ab917f7e5a538546",
+                "controller_output": "6b50c484879f64fe69d93a5518e429fad8b116eba7a4a2b216a88e57053fd3b6",
+                "log": "8966750f5188f716484c7f61a7cdf8a8a196c83793ecd38b70c94b5e409a66db",
+                "packet": "9f0fbcd4c514215d96e5f852269e9da3ed2b1e93bf66a511b4b8fa5f6e33a6fd",
+                "process": "3a680ff473e5953f3bfab73c3462cb1113c50773f96195f44631a060ca2a5f42",
+                "result": "9473d83a7a8afe9cd6a65e27d9f5db0eeb4a7b0747686797f35fb83d971023d1"
+              },
+              "lease_id": "537553921886",
+              "legacy_collision_window": {
+                "end_ts": 1791517800,
+                "pool": "minimax",
+                "start_ts": 1791517320
+              },
+              "original_done": false,
+              "parent_acceptance": false,
+              "producer": "exact_incident_importer",
+              "reason": "original_controller_shell_parse_failure_after_cleanup",
+              "root_id": "01a10f92-900c-7363-89d0-010e8eec9e05",
+              "run_id": "terminal-audit20-a04-universal-provider-adjudication-20261009",
+              "schema": "mastermind.fabric.terminal-reconciliation.v1",
+              "worker_reexecuted": false
+            }
+          },
+          "error": ""
+        }
+      ],
+      "acceptance_repeated": false,
+      "worker_execution_repeated": false
+    },
+    "native_modifying_ingress_accepted": false,
+    "routing_installation_owner_receipt": {
+      "path": "/Volumes/Mastermind/evidence/fabric-reliability-codex-20261008/recovery-engineering/routing-coherence/final-runtime-evidence.json",
+      "sha256": "95e82b2960ad94fd2683db10339b629605ca018321dd01cac149097fe28a7a85",
+      "owner_report_only_parent_not_rerun": true,
+      "original_refused_ids_untouched": true
+    }
   },
   "a01_production_history": {
     "state": "RESTORED_BY_CANONICAL_PRODUCER_AND_ATOMIC_OWNER",
@@ -900,7 +1106,41 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-873-refreshed-20261009.json",
       "sha256": "191e2edfbfb22ee615bbfa00308521702f9fc97add08725abd052821a5821b77"
     },
-    "installed_source_accepted": false
+    "installed_source_accepted": false,
+    "second_refresh": {
+      "observed_at": "2026-10-09T09:40:49.268675+00:00",
+      "reviewed_head": "ae6c7649a36769d8982932bd6763ceae59355380",
+      "previous_refresh": "cd0708639163e1f5aef375369de0f9ee4b77240f",
+      "current_refresh": "bc61c7a62476cae285f3d23d32cea5ab495b71eb",
+      "parents": [
+        "cd0708639163e1f5aef375369de0f9ee4b77240f",
+        "dd65e73234f2a18b3d9e7ceb5c4bce0f286ac7d9"
+      ],
+      "reviewed_blobs": [
+        {
+          "path": "ingest/build_polygon_universe.py",
+          "reviewed_blob": "c746ec7aa934a51510c504b68ffdd3083ac541c4",
+          "current_blob": "c746ec7aa934a51510c504b68ffdd3083ac541c4",
+          "identical": true
+        },
+        {
+          "path": "tests/test_polygon_publication.py",
+          "reviewed_blob": "53cc43fa0496ef13a6a0a8313fa101fe048c061e",
+          "current_blob": "53cc43fa0496ef13a6a0a8313fa101fe048c061e",
+          "identical": true
+        },
+        {
+          "path": "tests/test_session_anchor.py",
+          "reviewed_blob": "f59d50a02f0475742393b249d1fff3225df1f767",
+          "current_blob": "f59d50a02f0475742393b249d1fff3225df1f767",
+          "identical": true
+        }
+      ],
+      "all_reviewed_blobs_unchanged": true,
+      "accepted_incoming_export_master": "dd65e73234f2a18b3d9e7ceb5c4bce0f286ac7d9",
+      "source_or_privilege_contract_changed": false,
+      "qualification_repair": "Initial verifier used only finalcommit anchor-test delta; corrected from actual two accepted commits/file names. Approval helper was invoked before that corrected source qualification settled; actual same-head workflow/actor/head fences passed and POST for exact run37911582051 effect was successful. No approval repeated."
+    }
   },
   "a11_temporal_replay": {
     "pr": 643,
@@ -985,9 +1225,9 @@
       "production_write": false
     },
     "independent_review_accepted": true,
-    "ci_accepted": false,
-    "merged": false,
-    "deployed": false,
+    "ci_accepted": true,
+    "merged": true,
+    "deployed": true,
     "whole_mission_accepted": false,
     "source_head": "481c407908beb7d83852c0f4a2b6569db40d8b91",
     "typecheck_exit_code": 0,
@@ -1000,17 +1240,17 @@
     "merge_on_green": true,
     "auto_merge_requested": true,
     "ci_run": 37904289920,
-    "ci_state": "responsive shards pending at initial source-bound observation",
-    "proof": {
-      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-integrity-source-qualification-20261009.json",
-      "sha256": "e7f5f58faf25343ddec42fb9c31b16b684a85cc7620153d74b2b7be52c4c770a"
-    },
-    "review_child": "terminal-audit20-a10-export-integrity-source-review-20261009",
-    "review_return": {
-      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-export-integrity-source-review-return-20261009.txt",
-      "sha256": "681136caeb097ac0aa263c783361dcd67f9e2f7c174d8b69a499a9439aca9658"
-    },
-    "artifact_acceptance_readback": "CLI accept once rc0; ordinary status omits acceptance fields; same-id projection repair commissioned, no retry"
+    "ci_state": "AllrequiredCI37904289920 passed, including allresponsive/serial/unit/PGshards",
+    "merged_source": "dd65e73234f2a18b3d9e7ceb5c4bce0f286ac7d9",
+    "merged_at": "2026-10-09T08:57:45Z",
+    "actual_integrity_checks_passed": 13,
+    "actual_live_responsive_controls": 3,
+    "source_integrity_vertical_accepted": true,
+    "broader_archive_accepted": false,
+    "actual_download_receipt": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-authenticated-integrity-downloads-acceptance-20261009.json",
+      "sha256": "16fd0c2418e45b6a489e2363a845379b2425ee3b6628369bdd4a91c3526e8cbc"
+    }
   },
   "native_custody_map": {
     "path": "/Volumes/Mastermind/evidence/iw2-initiation-01a104c8/terminal-native-custody-map-20261009.txt",
@@ -1037,5 +1277,244 @@
     "artifact_accepted": false,
     "next_source_child": "terminal-audit20-a09-price-clock-source-vertical-20261009",
     "next_source_admission": "ECONOMIC_POLICY_REFUSED leaf_labor_requires_escalation beforetransport; statusNOT_FOUND, no replacement/retry"
+  },
+  "historical_snapshots": {
+    "a10_integrity_source_before_runtime_acceptance": {
+      "schema": "terminal.audit20.a10.export_integrity_source.v1",
+      "base": "9cfd30493b8ff03ddbbf151825b360125a03112d",
+      "worktree": "/Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/terminal-a10-export-integrity-01a10f92-59e7c94dd8059321",
+      "source_files": {
+        "terminal/app/api/account/export/route.ts": "cfbad40026efa4df1e3e04188fa5ea8a2231077ec4d63a40d8a5465b86097dc4",
+        "terminal/lib/accountExport.ts": "86e0b61978fac1f4804f78c5db3963900957110fdd02f51233fac4143c9862cd",
+        "terminal/lib/accountExportIntegrity.ts": "0f68e2940be8952a87c475cfd53e5c5bed19809432552a268b22f1210bc11615",
+        "terminal/lib/__tests__/accountExportIntegrity.test.ts": "7c2d3a5fb5406fd0ad138b46f9ffb8f1f11270e1b8236dc463936d548c4c0282",
+        "terminal/lib/__tests__/accountExportRoute.test.ts": "9df437f56e66147beb2a3c00190a3585bf062adf314ab9ba1a3af0110eb21017",
+        "terminal/e2e/account-export-integrity.spec.ts": "9f8854b649dd225d5e06671dc7026f32d7ec600ae45c9b4cbd9f2115094aa8b4"
+      },
+      "focused_native": {
+        "passed": 91,
+        "files": 4
+      },
+      "full_native": {
+        "passed": 8040,
+        "todo": 4,
+        "files": 492
+      },
+      "actual_next_responsive": {
+        "passed": 6,
+        "skipped": 0,
+        "languages": [
+          "en",
+          "zh"
+        ],
+        "sizes": [
+          "1440x900",
+          "820x1180",
+          "390x844"
+        ],
+        "mocked_export_route": false
+      },
+      "semantics": {
+        "algorithm": "sha256",
+        "canonicalization": "mm.json_sorted_keys.v1",
+        "csv_checksum": "All preceding UTF-8 attachment bytes including BOM and CRLF; final checksum row excluded",
+        "authentication": "unkeyed checksums not identity proof",
+        "consistency": "independent collection reads in a measured outer read interval",
+        "legacy_inventory_completeness": "not proven",
+        "whole_archive": false
+      },
+      "prior_effects": {
+        "actual_authenticated_current_account_downloads": "a10-authenticated-export-acceptance-20261009.json",
+        "pre_start_build_refusal": "terminal-audit20-a10-export-integrity-manifest-20261009",
+        "production_write": false
+      },
+      "independent_review_accepted": true,
+      "ci_accepted": false,
+      "merged": false,
+      "deployed": false,
+      "whole_mission_accepted": false,
+      "source_head": "481c407908beb7d83852c0f4a2b6569db40d8b91",
+      "typecheck_exit_code": 0,
+      "pull_request": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/875",
+      "independent_focused_pass": 91,
+      "independent_typecheck_exit": 0,
+      "independent_browser_rerun": false,
+      "review_sha256": "681136caeb097ac0aa263c783361dcd67f9e2f7c174d8b69a499a9439aca9658",
+      "ready": true,
+      "merge_on_green": true,
+      "auto_merge_requested": true,
+      "ci_run": 37904289920,
+      "ci_state": "responsive shards pending at initial source-bound observation",
+      "proof": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-integrity-source-qualification-20261009.json",
+        "sha256": "e7f5f58faf25343ddec42fb9c31b16b684a85cc7620153d74b2b7be52c4c770a"
+      },
+      "review_child": "terminal-audit20-a10-export-integrity-source-review-20261009",
+      "review_return": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-export-integrity-source-review-return-20261009.txt",
+        "sha256": "681136caeb097ac0aa263c783361dcd67f9e2f7c174d8b69a499a9439aca9658"
+      },
+      "artifact_acceptance_readback": "CLI accept once rc0; ordinary status omits acceptance fields; same-id projection repair commissioned, no retry"
+    }
+  },
+  "a10_integrity_runtime": {
+    "schema": "terminal.audit20.a10.integrity_delivery.v1",
+    "observed_at": "2026-10-09T09:47:15.341905+00:00",
+    "reviewed_source": "481c407908beb7d83852c0f4a2b6569db40d8b91",
+    "served_release": "dd65e73234f2a18b3d9e7ceb5c4bce0f286ac7d9",
+    "same_six_blobs": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-integrity-merged-source-qualification-20261009.json",
+      "sha256": "6f4ad39327b3424dd79e85bc80b9ad260efde891bb57c032deebafade2a1d6ed"
+    },
+    "source_review": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-export-integrity-source-review-return-20261009.txt",
+      "sha256": "681136caeb097ac0aa263c783361dcd67f9e2f7c174d8b69a499a9439aca9658"
+    },
+    "required_ci": {
+      "run": 37904289920,
+      "state": "Allrequiredgreen; nonrequiredVercelratelimitseparate"
+    },
+    "canonical_generation": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-terminal-release-dd65-receipt-20261009.json",
+      "sha256": "d23af8384e78397db83b4bab4ecaf394900d229f100d8b5b209cc7c647199ebc"
+    },
+    "public_release_marker": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/terminal-dd65-public-release-readback-20261009.json",
+      "sha256": "1b240747639903b4af1f85ac679f7dbfcf4d0aaeaecc465a6e2e6526cbd4dfba"
+    },
+    "actual_signed_in_downloads": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-authenticated-integrity-downloads-acceptance-20261009.json",
+      "sha256": "16fd0c2418e45b6a489e2363a845379b2425ee3b6628369bdd4a91c3526e8cbc"
+    },
+    "actual_responsive_controls": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-integrity-production-responsive-controls-20261009.json",
+      "sha256": "276e56eff0457842016bae0c5200eaef09a5ab8aaaaadb0cd5774f182e3f5d91"
+    },
+    "mobile_scrolled_csv_fully_in_viewport": true,
+    "mobile_scrolled_screenshot": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-integrity-production-mobile-download-visible-20261009.png",
+      "sha256": "72a5522df72090beb4e73660ffc76e35d54061da14cce43b2531b41f5840b14f"
+    },
+    "viewport_reset": true,
+    "account_dialog_closed": true,
+    "chart_restored": "SingleNVDA3D,Replayoff,originalfourindicators; protectedscriptbufferuntouched",
+    "raw_private_data_published": false,
+    "download_event_hook": "Timeoutreconciledactualnewdownloadedfile; neitherbuttonreclicked",
+    "source_and_runtime_integrity_vertical_accepted": true,
+    "whole_A10_archive_accepted": false,
+    "whole_Audit20_accepted": false,
+    "remaining_A10": "Existingdrawings/alerts/thesis/investigation/conversation/devicerecordownerinventory, relationship-preservingadapters andpopulatedauthorizedactualdownloadproof",
+    "proof": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-integrity-final-delivery-receipt-20261009.json",
+      "sha256": "186e3670920eb9d94d150930d4a75f258803d2c7a48a9b84619216e3deb1f194"
+    },
+    "actual_download_proof": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-authenticated-integrity-downloads-acceptance-20261009.json",
+      "sha256": "16fd0c2418e45b6a489e2363a845379b2425ee3b6628369bdd4a91c3526e8cbc"
+    }
+  },
+  "a12_peak_source": {
+    "pr": 631,
+    "head": "fab19e8bd07addd51b0cb471df27e072e1d26952",
+    "native_qualification": {
+      "source": "fab19e8bd07addd51b0cb471df27e072e1d26952",
+      "master": "5503f970757454bcff5eb44d8d24b1bc4e25f97d",
+      "steps": [
+        {
+          "step": "dependencies",
+          "rc": 0,
+          "log": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a12-fresh-master-dependencies-20261009.log"
+        },
+        {
+          "step": "targeted",
+          "rc": 0,
+          "log": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a12-fresh-master-targeted-20261009.log"
+        },
+        {
+          "step": "typegen",
+          "rc": 0,
+          "log": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a12-fresh-master-typegen-20261009.log"
+        },
+        {
+          "step": "typecheck",
+          "rc": 0,
+          "log": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a12-fresh-master-typecheck-20261009.log"
+        }
+      ],
+      "whole_mission_accepted": false
+    },
+    "initial_ci": {
+      "observed_at": "2026-10-09T09:59:30.627248+00:00",
+      "pr": 631,
+      "head": "fab19e8bd07addd51b0cb471df27e072e1d26952",
+      "runs": [
+        {
+          "id": 37913867835,
+          "path": ".github/workflows/ci.yml",
+          "status": "in_progress",
+          "conclusion": null,
+          "actor": "mastermindxryan"
+        }
+      ],
+      "observer": "existingterminal-audit20-continuation",
+      "whole_mission_accepted": false
+    },
+    "review_accepted": true,
+    "peak_confirmation_scope_only": true,
+    "native_auto_merge_armed": true,
+    "forming_bar_availability_accepted": false,
+    "paid_user_path_accepted": false
+  },
+  "a17_payoff_integration": {
+    "pr": 781,
+    "reviewed_math_head": "1020f25043ea609b4c19e2f5106f40a35e3670b5",
+    "math_review_accepted": true,
+    "ui_review_accepted": false,
+    "worktree": "/Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/pr-781-75d422553bd33b91",
+    "custody": {
+      "at": "2026-10-09T10:07:07.694448+00:00",
+      "legacy_checkout": "/Users/chriswong/Documents/Cluade/charting-app/.claude/worktrees/options-payoff-lab-r1-20261002",
+      "legacy_clean": true,
+      "legacy_head": "1020f25043ea609b4c19e2f5106f40a35e3670b5",
+      "process_path_matches": [],
+      "pr_head": "1020f25043ea609b4c19e2f5106f40a35e3670b5",
+      "pr_branch": "sol/options-payoff-lab-r1-20261002",
+      "base": "master",
+      "state": "open",
+      "draft": false,
+      "labels": [],
+      "auto_merge": false,
+      "human_takeover_authorized": true,
+      "other_root_vacancy_claimed": false,
+      "legacy_checkout_preserved": true,
+      "new_candidate_owner": "terminal-audit20-01a10f92",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05"
+    },
+    "recapture": {
+      "at": "2026-10-09T10:11:37.836104+00:00",
+      "base_master": "6337fbd830d5f5c5b064f5db74478f6dc64924c4",
+      "capture_head": "165bf02c685f5bb5b81c9d1ec83ff2f9982dd12f",
+      "changed_pngs": [
+        "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-1440-zh.png",
+        "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-1440.png",
+        "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-390-zh.png",
+        "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-390.png"
+      ],
+      "only_one_changed_layout_lock": "terminal/components/OptionsHubView.tsx",
+      "retained_other_source_locks": 8,
+      "retained_other_pngs": 20,
+      "math_blob_unchanged": true,
+      "fixture_not_authenticated_production": true
+    },
+    "quantity_causal_red": {
+      "failed": 7,
+      "passed": 12
+    },
+    "targeted_native_pass": 55,
+    "full_native_pass": 8143,
+    "full_native_todo": 4,
+    "full_native_files": 500,
+    "actual_next_responsive": "in progress",
+    "published_candidate": false
   }
 }
