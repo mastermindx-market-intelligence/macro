@@ -159,6 +159,144 @@ def test_first_value_html_escapes_untrusted_headline_claims_and_source_title():
 
 
 
+def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monkeypatch):
+    """No user data or external effects: REAL 01/00/02 code, synthetic grants and owner ports."""
+    from datetime import timedelta
+    from app import catalyst_optin
+    from engine.marketing import catalyst_scan
+    from engine.marketing.catalyst_packets import PublicSourceGrant, build_event_packet
+    from engine.marketing.catalyst_lifecycle import FunnelService, SCOPE
+
+    now = datetime.now(timezone.utc)
+    source_id = "sec:0000078003:0000078003-26-000094"
+    issuer = {"PFE": {"supported": True, "issuer_id": "cik:0000078003",
+                      "dossier_path": "/stocks/PFE/"}}
+    accepted = (now - timedelta(minutes=4)).isoformat()
+    observed = (now - timedelta(minutes=3)).isoformat()
+    event = {
+        "source": "edgar_8k_202", "filing_key": "0000078003:0000078003-26-000094",
+        "cik": 78003, "ticker": "PFE", "acceptance_datetime": accepted,
+        "when": observed, "publication_time_utc": observed,
+        "source_url": ("https://www.sec.gov/Archives/edgar/data/78003/"
+                       "000007800326000094/0000078003-26-000094-index.htm"),
+        "eps_actual": 0.42, "_eps_basis": "gaap", "rev_actual": 10000000.0,
+    }
+
+    allow = {"yes": True}
+    def grants(source, clock):
+        if not allow["yes"]:
+            return None
+        return PublicSourceGrant(
+            source, "synthetic-no-live-grant", "fixture-only-owner",
+            "public_anonymous", now - timedelta(days=1),
+            now + timedelta(days=1), True, True, True,
+        )
+
+    def admitted_context(clock):
+        packet = build_event_packet(event, issuers=issuer, rights_resolver=grants,
+                                    as_of=clock)
+        return [packet], issuer
+
+    monkeypatch.setattr(catalyst_scan, "read_qualified_event_context", admitted_context)
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
+    monkeypatch.setenv("CATALYST_SCAN_RECEIPT_SECRET", "test_only_hmac_key_" * 3)
+    ci._reset_rate_limits_for_tests()
+
+    class PendingOwner:
+        pending = []
+        def available(self):
+            return True
+        def begin_pending_intent(self, token, email_tag, expires):
+            self.pending.append((token, email_tag, expires))
+            return "opaque_fixture_ref_123456789"
+
+    class OtpOwner:
+        requested = []
+        def request_otp(self, address):
+            self.requested.append(address)
+            return True
+
+    class SuppressionOwner:
+        def is_suppressed(self, address, user_id):
+            return False
+
+    pending, otp = PendingOwner(), OtpOwner()
+    from app.catalyst_scan_authority import ScanReceiptAuthority
+    service = FunnelService(secret="intent_only_test_key_" * 3,
+                            scan=ScanReceiptAuthority(),
+                            identity=otp, consent=pending,
+                            suppression=SuppressionOwner(),
+                            revisions=object(), sender=object())
+    catalyst_optin.configure(service)
+    guard_allowed = {"yes": True}
+    guard_calls = []
+
+    def shared_guard(request):
+        guard_calls.append(1)
+        if not guard_allowed["yes"]:
+            raise HTTPException(503, "RATE_GUARD_UNAVAILABLE")
+
+    monkeypatch.setattr(catalyst_optin, "_abuse_guard", shared_guard)
+    app = FastAPI()
+    app.include_router(ci.router)
+    client = TestClient(app)
+
+    try:
+        scan = client.post("/api/catalyst/scan", json={"tickers": ["PFE"]})
+        assert scan.status_code == 200
+        first = scan.json()
+        assert first["generation"] == 0
+        assert first["results"][0]["status"] == "SUPPORTED"
+        assert first["results"][0]["sources"][0]["url"].startswith("https://www.sec.gov/Archives/")
+        # User sees the same material facts before offering any email form.
+        public_html = client.get("/api/catalyst?tickers=PFE")
+        assert public_html.status_code == 200
+        assert "Evidence checked" in public_html.text
+        assert 'href="/stocks/PFE.html"' in public_html.text
+        assert "name='email'" not in public_html.text.lower()
+        token = first["scan_receipt"]
+        assert isinstance(token, str) and token.count(".") == 1
+
+        body = {
+            "email": "test_user@example.invalid", "scan_receipt": token,
+            "consent_checked": True, "scope": SCOPE, "form_elapsed_ms": 4000,
+            "first_touch": {"utm_source": "synthetic_fixture"},
+        }
+        # A cross-site browser-simple POST cannot trigger the OTP owner even
+        # with a valid signed first-scan receipt, because it is not JSON-typed.
+        for mime in ("text/plain", "application/x-www-form-urlencoded"):
+            rejected = client.post("/api/catalyst/optin/request",
+                                   content=json.dumps(body), headers={"Content-Type": mime})
+            assert rejected.status_code == 415
+            assert otp.requested == []
+            assert pending.pending == []
+        assert guard_calls == []  # malformed/simple posts stop before OTP guard
+        guard_allowed["yes"] = False
+        guard_unavailable = client.post("/api/catalyst/optin/request", json=body)
+        assert guard_unavailable.status_code == 503
+        assert otp.requested == pending.pending == []
+        guard_allowed["yes"] = True
+        request = client.post("/api/catalyst/optin/request", json=body)
+        assert request.status_code == 202
+        assert len(guard_calls) == 2
+        assert request.json() == {
+            "status": "VERIFICATION_REQUIRED", "public_ref": "opaque_fixture_ref_123456789",
+        }
+        assert len(otp.requested) == len(pending.pending) == 1
+        assert "test_user@" not in str(request.json())
+
+        # A revoked source grant at verification time must not request a second OTP.
+        allow["yes"] = False
+        denied = client.post("/api/catalyst/optin/request", json=body)
+        assert denied.status_code in (403, 503)
+        assert len(otp.requested) == len(pending.pending) == 1
+    finally:
+        catalyst_optin.configure(None)
+        ci._reset_rate_limits_for_tests()
+
+
+
 def test_anon_rate_limits():
     ci._reset_rate_limits_for_tests()
     request = SimpleNamespace(headers={"eo-connecting-ip": "198.51.100.42"})
