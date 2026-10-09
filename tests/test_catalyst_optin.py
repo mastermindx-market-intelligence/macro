@@ -243,6 +243,44 @@ def test_consent_rpc_missing_owner_version_bad_reply_or_leaky_email_is_fail_clos
     assert error.value.code == "CONSENT_OWNER_PROTOCOL_MISMATCH"
 
 
+@pytest.mark.parametrize("mutation", [
+    lambda row: row.update(tickers=["AMD"]),
+    lambda row: row.update(tickers=["NVDA", "NVDA"]),
+    lambda row: row.update(tickers="NVDA"),
+    lambda row: row.update(tickers=["NVDA?"]),
+    lambda row: row.update(first_touch={"partner_id": "different"}),
+    lambda row: row.update(first_touch={"email": "secret@example.com"}),
+    lambda row: row.update(intent_id="unrelated-nonce"),
+])
+def test_consent_rpc_refuses_mismatched_new_grant_or_untrusted_projection(mutation):
+    from engine.marketing.catalyst_lifecycle import ConsentRecord, SCOPE
+    record = ConsentRecord(UID, "investor@example.com", "event-123", ("NVDA",),
+                           SCOPE, "2026-10-09T03:00:00+00:00", "nonce-A",
+                           {"partner_id": "original"})
+    row = dict(record.__dict__)
+    mutation(row)
+    owner = catalyst_optin.SupabaseConsentRpcOwner(
+        pg=lambda method, path, body: {"created": True, "record": row})
+    with pytest.raises(FunnelGate) as error:
+        owner.confirm(record)
+    assert error.value.code == "CONSENT_OWNER_PROTOCOL_MISMATCH"
+
+
+def test_rpc_replay_preserves_first_admitted_attribution_not_second_claim():
+    from engine.marketing.catalyst_lifecycle import ConsentRecord, SCOPE
+    record = ConsentRecord(UID, "investor@example.com", "event-123", ("NVDA",),
+                           SCOPE, "2026-10-09T03:00:00+00:00", "new-nonce",
+                           {"partner_id": "attempted-second-credit"})
+    saved = {**record.__dict__, "intent_id": "original-nonce",
+             "first_touch": {"partner_id": "genuine-first-credit"}}
+    owner = catalyst_optin.SupabaseConsentRpcOwner(
+        pg=lambda method, path, body: {"created": False, "record": saved})
+    out = owner.confirm(record)
+    assert out.created is False
+    assert out.record.first_touch == {"partner_id": "genuine-first-credit"}
+    assert out.record.intent_id == "original-nonce"
+
+
 def test_first_value_scan_is_owned_by_00_no_email_wall_or_duplicate_route(web):
     client, svc = web
     assert client.get("/api/catalyst/scan").status_code == 404
