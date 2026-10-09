@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T18:30:56.182964+00:00",
+  "observed_at": "2026-10-09T19:05:28.833561+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261009T1834",
+  "current_capability_frontier_key": "current_capability_frontier_20261009T1905",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -3877,5 +3877,85 @@
       "sha256": "28d34544db7a28cf34e616f2957820b8048c423873af00f6ed711b3587fad731"
     },
     "next_safe_phase": "Consume currentA19 independent return, fix any concrete defects then qualified existingproducer integration; consume original643finalreceipt/804formalSTART and Fabricinstalledcanarypacket. Existing785nativeauto/MOG own requiredCI/merge wait, parent owns canonicaldelivery. Save is not stop/completion."
+  },
+  "current_capability_frontier_20261009T1905": {
+    "observed_at": "2026-10-09T19:05:28.833561+00:00",
+    "supersedes": "current_capability_frontier_20261009T1834",
+    "settled_references_retained_in": "current_capability_frontier_20261009T1834",
+    "whole_original_mission_accepted": false,
+    "643_final_head": "b3b03a6607c135e5114604def66287825f343334",
+    "643_source_CI_acceptance": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-t04g-final-source-CI-parent-acceptance-20261009.json",
+      "sha256": "ec5ae7d0fa57489c23c51f47a57dc4ed926abd2bd919cf23cdd9bf04e12b387c"
+    },
+    "643_source_capture_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-t04g-integrated-source-parent-qualification-20261009.json",
+      "sha256": "c7658440fe0cae84dd1d5a54e5afb51b92bcb985078dbb78bd942cb4b0387f48"
+    },
+    "643_merge_effect": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-t04g-ready-auto-merge-effect-20261009.json",
+      "sha256": "db0d95a267fec5d9cc736afb77b1aa667834e58fc0a570e5eec7ccb41540aa60"
+    },
+    "643_squash": "5efbf1d2e7558e5eb7ef45c934b4560e4e31f15c",
+    "643_capability_delta": "Exactfinalb3 native independentREAD_ONLYOpusAPPROVE/canonical6086587320, parentactual60source/capturebindings and3visualfiles checked; VIgateblocks/871sources byteexact acceptedparents. Owner8212PASS4TODO/502files,54focused,15recapture,29ReplayPASS16capabilitySKIP,12unitmutants/TSC0/plainlanguage0; parentdidnotrerun. Exact3required App15368CI37968972763SUCCESS; ready/nativeauto transitionONCE actuallyMERGED18:45:12 squash5ef. Rawcommandpacketnotretrieved disclosed, canonicalexactheadverdict/source/fullbody/retainedlogs sufficientSCOPEDsourceCIacceptance. Productionhelduntilmandatoryf12healmerged. DeferredP2missingfallbackcut e2e: removingonlyhorizonfilterstill29existingPASS but actualprobe75->77futuremarkers; newtest-only boundedFabricproposal requested. WholeA11false.",
+    "886_head": "173d3b7604e301b82f39a19f1f9f815757e28442",
+    "886_source_acceptance": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-post643-f12-headonly-parent-source-qualification-20261009.json",
+      "sha256": "ea3bbd19f8942b55d77f8c5b5849cd30082d289b044afaa2e90fc3cd588b3c2d"
+    },
+    "886_PR_creation": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-post643-f12-heal-PR-creation-effect-20261009.json",
+      "sha256": "fa9a025ac804e9f162074ea5609212bd6f7369f1be2c6766b9b6a6915c5c29f2"
+    },
+    "886_auto_merge": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-post643-f12-heal-auto-merge-effect-20261009.json",
+      "sha256": "4d4b4f81ef099d462465a793a0d6ad4e5be39093ae9dbbeb43856e745dd4c9b1"
+    },
+    "886_initial_CI": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-post643-f12-heal-initial-PR-readback-20261009.json",
+      "sha256": "b4d71b4cb1b8116ee77cbfd221b40ae27d6fbc0bdac4b95ff96fc510d2b60977"
+    },
+    "886_capability_delta": "ApprovedhelperSSD from5ef, onlyf12_9 EVIDENCE.yml capturedAtHead actualdatafield4a633->5ef. Allotherbytes/crops/guard/comments unchanged. Actualoldnative1FAIL4PASS ancestorwitness->new5PASS0FAIL0SKIP, diffcheckPASS. Commitpush/readback173d, PR886createdattachednonDraft/MOG/nativeauto armed18:58ONCE. AutomaticCI37976377076 Quote/IngestrequiredSUCCESS/unitSUCCESS, Terminalaggregatepending; nonrequiredVercelbuildratefailure notadminbypassed. No approvalPOST/newcredential/operatorcommand/helperallowlistwidening/newwatcher. No release untilmerge/currentmaster exactsourcehash/3required qualify.",
+    "A19_review_acceptance": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-local-clock-freeze-review-parent-adjudication-20261009.json",
+      "sha256": "f1517a2e2fe35a8d3c16a1e5f93b17cbc191eeca6eac88de56cac8deb2f89abd"
+    },
+    "A19_review_return": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-local-clock-freeze-independent-review-return-20261009.txt",
+      "sha256": "c07f2139603c08bde51f0592a768aa03e6195673a7971884dc9f76fea5e014a7"
+    },
+    "A19_current": "Exactsame originalroot/parent run terminal-audit20-a19-local-clock-freeze-independent-review-20261009 settledrc0/6272B/c07f2139; sameIDrevieweracceptONCE/canonicalstatusACCEPTED_VALIDATED_OUTCOME. Actualreturnedexact8072/11434helper/testhashesmatch parent; independent25provided+13adversarial0FAIL0SKIP; parent25alreadyqualifiednotrerun. ACCEPTED_SCOPEDdetachedLOCAL_FROZEN/PERSISTED only, alwaysglobalfanoutSUPPRESS; callerretains effectreceipts/absencecanremintiflost; unsupportedphase/freshnesslimits retained. Sourceintegration/checkpointwinner/globalalerts/wholeA19unaccepted. Oldartifactrefusalsimmutable.",
+    "IW2_T03i_START": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/iw2-T03i-native-canonical-START-parent-consumption-20261009.json",
+      "sha256": "fc83fe37a22250b1121ebadc655b59c5b1e2871b87fc4c13dc09d1d4510a53c0"
+    },
+    "IW2_current": "Actualcanonical6087195412 START18:48:22 taskwft33jexf/runwf_214693a2-b83/singlewritera9f086c915680f3be fromcleanlocalremote da8. Originalnative03342 underIW2root retained; fourboundedlayout/refusal/recoveredrevise/uncertainasofUIrepairs. NoAPI/SQL/contractchanges/sourceacceptance yet. T03jqueuedNOT_STARTEDafterreviewedT03i; APIc4f1d78c/persistedinvalidpayload4ad21712 peerownednotparentexecuted/accepted. SQL0030/31/32 UNAPPLIED/Draftnoauto/release+rights holds. Sharednativepromptcollisionreconciled; peerrelayedmessage35queued/unreadnormalboundary, noSendNow/nooverwrite/duplicatewriter.",
+    "Fabric_installed_production_diagnostics": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/fabric-artifact-production-and-diagnostics-parent-consumption-20261009.json",
+      "sha256": "114d422b8ec055bf4004e413e88d869a25bd232d7165df69af0e94f825ef3881"
+    },
+    "Fabric_current": "Existingowner finalconsumed/cursor0269f06d-bf61-48de-9604-632ab3527b90:62. New artifactdeclaredoutput runtime+exportbinding installed/independent98inputs73checks; current34sourcehashes parentmatched, originalowner89Bfixedchallenge actualfile parentrehashed. Diagnosticsinstalled/inertowner26/reviewer44/independent46inputs57checks. Currentfuture55308336 digest differshistoricalpositive7f954a2b; no replayinstall/canary/accept. Originalnegative78 frozen/causeunknown/intendedlive65unproven; no nativeRuntimeBinding/automaticWake/fullFabric. Existingowner exactA19 diagnosticresolvednormalsettled6272Breturn, originallease/runpreserved.",
+    "A11_new_test_proposal": {
+      "run_id": "terminal-audit20-a11-fallback-cut-mounted-regression-20261009",
+      "request_session": 70161,
+      "packet": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/commissions/terminal-audit20-a11-fallback-cut-mounted-regression-20261009.md",
+        "sha256": "44e75247fce4327bc44d1d6312971e000f8eadf783439235360f6c87adc40444"
+      },
+      "phase": "PRESTART_REFUSED_NONE_NO_POOL_AVAILABLE_75",
+      "declared_new_outputs": [
+        "replay-fallback-regression.patch",
+        "qualification.json"
+      ],
+      "scope": "C2 test-only standalonePlaywrightspec proposal exact5ef/sourcecerpts; no sourcewriter/effects/publication; parentmountedbaseline+singlemutant qualification owed",
+      "refusal": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-fallback-cut-mounted-regression-prestart-refusal-20261009.json",
+        "sha256": "a6e9807ce64c24f662babf0448634153e6835349f9bf9c5fd86a1bb43efa0ee5"
+      },
+      "next": "No unchanged retry. Parent bounded mounted test + singlemutant under exact noeligible-pre-effect-worker reason."
+    },
+    "785_current": "Sourceaccepted8763/MOGnativeautoarmedONCE18:19/automaticCI37971161683 initiallyrequiredTerminalaggregatepending. Existingcontroller/nativeauto owns refresh/mergewait after5efmaster; no repeatedCIpoll/dispatch/approval. Source/runtime/controller-effect acceptance stillowed.",
+    "production_current": "883scopedDONE19334 canonicalruntime/60privatev2checks preserved/no rerun. Seasonal853/NVDArepair/IW2backup/Fabricolderacceptances notredone.",
+    "next_safe_phase": "Consume exactnewA11 testproposal/admission/refusal, qualify mountednewtest+singlefiltermutant in approvedparentcheckout; existing886nativeauto/soleheartbeatwait thenmergedmaster/sourceCIqual andcanonicalbuilder+health/publicmarker+actualReplay. A19 acceptedlocalhelper nextsourcefreshness/existingcheckpointauthorityboundedintegration aftercustody qualification. Consume804 exactreturnwithoutduplicatewriter. Checkpointnotcompletion."
   }
 }
