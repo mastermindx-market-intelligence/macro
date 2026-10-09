@@ -7307,3 +7307,6 @@
 {"date": "2026-10-08", "ticker": "WD", "score": 0.0, "percentile": 0.08181818181818182, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-08", "ticker": "LEN", "score": 27.0, "percentile": 0.706060606060606, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-08", "ticker": "VRRM", "score": 0.0, "percentile": 0.08181818181818182, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-08", "ticker": "WINA", "score": 31.0, "percentile": 0.7393939393939394, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-08", "ticker": "NHC", "score": 9.0, "percentile": 0.40606060606060607, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-08", "ticker": "RELY", "score": 8.0, "percentile": 0.296969696969697, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}

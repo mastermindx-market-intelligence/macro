@@ -4767,7 +4767,7 @@ def _seed_tool_plan(message: str) -> str:
 def _rotation_risk_grounding_digest(
     root: Path, *, user_id: str, now: datetime, lang: str = "en",
 ) -> str:
-    """Reuse the existing site-full gate before reading the canonical joint view.
+    """Reuse the existing site-full gate before selecting the canonical joint view.
 
     This additive context has no cache or risk arithmetic. Both actual chat loops
     call this same boundary; free/guest turns perform zero envelope reads. Source
@@ -4776,8 +4776,8 @@ def _rotation_risk_grounding_digest(
     if not _ontology_evidence_allowed(user_id, root):
         return ""
     try:
-        from engine.neuralweb.rotation_risk_context import read_context, render_context
-        return render_context(read_context(root, now=now), lang=lang)
+        from engine.neuralweb.rotation_risk_context import read_preferred_context, render_context
+        return render_context(read_preferred_context(root, now=now), lang=lang)
     except Exception as exc:  # noqa: BLE001 — one context failure cannot abort chat
         log.warning("brain_gateway: rotation/risk context unavailable (%s)", type(exc).__name__)
         return ""

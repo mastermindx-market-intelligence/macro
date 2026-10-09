@@ -2,6 +2,42 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-09",
+      "tickers": [
+        "ATO",
+        "CRDO",
+        "CRI",
+        "CSCO",
+        "ECG",
+        "EXTR",
+        "FUL",
+        "HAFC",
+        "HCC",
+        "JLL",
+        "MO",
+        "OI",
+        "OXM",
+        "PDI",
+        "PHK",
+        "PNC",
+        "PPLI",
+        "QDEL",
+        "SBRA",
+        "SNOW",
+        "ST",
+        "STWI",
+        "TFIN",
+        "TTD",
+        "UTHR",
+        "UTI",
+        "VNO",
+        "WLY",
+        "WMG",
+        "YUM",
+        "ZTS"
+      ]
+    },
+    {
       "as_of": "2026-10-08",
       "tickers": [
         "ACCV",
@@ -170,36 +206,6 @@
         "TJX",
         "WING",
         "WRLD"
-      ]
-    },
-    {
-      "as_of": "2026-10-02",
-      "tickers": [
-        "AAP",
-        "ADRX",
-        "AEIS",
-        "AMKR",
-        "ATO",
-        "CR",
-        "DVN",
-        "GAP",
-        "GL",
-        "GNRC",
-        "HBAN",
-        "HGBL",
-        "KLAC",
-        "MATW",
-        "NVDA",
-        "OKE",
-        "OMCL",
-        "POWI",
-        "PPLI",
-        "RPM",
-        "TTD",
-        "UTHR",
-        "WS",
-        "XENE",
-        "XOM"
       ]
     }
   ]
