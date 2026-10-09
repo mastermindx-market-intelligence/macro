@@ -164,6 +164,13 @@ class StructuralGuardsTest(unittest.TestCase):
         self.assertIn("STALE_QUOTE",assess_quote_reference(self.quote(quote_time_ns=0)).reasons)
         self.assertIn("SOURCE_RECEIPT_AFTER_CUTOFF",assess_quote_reference(self.quote(source_receipt_ns=102_000)).reasons)
 
+    def test_quote_future_print_rejected(self):
+        result=assess_quote_reference(self.quote(print_time_ns=101_500,source_receipt_ns=101_600))
+        self.assertIn("PRINT_AFTER_CUTOFF",result.reasons)
+
+    def test_quote_receipt_before_print_rejected(self):
+        self.assertIn("RECEIPT_BEFORE_PRINT",assess_quote_reference(self.quote(source_receipt_ns=99_999)).reasons)
+
     def test_cancelled_print_not_signed(self):
         self.assertIn("UNKNOWN_OR_CORRECTED_PRINT",assess_quote_reference(self.quote(correction_state="CANCELLED")).reasons)
 
