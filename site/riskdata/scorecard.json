@@ -1,12 +1,12 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-10-09T05:50:26+00:00",
+  "generated_at": "2026-10-09T12:02:47+00:00",
   "markets": {
     "us": {
       "asof_last_row": "2026-10-08",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 0,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 17,
         "backlog_cutoff_bd": 28,
@@ -74,31 +74,30 @@
         "min_display_n": 5,
         "horizons": {
           "h5": {
-            "n": 44,
-            "excluded_n": 19,
+            "n": 46,
+            "excluded_n": 17,
             "excluded": {
-              "invalid_or_future_receipt": 2,
               "ungraded": 17
             },
             "from": "2026-06-23",
-            "through": "2026-09-04",
+            "through": "2026-09-09",
             "events": 0,
             "both_outcomes_present": false,
-            "mean_forecast": 0.026545,
+            "mean_forecast": 0.026478,
             "observed_rate": 0.0,
-            "brier": 0.000751,
-            "paired_n": 40,
+            "brier": 0.000747,
+            "paired_n": 42,
             "missing_baseline_n": 4,
-            "paired_model_brier": 0.000693,
+            "paired_model_brier": 0.000691,
             "paired_base_brier": 0.001296,
-            "paired_brier_delta": -0.000603,
+            "paired_brier_delta": -0.000605,
             "bins": [
               {
                 "lower": 0.0,
                 "upper": 0.1,
                 "upper_inclusive": false,
-                "n": 44,
-                "mean_forecast": 0.026545,
+                "n": 46,
+                "mean_forecast": 0.026478,
                 "observed_rate": 0.0
               },
               {
@@ -136,30 +135,29 @@
             ]
           },
           "h10": {
-            "n": 44,
-            "excluded_n": 19,
+            "n": 46,
+            "excluded_n": 17,
             "excluded": {
-              "invalid_or_future_receipt": 2,
               "ungraded": 17
             },
             "from": "2026-06-23",
-            "through": "2026-09-04",
+            "through": "2026-09-09",
             "events": 0,
             "both_outcomes_present": false,
-            "mean_forecast": 0.072727,
+            "mean_forecast": 0.072609,
             "observed_rate": 0.0,
-            "brier": 0.005455,
-            "paired_n": 40,
+            "brier": 0.005435,
+            "paired_n": 42,
             "missing_baseline_n": 4,
-            "paired_model_brier": 0.00518,
+            "paired_model_brier": 0.005171,
             "paired_base_brier": 0.007396,
-            "paired_brier_delta": -0.002216,
+            "paired_brier_delta": -0.002225,
             "bins": [
               {
                 "lower": 0.0,
                 "upper": 0.1,
                 "upper_inclusive": false,
-                "n": 40,
+                "n": 42,
                 "mean_forecast": 0.07,
                 "observed_rate": 0.0
               },
@@ -198,24 +196,23 @@
             ]
           },
           "h21": {
-            "n": 44,
-            "excluded_n": 19,
+            "n": 46,
+            "excluded_n": 17,
             "excluded": {
-              "invalid_or_future_receipt": 2,
               "ungraded": 17
             },
             "from": "2026-06-23",
-            "through": "2026-09-04",
+            "through": "2026-09-09",
             "events": 0,
             "both_outcomes_present": false,
-            "mean_forecast": 0.149091,
+            "mean_forecast": 0.148913,
             "observed_rate": 0.0,
-            "brier": 0.0226,
-            "paired_n": 44,
+            "brier": 0.022541,
+            "paired_n": 46,
             "missing_baseline_n": 0,
-            "paired_model_brier": 0.0226,
+            "paired_model_brier": 0.022541,
             "paired_base_brier": 0.031684,
-            "paired_brier_delta": -0.009084,
+            "paired_brier_delta": -0.009143,
             "bins": [
               {
                 "lower": 0.0,
@@ -229,8 +226,8 @@
                 "lower": 0.1,
                 "upper": 0.2,
                 "upper_inclusive": false,
-                "n": 44,
-                "mean_forecast": 0.149091,
+                "n": 46,
+                "mean_forecast": 0.148913,
                 "observed_rate": 0.0
               },
               {
