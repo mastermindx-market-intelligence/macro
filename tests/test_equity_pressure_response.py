@@ -481,6 +481,9 @@ def tp1_minute(start=TP1_START, *, buy="1000", sell="500", mid="100",
         "exchange_reference_sha256":TP1_EXCHANGE_SHA,
         "source_observation_sha256":"d"*64,
         "n_sampled_prints":10,"n_unclassified":2,
+        "n_lit":9,"n_trf":1,"n_unknown_venue":0,
+        "n_buy_proxy":4,"n_sell_proxy":2,"n_midpoint":1,
+        "n_condition_ineligible":1,
         "gross_sampled_notional_usd":str(gross),
         "buy_proxy_notional_usd":buy,
         "sell_proxy_notional_usd":sell,
@@ -737,3 +740,36 @@ def test_tp1_null_or_nonfinite_signed_notional_rejected():
     m["buy_proxy_notional_usd"]="NaN"
     with pytest.raises(TP1ContextRefusal,match="invalid notional"):
         tp1_context(minute=[m])
+
+
+def test_tp1_receipt_digests_bind_exact_minute_generation():
+    a=tp1_context()
+    m=tp1_minute()
+    m["source_observation_sha256"]="f"*64
+    b=tp1_context(minute=[m])
+    assert a["pressure_balance"]==b["pressure_balance"]
+    assert a["source_minutes_receipt_sha256"]!=b["source_minutes_receipt_sha256"]
+
+
+def test_tp1_quote_source_digest_changes_with_price_generation():
+    a=tp1_context()
+    qs=tp1_quotes()
+    qs[-1]["ask"]="102"
+    b=tp1_context(quotes=qs)
+    assert a["source_minutes_receipt_sha256"]==b["source_minutes_receipt_sha256"]
+    assert a["source_quote_observations_sha256"]!=b["source_quote_observations_sha256"]
+    assert a["midpoint_response_bps"]!=b["midpoint_response_bps"]
+
+
+def test_tp1_rejects_inconsistent_count_denominators():
+    bad=tp1_minute()
+    bad["n_trf"]=2
+    with pytest.raises(TP1ContextRefusal,match="print denominators"):
+        tp1_context(minute=[bad])
+
+
+def test_tp1_rejects_claimed_measured_minute_without_observed_prints():
+    bad=tp1_minute()
+    bad["n_sampled_prints"]=0
+    with pytest.raises(TP1ContextRefusal,match="contradictory print counts"):
+        tp1_context(minute=[bad])
