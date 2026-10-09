@@ -375,7 +375,7 @@ def build_partner_pack(
     social_head = event["event_kind"].replace("_", " ").capitalize()
     social_head += " evidence for " + " ".join("$" + t for t in ticks)
     social_body = (
-        "Partner concept; no endorsement. " if partner["status"] == "candidate"
+        "Concept; no endorsement. " if partner["status"] == "candidate"
         else "Partner distribution with " + partner["name"] + ". "
     )
     social = social_head + "\n" + social_body + scan_link
