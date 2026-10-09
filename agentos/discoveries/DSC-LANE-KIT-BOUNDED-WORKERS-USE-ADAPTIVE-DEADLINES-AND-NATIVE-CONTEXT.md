@@ -490,6 +490,38 @@ The older safety-denied Go preselection, leased-GLM override and slot
 regression paths remain fenced. This evidence-only draft is not a production
 deployment, merge or permission grant.
 
+### 2026-10-08 Codex compaction headroom bound
+
+The qualified Codex-backed GLM and MiniMax launch wrappers exposed a narrow
+auto-compaction configuration bug: an explicitly tightened
+`POOL_MAX_CONTEXT_TOKENS=100000` had a default
+`model_auto_compact_token_limit=100000`, leaving zero tokens of context
+headroom for the next prompt or compaction call. An explicit equal-window
+compact override had the same issue. Existing native Claude Code compaction
+settings are separate, and were not modified.
+
+Both existing wrappers now **reject `compact >= context` before provider
+execution** with typed rc78
+`CODEX_CONTEXT_REFUSED reason=compaction_headroom_required`. The qualified
+1M/900K default and positive-headroom smaller-window overrides are preserved.
+Tests added to the incumbent hermetic Codex wrapper suite cover both
+100K/100K default and 500K/500K explicit edge cases on both models.
+`bash -n` and `pytest -q .../test_codex_exec_autocontinue.py -k context`
+passed **26 tests** with 46 unrelated tests deselected and eight existing
+pytest Chromium temporary-cleanup warnings.
+
+New local M2 hashes:
+`ext/mm_codex_exec.sh
+a593f116de4790034570ba374548d98160b4cbe8c26399c2fe2596fca5843378`,
+`ext/glm_codex_exec.sh
+1895227023bd76ae22214249d2fb7aca455e591e09422180f217091c3bfb7314`,
+`ext/tests/test_codex_exec_autocontinue.py
+c44898966e34ae944f2e21e6695ba3de677433c69f66e48c88d0ae1b98896fcc`.
+The earlier real GLM worker selected the **previous** `36af...` wrapper
+and cannot count as selection of these later bytes. No new paid provider
+request, remote worker restart or deployment occurred. Acceptance remains
+local verified, remote selection of the new revision unproven.
+
 ### Verification boundary
 
 Directly observed current green evidence:
