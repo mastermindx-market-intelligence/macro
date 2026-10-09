@@ -317,16 +317,17 @@ def test_update_sh_self_arms_the_backup_lane():
     assert "systemctl is-enabled macro-api.service" in script
 
 
-def test_runbook_names_exact_commands_and_marks_operator_blocked():
+def test_runbook_separates_historical_drill_from_iw2_acceptance():
     runbook = (ROOT / "docs/RESTORE_RUNBOOK.md").read_text()
     assert "python -m scripts.backup_user_tables dump" in runbook
     assert "python -m scripts.backup_user_tables restore" in runbook
     assert "--i-am-restoring-into-scratch" in runbook
     assert "--dest-db-url" in runbook
-    assert "OPERATOR-BLOCKED" in runbook
     assert "RPO" in runbook and "RTO" in runbook
     assert "NEVER restore into production" in runbook
     assert "fsldfzlxyavsuwqbceod" in runbook
     # Gate-1 must not be papered over.
-    assert "scratch-supabase restore: OPERATOR-BLOCKED" in runbook
-    assert "Supabase plan / PITR: OPERATOR-BLOCKED" in runbook
+    assert "PASS 2026-09-20" in runbook
+    assert "original nine tables only" in runbook
+    assert "IW2 recovery\nacceptance remains OPEN" in runbook
+    assert "not independent transport attestation" in runbook

@@ -33,3 +33,13 @@ so_what: >
   fail-closed behaviour, the quieter the hole it leaves. Check the vendor layer
   separately and with authority (`GET /v1/projects/{ref}/database/backups`), because
   a plan downgrade silently removes the safety net people assume is underneath.
+kind: landmine
+verified_at: 2026-09-20
+verified_by: "Historical restore-drill receipt in docs/RESTORE_RUNBOOK.md and Macro PR 7532; current installed identity is separately recorded in Terminal PR 804 comment 6078460402."
+scope: [macro, shared-auth-entitlements, scripts/backup_user_tables.py]
+confidence: verified
+---
+
+This records the September incident, not a claim that the October timer is
+still failing. The October 9 installed-identity receipt reports successful
+nine-table backups; it does not establish IW2 coverage.

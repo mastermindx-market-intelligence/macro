@@ -1,7 +1,7 @@
 ---
 workstream: "WS:CUSTOMER-DATA-BACKUP"
 session: claude/ssd-customer-data-recovery-drill-a74367
-model: claude-opus-5
+model: opus
 ended_because: complete
 mission: >
   Close GATE-1 with a real scratch restore: authoritative vendor backup/PITR facts,
@@ -44,6 +44,11 @@ verified:
   - claim: Scratch destroyed
     command: "DELETE /v1/projects/hdxmdoodczwrvpobbbqp; GET /v1/projects"
     result: "HTTP 200; absent from list; direct GET 404 'Resource has been removed'"
+unverified:
+  - claim: Backup-failure alerting and full auth recovery are complete
+    what_would_verify: Separate W3/W4 delivery and recovery receipts; not claimed by this September drill.
+next_actions:
+  - Preserve the historical nine-table receipt; consume the current WS record for the IW2 extension.
 unresolved:
   - "W3: no alerting on backup failure. 36 silent nights is the root defect."
   - "W4: plan free => no vendor backup, no PITR, no auth.users recovery path. Chairman decision."

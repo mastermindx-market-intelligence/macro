@@ -11,6 +11,9 @@ GATE-1 passes only when a restore has been performed into a scratch
 non-production Supabase project and the receipt below is filled with measured
 times. **That happened on 2026-09-20 — GATE-1 is CLOSED.** Both facts that
 require account access are now recorded below from authoritative vendor state.
+That historical result covers the original nine tables only. **IW2 recovery
+acceptance remains OPEN** until a current thirteen-table snapshot is restored
+and independently checked in an approved scratch destination.
 
 ---
 
@@ -39,6 +42,76 @@ identity recovery still needs the vendor backup / PITR for `auth`.
 
 `app/deploy/live-rollback.sh` recovers published artifacts only. It never
 touches Postgres.
+
+### IW2 snapshots and historical archives
+
+The default nightly command and its installed timer retain the original nine
+tables. Its REST reads are separate requests, so this path does **not** claim
+a consistent IW2 backup. The installed service currently has no direct database
+URL. Do not silently change the timer, copy a Management token into it, create
+another backup store, or represent the September nine-table drill as IW2 proof.
+
+An explicit `--table-set iw2` adds `chart_layout_revisions`, `investigations`,
+`investigation_revisions`, and `investigation_mutation_receipts`. All thirteen
+tables and counts come from **one read-only SQL SELECT**, with its transaction
+snapshot identifier and source timestamp. Separate per-table requests and
+`--allow-missing` are refused for this set. Its archive schema is
+`mmx.user_table_backup.v2`; old `v1` nine-table archives still verify and restore.
+The reader binds archive members, table hashes/counts, schema, sidecar, and backup
+identity instead of treating absent IW2 tables as empty historical coverage.
+
+With an already-authorized source connection in its existing secret slot:
+
+```bash
+python -m scripts.backup_user_tables dump --table-set iw2 --mode pg_dump \
+  --source-project-ref fsldfzlxyavsuwqbceod
+```
+
+This mode captures the canonical JSONL payload through one SQL statement. It
+does not attach a separately timed `pg_dump.sql` sibling to an IW2 archive.
+
+Where the established authorized transport is the Supabase Management API,
+generate the same read-only query:
+
+```bash
+python -m scripts.backup_user_tables snapshot-query \
+  --source-project-ref fsldfzlxyavsuwqbceod
+```
+
+Submit that exact SELECT with `read_only: true` through the existing authenticated
+transport. Keep the response private and in memory; pipe it into the existing
+backup host's stdin while that host loads its own existing encryption/R2 secret
+slots. Do not log the response, persist plaintext customer rows, put credentials
+in argv, or move the Management token or encryption key between hosts.
+
+```bash
+# stdin is the exact private response of the authorized read-only query
+python -m scripts.backup_user_tables dump --table-set iw2 --mode snapshot \
+  --source-project-ref fsldfzlxyavsuwqbceod
+```
+
+The importer checks source identity, snapshot metadata, exact table coverage,
+row shapes and counts, and records the response/query hashes. These fields are
+**not independent transport attestation**: the parent must retain the actual
+authenticated endpoint/project/query identity and capture time. A fabricated
+or fixture capsule cannot satisfy production acceptance. This manual capture
+does not establish nightly IW2 coverage or a new 24-hour IW2 RPO.
+
+IW2 restores require `--dest-db-url` into an approved non-production scratch
+database. All inserts and exact JSON row-multiset comparisons execute in **one
+transaction**; a constraint failure or content mismatch rolls it back. The
+receipt distinguishes transactional/content verification from legacy REST
+row-count verification. Schema must already match the captured production
+schema, and source/target catalog evidence remains part of the drill. Do not
+apply an unapplied migration merely to manufacture a scratch schema.
+
+Before approving migration 0030, retain the immutable encrypted object and its
+manifest/hash, verify it after download, restore into the approved scratch
+destination, and independently read back all four IW2 tables and their exact
+head/revision/receipt/retained-layout references. Historical external Thesis or
+evidence references remain their owners' responsibility; `auth.users` is still
+outside this backup. A local synthetic test or metadata-only R2 listing does
+not close this gate. Preserve the original production migration hold.
 
 ---
 
