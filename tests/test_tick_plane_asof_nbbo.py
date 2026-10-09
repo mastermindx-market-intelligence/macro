@@ -214,5 +214,41 @@ class NBBOAsOfTests(unittest.TestCase):
         self.assertFalse(ring.ingest_quote(copy.deepcopy(q)))
         self.assertEqual(ring._active_total,1)
 
+
+    def test_sip_prior_quote_received_after_print_must_abstain(self):
+        # Decisive falsifier: source complete at minute end does not mean this
+        # later-received quote was available for classification at trade time.
+        late=quote(2,BASE+10)
+        late["original_frame_received_ns"]=INGEST+5_000_000
+        self.ring.ingest_quote(late)
+        found=self.ring.match(self.t,**opts())
+        self.assertEqual(found["state"],"UNKNOWN")
+        self.assertEqual(found["reason"],"QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT")
+        self.assertIsNone(found["quote"])
+
+    def test_prior_quote_already_received_when_trade_arrives_is_usable(self):
+        prior=quote(2,BASE+10)
+        prior["original_frame_received_ns"]=INGEST-1
+        self.ring.ingest_quote(prior)
+        outcome=self.ring.match(self.t,**opts())
+        self.assertEqual(outcome["state"],"MATCHED_SOURCE_CONTEXT")
+        self.assertEqual(outcome["quote"]["native_sequence"],2)
+
+    def test_exact_same_frame_receipt_is_allowed_with_strict_sip_order(self):
+        prior=quote(2,BASE+10)
+        prior["original_frame_received_ns"]=self.t["original_frame_received_ns"]
+        self.ring.ingest_quote(prior)
+        outcome=self.ring.match(self.t,**opts())
+        self.assertEqual(outcome["state"],"MATCHED_SOURCE_CONTEXT")
+        self.assertEqual(outcome["quote"]["native_sequence"],2)
+
+    def test_late_prior_quote_without_previous_candidate_abstains(self):
+        empty=InFlightNBBO(session=S,symbols={"SPY"})
+        late=quote(5,BASE+10)
+        late["original_frame_received_ns"]=INGEST+1_000_000
+        empty.ingest_quote(late)
+        result=empty.match(self.t,**opts())
+        self.assertEqual(result["reason"],"QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT")
+
 if __name__ == "__main__":
     unittest.main()
