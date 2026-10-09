@@ -104,8 +104,8 @@ function entry(extra = {}) {
 function quote(price = 99, extra = {}) {
   return { price, source: "tencent", ts: NOW, prevClose: 10, changePct: 890, delayMin: 0, ...extra };
 }
-async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"], sessions = { cn: session() }, tickers = {}, quotes, ws = false, snapshotSessions, overlay, workerQuotes, rowDates = {}, liveOnlySymbols = [] } = {}) {
-  let now = NOW;
+async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"], sessions = { cn: session() }, tickers = {}, quotes, ws = false, snapshotSessions, overlay, workerQuotes, rowDates = {}, liveOnlySymbols = [], clockNow = NOW } = {}) {
+  let now = clockNow;
   const root = element("html", { "data-lang": "en" });
   const head = root.appendChild(element("head")), body = root.appendChild(element("body"));
   const nav = body.appendChild(element("nav", { class: "site-nav" }));
@@ -125,10 +125,10 @@ async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"]
   }
   const events = {}, intervals = [];
   const response = {
-    quotes: quotes ?? Object.fromEntries(symbols.map(s => [s, quote()])), quoteTs: NOW,
+    quotes: quotes ?? Object.fromEntries(symbols.map(s => [s, quote()])), quoteTs: clockNow,
     overlay: overlay === undefined ? { sessions, tickers } : overlay,
     snapshotSessions,
-    worker: workerQuotes === null ? null : { quotes: workerQuotes, ts: NOW },
+    worker: workerQuotes === null ? null : { quotes: workerQuotes, ts: clockNow },
   };
   const requests = [], sockets = [];
   class Clock extends Date { constructor(...args) { super(...(args.length ? args : [now])); } static now() { return now; } }
@@ -624,4 +624,38 @@ test("China live-only exception preserves unverified calendar and other cash ind
     assert.equal(frozen.px[sym].classList.contains("mx-skel"), true, sym);
     assert.equal(frozen.chg[sym].classList.contains("mx-skel"), true, sym);
   }
+});
+
+
+test("production-shaped weekend snapshot hydrates real China index closes without the protected overlay", async () => {
+  const clockNow = Date.parse("2026-10-09T20:59:39Z");
+  const symbols = ["000300.SS", "399006.SZ"];
+  const verifiedWeekend = session("cn", {
+    state: "weekend", open: false, data_frozen: true, calendar_verified: true,
+    holiday_name: null, holiday_name_zh: null,
+    timezone: "Asia/Shanghai", session_date: "2026-10-10",
+    expected_session: "2026-10-09",
+    local_time: "2026-10-10T04:59:39+08:00",
+    checked_at: "2026-10-09T20:59:39Z",
+    valid_until: "2026-10-09T21:59:39Z",
+    next_open: "2026-10-12T09:30:00+08:00",
+  });
+  const quotes = {
+    "000300.SS": quote(4317.25, { ts: Date.parse("2026-10-09T07:54:12Z"),
+      prevClose: 4310.28, changePct: 0.16, delayMin: 765.5 }),
+    "399006.SZ": quote(3043.33, { ts: Date.parse("2026-10-09T07:54:45Z"),
+      prevClose: 3036.66, changePct: 0.22, delayMin: 764.9 }),
+  };
+  const c = await client({ pathname: "/china.html", clockNow, symbols, liveOnlySymbols: symbols,
+    quotes, overlay: null, snapshotSessions: { cn: verifiedWeekend } });
+  assert.equal(c.px["000300.SS"].textContent, "4,317.25");
+  assert.equal(c.px["399006.SZ"].textContent, "3,043.33");
+  assert.equal(c.chg["000300.SS"].textContent, "+0.16%");
+  assert.equal(c.chg["399006.SZ"].textContent, "+0.22%");
+  for (const sym of symbols) {
+    assert.equal(c.px[sym].classList.contains("mx-skel"), false, sym);
+    assert.equal(c.chg[sym].classList.contains("mx-skel"), false, sym);
+    assert.equal(c.px[sym].getAttribute("data-live"), "closed", sym);
+  }
+  assert.equal(c.strip().getAttribute("data-session-state"), "weekend");
 });
