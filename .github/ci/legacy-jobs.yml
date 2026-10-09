@@ -14440,7 +14440,9 @@ jobs:
       # that broke: row-persistence/outage continuity (grade_us_board::emit_ledger)
       # vs the same-as_of Jaccard guard (build_stock_library::_board_continuity_warning).
       - name: board ledger row-persistence + same-as_of continuity guard
-        run: python -m pytest tests/test_us_board_ledger_continuity.py tests/test_us_board_continuity_guard.py -q
+        # Price-specific snapshot clocks import the same actual producer and use
+        # committed synthetic series only; keep this guard on the existing code gate.
+        run: python -m pytest tests/test_us_board_ledger_continuity.py tests/test_us_board_continuity_guard.py tests/test_build_stock_library_price_clock.py -q
 
   unrun-intl-libraries:
     # China / HK / Canada library writers behind the international surfaces.
