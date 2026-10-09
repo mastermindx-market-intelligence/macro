@@ -3097,3 +3097,19 @@ def test_a09_actual_table_cannot_show_guessed_dollars_or_partial_weights():
     assert 'USD 100' in out['table']
     assert '25.0%' not in out['table'] and '75.0%' not in out['table']
     assert '+0.0%' not in out['table']
+
+
+@needs_node
+def test_a09_duplicate_lots_cannot_publish_over_100_percent_in_book_read():
+    rows=[{'id':str(i),'ticker':'ANONA' if i<4 else 'ANONB','shares':1,'entry_price':100}
+          for i in range(5)]
+    out=_run("""
+      localStorage.setItem('mdash.pf.v1',JSON.stringify({v:1,rows:ROWS}));
+      window.requestIdleCallback=function(){};
+      window.SD={loadTickers:function(ts,cb){ts.forEach(function(t){cb(t,{tech:{price:100,currency:'USD'}});});
+        return Promise.resolve();}};
+      boot();await drain(12);OUT({say:node('ws_book_say').innerHTML,weights:__fxCalls[__fxCalls.length-1]});
+    """,{'ROWS':rows})
+    assert out['weights'] == {'ANONA':80,'ANONB':20}
+    assert '>160%' not in out['say']
+    assert '>80%' in out['say']

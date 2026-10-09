@@ -320,3 +320,12 @@ def test_a09_row_money_numeric_range_never_renders_infinite_or_false_zero(shares
     out=_run('OUT(PS.computeRowMoney(ROW,QUOTE));',
         {'ROW':{'ticker':'AAPL','shares':shares},'QUOTE':{'price':price,'currency':'USD'}})
     assert out['value'] is None
+
+
+@needs_node
+def test_a09_duplicate_unsized_names_keep_one_equal_assumption_per_name():
+    out=_run('OUT(PS.computeWeighting(ROWS,function(){return null;}));',
+             {'ROWS':[{'ticker':'AAPL'},{'ticker':'AAPL'},{'ticker':'MSFT'}]})
+    assert out['state'] == 'all_unsized_equal'
+    assert out['weights'] == {'AAPL':50,'MSFT':50}
+    assert sum(out['weights'].values()) == 100

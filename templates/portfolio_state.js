@@ -136,7 +136,11 @@
     }
 
     if (unsized.length === rows.length) {
-      var eq = 100 / rows.length;
+      // The downstream model is keyed by name. Repeated unsized lots do not
+      // manufacture a larger assumption for the same name.
+      var names = {};
+      rows.forEach(function (r) { names[r.ticker] = true; });
+      var eq = 100 / Object.keys(names).length;
       var eqWeights = {};
       rows.forEach(function (r) { eqWeights[r.ticker] = eq; });
       return {

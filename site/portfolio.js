@@ -972,12 +972,14 @@
       return;
     }
 
-    var items = leadRows.map(function (r) {
+    // Weights already aggregate lots by name. Render each name once so a
+    // repeated lot cannot contribute the full name weight a second time.
+    var items = Object.keys(W.weights).map(function (ticker) {
       return {
-        sym: r.ticker,
-        money: (W.weights[r.ticker] != null) ? W.weights[r.ticker] : 0,
-        risk: RISK_COVERED[r.ticker] && isNum(RISK_SHARES[r.ticker])
-                ? Math.abs(RISK_SHARES[r.ticker]) * 100 : null,
+        sym: ticker,
+        money: W.weights[ticker],
+        risk: RISK_COVERED[ticker] && isNum(RISK_SHARES[ticker])
+                ? Math.abs(RISK_SHARES[ticker]) * 100 : null,
         role: ''
       };
     }).sort(function (a, b) { return b.money - a.money; });
@@ -1030,10 +1032,11 @@
       var topShare = 0, topN = Math.max(1, Math.min(3, Math.ceil(items.length / 4)));
       items.slice(0, topN).forEach(function (x) { topShare += x.money; });
       say.innerHTML = te(
-        'Most of this book — <span class="fig">' + Math.round(topShare) + '%</span> of the money — sits in <span class="fig">' +
-          topN + '</span> ' + (topN === 1 ? 'position' : 'positions') + '.',
-        '这本账簿的大部分 —— <span class="fig">' + Math.round(topShare) + '%</span> 的资金 —— 压在 <span class="fig">' +
-          topN + '</span> 只持仓上。');
+        'The largest <span class="fig">' + topN + '</span> ' + (topN === 1 ? 'name accounts' : 'names account') +
+          ' for <span class="fig">' + Math.round(topShare) + '%</span> of this book\'s ' +
+          (W.state === 'all_unsized_equal' ? 'relative weight' : 'money') + '.',
+        '权重最大的 <span class="fig">' + topN + '</span> 只标的，占这本账簿' +
+          (W.state === 'all_unsized_equal' ? '相对权重' : '资金') + '的 <span class="fig">' + Math.round(topShare) + '%</span>。');
     }
     if (because) because.innerHTML = (BOOK && BOOK.because) ? BOOK.because : te(
       'The biggest weights are <b>' + esc(items.slice(0, 3).map(function (x) { return x.sym; }).join(' · ')) + '</b>.',

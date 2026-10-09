@@ -344,7 +344,8 @@ def test_5_canonical_book_read_never_blends_a_computed_value_with_an_equal_fallb
     assert "100 / byBook[lead]" not in code
     assert "computeWeighting(leadRows" in code
     assert "W.complete !== true" in code
-    assert "W.weights[r.ticker]" in code
+    assert "W.weights[ticker]" in code
+    assert "Object.keys(W.weights).map" in code
 
 
 # ===========================================================================
