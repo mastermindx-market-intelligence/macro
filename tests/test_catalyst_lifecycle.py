@@ -231,6 +231,48 @@ def test_signed_intent_binds_email_time_scope_and_attribution_without_email_leak
     assert safe["utm_campaign"] == "earnings"
 
 
+def test_current_public_rights_are_rechecked_before_consuming_one_use_otp():
+    service, otp, store, *_ = make()
+    pending = consented(service)
+    assert otp.requests == [EMAIL]
+    calls = []
+
+    def withdrawn(receipt):
+        calls.append(receipt)
+        raise FunnelGate("SCAN_PROOF_SUPERSEDED", 403)
+
+    service.scan.require_public_scan = withdrawn
+    fails("SCAN_PROOF_SUPERSEDED", lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=pending["public_ref"], now=NOW))
+    assert calls == ["scan-public-verified"]
+    assert otp.checks == [] and store.records == {}
+
+
+@pytest.mark.parametrize("changed", [
+    ScanEvidence("wrong-event", ("NVDA", "AMD"), NOW.isoformat(), True),
+    ScanEvidence("event-123", ("NVDA",), NOW.isoformat(), True),
+    ScanEvidence("event-123", ("NVDA", "AMD"), (NOW - timedelta(days=8)).isoformat(), True),
+])
+def test_changed_event_generation_interest_or_freshness_refuses_consent_before_otp(changed):
+    service, otp, store, *_ = make()
+    pending = consented(service)
+    service.scan.require_public_scan = lambda _: changed
+    code = "STALE_SCAN_PROOF" if changed.as_of_utc < (NOW - timedelta(days=7)).isoformat() else "SCAN_PROOF_SUPERSEDED"
+    fails(code, lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=pending["public_ref"], now=NOW))
+    assert otp.checks == [] and store.records == {}
+
+
+def test_unavailable_scan_reader_at_verification_is_typed_and_fail_closed():
+    service, otp, store, *_ = make()
+    pending = consented(service)
+    service.scan.require_public_scan = lambda _: (_ for _ in ()).throw(
+        RuntimeError("upstream private feed path / internal recipient"))
+    fails("SCAN_AUTHORITY_UNAVAILABLE", lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=pending["public_ref"], now=NOW))
+    assert otp.checks == [] and store.records == {}
+
+
 def test_duplicate_verification_is_idempotent_and_immutable_first_touch():
     service, *_ = make()
     first = consented(service, touch={"partner_id": "partner-A"})
