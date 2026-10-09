@@ -104,6 +104,36 @@ def test_otp_adapter_verifies_real_gotrue_response_not_just_request_acceptance()
     assert calls[1][1]["type"] == "email"
 
 
+@pytest.mark.parametrize("bad_reply", [
+    {"error": "email sending disabled"},
+    {"error_code": "over_email_send_rate_limit"},
+    {"error_description": "OTP service not ready"},
+    {"status": "error"},
+    [],
+    None,
+    "opaque response",
+])
+def test_otp_adapter_never_reports_request_accepted_on_provider_semantic_rejection(bad_reply):
+    identity = catalyst_optin.SupabaseOtpIdentity(
+        endpoint="https://auth.example.com", anon_key="public",
+        transport=lambda path, data: bad_reply)
+    with pytest.raises(FunnelGate) as exc:
+        identity.request_otp("investor@example.com")
+    assert exc.value.code == "IDENTITY_VERIFICATION_UNAVAILABLE"
+
+
+def test_anonymous_suppression_uses_incumbent_address_level_owner():
+    called = []
+    class Mailer:
+        @staticmethod
+        def _suppression_reason(email, user_id):
+            called.append((email, user_id))
+            return "bounce"
+    authority = catalyst_optin.ExistingMailerSuppression(mailer=Mailer())
+    assert authority.is_suppressed("investor@example.com", None) is True
+    assert called == [("investor@example.com", None)]
+
+
 def test_otp_unconfigured_or_unconfirmed_never_marked_verified():
     gate = catalyst_optin.SupabaseOtpIdentity(endpoint="https://auth.example.com", anon_key="")
     with pytest.raises(FunnelGate) as e:
