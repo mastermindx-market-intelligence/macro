@@ -8,13 +8,13 @@ objective: >-
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: active
 blocked_by:
-  - Current Terminal048e019c release is healthy. A02/A03 and paid Options functional acceptance still need the intended existing Pro identity; actual existing Free principal sees the Essential/Pro gate.
-  - Ordinary GitHub CI requests839/853 were automatically approved using existing credentials; their exact laterCI/merge/release gates remain with the existing sweeper and quiet heartbeat. New App850 enrollment is a separate exact security grant.
-  - A04/0031 and A09/0032 remain unapplied behind0030/804 current76e22c3d. IW2 is actively probing a real recovery-limit finding and final source acceptance; actual T03 writer join and denied792/B5 are preserved.
-  - A06/862 retains its new explicitT07 source hold and live pickup; earlier independent source acceptance is frozen and native auto-merge is disarmed.
-  - Macro8687/5cdacd56 has505native assertions and30 actualChromium cases/zero skips at all three sizes and both languages; independent exact-head Fabric source review remains active, and orderedDDL/production release is unaccepted.
-  - Fabric installed support/result integrity repairs are verified; supported recovery for original zero-effect A09 refusal and cleaned A04 terminal publication is actively commissioned, not yet accepted or exercised.
-  - Authenticated JSON/CSV export bytes and current-principal consistency are verified; nonempty research/archive, reporting FX, qualified production quote units and real-recipient evidence remain open.
+  - Actual current runtime marker9cfd3049 follows merged780. NVDA history is restored and real candles verified at three sizes; source safeguard873/ae6c7649 has1673nativePASS/8skip/40subtests, but final independent review/CI/release remain open.
+  - Ordinary839/853CI approvals are automatic through the qualified18-case helper bound to the existing quietheartbeat; new App850 enrollment is a distinct exact security grant, and CI/merge/release are independent gates.
+  - A04/0031 andA09/0032 stay unapplied behind0030/804. Actual nativeT03f is now sole modifying804 writer; IW2 independently reproduced cap races and delayed-original4002receipts. Denied792/B5/rights preserved.
+  - A06/862 retains explicitT07 sourcehold/livepickup; no duplicate writer or rearm.
+  - Macro8687/4df6828f has770nativePASS and36actualChromium cases/zero skips; source rejected5cd stale-PS money leak is repaired. Final exact-delta review and orderedDDL/production acceptance remain open.
+  - Original A04 terminal result recovered by accepted installed Fabric sources; parent accept returned0 but canonical readback remainsfalse. Owner owns this discrepancy plus supported same-original zero-effectA09 re-admission engineering; no frozen run is replaced.
+  - Current-principal JSON/CSV export bytes match, but whole research archive is incomplete. A11 current643/ea7c8995 is independently reviewing the nativeT04 repair; source-writer join and squash evidence gate remain open. Paid functional proof still needs the intended existing principal.
 program: terminal-charting
 repos: [terminal, macro]
 owner: ceo-sol
@@ -29,9 +29,10 @@ waves:
     title: Consume higher-level repairs and deliver accepted scoped changes
     status: in_progress
 next_action: >-
-  Consume the exact5cdacd56 Macro source review and reproduce any findings. Continue the existing Fabric owner's bounded recovery implementation/review; exercise only an accepted installed canonical path on the retained original operation.
-  Consume804 current final source/recovery findings through its live writer; preserve denied792 and ordered merged AND applied0030/0031/0032. Retain862 T07hold; do not duplicate its writer.
-  Act on actual839/853CI failure or merge returns from the existing observer, then canonical release and authenticated acceptance. Continue ready product proof while external gates settle. Whole Audit20 acceptance remains false.
+  Consume873/ae6c7649 and8687/4df6828f independent final reviews, reproduce/fix findings, then advance exact CI and authorized release gates.
+  Consume retained643 T04 source review and actual nativeTop10 writer disposition before mutation; resolve its squash evidence ancestry failure truthfully and qualify the actual replay UI.
+  Continue804 via actualT03f writer andIW2 independentPG review. Retain862 T07hold and ordered merged AND applied0030/31/32, denied792/B5 and current rights.
+  Consume installed Fabric owner's exact A04 acceptance reconciliation and supported originalA09 recovery path. Continue ready independent export/product work while observers own external waits. Whole Audit20 acceptance remains false.
 owns_paths: []
 artifacts:
   - research/terminal_audit20/TAKEOVER_20261009/release-and-repair-proof.json
@@ -146,3 +147,14 @@ Macro native-money companion8687/5cdacd56496aebb3ab7db67caf90cb0f81158b07 is pub
 Existing Fabric owner01a11e90-4b5d-7f53-b966-8aaaad38701f installed independently qualified support-receipt validation and retained-result inode fences and proved an actual same-parent worker roundtrip. Parent verified the installed hashes. Original866review refusal and A04SETTLING remain frozen: no general supported retry/publication path existed, so parent commissioned the concrete recovery implementation through that same owner. Its isolated causal test exposed falseDONEafter ledger failure; its same-run forensic recovery found an original unmatched-quote error after A04cleanup. Publication/idempotency review remains active and no unaccepted candidate was installed/exercised. This is engineering work, not a renamed retry.
 
 Actual production export UI downloaded6210-byteJSON and7313-byteCSV on the existing GoogleFree principal. Parent parsed actual bytes, schema, counts and values: sixwatchlist symbols, zero stored positions/scripts/layouts, all fourincludedcollections, no unavailable/partial read, and honest omitted categories. CSV82rows agrees with JSONwatchlist content and coverage. Download-event hook timeout was reconciled against the actual newly created browser file, not labeled as a site failure. No production content write, customer-row publication, deletion or identity change. WholeA10 and wholeAudit20 remainfalse because nonempty research/chart/archive coverage is still unproven. This checkpoint is not a stopping instruction.
+
+
+Oct9 causal production and final-source delta: NVDA's liveHTTP200 file was an incomplete372736-byte JSON prefix, hash8ff9fad1, generated by the canonical first flagship in-place write during the verified21:30ENOSPC event. The independent public diagnosis confirmed the same bytes/reader consequence and deeper Yahoo history contract; the shallow65901-byte Git fixture was not substituted. Parent used the installed canonical producer under the incumbent publication lock, validated6971bars from1999-01-22 through2026-10-08, preserved the corrupt preimage and atomically published onlyNVDA/hash0f9b7690. Global manifest stayed unchanged; no service restart. Public bytes and actual signed-in candles pass1440/820/390 with no overflow. This repairs the data, not the original wholeA01 mission.
+
+Same-carrier source safeguard873/ae6c7649 reuses the existing atomic owner for three artifacts. First review correctly rejected an outdated session-anchor test pin; parent reproduced/fixed it while retaining stamp-before-write.37targetedPASS and1673fullnativePASS/8skip/40subtests qualify the exact source; environment failure logs are retained. Final independent Fabric review is active; draft/CI/release gates remain open. Actual runtime marker subsequently observed9cfd3049 is the merged780 volatility repair; installed flagship publisher is still the original25b8e4db. Canonical builder root-ingest overlay must be verified on the safeguard release.
+
+Macro8687/4df6828f closes independently reproduced stale-state monetary leakage. New portfolio.js paired with real old ecc PS used to publish AVGO75/NVDA25 weights and money bars despite unknown units. Actual full-consumer method traps and real Chromium reproduce it; three consumers now require the native-money capability, preserve population and withhold monetary output otherwise.770native assertions/9suites and36realChromium cases EN/ZH at three sizes/zero skips pass, paired assets/version12 match. Prior505/30proof is frozen at5cd and is not claimed as this head. Final review remains pending; no production unit/DDL/FX/wholeA09 acceptance inferred.
+
+A11 actual signed-in3D→D replay retained index2245 while changing2325bars/close202.41 to6971bars/close0.8292 underREPLAY. Parent recorded the counterexample then restored3D/replayoff without touching user drawings or the protectedScripts buffer. NativeT04 had already returned the repair on existing643/ea7c8995; parent joined the recovered nativeTop10 coordinator throughIW2, routed immutable Fabric review and awaits actual writer disposition before mutation. The known squash/capturedAtHead ancestry failure is an explicit release gate. Source-lane and production proof remain separate.
+
+Fabric owner installed independently qualified durable-publication/default-path repairs and recovered originalA04's2759-byte result with original root/parent, exact six hashes, released lease and no reexecution/fabricatedDONE. Parent acceptance command returned0 once, but subsequent canonicalstatus stillaccepted:false; no repeat or manual ledger alteration. Exact discrepancy and still-unsupported original zero-effectA09 recovery engineering are commissioned to that owner. Ordinary GitHubCI helper18adversarial checks and two actual06:53POST_SUCCEEDED/QUEUED runs are bound to the sameACTIVE15-minute quietheartbeat; no operator command or second scheduler. This record is a material save and does not end the mission.

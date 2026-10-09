@@ -101,15 +101,20 @@
       "source_reviewed": "777898271ddc3fff6e01c504bff7b38f175dcc72",
       "actual_model_route": "MiniMax on mini2",
       "modern_module_sha256": "d36a75fcd042c8549333055db1f759e18a884dfd973e22d6a347ca246b86b433",
-      "formal_adapter_state": "SETTLING; controller exited0 and same-run process/cleanup proven; missing terminal ledger observation referred to existing owner, not invented",
-      "artifact_ledger_acceptance": false
+      "formal_adapter_state": "TERMINAL/rc0/result2759 original root/parent restored; no worker rerun",
+      "artifact_ledger_acceptance": false,
+      "accept_effect_readback": "accept--by reviewer returned0 once; nextcanonicalstatus accepted:false. No repeat; discrepancy referred to installed owner",
+      "recovery_receipt": {
+        "path": "/Volumes/Mastermind/evidence/fabric-reliability-codex-20261008/recovery-engineering/install/default-path-fix/production-a04-recovery.json",
+        "sha256": "903329b2f43282bc1b3cf2e08b508c408b3c2b82baa9615ca340f559de76d839"
+      }
     },
     "release_gate": {
       "prior_migration": "0030 on held incumbent #804",
       "current_source": "76e22c3d2640355b160cdf28dd8bb0b2c824b294",
-      "writer": "IW201a104c8-6e11-7e52-93c1-6b8dbc45bb9c active reviewing actual4000-receipt finding; T03 published carrier, precise next modifying writer join pending",
+      "writer": "Actual nativeTop10T03f sole modifying writer; wf_3c9eff0c-d71/taskwjj6oe5jm/buildera1c294525231de1e5 START07:25:35Z at76e22c3d; IW2 retains independentPG review",
       "apply_state": "UNAPPLIED",
-      "hold": "current804 whole-kernel release review/apply/rights gate; actual4000-receipt recovery probe active; denied792/B5 preserved",
+      "hold": "Current804 causal cap recovery repair active; two competing3999-fence saves and delayed original reach4002receipts. Ordered0030/31/32 and denied792/B5 preserved",
       "ready_auto_merge": false,
       "whole_mission_accepted": false
     }
@@ -140,10 +145,19 @@
     ],
     "app_enrollment_still_pending": true,
     "latest_exact_approval": {
-      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-20261009.json",
-      "sha256": "e9773f36d7d91d2ce5fca49c1d8e1cc5a0c8b7942a29e5bc58fc33dad3166c09"
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-20261009-r2.json",
+      "sha256": "dc6eb4735bfa9ed2878ee70f8d4abcace16406b88c4c581ecf50dd5bc3568c51"
     },
-    "latest_readback": "06:05Z bothQUEUED/conclusionnull after ordinary authenticated POST; observed workflows are byte-identical to trusted master; do not infer latest CI completion"
+    "latest_readback": "06:53Z ordinary existing-authentication helper approved839/93266471 run37893429764 and853/d12a4ae7 run37893549856; bothPOST_SUCCEEDED/QUEUED. LaterCI/merge not inferred.",
+    "deterministic_helper": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/approve-trusted-terminal-ci.py",
+      "sha256": "8da1fc612b9f057ad4c944032ced2cf00c99db4023ed380cc948f9fe8b9e367a"
+    },
+    "helper_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/approval-helper-qualification-20261009.json",
+      "sha256": "7982686d272b39ea82624d89fea48c3040158f0604cea4ff21170fbe706819a1"
+    },
+    "helper_cases": 18
   },
   "remaining": "Current048release healthy and pagination863 delivered. A06 explicitT07hold preserved.839/853 ordinary exact workflow approvals completed automatically; their laterCI/merge/release remains with existing sweeper/heartbeat. A04/A09 ordered0030/0031/0032unapplied; actual804current76e source review/recovery active. Macro8687published5cd505native+30actualChromium exacthead qualification and independent review active. Fabric supported recovery engineering active. Actual Free-principal JSON/CSV bytes and consistency qualified; nonempty research/archive, paid identity, FX/producer authority and real-recipient proofs remain owed. Whole acceptancefalse.",
   "a05": {
@@ -429,7 +443,10 @@
     "normal_existing_gh_approval_self_service": true,
     "duplicate_control_plane": false,
     "exact_app_grant_pending": true,
-    "trusted_ordinary_approval_and_expected_head_refresh": true
+    "trusted_ordinary_approval_and_expected_head_refresh": true,
+    "helper_bound": true,
+    "prompt_sha256": "70f27f7034465e20eca89ccdde2ace5374559c776001c98089836d4a5c31977e",
+    "native_update_readback": true
   },
   "ci_pagination": {
     "pr": 863,
@@ -482,7 +499,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T06:24:05.270497+00:00",
+  "observed_at": "2026-10-09T07:49:34.081290+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -501,15 +518,15 @@
     "schema": "terminal.audit20.macro_native_money_qualification.v1",
     "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
     "pr": 8687,
-    "head": "5cdacd56496aebb3ab7db67caf90cb0f81158b07",
+    "head": "4df6828f4c5b9aa94088f8439c805e0ee7542a30",
     "base": "4e76cc3c34e2bf57cc4d9e691791568eacab6367",
     "observed_at": "2026-10-09T06:19:50.859399+00:00",
     "draft": true,
     "source_accepted": false,
     "whole_mission_accepted": false,
-    "native_assertions": 505,
+    "native_assertions": 770,
     "native_files": 9,
-    "chromium_cases": 30,
+    "chromium_cases": 36,
     "chromium_skipped": 0,
     "zero_overflow": true,
     "languages": [
@@ -530,7 +547,7 @@
         844
       ]
     ],
-    "shipping_asset_pairs": 109,
+    "shipping_asset_pairs": 4,
     "source_files": [
       "app/main.py",
       "engine/neuralweb/brain_gateway.py",
@@ -553,6 +570,45 @@
       "tests/test_portfolio_truth_a1a_js.py"
     ],
     "proofs": {
+      "a09-macro-stale-qualifier-native-final-20261009.log": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-stale-qualifier-native-final-20261009.log",
+        "sha256": "bad1915d682a33e39b153bb2a0dab75882ef32ba03370f8f328ac2d6099856dc"
+      },
+      "a09-macro-stale-qualifier-native-command-20261009.json": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-stale-qualifier-native-command-20261009.json",
+        "sha256": "c56619755f53804a074b77eefafca490e498c602f88702479052b1a4ff714b14"
+      },
+      "a09-macro-stale-qualifier-browser-receipt-20261009.json": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-stale-qualifier-browser-receipt-20261009.json",
+        "sha256": "a9726522800c4c4be0ffa69478ef593e921dc490928d8a6232457877d00b0513"
+      },
+      "a09-macro-stale-qualifier-causal-proof-20261009.json": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-stale-qualifier-causal-proof-20261009.json",
+        "sha256": "9503382372a5787f80cb602c8591ca81db97bd1b648039a88ada7a74abe67b2e"
+      }
+    },
+    "independent_review": {
+      "child": "terminal-audit20-a09-macro-stale-qualifier-final-review-20261009",
+      "state": "ADMITTED_GROK_UBUNTU2_LAUNCH_RETURN0; START/result/acceptance remain separate",
+      "previous_5cd_review": "REJECTED_STALE_PS_MONETARY_CONSUMERS; actual source and real ecc Chromium leak reproduced; repaired same carrier"
+    },
+    "scope": "Native row/drawer values and returns, whole-cohort browser weights and factor inputs, duplicate-name conservation, private brief loaders/cache, versioned paired assets and currency-preserving import/persistence",
+    "unit_receipt_definition": "explicit supported native code bound to exact raw ticker and price; current unit from the same quote observation; no market/ticker guess",
+    "release_gates": [
+      "independent exact-head source acceptance",
+      "ordered0030/0031/0032 merged AND applied",
+      "required exact-head CI",
+      "canonical Macro/API release and actual authenticated production acceptance"
+    ],
+    "not_claimed": [
+      "production DDL",
+      "authenticated production browser proof",
+      "reporting FX conversion",
+      "historical currency inference",
+      "whole A09 acceptance"
+    ],
+    "prior_qualified_head": "5cdacd56496aebb3ab7db67caf90cb0f81158b07",
+    "prior_qualified_proofs": {
       "a09-macro-published-native-qualification-20261009.log": {
         "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-published-native-qualification-20261009.log",
         "sha256": "8352d2dc45f1409fe647c88d6e357aa64d0eb8f08fe19aa0b59c8e3e6bad2b95"
@@ -589,28 +645,7 @@
         "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-duplicate-book-green-20261009.log",
         "sha256": "b0eb2a1606673e66d63d07fa743a1ed3908d2ce0055167312341afc83322cf45"
       }
-    },
-    "independent_review": {
-      "child": "terminal-audit20-a09-macro-native-frontier-review-20261009",
-      "state": "ACTIVE_OR_WAITING",
-      "exact_head": "5cdacd56496aebb3ab7db67caf90cb0f81158b07",
-      "earlier_ecc_source_review": "terminal-audit20-a09-macro-companion-review-20261009 formally accepted PASS_SCOPED; reviewer suggestion reproduced and repaired"
-    },
-    "scope": "Native row/drawer values and returns, whole-cohort browser weights and factor inputs, duplicate-name conservation, private brief loaders/cache, versioned paired assets and currency-preserving import/persistence",
-    "unit_receipt_definition": "explicit supported native code bound to exact raw ticker and price; current unit from the same quote observation; no market/ticker guess",
-    "release_gates": [
-      "independent exact-head source acceptance",
-      "ordered0030/0031/0032 merged AND applied",
-      "required exact-head CI",
-      "canonical Macro/API release and actual authenticated production acceptance"
-    ],
-    "not_claimed": [
-      "production DDL",
-      "authenticated production browser proof",
-      "reporting FX conversion",
-      "historical currency inference",
-      "whole A09 acceptance"
-    ]
+    }
   },
   "a10_authenticated_export": {
     "schema": "terminal.audit20.authenticated_export_acceptance.v1",
@@ -699,18 +734,96 @@
     "installed_sha256": {
       "support_bundle.py": "126921951232a322668ba38be8671197fba99a89a0587b4dea86c10b32511a22",
       "lane_runtime.py": "ae4682dbf613eb463d16c29ed84a068b656f2b5f7292089e73828c5688b0289d",
-      "fabric_task.py": "7229d5eb232d10c22dcd648c02d6023128fe41863ffa233b1f9e28d3f2c77a93"
+      "fabric_task.py": "127f79b1dd456acb2ca4b07c291bb147d930ff669ebe14432854f620183dd16a",
+      "pool_ledger.py": "d9920b78edeeb9e92bc42b020b38cf7034806cd2a8f2813780cd04d59331888f",
+      "remote_sub.sh": "6671d54abcdbd56fb992f53bf6ec0217f8a8c896e104d964a32eac9730faa6da",
+      "a04_terminal_reconcile.py": "dcb61efcfea19c2a2a451e599a5d1bc92ef6cd0b12c6fbd22fde30429a4234e1"
     },
     "owner_verified_live_roundtrip": "fabric-policy-install-proof-01a11e90-v1; original parent consumed/deterministically accepted2642bytes43sec; qualified installed source and placement",
-    "remaining_recovery_engineering": "commissioned exact-operation prelaunch failure retry after accepted material repair and A04 terminal publication; isolated tests reproduce false DONE after ledger failure, repair/idempotency review active",
-    "a04_original_controller_failure_recovered": "owner recovered original unmatched quote after cleanup from Codex session log; worker savedrc0 and same-run artifacts preserved; publication repair not yet installed/accepted",
-    "a09_macro_review_liveness": "same child normalGrok/ubuntu3 launched06:11Z; at06:21ZACTIVE_OR_WAITING/no delivered output; one bounded canonical START/process reconciliation requested through owner",
+    "remaining_recovery_engineering": "Exact-original zero-effect A09 re-admission mechanism still commissioned after accepted material support repair; unsupported A09 operation remains frozen. SeparateA04 acceptance-readback discrepancy actively referred to owner.",
+    "a04_original_controller_failure_recovered": "Original same-run terminal publication installed/reconciled; six original hashes unchanged, no fabricatedDONE/reexecution. Parent canonical acceptance readback stillfalse afterrc0; owner recovering discrepancy.",
+    "a09_macro_review_liveness": "Both earlier Macro andNVDA diagnosis runs completed/retained; parent consumed existing results, no replacement worker",
     "frozen_operations_not_replayed": [
       "terminal-audit20-a09-native-money-adjudication-20261009",
       "terminal-audit20-a04-universal-provider-adjudication-20261009",
       "original Auth0/DCR frozen effect"
     ],
     "same_root": true,
-    "new_or_alternate_dispatch": false
+    "new_or_alternate_dispatch": false,
+    "prior_installed_sha256": {
+      "support_bundle.py": "126921951232a322668ba38be8671197fba99a89a0587b4dea86c10b32511a22",
+      "lane_runtime.py": "ae4682dbf613eb463d16c29ed84a068b656f2b5f7292089e73828c5688b0289d",
+      "fabric_task.py": "7229d5eb232d10c22dcd648c02d6023128fe41863ffa233b1f9e28d3f2c77a93"
+    }
+  },
+  "a01_production_history": {
+    "state": "RESTORED_BY_CANONICAL_PRODUCER_AND_ATOMIC_OWNER",
+    "bars": 6971,
+    "first": "1999-01-22",
+    "last": "2026-10-08",
+    "sha256": "0f9b769085e1df7e346153bf976ba4529339ff4815b9df87354ef4c8fd232d3c",
+    "global_manifest_unchanged": true,
+    "corrupt_preimage_preserved": true,
+    "services_restarted": false,
+    "data_recovery": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a01-nvda-canonical-data-recovery-20261009.json",
+      "sha256": "2f04b22bffbd68c3558b38f2c7030a5a5d0f82114fe53cb5f4c17f557b95f0bd"
+    },
+    "public_readback": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a01-nvda-restored-public-history-20261009.json",
+      "sha256": "f02941bba13a11aa526967626d3f8ca67d096a749f15ded39656ef66b84b1c26"
+    },
+    "actual_signed_in_responsive_proof": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a01-nvda-restored-live-responsive-20261009.json",
+      "sha256": "7037079c731dfdb25171fee3952f7d45369a5e6914b4a3e6e421eaa6e9ce4a25"
+    },
+    "independent_diagnosis": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a01-nvda-publication-diagnosis-return-20261009.txt",
+      "sha256": "c45c3c5535906418f9984ce8402d59515e9004faabe7cc8b37e7dd0d6ca98b9e"
+    },
+    "whole_mission_accepted": false
+  },
+  "a01_atomic_source": {
+    "pr": 873,
+    "head": "ae6c7649a36769d8982932bd6763ceae59355380",
+    "draft": true,
+    "native_pass": 1673,
+    "native_skip": 8,
+    "subtests": 40,
+    "targeted_pass": 37,
+    "first_review": "REJECTED_178_EXISTING_ANCHOR_TEST_PIN; parent reproduced/fixed exact pin retaining stamp-before-write",
+    "final_review_child": "terminal-audit20-a01-atomic-flagship-final-review-20261009",
+    "source_accepted": false,
+    "proof": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a01-atomic-publication-final-source-qualification-20261009.json",
+      "sha256": "b62a4921fefc13e1138d04e1ecd63e81744751564ac077afd22cbb05deedb6dc"
+    },
+    "whole_mission_accepted": false
+  },
+  "a11_temporal_replay": {
+    "pr": 643,
+    "head": "ea7c8995de274a0d3f72dfe0bc8b3e5aa5847125",
+    "actual_t04_return": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/643#issuecomment-6075686234",
+    "actual_live_counterexample": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-live-replay-timeframe-counterexample-20261009.json",
+      "sha256": "3040ff043b51044842e7372f5e2f209c70e9a133e01e289bc8babc4e992a0cb3"
+    },
+    "immutable_review_child": "terminal-audit20-a11-t04-replay-source-review-20261009",
+    "writer_join": "Delivered through actualIW2 to recovered nativeTop10 coordinator; returned643 writer/hold disposition pending before branch mutation",
+    "known_release_risk": "Squash removes capturedAtHead2026e01a ancestry; truthful evidence remedy required",
+    "whole_mission_accepted": false
+  },
+  "prelaunch_refused_builds": [
+    "terminal-audit20-a01-atomic-flagship-history-build-20261009",
+    "terminal-audit20-a10-export-integrity-manifest-20261009",
+    "terminal-audit20-a09-macro-stale-qualifier-repair-20261009"
+  ],
+  "later_release_observation": {
+    "runtime_marker": "9cfd30493b8ff03ddbbf151825b360125a03112d",
+    "github_commit": "PR780 volatility expiry/source-truth repair, merged07:02:05Z, parent9e272f08",
+    "parent_release_acceptance": false,
+    "installed_flagship_producer_sha256": "25b8e4dba03d800f32e289fd62fd9c7fa7232d5223dd0b8bf65096ba5a3bb5c4",
+    "atomic_guard_not_installed_yet": true,
+    "canonical_builder_overlays_root_ingest": true
   }
 }
