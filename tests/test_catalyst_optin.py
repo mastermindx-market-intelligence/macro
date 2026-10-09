@@ -329,6 +329,44 @@ def test_unsigned_scan_descriptor_never_falls_back_to_unmerged_integration_modul
     # its HMAC signer/verifier backed by a rights-qualified current producer.
 
 
+def test_private_delivery_summary_exposes_rights_hold_after_partial_provider_acceptance():
+    """A blocked subscriber must not be hidden by an earlier successful send."""
+    class Source:
+        @staticmethod
+        def load_public_revision(event_id, generation):
+            return PublicRevision(
+                event_id, generation, "2026-10-09T04:00:00+00:00",
+                "2026-10-09T03:00:00+00:00", "NVDA", "Revised source",
+                "Qualified correction", ("https://www.sec.gov/",),
+                True, True, True, True)
+
+    class SimulatedBatch:
+        revisions = Source()
+        states = ()
+        def deliver(self, revision, now):
+            return [
+                {"user_ref": "u_no_pii_" + str(i), "state": state}
+                for i, state in enumerate(self.states)
+            ]
+
+    fake = SimulatedBatch()
+    catalyst_optin.configure(fake)
+    try:
+        for states, expected in (
+            (("PROVIDER_ACCEPTED", "SOURCE_RIGHTS_NOT_CURRENT"), "SOURCE_RIGHTS_HELD"),
+            (("SOURCE_RIGHTS_UNAVAILABLE",), "SOURCE_RIGHTS_HELD"),
+            (("PROVIDER_ACCEPTED", "EFFECT_UNKNOWN"), "EFFECT_UNKNOWN"),
+            (("PROVIDER_ACCEPTED",), "PROVIDER_ACCEPTED"),
+            (("SUPPRESSED",), "NO_CONFIRMED_DELIVERY"),
+        ):
+            fake.states = states
+            res = catalyst_optin.deliver_update("event-123", 2)
+            assert res["status"] == expected
+            assert [item["state"] for item in res["receipts"]] == list(states)
+    finally:
+        catalyst_optin.configure(None)
+
+
 def test_00_private_delivery_seam_needs_an_authoritative_revision_loader():
     from engine.marketing.catalyst_lifecycle import PublicRevision
     class Loader:
