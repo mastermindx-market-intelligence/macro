@@ -129,11 +129,20 @@ class CatalystPartnerPackTests(unittest.TestCase):
                      scan_url="https://www.mastermind-x.com/scan/")
         self.refused("SCAN_ROUTE_UNREGISTERED",
                      route_receipt="route-01")
-        p = self.make(scan_url="https://www.mastermind-x.com/scan/",
+        p = self.make(scan_url="https://www.mastermind-x.com/api/catalyst",
                       route_receipt="approved-route-01")
         self.assertFalse(p["link_is_placeholder"])
         self.assertTrue(p["scan_link"].startswith(
-            "https://www.mastermind-x.com/scan/"))
+            "https://www.mastermind-x.com/api/catalyst?"))
+        # Exact route preservation: canonical_link builds the query while
+        # FastAPI expects GET /api/catalyst, not the trailing-slash variant.
+        self.assertEqual(urlsplit(p["scan_link"]).path, "/api/catalyst")
+        self.refused("INVALID_SCAN_ROUTE",
+                     scan_url="https://www.mastermind-x.com/scan/",
+                     route_receipt="approved-route-01")
+        self.refused("INVALID_SCAN_ROUTE",
+                     scan_url="https://untrusted.example.com/api/catalyst",
+                     route_receipt="approved-route-01")
         self.assertEqual(p["publication_status"], "DRAFT_HOLD")
 
     def test_duplicate_utm_or_unregistered_placeholder_with_receipt_blocked(self):
@@ -143,6 +152,17 @@ class CatalystPartnerPackTests(unittest.TestCase):
         self.refused("ROUTE_RECEIPT_FOR_PLACEHOLDER",
                      scan_url="https://preview.invalid/scan/",
                      route_receipt="approved-route-01")
+
+    def test_frozen_session00_partner_consumer_signature_is_accepted(self):
+        profile = copy.deepcopy(self.partner)
+        profile["selected_tickers"] = ["EXA"]
+        result = build_partner_pack(self.event, profile, now_utc=DEMO_NOW)
+        self.assertEqual(result["selected_tickers"], ["EXA"])
+        self.assertEqual(result["publication_status"], "DRAFT_HOLD")
+        with self.assertRaises(PackRejected) as exc:
+            build_partner_pack(self.event, profile, preview_only=False,
+                               now_utc=DEMO_NOW)
+        self.assertEqual(exc.exception.code, "PUBLICATION_UNAUTHORIZED")
 
     def test_public_packet_producer_verification_required_for_non_demo(self):
         self.event["demo_only"] = False
