@@ -2,24 +2,25 @@
   "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
   "whole_mission_accepted": false,
   "terminal_release": {
-    "head": "a70cf2ad36bf05792c2a3cddac4ee491be0ff99c",
+    "head": "2afef4456d81dc5d7cd99e929d425474964cd6ec",
     "canonical_builder_rc": 0,
     "source_marker_public_agree": true,
     "healthy_services": true,
-    "free_bytes_after_release": 12553195520,
+    "free_bytes_after_release": 15611318272,
     "installed_builder_sha256": "6cd5088d12b0ce4be5bf3c3b8b6ccf416864002ec4243056966e5ed81507b2d5",
     "receipt": {
-      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-terminal-release-a70-receipt-20261009.json",
-      "sha256": "ae9b90459333077c1578ae5410fd0289f18d4f10b987ebfc3c44479a6723ee1f"
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-terminal-release-2af-receipt-20261009.json",
+      "sha256": "b74e9eed537697227c2e32c267f30606ca85028abfd48dd58d863b2e4cc1695d"
     },
     "public_readback": {
-      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/terminal-a70-public-release-readback-20261009.json",
-      "sha256": "3632bc1c6df773374ef374f1f027036ce7cdcd6d87534c9947a447df5cb16e8f"
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/terminal-2af-public-release-readback-20261009.json",
+      "sha256": "5c405cc4a626d02d42227a8e243e64135e6f7a0287a7e7146c58efdea1c4b96e"
     },
     "compile_timeout_then_recovery": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/pine-a70-timeout-recovery-20261009.json",
       "sha256": "c1c2a095445bcfe6fa475ed2ff788d28a08b4060411f8f5fc20c207f55187d18"
-    }
+    },
+    "authenticated_paid_path": "actual Free principal denied by Essential/Pro gate; intended existing Pro principal remains human identity question, no purchase/entitlement change"
   },
   "storage_emergency": {
     "free_bytes": 11079020544,
@@ -30,23 +31,22 @@
   },
   "a04": {
     "pr": 858,
-    "head": "7002217a45c2a7c959722c03da778070366d59d8",
+    "head": "358d45347c7db8afe677ee46f95a33c56d26a474",
     "draft": true,
     "migration_applied": false,
-    "source_accepted": false,
-    "assertions": 87,
-    "unit_files": 10,
+    "source_accepted": true,
+    "assertions": 101,
+    "unit_files": 11,
     "typecheck_rc": 0,
-    "browser_pass": 42,
+    "browser_pass": 45,
     "browser_skip": 0,
     "browser_port": 3196,
     "postgresql_cases_unchanged_sql": 65,
     "sql_sha256": "0b046c0dd95c2a5d96d3e67987759d3d5321f3fea4471783ed4f8c51eab92477",
-    "previous_review_child": "terminal-audit20-a04-alias-adjudication-20261009",
-    "previous_review": "REJECT candidate; useful artifact independently reproduced and accepted",
+    "previous_review_child": "terminal-audit20-a04-retirement-adjudication-20261009",
+    "previous_review": "PASS_SCOPED prior delta; useful modern-copy caveat reproduced by parent and repaired before whole-candidate acceptance",
     "red_findings": {
-      "physical_retirement": 2,
-      "direct_selection_discard": 1
+      "modern_retirement": 2
     },
     "proofs": {
       "physical_red": {
@@ -58,24 +58,61 @@
         "sha256": "9f40b2d416755f0ab8a960cbe28df24f461ecf2eda7c2f79c935e11775c0516c"
       },
       "unit": {
-        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-retirement-selection-unit-20261009.log",
-        "sha256": "bf66aa8cbec6ad8a4e626e1929ead3291cdc94100f79cb1c5796a5f8fc9bb1a0"
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-358d-integration-unit-20261009.log",
+        "sha256": "61f00770b6d489b44d9f8f33aab869109640c091e87c9448873513de9bc352ee"
       },
       "typecheck": {
-        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-retirement-selection-tsc-20261009.log",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-358d-integration-tsc-20261009.log",
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
       "browser": {
-        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-retirement-selection-responsive-20261009.log",
-        "sha256": "f5bfc3fdb4018994f56b9d9f5ac3ee8819e81cbe055f91599e42190059abbf4c"
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-358d-integration-responsive-20261009.log",
+        "sha256": "ba27fcee82a1636bf1511154709b64202dc65a96fb213d6604068141dac9920f"
       },
       "old_module": {
-        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-old-tab-causal-7002217-20261009.json",
-        "sha256": "7d72ea2f8b91724af1ad0fddcb92906ef166e22aa68ddc54e8524ade4466b6ef"
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-old-tab-causal-358d4534-20261009.json",
+        "sha256": "5cee69d3cf413a7c5a31cbe96a41722a41b1585d092eeeff56ab948eb4fc5c9c"
+      },
+      "modern_red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-modern-retirement-red-20261009.log",
+        "sha256": "466282adb10ee1b72101d883ef683ac6572b0c7b6fdc59f2a57790dd0faeea03"
+      },
+      "evidence": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-358d-integration-evidence-locks-20261009.log",
+        "sha256": "930d0631749d8222909f69ef8916f9387d25666773d9ab310a0961984072600a"
+      },
+      "team_capture": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-team-evidence-recapture-r2-20261009.log",
+        "sha256": "f6d504e8a084fa2430b002032985b4bff055316bcd9bb74231e5a0097dfb8f32"
+      },
+      "namespace": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a04-358d-integration-namespace-20261009.log",
+        "sha256": "8e69c2d43c0cd23f6b6822f7825db2f05ff15d907c0efd147783b1303a78d4e0"
       }
     },
-    "delta_review_child": "terminal-audit20-a04-retirement-adjudication-20261009",
-    "delta_review_accepted": false
+    "evidence_assertions": 146,
+    "evidence_files": 20,
+    "actual_team_crops": 10,
+    "team_layout_source_commit": "7002217a45c2a7c959722c03da778070366d59d8",
+    "base": "2afef4456d81dc5d7cd99e929d425474964cd6ec",
+    "final_review": {
+      "child": "terminal-audit20-a04-universal-provider-adjudication-20261009",
+      "verdict": "PASS_SCOPED",
+      "source_reviewed": "777898271ddc3fff6e01c504bff7b38f175dcc72",
+      "actual_model_route": "MiniMax on mini2",
+      "modern_module_sha256": "d36a75fcd042c8549333055db1f759e18a884dfd973e22d6a347ca246b86b433",
+      "formal_adapter_state": "SETTLING; controller exited0 and same-run process/cleanup proven; missing terminal ledger observation referred to existing owner, not invented",
+      "artifact_ledger_acceptance": false
+    },
+    "release_gate": {
+      "prior_migration": "0030 on held incumbent #804",
+      "current_source": "cbd05fda4705c7d88e9a6811b310e525d25c289a",
+      "writer": "01a104c8-6e11-7e52-93c1-6b8dbc45bb9c ACTIVE confirmed",
+      "apply_state": "UNAPPLIED",
+      "hold": "integration review5989604142; explicit denied #792 ingress effect remains binding",
+      "ready_auto_merge": false,
+      "whole_mission_accepted": false
+    }
   },
   "brain": {
     "pr": 8526,
@@ -101,7 +138,7 @@
     ],
     "app_enrollment_still_pending": true
   },
-  "remaining": "Exact current-head protected CI/review, A04 migration/readback and real user paths; original per-mission contracts remain separate.",
+  "remaining": "Original per-mission done conditions remain separate. A04 and A09 ordered migrations are unapplied behind current active #804/0030 integration hold; A06 and controller863 source accepted and native auto-merge armed; current release2af healthy. Real paid identity, FX/producer authority and real-recipient evidence remain owed.",
   "a05": {
     "pr": 861,
     "head": "856f68e04bc85e265887d721854e2fa410314fdd",
@@ -148,7 +185,12 @@
     },
     "merge_on_green_armed": true,
     "head_required_ci_green": true,
-    "merge_release_pending": true
+    "merge_release_pending": false,
+    "merged": true,
+    "merged_head": "2afef4456d81dc5d7cd99e929d425474964cd6ec",
+    "canonical_release_accepted": true,
+    "production_functional_accepted": false,
+    "paid_authenticated_options_gate": "Free principal sees Unlock the Options desk; no trial started"
   },
   "storage_additional": {
     "batches": 5,
@@ -167,49 +209,206 @@
   },
   "a06": {
     "pr": 862,
-    "head": "0d3365ece989a7a447abb6edf1df1c29ec5b65cd",
-    "base": "a70cf2ad36bf05792c2a3cddac4ee491be0ff99c",
-    "draft": true,
-    "source_accepted": false,
-    "assertions": 32,
-    "files": 3,
+    "head": "462ddce5f2f0b750e7a3cc8290dd3bdae03485fb",
+    "base": "2afef4456d81dc5d7cd99e929d425474964cd6ec",
+    "draft": false,
+    "source_accepted": true,
+    "assertions": 52,
+    "files": 5,
     "red_failures": 6,
     "red_controls": 1,
     "typecheck_rc": 0,
-    "browser_pass": 3,
+    "browser_pass": 6,
     "browser_skip": 0,
-    "review_child": "terminal-audit20-a06-lifetime-source-review-20261009",
+    "review_child": "terminal-audit20-a06-open-authority-adjudication-20261009",
     "proofs": {
       "red": {
         "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-lifetime-red-20261009.log",
         "sha256": "5ff5db8eefd01012fc624b8733c325a312c74a083b257e533e53a812b60ad269"
       },
       "green": {
-        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-lifetime-green-20261009.log",
-        "sha256": "2197f52f7d32b2df6ab247bc7c227594b04b67b9030eb89075b6421f00f118de"
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-current-base-integration-unit-20261009.log",
+        "sha256": "b4ed277a680859bacbfff3ac19a3df4aa6fdb588cd6c942ad43a0c3a7aae6e64"
       },
       "typecheck": {
-        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-lifetime-tsc-20261009.log",
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-current-base-integration-tsc-20261009.log",
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
       "browser": {
-        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-next-responsive-20261009.log",
-        "sha256": "9681d5db3d3bdcbd517e73a7908ae9f4fa23e7d2188111215615fa24785fed5a"
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-current-base-integration-responsive-20261009.log",
+        "sha256": "39b6ee64ee7ecaa8af38113753a3709b635ca4b56930fb90215348482a31df27"
+      },
+      "fresh_owner_red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-fresh-owner-red-20261009.log",
+        "sha256": "6860a2e083ffd3a4d292d92a06b954c92d77b07272bb28c1ffe536f6814a0204"
+      },
+      "review": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-open-authority-review-return-20261009.txt",
+        "sha256": "2eb599fdec15cb668e22cf22714ad71d02e128bb8a44798817eb4aa7dffc3e7b"
+      },
+      "initial_authority_red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a06-initial-authority-red-20261009.log",
+        "sha256": "7e8baea1a83b1dc386d981e69c847ad19522bda467bb09639d391d90aa32a516"
       }
     },
-    "review_return_accepted": false
+    "previous_review": "REJECT reproduced2 native delayed-cache/older-inflight cases; useful artifact accepted only",
+    "old_head_ci_failure": "missing TTL export in existing boundary mock; repaired via partial import of actual owner",
+    "excluded_browser_attempt": "filename typo collected zero cases; excluded",
+    "previous_review_attempt": "terminal-audit20-a06-fresh-authority-adjudication-20261009",
+    "review_attempt_state": "TERMINAL pre-worker admission refusal; active_lane_limit_reached; no review artifact",
+    "additional_counterexample": "Nearly expired cached page gate admitted revoked caller at stream open; one actual-module RED reproduced and repaired",
+    "local_integration_head": "5be6f421224278adb21c87b135c70655b72b176c",
+    "tree_byte_identical": true,
+    "review_result": "PASS_SCOPED; source-only independent review, parent native execution",
+    "review_artifact_accepted": true,
+    "production_accepted": false,
+    "reviewed_source_identity": {
+      "terminal/lib/entitlement.ts": "d201b5f829ca48ac0e8dd52d1d552181302d0f42f0cba9e2b1ce1bb454e067bb",
+      "terminal/app/api/flow/stream/route.ts": "ec4d5d7e9716278fc42b515e0dcd7d119de49c9966a17490dba81ab07b0de77b",
+      "terminal/lib/__tests__/flowStreamLifetime.test.ts": "327cca09527e86028b2f5770bf827062ab9b8fb2e02971c4962146cd061d50c6",
+      "terminal/lib/__tests__/flowStreamRouteBoundary.test.ts": "c132d422ab69bc40eacf23f0130fe262988b9cb6434aaceacc935b73ed699bb6"
+    },
+    "ready": true,
+    "native_auto_merge": "SQUASH",
+    "merge_on_green_armed": true
   },
   "a09": {
-    "current_ref_terminal": "bacda5dcc30682f9327e037a2d4425bd9714ac3a",
-    "current_ref_macro": "cdbcd143dcfa419ab0637bc11dd4c80368143e2e",
-    "ordering_pr807": "MERGED ccbf164c50064bd26f713aba47a65576c3b29e38",
-    "routine_child": "terminal-audit20-a09-current-money-seam-20261009",
-    "routine_prelaunch_refusal": "pool minimax has no eligible mode on requested host",
-    "architecture_child": "terminal-audit20-a09-money-authority-design-20261009",
-    "architecture_c3_witness": "historical entry, current quote and reporting units across shared writers and existing FX authority",
-    "architecture_prelaunch_refusal": "no_pool_available",
-    "started": false,
-    "next": "parent retains additive contract adjudication; no FX or entry unit is inferred"
+    "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "pr": 866,
+    "head": "60fd6d997df52d2d8331de85ab63014446e16ef9",
+    "base": "2afef4456d81dc5d7cd99e929d425474964cd6ec",
+    "observed_at": "2026-10-09T04:45:41.803900+00:00",
+    "draft": true,
+    "source_accepted": false,
+    "whole_mission_accepted": false,
+    "migration_applied": false,
+    "native_assertions": 417,
+    "native_files": 21,
+    "typecheck_rc": 0,
+    "responsive_pass": 33,
+    "responsive_skip": 0,
+    "viewports": [
+      [
+        1440,
+        900
+      ],
+      [
+        820,
+        1180
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "postgres_cases": 21,
+    "postgres_version": "17.11 (Homebrew)",
+    "fixture_cleanup": true,
+    "sql_sha256": "fe4def299cf733dd1718bda8ef30f006a6d19c5015f7673cbab05a4b298f99f5",
+    "scope": "native entry unit receipts, whole-cohort cost qualification, raw quotes and signed money, additive export, stale-writer invalidation",
+    "proofs": {
+      "native": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-final-native-export-unit-20261009.log",
+        "sha256": "3307a69001444d42705518d23e15ed4d4bd897e3e5194765bc36e8e9404c64c6"
+      },
+      "typecheck": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-final-native-export-tsc-20261009.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "responsive": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-final-responsive-20261009.log",
+        "sha256": "472c80848f70d1772b76f158f38e48a1d9e94d89a59607269a8ea591367465c1"
+      },
+      "postgres": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-native-sql-final-20261009/a09-native-pg-receipt-20261009.json",
+        "sha256": "b5dd81188d0a2323c4f18ed189d97fc3f9d82b45ecfaa75797ff31e522063e74"
+      },
+      "dryrun": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-0032-final-apply-dryrun-20261009.log",
+        "sha256": "1f9d897364680906aa935a6073b1607cd384ed954c2a46cd56c83f908b684426"
+      },
+      "namespace": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-final-namespace-20261009.log",
+        "sha256": "5d9b1b6fc3b629aade1587a8b6daeab7c3fb8b9faabfd1584550dbc15ea5f03f"
+      },
+      "core_red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-native-money-red-20261009.log",
+        "sha256": "2ce8541445fed8d9df81d3e3df9fedd567524d1624e540241d16d4a10cadc1b1"
+      },
+      "consumers_red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-cost-consumers-red-20261009.log",
+        "sha256": "2aa8ad4169373617d4ced332e1249108f2d5f4eca13fba3d6b391930f51439a0"
+      },
+      "overflow_red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-overflow-day-cohort-red-20261009.log",
+        "sha256": "35840a5288599f1e0cf9df2ef6c88e9f4fcfe270cad743a432e14ea43b484f78"
+      },
+      "constraint_red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-native-sql-constraint-red-20261009/a09-native-pg-receipt-20261009.json",
+        "sha256": "09f121c1b827e06f31127acdb287ec9af5ef6b88cb58c5424759ff6656f6e5d5"
+      }
+    },
+    "source_files": [
+      "supabase/migrations/0032_portfolio_entry_currency.sql",
+      "supabase/migrations/README.md",
+      "supabase/migrations/RESERVATIONS.json",
+      "terminal/app/api/portfolio/risk-history/route.ts",
+      "terminal/app/api/portfolio/route.ts",
+      "terminal/app/api/portfolio/targets/route.ts",
+      "terminal/components/PortfolioView.tsx",
+      "terminal/components/PositionModal.tsx",
+      "terminal/e2e/portfolio-money-units.spec.ts",
+      "terminal/e2e/portfolio-positions.spec.ts",
+      "terminal/lib/__tests__/accountExport.test.ts",
+      "terminal/lib/__tests__/portfolio.test.ts",
+      "terminal/lib/__tests__/portfolioCostUnits.test.ts",
+      "terminal/lib/__tests__/portfolioMonetaryBasis.test.ts",
+      "terminal/lib/__tests__/portfolioRisk.test.ts",
+      "terminal/lib/__tests__/portfolioRiskHistory.test.ts",
+      "terminal/lib/__tests__/portfolioRiskHistoryRoute.test.ts",
+      "terminal/lib/__tests__/portfolioRiskHistoryView.test.tsx",
+      "terminal/lib/__tests__/portfolioRouteRisk.test.ts",
+      "terminal/lib/__tests__/portfolioTargets.test.ts",
+      "terminal/lib/__tests__/portfolioTargetsRoute.test.ts",
+      "terminal/lib/__tests__/portfolioTargetsView.test.tsx",
+      "terminal/lib/accountExport.ts",
+      "terminal/lib/portfolio.ts",
+      "terminal/lib/portfolioMoney.ts",
+      "terminal/lib/portfolioRisk.ts",
+      "terminal/lib/portfolioRiskHistory.ts",
+      "terminal/lib/portfolioTargets.ts",
+      "tests/sql/audit09/run_native_fixture.py"
+    ],
+    "release_gates": [
+      "independent monetary/receipt review",
+      "0030 incumbent #804 and 0031 #858 merged AND applied in order",
+      "shared Macro brief/import compatibility and qualified source authority",
+      "exact-head hosted CI",
+      "canonical merged-master release and authenticated acceptance"
+    ],
+    "not_claimed": [
+      "reporting-currency FX conversion",
+      "historical currency inference",
+      "production DDL",
+      "whole A09 acceptance"
+    ],
+    "fabric_refusal": {
+      "build": "terminal-audit20-a09-cost-consumers-20261009",
+      "route": "NONE no_pool_available",
+      "START": false
+    },
+    "independent_review": {
+      "child": "terminal-audit20-a09-native-money-adjudication-20261009",
+      "admitted_route": "Grok-4.6 on ubuntu2; incumbent picker assigned automatically",
+      "state": "TERMINAL_FAILURE prelaunch_failure rc75; noSTART/result",
+      "failure": "SUPPORT_POLICY_STALE_ACTIVE_REFUSED / SUPPORT_PUBLICATION_REFUSED",
+      "retry_or_alternate_carrier": false,
+      "existing_runtime_owner_notified": true
+    }
   },
   "continuation": {
     "automation_id": "terminal-audit20-continuation",
@@ -221,5 +420,51 @@
     "normal_existing_gh_approval_self_service": true,
     "duplicate_control_plane": false,
     "exact_app_grant_pending": true
+  },
+  "ci_pagination": {
+    "pr": 863,
+    "head": "8f6d58210329fdd7c91a9f21aea530f93dc3272a",
+    "source_accepted": true,
+    "acceptance_scope": "existing pagination reader and unchanged sweep semantics",
+    "parent_tests": 33,
+    "parent_causal_red_failures": 3,
+    "parent_causal_control": 1,
+    "independent_tests": 33,
+    "independent_extra_probes": 10,
+    "independent_red_replay": true,
+    "review_child": "terminal-audit20-ci-pagination-source-review-20261009",
+    "cleanup_proven": true,
+    "residual_count": 0,
+    "production_accepted": false,
+    "proofs": {
+      "red": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ci-pagination-red-20261009.log",
+        "sha256": "78e3025d04ea5d5d96300492f4970463d949cb39ee2eea7fc40301ab03fa1ff3"
+      },
+      "green": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ci-pagination-green-20261009.log",
+        "sha256": "25dd78ee05bffb971ea7e8b983c20ad460ad54448a811748d3f768ac7d4f37be"
+      },
+      "live_read_only": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ci-pagination-live-census-20261009.json",
+        "sha256": "38766921d9bb2866f63d7b18cb1ece916b1d80eaa1a853b96ae02634f89e63d5"
+      },
+      "review": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ci-pagination-source-review-return-20261009.txt",
+        "sha256": "b39828f7217bbe8fb9effbce5b2c0e62adbf8bfe72cea267cb2de00338a6aad7"
+      }
+    },
+    "base": "2afef4456d81dc5d7cd99e929d425474964cd6ec",
+    "current_base_controller_tests": 33,
+    "ready": true,
+    "native_auto_merge": "SQUASH"
+  },
+  "fabric_settlement_reconciliation": {
+    "child": "terminal-audit20-a04-universal-provider-adjudication-20261009",
+    "state": "SETTLING rc null despite controller exit0 and same-run process/cleanup receipts",
+    "manual_bypass": false,
+    "source_judgment": "parent accepted exact reviewed journal plus current-base proof",
+    "artifact_ledger_acceptance": false,
+    "existing_owner": "01a118f3-fc4e-7941-b432-03703dccd19b; bounded exact-run reconciliation requested"
   }
 }

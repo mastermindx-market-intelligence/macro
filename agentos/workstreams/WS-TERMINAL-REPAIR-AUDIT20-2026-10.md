@@ -8,12 +8,13 @@ objective: >-
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: active
 blocked_by:
-  - A02/A03 are live at a70cf2ad; protected production compile recovered after an enforced timeout. Intended existing Pro-principal editable timeout/save/rename acceptance remains owed.
-  - Terminal automation PR850 remains draft pending the exact one-time GitHub App grant. Ordinary authenticated workflow approvals are self-service and quiet automatic chat continuation is active.
-  - A04 PR858/7002217 repairs the third review's physical-handle resurrection and direct selection/discard findings; exact delta review, protected CI, reserved0031 readback and authenticated concurrency remain unclosed.
-  - A05 PR861/856f68 passed scoped independent review and head CI, is ready/merge-on-green armed, and awaits current-master convergence, canonical release and live acceptance. A06 PR862/0d3365 is draft awaiting its access-lifetime review and delivery.
-  - Seasonal PR853 and USD CAP PR839 retain their current-head CI/release gates. Rollback PR855 is merged and deployed at a70cf2ad. Brain8526 has exact served-asset and scoped live new-Free-principal proof.
-  - Remaining private identity, FX, producer and real-recipient contracts require qualification; missing historic sessions do not postpone in-scope recovery.
+  - Terminal release2afef445 is live and healthy; A02/A03 editable timeout/save/rename and paid Options user acceptance still need the intended existing Pro identity. Actual current Free principal receives the Essential/Pro gate.
+  - Terminal automation PR850 remains draft pending the exact one-time GitHub App grant. Ordinary authenticated workflow approvals are self-service; quiet automatic chat continuation is active.
+  - A04 PR858/358d4534 is source accepted after independent review and current-base proof;0031 remains unapplied behind live incumbent #804/0030 integration hold. Same-run review ledger settlement is referred to the existing runtime owner without invented terminal state.
+  - A05 PR861 is merged and canonically released at2afef445. A06 PR862/462ddce5 is independently source accepted, READY and native auto-merge armed; exact-head CI/merge and production functional acceptance remain separate gates.
+  - Controller pagination PR863/8f6d5821 is independently source accepted, refreshed to current base, READY and native auto-merge armed. Seasonal PR853 and USD CAP PR839 retain their exact CI/release gates.
+  - A09 PR866/60fd6d99 has qualified native currency receipts, whole-cohort cost consumers, additive export and real SQL proof; Grok/ubuntu2 review was refused before START because the active support policy is stale; existing runtime owner reconciliation is pending.0032 remains unapplied behind ordered0030/0031; Macro compatibility and reporting FX authority remain unclosed.
+  - Brain8526 has exact served-asset and scoped new-Free-principal proof. Remaining private identity, FX, producer and real-recipient contracts require qualification; absent historic owners do not postpone routine recovery.
 program: terminal-charting
 repos: [terminal, macro]
 owner: ceo-sol
@@ -28,11 +29,11 @@ waves:
     title: Consume higher-level repairs and deliver accepted scoped changes
     status: in_progress
 next_action: >-
-  Consume retained independent A04 physical-retirement and A06 access-lifetime reviews, repair actual findings,
-  and advance source-accepted A05 through the existing merge-on-green controller with exact refreshed-head CI.
-  Apply reserved0031 only after source/review/CI qualification, then canonical release and authenticated recovery proof.
-  Continue the additive Portfolio monetary-authority decision after two honest prelaunch admission refusals;
-  preserve exact App-grant/intended-account boundaries. The active heartbeat resumes this same root automatically.
+  Resolve the precise A09 prelaunch support-policy refusal through the incumbent runtime owner, then obtain exact-head independent review on the same866 carrier.
+  Continue path-disjoint shared Macro brief/import compatibility after current writer custody is confirmed.
+  Existing native auto-merge and the single quiet heartbeat own pending862/863/853/839 CI; act on real failure or merge events,
+  then canonical release and authenticated acceptance. Preserve the live804 integration writer and explicit denied ingress effect;
+  apply0031/0032 only after previous migrations are merged AND applied. Whole Audit20 acceptance remains false.
 owns_paths: []
 artifacts:
   - research/terminal_audit20/TAKEOVER_20261009/release-and-repair-proof.json
@@ -131,3 +132,9 @@ A06 takeover is PR862/0d3365ece989a7a447abb6edf1df1c29ec5b65cd from a70: actual 
 A09 routine source-seam request was refused before launch because MiniMax had no eligible host mode. The separately bounded C3 monetary-authority decision was refused before launch with no_pool_available. Neither STARTed and no carrier was substituted. Current807 ordering carrier is merged; parent retains the architecture decision. The exact source pins are Terminalbacda5dc/Macrocdbcd143; no historical entry currency, FX rate or customer book was invented.
 
 One native thread heartbeat,terminal-audit20-continuation, is ACTIVE every15minutes with unchanged state quiet and the same original root. It resumes retained children and authorized delivery rather than asking the operator to run ordinary GitHub approvals. It introduces no alternate Fabric lifecycle or GitHub controller; exact one-time App grant remains pending. Whole original Audit20 acceptance remains false, and this save is not a stopping instruction.
+
+Oct9 qualified capability delta at60fd6d99: PR866 records native entry currency bound to exact ticker/price, labels quote units from the same observation, and withholds aggregate money or risk/target/history cost weights for any eligible unknown/mixed/overflowing lot. Older writers cannot resurrect a declaration by changing price/ticker back. JSON/CSV export is additive; English/Chinese modal and notices retain unknown legacy data. Parent417 assertions/21files,TSC0,33 real responsive browser cases/zero skips and21 causal actualPG17.11 cases with cleanup passed. Real same-named incompatible SQL constraint, overflow/daily-cohort and missing-unit failures were reproduced before repair. This is native-unit correctness, not accepted reporting FX. Candidate866 remains draft/unaccepted pending independent review and ordered migration/shared-writer qualification. Stable reviewchildterminal-audit20-a09-native-money-adjudication-20261009 was selectedGrok-4.6/ubuntu2 but settledTERMINAL_FAILURE rc75 beforeSTART: SUPPORT_POLICY_STALE_ACTIVE_REFUSED / SUPPORT_PUBLICATION_REFUSED. No retry or alternate carrier; existing runtime owner notified. Prior C2 child was honestly refused NONE/no_pool_available beforeSTART.
+
+Current source and release pins:858/358d4534 has101 native assertions+146 evidence-lock assertions,45 actual browser cases/zero skips and unchanged65PGcases; exact reviewed journal digestd36a75fc conserved.862/462ddce5 is byte-identical in full tree to locally tested5be6f421,52 assertions+6 actual browser cases/zero skips, independent MiniMax source review formally terminal/accepted and READY/native auto armed.863/8f6d5821 has33 current-base native tests plus earlier independent33+10 probes and causal old-source RED; READY/native auto armed.861 was merged and released at2afef4456d81dc5d7cd99e929d425474964cd6ec through the actual updater lock/builder,rc0,clean matching public marker,all3services active and15,611,318,272 free bytes. Actual Free Options principal is denied by the Essential/Pro gate; no trial,purchase or entitlement modification occurred.
+
+Current prerequisite custody is independently verified, not a historic label: chat01a104c8-6e11-7e52-93c1-6b8dbc45bb9c replied ACTIVE as sole804 writer atcbd05fda;0030 SQL2e728722 remains UNAPPLIED. Its exact CI passed, but integration hold5989604142 and explicit denied792 raw-ingress effect remain binding. This parent preserves that live writer/hold and does not applyhigher0031/0032. A04 finalreview resultPASS_SCOPED and cleanup were consumed but adapter stillSETTLING with no terminal ledger observation; the exact same-run reconciliation request is with the existing Fabric owner, without resubmission/manuallease release or invented acceptance.
