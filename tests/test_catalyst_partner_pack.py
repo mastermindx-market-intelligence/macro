@@ -441,6 +441,42 @@ class CatalystPartnerPackTests(unittest.TestCase):
         self.event["sources"][0]["url"] = "https://www.sec.gov/search"
         self.refused("INVALID_PARTNER_PROFILE_URL")
 
+    def test_source_title_cannot_inject_markdown_newsletter_link(self):
+        self.event["sources"][0]["title"] = (
+            "Issuer](https://attacker.invalid) [Official"
+        )
+        pack = self.make()
+        note = pack["newsletter"]
+        self.assertNotIn("Issuer](https://attacker.invalid)", note)
+        self.assertIn(r"Issuer\](https://attacker.invalid) \[Official", note)
+        self.assertIn("https://example.invalid/filing/CaseSensitive/Exhibit",
+                      note)
+
+    def test_untrusted_newsletter_claim_html_is_inert(self):
+        self.event["claims"][0]["text"] = "<img src=x onerror=alert(1)>"
+        result = self.make()
+        self.assertNotIn("<img ", result["newsletter"])
+        self.assertIn("&lt;img src=x onerror=alert(1)&gt;",
+                      result["newsletter"])
+        self.assertIn("<img src=x onerror=alert(1)>",
+                      result["claims"][0]["text"])
+
+    def test_markdown_destination_delimiters_encoded_and_social_markup_refused(self):
+        self.event["sources"][0]["url"] = (
+            "https://example.invalid/reports/2026(Q3).html"
+        )
+        result = self.make()
+        self.assertIn("2026%28Q3%29.html", result["newsletter"])
+        self.assertEqual(result["sources"][0]["url"],
+                         "https://example.invalid/reports/2026(Q3).html")
+        self.event["sources"][0]["url"] += " [spoof]"
+        self.refused("UNSAFE_SOURCE_URL")
+        self.event = copy.deepcopy(DEMO_EVENT)
+        self.event["claims"][3]["text"] = (
+            "[Click](https://attacker.invalid) for guaranteed performance"
+        )
+        self.refused("SOCIAL_UNSAFE_MARKUP")
+
     def test_source_urls_preserve_case_and_are_rendered_escaped(self):
         self.partner["name"] = 'Research <script>alert("x")</script> Profile'
         p = self.make()
