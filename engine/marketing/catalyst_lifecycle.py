@@ -207,7 +207,7 @@ class ConsentOwner(Protocol):
 
 
 class SuppressionAuthority(Protocol):
-    def is_suppressed(self, email: str, user_id: str) -> bool: ...
+    def is_suppressed(self, email: str, user_id: str | None) -> bool: ...
 
 
 class RevisionAuthority(Protocol):
@@ -385,6 +385,16 @@ class FunnelService:
             raise FunnelGate("SCAN_PROOF_REQUIRED", 400)
         scan = self.scan.require_public_scan(scan_receipt)
         _validate_scan(scan)
+        # Check the incumbent address-level unsubscribe/bounce/complaint owner
+        # BEFORE storing a pending intent or asking GoTrue to email a code.
+        # No user ID exists yet, so the shared mailer checks the address-level
+        # suppression list now and checks per-user preferences after GoTrue proof.
+        # Do not disclose suppression membership to an anonymous requester.
+        try:
+            if self.suppression.is_suppressed(addr, None):
+                raise FunnelGate("VERIFICATION_UNAVAILABLE")
+        except Exception:
+            raise FunnelGate("VERIFICATION_UNAVAILABLE") from None
         data = {"v": 1, "scope": SCOPE, "nonce": secrets.token_urlsafe(24),
                 "email_tag": _email_tag(self.secret, addr),
                 "issued_at": now.isoformat(), "event_id": scan.event_id,
