@@ -69,6 +69,7 @@ def observe_provisional_trade(
             ),
             "quote_source_receipt_id": quote_receipt,
             "matched_quote_id": matched, "quote_age_ns": age,
+            "quote_age_limit_ns": max_quote_age_ns,
             "source_trade_conditions": trade.get("trade_conditions") if isinstance(trade, dict) else None,
             "venue_class": trade.get("venue_class") if isinstance(trade, dict) else None,
             "venue_reference_sha256": (
