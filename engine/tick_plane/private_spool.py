@@ -73,7 +73,7 @@ def write_private_trade_part(*, root, session, ticker, events):
 
     The caller owns singleton-writer custody, partition selection and PRIVATE R2
     handling. This module never creates an authority to delete or advertise
-    raw trade data. Temp + fsync + atomic rename preserve crash-safe whole parts.
+    raw trade data. Temp + fsync + atomic no-overwrite hardlink preserve whole parts.
     """
     base = _private_root(root)
     if (not isinstance(session, str) or _SESSION.fullmatch(session) is None or
@@ -111,6 +111,7 @@ def write_private_trade_part(*, root, session, ticker, events):
                 "sha256": digest, "n": len(records), "bytes": len(payload),
                 "path_private_only": str(target)}
     scratch = None
+    state = "PART_CREATED"
     try:
         with tempfile.NamedTemporaryFile(mode="wb", dir=output, prefix=".pending-",
                                          delete=False) as fh:
@@ -119,7 +120,15 @@ def write_private_trade_part(*, root, session, ticker, events):
             fh.write(payload)
             fh.flush()
             os.fsync(fh.fileno())
-        os.replace(scratch, target)
+        # Atomic no-overwrite publication. os.replace() could clobber an
+        # immutable part created by another writer after the existence check.
+        # Hardlink creation on the same filesystem fails if the target exists.
+        try:
+            os.link(scratch, target)
+        except FileExistsError:
+            if target.is_symlink() or not target.is_file() or target.read_bytes() != payload:
+                raise PrivateSpoolRefusal("immutable part collision; never overwrite")
+            state = "ALREADY_PRESENT"
         dir_fd = os.open(output, os.O_RDONLY)
         try:
             os.fsync(dir_fd)
@@ -128,6 +137,6 @@ def write_private_trade_part(*, root, session, ticker, events):
     finally:
         if scratch is not None and scratch.exists():
             scratch.unlink()
-    return {"schema": SPOOL_SCHEMA, "state": "PART_CREATED",
+    return {"schema": SPOOL_SCHEMA, "state": state,
             "sha256": digest, "n": len(records), "bytes": len(payload),
             "path_private_only": str(target)}
