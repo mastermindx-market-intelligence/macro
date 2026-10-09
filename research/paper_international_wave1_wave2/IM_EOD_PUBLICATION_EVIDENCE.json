@@ -1,0 +1,60 @@
+{
+  "schema": "intl_eod_publication_evidence.v1",
+  "state": "IN_PROGRESS_SOURCE_VERIFIED_NOT_RELEASED",
+  "parent_pr": 8527,
+  "implementation_pr": 8715,
+  "protected_source": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "mode": {
+    "user_requested": "Pro",
+    "served_mode": "UNATTESTED"
+  },
+  "authority": "Current Chairman continuation; user-facing redistribution confirmed 2026-10-09",
+  "custody": {
+    "operation_id": "intl-r10-qualified-publisher-20261009",
+    "lane": "web",
+    "repository": "macro",
+    "workspace_path": "/Volumes/Mastermind/agent-workspaces/macro/web/intl-r10-qualified-publisher-20261009",
+    "acquired_base": "1bb3ed402536538765089d19e7b64f401e29bc33",
+    "legacy_workspace_preserved": true
+  },
+  "validation": {
+    "source_foundation": 1290,
+    "publisher_render": 339,
+    "result": "PASS",
+    "runtime": "Python 3.12, M2 Studio",
+    "scope": "local; no hosted-green or served acceptance"
+  },
+  "reproduced_and_repaired": [
+    "Jinja-dependent tests were placed in the numerical-only CI job",
+    "History AST fixture omitted the new optional production_inputs argument and config/path context",
+    "intelligence-registry and browser scopes omitted the new import",
+    "fresh aggregate collector status admitted older index/FX tails",
+    "source hash prefix incorrectly implied delayed data policy",
+    "per-panel EOD notice disappeared outside Overview",
+    "non-string collector clocks raised AttributeError"
+  ],
+  "source_sha256": {
+    "lib/intl_eod_publication.py": "d8f38369bb7249c40056c488bdc4b60876c8ed0aa6fb6577ad14a4fe6548be3e",
+    "scripts/build_intl.py": "85ba198dc741a0986a8e2e1ff17bb5945f5821421bbbcbcdded211cb98043c8a",
+    "templates/intl_workspace/shell.html.j2": "98e1765678aa16481f0bc630ecdc1884c2b52e26788f47c3e3b16c33641a1d93",
+    "tests/test_intl_eod_publication.py": "3e10f2ad7c75911d767a0cac4157f63db38eb5a9c89173cbf92f2265ac646e35",
+    "tests/test_intl_eod_publisher_integration.py": "b84b1d65b54ce613b4b4680c733b6af8ed595a0526d588d6d269e30bd13fa59f",
+    "tests/test_intl_history_publication_independent.py": "3c82c0548b5a418c39b5dc12f2d773f5f48c79c11b2fffd564cb7af61d1a4873",
+    "config.yml": "02fd7d94a0cb553105a76de3dd34bccb244cb555ac0cca0baec774fa7cbfad62",
+    "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md": "8abe56f3705b30adb99b6dd99d0229edfa63d865f7629f7cc1bc602c582ec9a4"
+  },
+  "remaining": [
+    "independent exact-source review",
+    "CI scope/contract verification and all required hosted checks",
+    "dual-theme EN/ZH actual-browser evidence",
+    "ordinary publication and authenticated served verification",
+    "IM02 chart/benchmark and IM08/09 incumbent Saved dependencies"
+  ],
+  "do_not_redo": [
+    "Do not resubmit the already completed #8715 initial CI run",
+    "Do not overwrite the preserved legacy source workspace",
+    "Do not reopen the Chairman-confirmed redistribution gate"
+  ],
+  "effect_state": "NO_UNRESOLVED_WRITES",
+  "next_action": "Freeze this source for a bounded independent Fabric review while advancing browser and CI verification"
+}

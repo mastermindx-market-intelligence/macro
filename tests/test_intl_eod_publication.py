@@ -162,41 +162,56 @@ def test_future_collector_stamp_and_invalid_frame_refused(tmp_path):
     assert build_eod_inputs(bad, data_root=tmp_path, evaluated_at=EVALUATED, rights=GRANT) is None
 
 
-def test_normal_international_publisher_consumes_completed_eod_package(tmp_path):
-    from scripts import build_intl as publisher
+def test_fresh_collector_cannot_certify_a_missing_expected_snapshot_day(tmp_path):
+    """Deleting the expected day from all series must remove qualification."""
     frame, _ = _setup(tmp_path)
-    ws = publisher._publication_workspace(
-        frame, data_root=tmp_path, evaluated_at=EVALUATED)
-    assert ws is not None
-    usd = _panel(ws)
-    assert usd["eligible_count"] == 7
-    assert ws["binding_version"] == 2
-    assert "intl-supplied-close:sha256:" in usd["context"]["source_reference"]
+    frame = frame.iloc[:-1]
+    for path in (tmp_path / 'intl').glob('*.parquet'):
+        pd.read_parquet(path).iloc[:-1].to_parquet(path)
+    assert frame.index[-1].date().isoformat() == '2026-10-06'
+    assert build_eod_inputs(frame, data_root=tmp_path,
+                            evaluated_at=EVALUATED, rights=GRANT) is None
 
 
-def test_normal_publisher_keeps_safe_unavailable_on_status_failure(tmp_path):
-    from scripts import build_intl as publisher
-    frame, _ = _setup(tmp_path, late=False)
-    ws = publisher._publication_workspace(
-        frame, data_root=tmp_path, evaluated_at=EVALUATED)
-    assert ws is not None
-    usd = _panel(ws)
-    assert usd["eligible_count"] == 0
-    assert usd["ranking_reason"] == "no_qualified_returns"
-
-
-def test_delayed_source_notice_and_actual_window_dates_are_rendered(tmp_path):
-    from pathlib import Path
-    from jinja2 import Environment, FileSystemLoader
+def test_one_old_index_fx_pair_is_not_promoted_by_other_fresh_markets(tmp_path):
     frame, _ = _setup(tmp_path)
-    delayed, inputs = build_eod_inputs(
-        frame, data_root=tmp_path, evaluated_at=EVALUATED, rights=GRANT)
-    panel = _panel(_overview(delayed, inputs))
-    loader = FileSystemLoader(str(Path(__file__).resolve().parents[1] / "templates"))
-    page = Environment(loader=loader, autoescape=True).get_template(
-        "intl_workspace/overview.html.j2").render(
-        overview=panel, context_id="test-eod", generation=GENERATION)
-    assert 'data-im-eod-disclosure' in page
-    assert "at least 2 calendar days" in page
-    assert "2026-10-07" in page
-    assert "<time " in page
+    for symbol in ('^N225', 'USDJPY=X'):
+        frame.loc[frame.index[-1], symbol] = float('nan')
+        path = tmp_path / 'intl' / (symbol.replace('^', '_').replace('=', '_') + '.parquet')
+        pd.read_parquet(path).iloc[:-1].to_parquet(path)
+    delayed, inputs = build_eod_inputs(frame, data_root=tmp_path,
+                                       evaluated_at=EVALUATED, rights=GRANT)
+    assert not any(e['series_id'] in ('^N225', 'USDJPY=X')
+                   for e in inputs['source_evidence'])
+    overview = _panel(_overview(delayed, inputs))
+    japan = next(row for row in overview['rows'] if row.get('market_id') == 'JP')
+    assert japan['metric']['value'] is None
+    assert overview['eligible_count'] == 6
+
+
+@pytest.mark.parametrize('bad_stamp', [None, True, 42, [], {}])
+def test_nonstring_collector_clock_is_withheld_without_throwing(tmp_path, bad_stamp):
+    frame, _ = _setup(tmp_path)
+    path = tmp_path / 'run_status.json'
+    status = json.loads(path.read_text())
+    status['sources']['intl_prices']['checked_at'] = bad_stamp
+    path.write_text(json.dumps(status))
+    assert build_eod_inputs(frame, data_root=tmp_path, evaluated_at=EVALUATED,
+                            rights=GRANT) is None
+
+
+def test_weekend_snapshot_clock_uses_friday_without_inventing_weekend_bars(tmp_path):
+    frame, _ = _setup(tmp_path)
+    frame.index = pd.bdate_range(end='2026-10-09', periods=len(frame))
+    for symbol in frame.columns:
+        path = tmp_path / 'intl' / (symbol.replace('^', '_').replace('=', '_') + '.parquet')
+        frame[[symbol]].rename(columns={symbol: 'close'}).to_parquet(path)
+    status_path = tmp_path / 'run_status.json'
+    status = json.loads(status_path.read_text())
+    status['sources']['intl_prices'].update(checked_at='2026-10-12T12:00:00+00:00', last_date='2026-10-09')
+    status_path.write_text(json.dumps(status))
+    delayed, inputs = build_eod_inputs(frame, data_root=tmp_path,
+        evaluated_at='2026-10-12T20:30:00+00:00', rights=GRANT)
+    assert delayed.index[-1] == pd.Timestamp('2026-10-09')
+    assert {e['latest_completed_observation'] for e in inputs['source_evidence']} == {'2026-10-09T00:00:00'}
+    assert _panel(_overview(delayed, inputs))['eligible_count'] == 7

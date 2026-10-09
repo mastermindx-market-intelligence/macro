@@ -32,6 +32,8 @@ _LEGS = ("local", "usd", "fx_contribution")
 
 
 def _when(value: str) -> datetime:
+    if type(value) is not str or not value.strip():
+        raise ValueError("timestamp must be nonempty text")
     result = datetime.fromisoformat(value.replace("Z", "+00:00"))
     if result.tzinfo is None:
         raise ValueError("evaluation time needs a UTC offset")
@@ -81,7 +83,10 @@ def _stored_witness(root: Path, series_id: str, expected: pd.DataFrame,
         if not bars.index.equals(selected.index) or not bars.equals(selected):
             return None
         latest = selected.index[-1]
-        if latest.weekday() >= 5 or latest > cutoff:
+        # A fresh run for another series cannot make this old tail current.
+        # The expected snapshot date is chosen from the clock BEFORE looking
+        # at this series, never by calling its last saved bar "completed".
+        if latest != cutoff:
             return None
         # The collector must have finished after this observed daily bar and
         # outside a conservative two-day post-date window.
@@ -136,6 +141,11 @@ def build_eod_inputs(
 
     # This is an intentionally delayed source, not a live/current-session read.
     cutoff = pd.Timestamp((evaluated - _MIN_OBSERVATION_AGE).date())
+    while cutoff.weekday() >= 5:
+        cutoff -= pd.Timedelta(days=1)
+    # This is a conservative weekday obligation, not an inferred foreign
+    # holiday calendar. A missing expected day stays unavailable, even when
+    # a venue may have been closed. No closure exemption is fabricated.
     selected = closes.loc[closes.index <= cutoff].copy()
     if selected.empty:
         return None

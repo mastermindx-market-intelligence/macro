@@ -127,7 +127,7 @@ def _history_publication_sources(receipts):
 
 def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, cgl=None,
                            history_sources=None):
-    """Compose one normal publication without granting any equity evidence."""
+    """Compose independent evidence-qualified views under the narrow EOD grant."""
     from engine.intl_inputs import countries
 
     generation = "im-workspace-generation:" + str(uuid4())
@@ -153,6 +153,13 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
     )
     if workspace is None:
         return None
+    if publication_inputs is not None:
+        # Publication owns the delayed-price notice. A content-hash prefix
+        # never implies a clock policy; keep it outside view-switching panels.
+        workspace["eod_snapshot"] = {
+            "as_of": closes.index[-1].date().isoformat(),
+            "policy": "intl-conservative-observed-eod-tplus2-v1",
+        }
     registry = {
             "markets": [{"market_id": cc, "name_en": row["name"], "name_zh": row["name_zh"]}
                         for cc, row in countries().items()],

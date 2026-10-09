@@ -45,12 +45,6 @@
       {% endif %}
       <span class="l-en">Price return</span><span class="l-zh" lang="zh">价格回报</span>
     </div>
-    {% if projection_context.eligible_count and source_value.startswith('intl-supplied-close:sha256:') %}
-    <p class="intl-overview__limitation" data-im-eod-disclosure>
-      <span class="l-en">Delayed EOD · at least 2 calendar days after the observed bar. Each market shows its actual calculation dates below; not live prices.</span>
-      <span class="l-zh" lang="zh">延迟日终数据 · 距观测日期至少 2 个自然日。各市场的计算日期见下方；并非实时价格。</span>
-    </p>
-    {% endif %}
 
     <div class="intl-overview__summary" data-im-summary>
       {% if overview.summary.kind == 'highest_lowest_returns' %}

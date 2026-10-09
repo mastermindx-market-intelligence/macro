@@ -132,7 +132,12 @@ age checks, rather than treating a developing daily bar as a completed
 session. The frontend labels these as **delayed EOD** and shows the actual
 calculation windows. No claim of an exchange-certified holiday calendar is
 made: the conservative T+2 policy is its admitted observation-time evidence,
-not an exchange-issued schedule. Adding a faster clock later requires actual
+not an exchange-issued schedule. The expected snapshot weekday is computed from
+the evaluation clock before any stored tail is examined. Each index and FX
+series must independently contain that exact date. A recent aggregate collector
+status cannot qualify an older series. Weekend dates move to the preceding
+Friday; missing weekday observations remain unavailable, with no invented
+foreign-holiday exemption. Adding a faster clock later requires actual
 per-market verified session/calendar evidence, independent data-quality
 review and preserved before/after coverage cases.
 
