@@ -2,19 +2,19 @@
   "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
   "whole_mission_accepted": false,
   "terminal_release": {
-    "head": "2afef4456d81dc5d7cd99e929d425474964cd6ec",
+    "head": "048e019caf84fc8c2bc0e4180de313d6a02e7ca5",
     "canonical_builder_rc": 0,
     "source_marker_public_agree": true,
     "healthy_services": true,
-    "free_bytes_after_release": 15611318272,
+    "free_bytes_after_release": 13998530560,
     "installed_builder_sha256": "6cd5088d12b0ce4be5bf3c3b8b6ccf416864002ec4243056966e5ed81507b2d5",
     "receipt": {
-      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-terminal-release-2af-receipt-20261009.json",
-      "sha256": "b74e9eed537697227c2e32c267f30606ca85028abfd48dd58d863b2e4cc1695d"
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-terminal-release-048e-receipt-20261009.json",
+      "sha256": "8bfa3cfccc919c6c25b93edaedc0b2f060e010207eea35f1c66d23af22089ad0"
     },
     "public_readback": {
-      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/terminal-2af-public-release-readback-20261009.json",
-      "sha256": "5c405cc4a626d02d42227a8e243e64135e6f7a0287a7e7146c58efdea1c4b96e"
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/terminal-048e-public-release-readback-20261009.json",
+      "sha256": "89920a8039ecedf6d195676be14f33a9e0789e6c83c764828ef52e51e01289a1"
     },
     "compile_timeout_then_recovery": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/pine-a70-timeout-recovery-20261009.json",
@@ -106,10 +106,10 @@
     },
     "release_gate": {
       "prior_migration": "0030 on held incumbent #804",
-      "current_source": "cbd05fda4705c7d88e9a6811b310e525d25c289a",
-      "writer": "01a104c8-6e11-7e52-93c1-6b8dbc45bb9c ACTIVE confirmed",
+      "current_source": "76e22c3d2640355b160cdf28dd8bb0b2c824b294",
+      "writer": "IW201a104c8-6e11-7e52-93c1-6b8dbc45bb9c active reviewing actual4000-receipt finding; T03 published carrier, precise next modifying writer join pending",
       "apply_state": "UNAPPLIED",
-      "hold": "integration review5989604142; explicit denied #792 ingress effect remains binding",
+      "hold": "current804 whole-kernel release review/apply/rights gate; actual4000-receipt recovery probe active; denied792/B5 preserved",
       "ready_auto_merge": false,
       "whole_mission_accepted": false
     }
@@ -134,11 +134,18 @@
       37864329933,
       37864820430,
       37869801986,
-      37869591483
+      37869591483,
+      37885900758,
+      37886460449
     ],
-    "app_enrollment_still_pending": true
+    "app_enrollment_still_pending": true,
+    "latest_exact_approval": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-20261009.json",
+      "sha256": "e9773f36d7d91d2ce5fca49c1d8e1cc5a0c8b7942a29e5bc58fc33dad3166c09"
+    },
+    "latest_readback": "06:05Z bothQUEUED/conclusionnull after ordinary authenticated POST; observed workflows are byte-identical to trusted master; do not infer latest CI completion"
   },
-  "remaining": "Original per-mission done conditions remain separate. A04 and A09 ordered migrations are unapplied behind current active #804/0030 integration hold; A06 and controller863 source accepted and native auto-merge armed; current release2af healthy. Real paid identity, FX/producer authority and real-recipient evidence remain owed.",
+  "remaining": "Current048release healthy and pagination863 delivered. A06 explicitT07hold preserved.839/853 ordinary exact workflow approvals completed automatically; their laterCI/merge/release remains with existing sweeper/heartbeat. A04/A09 ordered0030/0031/0032unapplied; actual804current76e source review/recovery active. Macro8687published5cd505native+30actualChromium exacthead qualification and independent review active. Fabric supported recovery engineering active. Actual Free-principal JSON/CSV bytes and consistency qualified; nonempty research/archive, paid identity, FX/producer authority and real-recipient proofs remain owed. Whole acceptancefalse.",
   "a05": {
     "pr": 861,
     "head": "856f68e04bc85e265887d721854e2fa410314fdd",
@@ -268,9 +275,11 @@
       "terminal/lib/__tests__/flowStreamLifetime.test.ts": "327cca09527e86028b2f5770bf827062ab9b8fb2e02971c4962146cd061d50c6",
       "terminal/lib/__tests__/flowStreamRouteBoundary.test.ts": "c132d422ab69bc40eacf23f0130fe262988b9cb6434aaceacc935b73ed699bb6"
     },
-    "ready": true,
-    "native_auto_merge": "SQUASH",
-    "merge_on_green_armed": true
+    "ready": false,
+    "native_auto_merge": null,
+    "merge_on_green_armed": false,
+    "release_hold": "T07 source orchestration hold6075058001; actual pickup05:23Z on462ddce5. Prior frozen source review retained; new modifying lane conserved.",
+    "custody_reconciliation": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/862#issuecomment-6075058001"
   },
   "a09": {
     "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
@@ -419,7 +428,8 @@
     "same_root": true,
     "normal_existing_gh_approval_self_service": true,
     "duplicate_control_plane": false,
-    "exact_app_grant_pending": true
+    "exact_app_grant_pending": true,
+    "trusted_ordinary_approval_and_expected_head_refresh": true
   },
   "ci_pagination": {
     "pr": 863,
@@ -435,7 +445,7 @@
     "review_child": "terminal-audit20-ci-pagination-source-review-20261009",
     "cleanup_proven": true,
     "residual_count": 0,
-    "production_accepted": false,
+    "production_accepted": true,
     "proofs": {
       "red": {
         "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ci-pagination-red-20261009.log",
@@ -456,8 +466,13 @@
     },
     "base": "2afef4456d81dc5d7cd99e929d425474964cd6ec",
     "current_base_controller_tests": 33,
-    "ready": true,
-    "native_auto_merge": "SQUASH"
+    "ready": false,
+    "native_auto_merge": null,
+    "merged": true,
+    "merge_head": "048e019caf84fc8c2bc0e4180de313d6a02e7ca5",
+    "merged_at": "2026-10-09T04:49:30Z",
+    "canonical_release_accepted": true,
+    "production_acceptance_scope": "canonical source/runtime/public marker and services; historical same-head read-only controller proof; not live short-lived App enrollment"
   },
   "fabric_settlement_reconciliation": {
     "child": "terminal-audit20-a04-universal-provider-adjudication-20261009",
@@ -465,6 +480,237 @@
     "manual_bypass": false,
     "source_judgment": "parent accepted exact reviewed journal plus current-base proof",
     "artifact_ledger_acceptance": false,
-    "existing_owner": "01a118f3-fc4e-7941-b432-03703dccd19b; bounded exact-run reconciliation requested"
+    "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
+  },
+  "observed_at": "2026-10-09T06:24:05.270497+00:00",
+  "pending_ci_carriers": {
+    "839": {
+      "head": "3777bdb6e95f520e40185225dd1729631b159594",
+      "approved_pr_run": 37885900758,
+      "observed_after_approval": "QUEUED",
+      "native_auto_merge_armed": true
+    },
+    "853": {
+      "head": "979724c1544256708ca1514671a699b119523694",
+      "approved_pr_run": 37886460449,
+      "observed_after_approval": "QUEUED",
+      "native_auto_merge_armed": true
+    }
+  },
+  "a09_macro": {
+    "schema": "terminal.audit20.macro_native_money_qualification.v1",
+    "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "pr": 8687,
+    "head": "5cdacd56496aebb3ab7db67caf90cb0f81158b07",
+    "base": "4e76cc3c34e2bf57cc4d9e691791568eacab6367",
+    "observed_at": "2026-10-09T06:19:50.859399+00:00",
+    "draft": true,
+    "source_accepted": false,
+    "whole_mission_accepted": false,
+    "native_assertions": 505,
+    "native_files": 9,
+    "chromium_cases": 30,
+    "chromium_skipped": 0,
+    "zero_overflow": true,
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "viewports": [
+      [
+        1440,
+        900
+      ],
+      [
+        820,
+        1180
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "shipping_asset_pairs": 109,
+    "source_files": [
+      "app/main.py",
+      "engine/neuralweb/brain_gateway.py",
+      "engine/portfolio_brief.py",
+      "engine/portfolio_money.py",
+      "site/portfolio.js",
+      "site/portfolio_import.js",
+      "site/portfolio_state.js",
+      "site/watchlist.html",
+      "site/watchstore.js",
+      "templates/portfolio.js",
+      "templates/portfolio_import.js",
+      "templates/portfolio_state.js",
+      "templates/watchlist.html.j2",
+      "templates/watchstore.js",
+      "tests/test_portfolio_auth_transition_js.py",
+      "tests/test_portfolio_brief.py",
+      "tests/test_portfolio_import_a1b_js.py",
+      "tests/test_portfolio_state_js.py",
+      "tests/test_portfolio_truth_a1a_js.py"
+    ],
+    "proofs": {
+      "a09-macro-published-native-qualification-20261009.log": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-published-native-qualification-20261009.log",
+        "sha256": "8352d2dc45f1409fe647c88d6e357aa64d0eb8f08fe19aa0b59c8e3e6bad2b95"
+      },
+      "a09-macro-published-browser-qualification-20261009.log": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-published-browser-qualification-20261009.log",
+        "sha256": "3c8ade94a6c14ad673e8690ce1a7f99b197bc9c3ad42fd47630b7aedccc49ff2"
+      },
+      "a09-macro-native-browser-receipt-20261009.json": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-native-browser-receipt-20261009.json",
+        "sha256": "516f433f601c1616003edb86493ea3472715dee436cbfb371db2cdf57c1788c2"
+      },
+      "a09-macro-row-paired-assets-20261009.log": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-row-paired-assets-20261009.log",
+        "sha256": "22ed0adb3cb24c2e8e3033bcda8877a089e23500f3289ed385ce754d6cf0d4ad"
+      },
+      "a09-macro-review-findings-red-20261009.log": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-review-findings-red-20261009.log",
+        "sha256": "fcd06c9987fda3a7bc2ed7bdf94b89ed5be07970685f036b82820e6770147a85"
+      },
+      "a09-macro-row-money-red-20261009.log": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-row-money-red-20261009.log",
+        "sha256": "ced3ddf7c64a4b0751bcb218a41de540c50f266dfeec6c641a1df532a0ccb46c"
+      },
+      "a09-macro-row-money-green-20261009.log": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-row-money-green-20261009.log",
+        "sha256": "91f89fddad2f5132d0772720c64a4852318ec0e45961ed52071fd7261739e43b"
+      },
+      "a09-macro-duplicate-book-red-20261009.log": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-duplicate-book-red-20261009.log",
+        "sha256": "bb71f0b30469cc7e849031b2ebdac1f037b6ac582d9e80c81eca52061bbb3f74"
+      },
+      "a09-macro-duplicate-book-green-20261009.log": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-macro-duplicate-book-green-20261009.log",
+        "sha256": "b0eb2a1606673e66d63d07fa743a1ed3908d2ce0055167312341afc83322cf45"
+      }
+    },
+    "independent_review": {
+      "child": "terminal-audit20-a09-macro-native-frontier-review-20261009",
+      "state": "ACTIVE_OR_WAITING",
+      "exact_head": "5cdacd56496aebb3ab7db67caf90cb0f81158b07",
+      "earlier_ecc_source_review": "terminal-audit20-a09-macro-companion-review-20261009 formally accepted PASS_SCOPED; reviewer suggestion reproduced and repaired"
+    },
+    "scope": "Native row/drawer values and returns, whole-cohort browser weights and factor inputs, duplicate-name conservation, private brief loaders/cache, versioned paired assets and currency-preserving import/persistence",
+    "unit_receipt_definition": "explicit supported native code bound to exact raw ticker and price; current unit from the same quote observation; no market/ticker guess",
+    "release_gates": [
+      "independent exact-head source acceptance",
+      "ordered0030/0031/0032 merged AND applied",
+      "required exact-head CI",
+      "canonical Macro/API release and actual authenticated production acceptance"
+    ],
+    "not_claimed": [
+      "production DDL",
+      "authenticated production browser proof",
+      "reporting FX conversion",
+      "historical currency inference",
+      "whole A09 acceptance"
+    ]
+  },
+  "a10_authenticated_export": {
+    "schema": "terminal.audit20.authenticated_export_acceptance.v1",
+    "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "observed_at": "2026-10-09T06:21:00.601356+00:00",
+    "page": "https://app.mastermind-x.com/terminal",
+    "principal_kind": "existing signed-in Google Free principal",
+    "source_release_last_verified": "048e019caf84fc8c2bc0e4180de313d6a02e7ca5",
+    "production_browser_downloads": true,
+    "json": {
+      "bytes": 6210,
+      "sha256": "d1f03f58585c89b0a2c793e922bd0b937b3c274b21e5f6ce69cbb2054c013163",
+      "schema": "mm.terminal_account_export.v1",
+      "collections": {
+        "watchlists": 6,
+        "portfolio_positions": 0,
+        "saved_scripts": 0,
+        "chart_layouts": 0
+      }
+    },
+    "csv": {
+      "bytes": 7313,
+      "sha256": "245a12a429d9906b1143fc9d5e6e31b1db82d05a71744c93d318ff07d5ff2285",
+      "data_rows": 82,
+      "header": [
+        "section",
+        "dataset",
+        "row_id",
+        "field",
+        "value"
+      ],
+      "json_watchlist_values_match": true,
+      "coverage_counts_match": true
+    },
+    "coverage": {
+      "included": {
+        "watchlists": 6,
+        "portfolio_positions": 0,
+        "saved_scripts": 0,
+        "chart_layouts": 0
+      },
+      "unavailable": [],
+      "partial": [],
+      "honestly_omitted": [
+        "chart_drawings",
+        "alerts",
+        "chat_history",
+        "usage_records",
+        "profile_and_plan",
+        "payment_records",
+        "download_allowance"
+      ]
+    },
+    "screenshot": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a10-authenticated-export-controls-20261009.png",
+    "download_hook": "CUA download event timed out; actual browser-created file reconciled from timestamp/name and parsed. CSV also downloaded normally. No site error.",
+    "source_collections_accepted_for_observed_principal": true,
+    "nonempty_scripts_layouts_positions_tested_in_production": false,
+    "whole_a10_accepted": false,
+    "whole_mission_accepted": false,
+    "private_row_contents_or_account_credentials_published": false,
+    "production_writes": false
+  },
+  "a09_quote_unit_authority": {
+    "review_child": "terminal-audit20-a09-current-quote-unit-qualification-20261009",
+    "state": "TERMINAL rc0 signalok",
+    "artifact_accepted": true,
+    "return": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-current-quote-unit-qualified-return-20261009.txt",
+      "sha256": "8b4e8b945ac57006130c7aeafb26dc68de47ebafb743ca8b819879f7f13a3b78"
+    },
+    "current_public_quote_observation": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-public-native-quote-unit-observation-20261009.json",
+      "sha256": "ba241a361c44dfe12460815678e0516caa96bae6a463647fa37599e844587020"
+    },
+    "production_unit_available": false,
+    "qualified_source_seam": "Official Massive AllTickers optional exact ISO currency_symbol could qualify a joined current US observation; current snapshot alone has no unit. Tencent HK/CN field offsets do not prove unit/scale. No provider key or source change.",
+    "whole_mission_accepted": false
+  },
+  "fabric_runtime_recovery": {
+    "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f",
+    "existing_owner_title": "Improve Fabric and Codex integration",
+    "installed_repairs": {
+      "support_receipt_validator": true,
+      "retained_result_inode_read": true
+    },
+    "installed_sha256": {
+      "support_bundle.py": "126921951232a322668ba38be8671197fba99a89a0587b4dea86c10b32511a22",
+      "lane_runtime.py": "ae4682dbf613eb463d16c29ed84a068b656f2b5f7292089e73828c5688b0289d",
+      "fabric_task.py": "7229d5eb232d10c22dcd648c02d6023128fe41863ffa233b1f9e28d3f2c77a93"
+    },
+    "owner_verified_live_roundtrip": "fabric-policy-install-proof-01a11e90-v1; original parent consumed/deterministically accepted2642bytes43sec; qualified installed source and placement",
+    "remaining_recovery_engineering": "commissioned exact-operation prelaunch failure retry after accepted material repair and A04 terminal publication; isolated tests reproduce false DONE after ledger failure, repair/idempotency review active",
+    "a04_original_controller_failure_recovered": "owner recovered original unmatched quote after cleanup from Codex session log; worker savedrc0 and same-run artifacts preserved; publication repair not yet installed/accepted",
+    "a09_macro_review_liveness": "same child normalGrok/ubuntu3 launched06:11Z; at06:21ZACTIVE_OR_WAITING/no delivered output; one bounded canonical START/process reconciliation requested through owner",
+    "frozen_operations_not_replayed": [
+      "terminal-audit20-a09-native-money-adjudication-20261009",
+      "terminal-audit20-a04-universal-provider-adjudication-20261009",
+      "original Auth0/DCR frozen effect"
+    ],
+    "same_root": true,
+    "new_or_alternate_dispatch": false
   }
 }
