@@ -171,6 +171,35 @@ def test_anonymous_first_scan_stays_separate_from_registration():
     assert not otp.requests
 
 
+@pytest.mark.parametrize("observed_offset,expected_code", [
+    (timedelta(days=-8), "STALE_SCAN_PROOF"),
+    (timedelta(days=-30), "STALE_SCAN_PROOF"),
+    (timedelta(minutes=6), "FUTURE_SCAN_PROOF"),
+])
+def test_stale_or_future_signed_scan_clock_refuses_optin_even_with_trusted_authority(
+    observed_offset, expected_code
+):
+    service, otp, store, *_ = make()
+
+    class SignedButBadClock:
+        def require_public_scan(self, receipt):
+            return ScanEvidence("event-123", ("NVDA",),
+                                (NOW + observed_offset).isoformat(), True)
+
+    service.scan = SignedButBadClock()
+    fails(expected_code, lambda: consented(service))
+    assert otp.requests == [] and store.pending == {} and store.records == {}
+
+
+def test_seven_day_scan_freshness_boundary_retains_optin_without_extra_registration():
+    service, otp, store, *_ = make()
+    service.scan.require_public_scan = lambda _: ScanEvidence(
+        "event-123", ("NVDA",), (NOW - timedelta(days=7)).isoformat(), True)
+    response = consented(service)
+    assert response["status"] == "verification_requested"
+    assert len(otp.requests) == 1 and len(store.pending) == 1
+
+
 def test_invalid_address_and_unverified_never_becomes_a_lead():
     service, otp, store, *_ = make()
     for bad in ("bad", "a@b", "a@b.com\nBcc:other@example.com", "x" * 256 + "@e.com"):
