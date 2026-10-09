@@ -275,7 +275,7 @@ def standout_index(region: str = "us") -> dict[str, dict]:
 def build_detail_pages(data: dict, site: Path, env, region: str = "us",
                        chart: dict | None = None) -> int:
     """data carries theme_intel + baskets (the build payload). Returns # pages written."""
-    from engine import basket_history, basket_score
+    from engine import basket_history, basket_score, leadership_receipt
     sd_dir, out_name, stock_base = REGIONS.get(region, REGIONS["us"])
     ti = data.get("theme_intel") or {}
     tmap = {t["id"]: t for t in ti.get("themes", [])}
@@ -301,6 +301,7 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
                     "on_board": m["symbol"] in board,
                     "member_ctx": basket_ctx.get(m["symbol"])} for m in b.get("members", [])]
         th = {**tmap.get(bid, {}), "weights": ti.get("weights")}   # weights for the composition bar
+        lr = leadership_receipt.build_receipt(b, th, ti, region, site)
         detail = {
             "basket": basket_view, "members": members, "theme": th,
             "act_now": basket_score.act_now_stocks(members, th),
@@ -308,6 +309,7 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
             "timeline": basket_history.change_timeline(bid, region=region),
             "as_of": ti.get("as_of") or b.get("created"),
             "market_concentration": ti.get("market_concentration") or {},
+            "leadership_receipt": lr,
             # US hub merged into Sector Intelligence (sector_central.html, 2026-08) and the
             # China hub into China Sector Intelligence (sector_central_china.html, 2026-08);
             # hk/canada/intl keep their Theme Rotation Desk hubs + label.

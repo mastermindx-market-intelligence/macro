@@ -16,10 +16,14 @@ ambiguity: specified
 owns_paths:
   - engine/company_intelligence/pg_profile.py
   - engine/company_intelligence/economic_observations.py
+  - engine/company_intelligence/pg_envelope.py
   - engine/earnings_narrative/economic_interpretation.py
   - engine/earnings_narrative/private_economic_stage.py
   - tests/earnings_economic_fixtures.py
+  - tests/earnings_economic_interpretation_fixtures.py
   - tests/test_pg_economic_*.py
+  - tests/test_pg_envelope_*.py
+  - tests/fixtures/pg_envelope/**
   - tests/test_earnings_economic_*.py
   - templates/earnings_wire/earnings-economic.js
   - templates/earnings_wire/_economic_dossier.html.j2
@@ -31,20 +35,30 @@ waves:
     title: "Integrated Consumer Defensive CDV-1 implementation"
     status: in_progress
     next_action: >
-      Land T1 (#7905: round-5 repair against the frozen probe suite, final
-      Opus round bounded to R7–R16, CI on the exact head, merge), then dispatch
-      T2 ∥ T3 off fresh main; T7 UI build and T8 release gates wait for the
+      T1 merged (#7905 → cdce3023, Sol 5902318060). T2 ∥ T3 r3 lanes run on
+      disjoint grants (SEAT_RULING_T2_T3_R3_2026-09-30); verify each PR,
+      commission one read-only Opus review each, merge on concluded CI, then
+      T4 → T5 ∥ T6. T7 UI build and T8 release gates wait for the
       Semiconductors foundation (#7870).
 next_action: >
-  Land T1 (#7905) then T2 ∥ T3 → T4 → T5 ∥ T6; T7 is a merged CONTENT +
-  CONTRACT spec awaiting the foundation host slot; readers first, producer
-  flag last.
+  Land T2 ∥ T3 (r3 lanes dispatched 2026-09-30; T1 merged as cdce3023), then
+  T4 → T5 ∥ T6; T7 is a merged CONTENT + CONTRACT spec awaiting the
+  foundation host slot; readers first, producer flag last.
 artifacts:
   - research/consumer_defensive/cdv1_program/README.md
   - research/consumer_defensive/cdv1_program/reviews/OPUS_PLAN_SEAM_AUDIT_2026-09-24.md
   - research/consumer_defensive/cdv1_program/design/T7_DOSSIER_DESIGN_SPEC_2026-09-24.md
   - research/consumer_defensive/cdv1_program/integration/FOUNDATION_INTEGRATION_MAP_2026-09-24.md
   - research/consumer_defensive/cdv1_program/release/RELEASE_READINESS_CENSUS_2026-09-24.md
+  - research/consumer_defensive/cdv1_program/release/T1_REAL_RELEASE_DEMONSTRATION_2026-09-29.md
+  - research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R10_2026-09-29.md
+  - research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R11_A_2026-09-30.md
+  - research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R11_B_2026-09-30.md
+  - research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T2_T3_R3_2026-09-30.md
+  - research/consumer_defensive/cdv1_program/packets/CDV1_T2_R3_PACKET_2026-09-30.md
+  - research/consumer_defensive/cdv1_program/packets/CDV1_T3_R3_PACKET_2026-09-30.md
+  - tests/test_pg_economic_observations_probes.py
+  - tests/test_pg_envelope_f1.py
 decisions:
   - "DEC:CDV1-PLAN-SEAM-RULINGS"
   - "DEC:CDV1-FOUNDATION-INTEGRATION"
@@ -89,15 +103,17 @@ those shared homes.
 - Never put implementation on the research carrier PR #7792.
 - Sparse worktrees omit `data/` and `site/`; writing there can truncate committed artifacts.
 - The private publication pointer uses strict conditional v2 writes. Never restore it best-effort after an uncertain v2 write.
-- New implementation suites are wired into the existing `gate:code` job `earnings-economic-dossier`; do not add a second workflow or scheduler.
+- New implementation suites are wired into the existing `gate:code` job `earnings-economic-dossier`; do not add a second workflow or scheduler. The one exception is Task 2's suite, whose import closure reaches `requests`: it gets its own exclusive job `earnings-economic-source-selection` in the same `.github/ci/legacy-jobs.yml` inventory (T2 R5, `research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T2_T3_R3_2026-09-30.md`).
+- Task 1 is frozen for every later lane: `pg_envelope.py`, `economic_observations.py`, `issuer_profiles.py`, the frozen probe suites and `tests/fixtures/pg_envelope/**`. A failing frozen test is reported, never edited.
 
-## Artifacts pending the Task 1 merge
+## Task 1 merged (2026-09-30)
 
-The T1 seat rulings (`research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R{1,2,3}_2026-09-24.md`,
-the Opus reviews beside them) and the two frozen probe suites
-(`tests/test_pg_economic_observations_probes.py`, `tests/test_pg_economic_observations_probes_r2.py`) live on
-PR #7905 until it merges; they join `artifacts:` then, because the Agent OS validator treats a path absent from
-`origin/main` as a phantom artifact.
+PR #7905 merged as `cdce3023` at the Sol-released exact head `1c3e2215` (Sol comment 5902318060, after the
+round-11 ACCEPT from two independent Opus groups). Everything that lived on the PR is now on `main`: the seat
+rulings and Opus reviews under `research/consumer_defensive/cdv1_program/reviews/`, the frozen probe suites
+(`tests/test_pg_economic_observations_probes*.py`, `tests/test_pg_envelope_f1_probes_r*.py`), the F1-Q
+envelope and its SEC fixtures. `artifacts:` names their entry points. The release accepts the T1 source seam
+only; the dossier, publication and served experience remain unaccepted.
 
 ## Foundation integration (2026-09-24 re-scope)
 

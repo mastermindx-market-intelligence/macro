@@ -1,21 +1,21 @@
 {
-  "appended": 7,
-  "asof": "2026-09-25",
+  "appended": 3,
+  "asof": "2026-10-07",
   "candidates": {
-    "R": 0,
-    "T": 19,
+    "R": 1,
+    "T": 10,
     "W": 4
   },
   "deduped": {
     "R": 0,
-    "T": 12,
+    "T": 8,
     "W": 4
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-26",
+      "asof": "2026-10-07",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -27,36 +27,26 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 20
+        "ohlcv_absent": 6
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Industrial Automation": {
-          "theme_thrust_frac": 0.2143,
+        "Education Technology": {
+          "theme_thrust_frac": 0.0,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
-        "Nanotechnology": {
-          "theme_thrust_frac": 0.1176,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Semiconductors": {
-          "theme_thrust_frac": 0.2647,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Space Tech": {
-          "theme_thrust_frac": 0.05,
+        "Virtual & Augmented Reality": {
+          "theme_thrust_frac": 0.0952,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 101,
-      "tickers_read": 121
+      "tickers_ok": 35,
+      "tickers_read": 41
     },
     "keys": [
       "relay_count_3d",
@@ -76,14 +66,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 129,
-      "n_covered": 87,
+      "members_indexed": 114,
+      "n_covered": 72,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-09-25",
+      "last_session": "2026-10-07",
       "n_tickers": 1547,
       "ok": true,
       "reason": null,
@@ -116,59 +106,56 @@
     ]
   },
   "flag_tickers": {
-    "R": [],
+    "R": [
+      "ABBV"
+    ],
     "T": [
-      "ACLS",
-      "AMAT",
-      "LRCX",
-      "IRDM",
-      "AME",
-      "ROK",
-      "VECO"
+      "GHC",
+      "AAPL"
     ],
     "W": []
   },
-  "n_universe": 1492,
+  "n_universe": 1493,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-26 22:28:40",
-  "runtime_s": 105.9,
+  "run_utc": "2026-10-08 16:52:08",
+  "runtime_s": 96.5,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-09-25",
-    "n_members": 129,
+    "asof": "2026-10-07",
+    "n_members": 114,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 4.214,
+        "emerging_score": 1.975,
         "rank": 1,
-        "theme": "Semiconductors"
-      },
-      {
-        "emerging_score": 2.367,
-        "rank": 2,
-        "theme": "Quantum Computing"
-      },
-      {
-        "emerging_score": 2.084,
-        "rank": 3,
-        "theme": "Space Tech"
-      },
-      {
-        "emerging_score": 1.559,
-        "rank": 4,
         "theme": "Industrial Automation"
       },
       {
-        "emerging_score": 1.55,
+        "emerging_score": 1.719,
+        "rank": 2,
+        "theme": "Space Tech"
+      },
+      {
+        "emerging_score": 1.52,
+        "rank": 3,
+        "theme": "Education Technology"
+      },
+      {
+        "emerging_score": 1.35,
+        "rank": 4,
+        "theme": "Virtual & Augmented Reality"
+      },
+      {
+        "emerging_score": 1.305,
         "rank": 5,
-        "theme": "Nanotechnology"
+        "theme": "Internet of Things"
       }
     ]
   },
@@ -178,18 +165,18 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-25",
+    "asof_max": "2026-10-07",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-25",
+    "asof_run": "2026-10-07",
     "evaluated": 713,
-    "fresh": 4,
+    "fresh": 5,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.3,
+    "runtime_s": 17.8,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 67,
+    "state_turn": 61,
     "universe_n": 717
   }
 }

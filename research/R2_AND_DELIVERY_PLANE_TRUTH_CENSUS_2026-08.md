@@ -28,12 +28,12 @@ premium product / private operations / vendor raw
   -> browser receives only its tier's bytes
 ```
 
-This census contains **106 non-overlapping delivery families** at the level needed to make that split. Their single required classifications are:
+This census contains **108 non-overlapping delivery families** at the level needed to make that split. Their single required classifications are:
 
 | Classification | Count | Meaning in this census |
 |---|---:|---|
 | `PUBLIC_FACT` | 5 | Candidate for an anonymous allowlist projection; source rights, delay and provenance still bind. |
-| `PREMIUM_PRODUCT` | 41 | Sellable differentiated output. Full objects require Essential or Pro delivery. |
+| `PREMIUM_PRODUCT` | 43 | Sellable differentiated output. Full objects require Essential or Pro delivery. |
 | `PRIVATE_OPERATIONAL` | 27 | Internal state, controls, models, telemetry or authority material. No customer tier receives the raw object. |
 | `VENDOR_RAW` | 12 | Raw/transformed upstream material. Private service/operator access only unless a separate licensed projection is proved. |
 | `UNRESOLVED` | 21 | Field, source-rights, mixed-schema, or unregistered-key audit is incomplete. It fails closed to private. |

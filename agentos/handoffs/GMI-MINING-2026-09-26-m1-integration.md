@@ -149,3 +149,23 @@ a lookup table without ever comparing numbers.
 
 The seat departed from exactly one ruling (cross-leg `basis` equality) on domain evidence,
 and pinned that departure as a test so it cannot be silently reversed.
+
+---
+
+## CORRECTION ISSUED 2026-09-27 — two items in this handoff are refuted
+
+Superseding record: `agentos/handoffs/GMI-MINING-2026-09-27-m1-integration.md`.
+
+1. **"#7950 merging unblocks T04b, not T03" is WRONG in both halves.** #7950's merge unblocks
+   NO plan task. R-MIN-05 orders `T01' -> (T02 || T04a) -> T03 -> T04b -> T07`, so T04b comes
+   *after* T03, and T03 additionally needs T02 delivered. T02 is the only next dispatchable
+   task and is still gated on another seat's #7905. What #7950's merge actually unblocked was
+   this program's records lane.
+2. **The `>= 8 ci-pack-*` presence rule prescribed here is unsatisfiable** on a legitimately
+   small plan and must not be implemented. `ci-plan` COMPUTES the pack set from the changed
+   files and takes about four minutes; a docs-only diff gets a REDUCED set (measured: 2 packs),
+   not an empty one. R-MIN-33g replaces it: the expected set is the ci.yml RUN's own job list
+   for the exact head sha, completion is that run's `status == "completed"`, absence is resolved
+   only against the Actions API, and your own push invalidates your own evidence.
+
+Nothing else in this handoff is withdrawn.

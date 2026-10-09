@@ -16,7 +16,7 @@
 # this registry governs GMI emissions only — it does not retro-gate owner products.
 
 version: 1
-updated: "2026-09-24"
+updated: "2026-10-06"
 
 families:
   mastermind_curated:
@@ -27,17 +27,17 @@ families:
     notes: "The 49 US curated baskets + regional families. First-class alongside vendor families (directive §24)."
 
   finviz_themes:
-    rights_class: unresolved
+    rights_class: internal_only
     auth_class: keyless_public
     source_route: "finviz.com/map?t=themes webpack data chunk (structure, manual receipted refresh) + /api/map_perf* (nightly perf)"
-    review: { date: "2026-08-14", by: "gmi-w3a", outcome: "escalation prepared, not concluded — see rights note §1; treat as internal_only until the operator resolves the derived-display question (natural forcing point: W6)" }
+    review: { date: "2026-10-06", by: "chairman-gate2", outcome: "Chairman gate #2 ruling (PR #8324 comment 6009724772; op gmi-vendor-rights-gate2-20261006-web-001): retained internal-only. NO public/customer display or redistribution rights granted; no legal or vendor approval occurred or is claimed; the 2026-08-14 gmi-w3a escalation closes as this no-display disposition. Evidence reviewed: https://finviz.com/help/faq (resale/export restrictions)." }
     notes: "Vendor advertises export/API as Elite (paid); FAQ notes resale restrictions on raw historical data. No legal conclusion drawn here. GMI derivatives stay in data/theme_graph/ (internal plane)."
 
   ths_concepts:
-    rights_class: unresolved
+    rights_class: internal_only
     auth_class: receipted_scrape
     source_route: "同花顺 concept boards via collectors/china_ths_concepts.py (complete-or-fail receipts, weekly cadence from 2026-08-15)"
-    review: { date: "2026-08-14", by: "gmi-w3a", outcome: "same posture as finviz_themes — internal-only for NEW GMI emissions; existing cn owner surfaces grandfathered; bundle the display decision with the W6 escalation" }
+    review: { date: "2026-10-06", by: "chairman-gate2", outcome: "Chairman gate #2 ruling (PR #8324 comment 6009724772; op gmi-vendor-rights-gate2-20261006-web-001): retained internal-only. NO public/customer display or redistribution rights granted; no legal or vendor approval occurred or is claimed; the 2026-08-14 gmi-w3a escalation closes as this no-display disposition. Evidence reviewed: https://www.10jqka.com.cn/ia/pass_buck.php (THS legal §14)." }
     notes: "Concept names are zh source labels; zh-authored copy laws apply if ever displayed."
 
   sec_edgar:

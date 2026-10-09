@@ -53,7 +53,7 @@ from tests.test_dashboard_template_render import _env, _board_row, _base_vm  # n
 # coincide here — but keying on the full body is still what
 # docs/TIER_PREVIEW_PATTERN.md's checklist step 7 requires, and it is what
 # actually catches a markup regression that keys the wrong span.
-CARD_ROW = re.compile(r'<a class="pvcard.*?</a>', re.S)
+CARD_ROW = re.compile(r'<(?:a|article) class="pvcard.*?</(?:a|article)>', re.S)
 TICKER_ATTR = re.compile(r'data-ticker="([^"]*)"')
 SCRIPT_TAG = re.compile(r'<script\b.*?</script>', re.S)
 
@@ -242,12 +242,57 @@ def test_ungated_path_writes_empty_payload_and_leaves_the_board_whole():
         assert payload["gated"] is False
         assert payload["rows"] == []
         assert payload["cards_html"] == ""
+        assert payload["today_cards_html"] == ""
+        assert payload["today_preview"] == 0
+        assert payload["today_total"] == 0
         assert payload["schema"] == "tier_payload.v1"
         assert payload["page"] == "us_stocks"
 
     # and the shell itself renders the whole board when there is no gate
     html = _render_shell(original, None)
     assert _tickers_in(html) == {f"TIC{i}" for i in range(7)}
+
+
+def test_paid_today_shelf_rides_protected_payload_without_widening_shell():
+    """Full-access Today gets six owner-Featured cards, but anonymous bytes stay at 3."""
+    pytest.importorskip("pandas")
+    pytest.importorskip("plotly")
+    from scripts.build_site import (
+        _split_us_board, _us_today_featured_preview, _write_us_payload,
+    )
+
+    rows = _rows_with_stage(9)
+    for row in rows:
+        row["featured"] = True
+    original = {
+        "buy": rows,
+        "eligible": 9,
+        "ranking": {"featured_count": 9},
+        "as_of": "2026-09-30",
+    }
+    shell_su, gate, locked = _split_us_board(original, 3, gated=True)
+    paid_today = _us_today_featured_preview(original, 6)
+    assert [r["ticker"] for r in paid_today] == [f"TIC{i}" for i in range(6)]
+
+    shell_html = _render_shell(shell_su, gate)
+    for tk in ("TIC3", "TIC4", "TIC5"):
+        assert tk not in shell_html, f"{tk} must stay out of anonymous HTML"
+
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        site = Path(td)
+        _write_us_payload(
+            _env(), site, gate, locked_rows=locked,
+            us_standouts=original, top_setups=None, built="2026-10-01 00:00",
+            today_rows=paid_today,
+        )
+        payload = json.loads((site / "premiumdata" / "us_stocks.json").read_text())
+
+    assert payload["today_preview"] == 6
+    assert payload["today_total"] == 9
+    assert _tickers_in(payload["today_cards_html"]) == {f"TIC{i}" for i in range(6)}
+    assert payload["preview"] == 3
+    assert payload["locked"] == 6
 
 
 def test_board_smaller_than_the_preview_cap_ships_whole():
@@ -273,10 +318,10 @@ def test_us_board_gate_cfg_reads_config_yml_and_is_fail_soft():
     import scripts.build_site as bs
 
     cfg = _us_board_gate_cfg()
-    assert cfg == {"gated": True, "preview_rows": 3,
+    assert cfg == {"gated": True, "preview_rows": 3, "today_preview_rows": 6,
                    "panels": True, "panel_preview_rows": 3}, (
         "config.yml us_board_gate must be {gated: true, preview_rows: 3, "
-        "panels: true, panel_preview_rows: 3} — update this test deliberately "
+        "today_preview_rows: 6, panels: true, panel_preview_rows: 3} — update this test deliberately "
         "if that switch changes")
 
     real_config = bs.config
@@ -289,6 +334,7 @@ def test_us_board_gate_cfg_reads_config_yml_and_is_fail_soft():
     try:
         bs.config = _Boom()
         assert _us_board_gate_cfg() == {"gated": False, "preview_rows": 3,
+                                        "today_preview_rows": 6,
                                         "panels": False,
                                         "panel_preview_rows": 3}, (
             "a config read must NEVER fail the render")
@@ -493,11 +539,10 @@ def _shell_board_blocks():
     if not SHELL.exists():
         pytest.skip("site/us_stocks.html not built in this checkout")
     shell = SHELL.read_text(encoding="utf-8")
-    cards = re.findall(r'<a class="pvcard[^"]*" href="stock\.html#[A-Z0-9.\-]+"\s*\n?\s*'
-                       r'data-ticker="([^"]+)"', shell)
     start = shell.find('id="us-stocktable-data"')
     table = (re.findall(r'"ticker":\s*"([^"]+)"', shell[start:shell.find("</script>", start)])
              if start >= 0 else [])
+    cards = [m.group(1) for m in TICKER_ATTR.finditer("".join(CARD_ROW.findall(_candidate_card_surface(shell))))]
     return payload, cards, table
 
 
@@ -838,6 +883,8 @@ def test_fold_controls_are_suppressed_while_gated_and_rebuilt_on_hydrate():
     assert '<button class="lst-more act-more"' not in gated
     assert "function restoreFold(" in gated
     assert "hydratePanels(payload)" in gated
+    assert "function hydrateToday(" in gated
+    assert "hydrateToday(payload.today_cards_html, payload.today_preview, payload.today_total)" in gated
 
 
 def test_hydration_targets_every_panel_it_withholds():
@@ -955,8 +1002,10 @@ def test_candidate_visibility_full_render_equals_split_plus_tail():
     overrides, gate, locked = bs._split_us_panels(vm, 1, gated=True)
     env = _env()
     template = env.get_template("_us_candidate_pool_rows.html.j2")
-    full = template.render(rows=vm["us_candidate_visibility"]["rows"])
-    shell = template.render(rows=overrides["us_candidate_visibility"]["rows"])
+    pool = vm["us_candidate_visibility"]
+    shell_pool = overrides["us_candidate_visibility"]
+    full = template.render(rows=pool["rows"], setup_as_of=pool.get("as_of"))
+    shell = template.render(rows=shell_pool["rows"], setup_as_of=shell_pool.get("as_of"))
     tail = bs._render_us_panel_payload(env, gate, locked, vm)["candidate_pool_html"]
     pattern = r'<div class="ucp-row".*?(?=<div class="ucp-row"|\Z)'
     normalize = lambda text: [" ".join(x.split()) for x in re.findall(pattern, text, re.S)]
@@ -974,6 +1023,64 @@ def test_candidate_visibility_untrusted_labels_are_escaped():
     assert '&lt;img' in html
 
 
+def _render_us_dashboard_with_plan_book(book, error=False):
+    vm = _base_vm()
+    vm["us_prophet_book"] = book
+    vm["us_prophet_book_error"] = error
+    return _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
+
+
+def test_us_plan_block_displays_source_owned_book_clock():
+    from bs4 import BeautifulSoup
+
+    html = _render_us_dashboard_with_plan_book({
+        "asof": "2026-09-26", "source_asof": "2026-09-25",
+        "source_board_asof": "2026-09-24", "plans": []})
+    clock = BeautifulSoup(html, "html.parser").select_one("#us-plan-book-asof")
+    assert clock
+    assert clock["data-plan-book-asof"] == "2026-09-25"
+    assert clock["data-plan-book-published"] == "2026-09-26"
+    assert clock["data-plan-book-source-asof"] == "2026-09-24"
+    text = clock.get_text(" ", strip=True)
+    assert "Plan records as of 2026-09-25" in text
+    assert "published 2026-09-26" in text
+    assert "source board 2026-09-24" in text
+    assert "Plan records as of 2026-09-26" not in text
+    assert "计划记录截至 2026-09-25" in text
+    assert "发布于 2026-09-26" in text
+    assert "来源榜单 2026-09-24" in text
+
+
+@pytest.mark.parametrize("source_asof", ["2026-9-5", "yesterday", None])
+def test_us_plan_block_clock_is_unavailable_when_source_day_is_not_valid(source_asof):
+    from bs4 import BeautifulSoup
+
+    html = _render_us_dashboard_with_plan_book({
+        "asof": "2026-09-26", "source_asof": source_asof, "plans": []})
+    clock = BeautifulSoup(html, "html.parser").select_one("#us-plan-book-asof")
+    assert clock
+    assert clock["data-plan-book-asof"] == ""
+    assert clock["data-plan-book-source-asof"] == ""
+    assert clock["data-plan-book-published"] == ""
+    text = clock.get_text(" ", strip=True)
+    assert "Plan record date unavailable" in text
+    assert "计划记录日期不可用" in text
+
+
+def test_us_plan_block_clock_is_unavailable_on_book_error():
+    from bs4 import BeautifulSoup
+
+    html = _render_us_dashboard_with_plan_book(None, error=True)
+    clock = BeautifulSoup(html, "html.parser").select_one("#us-plan-book-asof")
+    assert clock
+    assert clock["data-plan-book-asof"] == ""
+    assert clock["data-plan-book-published"] == ""
+    assert clock["data-plan-book-source-asof"] == ""
+    text = clock.get_text(" ", strip=True)
+    assert "Plan record date unavailable" in text
+    assert "计划记录日期不可用" in text
+
+
 def test_real_dashboard_consumes_candidate_projection():
     vm = _base_vm()
     vm.update(_candidate_visibility_vm())
@@ -989,7 +1096,12 @@ def test_candidate_hydration_is_not_a_new_data_or_permission_path():
     assert "hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source)" in source
     assert "root.dataset.poolHydrated === 'true'" in source
     assert "candidate-pool-hydrated" in source and "candidate-pool-hydrated" in fragment
-    assert "fetch(" not in fragment
+    hydration = fragment.split('<script>', 1)[1].split('</script>', 1)[0]
+    context = fragment[fragment.index("var contextRequestSerial=0"):fragment.index("root.addEventListener('candidate-pool-hydrated'")]
+    # The one expected request is the pre-existing pool fetch at templates/_us_candidate_pool.html.j2:141.
+    assert "fetch(" not in hydration[:hydration.index("var contextRequestSerial=0")]
+    assert "fetch(" not in fragment[fragment.index("root.addEventListener('candidate-pool-hydrated'"):]
+    assert context.count("fetch(") == 1
     assert "candidate_pool" not in fragment.split('<script>', 1)[1].split('</script>', 1)[0]
 
 
@@ -1191,3 +1303,19 @@ def test_archive_recovery_alone_refreshes_the_same_day_screen():
     fresh = pool.project_candidate_visibility(board, archive=pool.reconcile_candidate_archive(board, records))
     assert _actual_fresh_board_condition(board, board, prior_view=old, fresh_view=fresh)
     assert not _actual_fresh_board_condition(board, board, prior_view=fresh, fresh_view=fresh)
+
+
+def test_candidate_reason_wording_matches_refusal_shelf_for_shared_codes():
+    from engine.prophet_bridge import REFUSAL_COPY
+
+    template = (ROOT / "templates" / "_us_candidate_pool_rows.html.j2").read_text(encoding="utf-8")
+    block = template.split("_why = {", 1)[1].split("\n{% set _reason", 1)[0]
+    why = {}
+    for entry in re.findall(r"'([^']+)':\s*\((.*?)\)\s*(?:,|\n})", block):
+        key, values = entry
+        copy = re.findall(r"'([^']*)'|\"([^\"]*)\"", values)
+        copy = [value for pair in copy for value in pair if value]
+        why[key] = tuple(copy[:2])
+    assert why
+    mismatches = {key: (why.get(key), copy) for key, copy in REFUSAL_COPY.items() if why.get(key) != copy}
+    assert not mismatches, f"shared decision codes differ from REFUSAL_COPY: {mismatches}"

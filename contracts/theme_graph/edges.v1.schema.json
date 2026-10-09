@@ -28,10 +28,19 @@
       "description": "Deterministic: '<type_lower>:<src>-><dst>@<valid_from>'. Stable across rebuilds, so a re-run appends nothing when nothing changed."
     },
     "type": {
-      "enum": ["MEMBER_OF", "EXPRESSES", "SAME_AS", "TRANSLATES_TO", "PARENT_OF", "RELATED", "SUPPLIES", "ENABLES", "BOTTLENECK_OF", "BENEFITS_FROM", "CATALYST_OF", "TRACKS", "HEDGES"]
+      "enum": ["MEMBER_OF", "EXPRESSES", "SAME_AS", "TRANSLATES_TO", "PARENT_OF", "RELATED", "SUPPLIES", "ENABLES", "BOTTLENECK_OF", "BENEFITS_FROM", "CATALYST_OF", "TRACKS", "HEDGES"],
+      "description": "PARENT_OF (GMI hierarchy, DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK): src is the PARENT, dst is the CHILD; adjacent tiers only (macro_category→theme or theme→micro_theme); DAG with at most three parents per child; display-tier only — no weight/share/count/score. The #8324 typed vocabulary (EQUIVALENT, NARROWER_THAN, BROADER_THAN, OVERLAPS, RELATED_NOT_EQUIVALENT, NO_CANONICAL_MAPPING, PENDING_ADJUDICATION, REJECTED) is probation/mapping vocabulary, not a graph edge type in v1. Tier adjacency, endpoint existence, cycles, and the three-parent cap are enforced per store by scripts/check_theme_graph_contracts.py."
     },
-    "src": {"type": "string", "minLength": 1, "description": "node_id of the source node."},
-    "dst": {"type": "string", "minLength": 1, "description": "node_id of the destination node."},
+    "src": {
+      "type": "string",
+      "minLength": 1,
+      "description": "node_id of the source node. For PARENT_OF, the PARENT (tier macro_category or theme)."
+    },
+    "dst": {
+      "type": "string",
+      "minLength": 1,
+      "description": "node_id of the destination node. For PARENT_OF, the CHILD (tier theme or micro_theme)."
+    },
     "valid_from": {"$ref": "#/$defs/date", "description": "VALID time: when the fact became true in the world."},
     "valid_to": {"$ref": "#/$defs/nullable_date", "description": "Null while the fact is still true. A closed interval never deletes the row that opened it."},
     "evidence_time": {"$ref": "#/$defs/date", "description": "When the EVIDENCE for this edge was published/observed."},
@@ -71,6 +80,31 @@
     "computed_at": {"$ref": "#/$defs/clock"},
     "engine_version": {"type": "string", "minLength": 1}
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"type": {"const": "PARENT_OF"}},
+        "required": ["type"]
+      },
+      "then": {
+        "properties": {
+          "source_class": {"const": "curated"},
+          "date_provenance": {"const": "crosswalk"},
+          "src": {"type": "string", "pattern": "^theme:[a-z0-9][a-z0-9_]{1,62}$"},
+          "dst": {"type": "string", "pattern": "^theme:[a-z0-9][a-z0-9_]{1,62}$"},
+          "economic_share": {"type": "null"},
+          "trading_beta": {"type": "null"},
+          "attention_share": {"type": "null"},
+          "economic_share_formula_id": {"type": "null"},
+          "trading_beta_formula_id": {"type": "null"},
+          "attention_share_formula_id": {"type": "null"},
+          "economic_share_display": {"type": "null"},
+          "trading_beta_display": {"type": "null"},
+          "attention_share_display": {"type": "null"}
+        }
+      }
+    }
+  ],
   "$defs": {
     "date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
     "nullable_date": {

@@ -24,13 +24,17 @@ block-trade anomalies). Degrades cleanly when artifact absent. Schema bumped to 
 
 v6 (additive over v5): command block reading site/china_intel/command.json (W4 command
 apparatus — per-ticker fusion, edge-remaining ranking, discovery lanes). Compact top-10
-rows + counts + asof. Degrades cleanly when artifact absent. Schema bumped to v6.
+rows + counts + asof. Degrades cleanly when artifact absent. Schema bumped to v6. CIE-07
+adds an additive visit_discovery block under the same backward-compatible v6 schema: it
+reads the existing P1 visit owner locally, never changes command/rank authority, and keeps
+insufficient coverage / source degradation / visitor identity explicit.
 """
 from __future__ import annotations
 
 import json
 import logging
-from datetime import date, datetime, timezone
+import re
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from lib import config
@@ -258,6 +262,963 @@ def _discovery_block() -> dict | None:
                 "sources": d.get("sources"), "top": cands[:12]}
     except Exception as e:  # noqa: BLE001
         log.debug("china_intel_bus: discovery block failed (%s)", e)
+        return None
+
+
+
+# --------------------------------------------------------------------------- #
+# CIE-07: coverage-adjusted institutional-visit metadata discovery
+# --------------------------------------------------------------------------- #
+
+_VISIT_DISCOVERY_SCHEMA = "china_visits.discovery_metadata.v1"
+_VISIT_DISCOVERY_RECENT_DAYS = 30
+_VISIT_DISCOVERY_BASELINE_DAYS = 90
+_VISIT_DISCOVERY_STALE_AFTER_DAYS = 4  # mirrors ChinaVisitsAdapter / Hub reader
+_VISIT_UNKNOWN_CLASSES = frozenset({"", "not_yet_available", "unresolved", "none", "nan", "<na>"})
+_VISIT_OBSERVED_TS_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$"
+)
+_VISIT_COVERAGE_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def _visit_day(value) -> date | None:
+    """Parse an owner clock to a calendar day without inventing precision."""
+    try:
+        text = str(value or "").strip()
+    except Exception:  # noqa: BLE001
+        return None
+    if not text or text.lower() in {"none", "nan", "nat", "<na>"}:
+        return None
+    try:
+        return date.fromisoformat(text[:10])
+    except (TypeError, ValueError):
+        return None
+
+
+def _visit_observed_instant(value) -> datetime | None:
+    """Parse the complete timezone-aware owner timestamp; partial clocks fail closed."""
+    try:
+        text = str(value or "").strip()
+    except Exception:  # noqa: BLE001
+        return None
+    if not text or not _VISIT_OBSERVED_TS_RE.fullmatch(text):
+        return None
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def _visit_observed_day(value) -> date | None:
+    instant = _visit_observed_instant(value)
+    return instant.date() if instant is not None else None
+
+
+def _visit_source_day(value) -> date | None:
+    """Normalize source publication clocks into the owner's UTC reference day.
+
+    Full timezone-aware timestamps are compared in UTC. A strict date-only value
+    is accepted as an already-day-level source clock; malformed timestamp-like
+    strings fail closed.
+    """
+    instant = _visit_observed_instant(value)
+    if instant is not None:
+        return instant.date()
+    try:
+        text = str(value or "").strip()
+    except Exception:  # noqa: BLE001
+        return None
+    if _VISIT_COVERAGE_DATE_RE.fullmatch(text):
+        try:
+            return date.fromisoformat(text)
+        except ValueError:
+            return None
+    return None
+
+
+
+def _visit_coverage_day(value) -> date | None:
+    """Parse the complete date-only coverage stamp; trailing data is invalid."""
+    try:
+        text = str(value or "").strip()
+    except Exception:  # noqa: BLE001
+        return None
+    if not text or text.lower() in {"none", "nan", "nat", "<na>"}:
+        return None
+    if not _VISIT_COVERAGE_DATE_RE.fullmatch(text):
+        return None
+    try:
+        return date.fromisoformat(text)
+    except (TypeError, ValueError):
+        return None
+
+
+def _visit_text(value) -> str:
+    try:
+        if value is None:
+            return ""
+        text = str(value).strip()
+        return "" if text.lower() in {"none", "nan", "nat", "<na>"} else text
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def _visit_company_code(value) -> str:
+    """Resolve a visit-plane company code through the existing Data OS owner.
+
+    The visit store normally carries bare six-digit mainland codes. A hostile or
+    historical row may carry a malformed value or a suffixed alias; do not mint
+    a second identity predicate here. Reuse normalize_cn_symbol and retain only
+    its canonical code. Any unavailable/invalid identity fails closed to "".
+    """
+    raw = _visit_text(value)
+    if not raw:
+        return ""
+    try:
+        from lib.dataos.identity import normalize_cn_symbol
+        return normalize_cn_symbol(raw).code
+    except Exception:  # noqa: BLE001 — identity uncertainty is an authority block
+        return ""
+
+
+def _visit_frame_records(frame) -> list[dict] | None:
+    """Bounded adapter for tests/lists and the owner DataFrames; None means unreadable."""
+    if frame is None:
+        return None
+    if isinstance(frame, list):
+        return [dict(r) for r in frame if isinstance(r, dict)]
+    try:
+        return [dict(r) for r in frame.to_dict(orient="records")]
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _visit_discovery_snapshot(
+    visits: list[dict],
+    *,
+    health: dict,
+    coverage_start: str | None,
+    open_scoped_codes: set[str],
+    has_unscoped_open: bool,
+    exception_ledger_readable: bool = True,
+    exception_status_valid: bool = True,
+    unknown_exception_status_count: int = 0,
+    kind_labeler,
+    recent_days: int = _VISIT_DISCOVERY_RECENT_DAYS,
+    baseline_days: int = _VISIT_DISCOVERY_BASELINE_DAYS,
+    reference_day: date | None = None,
+    stale_after_days: int = _VISIT_DISCOVERY_STALE_AFTER_DAYS,
+) -> dict:
+    """Descriptive visit-frequency state from the existing P1 tape.
+
+    It never claims a visit is bullish/bearish, never identifies an actor from
+    metadata, and never treats unobserved history as quiet.  The default 30d
+    recent / preceding 90d baseline is descriptive bookkeeping only; predictive
+    interpretation remains gated by CIE-03/CIE-18.
+    """
+    recent_days = max(int(recent_days), 1)
+    baseline_days = max(int(baseline_days), 1)
+    health = health if isinstance(health, dict) else {}
+
+    # Scoped coverage exceptions use the same Data OS company identity basis as
+    # visit rows. Accepted aliases (for example 600519.SH) must collapse onto
+    # the canonical bare company code, while a malformed/noncanonical exception
+    # becomes unscoped and blocks global absence authority rather than creating
+    # a phantom company bucket.
+    canonical_open_scoped_codes: set[str] = set()
+    for raw_code in open_scoped_codes or set():
+        canonical_code = _visit_company_code(raw_code)
+        if canonical_code:
+            canonical_open_scoped_codes.add(canonical_code)
+        else:
+            has_unscoped_open = True
+    open_scoped_codes = canonical_open_scoped_codes
+
+    owner_health_status = _visit_text(health.get("status")) or "no_coverage"
+    coverage_raw = _visit_text(coverage_start)
+    last_success_raw = _visit_text(health.get("last_success_utc"))
+    last_attempt_raw = _visit_text(health.get("last_attempt_utc"))
+    coverage_day = _visit_coverage_day(coverage_start)
+    last_success_instant = _visit_observed_instant(health.get("last_success_utc"))
+    last_attempt_instant = _visit_observed_instant(health.get("last_attempt_utc"))
+    last_success_day = (
+        last_success_instant.date() if last_success_instant is not None else None
+    )
+    last_attempt_day = (
+        last_attempt_instant.date() if last_attempt_instant is not None else None
+    )
+    # Keep the pure helper deterministic when called directly.  A degraded run
+    # may contain newer positive rows than its frozen last_success clock, so the
+    # fallback reference must include observed row clocks rather than moving the
+    # display window backward. Production passes today's real date explicitly.
+    if reference_day is None:
+        candidate_days = [
+            d for d in (
+                coverage_day,
+                last_success_day,
+                last_attempt_day,
+                *(_visit_source_day(r.get("source_published_at")) for r in (visits or [])),
+                *(_visit_observed_day(r.get("system_recorded_at")) for r in (visits or [])),
+            )
+            if d is not None
+        ]
+        reference_day = max(candidate_days) if candidate_days else date.today()
+
+    # Owner chronology is authority-bearing.  A persisted clock in the future,
+    # before the write-once coverage stamp, or an attempt preceding the recorded
+    # last success cannot authorize measured absence/baselines.  Preserve
+    # positive evidence separately; fail closed only the negative authority.
+    clock_errors: list[str] = []
+    if coverage_raw and coverage_day is None:
+        clock_errors.append("coverage_start_invalid")
+    if last_success_raw and last_success_instant is None:
+        clock_errors.append("last_success_clock_invalid")
+    if last_attempt_raw and last_attempt_instant is None:
+        clock_errors.append("last_attempt_clock_invalid")
+    if coverage_day is not None and coverage_day > reference_day:
+        clock_errors.append("coverage_start_after_reference")
+    if last_success_day is not None:
+        if last_success_day > reference_day:
+            clock_errors.append("last_success_after_reference")
+        if coverage_day is not None and last_success_day < coverage_day:
+            clock_errors.append("last_success_before_coverage_start")
+    if last_attempt_day is not None:
+        if last_attempt_day > reference_day:
+            clock_errors.append("last_attempt_after_reference")
+        if coverage_day is not None and last_attempt_day < coverage_day:
+            clock_errors.append("last_attempt_before_coverage_start")
+    if (
+        last_success_instant is not None
+        and last_attempt_instant is not None
+        and last_attempt_instant < last_success_instant
+    ):
+        clock_errors.append("last_attempt_before_last_success")
+    if (
+        owner_health_status == "ok"
+        and (not last_success_raw or not last_attempt_raw)
+    ):
+        clock_errors.append("ok_health_receipt_incomplete")
+    if (
+        owner_health_status == "ok"
+        and last_success_instant is not None
+        and last_attempt_instant is not None
+        and last_attempt_instant != last_success_instant
+    ):
+        clock_errors.append("ok_health_receipt_mismatch")
+    # This preliminary status only depends on health's own chronology. Row
+    # observation chronology is incorporated below before any authority is emitted.
+    health_clock_order_valid = not clock_errors
+    source_status = owner_health_status
+    if (
+        owner_health_status == "ok"
+        and last_success_day is not None
+        and health_clock_order_valid
+        and (reference_day - last_success_day).days > max(int(stale_after_days), 0)
+    ):
+        source_status = "stale"
+
+    # Authority-bearing integrity checks run over the raw persisted rows BEFORE
+    # presentation/count dedup. A hostile duplicate with a malformed clock must
+    # not disappear behind keep-FIRST and silently restore absence authority.
+    raw_rows = list(visits or [])
+
+    # A missing natural event key is positive evidence but cannot authorize a
+    # visit count. Legacy/schema-drifted rows with blank announcement_id may be
+    # duplicates of one another or of a keyed observation, so preserve them in
+    # a bounded raw-evidence lane and exclude them from recurrence/frequency math.
+    unkeyed_positive_rows = [
+        row for row in raw_rows if not _visit_text(row.get("announcement_id"))
+    ]
+    unkeyed_positive_evidence = [
+        {
+            "announcement_id": None,
+            "sec_code": _visit_company_code(row.get("sec_code")) or None,
+            "sec_code_raw": _visit_text(row.get("sec_code")) or None,
+            "sec_name": _visit_text(row.get("sec_name")) or None,
+            "exchange": _visit_text(row.get("exchange")) or None,
+            "title": _visit_text(row.get("title")) or None,
+            "source_published_at": _visit_text(row.get("source_published_at")) or None,
+            "system_recorded_at": _visit_text(row.get("system_recorded_at")) or None,
+            "visitor_class": _visit_text(row.get("visitor_class")) or None,
+            "coverage_state": "unknown_event_identity",
+            "event_identity_state": "unresolved_natural_key",
+            "may_rank": False,
+            "may_trade": False,
+        }
+        for row in unkeyed_positive_rows[:8]
+    ]
+
+    # Defensive natural-key dedup. The owner already enforces keep-FIRST on
+    # announcement_id; only rows with a usable event key enter countable
+    # recurrence/frequency state.
+    deduped: list[dict] = []
+    seen_ids: set[str] = set()
+    for row in raw_rows:
+        aid = _visit_text(row.get("announcement_id"))
+        if not aid:
+            continue
+        if aid in seen_ids:
+            continue
+        seen_ids.add(aid)
+        deduped.append(row)
+
+    # A readable positive row without a canonical company key is evidence, not
+    # absence. Preserve it separately instead of fabricating identity. Because it
+    # could belong to any issuer, it blocks global negative/baseline/first-seen
+    # authority until the existing identity owner resolves or accounts for it.
+    # Identity uncertainty is authority-bearing too, so inspect raw persisted
+    # rows before dedup just like the clock integrity checks below. A conflicting
+    # duplicate may not hide an unscoped positive behind a well-keyed keep-FIRST
+    # row and thereby restore global absence/baseline/first-seen authority.
+    unscoped_positive_rows = [
+        row for row in raw_rows if not _visit_company_code(row.get("sec_code"))
+    ]
+    unscoped_positive_evidence = [
+        {
+            "announcement_id": _visit_text(row.get("announcement_id")) or None,
+            "sec_code_raw": _visit_text(row.get("sec_code")) or None,
+            "sec_name": _visit_text(row.get("sec_name")) or None,
+            "exchange": _visit_text(row.get("exchange")) or None,
+            "title": _visit_text(row.get("title")) or None,
+            "source_published_at": _visit_text(row.get("source_published_at")) or None,
+            "system_recorded_at": _visit_text(row.get("system_recorded_at")) or None,
+            "visitor_class": _visit_text(row.get("visitor_class")) or None,
+            "coverage_state": "unknown_company_identity",
+            "company_identity_state": "unresolved",
+            "may_rank": False,
+            "may_trade": False,
+        }
+        for row in unscoped_positive_rows[:8]
+    ]
+
+    # The owner store is keep-FIRST on announcement_id but does not reject a
+    # hostile/corrupt duplicate that assigns the same source event to two
+    # different nonblank company identities. Such a conflict is not a second
+    # event and neither assignment may erase the other; surface it as unresolved
+    # raw evidence and remove all negative-history authority.
+    identity_by_announcement: dict[str, set[str]] = {}
+    source_routes_by_announcement: dict[str, dict[str, set[str]]] = {}
+    for row in raw_rows:
+        aid = _visit_text(row.get("announcement_id"))
+        code = _visit_company_code(row.get("sec_code"))
+        if not aid or not code:
+            continue
+        identity_by_announcement.setdefault(aid, set()).add(code)
+        exchange = _visit_text(row.get("exchange")).lower()
+        if exchange:
+            source_routes_by_announcement.setdefault(aid, {}).setdefault(
+                code, set()
+            ).add(exchange)
+
+    # exchange on the CNInfo filing tape is collection/source routing, not a
+    # listing-venue identity authority: the live 2026-10-06 tape legitimately
+    # contains Shanghai and Beijing codes under the szse route. Company
+    # contradiction therefore means distinct nonblank sec_code assignments for
+    # one source event; differing source routes for the SAME code are provenance.
+    identity_conflicts = {
+        aid: sorted(codes)
+        for aid, codes in identity_by_announcement.items()
+        if len(codes) > 1
+    }
+    identity_conflict_evidence = [
+        {
+            "announcement_id": aid,
+            "observed_identities": [
+                {
+                    "sec_code": code,
+                    "source_routes": sorted(
+                        source_routes_by_announcement.get(aid, {}).get(code, set())
+                    ),
+                }
+                for code in codes
+            ],
+            "coverage_state": "unknown_company_identity_conflict",
+            "company_identity_state": "conflicting_duplicate_natural_key",
+            "may_rank": False,
+            "may_trade": False,
+        }
+        for aid, codes in sorted(identity_conflicts.items())[:8]
+    ]
+
+    # Positive rows may be written before the owner health receipt is updated.
+    # If any persisted observation is newer than the latest valid attempt/success
+    # receipt, the positive remains visible but first-seen and absence authority
+    # are unknown until health catches up.
+    health_receipt_instant = last_attempt_instant or last_success_instant
+    authority_row_observation_instants = [
+        _visit_observed_instant(r.get("system_recorded_at")) for r in raw_rows
+    ]
+    authority_row_source_instants = [
+        _visit_observed_instant(r.get("source_published_at")) for r in raw_rows
+    ]
+    authority_row_source_days = [
+        _visit_source_day(r.get("source_published_at")) for r in raw_rows
+    ]
+    # system_recorded_at is the owner/write clock. Any keyed persisted row whose
+    # observation clock is absent or malformed makes receipt coverage unknown:
+    # the latest successful health receipt cannot prove whether that row was
+    # already on tape. Keep the positive row, but fail closed for negative and
+    # baseline authority.
+    if any(
+        _visit_company_code(r.get("sec_code")) and observed is None
+        for r, observed in zip(raw_rows, authority_row_observation_instants)
+    ):
+        clock_errors.append("row_observation_clock_invalid")
+    if any(
+        _visit_company_code(r.get("sec_code")) and source_day is None
+        for r, source_day in zip(raw_rows, authority_row_source_days)
+    ):
+        clock_errors.append("row_source_clock_invalid")
+    if any(
+        observed is not None
+        and (
+            (source is not None and observed < source)
+            or (
+                source is None
+                and source_day is not None
+                and observed.date() < source_day
+            )
+        )
+        for observed, source, source_day in zip(
+            authority_row_observation_instants,
+            authority_row_source_instants,
+            authority_row_source_days,
+        )
+    ):
+        # Full timestamps compare as instants. Accepted date-only source clocks
+        # compare at day precision so an observation cannot precede the source
+        # date merely because the source lacks an intraday timestamp.
+        clock_errors.append("row_observation_before_source")
+    if health_receipt_instant is not None:
+        if any(
+            inst is not None and inst > health_receipt_instant
+            for inst in authority_row_observation_instants
+        ):
+            clock_errors.append("row_observation_after_health_receipt")
+
+        # A row with no usable observation clock can still be proven outside the
+        # health receipt when its source event itself occurred later. Preserve
+        # the positive, but refuse absence/baseline/first-seen authority: the
+        # receipt cannot possibly cover an event that had not happened yet.
+        for row, observed_instant in zip(
+            raw_rows, authority_row_observation_instants
+        ):
+            if observed_instant is not None:
+                continue
+            source_instant = _visit_observed_instant(row.get("source_published_at"))
+            source_day = _visit_source_day(row.get("source_published_at"))
+            if (
+                source_instant is not None
+                and source_instant > health_receipt_instant
+            ) or (
+                source_instant is None
+                and source_day is not None
+                and source_day > health_receipt_instant.date()
+            ):
+                clock_errors.append(
+                    "row_source_after_health_receipt_without_observation_clock"
+                )
+                break
+    owner_clock_order_valid = not clock_errors
+
+    source_event_days = [
+        d for d in (
+            _visit_source_day(r.get("source_published_at")) for r in deduped
+        )
+        if d is not None and d <= reference_day
+    ]
+    system_observed_days = [
+        d for d in (_visit_observed_day(r.get("system_recorded_at")) for r in deduped)
+        if d is not None
+        and d <= reference_day
+        and (coverage_day is None or d >= coverage_day)
+    ]
+    valid_attempt_day = (
+        last_attempt_day
+        if last_attempt_day is not None
+        and last_attempt_day <= reference_day
+        and (coverage_day is None or last_attempt_day >= coverage_day)
+        and (
+            last_success_day is None
+            or last_attempt_day >= last_success_day
+        )
+        else None
+    )
+    if (
+        last_success_day is not None
+        and owner_health_status == "ok"
+        and owner_clock_order_valid
+    ):
+        authority_window_end = last_success_day
+    elif valid_attempt_day is not None:
+        # A degraded/failed attempt is the honest present-tense authority clock.
+        # It grants no negative authority, but remains the latest receipt-bound
+        # point for deciding what the owner actually proved.
+        authority_window_end = valid_attempt_day
+    elif coverage_day is not None and coverage_day <= reference_day:
+        authority_window_end = coverage_day
+    else:
+        authority_window_end = None
+
+    # Presentation is deliberately less strict than authority: a valid positive
+    # row written after the last health receipt must stay visible even though it
+    # cannot authorize first-seen novelty, measured quiet, or absence. Use the
+    # latest in-range positive clock only to keep the display window from hiding
+    # that evidence; all authority fields below remain receipt-gated.
+    display_candidates = [
+        d for d in (
+            authority_window_end,
+            *(system_observed_days or []),
+            *(source_event_days or []),
+        )
+        if d is not None and d <= reference_day
+    ]
+    observation_end = max(display_candidates) if display_candidates else None
+
+    authority = {
+        "is_context_only": True,
+        "may_rank": False,
+        "may_trade": False,
+        "may_feed_prophet": False,
+        "may_infer_visitor_identity": False,
+        "may_claim_predictive_edge": False,
+    }
+    base = {
+        "schema": _VISIT_DISCOVERY_SCHEMA,
+        "is_context_only": True,
+        "authority": authority,
+        "source_status": source_status,
+        "owner_health_status": owner_health_status,
+        "stale_after_days": max(int(stale_after_days), 0),
+        "exception_ledger_readable": bool(exception_ledger_readable),
+        "exception_status_valid": bool(exception_status_valid),
+        "unknown_exception_status_count": max(int(unknown_exception_status_count), 0),
+        "owner_clock_state": "valid" if owner_clock_order_valid else "invalid",
+        "owner_clock_errors": sorted(set(clock_errors)),
+        "reference_day": reference_day.isoformat(),
+        "coverage_start": coverage_day.isoformat() if coverage_day else None,
+        "observation_end": observation_end.isoformat() if observation_end else None,
+        "asof": observation_end.isoformat() if observation_end else None,
+        "recent_window_days": recent_days,
+        "baseline_window_days": baseline_days,
+        "scientific_state": "descriptive_only_not_alpha_evidence",
+        "actor_recurrence_state": "not_evaluated_without_body_stage_receipt",
+        "candidate_accounting": health.get("candidate_accounting"),
+        "global_negative_authority": (
+            source_status == "ok"
+            and coverage_day is not None
+            and last_success_day is not None
+            and owner_clock_order_valid
+            and exception_ledger_readable
+            and exception_status_valid
+            and not has_unscoped_open
+            and not unscoped_positive_rows
+            and not identity_conflicts
+            and not unkeyed_positive_rows
+        ),
+        "global_negative_authority_blocker": (
+            "coverage_exception_ledger_unreadable" if not exception_ledger_readable
+            else "coverage_exception_status_unknown" if not exception_status_valid
+            else "unscoped_coverage_exception" if has_unscoped_open
+            else "visit_company_identity_conflict" if identity_conflicts
+            else "visit_event_identity_unresolved" if unkeyed_positive_rows
+            else "visit_company_identity_unresolved" if unscoped_positive_rows
+            else "coverage_start_invalid" if "coverage_start_invalid" in clock_errors
+            else "last_success_clock_invalid" if "last_success_clock_invalid" in clock_errors
+            else "last_attempt_clock_invalid" if "last_attempt_clock_invalid" in clock_errors
+            else "ok_health_receipt_incomplete" if "ok_health_receipt_incomplete" in clock_errors
+            else "row_source_clock_invalid" if "row_source_clock_invalid" in clock_errors
+            else "row_source_after_health_receipt_without_observation_clock"
+                if "row_source_after_health_receipt_without_observation_clock" in clock_errors
+            else "row_observation_clock_invalid" if "row_observation_clock_invalid" in clock_errors
+            else "row_observation_before_source" if "row_observation_before_source" in clock_errors
+            # Coverage/future/order defects are more fundamental than the
+            # secondary invariant that successful attempt/success clocks match.
+            else "owner_clock_order_invalid" if any(
+                err in {
+                    "coverage_start_after_reference",
+                    "last_success_after_reference",
+                    "last_success_before_coverage_start",
+                    "last_attempt_after_reference",
+                    "last_attempt_before_coverage_start",
+                    "last_attempt_before_last_success",
+                }
+                for err in clock_errors
+            )
+            else "ok_health_receipt_mismatch" if "ok_health_receipt_mismatch" in clock_errors
+            else "source_stale" if source_status == "stale"
+            else "source_health_not_ok" if source_status != "ok"
+            else "coverage_start_unavailable" if coverage_day is None
+            else "last_success_clock_unavailable" if last_success_day is None
+            else "row_observation_after_health_receipt" if "row_observation_after_health_receipt" in clock_errors
+            else "owner_clock_order_invalid" if not owner_clock_order_valid
+            else None
+        ),
+        "n_persisted_rows": len(raw_rows),
+        "n_rows_observed": len(deduped),
+        "n_unkeyed_positive_rows": len(unkeyed_positive_rows),
+        "unkeyed_positive_evidence": unkeyed_positive_evidence,
+        "unkeyed_positive_evidence_truncated": (
+            len(unkeyed_positive_rows) > len(unkeyed_positive_evidence)
+        ),
+        "n_unscoped_positive_rows": len(unscoped_positive_rows),
+        "unscoped_positive_evidence": unscoped_positive_evidence,
+        "unscoped_positive_evidence_truncated": (
+            len(unscoped_positive_rows) > len(unscoped_positive_evidence)
+        ),
+        "n_identity_conflict_announcements": len(identity_conflicts),
+        "identity_conflict_evidence": identity_conflict_evidence,
+        "identity_conflict_evidence_truncated": (
+            len(identity_conflicts) > len(identity_conflict_evidence)
+        ),
+        "n_recent_companies": 0,
+        "n_first_observed_recent": 0,
+        "n_measured_baselines": 0,
+        "n_company_exceptions": len(open_scoped_codes),
+        "examples": [],
+        "examples_order": "company_key_lexicographic_not_ranked",
+        "examples_truncated": False,
+    }
+    if observation_end is None:
+        return base
+
+    recent_start = observation_end - timedelta(days=recent_days - 1)
+    baseline_end = recent_start - timedelta(days=1)
+    baseline_start = baseline_end - timedelta(days=baseline_days - 1)
+
+    grouped: dict[str, dict] = {}
+    for row in deduped:
+        code = _visit_company_code(row.get("sec_code"))
+        if not code:
+            continue
+        exchange = _visit_text(row.get("exchange")).lower()
+        # CNInfo exchange is a collection/source route, not listing identity.
+        # Bare six-digit sec_code is the owner-native company key on this plane;
+        # using route:code here would split one company whenever the same code
+        # arrives through multiple CNInfo routes.
+        key = code
+        source_day = _visit_source_day(row.get("source_published_at"))
+        observed_day = _visit_observed_day(row.get("system_recorded_at"))
+        bucket = grouped.setdefault(key, {
+            "company_key": key,
+            "sec_code": code,
+            "sec_name": _visit_text(row.get("sec_name")),
+            "exchange": exchange,
+            "source_routes": set(),
+            "rows": [],
+        })
+        if exchange:
+            bucket["source_routes"].add(exchange)
+        # Positive source evidence remains visible even when its publication
+        # predates our forward-only coverage stamp (the first P1 run uses a
+        # bounded lookback). The source day is the event clock; system_recorded_at
+        # is the observation/first-seen clock. They must never substitute for
+        # each other.
+        bucket["rows"].append((source_day, observed_day, row))
+
+    # Company-scoped exceptions deserve an explicit UNKNOWN record even when no
+    # canonical visit row could be admitted.
+    for code in open_scoped_codes:
+        if not code:
+            continue
+        if not any(v.get("sec_code") == code for v in grouped.values()):
+            grouped[code] = {
+                "company_key": code,
+                "sec_code": code,
+                "sec_name": "",
+                "exchange": "",
+                "source_routes": set(),
+                "rows": [],
+            }
+
+    examples: list[dict] = []
+    for key in sorted(grouped):
+        bucket = grouped[key]
+        rows = sorted(bucket["rows"], key=lambda item: (
+            item[0] or date.max,
+            item[1] or date.min,
+            _visit_text(item[2].get("announcement_id")),
+        ))
+        code = bucket["sec_code"]
+        source_clock_incomplete = any(source_day is None for source_day, _observed_day, _r in rows)
+        recent = [r for source_day, _observed_day, r in rows
+                  if source_day is not None
+                  and recent_start <= source_day <= observation_end]
+        baseline = [r for source_day, _observed_day, r in rows
+                    if source_day is not None
+                    and baseline_start <= source_day <= baseline_end]
+        if not recent and not source_clock_incomplete and code not in open_scoped_codes:
+            continue
+
+        company_exception = code in open_scoped_codes
+        if source_clock_incomplete:
+            baseline_state = "blocked_source_clock_invalid"
+        elif not exception_ledger_readable:
+            baseline_state = "blocked_exception_ledger_unreadable"
+        elif not exception_status_valid:
+            baseline_state = "blocked_exception_status_unknown"
+        elif has_unscoped_open:
+            baseline_state = "blocked_unscoped_coverage_exception"
+        elif identity_conflicts:
+            baseline_state = "blocked_conflicting_company_identity"
+        elif unkeyed_positive_rows:
+            baseline_state = "blocked_unresolved_event_identity"
+        elif unscoped_positive_rows:
+            baseline_state = "blocked_unresolved_company_identity"
+        elif company_exception:
+            baseline_state = "blocked_company_coverage_exception"
+        elif not health_clock_order_valid:
+            baseline_state = "blocked_owner_clock_order_invalid"
+        elif source_status == "stale":
+            baseline_state = "unavailable_source_stale"
+        elif source_status != "ok":
+            baseline_state = "unavailable_source_health"
+        elif last_success_day is None:
+            baseline_state = "unavailable_last_success_clock"
+        elif not owner_clock_order_valid:
+            baseline_state = "blocked_owner_clock_order_invalid"
+        elif coverage_day is None or coverage_day > baseline_start:
+            baseline_state = "insufficient_observed_history"
+        else:
+            baseline_state = "measured"
+
+        observation_clock_incomplete = any(
+            observed_day is None
+            or observed_day > reference_day
+            or (coverage_day is not None and observed_day < coverage_day)
+            for _source_day, observed_day, _r in rows
+        )
+        observed_days = [
+            observed_day for _source_day, observed_day, _r in rows
+            if observed_day is not None
+            and observed_day <= reference_day
+            and (coverage_day is None or observed_day >= coverage_day)
+        ]
+        first_observed_day = min(observed_days) if observed_days else None
+        if company_exception:
+            first_seen_state = "unknown_due_coverage_exception"
+        elif source_clock_incomplete:
+            first_seen_state = "unknown_source_clock"
+        elif not recent:
+            first_seen_state = "no_recent_positive_evidence"
+        elif not exception_ledger_readable:
+            first_seen_state = "unknown_exception_ledger_unreadable"
+        elif not exception_status_valid:
+            first_seen_state = "unknown_exception_status"
+        elif has_unscoped_open:
+            first_seen_state = "unknown_unscoped_coverage_exception"
+        elif identity_conflicts:
+            first_seen_state = "unknown_conflicting_company_identity"
+        elif unkeyed_positive_rows:
+            first_seen_state = "unknown_unresolved_event_identity"
+        elif unscoped_positive_rows:
+            first_seen_state = "unknown_unresolved_company_identity"
+        elif not health_clock_order_valid:
+            first_seen_state = "unknown_owner_clock_order_invalid"
+        elif source_status != "ok":
+            first_seen_state = "unknown_source_health"
+        elif coverage_day is None:
+            first_seen_state = "unknown_coverage_start"
+        elif last_success_day is None:
+            first_seen_state = "unknown_last_success_clock"
+        elif observation_clock_incomplete:
+            # Preserve the explicit observation-clock diagnosis even though the
+            # same defect now also invalidates global/baseline authority.
+            first_seen_state = "observation_clock_unavailable"
+        elif not owner_clock_order_valid:
+            first_seen_state = "unknown_owner_clock_order_invalid"
+        elif first_observed_day is None:
+            first_seen_state = "observation_clock_unavailable"
+        elif coverage_day is None or first_observed_day < coverage_day:
+            first_seen_state = "previous_observation_not_coverage_qualified"
+        elif recent_start <= first_observed_day <= observation_end:
+            first_seen_state = "first_observed_since_coverage_start"
+        else:
+            first_seen_state = "previously_observed_since_coverage_start"
+
+        recent_rate = len(recent) / recent_days if recent else 0.0
+        baseline_rate = len(baseline) / baseline_days if baseline_state == "measured" else None
+        ratio = None
+        comparison = None
+        higher = None
+        if baseline_state == "measured" and recent:
+            if len(baseline) == 0:
+                comparison = "recent_activity_after_measured_zero_baseline"
+                higher = True
+            else:
+                ratio = recent_rate / baseline_rate if baseline_rate else None
+                higher = recent_rate > baseline_rate
+                comparison = (
+                    "recent_rate_higher" if higher
+                    else "recent_rate_lower" if recent_rate < baseline_rate
+                    else "recent_rate_equal"
+                )
+
+        kind_counts: dict[str, int] = {}
+        classes: set[str] = set()
+        for row in recent:
+            try:
+                kind_en, _kind_zh = kind_labeler(_visit_text(row.get("title")))
+            except Exception:  # noqa: BLE001
+                kind_en = "investor visit"
+            kind_counts[kind_en] = kind_counts.get(kind_en, 0) + 1
+            classes.add(_visit_text(row.get("visitor_class")).lower())
+
+        resolved_actor_present = any(c not in _VISIT_UNKNOWN_CLASSES for c in classes)
+        examples.append({
+            "company_key": key,
+            "sec_code": code,
+            "sec_name": bucket["sec_name"],
+            # Legacy field retained for compatibility; this is the first
+            # observed CNInfo source route, not listing-venue identity.
+            "exchange": bucket["exchange"],
+            "exchange_semantics": "cninfo_source_route_not_listing_venue",
+            "source_routes": sorted(bucket.get("source_routes") or []),
+            "coverage_state": (
+                "unknown_company_exception" if company_exception
+                else "unknown_source_clock" if source_clock_incomplete
+                else "positive_metadata_observed" if recent
+                else "unknown"
+            ),
+            "source_clock_state": "invalid" if source_clock_incomplete else "valid",
+            "first_seen_state": first_seen_state,
+            "earliest_source_published_day": (
+                min(
+                    source_day for source_day, _observed_day, _r in rows
+                    if source_day is not None
+                ).isoformat()
+                if any(source_day is not None for source_day, _observed_day, _r in rows)
+                else None
+            ),
+            "first_observed_system_day": (
+                first_observed_day.isoformat()
+                if first_observed_day and not observation_clock_incomplete
+                else None
+            ),
+            "observation_clock_complete": not observation_clock_incomplete,
+            "recent_count": len(recent),
+            "recent_window_start": recent_start.isoformat(),
+            "recent_window_end": observation_end.isoformat(),
+            "baseline_state": baseline_state,
+            "baseline_count": len(baseline) if baseline_state == "measured" else None,
+            "baseline_window_start": baseline_start.isoformat(),
+            "baseline_window_end": baseline_end.isoformat(),
+            "recent_rate_per_day": recent_rate if recent else 0.0,
+            "baseline_rate_per_day": baseline_rate,
+            "recent_vs_baseline_rate_ratio": ratio,
+            "recent_activity_higher_than_baseline": higher,
+            "rate_comparison": comparison,
+            "activity_type_counts": kind_counts,
+            "visitor_identity_state": (
+                "actor_enriched_rows_present"
+                if resolved_actor_present
+                else "metadata_only_not_yet_available"
+            ),
+            "actor_recurrence_state": "not_evaluated_without_body_stage_receipt",
+            "may_rank": False,
+            "may_trade": False,
+        })
+
+    base["n_recent_companies"] = sum(1 for r in examples if r["recent_count"] > 0)
+    base["n_first_observed_recent"] = sum(
+        1 for r in examples if r["first_seen_state"] == "first_observed_since_coverage_start"
+    )
+    base["n_measured_baselines"] = sum(
+        1 for r in examples if r["baseline_state"] == "measured"
+    )
+    # The briefing stays bounded. These are deterministic examples, not a ranking.
+    base["examples"] = examples[:24]
+    base["examples_truncated"] = len(examples) > 24
+    return base
+
+
+def _visit_discovery_block() -> dict | None:
+    """CIE-07 metadata-only discovery from the existing P1 visit owner."""
+    try:
+        from collectors import china_visits as cv
+
+        visits = _visit_frame_records(cv.read_visits_strict())
+        exceptions = _visit_frame_records(cv.read_coverage_exceptions_strict())
+        if visits is None:
+            return {
+                "schema": _VISIT_DISCOVERY_SCHEMA,
+                "is_context_only": True,
+                "authority": {
+                    "is_context_only": True, "may_rank": False, "may_trade": False,
+                    "may_feed_prophet": False, "may_infer_visitor_identity": False,
+                    "may_claim_predictive_edge": False,
+                },
+                "source_status": "source_failure",
+                "coverage_start": None,
+                "observation_end": None,
+                "asof": None,
+                "exception_ledger_readable": exceptions is not None,
+                "global_negative_authority": False,
+                "global_negative_authority_blocker": "visit_store_unreadable",
+                "examples": [],
+                "scientific_state": "descriptive_only_not_alpha_evidence",
+                "actor_recurrence_state": "not_evaluated_without_body_stage_receipt",
+            }
+
+        exception_ledger_readable = exceptions is not None
+        exception_rows = exceptions or []
+        allowed_exception_statuses = {"open", "resolved"}
+        unknown_status_rows = [
+            r for r in exception_rows
+            if _visit_text(r.get("status")) not in allowed_exception_statuses
+        ]
+        exception_status_valid = not unknown_status_rows
+        open_rows = [
+            r for r in exception_rows if _visit_text(r.get("status")) == "open"
+        ]
+        open_scoped_codes: set[str] = set()
+        has_unscoped = False
+        for row in open_rows:
+            code = row.get("sec_code")
+            if cv.is_unscoped_sec_code(code):
+                has_unscoped = True
+            else:
+                norm = _visit_company_code(code)
+                if norm:
+                    open_scoped_codes.add(norm)
+                else:
+                    # Nonblank-but-noncanonical identities are no more scoped
+                    # than blank ones. Preserve the exception as plane-wide
+                    # uncertainty until the existing identity owner resolves it.
+                    has_unscoped = True
+
+        health = cv.read_health()
+        coverage_start = cv.read_coverage_start()
+        if (
+            not visits
+            and not open_rows
+            and exception_ledger_readable
+            and exception_status_valid
+            and _visit_text(health.get("status")) == "no_coverage"
+            and not coverage_start
+        ):
+            return None
+
+        return _visit_discovery_snapshot(
+            visits,
+            health=health,
+            coverage_start=coverage_start,
+            open_scoped_codes=open_scoped_codes,
+            has_unscoped_open=has_unscoped,
+            exception_ledger_readable=exception_ledger_readable,
+            exception_status_valid=exception_status_valid,
+            unknown_exception_status_count=len(unknown_status_rows),
+            kind_labeler=cv.visit_kind_label,
+            reference_day=datetime.now(timezone.utc).date(),
+            stale_after_days=getattr(
+                cv.ChinaVisitsAdapter, "stale_after_days", _VISIT_DISCOVERY_STALE_AFTER_DAYS
+            ),
+        )
+    except Exception as e:  # noqa: BLE001
+        log.debug("china_intel_bus: visit discovery block failed (%s)", e)
         return None
 
 
@@ -633,7 +1594,7 @@ def _analogs_block() -> dict | None:
 def _staleness(b: dict) -> tuple[dict, int]:
     sa, worst = {}, 0
     for k in ("news", "policy", "altdata", "radar", "analysis",
-              "policy_phrase", "narrative_divergence", "special_situations", "command"):
+              "policy_phrase", "narrative_divergence", "special_situations", "visit_discovery", "command"):
         d = (b.get(k) or {}).get("asof") if isinstance(b.get(k), dict) else None
         sa[k] = d
         if d:
@@ -654,7 +1615,7 @@ def briefing(asof: date | str | None = None) -> dict:
         "news": None, "policy": None, "altdata": None, "radar": None, "analysis": None,
         "regime": None, "discovery": None,
         "policy_phrase": None, "narrative_divergence": None,
-        "special_situations": None, "command": None,
+        "special_situations": None, "visit_discovery": None, "command": None,
         "analogs": None,   # v6: separate from command; NOT in surfaces_present until non-None
         "disclaimer": DISCLAIMER, "disclaimer_zh": DISCLAIMER_ZH,
     }
@@ -665,6 +1626,7 @@ def briefing(asof: date | str | None = None) -> dict:
                     ("policy_phrase", _policy_phrase_block),
                     ("narrative_divergence", _narrative_divergence_block),
                     ("special_situations", _special_situations_block),
+                    ("visit_discovery", _visit_discovery_block),
                     ("command", _command_block),
                     ("analogs", _analogs_block)):
         try:
@@ -684,7 +1646,7 @@ def briefing(asof: date | str | None = None) -> dict:
     # analogs NOT in surfaces_present until the artifact ships (degrade-safe)
     b["surfaces_present"] = [k for k in ("news", "policy", "altdata", "radar", "analysis",
                                         "policy_phrase", "narrative_divergence",
-                                        "special_situations", "command") if b.get(k)]
+                                        "special_situations", "visit_discovery", "command") if b.get(k)]
     b["surface_asof"], b["max_staleness_days"] = _staleness(b)
     b["digest"] = _digest_text(b)
     return b

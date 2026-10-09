@@ -1,7 +1,7 @@
 """Qualitative Research Intelligence: grounded understanding and private storage."""
 
 from .extractor import analyze_document, build_prompt, parse_model_output
-from .projection import claim_edges, summary_points
+from .projection import belief_context_points, claim_edges, summary_points
 from .schema import SCHEMA, validate_rio
 from .store import (
     ResearchIntelligenceConflict,
@@ -31,6 +31,7 @@ __all__ = [
     "analyze_document",
     "analyze_vault_report",
     "build_prompt",
+    "belief_context_points",
     "claim_edges",
     "load_latest_research_intelligence",
     "load_research_intelligence_version",

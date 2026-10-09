@@ -1900,7 +1900,9 @@ def issuer_for_ticker(ticker: str) -> IssuerIdentity | None:
     return factory() if factory is not None else None
 
 
-def profile_for_ticker(ticker: str) -> IssuerProfile | None:
+def profile_for_ticker(
+    ticker: str, *, publication: str = "public", fiscal_scope: tuple[str, str, str, str] | None = None,
+) -> IssuerProfile | None:
     """The registered profile for *ticker*, or ``None`` for an unknown ticker.
 
     ``"AAPL"`` resolves to :func:`apple_profile`; unknown tickers (including
@@ -1910,7 +1912,14 @@ def profile_for_ticker(ticker: str) -> IssuerProfile | None:
     share the same fail-closed contract: an unknown ticker never silently
     routes through Apple's profile.
     """
+    if publication not in {"public", "private"}:
+        raise ValueError("publication must be 'public' or 'private'")
     normalized = str(ticker or "").strip().upper()
+    if publication == "private" and normalized == "PG":
+        if fiscal_scope is None:
+            raise ValueError("private PG profile requires fiscal_scope")
+        from .pg_profile import pg_profile
+        return pg_profile(fiscal_scope=fiscal_scope)
     if normalized == "AAPL":
         return apple_profile()
     factory = _HOMEBUILDER_PROFILE_FACTORIES.get(normalized)

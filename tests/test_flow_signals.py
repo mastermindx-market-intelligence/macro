@@ -1077,3 +1077,712 @@ class TestMeasuredMicrostructureLedgerColumns:
         assert row["vol_gt_oi_ratio"] is None
         # Finite siblings in the same block are unaffected.
         assert row["at_bid_share"] == pytest.approx(0.2)
+
+
+# ── 13. SPY label-window contract ────────────────────────────────────────────
+#
+# A spy_excess_h comparison (ticker_fwd_ret_h - spy_fwd_ret_h) is only
+# evaluable when the two forward windows cover the SAME actual trading dates.
+# If SPY is missing a bar at the native fill or the native fill+h position
+# (e.g. SPY holiday, ticker-only session), the SPY window shifts to a
+# different date span and the difference would compare different label
+# windows — non-evaluable; the column stays None. Absolute native metrics
+# (ticker fwd_ret_h, fwd_mfe_h, fwd_mdd_h) are preserved regardless.
+
+class TestSpyLabelWindowContract:
+    """SPY label-window contract: spy_excess_h requires identical native fill
+    AND identical native endpoint dates on the two series."""
+
+    def test_matching_dates_positive_path(self):
+        """When ticker and SPY share the same business-day calendar, the
+        label-window contract is satisfied: spy_excess_h is the difference
+        of the two forward returns."""
+        from engine.flow_signals_grade import _grade_event
+
+        # snap_loc("2026-06-02") lands at bar 1, fill = 2.
+        # fwd_ret_5 = close[fill+5] / close[fill] - 1 = close[7] / close[2] - 1.
+        # Want ticker fwd_ret_5 = 0.05 (entry 100, exit 105) and SPY 0.02
+        # (entry 200, exit 204) → excess 0.03.
+        n = 9
+        dates = pd.date_range("2026-06-01", periods=n, freq="B")
+        ticker_prices = [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 105.0, 105.0]
+        spy_prices    = [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 204.0, 204.0]
+        close = pd.Series(ticker_prices, index=dates, dtype=float)
+        spy = pd.Series(spy_prices, index=dates, dtype=float)
+
+        result = _grade_event(
+            event_id="spy_match",
+            ticker="AAPL",
+            session_date="2026-06-02",
+            dte_bucket="1_7d",
+            close=close,
+            spy_close=spy,
+        )
+        assert result["graded_ok"] is True
+        assert result["reason_code"] == "ok"
+        assert result["fwd_ret_5"] is not None
+        assert result["fwd_ret_5"] == pytest.approx(0.05, abs=1e-9)
+        assert result["spy_excess_5"] is not None
+        assert result["spy_excess_5"] == pytest.approx(0.03, abs=1e-9)
+
+    def test_spy_missing_native_fill_leaves_excess_null(self):
+        """If SPY is missing a bar at the ticker's native fill date, the SPY
+        window opens on a different calendar day and the comparison is
+        non-evaluable. spy_excess_h MUST stay None while the absolute
+        ticker fwd_ret_h is still populated."""
+        from engine.flow_signals_grade import _grade_event
+
+        # Ticker has bars on 2026-06-01, 06-02 (signal), 06-03 (fill), 06-04, ...
+        # SPY is missing 2026-06-03 — its fill lands one bar later, on 06-04.
+        # Same length overall so len() checks do not save us; the dates
+        # themselves are the differentiator.
+        ticker_dates = pd.date_range("2026-06-01", periods=9, freq="B")
+        spy_dates = pd.DatetimeIndex([
+            pd.Timestamp("2026-06-01"),
+            pd.Timestamp("2026-06-02"),
+            # 2026-06-03 MISSING — SPY holiday
+            pd.Timestamp("2026-06-04"),
+            pd.Timestamp("2026-06-05"),
+            pd.Timestamp("2026-06-08"),
+            pd.Timestamp("2026-06-09"),
+            pd.Timestamp("2026-06-10"),
+            pd.Timestamp("2026-06-11"),
+            pd.Timestamp("2026-06-12"),
+        ])
+        ticker_prices = [100.0, 100.0, 100.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0]
+        spy_prices    = [200.0, 200.0,        201.0, 202.0, 202.5, 203.0, 203.5, 204.0, 204.5]
+        close = pd.Series(ticker_prices, index=ticker_dates, dtype=float)
+        spy = pd.Series(spy_prices, index=spy_dates, dtype=float)
+
+        result = _grade_event(
+            event_id="spy_missing_fill",
+            ticker="AAPL",
+            session_date="2026-06-02",
+            dte_bucket="1_7d",
+            close=close,
+            spy_close=spy,
+        )
+        assert result["graded_ok"] is True
+        assert result["fwd_ret_5"] is not None
+        # Label windows differ: ticker fill 06-03 → endpoint 06-10; SPY fill
+        # 06-04 → endpoint 06-11. Both endpoints drift together.
+        assert result["spy_excess_5"] is None, (
+            "SPY excess must be None when SPY's native fill date does not "
+            "match the ticker's native fill date — label-window mismatch "
+            "is non-evaluable per the contract."
+        )
+
+    def test_spy_missing_intermediate_shifts_endpoint(self):
+        """If SPY is missing a bar between fill and fill+h, SPY's native
+        fill+h date is later than the ticker's. spy_excess_h MUST stay None
+        while the absolute metric is preserved."""
+        from engine.flow_signals_grade import _grade_event
+
+        ticker_dates = pd.date_range("2026-06-01", periods=9, freq="B")
+        # SPY: bar at 2026-06-03 (fill) exists, but bar at 2026-06-04 (the
+        # bar that would be ticker fill+1) is missing — so SPY's fill+5
+        # endpoint lands on 2026-06-11 instead of the ticker's 2026-06-10.
+        # June 3 + 5 business days = June 10.
+        spy_dates = pd.DatetimeIndex([
+            pd.Timestamp("2026-06-01"),
+            pd.Timestamp("2026-06-02"),
+            pd.Timestamp("2026-06-03"),
+            # 2026-06-04 MISSING (intermediate)
+            pd.Timestamp("2026-06-05"),
+            pd.Timestamp("2026-06-08"),
+            pd.Timestamp("2026-06-09"),
+            pd.Timestamp("2026-06-10"),  # ticker's fill+5
+            pd.Timestamp("2026-06-11"),  # SPY's fill+5 (one bar late)
+            pd.Timestamp("2026-06-12"),
+        ])
+        ticker_prices = [100.0, 100.0, 100.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0]
+        spy_prices    = [200.0, 200.0, 200.0,       201.0, 202.0, 202.5, 203.0, 203.5, 204.0]
+        close = pd.Series(ticker_prices, index=ticker_dates, dtype=float)
+        spy = pd.Series(spy_prices, index=spy_dates, dtype=float)
+
+        result = _grade_event(
+            event_id="spy_missing_intermediate",
+            ticker="AAPL",
+            session_date="2026-06-02",
+            dte_bucket="1_7d",
+            close=close,
+            spy_close=spy,
+        )
+        assert result["graded_ok"] is True
+        assert result["fwd_ret_5"] is not None
+        # Endpoints differ: ticker 06-10, SPY 06-11.
+        assert result["spy_excess_5"] is None, (
+            "SPY excess must be None when SPY's native fill+h date differs "
+            "from the ticker's — label-window mismatch is non-evaluable."
+        )
+
+    def test_spy_excess_independent_per_horizon_8_30d(self):
+        """For an 8_30d bucket (horizon=21d), the label-window contract is
+        checked per horizon. A series that has matching dates throughout the
+        21d window should yield a populated spy_excess_21."""
+        from engine.flow_signals_grade import _grade_event
+
+        # snap_loc("2026-06-02") lands at bar 1, fill = 2.
+        # fwd_ret_21 = close[fill+21] / close[fill] - 1 = close[23] / close[2] - 1.
+        n = 24
+        dates = pd.date_range("2026-06-01", periods=n, freq="B")
+        ticker_prices = [100.0] * 24
+        ticker_prices[2] = 100.0
+        ticker_prices[23] = 115.0
+        spy_prices = [200.0] * 24
+        spy_prices[2] = 200.0
+        spy_prices[23] = 210.0
+
+        close = pd.Series(ticker_prices, index=dates, dtype=float)
+        spy = pd.Series(spy_prices, index=dates, dtype=float)
+
+        result = _grade_event(
+            event_id="spy_21d_match",
+            ticker="AAPL",
+            session_date="2026-06-02",
+            dte_bucket="8_30d",
+            close=close,
+            spy_close=spy,
+        )
+        assert result["graded_ok"] is True
+        assert result["fwd_ret_21"] is not None
+        assert result["fwd_ret_21"] == pytest.approx(0.15, abs=1e-9)
+        assert result["spy_excess_21"] is not None
+        assert result["spy_excess_21"] == pytest.approx(0.10, abs=1e-9)
+
+    def test_spy_none_preserves_absolute_metrics(self):
+        """spy_close=None is the pre-existing fast-path; absolute metrics
+        still populate, no SPY columns are written, no exception is raised."""
+        from engine.flow_signals_grade import _grade_event
+
+        n = 11
+        dates = pd.date_range("2026-06-01", periods=n, freq="B")
+        close = pd.Series([100.0] * n, index=dates, dtype=float)
+
+        result = _grade_event(
+            event_id="no_spy",
+            ticker="AAPL",
+            session_date="2026-06-02",
+            dte_bucket="1_7d",
+            close=close,
+            spy_close=None,
+        )
+        assert result["graded_ok"] is True
+        assert result["fwd_ret_5"] is not None
+        assert result["spy_excess_5"] is None
+        for h in (5, 21, 63, 126):
+            assert result[f"spy_excess_{h}"] is None
+
+
+# Source clocks stay with the incumbent collector test/CI owner.
+from collectors import flow_signals as clock_owner
+from scripts.build_flow_signals import _write_gate
+
+_SOURCE_CLOCK_TEST_FIELDS = (
+    "observed_at", "decision_at", "available_at", "published_at", "source_snapshot_asof",
+)
+_SOURCE_EVENT_CLOCK_TEST_FIELDS = (
+    "source_event_observed_at",
+    "source_event_decision_at",
+    "source_event_available_at",
+    "source_event_published_at",
+    "source_event_snapshot_asof",
+)
+_FS5_RECEIPT_FIELDS = (
+    "decision_at",
+    "available_at",
+    "source_stage_observed_at",
+    "source_stage_key",
+    "source_stage_schema",
+    "source_stage_prefix_records",
+    "source_stage_prefix_sha256",
+)
+
+
+def _make_source_clock_event(event_id="clock-event", **changes):
+    row = {
+        "id": event_id, "root": "TEST", "ts": "2026-09-29T14:00:00Z",
+        "dte_bucket": "8_30d", "right": "C", "premium": 1000,
+        "observed_at": "2026-09-29T10:00:01.123456789-04:00",
+        "decision_at": "2026-09-29T14:00:02Z",
+        "available_at": "2026-09-29T14:00:03Z",
+        "published_at": "2026-09-29T14:00:04Z",
+        "source_snapshot_asof": "2026-09-29T14:00:05Z",
+    }
+    row.update(changes)
+    return row
+
+
+def _parse_source_clock_event(row):
+    return clock_owner._events_from_blob({
+        "schema": "live_flow.feed/v1", "session_date": "2026-09-29",
+        "asof": "2026-09-29T15:00:00Z", "events": [row],
+    })[0]
+
+
+class TestSourceClockPreservation:
+    @pytest.fixture(autouse=True)
+    def frozen_ingestion(self, monkeypatch):
+        class Clock(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                value = datetime(2026, 9, 29, 16, 0, tzinfo=timezone.utc)
+                return value.astimezone(tz) if tz else value.replace(tzinfo=None)
+        monkeypatch.setattr(clock_owner, "datetime", Clock)
+
+    def test_source_clock_precision_and_order_survive_normalization(self):
+        row = _parse_source_clock_event(_make_source_clock_event())
+        assert row.get("source_event_observed_at") == "2026-09-29T14:00:01.123456789+00:00"
+        assert row["source_event_available_at"] == "2026-09-29T14:00:03+00:00"
+        assert row["source_event_published_at"] == "2026-09-29T14:00:04+00:00"
+        assert row["source_event_snapshot_asof"] == "2026-09-29T14:00:05+00:00"
+        assert row["source_clock_status"] == "ordered"
+        assert row["source_event_available_at"] != row["ingested_at"]
+
+    def test_missing_clocks_never_borrow_event_wrapper_or_ingestion_time(self):
+        raw = _make_source_clock_event()
+        for key in _SOURCE_CLOCK_TEST_FIELDS:
+            raw.pop(key)
+        row = _parse_source_clock_event(raw)
+        assert row.get("source_clock_status") == "unavailable"
+        assert all(row.get(key) is None for key in _SOURCE_EVENT_CLOCK_TEST_FIELDS)
+        assert row["ts"] and row["ingested_at"]
+
+    def test_partial_clock_chain_is_not_filled_or_called_ordered(self):
+        row = _parse_source_clock_event(_make_source_clock_event(observed_at=None, published_at=None))
+        assert row.get("source_clock_status") == "partial"
+        assert row["source_event_available_at"] == "2026-09-29T14:00:03+00:00"
+        assert row["source_event_observed_at"] is None
+
+    @pytest.mark.parametrize("bad", ["2026-09-29T14:00:03", "2026-09-29", "NaT", "tomorrow", True, 1790690403, "2026-02-31T14:00:03Z", "2026-09-29T14:00:03+01:99", "2026-09-29T14:00:03+01:60", "2026-09-29T14:00:03+24:00"])
+    def test_invalid_source_time_is_null_and_not_silently_utc(self, bad):
+        row = _parse_source_clock_event(_make_source_clock_event(available_at=bad))
+        assert row.get("source_clock_status") == "invalid"
+        assert row["source_event_available_at"] is None
+        assert row["source_event_decision_at"] == "2026-09-29T14:00:02+00:00"
+
+    @pytest.mark.parametrize("changes", [
+        {"ts": "2026-09-29T14:00:10Z"},
+        {"observed_at": "2026-09-29T14:00:03Z"},
+        {"decision_at": "2026-09-29T14:00:04Z"},
+        {"published_at": "2026-09-29T14:00:02Z"},
+        {"available_at": "2026-09-29T17:00:00Z", "published_at": None},
+        {"source_snapshot_asof": "2026-09-29T17:00:00Z"},
+        {"ts": "2026-09-29T14:00:00"},
+    ])
+    def test_reversed_future_or_unqualified_event_clocks_are_not_ordered(self, changes):
+        row = _parse_source_clock_event(_make_source_clock_event(**changes))
+        assert row.get("source_clock_status") == "invalid"
+
+    def test_submicrosecond_reversal_is_not_rounded_into_equality(self):
+        row = _parse_source_clock_event(_make_source_clock_event(observed_at="2026-09-29T14:00:02.000000002Z", decision_at="2026-09-29T14:00:02.000000001Z"))
+        assert row.get("source_clock_status") == "invalid"
+
+    def test_no_publication_time_remains_unpublished_not_fabricated(self):
+        row = _parse_source_clock_event(_make_source_clock_event(published_at=None))
+        assert row.get("source_clock_status") == "ordered"
+        assert row["source_event_published_at"] is None
+
+    def test_keep_first_cannot_backfill_missing_clocks(self, tmp_path):
+        path = tmp_path / "ledger.parquet"
+        raw = _make_source_clock_event()
+        for key in _SOURCE_CLOCK_TEST_FIELDS:
+            raw.pop(key)
+        clock_owner._append_rows(path, [_parse_source_clock_event(raw)])
+        clock_owner._append_rows(path, [_parse_source_clock_event(_make_source_clock_event())])
+        df = pd.read_parquet(path)
+        assert len(df) == 1
+        assert "source_event_available_at" in df.columns
+        assert pd.isna(df.iloc[0]["source_event_available_at"])
+        assert df.iloc[0]["source_clock_status"] == "unavailable"
+
+    def test_legacy_rows_remain_unknown_through_native_parquet_and_gate(self, tmp_path, monkeypatch):
+        path = tmp_path / "ledger.parquet"
+        old = _parse_source_clock_event(_make_source_clock_event("legacy"))
+        for key in (*_SOURCE_EVENT_CLOCK_TEST_FIELDS, "source_clock_status"):
+            old.pop(key, None)
+        pd.DataFrame([old]).to_parquet(path, index=False)
+        clock_owner._append_rows(path, [_parse_source_clock_event(_make_source_clock_event("new")), _parse_source_clock_event(_make_source_clock_event("invalid", published_at="2026-09-29T14:00:02Z"))])
+        df = pd.read_parquet(path)
+        assert "source_event_available_at" in df.columns
+        legacy = df[df.event_id == "legacy"].iloc[0]
+        assert pd.isna(legacy["source_event_available_at"])
+        assert pd.isna(legacy["source_clock_status"])
+        monkeypatch.setattr(clock_owner, "_ledger_path", lambda: path)
+        stats = clock_owner.ledger_stats()
+        coverage = stats.get("source_clock_coverage")
+        assert coverage is not None
+        assert coverage["authority"] == "diagnostic_only"
+        assert coverage["rows_total"] == 3
+        assert coverage["status_counts"]["legacy_unknown"] == 1
+        assert coverage["status_counts"]["ordered"] == 1
+        assert coverage["status_counts"]["invalid"] == 1
+        assert coverage["field_non_null"]["source_event_available_at"] == 2
+        assert sum(coverage["status_counts"].values()) == 3
+        gate_path = tmp_path / "gate.json"
+        _write_gate(gate_path, stats, {}, 2, 0.1, "2026-09-29")
+        gate = json.loads(gate_path.read_text())
+        assert gate["ledger"]["source_clock_coverage"] == coverage
+        assert gate["scoring"]["enabled"] is False
+        assert gate["scored"] is False
+
+    def test_legacy_only_statistics_report_unknown_not_zero_rows(self, tmp_path, monkeypatch):
+        path = tmp_path / "ledger.parquet"
+        pd.DataFrame([{"event_id": "old", "session_date": "2026-09-25", "ts": "2026-09-25T15:00:00+00:00", "dte_bucket": "8_30d"}]).to_parquet(path,index=False)
+        monkeypatch.setattr(clock_owner, "_ledger_path", lambda: path)
+        stats = clock_owner.ledger_stats()
+        assert stats["n_rows"] == 1
+        assert stats.get("source_clock_coverage", {}).get("status_counts", {}).get("legacy_unknown") == 1
+
+    def test_rfc3339_unknown_local_offset_still_has_known_utc_instant(self):
+        # RFC 3339 §4.3: UTC is known; only the local offset is unknown. Do not
+        # confuse this valid instant with an unqualified/naive local timestamp.
+        row = _parse_source_clock_event(_make_source_clock_event(available_at="2026-09-29T14:00:03-00:00"))
+        assert row["source_clock_status"] == "ordered"
+        assert row["source_event_available_at"] == "2026-09-29T14:00:03+00:00"
+
+    def test_exact_equal_clock_boundaries_are_valid_without_inventing_publication(self):
+        value = "2026-09-29T14:00:00Z"
+        row = _parse_source_clock_event(_make_source_clock_event(observed_at=value, decision_at=value, available_at=value, published_at=None, source_snapshot_asof=None))
+        assert row["source_clock_status"] == "ordered"
+        assert row["source_event_published_at"] is None
+
+    def test_invalid_clock_does_not_erase_independently_valid_measurement(self):
+        raw = _make_source_clock_event(available_at=True)
+        raw["microstructure"] = {"schema": "options.trade_nbbo_microstructure/v1", "source_print_count": 2, "nbbo_valid_print_count": 1, "nbbo_premium_coverage": 0.5}
+        row = _parse_source_clock_event(raw)
+        assert row["source_clock_status"] == "invalid"
+        assert row["source_print_count"] == 2
+        assert row["nbbo_premium_coverage"] == 0.5
+
+    def test_unrecognized_persisted_clock_status_stays_diagnostic(self, tmp_path, monkeypatch):
+        path = tmp_path / "ledger.parquet"
+        row = _parse_source_clock_event(_make_source_clock_event())
+        row["source_clock_status"] = "eligible_to_trade"
+        pd.DataFrame([row]).to_parquet(path, index=False)
+        monkeypatch.setattr(clock_owner, "_ledger_path", lambda: path)
+        coverage = clock_owner.ledger_stats()["source_clock_coverage"]
+        assert coverage["status_counts"]["unrecognized"] == 1
+        assert coverage["status_counts"]["ordered"] == 0
+        assert coverage["authority"] == "diagnostic_only"
+
+    def test_additive_source_clocks_do_not_change_native_feature_matrix(self):
+        from lib.flow_score import build_interaction_features
+
+        raw = _parse_source_clock_event(_make_source_clock_event())
+        raw.update(dte=14, premium_z=2.5)
+        before = {key: value for key, value in raw.items()
+                  if key not in (*_SOURCE_EVENT_CLOCK_TEST_FIELDS, "source_clock_status")}
+        columns = ["dte", "premium_z", "dte_X_premium_z", "missing_feature"]
+        expected = build_interaction_features(
+            pd.DataFrame([before]), columns, dte_interaction_enabled=True,
+        )
+        actual = build_interaction_features(
+            pd.DataFrame([raw]), columns, dte_interaction_enabled=True,
+        )
+        pd.testing.assert_frame_equal(actual, expected)
+        assert list(actual.columns) == columns
+
+    def _native_clock_bridge(self, tmp_path, monkeypatch):
+        from scripts import live_flow_poller as poller
+
+        state_dir = tmp_path / "state"
+        out_dir = tmp_path / "out"
+        state_dir.mkdir()
+        out_dir.mkdir()
+        monkeypatch.setattr(poller, "_state_dir", lambda: state_dir)
+        monkeypatch.setattr(poller, "_out_dir", lambda: out_dir)
+        monkeypatch.setattr(poller, "_OPTIONS_CONTEXT_DISPATCHER", None)
+        monkeypatch.setenv("LIVE_FLOW_EVENT_STAGE_DIR", str(state_dir / "events"))
+        ledger = tmp_path / "ledger.parquet"
+        feed_path = out_dir / "feed_current.json"
+        monkeypatch.setattr(clock_owner, "_ledger_path", lambda: ledger)
+        monkeypatch.setattr(clock_owner, "_feed_current_path", lambda: feed_path)
+        monkeypatch.setattr(clock_owner, "_r2_client", lambda: None)
+        monkeypatch.setattr(clock_owner, "_r2_bucket", lambda: "isolated-test-bucket")
+        raw = _make_source_clock_event("native-stage-event")
+        for key in ("available_at", "published_at", "source_snapshot_asof"):
+            raw.pop(key)
+        available = datetime(2026, 9, 29, 14, 0, 3, 123456, tzinfo=timezone.utc)
+        state = {"all_events": [], "pending_learning_events": [raw]}
+        poller._save_day_state("2026-09-29", state)
+        cleared, staged = poller._drain_pending_learning_events(
+            "2026-09-29", state,
+            event_stager=lambda session, events: poller._stage_raw_events(
+                session, events, now_fn=lambda: available,
+            ),
+        )
+        assert cleared["pending_learning_events"] == []
+        assert cleared["all_events"] == staged
+        # Same post-commit envelope assignment as the production poller. All
+        # event fields themselves come from the real durable staging function.
+        feed = {
+            "schema": "live_flow.feed/v1", "session_date": "2026-09-29",
+            "asof": "2026-09-29T14:05:00Z", "events": cleared["all_events"],
+        }
+        poller._write_json("feed_current.json", feed)
+        return poller, raw, staged[0], ledger, feed_path
+
+    @pytest.mark.parametrize("transport", ["local", "archive"])
+    def test_native_stage_to_harvest_preserves_source_clocks(self, tmp_path, monkeypatch, transport):
+        poller, raw, staged, ledger, feed_path = self._native_clock_bridge(tmp_path, monkeypatch)
+        if transport == "archive":
+            # Mock only external transport; the response bytes are generated by
+            # the real serializer above, not manually enriched test rows.
+            monkeypatch.setattr(clock_owner, "_r2_client", lambda: object())
+            monkeypatch.setattr(clock_owner, "_archive_keys_within_window", lambda *_args: ["archive/20260929T14.json"])
+            monkeypatch.setattr(clock_owner, "_fetch_r2_json", lambda *_args: json.loads(feed_path.read_text()))
+            monkeypatch.setattr(clock_owner, "_r2_feed_current", lambda *_args: None)
+            monkeypatch.setattr(clock_owner, "_feed_current_path", lambda: None)
+        assert clock_owner.harvest() == 1
+        row = pd.read_parquet(ledger).iloc[0]
+        assert row["event_id"] == staged["id"] == raw["id"]
+        assert row.get("source_event_available_at") == pd.Timestamp(staged["available_at"]).isoformat()
+        assert row.get("source_event_observed_at") == "2026-09-29T14:00:01.123456789+00:00"
+        assert row.get("source_event_decision_at") == "2026-09-29T14:00:02+00:00"
+        assert row.get("source_event_snapshot_asof") == pd.Timestamp(staged["source_snapshot_asof"]).isoformat()
+        assert row.get("source_clock_status") == "ordered"
+        assert pd.isna(row["source_event_published_at"])
+        assert row["source_event_available_at"] != row["ingested_at"]
+        stage_path = poller._event_stage_path("2026-09-29")
+        decisions, availability, _ = poller._parse_event_stage_bytes(
+            "2026-09-29", stage_path.read_bytes(), path=stage_path, require_complete=True,
+        )
+        assert availability[raw["id"]] == staged["available_at"]
+        assert decisions[raw["id"]]["observed_at"] == raw["observed_at"]
+        gate_path = tmp_path / "gate.json"
+        _write_gate(gate_path, clock_owner.ledger_stats(), {}, 1, 0.1, "2026-09-29")
+        gate = json.loads(gate_path.read_text())
+        coverage = gate["ledger"]["source_clock_coverage"]
+        assert coverage["status_counts"]["ordered"] == 1
+        assert coverage["field_non_null"]["source_event_published_at"] == 0
+        assert gate["scoring"]["enabled"] is False and gate["scored"] is False
+
+    def test_native_stage_replay_cannot_restamp_already_harvested_event(self, tmp_path, monkeypatch):
+        poller, raw, staged, ledger, _ = self._native_clock_bridge(tmp_path, monkeypatch)
+        assert clock_owner.harvest() == 1
+        first_bytes = ledger.read_bytes()
+        # A recovered/refetched event has newer observation clocks. The source
+        # stager itself must keep the first durable decision, before harvest.
+        replay_raw = dict(raw, observed_at="2026-09-29T14:10:01Z", decision_at="2026-09-29T14:10:02Z")
+        replay = poller._stage_raw_events(
+            "2026-09-29", [replay_raw],
+            now_fn=lambda: datetime(2026, 9, 29, 14, 10, 3, tzinfo=timezone.utc),
+        )
+        assert replay == [staged]
+        poller._write_json("feed_current.json", {
+            "schema": "live_flow.feed/v1", "session_date": "2026-09-29",
+            "asof": "2026-09-29T14:15:00Z", "events": replay,
+        })
+        assert clock_owner.harvest() == 0
+        assert ledger.read_bytes() == first_bytes
+
+    def test_native_stage_dry_harvest_does_not_write_history(self, tmp_path, monkeypatch):
+        _, _, _, ledger, _ = self._native_clock_bridge(tmp_path, monkeypatch)
+        assert clock_owner.harvest(dry_run=True) == 1
+        assert not ledger.exists()
+
+
+class TestCurrentMainSourceClockNamespace:
+    """Current-base coupling: raw event clocks stay diagnostic; FS-5 receipts stay exclusive."""
+
+    def test_archive_and_feed_clocks_cannot_populate_scientific_receipts(self, tmp_path, monkeypatch):
+        clocks = {
+            "observed_at": "2026-07-13T14:00:01Z",
+            "decision_at": "2026-07-13T14:00:02Z",
+            "available_at": "2026-07-13T14:00:03Z",
+            "published_at": "2026-07-13T14:00:04Z",
+            "source_snapshot_asof": "2026-07-13T14:00:05Z",
+        }
+        row = clock_owner._events_from_blob(
+            _make_feed_blob([_make_event("arch-clocks", **clocks)])
+        )[0]
+        for field in _FS5_RECEIPT_FIELDS:
+            assert row[field] is None, f"archive/feed populated scientific {field}"
+        assert row["source_event_observed_at"] == "2026-07-13T14:00:01+00:00"
+        assert row["source_event_decision_at"] == "2026-07-13T14:00:02+00:00"
+        assert row["source_event_available_at"] == "2026-07-13T14:00:03+00:00"
+        assert row["source_event_published_at"] == "2026-07-13T14:00:04+00:00"
+        assert row["source_event_snapshot_asof"] == "2026-07-13T14:00:05+00:00"
+        assert row["source_clock_status"] == "ordered"
+
+        ledger = tmp_path / "ledger.parquet"
+        blob = _make_feed_blob([_make_event("harvest-arch-clocks", **clocks)])
+        monkeypatch.setattr(clock_owner, "_ledger_path", lambda: ledger)
+        monkeypatch.setattr(clock_owner, "_r2_client", lambda: object())
+        monkeypatch.setattr(clock_owner, "_r2_bucket", lambda: "isolated-test-bucket")
+        monkeypatch.setattr(
+            clock_owner, "_event_stage_keys_within_window", lambda *_a, **_k: [],
+        )
+        monkeypatch.setattr(
+            clock_owner, "_archive_keys_within_window",
+            lambda *_a, **_k: ["live_flow/archive/20260713T14.json"],
+        )
+        monkeypatch.setattr(clock_owner, "_fetch_r2_json", lambda *_a, **_k: blob)
+        monkeypatch.setattr(clock_owner, "_r2_feed_current", lambda *_a, **_k: None)
+        monkeypatch.setattr(clock_owner, "_feed_current_path", lambda: None)
+        assert clock_owner.harvest() == 1
+        stored = pd.read_parquet(ledger).iloc[0]
+        assert pd.isna(stored["decision_at"])
+        assert pd.isna(stored["available_at"])
+        assert pd.isna(stored["source_stage_key"])
+        assert stored["source_event_decision_at"] == "2026-07-13T14:00:02+00:00"
+        assert stored["source_event_available_at"] == "2026-07-13T14:00:03+00:00"
+
+    def test_verified_stage_receipts_remain_exact_and_diagnostics_do_not_overwrite(
+        self, tmp_path, monkeypatch,
+    ):
+        from lib.live_flow_event_stage import EVENT_STAGE_SCHEMA, parse_stage_bytes
+
+        session = "2026-07-13"
+        key = f"live_flow/events/{session}.jsonl"
+        event = {
+            "id": "stage-evt",
+            "ts": "2026-07-13T14:00:00Z",
+            "root": "AAPL",
+            "observed_at": "2026-07-13T14:00:01Z",
+            "decision_at": "2026-07-13T14:00:02Z",
+            "dte_bucket": "8_30d",
+            "premium": 1000.0,
+        }
+        decision = {
+            "schema": EVENT_STAGE_SCHEMA,
+            "kind": "decision",
+            "event_id": "stage-evt",
+            "event": event,
+        }
+        availability = {
+            "schema": EVENT_STAGE_SCHEMA,
+            "kind": "availability",
+            "event_id": "stage-evt",
+            "available_at": "2026-07-13T18:00:03Z",
+        }
+        raw = (
+            json.dumps(decision, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+            + b"\n"
+            + json.dumps(availability, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+            + b"\n"
+        )
+        paired = parse_stage_bytes(
+            raw, expected_session_date=session, source_stage_key=key,
+        )
+        assert len(paired) == 1
+        item = paired[0]
+
+        class _Body:
+            def read(self):
+                return raw
+
+        s3 = MagicMock()
+        s3.get_object.return_value = {"Body": _Body()}
+        ledger = tmp_path / "ledger.parquet"
+        monkeypatch.setattr(clock_owner, "_ledger_path", lambda: ledger)
+        monkeypatch.setattr(clock_owner, "_r2_client", lambda: s3)
+        monkeypatch.setattr(clock_owner, "_r2_bucket", lambda: "isolated-test-bucket")
+        monkeypatch.setattr(
+            clock_owner, "_event_stage_keys_within_window", lambda *_a, **_k: [key],
+        )
+        monkeypatch.setattr(
+            clock_owner, "_archive_keys_within_window", lambda *_a, **_k: [],
+        )
+        monkeypatch.setattr(clock_owner, "_r2_feed_current", lambda *_a, **_k: None)
+        monkeypatch.setattr(clock_owner, "_feed_current_path", lambda: None)
+
+        assert clock_owner.harvest() == 1
+        stored = pd.read_parquet(ledger).iloc[0]
+        assert stored["decision_at"] == item["decision_at"]
+        assert stored["available_at"] == item["available_at"]
+        assert stored["source_stage_key"] == item["source_stage_key"]
+        assert stored["source_stage_schema"] == item["source_stage_schema"]
+        assert int(stored["source_stage_prefix_records"]) == item["source_stage_prefix_records"]
+        assert stored["source_stage_prefix_sha256"] == item["source_stage_prefix_sha256"]
+        assert stored["source_event_observed_at"] == "2026-07-13T14:00:01+00:00"
+        assert stored["source_event_decision_at"] == "2026-07-13T14:00:02+00:00"
+        assert stored["source_event_available_at"] == "2026-07-13T18:00:03+00:00"
+        assert stored["source_event_decision_at"] != stored["available_at"]
+        assert stored["decision_at"] == "2026-07-13T14:00:02Z"
+        assert stored["available_at"] == "2026-07-13T18:00:03Z"
+        assert stored["source_clock_status"] == "ordered"
+
+    def test_no_duplicate_columns_and_parquet_roundtrip_keeps_both_namespaces(self, tmp_path):
+        assert len(clock_owner._EVENT_COLS) == len(set(clock_owner._EVENT_COLS))
+        assert clock_owner._EVENT_COLS.count("decision_at") == 1
+        assert clock_owner._EVENT_COLS.count("available_at") == 1
+        for col in (*_SOURCE_EVENT_CLOCK_TEST_FIELDS, "source_clock_status", *_FS5_RECEIPT_FIELDS):
+            assert col in clock_owner._EVENT_COLS
+
+        clocks = {
+            "observed_at": "2026-07-13T14:00:01Z",
+            "decision_at": "2026-07-13T14:00:02Z",
+            "available_at": "2026-07-13T14:00:03Z",
+            "published_at": "2026-07-13T14:00:04Z",
+            "source_snapshot_asof": "2026-07-13T14:00:05Z",
+        }
+        rows = clock_owner._events_from_blob(
+            _make_feed_blob([_make_event("roundtrip", **clocks)])
+        )
+        path = tmp_path / "ledger.parquet"
+        assert clock_owner._append_rows(path, rows) == 1
+        df = pd.read_parquet(path)
+        stored = df.iloc[0]
+        assert pd.isna(stored["decision_at"])
+        assert pd.isna(stored["available_at"])
+        assert stored["source_event_decision_at"] == "2026-07-13T14:00:02+00:00"
+        assert stored["source_event_available_at"] == "2026-07-13T14:00:03+00:00"
+        assert stored["source_clock_status"] == "ordered"
+        reread = pd.read_parquet(path)
+        pd.testing.assert_frame_equal(df, reread)
+
+    def test_old_rows_remain_null_under_keep_first_and_raw_measurements_retained(self, tmp_path):
+        path = tmp_path / "ledger.parquet"
+        old = clock_owner._events_from_blob(_make_feed_blob([_make_event("legacy-keep")]))[0]
+        for key in (*_SOURCE_EVENT_CLOCK_TEST_FIELDS, "source_clock_status"):
+            old.pop(key, None)
+        pd.DataFrame([old]).to_parquet(path, index=False)
+
+        rich = _make_event(
+            "fresh-keep",
+            observed_at="2026-07-13T14:00:01Z",
+            decision_at="2026-07-13T14:00:02Z",
+            available_at="2026-07-13T14:00:03Z",
+            published_at="2026-07-13T14:00:04Z",
+            source_snapshot_asof="2026-07-13T14:00:05Z",
+            microstructure={
+                "schema": "options.trade_nbbo_microstructure/v1",
+                "source_print_count": 7,
+                "nbbo_valid_print_count": 6,
+                "nbbo_premium_coverage": 0.8,
+                "at_ask_share": 0.55,
+            },
+        )
+        assert clock_owner._append_rows(
+            path, clock_owner._events_from_blob(_make_feed_blob([rich])),
+        ) == 1
+        # Re-harvest of the same id with later clocks must not mutate first-seen fields.
+        restated = dict(rich)
+        restated["available_at"] = "2026-07-13T18:00:03Z"
+        restated["decision_at"] = "2026-07-13T18:00:02Z"
+        restated["microstructure"] = dict(rich["microstructure"], at_ask_share=0.99)
+        existing_ids = clock_owner._load_existing_ids(path)
+        new_rows = [
+            r for r in clock_owner._events_from_blob(_make_feed_blob([restated]))
+            if r["event_id"] not in existing_ids
+        ]
+        clock_owner._append_rows(path, new_rows)
+
+        df = pd.read_parquet(path)
+        assert list(df["event_id"]) == ["legacy-keep", "fresh-keep"]
+        legacy = df.iloc[0]
+        fresh = df.iloc[1]
+        for key in _SOURCE_EVENT_CLOCK_TEST_FIELDS:
+            assert pd.isna(legacy[key]), f"legacy backfilled {key}"
+        assert pd.isna(legacy["source_clock_status"])
+        assert pd.isna(legacy["decision_at"])
+        assert pd.isna(legacy["available_at"])
+        assert fresh["source_event_available_at"] == "2026-07-13T14:00:03+00:00"
+        assert fresh["source_event_decision_at"] == "2026-07-13T14:00:02+00:00"
+        assert pd.isna(fresh["decision_at"])
+        assert pd.isna(fresh["available_at"])
+        assert int(fresh["source_print_count"]) == 7
+        assert float(fresh["at_ask_share"]) == pytest.approx(0.55)
+        assert float(fresh["nbbo_premium_coverage"]) == pytest.approx(0.8)

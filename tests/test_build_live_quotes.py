@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import pathlib
 import re
+import pytest
 
 from engine import live_quotes as lq
 from scripts import build_live_quotes as blq
@@ -91,6 +92,7 @@ def test_scrape_site_symbols_extracts_only_valid(tmp_path):
 
 def test_to_worker_quotes_maps_engine_dict_to_contract():
     raw = {"AAPL": {"price": 212.5, "quote_ts": "2026-06-23T14:00:00+00:00",
+                    "quote_ts_synthetic": False,
                     "source": "polygon", "price_basis": "trade",
                     "prev_close": 210.0, "currency": "USD", "delay_min": 1.0}}
     out = blq.to_worker_quotes(raw)["AAPL"]
@@ -101,6 +103,156 @@ def test_to_worker_quotes_maps_engine_dict_to_contract():
     assert isinstance(out["ts"], int) and out["ts"] > 0     # epoch MILLIseconds
     from datetime import datetime
     assert out["ts"] == int(datetime.fromisoformat("2026-06-23T14:00:00+00:00").timestamp() * 1000)
+    # The long-standing Worker/browser contract remains unchanged by default.
+    assert "quote_ts" not in out
+    assert "quote_ts_synthetic" not in out
+
+
+def test_to_worker_quotes_private_provenance_preserves_source_clock_truth():
+    raw = {
+        "REAL": {
+            "price": 212.5,
+            "quote_ts": "2026-06-23T14:00:00.123456+00:00",
+            "quote_ts_synthetic": False,
+            "source": "polygon",
+            "price_basis": "trade",
+            "prev_close": 210.0,
+            "currency": "USD",
+            "delay_min": 1.0,
+        },
+        "SYNTH": {
+            "price": 7400.0,
+            "quote_ts": "2026-06-23T14:00:01+00:00",
+            "quote_ts_synthetic": True,
+            "source": "polygon",
+            "price_basis": "day",
+            "prev_close": 7390.0,
+            "currency": "USD",
+            "delay_min": 0.0,
+        },
+        "UNKNOWN": {
+            "price": 100.0,
+            "quote_ts": "2026-06-23T14:00:02+00:00",
+            "source": "fixture",
+            "price_basis": "trade",
+            "prev_close": 99.0,
+            "currency": "USD",
+            "delay_min": 0.0,
+        },
+    }
+
+    out = blq.to_worker_quotes(raw, include_private_provenance=True)
+
+    assert out["REAL"]["quote_ts"] == raw["REAL"]["quote_ts"]
+    assert out["REAL"]["quote_ts_synthetic"] is False
+    assert out["SYNTH"]["quote_ts"] == raw["SYNTH"]["quote_ts"]
+    assert out["SYNTH"]["quote_ts_synthetic"] is True
+    # Missing provenance is never guessed from a non-null timestamp.
+    assert out["UNKNOWN"]["quote_ts_synthetic"] is None
+
+
+def test_synthetic_quote_keeps_public_clock_refusal_with_private_opt_in():
+    clock = "2026-10-08T14:30:00.123456+00:00"
+    raw = {"UNIT": {"price": 10.0, "quote_ts": clock,
+                    "quote_ts_synthetic": True, "price_basis": "day"}}
+
+    public = blq.to_worker_quotes(raw)["UNIT"]
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    assert public["ts"] is None
+    assert public["tsSynthetic"] is True
+    assert "quote_ts" not in public and "quote_ts_synthetic" not in public
+    assert private["ts"] is None
+    assert private["tsSynthetic"] is True
+    assert private["quote_ts"] == clock
+    assert private["quote_ts_synthetic"] is True
+    assert {k: v for k, v in private.items()
+            if k not in {"quote_ts", "quote_ts_synthetic", "day_open",
+                         "bid_price", "ask_price", "nbbo_ts", "nbbo_source"}} == public
+
+
+@pytest.mark.parametrize("provenance", [None, 0, 1, "false", "true", [], {}])
+def test_private_quote_provenance_does_not_coerce_nonboolean_values(provenance):
+    clock = "2026-10-08T14:30:00+00:00"
+    raw = {"UNIT": {"price": 10.0, "quote_ts": clock,
+                    "quote_ts_synthetic": provenance}}
+
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    assert private["quote_ts"] == clock
+    assert private["quote_ts_synthetic"] is None
+
+
+def test_build_private_opt_in_preserves_all_session_receipts(monkeypatch, tmp_path):
+    from datetime import datetime, timezone
+    from lib.market_session import session_status
+
+    clock = datetime(2026, 10, 8, 14, 30, tzinfo=timezone.utc)
+
+    class FrozenDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return clock.astimezone(tz) if tz is not None else clock.replace(tzinfo=None)
+
+    raw = {"UNIT": {"price": 10.0, "quote_ts": clock.isoformat(),
+                    "quote_ts_synthetic": False}}
+    calls = []
+
+    def fake_fetch_quotes(universe, *, offline=False, diag=None):
+        calls.append((universe, offline))
+        assert universe == ["UNIT"] and offline is False
+        return raw
+
+    monkeypatch.setattr(blq, "datetime", FrozenDatetime)
+    monkeypatch.setattr(blq.live_quotes, "fetch_quotes", fake_fetch_quotes)
+    public = blq.build(tmp_path, symbols=["UNIT"])
+    private = blq.build(tmp_path, symbols=["UNIT"], include_private_provenance=True)
+
+    expected = {market: session_status(market, clock)
+                for market in ("us", "cn", "hk", "ca", "connect")}
+    assert set(expected) == {"us", "cn", "hk", "ca", "connect"}
+    assert public["sessions"] == private["sessions"] == expected
+    assert public["asof"] == private["asof"] == clock.isoformat()
+    assert public["ts"] == private["ts"] == int(clock.timestamp() * 1000)
+    assert private["quotes"]["UNIT"]["quote_ts"] == clock.isoformat()
+    assert "quote_ts" not in public["quotes"]["UNIT"]
+    assert len(calls) == 2
+
+
+def test_build_private_provenance_is_opt_in(monkeypatch, tmp_path):
+    raw = {
+        "AAPL": {
+            "price": 212.5,
+            "quote_ts": "2026-06-23T14:00:00+00:00",
+            "quote_ts_synthetic": False,
+            "source": "polygon",
+            "price_basis": "trade",
+            "prev_close": 210.0,
+            "currency": "USD",
+            "delay_min": 1.0,
+        }
+    }
+
+    def fake_fetch_quotes(universe, *, offline=False, diag=None):
+        assert universe == ["AAPL"]
+        assert offline is False
+        if diag is not None:
+            diag["polygon_status"] = "fixture"
+        return raw
+
+    monkeypatch.setattr(blq.live_quotes, "fetch_quotes", fake_fetch_quotes)
+
+    public = blq.build(tmp_path, symbols=["AAPL"])
+    private = blq.build(
+        tmp_path,
+        symbols=["AAPL"],
+        include_private_provenance=True,
+    )
+
+    assert "quote_ts" not in public["quotes"]["AAPL"]
+    assert "quote_ts_synthetic" not in public["quotes"]["AAPL"]
+    assert private["quotes"]["AAPL"]["quote_ts"] == raw["AAPL"]["quote_ts"]
+    assert private["quotes"]["AAPL"]["quote_ts_synthetic"] is False
 
 
 def test_to_worker_quotes_handles_missing_prevclose_and_price():
@@ -309,8 +461,6 @@ def test_display_board_pages_are_pages_this_repo_actually_builds():
 # 0/10. These tests pin the expanded coverage and add the standing invariant
 # that makes a future dead pill fail CI instead of shipping silently.
 import logging
-
-import pytest
 
 
 @pytest.mark.parametrize("page,valid_syms,malformed", [
@@ -687,3 +837,174 @@ def test_built_board_pages_bake_the_prefix_live_js_will_restore():
             f"{page} bakes {baked[:3]} for data-mkt={mkt!r} but live.js "
             f"{'adds' if mkt in dollar else 'omits'} the $ — a patch would change the glyph")
     assert checked, "no board page contributed a baked price — contract unverified"
+
+def test_private_snapshot_preserves_measured_b4_evidence_without_clock_substitution():
+    evidence = {
+        "day_open": 210.1256,
+        "bid_price": 212.1234,
+        "ask_price": 212.2345,
+        "nbbo_ts": "2026-10-08T14:29:58.987654+00:00",
+        "nbbo_source": "polygon_lastQuote",
+    }
+    raw = {"UNIT": {
+        "price": 212.2,
+        "quote_ts": "2026-10-08T14:30:00.123456+00:00",
+        "quote_ts_synthetic": False,
+        "source": "polygon",
+        "price_basis": "trade",
+        **evidence,
+    }}
+
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    assert {field: private[field] for field in evidence} == evidence
+    assert private["nbbo_ts"] != private["quote_ts"]
+    assert private["quote_ts"] == raw["UNIT"]["quote_ts"]
+    assert raw["UNIT"]["nbbo_ts"] == evidence["nbbo_ts"]
+    assert not {"liquidity_fillability", "ENTRY_OPEN", "availability"} & private.keys()
+
+
+def test_b4_evidence_does_not_change_the_public_projection():
+    plain = {"UNIT": {
+        "price": 212.2,
+        "quote_ts": "2026-10-08T14:30:00+00:00",
+        "quote_ts_synthetic": False,
+        "source": "polygon",
+        "price_basis": "trade",
+    }}
+    enriched = {"UNIT": {**plain["UNIT"],
+        "day_open": 210.0, "bid_price": 212.1, "ask_price": 212.3,
+        "nbbo_ts": "2026-10-08T14:29:59+00:00",
+        "nbbo_source": "polygon_lastQuote",
+    }}
+
+    assert json.dumps(blq.to_worker_quotes(enriched), sort_keys=True) == json.dumps(
+        blq.to_worker_quotes(plain), sort_keys=True,
+    )
+    assert not {"day_open", "bid_price", "ask_price", "nbbo_ts", "nbbo_source"} & (
+        blq.to_worker_quotes(enriched)["UNIT"].keys()
+    )
+
+
+@pytest.mark.parametrize("evidence", [
+    {},
+    {"day_open": None, "bid_price": None, "ask_price": None,
+     "nbbo_ts": None, "nbbo_source": None},
+])
+def test_private_b4_evidence_missingness_is_not_repaired_from_price_or_clock(evidence):
+    raw = {"UNIT": {
+        "price": 212.2, "prev_close": 210.0, "day_high": 213.0, "day_low": 209.0,
+        "quote_ts": "2026-10-08T14:30:00+00:00",
+        "quote_ts_synthetic": False, **evidence,
+    }}
+
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    for field in ("day_open", "bid_price", "ask_price", "nbbo_ts", "nbbo_source"):
+        assert field in private and private[field] is None
+    assert private["price"] == 212.2
+    assert private["quote_ts"] == raw["UNIT"]["quote_ts"]
+
+
+def test_build_private_b4_evidence_uses_the_existing_single_fetch(monkeypatch, tmp_path):
+    evidence = {
+        "day_open": 210.0, "bid_price": 212.1, "ask_price": 212.3,
+        "nbbo_ts": "2026-10-08T14:29:59+00:00",
+        "nbbo_source": "polygon_lastQuote",
+    }
+    raw = {"UNIT": {"price": 212.2, "quote_ts": "2026-10-08T14:30:00+00:00",
+                    "quote_ts_synthetic": False, **evidence}}
+    calls = []
+
+    def fake_fetch_quotes(universe, *, offline=False, diag=None):
+        calls.append((list(universe), offline))
+        return raw
+
+    monkeypatch.setattr(blq.live_quotes, "fetch_quotes", fake_fetch_quotes)
+
+    result = blq.build(tmp_path, symbols=["UNIT"], include_private_provenance=True)
+
+    assert calls == [(["UNIT"], False)]
+    assert {field: result["quotes"]["UNIT"][field] for field in evidence} == evidence
+
+
+def test_current_polygon_parser_missing_evidence_remains_null_in_private_snapshot():
+    from datetime import datetime, timezone
+
+    clock = datetime(2026, 10, 8, 14, 30, tzinfo=timezone.utc)
+    raw = lq.parse_polygon_snapshot({"tickers": [{
+        "ticker": "UNIT",
+        "lastTrade": {"p": 212.2, "t": 1791469800000000000},
+    }]}, now=clock)
+
+    private = blq.to_worker_quotes(raw, include_private_provenance=True)["UNIT"]
+
+    # Current main omits these keys; a later admitted producer may emit nulls.
+    # Neither representation can manufacture measured evidence.
+    for field in ("day_open", "bid_price", "ask_price", "nbbo_ts", "nbbo_source"):
+        assert raw["UNIT"].get(field) is None
+        assert field in private and private[field] is None
+    assert private["quote_ts"] == raw["UNIT"]["quote_ts"]
+    assert private["quote_ts_synthetic"] is False
+
+
+def test_private_snapshot_cli_to_public_intraday_cli_keeps_b4_evidence_private(
+    monkeypatch, tmp_path,
+):
+    import sys
+    from scripts import build_intraday_flow_quotes as public_quotes
+
+    evidence = {
+        "day_open": 210.0, "bid_price": 212.1, "ask_price": 212.3,
+        "nbbo_ts": "2026-10-08T14:29:59+00:00",
+        "nbbo_source": "polygon_lastQuote",
+    }
+    raw = {"UNIT": {
+        "price": 212.2, "prev_close": 210.0, "currency": "USD",
+        "quote_ts": "2026-10-08T14:30:00+00:00",
+        "quote_ts_synthetic": False, "source": "polygon",
+        "price_basis": "trade", **evidence,
+    }}
+    calls = []
+
+    def fake_fetch_quotes(universe, *, offline=False, diag=None):
+        calls.append((list(universe), offline))
+        return raw
+
+    monkeypatch.setattr(blq.live_quotes, "fetch_quotes", fake_fetch_quotes)
+    monkeypatch.setattr(blq.config, "load", lambda: {"live": {}})
+    private_path = tmp_path / "private" / "quotes_full.json"
+    default_path = tmp_path / "default" / "quotes.json"
+    base_path = tmp_path / "base.json"
+    public_path = tmp_path / "public" / "intraday_quotes.json"
+    base_path.write_text(json.dumps({"leaders": [{"ticker": "UNIT"}]}))
+
+    monkeypatch.setattr(sys, "argv", [
+        "build_live_quotes", "--site", str(tmp_path), "--symbols", "UNIT",
+        "--private-provenance", "--out", str(private_path),
+    ])
+    assert blq.main() is None
+    private_bytes = private_path.read_bytes()
+    private = json.loads(private_bytes)
+    assert {field: private["quotes"]["UNIT"][field] for field in evidence} == evidence
+
+    monkeypatch.setattr(sys, "argv", [
+        "build_live_quotes", "--site", str(tmp_path), "--symbols", "UNIT",
+        "--out", str(default_path),
+    ])
+    assert blq.main() is None
+    default = json.loads(default_path.read_text())
+
+    monkeypatch.setattr(sys, "argv", [
+        "build_intraday_flow_quotes", "--base", str(base_path),
+        "--quotes", str(private_path), "--out", str(public_path),
+    ])
+    assert public_quotes.main() == 0
+    published = json.loads(public_path.read_text())
+
+    assert published["quotes"]["UNIT"] == default["quotes"]["UNIT"]
+    assert not set(evidence) & published["quotes"]["UNIT"].keys()
+    assert published["ts"] == private["ts"]
+    assert published["asof"] == private["asof"]
+    assert private_path.read_bytes() == private_bytes
+    assert calls == [(["UNIT"], False), (["UNIT"], False)]

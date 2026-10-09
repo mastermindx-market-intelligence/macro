@@ -24,6 +24,7 @@ owns_paths:
   - engine/sector_intelligence/finance_projection.py
   - engine/sector_intelligence/finance_overlap.py
   - engine/sector_intelligence/finance_private.py
+  - engine/sector_intelligence/finance_research_registration.py
   - app/finance_intelligence.py
   - scripts/build_finance_intelligence_page.py
   - templates/finance_intelligence.html.j2
@@ -32,15 +33,26 @@ owns_paths:
   - templates/_finance_sector_deep_dive.html.j2
   - tests/test_finance_intelligence_*.py
   - tests/test_finance_overlap.py
+  - tests/test_finance_research_registration.py
   - tests/test_finance_owner_preservation.py
   - tests/test_finance_private_publication.py
   - tests/js/finance_intelligence.test.mjs
   - research/finance/implementation/
+  - mockups/evidence/finance-t11-conformance/
 decisions:
   - DEC:FINANCE-IMPL-CARRIER-IS-SEAT-PR-TASKS-SHIP-OFF-MAIN
   - DEC:FINANCE-EVIDENCE-GRAMMAR-MIRRORS-SHARED-ASSERTION-NEVER-FORKS
+  - DEC:FINANCE-DOSSIER-SPEC-SURFACE-TIERS-STATE-SCOPED-FRESHNESS-AND-ANSWER-FIRST-COMPOSITION
+  - DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE
+  - DEC:FINANCE-DOSSIER-SPEC-T11-ERRATA
+  - DEC:FINANCE-ZH-MARKS-UNTRANSLATED-SOURCE-PROSE-NEVER-MACHINE-TRANSLATES
+  - DEC:FINANCE-REGISTRATION-OMISSIONS-ARE-A-CLOSED-VOCABULARY-AND-EVIDENCE-EMBEDS-THE-VALIDATORS-COPY
+  - DEC:FINANCE-COMPOSER-NEVER-MINTS-AN-EVIDENCE-REF
+  - DEC:FINANCE-AN-OBSERVATION-HAS-ONE-DATE
 artifacts:
   - agentos/handoffs/GMI-FINANCE-INTELLIGENCE-2026-09-24.md
+  - agentos/handoffs/GMI-FINANCE-INTELLIGENCE-2026-09-27.md
+  - agentos/handoffs/GMI-FINANCE-INTELLIGENCE-2026-09-28.md
 landmines:
   - "#7786 (sol/finance-sector-research-20260923, head 615f1050) is records-only: 26k files behind main; never rebase it in, never merge it to reach the research — read by exact path/SHA."
   - "The shared curation assertion (#7870) requires scope.canonical_theme_id + subject.company_node_id; Finance has no canonical theme and unvalidated witness identities — consume by reference, request the R11 §14.1 extension sections on #7870, never fork."
@@ -76,35 +88,31 @@ waves:
     title: "Degraded/accessibility/privacy qualification, independent review, real browser proof, production acceptance (Tasks 14–16)"
     status: todo
 next_action: >
-  Wave 1 closed 2026-09-24 08:29Z (T1 #7896, T3 #7900, records #7887/#7902/#7913/#7939 merged); T2
-  composer #7920 MERGED 11:53Z (e4ac3730). D1 CLOSED: spec FROZEN at 2e5c3df6, mockup accepted at
-  ce7fc986 after browser proof, #7903 MERGED 14:58Z (0293b9cf)
-  (DEC:FINANCE-DOSSIER-SPEC-SURFACE-TIERS-STATE-SCOPED-FRESHNESS-AND-ANSWER-FIRST-COMPOSITION,
-  DSC:EXTERNAL-REPAIR-LANES-OVER-EDIT-LONG-SPECS-EVEN-WHEN-SURGICAL-CAP-THE-AUDITS-AND-LET-THE-SEAT-CLOSE).
-  T8 shell + hydration MERGED 16:11Z (#7952, 4c191a3e) behind the builder's `FI_READ_URL = ""`
-  constant, so the page stays not-connected. #7956 (6b1483f4) fixed the edge: a public shell needs FOUR
-  Caddyfile registrations beside site_access.yml
-  (DSC:PUBLIC-SHELL-ASSETS-NEED-FOUR-REGISTRATIONS-SITE-ACCESS-PLUS-CADDY-EDGE). The live browser
-  proof found four more shell defects. All four fixes are MERGED and production-proven on 2026-09-25
-  at 1440/390 × dark/light × EN/中文: theme.js was never loaded (#7968, 5600bb63; keyboard also
-  proven); the dark canvas was white outside the shell (#7974, c90af106); and the connected-state
-  names now follow the page language, together with the independent Opus review response (#7973,
-  836379db, which carries #7969, closed as superseded)
-  (DSC:NEW-PAGE-SHELL-DEFECTS-HIDE-FROM-TESTS-THEME-JS-CANVAS-AND-RENDER-TIME-ARIA-NAMES). T9
-  entries MERGED 2026-09-24 17:14Z (#7957, dafc546f). The Theme Tracker card has been LIVE since the
-  2026-09-25 00:48Z nightly bake (proof comment 5825108176 on #7957). Its 中文 accessible-name fix,
-  #7977, MERGED 01:47Z (05b559b8) and goes live at the next rebuild of the page. render.yml is wedged
-  on `render-linux` pending an operator relabel, so the nightly engine bake is the path; re-check
-  recipe in the handoff. The Financials launch partial stays DORMANT until #7669 merges.
-  Chairman directive (Astra CEO): Finance integrates into the Semiconductor-built shared foundation and
-  never rebuilds base layers, so T4/T5/T6/T7 are HELD
-  (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE).
-  Next: (1) confirm #7977 live after the next bake; (2) the integration wave once #7870 lands:
-  an adapter to the foundation's source_record.v1 / evidence_claim.v1 / sector_intelligence_packet.v1
-  as recorded in the handoff, then set FI_READ_URL once the serving route is accepted (nothing else in
-  the shell changes), with the three open questions for the shared owner and a connected proof that
-  re-reads ZH aria-labels on live data; (3) wire the Financials launch include when #7669 merges;
-  (4) the deferred review MINORs (handoff list) ride the integration wave.
+  2026-09-28 wave closed (handoff GMI-FINANCE-INTELLIGENCE-2026-09-28; the one before it,
+  GMI-FINANCE-INTELLIGENCE-2026-09-27, carries the history of T1-T3, T8-T11 and the composer
+  follow-ups #8113 to #8138). This wave closed every composer item the 09-27 handoff left open:
+  #8146 (the registration limitations read theme evidence through the composer's own gate) MERGED
+  3b9a451f; #8159 (an owner input reads the same whatever container holds its rows) MERGED
+  a4236bb0, with its independent review answered in #8165 MERGED e2fb0a01; and #8167 (an
+  observation has one date, which every reader reads through one helper, and a timestamp parted
+  by a space dates its row and its published clocks) MERGED 867b6b87
+  (DEC:FINANCE-AN-OBSERVATION-HAS-ONE-DATE). The page stays NOT CONNECTED by design
+  (FI_READ_URL = "") and T4/T5/T6/T7 stay HELD
+  (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE). The seat's T10/T11 lane ids
+  are not the waves list's original "Tasks 10-11" breadth verticals, which remain todo in W4.
+  Next, all gated on other owners: (1) when #7870 (the Semiconductors shared base) merges, open
+  the integration wave: the adapter onto source_record.v1 / evidence_claim.v1 /
+  sector_intelligence_packet.v1, then the serving route once accepted, then set FI_READ_URL
+  (DSC:FINANCE-PAGE-READS-THE-BARE-READ-MODEL-NOT-THE-RESEARCH-ENVELOPE: the page accepts only the
+  bare read model), then a connected browser proof on live data. The T6 publish step MUST run
+  validate_contract on the composed document before serving: the composer does not, and the
+  sealed contract is the only complete key check. The adapter also owns two input duties the
+  composer does not: refuse a malformed owner container per record, as a named omission (the
+  composer crashes, closed, on 70 of 184 malformed container shapes on the default fixture), and
+  write a source record's own clocks as dates (the contract refuses a timestamp there). (2) Wire
+  the Financials launch include when #7669 merges. (3) Carry the deferred review MINORs and the
+  T10 gaps (the #7870 owner-bundle wire grammar is not adopted; the round trip is a strict xfail
+  until §8 sector_profile is adjudicated) into the integration wave.
 ---
 
 # Finance Intelligence workstream

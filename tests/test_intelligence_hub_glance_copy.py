@@ -118,10 +118,63 @@ def test_mobile_command_rows_have_a_full_width_explanation() -> None:
     assert '{{ d.falsifier|e }}' not in src
 
 
-def test_generated_watch_conditions_have_no_serialized_check() -> None:
-    html = SITE.read_text(encoding="utf-8")
+def test_rendered_watch_conditions_have_no_serialized_check() -> None:
+    """The full template path stays safe even when today's page has zero watches."""
+    env = Environment(loader=FileSystemLoader(str(TEMPLATES)), autoescape=True)
+    env.globals["region_for"] = lambda _ticker: "us"
+    falsifier = {
+        "text": "Revenue falls below expectations.",
+        "text_zh": "营收低于预期。",
+        "check": {"subject_ticker": "TEST", "horizon_d": 20},
+    }
+    row = {
+        "ticker": "TEST",
+        "opportunity_score": 80,
+        "composite_conviction": 80,
+        "directions": {},
+        "stage": "emerging",
+        "entry_gate": None,
+        "trajectory": None,
+        "flags": [],
+        "leading_gap": 0,
+        "edge_drivers": [],
+        "falsifier": falsifier,
+        "price": None,
+        "edge_remaining": 0.5,
+        "n_confirm": 0,
+        "source_mix": [],
+        "sectors": [],
+    }
+    hub = {
+        "command": [row],
+        "emerging": [],
+        "discovery": [],
+        "exhausted": [],
+        "catalysts": [],
+        "track_record": None,
+        "desk_grader": {},
+        "sector_heat": [],
+        "disclaimer": "",
+        "n_universe": 1,
+        "n_actionable": 1,
+        "macro_context": {},
+        "desks": {},
+        "as_of": "2026-09-27",
+        "counts": {},
+    }
+    html = env.get_template("intelligence_hub.html.j2").render(
+        hub=hub,
+        built="2026-09-27T00:00:00+00:00",
+        mode="intel_hub",
+        qledger_chips={},
+        china=None,
+        market_pulse_roster=["TEST"],
+        research_implications={"cards": []},
+    )
     watches = re.findall(r'<div class="watch">(.*?)</div>', html, re.S)
-    assert watches
-    for watch in watches:
-        assert 'subject_ticker' not in watch and 'horizon_d' not in watch
-        assert '&#39;text&#39;' not in watch and '&#39;check&#39;' not in watch
+    assert len(watches) == 1
+    watch = watches[0]
+    assert "Revenue falls below expectations." in watch
+    assert "营收低于预期。" in watch
+    assert "subject_ticker" not in watch and "horizon_d" not in watch
+    assert "&#39;text&#39;" not in watch and "&#39;check&#39;" not in watch

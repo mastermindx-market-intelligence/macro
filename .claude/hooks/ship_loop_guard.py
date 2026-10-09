@@ -22,20 +22,24 @@ green on the other lane). Ownership is parsed from both workflows at Stop time �
 ``_render_lane_filters`` — never transcribed here, so the guard cannot drift from
 the split.
 
-ARMING ``merge-on-green`` IS NOT AN EXIT (operator ruling 2026-08-12). The label
-still works and the sweeper may still perform the merge — that is a convenience,
-not a transfer of ownership. A session owns its work through
-commit -> push -> PR -> CI -> squash-merge -> live verification, so ``unmerged``
-is satisfied by an actually-merged pull request and by nothing else. The earlier
-rule released a session the moment its pull request carried the label with no
-concluded red; in the field that turned an unfinished job into a reported-complete
-one — a session stopped on a label while its pull request sat ``merge-blocked`` on
-a red check, and the work had to be reopened by hand. What the armed pull request
-still buys is a better BLOCK: ``_armed_pull_status`` names the reds the sweeper
-will refuse, so the session is told what to fix instead of merely that it may not
-leave. The merge-on-CONCLUDED-checks law is unchanged — a pending check is not a
-pass, and an ``--admin`` merge mid-flight destroyed the pull request's own proof
-run (#3867).
+ARMING ``merge-on-green`` IS NOT BY ITSELF AN EXIT (operator ruling
+2026-08-12). The label still works and the sweeper may still perform the merge —
+that is a convenience, not proof that the merge happened. The earlier rule released
+a session the moment its pull request carried the label with no concluded red; in
+the field that turned an unfinished job into a reported-complete one — a session
+stopped on a label while its pull request sat ``merge-blocked`` on a red check,
+and the work had to be reopened by hand.
+
+There is one narrower continuation-safe release. If the session explicitly declares
+``SESSION END: DURABLE_EXECUTION_RUNNING`` and the exact local HEAD is an armed
+pull request whose live verdict is the benign ``unmerged`` wait, the Stop hook may
+release it to the existing merge-on-green controller. A genuine head-owned red is
+``ci_failed_unmerged`` and still blocks, as do an unarmed pull request, a head
+mismatch, dirty bytes, or unpushed commits. This preserves the 2026-08-12 safety
+ruling while preventing the measured 9/10/20+ Stop-hook loops on CI that is already
+owned by durable machinery. The merge-on-CONCLUDED-checks law is unchanged — a
+pending check is not a pass, and an ``--admin`` merge mid-flight destroyed the
+pull request's own proof run (#3867).
 
 THE GUARD MAY NOT WEDGE THE TREE IT IS JUDGING. Its own ``git status`` used to be
 run under a plain ``subprocess`` timeout, whose expiry is a SIGKILL git cannot
@@ -477,6 +481,73 @@ def _repo_root(payload: dict[str, Any]) -> Path | None:
         except Exception:
             continue
     return None
+
+
+# A resumed Claude Desktop/Code conversation can outlive the linked worktree it was
+# born in. Upstream Desktop resume bugs have also been observed rebinding an existing
+# conversation to the repository's primary checkout. The ship loop cannot repair that
+# by changing a shell cwd: the durable session root is already wrong. Quarantine such
+# sessions BEFORE their first modifying tool instead of discovering the mismatch at
+# Stop after work has happened.
+_ROOT_ADMISSION_VERSION = 1
+_ROOT_QUARANTINE_READ_ONLY_TOOLS = frozenset({
+    "Read",
+    "Glob",
+    "Grep",
+    "WebFetch",
+    "WebSearch",
+    "AskUserQuestion",
+})
+# EnterWorktree is the in-session form of the repair this quarantine demands: it
+# moves the conversation's durable root onto a linked worktree. Denying it left a
+# session rooted in the designated local root -- a linked worktree that the
+# workspace law keeps on `main` -- with no in-session exit at all, because every
+# tool able to relocate it was itself quarantined (measured 2026-10-07, Research
+# Vault seat 0e657eec: a live seat frozen mid-program until the Chairman
+# intervened). Admission is still recomputed from the live cwd on every later
+# effectful call, so entering a tree that is not an admissible claude/* worktree
+# simply stays quarantined.
+_ROOT_QUARANTINE_REPAIR_TOOLS = frozenset({
+    "EnterWorktree",
+})
+
+
+def _resolved_git_path(root: Path, raw: str) -> Path:
+    path = Path(raw)
+    if not path.is_absolute():
+        path = root / path
+    return path.resolve()
+
+
+def _delivery_root_admission(root: Path) -> tuple[bool, str]:
+    """Admit only a linked worktree on a claude/* branch for delivery work.
+
+    A branch name alone is insufficient: the shared primary checkout can itself
+    be put on a claude/* branch, which would still let one session mutate the root
+    used by every other process. Conversely, being a linked worktree alone is not
+    enough because the ship loop's ownership chain is defined on claude/*.
+
+    Unknown git identity fails closed. This is admission, not completion: the
+    existing Stop chain still owns every delivery/CI/merge/live proof after a
+    session has been admitted.
+    """
+    try:
+        branch = _run(root, "git", "branch", "--show-current")
+        git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
+        common_dir = _resolved_git_path(
+            root, _run(root, "git", "rev-parse", "--git-common-dir")
+        )
+    except Exception as exc:
+        return False, f"git identity unavailable ({type(exc).__name__})"
+
+    reasons: list[str] = []
+    if git_dir == common_dir:
+        reasons.append("cwd is the primary/shared checkout, not a linked worktree")
+    if not branch.startswith("claude/"):
+        reasons.append(f"branch {branch or 'detached HEAD'} is not claude/*")
+    if reasons:
+        return False, "; ".join(reasons)
+    return True, ""
 
 
 def _state_path(root: Path, payload: dict[str, Any]) -> Path:
@@ -2210,13 +2281,35 @@ def _base_red_block(number: Any, excused: dict[str, str], pending: list[str]) ->
         f"and its red is INHERITED FROM MAIN, not yours: {cited}.{tail} Do not start healing "
         "a pack you did not break — under a fleet-wide red every armed session sees this "
         "same failure, and two partial heals of one pack can never both go green (CLAUDE.md "
-        "§'Healing a red pack'). The sweeper drains an inherited backlog by itself once main "
-        "is proven again; the lever is `gh workflow run ci.yml --ref main`, and it is "
-        "DESTRUCTIVE over a live baseline — preflight `gh run list --workflow ci.yml "
-        "--branch main --json databaseId,status --jq '[.[]|select(.status!=\"completed\")]'` "
-        "and WATCH an in-flight run (`gh run watch <id> --interval 60`) instead of "
-        "re-dispatching over it. You still own this pull request until the merge lands."
+        "§'Healing a red pack'). The merge-on-green controller drains an inherited "
+        "backlog by itself and owns any bounded main re-proof it needs. Do not dispatch "
+        "another baseline or start a shell/REST polling loop from this session; that "
+        "duplicates the controller and spends shared quota without changing the verdict."
     )
+
+
+def _armed_wait_has_durable_owner(code: str, detail: str) -> bool:
+    """Whether an armed unmerged verdict names machinery that can advance it.
+
+    unmerged also covers fail-closed proof gaps where no CI run may have been
+    scheduled at all. Those are intentionally NOT durable waits: the hook itself
+    says no sweep will ever merge such a head. Keep this positive-list narrow and
+    tied only to verdicts whose generated detail names an actual controller wake or
+    independently healing inherited-red path.
+    """
+    if code != "unmerged":
+        return False
+    text = detail.lower()
+    durable_markers = (
+        "still running:",
+        "still running here:",
+        "while checks run:",
+        "next sweep should merge it",
+        "next sweep owns prooffreshness and merge",
+        "sweeper still applies prooffreshness before merging",
+        "drains an inherited backlog by itself",
+    )
+    return any(marker in text for marker in durable_markers)
 
 
 def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[str, str]:
@@ -2405,15 +2498,24 @@ def _armed_pull_status(owner: str, repo: str, branch: str, head: str) -> tuple[s
                 "dropped webhook, `[skip ci]`), no sweep will ever merge it — push a "
                 "change CI can see"
             )
-    return "unmerged", (
+    detail = (
         f"Pull request #{number} is armed with `{MERGE_ON_GREEN_LABEL}` but is NOT merged "
-        f"yet — {state}. Arming the label buys a merge you do not have to perform; it does "
-        "not end this session. You own this work through commit -> push -> PR -> CI -> "
-        "squash-merge -> live verification, so stay with it until the merge lands. Watch "
-        "on ONE slow watcher (`gh run watch <id> --interval 60`; a run here takes 30-34 "
-        "minutes) and preflight `gh api rate_limit` — the 5,000/hr REST pool is shared "
-        "with every other session and with this hook, which fails closed when it is spent."
+        f"yet — {state}."
     )
+    if _armed_wait_has_durable_owner("unmerged", detail):
+        detail += (
+            " The label is not proof of completion, but the existing merge-on-green "
+            "controller owns this benign wait and wakes from proof-workflow completion. "
+            "Do not start a shell watcher or repeatedly poll GitHub from this session; "
+            "that duplicates the controller and burns shared REST quota."
+        )
+    else:
+        detail += (
+            " This is not yet a durable wait: the required proof has not been observed. "
+            "Check the named proof gap once; if the run was never scheduled, repair that "
+            "cause rather than polling an unchanged state."
+        )
+    return "unmerged", detail
 
 
 def _failing_ci_message(display: list[str]) -> str:
@@ -4007,15 +4109,22 @@ SESSION_END_STATES = (
     "PROVEN_OUTCOME",
     "EXACT_HUMAN_GATE",
     "EFFECT_UNKNOWN",
+    "PLATFORM_FAILURE",
     "ALL_SCOPED_LANES_BLOCKED",
     "DURABLE_EXECUTION_RUNNING",
     "MORE_WORK_EXISTS",
 )
-# The one member that is never a lawful stop. It is in the vocabulary precisely so a
-# session can name the state honestly mid-task; naming it as the END state is the
-# contradiction this guard refuses.
-NON_TERMINAL_SESSION_END_STATES = frozenset({"MORE_WORK_EXISTS"})
+# These members are diagnostics, never lawful terminal states. The guard does not infer
+# whether lanes are really blocked; it only refuses a token the session declared about
+# itself. That keeps enforcement auditable without turning this hook into a control plane.
+NON_TERMINAL_SESSION_END_STATES = frozenset({"MORE_WORK_EXISTS", "ALL_SCOPED_LANES_BLOCKED"})
 MORE_WORK_EXISTS = "more_work_exists"
+ALL_SCOPED_LANES_BLOCKED = "all_scoped_lanes_blocked"
+DURABLE_WAIT_EXIT_GUIDANCE = (
+    " Durable machinery owns this exact wait. If no other authorized work remains, "
+    "finish with `SESSION END: DURABLE_EXECUTION_RUNNING`; do not spend another "
+    "turn polling the same state."
+)
 
 # A DECLARATION, never a mention. The marker is required so that a session quoting
 # the law ("MORE_WORK_EXISTS is not a valid stopping state") in its own final message
@@ -4292,53 +4401,146 @@ def _block(
     _emit({"decision": "block", "reason": body})
 
 
+def _initial_state(root: Path, admitted: bool) -> dict[str, Any]:
+    return {
+        "root": str(root),
+        "start_head": _run(root, "git", "rev-parse", "HEAD"),
+        # A quarantined root is read-only, so paying for a full fingerprint of
+        # the shared checkout is both needless and capable of adding fleet noise.
+        "baseline": _fingerprint(root) if admitted else {},
+        "last_blocker": "",
+        "blocker_count": 0,
+        "total_blocks": 0,
+        "external_blocks": 0,
+    }
+
+
 def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
     source = str(payload.get("source") or "")
+    admitted, admission_reason = _delivery_root_admission(root)
     state = _load(path)
     if state is None or source in {"startup", "clear"}:
-        state = {
-            "root": str(root),
-            "start_head": _run(root, "git", "rev-parse", "HEAD"),
-            "baseline": _fingerprint(root),
-            "last_blocker": "",
-            "blocker_count": 0,
-            "total_blocks": 0,
-            "external_blocks": 0,
-        }
-        _save(path, state)
+        state = _initial_state(root, admitted)
+    # Refresh on every startup/resume/compact. A Desktop conversation can retain
+    # its session identity while its durable cwd changes underneath it.
+    state["root_admission_v"] = _ROOT_ADMISSION_VERSION
+    state["root_admitted"] = admitted
+    state["root_admission_reason"] = admission_reason
+    _save(path, state)
+
+    ship_loop_context = (
+        "MANDATORY SHIP LOOP: Repository rules grant standing approval for "
+        "commit, push, pull request, CI repair, same-day squash merge, deploy "
+        "waiting, and real-live verification. Work only in a fresh "
+        ".claude/worktrees/ claude/* branch. Do not stop at a local change, "
+        "commit, or open PR. This session's starting dirty files were recorded "
+        "and are excluded from enforcement.\n"
+        "EXECUTION CONTINUATION LAW: A blocker freezes the affected lane "
+        "only - check independent authorized lanes and continue. If no "
+        "worker started and lawful principal tools and custody remain, "
+        "with no conflicting owner and no EFFECT_UNKNOWN, bounded direct "
+        "execution may continue; a delegation surface being unavailable "
+        "is not a reason to stop. A wait on external machinery is handed "
+        "to a durable watcher or owner while you do parallel work - never "
+        "spend principal capacity polling. Two equivalent no-delta cycles "
+        "means change tactic, lane, or owner. Accepted work is "
+        "DO_NOT_REDO unless materially invalidated. EFFECT_UNKNOWN is "
+        "reconciled on the same carrier, never by blind retry or "
+        "failover. ACK, QUEUED, START, RUNNING, DELIVERED, CI, MERGED, "
+        "PRODUCTION_PROOF and ACCEPTANCE are distinct facts and none "
+        "implies the next. Before a substantial session ends, state one "
+        "line `SESSION END: <STATE>` with STATE in PROVEN_OUTCOME, "
+        "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, PLATFORM_FAILURE, "
+        "ALL_SCOPED_LANES_BLOCKED, DURABLE_EXECUTION_RUNNING, "
+        "MORE_WORK_EXISTS - and MORE_WORK_EXISTS plus "
+        "ALL_SCOPED_LANES_BLOCKED are never valid stopping states. "
+        "The latter is a diagnostic: internal blockers must be resolved, "
+        "routed to their canonical owner, or bound to real durable execution."
+    )
+    if not admitted:
+        context = (
+            "SESSION ROOT QUARANTINE: This conversation is attached to a repository "
+            "root that is not an admissible linked claude/* worktree ("
+            + admission_reason
+            + "). Treat this session as READ-ONLY. Do not use shell cd, "
+            "change_directory, or a branch rename as a repair: those do not make the "
+            "durable session root a safe carrier. Start a fresh worktree-backed Claude "
+            "session (for example `claude --worktree <name>` or the Desktop worktree "
+            "flow), or move this conversation with EnterWorktree onto a linked claude/* "
+            "worktree, before any modifying work. Otherwise use this conversation only for read-only "
+            "diagnosis or a continuation packet. The normal ship loop belongs to the "
+            "fresh worktree-backed carrier.\n"
+            + ship_loop_context
+        )
+    else:
+        context = ship_loop_context
     _emit(
         {
             "hookSpecificOutput": {
                 "hookEventName": "SessionStart",
-                "additionalContext": (
-                    "MANDATORY SHIP LOOP: Repository rules grant standing approval for "
-                    "commit, push, pull request, CI repair, same-day squash merge, deploy "
-                    "waiting, and real-live verification. Work only in a fresh "
-                    ".claude/worktrees/ claude/* branch. Do not stop at a local change, "
-                    "commit, or open PR. This session's starting dirty files were recorded "
-                    "and are excluded from enforcement.\n"
-                    "EXECUTION CONTINUATION LAW: A blocker freezes the affected lane "
-                    "only - check independent authorized lanes and continue. If no "
-                    "worker started and lawful principal tools and custody remain, "
-                    "with no conflicting owner and no EFFECT_UNKNOWN, bounded direct "
-                    "execution may continue; a delegation surface being unavailable "
-                    "is not a reason to stop. A wait on external machinery is handed "
-                    "to a durable watcher or owner while you do parallel work - never "
-                    "spend principal capacity polling. Two equivalent no-delta cycles "
-                    "means change tactic, lane, or owner. Accepted work is "
-                    "DO_NOT_REDO unless materially invalidated. EFFECT_UNKNOWN is "
-                    "reconciled on the same carrier, never by blind retry or "
-                    "failover. ACK, QUEUED, START, RUNNING, DELIVERED, CI, MERGED, "
-                    "PRODUCTION_PROOF and ACCEPTANCE are distinct facts and none "
-                    "implies the next. Before a substantial session ends, state one "
-                    "line `SESSION END: <STATE>` with STATE in PROVEN_OUTCOME, "
-                    "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, ALL_SCOPED_LANES_BLOCKED, "
-                    "DURABLE_EXECUTION_RUNNING, MORE_WORK_EXISTS - and "
-                    "MORE_WORK_EXISTS is never a valid stopping state."
+                "additionalContext": context,
+            }
+        }
+    )
+
+
+def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
+    """Make a silently rebound/primary-root session read-only before side effects.
+
+    This hook intentionally re-evaluates the live cwd on every wired effectful
+    tool call instead of trusting SessionStart state. If Desktop loses or rebinds a worktree between
+    turns, the next modifying tool is stopped at admission rather than discovered
+    much later by the Stop hook.
+    """
+    admitted, reason = _delivery_root_admission(root)
+    if admitted:
+        _seed_relocated_state(root, path)
+        return
+    tool = str(payload.get("tool_name") or "")
+    if tool in _ROOT_QUARANTINE_READ_ONLY_TOOLS or tool in _ROOT_QUARANTINE_REPAIR_TOOLS:
+        return
+    _emit(
+        {
+            "hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": (
+                    "SESSION ROOT QUARANTINE: refusing tool "
+                    + (tool or "<unknown>")
+                    + " because this conversation is not attached to a linked "
+                    "claude/* worktree (" + reason + "). Do not repair this with "
+                    "cd/change_directory or by repointing the shared checkout. Start "
+                    "a fresh worktree-backed Claude session and continue there, or "
+                    "move this one with EnterWorktree onto a linked claude/* worktree."
                 ),
             }
         }
     )
+
+
+def _seed_relocated_state(root: Path, path: Path) -> None:
+    """Give a session that moved itself with EnterWorktree a completion record.
+
+    Completion state is keyed by root, and SessionStart only ever wrote one for the
+    root the conversation was born in. A session relocated onto an admissible
+    worktree therefore reached Stop with no state here, and Stop treats a missing
+    record as nothing to enforce -- so the repair path would have silently exempted
+    the very carrier the ship loop is meant to bind. Seed the record at the first
+    admitted effectful call: start_head and the dirty baseline are captured before
+    that call's side effect, which is the same moment SessionStart would have used.
+    Admission never depends on this write; a failure here leaves the tool allowed.
+    """
+    try:
+        if _load(path) is not None:
+            return
+        state = _initial_state(root, True)
+        state["root_admission_v"] = _ROOT_ADMISSION_VERSION
+        state["root_admitted"] = True
+        state["root_admission_reason"] = ""
+        state["seeded_by"] = "pre_tool_use_relocation"
+        _save(path, state)
+    except Exception:
+        return
 
 
 def _fast_forwarded_onto_main(root: Path) -> bool:
@@ -4377,14 +4579,132 @@ def _fast_forwarded_onto_main(root: Path) -> bool:
     and a zero ahead-count, and nothing here can tell them apart. The second one
     genuinely shipped something, so exempting it would skip the render and live
     gates on live work — fail-open, which this guard may never be. Running the
-    branch check first leaves that session blocking on `unsafe_branch` and makes
-    the exemption reachable only from a claude/* worktree branch, where a zero
-    ahead-count really does mean nothing shippable exists.
+    branch check first is what keeps POSITION from ever exempting `main` on its
+    own: inside that gate, `main` stops only when `_head_moved_only_by_sync` ALSO
+    proves authorship from this worktree's HEAD reflog — every move since
+    start_head a fast-forward sync or a reset to origin/main — so the session that
+    committed on main and pushed still blocks on `unsafe_branch`, its `commit:`
+    entry sitting in that window. Every other non-claude/* branch blocks there
+    unconditionally, which leaves this helper's own stand-down exemption below the
+    gate reachable only from a claude/* worktree branch, where a zero ahead-count
+    really does mean nothing shippable exists.
     """
     try:
         _run(root, "git", "fetch", "origin", "main", timeout=90)
         _run(root, "git", "merge-base", "--is-ancestor", "HEAD", "origin/main")
         return _run(root, "git", "rev-list", "--count", "origin/main..HEAD") == "0"
+    except Exception:
+        return False
+
+
+# The only HEAD-reflog subjects accepted as a sync, every one naming origin/main:
+# the law's own `git merge --ff-only origin/main`, a fast-forward `git pull` that
+# names `origin main` (flags only before it), a bare fast-forward `git pull`
+# (flags only) — accepted only while `main`'s configured upstream IS origin/main —
+# and a reset to origin/main. Everything else declines, deliberately including
+# `merge FETCH_HEAD`, `merge <sha>` (what git writes for a FETCH_HEAD merge) and
+# `merge <any other ref>`: a fast-forward onto a LOCAL ref is how a commit made
+# off HEAD's reflog (`commit-tree` + `update-ref`, or another worktree) would
+# reach main and then be pushed. See `_head_moved_only_by_sync`.
+_SYNC_MERGE_SUBJECT = "merge origin/main: Fast-forward"
+_SYNC_PULL_NAMED_SUBJECT = re.compile(r"^pull(?: --?\S+)* origin main: Fast-forward$")
+_SYNC_PULL_BARE_SUBJECT = re.compile(r"^pull(?: --?\S+)*: Fast-forward$")
+_SYNC_RESET_SUBJECT = "reset: moving to origin/main"
+
+
+def _head_moved_only_by_sync(root: Path, start_head: str, head: str) -> bool:
+    """Whether every HEAD move since ``start_head`` was a sync onto origin/main.
+
+    Repository law makes the designated local root a checkout of `main` itself and
+    requires `git fetch origin && git merge --ff-only origin/main` at session
+    start. That fast-forward walks HEAD off the start_head this guard recorded, so
+    the no-op exemption stops matching and the branch gate used to file
+    `unsafe_branch` against a session that authored nothing. Measured 2026-10-06 in
+    seat session 0e657eec-8307-4654-afae-0f4463a1243c: guard state
+    start_head=3a99670fac0bde192df82bb4e9320359badf6d62, HEAD
+    ccabe51c9509a8b4d503d9730190b174a7e90f6b, total_blocks=31 — and the worktree's
+    HEAD reflog between the two held exactly two entries, both
+    `merge origin/main: Fast-forward`.
+
+    POSITION cannot clear such a session; `_fast_forwarded_onto_main` explains why:
+    syncing to someone else's commits and committing on main then pushing straight
+    to origin/main both end at origin's tip with a zero ahead-count. This
+    worktree's HEAD reflog CAN tell them apart, because the two leave different
+    trails. A sync writes only a fast-forward merge/pull of origin/main or
+    `reset: moving to origin/main`; any authored commit writes a `commit`-class
+    entry (`commit`, `commit (amend)`, `cherry-pick`, `rebase …`, `revert`, a
+    non-fast-forward merge), and a branch switch writes `checkout: …`. So the
+    window strictly newer than start_head's entry must consist only of sync
+    subjects (`_SYNC_MERGE_SUBJECT`, `_SYNC_PULL_NAMED_SUBJECT`,
+    `_SYNC_PULL_BARE_SUBJECT`, `_SYNC_RESET_SUBJECT`), and every sha in it must
+    also be an ancestor of origin/main — the subject is the authorship test, the
+    ancestry is belt-and-braces that each step landed somewhere origin already
+    holds. The ref a sync names must be origin/main itself, because a
+    fast-forward onto a local ref is how a direct push to main would hide its
+    commit: `commit-tree` + `update-ref refs/heads/scratch`, then
+    `merge --ff-only scratch` and `push origin main`, leaves only
+    `merge scratch: Fast-forward` in this reflog, every sha an ancestor of
+    origin/main once pushed. A bare `pull` names no ref, so it counts only while
+    `main`'s configured upstream is origin/main — read once, and only when such an
+    entry is in the window. The caller has just fetched origin/main inside
+    `_fast_forwarded_onto_main`; this helper does not fetch again.
+
+    The window is bounded by the OLDEST entry naming start_head, never the newest.
+    HEAD can revisit start_head inside the session — commit on main, push, reset
+    back, then fast-forward onto the pushed commit — and bounding at the newer
+    visit would hide that `commit:` entry and exempt a direct push to main. The
+    oldest entry can only widen the window, and a wider window only declines.
+
+    Fail-CLOSED throughout, because a decline only restores the old block: a
+    reflog git cannot read, a newest entry that is not HEAD (the branch moved
+    without this worktree logging it — another worktree's update-ref, or
+    `core.logAllRefUpdates` off), or a start_head with no entry at all all return
+    False. That last case is reflog EXPIRY: `gc` prunes old entries (90 days by
+    default, sooner when configured), and once start_head's entry is gone nothing
+    can prove what happened since, so the trail is treated as untrustworthy rather
+    than as clean. Every git failure and every exception reads as "not a sync".
+    """
+    if not start_head or not head:
+        return False
+    if head == start_head:
+        # Unreachable from `_stop` (the no-op exemption returns first), and an
+        # empty window holds nothing authored.
+        return True
+    try:
+        # `_run_raw`, not `_run`: stripping the whole listing eats the trailing
+        # tab of an oldest entry whose subject is empty (a real entry in the
+        # operator root's reflog), so a line without a tab is read as an empty
+        # subject — which never matches a sync subject and so still declines if
+        # it falls inside the window.
+        listing = _run_raw(root, "git", "reflog", "show", "--format=%H%x09%gs", "HEAD")
+        entries: list[tuple[str, str]] = []
+        for line in listing.splitlines():
+            sha, _tab, subject = line.partition("\t")
+            entries.append((sha.strip(), subject))
+        if not entries or entries[0][0] != head:
+            return False
+        starts = [index for index, (sha, _subject) in enumerate(entries) if sha == start_head]
+        if not starts:
+            return False
+        window = entries[: starts[-1]]
+        upstream_is_origin_main: bool | None = None
+        for _sha, subject in window:
+            if subject in (_SYNC_MERGE_SUBJECT, _SYNC_RESET_SUBJECT):
+                continue
+            if _SYNC_PULL_NAMED_SUBJECT.match(subject):
+                continue
+            if _SYNC_PULL_BARE_SUBJECT.match(subject):
+                if upstream_is_origin_main is None:
+                    upstream = _run(
+                        root, "git", "for-each-ref", "--format=%(upstream:short)", "refs/heads/main"
+                    )
+                    upstream_is_origin_main = upstream == "origin/main"
+                if upstream_is_origin_main:
+                    continue
+            return False
+        for sha in dict.fromkeys(sha for sha, _subject in window):
+            _run(root, "git", "merge-base", "--is-ancestor", sha, "origin/main")
+        return True
     except Exception:
         return False
 
@@ -4438,7 +4758,8 @@ def _branch_was_pushed(root: Path, branch: str) -> bool:
 def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     """Judge the completion chain, in the order the cheapest evidence answers it.
 
-    Dirty tree -> no-op exemption -> branch -> stand-down -> pushed -> merged pull
+    Dirty tree -> no-op exemption -> branch (exempting only a sync-only `main`;
+    see `_head_moved_only_by_sync`) -> stand-down -> pushed -> merged pull
     request -> CI -> origin/main -> render -> live. Each gate blocks with a code
     `_block` can count, and every gate that proved something durable stores a
     proof so a later Stop turn does not re-poll GitHub for it.
@@ -4448,17 +4769,31 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     `_render_status`). The VPS pulls main every 3 minutes, so that merge is live
     regardless, and house law forbids a waiting session from touching the lane.
 
-    THE MERGE ITSELF IS NOT SUCH A GATE. An open pull request carrying
+    THE LABEL ITSELF IS NOT SUCH A GATE. An open pull request carrying
     `merge-on-green` used to release the session here; the operator removed that
-    on 2026-08-12 after it reported an unfinished job as complete. The label lets
-    the sweeper PERFORM the merge — it does not transfer ownership — so the
-    `if not pull:` branch now always blocks, and only chooses which block to file
-    (see `_armed_pull_status`).
+    on 2026-08-12 after it reported an unfinished job as complete. The narrow
+    exception is an explicit `DURABLE_EXECUTION_RUNNING` declaration after
+    `_armed_pull_status` has proved this exact head is armed and in its benign
+    `unmerged` wait. Head-owned red (`ci_failed_unmerged`) still blocks. That
+    distinction lets durable machinery own a wait without turning its label into
+    a false success receipt.
     """
     state = _load(path)
     # Hooks can be installed during an already-running session. Fail open once so
     # that pre-hook work is not misclassified; every later session is enforced.
     if state is None:
+        return
+
+    # A post-admission quarantined session could not lawfully run a modifying tool
+    # through the repository's wired effectful surfaces: PreToolUse covers Bash,
+    # file writes, agent/workflow launches, skills, EnterWorktree and MCP tools.
+    # Do not then run the delivery chain against an independently moving shared
+    # checkout and manufacture ten cycles of unsafe_branch. Legacy state without
+    # this versioned marker keeps the old fail-closed behavior during rollout.
+    if (
+        state.get("root_admission_v") == _ROOT_ADMISSION_VERSION
+        and state.get("root_admitted") is False
+    ):
         return
 
     # A session's OWN declared end state is the single continuation fact this guard
@@ -4485,17 +4820,31 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     # branch is unaffected either way; the wrapper probes it before any delegation.
     declared = declared_session_end_state(str(payload.get("last_assistant_message") or ""))
     if declared in NON_TERMINAL_SESSION_END_STATES:
-        _block(
-            path,
-            state,
-            payload,
-            MORE_WORK_EXISTS,
-            f"This session classified its own end state as {declared}: authorized "
-            "work remains in scope. That is not a stopping state. Either finish the "
-            "remaining work, or reclassify honestly as PROVEN_OUTCOME, "
-            "EXACT_HUMAN_GATE, EFFECT_UNKNOWN, ALL_SCOPED_LANES_BLOCKED or "
-            "DURABLE_EXECUTION_RUNNING.",
+        code = (
+            ALL_SCOPED_LANES_BLOCKED
+            if declared == "ALL_SCOPED_LANES_BLOCKED"
+            else MORE_WORK_EXISTS
         )
+        if declared == "ALL_SCOPED_LANES_BLOCKED":
+            reason = (
+                "This session classified every current lane as blocked. That is a "
+                "diagnostic, not a stopping state. Internal dependencies are work: "
+                "resolve one, route it to the canonical owner, or prove a real durable "
+                "running owner plus return path. 'Not my lane' forbids conflicting "
+                "mutation; it does not finish the mission. A bounded worker may return "
+                "BLOCKED to its parent. A principal may stop only on PROVEN_OUTCOME, "
+                "an exact external boundary (EXACT_HUMAN_GATE, PLATFORM_FAILURE, "
+                "EFFECT_UNKNOWN), or DURABLE_EXECUTION_RUNNING."
+            )
+        else:
+            reason = (
+                f"This session classified its own end state as {declared}: authorized "
+                "work remains in scope. That is not a stopping state. Either finish the "
+                "remaining work, route/own its internal blockers, or reclassify honestly "
+                "as PROVEN_OUTCOME, EXACT_HUMAN_GATE, PLATFORM_FAILURE, EFFECT_UNKNOWN "
+                "or DURABLE_EXECUTION_RUNNING."
+            )
+        _block(path, state, payload, code, reason)
         return
 
     baseline = state.get("baseline") or {}
@@ -4520,6 +4869,18 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
 
     branch = _run(root, "git", "branch", "--show-current")
     if not branch.startswith("claude/"):
+        # The designated local root is a checkout of `main` that repository law
+        # syncs with `git merge --ff-only origin/main` at session start, which
+        # moves HEAD off start_head with nothing authored. Position alone cannot
+        # clear it (see `_fast_forwarded_onto_main`); this worktree's HEAD reflog
+        # can, and declines on any authored entry or any doubt. Exactly `main`:
+        # never a detached HEAD, never sol/* or any other branch.
+        if (
+            branch == "main"
+            and _fast_forwarded_onto_main(root)
+            and _head_moved_only_by_sync(root, str(state.get("start_head") or ""), head)
+        ):
+            return
         location = branch or "detached HEAD"
         _block(
             path,
@@ -4628,12 +4989,13 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
             }
             _remember_proof(path, state, "merged_pull", pull_key, pull)
     if not pull:
-        # There is no merged pull request, so this session is NOT done — arming
-        # `merge-on-green` is a merge convenience, never an exit (operator ruling
-        # 2026-08-12; see the module docstring). The only question left is which
-        # block to file: an armed head with concluded reds gets `ci_failed` and the
-        # names, because "your sweeper will refuse this" is the fact the old
-        # release path used to hide.
+        # There is no merged pull request, so the label alone is not completion.
+        # The one continuation-safe release is explicit: when the session declares
+        # DURABLE_EXECUTION_RUNNING and the live armed-head verdict is the benign
+        # `unmerged` wait, release the Stop to the existing merge-on-green
+        # controller. This is narrower than the pre-2026-08-12 rule: a genuine
+        # concluded head-owned red is `ci_failed_unmerged` and still blocks, while
+        # an unarmed/mismatched head falls through and blocks normally.
         #
         # Fail-closed in every direction: a probe that raises, a pull request
         # without the label, or a head that does not match the local HEAD all fall
@@ -4643,7 +5005,14 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
             armed_code, armed_detail = _armed_pull_status(owner, repo, branch, head)
         except Exception:
             armed_code, armed_detail = "none", ""
+        if (
+            declared == "DURABLE_EXECUTION_RUNNING"
+            and _armed_wait_has_durable_owner(armed_code, armed_detail)
+        ):
+            return
         if armed_code != "none":
+            if _armed_wait_has_durable_owner(armed_code, armed_detail):
+                armed_detail += DURABLE_WAIT_EXIT_GUIDANCE
             _block(path, state, payload, armed_code, armed_detail)
             return
 
@@ -4767,6 +5136,19 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
         return
     live_ok, live_detail = _live_gate(root, merge_sha, start_head, head, health)
     if not live_ok:
+        # A pull-only merge is already owned by the durable VPS checkout loop; it
+        # requires no process restart and there is no session-side action that makes
+        # it arrive faster. When the session explicitly classifies the wait as
+        # DURABLE_EXECUTION_RUNNING, hand that wait to the existing owner instead
+        # of generating repeated live_stale Stop turns. API-code merges are different:
+        # only a restarted process proves them live, so those remain blocking.
+        pull_only = _live_health_fields(root, merge_sha, start_head, head) != (
+            _LIVE_PROCESS_FIELD,
+        )
+        if declared == "DURABLE_EXECUTION_RUNNING" and pull_only:
+            return
+        if pull_only:
+            live_detail += DURABLE_WAIT_EXIT_GUIDANCE
         _block(
             path,
             state,
@@ -4983,6 +5365,32 @@ def _delegate_to_evaluated_hook(payload: dict[str, Any], raw: bytes) -> bool:
     return True
 
 
+
+def _agentos_assist(root: Path, payload: dict[str, Any]) -> None:
+    """Best-effort PostToolUse annotation; isolated from Stop and its private state."""
+    try:
+        # Most Bash calls are unrelated. Avoid a Python child/store scan for those.
+        command = (payload.get("tool_input") or {}).get("command", "")
+        if payload.get("hook_event_name") != "PostToolUse" or not isinstance(command, str) or not command.startswith("gh pr create "):
+            return
+        result = subprocess.run(
+            [sys.executable, str(root / "scripts/agentos.py"), "ship-capture", "--hook"],
+            cwd=root, input=json.dumps(payload), text=True, capture_output=True, timeout=5,
+        )
+        if result.returncode or len(result.stdout) > 16384:
+            raise ValueError("capture report unavailable")
+        report = json.loads(result.stdout)
+        if report.get("schema") != "agentos.ship_capture.v1" or report.get("enforcement") != "REPORT_ONLY":
+            raise ValueError("unsupported capture report")
+        if report.get("code") == "CAPTURE_UNSUPPORTED":
+            return
+        context = "AGENT OS REPORT_ONLY: " + str(report.get("code")) + ". " + str(report.get("message", ""))
+        _emit({"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": context[:2048]}})
+    except Exception:
+        # No guard_error path, no _block, no state file, no authority inference.
+        print("AGENT OS REPORT_ONLY: capture result unavailable; inspect the record before retrying.", file=sys.stderr)
+
+
 def main() -> None:
     payload, raw = _load_payload_and_raw()
     if payload is None:
@@ -4992,11 +5400,16 @@ def main() -> None:
     root = _repo_root(payload)
     if root is None:
         return
-    path = _state_path(root, payload)
     event = str(payload.get("hook_event_name") or "")
+    if event == "PostToolUse":
+        _agentos_assist(root, payload)
+        return
+    path = _state_path(root, payload)
     try:
         if event == "SessionStart":
             _session_start(root, path, payload)
+        elif event == "PreToolUse":
+            _pre_tool_use(root, path, payload)
         elif event == "Stop":
             _stop(root, path, payload)
     except Exception as exc:
