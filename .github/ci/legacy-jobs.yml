@@ -11132,7 +11132,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest fastapi pydantic jinja2 pandas numpy pyarrow pyyaml requests
+        run: pip install pytest fastapi httpx pydantic jinja2 pandas numpy pyarrow pyyaml requests
+      - name: Catalyst anonymous scan + evidence + signed opt-in contracts (offline)
+        run: python -m pytest tests/test_catalyst_integration.py tests/test_catalyst_scan_authority.py tests/test_catalyst_packet_public.py tests/test_catalyst_scan.py tests/test_catalyst_lifecycle.py tests/test_catalyst_optin.py -q
       - name: mailer transport + ledger tests (app/mailer.py)
         run: python -m pytest tests/test_mailer.py -v
       - name: public support intake tests (app/support.py)
@@ -20285,6 +20287,9 @@ jobs:
       - "app/billing.py"
       - "app/billing_emails.py"
       - "app/biocatalyst.py"
+      - "app/catalyst_integration.py"
+      - "app/catalyst_optin.py"
+      - "app/catalyst_scan_authority.py"
       - "app/brain_runs.py"
       - "app/capital_structure.py"
       - "app/company_intelligence.py"
@@ -20535,6 +20540,9 @@ jobs:
       - "engine/donor.py"
       - "engine/earnings_blackout.py"
       - "engine/earnings_catalyst.py"
+      - "engine/marketing/catalyst_lifecycle.py"
+      - "engine/marketing/catalyst_packets.py"
+      - "engine/marketing/catalyst_scan.py"
       - "engine/earnings_narrative/biocatalyst_transcript_adapter.py"
       - "engine/earnings_narrative/context_packets.py"
       - "engine/earnings_narrative/contracts.py"
