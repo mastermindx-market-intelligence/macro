@@ -162,7 +162,7 @@ def _normalize_holdings(holdings: list[dict]) -> tuple[list[str], dict[str, floa
             currency = native_entry_currency(row)
             # Qualification precedes coverage/exclusion. An unknown or mixed lot
             # cannot vanish and silently renormalize the remaining position book.
-            if (not math.isfinite(amount) or not currency
+            if (not math.isfinite(amount) or amount <= 0 or not currency
                     or (cohort_currency is not None and currency != cohort_currency)):
                 cohort_unavailable = True
             if currency is not None:
@@ -954,7 +954,7 @@ def compose_brief(ctx: dict, holdings: list[dict], today: str,
     # Full brief.
     sections: list[dict] = []
     for builder in (
-        lambda: _exposure_section(ctx, covered, weights, population),
+        lambda: _exposure_section(ctx, covered, weights, population) if mode != "unavailable" else None,
         lambda: _lanes_section(ctx, covered, weights, population),
         lambda: _signals_section(ctx, covered),
         lambda: _regime_section(ctx, covered, weights),

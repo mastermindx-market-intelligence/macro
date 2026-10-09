@@ -670,31 +670,29 @@ def test_b1_sign_out_also_resets_last_good_cloud():
 # B2 (review — BLOCKING): split-deploy falsehood — PS absent must make no
 # weighting-law claim
 # ===========================================================================
-def test_b2_ps_absent_and_fully_priced_book_gets_real_weights_no_abstain_copy():
-    """MUTATION CHECK: revert to the pre-fix `var W = ps ? ps.computeWeighting(...) :
-    null; if (!W || W.complete !== true) { ...abstain copy... }` and this reds — a
-    fully sized, fully live-priced book must never be told "weights not shown" merely
-    because portfolio_state.js has not finished deploying yet (split-deploy window)."""
+def test_b2_ps_absent_shows_population_without_fabricating_money_weights():
+    """The qualifier's absence proves no currency, even when prices are present.
+    The split-deploy fallback stays a minimal population read."""
     code = _pf_code()
-    assert "allCurrent = leadRows.length > 0 && leadRows.every" in code
-    # the PS-absent branch must reach the SAME `items`-construction / cluster / etc.
-    # code the PS-present path uses — never its own copy of the abstain message
-    ps_idx = code.index("var ps = PS();")
-    b2_block = code[ps_idx:code.index("if (!W || W.complete !== true) {", ps_idx)]
-    assert "mixedAbstain" not in b2_block
-    assert "equalAssumed" not in b2_block
+    idx = code.index("var ps = PS();", code.index("function renderBookRead()"))
+    block = code[idx:code.index("if (!W || W.complete !== true) {", idx)]
+    fallback = block[block.index("} else {"):]
+    assert "This book holds" in fallback
+    assert "return;" in fallback
+    assert "mixedAbstain" not in fallback
+    assert "equalAssumed" not in fallback
+    assert "psWeights" not in fallback
+    assert "priceOf(" not in fallback
 
 
-def test_b2_ps_absent_and_not_fully_priced_shows_no_weighting_claim():
-    """MUTATION CHECK: same as above, from the other direction — a mixed book under
-    a PS-absent split-deploy window must show NEITHER the abstain copy NOR the equal-
-    assumption label; only a bare position count."""
+def test_b2_ps_absent_fallback_keeps_the_relationship_panels_empty():
     code = _pf_code()
-    idx = code.index("if (!allCurrent) {")
-    block = code[idx:idx + 800]
-    assert "mixedAbstain" not in block
-    assert "equalAssumed" not in block
-    assert "This book holds" in block
+    idx = code.index("var ps = PS();", code.index("function renderBookRead()"))
+    block = code[idx:code.index("if (!W || W.complete !== true) {", idx)]
+    fallback = block[block.index("} else {"):]
+    for panel in ('because', 'stance', 'cov'):
+        assert "if (" + panel + ") " + panel + ".innerHTML = '';" in fallback
+    assert "WS().seam(el('ws_seam'), null)" in fallback
 
 
 # ===========================================================================
@@ -1072,7 +1070,7 @@ def test_single_position_lead_book_never_gets_the_mixed_sizing_copy():
 # ===========================================================================
 def test_f5_renderbookread_single_book_reads_snapshot_weighting():
     """MUTATION CHECK: delete the `singleBookSnap`/`refreshSnapshot()` routing
-    (reverting to the bare `ps.computeWeighting(leadRows, priceOf)` call for every
+    (reverting to the bare `ps.computeWeighting(leadRows, moneyPriceOf)` call for every
     book) and this reds — a single-currency book must read the snapshot's own
     `weighting` field, not a second independently-computed one. The multi-currency
     §12 carve-out keeps the direct call (commented) — this test pins that both
@@ -1082,7 +1080,7 @@ def test_f5_renderbookread_single_book_reads_snapshot_weighting():
     block = code[idx:idx + 900]
     assert "singleBookSnap" in block
     assert "refreshSnapshot()" in block
-    assert "ps.computeWeighting(leadRows, priceOf)" in block  # §12 multi-currency carve-out
+    assert "ps.computeWeighting(leadRows, moneyPriceOf)" in block  # §12 multi-currency carve-out
 
 
 def test_f5_pfchipstatefor_and_dispatch_helpers_read_the_snapshot():
@@ -1124,13 +1122,11 @@ def test_f5_ps_absent_open_rows_filter_matches_openrowsof_truthy_ticker():
 
 
 def test_f5_pushfxweights_ps_absent_never_fabricates_a_partial_distribution():
-    """MUTATION CHECK: delete the `allCurrent` gate from pushFxWeights()'s
-    PS-absent branch (falling back to silently dropping unsized/unpriced rows from
-    `w`) and this reds — a PS-absent book with even ONE row that is not sized+
-    priced must push the honest-empty `{}`, never a partial weight map that sums
-    to less than the whole book while implying it is complete."""
+    """A split-deploy page without the qualifier cannot prove money units and
+    must keep the factor engine on the empty auto path, avoiding Watchlist fallback."""
     code = _pf_code()
     idx = code.index("function pushFxWeights() {")
     fn = code[idx:code.index("\n  function ", idx + 10)]
-    assert "allCurrent = modeled.length > 0 && modeled.every" in fn
-    assert fn.count("window.FX.setAutoWeights({})") >= 2  # S3 abstain + F5 non-allCurrent
+    assert fn.count("window.FX.setAutoWeights({})") >= 2
+    assert "w = Object.assign({},wgt.weights)" in fn
+    assert "priceOf(r.ticker)" not in fn

@@ -3038,3 +3038,62 @@ def test_d3b_synchronous_getclient_throw_reaches_the_same_terminal_state_no_unca
     assert out["readState"]["state"] in ("degraded", "error")
     assert out["readState"]["warning"] == "client-unavailable"
     assert out["listResult"] is None
+
+
+@needs_node
+@pytest.mark.parametrize('currencies,want', [
+    ([None,None], {}), (['USD',None], {}), (['USD','HKD'], {}),
+    (['USD','USD'], {'ANONA':50,'ANONB':50}),
+])
+def test_a09_actual_hydration_keeps_same_observation_unit_in_factor_weights(currencies, want):
+    seed = {'v':1,'rows':[{'id':'a','ticker':'ANONA','shares':2,'entry_price':10,'status':'open'},
+                         {'id':'b','ticker':'ANONB','shares':1,'entry_price':10,'status':'open'}]}
+    out = _run("""
+        localStorage.setItem('mdash.pf.v1',JSON.stringify(SEED));
+        window.requestIdleCallback=function(){};
+        window.SD={loadTickers:function(ts,cb){ts.forEach(function(t,i){
+          var tech={price:t==='ANONA'?100:200}; if(UNITS[i]) tech.currency=UNITS[i];
+          cb(t,{tech:tech,currency:'USD',asof:'fictional'});
+        });return Promise.resolve();}};
+        boot(); await drain(12);
+        OUT({weights:__fxCalls[__fxCalls.length-1],say:node('ws_book_say').innerHTML});
+    """, {'SEED':seed,'UNITS':currencies})
+    assert out['weights'] == want
+    if not want:
+        assert 'Weights not shown' in out['say']
+        assert '币种缺失或不兼容' in out['say']
+
+
+@needs_node
+def test_a09_actual_ps_absent_render_never_uses_unitless_current_weights():
+    out = _run("""
+        localStorage.setItem('mdash.pf.v1',JSON.stringify(SEED));
+        window.requestIdleCallback=function(){};
+        window.SD={loadTickers:function(ts,cb){ts.forEach(function(t){cb(t,{tech:{price:100}});});
+          return Promise.resolve();}};
+        boot(); await drain(12); window.PS=null; __fxCalls.length=0; PF.render();
+        OUT({weights:__fxCalls[__fxCalls.length-1],say:node('ws_book_say').innerHTML,
+             because:node('ws_book_because').innerHTML});
+    """, {'SEED':{'v':1,'rows':[{'id':'a','ticker':'ANONA','shares':1},
+                               {'id':'b','ticker':'ANONB','shares':1}]}})
+    assert out['weights'] == {}
+    assert 'This book holds 2 positions' in out['say']
+    assert out['because'] == ''
+
+
+@needs_node
+def test_a09_actual_table_cannot_show_guessed_dollars_or_partial_weights():
+    out=_run("""
+      localStorage.setItem('mdash.pf.v1',JSON.stringify(SEED));
+      window.requestIdleCallback=function(){};
+      window.SD={loadTickers:function(ts,cb){ts.forEach(function(t){
+        cb(t,{tech:{price:100,currency:t==='ANONA'?'USD':undefined},currency:'USD'});
+      });return Promise.resolve();}};
+      boot();await drain(12);
+      OUT({table:node('tbl_pf').innerHTML});
+    """,{'SEED':{'v':1,'rows':[{'id':'a','ticker':'ANONA','shares':1,'entry_price':100},
+                               {'id':'b','ticker':'ANONB','shares':3,'entry_price':100}]}})
+    assert '$' not in out['table']
+    assert 'USD 100' in out['table']
+    assert '25.0%' not in out['table'] and '75.0%' not in out['table']
+    assert '+0.0%' not in out['table']

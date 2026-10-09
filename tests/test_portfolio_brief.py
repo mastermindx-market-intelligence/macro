@@ -909,3 +909,21 @@ def test_a09_brain_tool_reads_same_exact_native_receipt(monkeypatch, tmp_path):
     assert brief["data"]["concentration"]["top_name_pct"] == 100
     assert "entry_currency_basis" in seen[0]
     assert len(seen) == 1
+
+
+def test_a09_same_theme_mixed_unit_has_no_exposure_section():
+    brief = compose_brief(_ctx(), [_unit_lot(), _unit_lot('AVGO', currency='HKD')],
+                          TODAY, GENERATED_AT, population='positions')
+    assert brief['weighting']['mode'] == 'unavailable'
+    assert not any(s['key'] == 'exposure' for s in brief['sections'])
+    assert brief['data']['book']['n'] == 2
+    assert any(s['key'] == 'signals' for s in brief['sections'])
+
+
+def test_a09_positive_native_cost_underflow_never_becomes_equal_assumption():
+    brief = compose_brief(_ctx(), [_unit_lot(price=1e-200, shares=1e-200),
+                                  _unit_lot('XOM', price=1e-200, shares=1e-200)],
+                          TODAY, GENERATED_AT, population='positions')
+    assert brief['weighting']['mode'] == 'unavailable'
+    assert 'concentration' not in brief['data']
+    assert brief['data']['book']['n'] == 2
