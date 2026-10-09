@@ -262,6 +262,20 @@ def test_secure_owner_down_does_not_consume_otp_or_forge_success():
     fails("CONSENT_WRITE_UNCONFIRMED", lambda: service.verify(email=EMAIL, otp="123456", public_ref=intent, now=NOW))
 
 
+def test_anonymous_optin_suppression_prevents_otp_and_pending_intent():
+    service, otp, store, suppression, *_ = make()
+    suppression.blocked = True
+    fails("ADDRESS_SUPPRESSED", lambda: consented(service))
+    assert otp.requests == [] and store.pending == {} and store.records == {}
+    suppression.blocked = False
+    suppression.down = True
+    fails("SUPPRESSION_CHECK_UNAVAILABLE", lambda: consented(service))
+    assert otp.requests == [] and store.pending == {} and store.records == {}
+    suppression.down = False
+    consented(service)
+    assert len(otp.requests) == 1 and len(store.pending) == 1
+
+
 def test_suppressed_or_unavailable_suppression_refuses_grant():
     service, otp, _, suppression, *_ = make()
     token = consented(service)["public_ref"]
