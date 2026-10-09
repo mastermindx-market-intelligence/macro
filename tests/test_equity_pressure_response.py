@@ -1118,7 +1118,7 @@ def test_private_readback_refuses_claim_of_vendor_authenticity():
 def test_private_readback_rejects_outcome_labels_after_hash_recompute():
     import json
     data=json.loads(private_context()["bytes_private_only"])
-    data["absorption_signal"]=0.95
+    data["absorption_signal"]=1  # valid JSON integer; test the authority gate, not float decoding
     with pytest.raises(PrivateContextRefusal,match="shape/authority"):
         private_readback(forged_private_blob(data))
 
