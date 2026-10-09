@@ -149,28 +149,30 @@ def _ctx() -> dict:
     }
 
 
+# A09 compatibility controls declare FICTIONAL USD ticker/price receipts below.
+# They do not set a production default; separate legacy/mixed causal cases remain unknown.
 # ── the charter's 3 synthetic books (§6) ─────────────────────────────────────
 
 BOOKS = {
     # concentrated-semis: cost-basis weighted, heavy in Technology semis.
     "concentrated-semis": [
-        {"ticker": "NVDA", "shares": 100, "entry_price": 120.0},
-        {"ticker": "AVGO", "shares": 40, "entry_price": 300.0},
-        {"ticker": "SMCI", "shares": 30, "entry_price": 40.0},
-        {"ticker": "XOM", "shares": 20, "entry_price": 110.0},
+        {"ticker": "NVDA", "shares": 100, "entry_price": 120.0, "entry_currency": "USD", "entry_currency_basis": {"ticker": "NVDA", "price": 120.0}},
+        {"ticker": "AVGO", "shares": 40, "entry_price": 300.0, "entry_currency": "USD", "entry_currency_basis": {"ticker": "AVGO", "price": 300.0}},
+        {"ticker": "SMCI", "shares": 30, "entry_price": 40.0, "entry_currency": "USD", "entry_currency_basis": {"ticker": "SMCI", "price": 40.0}},
+        {"ticker": "XOM", "shares": 20, "entry_price": 110.0, "entry_currency": "USD", "entry_currency_basis": {"ticker": "XOM", "price": 110.0}},
     ],
     # diversified-defensive: equal-weighted watchlist (no shares/entry) across sectors,
     # incl. one uncovered name (FOO) to exercise the uncovered listing.
     "diversified-defensive": [
-        {"ticker": "KO", "shares": None, "entry_price": None},
-        {"ticker": "DUK", "shares": None, "entry_price": None},
-        {"ticker": "JPM", "shares": None, "entry_price": None},
-        {"ticker": "XOM", "shares": None, "entry_price": None},
-        {"ticker": "FOO", "shares": None, "entry_price": None},
+        {"ticker": "KO", "shares": None, "entry_price": None, "entry_currency": "USD", "entry_currency_basis": {"ticker": "KO", "price": None}},
+        {"ticker": "DUK", "shares": None, "entry_price": None, "entry_currency": "USD", "entry_currency_basis": {"ticker": "DUK", "price": None}},
+        {"ticker": "JPM", "shares": None, "entry_price": None, "entry_currency": "USD", "entry_currency_basis": {"ticker": "JPM", "price": None}},
+        {"ticker": "XOM", "shares": None, "entry_price": None, "entry_currency": "USD", "entry_currency_basis": {"ticker": "XOM", "price": None}},
+        {"ticker": "FOO", "shares": None, "entry_price": None, "entry_currency": "USD", "entry_currency_basis": {"ticker": "FOO", "price": None}},
     ],
     # single-name: one position.
     "single-name": [
-        {"ticker": "NVDA", "shares": 10, "entry_price": 100.0},
+        {"ticker": "NVDA", "shares": 10, "entry_price": 100.0, "entry_currency": "USD", "entry_currency_basis": {"ticker": "NVDA", "price": 100.0}},
     ],
 }
 
@@ -237,9 +239,9 @@ def test_equal_mode_watchlist():
 
 def test_duplicate_ticker_merged_positions():
     holdings = [
-        {"ticker": "NVDA", "shares": 50, "entry_price": 100.0},
-        {"ticker": "nvda", "shares": 50, "entry_price": 100.0},  # dupe, lowercase
-        {"ticker": "XOM", "shares": 100, "entry_price": 100.0},
+        {"ticker": "NVDA", "shares": 50, "entry_price": 100.0, "entry_currency": "USD", "entry_currency_basis": {"ticker": "NVDA", "price": 100.0}},
+        {"ticker": "nvda", "shares": 50, "entry_price": 100.0, "entry_currency": "USD", "entry_currency_basis": {"ticker": "nvda", "price": 100.0}},  # dupe, lowercase
+        {"ticker": "XOM", "shares": 100, "entry_price": 100.0, "entry_currency": "USD", "entry_currency_basis": {"ticker": "XOM", "price": 100.0}},
     ]
     b = compose_brief(_ctx(), holdings, TODAY, GENERATED_AT)
     # 2 unique names; NVDA cost 10000, XOM 10000 → 50/50.
@@ -254,8 +256,8 @@ def test_duplicate_ticker_merged_positions():
 def test_mixed_positions_and_watchlist_uses_positions():
     # Any row with shares>0 & entry>0 flips the whole book to positions mode.
     holdings = [
-        {"ticker": "NVDA", "shares": 10, "entry_price": 100.0},
-        {"ticker": "XOM", "shares": None, "entry_price": None},
+        {"ticker": "NVDA", "shares": 10, "entry_price": 100.0, "entry_currency": "USD", "entry_currency_basis": {"ticker": "NVDA", "price": 100.0}},
+        {"ticker": "XOM", "shares": None, "entry_price": None, "entry_currency": "USD", "entry_currency_basis": {"ticker": "XOM", "price": None}},
     ]
     b = compose_brief(_ctx(), holdings, TODAY, GENERATED_AT)
     assert b["weighting"]["mode"] == "positions"
@@ -593,8 +595,8 @@ def test_population_and_weighting_are_independent_axes():
     """A positions population weighted equally (positions carrying no cost basis) must
     report population=positions AND weighting=equal — conflating the two axes is how the
     original confusion started."""
-    holdings = [{"ticker": "NVDA", "shares": None, "entry_price": None},
-                {"ticker": "XOM", "shares": None, "entry_price": None}]
+    holdings = [{"ticker": "NVDA", "shares": None, "entry_price": None, "entry_currency": "USD", "entry_currency_basis": {"ticker": "NVDA", "price": None}},
+                {"ticker": "XOM", "shares": None, "entry_price": None, "entry_currency": "USD", "entry_currency_basis": {"ticker": "XOM", "price": None}}]
     b = compose_brief(_ctx(), holdings, TODAY, GENERATED_AT, population="positions")
     assert b["population"]["mode"] == "positions"
     assert b["weighting"]["mode"] == "equal"
@@ -743,7 +745,7 @@ def _load_app_client(monkeypatch, tmp_path, *, tier="pro", status="active",
 
 def test_endpoint_200_pro(monkeypatch, tmp_path):
     ctx = _ctx()
-    holdings = [{"ticker": "NVDA", "shares": 10, "entry_price": 100.0}]
+    holdings = [{"ticker": "NVDA", "shares": 10, "entry_price": 100.0, "entry_currency": "USD", "entry_currency_basis": {"ticker": "NVDA", "price": 100.0}}]
     m, client = _load_app_client(monkeypatch, tmp_path, tier="pro", status="active",
                                  holdings=holdings, ctx=ctx)
     r = client.get("/api/portfolio/brief", headers={"Authorization": "Bearer x"})
@@ -763,8 +765,8 @@ def test_endpoint_reports_watchlist_population_when_that_is_what_it_read(monkeyp
     not come back describing positions. The loader reports `watchlist_union` and every
     summarizing string on the way out says so."""
     ctx = _ctx()
-    holdings = [{"ticker": "NVDA", "shares": None, "entry_price": None},
-                {"ticker": "XOM", "shares": None, "entry_price": None}]
+    holdings = [{"ticker": "NVDA", "shares": None, "entry_price": None, "entry_currency": "USD", "entry_currency_basis": {"ticker": "NVDA", "price": None}},
+                {"ticker": "XOM", "shares": None, "entry_price": None, "entry_currency": "USD", "entry_currency_basis": {"ticker": "XOM", "price": None}}]
     m, client = _load_app_client(monkeypatch, tmp_path, tier="pro", status="active",
                                  holdings=holdings, ctx=ctx,
                                  population="watchlist_union")
@@ -797,4 +799,93 @@ def test_endpoint_503_missing_ctx(monkeypatch, tmp_path):
     r = client.get("/api/portfolio/brief", headers={"Authorization": "Bearer x"})
     assert r.status_code == 503, r.text
     assert r.json()["detail"]["error"] == "ctx_unavailable"
+    m.app.dependency_overrides.clear()
+
+# Audit20 A09: causal controls for native entry-unit authority. All rows here are
+# fictional; a historical unit is never inferred from a symbol or today's quote.
+def _unit_lot(ticker="NVDA", price=100.0, shares=10, currency="USD", **extra):
+    return {"ticker": ticker, "shares": shares, "entry_price": price,
+            "entry_currency": currency,
+            "entry_currency_basis": {"ticker": ticker, "price": price}, **extra}
+
+
+@pytest.mark.parametrize("other", [
+    {"ticker": "XOM", "shares": 10, "entry_price": 100.0},
+    _unit_lot("XOM", currency="HKD"),
+    _unit_lot("XOM", entry_currency_basis={"ticker": "XOM", "price": 99.0}),
+    _unit_lot("XOM", currency="GBp"),
+    _unit_lot("NOT_COVERED", currency="HKD"),
+    _unit_lot("XOM", price=1e308, shares=1e308),
+    _unit_lot("XOM", currency="ZZZ"),
+    _unit_lot("XOM", entry_currency_basis={"ticker": "XOM", "price": 100.0, "extra": True}),
+    _unit_lot("XOM", entry_currency_basis={"ticker": "XOM", "price": "100"}),
+])
+def test_a09_bad_native_unit_invalidates_whole_cost_cohort(other):
+    brief = compose_brief(_ctx(), [_unit_lot(), other], TODAY, GENERATED_AT,
+                          population="positions")
+    assert brief["weighting"]["mode"] == "unavailable"
+    assert "concentration" not in brief["data"]
+    assert "top weight" not in brief["headline"]["en"]
+    assert "unavailable" in brief["weighting"]["label_en"].lower()
+    assert brief["weighting"]["label_zh"]
+    assert not any(s["key"] == "exposure" for s in brief["sections"])
+    # Per-name signals/events remain useful without inventing cost weights.
+    assert brief["data"]["book"]["n"] == 2
+    json.dumps(brief, allow_nan=False)
+
+
+def test_a09_common_declared_native_unit_keeps_exact_cost_weights():
+    brief = compose_brief(_ctx(), [_unit_lot(shares=1), _unit_lot("XOM", shares=3)],
+                          TODAY, GENERATED_AT, population="positions")
+    assert brief["weighting"]["mode"] == "positions"
+    assert brief["data"]["concentration"]["top_name_pct"] == 75
+
+
+def test_a09_currency_receipt_change_invalidates_real_brief_cache_key():
+    from app.main import _holdings_fingerprint
+    known = _unit_lot()
+    unknown = {**known, "entry_currency": None, "entry_currency_basis": None}
+    mixed = {**known, "entry_currency": "HKD"}
+    stale = {**known, "entry_currency_basis": {"ticker": "NVDA", "price": 99.0}}
+    keys = {_holdings_fingerprint([row], "positions") for row in [known, unknown, mixed, stale]}
+    assert len(keys) == 4
+
+
+def test_a09_actual_loader_carries_entry_unit_and_exact_receipt(monkeypatch):
+    import app.main as m
+    import engine.neuralweb.brain_gateway as bg
+    seen = []
+    lot = _unit_lot(currency="HKD")
+    def read(query, **kwargs):
+        seen.append(query)
+        fields = query.split("&select=", 1)[1].split("&", 1)[0].split(",")
+        return [{key: value for key, value in lot.items() if key in fields}]
+    monkeypatch.setattr(bg, "_sb_get", read)
+    rows, population = m._portfolio_load_holdings("a09-fictional-owner")
+    assert population == "positions"
+    assert rows[0]["entry_currency"] == "HKD"
+    assert rows[0]["entry_currency_basis"] == lot["entry_currency_basis"]
+    assert len(seen) == 1
+
+
+def test_a09_finite_lots_with_overflowing_whole_sum_are_unavailable():
+    brief = compose_brief(_ctx(), [_unit_lot(price=1e308, shares=1),
+                                  _unit_lot("XOM", price=1e308, shares=1)],
+                          TODAY, GENERATED_AT, population="positions")
+    assert brief["weighting"]["mode"] == "unavailable"
+    assert "concentration" not in brief["data"]
+    json.dumps(brief, allow_nan=False)
+
+
+def test_a09_real_endpoint_returns_unknown_weights_without_dropping_names(monkeypatch, tmp_path):
+    m, client = _load_app_client(monkeypatch, tmp_path, tier="pro", status="active",
+        holdings=[_unit_lot(), {"ticker": "XOM", "shares": 3, "entry_price": 100.0}], ctx=_ctx())
+    response = client.get("/api/portfolio/brief", headers={"Authorization": "Bearer fictional"})
+    assert response.status_code == 200
+    body = response.json()
+    assert body["weighting"]["mode"] == "unavailable"
+    assert body["book"]["n"] == 2
+    assert body["population"]["mode"] == "positions"
+    assert "concentration" not in body["data"]
+    assert response.headers["Cache-Control"] == "private, no-store"
     m.app.dependency_overrides.clear()
