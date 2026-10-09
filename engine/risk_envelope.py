@@ -107,7 +107,6 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Any, Iterable, Mapping, Sequence
 
 __all__ = [
@@ -133,8 +132,8 @@ LIVE_MARKET_FUTURE_TOLERANCE_S = 120.0
 
 
 def live_market_freshness(
-    *, live_active: bool, built_dt: datetime | None,
-    stale_after_min: float, now: datetime,
+    *, live_active: bool, built_dt: Any | None,
+    stale_after_min: float, now: Any,
 ) -> dict[str, Any]:
     """The live owner's carrying-clock arithmetic; inputs are already parsed.
 
