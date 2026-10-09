@@ -200,3 +200,10 @@ This is a local, source-backed publication proof, not served production acceptan
 The pure transmission helper publishes the existing reported state only when its origin, all four counted leg receipts, source timestamp, hot count and owner relation agree. Missing or denied support withholds the current statement; an independently permitted diagnostic enum remains available. The optional safety-bid field never becomes a fifth counted leg. Hostile object properties and subclass keys are rejected without executing custom hooks.
 
 The first worker candidate was rejected on three reproducible parent counterexamples. The repaired source passed87 retained/parent cases in isolation and in the repository, plus192 parent consistency checks. IM05_SUMMARY_EVIDENCE.json binds the accepted files and limits. This is a qualification component; the Risk page, individual field projections, live eligibility composition and served acceptance remain open.
+
+
+## Risk composition and local publication
+
+Risk and Transmission is now assembled and mounted under the existing publication generation. The retained currency, pressure and US-summary owners feed a dual-theme EN/ZH view with six scoped research descriptors and an explicit company-exposure boundary. Independent final review accepted the corrected template and real mount; parent reproduction passed159 checks, the affected render/publication job222, the controller browser job136, and the actual Risk journey40 cases. The canonical evidence matrix contains32 captures and16 verified focus states. `IM05_SECTION_COMPOSITION_EVIDENCE.json` and `IM05_RISK_PUBLICATION_EVIDENCE.json` bind exact source and limits.
+
+The normal publisher generated all three pages from copied local inputs. Production measures/support/summary permissions remain empty, so unavailable inputs stay unavailable. These results do not establish live data qualification, authenticated access, served release or full IM05 acceptance. The independent Japan cash-equity notice addition is recorded in `IM_EQUITY_JPX_NOTICE_EVIDENCE.json`; it does not grant a JP session clock or FX completion policy.

@@ -1213,7 +1213,7 @@
       '[data-im-library-groups],[data-im-library-group],[data-im-library-results],[data-im-library-empty],[data-im-library-tool],'+
       '[data-im-inspector-origin],[data-im-inspector-payload],[data-im-inspector-enhancement],[data-im-inspector-page],'+
       '[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-shell],[data-im-inspector-deeper-unavailable],'+
-      '[data-im-macro-market],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option';
+      '[data-im-macro-market],[data-im-risk-channel],[data-im-risk-row],[data-im-risk-prompt],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
       if (node === root) attrs.push('data-im-enhanced');
@@ -1235,6 +1235,10 @@
       if (node.matches('[data-im-inspector-shell]')) attrs.push('aria-labelledby','aria-label');
       if (node.matches('[data-im-panel][data-view="macro"]')) attrs.push('data-im-macro-has-selection');
       if (node.matches('[data-im-macro-market]')) attrs.push('data-im-macro-selected');
+      if (node.matches('[data-im-panel][data-view="risk"]')) attrs.push('data-im-risk-has-selection');
+      if (node.matches('[data-im-risk-row]')) attrs.push('data-im-risk-selected');
+      if (node.matches('[data-im-risk-channel],[data-im-risk-prompt]')) attrs.push('hidden');
+      if (node.matches('[data-im-risk-prompt]')) text = true;
       if (node.matches('[data-im-compare-panel]')) attrs.push('data-im-compare-state','data-im-compare-reason');
       if (node.matches('[data-im-compare-slot],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove]')) attrs.push('hidden');
       if (node.matches('[data-im-compare-status],[data-im-compare-pin] option')) text = true;
@@ -1274,7 +1278,7 @@
         !config.bases.includes(panel.getAttribute('data-basis')) ||
         !panel.hasAttribute('data-source') || (version === 2 ?
           !validGeneration(source) || panel.getAttribute('data-im-generation') !== source ||
-            (['overview','compare','macro'].includes(panel.getAttribute('data-view')) && panel.getAttribute('data-return-basis') !== 'price') :
+            (['overview','compare','macro','risk'].includes(panel.getAttribute('data-view')) && panel.getAttribute('data-return-basis') !== 'price') :
           panel.getAttribute('data-source') !== (source === null ? '' : source))) return false;
     if (panel.hasAttribute('data-market') && panel.getAttribute('data-market') !== '' &&
         !config.markets.includes(panel.getAttribute('data-market'))) return false;
@@ -1354,10 +1358,57 @@
         row.setAttribute('data-im-macro-selected', String(row.getAttribute('data-im-macro-market') === state.selected_market));
       });
     });
+    paintRisk(controller, state);
     paintLibrary(controller,state);
     paintCompare(controller,compare);
     paintInspectorFallbacks(controller,state);
     return reported;
+  }
+
+  function paintRisk(controller, state) {
+    var root = controller.root, markets = controller.config.markets;
+    owned(root, '[data-im-panel][data-view="risk"]').forEach(function (panel) {
+      var channels = owned(root, '[data-im-risk-channel]').filter(function (node) { return panel.contains(node); });
+      var slots = new Set();
+      var valid = channels.length === markets.length && channels.every(function (node) {
+        var value = node.getAttribute('data-im-risk-channel'), slot = Number(value);
+        if (value !== String(slot) || !Number.isInteger(slot) || slot < 0 || slot >= markets.length || slots.has(slot)) return false;
+        slots.add(slot);
+        return !node.hasAttribute('data-im-risk-market') || node.getAttribute('data-im-risk-market') === markets[slot];
+      });
+      var selectedSlot = markets.indexOf(state.selected_market);
+      panel.setAttribute('data-im-risk-has-selection', String(selectedSlot !== -1));
+      channels.forEach(function (node) {
+        node.hidden = !valid || selectedSlot === -1 || node.getAttribute('data-im-risk-channel') !== String(selectedSlot);
+      });
+      owned(root, '[data-im-risk-row]').filter(function (node) { return panel.contains(node); }).forEach(function (node) {
+        node.setAttribute('data-im-risk-selected', String(node.getAttribute('data-im-risk-row') === state.selected_market));
+      });
+      owned(root, '[data-im-risk-prompt]').filter(function (node) { return panel.contains(node); }).forEach(function (node) {
+        node.hidden = valid && selectedSlot !== -1;
+        var en = root.ownerDocument.createElement('span'), zh = root.ownerDocument.createElement('span');
+        en.className = 'l-en'; zh.className = 'l-zh'; zh.lang = 'zh';
+        en.textContent = valid ? 'Select a market to examine the currency channel' : 'Currency details are unavailable for this selection.';
+        zh.textContent = valid ? '选择市场以查看汇率传导' : '此选择暂无可用的汇率详情。';
+        node.replaceChildren(en, zh);
+      });
+    });
+  }
+
+  function riskEvent(controller, event) {
+    if (event.type !== 'click' || !event.target || !event.target.closest) return false;
+    var button = event.target.closest('button[data-im-risk-close-context]');
+    if (!button || button.disabled || button.closest('[data-im-workspace]') !== controller.root) return false;
+    var panel = button.closest('[data-im-panel][data-view="risk"]');
+    if (!panel || panel.hidden || panelFor(controller, controller.state)[0] !== panel) return false;
+    var detail = button.closest('details');
+    if (!detail || !panel.contains(detail)) return false;
+    var summary = Array.from(detail.children).find(function (node) { return node.tagName === 'SUMMARY'; });
+    if (!summary) return false;
+    event.preventDefault();
+    detail.open = false;
+    summary.focus({preventScroll: true});
+    return true;
   }
 
   function repaintIssues(controller) {
@@ -1478,6 +1529,7 @@
   }
 
   function clickOrChange(controller, event) {
+    if (riskEvent(controller,event)) return;
     if (compareEvent(controller,event)) return;
     if (inspectorEvent(controller,event)) return;
     if (libraryEvent(controller,event)) return;

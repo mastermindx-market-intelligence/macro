@@ -53,9 +53,8 @@ waves:
 - id: IM00
   title: Shared performance, presentation and route foundation
   status: in_progress
-  next_action: Source snapshot now passes47 cases and190 affected foundation tests with independent final review.
-    Build the pure qualifier under accepted derived-evaluation attribution. Authentic source/session/disclosure
-    inputs and hosted exact-head CI remain required.
+  next_action: Shared foundation, source snapshot/qualifier and publication-generation source accepted. Authentic
+    completed-session and disclosure inputs remain required.
 - id: IM01
   title: Overview
   status: in_progress
@@ -66,40 +65,48 @@ waves:
     remain required.
 - id: IM02
   title: Compare and Rotation
-  status: todo
+  status: in_progress
   depends_on:
   - IM00
+  next_action: Compare projection, mount and browser integration source accepted in existing carrier. Complete production
+    qualification and served acceptance.
 - id: IM03
   title: Country Inspector and Evidence
-  status: todo
+  status: in_progress
   depends_on:
   - IM00
+  next_action: Inspector projection, responsive evidence and browser integration source accepted. Complete authenticated
+    served path and publication acceptance.
 - id: IM04
   title: Macro and Policy
-  status: todo
+  status: in_progress
   depends_on:
   - IM00
   - IM03
+  next_action: Qualified ECB local publication and Macro composition accepted within recorded scope. Other fields
+    and live/authenticated publication acceptance remain required.
 - id: IM05
   title: Risk and Transmission
-  status: todo
+  status: in_progress
   depends_on:
   - IM00
   - IM03
+  next_action: Risk assembly, mount, dual-theme UI and copied-input publisher independently accepted; final source159,
+    render/publication222 and Risk browser40 pass. Real qualified source families and served acceptance remain open.
 - id: IM06
   title: History and Scenarios
   status: in_progress
   depends_on:
   - IM00
   - IM03
-  next_action: Source review accepted after exact numerical repair; shared controller, browser and publication integration
-    remain owed.
+  next_action: Typed history reader and manual numerical helper accepted. Bounded History API contract review is
+    active through Fabric; next implement pure projection, then shared draft/controller and presentation.
 - id: IM07
   title: Library and deterministic search
   status: in_progress
   next_action: Public catalogue and verified existing destinations are mounted through the sole controller. Parent
-    Chrome61 and render/source tests plus independent final source review pass; complete final CI/publication
-    and served acceptance.
+    Chrome61 and render/source tests plus independent final source review pass; complete final CI/publication and
+    served acceptance.
   depends_on:
   - IM00
 - id: IM08
@@ -119,9 +126,9 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Final-delta review accepted the exact snapshot and Library focus delta on PR8527; integrate/push
-  the reviewed source vertical. Continue prepared pure qualifier and bounded Inspector
-  contract while respecting actual admission and incumbent Saved boundaries.
+next_action: Final-delta review accepted the exact snapshot and Library focus delta on PR8527; integrate/push the
+  reviewed source vertical. Continue prepared pure qualifier and bounded Inspector contract while respecting actual
+  admission and incumbent Saved boundaries.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json

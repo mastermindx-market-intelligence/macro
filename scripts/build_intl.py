@@ -28,6 +28,7 @@ from lib.pages import write_page  # noqa: E402
 from engine.intl_workspace_overview import build_workspace_overviews as _workspace_overviews  # noqa: E402
 from lib.intl_library_mount import render_international_pages  # noqa: E402
 from lib.intl_macro_mount import attach_macros  # noqa: E402
+from lib.intl_risk_mount import attach_risks  # noqa: E402
 from lib.intl_macro_publication import read_ecb_deposit_materialization  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -37,7 +38,7 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "dashboard-icons.js", "theme.js",
           "mtf.js", "chart_i18n.js", "charts.js",
           "tablesort.js", "stockdata.js", "stockview.js",
-          "intl_workspace.css", "intl_workspace_macro.css", "intl_workspace_state.js",
+          "intl_workspace.css", "intl_workspace_macro.css", "intl_workspace_risk.css", "intl_workspace_state.js",
           "intl_library_search.js", "intl_workspace.js", "intl_workspace_entry.js")
 
 
@@ -100,7 +101,7 @@ def _ecb_publication_measure(materialized, *, evaluated_at, generation):
         return unavailable
 
 
-def _publication_workspace(closes, *, data_root, evaluated_at):
+def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, cgl=None):
     """Compose one normal publication without granting any equity evidence."""
     from engine.intl_inputs import countries
 
@@ -108,13 +109,13 @@ def _publication_workspace(closes, *, data_root, evaluated_at):
     workspace = _workspace_overviews(closes, workspace_generation=generation)
     if workspace is None:
         return None
-    try:
-        registry = {
+    registry = {
             "markets": [{"market_id": cc, "name_en": row["name"], "name_zh": row["name_zh"]}
                         for cc, row in countries().items()],
             "horizons": workspace["config"]["horizons"],
             "bases": workspace["config"]["bases"],
-        }
+    }
+    try:
         measure = _ecb_publication_measure(
             read_ecb_deposit_materialization(data_root=data_root),
             evaluated_at=evaluated_at, generation=generation,
@@ -128,10 +129,18 @@ def _publication_workspace(closes, *, data_root, evaluated_at):
             },
         )
         mounted["macro_registry"] = registry
-        return mounted
+        workspace = mounted
     except Exception as exc:  # Macro failure must preserve the existing workspace.
         log.error("International Macro panel unavailable (%s)", type(exc).__name__)
-        return workspace
+    try:
+        # Existing packets supply context, never disclosure or source grants.
+        workspace = attach_risks(
+            workspace, registry=registry, risk_desk=risk_desk, cgl=cgl,
+            measures={}, field_support={}, summary_eligibility={}, destinations={},
+        )
+    except Exception as exc:
+        log.error("International Risk panel unavailable (%s)", type(exc).__name__)
+    return workspace
 
 
 # quad colour keys (match the .q-Qn CSS) — uniform with the other verticals
@@ -993,6 +1002,7 @@ def main() -> int:
             workspace = _publication_workspace(
                 _wr_intl_raw, data_root=config.data_dir(),
                 evaluated_at=datetime.now(timezone.utc).isoformat(),
+                risk_desk=_intl_risk_payload, cgl=_cgl_artifact,
             )
         except Exception as exc:  # Preserve all incumbent views on adapter failure.
             log.error("International workspace unavailable (%s)", type(exc).__name__)

@@ -7,13 +7,13 @@
     <legend id="intl-context-label">{{ t('Research context', '研究范围') }}</legend>
     <nav class="intl-workspace__view-nav" aria-labelledby="intl-context-label">
       {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
-      <button type="button" data-im-action="set_view" data-im-view="{{ key|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) %} disabled{% endif %}>{{ t(en, zh) }}</button>
+      <button type="button" data-im-action="set_view" data-im-view="{{ key|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) and not (key == 'risk' and intl_workspace.risks|default(none)) %} disabled{% endif %}>{{ t(en, zh) }}</button>
       {% endfor %}
     </nav>
     <label class="intl-workspace__view-select">{{ t('Views', '视图') }}
       <select data-im-action="set_view">
         {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
-        <option value="{{ key|e }}" data-im-label-en="{{ en|e }}" data-im-label-zh="{{ zh|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) %} disabled{% endif %}>{{ en|e }}</option>
+        <option value="{{ key|e }}" data-im-label-en="{{ en|e }}" data-im-label-zh="{{ zh|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) and not (key == 'risk' and intl_workspace.risks|default(none)) %} disabled{% endif %}>{{ en|e }}</option>
         {% endfor %}
       </select>
     </label>
@@ -39,6 +39,9 @@
   {% endfor %}
   {% for panel in intl_workspace.macros|default([]) %}
     {% with macro_section=panel.macro_section, registry=intl_workspace.macro_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none), source_notice=panel.source_notice|default(none) %}{% include 'intl_workspace/macro.html.j2' %}{% endwith %}
+  {% endfor %}
+  {% for panel in intl_workspace.risks|default([]) %}
+    {% with risk_section=panel.risk_section, registry=intl_workspace.risk_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none) %}{% include 'intl_workspace/risk.html.j2' %}{% endwith %}
   {% endfor %}
   {% if intl_workspace.library|default(none) %}
     {% with payload=intl_workspace.library, context_id='im-catalogue', generation=intl_workspace.library_generation|default('') %}{% include 'intl_workspace/library.html.j2' %}{% endwith %}

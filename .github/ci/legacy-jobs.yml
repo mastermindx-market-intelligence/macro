@@ -3633,6 +3633,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "tests/test_intl_workspace_risk_section_independent.py"
+      - "lib/intl_workspace_risk_section.py"
+      - "lib/intl_risk_mount.py"
+      - "tests/test_intl_workspace_risk_section.py"
+      - "tests/test_intl_risk_mount.py"
       - lib/intl_workspace_risk.py
       - lib/intl_workspace_risk_pressure.py
       - tests/test_intl_workspace_risk_pressure.py
@@ -3904,13 +3909,28 @@ jobs:
       - name: install numerical test dependencies
         run: pip install pytest pandas numpy pyyaml pyarrow
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py -q
+        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py -q
 
   international-workspace-browser:
     if: ${{ false }}
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_workspace_risk.py"
+      - "lib/intl_workspace_risk_currency.py"
+      - "lib/intl_workspace_risk_pressure.py"
+      - "lib/intl_workspace_risk_section.py"
+      - "lib/intl_risk_mount.py"
+      - "tests/test_intl_workspace_risk_section.py"
+      - "tests/test_intl_risk_mount.py"
+      - "tests/test_intl_risk_publication_build.py"
+      - "tests/test_intl_workspace_risk_render.py"
+      - "tests/test_intl_workspace_risk_ui_independent.py"
+      - "tests/intl_workspace_risk_controller.test.cjs"
+      - "templates/intl_workspace/risk.html.j2"
+      - "templates/intl_workspace_risk.css"
+      - "tests/fixtures/intl_workspace/risk_render.json"
+      - "tests/fixtures/intl_workspace/risk_currency_overview.json"
       - lib/us_cash_calendar.py
       - collectors/china_filings.py
       - collectors/china_visits.py
@@ -4196,9 +4216,9 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.63.0
           npx playwright install --with-deps chromium
       - name: Actual International builder and template contracts
-        run: python -m pytest tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py -q
+        run: python -m pytest tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py -q
       - name: Actual DOM controller and page entry in Chromium
-        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs
+        run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs
 
   stock-dashboard-first-frame:
     if: ${{ false }}
@@ -5436,6 +5456,11 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/intl_risk_mount.py"
+      - "lib/intl_workspace_risk.py"
+      - "lib/intl_workspace_risk_currency.py"
+      - "lib/intl_workspace_risk_pressure.py"
+      - "lib/intl_workspace_risk_section.py"
       - lib/intl_compare_mount.py
       - lib/intl_compare_view.py
       - lib/intl_inspector_mount.py
@@ -9376,6 +9401,11 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "lib/intl_risk_mount.py"
+      - "lib/intl_workspace_risk.py"
+      - "lib/intl_workspace_risk_currency.py"
+      - "lib/intl_workspace_risk_pressure.py"
+      - "lib/intl_workspace_risk_section.py"
       - collectors/china_filings.py
       - collectors/china_visits.py
       - lib/dataos/identity.py
@@ -9648,6 +9678,11 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/intl_risk_mount.py"
+      - "lib/intl_workspace_risk.py"
+      - "lib/intl_workspace_risk_currency.py"
+      - "lib/intl_workspace_risk_pressure.py"
+      - "lib/intl_workspace_risk_section.py"
       - config/intl_library_catalogue.json
       - engine/cb_desk.py
       - engine/contagion.py
