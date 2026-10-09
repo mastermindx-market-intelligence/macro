@@ -23,6 +23,7 @@ _OBS_KEYS = frozenset({
     "decision_ns", "source_watermark_receipt", "trade_conditions_rules_ref",
     "trade_condition_policy_reason", "quote_conditions_rules_ref",
     "quote_source_receipt_id", "matched_quote_id", "quote_age_ns",
+    "quote_age_limit_ns",
     "source_trade_conditions", "venue_class", "venue_reference_sha256",
     "venue_admission_reason", "correction_status",
     "gross_observed_notional_usd", "side_proxy", "signed_notional_usd",
@@ -143,8 +144,11 @@ def project_provisional_minute(
     policy_refs=set()
     venue_refs=set()
     quote_policy_refs=set()
+    source_quote_age_limits=set()
     for o in dedup.values():
         gross=_decimal(o["gross_observed_notional_usd"],"gross notional")
+        limit=_integer(o["quote_age_limit_ns"],"quote_age_limit_ns")
+        source_quote_age_limits.add(limit)
         side=o["side_proxy"]
         state=o["state"]
         venue=o["venue_class"]
@@ -214,6 +218,8 @@ def project_provisional_minute(
             if not isinstance(quote_ref,str) or len(quote_ref)!=64:
                 raise MinuteProjectionRefusal("invalid source quote policy digest")
             quote_policy_refs.add(quote_ref)
+    if len(source_quote_age_limits)!=1:
+        raise MinuteProjectionRefusal("mixed quote-age admission policies in one minute")
     if len(quote_policy_refs)>1:
         raise MinuteProjectionRefusal("mixed quote condition policy generations in one minute")
     if len(venue_refs)>1:
@@ -245,6 +251,7 @@ def project_provisional_minute(
             "condition_rules_ref":next(iter(policy_refs),None),
             "exchange_reference_sha256":next(iter(venue_refs),None),
             "quote_condition_rules_sha256":next(iter(quote_policy_refs),None),
+            "max_quote_age_ns":next(iter(source_quote_age_limits)),
             "original_latest_available_ns":latest,
             "source_observation_sha256":digest,
             "absorption_signal":None,
