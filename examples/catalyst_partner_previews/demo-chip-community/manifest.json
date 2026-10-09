@@ -1,0 +1,87 @@
+{
+  "claims": [
+    {
+      "claim_id": "fixture-claim-exa",
+      "source_ids": [
+        "source-synthetic-001"
+      ],
+      "text": "In the synthetic scenario, EXA discusses a shift in product demand.",
+      "tickers": [
+        "EXA"
+      ]
+    },
+    {
+      "claim_id": "fixture-claim-exb",
+      "source_ids": [
+        "source-synthetic-001"
+      ],
+      "text": "In the synthetic scenario, EXB describes supplier lead times as an uncertainty.",
+      "tickers": [
+        "EXB"
+      ]
+    }
+  ],
+  "disclosure": "Unsolicited concept prepared for Illustrative chip-supply audience (demo only). No partnership, endorsement, or approval is implied.",
+  "event": {
+    "as_of_utc": "2026-10-09T03:30:00Z",
+    "correction_count": 0,
+    "correction_generation": 0,
+    "demo_only": true,
+    "event_id": "synthetic-semis-brief",
+    "event_kind": "earnings",
+    "event_time_utc": "2026-10-09T02:00:00Z",
+    "expires_at_utc": "2026-10-10T02:00:00Z",
+    "first_observed_at_utc": "2026-10-09T02:10:00Z",
+    "missing_data": [
+      "Every issuer, affected symbol and claim is synthetic.",
+      "The scan destination is an unregistered placeholder."
+    ],
+    "primary_subject": "Illustrative semiconductor earnings event",
+    "publication_time_utc": null
+  },
+  "link_is_placeholder": true,
+  "media_status": "READY_FOR_REVIEW",
+  "needs_review": [
+    "Verify live scan route and scan response before publishing.",
+    "Independent rights, facts, freshness and copy review.",
+    "Partner permission and editor signoff before any distribution."
+  ],
+  "pack_id": "cp_e94908295003cd78eb",
+  "partner": {
+    "audience": "supplier capacity and indirect exposure",
+    "channel": "community",
+    "disclosure": "Unsolicited concept prepared for Illustrative chip-supply audience (demo only). No partnership, endorsement, or approval is implied.",
+    "name": "Illustrative chip-supply audience (demo only)",
+    "profile_url": "https://example.invalid/profiles/chip-community",
+    "profile_verified_at_utc": "2026-10-09T03:30:00Z",
+    "slug": "demo-chip-community",
+    "status": "candidate"
+  },
+  "publication_status": "DRAFT_HOLD",
+  "relationships": [
+    {
+      "relationship": "DIRECT",
+      "ticker": "EXA"
+    },
+    {
+      "relationship": "EVIDENCED_INDIRECT",
+      "ticker": "EXB"
+    }
+  ],
+  "scan_link": "https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-chip-community&utm_campaign=catalyst_scan&utm_content=cp_e94908295003cd78eb&event_id=synthetic-semis-brief&tickers=EXA%2CEXB",
+  "schema": "marketing.catalyst_partner_pack.v1",
+  "selected_tickers": [
+    "EXA",
+    "EXB"
+  ],
+  "sources": [
+    {
+      "public_rehost": true,
+      "published_at_utc": "2026-10-09T02:00:00Z",
+      "source_id": "source-synthetic-001",
+      "tier": "unverified",
+      "title": "Synthetic event exhibit (NOT an actual filing)",
+      "url": "https://example.invalid/filing/CaseSensitive/Exhibit"
+    }
+  ]
+}
