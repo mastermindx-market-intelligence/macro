@@ -91,7 +91,7 @@ def request_optin(body: dict) -> dict:
         raise FunnelGate("ABUSE_CHECK_FAILED", 400)
     receipt = body.get("scan_receipt")
     if (not isinstance(receipt, str) or not 1 <= len(receipt) <= 1024
-            or not re.fullmatch(r"[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+", receipt)):
+            or not re.fullmatch(r"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+", receipt)):
         raise FunnelGate("SCAN_PROOF_REQUIRED", 400)
     accepted = _active().request(email=body.get("email"), checked=True,
                                  scan_receipt=receipt, touch=body.get("first_touch"),
