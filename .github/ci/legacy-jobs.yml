@@ -2700,6 +2700,9 @@ jobs:
       - "tests/test_semiconductor_research_inputs.py"
       - "tests/test_semiconductor_research_composition.py"
       - "tests/test_semiconductor_research_temporal.py"
+      - "tests/test_theme_graph_curation_assertion.py"
+      - "tests/test_semiconductor_assertion_semantics.py"
+      - "tests/test_semiconductor_industrial_views.py"
       - "tests/test_basket_intelligence_mounts.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/publish_company_intelligence_r2.py"
@@ -2802,6 +2805,8 @@ jobs:
         run: python -m pytest tests/test_semiconductor_guidance_history.py tests/test_semiconductor_earnings_witnesses.py tests/test_semiconductor_earnings_intake.py tests/test_semiconductor_earnings_intake_integration.py -q
       - name: semiconductor research composer (inputs, composition, temporal law)
         run: python -m pytest tests/test_semiconductor_research_inputs.py tests/test_semiconductor_research_composition.py tests/test_semiconductor_research_temporal.py -q
+      - name: shared curation_assertion v1 contract + semiconductor industrial-context semantics
+        run: python -m pytest tests/test_theme_graph_curation_assertion.py tests/test_semiconductor_assertion_semantics.py tests/test_semiconductor_industrial_views.py -q
       - name: binder read-side primitives (workspace projection; declared witness scope + owner identity join)
         run: python -m pytest tests/test_workspace_projection.py tests/test_semiconductor_witness_scope.py -q
       - name: registered owner-bundle loader (public half through the reader; private half declared absent)
