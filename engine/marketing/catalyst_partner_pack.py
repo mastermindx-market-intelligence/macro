@@ -662,6 +662,16 @@ def write_partner_pack(pack: dict, destination: Path | str,
     # including a symlink placed at a later output name.
     _require(not any((base / name).is_symlink() for name in files),
              "UNSAFE_OUTPUT_PATH")
+    # A previous generation may contain an SVG when updated source rights
+    # withhold it. The asset is not in this version's file set; retaining the
+    # old SVG would leak rights-withdrawn evidence from the same review folder.
+    previous_card = base / "intelligence-card.svg"
+    retire_previous_card = "intelligence-card.svg" not in files and (
+        previous_card.exists() or previous_card.is_symlink()
+    )
+    if retire_previous_card:
+        _require(previous_card.is_file() and not previous_card.is_symlink(),
+                 "UNSAFE_OUTPUT_PATH")
     written: list[Path] = []
     for name, data in files.items():
         target = base / name
@@ -678,4 +688,6 @@ def write_partner_pack(pack: dict, destination: Path | str,
         finally:
             Path(temporary).unlink(missing_ok=True)
         written.append(target)
+    if retire_previous_card:
+        previous_card.unlink()
     return written
