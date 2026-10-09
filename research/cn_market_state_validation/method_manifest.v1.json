@@ -1,0 +1,47 @@
+{
+  "base_sha": "d5eb16f3b3a093afb053efe275be62778729dcf4",
+  "entries": [
+    {
+      "git_blob_sha": "4323b490d82f747c65c76dba861eb6ab1eb9585c",
+      "path": "collectors/china_breadth.py"
+    },
+    {
+      "git_blob_sha": "43d4ce4fc068013121672d9c55a154d4c997f834",
+      "path": "collectors/china_credit.py"
+    },
+    {
+      "git_blob_sha": "cfd6f7ed0fe11a7101ece743c7d1bbdf1d3bff5d",
+      "path": "collectors/china_macro.py"
+    },
+    {
+      "git_blob_sha": "1d99d3d43e5cabd10876aa1d658154db5be882bf",
+      "path": "engine/china_cycle_phase.py"
+    },
+    {
+      "git_blob_sha": "4c9a4001fba9fe3f298c950967ec95067676fd59",
+      "path": "engine/china_event_calendar.py"
+    },
+    {
+      "git_blob_sha": "e7aee3d04efe1bfc6558676262ad6c2ce8436288",
+      "path": "engine/equity_alloc.py"
+    },
+    {
+      "git_blob_sha": "09b7a8a3003ebce9c3e58b2271b21ccdbcc5033d",
+      "path": "engine/grading_stats.py"
+    },
+    {
+      "git_blob_sha": "74d3d389648875d6c53b08dedbc0b82de21a0134",
+      "path": "research/MASTERMIND_TEMPORAL_DATA_STANDARD.md"
+    },
+    {
+      "git_blob_sha": "ff85bcac598c5eb9a5ca152154a333f86b7ad140",
+      "path": "research/PIT_LEAKAGE_TAX.md"
+    }
+  ],
+  "mapping_sha256": "09c32763c7a848abb52a45852c3b42ff4aee63f61e3af269813ef2b9ddec6356",
+  "note": "Existing house methods/laws reused for temporal honesty, dependence-aware inference, China release timing, historical eras, and episode semantics. No second validation/control plane is created.",
+  "operation": "cn-risk-p3-market-state-validation-20260923-solpro-001",
+  "repository": "mastermindx-market-intelligence/macro",
+  "sample_end": "2026-09-24",
+  "schema": "cn_market_state_p3_method_manifest.v1"
+}
