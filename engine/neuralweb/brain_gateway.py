@@ -3057,14 +3057,16 @@ def _tool_get_portfolio_brief(params: dict, root: Path, user_id: str = "") -> di
     population = "positions"
     pos_rows = _sb_get(
         f"portfolio_positions?user_id=eq.{quid}&status=eq.open"
-        f"&select=ticker,shares,entry_price")
+        f"&select=ticker,shares,entry_price,entry_currency,entry_currency_basis")
     if pos_rows is None:
         population = "unspecified"
     else:
         for r in pos_rows:
             if isinstance(r, dict) and r.get("ticker"):
                 holdings.append({"ticker": r.get("ticker"), "shares": r.get("shares"),
-                                 "entry_price": r.get("entry_price")})
+                                 "entry_price": r.get("entry_price"),
+                                 "entry_currency": r.get("entry_currency"),
+                                 "entry_currency_basis": r.get("entry_currency_basis")})
         if not holdings:
             lists = _sb_get(f"watchlists?user_id=eq.{quid}&select=id&order=position")
             if lists is None:

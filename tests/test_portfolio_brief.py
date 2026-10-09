@@ -889,3 +889,23 @@ def test_a09_real_endpoint_returns_unknown_weights_without_dropping_names(monkey
     assert "concentration" not in body["data"]
     assert response.headers["Cache-Control"] == "private, no-store"
     m.app.dependency_overrides.clear()
+
+
+def test_a09_brain_tool_reads_same_exact_native_receipt(monkeypatch, tmp_path):
+    import engine.neuralweb.brain_gateway as bg
+    folder = tmp_path / "site" / "data"
+    folder.mkdir(parents=True)
+    (folder / "portfolio_ctx.json").write_text(json.dumps(_ctx()))
+    monkeypatch.setattr(bg, "_resolve_tier", lambda *args, **kwargs: {"tier": "pro", "status": "active"})
+    lot = _unit_lot(currency="HKD")
+    seen = []
+    def read(query, **kwargs):
+        seen.append(query)
+        fields = query.split("&select=", 1)[1].split("&", 1)[0].split(",")
+        return [{key: value for key, value in lot.items() if key in fields}]
+    monkeypatch.setattr(bg, "_sb_get", read)
+    brief = bg._tool_get_portfolio_brief({}, root=tmp_path, user_id="a09-fictional-owner")
+    assert brief["weighting"]["mode"] == "positions"
+    assert brief["data"]["concentration"]["top_name_pct"] == 100
+    assert "entry_currency_basis" in seen[0]
+    assert len(seen) == 1
