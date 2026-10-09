@@ -33,9 +33,12 @@ import os
 import re
 import sys
 import time
+from copy import deepcopy
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, TypedDict
+from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -371,13 +374,14 @@ def _save_state(root: Path | str, state: dict[str, Any]) -> None:
 
 
 def filter_new_items(
-    items: list[FeedItem], root: Path | str
+    items: list[FeedItem], root: Path | str, *,
+    seen_snapshot: dict[str, str] | None = None,
 ) -> tuple[list[FeedItem], dict[str, str]]:
     """Return (new_items, updated_seen_dict) without writing to disk.
 
     Callers write the ledger after processing all sources.
     """
-    seen = _load_seen(root)
+    seen = dict(seen_snapshot) if seen_snapshot is not None else _load_seen(root)
     now_ts = datetime.now(tz=timezone.utc).isoformat()
     new_items: list[FeedItem] = []
     for item in items:
@@ -529,6 +533,160 @@ def poll_all(root: Path | str, cfg: dict) -> list[FeedItem]:
     _save_seen(root, updated_seen)
 
     return new_items
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WEB-P1 G1: bounded official-source observation before durable consumption.
+# Uses the incumbent RSS adapter and its SAME on-disk state/seen owners.
+# This is neither a parallel queue nor a second source/revision ledger.
+# ─────────────────────────────────────────────────────────────────────────────
+
+_OFFICIAL_PREVIEW_HOSTS = {
+    "bls_news": "bls.gov",
+    "bea_news": "bea.gov",
+}
+
+
+@dataclass(frozen=True, slots=True)
+class OfficialFeedPreview:
+    """In-memory source observation, not publication or license authority.
+
+    A caller must FIRST prove every offered event was durably accepted by the
+    incumbent News/Intelligence Desk before ack_official_preview is allowed.
+    Existing keep-FIRST event IDs make this a FIRST-PRINT-ONLY pilot; changed
+    same-ID facts/withdrawals are NOT established by this contract.
+    """
+
+    root_key: str
+    items: tuple[FeedItem, ...]
+    baseline_seen_digest: str | None
+    baseline_state_digest: str | None
+    updated_seen: dict[str, str]
+    updated_state: dict[str, Any]
+
+
+def _official_checkpoint(
+    root: Path | str, name: str,
+) -> tuple[dict[str, Any], str | None]:
+    """Read the SAME ledger without creating it; corrupt files fail closed."""
+    relative = Path("data") / "marketing" / "breaking"
+    expected = Path(root).resolve() / relative
+    if (Path(root) / relative).resolve() != expected:
+        raise ValueError("source ledger directory escape not admitted")
+    path = Path(root) / relative / name
+    if path.is_symlink():
+        raise ValueError("source state symlink not admitted")
+    try:
+        raw = path.read_bytes()
+    except FileNotFoundError:
+        return {}, None
+    try:
+        parsed = json.loads(raw.decode("utf-8"))
+    except (ValueError, UnicodeError) as exc:
+        raise ValueError("unreadable official source state") from exc
+    if not isinstance(parsed, dict) or any(not isinstance(k, str) for k in parsed):
+        raise ValueError("invalid official source state")
+    return parsed, hashlib.sha256(raw).hexdigest()
+
+
+def preview_official_sources(
+    root: Path | str, cfg: dict,
+) -> OfficialFeedPreview:
+    """Observe existing BLS/BEA RSS without consuming state or seen cursors.
+
+    Requires explicit first-party HTTPS source identity and official tier.
+    This DOES NOT certify any individual release's copyright, correction,
+    earliest-observable timestamp or permission to appear in a public product.
+    The normal poll_all path is not modified. This is a one-shot native
+    measurement seam until a rights-qualified News owner integrates its
+    exact durable acceptance boundary.
+    """
+    before_seen, seen_digest = _official_checkpoint(root, "seen.json")
+    before_state, state_digest = _official_checkpoint(root, "state.json")
+    if any(not isinstance(v, str) for v in before_seen.values()):
+        raise ValueError("invalid official seen values")
+    if any(not isinstance(v, dict) for v in before_state.values()):
+        raise ValueError("invalid official provider state")
+    proposed_state = deepcopy(before_state)
+    breaking_cfg = cfg if "sources" in cfg else cfg.get("breaking", {})
+    if not isinstance(breaking_cfg, dict):
+        raise ValueError("invalid official feed config")
+    items: list[FeedItem] = []
+    for source in breaking_cfg.get("sources", []):
+        if not isinstance(source, dict):
+            continue
+        key = str(source.get("key") or "")
+        expected_host = _OFFICIAL_PREVIEW_HOSTS.get(key)
+        if expected_host is None:
+            continue
+        url = str(source.get("url") or "")
+        parts = urlsplit(url)
+        host = (parts.hostname or "").lower()
+        if (parts.scheme != "https"
+                or (host != expected_host and not host.endswith("." + expected_host))
+                or source.get("kind", "rss") != "rss"
+                or source.get("tier") != "official"):
+            raise ValueError("unqualified official feed source")
+        merged = {
+            "poll_interval_s": int(breaking_cfg.get("poll_interval_s", _DEFAULT_INTERVAL)),
+            "user_agent": breaking_cfg.get("user_agent", _DEFAULT_UA),
+            **source,
+        }
+        fetched = poll_source(merged, root=root, session_state=proposed_state)
+        for item in fetched:
+            if (not isinstance(item, dict) or not str(item.get("id") or "")
+                    or item.get("source") != key
+                    or item.get("source_tier") != "official"):
+                raise ValueError("unqualified official feed item")
+            items.append(item)
+    new_items, updated_seen = filter_new_items(
+        items, root, seen_snapshot=before_seen,
+    )
+    return OfficialFeedPreview(
+        root_key=str(Path(root).resolve()),
+        items=tuple(new_items),
+        baseline_seen_digest=seen_digest,
+        baseline_state_digest=state_digest,
+        updated_seen=updated_seen,
+        updated_state=proposed_state,
+    )
+
+
+def ack_official_preview(
+    root: Path | str,
+    preview: OfficialFeedPreview,
+    *,
+    accepted_ids: set[str],
+) -> bool:
+    """Commit the EXISTING seen then ETag state only after downstream acceptance.
+
+    Fail closed on a changed on-disk ledger, wrong root or incomplete accepted
+    set. Caller-owned accepted_ids is not itself proof of a downstream write;
+    verify the incumbent store/snapshot first. A failure after _save_seen may
+    leave SEEN_APPLIED/STATE_PENDING: reread the original owners to reconcile,
+    never blindly retry or activate a new queue.
+    """
+    if (not isinstance(preview, OfficialFeedPreview)
+            or preview.root_key != str(Path(root).resolve())
+            or not isinstance(accepted_ids, set)):
+        return False
+    offered = {str(row["id"]) for row in preview.items}
+    if not offered or not offered.issubset(accepted_ids):
+        return False
+    if not offered.issubset(preview.updated_seen):
+        return False
+    if (_official_checkpoint(root, "seen.json")[1]
+            != preview.baseline_seen_digest
+            or _official_checkpoint(root, "state.json")[1]
+            != preview.baseline_state_digest):
+        return False
+
+    # State/ETag MUST NOT commit ahead of the seen ledger. If the process fails
+    # after the first atomic write, a repeat GET may over-fetch but cannot
+    # silently 304 away a new accepted event. Same incumbent source files.
+    _save_seen(root, preview.updated_seen)
+    _save_state(root, preview.updated_state)
+    return True
 
 
 # ─────────────────────────────────────────────────────────────────────────────

@@ -52,7 +52,7 @@ def _load_fixture(name: str) -> str:
 BLS_SOURCE_CFG = {
     "key": "bls_news",
     "kind": "rss",
-    "url": "https://www.bls.gov/feed/news_release.rss",
+    "url": "https://www.bls.gov/feed/bls_latest.rss",
     "source_name": "Bureau of Labor Statistics",
     "tier": "official",
 }
@@ -1336,3 +1336,249 @@ class TestRateDecisionVocabulary:
         from engine.marketing.breaking_relevance import _MACRO_PRINT_KEYWORDS
         for banned in ("interest rate", "interest rates", "powell", "rate", "rates"):
             assert banned not in _MACRO_PRINT_KEYWORDS, banned
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WEB-P1 G1 official government RSS: preview first, seen/ETag only after acceptance
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _official_preview_fixture(monkeypatch):
+    from engine.marketing import breaking_feed as feed
+
+    item = parse_feed(_load_fixture("rss_mixed.xml"), BLS_SOURCE_CFG)[0]
+    src = dict(BLS_SOURCE_CFG)
+    calls = []
+    def fake_poll(source_cfg, *, root, session_state):
+        calls.append(source_cfg["key"])
+        session_state[source_cfg["key"]] = {
+            "etag": "qualified-etag-01", "last_poll_ts": 1730000000.0
+        }
+        return [dict(item)]
+    monkeypatch.setattr(feed, "poll_source", fake_poll)
+    return feed, item, src, calls
+
+
+def test_official_preview_keeps_existing_seen_and_etag_untouched(tmp_path, monkeypatch):
+    feed, item, src, calls = _official_preview_fixture(monkeypatch)
+    initial = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert [row["id"] for row in initial.items] == [item["id"]]
+    assert calls == ["bls_news"]
+    root = tmp_path / "data" / "marketing" / "breaking"
+    assert not (root / "seen.json").exists()
+    assert not (root / "state.json").exists()
+    again = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert [row["id"] for row in again.items] == [item["id"]]
+    assert not (root / "seen.json").exists()
+
+
+def test_official_preview_ack_requires_all_accepted_source_ids(tmp_path, monkeypatch):
+    feed, item, src, _ = _official_preview_fixture(monkeypatch)
+    token = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert feed.ack_official_preview(tmp_path, token, accepted_ids=set()) is False
+    ledger = tmp_path / "data" / "marketing" / "breaking"
+    assert not (ledger / "seen.json").exists()
+    assert feed.ack_official_preview(
+        tmp_path, token, accepted_ids={item["id"]}
+    ) is True
+    assert item["id"] in json.loads((ledger / "seen.json").read_text())
+    assert json.loads((ledger / "state.json").read_text())[
+        "bls_news"
+    ]["etag"] == "qualified-etag-01"
+    assert feed.preview_official_sources(
+        tmp_path, {"sources": [src]}
+    ).items == ()
+
+
+def test_official_preview_ack_rejects_concurrent_ledger_change(tmp_path, monkeypatch):
+    feed, item, src, _ = _official_preview_fixture(monkeypatch)
+    token = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    feed._save_seen(tmp_path, {"foreign": "2026-10-09T12:00:00Z"})
+    assert feed.ack_official_preview(
+        tmp_path, token, accepted_ids={item["id"]}
+    ) is False
+    seen = feed._load_seen(tmp_path)
+    assert "foreign" in seen and item["id"] not in seen
+
+
+def test_official_preview_skips_unqualified_other_publishers(tmp_path, monkeypatch):
+    feed, item, src, calls = _official_preview_fixture(monkeypatch)
+    src["key"] = "cnbc_top"
+    src["url"] = "https://www.cnbc.com/rss/"
+    preview = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert preview.items == ()
+    assert calls == []
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+
+
+def test_official_preview_fails_closed_on_corrupted_seen_ledger(
+        tmp_path, monkeypatch):
+    feed, _, src, calls = _official_preview_fixture(monkeypatch)
+    path = tmp_path / "data" / "marketing" / "breaking" / "seen.json"
+    path.parent.mkdir(parents=True)
+    path.write_text("{broken-json", encoding="utf-8")
+    with pytest.raises(ValueError):
+        feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert calls == []
+    assert path.read_text() == "{broken-json"
+
+
+def test_official_preview_flows_through_existing_press_lane_and_desk_before_ack(
+        tmp_path, monkeypatch):
+    """No new event, quote, publisher or store owner is introduced."""
+    from datetime import timedelta
+    from engine.marketing import press_lane, intelligence_desk
+    feed, item, src, _ = _official_preview_fixture(monkeypatch)
+    token = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    now = datetime.fromisoformat(item["published_at"].replace("Z", "+00:00"))
+    now = now + timedelta(minutes=5)
+    result = press_lane.run_press_tick(
+        list(token.items), root=tmp_path, now=now,
+        cfg={"breaking": {"llm": {"enabled": False}}},
+        press_cfg={"wire": {"intelligence": {
+            "salience_floor": 0.0, "max_packets_per_tick": 10,
+        }}},
+        state={}, seen_ids=set(), dry_run=True, prime=False, spool=False,
+        llm_override=lambda *_: None,
+    )
+    packets = result["intelligence"]
+    assert item["id"] in {
+        e["event_id"] for p in packets for e in p["evidence"]
+    }
+    db = tmp_path / "private" / "intelligence.db"
+    sink = tmp_path / "private" / "intelligence.json"
+    served = intelligence_desk.update_intelligence_desk(
+        packets, root=tmp_path, now=now, db_path=db, snapshot_path=sink
+    )
+    assert item["id"] in {
+        e["event_id"] for p in served["stories"] for e in p["evidence"]
+    }
+    assert feed.ack_official_preview(
+        tmp_path, token, accepted_ids={item["id"]}
+    )
+    assert feed.preview_official_sources(
+        tmp_path, {"sources": [src]}
+    ).items == ()
+    assert db.exists() and sink.exists()
+    assert not list(tmp_path.rglob("items.jsonl"))
+
+
+def test_official_desk_projection_failure_does_not_consume_source(
+        tmp_path, monkeypatch):
+    from engine.marketing import intelligence_desk
+    feed, item, src, _ = _official_preview_fixture(monkeypatch)
+    token = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    now = datetime.fromisoformat(item["published_at"].replace("Z", "+00:00"))
+    packet = intelligence_desk.build_story_packet(
+        item, story={"story_id": "existing-spine-fixture"},
+        now=now, draft_text="Official release."
+    )
+    def failed_projection(*args, **kwargs):
+        raise OSError("controlled JSON publication failure")
+    with monkeypatch.context() as ctx:
+        ctx.setattr(intelligence_desk, "_atomic_json", failed_projection)
+        with pytest.raises(OSError):
+            intelligence_desk.update_intelligence_desk(
+                [packet], root=tmp_path, now=now,
+                db_path=tmp_path / "private" / "intelligence.db",
+                snapshot_path=tmp_path / "private" / "intelligence.json",
+            )
+    assert feed.preview_official_sources(
+        tmp_path, {"sources": [src]}
+    ).items
+    ledgers = tmp_path / "data" / "marketing" / "breaking"
+    assert not (ledgers / "seen.json").exists()
+    assert not (ledgers / "state.json").exists()
+
+
+def test_official_state_save_failure_after_accepted_seen_is_not_false_success(
+        tmp_path, monkeypatch):
+    feed, item, src, _ = _official_preview_fixture(monkeypatch)
+    token = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    def deny_state(*args, **kwargs):
+        raise OSError("controlled post-seen state save failure")
+    with monkeypatch.context() as ctx:
+        ctx.setattr(feed, "_save_state", deny_state)
+        with pytest.raises(OSError):
+            feed.ack_official_preview(
+                tmp_path, token, accepted_ids={item["id"]}
+            )
+    ledgers = tmp_path / "data" / "marketing" / "breaking"
+    assert item["id"] in feed._load_seen(tmp_path)
+    assert not (ledgers / "state.json").exists()
+    assert feed.preview_official_sources(
+        tmp_path, {"sources": [src]}
+    ).items == ()
+
+
+def test_official_preview_refuses_spoofed_feed_host_before_poll(
+        tmp_path, monkeypatch):
+    feed, _, src, calls = _official_preview_fixture(monkeypatch)
+    src["url"] = "https://evil.example/rss"
+    with pytest.raises(ValueError):
+        feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert calls == []
+
+
+def test_official_preview_refuses_symlink_without_following_its_bytes(
+        tmp_path, monkeypatch):
+    feed, _, src, calls = _official_preview_fixture(monkeypatch)
+    ledger = tmp_path / "data" / "marketing" / "breaking"
+    ledger.mkdir(parents=True)
+    external = tmp_path / "outside.json"
+    external.write_text('{"private":"fixture-only"}')
+    link = ledger / "seen.json"
+    link.symlink_to(external)
+    real_read = Path.read_bytes
+    follow = []
+    def read_guard(path):
+        if path == link:
+            follow.append(str(path))
+            raise AssertionError("preview followed symlink before refusal")
+        return real_read(path)
+    monkeypatch.setattr(Path, "read_bytes", read_guard)
+    with pytest.raises(ValueError):
+        feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert follow == []
+    assert calls == []
+
+
+def test_official_ack_rejects_updated_etag_state_without_seen_consumption(
+        tmp_path, monkeypatch):
+    feed, item, src, _ = _official_preview_fixture(monkeypatch)
+    token = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    feed._save_state(tmp_path, {"bls_news": {"etag": "other-owner-etag"}})
+    assert feed.ack_official_preview(
+        tmp_path, token, accepted_ids={item["id"]}
+    ) is False
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+    assert feed._load_state(tmp_path)["bls_news"]["etag"] == "other-owner-etag"
+
+
+def test_official_preview_refuses_symlinked_ledger_directory(
+        tmp_path, monkeypatch):
+    feed, _, src, calls = _official_preview_fixture(monkeypatch)
+    parent = tmp_path / "data" / "marketing"
+    parent.mkdir(parents=True)
+    external_dir = tmp_path / "outside-dir"
+    external_dir.mkdir()
+    (parent / "breaking").symlink_to(external_dir, target_is_directory=True)
+    with pytest.raises(ValueError):
+        feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert calls == []
+    assert list(external_dir.iterdir()) == []
+
+
+def test_official_ack_refuses_directory_symlink_swap_after_preview(
+        tmp_path, monkeypatch):
+    feed, item, src, _ = _official_preview_fixture(monkeypatch)
+    token = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    parent = tmp_path / "data" / "marketing"
+    parent.mkdir(parents=True)
+    external_dir = tmp_path / "outside-dir"
+    external_dir.mkdir()
+    (parent / "breaking").symlink_to(external_dir, target_is_directory=True)
+    with pytest.raises(ValueError):
+        feed.ack_official_preview(
+            tmp_path, token, accepted_ids={item["id"]}
+        )
+    assert list(external_dir.iterdir()) == []
