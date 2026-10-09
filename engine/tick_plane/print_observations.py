@@ -20,6 +20,16 @@ from engine.tick_plane.stream_events import SCHEMA as STREAM_SCHEMA
 SCHEMA = "equity.tick_plane.provisional_print_observation/v0"
 
 
+def _shares(trade):
+    try:
+        shares = Decimal(str(trade["decimal_size_shares"]))
+    except (KeyError, InvalidOperation, TypeError, ValueError):
+        return None
+    if not shares.is_finite() or shares <= 0:
+        return None
+    return format(shares, "f")
+
+
 def _money(trade):
     try:
         price = Decimal(str(trade["price"]))
@@ -82,6 +92,11 @@ def observe_provisional_trade(
             ),
             "correction_status": trade.get("correction_status") if isinstance(trade, dict) else None,
             "gross_observed_notional_usd": _money(trade) if isinstance(trade, dict) else None,
+            "gross_source_shares": _shares(trade) if isinstance(trade, dict) else None,
+            "trade_volume_eligible": (
+                trade_condition_verdict.get("volume_eligible")
+                if isinstance(trade_condition_verdict, dict) else None
+            ),
             "side_proxy": bucket,
             "signed_notional_usd": (
                 _money(trade) if bucket == "buy" else
@@ -123,6 +138,8 @@ def observe_provisional_trade(
     trade_condition_rules_ref = trade_condition_verdict["conditions_rules_ref"]
     if type(trade_condition_eligible) is not bool:
         return output("UNKNOWN", "TRADE_CONDITION_POLICY_UNQUALIFIED")
+    if trade_condition_eligible and trade_condition_verdict.get("volume_eligible") is not True:
+        return output("UNKNOWN", "TRADE_VOLUME_POLICY_INCONSISTENT")
     if not trade_condition_eligible:
         return output("INELIGIBLE", "TRADE_CONDITION_EXCLUDED")
     v = venue_reference_verdict
