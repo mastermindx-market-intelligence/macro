@@ -347,6 +347,30 @@ def cohort_row_from_source_minutes(
             counters[output_name]+=_int(minute.get(source_name),source_name)
         lit_source_unqualified+=_int(minute.get("n_lit_source_unqualified_prints"),
                                       "n_lit_source_unqualified_prints")
+        n_lit=_int(minute.get("n_lit"),"n_lit")
+        n_trf=_int(minute.get("n_trf"),"n_trf")
+        n_other=_int(minute.get("n_unknown_venue"),"n_unknown_venue")
+        n_sampled=_int(minute.get("n_sampled_prints"),"n_sampled_prints")
+        lit_policy_unknown=_int(minute.get("n_lit_source_unqualified_prints"),
+                                "n_lit_source_unqualified_prints")
+        lit_eligible=_int(minute.get("n_lit_eligible_prints"),"n_lit_eligible_prints")
+        if (n_lit+n_trf+n_other!=n_sampled
+                or lit_eligible+lit_policy_unknown>n_lit
+                or _int(minute.get("n_lit_unclassified_prints"),
+                        "n_lit_unclassified_prints")>
+                   _int(minute.get("n_unclassified"),"n_unclassified")):
+            raise PilotEvidenceRefusal("source minute venue/eligible count denominators inconsistent")
+        classified=_int(minute.get("n_buy_proxy"),"n_buy_proxy")+(
+            _int(minute.get("n_sell_proxy"),"n_sell_proxy")
+            +_int(minute.get("n_midpoint"),"n_midpoint"))
+        age_classified=(
+            _int(minute.get("n_lit_classified_quote_le5s_prints"),
+                 "n_lit_classified_quote_le5s_prints")
+            +_int(minute.get("n_lit_classified_quote_gt5s_prints"),
+                  "n_lit_classified_quote_gt5s_prints")
+        )
+        if classified!=age_classified:
+            raise PilotEvidenceRefusal("source minute signed-print age bands inconsistent")
         r=minute.get("lit_unknown_reason_counts")
         if not isinstance(r,dict) or len(r)>100:
             raise PilotEvidenceRefusal("source minute unknown lit reasons not tracked")
