@@ -293,7 +293,11 @@ def _validate_revision(rev: PublicRevision) -> None:
         raise FunnelGate("INVALID_REVISION", 400)
     if rev.correction != "none" and not rev.correction_note.strip():
         raise FunnelGate("CORRECTION_NOTE_REQUIRED", 400)
-    if (not _TICKER.fullmatch(rev.ticker) or not rev.headline.strip() or not rev.what_changed.strip()
+    # A public retraction must be able to state that the original claim was
+    # withdrawn WITHOUT inventing a replacement fact. Its authoritative
+    # correction_note is the entire message; the old claim is not reissued.
+    if (not _TICKER.fullmatch(rev.ticker) or not rev.headline.strip()
+            or (rev.correction != "retracted" and not rev.what_changed.strip())
             or any("\r" in x or "\n" in x for x in (rev.headline, rev.what_changed, rev.correction_note))):
         raise FunnelGate("INVALID_REVISION", 400)
     if len(rev.headline) > 180 or len(rev.what_changed) > 1200 or len(rev.correction_note) > 500:
@@ -444,8 +448,27 @@ class FunnelService:
             raise
         except Exception as exc:
             raise FunnelGate("CONSENT_WRITE_UNCONFIRMED") from exc
-        if (confirmed.user_id != uid or confirmed.event_id != record.event_id or
+        # A positive receipt must describe the EXACT event/recipient/interest
+        # the visitor explicitly consented to, not an unrelated old subscription.
+        # On an idempotent replay the owner may preserve the FIRST attribution
+        # and original intent, but must not silently swap ticker coverage.
+        if (type(confirmation.created) is not bool or confirmed.user_id != uid or
+                confirmed.email != addr or confirmed.event_id != record.event_id or
                 confirmed.scope != SCOPE or confirmed.revoked_at_utc):
+            raise FunnelGate("CONSENT_WRITE_UNCONFIRMED")
+        if (len(confirmed.tickers) != len(record.tickers) or
+                any(t not in record.tickers for t in confirmed.tickers)):
+            raise FunnelGate("CONSENT_INTEREST_MISMATCH", 409)
+        try:
+            stored_at = _timestamp(confirmed.verified_at_utc)
+        except FunnelGate:
+            raise FunnelGate("CONSENT_WRITE_UNCONFIRMED") from None
+        if stored_at > now + timedelta(seconds=30):
+            raise FunnelGate("CONSENT_WRITE_UNCONFIRMED")
+        if confirmation.created and (
+                confirmed.intent_id != record.intent_id or
+                confirmed.first_touch != record.first_touch or
+                abs((stored_at - now).total_seconds()) > 30):
             raise FunnelGate("CONSENT_WRITE_UNCONFIRMED")
         return {"status": "verified" if confirmation.created else "already_verified",
                 "event_id": confirmed.event_id, "scope": SCOPE,
