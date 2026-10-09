@@ -168,7 +168,8 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
     from engine.marketing import catalyst_scan
     from engine.marketing.catalyst_packets import PublicSourceGrant, build_event_packet
     from engine.marketing.catalyst_lifecycle import (
-        Confirmation, FunnelService, PublicRevision, SCOPE, VerifiedIdentity,
+        Confirmation, FunnelService, PublicRevision, PublicRightsSnapshot,
+        SourceDisplayRights, SCOPE, VerifiedIdentity, FunnelGate,
     )
 
     now = datetime.now(timezone.utc)
@@ -252,8 +253,34 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
             return False
 
     class RevisionOwner:
+        rights_reads = 0
         def is_current(self, event_id, generation):
             return event_id == expected_event["id"] and generation == expected_event["generation"]
+
+        def read_public_rights(self, revision, at_utc):
+            # Synthetic incumbent source-rights port, *not* a real license.
+            # It attests every exact URL and explicitly permits email reuse.
+            self.rights_reads += 1
+            if not allow["yes"]:
+                return None
+            return PublicRightsSnapshot(
+                event_id=revision.event_id,
+                generation=revision.generation,
+                ticker=revision.ticker,
+                checked_at_utc=at_utc.isoformat(),
+                grants=tuple(
+                    SourceDisplayRights(
+                        source_url=url,
+                        receipt_id="synthetic-public-email-grant",
+                        audience="public_anonymous",
+                        effective_at_utc=(at_utc - timedelta(days=1)).isoformat(),
+                        expires_at_utc=(at_utc + timedelta(days=1)).isoformat(),
+                        display_link=True, display_facts=True,
+                        email_distribution=True,
+                    )
+                    for url in revision.source_urls
+                ),
+            )
 
     class TestSender:
         def __init__(self):
@@ -265,13 +292,13 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
             return "sent"  # synthetic SMTP-owner adapter, NEVER a real send
 
     expected_event = {"id": None, "generation": 1}
-    pending, otp, sender = PendingOwner(), OtpOwner(), TestSender()
+    pending, otp, sender, revisions = PendingOwner(), OtpOwner(), TestSender(), RevisionOwner()
     from app.catalyst_scan_authority import ScanReceiptAuthority
     service = FunnelService(secret="intent_only_test_key_" * 3,
                             scan=ScanReceiptAuthority(),
                             identity=otp, consent=pending,
                             suppression=SuppressionOwner(),
-                            revisions=RevisionOwner(), sender=sender)
+                            revisions=revisions, sender=sender)
     catalyst_optin.configure(service)
     guard_allowed = {"yes": True}
     guard_calls = []
@@ -387,6 +414,7 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
             correction="corrected", correction_note="Synthetic filing correction.",
         )
         sent = service.deliver(revision, now=now + timedelta(minutes=4))
+        assert revisions.rights_reads == 2  # before roster and before sender
         assert sent[0]["state"] == "PROVIDER_ACCEPTED"
         assert sent[0]["utm_source"] == "synthetic_fixture"
         assert "email" not in sent[0] and "9507e687" not in str(sent)
@@ -403,6 +431,14 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
         )
         after_revoke = service.deliver(revision, now=now + timedelta(minutes=5))
         assert after_revoke[0]["state"] == "SUPPRESSED"
+        assert len(sender.calls) == 1
+
+        # A rights revocation at the source owner is an independent stop,
+        # even with positive prior consent and a frozen rights boolean.
+        allow["yes"] = False
+        with pytest.raises(FunnelGate) as withdrawn:
+            service.deliver(revision, now=now + timedelta(minutes=5))
+        assert withdrawn.value.code == "SOURCE_RIGHTS_NOT_CURRENT"
         assert len(sender.calls) == 1
 
         # A revoked source grant at verification time must not request a second OTP.
