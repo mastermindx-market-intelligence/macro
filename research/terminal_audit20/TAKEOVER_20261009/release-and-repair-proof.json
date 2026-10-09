@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T20:58:10.586485+00:00",
+  "observed_at": "2026-10-09T21:13:34.490356+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261009T2100",
+  "current_capability_frontier_key": "current_capability_frontier_20261009T2110",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -4155,5 +4155,47 @@
     "IW2_current": "Priorcompactcursor38 existingpeerrecoversSAME804coordinator after2actuallayoutclearfailures/compactionstall; no duplicatewriter/parentcomposer/sourceacceptance/migrations. SQL0030/31/32unapplied/Draftrelease+rights holds.",
     "holds": "All prior explicitrefusals/security/paididentity/sourceadmission/effectunknowns preserved. All20originalchildrenconsumed no wholemission accepted.",
     "next_safe_phase": "Consume single781independentreview; fix concretedefects ifreturned; acceptedcandidatecommit/push SAMEPR781 thenautomaticexactheadCI/existingnativeauto-MOG/mergedsource/currentmaster/canonicalrelease/livequalification. Continue existing887/IW2 actualterminalreturns whenready. Checkpointnotstop."
+  },
+  "current_capability_frontier_20261009T2110": {
+    "observed_at": "2026-10-09T21:13:34.488150+00:00",
+    "supersedes": "current_capability_frontier_20261009T2100",
+    "settled_references_retained_in": "current_capability_frontier_20261009T2100",
+    "whole_original_mission_accepted": false,
+    "A17_781_local_candidate": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a17-781-current-master-local-merge-checkpoint-20261009.json",
+      "sha256": "5f890390494a927bb77e2da7d2b2566dedeb20217584ea81dea108407637a85b"
+    },
+    "A17_current": "Localcleanmerge711746d3ca60b4593a438495ef6a2a232845aaf6 exactreviewpacket candidate tree408582c1, parents e5/master4d, source unchanged15code/currentReplay. NOTPUBLISHED pending same-IDindependentreview; currentstatusACTIVE_OR_WAITING/no result. SourceSTART/sourcecapture/native4PASS proofs retained; no human/sourceapprovalgate invented for781.",
+    "A19_new_checkpoint_seam": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-financial-admission-checkpoint-seam-admission-20261009.json",
+      "sha256": "2bfeb1803d5ddfded917d912696ac9b3f7ca03ee7ce19b77c0ac8f8e52d1e5b4"
+    },
+    "A19_current": "NewboundedC3 seam judgment after acceptedfinancialadapter, originalroot/parent normalGrokubuntu3/reservedlease/oneSSHlaunch21:03rc0/session55610. ActualproviderSTART/resultNOTqualified; notaccepted. Exactactual5sourceobjects verified. ExistingcanonicalGitcheckpointadmission/finance seam plus winnerloser/coldhost/latefollow witnesses; NO producer/job/SMTP/globalsend/newstore/CAS/receiptowner/sourcewriter. Sourceadoption/globalfanoutremainheld. No previousreview/helper/test/canary reruns.",
+    "887_original_terminal_and_refresh": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-887-existing-owner-bounded-terminal-reconciliation-20261009T2105.json",
+      "sha256": "d12f9b6d69586274a7473e2d64232468d8d1709255341dd7978f1f4748d453b7"
+    },
+    "887_newhead_source_CI": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-887-existing-controller-refresh-source-and-initial-CI-20261009T2105.json",
+      "sha256": "03bec5c3438801d7e51168802b826ca1e98e5fe5fcd72a4e9ba290b2e4494073"
+    },
+    "887_current": "Original37983365435 completedSUCCESS20:34:14. Existingcontrollerrefreshed887 to13e684d0869154eb60045ca8ca405c5b4f72ee22 on4d; onlynew94line1ba3spec unchanged, sourcequalified. Automatic botCI37987952590 completedaction_required; currentrequiredQuoteHub/IngestSUCCESS, Terminalaggregateabsent. This is ordinaryworkflowapprovaleligibility gate, not green CI. Nativeauto/MOGarmed unchanged; no POST/dispatch/repeatedpoll/helperallowlistwidening.",
+    "887_scoped_admission_proposal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/887-trusted-ci-admission-proposal-20261009/qualification.json",
+      "sha256": "f274411b71f2a7b6b758d0b9aa826d99e4e8dbb2734d2c5885bb3116d20cce4c"
+    },
+    "887_scoped_admission_patch": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/887-trusted-ci-admission-proposal-20261009/proposal.patch",
+      "sha256": "e8d3430cf6eb74bd659e876c3f992cb2a95b79125fb3bc53f9a8955acfa2b44c"
+    },
+    "887_restriction_and_question": "Originalhelper3d96573 unchanged; actualpurequalify current887 returnsPR_NOT_AUTHORIZED/inputvalidationbeforeNetwork/receipt. One-line DETACHED proposal addsONLY887 toALLOWED, retainsallguards/max2/exclusivereceipts/head-workflowactor-recheck/stickyunknown. Fifteenactualnewguards pass/0fail/0skip andinputchecks unknown888denied; NO helperapply orapprovaleffect. Conciseasyncquestion pending: allowonlyreviewedown887 inexistinghelper orkeephold, because savedcontinuationexplicitlyexcludes887/do-not-widen-for-pending. UserneednotrunGitHubcommand. No permission presumed fromelapsedtime; no othercarrier/principal/bypass.",
+    "IW2_new_START": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/iw2-T03i-r2-canonical-START-parent-consumption-20261009.json",
+      "sha256": "e074a04fa2854dd835a3923e6c9c1ef8565d8ee5ff5015f5ed4e5b9a0c78e95b"
+    },
+    "IW2_current": "Canonical804START6088874196 plusactualoriginalargsSHAfdd29b4c independentlymatched. Samecoordinatorrecovered runwf_2b0b08be-f5c/taskwfz5d124i/writeraf8790750a8ad7114 starts20:38:15/firstaction20:38:27 from36e5, rootIW2/sourceowner03342/SSD/branch preserved. Peercompactcursor39 reportsactiveworker; parentdidnotreadorwriteinflight source. Twoitems explicitlayoutref removal/defaultpreservation andM2duserselectionregression/doc. Repairreviewnotaccepted/T03jqueued/Draft/0030-31-32UNAPPLIED/rightsreleaseholds.",
+    "current_blockers": "Parent publication781 awaitsactualindependentreturn; A19canonicalsourceseam awaitsownC3return; 887explicithelperadmissionquestion;804samewriterrepairreview;paidexistingProidentitystillpending;A09public403/A12unsupportedartifactpath/oldA19modeguard/securityeffectunknowns/existingholds immutable. Everyreadypathdisjointphase was consumed ordispatched; no duplicatedwriter/sweeper/worker/approvaleffect.",
+    "continuation": "Soleverifiednativeheartbeat sameoriginalchatACTIVE/15min, compact exact IDs/receipts. Canonical804executionprovenstarted supportsDURABLE_EXECUTION_RUNNING; newFabricproviderSTART remainsunproven independently. No barehandle futurewake claim orExecutiveRuntimeBinding inference.",
+    "next_safe_phase": "Onoriginal781reviewreturn consume artifacts/hash/sourcejudgment thenpushaccepted711 toSAMEPR781, automaticexactheadCI/nativeauto-MOG/mergedsource/currentmaster/canonicalrelease/livequalification. Onexplicit887admissionanswer applyonlyreviewableone-lineproposal anduseSAMEexistinghelperexactfreshpair/rechecks/exclusivereceipt; denyanswerkeepsheld. ConsumeA19C3sameIDand804r2sameownerreturn, fixorredelegatequalifieddefects. Noall20completion/checkpoint-onlystop."
   }
 }
