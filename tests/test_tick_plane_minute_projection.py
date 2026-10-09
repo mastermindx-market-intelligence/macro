@@ -249,5 +249,75 @@ class ProjectionTests(unittest.TestCase):
         with self.assertRaisesRegex(MinuteProjectionRefusal,"nonnegative integer"):
             run([first])
 
+
+    def test_lit_eligible_5s_coverage_uses_observed_quote_age_not_policy_limit(self):
+        actual=run()
+        self.assertEqual(actual["n_lit_eligible_prints"],1)
+        self.assertEqual(actual["n_lit_classified_quote_le5s_prints"],1)
+        self.assertEqual(actual["n_lit_classified_quote_gt5s_prints"],0)
+        self.assertEqual(actual["n_lit_unclassified_prints"],0)
+        self.assertEqual(actual["lit_unknown_reason_counts"],{})
+
+    def test_exact_5s_quote_age_is_on_eligible_side_of_boundary(self):
+        value=row()
+        value["quote_age_ns"]=5_000_000_000
+        value["quote_age_limit_ns"]=6_000_000_000
+        outcome=run([value])
+        self.assertEqual(outcome["n_lit_classified_quote_le5s_prints"],1)
+        self.assertEqual(outcome["n_lit_classified_quote_gt5s_prints"],0)
+
+    def test_above_5s_classified_quote_does_not_count_for_soak_floor(self):
+        value=row()
+        value["quote_age_ns"]=5_000_000_001
+        value["quote_age_limit_ns"]=6_000_000_000
+        outcome=run([value])
+        self.assertEqual(outcome["n_lit_classified_quote_le5s_prints"],0)
+        self.assertEqual(outcome["n_lit_classified_quote_gt5s_prints"],1)
+
+    def test_abstained_lit_quote_is_in_unknown_denominator(self):
+        value=row(state="UNKNOWN",reason="QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT")
+        outcome=run([value])
+        self.assertEqual(outcome["n_lit_eligible_prints"],1)
+        self.assertEqual(outcome["n_lit_unclassified_prints"],1)
+        self.assertEqual(outcome["n_lit_classified_quote_le5s_prints"],0)
+        self.assertEqual(outcome["lit_unknown_reason_counts"],
+                         {"QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT":1})
+
+    def test_unknown_sale_condition_not_silent_eligible_lit_trade(self):
+        value=row(state="UNKNOWN",reason="TRADE_CONDITION_POLICY_UNQUALIFIED")
+        value["trade_condition_policy_reason"]="UNKNOWN_OR_INVALID_CONDITION_CODE"
+        outcome=run([value])
+        self.assertEqual(outcome["n_lit_eligible_prints"],0)
+        self.assertEqual(outcome["n_lit_source_unqualified_prints"],1)
+
+    def test_measured_print_must_have_source_sale_and_venue_admission(self):
+        for key in ("trade_condition_policy_reason","venue_admission_reason"):
+            with self.subTest(field=key):
+                value=row()
+                value[key]="UNQUALIFIED_SOURCE"
+                with self.assertRaisesRegex(MinuteProjectionRefusal,"sale/venue admission"):
+                    run([value])
+
+    def test_quote_age_exceeding_source_policy_is_a_integrity_failure(self):
+        value=row()
+        value["quote_age_limit_ns"]=20
+        value["quote_age_ns"]=21
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"exceeds its declared limit"):
+            run([value])
+
+    def test_lit_quote_age_requires_native_integer_clock(self):
+        value=row()
+        value["quote_age_ns"]=5_000_000_000.0
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"qualified quote age"):
+            run([value])
+
+    def test_trf_volume_not_folded_into_lit_quote_coverage(self):
+        lit=row("lit")
+        trf=row("off",state="UNKNOWN",reason="TRF_OR_VENUE_CLOCK_UNQUALIFIED",venue="TRF")
+        result=run([lit,trf])
+        self.assertEqual(result["n_trf"],1)
+        self.assertEqual(result["n_lit_eligible_prints"],1)
+        self.assertEqual(result["n_lit_classified_quote_le5s_prints"],1)
+
 if __name__=="__main__":
     unittest.main()
