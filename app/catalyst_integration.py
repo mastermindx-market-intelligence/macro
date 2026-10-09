@@ -340,6 +340,38 @@ async def scan_post(request: Request):
     return JSONResponse(public_scan_with_receipt(body.get("tickers"), body.get("event_id")), headers=_HEADERS)
 
 
+@router.post("/api/catalyst/optin/request")
+async def optin_request(request: Request):
+    """Delegate only to Session 02's secure owner; never grant consent here."""
+    _require_enabled("CATALYST_PUBLIC_ENABLED")
+    _require_enabled("CATALYST_OPTIN_ENABLED")
+    _rate_or_429(request, "scan")
+    body = await _read_json(request, max_bytes=4096)
+    if not isinstance(body, dict):
+        raise HTTPException(400, "Invalid opt-in request")
+    # The *only* supported identity/OTP/consent implementation is Session 02.
+    # No fallback: a missing module, owner RPC, or configured service yields 503.
+    try:
+        from app.catalyst_optin import request_optin
+        from engine.marketing.catalyst_lifecycle import FunnelGate
+    except ImportError:
+        raise HTTPException(503, "Verification service unavailable") from None
+    try:
+        result = request_optin(body)
+    except FunnelGate as exc:
+        raise HTTPException(exc.status, exc.code) from None
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(503, "Verification service unavailable") from None
+    if (not isinstance(result, dict) or result.get("status") != "VERIFICATION_REQUIRED"
+            or not isinstance(result.get("public_ref"), str)
+            or not re.fullmatch(r"[A-Za-z0-9_-]{8,128}", result["public_ref"])):
+        raise HTTPException(503, "Verification service unavailable")
+    return JSONResponse({"status": "VERIFICATION_REQUIRED",
+                         "public_ref": result["public_ref"]}, status_code=202, headers=_HEADERS)
+
+
 @router.get("/api/catalyst/scan")
 def scan_get(request: Request, tickers: str, event_id: str | None = None):
     _require_enabled("CATALYST_PUBLIC_ENABLED")
