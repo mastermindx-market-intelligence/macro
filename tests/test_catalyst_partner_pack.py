@@ -97,6 +97,31 @@ class CatalystPartnerPackTests(unittest.TestCase):
                 analyses.add((path / "newsletter.md").read_text())
             self.assertEqual(len(analyses), 3)
 
+    def test_committed_synthetic_previews_are_exact_generator_snapshots(self):
+        # The checked-in editorial review pack must never drift behind its
+        # canonical renderer/copy/template. Reproduce from the same fixed demo
+        # clock and compare every byte, including SVG, HTML and attribution.
+        with tempfile.TemporaryDirectory() as root:
+            proc = subprocess.run(
+                [sys.executable, str(ROOT / "scripts" /
+                                     "build_catalyst_partner_pack.py"),
+                 "--demo", "--out", root],
+                cwd=ROOT, capture_output=True, text=True, check=False,
+            )
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            captured = Path(root)
+            snapshots = ROOT / "examples" / "catalyst_partner_previews"
+            for slug in (p[0]["slug"] for p in DEMO_PROFILES):
+                expected = snapshots / slug
+                observed = captured / slug
+                self.assertEqual({p.name for p in expected.iterdir()},
+                                 {p.name for p in observed.iterdir()})
+                for path in expected.iterdir():
+                    with self.subTest(slug=slug, filename=path.name):
+                        self.assertEqual(path.read_bytes(),
+                                         (observed / path.name).read_bytes(),
+                                         "stale synthetic snapshot: " + path.name)
+
     def test_deterministic_idempotent_outputs(self):
         a = self.make()
         b = self.make()

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="dark light">
   <title>Illustrative semiconductor earnings event | Mastermind partner preview</title>
   <meta name="description" content="Private, evidence-backed draft for editorial review. Not a published partnership.">
   <!-- Canonical, unmodified :root tokens extracted at build time from theme.css. -->
@@ -175,11 +175,55 @@
   --mc-stance-bad: transparent;
   --mc-stance-neutral: transparent;
   --mc-stance-fill: var(--mc-stance-neutral);
+}
+html[data-theme="light"] {
+  /* Light palette tuned to match the Bitcoin Vector dashboard: airy #F7F8FA
+     canvas, white cards on a soft #EAECF0 grid, and the same vivid #285FFF
+     primary so links / buttons / accents read as one design family. The dark
+     theme (the :root block above) is intentionally left untouched. */
+  --bg: #f7f8fa; --panel: #ffffff; --panel2: #eef1f6; --text: #1c2430;
+  --muted: #5d6b7e;
+  /* Estate contrast pass 2026-08-03: #eaecf0 drew a 1.02–1.18:1 hairline on the
+     light surfaces — a card boundary you have to hunt for (the W3 audit's words
+     for the same defect on the sector page). 16% text lands the container edge
+     at 1.61 vs a white card / 1.48 vs the canvas, matching the W3 light floor
+     (1.6) and the raised dark hairline below, without turning row rules into a
+     grid. */
+  --line: color-mix(in srgb, #1c2430 16%, #eaecf0);
+  --q1: #1f8b41; --q2: #b07d05; --q3: #c12f2f; --q4: #2f63c4;
+  --warn: #b9791a; --act: #c43d3d; --ok: #2f8a52;
+  --fresh-ok: var(--ok);
+  --up: #1f9a55; --down: #cf4040; --orange: #c4781f;
+  --info: #285fff; --link: #285fff;
+  --g-cold: #285fff; --g-hot: #c2841f; --g-mid: #cdd5e0;
+  /* prophet-card verb hues — the same stance ramp, re-authored for a WHITE card.
+     The mix is 54%, NOT the 62% that would mirror --ink-mix-up: at 62% the stance
+     token resolves byte-identically to --ink-up (light --ink-mix-up is also 62%),
+     so the solid BUY chip and the live +N% change on the same card would be one
+     colour again — DA-002 in the other theme. 54% separates them and raises
+     contrast at the same time. (reference board.css:83) */
+  --pv-buy: color-mix(in srgb, var(--up) 54%, var(--text));
+  --pv-near: color-mix(in srgb, var(--pv-buy) 70%, var(--muted));
+  --pv-wait: #b9791a;
+  --pv-hold: #5d6b7e; --pv-avoid: #cf4040;
+  --chart-bg: #11151c;            /* keep dark-rendered Plotly charts legible */
+  --card-shadow: 0 1px 3px rgba(20,30,50,.07);
+  /* soft, light popover shadow — the dark theme's heavy 50%-black drop shadow
+     reads as a murky grey halo on the white light-mode tooltips */
+  --popover-shadow: 0 4px 10px rgba(20,30,50,.06), 0 12px 28px rgba(20,30,50,.14);
+  /* light glass: brighter fill (white reads thin when too transparent) + an airy
+     soft shadow with a crisp white top-edge sheen instead of the dark theme's
+     heavy drop. */
+  --glass-bg: color-mix(in srgb, var(--panel) 90%, transparent);
+  --glass-brd: color-mix(in srgb, #1c2430 9%, transparent);
+  --glass-shadow: 0 20px 54px -24px rgba(20,32,64,.34), 0 10px 24px -14px rgba(20,32,64,.20),
+    inset 0 1px 0 rgba(255,255,255,.85);
 }</style>
   <style>
     /* All palette, type and surface decisions resolve from canonical theme.css.
        No new colour/radius/font tokens are declared by this preview. */
     :root { color-scheme:dark; font-family:var(--font-ui); }
+    html[data-theme="light"] {color-scheme:light;}
     *{box-sizing:border-box}
     body{background:radial-gradient(ellipse at 83% -13%,var(--panel2) 0,transparent 42%),
       radial-gradient(ellipse at -10% 45%,var(--panel) 0,transparent 42%),var(--bg);
