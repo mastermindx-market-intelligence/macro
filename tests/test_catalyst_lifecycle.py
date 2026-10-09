@@ -212,6 +212,41 @@ def test_duplicate_verification_is_idempotent_and_immutable_first_touch():
     assert service.consent.current(UID, "event-123").first_touch == {"partner_id": "partner-A"}
 
 
+def test_consent_owner_cannot_claim_verified_with_wrong_signed_ticker_interests():
+    service, _, store, *_ = make()
+    pending = consented(service)
+    # The consent owner returned a durable write for a *different* interest set:
+    # earlier code reported verified even though AMD would never get its update.
+    store.confirm = lambda rec: Confirmation(replace(rec, tickers=("NVDA",)), True)
+    fails("CONSENT_INTEREST_MISMATCH", lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=pending["public_ref"], now=NOW))
+
+
+def test_duplicate_consent_cannot_silently_narrow_or_expand_existing_interests():
+    service, *_ = make()
+    verified(service)  # event-123 interest set NVDA + AMD
+    service.scan.require_public_scan = lambda _: ScanEvidence(
+        "event-123", ("NVDA",), "2026-10-08T10:00:00+00:00", True)
+    narrowed = consented(service)
+    fails("CONSENT_INTEREST_MISMATCH", lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=narrowed["public_ref"], now=NOW))
+    assert service.consent.current(UID, "event-123").tickers == ("NVDA", "AMD")
+
+
+@pytest.mark.parametrize("mutations", [
+    {"email": "another@example.com"},
+    {"intent_id": "unrelated-intent"},
+    {"first_touch": {"partner_id": "forged-credit"}},
+    {"verified_at_utc": "2026-10-08T03:00:00+00:00"},
+])
+def test_new_consent_receipt_must_attest_same_recipient_intent_and_first_touch(mutations):
+    service, _, store, *_ = make()
+    pending = consented(service)
+    store.confirm = lambda rec: Confirmation(replace(rec, **mutations), True)
+    fails("CONSENT_WRITE_UNCONFIRMED", lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=pending["public_ref"], now=NOW))
+
+
 def test_secure_owner_down_does_not_consume_otp_or_forge_success():
     service, otp, store, *_ = make()
     store.ready = False
@@ -330,6 +365,20 @@ def test_correction_and_retraction_print_latest_and_never_recycle_old_claims():
                        what_changed="New approved units")
     assert "Earlier publication misstated units" in format_revision(corrected, "https://mastermind-x.com/unsubscribe.html")[2]
     fails("CORRECTION_NOTE_REQUIRED", lambda: format_revision(update(correction="corrected"), "https://mastermind-x.com/u"))
+
+
+def test_public_retraction_can_contain_only_confirmed_withdrawal_and_no_replacement():
+    item = update(correction="retracted", correction_note="The cited claim was withdrawn.",
+                  what_changed="")
+    subject, html, plain = format_revision(
+        item, "https://www.mastermind-x.com/unsubscribe.html")
+    assert subject.startswith("Correction:")
+    assert "The cited claim was withdrawn." in plain and "withdrawn." in html
+    assert "Management revised guidance." not in html + plain
+    assert "https://www.sec.gov/" in plain
+    fails("INVALID_REVISION", lambda: format_revision(
+        update(correction="none", what_changed=""),
+        "https://www.mastermind-x.com/unsubscribe.html"))
 
 
 def test_user_input_html_escaped_and_never_enters_headers_as_multiline():
