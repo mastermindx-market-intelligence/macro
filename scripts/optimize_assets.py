@@ -23,6 +23,12 @@ rewrites live in lib.pages.optimize_assets_text / preload_css_text (kept beside
 the shim logic). Stamping must precede the preload pass — a hint whose URL differs
 from the stylesheet's by a query string is a second cache key, not a warm hit.
 
+The same pass also attaches the route-scoped AI-brief freshness controller to
+any rendered page that contains the shared ``.aib2`` body. The brief remains
+server-rendered; this only lets a long-lived browser tab replace yesterday's
+body with a strictly newer canonical rendered body when the user returns to or
+opens the brief.
+
 It also stamps the ``templates/`` side of every plain-copy HTML pair (index.html,
 chat.html — see paired_html_templates). Those site copies are written by NOTHING
 but ``check_template_site_sync --fix``, which the lanes run AFTER this step and
@@ -43,6 +49,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import re
 import sys
 from pathlib import Path
 from typing import Dict, Optional
@@ -53,12 +60,43 @@ from lib.pages import css_imports, optimize_assets_text, preload_css_text, write
 
 log = logging.getLogger("optimize_assets")
 
+_AIBRIEF_REFRESH_ASSET = "assets/js/aibrief-freshness.js"
+_AIBRIEF_REFRESH_SOURCE = "_aibrief_freshness.js.j2"
+_AIBRIEF_CLASS_RE = re.compile(
+    r"class\s*=\s*[\"'][^\"']*(?<![\w-])aib2(?![\w-])[^\"']*[\"']",
+    re.IGNORECASE,
+)
+_BODY_CLOSE_RE = re.compile(r"</body\s*>", re.IGNORECASE)
+
 
 def _hash_bytes(p: Path) -> Optional[str]:
     try:
         return hashlib.sha256(p.read_bytes()).hexdigest()[:8]
     except Exception:  # noqa: BLE001
         return None
+
+
+def _sync_aibrief_freshness_asset(site_dir: Path) -> None:
+    """Materialize the render-owned freshness source into the public site tree.
+
+    The canonical source lives under templates/** so an edit enters the existing
+    render lane. Sync before hashing so every injected immutable ?v= reference
+    names the exact bytes that the same render will publish. Missing source fails
+    open for standalone/fixture site trees that provide their own asset.
+    """
+    source = site_dir.parent / "templates" / _AIBRIEF_REFRESH_SOURCE
+    target = site_dir / _AIBRIEF_REFRESH_ASSET
+    if not source.is_file():
+        return
+    try:
+        payload = source.read_bytes()
+        if target.is_file() and target.read_bytes() == payload:
+            return
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(payload)
+        log.info("synced %s from render-owned source", _AIBRIEF_REFRESH_ASSET)
+    except Exception as e:  # noqa: BLE001
+        log.warning("AI brief freshness asset sync failed (%s)", e)
 
 
 def paired_html_pages(site_dir: Path):
@@ -87,22 +125,55 @@ def paired_html_pages(site_dir: Path):
             yield tpl, site_copy
 
 
+def _attach_aibrief_freshness(text: str, page_dir: Path, site_root: Path) -> str:
+    """Attach one depth-correct freshness client to a rendered AI-brief page.
+
+    The generated HTML remains the single rendering authority. The client only
+    swaps a shared ``.aib2`` body after it has fetched a strictly newer body from
+    the canonical rendered AI Brief page. Missing asset, malformed path, pages
+    without the shared renderer, and pages without ``</body>`` all fail open to
+    the original bytes.
+    """
+    if "aibrief-freshness.js" in text or not _AIBRIEF_CLASS_RE.search(text):
+        return text
+
+    root = Path(site_root).resolve()
+    if not (root / _AIBRIEF_REFRESH_ASSET).is_file():
+        return text
+
+    try:
+        depth = len(Path(page_dir).resolve().relative_to(root).parts)
+    except (OSError, ValueError):
+        return text
+
+    closes = list(_BODY_CLOSE_RE.finditer(text))
+    if not closes:
+        return text
+    close = closes[-1]
+
+    src = "../" * depth + _AIBRIEF_REFRESH_ASSET
+    tag = f'<script src="{src}"></script>\n'
+    return text[:close.start()] + tag + text[close.start():]
+
+
 def make_optimizer(site_root: Path):
-    """The two rewrite passes (?v= stamping, then CSS preload hints) closed over
-    one shared hash/@import cache: returns ``optimized(text, page_dir) -> str``,
-    refs resolved from ``page_dir`` and never reaching outside ``site_root``.
+    """The rewrite passes closed over one shared hash/@import cache.
+
+    Returns ``optimized(text, page_dir) -> str``. References are resolved from
+    ``page_dir`` and never reach outside ``site_root``.
 
     Factored out of ``optimize()`` so a builder whose lane runs NO site-wide
     sweep can emit already-stamped pages: the hourly whitehouse sentinel commits
     site/whitehouse.html straight to main, and an unstamped render there
     regressed the page to bare refs on every alert update
-    (scripts.build_whitehouse._render_page is the consumer)."""
+    (scripts.build_whitehouse._render_page is the consumer).
+    """
     root = Path(site_root).resolve()
     cache: Dict[Path, Optional[str]] = {}  # resolved asset path -> hash (once per process)
     imports: Dict[Path, list] = {}         # resolved css path -> its @import urls
 
     def optimized(text: str, page_dir: Path) -> str:
-        """`text` with assets stamped + preloaded, resolving refs from page_dir."""
+        """Attach page clients, then stamp/preload assets from ``page_dir``."""
         def _resolve(url: str) -> Optional[Path]:
             rel = url.split("?", 1)[0].split("#", 1)[0]
             try:
@@ -132,6 +203,9 @@ def make_optimizer(site_root: Path):
                     imports[target] = []
             return imports[target]
 
+        # Attach before stamping so the injected controller receives the same
+        # content-hash + defer treatment as every other local script.
+        text = _attach_aibrief_freshness(text, page_dir, root)
         # ?v= stamping FIRST: preload hints must carry the same final URL as the
         # stylesheet they warm, or the two are separate cache keys and double-fetch.
         return preload_css_text(optimize_assets_text(text, hash_for), imports_for)
@@ -147,6 +221,7 @@ def optimize(site_dir: Path) -> int:
     if not site_dir.is_dir():
         return 0
     root = site_dir.resolve()
+    _sync_aibrief_freshness_asset(site_dir)
     optimized = make_optimizer(root)
 
     n = 0
