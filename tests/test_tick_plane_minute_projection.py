@@ -442,7 +442,7 @@ class NativeVolumePilotIntegrationTests(unittest.TestCase):
         pilot=native_pilot_row(minute=minute)
         self.assertEqual(pilot["state"],"SOURCE_UNQUALIFIED")
         self.assertIn("UNKNOWN_SOURCE_VOLUME_CONDITION",pilot["carveout_reason"])
-        self.assertEqual(pilot["source_volume_shares"],"0")
+        self.assertEqual(Decimal(pilot["source_volume_shares"]),Decimal(0))
 
     def test_session_scope_mismatch_reaches_report_as_uncomparable(self):
         selected=native_pilot_row(reference_scope="FULL_DAY")
@@ -504,7 +504,7 @@ class NativeVolumePilotIntegrationTests(unittest.TestCase):
     def test_forged_source_minute_classification_counters_rejected(self):
         candidate=run()
         candidate["n_lit_classified_quote_le5s_prints"]+=1
-        with self.assertRaisesRegex(PilotEvidenceRefusal,"counters inconsistent"):
+        with self.assertRaisesRegex(PilotEvidenceRefusal,"signed-print age bands inconsistent"):
             native_pilot_row(minute=candidate)
 
     def test_grouped_reference_missing_preserves_partial_evidence(self):
