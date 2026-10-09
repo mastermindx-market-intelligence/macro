@@ -206,6 +206,12 @@ def _public_packet(packet: dict, now: datetime) -> tuple[dict, dict[str, dict], 
         _require(_stamp(publication, "PUBLICATION_TIME") <= as_of,
                  "FUTURE_PUBLICATION")
     sources = _sources(packet, as_of)
+    headline_receipts = packet.get("headline_evidence_ids")
+    _require(isinstance(headline_receipts, list) and bool(headline_receipts)
+             and len(headline_receipts) == len(set(headline_receipts))
+             and all(isinstance(ref, str) and ref in sources
+                     for ref in headline_receipts),
+             "HEADLINE_EVIDENCE_MISSING")
     ticker_rows = packet.get("affected_tickers")
     _require(isinstance(ticker_rows, list), "MISSING_TICKER_RELATIONS")
     relations: dict[str, dict] = {}
@@ -219,6 +225,7 @@ def _public_packet(packet: dict, now: datetime) -> tuple[dict, dict[str, dict], 
         "event_id": event_id, "event_kind": kind,
         "primary_subject": _atom(packet.get("primary_subject"),
                                  "INVALID_SUBJECT", 140),
+        "headline_evidence_ids": list(headline_receipts),
         "event_time_utc": _iso(event_time),
         "first_observed_at_utc": _iso(first_seen),
         "as_of_utc": _iso(as_of), "expires_at_utc": _iso(expires),
@@ -383,6 +390,8 @@ def build_partner_pack(
         f'# {event["primary_subject"]}: sourced event brief',
         "",
         partner["disclosure"], "",
+        "Headline source evidence: " + ", ".join(event["headline_evidence_ids"]) + ".",
+        "",
         f'For readers following {partner["audience"]}, this note tracks '
         + ", ".join(ticks) + " against the same event evidence.",
         "",
