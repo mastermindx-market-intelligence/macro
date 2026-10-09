@@ -16,7 +16,7 @@ from threading import Lock
 from datetime import datetime, timedelta, timezone
 from importlib import import_module
 from typing import Any, Callable
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, urlsplit
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -159,8 +159,15 @@ def _public_url(raw: Any) -> str:
     u = urlsplit(raw)
     if (u.scheme != "https" or not u.hostname or u.username or u.password
             or u.port not in (None, 443) or u.hostname.lower() in {"localhost", "127.0.0.1", "::1"}
-            or u.hostname.endswith(".internal") or u.hostname.endswith(".local")):
+            or u.hostname.endswith(".internal") or u.hostname.endswith(".local")
+            or any(ord(c) < 32 for c in raw)):
         raise ValueError("non-public source URL")
+    # A public "source" link must never contain authentication or subscriber PII.
+    forbidden_keys = {"email", "e_mail", "phone", "ip", "token", "access_token",
+                      "auth", "authorization", "api_key", "apikey", "secret",
+                      "session", "user_id"}
+    if any(key.lower() in forbidden_keys for key, _ in parse_qsl(u.query, keep_blank_values=True)):
+        raise ValueError("private source query")
     try:
         ipaddress.ip_address(u.hostname)
     except ValueError:
@@ -242,6 +249,7 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
         if not isinstance(src_raw, list) or not 1 <= len(src_raw) <= 12:
             raise ValueError("no public sources")
         sources = []
+        seen_source_ids: set[str] = set()
         for s in src_raw:
             if not isinstance(s, dict) or s.get("display_rights") != "ALLOWED":
                 raise ValueError("source rights missing")
@@ -250,6 +258,9 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
                     or not isinstance(receipt, str) or not receipt.strip() or len(receipt) > 128
                     or not isinstance(title, str) or not title.strip() or len(title) > 150):
                 raise ValueError("invalid source receipt")
+            if sid in seen_source_ids:
+                raise ValueError("ambiguous duplicate source ID")
+            seen_source_ids.add(sid)
             sources.append({"source_id": sid, "rights_receipt_id": receipt,
                             "display_rights": "ALLOWED", "title": title.strip(),
                             "url": _public_url(s.get("url")),
