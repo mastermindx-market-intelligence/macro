@@ -1,4 +1,19 @@
 {
+  "blocked_cli": {
+    "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/blocked-cli.json",
+    "exit_code": 2,
+    "sha256": "77a25b6089eede9bebbdb5b6459989b0a26650661edd67da9a0e6629935e4b68"
+  },
+  "ci_job_proposal_validation": {
+    "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-job-validation.txt",
+    "exit_code": 0,
+    "sha256": "9da7ce0d74b6f9d83dc05bc283ef250c1fea7329892e210fea20bd5143ac20b6"
+  },
+  "code_file_digests": {
+    "research/structural_leadership_shock_resilience/local_source_qualification/adapter.py": "0644f86cc5649210d847f5775b6aed52e4daee6e87fe8b137f4168c174e487aa",
+    "tests/test_slr_local_source_qualification.py": "0a7973b9dd871fc10e146cd58e96e720b202c8aa8fd68021700c945767f9b900"
+  },
+  "code_snapshot": "2824055ed10de68ca8488572c7f25ba2975d8ebf",
   "logs": [
     {
       "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/red.txt",
