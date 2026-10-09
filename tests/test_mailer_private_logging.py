@@ -7,10 +7,13 @@ only diagnostic log messages are redacted.
 from __future__ import annotations
 
 import logging
+import sys
+from pathlib import Path
 
 import pytest
 
-from app import mailer
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from app import mailer  # noqa: E402
 
 
 ADDRESS = "Catalyst.Private+123@example.invalid"
