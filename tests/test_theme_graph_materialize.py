@@ -892,7 +892,7 @@ def _file_hashes(root):
     }
 
 
-def test_d2c_run_retracts_only_pit_covered_legacy_and_preserves_history(tree, monkeypatch):
+def test_d2c_run_retracts_only_pit_covered_legacy_and_preserves_history(tree, monkeypatch, capsys):
     bake, _root = _d2c_run_fixture(tree, monkeypatch)
     covered, uncovered = _legacy_ths_edge(), _legacy_ths_edge("600099.SS")
     assert store.write_edges([covered, uncovered], lane="nightly") == 2
@@ -915,9 +915,15 @@ def test_d2c_run_retracts_only_pit_covered_legacy_and_preserves_history(tree, mo
                       .where(pd.notna(history_before), None).to_dict("records"))
     assert old_records == before_records
     assert store.read_meta()["rows_appended"]["edges"] > 0
+    receipts = [json.loads(line[len(bake._WITNESS_MARKER):])
+                for line in capsys.readouterr().out.splitlines()
+                if line.startswith(bake._WITNESS_MARKER)]
+    assert len(receipts) == 1
+    assert receipts[0]["meta_computed_at"] == store.read_meta()["computed_at"]
+    assert receipts[0]["meta_sha256"] == _file_hashes(store.meta_path().parent)["_meta.json"]
 
 
-def test_d2c_run_swallowed_ths_producer_error_returns_failure_without_writes(tree, monkeypatch):
+def test_d2c_run_swallowed_ths_producer_error_returns_failure_without_writes(tree, monkeypatch, capsys):
     bake, root = _d2c_run_fixture(tree, monkeypatch)
     assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
     before = _file_hashes(root)
@@ -928,6 +934,7 @@ def test_d2c_run_swallowed_ths_producer_error_returns_failure_without_writes(tre
     monkeypatch.setattr(materialize._Builder, "build_ths_membership_history", broken_plane)
     assert bake.run(backfill=False, force_backfill=False) == 1
     assert _file_hashes(root) == before
+    assert bake._WITNESS_MARKER not in capsys.readouterr().out
 
 
 def test_d2c_run_corrupt_existing_ths_history_fails_closed_without_writes(
@@ -995,13 +1002,14 @@ def test_d2c_run_empty_pit_never_retracts_or_auto_waives(tree, monkeypatch):
     assert not (latest["confidence_basis"] == "membership_pit.ths.v1").any()
 
 
-def test_d2c_run_off_lane_preserves_every_fixture_and_store_byte(tree, monkeypatch):
+def test_d2c_run_off_lane_preserves_every_fixture_and_store_byte(tree, monkeypatch, capsys):
     bake, root = _d2c_run_fixture(tree, monkeypatch)
     assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
     before = _file_hashes(root)
     monkeypatch.setenv("COLLECT_LANE", "render")
     assert bake.run(backfill=False, force_backfill=False) == 0
     assert _file_hashes(root) == before
+    assert bake._WITNESS_MARKER not in capsys.readouterr().out
 
 
 def test_d2c_run_identical_second_night_appends_no_edge_belief(tree, monkeypatch):
@@ -1479,6 +1487,177 @@ def test_ontology_owner_refusal_preserves_every_prior_graph_artifact(tree, monke
     before = _file_hashes(root)
     assert bake.run(backfill=False, force_backfill=False) == 1
     assert _file_hashes(root) == before
+
+
+@pytest.fixture
+def nightly_witness_fixture(tmp_path, monkeypatch, capsys):
+    """Synthetic receipt bytes only: this fixture never runs a graph build."""
+    from scripts import build_theme_graph as bake
+
+    root = tmp_path / "checkout"
+    sources = (
+        "scripts/build_theme_graph.py", "scripts/check_theme_graph_contracts.py",
+        "scripts/ci/daily_engine_regional_desk_builders.sh", ".github/workflows/daily.yml",
+    )
+    for name in sources:
+        path = root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("# synthetic source: " + name + "\n")
+    monkeypatch.setattr(bake, "__file__", str(root / "scripts/build_theme_graph.py"))
+    git_calls = []
+
+    def head(args, **kwargs):
+        git_calls.append((args, kwargs["cwd"]))
+        return "1" * 40 + "\n"
+
+    monkeypatch.setattr(bake.subprocess, "check_output", head)
+    scratch = tmp_path / "runner"
+    scratch.mkdir()
+    output = scratch / "step-output"
+    for key, value in {
+        "RUNNER_TEMP": str(scratch), "GITHUB_OUTPUT": str(output),
+        "GITHUB_REPOSITORY": "fixture/theme-graph", "GITHUB_RUN_ID": "123",
+        "GITHUB_RUN_ATTEMPT": "1", "GITHUB_JOB": "engine",
+        "GITHUB_EVENT_NAME": "schedule", "GITHUB_SHA": "2" * 40,
+        "GITHUB_WORKFLOW_REF": "fixture/theme-graph/.github/workflows/daily.yml@refs/heads/main",
+        "WITNESS_TEST_SECRET": "must-not-be-captured",
+    }.items():
+        monkeypatch.setenv(key, value)
+    directory = Path(bake.start_nightly_witness())
+    assert directory.is_dir()
+    monkeypatch.setenv("THEME_GRAPH_WITNESS_ID", directory.name)
+    graph = root / "data/theme_graph"
+    names = (
+        "nodes.parquet", "node_lifecycle.parquet", "edges.parquet", "evidence.parquet",
+        "capability.parquet", "identity_resolution.parquet", "probation/proposals.jsonl",
+    )
+    for name in names:
+        path = graph / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"synthetic hash input: " + name.encode())
+    meta = dict(computed_at="2026-10-07T08:00:17Z", lane="nightly", mode="nightly",
+                era="observed", belief_time="2026-10-07")
+    _write(graph / "_meta.json", meta)
+    monkeypatch.setattr(bake.store, "meta_path", lambda: graph / "_meta.json")
+    bake._emit_meta_write_receipt(meta, "2026-10-07T08:00:10Z")
+    marker = capsys.readouterr().out
+    band = scratch / "band"
+    band.mkdir()
+    for slug in ("theme_graph", "theme_graph_guard"):
+        (band / f"{slug}.rc").write_text("0\n")
+        (band / f"{slug}.sec").write_text("8\n")
+        (band / f"{slug}.log").write_text(
+            "synthetic builder\n" + marker if slug == "theme_graph"
+            else "::notice title=fixture::historical snapshots, not breaches\n")
+    (band / "unrelated.log").write_text("must-not-be-captured")
+    return bake, directory, band, graph, output, git_calls, sources, names
+
+
+def test_nightly_witness_retains_exact_receipts_and_separate_clocks(nightly_witness_fixture):
+    bake, directory, band, graph, output, git_calls, sources, names = nightly_witness_fixture
+    before = _file_hashes(graph)
+    bake.finish_nightly_witness(str(directory), str(band))
+    manifest = json.loads((directory / "manifest.json").read_text())
+    assert manifest["capture_status"] == "complete"
+    assert manifest["acceptance"] == "not_evaluated"
+    assert manifest["errors"] == []
+    assert manifest["actual_head_sha"] == "1" * 40
+    assert manifest["run_identity"]["GITHUB_SHA"] == "2" * 40  # never substitute event SHA
+    assert git_calls == [(["git", "rev-parse", "HEAD"], graph.parents[1])]
+    assert set(manifest["source_files"]) == set(sources)
+    expected = {f"{slug}.{suffix}" for slug in ("theme_graph", "theme_graph_guard")
+                for suffix in ("log", "rc", "sec")}
+    assert set(manifest["files"]) == expected | {"_meta.json"}
+    assert set(manifest["graph_output_files"]) == set(names)
+    for name in expected:
+        assert (directory / name).read_bytes() == (band / name).read_bytes()
+    assert (directory / "_meta.json").read_bytes() == (graph / "_meta.json").read_bytes()
+    receipt = manifest["post_write_receipt"]
+    assert receipt["materialization_computed_at"] == "2026-10-07T08:00:10Z"
+    assert receipt["meta_computed_at"] == "2026-10-07T08:00:17Z"
+    assert receipt["meta_sha256"] == _file_hashes(graph)["_meta.json"]
+    assert _file_hashes(graph) == before
+    assert output.read_text() == f"theme_graph_witness={directory}\n"
+    assert all(b"must-not-be-captured" not in path.read_bytes() for path in directory.iterdir())
+
+
+@pytest.mark.parametrize("fault,reason", [
+    ("missing_rc", "receipt_unavailable:theme_graph_guard.rc"),
+    ("nonzero_rc", "nonzero_or_invalid_rc:theme_graph"),
+    ("invalid_seconds", "invalid_seconds:theme_graph_guard"),
+    ("missing_marker", "post_write_marker_missing_or_ambiguous"),
+    ("stale_marker", "post_write_marker_metadata_mismatch"),
+    ("meta_changed", "post_write_marker_metadata_mismatch"),
+    ("guard_breach", "guard_warning_or_error"),
+    ("missing_output", "graph_output_unavailable:nodes.parquet"),
+])
+def test_nightly_witness_never_promotes_incomplete_evidence(nightly_witness_fixture, fault, reason):
+    bake, directory, band, graph, *_ = nightly_witness_fixture
+    if fault == "missing_rc":
+        (band / "theme_graph_guard.rc").unlink()
+    elif fault == "nonzero_rc":
+        (band / "theme_graph.rc").write_text("7\n")
+    elif fault == "invalid_seconds":
+        (band / "theme_graph_guard.sec").write_text("?\n")
+    elif fault == "missing_marker":
+        (band / "theme_graph.log").write_text("caught builder exception, rc remained zero\n")
+    elif fault == "stale_marker":
+        log_path = band / "theme_graph.log"
+        log_path.write_text(log_path.read_text().replace(directory.name, "old-attempt"))
+    elif fault == "meta_changed":
+        (graph / "_meta.json").write_text('{"computed_at":"different"}\n')
+    elif fault == "guard_breach":
+        (band / "theme_graph_guard.log").write_text("::warning title=fixture::breach\n")
+    else:
+        (graph / "nodes.parquet").unlink()
+    bake.finish_nightly_witness(str(directory), str(band))
+    manifest = json.loads((directory / "manifest.json").read_text())
+    assert manifest["capture_status"] == "incomplete"
+    assert manifest["acceptance"] == "not_evaluated"
+    assert reason in manifest["errors"]
+
+
+def test_nightly_witness_start_never_reuses_a_previous_capture(nightly_witness_fixture):
+    bake, directory, band, _graph, output, *_ = nightly_witness_fixture
+    bake.finish_nightly_witness(str(directory), str(band))
+    fresh = Path(bake.start_nightly_witness())
+    assert fresh != directory
+    assert set(path.name for path in fresh.iterdir()) == {"manifest.json"}
+    assert json.loads((fresh / "manifest.json").read_text())["capture_status"] == "incomplete"
+    assert output.read_text().splitlines()[-1] == f"theme_graph_witness={fresh}"
+
+
+def test_nightly_witness_caught_builder_exception_has_no_success_marker(monkeypatch, capsys):
+    from scripts import build_theme_graph as bake
+
+    def explode(**kwargs):
+        raise RuntimeError("synthetic builder exception")
+
+    monkeypatch.setattr(bake, "run", explode)
+    assert bake.main([]) == 0  # preserve the existing advisory policy
+    assert bake._WITNESS_MARKER not in capsys.readouterr().out
+
+
+def test_nightly_witness_capture_precedes_barrier_and_upload_precedes_tail():
+    root = Path(__file__).resolve().parents[1]
+    band = (root / "scripts/ci/daily_engine_regional_desk_builders.sh").read_text()
+    guard_call = 'brun theme_graph_guard "theme graph contract guard (check_theme_graph_contracts)" scripts.check_theme_graph_contracts'
+    assert band.index("  brun baskets_snapshot ") < band.index("print(start_nightly_witness())") < band.index('  brun theme_graph "')
+    assert band.index(guard_call) < band.index("finish_nightly_witness(*sys.argv[1:])") < band.index("\nwait\n")
+    assert guard_call + " --strict" not in band
+    daily = yaml.safe_load((root / ".github/workflows/daily.yml").read_text())
+    steps = daily["jobs"]["engine"]["steps"]
+    band_index = next(i for i, step in enumerate(steps) if step.get("id") == "regional_desk_builders")
+    upload = steps[band_index + 1]
+    assert upload["uses"] == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+    assert "always()" in upload["if"]
+    assert "steps.regional_desk_builders.outputs.theme_graph_witness != ''" in upload["if"]
+    assert upload["continue-on-error"] is True
+    assert upload["with"]["path"] == "${{ steps.regional_desk_builders.outputs.theme_graph_witness }}"
+    assert "github.run_attempt" in upload["with"]["name"]
+    assert upload["with"]["retention-days"] == 14
+    assert steps[band_index + 2]["name"] == "checkpoint core engine outputs to main (durable before tail desks)"
+
 
 
 def test_dated_curation_absence_without_event_does_not_withdraw_relation(tree, monkeypatch):

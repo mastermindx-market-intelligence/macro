@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "NYT-BULL-20260709",
-  "asof": "2026-10-06",
+  "asof": "2026-10-08",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 19.2,
@@ -17,14 +17,14 @@
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -3.726,
+    "dist_to_stop_r": -2.274,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 102.2,
-    "p1": -1.8172,
-    "p2": -0.9086,
+    "horizon_pct_used": 106.7,
+    "p1": -0.8495,
+    "p2": -0.4247,
     "p3": null,
-    "move_r": -2.726,
+    "move_r": -1.274,
     "mfe_r": 10.839,
     "mae_r": -4.823
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": "2026-08-24",
   "_first_t2_ts": "2026-08-25",
-  "days_elapsed": 46,
-  "tau": 1.0222
+  "days_elapsed": 48,
+  "tau": 1.0667
 }

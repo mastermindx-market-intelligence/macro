@@ -12,6 +12,12 @@ _SPEC = importlib.util.spec_from_file_location("information_to_price_audit", Pat
 mod = importlib.util.module_from_spec(_SPEC)
 _SPEC.loader.exec_module(mod)
 
+_R1_SPEC = importlib.util.spec_from_file_location(
+    "r1_readiness_probe", Path(__file__).with_name("r1_readiness_probe.py")
+)
+r1 = importlib.util.module_from_spec(_R1_SPEC)
+_R1_SPEC.loader.exec_module(r1)
+
 AS_OF = "2026-10-03T12:00:00Z"
 PAYLOAD = "a" * 64
 
@@ -373,6 +379,255 @@ class TestAudit(unittest.TestCase):
         with patch.object(mod, "load_inputs", return_value=([obs], [attempt], {"mode": "test"})), contextlib.redirect_stdout(output):
             self.assertEqual(mod.main(["--as-of", AS_OF, "--observations-path", "a", "--attempts-path", "b"]), 0)
         self.assertEqual(json.loads(output.getvalue())["scope"], "structural_on_declared_clocks_only")
+
+
+class R1OwnerReceiptTests(unittest.TestCase):
+    HITS = [
+        {
+            "line": 363,
+            "text": (
+                '"rights_class": "UNKNOWN",  # R1-OWNER-REFUSAL line 363: '
+                "no rights class is assigned"
+            ),
+        }
+    ]
+
+    @staticmethod
+    def raw_gaps():
+        return {
+            "G1": {
+                "status": "OPEN",
+                "value": {
+                    "issuer_id_resolved": 779,
+                    "universe_names": 1503,
+                    "unresolved": 724,
+                    "cik_map_universe_tickers": 1499,
+                },
+            },
+            "G2": {
+                "status": "OPEN",
+                "value": {
+                    "alias_rows_dated_le_cutoff": 2,
+                    "undated_alias_rows": 777,
+                    "prospective_from_undated_rows": 0,
+                },
+            },
+            "G3": {
+                "status": "OPEN",
+                "value": {
+                    "spine_columns_present": [],
+                    "observation_currency_nonnull": 0,
+                    "observation_fiscal_year_nonnull": 0,
+                    "observation_basis_nonnull": 0,
+                },
+            },
+            "G4": {
+                "status": "OPEN",
+                "value": {"literal": "UNKNOWN", "line": 363},
+            },
+            "G5": {
+                "status": "OPEN",
+                "value": {
+                    "source_effective_at_nonnull": 0,
+                    "source_published_at_nonnull": 0,
+                    "observation_rows": 517384,
+                },
+            },
+        }
+
+    @classmethod
+    def receipts(cls):
+        raw = cls.raw_gaps()
+        out = {}
+        for key in ("G1", "G2", "G3", "G4", "G5"):
+            counts = {
+                k: raw[key]["value"][k] for k in r1.STABLE_COUNT_KEYS[key]
+            }
+            entry = {
+                "owner_ws": "ALPHA-INTELLIGENCE-INTEGRATION",
+                "receipt_form": r1.EXPECTED_RECEIPT_FORM[key],
+                "cutoff": r1.CUTOFF,
+                "counts": counts,
+            }
+            if key == "G4":
+                entry["refusal"] = {
+                    "path": "collectors/equity_revisions.py",
+                    "line": 363,
+                    "same_line_marker": "R1-OWNER-REFUSAL",
+                }
+            out[key] = entry
+        return out
+
+    @staticmethod
+    def ws():
+        return {
+            "status": "active",
+            "owns_paths": [
+                "data/reference/",
+                "data/symbol_directory/",
+                "data/openfigi/",
+                "data/revisions/expectation_observations.parquet",
+                "data/revisions/expectation_attempts.parquet",
+                "collectors/equity_revisions.py",
+            ],
+        }
+
+    @classmethod
+    def evaluate_all(cls, raw, rec, ws_fm, hits):
+        return {
+            g: r1.evaluate_owner_receipt(
+                g,
+                raw[g],
+                rec.get(g),
+                ws_fm,
+                hits if g == "G4" else None,
+            )["status"]
+            for g in raw
+        }
+
+    def test_t1_all_valid_degraded_accepted(self):
+        raw = self.raw_gaps()
+        rec = self.receipts()
+        ws_fm = self.ws()
+        statuses = self.evaluate_all(raw, rec, ws_fm, self.HITS)
+        for g in statuses:
+            self.assertEqual(statuses[g], "DEGRADED_ACCEPTED")
+        self.assertEqual(r1.compute_r1_status(statuses, []), ("COMPLETE_DEGRADED", []))
+
+    def test_t2_g1_count_mismatch(self):
+        raw = self.raw_gaps()
+        rec = self.receipts()
+        rec["G1"]["counts"]["unresolved"] = 723
+        result = r1.evaluate_owner_receipt("G1", raw["G1"], rec["G1"], self.ws())
+        self.assertEqual(result["status"], "OPEN")
+        self.assertTrue(
+            any("unresolved" in m for m in result["owner_receipt"]["mismatches"])
+        )
+        statuses = self.evaluate_all(raw, rec, self.ws(), self.HITS)
+        self.assertEqual(r1.compute_r1_status(statuses, [])[0], "INCOMPLETE")
+
+    def test_t3_missing_openfigi_ownership(self):
+        raw = self.raw_gaps()
+        rec = self.receipts()
+        ws_fm = dict(self.ws())
+        ws_fm["owns_paths"] = [p for p in ws_fm["owns_paths"] if p != "data/openfigi/"]
+        result = r1.evaluate_owner_receipt("G1", raw["G1"], rec["G1"], ws_fm)
+        self.assertEqual(result["status"], "OPEN")
+        self.assertEqual(result["owner_receipt"]["uncovered_paths"], ["data/openfigi/"])
+        statuses = self.evaluate_all(raw, rec, ws_fm, self.HITS)
+        for g in ("G2", "G3", "G4", "G5"):
+            self.assertEqual(statuses[g], "DEGRADED_ACCEPTED")
+
+    def test_t4_g5_wrong_receipt_form(self):
+        raw = self.raw_gaps()
+        rec = self.receipts()
+        rec["G5"]["receipt_form"] = "DEGRADED_LABELED_ABSENCE"
+        result = r1.evaluate_owner_receipt("G5", raw["G5"], rec["G5"], self.ws())
+        self.assertEqual(result["status"], "OPEN")
+
+    def test_t5_g3_receipt_removed(self):
+        raw = self.raw_gaps()
+        rec = self.receipts()
+        del rec["G3"]
+        result = r1.evaluate_owner_receipt("G3", raw["G3"], None, self.ws())
+        self.assertEqual(result["status"], "OPEN")
+        self.assertFalse(result["owner_receipt"]["present"])
+        statuses = self.evaluate_all(raw, rec, self.ws(), self.HITS)
+        self.assertEqual(r1.compute_r1_status(statuses, [])[0], "INCOMPLETE")
+
+    def test_t6_g4_marker_and_hit_count(self):
+        raw = self.raw_gaps()
+        rec = self.receipts()
+        bad_hits = [{"line": 363, "text": '"rights_class": "UNKNOWN",'}]
+        result = r1.evaluate_owner_receipt("G4", raw["G4"], rec["G4"], self.ws(), bad_hits)
+        self.assertEqual(result["status"], "OPEN")
+        two_hits = self.HITS + [{"line": 364, "text": "other"}]
+        result2 = r1.evaluate_owner_receipt(
+            "G4", raw["G4"], rec["G4"], self.ws(), two_hits
+        )
+        self.assertEqual(result2["status"], "OPEN")
+
+    def test_t7_g2_closed_without_receipt(self):
+        raw = self.raw_gaps()
+        raw["G2"]["status"] = "CLOSED"
+        result = r1.evaluate_owner_receipt("G2", raw["G2"], None, self.ws())
+        self.assertEqual(result["status"], "CLOSED")
+        all_closed = {g: "CLOSED" for g in raw}
+        self.assertEqual(r1.compute_r1_status(all_closed, []), ("COMPLETE", []))
+
+    def test_t8_g3_unmeasurable_not_upgraded(self):
+        raw = self.raw_gaps()
+        raw["G3"]["status"] = "UNMEASURABLE"
+        rec = self.receipts()
+        result = r1.evaluate_owner_receipt("G3", raw["G3"], rec["G3"], self.ws())
+        self.assertEqual(result["status"], "UNMEASURABLE")
+        statuses = self.evaluate_all(raw, rec, self.ws(), self.HITS)
+        self.assertEqual(r1.compute_r1_status(statuses, [])[0], "INCOMPLETE")
+
+    def test_t9_owns_path_prefix(self):
+        self.assertTrue(
+            r1.owns_path(["data/reference/"], "data/reference/x.parquet")
+        )
+        self.assertFalse(
+            r1.owns_path(["data/reference"], "data/reference/x.parquet")
+        )
+        self.assertFalse(r1.owns_path(["data/ref/"], "data/reference/x.parquet"))
+        self.assertFalse(r1.owns_path(None, "a"))
+
+    def test_t10_growing_counts_ignored(self):
+        raw = self.raw_gaps()
+        raw["G5"]["value"]["observation_rows"] = 999999
+        raw["G1"]["value"]["cik_map_universe_tickers"] = 1
+        statuses = self.evaluate_all(raw, self.receipts(), self.ws(), self.HITS)
+        for g in statuses:
+            self.assertEqual(statuses[g], "DEGRADED_ACCEPTED")
+
+    def test_t11_g2_cutoff_mismatch(self):
+        raw = self.raw_gaps()
+        rec = self.receipts()
+        rec["G2"]["cutoff"] = "2026-10-04T00:00:00Z"
+        result = r1.evaluate_owner_receipt("G2", raw["G2"], rec["G2"], self.ws())
+        self.assertEqual(result["status"], "OPEN")
+
+    def test_t12_ws_parked(self):
+        raw = self.raw_gaps()
+        rec = self.receipts()
+        ws_fm = {"status": "parked", "owns_paths": self.ws()["owns_paths"]}
+        statuses = self.evaluate_all(raw, rec, ws_fm, self.HITS)
+        for g in statuses:
+            self.assertEqual(statuses[g], "OPEN")
+
+    def test_t13_parse_front_matter(self):
+        self.assertEqual(
+            r1.parse_front_matter("---\nkey: X\nstatus: active\n---\nbody"),
+            {"key": "X", "status": "active"},
+        )
+        self.assertEqual(r1.parse_front_matter("no front matter"), {})
+        self.assertEqual(r1.parse_front_matter("---\n: : bad\n---\n"), {})
+
+    def test_t14_rights_literal_of(self):
+        self.assertEqual(
+            r1.rights_literal_of('"rights_class": "UNKNOWN",  # note "LICENSED"'),
+            "UNKNOWN",
+        )
+        self.assertEqual(
+            r1.rights_literal_of('"rights_class": "LICENSED",  # was UNKNOWN'),
+            "LICENSED",
+        )
+        self.assertIsNone(r1.rights_literal_of("x = 1"))
+
+    def test_t15_headline_forces_incomplete(self):
+        self.assertEqual(
+            r1.compute_r1_status({"G1": "DEGRADED_ACCEPTED"}, ["universe mismatch"])[0],
+            "INCOMPLETE",
+        )
+
+    def test_t16_module_constants(self):
+        self.assertEqual(r1.SCHEMA_VERSION, "r1-readiness-probe.v2")
+        keys = {"G1", "G2", "G3", "G4", "G5"}
+        self.assertEqual(set(r1.STABLE_COUNT_KEYS), keys)
+        self.assertEqual(set(r1.EXPECTED_RECEIPT_FORM), keys)
+        self.assertEqual(set(r1.REQUIRED_OWNER_PATHS), keys)
 
 
 if __name__ == "__main__":

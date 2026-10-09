@@ -21,7 +21,9 @@ from engine.theme_graph.ontology import (
     _parse_date,
     _records,
 )
-from engine.theme_graph.selection_cohort import content_sha256
+from engine.theme_graph.selection_cohort import FLAGS, content_sha256
+
+_AUTHORITY_CEILING = "research_internal_only"
 
 IDENTITY_OWNER_SCHEMA = "gmi.identity_resolution/v1"
 MEMBERSHIP_OWNER_SCHEMA = "gmi.theme_graph_membership_pit/v1"
@@ -202,7 +204,7 @@ def _canonical_for_local(
     local_node: str,
     *,
     asof: dt.date,
-    cutoff: dt.date,
+    cutoff: dt.date | dt.datetime,
 ) -> tuple[list[str], list[dict]]:
     live, _ = _collapse_relevant_edges(edges, node_id=local_node, asof=asof, knowledge_cutoff=cutoff)
     theme_ids = sorted(
@@ -226,9 +228,12 @@ def _canonical_for_local(
     return theme_ids, nodes
 
 
-def _knowledge_cutoff_date(known_at: str) -> dt.date:
+def _knowledge_cutoff(known_at: str) -> dt.date | dt.datetime:
     if "T" in known_at:
-        return dt.datetime.fromisoformat(known_at.replace("Z", "+00:00")).date()
+        parsed = dt.datetime.fromisoformat(known_at.replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=dt.timezone.utc)
+        return parsed.astimezone(dt.timezone.utc)
     return dt.date.fromisoformat(known_at[:10])
 
 
@@ -241,7 +246,7 @@ def _membership_rows(
     rights_receipt_ref: str,
 ) -> list[dict]:
     asof = _parse_date(_asof_date(effective_at), "asof")
-    cutoff = _knowledge_cutoff_date(known_at)
+    cutoff = _knowledge_cutoff(known_at)
     nodes = _records(store_view.read_nodes())
     lifecycle = _records(store_view.read_node_lifecycle())
     node_map = _nodes_as_known(nodes, lifecycle, asof=asof, knowledge_cutoff=cutoff)
@@ -370,6 +375,12 @@ def _qualified_reads_inner(
     }
     asof = _asof_date(effective_at)
     state_artifact = _load_state_artifact(root)
+    state_invalid = False
+    if state_artifact is not None:
+        try:
+            theme_state.validate_state(state_artifact)
+        except (ValueError, TypeError, KeyError):
+            state_artifact, state_invalid = None, True
 
     for row in selection["rows"]:
         sid = row["selection_id"]
@@ -507,7 +518,7 @@ def _qualified_reads_inner(
                         "kind": "state",
                         "reason_code": _REASON_OWNER,
                         "owner": theme_state.READ_SCHEMA,
-                        "detail": concept_id,
+                        "detail": "invalid" if state_invalid else concept_id,
                     }
                 )
                 continue
@@ -530,5 +541,7 @@ def _qualified_reads_inner(
         "unqualified": unqualified,
         "selection_clock": {"effective_at": effective_at, "known_at": known_at},
         "owners": owners,
+        "authority_ceiling": _AUTHORITY_CEILING,
+        **{flag: False for flag in FLAGS},
     }
 

@@ -3189,6 +3189,7 @@ jobs:
       - name: timings band — builders-parallel (W2)
         run: python3 scripts/nightly_timings.py mark --band builders-parallel || echo "::warning::timings band mark failed (non-fatal)"
       - name: regional + desk builders (parallelised — independent clusters, barrier before the hub)
+        id: regional_desk_builders
         # The ~22 builders between build_site and the landing hub split into mutually
         # INDEPENDENT clusters (each internally ordered by its own data deps). They used
         # to run strictly serially (~75 min of wall-clock); here each cluster runs in the
@@ -3242,6 +3243,15 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
         run: bash scripts/ci/daily_engine_regional_desk_builders.sh
+      - name: retain this run's Theme Graph generation witness (advisory)
+        if: ${{ always() && steps.regional_desk_builders.outputs.theme_graph_witness != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: theme-graph-witness-${{ github.run_id }}-${{ github.run_attempt }}-engine
+          path: ${{ steps.regional_desk_builders.outputs.theme_graph_witness }}
+          if-no-files-found: warn
+          retention-days: 14
       # Durable core checkpoint (incident run 35547644919): the coherent builder
       # band completed, but a later best-effort tail exhausted the 300-minute job
       # cap before the sole broad publisher. Persist the core public tree here;
@@ -5173,6 +5183,14 @@ jobs:
               line = f"tier {tier}: date_to={dt} ({age}d old)"
               print(f"::error::TM STALE — {line}" if age > 4 else f"TM fresh — {line}")
           PY
+      - name: GMI graph shadow theme state (gate 8 — off-render, non-fatal)
+        # Seat ruling G1-RC1: state-only compose; writes data/theme_graph/shadow_theme_state.v1.json only.
+        # RC1-R1: no engine.result gate — engine ends red on the post-commit OIP PIT fail-closed marker after its commit.
+        timeout-minutes: 12
+        continue-on-error: true
+        env:
+          COLLECT_LANE: nightly
+        run: python -m scripts.build_thematic_state --mode GRAPH_SHADOW_STATE
       - name: commit oracle Time Machine feed + ratio lens
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
@@ -5185,6 +5203,7 @@ jobs:
           # on 2026-07-13 and 2026-07-14). The commit is gated below by `git diff --cached
           # --quiet`, so tolerating the file's absence is safe.
           git add data/oracle/washout_counterread_ledger.jsonl 2>/dev/null || true
+          git add data/theme_graph/shadow_theme_state.v1.json 2>/dev/null || true
           if git diff --cached --quiet; then echo "no oracle Time Machine or ratio lens changes"; exit 0; fi
           git commit -m "oracle-tm: nightly Time Machine feed + ratio lens refresh $(date -u +%F)"
           # best-effort push (own files -> rebases clean; no other job writes site/oracledata/)

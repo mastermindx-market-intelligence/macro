@@ -50,6 +50,7 @@ confidence: high
 reversibility: easy
 decided_by: coo-fable
 decided_at: 2026-10-04
+superseded_by: DEC:A2-SHARED-RELAY-RECEIPT-AND-INSTALL-FIRST
 ---
 
 ## Operating law

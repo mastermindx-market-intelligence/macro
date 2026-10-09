@@ -18888,7 +18888,7 @@ artifacts:
     path: data/theme_graph/edges.parquet
     format: parquet
     producer: scripts/build_theme_graph.py
-    known_extra_writers: []
+    known_extra_writers: [scripts/correct_gmi_identity_lineage.py]
     owner_program: gmi-theme-graph
     cadence: daily-engine
     storage: git
@@ -18919,12 +18919,19 @@ artifacts:
       where a series begins, not when a company joined a theme. The three exposure axes
       and their display enums are RESERVED-NULL until W2 measures them. Contradictory
       evidence coexists as rows; nothing nets. Ordering is recency/id only (G0.11).
+      Known extra writer: scripts/correct_gmi_identity_lineage.py (V4-D2B3 one-shot,
+      idempotent identity-lineage correction, contract
+      research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md) APPENDS
+      belief-lineage rows — identity_break truncations and entity_type_conflict
+      annulments of open MEMBER_OF edges — and their evidence rows through
+      engine.theme_graph.store with allow_backfill=True; it never rewrites an
+      existing row.
 
   theme-graph-evidence:
     path: data/theme_graph/evidence.parquet
     format: parquet
     producer: scripts/build_theme_graph.py
-    known_extra_writers: []
+    known_extra_writers: [scripts/correct_gmi_identity_lineage.py]
     owner_program: gmi-theme-graph
     cadence: daily-engine
     storage: git
@@ -18952,6 +18959,11 @@ artifacts:
       land quietly. Licensing tags travel with the receipt: house-authored curation is
       internal/display/redistribution true, vendor-derived (同花顺) rows keep
       redistribution false. Corroborating and contradictory receipts are separate rows.
+      Known extra writer: scripts/correct_gmi_identity_lineage.py (V4-D2B3 one-shot,
+      idempotent identity-lineage correction, contract
+      research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md) appends the evidence
+      rows citing those corrections through engine.theme_graph.store with
+      allow_backfill=True; it never rewrites an existing row.
 
   theme-graph-capability:
     path: data/theme_graph/capability.parquet
