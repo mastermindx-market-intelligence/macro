@@ -71,6 +71,17 @@ def test_forged_and_oversized_proofs_are_rejected_before_producer_use():
     assert not calls
 
 
+
+@pytest.mark.parametrize("malformed", ["x.x", "AAAAA.AAAAA", "x.AAAAA"])
+def test_malformed_base64_signed_shape_is_typed_invalid_proof_not_server_error(malformed):
+    called = []
+    auth = _owner(reader=lambda *a, **k: called.append(True))
+    with pytest.raises(Exception) as result:
+        auth.require_public_scan(malformed)
+    assert "INVALID_SCAN_PROOF" in str(result.value)
+    assert called == []
+
+
 def test_receipt_expires_in_twenty_minutes_even_when_mac_was_valid():
     issued = _owner()
     proof = issued.issue(_public())
