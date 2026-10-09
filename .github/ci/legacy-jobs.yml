@@ -2286,6 +2286,14 @@ jobs:
       # here explicitly so an edit to it re-runs this job.
       - "engine/market_ontology/semiconductor_owner_bundle.py"
       - "engine/market_ontology/theme_research_binding.py"
+      # The binding leaf grew from one exception class into the shared
+      # stdlib-only kernel every vertical's loader and the shell call
+      # (cutoff comparison, unreadable-owner withholding, pagination,
+      # generation fingerprint). Its own suite imports NO vertical, so it is
+      # the one place those laws are pinned without a composer in the way —
+      # named here because a mutation pass showed four of them discriminated
+      # by no other test in the tree.
+      - "tests/test_theme_research_binding.py"
       - "tests/test_semiconductor_owner_bundle.py"
       # That suite reaches its helpers as `from tests.semiconductor_research_helpers
       # import ...` — a PACKAGE import, so the closure audit counts the package
@@ -2421,6 +2429,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2 jsonschema fastapi httpx requests numpy pandas pyarrow
+      - name: shared binding kernel (day-vs-instant cutoffs, unreadable-owner withhold, pagination bounds, generation fingerprint) — no vertical imported
+        run: python -m pytest tests/test_theme_research_binding.py -q
       - name: paid theme research transport (auth gate, closed vertical registration, rights owner veto, private binding)
         run: python -m pytest tests/test_theme_research_registry.py tests/test_theme_research_api.py tests/test_theme_research_rights_refresh.py tests/test_theme_research_private_binding.py -q
       - name: issuer release grammars, guidance history, EDGAR intake (TSMC + onsemi witnesses)

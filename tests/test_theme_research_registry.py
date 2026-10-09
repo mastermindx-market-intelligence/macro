@@ -61,16 +61,27 @@ def _noop_load(query, *, rights_snapshot=None):  # pragma: no cover — shape on
     raise AssertionError("synthetic loader never serves")
 
 
+def _noop_build_query(**fields):  # pragma: no cover — shape only
+    return fields
+
+
 def _valid_kwargs(**overrides):
     kwargs = dict(
         anchor_theme_id="synthetic_vertical",
         slice_keys=("alpha_slice", "beta_slice"),
+        # A DIFFERENT admitted view set from the incumbent's five: this
+        # synthetic vertical is the control for "the shell holds no vertical's
+        # vocabulary" (Sol #7870 issuecomment-5923155205). If a semiconductor
+        # view were hard-pinned anywhere in the transport, a vertical whose
+        # views are ``alpha_view``/``beta_view`` could not be served at all.
+        view_keys=("alpha_view", "beta_view"),
         schema_id="synthetic_theme_research.v1",
         evidence_schema_id="synthetic_theme_research.evidence.v1",
         definition_version="2026-09-24.synthetic",
         compose=_noop_compose,
         select_evidence=_noop_select,
         load_bundle=_noop_load,
+        build_query=_noop_build_query,
         title_en="Synthetic research",
         title_zh="合成研究",
         note_en="Synthetic note.",
@@ -94,6 +105,31 @@ def test_registry_is_a_read_only_mapping_with_exactly_one_entry():
     assert list(REGISTRY) == ["ai_semiconductors"]
 
 
+def _vertical_module(anchor, bound, field):
+    """The module a registration's lazily bound callable dispatches into.
+
+    Every registered callable must expose ``lazy_target()`` — a zero-argument
+    accessor returning the real vertical function. That is the contract the
+    laziness law and the identity law share: without it a test can prove
+    neither which function will run nor that importing the registry left the
+    vertical unloaded.
+    """
+    import sys
+
+    target = getattr(bound, "lazy_target", None)
+    assert callable(target), (
+        f"{anchor}: registration field {field!r} is bound without a "
+        f"``lazy_target()`` accessor. Bind it lazily and expose the accessor: "
+        f"an eager binding reintroduces the import edge that made the shared "
+        f"shell unloadable without one vertical, and a wrapper without the "
+        f"accessor hides the module whose constants this law reconciles."
+    )
+    resolved = target()
+    module = sys.modules.get(resolved.__module__)
+    assert module is not None, f"{anchor}: {field} resolved to an unloaded module"
+    return module
+
+
 def test_every_entry_is_keyed_by_its_own_anchor():
     for anchor, entry in REGISTRY.items():
         assert isinstance(entry, VerticalRegistration)
@@ -107,12 +143,21 @@ def test_every_entry_is_keyed_by_its_own_anchor():
 def test_semiconductor_registration_binds_composer_constants_and_callables():
     entry = REGISTRY["ai_semiconductors"]
     assert entry.slice_keys == ("hbm_packaging", "sic_gan_specialty")
+    assert entry.view_keys == composer.VIEW_KEYS
     assert entry.schema_id == composer.SCHEMA_ID == "semiconductor_theme_research.v1"
     assert entry.evidence_schema_id == composer._EVIDENCE_SCHEMA_ID \
         == "semiconductor_theme_research.evidence.v1"
     assert entry.definition_version == composer.DEFINITION_VERSION
-    assert entry.compose is composer.compose_semiconductor_research
-    assert entry.select_evidence is composer.select_authorized_evidence
+    # The binding is LAZY — importing the registry must not execute this
+    # composer's closure, which is the edge that made the shared shell
+    # unloadable without this one vertical (Sol #7870
+    # issuecomment-5895067178). ``lazy_target()`` resolves the registration
+    # to the exact function it dispatches to, so the identity guarantee this
+    # test has always carried is unchanged: it is asserted through the
+    # accessor instead of through a direct module reference.
+    assert entry.compose.lazy_target() is composer.compose_semiconductor_research
+    assert entry.select_evidence.lazy_target() is composer.select_authorized_evidence
+    assert entry.build_query.lazy_target() is composer.ResearchQuery
 
 
 def test_every_registration_reconciles_with_its_own_vertical_module():
@@ -131,24 +176,37 @@ def test_every_registration_reconciles_with_its_own_vertical_module():
 
     The vertical's module is found through its OWN registered callables, so
     this test never grows a per-vertical table to keep in sync.
-    """
-    import sys
 
+    Resolution goes through ``lazy_target()``, not ``fn.__module__``: a
+    registration binds its vertical LAZILY so that importing the registry —
+    or the shared shell above it — loads no vertical composer at all (Sol
+    #7870 issuecomment-5895067178), and a lazy binding's ``__module__`` is
+    the registry, not the composer. Requiring the accessor is what keeps this
+    law total: it cannot be satisfied by an eager binding that reintroduces
+    the import edge, and it cannot be dodged by a wrapper that hides which
+    function the registration actually dispatches to.
+    """
     assert REGISTRY, "the registry is empty: this law would be vacuous"
     for anchor, entry in REGISTRY.items():
-        compose_module = sys.modules[entry.compose.__module__]
+        compose_module = _vertical_module(anchor, entry.compose, "compose")
         assert getattr(compose_module, "SCHEMA_ID", None) == entry.schema_id, (
             f"{anchor}: registration schema_id {entry.schema_id!r} is not the "
-            f"one {compose_module.__name__} emits. If this vertical registers a "
-            f"lazy WRAPPER instead of its module-level composer, register the "
-            f"composer itself: the shell binds callables, and a wrapper hides "
-            f"the module whose constants this law reconciles against."
+            f"one {compose_module.__name__} emits"
         )
         assert getattr(compose_module, "DEFINITION_VERSION", None) == \
             entry.definition_version, (
             f"{anchor}: registration definition_version is not the composer's"
         )
-        evidence_module = sys.modules[entry.select_evidence.__module__]
+        assert getattr(compose_module, "VIEW_KEYS", None) == entry.view_keys, (
+            f"{anchor}: registration view_keys {entry.view_keys!r} are not the "
+            f"views {compose_module.__name__} admits. The registration owns the "
+            f"admitted view set and the shell validates membership against it, "
+            f"so a drifted copy here refuses views the composer serves — or "
+            f"admits views it does not."
+        )
+        evidence_module = _vertical_module(
+            anchor, entry.select_evidence, "select_evidence",
+        )
         declared = [
             getattr(evidence_module, name)
             for name in ("EVIDENCE_SCHEMA_ID", "_EVIDENCE_SCHEMA_ID")
@@ -177,8 +235,9 @@ def test_semiconductor_registration_carries_the_mount_copy_verbatim():
 
 def test_dataclass_field_names_are_the_accepted_contract():
     assert [f.name for f in dataclasses.fields(VerticalRegistration)] == [
-        "anchor_theme_id", "slice_keys", "schema_id", "evidence_schema_id",
-        "definition_version", "compose", "select_evidence", "load_bundle",
+        "anchor_theme_id", "slice_keys", "view_keys", "schema_id",
+        "evidence_schema_id", "definition_version", "compose",
+        "select_evidence", "load_bundle", "build_query",
         "title_en", "title_zh", "note_en", "note_zh",
     ]
 
@@ -196,22 +255,64 @@ def test_semiconductor_entry_binds_the_public_half_loader(monkeypatch):
     assert seen == [("q", ("r", {}))]
 
 
-def test_registry_import_closure_stays_light():
-    """Importing the registry alone must not load the reader's network / data
-    stack (requests, pandas, pyarrow, numpy) nor a web framework or template
-    engine — producers import it for the mount copy."""
+#: No VERTICAL may load when a SHARED module is imported. This is the edge Sol
+#: #7870 issuecomment-5895067178 ordered removed: the registry used to import
+#: the semiconductor composer eagerly for three names, and the shell imported
+#: three more from it directly, so importing either shared module executed one
+#: vertical's entire closure and no second vertical could be served without it.
+#: A vertical now loads only once a request has actually resolved its
+#: registration. Both shared entry points are measured against this set.
+_VERTICALS_AT_IMPORT = (
+    "engine.market_ontology.semiconductor_theme_research",
+    "engine.market_ontology.semiconductor_owner_bundle",
+)
+
+#: Additionally forbidden for the REGISTRY alone: the reader's network / data
+#: stack and the web/template frameworks. Producers import the registry for the
+#: mount copy, so it must stay cheap. The shell is deliberately exempt — it IS
+#: the FastAPI router, so ``fastapi`` in its closure is its job, not a defect.
+_HEAVY_AT_IMPORT = (
+    "requests", "pandas", "pyarrow", "numpy", "fastapi", "jinja2",
+    "engine.neuralweb.company_intelligence_reader",
+)
+
+
+def _loaded_after_importing(entry_point: str, probe: tuple[str, ...]) -> str:
     import subprocess
     import sys
     code = (
-        "import sys; import engine.market_ontology.theme_research_registry; "
-        "print(sorted(m for m in ('requests', 'pandas', 'pyarrow', 'numpy', 'fastapi', 'jinja2', "
-        "'engine.neuralweb.company_intelligence_reader', 'engine.market_ontology.semiconductor_owner_bundle') "
-        "if m in sys.modules))"
+        f"import sys; import {entry_point}; "
+        f"print(sorted(m for m in {probe!r} if m in sys.modules))"
     )
     result = subprocess.run([sys.executable, "-B", "-c", code], capture_output=True, text=True,
                             cwd=str(ROOT), timeout=120)
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == "[]", result.stdout
+    return result.stdout.strip()
+
+
+@pytest.mark.parametrize("entry_point", [
+    pytest.param("engine.market_ontology.theme_research_registry", id="registry"),
+    pytest.param("app.theme_research", id="shared-shell"),
+])
+def test_no_vertical_loads_when_a_shared_module_is_imported(entry_point):
+    assert _loaded_after_importing(entry_point, _VERTICALS_AT_IMPORT) == "[]"
+
+
+def test_registry_import_closure_stays_light():
+    """Importing the registry alone must not load the reader's network / data
+    stack nor a web framework or template engine."""
+    assert _loaded_after_importing(
+        "engine.market_ontology.theme_research_registry", _HEAVY_AT_IMPORT,
+    ) == "[]"
+
+
+def test_the_vertical_import_probe_actually_fires():
+    """Positive control for the laziness law: the same probe MUST report the
+    composer when something imports it on purpose. Without this, a probe with
+    a misspelled module name would pass the law vacuously forever."""
+    assert _loaded_after_importing(
+        "engine.market_ontology.semiconductor_theme_research", _VERTICALS_AT_IMPORT,
+    ) == "['engine.market_ontology.semiconductor_theme_research']"
 
 
 @pytest.mark.parametrize("bad", [None, "load", 7, object()])
@@ -287,6 +388,15 @@ def test_synthetic_registration_constructs_without_touching_the_registry():
     pytest.param({"slice_keys": ("alpha_slice", "alpha_slice")}, id="slices-duplicate"),
     pytest.param({"slice_keys": ("Alpha-Slice",)}, id="slice-grammar"),
     pytest.param({"slice_keys": ("",)}, id="slice-empty"),
+    # The admitted VIEW set is validated exactly like the admitted slice set:
+    # the registration owns both vocabularies, so both refuse malformation at
+    # construction rather than letting the transport admit by grammar alone.
+    pytest.param({"view_keys": ()}, id="views-empty"),
+    pytest.param({"view_keys": ["alpha_view"]}, id="views-list-not-tuple"),
+    pytest.param({"view_keys": "alpha_view"}, id="views-bare-string"),
+    pytest.param({"view_keys": ("alpha_view", "alpha_view")}, id="views-duplicate"),
+    pytest.param({"view_keys": ("Alpha-View",)}, id="view-grammar"),
+    pytest.param({"view_keys": ("",)}, id="view-empty"),
     pytest.param({"schema_id": ""}, id="schema-empty"),
     pytest.param({"schema_id": "   "}, id="schema-blank"),
     pytest.param({"evidence_schema_id": "synthetic_theme_research.v1"},
@@ -304,6 +414,8 @@ def test_malformed_registration_is_refused_with_value_error(overrides):
     pytest.param({"compose": None}, id="compose-none"),
     pytest.param({"compose": "compose_semiconductor_research"}, id="compose-name-string"),
     pytest.param({"select_evidence": 42}, id="select-int"),
+    pytest.param({"build_query": None}, id="build-query-none"),
+    pytest.param({"build_query": "ResearchQuery"}, id="build-query-name-string"),
 ])
 def test_non_callable_composer_or_selector_is_refused_with_type_error(overrides):
     with pytest.raises(TypeError):
@@ -355,5 +467,6 @@ def test_module_opens_no_file_and_reads_no_environment():
 
 def test_module_public_surface_is_closed():
     assert set(registry.__all__) == {
-        "REGISTRY", "VerticalRegistration", "allowed_slices", "registration_for",
+        "REGISTRY", "VerticalRegistration", "allowed_slices", "allowed_views",
+        "registration_for",
     }

@@ -1249,12 +1249,19 @@ fi
 #     NOT in the API's sys.modules. Adding them would restart /api on nearly every
 #     engine commit — exactly what this narrow list exists to prevent.
 #
-# Theme-research (#7870): app/theme_research.py imports the market_ontology
-# registration chain at module level, which reaches engine/theme_graph/
-# curation_assertion.py. Those six market_ontology modules plus
-# curation_assertion are therefore import-cached by macro-api and are
-# ENUMERATED, not globbed: the rest of engine/market_ontology is nightly-only,
-# and a wildcard would blip /api on every ontology commit.
+# Theme-research (#7870): app/theme_research.py reaches the market_ontology
+# registration chain, which reaches the engine/theme_graph leaves below.
+# CORRECTION (shared-foundation extraction): those edges are no longer
+# module-level. The registry resolves a vertical's composer, its owner-bundle
+# loader and theme_node_id INSIDE the call, on the first served request that
+# needs them. That makes this pinning more necessary, not less — sys.modules
+# caches each module for the life of the macro-api process, so a changed file
+# keeps serving its old bytes until a restart. Do not trim an entry on the
+# grounds that nothing imports it at import time; the enumeration below is
+# the set of modules a served request can bind, eagerly or lazily.
+# The nine engine/market_ontology modules are ENUMERATED, not globbed: the
+# rest of that package is nightly-only, and a wildcard would blip /api on
+# every ontology commit.
 API_RESTART_CONFIRMED=0
 API_RESTART_NEEDED=0
 # BEGIN MACRO_API_RESTART_TRIGGER

@@ -43,12 +43,25 @@ only. Data availability NEVER raises — an invalid assertion is dropped into
 from __future__ import annotations
 
 import copy
-import hashlib
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from typing import Any, Literal, Mapping
 
+from engine.market_ontology.theme_research_binding import (
+    ResearchRefusal,
+    canonical_text,
+    generation_fingerprint,
+    in_anchor_scope,
+    is_instant,
+    le,
+    parse_clock,
+    parse_day,
+    readable,
+    validate_cutoff_format,
+    validate_pagination,
+    validate_replay_cutoffs,
+    within,
+)
 from engine.company_intelligence.guidance_history import (
     GuidanceHistoryError,
     assess_management_sequence,
@@ -58,7 +71,6 @@ from engine.theme_graph.curation_assertion import (
     source_ref_for,
     validate_assertion,
 )
-from engine.theme_graph.identity import theme_node_id
 
 #: Frozen response schema id.
 SCHEMA_ID = "semiconductor_theme_research.v1"
@@ -119,106 +131,29 @@ class OwnerBundle:
     omissions: tuple[str, ...]
 
 
-class ResearchRefusal(ValueError):
-    """A query/generation contract violation. ``str(exc)`` is exactly ``.code``."""
-
-    def __init__(self, code: str):
-        super().__init__(code)
-        self.code = code
+# ``ResearchRefusal`` now lives in the shared foundation and is re-exported
+# here unchanged: the shell catches it at the transport boundary, so the
+# ``except`` clause must resolve without loading this composer. Every
+# existing importer of ``semiconductor_theme_research.ResearchRefusal``
+# keeps working and receives the SAME class object.
 
 
 # ---------------------------------------------------------------------------
 # Canonical JSON / time parsing
 # ---------------------------------------------------------------------------
 
-def _canonical_text(payload: Mapping[str, Any]) -> str:
-    return json.dumps(payload, ensure_ascii=False, sort_keys=True,
-                      separators=(",", ":"), allow_nan=False)
-
-
-def _is_instant(value: str) -> bool:
-    return "T" in value
-
-
-def _parse_clock(value: str) -> datetime:
-    text = value[:-1] + "+00:00" if value.endswith("Z") else value
-    moment = datetime.fromisoformat(text)
-    if moment.tzinfo is None:
-        moment = moment.replace(tzinfo=timezone.utc)
-    return moment
-
-
-def _parse_day(value: str):
-    return _parse_clock(value).date() if _is_instant(value) else datetime.strptime(value, "%Y-%m-%d").date()
-
-
-def _le(value: str, cutoff: str) -> bool:
-    """``value <= cutoff`` for date-or-datetime strings, WITHOUT synthesizing a
-    time: when either side is date-only the comparison is on calendar days
-    (inclusive). Two instants compare as instants.
-
-    CONTRACT, for consumers reading a date-only cutoff (asked by the Energy
-    seat on #7870): the calendar day taken from an instant is the day in the
-    instant's OWN offset, so a date-only cutoff means "the source's local day",
-    not "the UTC day". Measured on this build::
-
-        _le("2026-12-31T23:00:00-05:00", "2026-12-31")  # True  (04:00Z on Jan 1)
-        _le("2027-01-01T01:00:00+08:00", "2026-12-31")  # False (17:00Z on Dec 31)
-
-    This is deliberate and follows from the no-synthesis rule above: converting
-    to UTC first and then taking the date would pick UTC midnight as the cutoff
-    instant -- a time the caller never supplied, in a zone the cutoff never
-    named. A caller that wants instant semantics states an instant cutoff, and
-    then no day is inferred on either side::
-
-        _le("2026-12-31T23:00:00-05:00", "2026-12-31T23:59:59+00:00")  # False
-
-    Grain mismatch in the other direction is not silently resolved either: a
-    date-only publication landing ON the cutoff instant's own day cannot be
-    placed before or after it, so the replay gate drops that row with a
-    ``same_day_grain_ambiguous`` limitation rather than guessing a side.
-    """
-    if not _is_instant(value) and not _is_instant(cutoff):
-        return _parse_day(value) <= _parse_day(cutoff)
-    if not _is_instant(value):          # date vs instant: compare days
-        return _parse_day(value) <= _parse_clock(cutoff).date()
-    if not _is_instant(cutoff):         # instant vs date: compare days
-        return _parse_clock(value).date() <= _parse_day(cutoff)
-    return _parse_clock(value) <= _parse_clock(cutoff)
-
-
-def _within(value: Any, cutoff: Any) -> bool:
-    """:func:`_le` for an OWNER-SUPPLIED timestamp: a value this transport
-    cannot read is ``False`` — the row is WITHHELD, never fatal.
-
-    ``_le`` raises ``ValueError`` on a string it cannot parse and ``TypeError``
-    on a non-string. Reached from a time gate, that bare exception left the
-    route's catch-all to answer 503, so ONE unreadable timestamp from the owner
-    denied the caller every row it was entitled to. That is the same defect
-    ``app/theme_research.py`` already fixed for an unreadable ROW ("a row this
-    transport cannot read is WITHHELD, never fatal; withholding is the
-    fail-closed answer, 503 is not") — this is that law applied to the
-    timestamps inside the row. Reported by the Energy seat as base item 5
-    (#7870 issuecomment-5866433049), whose probe used an empty ``reviewed_at``.
-
-    Every caller reads this as "in range", so ``False`` withholds in both
-    polarities: an inclusion test does not include, an exclusion test excludes.
-    The parse is unchanged for every value ``_le`` could already read."""
-    try:
-        return _le(value, cutoff)
-    except (ValueError, TypeError):
-        return False
-
-
-def _readable(value: Any) -> bool:
-    """Whether :func:`_le` could compare this owner timestamp at all — the
-    distinction between "not datable" and "datable, and outside the cutoff",
-    which the caller needs to pick the right limitation."""
-    try:
-        _parse_day(value)
-    except (ValueError, TypeError):
-        return False
-    return True
+# The canonical-JSON, time-comparison and owner-withholding primitives moved
+# to the shared foundation (Sol #7870 issuecomment-5895067178). The private
+# names are kept as aliases so every call site below is UNCHANGED and the
+# composed bytes stay provably identical — a pure move, which is why
+# ``DEFINITION_VERSION`` is not bumped.
+_canonical_text = canonical_text
+_is_instant = is_instant
+_parse_clock = parse_clock
+_parse_day = parse_day
+_le = le
+_within = within
+_readable = readable
 
 
 # ---------------------------------------------------------------------------
@@ -226,58 +161,35 @@ def _readable(value: Any) -> bool:
 # ---------------------------------------------------------------------------
 
 def _validate_query(query: ResearchQuery) -> None:
-    if not isinstance(query.limit, int) or isinstance(query.limit, bool) \
-            or not _MIN_LIMIT <= query.limit <= _MAX_LIMIT:
-        raise ResearchRefusal("limit_out_of_range")
-    if not isinstance(query.offset, int) or isinstance(query.offset, bool) or query.offset < 0:
-        raise ResearchRefusal("offset_negative")
-    if query.offset > 0 and query.expected_generation is None:
-        raise ResearchRefusal("expected_generation_required")
-    if query.time_mode == "system_replay" and (
-            query.source_cutoff is None or query.recorded_cutoff is None):
-        raise ResearchRefusal("replay_cutoffs_required")
-    # A SUPPLIED cutoff must be readable, in EVERY mode. Until this ran, the
-    # first parse happened inside a time gate: `_le` raised a bare ValueError
-    # and the route's catch-all answered 503 `retry_later` (a transient code
-    # for a permanently malformed request), and where no gate read the cutoff
-    # the request answered a silent 200 that echoed the unreadable value back
-    # in `request.recorded_cutoff` with no limitation marking it. Both halves
-    # measured by the Energy seat over nuclear's route (#7870
-    # issuecomment-5868018569, corrected in 5869344590 and 5870740225).
-    #
-    # `_parse_day` is the parser deliberately: it accepts EXACTLY the values
-    # `_le` can go on to compare. `_parse_clock`/`fromisoformat` would admit
-    # `20261231` and `2026-W53-4`, which `_le` then raises on — the validator
-    # would hand those straight back to the 503 it exists to remove.
-    #
-    # FORMAT only. A well-formed cutoff is never refused for arriving in a
-    # mode this module does not read it in: a registered vertical may read one
-    # there on purpose (nuclear judges target windows from `source_cutoff` in
-    # `latest`), and refusing it would fail that vertical's existing pins.
-    for name in ("source_cutoff", "recorded_cutoff"):
-        raw = getattr(query, name)
-        if raw is None:
-            continue
-        try:
-            _parse_day(raw)
-        except (ValueError, TypeError):
-            raise ResearchRefusal("cutoff_unreadable") from None
+    """This vertical's page bounds and replay rule, enforced by the shared
+    validators with every vertical input passed explicitly. The call order is
+    the original one, so refusal PRECEDENCE is unchanged: page bounds, then
+    the replay-cutoff requirement, then cutoff format."""
+    validate_pagination(limit=query.limit, offset=query.offset,
+                        expected_generation=query.expected_generation,
+                        min_limit=_MIN_LIMIT, max_limit=_MAX_LIMIT)
+    validate_replay_cutoffs(time_mode=query.time_mode,
+                            source_cutoff=query.source_cutoff,
+                            recorded_cutoff=query.recorded_cutoff)
+    validate_cutoff_format(query.source_cutoff, query.recorded_cutoff)
 
 
 def _generation(query: ResearchQuery, bundle: OwnerBundle) -> str:
-    payload = {
-        "definition_version": DEFINITION_VERSION,
-        "rights_revision": bundle.rights_revision,
-        "revision_tuple": sorted(list(pair) for pair in bundle.revision_tuple),
-        "slice_key": query.slice_key,
-        "view": query.view,
-        "time_mode": query.time_mode,
-        "source_cutoff": query.source_cutoff,
-        "recorded_cutoff": query.recorded_cutoff,
-        "anchor_theme_id": query.anchor_theme_id,
-    }
-    digest = hashlib.sha256(_canonical_text(payload).encode("utf-8")).hexdigest()[:32]
-    return "gen_" + digest
+    """The shared fingerprint over THIS vertical's query dimensions. The
+    dimension set is passed in, not defaulted by the foundation."""
+    return generation_fingerprint(
+        definition_version=DEFINITION_VERSION,
+        rights_revision=bundle.rights_revision,
+        revision_tuple=bundle.revision_tuple,
+        fields={
+            "slice_key": query.slice_key,
+            "view": query.view,
+            "time_mode": query.time_mode,
+            "source_cutoff": query.source_cutoff,
+            "recorded_cutoff": query.recorded_cutoff,
+            "anchor_theme_id": query.anchor_theme_id,
+        },
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -366,39 +278,10 @@ def _is_retrospective(assertion: Mapping[str, Any], query: ResearchQuery) -> boo
     return _parse_day(retained) > _parse_day(published)
 
 
-def _in_anchor_scope(assertion: Mapping[str, Any], anchor_theme_id: str) -> bool:
-    """Whether an assertion belongs to the anchor the query names.
-
-    TWO VOCABULARIES MEET HERE, and they are deliberately different. The
-    mount/API ``anchor_theme_id`` is the crosswalk SLUG (``ai_semiconductors``,
-    ``^[a-z0-9_]+$`` at the route). The assertion's ``scope.canonical_theme_id``
-    is the identity owner's NODE id, ``theme:<slug>`` — the canonical-id law
-    this carrier published at #7870 issuecomment-5812295091, which every later
-    vertical was told to mint through
-    :func:`engine.theme_graph.identity.theme_node_id`, and which this contract's
-    own schema gives as its example ("e.g. theme:semiconductors").
-
-    Comparing the two as raw strings — which is what this gate did until now —
-    admits ONLY the slug form. The semiconductor corpus happens to carry the
-    slug, so the shipping vertical worked and the defect stayed invisible; a
-    vertical that followed the published law instead matched nothing, and
-    because an out-of-scope row is deliberately silent (below) it got zero rows
-    and NO limitation naming why. Accepting both forms is what makes the
-    foundation's own law executable.
-
-    Resolution goes through the identity owner rather than a literal
-    ``"theme:" + anchor`` so the prefix has ONE definition. It also refuses
-    ``ltheme:`` structurally, with no blocklist: the owner declares that prefix
-    deliberately non-canonical, and ``theme_node_id`` can never produce it."""
-    scope_id = assertion.get("scope", {}).get("canonical_theme_id")
-    if not isinstance(scope_id, str) or not scope_id:
-        return False
-    if scope_id == anchor_theme_id:
-        return True
-    try:
-        return scope_id == theme_node_id(anchor_theme_id)
-    except ValueError:
-        return False  # an anchor the identity owner cannot form a node id for
+# Canonical anchor-versus-``theme:<slug>`` scope matching is shared: the law it
+# makes executable was published for EVERY vertical, so a copy per vertical is
+# what let it drift in the first place.
+_in_anchor_scope = in_anchor_scope
 
 
 class _Selection:

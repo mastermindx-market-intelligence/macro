@@ -175,33 +175,20 @@ def free_client(monkeypatch):
 def bundle_loader(monkeypatch):
     """Install a synthetic bundle loader that returns ``witness_hbm_packaging``
     for any query. Tests that need a different fixture override the loader
-    directly. Tracks reader calls so anonymous paths can assert zero calls."""
+    directly. Tracks reader calls so anonymous paths can assert zero calls.
+
+    NOTE what this bundle cannot prove. The witness fixture's ``source_uri``s
+    are ``https://example.invalid/witness/...`` — a prefix in no
+    ``rights.SOURCE_PREFIX_FAMILY`` row — so ``family_for_source_ref`` returns
+    None and the emission path withholds every assertion (refusal through
+    ignorance; pinned by
+    ``test_witness_unmapped_sources_withhold_every_assertion_ref``). No rights
+    registry can grant an unmapped prefix. A test that needs a SERVED
+    ``assertion_ref`` must therefore use ``_install_warm_owner_state``,
+    not this fixture.
+    """
     calls: list[dict] = []
 
-    def _loader(query, *, principal, **_route_kwargs):
-        # The route also passes ``registration`` and ``rights_snapshot``
-        # (T08c-2); this synthetic loader ignores both.
-        calls.append({"query": query, "principal": principal})
-        case = load_case("witness_hbm_packaging")
-        from engine.market_ontology.semiconductor_theme_research import (
-            OwnerBundle, ResearchQuery,
-        )
-        src = case["bundle"]
-        bundle = OwnerBundle(
-            revision_tuple=tuple(tuple(x) for x in src["revision_tuple"]),
-            rights_revision=src["rights_revision"],
-            assertions=tuple(src["assertions"]),
-            identity_results=tuple(src["identity_results"]),
-            event_workspaces=tuple(src["event_workspaces"]),
-            financial_packets=tuple(src["financial_packets"]),
-            interpretation_blocks=tuple(src["interpretation_blocks"]),
-            native_refs=tuple(src["native_refs"]),
-            omissions=tuple(src["omissions"]),
-        )
-        return ResearchQuery(**case["query"]), bundle
-
-    # Replace with a simple wrapper: the function returns a tuple (query, bundle),
-    # but the route expects just the bundle. We adapt to fit both shapes.
     def loader(query, *, principal, **_route_kwargs):
         # The route also passes ``registration`` and ``rights_snapshot``
         # (T08c-2); this synthetic loader ignores both.
@@ -421,9 +408,11 @@ def test_remainder_path_returns_private_404_behind_auth(monkeypatch):
 # 5. HAPPY PATH — entitled + synthetic bundle → 200, schema, headers, authority
 # ---------------------------------------------------------------------------
 
-def _witness_query_and_bundle() -> tuple[dict, Any]:
-    case = load_case("witness_hbm_packaging")
-    return case["query"], case["bundle"]
+def _witness_body() -> dict:
+    """The W-A witness query as a request body — view ``economics``, unlike
+    :data:`_WITNESS_BODY`, which asks for ``composition``."""
+    q = load_case("witness_hbm_packaging")["query"]
+    return {k: q[k] for k in _WITNESS_BODY}
 
 
 def test_entitled_query_returns_200_and_validates_against_schema(
@@ -452,44 +441,37 @@ def test_entitled_query_returns_200_and_validates_against_schema(
 
 
 def test_evidence_route_with_returned_generation_returns_200(
-    entitled_client, bundle_loader, monkeypatch,
+    entitled_client, monkeypatch, tmp_path,
 ):
-    case = load_case("witness_hbm_packaging")
-    witness_query = case["query"]
+    """A ref the snapshot emitted, replayed with the generation it emitted,
+    is admitted.
+
+    Uses ``_install_warm_owner_state`` rather than the witness fixture:
+    the witness's sources map to no rights family, so it emits no assertion
+    ref and this route could never be reached. Until this test was rewritten
+    it skipped itself on every machine and in CI, which left evidence-reference
+    admission with zero executed coverage while the suite reported green.
+    """
+    fixture = _install_warm_owner_state(monkeypatch, tmp_path)
     # First fetch the generation from a snapshot call.
     snapshot = entitled_client.post(
-        "/api/themes/v1/research/query",
-        json={"anchor_theme_id": witness_query["anchor_theme_id"],
-               "slice_key": witness_query["slice_key"],
-               "view": witness_query["view"],
-               "time_mode": witness_query["time_mode"],
-               "source_cutoff": witness_query["source_cutoff"],
-               "recorded_cutoff": witness_query["recorded_cutoff"],
-               "offset": witness_query["offset"],
-               "limit": witness_query["limit"],
-               "expected_generation": witness_query["expected_generation"]},
+        "/api/themes/v1/research/query", json=_valid_body(),
     )
     assert snapshot.status_code == 200, snapshot.text
     snapshot_payload = snapshot.json()
     generation = snapshot_payload["generation"]
-    # Pick one assertion_ref out of the snapshot.
+    # Pick one assertion_ref out of the snapshot. The count is asserted, not
+    # branched on: a fixture that stops granting must fail here, never skip.
     refs = [r for r in snapshot_payload["evidence_refs"] if r.get("kind") == "assertion"]
-    if not refs:
-        pytest.skip("witness fixture has no selected assertions (rights filter emptied it)")
+    assert len(refs) == fixture["expected_first_selected"], (
+        f"granted bundle emitted {len(refs)} assertion refs, "
+        f"limitations={snapshot_payload['limitations']}"
+    )
     ref = refs[0]["assertion_ref"]
 
     response = entitled_client.post(
         "/api/themes/v1/research/evidence",
-        json={"anchor_theme_id": witness_query["anchor_theme_id"],
-              "slice_key": witness_query["slice_key"],
-              "view": witness_query["view"],
-              "time_mode": witness_query["time_mode"],
-              "source_cutoff": witness_query["source_cutoff"],
-              "recorded_cutoff": witness_query["recorded_cutoff"],
-              "offset": witness_query["offset"],
-              "limit": witness_query["limit"],
-              "expected_generation": generation,
-              "assertion_ref": ref},
+        json=_evidence_body_with(ref, generation),
     )
     assert response.status_code == 200, response.text
     _assert_private_headers(response)
@@ -497,33 +479,59 @@ def test_evidence_route_with_returned_generation_returns_200(
     assert payload["assertion_ref"] == ref
 
 
-def test_evidence_with_stale_generation_returns_409_refresh_required(
+def test_witness_unmapped_sources_withhold_every_assertion_ref(
     entitled_client, bundle_loader,
 ):
-    case = load_case("witness_hbm_packaging")
-    q = case["query"]
-    refs = []
-    snapshot = entitled_client.post(
-        "/api/themes/v1/research/query",
-        json={"anchor_theme_id": q["anchor_theme_id"], "slice_key": q["slice_key"],
-              "view": q["view"], "time_mode": q["time_mode"],
-              "source_cutoff": q["source_cutoff"], "recorded_cutoff": q["recorded_cutoff"],
-              "offset": q["offset"], "limit": q["limit"], "expected_generation": None},
+    """The W-A witness fixture's sources name no rights family, so every
+    assertion is withheld — and the panel built from NATIVE inputs survives.
+
+    This was previously an in-test ``pytest.skip`` whose message guessed at the
+    cause ("rights filter emptied it"). The cause is narrower and permanent:
+    ``family_for_source_ref("https://example.invalid/witness/...")`` is None,
+    and None on the emission path means withhold. Pinning it here converts a
+    silent, unconditional skip into an executed law, and records that the
+    withhold is scoped — it empties assertion-derived sections without
+    emptying the economics panel the W-A witness exists to show.
+    """
+    response = entitled_client.post(
+        "/api/themes/v1/research/query", json=_witness_body(),
     )
-    assert snapshot.status_code == 200
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert [r for r in payload["evidence_refs"] if r.get("kind") == "assertion"] == []
+    assert payload["authorized_coverage"]["selected"] == 0
+    assert payload["authorized_coverage"]["status"] == "unavailable"
+    assert payload["authorized_coverage"]["input_refs"] == []
+    # The refusal is DECLARED, not silent.
+    assert "rights_refused_families_hidden" in payload["limitations"]
+    # Native inputs are not family-gated, so the witness still serves the
+    # management sequence. An empty economics panel here would be a failure.
+    assert payload["economics"]["status"] == "ready"
+    assert payload["economics"]["input_refs"]
+    # Assertion-derived sections ARE emptied, and say so rather than lying.
+    assert payload["companies"]["status"] == "unavailable"
+
+
+def test_evidence_with_stale_generation_returns_409_refresh_required(
+    entitled_client, monkeypatch, tmp_path,
+):
+    """A real, admissible ref carried on a generation that is not the current
+    one is refused with ``refresh_required`` — the ref's validity does not
+    excuse the stale page. Same rewrite as the 200 case: this test used to
+    skip itself unconditionally.
+    """
+    fixture = _install_warm_owner_state(monkeypatch, tmp_path)
+    snapshot = entitled_client.post(
+        "/api/themes/v1/research/query", json=_valid_body(),
+    )
+    assert snapshot.status_code == 200, snapshot.text
     refs = [r for r in snapshot.json()["evidence_refs"] if r.get("kind") == "assertion"]
-    if not refs:
-        pytest.skip("witness has no selected assertions")
+    assert len(refs) == fixture["expected_first_selected"]
     ref = refs[0]["assertion_ref"]
     # Use a stale generation.
     response = entitled_client.post(
         "/api/themes/v1/research/evidence",
-        json={"anchor_theme_id": q["anchor_theme_id"], "slice_key": q["slice_key"],
-              "view": q["view"], "time_mode": q["time_mode"],
-              "source_cutoff": q["source_cutoff"], "recorded_cutoff": q["recorded_cutoff"],
-              "offset": q["offset"], "limit": q["limit"],
-              "expected_generation": "gen_" + "0" * 32,
-              "assertion_ref": ref},
+        json=_evidence_body_with(ref, "gen_" + "0" * 32),
     )
     assert response.status_code == 409, response.text
     _assert_private_headers(response)
@@ -817,10 +825,20 @@ def test_theme_research_routes_are_unique_against_existing_themes_prefix():
 # ---------------------------------------------------------------------------
 
 def _install_warm_owner_state(monkeypatch, tmp_path) -> dict:
-    """Shared setup for the owner-parity tests: point the rights OWNER at the
-    fixture's PERMITTING synthetic registry and install the warm bundle whose
-    every assertion maps to ``mastermind_curated`` (rights class
-    ``direct_display_ok`` in that registry). Returns the fixture dict."""
+    """Shared setup for the owner-parity AND evidence-route tests: point the
+    rights OWNER at the fixture's PERMITTING synthetic registry and install the
+    warm bundle whose every assertion maps to ``mastermind_curated`` (rights
+    class ``direct_display_ok`` in that registry). Returns the fixture dict.
+
+    The evidence-route tests need this rather than :func:`bundle_loader`
+    because the W-A witness fixture's ``source_uri``s
+    (``https://example.invalid/witness/...``) match no
+    ``rights.SOURCE_PREFIX_FAMILY`` prefix, so ``family_for_source_ref``
+    returns None and the emission path withholds every assertion. No registry
+    can grant an unmapped prefix, so the witness bundle can never produce a
+    served ``assertion_ref`` — which is why those two tests used to skip
+    themselves unconditionally.
+    """
     fixture = load_case("revoked_rights_warm")
     registry = tmp_path / "theme_sources_owner_parity.yml"
     registry.write_text(json.dumps(fixture["rights_registry_initial"]))
@@ -1146,6 +1164,11 @@ from engine.market_ontology.theme_research_registry import (  # noqa: E402
 
 _SYNTHETIC_ANCHOR = "synthetic_vertical"
 _SYNTHETIC_SLICE = "synthetic_slice"
+#: A view NO semiconductor registration admits. The synthetic vertical also
+#: admits ``composition`` so the bodies below need no per-test override; this
+#: extra one is what makes the view vocabulary provably per-vertical rather
+#: than a literal in the shared transport.
+_SYNTHETIC_VIEW = "synthetic_view"
 _SYNTHETIC_SCHEMA = "synthetic_theme_research.v1"
 _SYNTHETIC_EVIDENCE_SCHEMA = "synthetic_theme_research.evidence.v1"
 _SYNTHETIC_AUTHORITY = {
@@ -1160,6 +1183,7 @@ def _install_synthetic_registration(monkeypatch, *, compose=None, select=None):
     copy whose callables FAIL, so a dispatch to the wrong vertical is loud.
     The module-level REGISTRY is never mutated (it is read-only)."""
     import dataclasses
+    from types import SimpleNamespace
 
     calls: dict[str, list] = {"compose": [], "select": []}
 
@@ -1188,15 +1212,26 @@ def _install_synthetic_registration(monkeypatch, *, compose=None, select=None):
     def default_load(query, *, rights_snapshot):  # pragma: no cover — these tests patch the route seam
         raise AssertionError("synthetic registration's loader must not be reached here")
 
+    def default_build_query(**fields):
+        """This vertical's OWN query type — deliberately not the semiconductor
+        dataclass. The shell constructs a query only through the resolved
+        registration, so a vertical is free to use any type at all; a shell
+        that still named one vertical's ``ResearchQuery`` would refuse
+        ``slice_key="synthetic_slice"`` on that class's ``Literal`` before
+        this registration was ever consulted."""
+        return SimpleNamespace(**fields)
+
     synthetic = VerticalRegistration(
         anchor_theme_id=_SYNTHETIC_ANCHOR,
         slice_keys=(_SYNTHETIC_SLICE,),
+        view_keys=("composition", _SYNTHETIC_VIEW),
         schema_id=_SYNTHETIC_SCHEMA,
         evidence_schema_id=_SYNTHETIC_EVIDENCE_SCHEMA,
         definition_version="2026-09-24.synthetic",
         compose=compose or default_compose,
         select_evidence=select or default_select,
         load_bundle=default_load,
+        build_query=default_build_query,
         title_en="Synthetic research", title_zh="合成研究",
         note_en="Synthetic note.", note_zh="合成说明。",
     )
@@ -1207,6 +1242,7 @@ def _install_synthetic_registration(monkeypatch, *, compose=None, select=None):
     semiconductor = dataclasses.replace(
         _real_registration_for("ai_semiconductors"),
         compose=wrong_vertical, select_evidence=wrong_vertical,
+        build_query=wrong_vertical,
     )
 
     def patched(anchor):
@@ -1364,6 +1400,79 @@ def test_synthetic_registration_foreign_slice_fails_closed_before_its_composer(
     assert calls["compose"] == [] and bundle_loader == []
 
 
+def test_a_foreign_view_fails_closed_on_the_registered_semiconductor_anchor(
+    entitled_client, bundle_loader,
+):
+    """The VIEW vocabulary is per-vertical, and the shell holds none of it.
+
+    ``view`` used to be a shared ``Literal`` naming one vertical's five views
+    (#7870 issuecomment-5923155205: "the finished closed registration must own
+    and validate the admitted view set as well as the admitted slice set"), so
+    a second vertical could not name a view of its own without editing the
+    shared transport. The grammar now admits any ``[a-z0-9_]+`` and the
+    REGISTRATION decides. ``synthetic_view`` is grammatically valid and belongs
+    to another vertical, so it is refused here — before any bundle is loaded —
+    and the refusal does not disclose the views this anchor does admit.
+    """
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_valid_body(view=_SYNTHETIC_VIEW),
+    )
+    assert response.status_code == 400, response.text
+    _assert_private_headers(response)
+    assert response.json()["detail"]["error"]["code"] == "invalid_request"
+    assert bundle_loader == []
+    for admitted in ("manufacturing", "commercial", "capacity", "economics"):
+        assert admitted not in response.text, (
+            f"the refusal discloses {admitted!r}, part of this anchor's admitted "
+            "view set; an unregistered view must not enumerate the registry"
+        )
+
+
+def test_a_foreign_view_fails_closed_on_the_synthetic_anchor(
+    entitled_client, bundle_loader, monkeypatch,
+):
+    """The same closure in the other direction: ``economics`` is a real
+    SEMICONDUCTOR view and the synthetic vertical never registered it, so it is
+    refused before the synthetic composer runs. Together with the test above
+    this proves the shell carries no vertical's view vocabulary in either
+    direction — a shell that still pinned the semiconductor ``Literal`` would
+    admit ``economics`` everywhere and refuse ``synthetic_view`` everywhere,
+    which is exactly the inverse of both assertions."""
+    calls = _install_synthetic_registration(monkeypatch)
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_valid_body(
+            anchor_theme_id=_SYNTHETIC_ANCHOR, slice_key=_SYNTHETIC_SLICE, view="economics",
+        ),
+    )
+    assert response.status_code == 400, response.text
+    _assert_private_headers(response)
+    assert response.json()["detail"]["error"]["code"] == "invalid_request"
+    assert calls["compose"] == [] and bundle_loader == []
+    assert _SYNTHETIC_VIEW not in response.text
+
+
+def test_a_foreign_view_fails_closed_on_the_evidence_route_too(
+    entitled_client, bundle_loader, monkeypatch,
+):
+    """``_EvidenceBody`` extends ``_QueryBody``, so the evidence route resolves
+    the same registration and must close the same view set. Proven on the
+    selector, which is a different callable from the composer."""
+    calls = _install_synthetic_registration(monkeypatch)
+    body = _evidence_body_with(
+        "gmi-curation://" + _SYNTHETIC_ANCHOR + "/gmirca_" + "b" * 32,
+    )
+    body["anchor_theme_id"] = _SYNTHETIC_ANCHOR
+    body["slice_key"] = _SYNTHETIC_SLICE
+    body["view"] = "economics"
+    response = entitled_client.post("/api/themes/v1/research/evidence", json=body)
+    assert response.status_code == 400, response.text
+    _assert_private_headers(response)
+    assert response.json()["detail"]["error"]["code"] == "invalid_request"
+    assert calls["select"] == [] and bundle_loader == []
+
+
 def test_composer_payload_with_unregistered_schema_fails_closed_as_503(
     entitled_client, bundle_loader, monkeypatch,
 ):
@@ -1406,7 +1515,11 @@ def test_semiconductor_anchor_still_dispatches_the_real_composer(
     payload carries the composer's exact schema id and definition version."""
     from engine.market_ontology import semiconductor_theme_research as composer
     entry = _real_registration_for("ai_semiconductors")
-    assert entry.compose is composer.compose_semiconductor_research
+    # Bound lazily so importing this shell loads no vertical at all; the
+    # accessor resolves the registration to the exact function it dispatches
+    # to, which is the same identity guarantee asserted before the binding
+    # became lazy (Sol #7870 issuecomment-5895067178).
+    assert entry.compose.lazy_target() is composer.compose_semiconductor_research
     response = entitled_client.post("/api/themes/v1/research/query", json=_valid_body())
     assert response.status_code == 200, response.text
     payload = response.json()
@@ -1421,11 +1534,55 @@ def test_route_source_carries_no_hard_pinned_vertical():
     assert "compose_semiconductor_research" not in source
     assert "select_authorized_evidence" not in source
     assert 'Literal["hbm_packaging"' not in source
+    # No vertical's slice OR view vocabulary is pinned in the transport: both
+    # are membership decisions the closed registration owns (Sol #7870
+    # issuecomment-5923155205). The views used to sit in a pydantic
+    # ``Literal`` here, which silently made the SEMICONDUCTOR vocabulary the
+    # shared contract for every vertical.
+    for pinned in ("composition", "manufacturing", "capacity", "economics",
+                   "hbm_packaging", "sic_gan_specialty"):
+        assert f'"{pinned}"' not in source, pinned
     assert "registration_for(" in source
     assert "registration.compose(" in source
     assert "registration.select_evidence(" in source
+    assert "registration.build_query(" in source
     for forbidden in ("import re\n", "re.compile", "re.match", "fnmatch", "os.environ"):
         assert forbidden not in source, forbidden
+
+
+def test_the_only_vertical_named_in_the_shell_is_annotation_only():
+    """The shell imports two of the semiconductor dataclasses for ANNOTATIONS.
+
+    ``from __future__ import annotations`` makes every annotation a string, so
+    that import is never executed at runtime — which the laziness law proves
+    by measurement. This law pins the shape the measurement depends on: the
+    mention lives inside ``if TYPE_CHECKING:`` and nowhere else, so a future
+    edit cannot quietly turn it back into a real import edge and leave the
+    shared shell unloadable without this one vertical again.
+    """
+    import ast as _ast
+
+    path = ROOT / "app" / "theme_research.py"
+    tree = _ast.parse(path.read_text(encoding="utf-8"))
+    guarded, unguarded = [], []
+    for node in _ast.walk(tree):
+        if not isinstance(node, _ast.If):
+            continue
+        if "TYPE_CHECKING" not in _ast.dump(node.test):
+            continue
+        for sub_node in _ast.walk(node):
+            if isinstance(sub_node, _ast.ImportFrom) and sub_node.module:
+                guarded.append(sub_node.module)
+    for node in _ast.walk(tree):
+        if isinstance(node, _ast.ImportFrom) and node.module and node.module not in guarded:
+            unguarded.append(node.module)
+    assert any("semiconductor" in m for m in guarded), (
+        "expected the vertical's dataclasses behind TYPE_CHECKING"
+    )
+    assert not [m for m in unguarded if "semiconductor" in m], (
+        f"a vertical is imported at RUNTIME by the shared shell: "
+        f"{[m for m in unguarded if 'semiconductor' in m]}"
+    )
 
 
 def test_composer_payload_with_drifted_definition_version_fails_closed_as_503(

@@ -84,12 +84,27 @@ class MountFacts:
     rather than leaving them to drift. Both halves of every pair are required
     — a mount that renders an English label where Chinese is owed is a drift
     the toggle cannot hide.
+
+    ``view_keys`` and ``definition_version`` are declarative contract facts,
+    not copy: they are the admitted view vocabulary and the payload's
+    definition version, and the closed registration one layer up reads both
+    from here. They live beside ``schema_id``/``evidence_schema_id`` because
+    they are the same KIND of fact and have the same problem — the registry
+    cannot learn them from the composer without importing it eagerly, which is
+    exactly the edge that made the shared shell unloadable without this
+    vertical. Deliberately absent from :func:`mount_context`: that contract is
+    the nine strings a TEMPLATE renders, and no template renders a view list
+    or a definition version. Agreement with the composer's own ``VIEW_KEYS``
+    and ``DEFINITION_VERSION`` is covered by the registry's existing
+    per-registration reconciliation, which imports each composer lazily.
     """
 
     anchor_theme_id: str
     slice_keys: tuple[str, ...]
+    view_keys: tuple[str, ...]
     schema_id: str
     evidence_schema_id: str
+    definition_version: str
     slice_labels: Mapping[str, tuple[str, str]]
     title_en: str
     title_zh: str
@@ -111,6 +126,15 @@ class MountFacts:
                 )
         if len(set(self.slice_keys)) != len(self.slice_keys):
             raise ValueError("MountFacts.slice_keys must not repeat a slice")
+        if not isinstance(self.view_keys, tuple) or not self.view_keys:
+            raise ValueError("MountFacts.view_keys must be a non-empty tuple")
+        for view_key in self.view_keys:
+            if not _is_canonical_id(view_key):
+                raise ValueError(
+                    "MountFacts.view_keys entries must match the canonical id grammar"
+                )
+        if len(set(self.view_keys)) != len(self.view_keys):
+            raise ValueError("MountFacts.view_keys must not repeat a view")
         if not isinstance(self.slice_labels, Mapping):
             raise TypeError("MountFacts.slice_labels must be a mapping")
         if set(self.slice_labels) != set(self.slice_keys):
@@ -124,7 +148,7 @@ class MountFacts:
                 )
             for half in pair:
                 _require_nonempty_text(f"slice_labels[{slice_key!r}]", half)
-        for field in ("schema_id", "evidence_schema_id",
+        for field in ("schema_id", "evidence_schema_id", "definition_version",
                       "title_en", "title_zh", "note_en", "note_zh"):
             _require_nonempty_text(field, getattr(self, field))
         if self.schema_id == self.evidence_schema_id:
@@ -134,8 +158,17 @@ class MountFacts:
 _SEMICONDUCTOR = MountFacts(
     anchor_theme_id="ai_semiconductors",
     slice_keys=("hbm_packaging", "sic_gan_specialty"),
+    # The five admitted views, pinned verbatim from the composer's VIEW_KEYS.
+    view_keys=(
+        "composition",
+        "manufacturing",
+        "commercial",
+        "capacity",
+        "economics",
+    ),
     schema_id="semiconductor_theme_research.v1",
     evidence_schema_id="semiconductor_theme_research.evidence.v1",
+    definition_version="2026-09-24.1",
     slice_labels=MappingProxyType({
         "hbm_packaging": ("HBM & advanced packaging", "HBM 与先进封装"),
         "sic_gan_specialty": ("SiC / GaN specialty devices", "SiC / GaN 特种器件"),

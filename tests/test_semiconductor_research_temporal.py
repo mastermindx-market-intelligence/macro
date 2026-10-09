@@ -227,6 +227,54 @@ def test_epoch_listing_valid_from_is_not_evidence_of_listing():
     assert row['company_node_id'] is not None
 
 
+def test_an_unreadable_mapping_timestamp_degrades_one_row_not_the_whole_response():
+    """An owner timestamp this transport cannot read WITHHOLDS, it is never fatal.
+
+    The identity gate is the one place the composer calls ``within`` behind an
+    ``isinstance(..., str)`` check with no readability guard, so an empty or
+    malformed ``mapping_learned_at`` from the owner reaches the comparison
+    directly. Before the shared foundation absorbed that parse, ``le`` raised a
+    bare ValueError here and the route's catch-all answered 503 ``retry_later``:
+    ONE unreadable timestamp denied the caller every row it was entitled to
+    (Energy seat base item 5, #7870 issuecomment-5866433049). A kernel unit pins
+    the primitive; this pins the path that actually reaches it in production.
+
+    Degrading to ``identity_not_yet_learned`` is the fail-closed answer: an
+    unreadable mapping timestamp cannot prove the mapping existed by the
+    recorded cutoff, so the row must not resolve — and the OTHER rows, whose
+    timestamps are readable, keep being served.
+    """
+    query, bundle = load_bundle_case('witness_hbm_packaging')
+    anchor_result = next(
+        r for r in bundle.identity_results
+        if r['source_business_label'] == 'Synthetic Foundry Alpha'
+    )
+    others = tuple(
+        r for r in bundle.identity_results
+        if r['source_business_label'] != 'Synthetic Foundry Alpha'
+    )
+    assert others, 'this pin needs a readable sibling row to prove the response survives'
+
+    for unreadable in ('', 'unknown', 'not-a-date'):
+        broken = dict(anchor_result)
+        broken['mapping_learned_at'] = unreadable
+        replay = replace(query, time_mode='system_replay',
+                         source_cutoff='2026-06-01T00:00:00Z',
+                         recorded_cutoff='2026-06-01T00:00:00Z')
+        response = compose_semiconductor_research(
+            replay, replace(bundle, identity_results=(broken,) + others),
+        )
+        rows = {row['source_business_label']: row for row in response['companies']['rows']}
+        row = rows['Synthetic Foundry Alpha']
+        assert row['company_node_id'] is None, (
+            f'an unreadable mapping timestamp ({unreadable!r}) cannot prove the mapping '
+            f'existed by the recorded cutoff'
+        )
+        assert row['navigation']['reason'] == 'identity_not_yet_learned'
+        # and the readable siblings are still served: withholding is per-row
+        assert len(rows) > 1
+
+
 def test_replay_with_pre_event_cutoffs_loses_the_witness_economics():
     # events recorded after the recorded_cutoff must not leak into a replay
     query, bundle = load_bundle_case('witness_hbm_packaging')

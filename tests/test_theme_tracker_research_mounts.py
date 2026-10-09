@@ -114,8 +114,10 @@ def test_a_second_registered_vertical_renders_a_second_section(tmp_path, monkeyp
     synthetic = mounts_module.MountFacts(
         anchor_theme_id="synthetic_vertical",
         slice_keys=("alpha_slice", "beta_slice"),
+        view_keys=("alpha_view", "beta_view"),
         schema_id="synthetic_research.v1",
         evidence_schema_id="synthetic_research.evidence.v1",
+        definition_version="2026-09-24.synthetic",
         slice_labels=MappingProxyType({
             "alpha_slice": ("Alpha slice", "甲切片"),
             "beta_slice": ("Beta slice", "乙切片"),

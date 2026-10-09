@@ -47,24 +47,39 @@ without naming the families — what was refused is never disclosed.
 """
 from __future__ import annotations
 
+import dataclasses
 import json
 from collections.abc import Iterable, Mapping
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from engine.market_ontology.semiconductor_theme_research import (
-    OwnerBundle,
-    ResearchQuery,
+from engine.market_ontology.theme_research_binding import (
+    BundleUnavailable,
     ResearchRefusal,
 )
-from engine.market_ontology.theme_research_binding import BundleUnavailable
 from engine.market_ontology.theme_research_registry import (
     VerticalRegistration,
     registration_for,
 )
+
+if TYPE_CHECKING:  # pragma: no cover — annotations only (PEP 563 is on)
+    # This SHARED transport used to import ``OwnerBundle``, ``ResearchQuery``
+    # and ``ResearchRefusal`` from the semiconductor composer at module level,
+    # so loading the shell loaded ONE vertical's entire closure and the shell
+    # could not serve a second vertical without it (Sol #7870
+    # issuecomment-5895067178). The refusal class moved to the shared
+    # foundation above, because an ``except`` clause must resolve at runtime.
+    # The two dataclasses are only ever ANNOTATED here: the shell builds a
+    # query through ``registration.build_query`` and derives a filtered bundle
+    # with ``dataclasses.replace``, so it needs neither type at runtime and
+    # names no vertical.
+    from engine.market_ontology.semiconductor_theme_research import (
+        OwnerBundle,
+        ResearchQuery,
+    )
 from engine.theme_graph.rights import (
     RightsRefusal,
     assert_current_emission_allowed,
@@ -203,7 +218,13 @@ class _QueryBody(BaseModel):
     # Grammar only; MEMBERSHIP is decided by the closed registration for the
     # anchor (``_resolve_registration``), never by a literal in this shell.
     slice_key: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9_]+$")
-    view: Literal["composition", "manufacturing", "commercial", "capacity", "economics"]
+    # Grammar only, for the same reason and by the same rule as ``slice_key``:
+    # these five views were the SEMICONDUCTOR vocabulary pinned in a shared
+    # transport, which is a membership decision the shell is not entitled to
+    # make for any other vertical (Sol #7870 issuecomment-5923155205). An
+    # unregistered view is refused by ``_resolve_registration`` with the same
+    # private 400 an unregistered slice gets.
+    view: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9_]+$")
     time_mode: Literal["latest", "source_history", "system_replay"]
     source_cutoff: str | None = Field(default=None, max_length=32)
     recorded_cutoff: str | None = Field(default=None, max_length=32)
@@ -231,8 +252,17 @@ class _EvidenceBody(_QueryBody):
     expected_generation: str = Field(pattern=r"^gen_[0-9a-f]{32}$")
 
 
-def _body_to_query(body: _QueryBody | _EvidenceBody) -> ResearchQuery:
-    return ResearchQuery(
+def _body_to_query(
+    body: _QueryBody | _EvidenceBody, registration: VerticalRegistration,
+) -> ResearchQuery:
+    """Build the resolved vertical's own query object from the parsed body.
+
+    The field NAMES are the shared query contract every registered vertical
+    accepts; the vertical owns the type and its literals, so a value this
+    shell admitted by grammar but the vertical does not accept fails in the
+    vertical. The shell constructs no vertical type itself.
+    """
+    return registration.build_query(
         anchor_theme_id=body.anchor_theme_id,
         slice_key=body.slice_key,
         view=body.view,
@@ -454,16 +484,14 @@ def _filter_bundle_for_rights(
             dropped = True
     if not dropped:
         return bundle, False
-    new_bundle = OwnerBundle(
-        revision_tuple=bundle.revision_tuple,
-        rights_revision=bundle.rights_revision,
-        assertions=tuple(kept),
-        identity_results=bundle.identity_results,
-        event_workspaces=bundle.event_workspaces,
-        financial_packets=bundle.financial_packets,
-        interpretation_blocks=tuple(blocks),
-        native_refs=bundle.native_refs,
-        omissions=bundle.omissions,
+    # ``replace`` on the bundle INSTANCE, not a constructor call on a named
+    # vertical class: every other field was copied through verbatim, so this
+    # is the same object by construction, and the shell no longer has to know
+    # which dataclass a vertical's loader returned or how many fields it has.
+    # A field added to a vertical's bundle is carried here automatically
+    # instead of being silently dropped by a nine-field copy.
+    new_bundle = dataclasses.replace(
+        bundle, assertions=tuple(kept), interpretation_blocks=tuple(blocks),
     )
     return new_bundle, True
 
@@ -578,7 +606,7 @@ def _resolve_registration(body: _QueryBody) -> VerticalRegistration:
     registration. Unregistered anchor → the route's private 404
     ``not_available`` (the same body the evidence route gives an unknown ref;
     the anchor is not echoed and the registry is not listed). Registered anchor
-    with a slice outside its closed slice set → the private 400
+    with a slice or a view outside its closed sets → the private 400
     ``invalid_request`` the body model gives a malformed field. Nothing here
     reads a bundle, a file or the environment."""
     try:
@@ -602,6 +630,12 @@ def _resolve_registration(body: _QueryBody) -> VerticalRegistration:
             400,
             {"error": {"code": "invalid_request", "action": "fix_request",
                         "detail": "slice_key is not registered for this anchor"}},
+        )
+    if body.view not in registration.view_keys:
+        raise _private_error(
+            400,
+            {"error": {"code": "invalid_request", "action": "fix_request",
+                        "detail": "view is not registered for this anchor"}},
         )
     return registration
 
@@ -629,7 +663,7 @@ def _require_registered_contract(
 def _call_compose(
     body: _QueryBody, principal: Mapping[str, Any], registration: VerticalRegistration,
 ) -> JSONResponse:
-    query = _body_to_query(body)
+    query = _body_to_query(body, registration)
     snapshot = load_registry_snapshot()  # ONE rights read per request (T03 owner)
     bundle = load_authorized_owner_bundle(
         query, principal=principal, registration=registration, rights_snapshot=snapshot,
@@ -647,7 +681,7 @@ def _call_compose(
 def _call_evidence(
     body: _EvidenceBody, principal: Mapping[str, Any], registration: VerticalRegistration,
 ) -> JSONResponse:
-    query = _body_to_query(body)
+    query = _body_to_query(body, registration)
     snapshot = load_registry_snapshot()  # ONE rights read per request (T03 owner)
     bundle = load_authorized_owner_bundle(
         query, principal=principal, registration=registration, rights_snapshot=snapshot,
