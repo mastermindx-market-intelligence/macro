@@ -2,20 +2,28 @@
   "customer_publication_authorized": false,
   "files": {
     "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
-      "bytes": 69782,
-      "sha256": "ab12edf23311a932208020fcc863bbd0d81ba163e7d17f9d02323e367af1f365"
+      "bytes": 74479,
+      "sha256": "7314d4bddcbe130f91c4828c8d26ab194b38b4871d79a6971f414d2c5b15ad07"
     },
     "session2/CONTINUATION.md": {
-      "bytes": 5491,
-      "sha256": "f22c806fc9953c305e86ff6de0fe4a3fa590f61c9bf9ec4135eb2830b1f48e26"
+      "bytes": 7591,
+      "sha256": "f45b982f3e703428aaf47a9eb818a408614048f3815686a10f945f7431f2aa71"
     },
     "session2/CUMULATIVE_WINDOW_CONTRACT.md": {
       "bytes": 2197,
       "sha256": "7afce9b4f4e01ed1eda350cefe09de6cf3b6733903f31b9d5fd4a2d6d9991f0b"
     },
+    "session2/QUOTE_REFERENCE_PROTOCOL.md": {
+      "bytes": 5830,
+      "sha256": "7f3e9a0e47acf39a20f34aa6a3020265e865aaa96441d6945c92db6b1516e874"
+    },
     "session2/evidence/benchmark.json": {
       "bytes": 1341,
       "sha256": "196e3b469c399c114fbde8f9e092ca920252ddac60c50ad4182be8105d7c60ac"
+    },
+    "session2/evidence/native_quote_tests.json": {
+      "bytes": 1902,
+      "sha256": "3782faa4439cb13833bc37592d42b90c4dfae1e86f9254a4cede5aa5f27fd8e9"
     },
     "session2/evidence/native_r2_tests.json": {
       "bytes": 1668,
@@ -41,6 +49,10 @@
       "bytes": 26552,
       "sha256": "34cf424cdb33ac7edc2b1af83334f2117692b8b3569de93b6c632c6729a75edb"
     },
+    "session2/prototype/quote_reference.py": {
+      "bytes": 11001,
+      "sha256": "f3b487c815e7123c0edb92fad123743434a9b1e201a8b914a7d48ac9ac034250"
+    },
     "session2/prototype/test_disclosed_profile.py": {
       "bytes": 3083,
       "sha256": "cf70779f659d5e4f22abfbbe5687cdbb73cdbc0b83cb1290211f7e99ac8f426b"
@@ -48,6 +60,10 @@
     "session2/prototype/test_pressure.py": {
       "bytes": 15906,
       "sha256": "057efcbd01db1ace2367449343d0a5bd556f245d20e1a4c703baf535aae35c79"
+    },
+    "session2/prototype/test_quote_reference.py": {
+      "bytes": 10233,
+      "sha256": "a7eb61319530ac81c50214dfe69fd0b62051af488d65656254894dc616cb040e"
     },
     "session2/prototype/test_window_pipeline.py": {
       "bytes": 5835,
@@ -79,15 +95,16 @@
     }
   },
   "market_pilot_admitted": false,
-  "native_scoped_tests_passed": 116,
+  "native_quote_test_receipt": "session2/evidence/native_quote_tests.json",
+  "native_scoped_tests_passed": 164,
   "native_test_receipt": "session2/evidence/native_window_tests.json",
-  "predecessor_commit": "28a59ff16e59da6af4f8b0389935d4800f4b2ed1",
-  "prepared_at_utc": "2026-10-09T04:22:01.910509+00:00",
+  "predecessor_commit": "6ec65baf50cb06349197a92782e63c603d265e73",
+  "prepared_at_utc": "2026-10-09T04:46:31.290737+00:00",
   "report_structure_checks": {
     "external_source_records": 13,
     "implementation_packets": 7,
     "internal_source_records": 10,
-    "numbered_sections": 18
+    "numbered_sections": 19
   },
   "schema": "factor_atlas.session2.research_package.v1"
 }

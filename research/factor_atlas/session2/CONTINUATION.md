@@ -33,3 +33,39 @@ The report now includes section 18; original 17-section research and seven nativ
 Publish and verify this source/evidence delta, keeping PR8677 Draft/HOLD and unarmed. Preserve old CI37882116352 / fences37882115950 as predecessor evidence; a new head needs its own checks. The predecessor fences were observed successful on this resume; CI remained unresolved at the last check. No polling-only or background Web execution claim.
 
 Then inspect only material existing-source dependency progress. S2-P1 requires an existing owner-qualified AAPL/MSFT/NVDA + SPY minute bundle with compatible monetary basis, actual source/reader clocks, immutable revisions and coverage. Only positive source admission unlocks licensed S2-P2 replay. The pure reducer does not authenticate input metadata or create another qualifier, calendar, ingest or identity owner. Hold source/consumer promotion and all denied effects.
+
+## Extra High milestone — quote-reference research
+
+Source head at entry: 6ec65baf50cb06349197a92782e63c603d265e73. Protected Mastermind moved to
+`ad362ef45def043ee5970c2b131be9825fcea1ae`, compatible Skillpack
+1.0.1; source-law blobs unchanged from the earlier pin. Existing PR #8677
+remains Draft/HOLD. The preceding cumulative source and tests are DO_NOT_REDO
+without material invalidation.
+
+A new independent production-inert S2-P3 quote-reference research adapter
+was added only under `session2/prototype/quote_reference.py`, with
+`test_quote_reference.py` and `QUOTE_REFERENCE_PROTOCOL.md`.
+It consumes caller-supplied SIP nanosecond trade/quote events and actual
+availability clocks, retains full Decimal print/notional precision, bounds
+invalid exponent sizes, refuses future/equal/stale/invalid quote signing,
+keeps TRF/corrections unknown/excluded, and exposes eligible unknown-dollar
+accounting bounds. This is not a new options or market-data owner.
+The incumbent `engine/flow_signing.py` was used for a six-case mathematical
+parity check and was not modified.
+
+Test-first evidence: red unimplemented method; 147 green before additional
+adversarial cases; four precision/exponent failures; now **164/164 native
+scoped tests** including **48 quote tests**, on M2 Python 3.14.7.
+Immutable source/log digests are in `evidence/native_quote_tests.json`.
+No actual provider data, quote label truth, data quality/rights admission,
+predictive edge, customer artifact, input/source writer, worker or daemon
+was created.
+
+Next: save this original-branch source/evidence as a single reconciled PR
+effect; verify exact remote bytes. Then build a pure **same-security,
+same-minute, same-eligible-denominator BVC-versus-quote comparator**, with
+null/coverage and as-of guards, on fabricated fixtures. Do not produce a
+real tape accuracy claim without an owner-admitted source. Earlier denied
+four source reads, benchmark repair and main-base comparison remain held:
+do not retry, split, alternate carriers or delegate those effects.
+The current licensed-data S2-P1/S2-P2 pilot remains NOT_ADMITTED.
