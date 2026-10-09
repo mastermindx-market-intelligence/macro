@@ -1,44 +1,20 @@
-"""Synthetic-only S6 guards. No source authentication or financial authority.
+"""Factor Atlas S6 independent synthetic-only structural evaluation guards.
 
-Clocks here are nonnegative signed-64-bit UTC nanosecond claims, not an owner
-clock attestation. Roster completeness, calendars, per-quote receipt provenance,
-real data admission and dependence-aware inference are deliberately not supplied.
-Numeric resource bounds are for this research instrument, not production policy.
+This module cannot authenticate source rights, source receipts, or numerical truth.
+Even valid caller-supplied claims are always STRUCTURAL_ONLY_NOT_ADMITTED. It
+never writes a dataset, reports empirical p values, or releases a prediction.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
-from decimal import Decimal, localcontext
-from itertools import islice
+from decimal import Decimal
 from statistics import median
 from typing import Iterable
 
+
 NOT_ADMITTED = "STRUCTURAL_ONLY_NOT_ADMITTED"
 BLOCKED = "BLOCKED_NOT_ADMITTED"
-MAX_RECORDS = 100_000
-ARITHMETIC_PRECISION = 1024
-
-
-def _clock(value: object) -> bool:
-    return type(value) is int and 0 <= value <= (1 << 63) - 1
-
-
-def _identifier(value: object) -> bool:
-    return isinstance(value, str) and bool(value) and value == value.strip()
-
-
-def _valid_amount(value: object) -> bool:
-    if not isinstance(value, Decimal) or not value.is_finite():
-        return False
-    parts = value.as_tuple()
-    return len(parts.digits) <= 128 and abs(parts.exponent) <= 128
-
-
-def _records(rows: Iterable) -> tuple | None:
-    try:
-        result = tuple(islice(iter(rows), MAX_RECORDS + 1))
-    except (TypeError, ValueError):
-        return None
-    return result if len(result) <= MAX_RECORDS else None
 
 
 @dataclass(frozen=True)
@@ -74,65 +50,59 @@ class Assessment:
     publication_authorized: bool = False
 
 
+def _valid_amount(value: Decimal | None) -> bool:
+    return isinstance(value, Decimal) and value.is_finite()
+
+
 def assess_minute(row: MinuteClaim) -> Assessment:
-    if not isinstance(row, MinuteClaim):
-        return Assessment(BLOCKED, ("INVALID_MINUTE_CLAIM_TYPE",))
-    issues = set()
-    if not _identifier(row.factor_id) or not _identifier(row.security_id):
-        issues.add("MISSING_IDENTITY")
-    mandatory = ("minute_start_ns", "minute_end_ns", "cutoff_ns")
-    optional = ("source_known_ns", "reader_complete_ns", "membership_known_ns",
-                "label_start_ns", "label_end_ns", "last_correction_known_ns")
-    for field in mandatory + optional:
-        value = getattr(row, field)
-        if (field in mandatory or value is not None) and not _clock(value):
-            issues.add("INVALID_CLOCK:" + field)
-    if issues:
-        return Assessment(BLOCKED, tuple(sorted(issues)))
+    issues: list[str] = []
+    if not row.factor_id or not row.security_id:
+        issues.append("MISSING_IDENTITY")
     if row.minute_start_ns >= row.minute_end_ns or row.minute_end_ns - row.minute_start_ns != 60_000_000_000:
-        issues.add("INVALID_MINUTE_SPAN")
+        issues.append("INVALID_MINUTE_SPAN")
     if any(t is None for t in (row.source_known_ns, row.reader_complete_ns, row.membership_known_ns)):
-        issues.add("MISSING_KNOWLEDGE_CLOCK")
+        issues.append("MISSING_KNOWLEDGE_CLOCK")
     else:
         if row.source_known_ns < row.minute_end_ns:
-            issues.add("SOURCE_BEFORE_BAR_END")
+            issues.append("SOURCE_BEFORE_BAR_END")
         if row.reader_complete_ns < row.source_known_ns:
-            issues.add("READER_BEFORE_SOURCE")
+            issues.append("READER_BEFORE_SOURCE")
         if row.reader_complete_ns > row.cutoff_ns:
-            issues.add("FEATURE_AFTER_CUTOFF")
+            issues.append("FEATURE_AFTER_CUTOFF")
         if row.membership_known_ns > row.cutoff_ns:
-            issues.add("FUTURE_MEMBERSHIP")
+            issues.append("FUTURE_MEMBERSHIP")
     if row.last_correction_known_ns is not None and row.last_correction_known_ns > row.cutoff_ns:
-        issues.add("CORRECTION_AFTER_CUTOFF")
-    if not _identifier(row.revision_id):
-        issues.add("MISSING_REVISION")
-    if not _identifier(row.monetary_basis_id) or not _identifier(row.corporate_action_vintage):
-        issues.add("UNPROVEN_MONETARY_BASIS")
+        issues.append("CORRECTION_AFTER_CUTOFF")
+    if not row.revision_id:
+        issues.append("MISSING_REVISION")
+    if not row.monetary_basis_id or not row.corporate_action_vintage:
+        issues.append("UNPROVEN_MONETARY_BASIS")
     if row.rights_claim != "PERMITTED_BY_OWNER":
-        issues.add("RIGHTS_NOT_CLAIMED")
+        issues.append("RIGHTS_NOT_CLAIMED")
     if row.finality_claim != "FINAL_AS_KNOWN":
-        issues.add("NOT_FINAL_AS_KNOWN")
+        issues.append("NOT_FINAL_AS_KNOWN")
     if row.gross_notional is None:
-        issues.add("MISSING_GROSS_NOTIONAL")
+        issues.append("MISSING_GROSS_NOTIONAL")
     elif not _valid_amount(row.gross_notional) or row.gross_notional < 0:
-        issues.add("INVALID_GROSS_NOTIONAL")
+        issues.append("INVALID_GROSS_NOTIONAL")
     if row.signed_pressure is None:
-        issues.add("MISSING_SIGNED_PRESSURE")
+        issues.append("MISSING_SIGNED_PRESSURE")
     elif not _valid_amount(row.signed_pressure):
-        issues.add("INVALID_SIGNED_PRESSURE")
+        issues.append("INVALID_SIGNED_PRESSURE")
     if _valid_amount(row.gross_notional) and _valid_amount(row.signed_pressure):
-        if row.signed_pressure.copy_abs() > row.gross_notional:
-            issues.add("SIGN_EXCEEDS_GROSS")
+        if abs(row.signed_pressure) > row.gross_notional:
+            issues.append("SIGN_EXCEEDS_GROSS")
     if not _valid_amount(row.weight) or row.weight < 0 or row.weight > 1:
-        issues.add("INVALID_MEMBERSHIP_WEIGHT")
+        issues.append("INVALID_MEMBERSHIP_WEIGHT")
     if row.label_start_ns is not None:
         if row.label_start_ns <= row.cutoff_ns:
-            issues.add("OUTCOME_NOT_FUTURE")
+            issues.append("OUTCOME_NOT_FUTURE")
         if row.label_end_ns is None or row.label_end_ns < row.label_start_ns:
-            issues.add("INVALID_LABEL_WINDOW")
+            issues.append("INVALID_LABEL_WINDOW")
     elif row.label_end_ns is not None:
-        issues.add("INVALID_LABEL_WINDOW")
-    return Assessment(BLOCKED if issues else NOT_ADMITTED, tuple(sorted(issues)))
+        issues.append("INVALID_LABEL_WINDOW")
+    # Even complete metadata may be fabricated: this method grants no rights or authority.
+    return Assessment(BLOCKED if issues else NOT_ADMITTED, tuple(sorted(set(issues))))
 
 
 @dataclass(frozen=True)
@@ -147,39 +117,33 @@ class Aggregation:
 
 
 def aggregate_synthetic(rows: Iterable[MinuteClaim]) -> Aggregation:
-    material = _records(rows)
-    if material is None or not material:
-        return Aggregation(BLOCKED, ("EMPTY_OR_INVALID_POPULATION",), (), None, None)
-    reasons = {r for row in material for r in assess_minute(row).reasons}
-    if reasons:
-        return Aggregation(BLOCKED, tuple(sorted(reasons)), (), None, None)
-    if len({row.cutoff_ns for row in material}) != 1:
-        reasons.add("MIXED_CUTOFFS")
-    seen_factor = set()
-    seen_market = {}
+    material = tuple(rows)
+    reasons: set[str] = set()
+    seen_factor: set[tuple[str, str, int, int]] = set()
+    seen_market: dict[tuple[str, int, int], tuple[str, str, Decimal]] = {}
+    allocated: dict[str, Decimal] = {}
+    naive_raw = Decimal(0)
     for row in material:
+        result = assess_minute(row)
+        reasons.update(result.reasons)
         fkey = (row.factor_id, row.security_id, row.minute_start_ns, row.minute_end_ns)
         if fkey in seen_factor:
             reasons.add("DUPLICATE_FACTOR_SECURITY_MINUTE")
         seen_factor.add(fkey)
+        if not _valid_amount(row.gross_notional) or not _valid_amount(row.weight):
+            continue
+        naive_raw += row.gross_notional
+        allocated[row.factor_id] = allocated.get(row.factor_id, Decimal(0)) + row.weight * row.gross_notional
         mkey = (row.security_id, row.minute_start_ns, row.minute_end_ns)
-        identity = (row.revision_id, row.monetary_basis_id, row.corporate_action_vintage,
-                    row.gross_notional, row.signed_pressure)
+        identity = (row.revision_id or "", row.monetary_basis_id or "", row.gross_notional)
         prior = seen_market.get(mkey)
         if prior is not None and prior != identity:
             reasons.add("CONFLICTING_SHARED_MEMBER_SOURCE")
         seen_market[mkey] = identity
     if reasons:
         return Aggregation(BLOCKED, tuple(sorted(reasons)), (), None, None)
-    # Input bounds plus MAX_RECORDS make 1024 digits sufficient for exact sums/products.
-    with localcontext() as ctx:
-        ctx.prec = ARITHMETIC_PRECISION
-        allocated = {}
-        for row in material:
-            allocated[row.factor_id] = allocated.get(row.factor_id, Decimal(0)) + row.weight * row.gross_notional
-        naive = sum((row.gross_notional for row in material), Decimal(0))
-        unique = sum((x[3] for x in seen_market.values()), Decimal(0))
-        return Aggregation(NOT_ADMITTED, (), tuple(sorted(allocated.items())), unique, naive - unique)
+    unique = sum((x[2] for x in seen_market.values()), Decimal(0))
+    return Aggregation(NOT_ADMITTED, (), tuple(sorted(allocated.items())), unique, naive_raw - unique)
 
 
 @dataclass(frozen=True)
@@ -198,15 +162,14 @@ class BaselineCheck:
     source_authenticated: bool = False
 
 
-def check_prior_baseline(current_row_id: str, cutoff_ns: int,
-                         rows: Iterable[BaselineObservation], *, min_history: int = 20) -> BaselineCheck:
-    data = _records(rows)
-    if data is None or not _identifier(current_row_id) or not _clock(cutoff_ns):
-        return BaselineCheck(BLOCKED, ("INVALID_BASELINE_INPUT",))
-    if type(min_history) is not int or not 2 <= min_history <= MAX_RECORDS:
-        return BaselineCheck(BLOCKED, ("INVALID_HISTORY_FLOOR",))
-    if any(not isinstance(x, BaselineObservation) or not _identifier(x.source_row_id) or not _clock(x.known_ns) for x in data):
-        return BaselineCheck(BLOCKED, ("INVALID_BASELINE_IDENTITY_OR_CLOCK",))
+def check_prior_baseline(
+    current_row_id: str,
+    cutoff_ns: int,
+    rows: Iterable[BaselineObservation],
+    *,
+    min_history: int = 20,
+) -> BaselineCheck:
+    data = tuple(rows)
     reasons = set()
     if any(x.source_row_id == current_row_id for x in data):
         reasons.add("SAME_MINUTE_SELF_CONTAMINATION")
@@ -220,10 +183,8 @@ def check_prior_baseline(current_row_id: str, cutoff_ns: int,
         reasons.add("INSUFFICIENT_HISTORY")
     if reasons:
         return BaselineCheck(BLOCKED, tuple(sorted(reasons)))
-    with localcontext() as ctx:
-        ctx.prec = ARITHMETIC_PRECISION
-        med = median(x.value for x in data)
-        mad = median((x.value - med).copy_abs() for x in data)
+    med = median(x.value for x in data)
+    mad = median(abs(x.value - med) for x in data)
     if mad == 0:
         return BaselineCheck(BLOCKED, ("ZERO_MAD_UNDEFINED_Z",), med, mad)
     return BaselineCheck(NOT_ADMITTED, (), med, mad)
@@ -242,16 +203,7 @@ class PrintQuoteClaim:
 
 
 def assess_quote_reference(row: PrintQuoteClaim) -> Assessment:
-    if not isinstance(row, PrintQuoteClaim):
-        return Assessment(BLOCKED, ("INVALID_QUOTE_CLAIM_TYPE",))
-    reasons = set()
-    for field in ("print_time_ns", "cutoff_ns", "quote_age_limit_ns", "quote_time_ns", "source_receipt_ns"):
-        value = getattr(row, field)
-        optional = field in ("quote_time_ns", "source_receipt_ns")
-        if (not optional or value is not None) and not _clock(value):
-            reasons.add("INVALID_CLOCK:" + field)
-    if reasons:
-        return Assessment(BLOCKED, tuple(sorted(reasons)))
+    reasons: set[str] = set()
     if row.print_time_ns > row.cutoff_ns:
         reasons.add("PRINT_AFTER_CUTOFF")
     if row.source_receipt_ns is not None and row.source_receipt_ns < row.print_time_ns:
@@ -294,21 +246,17 @@ class LossDiagnostic:
 
 
 def brier_diagnostic_only(rows: Iterable[LossRow]) -> LossDiagnostic:
-    data = _records(rows)
-    if not data or any(not isinstance(x, LossRow) or not _identifier(x.independent_episode_id) for x in data):
-        return LossDiagnostic(BLOCKED, None, 0)
+    data = tuple(rows)
     keys = [x.independent_episode_id for x in data]
-    if len(set(keys)) != len(data):
+    if not data or len(set(keys)) != len(data) or any(not k for k in keys):
         return LossDiagnostic(BLOCKED, None, len(set(keys)))
     for row in data:
-        if type(row.label) is not int or row.label not in (0, 1):
+        if row.label not in (0, 1):
             return LossDiagnostic(BLOCKED, None, len(data))
         if any(not _valid_amount(x) or x < 0 or x > 1 for x in (row.baseline_probability, row.challenger_probability)):
             return LossDiagnostic(BLOCKED, None, len(data))
-    with localcontext() as ctx:
-        ctx.prec = ARITHMETIC_PRECISION
-        total = sum(((r.baseline_probability-r.label)**2 - (r.challenger_probability-r.label)**2 for r in data), Decimal(0))
-        ctx.prec = 50  # Display rounding only; no inference or threshold is computed here.
-        gain = total / Decimal(len(data))
-    # n_episodes is a count of supplied unique IDs, not proof of independence.
-    return LossDiagnostic(NOT_ADMITTED, gain, len(data))
+    diffs = [
+        (row.baseline_probability - row.label) ** 2 - (row.challenger_probability - row.label) ** 2
+        for row in data
+    ]
+    return LossDiagnostic(NOT_ADMITTED, sum(diffs, Decimal(0)) / Decimal(len(data)), len(data))
