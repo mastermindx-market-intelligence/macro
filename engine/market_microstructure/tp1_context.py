@@ -213,8 +213,10 @@ def project_tp1_pressure_context(
             raise TP1ContextRefusal("source minute print denominators inconsistent")
         count_prints += minute["n_sampled_prints"]
         count_unknown += minute["n_unclassified"]
+    if len(minute_age_limits) != 1:
+        raise TP1ContextRefusal("mixed source quote-age policies")
     if (len(condition_refs) != 1 or len(exchange_refs) != 1
-            or len(minute_quote_refs) != 1 or len(minute_age_limits) != 1):
+            or len(minute_quote_refs) != 1):
         raise TP1ContextRefusal("mixed condition or exchange source vintages")
     if amounts["trf"] > amounts["unknown"] or sum(amounts[k] for k in (
         "buy", "sell", "mid", "unknown", "ineligible"
