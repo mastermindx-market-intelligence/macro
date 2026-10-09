@@ -1,0 +1,63 @@
+{
+  "customer_publication_authorized": false,
+  "files": {
+    "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
+      "bytes": 66544,
+      "sha256": "674ccf0f468acfc47a907e277b7867c4d7eb2c3d76493bb52b7a5561d74ebdb6"
+    },
+    "session2/CONTINUATION.md": {
+      "bytes": 6927,
+      "sha256": "f99677fa9e27acf8e4d9a01e7bd287e2b0115c53d6a88da2f15fe46f64bf367b"
+    },
+    "session2/evidence/benchmark.json": {
+      "bytes": 1341,
+      "sha256": "196e3b469c399c114fbde8f9e092ca920252ddac60c50ad4182be8105d7c60ac"
+    },
+    "session2/evidence/native_r2_tests.json": {
+      "bytes": 1668,
+      "sha256": "ceeeeb1cba09a1b91d3cee46fc73e8640ff34e95f7790bab4757d5542161f1e2"
+    },
+    "session2/prototype/mutation_check.py": {
+      "bytes": 2387,
+      "sha256": "7e5adecdfb8cd1e89f8eb91c29d97618ecb3a53036dcca19fe99ba8f07f03fda"
+    },
+    "session2/prototype/pressure.py": {
+      "bytes": 26552,
+      "sha256": "34cf424cdb33ac7edc2b1af83334f2117692b8b3569de93b6c632c6729a75edb"
+    },
+    "session2/prototype/test_disclosed_profile.py": {
+      "bytes": 3083,
+      "sha256": "cf70779f659d5e4f22abfbbe5687cdbb73cdbc0b83cb1290211f7e99ac8f426b"
+    },
+    "session2/prototype/test_pressure.py": {
+      "bytes": 15906,
+      "sha256": "057efcbd01db1ace2367449343d0a5bd556f245d20e1a4c703baf535aae35c79"
+    },
+    "session2/prototype/test_witnesses.py": {
+      "bytes": 1362,
+      "sha256": "5f428647df39eceb2668d67ddc11f844bfd5d261efa3c8ab599f1ad963334f74"
+    },
+    "session2/prototype/witnesses.py": {
+      "bytes": 5711,
+      "sha256": "7078a1ba586f566a7e7b3c588fed45ee61b4c93ca50ccf761ced9e94da70a647"
+    },
+    "session2/requirements-research.txt": {
+      "bytes": 41,
+      "sha256": "30702d3dc61bc5d33853f1ff92cd2092a483a1d64f8a4f8f88c82295ca928bfe"
+    }
+  },
+  "market_pilot_admitted": false,
+  "native_scoped_tests_passed": 79,
+  "native_test_receipt": "session2/evidence/native_r2_tests.json",
+  "prepared_at_utc": "2026-10-09T04:00:54.426269+00:00",
+  "report_structure_checks": {
+    "capacity_arithmetic": "recomputed",
+    "external_source_records": 13,
+    "implementation_packets": 7,
+    "internal_source_records": 10,
+    "numbered_sections": 17,
+    "unresolved_placeholder_scan": "none"
+  },
+  "schema": "factor_atlas.session2.research_package.v1",
+  "source_milestone": "80231c289e284f702e2aba5e69394829c784c1e1"
+}
