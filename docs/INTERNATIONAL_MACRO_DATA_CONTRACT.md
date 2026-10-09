@@ -106,6 +106,43 @@ plus all five country routes. Template or builder changes are included in the
 render scope, and generated `site/*.html` pages are committed with their source
 changes where required by the repository’s render contract.
 
+## International index and FX EOD return admission (2026-10-09)
+
+The Chairman has confirmed permission to redistribute user-facing international
+price and FX data. This grant is now narrowly recorded in `config.yml` at
+`intl.eod_publication` (scope `intl-index-fx-eod-user-facing-v1`).
+It does not apply to other providers, raw tick archives, derivative data,
+forecasts, or trading execution. Changing `status` away from `confirmed`
+withholds new EOD return qualification without disabling legacy research.
+
+The existing normal `scripts/build_intl.py` publisher calls
+`lib.intl_eod_publication.build_eod_inputs`, then only the existing
+`engine.intl_inputs.qualify_return_records` evaluator can grant a financial
+value. The helper binds the **same persisted index/FX parquet bytes** that
+`engine.intl_inputs._intl_closes` consumed, the collected-run status, the
+configured auto-adjustment basis, an exact content digest, and each selected
+observation endpoint. The stored file is read once into bytes and the parsed
+close series must agree with the selected calculation frame. One bad/missing
+series is withheld independently. A collector success alone never grants it.
+
+The source cannot certify same-day foreign-market closes from a daily Yahoo
+timestamp. Therefore the publication selects only dates at least **two
+calendar days old**, and requires collector and saved-observation timing and
+age checks, rather than treating a developing daily bar as a completed
+session. The frontend labels these as **delayed EOD** and shows the actual
+calculation windows. No claim of an exchange-certified holiday calendar is
+made: the conservative T+2 policy is its admitted observation-time evidence,
+not an exchange-issued schedule. Adding a faster clock later requires actual
+per-market verified session/calendar evidence, independent data-quality
+review and preserved before/after coverage cases.
+
+A producer/runtime without fresh `data/run_status.json`, the exact parquet
+materializations, the matching hash, or the permitted scope keeps numerical
+values `unknown` rather than filling zero or borrowing legacy performance
+scores. The original International tools, the macro/regime workspace, Risk
+and History remain independently available. No new queue, collector, store,
+provider key, paid entitlement, or market-scoring authority is introduced.
+
 ## Official ECB deposit-level admission
 
 The existing International publication owner may publish the descriptive

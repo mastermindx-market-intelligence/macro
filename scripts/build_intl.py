@@ -131,7 +131,26 @@ def _publication_workspace(closes, *, data_root, evaluated_at, risk_desk=None, c
     from engine.intl_inputs import countries
 
     generation = "im-workspace-generation:" + str(uuid4())
-    workspace = _workspace_overviews(closes, workspace_generation=generation)
+    publication_inputs = None
+    try:
+        from lib.intl_eod_publication import build_eod_inputs
+        admitted = build_eod_inputs(
+            closes, data_root=Path(data_root), evaluated_at=evaluated_at,
+            rights=(config.load().get("intl") or {}).get("eod_publication", {}),
+        )
+        if admitted is not None:
+            closes, publication_inputs = admitted
+            log.info("International EOD source evidence admitted for review")
+        else:
+            log.warning("International EOD evidence withheld; no current qualified returns")
+    except Exception as exc:
+        # A failed input binding cannot authorize financial values, nor may
+        # it suppress the remaining, independently mounted research views.
+        log.error("International EOD evidence unavailable (%s)", type(exc).__name__)
+    workspace = _workspace_overviews(
+        closes, production_inputs=publication_inputs,
+        workspace_generation=generation,
+    )
     if workspace is None:
         return None
     registry = {
