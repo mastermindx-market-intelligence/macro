@@ -167,14 +167,13 @@
     "emerging_score": 2.764,
     "n_members": 20,
     "present_counts": {
-     "buy": 3,
+     "buy": 2,
      "ran": 1,
      "leaders": 0
     },
     "present": {
      "buy": [
       "LRN",
-      "TAL",
       "WLY"
      ],
      "ran": [
@@ -182,7 +181,7 @@
      ],
      "leaders": []
     },
-    "represented_n": 4,
+    "represented_n": 3,
     "days_since_top5_entry": null
    },
    {
@@ -516,16 +515,15 @@
     "n_members": 14,
     "n_members_live": 13,
     "n_members_read": 14,
-    "n_members_on_board": 2,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "APH",
      "CSCO"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
      "leaders": 0,
-     "ran": 1
+     "ran": 0
     },
     "pctile": 0.6766,
     "pctile_n": 252,
@@ -570,11 +568,10 @@
     "n_members": 74,
     "n_members_live": 74,
     "n_members_read": 74,
-    "n_members_on_board": 12,
+    "n_members_on_board": 11,
     "members_on_board": [
      "ACN",
      "ADSK",
-     "APH",
      "AVGO",
      "CSCO",
      "MSFT",
@@ -589,7 +586,7 @@
      "buy": 4,
      "watch": 3,
      "leaders": 2,
-     "ran": 3
+     "ran": 2
     },
     "pctile": 0.6567,
     "pctile_n": 252,
@@ -1116,16 +1113,15 @@
     "n_members": 24,
     "n_members_live": 24,
     "n_members_read": 24,
-    "n_members_on_board": 2,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "APH",
      "AVGO"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
      "leaders": 0,
-     "ran": 1
+     "ran": 0
     },
     "pctile": 0.3472,
     "pctile_n": 252,

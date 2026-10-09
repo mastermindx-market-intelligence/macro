@@ -1,5 +1,5 @@
 {
-  "appended": 9,
+  "appended": 0,
   "asof": "2026-10-08",
   "candidates": {
     "R": 3,
@@ -7,56 +7,27 @@
     "W": 4
   },
   "deduped": {
-    "R": 0,
-    "T": 2,
+    "R": 3,
+    "T": 8,
     "W": 4
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-10-09",
-      "consulted": true,
-      "n_keys": 27,
-      "n_themes": 18,
-      "ok": true,
-      "reason": null,
-      "source": "site/basketdata/foresight_cascade.json"
+      "consulted": false
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": true,
-      "null_reasons": {
-        "ohlcv_absent": 23
-      },
+      "consulted": false,
+      "null_reasons": {},
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {
-        "Commodities Agriculture": {
-          "theme_thrust_frac": 0.0556,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Consumer Goods": {
-          "theme_thrust_frac": 0.0,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Education Technology": {
-          "theme_thrust_frac": 0.2,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Healthy Food & Nutrition": {
-          "theme_thrust_frac": 0.0556,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        }
-      },
+      "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 76,
-      "tickers_read": 99
+      "tickers_ok": 0,
+      "tickers_read": 0
     },
     "keys": [
       "relay_count_3d",
@@ -74,21 +45,10 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": true,
-      "high_lookback": 63,
-      "members_indexed": 126,
-      "n_covered": 77,
-      "reason": null,
-      "window_sessions": 21
+      "consulted": false
     },
     "turnover": {
-      "consulted": true,
-      "last_session": "2026-10-08",
-      "n_tickers": 1549,
-      "ok": true,
-      "reason": null,
-      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
-      "window_max": 60
+      "consulted": false
     }
   },
   "feature_source_w": {
@@ -116,19 +76,8 @@
     ]
   },
   "flag_tickers": {
-    "R": [
-      "MSFT",
-      "PI",
-      "AAPL"
-    ],
-    "T": [
-      "LRN",
-      "ACI",
-      "BRBR",
-      "SMPL",
-      "DECK",
-      "TSN"
-    ],
+    "R": [],
+    "T": [],
     "W": []
   },
   "n_universe": 1491,
@@ -137,8 +86,8 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-09 15:32:41",
-  "runtime_s": 98.5,
+  "run_utc": "2026-10-09 16:54:06",
+  "runtime_s": 101.7,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
@@ -189,7 +138,7 @@
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 21.0,
+    "runtime_s": 19.1,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 61,
