@@ -11,7 +11,9 @@ import hashlib
 import html
 import ipaddress
 import json
+import os
 import re
+import tempfile
 import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -371,11 +373,30 @@ def build_partner_pack(
     base_url, route_live = _route(scan_url, route_receipt)
     # Reuse the existing funnel link authority, not a second UTM encoder.
     from engine.marketing.links import canonical_link, is_tagged_canonical
-    pack_id = "cp_" + hashlib.sha256(
-        (event["event_id"] + "|" + str(event["correction_generation"])
-         + "|" + partner["slug"] + "|" + ",".join(ticks)
-         + "|" + ",".join(c["claim_id"] for c in claims)).encode("utf-8")
-    ).hexdigest()[:18]
+    # Identity is content-addressed over exactly the public evidence and
+    # partner copy used by this pack. Claim IDs alone are NOT enough: a
+    # corrected fact with an accidentally unchanged claim ID must never reuse
+    # the attribution key of the earlier creative.
+    active_ids = list(dict.fromkeys(event["headline_evidence_ids"] + [
+        source_id for claim in claims for source_id in claim["source_ids"]
+    ]))
+    active_sources = {source_id: sources[source_id] for source_id in active_ids}
+    identity = {
+        "event": event, "partner": partner, "tickers": ticks,
+        "claims": claims,
+        "sources": list(active_sources.values()),
+        "relationships": [
+            {
+                "ticker": ticker,
+                "relationship": relations[ticker]["relationship"],
+                "evidence_ids": relations[ticker]["evidence_ids"],
+            }
+            for ticker in ticks
+        ],
+    }
+    pack_id = "cp_" + hashlib.sha256(json.dumps(
+        identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")).hexdigest()[:18]
     canonical = canonical_link(
         "partner-" + partner["slug"], "catalyst_scan", pack_id,
         base_url=base_url, utm_source="partner",
@@ -397,11 +418,11 @@ def build_partner_pack(
     lead_ticker = ticks[-1]
     lead_claim = next(c for c in reversed(claims) if lead_ticker in c["tickers"])
     social_hook = "$" + lead_ticker + ": " + lead_claim["text"]
-    active_sources = {ref: sources[ref] for c in claims for ref in c["source_ids"]}
-    # The SVG can only reproduce source material if ALL contributing receipts
-    # affirm rehosting. Textual synthesis still requires public display/link.
+    # Both the event headline and the actual included claims contribute to
+    # this asset. A headline-only source with public_display=True but
+    # public_rehost=False must withhold the SVG, not disappear from the ledger.
     media_rights = all(s["public_rehost"] for s in active_sources.values())
-    main_source = next(iter(active_sources.values()))
+    main_source = sources[claims[0]["source_ids"][0]]
     card_svg = None
     media_fit: dict[str, Any] = {}
     media_status = "REHOST_RIGHTS_BLOCKED"
@@ -637,8 +658,18 @@ def write_partner_pack(pack: dict, destination: Path | str,
     written: list[Path] = []
     for name, data in files.items():
         target = base / name
-        temp = base / ("." + name + ".tmp")
-        temp.write_text(data, encoding="utf-8")
-        temp.replace(target)
+        _require(not target.is_symlink(), "UNSAFE_OUTPUT_PATH")
+        # Never write through a caller-planted predictable temp-file symlink.
+        # A unique O_EXCL tempfile keeps the existing atomic per-file publish
+        # behavior without touching any pre-existing .<name>.tmp path.
+        fd, temporary = tempfile.mkstemp(
+            dir=base, prefix="." + name + ".", suffix=".tmp"
+        )
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as stream:
+                stream.write(data)
+            os.replace(temporary, target)
+        finally:
+            Path(temporary).unlink(missing_ok=True)
         written.append(target)
     return written
