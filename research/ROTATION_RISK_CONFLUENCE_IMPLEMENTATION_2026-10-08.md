@@ -2,6 +2,8 @@
 
 Operation: rotation-risk-confluence-20261008. Chairman instruction: assess, architect, implement and integrate the rotation/risk connection across the existing system. Source pins: Macro 7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477; Terminal 54f97dda68a76a55ba0813afc9433ef54aaf401c; Mastermind implementation f74e912d3efa3b67cae40ba04f9e558d579096e9. Existing program homes: Rotation Command / Leadership Migration (Mastermind #1194) and WS:GREY-DEER-RISK-INTELLIGENCE. This document is a source design and acceptance plan, not a new workstream, risk authority, or runtime ledger.
 
+Delivery receipts and remaining proof gates: [October 9 delivery record](ROTATION_RISK_CONFLUENCE_DELIVERY_2026-10-09.md).
+
 ## 0. Acceptance gates
 
 The work is not complete merely because a detector or document exists.
