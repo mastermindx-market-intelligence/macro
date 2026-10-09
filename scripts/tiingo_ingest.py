@@ -56,14 +56,16 @@ def parse_day(value: str) -> date:
 
 
 def date_ranges(start: date, end: date, span_days: int) -> Iterator[tuple[date, date]]:
-    if end < start:
-        raise ValueError("end must be at or after start")
-    if span_days < 1 or span_days > 366:
+    if type(start) is not date or type(end) is not date or end < start:
+        raise ValueError("valid ordered date bounds are required")
+    if type(span_days) is not int or not 1 <= span_days <= 366:
         raise ValueError("invalid chunk span")
     cursor = start
     while cursor <= end:
-        upper = min(end, cursor + timedelta(days=span_days - 1))
+        upper = cursor + timedelta(days=min(span_days - 1, (end - cursor).days))
         yield cursor, upper
+        if upper == end:
+            break
         cursor = upper + timedelta(days=1)
 
 
@@ -84,7 +86,7 @@ def load_symbols(spec: str, symbol_file: str | None) -> list[str]:
         symbol_path(val)
         # Preserve the vendor identifier verbatim; permaTicker is not just a
         # presentation ticker and may have case-sensitive future namespaces.
-        key = val.casefold()
+        key = val
         if key not in seen:
             found.append(val)
             seen.add(key)
@@ -93,59 +95,133 @@ def load_symbols(spec: str, symbol_file: str | None) -> list[str]:
     return found
 
 
+def _symbol_groups(symbols: list[str], max_chars: int = 150) -> list[str]:
+    """Respect the current source adapter's query bound without changing it."""
+    groups: list[str] = []
+    current = ""
+    for symbol in symbols:
+        symbol_path(symbol)
+        candidate = current + ("," if current else "") + symbol
+        if len(candidate) > max_chars:
+            if not current:
+                raise ValueError("symbol exceeds query bound")
+            groups.append(current)
+            current = symbol
+        else:
+            current = candidate
+    if current:
+        groups.append(current)
+    return groups
+
+
 def plan(sources: list[str], symbols: list[str], start: date | None,
          end: date | None, *, chunk_override: int | None = None,
          as_reported: bool = True, search_query: str | None = None) -> list[Task]:
-    if not sources:
-        raise ValueError("select one or more data sources")
-    if any(x not in SOURCES for x in sources):
-        raise ValueError("unknown source")
-    if bool(start) != bool(end):
+    """Pure, bounded request construction. Does not authorize or execute imports.
+
+    Corporate action filters follow the vendor's ex-date contract. Crypto/FX
+    minute resolution is explicit instead of relying on changing defaults.
+    Reference: Tiingo corporate-actions/dividends, splits, crypto, forex docs.
+    """
+    sources = list(dict.fromkeys(s.strip() for s in sources))
+    symbols = list(dict.fromkeys(symbols))
+    if not sources or any(x not in SOURCES for x in sources):
+        raise ValueError("select known Tiingo sources")
+    if len(symbols) > MAX_SYMBOLS:
+        raise ValueError("symbol cohort must be partitioned before planning")
+    for symbol in symbols:
+        symbol_path(symbol)
+    if (start is None) != (end is None):
         raise ValueError("start/end must both be supplied")
+    if start is not None and (type(start) is not date or type(end) is not date or end < start):
+        raise ValueError("valid ordered date bounds are required")
+    if chunk_override is not None and (type(chunk_override) is not int or not 1 <= chunk_override <= 366):
+        raise ValueError("invalid chunk span")
+    if type(as_reported) is not bool:
+        raise ValueError("as_reported must be boolean")
     result: list[Task] = []
+
+    def add(src: str, ticker: str | None, params: dict[str, Any]) -> None:
+        if len(result) >= MAX_TASKS:
+            raise ValueError("plan exceeds bounded task limit; partition the cohort")
+        request_path(src, ticker, params)
+        result.append(Task(src, ticker, params))
+
     for src in sources:
         source = SOURCES[src]
         if (source.symbol or src == "crypto-bars") and not symbols:
             raise ValueError(f"{src} requires symbols")
         if src == "security-search" and not search_query:
             raise ValueError("security-search requires --search-query")
-        symbols_for_src: list[str | None] = symbols if source.symbol else [None]
-        for ticker in symbols_for_src:
+        targets: list[str | None] = symbols if source.symbol else [None]
+        for ticker in targets:
             if src in BAR_SOURCES:
                 if start is None or end is None:
                     raise ValueError(f"{src} requires start/end")
                 chunk = min(chunk_override or BAR_CHUNKS[src], BAR_CHUNKS[src])
-                for lo, hi in date_ranges(start, end, chunk):
-                    extras: dict[str, Any] = {
-                        "startDate": lo.isoformat(), "endDate": hi.isoformat()
-                    }
-                    if src == "boats-bars":
-                        extras.update(resampleFreq="1min",
-                                      columns="open,high,low,close,volume")
-                    elif src in {"equity-intraday-bars", "iex-bars"}:
-                        extras.update(resampleFreq="1min")
-                    elif src == "crypto-bars":
-                        extras["tickers"] = ",".join(symbols)
-                    result.append(Task(src, ticker, extras))
+                groups = _symbol_groups(symbols) if src == "crypto-bars" else [None]
+                for group in groups:
+                    for lo, hi in date_ranges(start, end, chunk):
+                        params: dict[str, Any] = {"startDate": lo.isoformat(), "endDate": hi.isoformat()}
+                        if src != "eod-bars":
+                            params["resampleFreq"] = "1min"
+                        if src == "boats-bars":
+                            params["columns"] = "open,high,low,close,volume"
+                        if src == "crypto-bars":
+                            params["tickers"] = group
+                        add(src, ticker, params)
             else:
-                params: dict[str, Any] = {}
-                if start and src in {"fund-statements", "fund-daily", "news",
-                                     "distributions", "splits"}:
+                params = {}
+                if start and src in {"fund-statements", "fund-daily", "news"}:
                     params.update(startDate=start.isoformat(), endDate=end.isoformat())
+                if start and src in {"distributions", "splits"}:
+                    params.update(startExDate=start.isoformat(), endExDate=end.isoformat())
                 if src == "fund-statements":
                     params["asReported"] = "true" if as_reported else "false"
                 if src == "security-search":
-                    params["query"] = search_query or ""
+                    params["query"] = search_query
                 if src == "news":
                     params["limit"] = 100
-                    if symbols:
-                        params["tickers"] = ",".join(symbols)
-                result.append(Task(src, ticker, params))
-            if len(result) > MAX_TASKS:
-                raise ValueError("plan exceeds bounded task limit")
-    for item in result:
-        request_path(item.source, item.symbol, item.params)
+                    for group in (_symbol_groups(symbols) or [None]):
+                        scoped = dict(params)
+                        if group is not None:
+                            scoped["tickers"] = group
+                        add(src, ticker, scoped)
+                else:
+                    add(src, ticker, params)
     return result
+
+
+def plan_page(tasks: list[Task], *, offset: int = 0, limit: int = 25,
+              expected_digest: str | None = None) -> dict[str, Any]:
+    """Stateless offline navigation, not a job queue or execution checkpoint.
+
+    The exact request order and dimensions bind the digest. An offset alone is
+    never accepted as proof of progress, vendor download, or completed history.
+    """
+    if type(offset) is not int or not 0 <= offset <= len(tasks):
+        raise ValueError("plan offset out of range")
+    if type(limit) is not int or not 1 <= limit <= 1000:
+        raise ValueError("plan page limit must be 1..1000")
+    hasher = hashlib.sha256(b"tiingo.offline_plan.v1\n")
+    items = []
+    counts: dict[str, int] = {}
+    for index, task in enumerate(tasks):
+        entry = {"ordinal": index, "source": task.source, "symbol": task.symbol,
+                 "request_path": request_path(task.source, task.symbol, task.params)}
+        hasher.update((json.dumps(entry, sort_keys=True, separators=(",", ":")) + "\n").encode())
+        counts[task.source] = counts.get(task.source, 0) + 1
+        if offset <= index < offset + limit:
+            items.append(entry)
+    digest = hasher.hexdigest()
+    if expected_digest is not None and expected_digest != digest:
+        raise ValueError("plan changed; cursor cannot be reused")
+    return {"schema": "mastermind.tiingo.offline_plan.v1", "network": False,
+            "execution_authorized": False, "execution_progress": "NOT_OBSERVED",
+            "plan_sha256": digest, "tasks": len(tasks), "total_tasks": len(tasks),
+            "source_counts": counts, "offset": offset, "items": items,
+            "next_offset": offset + len(items) if offset + len(items) < len(tasks) else None,
+            "complete_history_proven": False}
 
 
 def collect(tasks: Iterable[Task], *, max_requests: int,
@@ -336,6 +412,10 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--search-query", help="security-search text; no symbol required")
         p.add_argument("--latest-restated", action="store_true",
                        help="statement restatements, NOT point-in-time as-reported")
+        if verb == "plan":
+            p.add_argument("--plan-offset", type=int, default=0)
+            p.add_argument("--plan-limit", type=int, default=25)
+            p.add_argument("--expect-plan-sha256")
         if verb == "collect":
             p.add_argument("--max-requests", type=int, default=25)
             p.add_argument("--pause-seconds", type=float, default=1.25)
@@ -362,14 +442,10 @@ def main(argv: list[str] | None = None) -> int:
                          as_reported=not args.latest_restated,
                          search_query=args.search_query)
             if args.cmd == "plan":
-                print(json.dumps({"tasks": len(tasks), "symbols": len(targets),
-                                  "source_counts": {src: sum(t.source == src for t in tasks)
-                                                    for src in sorted(set(args.sources.split(",")))},
-                                  "examples": [
-                                      {"source": t.source, "symbol": t.symbol,
-                                       "request_path": request_path(t.source, t.symbol, t.params)}
-                                      for t in tasks[:4]],
-                                  "network": False}, indent=2))
+                page = plan_page(tasks, offset=args.plan_offset, limit=args.plan_limit,
+                                 expected_digest=args.expect_plan_sha256)
+                page["symbols"] = len(targets)
+                print(json.dumps(page, indent=2))
                 return 0
             out = collect(tasks, max_requests=args.max_requests,
                           pause_seconds=args.pause_seconds)

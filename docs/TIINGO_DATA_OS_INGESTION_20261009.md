@@ -177,8 +177,9 @@ Admission evidence before calling this complete:
 - [ ] Production process admission, continuity/return path, freshness health,
       downstream UI and machine proof, CI/independent review completed.
 
-**No real Tiingo data was downloaded in this branch/session.** Dummy fixture
-bytes written by tests are not sourced vendor data. Data OS registry rows
+**No authenticated Tiingo prices/fundamentals or BOATS events have been downloaded.**
+The later continuation acquired only the public symbol catalogue, recorded below.
+Dummy fixture bytes written by tests are not sourced vendor market data. Data OS registry rows
 should remain PROPOSED until actual production artifacts and valid receipts
 exist; no downstream feed should be labeled PROVEN_LIVE from the code alone.
 
@@ -217,6 +218,62 @@ raw source projection. Divergent orphan files are refused, not overwritten.
 Live BOATS websocket support uses an optional, isolated dependency:
 requirements/tiingo.txt. This package is not installed by the source
 addition, and no vendor connection or live service was started.
+
+## Public catalogue and offline request planning — current continuation
+
+Public reference acquisition is distinct from the refused authenticated API probe.
+The official EOD documentation links a keyless static ZIP; that public ZIP was
+retrieved without any credential, API request or collector change at
+2026-10-09T20:38:54.536319+00:00. Its bytes are stored on the external volume at
+`/Volumes/Mastermind/evidence/tiingo-8698-public-catalog-20261009/supported_tickers.zip`.
+SHA-256: `015cda96b828344e26f5937f426cbc40a7b8fe2edc9a023a342a3743799abcf0`.
+Compressed size: 797,482 bytes; enclosed CSV: 5,039,605 bytes.
+The reproducible bounded report is `research/tiingo/2026-10-09/PUBLIC_CATALOGUE_AUDIT.json`.
+
+Measured public catalogue, not licensed/accessible price-history evidence:
+- 108,970 records: 49,299 Stock; 9,791 ETF; 49,880 Mutual Fund.
+- Currency rows: 101,766 USD; 7,147 CNY; 52 HKD; 5 AUD.
+- 106,600 distinct ticker strings; 1,069 appear across multiple catalogue keys.
+- 1,241 catalogue keys have conflicting date-range rows; these can reflect
+  history/ticker reuse, not necessarily provider errors. They require resolution.
+- 186 otherwise distinct catalogue keys have symbol spellings the current source
+  adapter rejects. The adapter is unchanged; those names remain visible gaps.
+- Oldest advertised history is 1960-01-29. That is a catalogue field, NOT a
+  claim that this account has that history or that those prices were downloaded.
+- Explicit USD/history-window filtering and ambiguity exclusions yield 96,937
+  acquisition candidates. This is neither U.S.-only membership nor a PIT universe.
+  Official docs warn the catalogue also contains reservations; metadata and real
+  endpoint responses remain required for actual coverage.
+
+`scripts/tiingo_reference_audit.py` now provides bounded ZIP/CSV validation,
+metadata/date/currency/asset/ambiguity denominators and source-digest-bound
+candidate pages. It is offline and writes no source data or identity records.
+`plan()` now uses ex-date filters for dividend/split history, explicit minute
+resolution for FX/crypto, bounded crypto symbol groups, deduplicated exact
+identifiers, and early resource/date validation. Case-distinct vendor identifiers
+are retained. `plan_page()` provides an exact-plan digest and bounded offline
+pagination; it is NOT persistent execution progress or a scheduler. Live
+`collect`, `boats_stream`, and `boats_subscribe_message` functions were verified
+byte-identical across this change. The refused core collector is untouched.
+
+Verification: **141 passed** across archive/views/reader/cohort/registry plus
+new planning/reference suites, process 51325 exit 0. The existing 11 source
+integrity failures remain unfixed and active release gates. New tests were wired
+into the same `dataos-prospective-reference` CI lane, without waivers.
+
+Primary documentation checked 2026-10-09:
+- https://www.tiingo.com/documentation/end-of-day (catalogue reservations/bounds)
+- https://www.tiingo.com/documentation/corporate-actions/dividends (ex-date filters)
+- https://www.tiingo.com/documentation/corporate-actions/splits (ex-date semantics)
+- https://www.tiingo.com/documentation/crypto (explicit resampling; nested priceData)
+- https://www.tiingo.com/documentation/forex (historical bar endpoint)
+- https://www.tiingo.com/documentation/fundamentals (permaTicker, annual quarter=0,
+  as-reported/revised dimensions and USD-converted financial values)
+- https://www.tiingo.com/documentation/boats (overnight-only bars, explicit volume)
+
+The next independent phase is a read-only corpus gap audit against exact planned
+requests. Authentication and the refused collector rewrite remain held; no
+worker is delegated those denied effects. No live collector has been started.
 
 ## Cumulative execution checkpoint — 2026-10-09 continuation
 
