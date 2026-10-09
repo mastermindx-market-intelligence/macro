@@ -24,6 +24,12 @@ _REF = re.compile(r"[A-Za-z0-9_\-]{8,128}\Z")
 _UTM = re.compile(r"[A-Za-z0-9_.:\-]{1,96}\Z")
 _EMAIL = re.compile(r"[^@\s\x00-\x1f]+@[^@\s\x00-\x1f.]+(?:\.[A-Za-z0-9\-]+)+\Z")
 _STATUSES = {"SUPPORTED", "NOT_COVERED", "TEMPORARILY_UNAVAILABLE", "RIGHTS_BLOCKED"}
+_PUBLIC_COVERAGE = {
+    "SUPPORTED": "Only rights-qualified public evidence is displayed; other sources may be excluded.",
+    "NOT_COVERED": "This ticker is not covered by the currently qualified public event.",
+    "TEMPORARILY_UNAVAILABLE": "Current source evidence is unavailable; please try again later.",
+    "RIGHTS_BLOCKED": "Source-display permission is not confirmed, so no event details can be shown.",
+}
 _LIMIT = 10
 _FRESHNESS = timedelta(days=7)
 _HEADERS = {"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"}
@@ -149,9 +155,9 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
         status = item.get("status")
         if status not in _STATUSES:
             raise ValueError("invalid status")
-        coverage = item.get("coverage_note")
-        if not isinstance(coverage, str) or len(coverage) > 280:
-            coverage = "Coverage is limited to qualified public sources."
+        # Never forward an upstream coverage_note on a blocked or supported path:
+        # it may contain unqualified proprietary text, PII, or a score.
+        coverage = _PUBLIC_COVERAGE[status]
         # Denial cases never carry hidden field content even if a producer supplies it.
         if status != "SUPPORTED":
             public_results.append({"ticker": ticker, "status": status, "coverage_note": coverage,
@@ -192,20 +198,25 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
         headline = item.get("headline")
         if not isinstance(headline, str) or not headline.strip() or len(headline) > 180:
             raise ValueError("invalid headline")
+        headline_ids = item.get("headline_evidence_ids")
+        if (not isinstance(headline_ids, list) or not headline_ids
+                or any(x not in ids for x in headline_ids)):
+            raise ValueError("unsupported headline")
         changed = _claims(item.get("what_changed", []), "text", ids)
         if not changed:
             raise ValueError("unsupported empty coverage")
         public_results.append({"ticker": ticker, "status": "SUPPORTED", "headline": headline.strip(),
                                "relationship": relation, "relationship_evidence_ids": relation_ids,
+                               "headline_evidence_ids": list(dict.fromkeys(headline_ids)),
                                "correction_state": item["correction_state"], "as_of_utc": item_as_of,
                                "what_changed": changed,
                                "scenarios": _claims(item.get("scenarios", []), "trigger", ids, True),
                                "invalidators": _claims(item.get("invalidators", []), "text", ids),
                                "sources": sources, "dossier_path": dossier, "coverage_note": coverage})
-    note = raw.get("coverage_note")
+    note = "Limited coverage from rights-qualified public sources; source times are shown."
     return {"schema": "catalyst.scan/v1", "schema_version": 1, "event_id": event_id,
             "generation": generation, "as_of_utc": as_of, "publication_state": publication,
-            "requested_tickers": tickers, "coverage_note": note[:280] if isinstance(note, str) else "Limited public coverage",
+            "requested_tickers": tickers, "coverage_note": note,
             "results": public_results}
 
 
