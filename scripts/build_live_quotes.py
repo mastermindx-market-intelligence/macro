@@ -438,8 +438,11 @@ def to_worker_quotes(
     The default/public contract intentionally stays narrow: epoch-ms ``ts``,
     ``basis`` and display fields only. The VPS root-readable ``quotes_full.json``
     may opt into the source-native ``quote_ts`` and ``quote_ts_synthetic`` fields
-    that provenance-sensitive server consumers require. Missing provenance is
-    preserved as ``None`` and is never inferred from a non-null timestamp.
+    that provenance-sensitive server consumers require. It also retains the
+    source-native session-open/NBBO fields when supplied by the engine, without
+    re-deriving prices or clocks. These are evidence only: identity, session, freshness and
+    strategy fillability remain the downstream owner's responsibility. Missing
+    evidence is preserved as ``None`` and never inferred from price or timestamps.
 
     New display fields (IFT A1): vol, hi, lo — from the same Yahoo/Polygon batch
     response, zero extra requests.
@@ -470,6 +473,10 @@ def to_worker_quotes(
             entry["quote_ts_synthetic"] = (
                 synthetic if type(synthetic) is bool else None
             )
+            # Preserve the engine's source-native evidence only in the private
+            # full snapshot. No clock fallback, spread policy or gate verdict.
+            for field in ("day_open", "bid_price", "ask_price", "nbbo_ts", "nbbo_source"):
+                entry[field] = q.get(field)
         # IFT A1: intraday volume + range from same batch response.
         # Keys kept short (vol/hi/lo) to minimise payload bytes.
         dv = q.get("day_volume")
