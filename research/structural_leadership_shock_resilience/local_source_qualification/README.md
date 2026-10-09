@@ -9,7 +9,7 @@ submissions capability sample; **the historical SLR population was not read**.
 DATA_SOURCE_RIGHTS: **UNKNOWN overall**; Massive research rights are confirmed by
 the existing repository record. PARENT_PARITY: **UNKNOWN on the actual population**.
 CODE_PR: https://github.com/mastermindx-market-intelligence/macro/pull/8665.
-COMMIT_SHA: `2824055ed10de68ca8488572c7f25ba2975d8ebf` (tested code snapshot).
+COMMIT_SHA: `9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0` (tested code snapshot).
 CI: initial authority/main PASS; binding semantic CI/review pending at this
 artifact revision. Current head and subsequent terminal evidence live on that PR.
 The qualification result distinguishes this code snapshot from later receipts.

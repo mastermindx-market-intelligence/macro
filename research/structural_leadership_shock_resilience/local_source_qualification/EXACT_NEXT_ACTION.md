@@ -34,19 +34,21 @@ protected CR1/AF1/RH1 and SLR forward outcomes. No modifying effect is unresolve
 No native child, Executive job, provider purchase or new control plane exists.
 
 Code-delivery frontier: code PR #8665, tested code commit
-`2824055ed10de68ca8488572c7f25ba2975d8ebf`, 401 local passes.
+`9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0`, 418 local passes.
 The prepared CI job validates, but registering it in `.github/ci/legacy-jobs.yml`
 requires an extension of the commission's two-path write fence. A single exact
 scope question is pending; no non-answer counts as approval. Preserve the path
 fence until answered. Do not waive or grandfather the collecting suite.
 
-One retained Fabric review is active: `slr-p0-review-01a11e3b`, original root
-`01a11e3b-bf7b-7752-856d-9e5af1c51b02`, requested grok-4.6 via the incumbent
-adapter's admitted selection. Its packet covers the initial implementation
-`b3cf217b635f3edf9b3780ea483f58a46965637d`. Consume and adjudicate that exact return
-before any replacement or extension. The later timestamp/terminal-cash/identity
-repairs and test portability changes require a review delta bound to the actual
-candidate head; never call the old packet an exact-head approval.
+The initial retained Fabric review `slr-p0-review-01a11e3b` is TERMINAL,
+rc 0 / signal ok, and returned CHANGES_REQUIRED against the initial commit.
+It was consumed and accepted as useful review findings, never code approval.
+The parent reproduced twelve failures and repaired the remaining findings;
+418 focused tests now pass. See REVIEW_ADJUDICATION.md and retained log digests.
+The repair code snapshot is `9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0`. A bounded follow-up review
+`slr-p0-review-r2-01a11e3b` must examine this repaired candidate under the same
+original root `01a11e3b-bf7b-7752-856d-9e5af1c51b02`. No initial approval is
+carried forward; consume that exact follow-up result before further work.
 
 The one native heartbeat `slr-p0-8665-delivery-gates` owns CI/review return
 observation. It must stay quiet on unchanged state, act on material returns, and

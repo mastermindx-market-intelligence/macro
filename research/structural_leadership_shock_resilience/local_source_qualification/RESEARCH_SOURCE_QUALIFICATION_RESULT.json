@@ -31,10 +31,28 @@
       "name": "ci",
       "status": "IN_PROGRESS_AT_FIRST_OBSERVATION",
       "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37870535355"
+    },
+    {
+      "conclusion": "SUCCESS",
+      "head_sha": "6a87bc86063bf70b8a657fcfce19b6a5a02169d5",
+      "name": "ci-authority/main",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/113630894315"
+    },
+    {
+      "conclusion": "SUCCESS",
+      "head_sha": "6a87bc86063bf70b8a657fcfce19b6a5a02169d5",
+      "name": "fence-pack",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37871637390/job/113630849494"
+    },
+    {
+      "head_sha": "6a87bc86063bf70b8a657fcfce19b6a5a02169d5",
+      "name": "ci",
+      "status": "IN_PROGRESS_AT_HEARTBEAT_OBSERVATION",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37871637577"
     }
   ],
   "CODE_PR": "https://github.com/mastermindx-market-intelligence/macro/pull/8665",
-  "COMMIT_SHA": "2824055ed10de68ca8488572c7f25ba2975d8ebf",
+  "COMMIT_SHA": "9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0",
   "DATA_SOURCE_RIGHTS": "UNKNOWN",
   "FROZEN_SPEC": "v1.0.1 plus pre-outcome v1.1 amendment",
   "INDEPENDENT_REVIEW": "OWED",
@@ -59,20 +77,24 @@
   "gics_dataset_rights": "UNKNOWN",
   "gics_delivered_source": "NOT_OBSERVED_IN_AUTHORIZED_SCOPE",
   "implementation_review": {
-    "acceptance": null,
+    "acceptance": "USEFUL_REVIEW_FINDINGS_ACCEPTED_DETERMINISTICALLY_NOT_CODE_APPROVAL",
+    "followup_stable_id": "slr-p0-review-r2-01a11e3b",
+    "followup_status": "PREPARED_NOT_SUBMITTED",
+    "repair_code_commit": "9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0",
     "requested_model": "grok-4.6",
     "reviewed_source_is_older_than_candidate": true,
     "root": "01a11e3b-bf7b-7752-856d-9e5af1c51b02",
     "source_commit": "b3cf217b635f3edf9b3780ea483f58a46965637d",
     "stable_id": "slr-p0-review-01a11e3b",
-    "status": "RETAINED_RUN_ACTIVE_RETURN_PENDING"
+    "status": "TERMINAL_FINDINGS_CONSUMED",
+    "verdict": "CHANGES_REQUIRED"
   },
   "local_focused_tests": {
     "exit_code": 0,
     "incumbent_cases": 330,
-    "log": "green6.txt",
-    "new_synthetic_cases": 71,
-    "passed": 401
+    "log": "review-green2.txt",
+    "new_synthetic_cases": 88,
+    "passed": 418
   },
   "macro_base_sha": "1f9fb63fec63aaaee17ec0094f4d319dc63d24a5",
   "massive_local_authenticated_access": "KEY_UNAVAILABLE",

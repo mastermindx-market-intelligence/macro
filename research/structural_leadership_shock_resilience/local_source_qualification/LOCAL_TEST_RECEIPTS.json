@@ -10,10 +10,16 @@
     "sha256": "9da7ce0d74b6f9d83dc05bc283ef250c1fea7329892e210fea20bd5143ac20b6"
   },
   "code_file_digests": {
-    "research/structural_leadership_shock_resilience/local_source_qualification/adapter.py": "0644f86cc5649210d847f5775b6aed52e4daee6e87fe8b137f4168c174e487aa",
-    "tests/test_slr_local_source_qualification.py": "0a7973b9dd871fc10e146cd58e96e720b202c8aa8fd68021700c945767f9b900"
+    "research/structural_leadership_shock_resilience/local_source_qualification/adapter.py": "186825dc98073409b1ed159979bbc4dc1d2ab528fbce63276fc31d2278cb3a92",
+    "tests/test_slr_local_source_qualification.py": "2a7c14536c3efec5740a063f69c297bbc9ea3e13d8c7f9cbb46fc0a0732c2096"
   },
-  "code_snapshot": "2824055ed10de68ca8488572c7f25ba2975d8ebf",
+  "code_snapshot": "9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0",
+  "initial_review_result": {
+    "adjudication": "USEFUL_FINDINGS_ACCEPTED_NOT_CODE_APPROVAL",
+    "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/review-initial.txt",
+    "sha256": "4870726add97b3adeaaa72802e9371d6423936240b42d6baed182e4b84532dc8",
+    "verdict": "CHANGES_REQUIRED"
+  },
   "logs": [
     {
       "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/red.txt",
@@ -84,6 +90,21 @@
       "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/green6.txt",
       "last_line": "401 passed in 5.86s",
       "sha256": "40cb899105d8c692c22afb00e0cf0d908b6bf85b730935ed4f6ff47667d94983"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/review-red.txt",
+      "last_line": "12 failed, 71 passed in 1.06s",
+      "sha256": "bd300bd3cf30854929828fe269f297f2d3577abcbaf3927a32656f1b85e61592"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/review-green.txt",
+      "last_line": "1 failed, 412 passed in 5.12s",
+      "sha256": "1167afd0bd570dd251ebfc6ca5d2d34711c26e2e809837084aa924cebd51a7f6"
+    },
+    {
+      "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/review-green2.txt",
+      "last_line": "418 passed in 5.48s",
+      "sha256": "a37a3b6eeedf340c1271aaddef2c6afbf5ffc167970d98145dcc787f1a799733"
     }
   ],
   "raw_logs_in_repository": false
