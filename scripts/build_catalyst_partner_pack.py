@@ -46,6 +46,7 @@ DEMO_EVENT = {
     "event_id": "synthetic-semis-brief",
     "event_kind": "earnings",
     "primary_subject": "Illustrative semiconductor earnings event",
+    "headline_evidence_ids": ["source-synthetic-001"],
     "status": "active",
     "event_time_utc": "2026-10-09T02:00:00Z",
     "first_observed_at_utc": "2026-10-09T02:10:00Z",
