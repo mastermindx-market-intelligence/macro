@@ -1813,6 +1813,10 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -2734,6 +2738,10 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -3801,6 +3809,10 @@ jobs:
       - "engine/pooling.py"
       - "engine/provider_health.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "engine/qledger_validity.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime.py"
@@ -4172,6 +4184,10 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "engine/qledger_validity.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime.py"
@@ -6549,6 +6565,33 @@ jobs:
   push-retry-policy:
     if: ${{ false }}
     gate: code
+    # Keep the measured suite closure and dynamic workflow, shell, and data inputs.
+    # Git subprocess inference otherwise claims unrelated template and code trees.
+    scope: exclusive
+    paths:
+      - ".github/workflows/**"
+      - "scripts/ci/*.sh"
+      - "data/**"
+      - "site/index.html"
+      - "site/premiumdata/special_situations.json"
+      - "site/qledger/track_record.json"
+      - "config/append_only_artifacts.json"
+      - "config/dag.yml"
+      - "engine/__init__.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
+      - "scripts/check_dag_conformance.py"
+      - "scripts/ci/append_only_base_fence.py"
+      - "scripts/ci/options_signal_nightly.sh"
+      - "scripts/ci/push_retry.sh"
+      - "scripts/ci/qledger_publication.py"
+      - "scripts/workflow_run_source.py"
+      - "tests/test_append_only_base_fence.py"
+      - "tests/test_push_retry.py"
+      - "tests/test_qledger_publication.py"
+      - "tests/test_qledger_publish_binding.py"
     # scripts/ci/push_retry.sh is the shared retry policy that EVERY lane's commit→push
     # step sources (render, engine-render, daily ×13, closing-bell, asia-close ×2,
     # weekly, earlyclose). It exists because render.yml run 30167139398 (2026-07-25)
@@ -6590,6 +6633,8 @@ jobs:
         run: pip install pytest pyyaml pandas pyarrow
       - name: push-retry policy tests (classification, budgets, jitter, real git races)
         run: python -m pytest tests/test_push_retry.py -q
+      - name: QLedger explicit publication checks and publisher preservation boundaries
+        run: python -m pytest tests/test_qledger_publication.py tests/test_qledger_publish_binding.py -q
       - name: append-only base fence (real-incident replay, withhold, quiet-night property)
         run: python -m pytest tests/test_append_only_base_fence.py -q
 
@@ -7469,7 +7514,7 @@ jobs:
       # was named by NO legacy job, so every grading-path change shipped dark; it
       # is hermetic (tmp_path store + monkeypatched price layer, no data/** reads).
       - name: qledger contract regression suite
-        run: python -m pytest tests/test_qledger.py -q
+        run: python -m pytest tests/test_qledger.py tests/test_qledger_reader_compatibility.py tests/test_qledger_bypass_reader_compatibility.py tests/test_qledger_remaining_reader_compatibility.py tests/test_qledger_store_protocol.py tests/test_qledger_store_sources.py tests/test_qledger_store_native.py tests/test_qledger_native_binding.py tests/test_qledger_store_integrity.py -q
       - name: qledger explicit horizon-clock (P0a) + matched-control policy (P0d) contracts
         run: python -m pytest tests/test_qledger_horizon_clock.py tests/test_qledger_control_policy.py -q
       # P3 — the forward-only desk adapters and the evidence-clock writer. These
@@ -9680,6 +9725,10 @@ jobs:
       - engine/qbus.py
       - engine/qkernel.py
       - engine/qledger.py
+      - engine/qledger_store.py
+      - engine/qledger_store_native.py
+      - engine/qledger_store_protocol.py
+      - engine/qledger_store_sources.py
       - engine/qledger_validity.py
       - engine/rebalance_calendar.py
       - engine/regime.py
@@ -10364,6 +10413,10 @@ jobs:
       - engine/qbus.py
       - engine/qkernel.py
       - engine/qledger.py
+      - engine/qledger_store.py
+      - engine/qledger_store_native.py
+      - engine/qledger_store_protocol.py
+      - engine/qledger_store_sources.py
       - engine/qledger_validity.py
       - engine/quant_lab/__init__.py
       - engine/quant_lab/legs.py
@@ -12087,6 +12140,10 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -12571,6 +12628,10 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -15120,6 +15181,10 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -16859,6 +16924,10 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "engine/qledger_desk_adapter.py"
       - "engine/qledger_evidence_clock.py"
       - "engine/qledger_validity.py"
@@ -18997,6 +19066,10 @@ jobs:
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "engine/qledger_validity.py"
       # Package N closure widening 2026-10-07 (contract-delta)
       - "engine/qbus_news_cluster.py"
@@ -20767,6 +20840,10 @@ jobs:
       - "engine/qbus_news_universe_snapshot.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
       - "engine/qledger_validity.py"
       - "engine/quote_resolution.py"
       - "engine/rate_inflation_transmission.py"

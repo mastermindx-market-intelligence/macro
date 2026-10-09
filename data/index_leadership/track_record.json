@@ -1,18 +1,18 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-10-05",
-  "generated_at": "2026-10-07T07:25:04.498152+00:00",
+  "as_of": "2026-10-06",
+  "generated_at": "2026-10-09T07:32:51.133174+00:00",
   "is_context_only": true,
-  "n_snapshots": 1118,
-  "n_days": 38,
+  "n_snapshots": 1150,
+  "n_days": 39,
   "horizons": {
     "5": {
-      "n_matured": 1021,
+      "n_matured": 1052,
       "by_stage": {
         "running": {
-          "n": 947,
-          "mean_fwd_rel": -0.006,
-          "hit_rate": 0.421
+          "n": 978,
+          "mean_fwd_rel": -0.0056,
+          "hit_rate": 0.424
         },
         "coiling": {
           "n": 36,
@@ -25,8 +25,8 @@
           "hit_rate": 0.579
         }
       },
-      "running_ic": 0.0083,
-      "running_ic_t_hac": 0.112,
+      "running_ic": 0.0093,
+      "running_ic_t_hac": 0.124,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -35,8 +35,8 @@
       "by_stage": {
         "running": {
           "n": 902,
-          "mean_fwd_rel": -0.0106,
-          "hit_rate": 0.378
+          "mean_fwd_rel": -0.0105,
+          "hit_rate": 0.379
         },
         "coiling": {
           "n": 36,
@@ -49,18 +49,18 @@
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0086,
-      "running_ic_t_hac": -0.131,
+      "running_ic": -0.0066,
+      "running_ic_t_hac": -0.101,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 714,
+      "n_matured": 752,
       "by_stage": {
         "running": {
-          "n": 640,
-          "mean_fwd_rel": -0.0249,
-          "hit_rate": 0.317
+          "n": 678,
+          "mean_fwd_rel": -0.0263,
+          "hit_rate": 0.31
         },
         "coiling": {
           "n": 36,
@@ -73,27 +73,27 @@
           "hit_rate": 0.605
         }
       },
-      "running_ic": -0.0004,
-      "running_ic_t_hac": -0.011,
+      "running_ic": -0.0038,
+      "running_ic_t_hac": -0.106,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 99,
+      "n_matured": 146,
       "by_stage": {
         "running": {
-          "n": 89,
-          "mean_fwd_rel": -0.0456,
-          "hit_rate": 0.337
+          "n": 134,
+          "mean_fwd_rel": -0.0453,
+          "hit_rate": 0.328
         },
         "coiling": {
-          "n": 9,
-          "mean_fwd_rel": -0.0754,
-          "hit_rate": 0.222
+          "n": 10,
+          "mean_fwd_rel": -0.071,
+          "hit_rate": 0.2
         },
         "coiling_primed": {
-          "n": 1,
-          "mean_fwd_rel": -0.0704,
+          "n": 2,
+          "mean_fwd_rel": -0.0446,
           "hit_rate": 0.0
         }
       },
@@ -116,67 +116,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-09-11",
-      "id": "russell:oil-gas-equipment-services",
-      "name": "Oil & Gas Equipment & Services",
+      "date": "2026-09-15",
+      "id": "russell:oil-gas-drilling",
+      "name": "Oil & Gas Drilling",
       "stage": "running",
-      "fwd_rel": -0.1003,
+      "fwd_rel": -0.138,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
+      "date": "2026-09-15",
       "id": "russell:oil-gas-e-p",
       "name": "Oil & Gas E&P",
       "stage": "running",
-      "fwd_rel": -0.0988,
+      "fwd_rel": -0.1244,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
+      "date": "2026-09-15",
       "id": "russell:auto-truck-dealerships",
       "name": "Auto & Truck Dealerships",
       "stage": "running",
-      "fwd_rel": -0.0793,
+      "fwd_rel": -0.1227,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "subsectors:auto-manufacturers",
-      "name": "Auto Manufacturers",
+      "date": "2026-09-15",
+      "id": "subsectors:information-technology-services",
+      "name": "Information Technology Services",
       "stage": "running",
-      "fwd_rel": -0.078,
+      "fwd_rel": -0.1068,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:insurance-life",
-      "name": "Insurance - Life",
+      "date": "2026-09-15",
+      "id": "subsectors:agricultural-inputs",
+      "name": "Agricultural Inputs",
       "stage": "running",
-      "fwd_rel": -0.0735,
+      "fwd_rel": -0.1011,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:broadcasting",
-      "name": "Broadcasting",
+      "date": "2026-09-15",
+      "id": "subsectors:oil-gas-e-p",
+      "name": "Oil & Gas E&P",
       "stage": "running",
-      "fwd_rel": -0.0724,
+      "fwd_rel": -0.0987,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-11",
-      "id": "russell:building-products-equipment",
-      "name": "Building Products & Equipment",
-      "stage": "coiling_primed",
-      "fwd_rel": -0.0641,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-11",
-      "id": "baskets:us-sector-comm",
-      "name": "Communication Services (Equal-Weight)",
+      "date": "2026-09-15",
+      "id": "nasdaq:specialty-business-services",
+      "name": "Specialty Business Services",
       "stage": "running",
-      "fwd_rel": -0.0631,
+      "fwd_rel": -0.0962,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-15",
+      "id": "subsectors:insurance-property-casualty",
+      "name": "Insurance - Property & Casualty",
+      "stage": "running",
+      "fwd_rel": -0.0894,
       "horizon_d": 21
     }
   ],
