@@ -2476,18 +2476,28 @@ jobs:
     # Hermetic source-contract gate for the matrix producer/publisher repair.
     # The broader flow-surface lane stays gate:data for nightly/data health,
     # but source/session/publication invariants must also be able to block a PR.
+    # Cover the concrete import closure, fixtures and lib.config fallback.
+    # Retention filesystem probes otherwise add unrelated repository-wide
+    # opaque fallback patterns to this hermetic job.
+    scope: exclusive
     paths:
+      - "config.yml"
+      - "engine/__init__.py"
+      - "engine/gex_engine.py"
+      - "engine/greeks.py"
       - "engine/options_matrix.py"
       - "engine/options_matrix_retention.py"
       - "engine/options_structure.py"
       - "engine/thetadata_store.py"
-      - "engine/greeks.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
       - "lib/nyse_calendar.py"
+      - "scripts/__init__.py"
       - "scripts/build_options_matrix.py"
+      - "site/options_structure/examples/matrix.json"
+      - "tests/fixtures/options_matrix_retention/**"
       - "tests/test_options_matrix.py"
       - "tests/test_options_matrix_retention.py"
-      - "tests/fixtures/options_matrix_retention/**"
-      - "site/options_structure/examples/matrix.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
