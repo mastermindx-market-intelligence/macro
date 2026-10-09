@@ -218,7 +218,7 @@
      quiet, no weighting-law claim, the existing B2 fallback untouched. */
   function refreshSnapshot() {
     var ps = PS();
-    if (!ps) { snapshot = null; return null; }
+    if (!ps || typeof ps.computeRowMoney !== 'function') { snapshot = null; return null; }
     var effWrite = writeState;
     if (effWrite === 'clean' && readState.authority === 'cloud' &&
         (readState.state === 'degraded' || readState.state === 'error')) {
@@ -377,7 +377,8 @@
        never activated for it at all. computeWeighting's `all_unsized_equal` state is
        what names that case; everything else keeps the original real-value math. */
     var ps = PS();
-    var wgt = ps ? ps.computeWeighting(modeled, moneyPriceOf) : null;
+    var wgt = ps && typeof ps.computeRowMoney === 'function'
+      ? ps.computeWeighting(modeled, moneyPriceOf) : null;
     if (wgt && wgt.state === 'all_unsized_equal') {
       modeled.forEach(function (r) { w[r.ticker] = 1; });
     } else if (wgt && wgt.complete !== true) {
@@ -919,7 +920,7 @@
        it shows no money bars rather than a fabricated one. */
     var ps = PS();
     var W;
-    if (ps) {
+    if (ps && typeof ps.computeRowMoney === 'function') {
       /* F5 (Sol post-review, MAJOR — real snapshot consumption): a single-currency
          book (the common case, `byBook` has exactly one key) reads the ONE
          snapshot's own `weighting` field directly — computeSnapshot() computes it

@@ -3100,6 +3100,36 @@ def test_a09_actual_table_cannot_show_guessed_dollars_or_partial_weights():
 
 
 @needs_node
+def test_a09_stale_ps_cannot_publish_snapshot_book_read_or_factor_money():
+    """A split deployment can retain the old PS API while serving the new consumer.
+
+    Execute the entire shipped consumer. A stale API has no native-money qualifier;
+    its old monetary methods must never be called, even with populated prices.
+    """
+    out = _run("""
+      localStorage.setItem('mdash.pf.v1', JSON.stringify({v:1,rows:[
+        {id:'stale-a',ticker:'NVDA',shares:1,entry_price:100,status:'open'},
+        {id:'stale-b',ticker:'AVGO',shares:3,entry_price:100,status:'open'}]}));
+      window.SD={loadTickers:function(ts,cb){ts.forEach(function(t){
+        cb(t,{tech:{price:100}});});return Promise.resolve();}};
+      boot(); await drain(8);
+      window.PS=Object.assign({},PS);
+      delete window.PS.computeRowMoney;
+      window.PS.computeSnapshot=function(){throw Error('stale monetary snapshot called');};
+      window.PS.computeWeighting=function(){throw Error('stale monetary weights called');};
+      window.PF.render(); await drain(2);
+      OUT({count:PF.count(),table:node('tbl_pf').innerHTML,
+        say:node('ws_book_say').innerHTML,because:node('ws_book_because').innerHTML,
+        weights:__fxCalls[__fxCalls.length-1]});
+    """)
+    assert out['count'] == 2
+    assert 'NVDA' in out['table'] and 'AVGO' in out['table']
+    assert 'This book holds 2 positions' in out['say']
+    assert out['because'] == ''
+    assert out['weights'] == {}
+    assert '25.0%' not in out['table'] and '75.0%' not in out['table']
+
+
 def test_a09_duplicate_lots_cannot_publish_over_100_percent_in_book_read():
     rows=[{'id':str(i),'ticker':'ANONA' if i<4 else 'ANONB','shares':1,'entry_price':100}
           for i in range(5)]

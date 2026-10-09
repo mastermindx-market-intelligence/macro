@@ -1001,7 +1001,7 @@ def test_partB_ps_absent_read_banner_falls_back_to_readState_directly():
     code = _pf_code()
     idx = code.index("function refreshSnapshot() {")
     fn = code[idx:code.index("\n  function ", idx + 10)]
-    assert "if (!ps) { snapshot = null; return null; }" in fn
+    assert "if (!ps || typeof ps.computeRowMoney !== 'function') { snapshot = null; return null; }" in fn
 
 
 def test_md_a_plain_read_never_claims_saved():
@@ -1077,7 +1077,7 @@ def test_f5_renderbookread_single_book_reads_snapshot_weighting():
     §12 carve-out keeps the direct call (commented) — this test pins that both
     still exist."""
     code = _pf_code()
-    idx = code.index("var ps = PS();\n    var W;\n    if (ps) {")
+    idx = code.index("var ps = PS();\n    var W;\n    if (ps && typeof ps.computeRowMoney === 'function') {")
     block = code[idx:idx + 900]
     assert "singleBookSnap" in block
     assert "refreshSnapshot()" in block
