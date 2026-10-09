@@ -146,6 +146,7 @@ Two earlier rulings need reading in this light.
   "They have no evidence test". None of the six packets had ever had one. "Historical" there does
   not mean "was once verified".
 
-The f12_7 and f12_10 `informationalFiles` rows are described in-file as "recorded for provenance
-only". They hold 85830659, which #802 wrote on 2026-10-06, so they do not record the capture
-either.
+The f12_7 and f12_10 `informationalFiles` rows (`asserted: false`) do not record the capture
+either. b-f12-7's EVIDENCE.yml says they "are recorded for provenance only", but both hold
+85830659, which #802 (64c1ea5e2) wrote on 2026-10-06, after the 2026-09-27 capture. At a0e4333e0,
+terminal/lib/i18n.tsx hashes to 63689cd6, so these rows are stale too.
