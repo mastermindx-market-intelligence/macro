@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="dark light">
   <title>{{ pack.event.primary_subject }} | Mastermind partner preview</title>
   <meta name="description" content="Private, evidence-backed draft for editorial review. Not a published partnership.">
   <!-- Canonical, unmodified :root tokens extracted at build time from theme.css. -->
@@ -13,6 +13,7 @@
     /* All palette, type and surface decisions resolve from canonical theme.css.
        No new colour/radius/font tokens are declared by this preview. */
     :root { color-scheme:dark; font-family:var(--font-ui); }
+    html[data-theme="light"] {color-scheme:light;}
     *{box-sizing:border-box}
     body{background:radial-gradient(ellipse at 83% -13%,var(--panel2) 0,transparent 42%),
       radial-gradient(ellipse at -10% 45%,var(--panel) 0,transparent 42%),var(--bg);
