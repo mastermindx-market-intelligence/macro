@@ -154,6 +154,21 @@
         "path": "/Volumes/Mastermind/evidence/iw2-initiation-01a104c8/iw2-backup-coverage-219b47ea-20261009.json",
         "sha256": "f4d0457f8d98dc05f89f95862b64da3180d0fdf09fe54584af786c808e6bdd7c"
       }
+    },
+    "backup_current_owner_return": {
+      "owner": "01a104c8-6e11-7e52-93c1-6b8dbc45bb9c",
+      "carrier": 7532,
+      "head": "ffd559af942032c153c93a56d41129a65057c331",
+      "observed_return": "2026-10-09T11:27Z",
+      "contract_delta_passed": true,
+      "two_source_reviews_accepted_as_reported": true,
+      "controller_armed": true,
+      "remaining_ci_pending_at_owner_read": true,
+      "one_statement_13_table_snapshot_and_reference_preparation_qualified": true,
+      "production_capture_restore_accepted": false,
+      "sql0030_applied": false,
+      "existing_empty_scratch": "brdnwkogwtkapcnkeinr",
+      "new_backup_stores_or_jobs": false
     }
   },
   "brain": {
@@ -219,16 +234,17 @@
     },
     "current_helper": {
       "schema": "terminal.audit20.approval_helper_qualification.v2",
-      "checks": 25,
-      "passed": 25,
+      "checks": 33,
+      "passed": 33,
       "cases": [
         "trusted owned current head",
         "authorized carrier 631",
+        "authorized carrier 781",
         "authorized carrier 853",
         "authorized carrier 873",
         "authorized carrier 875",
         "unauthorized PR",
-        "unreviewed payoff carrier",
+        "unreviewed options carrier",
         "wrong base branch",
         "missing base branch",
         "closed",
@@ -246,12 +262,20 @@
         "wrong actor",
         "already queued",
         "changed workflow",
-        "empty trusted workflow"
+        "empty trusted workflow",
+        "run-id where full head required rejects before network/receipt",
+        "non-hex full head rejects before network/receipt",
+        "unauthorized input carrier rejects before network/receipt",
+        "duplicate input carrier rejects before network/receipt",
+        "too many input carriers rejects before network/receipt",
+        "empty input rejects before network/receipt",
+        "valid full-head input accepted"
       ],
       "actual_network_effects": 0,
-      "qualified_source_sha256": "68e0195bf36c55b7f34c3615db0814001e0bb977d897661319bb7fa0a885997b",
+      "qualified_source_sha256": "bdb275beef637644e2f483c13f5e986fcefca5f8cab2c0ec4e2db785b2ff70e7",
       "authorized_prs": [
         631,
+        781,
         839,
         853,
         873,
@@ -274,6 +298,172 @@
     "new_873_refresh_approval": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-873-second-refresh-20261009.json",
       "sha256": "157ed6f52c1e6feadcb1fff84c4949497aae12faf199b90a9a49c5db1ed2cc08"
+    },
+    "current_refresh_approvals": [
+      {
+        "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+        "observed_at": "2026-10-09T11:32:17.916663+00:00",
+        "trusted_master": "a8fa079676d8bd157a252a94d670ff85464a66c2",
+        "new_credentials": false,
+        "operator_command_required": false,
+        "operations": [
+          {
+            "pr": 631,
+            "head": "c446410852174c0ed4d6cf6b5e000d613e48e72c",
+            "run": 37922676612,
+            "decision": "APPROVE_TRUSTED_CURRENT_RUN",
+            "approval_effect": "POST_SUCCEEDED",
+            "readback_status": "queued",
+            "readback_conclusion": null
+          },
+          {
+            "pr": 781,
+            "head": "64bae3d75ad71b2e717255ca80e3bae2761ac24a",
+            "run": 37920554777,
+            "decision": "APPROVE_TRUSTED_CURRENT_RUN",
+            "approval_effect": "POST_SUCCEEDED",
+            "readback_status": "queued",
+            "readback_conclusion": null
+          }
+        ]
+      },
+      {
+        "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+        "observed_at": "2026-10-09T11:32:19.002208+00:00",
+        "trusted_master": "a8fa079676d8bd157a252a94d670ff85464a66c2",
+        "new_credentials": false,
+        "operator_command_required": false,
+        "operations": [
+          {
+            "pr": 839,
+            "head": "c5df73a7909c45a640da2e9f1f17c7b1a52a9856",
+            "run": 37918874426,
+            "decision": "APPROVE_TRUSTED_CURRENT_RUN",
+            "approval_effect": "POST_SUCCEEDED",
+            "readback_status": "queued",
+            "readback_conclusion": null
+          },
+          {
+            "pr": 853,
+            "head": "8a2bb9695ba90d4cc21a96a8807fce88ebbb68b4",
+            "run": 37919205734,
+            "decision": "APPROVE_TRUSTED_CURRENT_RUN",
+            "approval_effect": "POST_SUCCEEDED",
+            "readback_status": "queued",
+            "readback_conclusion": null
+          }
+        ]
+      }
+    ],
+    "malformed_input_no_effect_reconciliation": {
+      "schema": "terminal.audit20.ci_approval_input_reconciliation.v1",
+      "original_receipt": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-631-781-current-refresh-20261009.json",
+      "original_operations": [],
+      "error": "Malformed --pair PR:run-id supplied where PR:40-character-head is required; assertion failed before per-PR reads or REQUEST_PENDING/POST",
+      "approval_requests_sent": 0,
+      "effect_unknown": false,
+      "refusal_or_authorization_denial": false,
+      "next_action": "Fresh corrected-head invocation of unchanged existing helper; preserve original empty receipt",
+      "same_root": true,
+      "at": "2026-10-09T11:32:16.277218+00:00"
+    },
+    "current_helper_qualification": {
+      "schema": "terminal.audit20.approval_helper_qualification.v2",
+      "checks": 33,
+      "passed": 33,
+      "cases": [
+        "trusted owned current head",
+        "authorized carrier 631",
+        "authorized carrier 781",
+        "authorized carrier 853",
+        "authorized carrier 873",
+        "authorized carrier 875",
+        "unauthorized PR",
+        "unreviewed options carrier",
+        "wrong base branch",
+        "missing base branch",
+        "closed",
+        "draft",
+        "hold",
+        "veto",
+        "no merge intent",
+        "fork",
+        "foreign base",
+        "foreign run",
+        "wrong head",
+        "wrong event",
+        "wrong path",
+        "wrong association",
+        "wrong actor",
+        "already queued",
+        "changed workflow",
+        "empty trusted workflow",
+        "run-id where full head required rejects before network/receipt",
+        "non-hex full head rejects before network/receipt",
+        "unauthorized input carrier rejects before network/receipt",
+        "duplicate input carrier rejects before network/receipt",
+        "too many input carriers rejects before network/receipt",
+        "empty input rejects before network/receipt",
+        "valid full-head input accepted"
+      ],
+      "actual_network_effects": 0,
+      "qualified_source_sha256": "bdb275beef637644e2f483c13f5e986fcefca5f8cab2c0ec4e2db785b2ff70e7",
+      "authorized_prs": [
+        631,
+        781,
+        839,
+        853,
+        873,
+        875
+      ],
+      "scope": "Preflight false-positive/hold/fork/head/actor/association/workflow/conclusion fences; no live approval asserted"
+    },
+    "latest_operations": {
+      "ordinary-github-ci-approval-631-781-refresh-20261009T1212.json": {
+        "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+        "observed_at": "2026-10-09T12:15:21.671728+00:00",
+        "trusted_master": "5e67edcbc338d49d3dc552e62fdf966032b4b795",
+        "new_credentials": false,
+        "operator_command_required": false,
+        "operations": [
+          {
+            "pr": 631,
+            "head": "b67de29a38ed17d5a5c2aab718bb274d03eaafbf",
+            "run": 37928303544,
+            "decision": "APPROVE_TRUSTED_CURRENT_RUN",
+            "approval_effect": "POST_SUCCEEDED",
+            "readback_status": "queued",
+            "readback_conclusion": null
+          },
+          {
+            "pr": 781,
+            "head": "abb61cddd24cea14b8e09d8a646bee7439422f00",
+            "run": 37925558105,
+            "decision": "APPROVE_TRUSTED_CURRENT_RUN",
+            "approval_effect": "POST_SUCCEEDED",
+            "readback_status": "queued",
+            "readback_conclusion": null
+          }
+        ]
+      },
+      "ordinary-github-ci-approval-839-refresh-20261009T1212.json": {
+        "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+        "observed_at": "2026-10-09T12:15:36.331764+00:00",
+        "trusted_master": "5e67edcbc338d49d3dc552e62fdf966032b4b795",
+        "new_credentials": false,
+        "operator_command_required": false,
+        "operations": [
+          {
+            "pr": 839,
+            "head": "b0b28fd1de32936fe08bd3112c7fc8dd08569676",
+            "run": 37926301472,
+            "decision": "APPROVE_TRUSTED_CURRENT_RUN",
+            "approval_effect": "POST_SUCCEEDED",
+            "readback_status": "queued",
+            "readback_conclusion": null
+          }
+        ]
+      }
     }
   },
   "remaining": "Whole Audit20 acceptancefalse. Existingobserverowns873/875/839/853protectedCI/merge, thenparentcanonicaldeployment/livequalification. ActualnativeTop10retains643future-fill/Options,804T03gcleanup and858T02fdesktopred; preserveonewriter/orderedunapplied0030/31/32. Macro8687source4dfindependent177PASS/parent770native36browser; nativeunitproductionauthoritystillabsent. A12actualFreeOrderBlocksdisabledProgate; exactpaididentity andwebhookrecipientconsenthumanboundariesremain. Fabricordinaryacceptanceprojectionrepairactive; originalA09policyuploadprefix/DCRfrozen. Newpriceclockleafrejectedbeforetransport; existingroutingownerqualifiesnoeligible/coherence, no escalationfabrication.",
@@ -566,9 +756,34 @@
     "native_update_readback": true,
     "prior_prompt_sha256": "cae0cc6f6e2bec3f563a50e2b59e8f5288fcb9e19afffea159a4e6372a5b5259",
     "current_frontier_readback": {
-      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/heartbeat-current-frontier-readback-20261009.json",
-      "sha256": "5763feb2786c0c4b3008d03a1a87823a856d89a59395fee3bfa19fa686b0bb32"
-    }
+      "at": "2026-10-09T11:26:11.113831+00:00",
+      "id": "terminal-audit20-continuation",
+      "status": "ACTIVE",
+      "kind": "heartbeat",
+      "target_thread_id": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "rrule": "FREQ=MINUTELY;INTERVAL=15",
+      "prompt_sha256": "48892887af3810f82208a98397ac5dddc220dde777aa3c3ccc3e16e31bc35ea7",
+      "prompt_chars": 11560,
+      "single_existing_observer": true,
+      "native_update_readback": true,
+      "runtime_LastRun_not_exposed": true
+    },
+    "current_native_readback": {
+      "observed_at": "2026-10-09T12:17:30.560592+00:00",
+      "id": "terminal-audit20-continuation",
+      "kind": "heartbeat",
+      "status": "ACTIVE",
+      "rrule": "FREQ=MINUTELY;INTERVAL=15",
+      "prompt_chars": 12116,
+      "prompt_sha256": "3bf55d8359ad534e8d23bafd26098c31f5d3d2e71638d1ba0b474ec56d724ad4",
+      "native_update_readback": true,
+      "same_original_parent": true,
+      "new_json_security_review_bound": true,
+      "approval_v6_bound": true,
+      "ordinary_ci_operator_command_required": false,
+      "quiet_unchanged": true
+    },
+    "no_second_observer_created": true
   },
   "ci_pagination": {
     "pr": 863,
@@ -621,7 +836,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T10:13:57.124905+00:00",
+  "observed_at": "2026-10-09T12:18:46.211351+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -1040,6 +1255,21 @@
       "sha256": "95e82b2960ad94fd2683db10339b629605ca018321dd01cac149097fe28a7a85",
       "owner_report_only_parent_not_rerun": true,
       "original_refused_ids_untouched": true
+    },
+    "executive_reader_scope_correction": {
+      "parent_reader_observed_at": "2026-10-09T10:10:21Z",
+      "ok": true,
+      "server_version": "1.5.0",
+      "mode": "readonly",
+      "mode_proves": "reader projection only",
+      "production_submission_disabled_inferred": false,
+      "native_modifying_ingress_or_exact_parent_wake_accepted": false,
+      "canonical_host_owned_original_parent_binding_qualified": false,
+      "owner_latest_reader_verified_at": "2026-10-09T10:15:56Z",
+      "owner_config_access_denial_preserved": true,
+      "no_probe_queued": true,
+      "frozen_Auth0_operation_retried": false,
+      "next_gate": "accepted existing host-owned original-parent RuntimeBinding with current generation/native session/account-host connection and Wake return"
     }
   },
   "a01_production_history": {
@@ -1140,6 +1370,45 @@
       "accepted_incoming_export_master": "dd65e73234f2a18b3d9e7ceb5c4bce0f286ac7d9",
       "source_or_privilege_contract_changed": false,
       "qualification_repair": "Initial verifier used only finalcommit anchor-test delta; corrected from actual two accepted commits/file names. Approval helper was invoked before that corrected source qualification settled; actual same-head workflow/actor/head fences passed and POST for exact run37911582051 effect was successful. No approval repeated."
+    },
+    "third_refresh": {
+      "at": "2026-10-09T11:00:09.640671+00:00",
+      "reviewed_source": "ae6c7649a36769d8982932bd6763ceae59355380",
+      "previous_refresh": "bc61c7a62476cae285f3d23d32cea5ab495b71eb",
+      "current_refresh": "276cedc1397e389fb74bbdd7d0241329b6f28dfa",
+      "parents": [
+        "bc61c7a62476cae285f3d23d32cea5ab495b71eb",
+        "ebb0ca37369faa6ae9149c7dffa130471b98580b"
+      ],
+      "all_three_reviewed_blobs_unchanged": true,
+      "blobs": {
+        "ingest/build_polygon_universe.py": "c746ec7aa934a51510c504b68ffdd3083ac541c4",
+        "tests/test_polygon_publication.py": "53cc43fa0496ef13a6a0a8313fa101fe048c061e",
+        "tests/test_session_anchor.py": "f59d50a02f0475742393b249d1fff3225df1f767"
+      },
+      "whole_A01_accepted": false,
+      "atomic_write_owner": {
+        "path": "ingest/build_macro_symbols.py",
+        "blob": "dc4a23e6c9a2a3bdff43eaf01641ce75853eb766",
+        "sha256": "e0bfcd0e993cb4c57098f4243c6e633d0a3a24acea90f00c63263b9d9eb6fb6a",
+        "unchanged_from_reviewed_source": true,
+        "semantics": "Same-directory mkstemp + chmod + os.replace, not an fsync crash-durability claim"
+      }
+    },
+    "third_refresh_ci_initial": {
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "observed_at": "2026-10-09T11:02:12.046492+00:00",
+      "trusted_master": "ebb0ca37369faa6ae9149c7dffa130471b98580b",
+      "new_credentials": false,
+      "operator_command_required": false,
+      "operations": [
+        {
+          "pr": 873,
+          "head": "276cedc1397e389fb74bbdd7d0241329b6f28dfa",
+          "run": 37920591752,
+          "decision": "NO_APPROVAL_REQUIRED"
+        }
+      ]
     }
   },
   "a11_temporal_replay": {
@@ -1355,6 +1624,118 @@
         "sha256": "681136caeb097ac0aa263c783361dcd67f9e2f7c174d8b69a499a9439aca9658"
       },
       "artifact_acceptance_readback": "CLI accept once rc0; ordinary status omits acceptance fields; same-id projection repair commissioned, no retry"
+    },
+    "a10_owned_readers_before_json_secret_repair": {
+      "schema": "terminal.audit20.a10.owned_readers.source_qualification.v1",
+      "root_id": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "head": "a7b170cace34fb090e02a2293448a0d9779772b0",
+      "base": "ebb0ca37369faa6ae9149c7dffa130471b98580b",
+      "worktree": "/Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/terminal-a10-owned-readers-01a10f92-5ffec8e34ba48ac9",
+      "files": {
+        "terminal/app/api/account/export/route.ts": {
+          "blob": "8c9372180482487257fb6b8539b519be0f20dd63",
+          "sha256": "952070d1d2b1baca6326c9c0dcb73953a533a885165c62ed582b091d6e4a5ceb"
+        },
+        "terminal/e2e/account-export-integrity.spec.ts": {
+          "blob": "7d827dbcae3fbf69bcfaef303f9d28ebf1227ded",
+          "sha256": "da771487879895de347e2ccec001d55b2d486d83bed9db826c48a8bb565a5faa"
+        },
+        "terminal/lib/__tests__/accountExportCoverage.test.ts": {
+          "blob": "e8ea8c18c98a24469a62d06fc85b838d071347e8",
+          "sha256": "0cb1783c73377d8ba610f99cbd141afe4a5361d2d1dba48a92df9bfce1a07ee8"
+        },
+        "terminal/lib/__tests__/accountExportIntegrity.test.ts": {
+          "blob": "a634494fa8dc99e9d063e4100e226c87b1a35f5e",
+          "sha256": "97b3c6a269d206ab32336a0ce82e5f5dc0c3f4a79ab7d9dde023d1f68a859ad0"
+        },
+        "terminal/lib/__tests__/accountExportRoute.test.ts": {
+          "blob": "bbc701729d0fc7b62ac3eb94f60367c54935cf9b",
+          "sha256": "58075b68f30d00a6a99a19b6fc4d934654d5e9322ca066d9cb5d173b8fb572bf"
+        },
+        "terminal/lib/__tests__/accountLifecycleRoutes.test.ts": {
+          "blob": "e7a9f367ec497a47fee762d0fbfcf014e692391a",
+          "sha256": "a91180794662ce5b7e902be3016f6894d8f1d1ac12a4d033bcc21855c1377aa0"
+        },
+        "terminal/lib/accountExport.ts": {
+          "blob": "0b7c838cc9538ce8d29fbd30feea782bc95f9bb4",
+          "sha256": "47dfd9c0b9b46f6092383477a0d26d204288fb12cf767a6b4075c846af4f84df"
+        },
+        "terminal/lib/accountExportIntegrity.ts": {
+          "blob": "e262dd8292b2f7b689e09f6a9b5f33c711896dfe",
+          "sha256": "63b56e8ffe74c70c5094e0db35baf96d7a56a122c564a9d061e5b4b0263674e5"
+        }
+      },
+      "catalog_sha256": "8ec4dc7e7ea2fe22640ce665960479b2f905d2ec2ce09eee19c122cad8119729",
+      "causal_red": {
+        "failed": 18,
+        "passed": 51,
+        "tests": 69,
+        "wrong_cwd_attempt_not_test_proof": true
+      },
+      "focused": {
+        "passed": 116,
+        "files": 4
+      },
+      "full_native": {
+        "passed": 8123,
+        "todo": 4,
+        "files": 497
+      },
+      "typegen_rc": 0,
+      "tsc_rc": 0,
+      "actual_next_downloads": {
+        "passed": 6,
+        "skipped": 0,
+        "languages": [
+          "en",
+          "zh"
+        ],
+        "viewports": [
+          "1440x900",
+          "820x1180",
+          "390x844"
+        ],
+        "source_fixture_new_collections": "unpageable empty / partial, no populated or complete inventory proof"
+      },
+      "legacy_v1_actual_download_compatibility_checks": 13,
+      "independent_final_review_accepted": false,
+      "ci_accepted": false,
+      "merged": false,
+      "production_accepted": false,
+      "whole_mission_accepted": false,
+      "pull_request": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/883",
+      "independent_review": {
+        "verdict": "REPAIR_REQUIRED",
+        "bytes": 7759,
+        "sha256": "9c796a4014bc20510c27e76a655261c9d5c14f751f154771c07bc09c53afcc9c",
+        "existing_tests_passed": 144,
+        "independent_probes_passed": 3,
+        "independent_probes_failed": 1,
+        "finding": "wrong physical drawings relation"
+      },
+      "initial_defective_head": "8cc42c85a9c982abf0a8c7d40ac1d7cdbf7dffe2",
+      "repair": {
+        "physical_table": "drawings",
+        "artifact_dataset": "chart_drawings",
+        "causal_red": {
+          "failed": 8,
+          "passed": 39,
+          "tests": 47
+        },
+        "targeted_pass": 144,
+        "full_native_pass": 8123,
+        "full_native_todo": 4,
+        "full_native_files": 497,
+        "tsc_rc": 0,
+        "actual_next_pass": 6,
+        "actual_next_skip": 0,
+        "strict_mock_unknown_relation_error": true,
+        "legacy_verifier_blob_unchanged": true,
+        "repaired_source_independent_review_accepted": false
+      },
+      "repair_review_child": "terminal-audit20-a10-owned-readers-physical-binding-repair-review-20261009",
+      "repair_review_state": "requested through normal admitted Fabric; result not yet available",
+      "private_contents_published": false
     }
   },
   "a10_integrity_runtime": {
@@ -1515,6 +1896,798 @@
     "full_native_todo": 4,
     "full_native_files": 500,
     "actual_next_responsive": "in progress",
-    "published_candidate": false
-  }
+    "published_candidate": false,
+    "final_source_qualification": {
+      "schema": "terminal.audit20.a17.current_candidate.v1",
+      "observed_at": "2026-10-09T10:15:15.518677+00:00",
+      "head": "bb2eaa94e924daf3e1e02dccd8b05dec769fd45b",
+      "master": "6337fbd830d5f5c5b064f5db74478f6dc64924c4",
+      "worktree": "/Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/pr-781-75d422553bd33b91",
+      "pr": 781,
+      "previous_remote_head": "1020f25043ea609b4c19e2f5106f40a35e3670b5",
+      "targeted_pass": 55,
+      "full_native": {
+        "pass": 8143,
+        "todo": 4,
+        "files": 500
+      },
+      "typegen_exit": 0,
+      "typecheck_exit": 0,
+      "actual_next_responsive": {
+        "pass": 18,
+        "skip": 0,
+        "sizes": [
+          "1440x900",
+          "820x1180",
+          "390x844"
+        ],
+        "languages": [
+          "en",
+          "zh"
+        ],
+        "authenticated_production": false
+      },
+      "scoped_capture": {
+        "at": "2026-10-09T10:11:37.836104+00:00",
+        "base_master": "6337fbd830d5f5c5b064f5db74478f6dc64924c4",
+        "capture_head": "165bf02c685f5bb5b81c9d1ec83ff2f9982dd12f",
+        "changed_pngs": [
+          "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-1440-zh.png",
+          "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-1440.png",
+          "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-390-zh.png",
+          "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-390.png"
+        ],
+        "only_one_changed_layout_lock": "terminal/components/OptionsHubView.tsx",
+        "retained_other_source_locks": 8,
+        "retained_other_pngs": 20,
+        "math_blob_unchanged": true,
+        "fixture_not_authenticated_production": true
+      },
+      "source_sha256": {
+        "terminal/components/OptionsHubView.tsx": "7170485d20c5e17c7c97d6cf76ab18bbd031f8750efaab17fda2258e0b26d8f5",
+        "terminal/components/chrome/WorkspaceTabs.tsx": "912ab34fea38f56f5dee87a09e2a5c394f9a997e09be0bccb57db2260f906e5f",
+        "terminal/components/options/OptionsWorkflowGuide.tsx": "6c419959860e2ca9361e3478fdc0a070310c77117bc633be265ccd501b947e54",
+        "terminal/components/plan/PayoffLab.module.css": "82e6296fe503d8d0ea71cea4fd255f9c5fffadf9ffa5720e3f2f697c1b6cd171",
+        "terminal/components/plan/PayoffLab.tsx": "4b00b9ed9ba6cd9dc59cba9e2316973b0d74cecb68245ea7df899dc0e886cd90",
+        "terminal/components/workspaces/OptionsWorkspace.tsx": "12fdbc7a22b24302d19a8461172d35a4a4076796677d1f962e4bd4c4bb46aa3e",
+        "terminal/docs/pr-crops/b-pl-6-batch-1/EVIDENCE.yml": "f8ebeb28e2648ee3c066eca55b8863f83e676524668cf06c62578caeccfda787",
+        "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-1440-zh.png": "63148a21a922d3d1a118fca06b7981a57c86746567d5bb721b916cb8be7cff60",
+        "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-1440.png": "661fbd2864313ed6fda2ba69bddee251e25f425481e7d7629b84576d51c93264",
+        "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-390-zh.png": "16dbf093ed02ceffe534df093933c562e5caec3d4af9a4a37dc1dd17b1a32f94",
+        "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-390.png": "8e0cd7440a003206f0d6a8296fb28515ea6d791fac91e8e570609f5a02ac20f1",
+        "terminal/e2e/options-payoff-lab.spec.ts": "94b473a56e47f9d22890d2439991e988c18f45c31033da5cc70cdd3ca7406d1c",
+        "terminal/e2e/options-workflow-guide.spec.ts": "3f79b77ee7446126f77bd76d6b82af6626cc5a23b22782881478b57c15019d12",
+        "terminal/lib/__tests__/optionsIa.test.ts": "10c4d336f899da9db319f58fc7ee9327a29b8094889ad34ba00688bbdba16b19",
+        "terminal/lib/__tests__/optionsPayoff.numeric.test.ts": "10c6555f1253b0b0ca8de424da9e1d5eb67c21cf88b20532b2813a763d6b9dd7",
+        "terminal/lib/__tests__/optionsPayoff.test.ts": "04e6c02acce13acd5bed3b034b9fd1722f247c2162b8be0c19d08308c27ca2db",
+        "terminal/lib/__tests__/optionsWorkflowPlan.test.tsx": "df855cda4aade475d528db96c72c5139be54d36a2f5e5499b0fb39f83138e190",
+        "terminal/lib/__tests__/payoffLabView.test.tsx": "0d504b201f36ffc504e152bc0866d899701e8cf180661e98a238109214266f30",
+        "terminal/lib/optionsIa.ts": "0b45e14384dc25eea5b4025d541bcc311a08feccd707ab59fa8ea38bc4be74d9",
+        "terminal/lib/optionsPayoff.ts": "5e1a52594ca1c1d1375a87165220977834e9aa48fba2c9aa1fb80fe79e3b3c86"
+      },
+      "logs": {
+        "a17-targeted-native-20261009.log": "5f7e7f015bfdf841635997da434aa74e9e9285549521c37da28092747298dd2e",
+        "a17-full-native-20261009.log": "1c0e764f4bf9c305e492d72daebed8278d98caa14b2c163a5e4175f806bc0bc3",
+        "a17-typecheck-20261009.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "a17-actual-next-responsive-20261009.log": "42237447b0b661aae5db6115265296ba0a13d032c446c1d7823589d3788ca3b1",
+        "a17-options-only-capture-20261009.log": "37d13a9e7fe4c55c0e07433416acfe62da5710bda15c8231fc8c0df90b211d61"
+      },
+      "final_independent_review_accepted": true,
+      "whole_A17_accepted": false,
+      "independent_review": {
+        "id": "terminal-audit20-a17-payoff-integration-final-review-20261009",
+        "sha256": "74692d2d1c6b7578ed5418fffc2b635192956d48b667cba9323cb34b4e115d0a",
+        "bytes": 6978,
+        "actual_commands": {
+          "math": 32,
+          "causal": 21,
+          "quantity": 9,
+          "ia": 3,
+          "ui_source_contract": 12,
+          "component": 20
+        },
+        "BigInt_structures_in_causal": 400,
+        "independent_next_or_playwright": false,
+        "scope": "immutable20-file source integration; CI/release/authenticated and whole originalA17 unaccepted"
+      }
+    },
+    "final_review_accepted": true,
+    "ready_auto_armed_once": true,
+    "authenticated_production_accepted": false
+  },
+  "a10_owned_readers": {
+    "schema": "terminal.audit20.a10.owned_readers.source_qualification.v1",
+    "root_id": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "head": "eeba25ca1556db21c77b4496efa4d828d9844c66",
+    "base": "ebb0ca37369faa6ae9149c7dffa130471b98580b",
+    "worktree": "/Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/terminal-a10-owned-readers-01a10f92-5ffec8e34ba48ac9",
+    "files": {
+      "terminal/app/api/account/export/route.ts": {
+        "blob": "20650b59abd1aa681f42f2db6c32675d22bd43f9",
+        "sha256": "e87a1088e92d27930c19410ef22e8f2d00309c0078a21c3ec953a127058429d9"
+      },
+      "terminal/e2e/account-export-integrity.spec.ts": {
+        "blob": "7d827dbcae3fbf69bcfaef303f9d28ebf1227ded",
+        "sha256": "da771487879895de347e2ccec001d55b2d486d83bed9db826c48a8bb565a5faa"
+      },
+      "terminal/lib/__tests__/accountExportCoverage.test.ts": {
+        "blob": "70b7f061ada518a682c4c1b1a4c7bd7ff3c34d32",
+        "sha256": "a89674eb1db0d75529b88685620c548ee985e5c49e778a391f709aac279cdaf0"
+      },
+      "terminal/lib/__tests__/accountExportIntegrity.test.ts": {
+        "blob": "a634494fa8dc99e9d063e4100e226c87b1a35f5e",
+        "sha256": "97b3c6a269d206ab32336a0ce82e5f5dc0c3f4a79ab7d9dde023d1f68a859ad0"
+      },
+      "terminal/lib/__tests__/accountExportRoute.test.ts": {
+        "blob": "29a8c94a52e81c287b102c1de4a47f0c5071210b",
+        "sha256": "eaabbf5c3ee4b9d1ac5bcd4e3dc026cd20045c25af5751d4f14ef9daa581e967"
+      },
+      "terminal/lib/__tests__/accountLifecycleRoutes.test.ts": {
+        "blob": "e7a9f367ec497a47fee762d0fbfcf014e692391a",
+        "sha256": "a91180794662ce5b7e902be3016f6894d8f1d1ac12a4d033bcc21855c1377aa0"
+      },
+      "terminal/lib/accountExport.ts": {
+        "blob": "d7b08fb17612541edc5a24daaf8edf9093a68b9f",
+        "sha256": "537c59749d73ebdd84c740e6784c0f810c89b6d77411620064b471db81a53eca"
+      },
+      "terminal/lib/accountExportIntegrity.ts": {
+        "blob": "e262dd8292b2f7b689e09f6a9b5f33c711896dfe",
+        "sha256": "63b56e8ffe74c70c5094e0db35baf96d7a56a122c564a9d061e5b4b0263674e5"
+      }
+    },
+    "catalog_sha256": "8ec4dc7e7ea2fe22640ce665960479b2f905d2ec2ce09eee19c122cad8119729",
+    "causal_red": {
+      "failed": 18,
+      "passed": 51,
+      "tests": 69,
+      "wrong_cwd_attempt_not_test_proof": true
+    },
+    "focused": {
+      "passed": 116,
+      "files": 4
+    },
+    "full_native": {
+      "passed": 8128,
+      "todo": 4,
+      "files": 497
+    },
+    "typegen_rc": 0,
+    "tsc_rc": 0,
+    "actual_next_downloads": {
+      "passed": 6,
+      "skipped": 0,
+      "languages": [
+        "en",
+        "zh"
+      ],
+      "viewports": [
+        "1440x900",
+        "820x1180",
+        "390x844"
+      ],
+      "source_fixture_new_collections": "unpageable empty / partial, no populated or complete inventory proof"
+    },
+    "legacy_v1_actual_download_compatibility_checks": 13,
+    "independent_final_review_accepted": false,
+    "ci_accepted": false,
+    "merged": false,
+    "production_accepted": false,
+    "whole_mission_accepted": false,
+    "pull_request": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/883",
+    "independent_review": {
+      "verdict": "REPAIR_REQUIRED",
+      "bytes": 7759,
+      "sha256": "9c796a4014bc20510c27e76a655261c9d5c14f751f154771c07bc09c53afcc9c",
+      "existing_tests_passed": 144,
+      "independent_probes_passed": 3,
+      "independent_probes_failed": 1,
+      "finding": "wrong physical drawings relation"
+    },
+    "initial_defective_head": "8cc42c85a9c982abf0a8c7d40ac1d7cdbf7dffe2",
+    "repair": {
+      "physical_table": "drawings",
+      "artifact_dataset": "chart_drawings",
+      "causal_red": {
+        "failed": 8,
+        "passed": 39,
+        "tests": 47
+      },
+      "targeted_pass": 144,
+      "full_native_pass": 8123,
+      "full_native_todo": 4,
+      "full_native_files": 497,
+      "tsc_rc": 0,
+      "actual_next_pass": 6,
+      "actual_next_skip": 0,
+      "strict_mock_unknown_relation_error": true,
+      "legacy_verifier_blob_unchanged": true,
+      "repaired_source_independent_review_accepted": true,
+      "independent_review": {
+        "run_id": "terminal-audit20-a10-owned-readers-physical-binding-repair-review-20261009",
+        "head": "a7b170cace34fb090e02a2293448a0d9779772b0",
+        "verdict": "PASS_SCOPED",
+        "bytes": 7147,
+        "sha256": "c759cdf23505229dc136543ce6f2613b2de5ea8441b5183b9f62a1feb550172e",
+        "native_passed": 144,
+        "synthetic_drawings_alerts_only_sqlite_counterexample_passed": true,
+        "old_source_causal_failed": 8,
+        "old_source_causal_passed": 39,
+        "parent_accepted_by": "reviewer",
+        "acceptance_scope": "physical table binding only; no new JSON guard or production acceptance"
+      }
+    },
+    "observed_at": "2026-10-09T12:12:05.892557+00:00",
+    "current_account_suite_subset_in_full_run": {
+      "passed": 149,
+      "files": 5,
+      "test_counts": [
+        37,
+        39,
+        32,
+        13,
+        28
+      ],
+      "source": "structured-json-secret full-native log; these are actual subset counts, not an additional execution"
+    },
+    "json_secret_repair": {
+      "head": "eeba25ca1556db21c77b4496efa4d828d9844c66",
+      "prior_head": "a7b170cace34fb090e02a2293448a0d9779772b0",
+      "causal_red": {
+        "failed": 2,
+        "passed": 11
+      },
+      "current_full_native_passed": 8128,
+      "tsc_exit": 0,
+      "actual_next_passed": 6,
+      "actual_next_skipped": 0,
+      "deep_valid_json_iterative_inspection": true,
+      "review_id": "terminal-audit20-a10-owned-readers-json-secret-repair-review-20261009",
+      "independent_delta_review_accepted": false,
+      "published_draft": true
+    },
+    "current_proof_artifacts": {
+      "a10-owned-readers-structured-json-secret-full-native-20261009.log": {
+        "bytes": 112790,
+        "sha256": "a3e2cebe982d50aaab39b16f8e22e13a543468b31e938a7097caec6bd6b9c2a1"
+      },
+      "a10-owned-readers-structured-json-secret-typecheck-20261009.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "a10-owned-readers-structured-json-secret-actual-next-responsive-20261009.log": {
+        "bytes": 2814,
+        "sha256": "54526718f56a5a58494cabb5d481f64fe560e8fca9c5c4ea7dd4923e24f44991"
+      }
+    }
+  },
+  "a09_price_clock_vertical": {
+    "schema": "terminal.audit20.a09.price_clock_source.v1",
+    "observed_at": "2026-10-09T10:33:39.783451+00:00",
+    "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "head": "6e942fbbfdef71c20894582a84decd5a02ca51f7",
+    "base": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+    "worktree": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/macro-a09-price-clock-01a10f92-609f8e4dcbe82f47",
+    "source_files": {
+      "scripts/build_stock_library.py": "fa6a78415abc6e5d13fa840413fb4908d634deae47cd8cfdfc7d5c63664ba835",
+      "tests/test_build_stock_library_price_clock.py": "5a9dc9234816c9b80df2cf2dcdfd0c7d95a3e46556d5e7af0c9ecd6f69382136"
+    },
+    "causal_red": {
+      "failed": 23,
+      "parent_emitter_contract": true
+    },
+    "final_native": {
+      "passed": 249,
+      "suites": 5,
+      "warnings": 9,
+      "skipped": 0
+    },
+    "source_compile_exit": 0,
+    "diff_check_exit": 0,
+    "production_generator_ran": false,
+    "native_currency_producer_qualified": false,
+    "whole_analysis_asof_changed": false,
+    "inherited_thin_currency_withheld_on_rich_replacement": true,
+    "independent_review_accepted": true,
+    "whole_A09_accepted": false,
+    "pull_request": "https://github.com/mastermindx-market-intelligence/macro/pull/8708",
+    "base_branch": "main",
+    "pr_creation_initial_error": "First create used nonexistent master base; GraphQL validation refused without creating a PR. Actual API verified default/incumbent base main and exact pushed6e942 ref, then same branch created successfully against main.",
+    "independent_final_review": {
+      "run_id": "terminal-audit20-a09-price-clock-final-source-review-20261009",
+      "verdict": "PASS_SCOPED",
+      "artifact_bytes": 6337,
+      "artifact_sha256": "d79dae1718ad189031ce7389e0297830570af07e87921c42a83e32cfef4bb8be",
+      "native_tests_passed": 128,
+      "independent_causal_probes_passed": 34,
+      "native_skipped": 0,
+      "plotly_collection_unavailable": true,
+      "actual_browser_or_production_proof": false,
+      "parent_acceptance_pending": false,
+      "parent_acceptance": "reviewer / VALIDATED_OUTCOME (same root and parent)"
+    },
+    "ci_repair": {
+      "failing_run": 37918600625,
+      "failing_job": 113780767888,
+      "failure": "New pytest suite named by no run step",
+      "repair": "Add to existing unrun-grading-board code-gate continuity step, actual producer tests; no new job/dependency/waiver",
+      "parent_direct_reason": "Two-line CI binding in the active sole source writer is lower overhead than a separate implementation child; admitted independent delta review next.",
+      "inactive_pilot_context_preserved": true
+    },
+    "ci_binding_repair": {
+      "head": "b374aefbaddf891f4c94a2728561d48e13cb67f2",
+      "base": "07b5d74adceb1a7e1d8bc37838ef077c291c25f8",
+      "same_two_source_and_three_engine_blobs": true,
+      "actual_owning_step_pass": 54,
+      "contract_delta_exit": 0,
+      "contract_delta_introduced": 0,
+      "contract_delta_inherited": 0,
+      "new_jobs": 0,
+      "new_dependencies": 0,
+      "new_waivers": 0,
+      "published_draft": false,
+      "independent_delta_review_accepted": true,
+      "independent_review": {
+        "run_id": "terminal-audit20-a09-price-clock-ci-binding-review-20261009",
+        "verdict": "PASS_SCOPED",
+        "bytes": 8226,
+        "sha256": "afaa43bcbd6e094114f8c4db6c468d99f8b9251fbec7cec87db1fd7199eba307",
+        "owning_step_native_passed": 54,
+        "skipped": 0,
+        "full_contract_gate_independently_executed": false,
+        "partial_tree_pack_counts_lower_bound_only": true,
+        "parent_accepted_by": "reviewer"
+      },
+      "ci_run": 37923864797,
+      "active_main_authority": "SUCCESS",
+      "contract_delta": "SUCCESS",
+      "ci_pack_passed": 12,
+      "ci_gate": "SUCCESS",
+      "inactive_pilot_context_preserved": true
+    },
+    "merge_on_green_armed": true,
+    "native_auto_merge_armed": false,
+    "merged": false,
+    "production_generator_accepted": false
+  },
+  "current_controller_refreshes": {
+    "observed_at": "2026-10-09T12:15:19.445815+00:00",
+    "qualifications": {
+      "631": {
+        "reviewed_source": "fab19e8bd07addd51b0cb471df27e072e1d26952",
+        "current_refresh": "b67de29a38ed17d5a5c2aab718bb274d03eaafbf",
+        "parents": [
+          "c446410852174c0ed4d6cf6b5e000d613e48e72c",
+          "5e67edcbc338d49d3dc552e62fdf966032b4b795"
+        ],
+        "files": {
+          "terminal/lib/suites/structure/orderBlocks.ts": {
+            "blob": "a04ffef560d2be445f5c5e24c0a2a609c66fdaf6",
+            "sha256": "ebd699b2a8eb77c801e1fa7b60374cbdc3471a9cb9161e59bf5c44ec219fb71c",
+            "same_reviewed_source": true
+          },
+          "terminal/lib/__tests__/orderBlocksPeakTiming.test.ts": {
+            "blob": "74b540b3521f810b31b7adcdf964969e6cad2fd3",
+            "sha256": "af7c4d8648d7b87380db5530018ae338a2aab8457b3048d3e7d70aae079f14f9",
+            "same_reviewed_source": true
+          }
+        },
+        "all_reviewed_source_unchanged": true,
+        "whole_mission_accepted": false
+      },
+      "781": {
+        "reviewed_source": "bb2eaa94e924daf3e1e02dccd8b05dec769fd45b",
+        "current_refresh": "abb61cddd24cea14b8e09d8a646bee7439422f00",
+        "parents": [
+          "64bae3d75ad71b2e717255ca80e3bae2761ac24a",
+          "a8fa079676d8bd157a252a94d670ff85464a66c2"
+        ],
+        "files": {
+          "terminal/components/OptionsHubView.tsx": {
+            "blob": "784bacb4dd8d27bb48b14662698428faf9761956",
+            "sha256": "7170485d20c5e17c7c97d6cf76ab18bbd031f8750efaab17fda2258e0b26d8f5",
+            "same_reviewed_source": true
+          },
+          "terminal/components/chrome/WorkspaceTabs.tsx": {
+            "blob": "51874d5412baa0bde41c2ca85c785fd0ea79bb6f",
+            "sha256": "912ab34fea38f56f5dee87a09e2a5c394f9a997e09be0bccb57db2260f906e5f",
+            "same_reviewed_source": true
+          },
+          "terminal/components/options/OptionsWorkflowGuide.tsx": {
+            "blob": "786b8ff7638687cb691caee6ed3223321f92ee52",
+            "sha256": "6c419959860e2ca9361e3478fdc0a070310c77117bc633be265ccd501b947e54",
+            "same_reviewed_source": true
+          },
+          "terminal/components/plan/PayoffLab.module.css": {
+            "blob": "f093abcc0a9681705c5fc922c1c90299a7445e30",
+            "sha256": "82e6296fe503d8d0ea71cea4fd255f9c5fffadf9ffa5720e3f2f697c1b6cd171",
+            "same_reviewed_source": true
+          },
+          "terminal/components/plan/PayoffLab.tsx": {
+            "blob": "606bd3bda7fa075430176fd1098237ba756f41be",
+            "sha256": "4b00b9ed9ba6cd9dc59cba9e2316973b0d74cecb68245ea7df899dc0e886cd90",
+            "same_reviewed_source": true
+          },
+          "terminal/components/workspaces/OptionsWorkspace.tsx": {
+            "blob": "d2e8b5f6644456d42caeae19b256894e2670299e",
+            "sha256": "12fdbc7a22b24302d19a8461172d35a4a4076796677d1f962e4bd4c4bb46aa3e",
+            "same_reviewed_source": true
+          },
+          "terminal/docs/pr-crops/b-pl-6-batch-1/EVIDENCE.yml": {
+            "blob": "7f566c9530044736ea056319f4e679a5fb9d40b0",
+            "sha256": "f8ebeb28e2648ee3c066eca55b8863f83e676524668cf06c62578caeccfda787",
+            "same_reviewed_source": true
+          },
+          "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-1440-zh.png": {
+            "blob": "e8cac82dea56eb7166a3cce639d2fd25b84d2c0c",
+            "sha256": "63148a21a922d3d1a118fca06b7981a57c86746567d5bb721b916cb8be7cff60",
+            "same_reviewed_source": true
+          },
+          "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-1440.png": {
+            "blob": "90a706e77478780e5af81349c5bff0c71452aa2d",
+            "sha256": "661fbd2864313ed6fda2ba69bddee251e25f425481e7d7629b84576d51c93264",
+            "same_reviewed_source": true
+          },
+          "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-390-zh.png": {
+            "blob": "9034db4f4a0084f6ecde39de4bc8f04962576548",
+            "sha256": "16dbf093ed02ceffe534df093933c562e5caec3d4af9a4a37dc1dd17b1a32f94",
+            "same_reviewed_source": true
+          },
+          "terminal/docs/pr-crops/b-pl-6-batch-1/OptionsHubView-390.png": {
+            "blob": "fccb9b1e543a7697abdf29886c6cbd8376a04307",
+            "sha256": "8e0cd7440a003206f0d6a8296fb28515ea6d791fac91e8e570609f5a02ac20f1",
+            "same_reviewed_source": true
+          },
+          "terminal/e2e/options-payoff-lab.spec.ts": {
+            "blob": "f17c3c10832ef5c0b62c8a8a4707b89165e3aca2",
+            "sha256": "94b473a56e47f9d22890d2439991e988c18f45c31033da5cc70cdd3ca7406d1c",
+            "same_reviewed_source": true
+          },
+          "terminal/e2e/options-workflow-guide.spec.ts": {
+            "blob": "8016d3dda4ab2e33bb50298ae59f615ff70141d2",
+            "sha256": "3f79b77ee7446126f77bd76d6b82af6626cc5a23b22782881478b57c15019d12",
+            "same_reviewed_source": true
+          },
+          "terminal/lib/__tests__/optionsIa.test.ts": {
+            "blob": "3d24fc0a4a8d66e494b7beae61141c0bc3364d74",
+            "sha256": "10c4d336f899da9db319f58fc7ee9327a29b8094889ad34ba00688bbdba16b19",
+            "same_reviewed_source": true
+          },
+          "terminal/lib/__tests__/optionsPayoff.numeric.test.ts": {
+            "blob": "729f53a62f9c97530e261ab87d2f39508574a112",
+            "sha256": "10c6555f1253b0b0ca8de424da9e1d5eb67c21cf88b20532b2813a763d6b9dd7",
+            "same_reviewed_source": true
+          },
+          "terminal/lib/__tests__/optionsPayoff.test.ts": {
+            "blob": "6a1a7cbe46c4298b5202979d1a8a5871ae3c8fa0",
+            "sha256": "04e6c02acce13acd5bed3b034b9fd1722f247c2162b8be0c19d08308c27ca2db",
+            "same_reviewed_source": true
+          },
+          "terminal/lib/__tests__/optionsWorkflowPlan.test.tsx": {
+            "blob": "064b9820b2e134023e5eef808c51756e881d0893",
+            "sha256": "df855cda4aade475d528db96c72c5139be54d36a2f5e5499b0fb39f83138e190",
+            "same_reviewed_source": true
+          },
+          "terminal/lib/__tests__/payoffLabView.test.tsx": {
+            "blob": "1ecf19ba98bcc1a565b880ec3b87e9dfc7be805d",
+            "sha256": "0d504b201f36ffc504e152bc0866d899701e8cf180661e98a238109214266f30",
+            "same_reviewed_source": true
+          },
+          "terminal/lib/optionsIa.ts": {
+            "blob": "655f289dc078eb3d3aaefceece906b745742d64b",
+            "sha256": "0b45e14384dc25eea5b4025d541bcc311a08feccd707ab59fa8ea38bc4be74d9",
+            "same_reviewed_source": true
+          },
+          "terminal/lib/optionsPayoff.ts": {
+            "blob": "05aed96cd980450aa3f56b2b5942e961af6b0f0e",
+            "sha256": "5e1a52594ca1c1d1375a87165220977834e9aa48fba2c9aa1fb80fe79e3b3c86",
+            "same_reviewed_source": true
+          }
+        },
+        "all_reviewed_source_unchanged": true,
+        "whole_mission_accepted": false
+      },
+      "839": {
+        "reviewed_source": "93266471f0ec1058471a1244f9ae2ee59741013a",
+        "current_refresh": "b0b28fd1de32936fe08bd3112c7fc8dd08569676",
+        "parents": [
+          "c5df73a7909c45a640da2e9f1f17c7b1a52a9856",
+          "a8fa079676d8bd157a252a94d670ff85464a66c2"
+        ],
+        "files": {
+          "terminal/lib/heatmapCapitalization.ts": {
+            "blob": "2b5adba5cacbb450b2d12d5058290f619717fd44",
+            "sha256": "bd10b0d58078cf235fee75de98fc510e91352bd86bb36009c4843450230eb377",
+            "same_reviewed_source": true
+          },
+          "terminal/components/heatmap/HeatmapView.tsx": {
+            "blob": "0ce83a54966e16ba95ce44a4a8ac92c5b9656093",
+            "sha256": "98d3605d37a0decaf69c9828f7057fe835ba9c310482b3ef1780b7fedb0555d9",
+            "same_reviewed_source": true
+          },
+          "terminal/components/heatmap/Treemap.tsx": {
+            "blob": "ab5902f00e74c6810bb03780f314d0b0c3888881",
+            "sha256": "51b284e851011198374854f765c6efd6cb9f682450e7e52f62438adfb1bc995b",
+            "same_reviewed_source": true
+          },
+          "terminal/components/heatmap/types.ts": {
+            "blob": "261d0567efd308f41a1c1938826fcd6de7428277",
+            "sha256": "a815136d6c0e0396d1e6d36eae63097fa92deddd7e0989c33e42c3e1f22170e2",
+            "same_reviewed_source": true
+          },
+          "terminal/lib/__tests__/heatmapCapitalization.test.ts": {
+            "blob": "85b24f10fda8ca8b9d896015fca8be9474ee3869",
+            "sha256": "aaff6acdce0610a75282571a0486cdc7ce8700c2fefe0f6135bdbb5bef7d1ecd",
+            "same_reviewed_source": true
+          },
+          "terminal/lib/__tests__/heatmapCapDisclosure.test.tsx": {
+            "blob": "3bbf54617f04df48cb2e91ae69663e1ba461b937",
+            "sha256": "74b45e9451f04d50806c86b13ea9a4cc97d92ae0cbea32b3389f4c56e9ed7e02",
+            "same_reviewed_source": true
+          }
+        },
+        "all_reviewed_source_unchanged": true,
+        "whole_mission_accepted": false
+      }
+    },
+    "all_qualified": true
+  },
+  "latest_bounded_existing_observer_reconciliation": {
+    "observed_at": "2026-10-09T12:12:07.269117+00:00",
+    "reason": "one bounded existing observer staleness reconciliation after source-review phase completion",
+    "items": [
+      {
+        "autoMergeRequest": {
+          "authorEmail": null,
+          "commitBody": null,
+          "commitHeadline": null,
+          "mergeMethod": "SQUASH",
+          "enabledAt": "2026-10-09T09:52:39Z",
+          "enabledBy": {
+            "id": "U_kgDOE-Q03g",
+            "is_bot": false,
+            "login": "mastermindxryan",
+            "name": ""
+          }
+        },
+        "headRefOid": "b67de29a38ed17d5a5c2aab718bb274d03eaafbf",
+        "isDraft": false,
+        "labels": [
+          "merge-on-green"
+        ],
+        "mergeCommit": null,
+        "mergeStateStatus": "BLOCKED",
+        "mergedAt": null,
+        "number": 631,
+        "state": "OPEN",
+        "statusCheckRollup": []
+      },
+      {
+        "autoMergeRequest": {
+          "authorEmail": null,
+          "commitBody": null,
+          "commitHeadline": null,
+          "mergeMethod": "SQUASH",
+          "enabledAt": "2026-10-09T10:38:22Z",
+          "enabledBy": {
+            "id": "U_kgDOE-Q03g",
+            "is_bot": false,
+            "login": "mastermindxryan",
+            "name": ""
+          }
+        },
+        "headRefOid": "abb61cddd24cea14b8e09d8a646bee7439422f00",
+        "isDraft": false,
+        "labels": [
+          "merge-on-green"
+        ],
+        "mergeCommit": null,
+        "mergeStateStatus": "UNKNOWN",
+        "mergedAt": null,
+        "number": 781,
+        "state": "OPEN",
+        "statusCheckRollup": []
+      },
+      {
+        "autoMergeRequest": {
+          "authorEmail": null,
+          "commitBody": null,
+          "commitHeadline": null,
+          "mergeMethod": "SQUASH",
+          "enabledAt": "2026-10-06T17:58:50Z",
+          "enabledBy": {
+            "id": "U_kgDOE-Q03g",
+            "is_bot": false,
+            "login": "mastermindxryan",
+            "name": ""
+          }
+        },
+        "headRefOid": "b0b28fd1de32936fe08bd3112c7fc8dd08569676",
+        "isDraft": false,
+        "labels": [
+          "merge-on-green"
+        ],
+        "mergeCommit": null,
+        "mergeStateStatus": "UNKNOWN",
+        "mergedAt": null,
+        "number": 839,
+        "state": "OPEN",
+        "statusCheckRollup": []
+      },
+      {
+        "autoMergeRequest": {
+          "authorEmail": null,
+          "commitBody": null,
+          "commitHeadline": null,
+          "mergeMethod": "SQUASH",
+          "enabledAt": "2026-10-08T22:28:46Z",
+          "enabledBy": {
+            "id": "U_kgDOE-Q03g",
+            "is_bot": false,
+            "login": "mastermindxryan",
+            "name": ""
+          }
+        },
+        "headRefOid": "8a2bb9695ba90d4cc21a96a8807fce88ebbb68b4",
+        "isDraft": false,
+        "labels": [
+          "merge-on-green"
+        ],
+        "mergeCommit": null,
+        "mergeStateStatus": "BEHIND",
+        "mergedAt": null,
+        "number": 853,
+        "state": "OPEN",
+        "statusCheckRollup": [
+          {
+            "name": "Quote Hub tests",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37919205734/job/113799663143"
+          },
+          {
+            "name": "Terminal unit + typecheck (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37919205734/job/113799663423"
+          },
+          {
+            "name": "Terminal e2e desktop-1 (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37919205734/job/113799663547"
+          },
+          {
+            "name": "Terminal e2e desktop-2 (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37919205734/job/113799663470"
+          },
+          {
+            "name": "Terminal e2e tablet (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37919205734/job/113799663765"
+          },
+          {
+            "name": "Terminal e2e mobile (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37919205734/job/113799663544"
+          },
+          {
+            "name": "Terminal e2e serial (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37919205734/job/113799663634"
+          },
+          {
+            "name": "Ingest + signal-layer tests",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37919205734/job/113799663442"
+          },
+          {
+            "name": "Investigation PostgreSQL invariants",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37919205734/job/113799663600"
+          },
+          {
+            "name": "Terminal typecheck + tests",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37919205734/job/113812802191"
+          }
+        ]
+      },
+      {
+        "autoMergeRequest": {
+          "authorEmail": null,
+          "commitBody": null,
+          "commitHeadline": null,
+          "mergeMethod": "SQUASH",
+          "enabledAt": "2026-10-09T08:04:04Z",
+          "enabledBy": {
+            "id": "U_kgDOE-Q03g",
+            "is_bot": false,
+            "login": "mastermindxryan",
+            "name": ""
+          }
+        },
+        "headRefOid": "276cedc1397e389fb74bbdd7d0241329b6f28dfa",
+        "isDraft": false,
+        "labels": [
+          "merge-on-green"
+        ],
+        "mergeCommit": null,
+        "mergeStateStatus": "UNKNOWN",
+        "mergedAt": null,
+        "number": 873,
+        "state": "OPEN",
+        "statusCheckRollup": [
+          {
+            "name": "Quote Hub tests",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37920591752/job/113787290938"
+          },
+          {
+            "name": "Terminal unit + typecheck (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37920591752/job/113787290515"
+          },
+          {
+            "name": "Terminal e2e desktop-1 (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37920591752/job/113787290919"
+          },
+          {
+            "name": "Terminal e2e desktop-2 (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37920591752/job/113787290845"
+          },
+          {
+            "name": "Terminal e2e tablet (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37920591752/job/113787290886"
+          },
+          {
+            "name": "Terminal e2e mobile (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37920591752/job/113787290976"
+          },
+          {
+            "name": "Terminal e2e serial (shard)",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37920591752/job/113787291048"
+          },
+          {
+            "name": "Ingest + signal-layer tests",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37920591752/job/113787290942"
+          },
+          {
+            "name": "Investigation PostgreSQL invariants",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37920591752/job/113787290916"
+          },
+          {
+            "name": "Terminal typecheck + tests",
+            "status": "COMPLETED",
+            "conclusion": "SUCCESS",
+            "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/37920591752/job/113799547597"
+          }
+        ]
+      }
+    ]
+  },
+  "account_export_format_decision": "DEC:TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1"
 }

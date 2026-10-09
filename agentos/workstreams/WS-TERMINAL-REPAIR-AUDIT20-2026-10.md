@@ -1,58 +1,62 @@
 ---
 key: TERMINAL-REPAIR-AUDIT20-2026-10
 title: Terminal twenty-mission repair audit and delivery
-objective: >-
-  Review the twenty supplied Terminal repair missions through the admitted Subagent Fabric,
-  repair rejected returns through qualified escalation, and deliver accepted changes through
-  their existing source owners with exact CI and production evidence. Whole-mission acceptance
-  requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
+objective: Review the twenty supplied Terminal repair missions through the admitted Subagent Fabric, repair rejected returns through
+  qualified escalation, and deliver accepted changes through their existing source owners with exact CI and production evidence. Whole-mission
+  acceptance requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: active
 blocked_by:
-  - Actualruntime9cfd3049 follows merged780; scoped NVDAdata/candles restored.873 reviewedae6 ready/auto, controllerrefreshcd070 unchangedatomicblobs and approvedCI37902711347; installedguard/canonicalrelease remainopen.
-  - Ordinary839/853/873/875CI approvals are automatic through qualified21-case helperSHA46779e53 bound to the samequietheartbeat; exactApp850 enrollment remains distinct, and CI/merge/deploy/live proof separate.
-  - Actual858T02f solewriter advanced675eeea2, independentOpusAPPROVE; new0031SHA51cf2c12 invalidates old358/777current-candidate qualification. Desktop-1red diagnosis/docP3 and ordered0030/31productiongate remain.
-  - Actual804T03g solewriter publisheda156f6be four-P3cleanup after28dgreen; finalreview/CI, exact0030b840approval and current-productionbackup/restore/readback remain. Denied792/B5/rights unchanged.
-  - A06/862 explicitT07hold/livewriter; no duplicate/rearm. Nativecustodymap qualifies only its ownroot bindings; otherrootsUNKNOWN/UNJOINED !=vacant.707/668/webhookholds unchanged.
-  - Macro8687/4df source770native36browser/independent177PASS; ordered0030/31/32merged-and-applied andproductionunitauthority remain. ExactUSpriceproducer can pairolderstoreprice/neweruniverseasof; priceclockleafrefusedbeforetransport, existingroutingownerqualifiescoherence/noeligible.
-  - InstalledFabricstrictdurableack nowreturns originalA04acceptedtrue withoutreaccept/rerun. Fourordinaryreviewacceptsreturned0 butstatusomitsmetadata; same-ownerreadonlyprojectionrepairactive. OriginalA09policyrefusal/uploadprefix andDCRuncertainty frozen, not zeroeffect.
-  - A10integrity875/481c has8040native/91focused/TSC0/sixactualNextdownloads plusindependent91PASS/TSC0; ready/autoarmed, sourceCI/releaseopen, wholearchiveincomplete. A11ea7 cutoffscopeonly; actualT04nowowner-reported7de6c96a stillfinalreview/squashheal. A12actualFreeOrderBlocksdisabledupgradegate; exactpaidprincipalneeded.
+- A10 integrity875 is scoped merged/deployed/authenticated accepted;883 owned readers stayDraft at eeba25ca. Physical drawings binding repair has independent144-test/SQLite acceptance; quoted-JSON credential withholding repair passes8128full/149account-subset/TSC0/6Next and its retained independent security-delta review is active. Whole archive and paid acceptance remain open.
+- 873 atomic source276 retains all reviewed blobs and actual atomic owner; current37920591752 required CI is green. Existing merge controller and exact canonical producer install remain owed; accepted NVDA6971-bar recovery must never replay.
+- 631b67de/781abb61/839b0b28 current controller refreshes preserve reviewed2/20/6source paths; current37928303544/37925558105/37926301472 runs approved once12:15 with POST_SUCCEEDED queued receipts.853seasonal8a2bb required CI green/behind. Existing controller owns merge wait. Helperv6/33checks and same15-minute quiet heartbeat require no operator GitHub command; App850 security grant is separate.
+- Macro8708b374 source and CI-binding reviews are independently accepted; all12packs/contract-delta/ci-gate/active-main authority green. Ready/merge-on-green armed12:10, nativeauto off. Merge/generator publication/consumer adoption are not accepted.8687 native-money source4df remains scoped; ordered0030/31/32 and actual native currency/consumer production are open.
+- 804T03g a156f6be and858T02f675eeea2 retain actual sole writers. SQL0030b840/003151cf unapplied with exact permission/rights/0028/current-backup gates. IW2 Macro7532ffd has accepted reviews/repaired contract gate/armed merge with remainingCI; actual encrypted production capture/isolated restore/reference comparison precede apply and remain unproven.
+- Installed Fabric ordinary acceptance/picker/canary repairs have current readbacks. Executive1.5 reader readonly is a projection; original-parent host-owned binding/wake unqualified. Config denial and frozen native-money/DCR uncertain effects remain; no replacement or queued probe.
+- A11T04/6437de6 needs final future-fill/Options/squash-evidence heal/live acceptance.862T07 live hold,707chairmanchart,686coverage,768data,668privatebackendrights and582actual webhook recipient holds remain. Authenticated account is Free; intended existing paid identity unresolved. Unknown/unjoined roots are not vacancy.
+- A19 legacy plan identity is distinct from canonical B1 episode/event identity; an actual owner-issued follow/material event and private Alerts opt-in binding is still required, without guessed symbol/date joins, new queues or implicit notifications. A08 scoped Brain live proof does not accept full schema/history/G0-G9.
 program: terminal-charting
-repos: [terminal, macro]
+repos:
+- terminal
+- macro
 owner: ceo-sol
 class: adjudication
 blast_radius: user_facing
 ambiguity: scoped
 waves:
-  - id: FIRST-RETURNS
-    title: Fan out and adjudicate all twenty original bounded Fabric missions
-    status: done
-  - id: REPAIR-AND-DELIVER
-    title: Consume higher-level repairs and deliver accepted scoped changes
-    status: in_progress
+- id: FIRST-RETURNS
+  title: Fan out and adjudicate all twenty original bounded Fabric missions
+  status: done
+- id: REPAIR-AND-DELIVER
+  title: Consume higher-level repairs and deliver accepted scoped changes
+  status: in_progress
 next_action: >-
-  Consume873/875 and839/853existingobserver terminalCI/merge, thenparentcanonicalrelease/installedproducerhash/authenticatedproof; no repeatedapproval/merge/observer.
-  Consumeactual643T04 finalconsumerrepairs/disposition andtruthfulsquashheal,858T02f desktopred/docP3,804T03g independentcleanup/finalCI andIW2 current-productionbackup gate, preservingonewriter/orderedSQL/holds.
-  ConsumeexistingFabricowner ordinaryacceptanceprojection repair/same-IDreadbacks withoutreaccept, andqualifypriceclockleaf admissionboundary withoutweakeningpolicy. Continueindependent useful source/proof work; wholeAudit20acceptancefalse.
+  Consume the retained883 JSON-secret repair review and fix or accept its bounded source delta,
+  then finish requiredCI/merge/canonical release and actual private-download proof. Existing
+  observer owns ready631/781/839/853/873 andMacro8708; react to terminal merge/red/head events,
+  qualify only affected bytes and install/prove accepted merged capabilities. Preserve actual
+  native804/858/643 andIW2 backup writers and exact orderedSQL/rights/consent holds. Continue a
+  safe useful independent phase after every material save; wholeAudit20 remains false.
 owns_paths: []
 artifacts:
-  - research/terminal_audit20/TAKEOVER_20261009/release-and-repair-proof.json
-  - research/terminal_audit20/CI_AUTOMATION_PR850/reviewed-proof-20261008.json
-  - agentos/discoveries/DSC-TERMINAL-GITHUB-TOKEN-REFRESH-REQUIRES-WORKFLOW-APPROVAL.md
-  - research/terminal_audit20/A01_EDITOR_PROOF/actual-editor-20261007.json
-  - research/terminal_audit20/A02_PR834/reviewed-proof-20261007.json
-  - research/TERMINAL_AUDIT20_REVIEW_2026-10-06.json
-  - research/terminal_audit20/A08_PR8526/README.md
-  - research/terminal_audit20/A04_RPC_PROTOTYPE/README.md
-  - research/terminal_audit20/A15_PR839/README.md
-  - agentos/handoffs/TERMINAL-REPAIR-AUDIT20-2026-10-2026-10-06.md
+- agentos/decisions/DEC-TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1.md
+- research/terminal_audit20/TAKEOVER_20261009/release-and-repair-proof.json
+- research/terminal_audit20/CI_AUTOMATION_PR850/reviewed-proof-20261008.json
+- agentos/discoveries/DSC-TERMINAL-GITHUB-TOKEN-REFRESH-REQUIRES-WORKFLOW-APPROVAL.md
+- research/terminal_audit20/A01_EDITOR_PROOF/actual-editor-20261007.json
+- research/terminal_audit20/A02_PR834/reviewed-proof-20261007.json
+- research/TERMINAL_AUDIT20_REVIEW_2026-10-06.json
+- research/terminal_audit20/A08_PR8526/README.md
+- research/terminal_audit20/A04_RPC_PROTOTYPE/README.md
+- research/terminal_audit20/A15_PR839/README.md
+- agentos/handoffs/TERMINAL-REPAIR-AUDIT20-2026-10-2026-10-06.md
 landmines:
-  - Incumbent holds and migration reservations remain in force; this record claims no source paths.
-  - Retired MiMo model errors and host admission refusals are capability evidence, not source-quality verdicts.
-  - Native Worker, fixtures, unit checks, CI, deployment and authenticated user acceptance are separate proof levels.
+- Incumbent holds and migration reservations remain in force; this record claims no source paths.
+- Retired MiMo model errors and host admission refusals are capability evidence, not source-quality verdicts.
+- Native Worker, fixtures, unit checks, CI, deployment and authenticated user acceptance are separate proof levels.
 do_not_redo:
-  - Do not duplicate the original twenty Fabric runs or synthesize a fresh budget root.
-  - Do not reimplement customer stores, Brain routing, FX authority or native analysis.
-  - Do not replay the deployed PR836 export vertical; release identity is 69dfda2e8901bfa3201e929025220e692d9cd83f.
+- Do not duplicate the original twenty Fabric runs or synthesize a fresh budget root.
+- Do not reimplement customer stores, Brain routing, FX authority or native analysis.
+- Do not replay the deployed PR836 export vertical; release identity is 69dfda2e8901bfa3201e929025220e692d9cd83f.
 ---
 
 Chairman assignment: Sol CEO coordinates the admitted Fabric from M2; the installed
@@ -170,3 +174,17 @@ ActualnativeTop10 holds643T04 foradditional replayGapZonesfuture-fillP0/OptionsL
 2026-10-09 10:14 UTC material delivery delta: export-integrity875 source481c4079 merged/deployed through canonical pinned builder asdd65e732, clean matching marker and healthy services. Actual signed-in JSON/CSV attachments pass13independent checksum/count/read-window/tamper checks, plus usable controls at1440/820/390; private row bytes were not published. This accepts only the integrity vertical, not the broader owned-work archive or wholeAudit20. The same quiet native heartbeat now verifies helperv4/25preflightcases and five reviewed carriers, including631;873bc61 second refreshed run37911582051 was approved once through the existing credential. The installed ordinary-run acceptance projection now reads all four original reviewer acceptances with original root/parent and unchanged result bytes, without reacceptance. Routing owner independently qualified the installed picker and a distinct six-case canary; original refused children remain frozen and full modifying native ingress remains unproven.
 
 OrderBlocks631 is recovered in one SSD candidate, fresh-master merged asfab19e8b with both reviewed source blobs unchanged;266native/TSC0 and scoped independent causal review pass. Existing PR branch was fast-forwarded, body rewritten and native auto-merge armed once; initial trusted-actorCI37913867835 runs under the existing observer. Forming-bar availability and the paid production path remain unaccepted. Payoff781 math review passed actual32native/21independent/400oracle structures. Parent preserved the clean legacy checkout, took one isolated SSD integration candidate, fixed the reproduced quantity-validation gap and retained all eight unrelated PL6 source locks and20otherPNGs while recapturing only the four actual Options surfaces.55focused/8143fullnative4todo500files pass; actualNextresponsive and final immutable review are in progress. Latest merged master6337fbd8 is source context, not an inferred current production acceptance. The existing IW2 coordinator is repairing the old backup reader/restore mechanism because its219b47ea allowlist omits all four IW2 tables;0030/0031 exact approval, backup/restore, apply and live gates remain. This save is not task completion or a stopping point.
+
+2026-10-09 material source/recovery delta: A17 exact bb2eaa94 integration received independent PASS_SCOPED,20 actual Vitest component tests and the separately counted native/causal commands in its retained return; accepted once through the repaired ordinary projection. Ready/auto, protected CI and authenticated production remain owed. New Macro8708 price-specific clock source6e942fbb independently passes128 native/34 causal probes. Its genuine contract-delta failure was missing test wiring; the same writer merged current main07b5d74a with all reviewed producer/test/engine blobs unchanged, then pushed b374aefb adding24 tests to the existing code-gate continuity step. Actual54-test step and full contract-delta0introduced/0inherited pass; bounded independent CI-binding review is active, source is stillDraft and production/consumer/native-unit adoption unaccepted.
+
+A10 newPR883 initially used the logical chart_drawings key as a physical relation. Independent review reproduced the defect even though144 mirrored mocks passed; the live catalog, existing drawings API and0002 migration all name public.drawings. The parent corrected the binding, made unknown mock relations fail, reproduced8causal red/39controls on oldsource, and pushed a7b170ca in the sameDraft.144scoped/8123full/497files/4existingTODO,TSC0 and6actualNext ENZH3sizes pass; a bounded repair review is active. Raw geometry/operations/conditions/inactive alerts and stored revision semantics remain intact; alert revisions are unknown, creationtime is not version. The new six-collection integrity.v2 format preserves the previously downloaded v1 JSON/CSV13-check proof. This is source-only and does not accept the broader archive or disclose private row contents.
+
+Four merge-controller refreshes were byte-qualified against their accepted source:631c446/78164bae3/839c5df/8538a2bb. Their new matching pull_request CI runs were approved once at11:32 through the existing helper, with POST_SUCCEEDED/queued receipts; prior approved runs were not replayed. A malformed PR:run-id invocation created an empty receipt but failed before any per-PR/POST request; it was reconciled as zero effects. The same helper now rejects malformed/unlisted/duplicate/excess inputs before network or receipt creation,33causal checks pass, no new credential/scheduler/bypass.873276 third refresh retains all three reviewed blobs and the actual write_atomic owner bytes; its37920591752 run needed no approval. Ordinary approvals are self-service and independent of the App850 security grant.
+
+The same15-minute quiet native observer was cohesively refreshed and read back in the original chat/root. Executive1.5 reader mode=readonly describes that projection only, not a proven production-submit disablement; original-parent host binding/wake remains unqualified, config access denial and frozenDCR/native-money effects remain preserved. The existing IW2 backup carrier7532 has two accepted source reviews and repaired contract-delta, with remaining CI pending at its bounded return; one-statement thirteen-table capture/reference preparation parsed against the retained empty scratch. Actual encrypted production capture/restore, exact SQL approval/apply and G0–G9 remain unaccepted. No duplicate source/DDL/backup writer or notification plane was created. This save is not a completion or stopping point.
+
+2026-10-09 12:17 UTC material capability delta: the physical drawings-binding repair is now independently PASS_SCOPED and accepted once,144 native tests plus a drawings/alerts-only SQLite counterexample. The newly reproduced quoted-JSON credential leak returned downloadable200 in both transports; parent repaired it in the same sole writer and published883/eeba25ca. Actual8128native/497files/4existingTODOs,149tests in the five account-suite subset,TSC0 andsixrealNext ENZH/three-size downloads pass. A separate admitted retained security-delta review is active; this source remainsDraft until accepted. No private row bytes were published. DEC:TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1 preserves actual prior receipts while adding explicit six-collection coverage.
+
+Macro8708 source and its real CI-binding delta are independently accepted. The leaf independently executed54tests and actual scheduling/census ownership; its sparse host could not execute full contract gate, so parent0introduced/0inherited proof remains separately attributed. Current37923864797 has12CI packs,contract-delta,ci-gate andactive-main authority SUCCESS. Same carrier is ready/merge-on-green armed, nativeauto off; no production generator/unit/adoption proof yet.
+
+One bounded stale-observer reconciliation found new631b67de/781abb61/839b0b28 controller heads. Actual2/20/6reviewed source paths stayed byte-identical. The existing qualifiedv6helper approved only their associated trusted current runs37928303544/37925558105/37926301472 once12:15, POST_SUCCEEDED/queued.873276 and8538a2bb currentCI were green; their existing merge controller still owns the wait. Same heartbeat/root was natively updated andreadback at12:17, promptSHA3bf55d8359ad534e8d23bafd26098c31f5d3d2e71638d1ba0b474ec56d724ad4. This is a capability save, not completion or a stopping point.
