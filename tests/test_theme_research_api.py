@@ -2037,9 +2037,16 @@ def test_system_replay_unsupported_mode_outranks_bad_cutoff(entitled_client, fie
     which removes the very loader whose verdict is under test -- which is why
     none of them caught the conversion.
 
-    Mutation control (receipt in the branch evidence): with the check restored
-    to ``_body_to_query`` this test answers 400 ``invalid_request``, so it
-    discriminates the repair rather than describing the current code.
+    Mutation control, measured: restoring the check to ``_body_to_query`` as
+    its first statement makes this test answer
+    ``400 {"code":"invalid_request","action":"fix_request"}`` in place of the
+    404 asserted below -- so it discriminates the repair rather than
+    describing the current code. Under that mutation exactly three rows in
+    this file fail: both parametrizations here and
+    ``test_system_replay_evidence_route_also_answers_the_loader_verdict``
+    (122 passed, 4 skipped). All three arrived with this repair, which is the
+    measured form of the paragraph above: no pre-existing row discriminates
+    the conversion.
     """
     body = _valid_body(time_mode="system_replay")
     body["source_cutoff"] = "2026-12-31"

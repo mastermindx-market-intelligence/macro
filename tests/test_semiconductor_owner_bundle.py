@@ -635,7 +635,11 @@ def _second_generation(tmp_dir, *, observed_shift_hours: int) -> dict:
     same witnesses observed again later. Shifting FORWARD from each row's own
     ``observed_at`` preserves the writer's per-row
     ``observed_at >= source_available_at`` invariant, which a flat literal
-    clock would risk violating for any row filed after it."""
+    clock would violate for any row filed after it — enforced at
+    ``event_workspace.py``'s "observed_at precedes source_available_at"
+    (reached from ``_generation_clocks``, so a flat clock set to the EARLIEST
+    ``source_available_at`` raises on the later-filed row rather than writing a
+    bad generation)."""
     from datetime import datetime, timedelta, timezone
 
     from engine.company_intelligence.event_workspace import write_workspace_generation
