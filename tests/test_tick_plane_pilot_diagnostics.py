@@ -350,6 +350,17 @@ class SameScopeRTHMinuteReferenceTests(unittest.TestCase):
         with self.assertRaisesRegex(RTHReferenceError,"ambiguous native adjusted"):
             reference(original_response_bytes=mock_minute_original(adjusted="false"))
 
+    def test_missing_native_adjustment_field_cannot_be_silently_unadjusted(self):
+        body=json.loads(mock_minute_original())
+        del body["adjusted"]
+        with self.assertRaisesRegex(RTHReferenceError,"missing or ambiguous native adjusted"):
+            reference(original_response_bytes=json.dumps(body).encode())
+
+    def test_even_empty_pagination_cursor_is_unreviewed_incomplete(self):
+        packet=mock_minute_original(next_url="")
+        with self.assertRaisesRegex(RTHReferenceError,"pagination incomplete"):
+            reference(original_response_bytes=packet)
+
     def test_reference_cannot_synthesize_receive_time_from_event_timestamp(self):
         with self.assertRaisesRegex(RTHReferenceError,"calendar disagree"):
             reference(source_received_ns=RTH_START-1)
