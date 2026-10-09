@@ -11,7 +11,7 @@ import math
 import re
 from dataclasses import dataclass
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, DecimalException, InvalidOperation, localcontext
 
 SCHEMA = "options_structure.matrix/v1"
 R2_PREFIX = "options_structure/matrix/"
@@ -219,6 +219,22 @@ def retain_snapshot(s3, bucket: str, ref: SnapshotReference, raw: bytes) -> None
         raise HistoricalUnavailable("retained byte collision")
 
 
+def _decode_exact_numbers(raw: bytes) -> dict:
+    """Parse verified bytes exactly, refusing unsupported Decimal exponents.
+
+    Decimal string construction is exact but follows InvalidOperation traps.
+    Isolate parsing so an unsupported token cannot become NaN or alter the
+    caller's flags. Never round through a float or expand an exponent.
+    """
+    try:
+        with localcontext() as context:
+            context.traps[InvalidOperation] = True
+            return json.loads(raw.decode("utf-8"), parse_float=Decimal, parse_int=Decimal,
+                              object_pairs_hook=_unique_object, parse_constant=_nonfinite)
+    except DecimalException as exc:
+        raise HistoricalUnavailable("unsupported exact JSON number") from exc
+
+
 def matrix_coordinate_tokens(ref: SnapshotReference, raw: bytes) -> tuple[tuple[str, str], ...]:
     """Return exact (expiry, strike-decimal) keys from verified source bytes.
 
@@ -228,8 +244,7 @@ def matrix_coordinate_tokens(ref: SnapshotReference, raw: bytes) -> tuple[tuple[
     Empty matrices return no keys and cannot satisfy primary membership.
     """
     verify_snapshot(ref, raw)
-    payload = json.loads(raw.decode("utf-8"), parse_float=Decimal, parse_int=Decimal,
-                         object_pairs_hook=_unique_object, parse_constant=_nonfinite)
+    payload = _decode_exact_numbers(raw)
     cells = payload.get("cells")
     if not isinstance(cells, list):
         raise HistoricalUnavailable("matrix cells unavailable")
@@ -275,8 +290,7 @@ def matrix_observed_side_tokens(ref: SnapshotReference, raw: bytes) -> tuple[tup
     rights nor Saved Research admission.
     """
     coordinates = matrix_coordinate_tokens(ref, raw)
-    payload = json.loads(raw.decode("utf-8"), parse_float=Decimal, parse_int=Decimal,
-                         object_pairs_hook=_unique_object, parse_constant=_nonfinite)
+    payload = _decode_exact_numbers(raw)
     observed = []
     for (expiry, strike), cell in zip(coordinates, payload["cells"]):
         for side in ("call", "put"):

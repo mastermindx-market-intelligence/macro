@@ -73,7 +73,7 @@ subject binding, rights or runtime admission. Consumers retain those gates.
 ## Observed call/put sides
 
 `matrix_observed_side_tokens(ref, raw)` supplies `(expiry, strike-string, side)`
-tuples in source-cell order, call before put. It reuses the unchanged coordinate
+tuples in source-cell order, call before put. It reuses the coordinate
 helper and its exact reference/hash/length/schema/root/session and duplicate-cell
 validation. A side requires at least one of its own OI or volume observations:
 `call_oi`/`call_vol` for `call`, `put_oi`/`put_vol` for `put`. Explicit zero is an
@@ -87,6 +87,13 @@ Fractions such as `9007199254740992.5`, `1.000000000000000000000000000001` and
 `1e-400` refuse even when binary-float decoding loses their fraction. Numerical
 zero, including `0e-400`, and trailing-zero integral values remain observations.
 The work stays bounded by source coefficient length, not exponent magnitude.
+
+Both coordinate and observed-side helpers use one exact-number decoder with an
+isolated Decimal context. Unsupported exponents, including zero tokens such as
+`0e-9223372036854775809`, always raise `HistoricalUnavailable`, regardless of the
+caller's `InvalidOperation` trap. The decoder preserves caller flags/settings,
+never substitutes a float, and leaves the existing coordinate normalization and
+observation-count rules unchanged. Supported tiny zero exponents remain valid.
 
 Opposite-side counts, aggregate/derived exposure, delta OI, unusual metadata and
 top-level strike/expiration lists cannot establish membership. Empty matrices

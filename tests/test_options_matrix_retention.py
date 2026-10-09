@@ -721,3 +721,51 @@ def test_observed_side_real_builder_distinguishes_missing_from_zero(tmp_path, ri
         assert ("2026-10-16", "105", side) in tokens
     finally:
         clear_parquet_cache()
+
+
+@pytest.mark.parametrize("helper", ["matrix_coordinate_tokens", "matrix_observed_side_tokens"])
+@pytest.mark.parametrize("trapped", [True, False])
+@pytest.mark.parametrize("field", ["call_oi", "call_vol", "put_oi", "put_vol", "strike"])
+@pytest.mark.parametrize("token", [
+    "1e-9223372036854775809", "0e-9223372036854775809",
+    "1e-1000000000000000000000", "0e-1000000000000000000000",
+])
+def test_exact_number_context_refuses_unsupported_exponents_without_leaking(helper, trapped, field, token):
+    from decimal import InvalidOperation, localcontext
+    raw = (_observed_side_raw('"call_oi":0', strike=token) if field == "strike"
+           else _observed_side_raw(f'"{field}":{token}'))
+    ref = retention.reference_for_bytes("SPY", raw)
+    with localcontext() as context:
+        context.traps[InvalidOperation] = trapped
+        context.clear_flags()
+        before = repr(context)
+        with pytest.raises(retention.HistoricalUnavailable):
+            getattr(retention, helper)(ref, raw)
+        assert repr(context) == before, "numeric refusal must not modify caller context"
+
+
+@pytest.mark.parametrize("helper", ["matrix_coordinate_tokens", "matrix_observed_side_tokens"])
+@pytest.mark.parametrize("trapped", [True, False])
+@pytest.mark.parametrize("token,observed", [
+    ("0", True), ("0e-999999999", True),
+    ("1.000000000000000000000000000000", True),
+    ("1e-999999999", False), ("9007199254740992.5", False),
+])
+def test_exact_number_context_keeps_supported_tokens_lossless(helper, trapped, token, observed):
+    from decimal import Inexact, InvalidOperation, localcontext
+    raw = _observed_side_raw(f'"call_oi":{token}', strike="999999999999.12345678")
+    ref = retention.reference_for_bytes("SPY", raw)
+    with localcontext() as context:
+        context.prec, context.Emin, context.Emax = 6, -9, 9
+        context.traps[InvalidOperation] = trapped
+        context.flags[Inexact] = True  # Preserve preexisting caller state too.
+        before = repr(context)
+        if helper == "matrix_observed_side_tokens" and not observed:
+            with pytest.raises(retention.HistoricalUnavailable):
+                getattr(retention, helper)(ref, raw)
+        else:
+            expected = (("2026-10-16", "999999999999.12345678"),)
+            if helper == "matrix_observed_side_tokens":
+                expected = (("2026-10-16", "999999999999.12345678", "call"),)
+            assert getattr(retention, helper)(ref, raw) == expected
+        assert repr(context) == before
