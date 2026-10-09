@@ -1,8 +1,9 @@
 """Additive opt-in routes for the anonymous-first Catalyst Scan.
 
-The public request route is OWNED by Session 00, which calls our synchronous
-``request_optin(body: dict)``; this module exposes only a separately gated OTP
-verification router. No second public opt-in route, auth, mail service or DB.
+Session 00 owns the anonymous public scan. This module owns the separate
+explicit-consent OTP request and verification routes. Both remain disabled or
+unconfigured until the signed scan authority and incumbent consent owner are admitted.
+No second auth, mail service, durable identity store or event producer is created.
 """
 from __future__ import annotations
 
@@ -99,6 +100,8 @@ def request_optin(body: dict) -> dict:
 
 async def _read_bounded_optin_json(request: Request) -> dict:
     """Bound body before JSON parsing or a GoTrue/consent owner operation."""
+    if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
+        raise HTTPException(415, "APPLICATION_JSON_REQUIRED")
     data = bytearray()
     async for part in request.stream():
         if len(data) + len(part) > 4096:
@@ -123,6 +126,10 @@ async def public_request_optin(request: Request) -> dict:
         raise HTTPException(503, "CATALYST_OPTIN_DISABLED")
     _abuse_guard(request)
     raw = await _read_bounded_optin_json(request)
+    if raw.get("consent_checked") is not True or type(raw.get("form_elapsed_ms")) is not int:
+        raise HTTPException(400, "EXPLICIT_CONSENT_REQUIRED")
+    if not isinstance(raw.get("scan_receipt"), str):
+        raise HTTPException(400, "SCAN_PROOF_REQUIRED")
     try:
         body = RequestOptin(**raw)
     except (ValueError, TypeError):
@@ -141,9 +148,10 @@ async def public_request_optin(request: Request) -> dict:
 class CanonicalPublicScanAuthority(ScanAuthority):
     """Re-use 00's actual serializer/rights/freshness gate; no duplicate feed.
 
-    The event/ticker 'receipt' is an internal lookup descriptor, *not* a signed
-    visitor proof: 00 deliberately does not freeze a public scan receipt token.
-    We therefore RE-READ 00's current public scan rather than trust this JSON.
+    Legacy compatibility reader only. Its unsigned event/ticker descriptor is
+    NOT proof that a visitor actually obtained first value. Production service
+    configuration uses UnwiredScanAuthority by default; the Integration CEO must
+    explicitly inject Session 00's signed ScanReceiptAuthority instead.
     """
 
     def require_public_scan(self, receipt: str):
