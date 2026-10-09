@@ -1842,6 +1842,7 @@ jobs:
       - "engine/risk_radar_market_catalysts.py"
       - "engine/risk_radar_recovery.py"
       - "engine/risk_radar_scorecard.py"
+      - "engine/risk_envelope.py"
       - "engine/risk_sizing.py"
       - "engine/risk_state.py"
       - "engine/sector_cycles.py"
@@ -3205,6 +3206,7 @@ jobs:
       - "engine/pullback_zone.py"
       - "engine/rate_inflation_transmission.py"
       - "engine/yield_momentum.py"
+      - "engine/risk_envelope.py"
       - "engine/risk_sizing.py"
       - "engine/roc_blowoff.py"
       - "engine/sector_pulse.py"
@@ -7512,6 +7514,21 @@ jobs:
         run: pip install pytest jsonschema
       - name: options signal campaign v2 (effective-outcome view, strict v2 continuation C1-C4, checkpoint-last atomic-append idempotency)
         run: python -m pytest tests/test_options_signal_campaign_effective_view.py -q
+  quant-q07-fitted-har-vol:
+    if: ${{ false }}
+    gate: code
+    # Q07 fitted log-HAR volatility challenger: causality, embargo, label separation, QLIKE floors, block-bootstrap decision, no production effect
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q07 fitted HAR volatility research suite
+        run: python -m pytest tests/test_vol_fitted_har.py -q
+
   uk-policy-desk:
     if: ${{ false }}
     gate: code
@@ -13157,6 +13174,7 @@ jobs:
       - "engine/rate_inflation_transmission.py"
       - "engine/yield_momentum.py"
       - "engine/residual_alpha.py"
+      - "engine/risk_envelope.py"
       - "engine/risk_sizing.py"
       - "engine/roc_blowoff.py"
       - "engine/sector_pulse.py"
@@ -14824,7 +14842,9 @@ jobs:
       # that broke: row-persistence/outage continuity (grade_us_board::emit_ledger)
       # vs the same-as_of Jaccard guard (build_stock_library::_board_continuity_warning).
       - name: board ledger row-persistence + same-as_of continuity guard
-        run: python -m pytest tests/test_us_board_ledger_continuity.py tests/test_us_board_continuity_guard.py -q
+        # Price-specific snapshot clocks import the same actual producer and use
+        # committed synthetic series only; keep this guard on the existing code gate.
+        run: python -m pytest tests/test_us_board_ledger_continuity.py tests/test_us_board_continuity_guard.py tests/test_build_stock_library_price_clock.py -q
 
   unrun-intl-libraries:
     # China / HK / Canada library writers behind the international surfaces.
@@ -15758,6 +15778,7 @@ jobs:
       - "engine/rate_inflation_transmission.py"
       - "engine/yield_momentum.py"
       - "engine/residual_alpha.py"
+      - "engine/risk_envelope.py"
       - "engine/risk_sizing.py"
       - "engine/roc_blowoff.py"
       - "engine/sector_pulse.py"
@@ -16182,7 +16203,12 @@ jobs:
       # audit_unrun_tests.py sees a run: body that names the suite. openssl is
       # on ubuntu-latest; the suite is stdlib + MemoryStore (no boto3).
       - name: customer-table backup dump/restore contracts (MMX-001)
-        run: python -m pytest tests/test_backup_user_tables.py -q
+        run: |
+          pg_bin="$(pg_config --bindir)"
+          export PATH="$pg_bin:$PATH"
+          for tool in psql initdb pg_ctl; do command -v "$tool" >/dev/null; done
+          test "$(id -u)" -ne 0
+          python -m pytest tests/test_backup_user_tables.py tests/test_backup_iw2_snapshot.py -q
       - name: store/ops builders behind the nightly data lanes
         run: python -m pytest tests/test_append_sync_gauge.py tests/test_audit_fred_groups.py tests/test_audit_massive_store.py tests/test_build_adjudication_packet.py tests/test_build_demand.py tests/test_build_ext_quotes.py tests/test_build_live_overlay.py tests/test_build_m2_profiles.py tests/test_build_unusual_baseline.py tests/test_calibrate_flow_signing_append.py tests/test_calibrate_stage.py tests/test_cctv_finalize_watcher.py tests/test_collect_lane_gate.py tests/test_context_candidates.py tests/test_context_index_eval.py tests/test_deploy_update_self_heal.py tests/test_close_pass_slo_report.py tests/test_ei_f1d_shadow.py tests/test_freshness_sentinel.py tests/test_cn_live_watchdog.py tests/test_exit_tax_scenarios.py tests/test_expanding_mean_benchmark.py tests/test_fetch_basket_ohlcv.py tests/test_finra_short_interest_pit.py tests/test_flow_score_stock_block.py tests/test_gex_history_snapshot.py tests/test_grade_policy_calendar.py tests/test_import_equitydesk.py tests/test_import_equitydesk_backfill.py tests/test_index_add_overnight.py tests/test_manifest_seams.py tests/test_mri_config_spine.py tests/test_narrative_ttl.py tests/test_net_replay_v1.py tests/test_options_tape_signed.py tests/test_quotes_server.py tests/test_reconcile_membership.py tests/test_refresh_markets_now.py tests/test_release_playbook.py tests/test_sf_harness_runner.py tests/test_slf031.py tests/test_slf051_cn_margin.py tests/test_tech_lab_cli.py tests/test_vps_live_orchestration.py tests/test_live_breadth.py tests/test_live_breadth_js_contract.py -q
       # Tech-Lab parity fixtures: the ~24 STRUCTURAL checks (fields, warmup
@@ -19696,6 +19722,7 @@ jobs:
       - "engine/rate_inflation_transmission.py"
       - "engine/yield_momentum.py"
       - "engine/residual_alpha.py"
+      - "engine/risk_envelope.py"
       - "engine/risk_sizing.py"
       - "engine/roc_blowoff.py"
       - "engine/sector_pulse.py"
@@ -21364,6 +21391,7 @@ jobs:
       - "engine/research_vault/view_ratelimit.py"
       - "engine/research_vault/watermark.py"
       - "engine/residual_alpha.py"
+      - "engine/risk_envelope.py"
       - "engine/risk_sizing.py"
       - "engine/roc_blowoff.py"
       - "engine/seasonality/contracts.py"
@@ -22921,6 +22949,7 @@ jobs:
       - tests/conftest.py
       - tests/test_company_pinned_relationship_candidates.py
       - tests/test_company_relationship_candidates.py
+      - tests/test_company_relationship_review_set.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22930,4 +22959,4 @@ jobs:
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
       - name: File and pinned-source replay, manual boundary and temporal refusals
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py -q
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py -q

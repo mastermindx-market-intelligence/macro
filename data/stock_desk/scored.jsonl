@@ -571,3 +571,5 @@
 {"id": "2026-10-06-VIR-20261008152814-2", "ticker": "VIR", "subject": "VIR", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-27", "outcome": "unscored", "scored_at": "2026-10-08T15:28:15.796463+00:00"}
 {"id": "2026-10-06-TAL-20261008152814-3", "ticker": "TAL", "subject": "TAL", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-11-03", "outcome": "unscored", "scored_at": "2026-10-08T15:28:15.796471+00:00"}
 {"id": "2026-10-06-UTHR-20261008152814-6", "ticker": "UTHR", "subject": "UTHR", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-11-03", "outcome": "unscored", "scored_at": "2026-10-08T15:28:15.796478+00:00"}
+{"id": "2026-10-08-ADSK-20261009144103-2", "ticker": "ADSK", "subject": "ADSK", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-11-05", "outcome": "unscored", "scored_at": "2026-10-09T14:41:05.365315+00:00"}
+{"id": "2026-10-08-ABBV-20261009144103-5", "ticker": "ABBV", "subject": "ABBV", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-11-05", "outcome": "unscored", "scored_at": "2026-10-09T14:41:05.365330+00:00"}

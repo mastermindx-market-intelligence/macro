@@ -372,8 +372,8 @@
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "rates_curves-US-844fc2b43ca893dd"
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "rates_curves-US-3b1a26d15aea8dd5"
   },
   "drivers": {
     "balance_sheet": [
@@ -508,11 +508,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-09T06:01:29Z",
+    "built_at": "2026-10-09T12:00:01Z",
     "calculation_as_of": "2026-10-09",
-    "code_version": "fea3a49e9b0e2114ff3f30fb7a58f46da00cf116",
-    "content_sha256": "3b1a26d15aea8dd5ff3e8269f37ce1c03e522fe927921e465667b91fa20a5b4d",
-    "generation_id": "rates_curves-US-3b1a26d15aea8dd5",
+    "code_version": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+    "content_sha256": "a3b1be3fa7d02b648450b9dde9fa61894a9ecec8791c39b72331b777adfe4fe5",
+    "generation_id": "rates_curves-US-a3b1be3fa7d02b64",
     "producer": "engine.market_os.macro_workspaces.rates_curves",
     "rendered_at": null
   },

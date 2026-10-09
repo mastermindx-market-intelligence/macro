@@ -1,0 +1,2 @@
+2026-10-09T09:34:35Z PREREG.md sha256=6d3b19623e58f65b2036aefcd4b0dde8f74c68bdbdf0bad28c118ebd3bbed4de
+# timestamp from `date -u +%Y-%m-%dT%H:%M:%SZ`; hash from `shasum -a 256 PREREG.md`; recorded before any evaluation outcome was computed.

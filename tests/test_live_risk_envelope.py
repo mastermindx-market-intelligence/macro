@@ -1061,3 +1061,59 @@ class TestMaterialityFiringLedger:
         assert firings_a[0]["fingerprint"] != firings_b[0]["fingerprint"], (
             "changing a spliced leg value (score) must change the fingerprint"
         )
+
+
+# Brain live-reader extraction: incumbent arithmetic, not a second freshness law.
+def _incumbent_market_freshness(doc, horizon, now):
+    """Frozen pre-extraction function from dcf38b9461e8163c7d26e1bc3bff6f4d3caab463."""
+    active = bool((doc or {}).get("live_active"))
+    built = blre._parse_built((doc or {}).get("built"))
+    fresh = bool(built) and (now - built).total_seconds() <= horizon * 60.0
+    future = bool(built) and (built - now).total_seconds() > 120.0
+    return {"live_active": active, "built_dt": built, "fresh_enough": fresh,
+            "future_artifact": future, "usable": active and fresh and not future}
+
+
+@pytest.mark.parametrize("age,active,expected", [
+    (-121, True, (True, True, False)),
+    (-120, True, (True, False, True)),
+    (-60, True, (True, False, True)),
+    (0, True, (True, False, True)),
+    (300, True, (True, False, True)),
+    (301, True, (False, False, False)),
+    (0, False, (True, False, False)),
+])
+def test_shared_freshness_keeps_exact_incumbent_boundaries(age, active, expected):
+    from engine.risk_envelope import live_market_freshness
+    now = datetime(2026, 10, 7, 14, 1, tzinfo=timezone.utc)
+    built = now - timedelta(seconds=age)
+    doc = {"built": built.strftime("%Y-%m-%d %H:%M:%S UTC"), "live_active": active}
+    result = blre.market_freshness(doc, 5.0, now)
+    assert result == _incumbent_market_freshness(doc, 5.0, now)
+    assert result == live_market_freshness(live_active=active, built_dt=built,
+                                           stale_after_min=5.0, now=now)
+    assert tuple(result[key] for key in ("fresh_enough", "future_artifact", "usable")) == expected
+
+
+@pytest.mark.parametrize("doc", [None, {}, {"built": "bad", "live_active": True}])
+def test_shared_freshness_keeps_missing_source_unknown(doc):
+    now = datetime(2026, 10, 7, 14, 1, tzinfo=timezone.utc)
+    assert blre.market_freshness(doc, 5.0, now) == _incumbent_market_freshness(doc, 5.0, now)
+    assert blre.market_freshness(doc, 5.0, now)["usable"] is False
+
+
+@pytest.mark.parametrize("age,active", [(60, True), (300, True), (301, True), (-120, True),
+                                        (-121, True), (60, False)])
+def test_shared_freshness_preserves_actual_synthetic_builder_bytes(tmp_path, monkeypatch, age, active):
+    from engine.risk_envelope import canonical_json
+    now = datetime(2026, 10, 7, 14, 1, tzinfo=timezone.utc)
+    built = (now - timedelta(seconds=age)).strftime("%Y-%m-%d %H:%M:%S UTC")
+    _write_root(tmp_path, risk_state=_risk_state(built, live_active=active),
+                leadership=_leadership("2026-10-06"), settled=_settled("2026-10-06"))
+    monkeypatch.setattr(blre, "_risk_envelope_cfg", lambda: {"debounce_ticks": 3, "stale_after_min": 5.0})
+    monkeypatch.setattr(blre, "_emit_materiality_firing", lambda **kw: pytest.fail("reader parity fixture fired"))
+    actual = blre.build(tmp_path, now=now, produced_now=now)
+    monkeypatch.setattr(blre, "market_freshness", _incumbent_market_freshness)
+    before = blre.build(tmp_path, now=now, produced_now=now)
+    assert canonical_json(actual) == canonical_json(before)
+    assert actual["stale_after"] is None

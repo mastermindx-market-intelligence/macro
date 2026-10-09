@@ -3500,6 +3500,8 @@ on:
       # listing only the suite leaves a unit/script-only edit unable to start
       # the job that owns it. update.sh already appears above.
       - "tests/test_backup_user_tables.py"
+      - "tests/test_backup_iw2_snapshot.py"
+      - "tests/fixtures/user_table_backup_v1.tar.gz"
       - "scripts/backup_user_tables.py"
       - "app/deploy/macro-user-backup.service"
       - "app/deploy/macro-user-backup.timer"

@@ -71,72 +71,8 @@
   "standing_line_zh": "\u5f71\u5b50\u8bb0\u5f55 \u2014 \u5b9e\u76d8\u7b56\u7565\u4ec5\u5728\u64cd\u4f5c\u8005\u6279\u51c6\u540e\u624d\u4f1a\u66f4\u6539",
   "headline_min_closed": 20,
   "harness_validity": {
-    "c0_plan_ids": [
-      "AA-BULL-20260812",
-      "AIG-BULL-20261008",
-      "AVGO-BULL-20261005",
-      "CB-BULL-20261008",
-      "DOW-BULL-20261008",
-      "EQT-BULL-20261008",
-      "EXK-BULL-20261008",
-      "GIS-BULL-20261008",
-      "IDA-BULL-20261008",
-      "IR-BULL-20261005",
-      "JBGS-BULL-20261008",
-      "JLL-BULL-20261008",
-      "LFST-BULL-20260820",
-      "LPG-BULL-20261008",
-      "MDU-BULL-20261008",
-      "NWSA-BULL-20261008",
-      "ODFL-BULL-20261008",
-      "OI-BULL-20261008",
-      "PLG-BULL-20261008",
-      "SGML-BULL-20261005",
-      "SMPL-BULL-20261008",
-      "STZ-BULL-20261008",
-      "TRMB-BULL-20261005",
-      "UTI-BULL-20261008",
-      "VNO-BULL-20261008",
-      "VSTS-BULL-20261008",
-      "WDFC-BULL-20261008",
-      "XPO-BULL-20261005",
-      "YUM-BULL-20261008",
-      "ZS-BULL-20260914",
-      "ZTS-BULL-20261008"
-    ],
-    "live_plan_ids": [
-      "AA-BULL-20260812",
-      "AIG-BULL-20261008",
-      "AVGO-BULL-20261005",
-      "CB-BULL-20261008",
-      "DOW-BULL-20261008",
-      "EQT-BULL-20261008",
-      "EXK-BULL-20261008",
-      "GIS-BULL-20261008",
-      "IDA-BULL-20261008",
-      "IR-BULL-20261005",
-      "JBGS-BULL-20261008",
-      "JLL-BULL-20261008",
-      "LFST-BULL-20260820",
-      "LPG-BULL-20261008",
-      "MDU-BULL-20261008",
-      "NWSA-BULL-20261008",
-      "ODFL-BULL-20261008",
-      "OI-BULL-20261008",
-      "PLG-BULL-20261008",
-      "SGML-BULL-20261005",
-      "SMPL-BULL-20261008",
-      "STZ-BULL-20261008",
-      "TRMB-BULL-20261005",
-      "UTI-BULL-20261008",
-      "VNO-BULL-20261008",
-      "VSTS-BULL-20261008",
-      "WDFC-BULL-20261008",
-      "XPO-BULL-20261005",
-      "YUM-BULL-20261008",
-      "ZS-BULL-20260914",
-      "ZTS-BULL-20261008"
-    ],
+    "c0_plan_ids": [],
+    "live_plan_ids": [],
     "c0_mismatch_count": 0,
     "missing_from_mirror": [],
     "extra_in_mirror": [],
@@ -378,7 +314,7 @@
     "asof": "2026-10-09",
     "standouts_as_of": "2026-10-08",
     "price_through": "2026-10-08",
-    "observed_at_utc": "2026-10-09T06:01:32.850266+00:00",
+    "observed_at_utc": "2026-10-09T12:00:03.223211+00:00",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
@@ -416,7 +352,7 @@
           "2B",
           "3B"
         ],
-        "runtime_s": 22.1
+        "runtime_s": 19.6
       }
     },
     "policies": {
@@ -426,14 +362,15 @@
           "HAS",
           "YUM",
           "AVGO",
-          "SHAK",
           "ADSK",
           "STZ",
           "URBN",
+          "ELV",
           "LPG",
           "MCK",
           "PAHC",
           "ABBV",
+          "DTM",
           "LFST",
           "SRE",
           "PPL",
@@ -442,28 +379,25 @@
           "CBOE",
           "WLY",
           "LNT",
-          "ELV",
-          "NWSA",
           "PG",
+          "NWSA",
+          "ZTS",
           "SO",
           "AFRM",
-          "DTM",
-          "APOG",
           "ULS",
+          "APOG",
           "TSN",
           "DOW",
           "NU",
           "BURL",
-          "VNO",
           "EQT",
           "IR",
           "XOM",
           "GGG",
           "VSTS",
           "BWXT",
-          "ZTS",
-          "SMPL",
           "OI",
+          "SMPL",
           "DD",
           "EXK",
           "JLL",
@@ -480,6 +414,7 @@
           "CALX",
           "NI",
           "ODFL",
+          "VNO",
           "WDFC",
           "SGML",
           "POST",
@@ -490,52 +425,20 @@
           "AMSF",
           "JBGS"
         ],
-        "plan_ids": [
-          "AA-BULL-20260812",
-          "AIG-BULL-20261008",
-          "AVGO-BULL-20261005",
-          "CB-BULL-20261008",
-          "DOW-BULL-20261008",
-          "EQT-BULL-20261008",
-          "EXK-BULL-20261008",
-          "GIS-BULL-20261008",
-          "IDA-BULL-20261008",
-          "IR-BULL-20261005",
-          "JBGS-BULL-20261008",
-          "JLL-BULL-20261008",
-          "LFST-BULL-20260820",
-          "LPG-BULL-20261008",
-          "MDU-BULL-20261008",
-          "NWSA-BULL-20261008",
-          "ODFL-BULL-20261008",
-          "OI-BULL-20261008",
-          "PLG-BULL-20261008",
-          "SGML-BULL-20261005",
-          "SMPL-BULL-20261008",
-          "STZ-BULL-20261008",
-          "TRMB-BULL-20261005",
-          "UTI-BULL-20261008",
-          "VNO-BULL-20261008",
-          "VSTS-BULL-20261008",
-          "WDFC-BULL-20261008",
-          "XPO-BULL-20261005",
-          "YUM-BULL-20261008",
-          "ZS-BULL-20260914",
-          "ZTS-BULL-20261008"
-        ],
-        "n_plans": 31,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 67,
+          "admitted": 66,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "lossless live champion mirror",
           "truncated": 0
         },
         "origination": {
-          "offered": 67,
-          "skipped_duplicate_id": 12,
+          "offered": 66,
+          "skipped_duplicate_id": 43,
           "skipped_open_plan": 9,
-          "skipped_clock_provenance": 15,
+          "skipped_clock_provenance": 14,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
@@ -552,14 +455,6 @@
               ]
             },
             {
-              "ticker": "SHAK",
-              "id": "SHAK-BULL-20261008",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
-              ]
-            },
-            {
               "ticker": "ADSK",
               "id": "ADSK-BULL-20261008",
               "stage": "clock_provenance",
@@ -573,6 +468,14 @@
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
+              ]
+            },
+            {
+              "ticker": "DTM",
+              "id": "DTM-BULL-20261008",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
               ]
             },
             {
@@ -610,14 +513,6 @@
             {
               "ticker": "AFRM",
               "id": "AFRM-BULL-20261008",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
-              ]
-            },
-            {
-              "ticker": "DTM",
-              "id": "DTM-BULL-20261008",
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
@@ -664,11 +559,11 @@
               ]
             }
           ],
-          "originated": 31,
-          "validation_failed": 15
+          "originated": 0,
+          "validation_failed": 14
         },
-        "ledger_rows_appended": 31,
-        "ledger_closures_appended": 14
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C1_buy_soon_first": {
         "selected_tickers": [
@@ -676,25 +571,19 @@
           "HAS",
           "YUM",
           "AVGO",
-          "SHAK",
           "ADSK",
           "STZ",
           "URBN",
+          "ELV",
           "LPG",
           "MCK",
           "PAHC",
           "ABBV"
         ],
-        "plan_ids": [
-          "AVGO-BULL-20261005",
-          "CB-BULL-20261008",
-          "LPG-BULL-20261008",
-          "STZ-BULL-20261008",
-          "YUM-BULL-20261008"
-        ],
-        "n_plans": 5,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 67,
+          "admitted": 66,
           "cap": 12,
           "cap_applied": true,
           "act_level_2": 0,
@@ -702,9 +591,9 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 2,
-          "skipped_open_plan": 1,
-          "skipped_clock_provenance": 4,
+          "skipped_duplicate_id": 7,
+          "skipped_open_plan": 2,
+          "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
@@ -718,14 +607,6 @@
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
-              ]
-            },
-            {
-              "ticker": "SHAK",
-              "id": "SHAK-BULL-20261008",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
               ]
             },
             {
@@ -745,11 +626,11 @@
               ]
             }
           ],
-          "originated": 5,
-          "validation_failed": 4
+          "originated": 0,
+          "validation_failed": 3
         },
-        "ledger_rows_appended": 5,
-        "ledger_closures_appended": 4
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C3_door_w_union": {
         "selected_tickers": [
@@ -757,27 +638,23 @@
           "HAS",
           "YUM",
           "AVGO",
-          "SHAK",
           "ADSK",
           "STZ",
           "URBN",
+          "ELV",
           "WMT",
           "ECHO",
           "RKLB",
           "KMT"
         ],
         "plan_ids": [
-          "AVGO-BULL-20261005",
-          "CB-BULL-20261008",
           "ECHO-BULL-20261008",
           "RKLB-BULL-20261008",
-          "STZ-BULL-20261008",
-          "WMT-BULL-20261008",
-          "YUM-BULL-20261008"
+          "WMT-BULL-20261008"
         ],
-        "n_plans": 7,
+        "n_plans": 3,
         "selection": {
-          "admitted": 67,
+          "admitted": 66,
           "cap": 12,
           "cap_applied": true,
           "door_w_offered": 4,
@@ -788,9 +665,9 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 0,
-          "skipped_open_plan": 2,
-          "skipped_clock_provenance": 3,
+          "skipped_duplicate_id": 4,
+          "skipped_open_plan": 3,
+          "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
@@ -804,77 +681,6 @@
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
-              ]
-            },
-            {
-              "ticker": "SHAK",
-              "id": "SHAK-BULL-20261008",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
-              ]
-            },
-            {
-              "ticker": "ADSK",
-              "id": "ADSK-BULL-20261008",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
-              ]
-            }
-          ],
-          "originated": 7,
-          "validation_failed": 3
-        },
-        "ledger_rows_appended": 7,
-        "ledger_closures_appended": 5
-      },
-      "C4_dispersion_cap": {
-        "selected_tickers": [
-          "CB",
-          "HAS",
-          "YUM",
-          "AVGO",
-          "SHAK",
-          "ADSK"
-        ],
-        "plan_ids": [
-          "AVGO-BULL-20261005",
-          "CB-BULL-20261008",
-          "YUM-BULL-20261008"
-        ],
-        "n_plans": 3,
-        "selection": {
-          "admitted": 67,
-          "cap": 6,
-          "cap_applied": true
-        },
-        "origination": {
-          "offered": 6,
-          "skipped_duplicate_id": 0,
-          "skipped_open_plan": 0,
-          "skipped_clock_provenance": 3,
-          "skipped_no_spot": 0,
-          "skipped_door_w_no_geometry": 0,
-          "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-09",
-          "price_basis_date": "2026-10-08",
-          "clock_errors": [],
-          "validation_failures": [
-            {
-              "ticker": "HAS",
-              "id": "HAS-BULL-20261008",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
-              ]
-            },
-            {
-              "ticker": "SHAK",
-              "id": "SHAK-BULL-20261008",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
               ]
             },
             {
@@ -887,10 +693,61 @@
             }
           ],
           "originated": 3,
-          "validation_failed": 3
+          "validation_failed": 2
         },
-        "ledger_rows_appended": 3,
-        "ledger_closures_appended": 4
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
+      },
+      "C4_dispersion_cap": {
+        "selected_tickers": [
+          "CB",
+          "HAS",
+          "YUM",
+          "AVGO",
+          "ADSK",
+          "STZ"
+        ],
+        "plan_ids": [],
+        "n_plans": 0,
+        "selection": {
+          "admitted": 66,
+          "cap": 6,
+          "cap_applied": true
+        },
+        "origination": {
+          "offered": 6,
+          "skipped_duplicate_id": 4,
+          "skipped_open_plan": 0,
+          "skipped_clock_provenance": 2,
+          "skipped_no_spot": 0,
+          "skipped_door_w_no_geometry": 0,
+          "skipped_door_w_tickers": [],
+          "recorded_at": "2026-10-09",
+          "price_basis_date": "2026-10-08",
+          "clock_errors": [],
+          "validation_failures": [
+            {
+              "ticker": "HAS",
+              "id": "HAS-BULL-20261008",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
+              ]
+            },
+            {
+              "ticker": "ADSK",
+              "id": "ADSK-BULL-20261008",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
+              ]
+            }
+          ],
+          "originated": 0,
+          "validation_failed": 2
+        },
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C5_align2_gate": {
         "selected_tickers": [
@@ -900,37 +757,32 @@
           "ABBV",
           "PPL",
           "ZS",
+          "ZTS",
           "XOM",
           "GGG",
-          "ZTS",
           "TRMB",
           "MIR",
           "PLG"
         ],
-        "plan_ids": [
-          "PLG-BULL-20261008",
-          "TRMB-BULL-20261005",
-          "ZS-BULL-20260914",
-          "ZTS-BULL-20261008"
-        ],
-        "n_plans": 4,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 67,
+          "admitted": 66,
           "cap": 12,
           "cap_applied": true,
           "align_gate": {
             "admitted": 12,
             "admitted_via_fallback": 3,
-            "excluded_misaligned": 55,
+            "excluded_misaligned": 54,
             "excluded_unreadable": 0,
             "basis": "event_atlas weekly align_class == 2 (its full value), falling back to align_now == 3 (its full value) when the name has no weekly event on record; a name the atlas cannot read is excluded, never admitted"
           },
           "passed_gate": 12,
-          "excluded": 55
+          "excluded": 54
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 5,
+          "skipped_duplicate_id": 9,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
@@ -957,11 +809,11 @@
               ]
             }
           ],
-          "originated": 4,
+          "originated": 0,
           "validation_failed": 2
         },
-        "ledger_rows_appended": 4,
-        "ledger_closures_appended": 3
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C6_time_stop_21": {
         "selected_tickers": [
@@ -969,14 +821,15 @@
           "HAS",
           "YUM",
           "AVGO",
-          "SHAK",
           "ADSK",
           "STZ",
           "URBN",
+          "ELV",
           "LPG",
           "MCK",
           "PAHC",
           "ABBV",
+          "DTM",
           "LFST",
           "SRE",
           "PPL",
@@ -985,28 +838,25 @@
           "CBOE",
           "WLY",
           "LNT",
-          "ELV",
-          "NWSA",
           "PG",
+          "NWSA",
+          "ZTS",
           "SO",
           "AFRM",
-          "DTM",
-          "APOG",
           "ULS",
+          "APOG",
           "TSN",
           "DOW",
           "NU",
           "BURL",
-          "VNO",
           "EQT",
           "IR",
           "XOM",
           "GGG",
           "VSTS",
           "BWXT",
-          "ZTS",
-          "SMPL",
           "OI",
+          "SMPL",
           "DD",
           "EXK",
           "JLL",
@@ -1023,6 +873,7 @@
           "CALX",
           "NI",
           "ODFL",
+          "VNO",
           "WDFC",
           "SGML",
           "POST",
@@ -1033,52 +884,20 @@
           "AMSF",
           "JBGS"
         ],
-        "plan_ids": [
-          "AA-BULL-20260812",
-          "AIG-BULL-20261008",
-          "AVGO-BULL-20261005",
-          "CB-BULL-20261008",
-          "DOW-BULL-20261008",
-          "EQT-BULL-20261008",
-          "EXK-BULL-20261008",
-          "GIS-BULL-20261008",
-          "IDA-BULL-20261008",
-          "IR-BULL-20261005",
-          "JBGS-BULL-20261008",
-          "JLL-BULL-20261008",
-          "LFST-BULL-20260820",
-          "LPG-BULL-20261008",
-          "MDU-BULL-20261008",
-          "NWSA-BULL-20261008",
-          "ODFL-BULL-20261008",
-          "OI-BULL-20261008",
-          "PLG-BULL-20261008",
-          "SGML-BULL-20261005",
-          "SMPL-BULL-20261008",
-          "STZ-BULL-20261008",
-          "TRMB-BULL-20261005",
-          "UTI-BULL-20261008",
-          "VNO-BULL-20261008",
-          "VSTS-BULL-20261008",
-          "WDFC-BULL-20261008",
-          "XPO-BULL-20261005",
-          "YUM-BULL-20261008",
-          "ZS-BULL-20260914",
-          "ZTS-BULL-20261008"
-        ],
-        "n_plans": 31,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 67,
+          "admitted": 66,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "identical to lossless C0 by construction",
           "truncated": 0
         },
         "origination": {
-          "offered": 67,
-          "skipped_duplicate_id": 12,
+          "offered": 66,
+          "skipped_duplicate_id": 43,
           "skipped_open_plan": 9,
-          "skipped_clock_provenance": 15,
+          "skipped_clock_provenance": 14,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
@@ -1095,14 +914,6 @@
               ]
             },
             {
-              "ticker": "SHAK",
-              "id": "SHAK-BULL-20261008",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
-              ]
-            },
-            {
               "ticker": "ADSK",
               "id": "ADSK-BULL-20261008",
               "stage": "clock_provenance",
@@ -1116,6 +927,14 @@
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
+              ]
+            },
+            {
+              "ticker": "DTM",
+              "id": "DTM-BULL-20261008",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
               ]
             },
             {
@@ -1153,14 +972,6 @@
             {
               "ticker": "AFRM",
               "id": "AFRM-BULL-20261008",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
-              ]
-            },
-            {
-              "ticker": "DTM",
-              "id": "DTM-BULL-20261008",
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
@@ -1207,40 +1018,34 @@
               ]
             }
           ],
-          "originated": 31,
-          "validation_failed": 15
+          "originated": 0,
+          "validation_failed": 14
         },
-        "ledger_rows_appended": 31,
-        "ledger_closures_appended": 9
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C7_buy_soon_admitted": {
         "selected_tickers": [
-          "MSCI",
           "CB",
           "HAS",
+          "MSCI",
           "YUM",
           "AVGO",
-          "SHAK",
           "ADSK",
           "STZ",
           "URBN",
+          "ELV",
           "LPG",
           "MCK",
           "PAHC"
         ],
-        "plan_ids": [
-          "AVGO-BULL-20261005",
-          "CB-BULL-20261008",
-          "LPG-BULL-20261008",
-          "STZ-BULL-20261008",
-          "YUM-BULL-20261008"
-        ],
-        "n_plans": 5,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 67,
+          "admitted": 66,
           "cap": 12,
           "cap_applied": true,
-          "admitted_with_widening": 73,
+          "admitted_with_widening": 72,
           "buy_soon_in_board": 8,
           "buy_soon_admitted_by_widening": 6,
           "buy_soon_selected": 1,
@@ -1248,9 +1053,9 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 2,
-          "skipped_open_plan": 1,
-          "skipped_clock_provenance": 4,
+          "skipped_duplicate_id": 7,
+          "skipped_open_plan": 2,
+          "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
@@ -1258,14 +1063,6 @@
           "price_basis_date": "2026-10-08",
           "clock_errors": [],
           "validation_failures": [
-            {
-              "ticker": "MSCI",
-              "id": "MSCI-BULL-20261008",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
-              ]
-            },
             {
               "ticker": "HAS",
               "id": "HAS-BULL-20261008",
@@ -1275,11 +1072,11 @@
               ]
             },
             {
-              "ticker": "SHAK",
-              "id": "SHAK-BULL-20261008",
+              "ticker": "MSCI",
+              "id": "MSCI-BULL-20261008",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
+                "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
               ]
             },
             {
@@ -1291,11 +1088,11 @@
               ]
             }
           ],
-          "originated": 5,
-          "validation_failed": 4
+          "originated": 0,
+          "validation_failed": 3
         },
-        "ledger_rows_appended": 5,
-        "ledger_closures_appended": 3
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       }
     }
   },

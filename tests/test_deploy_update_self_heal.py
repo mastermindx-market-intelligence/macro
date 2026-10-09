@@ -335,6 +335,7 @@ MUST_RESTART = [
     "engine/neuralweb/ask_brain.py",
     "engine/neuralweb/chat_plain_words.py",
     "engine/neuralweb/brain_gateway.py",
+    "engine/risk_envelope.py",
     "engine/neuralweb/brain_native_inputs.py",
     "engine/neuralweb/native_facts.py",
     # W1-B imports this typed-fact package on the first native request.  From

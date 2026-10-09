@@ -1,0 +1,93 @@
+{
+  "checks": [
+    {
+      "check": "agentos",
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+        "-B",
+        "scripts/agentos.py",
+        "validate",
+        "--root",
+        "agentos"
+      ],
+      "exit_code": 0,
+      "log": "/Users/chriswong/Library/Caches/Mastermind/economic-network-native-reader-20261009/principal/integration-001/agentos.log",
+      "bytes": 28534,
+      "sha256": "a79b756de42fc45e265e0938498ef5b601d972de65cfe4299b99657b24db29be",
+      "tail": [
+        "agentos: 1590 records (82 workstreams, 425 decisions, 472 discoveries, 611 handoffs) — 0 error(s), 143 warning(s)"
+      ]
+    },
+    {
+      "check": "ci-ownership",
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "-q",
+        "--basetemp=/Users/chriswong/Library/Caches/Mastermind/economic-network-native-reader-20261009/principal/integration-001/pytest-temp"
+      ],
+      "exit_code": 0,
+      "log": "/Users/chriswong/Library/Caches/Mastermind/economic-network-native-reader-20261009/principal/integration-001/ci-ownership.log",
+      "bytes": 110,
+      "sha256": "0858f5a0ffedd58a33d320bf758b8451cb666115d98fa8fa48c15e42a3567d45",
+      "tail": [
+        "3 passed in 146.06s (0:02:26)"
+      ]
+    },
+    {
+      "observed_at": "2026-10-09T09:39:43.970063+00:00",
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_ci_pack.py::test_plan_is_deterministic",
+        "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+        "-q",
+        "--basetemp=/Users/chriswong/Library/Caches/Mastermind/economic-network-native-reader-20261009/principal/integration-002-packing/pytest-temp"
+      ],
+      "exit_code": 0,
+      "log": "/Users/chriswong/Library/Caches/Mastermind/economic-network-native-reader-20261009/principal/integration-002-packing/packing.log",
+      "bytes": 110,
+      "sha256": "88a2b776aefbfb61ee564c70e839d7968cb1e014cbf6ce8048df03c9c089fb29",
+      "tail": [
+        "2 passed in 110.57s (0:01:50)"
+      ]
+    }
+  ],
+  "all_exit_zero": true,
+  "raw_receipts_verified_against_native_logs": true,
+  "schema": "economic_network.principal_integration_checks.v1",
+  "operation_id": "gmi-economic-network-native-reader-20261009-pro-002",
+  "native_device": "m2studio",
+  "code_base": "41c1516fa803504c30ca2d5d067a71899fca3e8d",
+  "evidence_scope": "Actual native AgentOS validation and five existing CI manifest/packing tests; not hosted PR CI or real source replay.",
+  "source_freeze": {
+    "manual": "a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55",
+    "review_test": "67636cc6eca4f9be84b383bb44b4835a3dc8447f6b288e2e99073f61182ce212",
+    "ci_manifest": "62598df9610b898e182abfae61da60bb06e417416125314d72379f9dd2706a64"
+  },
+  "processes": [
+    {
+      "pid": 37328,
+      "exit_code": 0
+    },
+    {
+      "pid": 51962,
+      "exit_code": 0
+    },
+    {
+      "pid": 68042,
+      "exit_code": 0
+    }
+  ]
+}

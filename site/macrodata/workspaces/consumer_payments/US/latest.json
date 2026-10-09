@@ -442,18 +442,10 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "consumer_credit_nonrevolving_level:consumer_credit_nonrevolving_level:a909bfe2c1f95e0b",
-      "consumer_credit_nonrevolving_yoy:consumer_credit_nonrevolving_yoy:3861a0bde4da93b6",
-      "consumer_credit_revolving_level:consumer_credit_revolving_level:0bbd75ab45e34a66",
-      "consumer_credit_revolving_yoy:consumer_credit_revolving_yoy:734e0ca219618297",
-      "consumer_credit_total_level:consumer_credit_total_level:30e0d1f49a376832",
-      "consumer_credit_total_yoy:consumer_credit_total_yoy:e782bdb17f36bebe",
-      "credit_stress:credit_stress:e0a940787db3d013"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "consumer_payments-US-83df35b9dd8960d5"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "consumer_payments-US-083e2e8f02b9b17d"
   },
   "drivers": {
     "balance_sheet": [
@@ -546,11 +538,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-09T06:01:29Z",
+    "built_at": "2026-10-09T12:00:01Z",
     "calculation_as_of": "2026-08-01",
-    "code_version": "fea3a49e9b0e2114ff3f30fb7a58f46da00cf116",
-    "content_sha256": "083e2e8f02b9b17d50a842e71942609f65d0f36ee71d9535e3a7e272844c8200",
-    "generation_id": "consumer_payments-US-083e2e8f02b9b17d",
+    "code_version": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+    "content_sha256": "6ab4132fe63a7d9a6b4ecedcea6236da7cc00625fcb4e875b9f2fb9635284668",
+    "generation_id": "consumer_payments-US-6ab4132fe63a7d9a",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
     "rendered_at": null
   },
