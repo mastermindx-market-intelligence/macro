@@ -212,6 +212,35 @@ class CatalystPartnerPackTests(unittest.TestCase):
         self.event["claims"][0]["source_ids"] = ["missing-source"]
         self.refused("UNSOURCED_OR_DUPLICATE_CLAIM")
 
+    def test_redundant_social_card_is_withheld_by_incumbent_value_gate(self):
+        # A source-backed claim repeated in full as the social post does not
+        # earn a second giant-image surface. This must be a genuine veto.
+        self.event["affected_tickers"][0]["evidence_ids"] = ["fixture-claim-exa"]
+        p = self.make()
+        self.assertEqual(p["media_status"],
+                         "CARD_WITHHELD_NO_ADDITIONAL_VALUE")
+        self.assertIsNone(p["card_svg"])
+        with tempfile.TemporaryDirectory() as temp:
+            written = write_partner_pack(p, temp)
+            self.assertNotIn("intelligence-card.svg", [f.name for f in written])
+            page = (Path(temp) / "index.html").read_text()
+            self.assertIn("Duplicate card withheld", page)
+            self.assertNotIn("Image rehosting withheld", page)
+
+    def test_additive_card_and_canonical_style_tokens_survive_render(self):
+        p = self.make()
+        self.assertEqual(p["media_status"], "READY_FOR_REVIEW")
+        self.assertIsNotNone(p["card_svg"])
+        with tempfile.TemporaryDirectory() as temp:
+            write_partner_pack(p, temp)
+            page = (Path(temp) / "index.html").read_text()
+            root_theme = (ROOT / "templates" / "theme.css").read_text()
+            first = root_theme.index(":root {")
+            last = root_theme.index("\n}\n", first)
+            self.assertIn(root_theme[first:last+2], page)
+            self.assertIn("font-family:var(--font-ui)", page)
+            self.assertIn("var(--r-card", page)
+
     def test_rights_fail_closed_and_dont_rehost_without_positive_receipt(self):
         self.event["sources"][0]["rights"]["public_display"] = False
         self.refused("BLOCKED_PUBLIC_RIGHTS")
