@@ -6,29 +6,13 @@ objective: Review the twenty supplied Terminal repair missions through the admit
   requires the original observable outcomes; a scoped patch or checkpoint does not satisfy it.
 status: active
 blocked_by:
-- A10 integrity875 is scoped delivered;8838b842 is independently accepted159native/74causal probes per tree, ready/nativeauto armed once. Required
-  CI, merge, canonical release and actual v2 private downloads remain. Parent8138full/TSC0/sixNext checks are separately attributed. Whole archive
-  and paid scope remain open.
-- 631 peak confirmation merged77eb5345 and canonical deployed/public marker/services healthy, actual Free gate at all three sizes. Paid behavior
-  and last-forming availability remain unaccepted.781642c60/20source values qualified and exactrun37934023714 approved once13:13.839b0b28/8538a2bb/873276
-  controller waits and their exact production proof remain; accepted NVDA recovery never replay.
-- Same automatic approval helper v7 has36causal checks and adds883 only after source acceptance/ready. Existing15-minute quiet heartbeat has current
-  native readback; no operator GitHub command/new scheduler or credential. App850 security grant is separate.
-- Macro8708 merged3bb1ee47 fromf5072e8e at13:07, all12packs/contractgate/active-main authority green; accepted producer/test/three-engine/owningCI
-  bytes verified on head and squash. Normal Fabric read-only adoption-map child active. Generator publication, consumer adoption, units and wholeA09
-  remain open.8687 scoped and orderedSQL unchanged.
-- 804T03g/858T02f reserved writers persist. IW2 reports actual encrypted capture user-tables-20261009T122438Z13tables520rows, one-transaction
-  restore and independent13hash/reference match after7532merge64983dd. Exact durable receipts/scratchcleanup/SQL0030packet still requested through
-  same receiver; no duplicate backup.0030/31/32 unapplied and exact approval/rights/0028 gates preserved.
-- A11 nativeT04f repair1 pushed95013, reviewer requested known_ts chip gate, repair2 weekly-quota error withzero tools. ActualClaude6 Send disabled
-  until8AMVancouver. Canonical source pickup/CAS capability not exposed; no manual lease transfer. Parent prepared patch and ten actual compiled
-  helper probes outside reserved source; no mountedChartPanel/housecrop/publication/live acceptance yet.
-- A19 selected existing-plan trigger_confirmed management slice avoids legacy/B1/B4 joins. Parent rejected delivery contract for shared-event
-  recipient collapse, crash-loss and stale-origin clock. Narrow admitted C3 contract-repair child active; no implementation or live recipient
-  action before corrected admission/identity contract. Existing prefs/outbox/consent owners retained.
-- Installed Fabric ordinary acceptance/picker/canary have verified readbacks; Executive reader projection does not prove modifying ingress. Original-parent
-  host binding/wake remains unqualified; denied config and frozen effects retained.707chairman/686coverage/768data/668private/582recipient/862native
-  holds remain. Authenticated account Free and intended paid identity unresolved.
+- 8838b842 is independently accepted and ready/nativeauto armed; exact required CI green but strict master refresh/merge remains owned by the existing observer, followed by canonical release and actual v2 downloads.
+- A12 peak631 canonical77eb is scoped delivered; five detached closure-module source blobs independently accepted, caller not wired. Actual hub fixtures disprove serve-time post-session labels as complete-volume proof; corrected C3 finality leaf active/waiting. Paid and wholeA12 remain unaccepted.
+- Macro8708 merged3bb1ee47 and adoption map consumed. At14:32 corrected render37934675596 was building with R2 stage24 pending; older daily37874656026 could later overwrite stockdata. Public14:06 artifacts lack qualified price fields. Publication and stale-writer settlement still unqualified.
+- IW2 backup capture/restore13tables520rows and cleanup independently consumed, scoped complete. Legacy rejected-draft compatibility patch reviewed as source evidence only; native804/858 source writers reserved and0030/31/32 unapplied. Exact SQL/rights gates remain.
+- Original native643/T04f95013 owner resumed after actual quota reset through retained Claude6 session; message/Thinking proven and priority steering sent. Canonical child recovery START or source transfer still unproven. Parent known_ts patch/ten probes remain detached; house/exact-head review/evidence heal/install/live owed.
+- A19 cutoff design scoped useful but native-shape helper failed8 parent cases. Bounded build refused NONE/no_pool_available before START; parent detached correction passes11 native/causal tests and exact raw-reader old/new probes. Normal independent C2 review active/waiting, no source or recipient effect accepted.
+- Existing Fabric repair owner reports139 tests and independent review of same-run artifact export draft. Installed operation and original five-file A19 recovery remain unproven. Executive denied config/frozen effects, original-parent binding, explicit707/686/768/668/582/862 and paid-principal boundaries preserved.
 program: terminal-charting
 repos:
 - terminal
@@ -44,10 +28,7 @@ waves:
 - id: REPAIR-AND-DELIVER
   title: Consume higher-level repairs and deliver accepted scoped changes
   status: in_progress
-next_action: Finish ready883 exact CI/merge/canonical release and actual private v2 download verification; consume same-id A19 contract correction
-  and A09 merged-producer adoption map, then act on their qualified existing owners. Install/prove other accepted controller-merged capabilities
-  on actual events. Recover native643 only through exposed canonical source binding, preserving prepared proposal and mandatory evidence heal.
-  Consume final existing IW2 backup/SQL0030 packet without duplicating producer effects. Continue safe useful phases; wholeAudit20 remains false.
+next_action: Continue original native643 bounded recovery and consume independent A12/A19 repair returns; integrate only qualified source through one writer. Complete883 protected merge/canonical release/private downloads on the existing observer event; prove A09 corrected publication after older writer settles; consume installed Fabric same-run artifact retrieval. Preserve ordered SQL and real source/effect gates. A checkpoint does not end work.
 owns_paths: []
 artifacts:
 - agentos/decisions/DEC-TERMINAL-ACCOUNT-EXPORT-INTEGRITY-V2-PRESERVES-V1.md
@@ -210,3 +191,7 @@ Macro8708 merged3bb1ee47 fromf5072e8e; current37931299996 all12packs/contractgat
 A19 C3 return selected non-B4 trigger-confirmed management on canonical plan.id, but parent consumed REPAIR_REQUIRED: global event identity would collapse recipient delivery, in-run-only admission loses events after state save/crash, and stale frames can latch an invalid first clock. Narrow C3 correction dispatched through normal Fabric, same root/grant. A11 native643 current95013 source remains clean/reserved; parent ten-probe known_ts replay-chip patch proposal is prepared outside source while actual takeover/CAS operation is unavailable. IW2 reports existing merged7532 encrypted13-table520-row capture/restore/hash/reference success; final durable cleanup/SQL0030 packet remains owned by same coordinator. SQL still unapplied. This durable save is not completion or a stopping point.
 
 2026-10-09 backup closure consumed once: six retained same-run receipts were rehashed; installed canonical7532squash64983dd, encrypted archive verified, atomic restore plus independent13contenthash/reference match, scratch absent/production present and temporarycredentialremoved. No capture/restore/timer replay. Separate0030cutover disposition is REQUEST_REPAIR: SQL-first/app-first incompatibility and retained legacy command retry loss reproduced by IW2 parent; existing804 source recovery/repair owns this dependency. Approval packet is not ready and0030/31/32 remain unapplied.
+
+2026-10-09 15:20 UTC material capability frontier: original Claude6 retained source owner accepted the bounded643 recovery message after quota reset and is working; delivery/Thinking is distinct from canonical T04f START. Priority steering prevents unrelated carrier census from replacing the assigned repair. A12 five exact source blobs are independently accepted once; full corrected patch preserves a test-body delivery limitation and no caller integration. Two actual77eb hub cases retain15:45 RTH volume/clock while served16:05 post, disproving the prior finality claim. A corrected source-clock C3 leaf is active/waiting, not accepted.
+
+A19 complete temporal helper/test bytes were retained and hashes verified; parent13 original tests pass but eight foreign/native-shape/UUID cases fail. Normal build repair refused before START, so bounded detached parent preparation repaired strict native condition rows, raw list classification, immutable intake/readback, original sticky operation key and unambiguous identity encoding. Eleven actual native/causal cases pass, including exact typed_get old/new false-response shapes; independent C2 review is active/waiting. No producer/source/live alert effect accepted. Existing Fabric owner independently reviews139-test artifact-read draft; original five same-run files are not retrieved or declared lost. Existing IW2 legacy compatibility proposal bytes/proof hashes are read, unpublished/unapplied; backup remains scoped done. A09 corrected publisher and older daily writer were actually active at14:32, so neither a workflow head nor the14:06 public artifacts proves corrected production adoption. All new evidence is referenced by the same proof record; this save is not completion or a stopping point.

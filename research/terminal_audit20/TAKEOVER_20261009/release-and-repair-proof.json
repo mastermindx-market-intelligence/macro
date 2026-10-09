@@ -407,7 +407,7 @@
       ]
     }
   },
-  "remaining": "Whole Audit20 acceptancefalse. Existingobserverowns873/875/839/853protectedCI/merge, thenparentcanonicaldeployment/livequalification. ActualnativeTop10retains643future-fill/Options,804T03gcleanup and858T02fdesktopred; preserveonewriter/orderedunapplied0030/31/32. Macro8687source4dfindependent177PASS/parent770native36browser; nativeunitproductionauthoritystillabsent. A12actualFreeOrderBlocksdisabledProgate; exactpaididentity andwebhookrecipientconsenthumanboundariesremain. Fabricordinaryacceptanceprojectionrepairactive; originalA09policyuploadprefix/DCRfrozen. Newpriceclockleafrejectedbeforetransport; existingroutingownerqualifiesnoeligible/coherence, no escalationfabrication.",
+  "remaining": "Whole Audit20 false. Preserve scoped completed deliveries. Finish ready883 protected CI/merge/canonical release and actual private v2 downloads through existing observer; recover retained643/T04f through its original native task owner and heal exact-squash evidence before release. Integrate A12 only after actual source-finality proof; consume A19 native-shaped consent review and repair before integration. Qualify corrected A09 publication plus stale daily writer settlement. Receive installed same-run artifact-read operation and original five-file retrieval. IW2 backup scoped complete; legacy compatibility and ordered unapplied0030/31/32 remain. Explicit source/rights/paid-principal/webhook gates retained, no new roots/carriers/unknown-effect replay.",
   "a05": {
     "pr": 861,
     "head": "856f68e04bc85e265887d721854e2fa410314fdd",
@@ -773,7 +773,7 @@
     "artifact_ledger_acceptance": false,
     "existing_owner": "01a11e90-4b5d-7f53-b966-8aaaad38701f; actual installed runtime writer, bounded exact-run publication repair active"
   },
-  "observed_at": "2026-10-09T13:25:26.987438+00:00",
+  "observed_at": "2026-10-09T15:20:36.880609+00:00",
   "pending_ci_carriers": {
     "839": {
       "head": "3777bdb6e95f520e40185225dd1729631b159594",
@@ -3326,6 +3326,100 @@
         "sha256": "abc1c6fc754fb789ef79c209c091950d49e704241f3c436afd88c813ad799735",
         "bytes": 5392
       }
+    }
+  },
+  "current_capability_frontier_20261009T1520": {
+    "a11_native_owner_recovery": {
+      "original_root": "03342a8d-ffe5-4ca8-9b69-5c22441080a9",
+      "retained_task": "T04f/taskwn65hiefp",
+      "source": "95013f082d09f98122d06ec317a2b992dae4390a",
+      "ui_request_delivered_and_thinking": true,
+      "actual_child_recovery_START_or_transfer_proven": false,
+      "bounded_priority_steering_sent": true,
+      "dispatch": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-native-owner-recovery-dispatch-20261009T1503.json",
+        "sha256": "468ee4e48d19cf49ccbc8f3527dfc2efedda1da675d2c4221f7145e1904291a9"
+      },
+      "source_proposal": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-replay-chip-source-proposal-20261009.patch",
+        "sha256": "cfd1de6f137fc06c4958e0395b353c89085efbc1063edd7e72fcafc1fe6cf2ec"
+      },
+      "runtime_acceptance": false
+    },
+    "a12_closed_confirmation": {
+      "five_exact_source_blobs_independently_accepted": true,
+      "review_run": "terminal-audit20-a12-closed-confirmation-proposal-review-20261009",
+      "readback": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a12-closed-confirmation-review-acceptance-readback-20261009.json",
+        "sha256": "599ad69d83dec0898a19cf168b5e3acac4e2382c0cd87c518627dd47172a091b"
+      },
+      "test_body_delivery_limit": true,
+      "complete_corrected_patch": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a12-closed-confirmation-source-proposal-20261009.patch",
+        "sha256": "660dffb7f877890e0105678f728c9e859b62cc80b0548f43673cff12bd532086"
+      },
+      "caller_wired": false,
+      "source_finality_return": "CONSUMED_NOT_ACCEPTED",
+      "actual_post_label_counterexamples": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a12-actual-owner-post-label-counterexamples-20261009.json",
+        "sha256": "b140a3fac223a4d3eb6e2c5ebadce6f410918f25572efbc6e19d2076780fefb5"
+      },
+      "next_leaf": "terminal-audit20-a12-source-finality-clock-repair-20261009",
+      "next_leaf_state": "ACTIVE_OR_WAITING; child START not yet qualified",
+      "whole_A12": false
+    },
+    "a19_recipient_consent": {
+      "temporal_return": "CONSUMED_REPAIR_REQUIRED",
+      "adjudication": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-temporal-consent-parent-adjudication-20261009.json",
+        "sha256": "3e1577ff6ab32bb2d602ade7782ef18fd53929d22ffbdb2927d0b515485d04dc"
+      },
+      "original_tests_parent_passed": 13,
+      "causal_gaps": 8,
+      "native_shaped_build": "NONE/no_pool_available/preSTART/exit75; unchanged refused child not replayed",
+      "parent_preparation": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-native-shaped-consent-parent-proposal-qualification-20261009.json",
+        "sha256": "c0dfea14ec4c8b37769398a5878bcb3fb430928c9c3d6dc89f1d6ced6a1d1f59"
+      },
+      "parent_tests": 11,
+      "independent_review": "terminal-audit20-a19-native-shaped-consent-review-20261009",
+      "independent_review_state": "ACTIVE_OR_WAITING; child START not yet qualified",
+      "source_or_live_recipient_acceptance": false
+    },
+    "a09_publication": {
+      "map_consumed": true,
+      "public_old_fields_absent": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-public-producer-artifact-readback-20261009T1428.json",
+        "sha256": "ca700ed49f1348540e5606197a677bcb0f4bff21d1b3eae109bcfdd07dccd72d"
+      },
+      "owner_phase": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a09-owner-publisher-phase-20261009T1432.json",
+        "sha256": "862b1355c8c57be70e66fb1939dbd2bac5731ee97d114126e9efec5a4184f0ca"
+      },
+      "corrected_run": "37934675596/3bb1ee47; R2 stockdata stage24 pending at14:32",
+      "stale_writer": "37874656026/cdbcd; stage154 pending at14:32; late clobber unqualified",
+      "production_feature_acceptance": false
+    },
+    "fabric_same_run_artifact_read": {
+      "owner_thread": "01a11e90-4b5d-7f53-b966-8aaaad38701f",
+      "latest_compact_revision": 52,
+      "reported_tests": 139,
+      "independent_review_active": true,
+      "installed_operation_or_actual_five_file_retrieval_proven": false,
+      "old_a19_five_artifacts": "NOT_RETRIEVED, not declared lost; same run/root/receiver retained"
+    },
+    "iw2_legacy_draft_proposal": {
+      "coordinator": "01a104c8-6e11-7e52-93c1-6b8dbc45bb9c",
+      "patch_sha256": "3c96c021491766996e134fb64b83bb3a066f30dc65f36b9cb955ddd503600ee7",
+      "verification_sha256": "c03db374478c27ac3ea5b39e31d81a3a21789555cce8d48bfd939d5b442c5c11",
+      "parent_hash_and_source_read": true,
+      "peer_reported_tests": "13 pass/0 fail; parent did not rerun",
+      "source_applied_or_independently_accepted": false,
+      "SQL0030_0031_0032_applied": false
+    },
+    "heartbeat": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/native-heartbeat-current-readback-20261009T1504.json",
+      "sha256": "fa479574342a8ce8cb1316475490900c66f4939dd2ac6025a97c3039a5c0ebe0"
     }
   }
 }
