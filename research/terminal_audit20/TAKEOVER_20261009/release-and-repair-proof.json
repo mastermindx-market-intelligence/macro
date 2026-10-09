@@ -3968,7 +3968,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-post643-heal-canonical-live-parent-acceptance-20261009.json",
       "sha256": "642001ab745582399923583ed9fdbbb669ce2edf8001ec85d7ed30d1db4042ef"
     },
-    "A11_current": "643sourceCIaccepted/merged5ef; mandatory886headonlyhealmerged19:17:01/438/all3required37976377076SUCCESS. Exactentire438tree173d+onlyf12delta/currentmaster qualified. Canonicalbuild19:24:48–19:39:35 rc0/clean source/runtime/publicassetdplmarker438/TerminalQuoteHubLoggingACTIVE/free11097116672. Actualsignedin FreeNVDA3D Replayprev2245->2244/next2245 changeshistoricalchartOHLC desktop1440/tablet820/nooverflow; actualphone390hub noReplayentry disclosed. Original4indicatorsReplayoff/default1520restored/protectedunsavedScriptsuntouched. Scopedsource/install/desktoptabletbehavior only, wholeA11false; railOracleDashP3/paid/phone gates remain.",
+    "A11_current": "643sourceCIaccepted/merged5ef; mandatory886headonlyhealmerged19:17:01/438/all3required37976377076SUCCESS. Exactentire438tree173d+onlyf12delta/currentmaster qualified. Canonicalbuild19:24:48\u201319:39:35 rc0/clean source/runtime/publicassetdplmarker438/TerminalQuoteHubLoggingACTIVE/free11097116672. Actualsignedin FreeNVDA3D Replayprev2245->2244/next2245 changeshistoricalchartOHLC desktop1440/tablet820/nooverflow; actualphone390hub noReplayentry disclosed. Original4indicatorsReplayoff/default1520restored/protectedunsavedScriptsuntouched. Scopedsource/install/desktoptabletbehavior only, wholeA11false; railOracleDashP3/paid/phone gates remain.",
     "A11_new_mounted_test": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-fallback-horizon-final-source-native-parent-qualification-20261009.json",
       "sha256": "253fcba0289507d5cc42d5e14790e0264e871df49e5e0764b9a543b92eb29f80"
@@ -4117,7 +4117,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-canonical-release-and-existing-controller-parent-acceptance-20261009.json",
       "sha256": "718ffba1f325d18dab385cdf1b864598590abd3d0a06bff1c9cae6af7046d0a7"
     },
-    "785_current": "SCOPED_DONE exactheadCI/squash4d/currentmaster/fulltree+7acceptedblobs. Single canonicalbuild20:23:11–20:39:35rc0/clean source-runtime-marker4d/TerminalQuoteHubLoggingACTIVE/free11074121728. PublicHTTP200/dpl4d actualsignedinNVDA3D/original4studies/Replayoff/default/nooverflow. Product4dtrees byteequal438 qualifies earlier643liveproof, no repeatbuild. No queue/security activation orall20claim.",
+    "785_current": "SCOPED_DONE exactheadCI/squash4d/currentmaster/fulltree+7acceptedblobs. Single canonicalbuild20:23:11\u201320:39:35rc0/clean source-runtime-marker4d/TerminalQuoteHubLoggingACTIVE/free11074121728. PublicHTTP200/dpl4d actualsignedinNVDA3D/original4studies/Replayoff/default/nooverflow. Product4dtrees byteequal438 qualifies earlier643liveproof, no repeatbuild. No queue/security activation orall20claim.",
     "785_automatic_existing_controller": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-existing-controller-actual-return-20261009T2035.json",
       "sha256": "93299fb83e693559f85bb7a93815b413196fb6069171864a5372fcd5bf66bd4d"
@@ -4271,7 +4271,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-typed-read-path-parent-proposal-20261009/qualification.json",
       "sha256": "de480b675a1f0fa3236ad208a3b7d69732c5258e07dea77b44836147b3402e84"
     },
-    "A19_current": "C2boundedbuild49716 returned75NONE/no_poolpreSTART/noeffect/sameIDNOT_FOUND/frozen/no retry. ParentNO_ELIGIBLE_PRE_EFFECT_WORKER detached2defectrepair module66d690468625200ce0be8cb375970fc4c75fa2ec47ae44fff2c9d3ac84ee0fae; typedGitLS observations proveABSENT onlysuccessfulvalidrefemptyquery, failuresUNAVAILABLE; exactstatepath/internalid/admission/computedidbind before recoverypersist, originalprior_effectheld. Parentnew26PASS0FAIL0SKIP=16supplied+same5causalold0/5→new5/5+5positive-negativecontrols. Initialonecontrol usedwrong0600workspace vs0644Gitbeforefingerprint; legitimateguardfailure retained, fixturecorrected andonly5controls rerun, assertionsunchanged. Exactembeddedacceptedhelpersunchanged. No canonicalwriter/adoption/authoritywidening.",
+    "A19_current": "C2boundedbuild49716 returned75NONE/no_poolpreSTART/noeffect/sameIDNOT_FOUND/frozen/no retry. ParentNO_ELIGIBLE_PRE_EFFECT_WORKER detached2defectrepair module66d690468625200ce0be8cb375970fc4c75fa2ec47ae44fff2c9d3ac84ee0fae; typedGitLS observations proveABSENT onlysuccessfulvalidrefemptyquery, failuresUNAVAILABLE; exactstatepath/internalid/admission/computedidbind before recoverypersist, originalprior_effectheld. Parentnew26PASS0FAIL0SKIP=16supplied+same5causalold0/5\u2192new5/5+5positive-negativecontrols. Initialonecontrol usedwrong0600workspace vs0644Gitbeforefingerprint; legitimateguardfailure retained, fixturecorrected andonly5controls rerun, assertionsunchanged. Exactembeddedacceptedhelpersunchanged. No canonicalwriter/adoption/authoritywidening.",
     "A19_independent_review_request": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-typed-read-path-independent-review-admission-20261009.json",
       "sha256": "d5d603b2edad81d56ef015fef502ea952b9f56af4073e9e1ce96e073a4334577"
@@ -4442,5 +4442,61 @@
     "current_gates": "A19 newwrapper independentreview51591 and canonicalproducer/UTCfirstintake/prior-effect authority; actual804T03k offlinecutover/review/rights/exactSQLapproval;781/839/873 CImerge/release/live; specific887helperadmission and intendedexistingProidentity answers pending. 889firstprebuildrefusal frozen/healthy4dobserved/notourrestore/newmasterunaccepted; other protected Fabric/security/source/refusals/effects unchanged.",
     "next_safe_phase": "Consume same-ID A19 wrapperreview/declaredreview.json via installedreader when actualavailable, bind exact bytes/commands and acceptorrepair concrete defect. Consume T03k exactwriter/review through incumbent03342+peerIW2; never liveSendMessage activeworker orduplicate. Existing controller events own delivery phase; no repeatedCIpoll. No repeated pendingquestions or alternate refused effect routes.",
     "continuation": "DURABLE_EXECUTION_RUNNING supported by new actual canonical804T03k START23:09:36Z plus sole original-chat nativeheartbeat ACTIVE15min; previous T03j workflow is terminal. Review51591 handle is not PID/wake/providerSTART proof. Checkpoint is not completion; all20 whole original mission acceptances false."
+  },
+  "current_capability_frontier_20261009T2350": {
+    "observed_at": "2026-10-09T23:54:31.602386+00:00",
+    "supersedes": "current_capability_frontier_20261009T2318",
+    "settled_references_retained_in": "current_capability_frontier_20261009T2318",
+    "whole_original_mission_accepted": false,
+    "A19_wrapper_acceptance": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-persist-wrapper-independent-review-parent-acceptance-20261009.json",
+      "sha256": "642410078186bb3415af09a63eb77f4baf3d35e1b79affed1476b7d01b96831c",
+      "bytes": 4261
+    },
+    "A19_wrapper_current": "Exact52dac public-wrapper review accepted ONCE reviewer/canonicalVALIDATED_OUTCOME after original-parent4039B793f6129 and23929Ba868adb2 review export COMPLETE once. Twelve parent byte bindings; independently corrected old16FAIL6PASS/new22+56prior=78PASS0022,14own adversarial attributed/body notdelivered. Host0002 originalmode15PASS1FAIL retained. Originalbuild79925 refusal frozen; no source/produceradoption or clock/receiptowner change.",
+    "A19_actual_canonical_rehearsal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-actual-canonical-checkpoint-rehearsal-20261009/parent-qualification-summary.json",
+      "sha256": "f061ab33c60f6627c6bf4d5f5b5e6df32de83c567ebbc114fb69a68f955d5158",
+      "bytes": 26715
+    },
+    "A19_actual_checkpoint_acceptance": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-actual-canonical-checkpoint-independent-review-parent-acceptance-20261009.json",
+      "sha256": "f82bda0c76a0f47562a857ca4e69fe6d08605f402cf2503a4ad419f9a8f350d7",
+      "bytes": 4580
+    },
+    "A19_actual_checkpoint_current": "Bound immutable actual539f checkpoint and same-tree pushretryd75d atMacro7d062; boundedbuild71686 declined75NONE/no_pool/preSTART/noeffect/NOT_FOUND/frozen. ParentNO_ELIGIBLE_PRE_EFFECT_WORKER executed unchanged shells against owned localGit only:11cases85assertionsPASS, actual filesystem0022/0002, source/closedpath/hash/provenance failures preserve origin; postpushfetchfailure retains landed effect/rc1/R2disarmed, supersededorigin retains both actual local effects/R2disarmed. Independent original-rootreview61242 terminal4707B9c68ec5d,114975Bb67723b8 review COMPLETE once. Five actualsource/inlinebody hashes plus eleven completeassertion/rc/tree bindings matched,13cases112reportedassertions (one own constanttrue judgment label),124boundedcommand witness not547raw events. Complete16925B ownadversarial.py295b0067 and42956Bcommands cba0d153 delivered inline/extracted. AcceptedONCE review/canonicalVALIDATED_OUTCOME. Two receipt-script schema errors occurred around once-onlyaccept; final bindings completed and ordering preserved, no reaccept.",
+    "A19_authority_holds": "Actualcanonicalcheckpoint is now locally executed and independently qualified within scope, not liveorigin/produceradoption. WrongJSONid under another allowed state filename actually passes this checkpoint blob/path gate; notnativeproducerbugwithoutwitness. r2_ready only indexpublish metadata, notperplanintake/winner/admission. Actualproducer5deae6e7 still lacks durableprior_effect/awareUTC firstintake owners; financialdates separate. No newstore/CAS/receiptowner/job/SMTP/API/globalfanout/canonicalwriter; intake_ready/globalSUPPRESS, wholeA19false.",
+    "owned_new_head_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/owned-controller-new-head-source-qualification-20261009T2335.json",
+      "sha256": "ab60d96c28a5764ec3652e8c25aafcd443690cb3b1394d77b44099a2371ad68a",
+      "bytes": 7789
+    },
+    "trusted_CI_effect": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-781-873-controller-refresh-20261009T2336.json",
+      "sha256": "280d65fdacde82e5926a341affba931f0cb254578bc8c722c065f9a947e9727a",
+      "bytes": 808
+    },
+    "carriers_current": "Actualnewmasterb7a3357b06847f560022a829b8fd6c4fea3d4d47. Controller7812648925f8bf58d44e2e95fce9573dca4a5e87522 and873d88289f8698c466f895778c7e9e7677677f74d03,20/3acceptedsource/evidencebytes match. Originalhelper3d965 unchanged approved exactcurrenttrusted runs38003845935/38004498929 ONCE23:36:30 POST_SUCCEEDED/queued, no usercommand/credential/887widening/priorrunreplay/CIgreen/merge/install inference. ExistingMOG/nativeauto/soleheartbeat owns return.839e4f72 is actualmergeablefalse/dirty conflict, not approvalready.",
+    "A15_source_custody": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a15-839-heatmap-conflict-repair-20261009/source-custody.json",
+      "sha256": "e476d444fabaa6db817ba002767c2b3fd127565f1f05858dd51c3a9921fd6aa6",
+      "bytes": 1270
+    },
+    "A15_final_candidate": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a15-839-heatmap-conflict-repair-20261009/final-candidate-qualification.json",
+      "sha256": "76330104a37abb38c6a6931f033075fefb3f0b56cf7146e4100354f2397a3413",
+      "bytes": 1953
+    },
+    "A15_initial_review_admission": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a15-839-heatmap-conflict-repair-20261009/independent-review-admission.json",
+      "sha256": "dd730e145d09289dc1e35bab1e0438650d21b1a25708137f5b54157781d58199",
+      "bytes": 1031
+    },
+    "A15_current": "Actualmerge-treee4f/b7 found ONLYHeatmapView conflict at two blocks. Sameoriginalparentroot/SSD/branch cleana496 behind43, normalFF toe4f then ownedmerge. C2builddeclined75NONE/no_pool/preSTART/noeffect/NOT_FOUND/frozen. Parentbounded two-block repair preserves capdisclosure/prunenote/missinglist ANDmaster failed-refreshRetry/constants; all uncontested partial-tree bytes exact. Initial704ec/ef5:46focused+2ENZH actual-cache continuity PASS,8319native4TODO/508files and66responsive6conditionalSKIP,6actuallocalappbrowsercases/12PNGs. ESLint4errors1warning same full signatures onbothbaselines, no newdiagnostics. Initialreview36054 originalroot normalGrokubuntu0/reserved/LEASE_OK/oneSSHlaunch, ACTIVE_OR_WAITING/rootnull/resultfalse, providerSTARTnotqualified.",
+    "A15_new_causal_repair": "One new actualmountedcounterexampleFAIL: selectingUSDcap after firstdual503read showsusable0/0/universe0 despite unreadsource. Preserve red. Parentrequireheldnonnullmanifestforcapdisclosure (knownemptyobjectstillvalid, heldlast-read staysvisible), permanent21stloadfailurecase checks Retry thenuniverse3. Newsourcec85e5854d117def4926c528b2d627aaa03b9661a3bf5520e6e005167ff7fbdb7/tree dd757f2ea8bd19a63446826b7a60b7cc352088d7/cleanlocalcommitbd63d659081c4ccadf115be5c789930051e7e17a. Exactfinal47focused/TSC0/6ENZHactualappbrowsercases3sizes/zerohorizontaloverflow+runtimeerrors. Paid/productionfalse. Earlierbroad8319/66 retained historicalsource, notrelabeledfinal. Own3169prooflistener stopped afterqualifiedreadback; no production/Fabric/nativeworkerkill. NewfinalheadNOTaccepted/published; remote839still e4f. Old36054 review targetsold704ec/ef5 and cannotapprove correctedcandidate; consumeexactreturn before any nextreview/successor, no duplicate/resubmit/kill/manuallease.",
+    "IW2_current": "Prior41d85 sourceacceptance19bindings and T03k actualSTART6e11e045 remainsettled fromT2318. Peercompactcursor45 ACTIVE at23:22, no newhead/acceptedcutover thisturn. Sameoriginalnativeowner/root/SSD oneofflinewriter andone readonlyreview, no liveSendMessage/composer/Stop/duplicate/SQL/production/lease transfer. Exact0030b840 approval/unapplied0030-32/rights/release/paid/cutoverholds unchanged.",
+    "next_safe_phase": "Consume existing839 initialreview36054 exactsameID via originalreader whenavailable; adjudicateagainst preserved unread0/0red, do notaccept oldcandidate ascorrected. Then ONE bounded independentreview of actualbd63/dd75/c85e+newregression/browser proofs; afteraccepted freshreadexactcarrier/source/head normalFFpushsamePR839, existingnativeauto/MOG3requiredcontexts then mergedsource/canonicalrelease/live. Consume actual804T03kreturn through existingowner. No unchangedCIpoll/alternate887approval/Proguess/frozenrelease retry.",
+    "current_gates": "Corrected839 source finalindependentreview/remotepublication/CImerge/release/live;781/873 existingcontroller terminalevents; actual804T03k offlinecutover/review/SQLapprovalrightsrelease;A19canonicalproducerUTCclock/prior-effect/perplanowner;887specificadmission andexistingProidentity pending. Otheroriginalrefusals/sourceholds unchanged.",
+    "continuation": "MORE_WORK_EXISTS at corrected839 review/publish dependency; no duplicate pendingoldreview. Soleheartbeat plus actual804T03kSTART is lawfuldurablecontinuation, bare36054handle notPID/wake/START. Save is notcompletion; all20wholeacceptancesfalse."
   }
 }
