@@ -158,7 +158,7 @@ def main(argv: list[str] | None = None) -> int:
                         help="Fail if the packet does not contain this exact event ID")
     parser.add_argument("--partner", type=Path,
                         help="Legitimate reviewed partner profile JSON")
-    parser.add_argument("--tickers", help="1 to 3 comma-separated supported tickers")
+    parser.add_argument("--tickers", help="1 to 3 comma-separated supported tickers; defaults to reviewed partner descriptor selection")
     parser.add_argument("--angle-plan", type=Path,
                         help="Optional AI-assisted list of selected existing claim IDs")
     parser.add_argument("--out", type=Path, required=True,
@@ -181,13 +181,14 @@ def main(argv: list[str] | None = None) -> int:
                 raise PackRejected("DEMO_CANNOT_USE_LIVE_INPUTS")
             work = [(DEMO_EVENT, p, t, DEMO_NOW, None) for p, t in DEMO_PROFILES]
         else:
-            if not args.packet or not args.partner or not args.tickers:
-                raise PackRejected("PACKET_PARTNER_TICKERS_REQUIRED")
+            if not args.packet or not args.partner:
+                raise PackRejected("PACKET_AND_PARTNER_REQUIRED")
             event = _read_json(args.packet)
             if args.event_id and event.get("event_id") != args.event_id:
                 raise PackRejected("EVENT_ID_MISMATCH")
             work = [(event, _read_json(args.partner),
-                     args.tickers.split(","), _now(args.now_utc),
+                     args.tickers.split(",") if args.tickers else None,
+                     _now(args.now_utc),
                      _read_json(args.angle_plan) if args.angle_plan else None)]
         for event, partner, tickers, now, angle_plan in work:
             result = build_partner_pack(
