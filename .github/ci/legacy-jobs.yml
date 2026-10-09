@@ -7469,7 +7469,7 @@ jobs:
       # was named by NO legacy job, so every grading-path change shipped dark; it
       # is hermetic (tmp_path store + monkeypatched price layer, no data/** reads).
       - name: qledger contract regression suite
-        run: python -m pytest tests/test_qledger.py -q
+        run: python -m pytest tests/test_qledger.py tests/test_qledger_store_reader.py -q
       - name: qledger explicit horizon-clock (P0a) + matched-control policy (P0d) contracts
         run: python -m pytest tests/test_qledger_horizon_clock.py tests/test_qledger_control_policy.py -q
       # P3 — the forward-only desk adapters and the evidence-clock writer. These
