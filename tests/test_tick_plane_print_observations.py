@@ -9,6 +9,7 @@ from engine.tick_plane.asof_nbbo import InFlightNBBO
 from engine.tick_plane.print_observations import observe_provisional_trade
 from engine.tick_plane.condition_policy import parse_condition_reference, evaluate_trade_conditions
 from engine.tick_plane.exchange_reference import parse_exchange_reference, classify_trade_venue
+from engine.tick_plane.quote_condition_policy import parse_quote_policy, POLICY_SCHEMA as QPOLICY_SCHEMA
 
 BASE=1_791_417_600_000
 RECV=BASE*1_000_000+100_000_000
@@ -24,7 +25,7 @@ def wrap(row):
 
 def q(**more):
     x={"ev":"Q","sym":"SPY","t":BASE,"q":1,"bx":1,"bp":100.1,
-       "bs":100,"ax":2,"ap":100.2,"as":200}
+       "bs":100,"ax":2,"ap":100.2,"as":200,"c":0,"i":[604]}
     x.update(more)
     return wrap(x)
 
@@ -59,6 +60,18 @@ def venue_verdict(trade, *, decision=RECV+20_000_000):
                                 original_reference_custody_attested=True)
 
 
+def quote_policy():
+    data={"schema":QPOLICY_SCHEMA,"source_reference_sha256":"c"*64,
+          "reviewer_receipt":"synthetic:reviewer:source-vintage",
+          "unknown_action":"ABSTAIN",
+          "allowed_quote_conditions":[0,1],
+          "allowed_nbbo_indicators":[602,604,605]}
+    return parse_quote_policy(
+        original_policy_bytes=json.dumps(data).encode(),
+        policy_received_ns=RECV-1000000,
+        policy_receipt_id="synthetic:source-quote-policy")
+
+
 def input_args(trade=None,**updates):
     trade = t() if trade is None else trade
     kw=dict(decision_ns=RECV+20_000_000,
@@ -69,8 +82,8 @@ def input_args(trade=None,**updates):
             max_quote_age_ns=50_000_000,
             trade_condition_verdict=condition_verdict(trade),
             venue_reference_verdict=venue_verdict(trade),
-            quote_condition_eligible=True,
-            quote_condition_rules_ref="quote_conditions@source-sha")
+            quote_condition_policy=quote_policy(),
+            original_quote_policy_custody_attested=True)
     kw.update(updates)
     return kw
 
@@ -125,7 +138,7 @@ class ProvisionalObservationTests(unittest.TestCase):
         self.assertIsNone(r["signed_notional_usd"])
 
     def test_uncertified_quote_conditions_yield_unknown(self):
-        r=self.observed(quote_condition_eligible=None)
+        r=self.observed(quote_condition_policy=None)
         self.assertEqual(r["reason"],"QUOTE_CONDITION_POLICY_UNQUALIFIED")
 
     def test_unattested_source_capture_yields_unknown(self):
@@ -224,6 +237,36 @@ class ProvisionalObservationTests(unittest.TestCase):
         self.assertEqual(len(r["venue_reference_sha256"]),64)
         self.assertEqual(r["venue_admission_reason"],
                          "SOURCE_REFERENCE_EXCHANGE_CANDIDATE")
+
+    def test_native_quote_condition_nonfirm_abstains_after_nbbo_lookup(self):
+        ring=InFlightNBBO(session=SESSION,symbols={"SPY"})
+        ring.ingest_quote(q(c=20))
+        tr=t()
+        result=observe_provisional_trade(tr,ring,**input_args(trade=tr))
+        self.assertEqual(result["reason"],"QUOTE_CONDITION_NOT_FIRM_OR_UNKNOWN")
+        self.assertIsNone(result["signed_notional_usd"])
+
+    def test_native_quote_indicator_unrecognized_abstains(self):
+        ring=InFlightNBBO(session=SESSION,symbols={"SPY"})
+        ring.ingest_quote(q(i=[999]))
+        tr=t()
+        result=observe_provisional_trade(tr,ring,**input_args(trade=tr))
+        self.assertEqual(result["reason"],"NON_ADMITTED_NBBO_INDICATOR")
+
+    def test_quote_policy_later_than_original_decision_abstains(self):
+        later=quote_policy()
+        later["policy_received_ns"]=RECV+40_000_000
+        result=self.observed(quote_condition_policy=later)
+        self.assertEqual(result["reason"],"QUOTE_OR_POLICY_NOT_AVAILABLE_AT_DECISION")
+
+    def test_quote_policy_custody_not_assumed_from_supplied_json(self):
+        result=self.observed(original_quote_policy_custody_attested=False)
+        self.assertEqual(result["reason"],"QUOTE_CONDITION_POLICY_UNQUALIFIED")
+
+    def test_quote_policy_digest_survives_measured_record(self):
+        result=self.observed()
+        self.assertEqual(result["quote_conditions_rules_ref"],
+                         quote_policy()["policy_sha256"])
 
 if __name__ == "__main__":
     unittest.main()
