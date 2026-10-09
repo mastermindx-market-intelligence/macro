@@ -45,6 +45,24 @@ Use **only disjoint paths** for the new code PR:
 
 Do not modify production `engine/winner_autopsy.py`, `lib/dataos/identity.py`, `scripts/research/build_winner_autopsy.py`, `engine/residual_alpha.py`, the daily collector, scheduler, data registry, producer stores, Terminal or Prophet. Do not register a parallel identity, signal, lifecycle, watcher or dataset authority.
 
+### Practical, non-destructive startup sequence
+
+This sequence is illustrative and still subject to live custody checks; it should not be executed if a protected or competing worktree/branch already owns the operation.
+
+```sh
+cd /Users/chriswong/Documents/Cluade/macro-main
+git fetch origin
+git status --porcelain=v1
+git worktree list --porcelain
+git branch --list 'claude/slr-p0-source-qualification-20261008'
+# First read the unmerged research instruction with no checkout switch:
+git show origin/sol/slr-p0-deep-research-20261007-c3:research/structural_leadership_shock_resilience/LOCAL_CODEX_HISTORICAL_DATA_QUALIFICATION_HANDOFF_2026-10-08.md
+# Only when no collision, current law permits, and the designated path is free:
+git worktree add -b claude/slr-p0-source-qualification-20261008 .claude/worktrees/slr-p0-source-qualification-20261008 origin/main
+```
+
+The initial `cd` is a way to locate Git metadata, **not** authority to edit or change the shared `macro-main` files/branch. Start the Codex editor/terminal **inside the newly created approved worktree** for all subsequent source modifications. If any preflight command fails, do not reset/rebase/delete/stash; reconcile and return the exact blocker.
+
 ## 3. Effect and permission fences — load-bearing
 
 A prior Web source-qualification session received **explicit safety-status refusals** for (a) a broad host repository source inventory and (b) the specific current-reference row/alias/parent-join host audit; and received a refusal on publishing a particular `check_source_evidence.py` implementation. **Do NOT retry, reproduce, disguise, delegate, rephrase or change account/tool/model/host to obtain those previously refused effects.** This Codex assignment is not a permission bypass. Instead:
@@ -126,7 +144,7 @@ BLOCKERS: <specific source/gate>
 NEXT_ACTION: <one exact owned next operation>
 ```
 
-Push one scoped PR only after local focused tests. Do **not** arm `merge-on-green`, squash/force push over another writer, auto-merge, deploy, or modify source/governance without applicable current release authority. Independent scientific review must first decide whether the code/results are admissible and whether a follow-on outcome run can be released. Check CI on the exact head; unrelated inactive `ci-authority/codex/merge-queue-pilot` does not establish a binding failure on main, but record it honestly if present.
+Push one scoped PR only after local focused tests. **Complete the normal Macro code-delivery chain where current law permits:** conclude binding CI on the exact head, independently review the research-only implementation, and merge/verify code availability only if the current repository release rules accept it. Do **not** automatically promote the historical study, activate a product consumer, overwrite another writer, force push, deploy, or equate merged research code with scientific source admission. If a genuine scientific/authority blocker prevents the code PR itself from merging, follow the repository's explicit ratified HOLD-FOR-SOL protocol when legally available (draft PR, no merge-on-green, exact holding/release receipt); otherwise return a precise BLOCKED state and do not fabricate a hold or park a PR indefinitely. Unrelated inactive `ci-authority/codex/merge-queue-pilot` does not establish a binding failure on main, but record it honestly if present.
 
 For the user or receiving Web CEO, return the **actual new PR link, branch/head SHA, tests, verified source rights and coverage, source-admission verdict, scientific limitations and exact remaining gate**. The Chairman should not be asked to perform routine code troubleshooting, invent an owner, buy a new feed reflexively or keep nudging a stalled Codex session. Ask for human action **only** if a verified unavailable GICS entitlement/provider agreement, secret/auth ceremony or an actual denied host permission specifically requires it.
 
