@@ -43,6 +43,8 @@ _PRIVATE_URL_KEYS = frozenset({"email", "e_mail", "phone", "ip", "user_id", "tok
                                "access_token", "auth", "authorization", "apikey",
                                "api_key", "secret", "session", "password", "signature"})
 _EMAIL_IN_URL = re.compile(r"[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", re.I)
+_CONSENT_OWNER_UNAVAILABLE = object()  # private sentinel; never a grant or receipt
+
 
 
 class FunnelGate(Exception):
@@ -425,6 +427,21 @@ class FunnelService:
         except Exception:
             raise FunnelGate("SOURCE_RIGHTS_CLOCK_UNAVAILABLE") from None
 
+    def _current_consent(self, user_id: str, event_id: str) -> ConsentRecord | None | object:
+        # Fail closed on service-role RPC transport errors before any SMTP
+        # attempt; a down consent owner is not an ambiguous email send.
+        try:
+            return self.consent.current(user_id, event_id)
+        except Exception:
+            return _CONSENT_OWNER_UNAVAILABLE
+
+    @staticmethod
+    def _same_email(first: str, second: str) -> bool:
+        try:
+            return normalize_email(first) == normalize_email(second)
+        except FunnelGate:
+            return False
+
     def _qualified_scan(self, receipt: str, *, now: datetime) -> ScanEvidence:
         """Recheck the current public source through the canonical ScanAuthority.
 
@@ -664,12 +681,18 @@ class FunnelService:
         out: list[dict[str, str]] = []
         for rec in subscribers[:limit]:
             try:
-                current = self.consent.current(rec.user_id, revision.event_id)
-                if (current is None or current.revoked_at_utc or current.scope != SCOPE or
-                        current.intent_id != rec.intent_id or revision.ticker not in current.tickers):
+                current = self._current_consent(rec.user_id, revision.event_id)
+                if current is _CONSENT_OWNER_UNAVAILABLE:
+                    state = "CONSENT_OWNER_UNAVAILABLE"
+                elif current is None:
+                    state = "SUPPRESSED"
+                elif not isinstance(current, ConsentRecord):
+                    state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
+                elif (current.revoked_at_utc or current.scope != SCOPE or
+                      current.intent_id != rec.intent_id or revision.ticker not in current.tickers):
                     state = "SUPPRESSED"
                 elif (current.user_id != rec.user_id or current.event_id != revision.event_id or
-                      normalize_email(current.email) != normalize_email(rec.email)):
+                      not self._same_email(current.email, rec.email)):
                     state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
                 elif _timestamp(current.verified_at_utc) >= _timestamp(revision.as_of_utc):
                     state = "NOT_SECOND_VALUE"
@@ -690,31 +713,32 @@ class FunnelService:
                         # scoped consent owner AFTER it, before transport effects:
                         # a person may unsubscribe while their source is examined.
                         # Never trust an unrelated/mismatched current() reply.
-                        try:
-                            latest = self.consent.current(rec.user_id, revision.event_id)
-                        except Exception:
+                        latest = self._current_consent(rec.user_id, revision.event_id)
+                        if latest is _CONSENT_OWNER_UNAVAILABLE:
                             state = "CONSENT_OWNER_UNAVAILABLE"
+                        elif latest is None:
+                            state = "SUPPRESSED"
+                        elif not isinstance(latest, ConsentRecord):
+                            state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
+                        elif (latest.revoked_at_utc or latest.scope != SCOPE or
+                              revision.ticker not in latest.tickers or
+                              latest.intent_id != rec.intent_id):
+                            state = "SUPPRESSED"
+                        elif (latest.user_id != rec.user_id or
+                              latest.event_id != revision.event_id or
+                              not self._same_email(latest.email, rec.email)):
+                            state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
+                        elif _timestamp(latest.verified_at_utc) >= revision_as_of:
+                            state = "NOT_SECOND_VALUE"
+                        elif self.revisions.is_current(revision.event_id, revision.generation) is not True:
+                            state = "OUTDATED_OR_UNVERIFIED_REVISION"
                         else:
-                            if (latest is None or latest.revoked_at_utc or
-                                    latest.scope != SCOPE or
-                                    revision.ticker not in latest.tickers or
-                                    latest.intent_id != rec.intent_id):
-                                state = "SUPPRESSED"
-                            elif (latest.user_id != rec.user_id or
-                                  latest.event_id != revision.event_id or
-                                  normalize_email(latest.email) != normalize_email(rec.email)):
-                                state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
-                            elif _timestamp(latest.verified_at_utc) >= revision_as_of:
-                                state = "NOT_SECOND_VALUE"
-                            elif self.revisions.is_current(revision.event_id, revision.generation) is not True:
-                                state = "OUTDATED_OR_UNVERIFIED_REVISION"
-                            else:
-                                idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{latest.user_id}"
-                                raw = self.sender.deliver(latest, revision, idem)
-                                state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
-                                         "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
-                                         "queued": "QUEUED_NOT_SENT", "failed": "SEND_FAILED",
-                                         "effect_unknown": "EFFECT_UNKNOWN"}.get(raw, "SEND_UNCONFIRMED")
+                            idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{latest.user_id}"
+                            raw = self.sender.deliver(latest, revision, idem)
+                            state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
+                                     "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
+                                     "queued": "QUEUED_NOT_SENT", "failed": "SEND_FAILED",
+                                     "effect_unknown": "EFFECT_UNKNOWN"}.get(raw, "SEND_UNCONFIRMED")
             except Exception:  # transport could have fired; never call it a safe failure
                 state = "EFFECT_UNKNOWN"
             out.append({"user_ref": analytics_receipt(rec)["user_ref"], "state": state,
