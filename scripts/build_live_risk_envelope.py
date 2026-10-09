@@ -135,6 +135,10 @@ from scripts.build_risk_envelope import (  # noqa: E402
     _leadership_crack_read,
     _market_state_read,
     _risk_radar_read,
+    _rotation_read,
+    _recorded_market_transition,
+    _CONTEXT_NOT_PROVIDED,
+    _NATIVE_MARKET_FIELDS,
 )
 
 log = logging.getLogger(__name__)
@@ -152,7 +156,8 @@ def _read_json(path: Path) -> dict[str, Any] | None:
     try:
         if not path.exists():
             return None
-        return json.loads(path.read_text(encoding="utf-8"))
+        parsed = json.loads(path.read_text(encoding="utf-8"))
+        return parsed if isinstance(parsed, dict) else None
     except Exception as e:  # noqa: BLE001 — a bad source becomes a missing one
         log.warning("live_risk_envelope: source unreadable %s (%s)", path, e)
         return None
@@ -248,9 +253,12 @@ def _normalize_event_time(raw: Any, now: datetime) -> str | None:
         return None
     if dt.tzinfo is None:
         return None  # F5: naive clock -> never assumed UTC, dropped
-    if (dt - now).total_seconds() > _FUTURE_TOLERANCE_S:
-        return None  # F6: defense-in-depth future-clock guard
-    return _iso_z(dt)
+    try:
+        if (dt - now).total_seconds() > _FUTURE_TOLERANCE_S:
+            return None  # F6: defense-in-depth future-clock guard
+        return _iso_z(dt)
+    except (ValueError, OverflowError):
+        return None  # malformed offset must not abort the source projection
 
 
 def _live_session(built_dt: datetime | None) -> str | None:
@@ -313,6 +321,8 @@ def build_live_sources(
     live_session: str | None,
     market_usable: bool,
     now: datetime,
+    rotation_doc: Any = _CONTEXT_NOT_PROVIDED,
+    market_transition: dict[str, Any] | None = None,
 ) -> list:
     """Reshape the live plane's own artifacts into the SETTLED adapters' doc shapes
     and call them with an explicit `stale_override`. Field re-housing only — no
@@ -325,6 +335,7 @@ def build_live_sources(
     too, so source-level usability and the wrapper's `live_active` can never
     disagree with each other."""
     L, S = live_session, settled_source_session
+    context_enabled = rotation_doc is not _CONTEXT_NOT_PROVIDED
 
     market_stale_override = not market_usable
     # "radar live read carries the same freshness verdict as its carrying artifact"
@@ -357,6 +368,16 @@ def build_live_sources(
                 "capped": False,
                 "freshness": {"stale": market_stale_override},
             }
+            if context_enabled:
+                # Source-native attribution survives the fast-lane adapter. Missing
+                # provenance stays absent; 'live_fast_lane' is a delivery path, not
+                # evidence that the native score was uncapped or blend-derived.
+                for key in _NATIVE_MARKET_FIELDS:
+                    if key in live_blk:
+                        ms_doc[key] = live_blk[key]
+                for key in ("score_source", "capped"):
+                    if key not in live_blk:
+                        ms_doc.pop(key, None)
             radar_raw = live_blk.get("radar") or {}
             if radar_raw.get("state") is not None:
                 radar_doc = {
@@ -369,9 +390,12 @@ def build_live_sources(
                 }
 
     measured = (
-        _market_state_read(ms_doc, L, stale_override=market_stale_override)
+        _market_state_read(ms_doc, L, stale_override=market_stale_override,
+                           context_enabled=context_enabled, transition_context=market_transition,
+                           now=now)
         if ms_doc is not None
-        else _market_state_read(None, L)
+        else _market_state_read(None, L, context_enabled=context_enabled,
+                                transition_context=market_transition, now=now)
     )
     radar = (
         _risk_radar_read(radar_doc, L, L, stale_override=radar_stale_override)
@@ -395,7 +419,10 @@ def build_live_sources(
             S, stale_override=True,
         )
 
-    return [measured, leadership, radar]
+    sources = [measured, leadership, radar]
+    if context_enabled:
+        sources.append(_rotation_read(rotation_doc, L, now=now))
+    return sources
 
 
 def _advance_transition(
@@ -608,6 +635,8 @@ def build(root: Path | None = None, now: datetime | None = None,
     risk_state_doc = _read_json(risk_state_path(root))
     leadership_doc = _read_json(leadership_crack_path(root))
     settled = _read_json(settled_envelope_path(root)) or {}
+    rotation_doc = _read_json(root / "site" / "marketdata" / "rotation_events.json")
+    market_state_doc = _read_json(root / "data" / "market_state" / "latest.json")
     S = settled.get("source_session")
     B = settled.get("bundle_id")
     settled_stage = (settled.get("hazard_summary") or {}).get("stage")
@@ -634,6 +663,11 @@ def build(root: Path | None = None, now: datetime | None = None,
         live_session=L,
         market_usable=fresh["usable"],
         now=now,
+        rotation_doc=rotation_doc,
+        market_transition=_recorded_market_transition(
+            root / "data" / "market_state" / "forward_log.jsonl", S,
+            now=now, current=market_state_doc,
+        ),
     )
 
     # OBSERVATION CLOCK: `now`, captured/injected above. PRODUCTION CLOCK: sampled

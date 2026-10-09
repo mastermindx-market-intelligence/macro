@@ -6,7 +6,7 @@ objective: >
   what was learned, and what is next — without building a third control plane. Done =
   workstreams, decisions, discoveries, and handoffs are written by live sessions, and
   the CEO reads one generated page instead of reconstructing state by hand.
-status: active
+status: done
 program: project-active-build-control
 p0: EXECUTIVE_OS
 repos: [macro]
@@ -47,8 +47,13 @@ waves:
     depends_on: [W0]
   - id: W4
     title: "Phase 4 — hook auto-capture at ship-loop boundaries (report-only)"
-    status: todo
+    status: done
+    pr: 8411
     depends_on: [W1, W2, W2B]
+    next_action: >
+      Accepted via PR 8411 at reviewed head 714c6f5b49337bbab9770c9c7ad454b277797c1e,
+      hosted CI 37181494645, and merge 7329199684df69a862ed6492ce07c65f7dbf71ec. Exact capture,
+      committed-handoff report and independent cold recovery passed. Remain report-only.
   - id: MAS28-W0
     title: "MAS-28 — canonical PR-linkage validator V1 records freeze"
     status: done
@@ -74,15 +79,18 @@ waves:
       semantic CI 32800454750, then squash-merged as
       35e83b79ac026345a17d5d2d13774bb74e8a994c on 2026-08-25. The earlier #6328
       squash carried the rejected defect shape and is historical evidence, not W1
-      acceptance. Enforcement remains REPORT_ONLY. MAS-28 itself remains
-      BUILT_NOT_PROVEN until the separate calibration stop condition is satisfied.
+      acceptance. Enforcement remains REPORT_ONLY. The separate MAS28-CALIBRATION wave is now
+      accepted with its evidence-backed limited-scope ruling; no enforcement gate is armed.
   - id: MAS28-CALIBRATION
     title: "MAS-28 — frozen representative report-only calibration and bounded wire repair"
-    status: in_progress
+    status: done
+    pr: 8407
     depends_on: [MAS28-W1]
     next_action: >
-      Calibration and independent source review are complete; ship the evidence and
-      minimal repair through exact-head CI and merge. Retain report-only authority.
+      None for this calibration scope. PR 8407 head dbe9b6fcfd068fd40f25aae64f142c87702d48de
+      passed hosted CI 37176956307 and independent review, then merged as
+      8776514432e53280b96fba46ff101257a6827431. Retain report-only authority and the
+      complete-observation limits in DEC:MAS28-CALIBRATION-REMAIN-REPORT-ONLY.
 decisions:
   - DEC:AGENTOS-CXI-R12-OVERRULED
   - DEC:AGENTOS-CLAIMS-ARE-NOT-LIVE-ACTIVITY
@@ -96,6 +104,7 @@ decisions:
   - DEC:MAS28-PR-LINKAGE-VALIDATOR-V1-REPORT-ONLY
   - DEC:MAS28-R028-TARGET-IDENTITY-RECONCILIATION
   - DEC:MAS28-CALIBRATION-REMAIN-REPORT-ONLY
+  - DEC:AGENTOS-W4-CAPTURE-BOUNDARY
 discoveries:
   - DSC:GOVERNANCE-JSONL-NOT-TRACKED
   - DSC:EXECUTIVE-OS-NO-PROGRAM-ROW
@@ -116,13 +125,15 @@ artifacts:
   - research/MASTERMIND_AGENT_HANDOFF_PROTOCOL.md
   - research/MASTERMIND_AGENT_OS_V1_IMPLEMENTATION_PLAN.md
   - research/MASTERMIND_CEO_BRIEF_SPEC.md
+  - research/MASTERMIND_AGENT_OS_V1_CALIBRATION_2026-10-04.md
+  - research/MASTERMIND_AGENT_OS_W4_DELIVERY_2026-10-04.md
 next_action: >
-  Release the completed MAS-28 calibration and bounded report-wire repair after
-  exact-head CI. DEC:MAS28-CALIBRATION-REMAIN-REPORT-ONLY records the actual scoped
-  result and incomplete-observation limits. The current Chairman operation
-  agent-os-v1-closure-20261003-astra-001 separately commissions W4 implementation,
-  high-blast-radius review, cold recovery and truthful V1 closure. W4 remains
-  unaccepted until those gates pass; the canceled MAS-129 carrier is not revived.
+  V1 is complete and in maintenance mode; all declared waves are done. Preserve the
+  accepted report-only calibration and exact ship-boundary capture. Respond only to
+  a concrete defect or separately commissioned change. MAS-64/MAS-66 projection,
+  native fleet installation qualification and broader context-compiler completeness
+  remain separate scopes and do not reopen this V1 program. Agent OS remains the
+  knowledge plane; Executive OS and the existing fleet guards retain execution authority.
 ---
 
 ## Context
@@ -187,3 +198,20 @@ preserved agenda rank bytes. The authoritative agenda write persisted 27 existin
 their original order: zero authored Agent OS references and 27 structured N/A annotations.
 Its JSON, Markdown, internal API, and tunneled UI all agreed; the UI rendered 27 readiness
 rows and no browser errors. That is the cross-repo evidence required to mark W2B done.
+
+
+## V1 acceptance and maintenance boundary — 2026-10-04
+
+Before closure, the established knowledge plane was live but representative MAS-28
+calibration and W4 capture were unfinished. Both declared obligations are now accepted;
+all eleven declared waves are done. PR8407 protects the frozen calibration/ruling;
+PR8411 protects report-only capture and handoff assistance, exercised by this session's
+actual PR8411 capture and recovered by an independent reader and the existing compiler.
+
+The W4 delivery record preserves exact head/merge/check/review/recovery receipts.
+No lifecycle, dispatch, queue, lease, watcher, daemon, Linear writer or memory plane was
+introduced. The source hook remains separate from enforcement and does not self-arm.
+
+The compiler's broader selection/budget limitations and universal native fleet adoption
+are explicit separate maintenance/qualification scopes. MAS-64/MAS-66 remain their
+existing projection/integration program; V1 closure does not accept those capabilities.

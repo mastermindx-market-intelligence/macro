@@ -1,15 +1,15 @@
 {
  "schema": "bottom_ledger/v1",
- "as_of": "2026-10-03",
+ "as_of": "2026-10-07",
  "ledger_born": "2026-06-30",
  "advance": {
   "status": "advanced",
-  "as_of": "2026-10-03",
-  "n_new_flags": 104,
+  "as_of": "2026-10-07",
+  "n_new_flags": 114,
   "n_newly_graded": 0,
   "error": null,
   "clock_contract": "ledger dates are civil calendar dates (YYYY-MM-DD, no clock, no timezone) — engine/ledger_clock.py",
-  "n_rows": 3061,
+  "n_rows": 3279,
   "store_repairs": {
    "renormalized": 0,
    "unreadable": []
@@ -17,42 +17,42 @@
   "unreadable_flag_dates": []
  },
  "maturity_state": "maturing",
- "n_accruing": 2923,
- "n_matured": 138,
+ "n_accruing": 3110,
+ "n_matured": 169,
  "first_maturity_est": null,
  "accrual_by_source": {
-  "board_buy": 2651,
-  "prophet_plan": 410
+  "board_buy": 2817,
+  "prophet_plan": 462
  },
  "summary": {
-  "pin5": 0.1304,
-  "held_pct": 0.4855,
+  "pin5": 0.1243,
+  "held_pct": 0.4734,
   "prox_med": 0.1117
  },
  "cohorts": [
   {
    "source": "board_buy",
    "lane": "bottoming",
-   "n": 16,
-   "prox_med": 0.10597437211432148,
-   "pin5": 0.25,
-   "held_pct": 0.4375,
-   "broke_pct": 0.4375,
-   "mfe60_med": 0.07882546984416117,
-   "fwd60_med": -0.054538683417681755,
+   "n": 34,
+   "prox_med": 0.10739259943816515,
+   "pin5": 0.20588235294117646,
+   "held_pct": 0.38235294117647056,
+   "broke_pct": 0.35294117647058826,
+   "mfe60_med": 0.07558057237827143,
+   "fwd60_med": -0.058745103013370215,
    "undercut_med": 0.03413305145498835
   },
   {
    "source": "board_buy",
    "lane": "continuation",
-   "n": 25,
-   "prox_med": 0.13690215349332413,
+   "n": 38,
+   "prox_med": 0.1377618883062115,
    "pin5": 0.0,
-   "held_pct": 0.56,
-   "broke_pct": 0.24,
-   "mfe60_med": 0.12391542262090582,
-   "fwd60_med": -0.04140558282865092,
-   "undercut_med": 0.0
+   "held_pct": 0.5526315789473685,
+   "broke_pct": 0.3157894736842105,
+   "mfe60_med": 0.11600719223860934,
+   "fwd60_med": -0.05171199236418306,
+   "undercut_med": 0.001429906714783491
   },
   {
    "source": "board_buy",
@@ -75,8 +75,8 @@
   "one_grader_law": "grades are computed once at maturity and never recomputed (SA-R14)"
  },
  "integrity_projection": {
-  "raw_rows": 3061,
-  "effective_rows": 3061,
+  "raw_rows": 3279,
+  "effective_rows": 3279,
   "excluded_prophet_rows": 0,
   "error": null,
   "effect": "raw learning rows remain append-only; Prophet rows require a stable plan source_ref and the current canonical signal-family date, and correction/quarantine authority excludes superseded claims from grades and cohorts"

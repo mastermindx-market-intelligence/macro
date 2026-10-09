@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-03T20:25:04Z",
-  "inputs_hash": "sha256:6bfd0c11cd7b3f030378f8d6cb7a13214edbfb912eebaa943cd2050217fb9373",
+  "produced_at": "2026-10-07T10:13:31Z",
+  "inputs_hash": "sha256:6a36fd385d2b1b610660057d84f9015cd5aea3a5a9f162a01131f30c43a856cc",
   "tier": "shadow",
   "artifact_path": "data/neuralweb/theme_thesis_ledger.jsonl",
-  "byte_sha256": "sha256:6bfd0c11cd7b3f030378f8d6cb7a13214edbfb912eebaa943cd2050217fb9373"
+  "byte_sha256": "sha256:6a36fd385d2b1b610660057d84f9015cd5aea3a5a9f162a01131f30c43a856cc"
 }

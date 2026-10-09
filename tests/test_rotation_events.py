@@ -7,7 +7,10 @@ on lapse/TTL and honor the re-fire lockout. Network-free.
 """
 from __future__ import annotations
 
+import json
+
 import pandas as pd
+import pytest
 
 from engine import rotation_events as re_
 
@@ -363,6 +366,363 @@ def test_label_index_spans_v1_legs_and_v2_series():
     assert idx["xlu_etf"] == ("Utilities", "公用事业")
     assert "unnamed" not in idx, "an unnamed leg must not enter the index"
     assert re_._label_index(None, None) == {}
+
+# ================================================================== W2 HISTORY ====
+
+def _history_created(*, pair_id="xlk:memory->mag7", asof="2026-07-01",
+                     ts="2026-07-02 01:02 UTC", replayed=None):
+    sector, legs = pair_id.split(":", 1)
+    from_key, to_key = legs.split("->", 1)
+    row = {
+        "ts": ts,
+        "event": "created",
+        "id": pair_id,
+        "sector": sector,
+        "from_leg": {"key": from_key, "name_en": from_key, "name_zh": from_key},
+        "to_leg": {"key": to_key, "name_en": to_key, "name_zh": to_key},
+        "started": asof,
+        "asof": asof,
+        "day_n": 1,
+        "severity": "standard",
+        "receipts": {},
+    }
+    if replayed is not None:
+        row["replayed"] = replayed
+    return row
+
+
+def _history_closed(*, pair_id="xlk:memory->mag7", started="2026-07-01",
+                    closed_asof="2026-07-08", ts="2026-07-09 01:02 UTC",
+                    replayed=None):
+    sector, legs = pair_id.split(":", 1)
+    from_key, to_key = legs.split("->", 1)
+    row = {
+        "ts": ts,
+        "event": "closed",
+        "pair_id": pair_id,
+        "sector": sector,
+        "from_leg": from_key,
+        "to_leg": to_key,
+        "started": started,
+        "closed_asof": closed_asof,
+        "reason": "conditions_lapsed",
+        "day_n": 5,
+    }
+    if replayed is not None:
+        row["replayed"] = replayed
+    return row
+
+
+def _write_history(path, rows):
+    path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows),
+                    encoding="utf-8")
+
+
+def test_read_ledger_history_preserves_native_rows_and_modes(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    replay = _history_created(replayed=True)
+    unmarked = _history_closed()
+    _write_history(ledger, [replay, unmarked])
+
+    all_result = re_.read_ledger_history(ledger)
+    assert all_result["status"] == "OK"
+    assert [entry["row"] for entry in all_result["rows"]] == [replay, unmarked]
+    assert [entry["mode"] for entry in all_result["rows"]] == [
+        "RECONSTRUCTED_REPLAY", "RETAINED_LEDGER_UNMARKED"
+    ]
+    assert [entry["observation_date"] for entry in all_result["rows"]] == [
+        "2026-07-01", "2026-07-08"
+    ]
+    assert [entry["native_id"] for entry in all_result["rows"]] == [
+        "xlk:memory->mag7", "xlk:memory->mag7"
+    ]
+    assert all_result["rows"][0]["lifecycle_id"] == "xlk:memory->mag7@2026-07-01"
+    assert all_result["rows"][1]["lifecycle_id"] == "xlk:memory->mag7@2026-07-01"
+    assert all_result["coverage"]["selected_rows"] == 2
+    assert all_result["coverage"]["event_counts"] == {"created": 1, "closed": 1}
+    assert all_result["coverage"]["mode_counts"] == {
+        "RECONSTRUCTED_REPLAY": 1,
+        "RETAINED_LEDGER_UNMARKED": 1,
+    }
+    assert len(all_result["source_sha256"]) == 64
+    assert all(len(entry["line_sha256"]) == 64 for entry in all_result["rows"])
+
+    replay_result = re_.read_ledger_history(ledger, mode="replay")
+    assert [entry["row"] for entry in replay_result["rows"]] == [replay]
+    unmarked_result = re_.read_ledger_history(ledger, mode="ledger_unmarked")
+    assert [entry["row"] for entry in unmarked_result["rows"]] == [unmarked]
+
+
+def test_read_ledger_history_through_stops_before_future_rows(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    boundary = _history_closed(closed_asof="2026-07-08", ts="2026-07-08 23:59 UTC")
+    future = _history_created(
+        pair_id="xlk:software->ai_semis", asof="2026-07-09",
+        ts="2026-07-09 01:00 UTC"
+    )
+    ledger.write_text(
+        json.dumps(boundary) + "\n" +
+        json.dumps(future) + "\n" +
+        "{malformed future content that must not be parsed\n",
+        encoding="utf-8",
+    )
+
+    result = re_.read_ledger_history(ledger, through="2026-07-08")
+    assert result["status"] == "OK"
+    assert [entry["row"] for entry in result["rows"]] == [boundary]
+    assert result["coverage"]["stopped_by"] == "through"
+    assert result["coverage"]["inspected_nonblank_lines"] == 2
+    assert result["coverage"]["first_uninspected_line"] == 3
+
+
+def test_read_ledger_history_malformed_before_cutoff_fails_closed(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    ledger.write_text(
+        json.dumps(_history_created()) + "\n" +
+        "{bad-json\n" +
+        json.dumps(_history_closed()) + "\n",
+        encoding="utf-8",
+    )
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "INVALID"
+    assert result["rows"] == []
+    assert result["error"] == {"code": "INVALID_JSON", "line": 2}
+    assert result["coverage"]["invalid_rows"] == 1
+
+
+@pytest.mark.parametrize(
+    ("mutator", "code"),
+    [
+        (lambda r: r.pop("id"), "MISSING_IDENTITY"),
+        (lambda r: r.pop("started"), "MISSING_STARTED"),
+        (lambda r: r["from_leg"].pop("key"), "MISSING_DIRECTION"),
+        (lambda r: r.pop("asof"), "MISSING_OBSERVATION_CLOCK"),
+        (lambda r: r.pop("ts"), "MISSING_RECORD_CLOCK"),
+        (lambda r: r.__setitem__("event", "mystery"), "INVALID_EVENT_KIND"),
+    ],
+)
+def test_read_ledger_history_invalid_created_rows_fail_closed(tmp_path, mutator, code):
+    ledger = tmp_path / "events.jsonl"
+    row = _history_created()
+    mutator(row)
+    _write_history(ledger, [row])
+
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "INVALID"
+    assert result["rows"] == []
+    assert result["error"] == {"code": code, "line": 1}
+
+
+def test_read_ledger_history_invalid_closed_observation_clock_fails_closed(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    row = _history_closed()
+    row.pop("closed_asof")
+    _write_history(ledger, [row])
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "INVALID"
+    assert result["error"] == {"code": "MISSING_OBSERVATION_CLOCK", "line": 1}
+
+
+def test_read_ledger_history_duplicate_lifecycle_rows_are_not_deduplicated(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    row = _history_created()
+    _write_history(ledger, [row, row])
+
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "OK"
+    assert len(result["rows"]) == 2
+    assert result["rows"][0]["lifecycle_id"] == result["rows"][1]["lifecycle_id"]
+    assert result["coverage"]["selected_rows"] == 2
+
+
+def test_read_ledger_history_limit_is_bounded_and_does_not_parse_later_rows(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    rows = [_history_created(), _history_closed()]
+    ledger.write_text(
+        json.dumps(rows[0]) + "\n" +
+        json.dumps(rows[1]) + "\n" +
+        "{malformed after limit\n",
+        encoding="utf-8",
+    )
+    result = re_.read_ledger_history(ledger, limit=2)
+    assert result["status"] == "OK"
+    assert len(result["rows"]) == 2
+    assert result["coverage"]["stopped_by"] == "limit"
+    assert result["coverage"]["inspected_nonblank_lines"] == 2
+    assert result["coverage"]["first_uninspected_line"] == 3
+
+
+def test_read_ledger_history_missing_and_empty_are_typed(tmp_path):
+    missing = tmp_path / "missing.jsonl"
+    result = re_.read_ledger_history(missing)
+    assert result["status"] == "MISSING"
+    assert result["rows"] == []
+    assert result["coverage"]["selected_rows"] == 0
+
+    empty = tmp_path / "empty.jsonl"
+    empty.write_text("\n\n", encoding="utf-8")
+    result = re_.read_ledger_history(empty)
+    assert result["status"] == "EMPTY"
+    assert result["rows"] == []
+    assert result["coverage"]["selected_rows"] == 0
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "match"),
+    [
+        ({"mode": "natural"}, "mode"),
+        ({"through": "07/08/2026"}, "through"),
+        ({"limit": 0}, "limit"),
+        ({"limit": True}, "limit"),
+    ],
+)
+def test_read_ledger_history_rejects_invalid_query_arguments(tmp_path, kwargs, match):
+    ledger = tmp_path / "events.jsonl"
+    _write_history(ledger, [_history_created()])
+    with pytest.raises(ValueError, match=match):
+        re_.read_ledger_history(ledger, **kwargs)
+
+
+def test_read_ledger_history_does_not_mutate_source_bytes(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    _write_history(ledger, [_history_created(), _history_closed()])
+    before = ledger.read_bytes()
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "OK"
+    assert ledger.read_bytes() == before
+
+
+def test_read_ledger_history_replay_metadata_coverage_counts_absent_flag(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    rows = [
+        _history_created(pair_id="xlk:a->b", replayed=True),
+        _history_created(pair_id="xlk:c->d", replayed=False),
+        _history_created(pair_id="xlk:e->f", replayed=None),
+    ]
+    _write_history(ledger, rows)
+    result = re_.read_ledger_history(ledger, mode="all")
+    assert result["status"] == "OK"
+    meta = result["coverage"]["replay_metadata"]
+    assert meta["native_replayed_true_rows"] == 1
+    assert meta["native_replayed_other_rows"] == 1
+    assert meta["native_replayed_absent_rows"] == 1
+    assert (
+        meta["native_replayed_true_rows"]
+        + meta["native_replayed_other_rows"]
+        + meta["native_replayed_absent_rows"]
+        == result["coverage"]["selected_rows"]
+        == 3
+    )
+    assert meta["absent_means"] == "UNKNOWN_NOT_EVIDENCE_OF_NOT_REPLAYED"
+    omitted = next(e for e in result["rows"] if "replayed" not in e["row"])
+    assert omitted["mode"] == "RETAINED_LEDGER_UNMARKED"
+
+
+def test_read_ledger_history_clock_skew_reports_rows_recorded_after_through(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    created = _history_created()
+    closed = _history_closed(closed_asof="2026-07-08", ts="2026-07-09 01:02 UTC")
+    _write_history(ledger, [created, closed])
+    result = re_.read_ledger_history(ledger, mode="all", through="2026-07-08")
+    assert result["status"] == "OK"
+    assert any(e["row"]["event"] == "closed" for e in result["rows"])
+    skew = result["coverage"]["clock_skew"]
+    # record_date 2026-07-09 UTC > through 2026-07-08 for the closed row only
+    assert skew["recorded_after_through_rows"] == 1
+    assert skew["max_recorded_after_through_days"] == 1
+    closed_entry = next(e for e in result["rows"] if e["row"]["event"] == "closed")
+    assert skew["min_skew_days"] == 1
+    assert skew["max_skew_days"] == 1
+    assert closed_entry["observation_date"] == "2026-07-08"
+
+    no_through = re_.read_ledger_history(ledger, mode="all", through=None)
+    skew_none = no_through["coverage"]["clock_skew"]
+    assert skew_none["recorded_after_through_rows"] is None
+    assert skew_none["max_recorded_after_through_days"] is None
+
+
+def test_read_ledger_history_clock_skew_naive_and_before_observation(tmp_path):
+    ledger = tmp_path / "events.jsonl"
+    row = _history_created(asof="2026-07-01", ts="2026-06-30 12:00")
+    _write_history(ledger, [row])
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "OK"
+    skew = result["coverage"]["clock_skew"]
+    assert skew["naive_record_clock_rows"] == 1
+    assert skew["recorded_before_observation_rows"] == 1
+    assert skew["min_skew_days"] == -1
+
+
+def test_read_ledger_history_repeated_lifecycle_event_rows_is_a_diagnostic_not_dedup(
+    tmp_path,
+):
+    ledger = tmp_path / "events.jsonl"
+    first = _history_created()
+    second = _history_created(ts="2026-07-03 01:02 UTC")
+    closed = _history_closed()
+    _write_history(ledger, [first, second, closed])
+    result = re_.read_ledger_history(ledger)
+    assert result["status"] == "OK"
+    assert result["coverage"]["repeated_lifecycle_event_rows"] == 1
+    assert result["coverage"]["selected_rows"] == 3
+    assert len(result["rows"]) == 3
+    assert result["coverage"]["event_counts"] == {"created": 2, "closed": 1}
+
+
+_EMPTY_DIAGNOSTIC_CLOCK = {
+    "basis": "RECORD_DATE_UTC_MINUS_OBSERVATION_DATE_DAYS",
+    "naive_record_clock_rows": 0,
+    "recorded_after_observation_rows": 0,
+    "recorded_before_observation_rows": 0,
+    "min_skew_days": None,
+    "max_skew_days": None,
+}
+
+
+def _empty_diagnostic_shape(through):
+    return {
+        "replay_metadata": {
+            "native_replayed_true_rows": 0,
+            "native_replayed_other_rows": 0,
+            "native_replayed_absent_rows": 0,
+            "absent_means": "UNKNOWN_NOT_EVIDENCE_OF_NOT_REPLAYED",
+        },
+        "clock_skew": {
+            **_EMPTY_DIAGNOSTIC_CLOCK,
+            "recorded_after_through_rows": 0 if through is not None else None,
+            "max_recorded_after_through_days": None,
+        },
+        "repeated_lifecycle_event_rows": 0,
+    }
+
+
+def test_read_ledger_history_non_ok_results_carry_diagnostic_shape(tmp_path):
+    missing = tmp_path / "missing.jsonl"
+    miss = re_.read_ledger_history(missing, through="2026-07-08")
+    assert miss["status"] == "MISSING"
+    for key, expected in _empty_diagnostic_shape("2026-07-08").items():
+        assert miss["coverage"][key] == expected
+    assert miss["coverage"]["clock_skew"]["recorded_after_through_rows"] == 0
+
+    empty = tmp_path / "empty.jsonl"
+    empty.write_text("\n", encoding="utf-8")
+    emp = re_.read_ledger_history(empty)
+    assert emp["status"] == "EMPTY"
+    for key, expected in _empty_diagnostic_shape(None).items():
+        assert emp["coverage"][key] == expected
+
+    bad = tmp_path / "bad.jsonl"
+    bad.write_text("{not json\n", encoding="utf-8")
+    inv = re_.read_ledger_history(bad)
+    assert inv["status"] == "INVALID"
+    for key, expected in _empty_diagnostic_shape(None).items():
+        assert inv["coverage"][key] == expected
+
+
+def test_read_ledger_history_docstring_states_non_claims():
+    doc = re_.read_ledger_history.__doc__ or ""
+    assert "consumer join" in doc
+    assert "not evidence" in doc
 
 def test_build_art_dir_isolates_shared_rotation_alert_store(tmp_path, monkeypatch):
     """A scratch/replay build must not write the configured shared alert store."""

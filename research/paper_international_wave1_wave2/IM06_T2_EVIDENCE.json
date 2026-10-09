@@ -1,0 +1,75 @@
+{
+  "scope": "IM06-T2 source artifact only",
+  "mission_complete": false,
+  "state": "SOURCE_REVIEW_ACCEPTED_NOT_INTEGRATED",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "base": "e95e32d4418f12c9670a6a4321498d2c641158fd",
+  "worker": {
+    "run": "rs_20261006T073746Z_70350",
+    "host": "ubuntu2",
+    "requested_model": "grok-4.6",
+    "returncode": 0,
+    "cleanup_proven": true,
+    "residual_count": 0,
+    "output_complete": true,
+    "usage_tokens": null,
+    "initial_tests": 45,
+    "accepted_first_pass": false
+  },
+  "review": {
+    "parser_review": "Sol independently checked the original parent membership repair",
+    "first_native_verdict": "CHANGES_REQUIRED: loss-boundary cancellation",
+    "worker_repair_run": "rs_20261006T083929Z_61093",
+    "worker_repair_outcome": "rc124; no patch; cleanup proven; lease2a47ca8c4c2a released; not a model-quality verdict",
+    "repair_author": "native Sol CEO, bounded hard-debugging exception",
+    "independent_numerical_reviewer": "Astra parent",
+    "independent_disposition": "APPROVE_SCOPED",
+    "focused_tests": 55,
+    "failures": 0,
+    "skipped": 0,
+    "frozen_sol_oracle": {
+      "cases": 2005,
+      "original_failures": 309,
+      "repair_failures": 0
+    },
+    "independent_astra_oracle": {
+      "cases": 4900,
+      "seed": 60101006,
+      "precision": 1100,
+      "original_failures": 56,
+      "repair_failures": 0
+    },
+    "test_correction": "Replace binary-noise-as-no-rounding test with meaningful four-decimal result; original source also passes corrected assertion",
+    "algorithm_review": "Exact binary64 integer units, bounded rational arithmetic and a single nearest/ties-to-even conversion; no new input caps",
+    "limitations": [
+      "requires native BigInt and DataView",
+      "decimal-to-binary input parsing loss unchanged",
+      "binary64 underflow and separately rounded output identities remain representation limits",
+      "real browser and asset pipeline compatibility not yet proven"
+    ]
+  },
+  "source_sha256": {
+    "templates/intl_workspace_scenario.js": "00b75801324e78665f3333c4939be9651795ba9943710453bd7f7e27e6744fd6",
+    "tests/intl_workspace_scenario_math.test.cjs": "bf1bf7e86c00dca684c3ad4704f6838c959a6c9d4278c8524421562198a58b20"
+  },
+  "not_proven": [
+    "nested COO-to-worker hierarchy",
+    "route integration",
+    "CI execution of scenario tests",
+    "browser",
+    "authenticated rights",
+    "merge",
+    "deployment",
+    "subsequent normal publication"
+  ],
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f",
+  "native_ceo": {
+    "session": "01a11057-3134-76d2-bcd1-784d69cc17d3",
+    "requested_model": "gpt-6.1-sol",
+    "served_model": "UNKNOWN",
+    "route": "Chairman-authorized local native Codex CEO exception",
+    "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "native_grandchildren": 0,
+    "current_processes": 0
+  }
+}

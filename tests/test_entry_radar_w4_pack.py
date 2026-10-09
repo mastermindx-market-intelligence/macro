@@ -687,6 +687,20 @@ def test_PACK7_the_pointer_is_a_file_and_names_the_hash(tmp_path, pack):
     assert not lp.pointer_path(tmp_path).is_symlink()
 
 
+def test_save_pack_stale_hash_refusal_creates_no_directory(tmp_path):
+    import dataclasses
+
+    from engine.entry_radar.pack_spool import ParquetSpoolSink
+
+    spool_path = tmp_path / "substrate_spool.parquet"
+    pack = build(sink=ParquetSpoolSink(spool_path))
+    tampered = dataclasses.replace(pack, pack_hash="stale-nonempty-digest")
+    out_state = tmp_path / "pack_out"
+    with pytest.raises(lp.LivePackError, match=r"^pack_hash_mismatch_on_save:"):
+        lp.save_pack(tampered, out_state)
+    assert not out_state.exists()
+
+
 def test_PACK7_no_partial_directory_survives_a_save(tmp_path, pack):
     lp.save_pack(pack, tmp_path)
     strays = [p.name for p in lp.pack_root(tmp_path).iterdir()

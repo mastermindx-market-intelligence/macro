@@ -49,6 +49,33 @@
   .timing-cell { background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:6px 8px; min-width:0; }
   .timing-cell .k { color:var(--muted); font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; white-space:nowrap; }
   .timing-cell .v { font-size:13px; font-weight:720; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .lrc { background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,12px); margin-top:10px; padding:12px 14px; }
+  html[data-theme="light"] .lrc { background:var(--panel); box-shadow:var(--card-shadow); }
+  .lrc-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:8px; }
+  .lrc-eyebrow { font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .lrc-asof { font-size:10px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .lrc-stance-row { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+  .lrc-stance { font-size:17px; font-weight:620; line-height:1.25; flex:1; min-width:0; }
+  .lrc-figure { font-size:22px; font-weight:720; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .lrc-figure.up { color:var(--ink-up, var(--up)); }
+  .lrc-figure.down { color:var(--ink-down, var(--down)); }
+  .lrc-figure.muted { color:var(--muted); }
+  .lrc-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+  .lrc-chip { font-size:10px; font-weight:600; padding:3px 8px; border-radius:var(--r-ctl,8px); background:var(--panel2); border:1px solid var(--line); color:var(--muted); }
+  html[data-theme="light"] .lrc-chip { background:var(--panel2); }
+  .lrc-chip.state-fresh { color:var(--text); }
+  .lrc-chip.state-stale { color:var(--muted); }
+  .lrc-sowhat { font-size:11px; color:var(--muted); margin-bottom:6px; max-width:48ch; }
+  .lrc-receipt summary { cursor:pointer; font-size:11px; font-weight:650; color:var(--muted); margin-top:4px; }
+  .lrc-ledger { margin-top:10px; display:grid; grid-template-columns:minmax(88px, 0.35fr) 1fr; gap:0; border-top:1px solid var(--line); }
+  .lrc-ledger-row { display:contents; }
+  .lrc-ledger-row > div { padding:8px 0; border-bottom:1px solid var(--line); }
+  .lrc-ledger-label { font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); padding-right:10px; }
+  .lrc-ledger-text { font-size:12px; line-height:1.45; font-variant-numeric:tabular-nums; }
+  @media (max-width:720px) {
+    .lrc-ledger { grid-template-columns:1fr; }
+    .lrc-ledger-row > .lrc-ledger-label { padding-bottom:2px; border-bottom:none; }
+  }
   .tlabel { font-size:11px; font-weight:700; letter-spacing:.05em; padding:3px 9px; border-radius:7px; text-transform:uppercase; }
   .treco { font-size:12px; font-weight:700; padding:3px 11px; border-radius:8px; }
   .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; }
@@ -613,6 +640,48 @@ function timingStripHtml(th){
     ${cell(L('fast state','快速状态'),L(esc((tm.state||'steady').replace('_',' ')),esc(tm.state_zh||tm.state||'平稳')),tone)}
   </div>
   <div class="muted sm" style="margin-top:5px">${L('Fast moves are context; the slower trend, breadth and cycle still drive the recommendation.','快速波动只作背景；较慢的趋势、广度和周期仍决定建议。')}</div>`;
+}
+function leadershipReceiptHtml(lr){
+  /* receipt row keys: interval benchmark measure sample freshness authority */
+  if(!lr||typeof lr!=='object') return '';
+  const st=lr.state||'unavailable';
+  const rel=lr.rel_20d;
+  const figCls=st==='leading'?'up':st==='lagging'?'down':'muted';
+  const fig=(st==='unavailable'||rel==null)?'—':((rel>=0?'+':'')+(rel*100).toFixed(1)+' pt');
+  const bench=lr.benchmark||{};
+  const smp=lr.sample||{};
+  const ts=lr.theme_state||{};
+  const tsStat=ts.status||'missing';
+  const tsChip={
+    fresh:L('Theme state current','主题状态当前'),
+    stale:L('Theme state stale','主题状态陈旧'),
+    missing:L('Theme state missing','主题状态缺失'),
+    not_published:L('Theme state not published','主题状态未发布')
+  }[tsStat]||L('Theme state missing','主题状态缺失');
+  const tsChipCls=tsStat==='fresh'?'state-fresh':'state-stale';
+  const reason=lr.reason_en?`<span class="lrc-chip">${L(esc(lr.reason_en),esc(lr.reason_zh||lr.reason_en))}</span>`:'';
+  const rowHtml=(lr.rows||[]).map(r=>`<div class="lrc-ledger-row" data-key="${esc(r.key)}"><div class="lrc-ledger-label">${L(esc(r.label_en),esc(r.label_zh))}</div><div class="lrc-ledger-text">${L(esc(r.text_en),esc(r.text_zh))}</div></div>`).join('');
+  return `<section class="lrc" data-state="${esc(st)}">
+    <div class="lrc-head">
+      <div class="lrc-eyebrow">${L('LEADERSHIP READ','领涨判读')}</div>
+      <div class="lrc-asof">${lr.as_of?esc(lr.as_of):'—'}</div>
+    </div>
+    <div class="lrc-stance-row">
+      <div class="lrc-stance">${L(esc(lr.stance_en||''),esc(lr.stance_zh||''))}${reason}</div>
+      <div class="lrc-figure ${figCls}">${fig}</div>
+    </div>
+    <div class="lrc-chips">
+      <span class="lrc-chip">${L('Descriptive','描述性')}</span>
+      <span class="lrc-chip">${L('Daily closes','日收盘')}</span>
+      <span class="lrc-chip">${L('vs '+esc(bench.label||BENCH),'vs '+esc(bench.label_zh||BENCHZ))}</span>
+      <span class="lrc-chip">${esc(smp.observed_n!=null?smp.observed_n:'—')}/${esc(smp.configured_n!=null?smp.configured_n:'—')} ${L('members','成分')}</span>
+      <span class="lrc-chip ${tsChipCls}">${tsChip}</span>
+    </div>
+    <div class="lrc-sowhat">${L('Context only — the recommendation above still comes from trend, breadth and cycle.','仅作背景——上方建议仍由趋势、广度与周期决定。')}</div>
+    <details class="lrc-receipt"><summary>${L('How this is measured','口径')}</summary>
+      <div class="lrc-ledger">${rowHtml}</div>
+    </details>
+  </section>`;
 }
 /* ── GR1:READ:BEGIN — Group read (group_pulse.v1 / group_earnings_pulse.v1) ─────
    Assembles the three nightly artifacts into ONE plain-word read: a stance line, four
@@ -1208,6 +1277,7 @@ function render(){
         <div class="sbx"><div class="v ${cls((th.perf&&th.perf['1d'])?th.perf['1d'].rel:null)}">${fmtPct((th.perf&&th.perf['1d'])?th.perf['1d'].rel:null)}</div><div class="k">${L('1d vs '+BENCH,'1日 vs '+BENCHZ)}</div></div>
       </div>
       ${timingStripHtml(th)}
+      ${leadershipReceiptHtml(DETAIL.leadership_receipt)}
       <div class="muted sm" style="margin-top:8px;max-width:42ch">${recoNoEntry(th)?RECO_NOENTRY_WHY():L(esc(th.reco_why_en||''),esc(th.reco_why_zh||''))}</div>
       ${contested?`<div class="muted sm" style="margin-top:6px;max-width:46ch">${L('Contested','存在分歧')}: ${cList.map(x=>L(esc(x[0]),esc(x[1]))).join(' · ')}</div>`:''}
       ${flipCap}

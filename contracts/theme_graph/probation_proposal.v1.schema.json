@@ -2,10 +2,17 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/theme_graph/probation_proposal.v1.schema.json",
   "title": "GMI theme-graph probation proposal v1",
-  "description": "One LINE of data/theme_graph/probation/proposals.jsonl (append-only JSONL). NOTHING HERE IS PRODUCTION VOCABULARY: the graph build ignores every row whose status is not 'ratified', and ratification is a curated act (G0.6/G0.13 — a string match or an overlap statistic may never promote itself into an edge). Rows are keep-first on proposal_id, a deterministic hash of the proposal's subject, so re-running a proposer re-proposes nothing and never overwrites a curator's decision.",
+  "description": "One LINE of data/theme_graph/probation/proposals.jsonl (append-only JSONL). NOTHING HERE IS PRODUCTION VOCABULARY: the graph build ignores every row whose status is not 'ratified', and ratification is a curated act (G0.6/G0.13 \u2014 a string match or an overlap statistic may never promote itself into an edge). Rows are keep-first on proposal_id, a deterministic hash of the proposal's subject, so re-running a proposer re-proposes nothing and never overwrites a curator's decision.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["proposal_id", "kind", "subject", "proposed_by", "created", "status"],
+  "required": [
+    "proposal_id",
+    "kind",
+    "subject",
+    "proposed_by",
+    "created",
+    "status"
+  ],
   "properties": {
     "proposal_id": {
       "type": "string",
@@ -13,77 +20,834 @@
       "description": "'prop:' + sha1(kind|subject)[:16]. Deterministic: the same finding on the same subject is the same row."
     },
     "kind": {
-      "enum": ["new_theme", "merge", "split", "mapping", "key_rename", "identity_continuity"],
+      "enum": [
+        "new_theme",
+        "merge",
+        "split",
+        "mapping",
+        "key_rename",
+        "identity_continuity",
+        "hierarchy"
+      ],
       "description": "What is being proposed. key_rename and identity_continuity come from the refresh path (a source key or a ticker that may have been renamed rather than deleted-and-added); mapping and new_theme from the overlap and coverage-gap diagnostics."
     },
     "subject": {
       "type": "object",
-      "description": "What the proposal is about — the ids/keys involved. Hashed into proposal_id, so it is the row's identity, not commentary."
+      "description": "What the proposal is about \u2014 the ids/keys involved. Hashed into proposal_id, so it is the row's identity, not commentary."
     },
     "evidence": {
       "type": "object",
-      "description": "The statistics or observations behind the proposal (overlap counts, Jaccard, containments, member-set signatures). Free-form by design: a curator needs the numbers that were actually computed, not a lowest-common-denominator subset of them."
+      "description": "The statistics or observations behind the proposal (overlap counts, Jaccard, containments, member-set signatures). Free-form by design: a curator needs the numbers that were actually computed, not a lowest-common-denominator subset of them.",
+      "properties": {
+        "observation_profile": {
+          "$ref": "#/$defs/coverage_observation"
+        }
+      }
     },
     "evidence_refs": {
       "type": "array",
-      "items": {"type": "string", "minLength": 1},
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "description": "evidence_id values or artifact paths supporting the proposal."
     },
     "proposed_by": {
-      "enum": ["coverage_gap", "overlap_stats", "refresh_identity", "llm_proposed"],
+      "enum": [
+        "coverage_gap",
+        "overlap_stats",
+        "refresh_identity",
+        "llm_proposed"
+      ],
       "description": "Which organ proposed it. A proposal whose origin is not named cannot be audited later. llm_proposed is registered here so an LLM proposal is visibly a PROPOSAL and can never be mistaken for a minted fact."
     },
-    "created": {"type": "string", "minLength": 1},
-    "status": {"enum": ["proposed", "ratified", "rejected"]},
+    "created": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "ratified",
+        "rejected"
+      ]
+    },
     "ratified_by": {
-      "type": ["string", "null"],
-      "description": "The operator or delegated curation session that ratified. Required when status=ratified, forbidden otherwise — a ratification without an author is not a ratification."
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The operator or delegated curation session that ratified. Required when status=ratified, forbidden otherwise \u2014 a ratification without an author is not a ratification."
     },
     "adjudicated_at": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Decision-time belief clock. Required for ratified/rejected rows and null/absent while proposed; never backdated to proposal creation."
     },
-    "adjudication_note": {"type": ["string", "null"], "description": "Decision-time note, hidden before adjudicated_at. The existing note is immutable proposal-origin content."},
-    "note": {"type": ["string", "null"]}
+    "adjudication_note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Decision-time note, hidden before adjudicated_at. The existing note is immutable proposal-origin content."
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
   },
   "allOf": [
     {
       "if": {
-        "properties": {"status": {"const": "ratified"}},
-        "required": ["status"]
+        "properties": {
+          "status": {
+            "const": "ratified"
+          }
+        },
+        "required": [
+          "status"
+        ]
       },
       "then": {
-        "required": ["ratified_by", "adjudicated_at"],
+        "required": [
+          "ratified_by",
+          "adjudicated_at"
+        ],
         "properties": {
-          "ratified_by": {"type": "string", "minLength": 1},
-          "adjudicated_at": {"type": "string", "minLength": 1}
+          "ratified_by": {
+            "type": "string",
+            "minLength": 1
+          },
+          "adjudicated_at": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
     {
       "if": {
-        "properties": {"status": {"const": "rejected"}},
-        "required": ["status"]
+        "properties": {
+          "status": {
+            "const": "rejected"
+          }
+        },
+        "required": [
+          "status"
+        ]
       },
       "then": {
-        "required": ["adjudicated_at"],
+        "required": [
+          "adjudicated_at"
+        ],
         "properties": {
-          "ratified_by": {"type": "null"},
-          "adjudicated_at": {"type": "string", "minLength": 1}
+          "ratified_by": {
+            "type": "null"
+          },
+          "adjudicated_at": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
     {
       "if": {
-        "properties": {"status": {"const": "proposed"}},
-        "required": ["status"]
+        "properties": {
+          "status": {
+            "const": "proposed"
+          }
+        },
+        "required": [
+          "status"
+        ]
       },
       "then": {
         "properties": {
-          "ratified_by": {"type": "null"},
-          "adjudicated_at": {"type": "null"}
+          "ratified_by": {
+            "type": "null"
+          },
+          "adjudicated_at": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "hierarchy"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "subject": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "parent_id",
+              "child_id",
+              "child_tier",
+              "proposed_asserted_on",
+              "nominated_from"
+            ],
+            "properties": {
+              "parent_id": {
+                "type": "string",
+                "pattern": "^theme:[a-z0-9][a-z0-9_]{1,62}$"
+              },
+              "child_id": {
+                "type": "string",
+                "pattern": "^theme:[a-z0-9][a-z0-9_]{1,62}$"
+              },
+              "child_tier": {
+                "enum": [
+                  "theme",
+                  "micro_theme"
+                ]
+              },
+              "proposed_asserted_on": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "nominated_from": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "hierarchy"
+          },
+          "proposed_by": {
+            "const": "llm_proposed"
+          }
+        },
+        "required": [
+          "kind",
+          "proposed_by"
+        ]
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "not": {
+              "const": "ratified",
+              "$comment": "LLM_HIERARCHY_NOT_RATIFIABLE: llm_proposed hierarchy rows may not be ratified"
+            }
+          }
         }
       }
     }
-  ]
+  ],
+  "$defs": {
+    "coverage_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "input_list",
+        "input_list_sha256",
+        "source_artifact",
+        "clocks",
+        "population",
+        "identity",
+        "evaluated_dimensions",
+        "source_local_memberships",
+        "pair_display",
+        "evidence_refs",
+        "counterevidence",
+        "completeness",
+        "rights",
+        "next_action",
+        "input_state",
+        "input_digest_reason",
+        "graph_snapshot"
+      ],
+      "properties": {
+        "schema": {
+          "const": "gmi.coverage_observation/v1"
+        },
+        "input_list": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "input_list_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reference",
+            "verification",
+            "revision",
+            "sha256",
+            "reason"
+          ],
+          "properties": {
+            "reference": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "verification": {
+              "enum": [
+                "CALLER_DECLARED",
+                "NOT_SUPPLIED"
+              ]
+            },
+            "revision": {
+              "type": "null"
+            },
+            "sha256": {
+              "type": "null"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "clocks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "observed_at",
+            "selection_basis",
+            "historical_claim",
+            "source_asof_declared",
+            "edge_observations",
+            "issues"
+          ],
+          "properties": {
+            "observed_at": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selection_basis": {
+              "const": "CURRENT_NODES_LATEST_BELIEF_EDGES_NO_HISTORICAL_RECONSTRUCTION"
+            },
+            "historical_claim": {
+              "const": false
+            },
+            "source_asof_declared": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "edge_observations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "edge_id",
+                  "values",
+                  "missing_clock_reason",
+                  "src",
+                  "dst",
+                  "type",
+                  "endpoint_eligibility"
+                ],
+                "properties": {
+                  "edge_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "values": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "valid_from",
+                      "valid_to",
+                      "evidence_time",
+                      "belief_time",
+                      "computed_at",
+                      "source_effective_at",
+                      "source_published_at",
+                      "house_admitted_at"
+                    ],
+                    "properties": {
+                      "valid_from": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "valid_to": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "evidence_time": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "belief_time": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "computed_at": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "source_effective_at": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "source_published_at": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "house_admitted_at": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  },
+                  "missing_clock_reason": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "src": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "dst": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "type": {
+                    "enum": [
+                      "MEMBER_OF",
+                      "EXPRESSES"
+                    ]
+                  },
+                  "endpoint_eligibility": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "src_kind",
+                      "src_status",
+                      "dst_kind",
+                      "dst_status"
+                    ],
+                    "properties": {
+                      "src_kind": {
+                        "enum": [
+                          "company",
+                          "basket",
+                          "local_theme"
+                        ]
+                      },
+                      "dst_kind": {
+                        "enum": [
+                          "company",
+                          "basket",
+                          "local_theme"
+                        ]
+                      },
+                      "src_status": {
+                        "enum": [
+                          "candidate",
+                          "canonical",
+                          "retired",
+                          "merged"
+                        ]
+                      },
+                      "dst_status": {
+                        "enum": [
+                          "candidate",
+                          "canonical",
+                          "retired",
+                          "merged"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "population": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "definition",
+            "supplied",
+            "distinct_supplied",
+            "eligible",
+            "resolved_graph_nodes",
+            "excluded"
+          ],
+          "properties": {
+            "definition": {
+              "type": "string",
+              "minLength": 1
+            },
+            "supplied": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "distinct_supplied": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "eligible": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "resolved_graph_nodes": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^co:[a-z]+:[^\\s:]+$"
+              }
+            },
+            "excluded": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "security_qualification",
+            "owner",
+            "reason"
+          ],
+          "properties": {
+            "state": {
+              "const": "UNQUALIFIED_GRAPH_COMPANY"
+            },
+            "security_qualification": {
+              "const": "NOT_EVALUATED"
+            },
+            "owner": {
+              "const": "engine.theme_graph.security_navigation"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "evaluated_dimensions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_local_concept_cooccurrence",
+            "canonical_theme",
+            "micro_theme",
+            "sector",
+            "industry",
+            "measurement"
+          ],
+          "properties": {
+            "source_local_concept_cooccurrence": {
+              "enum": [
+                "COMPLETE",
+                "PARTIAL",
+                "INDETERMINATE"
+              ]
+            },
+            "canonical_theme": {
+              "const": "NOT_EVALUATED"
+            },
+            "micro_theme": {
+              "const": "NOT_EVALUATED"
+            },
+            "sector": {
+              "const": "NOT_EVALUATED"
+            },
+            "industry": {
+              "const": "NOT_EVALUATED"
+            },
+            "measurement": {
+              "const": "NOT_EVALUATED"
+            }
+          }
+        },
+        "source_local_memberships": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^ltheme:[^\\s:]+:[^\\s:]+$"
+            },
+            "uniqueItems": true
+          }
+        },
+        "pair_display": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "total",
+            "displayed",
+            "limit",
+            "truncated"
+          ],
+          "properties": {
+            "total": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "displayed": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "limit": {
+              "const": 200
+            },
+            "truncated": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "counterevidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "refs"
+          ],
+          "properties": {
+            "state": {
+              "const": "NOT_EVALUATED"
+            },
+            "refs": {
+              "type": "array",
+              "maxItems": 0
+            }
+          }
+        },
+        "completeness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "analysis",
+            "display",
+            "identity",
+            "reason"
+          ],
+          "properties": {
+            "analysis": {
+              "enum": [
+                "COMPLETE",
+                "PARTIAL",
+                "INDETERMINATE"
+              ]
+            },
+            "display": {
+              "enum": [
+                "COMPLETE",
+                "PARTIAL",
+                "TRUNCATED",
+                "INDETERMINATE"
+              ]
+            },
+            "identity": {
+              "const": "NOT_EVALUATED"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "rights": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authority_ceiling",
+            "use_verdict",
+            "new_grant",
+            "public_display_allowed"
+          ],
+          "properties": {
+            "authority_ceiling": {
+              "const": "research_internal_only"
+            },
+            "use_verdict": {
+              "const": "NOT_EVALUATED"
+            },
+            "new_grant": {
+              "const": false
+            },
+            "public_display_allowed": {
+              "const": false
+            }
+          }
+        },
+        "next_action": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reason",
+            "owner",
+            "code",
+            "query"
+          ],
+          "properties": {
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "owner": {
+              "const": "engine.theme_graph.proposal_worklist"
+            },
+            "code": {
+              "const": "REVIEW_CURRENT_SOURCE_LOCAL_OBSERVATION"
+            },
+            "query": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "input_state": {
+          "enum": [
+            "READ",
+            "UNAVAILABLE"
+          ]
+        },
+        "input_digest_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "graph_snapshot": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "node_rows",
+            "edge_rows",
+            "lifecycle_rows",
+            "sha256",
+            "basis"
+          ],
+          "properties": {
+            "node_rows": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "edge_rows": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "lifecycle_rows": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "sha256": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
 }

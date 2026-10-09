@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-10-03",
+  "as_of": "2026-10-07",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -28,7 +28,7 @@
       "family": "real_rate_shock",
       "driver": "real_rate_shock",
       "pathway_role": "primary",
-      "as_of": "2026-10-03",
+      "as_of": "2026-10-07",
       "direction_en": "Rates / inflation shock",
       "direction_zh": "利率/通胀冲击",
       "confidence_ceiling": "context_only",
@@ -38,7 +38,7 @@
       "nodes": [
         {
           "node_id": "driver_real_rate_shock",
-          "as_of": "2026-10-03",
+          "as_of": "2026-10-07",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "real_rate_shock",
@@ -47,7 +47,7 @@
             "zh": "利率/通胀冲击"
           },
           "direction": "",
-          "value": 83.7,
+          "value": 84.8,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -58,7 +58,7 @@
         },
         {
           "node_id": "transmission_real_rate_order1",
-          "as_of": "2026-10-03",
+          "as_of": "2026-10-07",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -78,7 +78,7 @@
         },
         {
           "node_id": "transmission_real_rate_order2",
-          "as_of": "2026-10-03",
+          "as_of": "2026-10-07",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -98,7 +98,7 @@
         },
         {
           "node_id": "transmission_real_rate_order3",
-          "as_of": "2026-10-03",
+          "as_of": "2026-10-07",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -160,11 +160,11 @@
       "scare": "rates"
     },
     {
-      "family": "credit",
-      "driver": "credit_stress",
+      "family": "equity-leadership",
+      "driver": "ai_semis",
       "pathway_role": "alternate",
-      "as_of": "2026-10-03",
-      "direction_en": "credit spreads widening — stress",
+      "as_of": "2026-10-07",
+      "direction_en": "AI/semis leadership — narrow tech-led tape",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -172,17 +172,17 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_credit_stress",
-          "as_of": "2026-10-03",
+          "node_id": "driver_ai_semis",
+          "as_of": "2026-10-07",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "credit_stress",
+          "entity": "ai_semis",
           "observation": {
-            "en": "credit spreads widening — stress",
+            "en": "AI/semis leadership — narrow tech-led tape",
             "zh": ""
           },
           "direction": "",
-          "value": 1.13,
+          "value": 0.42,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -196,11 +196,11 @@
       "coverage_basis": "scare_trigger"
     },
     {
-      "family": "fx",
-      "driver": "usd_shock",
+      "family": "crypto",
+      "driver": "crypto_liquidity",
       "pathway_role": "alternate",
-      "as_of": "2026-10-03",
-      "direction_en": "dollar surging — squeeze, commodities & EM pressured",
+      "as_of": "2026-10-07",
+      "direction_en": "crypto liquidity surging — BTC/ETH lead up",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -208,17 +208,17 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_usd_shock",
-          "as_of": "2026-10-03",
+          "node_id": "driver_crypto_liquidity",
+          "as_of": "2026-10-07",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "usd_shock",
+          "entity": "crypto_liquidity",
           "observation": {
-            "en": "dollar surging — squeeze, commodities & EM pressured",
+            "en": "crypto liquidity surging — BTC/ETH lead up",
             "zh": ""
           },
           "direction": "",
-          "value": 0.99,
+          "value": 0.36,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
