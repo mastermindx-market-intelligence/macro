@@ -6640,6 +6640,21 @@ jobs:
       - name: append-only base fence (real-incident replay, withhold, quiet-night property)
         run: python -m pytest tests/test_append_only_base_fence.py -q
 
+  quant-q06-sparse-cal:
+    if: ${{ false }}
+    gate: code
+    # Q06 pins sparse weighted calibration reference (whole-tie bins, zero weights, empty-cell states, monotone tolerance, Kish vs anchor blocks, separate review states)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q06 sparse weighted calibration reference tests
+        run: python -m pytest tests/test_calibration_sparse_weighted.py -q
+
   transmission-chains:
     # GMI consumer imports expose opaque engine/scripts fallback, not new
     # transmission ownership. Keep the measured concrete closure and real
