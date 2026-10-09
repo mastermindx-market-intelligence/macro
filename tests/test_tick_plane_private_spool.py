@@ -7,6 +7,8 @@ import stat
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+from concurrent.futures import ThreadPoolExecutor
 
 from engine.tick_plane.stream_events import normalize_ws_event
 from engine.tick_plane.private_spool import (
@@ -137,6 +139,41 @@ class SpoolTests(unittest.TestCase):
         self.assertNotIn("url",a)
         self.assertNotIn("raw_quote",str(a))
 
+
+    def test_immutable_file_collision_can_never_be_overwritten(self):
+        def rival_created_target(src, dest):
+            Path(dest).write_bytes(b"rival-conflicting-part")
+            raise FileExistsError()
+        with patch("engine.tick_plane.private_spool.os.link",
+                   side_effect=rival_created_target):
+            with self.assertRaisesRegex(PrivateSpoolRefusal,
+                                        "immutable part collision"):
+                self.commit()
+        targets=list(self.path.rglob("*.jsonl"))
+        self.assertEqual(len(targets),1)
+        self.assertEqual(targets[0].read_bytes(),b"rival-conflicting-part")
+        self.assertEqual(list(self.path.rglob(".pending-*")),[])
+
+    def test_file_collision_with_identical_content_is_idempotent(self):
+        def rival_created_same_target(src,dest):
+            Path(dest).write_bytes(Path(src).read_bytes())
+            raise FileExistsError()
+        with patch("engine.tick_plane.private_spool.os.link",
+                   side_effect=rival_created_same_target):
+            result=self.commit()
+        self.assertEqual(result["state"],"ALREADY_PRESENT")
+        self.assertEqual(list(self.path.rglob(".pending-*")),[])
+
+    def test_concurrent_same_digest_is_one_immutable_part(self):
+        # Production requires one writer; this synthetic race proves that
+        # unexpected concurrent attempts cannot overwrite source receipts.
+        with ThreadPoolExecutor(max_workers=6) as pool:
+            receipts=list(pool.map(lambda _ : self.commit(),range(6)))
+        self.assertEqual({r["sha256"] for r in receipts},
+                         {receipts[0]["sha256"]})
+        self.assertEqual([r["state"] for r in receipts].count("PART_CREATED"),1)
+        self.assertEqual(len(list(self.path.rglob("*.jsonl"))),1)
+        self.assertEqual(list(self.path.rglob(".pending-*")),[])
 
 if __name__ == "__main__":
     unittest.main()
