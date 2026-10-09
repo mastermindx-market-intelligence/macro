@@ -89,14 +89,34 @@ DEMO_EVENT = {
             "tickers": ["EXC"], "source_ids": ["source-synthetic-001"],
             "topics": ["portfolio-risk"],
         },
+        # Distinct public-safe, fabricated-only facts allow demo cards to add
+        # information rather than duplicate the chosen social observation.
+        {
+            "claim_id": "fixture-claim-exa-two",
+            "text": "The illustrative EXA demand outlook remains unquantified.",
+            "tickers": ["EXA"], "source_ids": ["source-synthetic-001"],
+            "topics": ["uncertainty"],
+        },
+        {
+            "claim_id": "fixture-claim-exb-two",
+            "text": "The fictional EXB supplier capacity assumption has no measured backlog.",
+            "tickers": ["EXB"], "source_ids": ["source-synthetic-001"],
+            "topics": ["supply-chain"],
+        },
+        {
+            "claim_id": "fixture-claim-exc-two",
+            "text": "The invented EXC example lacks independent customer order evidence.",
+            "tickers": ["EXC"], "source_ids": ["source-synthetic-001"],
+            "topics": ["missing-evidence"],
+        },
     ],
     "affected_tickers": [
         {"ticker": "EXA", "relationship": "DIRECT",
-         "evidence_ids": ["fixture-claim-exa"]},
+         "evidence_ids": ["fixture-claim-exa", "fixture-claim-exa-two"]},
         {"ticker": "EXB", "relationship": "EVIDENCED_INDIRECT",
-         "evidence_ids": ["fixture-claim-exb"]},
+         "evidence_ids": ["fixture-claim-exb", "fixture-claim-exb-two"]},
         {"ticker": "EXC", "relationship": "EVIDENCED_INDIRECT",
-         "evidence_ids": ["fixture-claim-exc"]},
+         "evidence_ids": ["fixture-claim-exc", "fixture-claim-exc-two"]},
     ],
 }
 
