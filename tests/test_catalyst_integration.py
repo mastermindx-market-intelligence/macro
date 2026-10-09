@@ -68,6 +68,9 @@ def test_real_shape_first_value_and_fail_closed_private_fields():
     lambda p: p.update(requested_tickers=["NVDA", "AAPL"]),
     lambda p: p["results"][0]["sources"][0].update(url="http://127.0.0.1/private"),
     lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?email=visitor%40example.org"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?ref=visitor%40example.org&doc=10k"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/Archives/visitor%2540example.org/filing"),
+    lambda p: p["results"][0]["sources"][0].update(url="https://www.sec.gov/search?q=filing#visitor@example.org"),
     lambda p: p["results"][0]["sources"].append(copy.deepcopy(p["results"][0]["sources"][0])),
 ])
 def test_claims_rights_clock_and_identity_negative(mutation):
@@ -77,6 +80,14 @@ def test_claims_rights_clock_and_identity_negative(mutation):
         ci.scan_with_reader(["NVDA", "ZZZZ"], reader=lambda *a, **k: p, now_utc=NOW)
     assert exc.value.status_code == 503
     assert "secret" not in str(exc.value.detail).lower()
+
+
+def test_public_source_query_without_identity_remains_citable():
+    p = packet()
+    safe_url = "https://www.sec.gov/Archives/edgar/data/123/10-K?ref=0001&lang=en"
+    p["results"][0]["sources"][0]["url"] = safe_url
+    public = ci.sanitize_public_scan(p, ["NVDA", "ZZZZ"], now_utc=NOW)
+    assert public["results"][0]["sources"][0]["url"] == safe_url
 
 
 def test_prevalidate_abuse_and_dedupe_without_calling_producer():
