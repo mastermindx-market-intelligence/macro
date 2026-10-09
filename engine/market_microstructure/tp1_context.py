@@ -138,6 +138,7 @@ def project_tp1_pressure_context(
         "gross", "buy", "sell", "mid", "unknown", "ineligible", "trf"
     )}
     minute_refs, condition_refs, exchange_refs, minute_quote_refs = [], set(), set(), set()
+    minute_age_limits = set()
     count_prints = count_unknown = 0
     for i, minute in enumerate(sorted(minute_observations, key=lambda m: m.get("start_ns", -1))):
         if not isinstance(minute, dict) or minute.get("schema") != TP1_MINUTE_SCHEMA:
@@ -158,6 +159,12 @@ def project_tp1_pressure_context(
         for clock in ("decision_ns", "source_complete_through_ns",
                       "watermark_available_ns", "original_latest_available_ns"):
             _int(minute.get(clock), f"minute.{clock}")
+        source_quote_age = _int(minute.get("max_quote_age_ns"),
+                                "minute.max_quote_age_ns")
+        minute_age_limits.add(source_quote_age)
+        if source_quote_age > max_quote_age_ns:
+            return {**head, "state": "MINUTE_NOT_QUALIFIED",
+                    "reason": "SOURCE_QUOTE_AGE_POLICY_TOO_LENIENT"}
         if (minute["decision_ns"] > decision_ns
                 or minute["source_complete_through_ns"] < minute["end_ns"]
                 or minute["watermark_available_ns"] < minute["source_complete_through_ns"]
@@ -206,7 +213,8 @@ def project_tp1_pressure_context(
             raise TP1ContextRefusal("source minute print denominators inconsistent")
         count_prints += minute["n_sampled_prints"]
         count_unknown += minute["n_unclassified"]
-    if len(condition_refs) != 1 or len(exchange_refs) != 1 or len(minute_quote_refs) != 1:
+    if (len(condition_refs) != 1 or len(exchange_refs) != 1
+            or len(minute_quote_refs) != 1 or len(minute_age_limits) != 1):
         raise TP1ContextRefusal("mixed condition or exchange source vintages")
     if amounts["trf"] > amounts["unknown"] or sum(amounts[k] for k in (
         "buy", "sell", "mid", "unknown", "ineligible"
@@ -342,6 +350,7 @@ def project_tp1_pressure_context(
         "source_condition_rules_sha256": next(iter(condition_refs)),
         "source_exchange_rules_sha256": next(iter(exchange_refs)),
         "source_quote_condition_rules_sha256": next(iter(quote_refs)),
+        "source_quote_age_limit_ns": next(iter(minute_age_limits)),
         "n_source_minute_packets": n_minutes, "n_sampled_prints": count_prints,
         "n_unclassified": count_unknown, "n_quote_updates": len(normalized),
         "n_quote_condition_unqualified": unqualified_quote_events,
