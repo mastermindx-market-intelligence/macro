@@ -206,6 +206,7 @@ def test_financial_integration_filters_sources_and_uses_single_qbus_batch(monkey
         article(),
         article(id=81235, source="random-unknown-domain.example", url="https://random-unknown-domain.example/article"),
         article(id=81236, tickers=[]),
+        article(id=81237, source="fakebloomberg.com", url="https://fakebloomberg.com/a"),
     ]
     monkeypatch.setattr(fin._tiingo_news_api, "fetch_articles", lambda *a, **kw: (raw, "ok"))
     stored = []
@@ -218,7 +219,7 @@ def test_financial_integration_filters_sources_and_uses_single_qbus_batch(monkey
     assert items[0]["first_available_at"] == NOW.isoformat()
     assert len(stored) == 1 and len(stored[0]) == 1  # no per-article Parquet rewrite
     assert stored[0][0]["_crawled_at"] == NOW.isoformat()
-    assert audit["filtered_source"] == 1
+    assert audit["filtered_source"] == 2
     assert audit["filtered_untagged"] == 1
     assert audit["eligible_articles"] == 1
 
