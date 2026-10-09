@@ -355,6 +355,9 @@ def test_private_delivery_summary_exposes_rights_hold_after_partial_provider_acc
         for states, expected in (
             (("PROVIDER_ACCEPTED", "SOURCE_RIGHTS_NOT_CURRENT"), "SOURCE_RIGHTS_HELD"),
             (("SOURCE_RIGHTS_UNAVAILABLE",), "SOURCE_RIGHTS_HELD"),
+            (("PROVIDER_ACCEPTED", "CONSENT_OWNER_UNAVAILABLE"), "CONSENT_HELD"),
+            (("CONSENT_OWNER_PROTOCOL_MISMATCH",), "CONSENT_HELD"),
+            (("PROVIDER_ACCEPTED", "OUTDATED_OR_UNVERIFIED_REVISION"), "REVISION_HELD"),
             (("PROVIDER_ACCEPTED", "EFFECT_UNKNOWN"), "EFFECT_UNKNOWN"),
             (("PROVIDER_ACCEPTED",), "PROVIDER_ACCEPTED"),
             (("SUPPRESSED",), "NO_CONFIRMED_DELIVERY"),
