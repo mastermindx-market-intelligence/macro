@@ -303,7 +303,15 @@ def _tiingo_articles(now: datetime, *, _received_at: datetime | None = None) -> 
         # Provider tickers are unverified candidates. Never promote an
         # unallowlisted publisher to the tier-3 floor purely because Tiingo
         # tagged it: the broad REST feed includes general/SEO sources.
-        if nc.source_tier(article["source"]) == 0 or nc.is_blocked(article["source"]):
+        # qkernel.source_tier uses substring tokens for legacy compatibility.
+        # A newly admitted Tiingo publisher must match an actual dotted domain
+        # boundary, not a lookalike such as fakebloomberg.com.
+        host = article["source"]
+        trusted = any(
+            "." in token and (host == token or host.endswith("." + token))
+            for token in (nc.TIER1_SOURCES + nc.TIER2_SOURCES + nc.TIER3_SOURCES)
+        )
+        if not trusted or nc.is_blocked(host):
             filtered_source += 1
             continue
         tickers = [vendor_join_key(t) for t in article["tickers"] if vendor_join_key(t)]
