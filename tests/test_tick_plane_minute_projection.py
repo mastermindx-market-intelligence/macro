@@ -32,6 +32,7 @@ def row(key="t1", *,t=None,state="MEASURED_SOURCE_PROXY",side="buy",
            "venue_admission_reason":"SOURCE_REFERENCE_EXCHANGE_CANDIDATE",
            "correction_status":"STREAM_PROVISIONAL_UNRECONCILED",
            "gross_observed_notional_usd":gross,
+           "gross_source_shares":"1.00", "trade_volume_eligible":True,
            "side_proxy":side,
            "signed_notional_usd":gross if side=="buy" else
                                  "-"+gross if side=="sell" else None,
@@ -318,6 +319,77 @@ class ProjectionTests(unittest.TestCase):
         self.assertEqual(result["n_trf"],1)
         self.assertEqual(result["n_lit_eligible_prints"],1)
         self.assertEqual(result["n_lit_classified_quote_le5s_prints"],1)
+
+
+    def test_exact_fractional_source_share_volume_is_separate_from_dollar_flow(self):
+        sample=row(gross="3750.00")
+        sample["gross_source_shares"]="0.375"
+        result=run([sample])
+        self.assertEqual(result["gross_sampled_notional_usd"],"3750.00")
+        self.assertEqual(result["source_volume_included_shares"],"0.375")
+        self.assertEqual(result["source_all_printed_shares"],"0.375")
+
+    def test_volume_only_print_is_excluded_from_pressure_but_included_in_share_reconciliation(self):
+        volume_only=row("special",state="INELIGIBLE",
+                        reason="VOLUME_ONLY_OR_NON_PRICE_FORMING",gross="400.00")
+        volume_only["gross_source_shares"]="12.375"
+        volume_only["trade_volume_eligible"]=True
+        reported=run([row("regular"),volume_only])
+        self.assertEqual(reported["source_volume_included_shares"],"13.375")
+        self.assertEqual(reported["ineligible_notional_usd"],"400.00")
+        self.assertEqual(reported["n_source_volume_included_prints"],2)
+        self.assertEqual(reported["n_buy_proxy"],1)
+
+    def test_trade_excluded_from_consolidated_volume_does_not_enter_volume_reconciliation(self):
+        excluded=row(state="INELIGIBLE",reason="CONSOLIDATED_VOLUME_NOT_ELIGIBLE")
+        excluded["gross_source_shares"]="8"
+        excluded["trade_volume_eligible"]=False
+        report=run([excluded])
+        self.assertEqual(report["source_volume_included_shares"],"0")
+        self.assertEqual(report["source_volume_excluded_shares"],"8")
+        self.assertEqual(report["n_source_volume_excluded_prints"],1)
+
+    def test_unknown_trade_conditions_remain_unknown_share_volume(self):
+        unknown=row(state="UNKNOWN",reason="TRADE_CONDITION_POLICY_UNQUALIFIED")
+        unknown["trade_volume_eligible"]=None
+        unknown["gross_source_shares"]="2.5"
+        summary=run([unknown])
+        self.assertEqual(summary["source_volume_unknown_shares"],"2.5")
+        self.assertEqual(summary["source_volume_included_shares"],"0")
+        self.assertEqual(summary["n_source_volume_unknown_prints"],1)
+
+    def test_unknown_quote_condition_does_not_remove_trade_from_known_volume(self):
+        unknown=row(state="UNKNOWN",reason="QUOTE_CONDITION_NOT_FIRM_OR_UNKNOWN")
+        unknown["gross_source_shares"]="6.75"
+        summary=run([unknown])
+        self.assertEqual(summary["unknown_notional_usd"],"100.50")
+        self.assertEqual(summary["source_volume_included_shares"],"6.75")
+
+    def test_classified_trade_must_have_volume_source_policy(self):
+        sample=row()
+        sample["trade_volume_eligible"]=False
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"lacks volume-eligible"):
+            run([sample])
+
+    def test_malformed_or_nonfinite_share_volume_fails_closed(self):
+        for bad in (None,"NaN","Infinity","-2","garbage"):
+            with self.subTest(value=bad):
+                sample=row()
+                sample["gross_source_shares"]=bad
+                with self.assertRaises(MinuteProjectionRefusal):
+                    run([sample])
+
+    def test_boolean_source_volume_eligibility_must_be_exact(self):
+        sample=row()
+        sample["trade_volume_eligible"]="yes"
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"boolean or unknown"):
+            run([sample])
+
+    def test_missing_native_share_field_fails_exact_source_contract(self):
+        sample=row()
+        del sample["gross_source_shares"]
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"exact incumbent"):
+            run([sample])
 
 if __name__=="__main__":
     unittest.main()
