@@ -10,6 +10,7 @@ carry it, and the listener degrades to nothing by design.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -338,3 +339,66 @@ class TestShippedConfig:
         for rule in rules:
             assert len(rule["value"]) <= 255
             assert 0.1 <= float(rule["interval_seconds"]) <= 86400
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Non-consuming stream snapshots (WEB-P1 G1; same incumbent spool)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _snapshot_spool(root: Path) -> Path:
+    return root / "data" / "marketing" / "press" / "stream_spool.jsonl"
+
+
+def _snapshot_ids(batch: object) -> list[str]:
+    return [row["id"] for row in batch.items]
+
+
+def test_peek_is_non_consuming_and_recovers_after_unacknowledged_crash(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "event-1", "headline": "Source A"}])
+    first = ps.peek_spool(tmp_path)
+    assert _snapshot_ids(first) == ["event-1"]
+    assert _snapshot_spool(tmp_path).stat().st_size > 0
+    assert _snapshot_ids(ps.peek_spool(tmp_path)) == ["event-1"]
+    assert ps.ack_spool(tmp_path, first) is True
+    assert _snapshot_ids(ps.peek_spool(tmp_path)) == []
+
+
+def test_ack_exact_prefix_preserves_arrivals_appended_during_acceptance(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "event-before"}])
+    before = ps.peek_spool(tmp_path)
+    ps.append_spool(tmp_path, [{"id": "event-during"}])
+    assert ps.ack_spool(tmp_path, before) is True
+    assert _snapshot_ids(ps.peek_spool(tmp_path)) == ["event-during"]
+
+
+def test_ack_refuses_modified_prefix_without_deleting_data(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "original"}])
+    original = ps.peek_spool(tmp_path)
+    path = _snapshot_spool(tmp_path)
+    path.write_text('{"id":"replacement"}' + chr(10), encoding="utf-8")
+    assert ps.ack_spool(tmp_path, original) is False
+    assert _snapshot_ids(ps.peek_spool(tmp_path)) == ["replacement"]
+
+
+def test_ack_refuses_stale_batch_after_inode_replacement_even_if_bytes_match(tmp_path):
+    ps.append_spool(tmp_path, [{"id": "A"}])
+    original = ps.peek_spool(tmp_path)
+    path = _snapshot_spool(tmp_path)
+    replacement = path.with_name("stream_spool.pending")
+    replacement.write_bytes(path.read_bytes())
+    os.replace(replacement, path)
+    assert ps.ack_spool(tmp_path, original) is False
+    assert _snapshot_ids(ps.peek_spool(tmp_path)) == ["A"]
+
+
+def test_failed_ack_replace_keeps_the_original_unconsumed(tmp_path, monkeypatch):
+    ps.append_spool(tmp_path, [{"id": "A"}])
+    snapshot = ps.peek_spool(tmp_path)
+    before = _snapshot_spool(tmp_path).read_bytes()
+
+    def fail_replace(src, dest):
+        raise OSError("controlled replacement failure")
+
+    monkeypatch.setattr(ps.os, "replace", fail_replace)
+    assert ps.ack_spool(tmp_path, snapshot) is False
+    assert _snapshot_spool(tmp_path).read_bytes() == before
