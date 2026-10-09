@@ -40,6 +40,16 @@ This module holds no data, opens no socket, and publishes no artifact. `print_di
 
 Run `PYTHONPATH=. python -m pytest -q tests/test_equity_pressure_response.py` from Macro repository root. Synthetic fixtures exercise availability, future correction/cancel, late quote, invalid/ambiguous NBBO, condition policy consistency, venue switch, midpoint/outside, unmatured window and missing receipts. Passing these fixtures is **not** live-data qualification or any claim of alpha.
 
+## Matured forward-response outcomes — separate from live recognition
+
+`engine.market_microstructure.matured_response.measure_matured_response` adds the **evaluation-only** `equity.price_response_evaluation_label/v0` contract. It requires an explicit original decision cutoff, anchor quote eligible at that original cutoff, a forward endpoint, an already-matured source watermark/receipt, market-session health, and fresh qualified NBBO at the endpoint.
+
+A future quote not received by its evaluation cutoff cannot be applied retroactively. A halted/unknown market, stale/locked/ambiguous quote or absent maturity produces a typed null/censored outcome. A quiet symbol may legitimately reuse an unchanged best quote only while it still passes the declared age bound—lack of a new quote by itself is not a malfunction. Source quality, original custody and quote-stream coverage remain externally qualified by TP-1, not authenticated by the evaluation math.
+
+The output has `authority=RESEARCH_OUTCOME_LABEL_ONLY` and leaves `absorption_signal`, `signal`, trade fills and execution-adjusted returns null. It may support preregistered future-outcome validation only after source qualification; it grants no entry/rank/sizing/alert authority and is not part of the earlier candidate's information set.
+
+**Candidate acceptance:** At `9048a47caf90ea89e59ba71b2480a0db63ed1a81`, M2 Studio ran both existing R0 test suites including 16 new matured-response falsifiers: **58 passed**. Hosted exact-head CI, independent reviewer and real source evidence remain separate acceptance requirements.
+
 ## Real-data and production gates
 
 1. **Consume, do not repeat, the 2026-08-08 TP-0.5 socket experiment** recorded in Massive masterplan §3.1b.4: delayed and real-time are separate buckets, but opening a second real-time socket evicts the oldest. Verify the *current* Quote Hub `/health` effective cluster and original TP-1 live-slot owner without starting any rival RT WebSocket. Qualify T/Q real RTH frames, event/receipt clocks and remaining source gates only inside the admitted owner/maintenance path.
