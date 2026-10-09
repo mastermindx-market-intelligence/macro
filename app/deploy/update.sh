@@ -1271,6 +1271,12 @@ if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(a
 	API_RESTART_NEEDED=1
 
 fi
+# Read-only explanation helpers share the same restart transaction. Keep this
+# additive predicate separate from the established list so sibling source
+# additions compose without rewriting that list or broadening its matches.
+if grep -qE '^engine/neuralweb/(mechanism_evidence|mechanism_pathways|regime_change_evidence)\.py$' <<<"$CHANGED"; then
+    API_RESTART_NEEDED=1
+fi
 # END MACRO_API_RESTART_TRIGGER
 if [ "$API_RESTART_NEEDED" -eq 1 ]; then
 	disarm_options_timer

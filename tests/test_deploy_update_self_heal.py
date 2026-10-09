@@ -194,13 +194,14 @@ def _api_restart_regex() -> str:
     trigger = SCRIPT.split("# BEGIN MACRO_API_RESTART_TRIGGER\n", 1)[1].split(
         "# END MACRO_API_RESTART_TRIGGER", 1
     )[0]
-    return _ere_on_line(
-        next(
-            line
-            for line in trigger.splitlines()
-            if _GREP in line and line.lstrip().startswith("if ")
-        )
-    )
+    # Every named-path predicate in this block only sets the same needed flag.
+    # Preserve their OR semantics; the shell-equivalence test below executes
+    # the real block, so the parser cannot hide a disconnected predicate.
+    patterns = [_ere_on_line(line) for line in trigger.splitlines()
+                if _GREP in line and line.lstrip().startswith("if ")]
+    assert patterns
+    return "|".join("(" + pattern + ")" for pattern in patterns)
+
 
 
 def _admin_restart_regex() -> str:
@@ -965,3 +966,30 @@ def test_dotted_import_still_reaches_the_package_init():
         "engine", "engine.marketing",
     }
     assert _ancestor_packages("lib") == set()
+
+
+@pytest.mark.parametrize("path", [
+    "engine/neuralweb/mechanism_evidence.py",
+    "engine/neuralweb/mechanism_pathways.py",
+    "engine/neuralweb/regime_change_evidence.py",
+    "engine/neuralweb/cortex.py",
+    "engine/neuralweb/not_an_api_reader.py",
+    "engine/neuralweb/mechanism_evidence.py.bak",
+    "data/neuralweb/world_state.json",
+])
+def test_explanation_restart_predicates_match_actual_shell_block(path):
+    trigger = SCRIPT.split("# BEGIN MACRO_API_RESTART_TRIGGER\n", 1)[1].split(
+        "# END MACRO_API_RESTART_TRIGGER", 1
+    )[0]
+    setup = ('API_UNIT_UPDATED=0; API_DEPS_UPDATED=0; API_RESTART_NEEDED=0; '
+             'mm_api_fence_marker_ready() { return 0; }; CHANGED="$1";\n')
+    result = subprocess.run(["bash", "-c", setup + trigger + '\nprintf "%s" "$API_RESTART_NEEDED"',
+                             "fixture", path], capture_output=True, text=True, check=True)
+    expected = path in {
+        "engine/neuralweb/mechanism_evidence.py",
+        "engine/neuralweb/mechanism_pathways.py",
+        "engine/neuralweb/regime_change_evidence.py",
+        "engine/neuralweb/cortex.py",
+    }
+    assert (result.stdout == "1") is expected
+    assert _triggers_restart(path) is expected

@@ -511,7 +511,6 @@
     "tests/test_market_state_tune_lane_gate.py",
     "tests/test_massive_stock_day_fence.py",
     "tests/test_massive_stock_day_state.py",
-    "tests/test_mechanism_pathways.py",
     "tests/test_meta_label.py",
     "tests/test_metabolism_b3_cost_capture.py",
     "tests/test_metabolism_memory_integrity.py",
