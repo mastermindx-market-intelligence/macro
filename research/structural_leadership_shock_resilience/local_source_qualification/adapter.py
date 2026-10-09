@@ -23,6 +23,9 @@ SPEC_REF = ('macro@1f21fb74735d826a37d5e1925b1d06af6feb6fda:'
 FAMILIES = ('gics', 'identity', 'instrument_type', 'aliases', 'total_returns',
             'corporate_actions', 'membership', 'market_cap', 'events', 'earnings_schedule')
 Status = Literal['PASS', 'FAIL', 'UNKNOWN']
+GICS_SECTORS = frozenset(('Energy', 'Information Technology', 'Financials',
+    'Health Care', 'Industrials', 'Consumer Discretionary', 'Consumer Staples',
+    'Utilities', 'Materials', 'Real Estate', 'Communication Services'))
 
 
 class NotQualified(ValueError):
@@ -35,6 +38,8 @@ def digest(value: Any) -> str:
 
 
 def _utc(value: str) -> datetime:
+    if not isinstance(value, str):
+        raise NotQualified('CLOCK_NOT_TIMESTAMP')
     result = datetime.fromisoformat(value.replace('Z', '+00:00'))
     if result.tzinfo is None:
         raise NotQualified('CLOCK_WITHOUT_TIMEZONE')
@@ -74,8 +79,8 @@ def qualify(result: SourceQualificationResult, source_object: Any,
     Filing acceptance alone is not sufficient: the supplied publication bound
     must include actual dissemination or conservative next-session availability.
     """
-    failures: list[str] = list(result.exclusion_codes)
-    unknown: list[str] = []
+    failures: list[str] = list(result.exclusion_codes) if result.status != 'UNKNOWN' else []
+    unknown: list[str] = list(result.exclusion_codes) if result.status == 'UNKNOWN' else []
     if result.status not in ('PASS', 'FAIL', 'UNKNOWN') or result.field_family not in FAMILIES:
         failures.append('INVALID_SOURCE_CONTRACT')
     if result.study_spec_ref != SPEC_REF:
@@ -110,6 +115,12 @@ def qualify(result: SourceQualificationResult, source_object: Any,
         unknown.append('KNOWLEDGE_BASIS_UNKNOWN')
     try:
         cutoff = _utc(decision_at)
+        for name in ('vendor_asof_date', 'report_period_end'):
+            value = getattr(result, name)
+            if value is not None:
+                parsed = date.fromisoformat(value)
+                if result.knowledge_basis == 'ACTUALLY_FIRST_SEEN' and parsed > cutoff.date():
+                    failures.append(name.upper() + '_AFTER_FIRST_SEEN_CUTOFF')
         if result.economic_valid_from:
             start = date.fromisoformat(result.economic_valid_from)
             if start > cutoff.date():
@@ -189,22 +200,48 @@ def resolve_alias(records: list[dict], vendor: str, symbol: str, on: str,
     if vendor in ('yahoo_fetch', 'store'):
         raise NotQualified('CURRENT_CATALOG_NOT_HISTORICAL_ALIAS')
     relevant = [r for r in records if r['vendor'] == vendor]
-    if any(r.get('valid_from') is None for r in relevant):
+    if any(not r.get('valid_from') for r in relevant):
         raise NotQualified('UNDATED_ALIAS')
     # Delegates naming/ambiguity and native polygon seals to the incumbent reader.
     return VendorAliasTable.from_records(relevant).resolve(
         vendor, symbol, date.fromisoformat(on), decision_at=decision_at)
 
 
-def historical_sector(records: list[dict], on: str) -> str:
-    selected = [r for r in records if r.get('valid_from') and r['valid_from'] <= on
-                and (r.get('valid_to') is None or on < r['valid_to'])]
-    if len(selected) != 1 or selected[0].get('taxonomy') != 'GICS':
-        raise NotQualified('GICS_NOT_ADMITTED')
-    sector = selected[0].get('sector')
-    if not sector:
-        raise NotQualified('GICS_NOT_ADMITTED')
-    return sector
+def historical_sector(records: list[dict], on: str, *, decision_at: str | None = None) -> str:
+    """Select official GICS at valid time while retaining the declared two clocks."""
+    def day(value):
+        if not isinstance(value, str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
+            raise NotQualified('GICS_INVALID_DATE')
+        return date.fromisoformat(value)
+    try:
+        on_day = day(on)
+        cutoff = _utc(decision_at or on + 'T00:00:00Z')
+        if cutoff.date() != on_day:
+            raise NotQualified('GICS_CUTOFF_NOT_VALID_SESSION')
+        selected = []
+        for row in records:
+            start = day(row.get('valid_from'))
+            end = day(row['valid_to']) if row.get('valid_to') is not None else None
+            if end is not None and end <= start:
+                raise NotQualified('GICS_INVALID_INTERVAL')
+            if start <= on_day and (end is None or on_day < end):
+                selected.append(row)
+        if len(selected) != 1:
+            raise NotQualified('GICS_NOT_ADMITTED')
+        row = selected[0]
+        if row.get('taxonomy') != 'GICS' or row.get('sector') not in GICS_SECTORS:
+            raise NotQualified('GICS_NOT_ADMITTED')
+        basis = row.get('knowledge_basis')
+        if basis not in ('ACTUALLY_FIRST_SEEN', 'FINAL_VINTAGE_VALID_TIME_ONLY'):
+            raise NotQualified('GICS_KNOWLEDGE_UNKNOWN')
+        published = _utc(row['first_publication_or_filing_accepted_at'])
+        observed = _utc(row['known_at'])
+        if (published > cutoff or observed < published
+                or (basis == 'ACTUALLY_FIRST_SEEN' and observed > cutoff)):
+            raise NotQualified('GICS_NOT_KNOWN_BY_CUTOFF')
+        return row['sector']
+    except (ValueError, TypeError, KeyError):
+        raise NotQualified('GICS_NOT_ADMITTED') from None
 
 
 def check_benchmark_inception(on: str, first_session: str) -> None:
@@ -278,7 +315,8 @@ def _finite(value) -> bool:
 
 
 def validate_price_segment(bases: list[str], identities: list[str]) -> None:
-    if not bases or len(bases) != len(identities) or set(bases) != {ADJUSTED}:
+    if (not bases or len(bases) != len(identities) or len(set(bases)) != 1
+            or bases[0] not in (ADJUSTED, 'split_adjusted')):
         raise NotQualified('BASIS_CONFLICT')
     if len(set(identities)) != 1 or not identities[0]:
         raise NotQualified('IDENTITY_SPLICE')
@@ -293,6 +331,8 @@ def economic_return(previous: float, close: float | None, *, cash: float = 0,
         raise NotQualified('BASIS_CONFLICT')
     if basis == ADJUSTED and cash != 0:
         raise NotQualified('DOUBLE_ADJUSTMENT')
+    if close is not None and terminal_proceeds is not None:
+        raise NotQualified('TERMINAL_PAYOFF_AMBIGUOUS')
     if close is None:
         if not _finite(terminal_proceeds) or terminal_proceeds < 0:
             raise NotQualified('TERMINAL_UNRESOLVED')
@@ -317,7 +357,11 @@ def action_receipt(pages: list[dict], required_ids: set[str]) -> list[str]:
     return events
 
 
-def session_window(prices: dict, sessions: list, anchor: int, horizon: int) -> tuple:
+def session_window(prices: dict, sessions: list, anchor: int, horizon: int,
+                   *, master_sessions=None) -> tuple:
+    if (master_sessions is None or list(sessions) != list(master_sessions)
+            or list(sessions) != sorted(sessions) or len(set(sessions)) != len(sessions)):
+        raise NotQualified('MASTER_SESSION_UNAVAILABLE_OR_MISMATCH')
     if anchor < horizon or anchor >= len(sessions) or horizon < 1:
         raise NotQualified('LOOKBACK_UNAVAILABLE')
     selected = tuple(sessions[anchor-horizon:anchor+1])
@@ -472,8 +516,8 @@ def replay_detector(bars, benchmark_closes: dict, sectors, *, master_sessions=No
     import pandas as pd
     from engine import winner_autopsy as w
     c = bars['close']
-    if master_sessions is not None and not c.index.equals(master_sessions):
-        raise NotQualified('MASTER_SESSION_MISMATCH')
+    if master_sessions is None or not c.index.equals(master_sessions):
+        raise NotQualified('MASTER_SESSION_UNAVAILABLE_OR_MISMATCH')
     if (not c.index.is_unique or not c.index.is_monotonic_increasing or len(c) < 68
             or not np.isfinite(c).all() or (c <= 0).any()
             or 'volume' not in bars or not np.isfinite(bars['volume']).all()
@@ -485,6 +529,8 @@ def replay_detector(bars, benchmark_closes: dict, sectors, *, master_sessions=No
     vol = (w._dv_zscore(dv, 21) >= w.DV_Z_FLOOR) | (w._dv_ratio(dv, 5, 60) >= w.DV_5_60_RATIO)
     candidates = pd.Series(False, index=c.index)
     for sector in sectors.unique():
+        if sector not in GICS_SECTORS:
+            raise NotQualified('GICS_NOT_ADMITTED')
         benchmark = w._GICS_ETF.get(sector)
         if benchmark is None or benchmark not in benchmark_closes:
             raise NotQualified('BENCHMARK_HISTORY')

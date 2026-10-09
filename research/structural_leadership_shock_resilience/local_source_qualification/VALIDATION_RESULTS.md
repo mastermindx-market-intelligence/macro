@@ -21,10 +21,10 @@ The cooldown fixture also tests D+63 versus D+64 explicitly.
 Final focused command at this artifact revision:
 
 ```sh
-python3 -m pytest tests/test_slr_local_source_qualification.py tests/test_winner_autopsy.py tests/test_dataos_identity.py -q --tb=short --basetemp=/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/pytest-green6
+python3 -m pytest tests/test_slr_local_source_qualification.py tests/test_winner_autopsy.py tests/test_dataos_identity.py -q --tb=short --basetemp=/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/pytest-review-green2
 ```
 
-Result: **401 passed**, exit 0, 5.86 seconds. Of these, **71** are new synthetic
+Result: **418 passed**, exit 0, 5.48 seconds. Of these, **88** are new synthetic
 qualification tests and **330** are incumbent detector/identity tests. The first
 two runs had an unrelated pytest cleanup warning on an old temporary Chromium
 directory; isolated basetemp runs have no warning. No cleanup of that other
@@ -43,3 +43,10 @@ no self-review is represented as independent approval.
 No SLR historical onsets/prices/forward outcomes or protected CR1/AF1/RH1 stores
 were read. SEC endpoint access is sample evidence only. Source qualification,
 Detector-D population parity, first-shock incidence and science remain blocked.
+
+Independent review of the initial commit returned CHANGES_REQUIRED. Twelve
+new counterexamples failed before the repair. The first repair run retained one
+missing-clock exception (412 passed / 1 failed); after correction and dated
+sector/inception supplementary coverage, the focused suite passed 418 cases.
+The initial review return is adjudicated as useful findings, never candidate
+approval. A second bounded review must examine the repair candidate.

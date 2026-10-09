@@ -19,7 +19,9 @@ no provider credentials, performs no network requests, discovers no data stores,
 allocates no identities and grants no admission. It reuses the Data OS identity
 parser and `VendorAliasTable`, the incumbent price-basis vocabulary, and frozen
 Winner Autopsy Detector-D constants/math. `IssuerMaster` remains current-only;
-the adapter requires separately evidenced historical owner assertions.
+the adapter requires separately evidenced historical owner assertions. GICS
+rows require original official sector names, parsed date intervals, a public
+availability bound, observed `known_at`, and an explicit knowledge basis.
 
 Run from the repository root:
 
@@ -45,15 +47,22 @@ interval selection, peer deduplication, calendar windows, corporate actions,
 total returns, lagged OLS, first-challenge observability and information counts.
 Callers must bind these helper inputs to the same reviewed field objects.
 
+For ACTUALLY_FIRST_SEEN receipts, future vendor-as-of/report-period dates are
+refused. Preexisting UNKNOWN exclusions retain UNKNOWN unless a checked
+violation establishes FAIL. A homogeneous split-adjusted tape may be paired
+with cash in matching units; mixed bases and ambiguous simultaneous closing
+price/terminal payoff inputs are refused.
+
 Final-vintage validity is explicitly distinct from ACTUALLY_FIRST_SEEN. A later
 ingestion cannot become historical first possession. Filing acceptance must be
 combined with public dissemination or a conservative next-session bound in the
 receipt's publication field; report-period indexing is insufficient.
 
 `replay_detector` requires complete subject sessions and qualified benchmark
-prices at every relevant past candidate date. Its optional `master_sessions`
-argument checks exact calendar equality; **real input qualification must supply
-that independently retained NYSE index**. No benchmark fallback or inception
+prices at every relevant past candidate date. Its required `master_sessions`
+argument checks exact calendar equality. Lookback slices also require the
+independently retained master index; missing, compressed or unsorted calendars
+are refused before returns are computed. No benchmark fallback or inception
 fill is allowed. `continuation` applies the incumbent 150-session detection
 window and last-five-session candidate override, and rejects a watch onset
 different from the original D. Static-sector fixtures compare both paths with

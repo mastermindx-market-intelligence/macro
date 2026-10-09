@@ -94,8 +94,12 @@ def test_F05_alias_end_is_exclusive_and_timeless_is_unknown(q):
     ('2018-10-01','Information Technology','Communication Services'),
     ('2023-03-20','Information Technology','Financials')])
 def test_F06_dated_gics_and_etf_inception(q,change,old,new):
-    records = [dict(valid_from='2013-01-01', valid_to=change, sector=old, taxonomy='GICS'),
-               dict(valid_from=change,valid_to=None,sector=new,taxonomy='GICS')]
+    records = [dict(valid_from='2013-01-01', valid_to=change, sector=old, taxonomy='GICS',
+               knowledge_basis='ACTUALLY_FIRST_SEEN',known_at='2013-01-02T00:00:00Z',
+               first_publication_or_filing_accepted_at='2013-01-01T00:00:00Z'),
+               dict(valid_from=change,valid_to=None,sector=new,taxonomy='GICS',
+               knowledge_basis='ACTUALLY_FIRST_SEEN',known_at='2013-01-02T00:00:00Z',
+               first_publication_or_filing_accepted_at='2013-01-01T00:00:00Z')]
     before = str((pd.Timestamp(change)-pd.Timedelta(days=1)).date())
     assert q.historical_sector(records,before) == old
     assert q.historical_sector(records,change) == new
@@ -115,7 +119,7 @@ def test_F08_exchange_session_is_not_compressed(q):
     sessions = list(range(65))
     prices = {s:100+s for s in sessions if s != 50}
     with pytest.raises(q.NotQualified,match='MISSING_SESSION'):
-        q.session_window(prices,sessions,64,21)
+        q.session_window(prices,sessions,64,21,master_sessions=sessions)
 
 
 def test_F09_first_unknown_candidate_cannot_be_replaced(q):
@@ -288,7 +292,7 @@ def test_full_prefix_detector_parity_and_cooldown(q):
     from engine.winner_autopsy import detect_episodes
     bars,bench,sectors = detector_fixture()
     original = detect_episodes({'S':bars},bench,{'S':'Information Technology'})
-    replay = q.replay_detector(bars,bench,sectors)
+    replay = q.replay_detector(bars,bench,sectors,master_sessions=bars.index)
     assert replay['onsets'] == list(original.t0)
     assert len(replay['onsets']) > 0
     assert all((bars.index.get_loc(b)-bars.index.get_loc(a))>63
@@ -301,7 +305,7 @@ def test_watch_last_five_override_and_same_onset(q):
     bars,bench,sectors = detector_fixture()
     for end in [85,95,110]:
         prefix=bars.iloc[:end]
-        replay=q.replay_detector(prefix,bench,sectors.reindex(prefix.index))
+        replay=q.replay_detector(prefix,bench,sectors.reindex(prefix.index),master_sessions=prefix.index)
         state=q.continuation(replay,prefix,replay['onsets'][0])
         expected=compute_watch_states({'S':prefix},bench,{'S':'Information Technology'},as_of=prefix.index[-1])
         assert state['state'] == expected.iloc[0]['state']
@@ -312,7 +316,7 @@ def test_missing_past_benchmark_blocks_full_prefix_parity(q):
     bars,bench,sectors = detector_fixture()
     bench['XLK']=bench['XLK'].drop(bars.index[69])
     with pytest.raises(q.NotQualified,match='BENCHMARK_HISTORY'):
-        q.replay_detector(bars,bench,sectors)
+        q.replay_detector(bars,bench,sectors,master_sessions=bars.index)
 
 
 def test_primary_report_never_grants_review_or_zero_alpha(q):
@@ -361,8 +365,8 @@ def test_cli_qualifies_stdin_packet_and_cannot_skip_outcome_firewall(q,monkeypat
 
 def test_complete_lookback_requires_504_master_sessions(q):
     with pytest.raises(q.NotQualified,match='LOOKBACK_UNAVAILABLE'):
-        q.session_window({i:100. for i in range(504)},list(range(504)),503,504)
-    assert len(q.session_window({i:100. for i in range(505)},list(range(505)),504,504)) == 505
+        q.session_window({i:100. for i in range(504)},list(range(504)),503,504,master_sessions=list(range(504)))
+    assert len(q.session_window({i:100. for i in range(505)},list(range(505)),504,504,master_sessions=list(range(505)))) == 505
 
 
 def test_full_prefix_missing_subject_session_not_hidden(q):
@@ -459,3 +463,98 @@ def test_full_prefix_cooldown_exact_63_boundary(q):
 def test_peer_subject_must_be_economic_issuer_not_security_identifier(q):
     with pytest.raises(q.NotQualified,match='SUBJECT_ISSUER'):
         q.freeze_peers([peer(1)],'SEC:US-XNYS-SUBJECT','Information Technology','2014-01-02')
+
+
+@pytest.mark.parametrize('clock', ['vendor_asof_date','report_period_end'])
+def test_review_future_vendor_or_report_clock_not_first_seen(q,clock):
+    r,p=evidence(q,**{clock:'2026-10-08'})
+    assert q.qualify(r,p,'2014-01-02T20:00:00Z').status == 'FAIL'
+
+
+def gics_row(**changes):
+    row=dict(valid_from='2013-01-01',valid_to=None,sector='Information Technology',
+             taxonomy='GICS',knowledge_basis='ACTUALLY_FIRST_SEEN',
+             first_publication_or_filing_accepted_at='2013-01-01T00:00:00Z',
+             known_at='2013-01-02T00:00:00Z')
+    row.update(changes)
+    return row
+
+
+def test_review_gics_restatement_does_not_claim_first_seen(q):
+    row=gics_row(known_at='2018-01-01T00:00:00Z')
+    with pytest.raises(q.NotQualified,match='GICS'):
+        q.historical_sector([row],'2014-01-02')
+    row['knowledge_basis']='FINAL_VINTAGE_VALID_TIME_ONLY'
+    assert q.historical_sector([row],'2014-01-02') == 'Information Technology'
+
+
+@pytest.mark.parametrize('row',[gics_row(sector='Technology'),
+    gics_row(valid_from='2013-1-1'),gics_row(known_at=None),
+    gics_row(first_publication_or_filing_accepted_at='2014-01-02T23:59:59Z')])
+def test_review_gics_official_names_dates_and_publication_required(q,row):
+    with pytest.raises(q.NotQualified,match='GICS'):
+        q.historical_sector([row],'2014-01-02',decision_at='2014-01-02T21:00:00Z')
+
+
+def test_review_terminal_payoff_cannot_be_silently_ignored(q):
+    with pytest.raises(q.NotQualified,match='TERMINAL'):
+        q.economic_return(100,50,basis='split_adjusted',terminal_proceeds=80)
+
+
+def test_review_homogeneous_split_adjusted_segment_is_supported(q):
+    q.validate_price_segment(['split_adjusted']*2,['S','S'])
+
+
+def test_review_master_calendar_is_required_even_for_unique_compressed_index(q):
+    bars,bench,sectors=detector_fixture()
+    bars=bars.drop(bars.index[80])
+    with pytest.raises(q.NotQualified,match='MASTER_SESSION'):
+        q.replay_detector(bars,bench,sectors.reindex(bars.index))
+    with pytest.raises(q.NotQualified,match='MASTER_SESSION'):
+        q.session_window({i:100 for i in range(65)},list(range(65)),64,21)
+
+
+def test_review_lookback_rejects_unsorted_calendar(q):
+    sessions=[0,2,1,3]
+    with pytest.raises(q.NotQualified,match='MASTER_SESSION'):
+        q.session_window({i:100 for i in sessions},sessions,3,2,master_sessions=sessions)
+
+
+def test_review_unknown_receipt_exclusions_remain_unknown(q):
+    r,p=evidence(q,status='UNKNOWN',exclusion_codes=('GICS_NOT_ADMITTED',))
+    result=q.qualify(r,p,'2014-01-02T20:00:00Z')
+    assert result.status == 'UNKNOWN'
+    assert 'GICS_NOT_ADMITTED' in result.exclusion_codes
+    assert q.qualify(r,{'tampered':True},'2014-01-02T20:00:00Z').status == 'FAIL'
+
+
+@pytest.mark.parametrize('old,new,old_etf,new_etf',[
+    ('Financials','Real Estate','XLF','XLRE'),
+    ('Information Technology','Communication Services','XLK','XLC'),
+    ('Information Technology','Financials','XLK','XLF')])
+def test_review_dated_sector_switch_requires_new_benchmark_prehistory(q,old,new,old_etf,new_etf):
+    bars,_,sectors=detector_fixture()
+    sectors.iloc[:100]=old
+    sectors.iloc[100:]=new
+    constant=pd.Series(100.,index=bars.index)
+    benchmarks={old_etf:constant.copy(),new_etf:constant.copy()}
+    before=q.replay_detector(bars.iloc[:100],benchmarks,sectors.iloc[:100],
+                             master_sessions=bars.index[:100])
+    full=q.replay_detector(bars,benchmarks,sectors,master_sessions=bars.index)
+    assert [d for d in full['onsets'] if d < bars.index[100]] == before['onsets']
+    benchmarks[new_etf].iloc[:90]=np.nan
+    with pytest.raises(q.NotQualified,match='BENCHMARK_HISTORY'):
+        q.replay_detector(bars,benchmarks,sectors,master_sessions=bars.index)
+
+
+def test_review_detector_rejects_current_catalog_sector_alias(q):
+    bars,bench,sectors=detector_fixture()
+    sectors[:]='Technology'
+    with pytest.raises(q.NotQualified,match='GICS_NOT_ADMITTED'):
+        q.replay_detector(bars,bench,sectors,master_sessions=bars.index)
+
+
+def test_review_final_vintage_vendor_date_is_not_local_first_possession(q):
+    r,p=evidence(q,knowledge_basis='FINAL_VINTAGE_VALID_TIME_ONLY',
+                 observed_ingested_at='2026-10-08T00:00:00Z',vendor_asof_date='2026-10-08')
+    assert q.qualify(r,p,'2014-01-02T20:00:00Z').status == 'PASS'
