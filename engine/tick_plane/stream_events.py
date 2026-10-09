@@ -24,6 +24,19 @@ from datetime import date
 from decimal import Decimal, InvalidOperation
 
 SCHEMA = "equity.tick_plane.stream_event/v0"
+# Vendor exchange reference names these non-exchange reporting/SIP codes.
+# This is a conservative exclusion, NOT an authoritative map of every venue.
+# Later source qualification must bind the versioned /v3/reference/exchanges table.
+_NON_LIT_EXCHANGE_IDS = frozenset({4, 5, 13, 62})
+_KNOWN_TRF_IDS = frozenset({201, 202, 203})
+
+
+def _coarse_venue_class(exchange, trf_id):
+    """Exclude known reporting/SIP routes from lit quote-rule classification."""
+    if exchange == 4:
+        return "TRF" if trf_id in _KNOWN_TRF_IDS else "UNKNOWN"
+    return "UNKNOWN" if exchange in _NON_LIT_EXCHANGE_IDS else "LIT"
+
 MAX_FRAME_BYTES = 2 * 1024 * 1024
 MAX_UNIVERSE = 600
 _SYMBOL = re.compile(r"^[A-Z][A-Z0-9.\-]{0,19}$")
@@ -199,8 +212,7 @@ def normalize_ws_event(
             "decimal_size_shares": size_exact, "trade_conditions": conditions,
             "exchange": exchange, "trf_id": trf_id,
             "trf_timestamp_ns": trf_ns,
-            "venue_class": "TRF" if exchange == 4 and trf_id is not None else
-                           "UNKNOWN" if exchange == 4 else "LIT",
+            "venue_class": _coarse_venue_class(exchange, trf_id),
             "trade_action": "UNRESOLVED_STREAM_ORIGINAL",
         })
     return common
