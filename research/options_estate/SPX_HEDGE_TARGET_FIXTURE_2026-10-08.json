@@ -24,6 +24,8 @@
   "universe_ref": "fixture:complete-one-contract-book",
   "source_receipt": {
     "source_ref": "fixture:source-1",
+    "source_revision": "synthetic-fixture-v1",
+    "contract_reference_revision": "synthetic-reference-v1",
     "source_observed_at": "2026-10-08T18:00:00Z",
     "received_at": "2026-10-08T18:00:01Z",
     "consumer_available_at": "2026-10-08T18:00:02Z"

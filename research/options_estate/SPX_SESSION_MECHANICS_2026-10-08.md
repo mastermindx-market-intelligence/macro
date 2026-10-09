@@ -7,6 +7,11 @@ pricing kernel, source store, forecast lifecycle, or event ledger.
 
 ## Source and custody
 
+- Full commission recovered from
+  `/Users/chriswong/Downloads/CODEX_SPX_SESSION_MECHANICS_EXECUTION_PACKET_2026-10-08.zip`.
+  The complete commission and kickoff were read; commission SHA-256
+  `2ab447c172db12a996755fdeb9a950c344bf33fe181bafd263dc3b37a55cdf08`
+  matches its manifest. The earlier missing-document blocker is resolved.
 - Protected Mastermind procedure pin:
   `ad362ef45def043ee5970c2b131be9825fcea1ae`; same-commit Skillpack INDEX,
   ACTIVE_EXECUTION, SESSION_RELIABILITY and delegation procedure were consumed.
@@ -38,7 +43,10 @@ pricing kernel, source store, forecast lifecycle, or event ledger.
 `build_inventory_scenario` conditions explicitly supplied signed positions on an
 already-qualified customer-initiated signed Flow aggregate. Every contract needs
 an explicit observation, including measured zero. For assumed dealer participation
-`a`, the endpoint position is `n1 = n0 - a * signed_flow`. This is a scenario, not
+`a`, the endpoint position is `n1 = n0 - a * signed_flow + nontrade_adjustment`.
+Trade increments and nontrade adjustments remain separate in the output. Omitting
+adjustments means an explicitly labelled zero-adjustment scenario assumption;
+an explicitly supplied partial/unknown adjustment map is refused. This is a scenario, not
 inferred actual dealer ownership. The Flow owner retains signing, corrections,
 packages, deduplication and source availability qualification.
 
@@ -63,10 +71,20 @@ ordering are rejected.
 
 The receipt's clocks and reference are caller assertions. A successful calculation
 does not independently qualify those assertions, data entitlements or distribution
-rights. Coverage means the supplied universe only. Optional selected expiries are
+rights. Supplied source and contract-reference revisions survive content identity;
+unknown revisions remain null. Coverage means the supplied universe only. Optional selected expiries are
 shown alongside expected/received/selected counts. The output always denies
 publication, calibrated-probability, observed-inventory, executed-flow and trading
 authority. The old scenario-surface function/schema and default CLI mode remain.
+
+The reconciled commission slice adds `0DTE`, `1-7D` and `8+D` sums classified by
+calendar days at the New York anchor date. Their signed changes reconcile to the
+covered-book change. Endpoint cohort migration is disclosed separately, without
+moving the anchor denominator or counting exposure twice. A complete explicit
+`target_iv_by_contract` map permits a supplied endpoint volatility surface instead
+of a parallel shift; combining both shocks is rejected. It remains a conditional
+endpoint assumption, not a predicted volatility path. Ranking, portfolio, sizing
+and auto-exit authority are also explicitly false.
 
 ## Reproducible local evidence
 
@@ -76,21 +94,33 @@ It is one invented SPXW contract and has no observed-market evidentiary value.
 ```sh
 python3 scripts/build_options_scenario_surface.py --mode hedge-target \
   --input research/options_estate/SPX_HEDGE_TARGET_FIXTURE_2026-10-08.json \
-  --output /Volumes/Mastermind/evidence/spx-session-mechanics-01a11ee7/synthetic-hedge-target.json
+  --output /Volumes/Mastermind/evidence/spx-session-mechanics-01a11ee7/synthetic-hedge-target-v2.json
 python3 -m pytest tests/test_options_scenario_surface.py tests/test_intraday_greeks.py tests/test_gex_engine.py -q --disable-warnings --maxfail=2
 ```
 
 CLI exit 0; fixture output SHA-256
-`8deedff8b7c10c0d0f8b7f87c02e618ed7e2c4a1714a66413b2d43b55592786d`.
+`8dcc57469e9c361d20f893022ea924afd37c4fe13a8f81cdb5b23a20f6ea4f5f`.
 Target change is -3741.9617374099907 SPX index-equivalent risk units; attribution
 residual is 2.2737367544323206e-13. This is an arithmetic demonstration only.
-The regression command passed **173 tests**, one warning, exit 0. Tests include
+The regression command passed **183 tests**, one warning, exit 0. Tests include
 independent scalar normal-CDF deltas through the final hour, puts/calls, both
 inventory signs, zero moves, telescoping endpoints versus path turnover,
 large-move linear residuals, netting, overflow, missing data, stale/late clocks,
 fixing boundaries, expiry selection, conditional Flow and CLI compatibility.
 Existing `options-data` CI enrollment already includes this test suite.
 
+The unchanged October 3 reference reproduced **83 assertions**, exit 0, to
+`/Volumes/Mastermind/evidence/spx-session-mechanics-01a11ee7/oct03-reference-reproduced.json`.
+The held October 6 witness wrote 62 passing numerical assertions but its complete
+CLI exited 1 at figure rendering because Matplotlib is absent. A separate
+numerical-only runner, `compare-held-witness.py` in the external evidence directory,
+reran all **62 assertions**, then compared the unchanged 14-contract witness to
+the actual incumbent-owner function: **PASS**, exit 0, target-change error
+`7.275957614183426e-12` risk units. Receipt `held-witness-comparison.json` explicitly
+records that no figure was rendered. Both witnesses are synthetic, not market
+backtests or independent review of this implementation.
+
+At first implementation head `4b3b1dbbbe66e2999e6485ed311c365d6114a417`,
 `python3 scripts/check_contract_delta.py --base 4fd2d0e2b2fb0eeb5d98222e01c4a8b36d9e9396`
 exited 0; its log is retained outside the repository at
 `/Volumes/Mastermind/evidence/spx-session-mechanics-01a11ee7/contract-delta.log`.
@@ -98,6 +128,9 @@ exited 0; its log is retained outside the repository at
 on other existing records. `git diff --check` exited 0. A prepublication fetch
 advanced `origin/main` to `1f1580ef4f09`; none of the three modified code/test files
 or the parent workstream changed between the pinned base and that revision.
+Hosted CI run `37885493384` succeeded on that exact first head: all twelve packs,
+contract-delta and ci-gate passed. This is prior-head proof; the commission
+reconciliation requires its own exact-head CI before acceptance.
 
 ## Recovered scientific findings
 
@@ -123,12 +156,9 @@ yet passed a common point-in-time SPX evaluation in this assignment.
 
 ## Current external gates and exact return conditions
 
-1. **Commission unavailable.** The named
-   `SPX_SESSION_MECHANICS_CODEX_EXECUTION_COMMISSION_2026-10-08.md` was absent from
-   the chat attachment surface, workspace and searched download/attachment paths.
-   Its contents have not been read. The user was asked for its path/Page/link.
-   Broader contracts, scientific target definitions and product composition need
-   reconciliation against that file before adoption.
+1. **Commission recovered and mechanics reconciled.** The ZIP identified above
+   resolves the missing-file gate. Its S1-S6 acceptance slices remain separate;
+   reading the document is not source admission, independent review or acceptance.
 2. **Raw source access unproven.** The existing local ThetaData owner's health read
    at configured 127.0.0.1:25503 returned ConnectionError. A single read-only request
    through incumbent `m1` transport failed before execution with exit 255,
@@ -141,9 +171,14 @@ yet passed a common point-in-time SPX evaluation in this assignment.
    2026-10-08T16:00:00-04:00. These are aggregate artifacts, not an independently
    qualified intraday book, live SSE chain or dealer inventory. No one-minute
    data was manufactured from candles.
-4. **Entitlements/rights unqualified.** No participant-tagged historical dataset,
-   ES basis/history sample or customer redistribution rights were established.
-   No purchase was made. Standard identity follows
+4. **Rights scope partially established, not absent.** The existing
+   `research/licenses/THETADATA_ENTITLEMENT_RECORD.md` records operator-confirmed
+   private/professional subscription, Full Trade Stream and purchased
+   display/redistribution rights. The remaining Theta gate is the written
+   full-universe intraday-derived Terminal scope and prepublish terms check.
+   No participant-tagged historical dataset or ES basis/history entitlement was
+   established. Stock-data rights do not establish futures rights. No purchase was
+   made. Standard identity follows
    [Cboe's SPX specification](https://www.cboe.com/tradable-products/sp-500/spx-options/spx-specifications/).
    [ThetaData's Greek-history documentation](https://thetadata.net/docs/operations/option_history_greeks_all.html)
    makes its time-to-expiry convention a qualification question; the local kernel
@@ -165,8 +200,42 @@ yet passed a common point-in-time SPX evaluation in this assignment.
    This proves current access behavior only. No new source-to-API-to-browser,
    EN/ZH, mobile or deployed-product acceptance has occurred.
 
-Next critical dependency is the complete commission and existing source-owner
-access. Then qualify the raw book/Flow/clock denominator, review this numerical
+## One integration owner and disjoint source lane
+
+Root `01a11ee7-d9fe-71f1-b582-193891266722` and PR #8684 remain the integration
+owner/carrier. Sibling chat `01a11eed-84cf-75e1-af19-fec04c4e4d5e` acknowledged the
+disjoint S1 source-contract/clock/rights lane and
+`research/options_estate/SPX_SOURCE_ADMISSION_2026-10-09.md`; its subsequent
+`collectors/thetadata.py` / `tests/test_thetadata.py` clock-retention repair is
+disjoint from the scenario engine/tests/CLI. Its source-return evidence must be
+consumed before any integration; no duplicate source acquisition or child exists
+in this integration chat.
+
+Terminal `master` was read at `048e019caf84fc8c2bc0e4180de313d6a02e7ca5`.
+Source-path reconciliation confirms OPEN #640 at `df440cac848ffbb973ed6100579f0603ca3c5e19`
+owns the typed scenario contract/composition; OPEN #661 at
+`edea69ef044c2581bf38a463d1956cf72295e2ab` owns the contour overlay; OPEN #799 at
+`8b39aa25a88a71ad437a673c87d460b0eed0e027` owns OptionsWorkspace/statistics; OPEN
+#723 at `b85c8e525364719689a01defbaad8e36cc73e693` owns the chart companion.
+OPEN draft #846 at `6369e5fa394aa391de5476d4e255285989882f23` owns GexDeskView,
+the Options route and Research Lab. Its original chat
+`01a118f3-fc4e-7941-b432-03703dccd19b` has a current continuation/CI/review return,
+so it is a live integration dependency, not a ghost owner. No second Terminal
+writer or transport/publication key was created. The pure JSON calculation is a
+research contract; adapting it into the accepted scenario consumer still requires
+that existing owner's source/schema reconciliation.
+
+| Acceptance slice | Current scope |
+| --- | --- |
+| S1 source admission | Partial source/rights findings; actual fresh sample unavailable |
+| S2 mechanics | Implemented and locally verified; independent review outstanding |
+| S3 research verdict | F1/F2/F3 NOT_EVALUATED; previous negative results preserved |
+| S4 Terminal integration | Not integrated; original active component owners retained |
+| S5 natural production proof | Not proven; source/release/entitlement gates remain |
+| S6 probabilistic promotion | NOT_QUALIFIED; disabled |
+
+Next critical dependency is existing source-owner access and the disjoint S1
+return. Then qualify the raw book/Flow/clock denominator, review this numerical
 seam, and bind it through the already-owned transport and Options Workspace.
 Historical evaluation and UI acceptance remain separate gates. No merge,
 installation, production publication or deployment is claimed.

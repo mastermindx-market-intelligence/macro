@@ -282,6 +282,124 @@ def test_endpoint_cli_rejects_duplicate_json_members(tmp_path):
     assert "duplicate JSON member" in proc.stderr
 
 
+def test_inventory_nontrade_adjustment_is_separate_and_never_signed_as_flow():
+    from engine.options_scenario_surface import build_inventory_scenario
+    key = "SPXW:2026-10-08:C:6000"
+    inv = build_inventory_scenario({key: -100}, {key: 20}, dealer_fraction=.5,
+                                  scenario_id="adjusted", nontrade_adjustments={key: 7})
+    assert inv["trade_increment"][key] == -10
+    assert inv["nontrade_adjustments"][key] == 7
+    assert inv["ending"][key] == -103
+    out = _endpoint(inventory=inv)
+    plain = _endpoint_inputs()["inventory"]
+    plain["ending"][key] = -103
+    assert out["hedge"] == _endpoint(inventory=plain)["hedge"]
+    assert out["inventory_assumptions"]["nontrade_assumption"] == "supplied"
+    # Changing the adjustment without changing the endpoint is detectable.
+    inv["nontrade_adjustments"][key] = 8
+    with pytest.raises(ValueError, match="conditioned inventory"):
+        _endpoint(inventory=inv)
+
+
+@pytest.mark.parametrize("adjustments", [{}, {"c": None}, {"c": 0, "alien": 0}])
+def test_inventory_partial_unknown_adjustments_are_not_assumed_zero(adjustments):
+    from engine.options_scenario_surface import build_inventory_scenario
+    with pytest.raises(ValueError):
+        build_inventory_scenario({"c": -10}, {"c": 0}, dealer_fraction=.5,
+                                 scenario_id="adjusted", nontrade_adjustments=adjustments)
+
+
+def test_inventory_omitted_adjustments_are_an_explicit_scenario_assumption():
+    from engine.options_scenario_surface import build_inventory_scenario
+    inv = build_inventory_scenario({"c": -10}, {"c": 0}, dealer_fraction=.5, scenario_id="fixed")
+    assert inv["nontrade_assumption"] == "assumed_zero"
+    assert inv["nontrade_adjustments"] == {"c": 0.}
+
+
+def test_endpoint_contract_specific_iv_is_repriced_per_leg_not_averaged():
+    from engine.options_scenario_surface import build_hedge_target_change
+    args = _endpoint_inputs()
+    key = args["contracts"][0]["contract_id"]
+    args["contracts"].append(dict(args["contracts"][0], contract_id="put", right="P"))
+    args["expected_contract_ids"].append("put")
+    args["inventory"]["starting"]["put"] = 50
+    args["inventory"]["ending"]["put"] = 60
+    args.update(iv_shift=0., target_iv_by_contract={key: .3, "put": .15})
+    before = copy.deepcopy(args)
+    out = build_hedge_target_change(**args)
+    initial = bs_greeks_vec(6000., np.array([6000., 6000.]), 120/(365*1440),
+                            .2, np.array([True, False]))[0]
+    endpoint = bs_greeks_vec(5979., np.array([6000., 6000.]), 100/(365*1440),
+                             np.array([.3, .15]), np.array([True, False]))[0]
+    expected = sum(-100 * (np.array([-110, 60]) * endpoint - np.array([-100, 50]) * initial))
+    assert out["hedge"]["target_change"] == pytest.approx(expected)
+    assert out["assumptions"]["vol_map"] == "supplied_contract_endpoint_iv"
+    assert {r["contract_id"]: r["target_iv"] for r in out["contracts"]} == args["target_iv_by_contract"]
+    assert args == before
+
+
+def test_endpoint_iv_surface_requires_explicit_universe_and_unambiguous_shock():
+    key = _endpoint_inputs()["contracts"][0]["contract_id"]
+    with pytest.raises(ValueError, match="universe"):
+        _endpoint(iv_shift=0., target_iv_by_contract={})
+    with pytest.raises(ValueError, match="iv_shift"):
+        _endpoint(iv_shift=.01, target_iv_by_contract={key: .3})
+    for invalid in (None, -1, True, float("nan"), float("inf")):
+        out = _endpoint(iv_shift=0., target_iv_by_contract={key: invalid})
+        assert out["hedge"] is None
+        assert "invalid_target_iv" in out["unavailable_reasons"]
+        json.dumps(out, allow_nan=False)
+
+
+def test_endpoint_cohorts_reconcile_at_anchor_and_keep_missing_book_unavailable():
+    from engine.options_scenario_surface import build_hedge_target_change
+    args = _endpoint_inputs()
+    for days in (1, 7, 8):
+        expiry = (datetime(2026, 10, 8) + timedelta(days=days)).date().isoformat()
+        key = f"day-{days}"
+        args["contracts"].append(dict(args["contracts"][0], contract_id=key,
+                                    expiry=expiry, fixing_at=expiry + "T20:00:00Z"))
+        args["expected_contract_ids"].append(key)
+        args["inventory"]["starting"][key] = days * 10
+        args["inventory"]["ending"][key] = days * 10
+    out = build_hedge_target_change(**args)
+    assert {r["cohort"]: r["contracts"] for r in out["by_cohort"]} == {"0DTE": 1, "1-7D": 2, "8+D": 1}
+    assert sum(r["target_change"] for r in out["by_cohort"]) == pytest.approx(out["hedge"]["target_change"])
+    args["contracts"].pop()
+    incomplete = build_hedge_target_change(**args)
+    assert incomplete["hedge"] is None
+    assert incomplete["by_cohort"] == []
+
+
+def test_endpoint_cohort_migration_uses_new_york_dates_not_utc_or_time_fraction():
+    args = _endpoint_inputs()
+    key = args["contracts"][0]["contract_id"]
+    args["contracts"][0].update(expiry="2026-10-16", fixing_at="2026-10-16T20:00:00Z")
+    # UTC has already reached Oct 9, but New York is still Oct 8 at the anchor.
+    args.update(observed_at="2026-10-09T01:30:00Z", as_of="2026-10-09T01:30:00Z",
+                target_at="2026-10-09T05:00:00Z")
+    args["source_receipt"].update({k: args["observed_at"] for k in
+                                ("source_observed_at", "received_at", "consumer_available_at")})
+    from engine.options_scenario_surface import build_hedge_target_change
+    out = build_hedge_target_change(**args)
+    assert out["cohort_migrations"] == [{"contract_id": key, "from": "8+D", "to": "1-7D"}]
+    assert next(r for r in out["by_cohort"] if r["cohort"] == "8+D")["target_change"] == out["hedge"]["target_change"]
+
+
+def test_endpoint_source_revision_changes_identity_without_backdating_or_repricing():
+    args = _endpoint_inputs()
+    args["source_receipt"].update(source_revision="revision-1", contract_reference_revision="reference-3")
+    before = _endpoint(**args)
+    args["source_receipt"]["source_revision"] = "revision-2"
+    after = _endpoint(**args)
+    assert before["content_id"] != after["content_id"]
+    assert before["hedge"] == after["hedge"]
+    assert after["source_receipt"]["source_revision"] == "revision-2"
+    assert after["source_receipt"]["contract_reference_revision"] == "reference-3"
+    assert _endpoint()["source_receipt"]["source_revision"] is None
+    assert all(after["authority"][flag] is False for flag in ("ranking", "portfolio", "sizing", "auto_exit"))
+
+
 def _contracts():
     rows = []
     for strike in (90.0, 95.0, 100.0, 105.0, 110.0):

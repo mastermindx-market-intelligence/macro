@@ -37,6 +37,8 @@ IV_SOURCE_PROVIDED = "provided_iv"
 IV_SOURCE_MID_SOLVE = "solve_from_mid"
 MINUTES_PER_YEAR = 365.0 * 24.0 * 60.0
 ET = ZoneInfo("America/New_York")
+INVENTORY_FLOW_METHOD = "supplied_prior_minus_participation_times_signed_flow/v1"
+INVENTORY_ADJUSTED_METHOD = "supplied_prior_minus_participation_times_signed_flow_plus_adjustments/v1"
 
 
 def _scenario_number(value: Any, name: str, *, positive: bool = False) -> float:
@@ -64,12 +66,18 @@ def _scenario_ref(value: Any, name: str) -> str:
     return value.strip()
 
 
+def _expiry_cohort(expiry: str, clock: datetime) -> str:
+    days = (date.fromisoformat(expiry) - clock.astimezone(ET).date()).days
+    return "past_expiry" if days < 0 else "0DTE" if days == 0 else "1-7D" if days <= 7 else "8+D"
+
+
 def build_inventory_scenario(
     prior_positions: dict[str, float],
     signed_flow: dict[str, float],
     *,
     dealer_fraction: float,
     scenario_id: str,
+    nontrade_adjustments: dict[str, float] | None = None,
 ) -> dict:
     """Condition a supplied prior on an already-qualified signed Flow aggregate.
 
@@ -79,6 +87,8 @@ def build_inventory_scenario(
     same explicit contract universe on both sides, including measured zeros; an
     absent or unknown flow is never a zero. Corrections/packages and source clocks
     remain with the existing Flow owner and the consuming snapshot receipt.
+    Supplied nontrade adjustments have the same explicit universe; omission
+    means a disclosed zero-adjustment scenario assumption, not measured absence.
     """
     scenario_id = _scenario_ref(scenario_id, "scenario_id")
     fraction = _scenario_number(dealer_fraction, "dealer_fraction")
@@ -88,17 +98,28 @@ def build_inventory_scenario(
         raise ValueError("inventory and Flow must be contract-keyed mappings")
     if not prior_positions or set(prior_positions) != set(signed_flow):
         raise ValueError("prior and Flow must have the same nonempty explicit contract universe")
-    starting, ending, flow = {}, {}, {}
+    supplied_adjustments = nontrade_adjustments is not None
+    if supplied_adjustments and (not isinstance(nontrade_adjustments, dict) or
+                                set(nontrade_adjustments) != set(prior_positions)):
+        raise ValueError("nontrade adjustments must have the same explicit contract universe")
+    starting, ending, flow, trade, adjustments = {}, {}, {}, {}, {}
     for key in sorted(prior_positions):
         _scenario_ref(key, "contract_id")
         starting[key] = _scenario_number(prior_positions[key], "prior position")
         flow[key] = _scenario_number(signed_flow[key], "signed Flow")
-        ending[key] = _scenario_number(starting[key] - fraction * flow[key], "ending position")
+        trade[key] = -fraction * flow[key]
+        adjustments[key] = _scenario_number(nontrade_adjustments[key], "nontrade adjustment") if supplied_adjustments else 0.
+        try:
+            ending[key] = _scenario_number(math.fsum((starting[key], trade[key], adjustments[key])), "ending position")
+        except OverflowError as exc:
+            raise ValueError("ending position must be finite") from exc
     return {
         "scenario_id": scenario_id, "evidence_class": "SCENARIO",
         "starting": starting, "ending": ending,
-        "method": "supplied_prior_minus_participation_times_signed_flow/v1",
+        "method": INVENTORY_ADJUSTED_METHOD if supplied_adjustments else INVENTORY_FLOW_METHOD,
         "dealer_fraction": fraction, "signed_flow": flow,
+        "trade_increment": trade, "nontrade_adjustments": adjustments,
+        "nontrade_assumption": "supplied" if supplied_adjustments else "assumed_zero",
     }
 
 
@@ -107,6 +128,7 @@ def build_hedge_target_change(
     target_spot: float, target_at: str, inventory: dict,
     expected_contract_ids: list[str], universe_ref: str, source_receipt: dict,
     expiry_scope: list[str] | None = None, iv_shift: float = 0.0,
+    target_iv_by_contract: dict[str, float] | None = None,
     r: float = DEFAULT_R, q: float = DEFAULT_Q,
     max_source_age_seconds: float = 60.0,
 ) -> dict:
@@ -133,6 +155,9 @@ def build_hedge_target_change(
     if not isinstance(source_receipt, dict):
         raise ValueError("source_receipt must be a mapping")
     receipt = {"source_ref": _scenario_ref(source_receipt.get("source_ref"), "source_ref")}
+    for key in ("source_revision", "contract_reference_revision"):
+        raw_revision = source_receipt.get(key)
+        receipt[key] = None if raw_revision is None else _scenario_ref(raw_revision, key)
     clocks = [_scenario_clock(source_receipt.get(k), k) for k in
               ("source_observed_at", "received_at", "consumer_available_at")]
     source, received, available = clocks
@@ -146,6 +171,11 @@ def build_hedge_target_change(
     expected_set = set(expected)
     if len(expected_set) != len(expected):
         raise ValueError("duplicate expected contract_id")
+    if target_iv_by_contract is not None:
+        if not isinstance(target_iv_by_contract, dict) or set(target_iv_by_contract) != expected_set:
+            raise ValueError("target IV must name the entire explicit contract universe")
+        if shift != 0:
+            raise ValueError("target_iv_by_contract and nonzero iv_shift are mutually exclusive")
     if not isinstance(inventory, dict) or inventory.get("evidence_class") != "SCENARIO":
         raise ValueError("inventory must explicitly be a SCENARIO, not observed dealer ownership")
     inv_id = _scenario_ref(inventory.get("scenario_id"), "inventory scenario_id")
@@ -156,15 +186,25 @@ def build_hedge_target_change(
         raise ValueError("inventory contains contracts outside supplied universe")
     inv_assumptions = {"method": "supplied_signed_positions"}
     if "method" in inventory:
-        if inventory["method"] != "supplied_prior_minus_participation_times_signed_flow/v1":
+        if inventory["method"] not in {INVENTORY_FLOW_METHOD, INVENTORY_ADJUSTED_METHOD}:
             raise ValueError("unsupported inventory method")
+        adjusted = inventory["method"] == INVENTORY_ADJUSTED_METHOD
+        if adjusted and not isinstance(inventory.get("nontrade_adjustments"), dict):
+            raise ValueError("adjusted inventory requires explicit nontrade adjustments")
         conditioned = build_inventory_scenario(
             start, inventory.get("signed_flow"),
             dealer_fraction=inventory.get("dealer_fraction"), scenario_id=inv_id,
+            nontrade_adjustments=inventory.get("nontrade_adjustments") if adjusted else None,
         )
-        if conditioned["ending"] != end:
+        if conditioned["ending"] != end or any(
+            key in inventory and inventory[key] != conditioned[key]
+            for key in ("trade_increment", "nontrade_adjustments", "nontrade_assumption")
+        ):
             raise ValueError("conditioned inventory does not match its supplied Flow assumptions")
-        inv_assumptions = {key: conditioned[key] for key in ("method", "dealer_fraction", "signed_flow")}
+        inv_assumptions = {key: conditioned[key] for key in (
+            "method", "dealer_fraction", "signed_flow", "trade_increment",
+            "nontrade_adjustments", "nontrade_assumption",
+        )}
     scope = None
     if expiry_scope is not None:
         if not isinstance(expiry_scope, list) or not expiry_scope:
@@ -201,6 +241,8 @@ def build_hedge_target_change(
         rows.append({"contract_id": key, "option_root": option_root, "expiry": expiry,
                      "right": raw["right"], "strike": strike, "multiplier": mult,
                      "settlement": settlement, "fixing_at": fixing.isoformat(),
+                     "anchor_cohort": _expiry_cohort(expiry, observed),
+                     "endpoint_cohort": _expiry_cohort(expiry, target),
                      "iv": raw.get("iv"), "n0": start.get(key), "n1": end.get(key)})
     rows.sort(key=lambda row: row["contract_id"])
     selected = [row for row in rows if scope is None or row["expiry"] in scope]
@@ -222,12 +264,18 @@ def build_hedge_target_change(
                 row[key] = None
                 if row["contract_id"] in selected_ids:
                     reasons.append("unknown_inventory" if key != "iv" else "invalid_iv")
+        target_iv = (target_iv_by_contract[row["contract_id"]] if target_iv_by_contract is not None
+                     else row["iv"] + shift if row["iv"] is not None else None)
+        try:
+            row["target_iv"] = _scenario_number(target_iv, "target IV", positive=True)
+        except ValueError:
+            row["target_iv"] = None
+            if row["contract_id"] in selected_ids:
+                reasons.append("invalid_target_iv")
         if row["contract_id"] in selected_ids:
             fixing = datetime.fromisoformat(row["fixing_at"])
             if fixing <= target:
                 reasons.append("fixing_boundary")
-            if row["iv"] is not None and row["iv"] + shift <= 0:
-                reasons.append("invalid_target_iv")
     out = {
         "schema": "options.hedge_target_change/v1", "evidence_class": "SCENARIO",
         "root": "SPX", "observed_at": observed.isoformat(), "as_of": cutoff.isoformat(),
@@ -240,22 +288,28 @@ def build_hedge_target_change(
                      "missing_contract_ids": sorted(expected_set - seen)},
         "assumptions": {"pricing": "engine.intraday_greeks.bs_greeks_vec",
                         "pricing_convention": "European_constant_carry_pricing_delta",
-                        "vol_map": "sticky_strike_parallel_shift", "iv_shift": shift,
+                        "vol_map": "supplied_contract_endpoint_iv" if target_iv_by_contract is not None else "sticky_strike_parallel_shift",
+                        "iv_shift": shift,
+                        "cohort_convention": "anchor_calendar_days_America/New_York",
                         "r": r, "q": q, "year_days": 365,
                         "max_source_age_seconds": max_age},
         "units": {"target_change": "SPX_index_equivalent_units",
                   "reference_notional_usd": "target_SPX_times_change_in_hedge_units"},
         "authority": {"calibrated_probability": False, "actual_dealer_inventory": False,
-                      "executed_flow": False, "trading": False, "can_publish": False},
+                      "executed_flow": False, "trading": False, "can_publish": False,
+                      "ranking": False, "portfolio": False, "sizing": False, "auto_exit": False},
         "warnings": ["Supplied inventory scenario, not observed dealer positions.",
                      "SPX risk units are not executable shares; reference notional is not cash or ES contracts.",
                      "Source receipt is caller supplied; this calculation grants no data or distribution rights.",
                      "Endpoint target change is not path turnover, impact or a price forecast."],
-        "hedge": None, "attribution": None, "by_expiry": [],
+        "hedge": None, "attribution": None, "by_expiry": [], "by_cohort": [],
+        "cohort_migrations": [{"contract_id": row["contract_id"], "from": row["anchor_cohort"], "to": row["endpoint_cohort"]}
+                              for row in selected if row["anchor_cohort"] != row["endpoint_cohort"]],
     }
     if not reasons:
         strike = np.array([row["strike"] for row in selected])
         iv = np.array([row["iv"] for row in selected])
+        endpoint_iv = np.array([row["target_iv"] for row in selected])
         n0 = np.array([row["n0"] for row in selected])
         n1 = np.array([row["n1"] for row in selected])
         mult = np.array([row["multiplier"] for row in selected])
@@ -265,12 +319,12 @@ def build_hedge_target_change(
         calls = np.array([row["right"] == "C" for row in selected])
         with np.errstate(over="ignore", invalid="ignore", divide="ignore", under="ignore"):
             d0, gamma, vanna, charm = bs_greeks_vec(s0, strike, t0, iv, calls, r=r, q=q)
-            d1 = bs_greeks_vec(s1, strike, t1, iv + shift, calls, r=r, q=q)[0]
+            d1 = bs_greeks_vec(s1, strike, t1, endpoint_iv, calls, r=r, q=q)[0]
             b0, b1 = -n0 * mult * d0, -n1 * mult * d1
             change = b1 - b0
             repricing = -mult * (n0 / 2 + n1 / 2) * (d1 - d0)
             position = -mult * (n1 - n0) * (d0 / 2 + d1 / 2)
-            linear = -mult * (n0 * (gamma * (s1 - s0) + vanna * shift +
+            linear = -mult * (n0 * (gamma * (s1 - s0) + vanna * (endpoint_iv - iv) +
                       charm * ((target - observed).total_seconds() / (365 * 86400))) + (n1 - n0) * d0)
         vectors = [d0, d1, b0, b1, change, repricing, position, linear]
         if not all(np.isfinite(x).all() for x in vectors):
@@ -297,7 +351,14 @@ def build_hedge_target_change(
                               "target_change": math.fsum(change[i] for i, row in enumerate(selected)
                                   if (row["option_root"], row["expiry"], row["fixing_at"]) == (root, expiry, fixing_at))}
                              for root, expiry, fixing_at in groups]
-                out.update(hedge=hedge, attribution=attribution, by_expiry=by_expiry)
+                by_cohort = []
+                for cohort in ("0DTE", "1-7D", "8+D"):
+                    members = [i for i, row in enumerate(selected) if row["anchor_cohort"] == cohort]
+                    by_cohort.append({"cohort": cohort, "contracts": len(members),
+                                      "anchor_target": math.fsum(b0[i] for i in members),
+                                      "endpoint_target": math.fsum(b1[i] for i in members),
+                                      "target_change": math.fsum(change[i] for i in members)})
+                out.update(hedge=hedge, attribution=attribution, by_expiry=by_expiry, by_cohort=by_cohort)
             except (OverflowError, ValueError):
                 reasons.append("nonfinite_repricing")
     out["unavailable_reasons"] = sorted(set(reasons))
