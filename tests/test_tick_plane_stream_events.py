@@ -239,5 +239,28 @@ class StreamEventContractTests(unittest.TestCase):
         self.assertEqual(captured(good)["decimal_size_shares"], "10.875")
 
 
+    def test_finra_orf_and_sip_codes_never_masquerade_as_lit(self):
+        for exchange in (5, 13, 62):
+            with self.subTest(exchange=exchange):
+                record = copy.deepcopy(TRADE)
+                record["x"] = exchange
+                record.pop("trfi", None)
+                parsed = captured(record)
+                self.assertEqual(parsed["venue_class"], "UNKNOWN")
+                self.assertEqual(parsed["exchange"], exchange)
+
+    def test_unknown_trf_pipe_does_not_gain_named_facility_authority(self):
+        record = copy.deepcopy(TRADE)
+        record["x"] = 4
+        record["trfi"] = 999
+        self.assertEqual(captured(record)["venue_class"], "UNKNOWN")
+
+    def test_known_trf_codes_are_reporting_facility_not_lit(self):
+        for code in (201, 202, 203):
+            record = copy.deepcopy(TRADE)
+            record["x"] = 4
+            record["trfi"] = code
+            self.assertEqual(captured(record)["venue_class"], "TRF")
+
 if __name__ == "__main__":
     unittest.main()
