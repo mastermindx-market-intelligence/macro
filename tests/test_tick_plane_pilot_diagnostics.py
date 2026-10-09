@@ -199,5 +199,152 @@ class PilotEvidenceTests(unittest.TestCase):
                          "INSUFFICIENT_COMPARABLE_EVIDENCE")
 
 
+
+from engine.tick_plane.rth_minute_reference import (
+    normalize_rth_minute_volume_reference, FrameContractError as RTHReferenceError,
+    MINUTE_NS,
+)
+
+RTH_START=1_791_417_600_000_000_000
+RTH_START-=RTH_START%MINUTE_NS
+
+
+def mock_minute_original(*, rows=None, **changes):
+    if rows is None:
+        rows=[
+            {"t":RTH_START//1_000_000,"v":12.375,"n":4},
+            {"t":(RTH_START+MINUTE_NS)//1_000_000,"v":7.625,"n":2},
+        ]
+    body={"status":"OK","ticker":"SPY","request_id":"original-rest-response",
+          "results":rows,"resultsCount":len(rows),"adjusted":False}
+    body.update(changes)
+    return json.dumps(body,separators=(",",":")).encode()
+
+
+def reference(rows=None, **changes):
+    packet=mock_minute_original(rows=rows)
+    opts=dict(
+        original_response_bytes=packet,
+        ticker="SPY",session="2026-10-08:RTH",
+        rth_start_ns=RTH_START,
+        rth_end_ns=RTH_START+2*MINUTE_NS,
+        expected_rth_minutes=2,
+        source_received_ns=RTH_START+3*MINUTE_NS,
+        source_receipt_id="synthetic-original-rest-bytes",
+        source_query_receipt="synthetic-original-exact-rth-query",
+        calendar_receipt="reviewed-existing-calendar",
+        volume_semantics_receipt="reviewed-source-volume-update-parity",
+        calendar_scope_reviewed=True,
+        exact_query_range_reviewed=True,
+        complete_pagination_reviewed=True,
+        minute_volume_semantics_reviewed=True,
+    )
+    opts.update(changes)
+    return normalize_rth_minute_volume_reference(**opts)
+
+
+class SameScopeRTHMinuteReferenceTests(unittest.TestCase):
+    def test_exact_native_decimals_sum_over_reviewed_rth_only(self):
+        r=reference()
+        self.assertEqual(r["reference_scope"],"RTH")
+        self.assertEqual(r["reference_volume_shares"],"20.000")
+        self.assertEqual(r["reference_state"],
+                         "CANDIDATE_SAME_SCOPE_EXTERNAL_PROOF_REQUIRED")
+        self.assertFalse(r["reference_source_available_at_original_decision"])
+        self.assertIsNone(r["acceptance_authority"])
+        self.assertEqual(r["original_vendor_receipt_authenticity"],
+                         "REQUIRES_INCUMBENT_OWNER_VERIFICATION")
+
+    def test_missing_native_query_review_does_not_generate_comparable_volume(self):
+        r=reference(exact_query_range_reviewed=False)
+        self.assertIsNone(r["reference_volume_shares"])
+        self.assertEqual(r["reference_state"],"UNQUALIFIED_MISSING_SOURCE_REVIEW")
+        self.assertEqual(r["observed_unadmitted_volume_shares_private_only"],"20.000")
+
+    def test_native_minute_volume_rule_parity_review_must_be_explicit(self):
+        r=reference(minute_volume_semantics_reviewed=False)
+        self.assertIsNone(r["reference_volume_shares"])
+
+    def test_sparse_source_does_not_silently_fake_bars(self):
+        r=reference(rows=[{"t":RTH_START//1_000_000,"v":"5.25"}])
+        self.assertEqual(r["actual_minute_records"],1)
+        self.assertEqual(r["missing_minute_rows"],1)
+        self.assertEqual(r["reference_volume_shares"],"5.25")
+
+    def test_empty_complete_minute_response_can_sum_zero_but_never_proves_source(self):
+        r=reference(rows=[])
+        self.assertEqual(r["reference_volume_shares"],"0")
+        self.assertEqual(r["missing_minute_rows"],2)
+        self.assertFalse(r["native_volume_eligibility_automatically_validated"])
+
+    def test_full_day_outside_rth_bar_refused(self):
+        outside={"t":(RTH_START-10*MINUTE_NS)//1_000_000,"v":500}
+        with self.assertRaisesRegex(RTHReferenceError,"does not match exact RTH"):
+            reference(rows=[outside])
+
+    def test_unadjusted_daily_aggregate_is_not_minute_reference(self):
+        daily={"status":"OK","ticker":"SPY",
+               "results":[{"T":RTH_START//1_000_000,"v":1000}],
+               "resultsCount":1}
+        with self.assertRaisesRegex(RTHReferenceError,"native integer"):
+            reference(original_response_bytes=json.dumps(daily).encode())
+
+    def test_duplicate_source_minute_not_double_counted(self):
+        dup={"t":RTH_START//1_000_000,"v":"10"}
+        with self.assertRaisesRegex(RTHReferenceError,"duplicate source minute"):
+            reference(rows=[dup,dup])
+
+    def test_fractional_non_integer_source_volume_is_exact(self):
+        rows=[{"t":RTH_START//1_000_000,"v":0.125},
+              {"t":(RTH_START+MINUTE_NS)//1_000_000,"v":"0.375"}]
+        self.assertEqual(reference(rows=rows)["reference_volume_shares"],"0.500")
+
+    def test_incomplete_rest_query_pagination_cannot_be_promoted(self):
+        packet=mock_minute_original(next_url="https://api.massive.com/next")
+        with self.assertRaisesRegex(RTHReferenceError,"pagination incomplete"):
+            reference(original_response_bytes=packet)
+
+    def test_inconsistent_results_count_refused(self):
+        packet=mock_minute_original(resultsCount=3)
+        with self.assertRaisesRegex(RTHReferenceError,"returned-count"):
+            reference(original_response_bytes=packet)
+
+    def test_foreign_ticker_cannot_supply_spy_reference(self):
+        packet=mock_minute_original(ticker="QQQ")
+        with self.assertRaisesRegex(RTHReferenceError,"ticker differs"):
+            reference(original_response_bytes=packet)
+
+    def test_post_session_venue_rest_receipt_never_becomes_original_intraday(self):
+        r=reference(source_received_ns=RTH_START+10*MINUTE_NS)
+        self.assertGreater(r["source_received_ns"],r["rth_end_ns"])
+        self.assertFalse(r["reference_source_available_at_original_decision"])
+
+    def test_reference_cannot_predate_source_session_end(self):
+        with self.assertRaisesRegex(RTHReferenceError,"calendar disagree"):
+            reference(source_received_ns=RTH_START+MINUTE_NS)
+
+    def test_unknown_requested_calendar_wont_admit_numeric_reference(self):
+        r=reference(calendar_scope_reviewed=False)
+        self.assertIsNone(r["reference_volume_shares"])
+
+    def test_external_referenced_volume_works_only_with_explicit_rth_scope(self):
+        native=reference()
+        row=symbol(reference_scope=native["reference_scope"],
+                   source_volume_shares=native["reference_volume_shares"],
+                   reference_volume_shares=native["reference_volume_shares"],
+                   reference_receipt=native["source_receipt_id"])
+        out=diag([row])
+        self.assertEqual(out["n_volume_within_2pct"],1)
+        self.assertIsNone(out["production_source_acceptance"])
+
+    def test_full_day_daily_volume_still_cannot_masquerade_as_rth(self):
+        annual=symbol(reference_scope="FULL_DAY",
+                      reference_volume_shares="30",
+                      source_volume_shares="20")
+        out=diag([annual])
+        self.assertEqual(out["n_mismatched_reference_scope"],1)
+        self.assertEqual(out["provisional_numeric_state"],
+                         "INSUFFICIENT_COMPARABLE_EVIDENCE")
+
 if __name__=="__main__":
     unittest.main()
