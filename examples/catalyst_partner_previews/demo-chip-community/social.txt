@@ -1,5 +1,5 @@
 DRAFT THREAD 1/2
-$EXB: In the synthetic scenario, EXB describes supplier lead times as an uncertainty.
+$EXB: The fictional EXB supplier capacity assumption has no measured backlog.
 
 DRAFT THREAD 2/2
-Concept; no endorsement. https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-chip-community&utm_campaign=catalyst_scan&utm_content=cp_e94908295003cd78eb&event_id=synthetic-semis-brief&tickers=EXA%2CEXB
+Concept; no endorsement. https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-chip-community&utm_campaign=catalyst_scan&utm_content=cp_f9f6d7bb13d917c741&event_id=synthetic-semis-brief&tickers=EXA%2CEXB

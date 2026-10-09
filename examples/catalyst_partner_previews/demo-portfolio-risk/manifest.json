@@ -11,6 +11,16 @@
       ]
     },
     {
+      "claim_id": "fixture-claim-exa-two",
+      "source_ids": [
+        "source-synthetic-001"
+      ],
+      "text": "The illustrative EXA demand outlook remains unquantified.",
+      "tickers": [
+        "EXA"
+      ]
+    },
+    {
       "claim_id": "fixture-claim-exb",
       "source_ids": [
         "source-synthetic-001"
@@ -21,11 +31,31 @@
       ]
     },
     {
+      "claim_id": "fixture-claim-exb-two",
+      "source_ids": [
+        "source-synthetic-001"
+      ],
+      "text": "The fictional EXB supplier capacity assumption has no measured backlog.",
+      "tickers": [
+        "EXB"
+      ]
+    },
+    {
       "claim_id": "fixture-claim-exc",
       "source_ids": [
         "source-synthetic-001"
       ],
       "text": "In the synthetic scenario, EXC reports no quantified delivery schedule.",
+      "tickers": [
+        "EXC"
+      ]
+    },
+    {
+      "claim_id": "fixture-claim-exc-two",
+      "source_ids": [
+        "source-synthetic-001"
+      ],
+      "text": "The invented EXC example lacks independent customer order evidence.",
       "tickers": [
         "EXC"
       ]
@@ -59,7 +89,7 @@
     "Independent rights, facts, freshness and copy review.",
     "Partner permission and editor signoff before any distribution."
   ],
-  "pack_id": "cp_9bdc2e2f9f3e5ee27e",
+  "pack_id": "cp_c09256aed277a51c68",
   "partner": {
     "audience": "exposure coverage and missing forward disclosures",
     "channel": "research",
@@ -85,7 +115,7 @@
       "ticker": "EXC"
     }
   ],
-  "scan_link": "https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-portfolio-risk&utm_campaign=catalyst_scan&utm_content=cp_9bdc2e2f9f3e5ee27e&event_id=synthetic-semis-brief&tickers=EXA%2CEXB%2CEXC",
+  "scan_link": "https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-portfolio-risk&utm_campaign=catalyst_scan&utm_content=cp_c09256aed277a51c68&event_id=synthetic-semis-brief&tickers=EXA%2CEXB%2CEXC",
   "schema": "marketing.catalyst_partner_pack.v1",
   "selected_tickers": [
     "EXA",

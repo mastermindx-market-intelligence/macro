@@ -15,7 +15,9 @@ These are evidence-qualified relationships, not estimated market moves or tradin
 ## Confirmed observations
 
 - In the synthetic scenario, EXA discusses a shift in product demand. [Evidence fixture-claim-exa; source-synthetic-001]
+- The illustrative EXA demand outlook remains unquantified. [Evidence fixture-claim-exa-two; source-synthetic-001]
 - In the synthetic scenario, EXB describes supplier lead times as an uncertainty. [Evidence fixture-claim-exb; source-synthetic-001]
+- The fictional EXB supplier capacity assumption has no measured backlog. [Evidence fixture-claim-exb-two; source-synthetic-001]
 
 ## Source references
 
@@ -28,6 +30,6 @@ These are evidence-qualified relationships, not estimated market moves or tradin
 
 Information as of 2026-10-09T03:30:00Z; event dated 2026-10-09T02:00:00Z.
 Conditional context only. Not investment advice.
-Scan the cited event and selected tickers: https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-chip-community&utm_campaign=catalyst_scan&utm_content=cp_e94908295003cd78eb&event_id=synthetic-semis-brief&tickers=EXA%2CEXB
+Scan the cited event and selected tickers: https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-chip-community&utm_campaign=catalyst_scan&utm_content=cp_f9f6d7bb13d917c741&event_id=synthetic-semis-brief&tickers=EXA%2CEXB
 
 DRAFT PREVIEW - NOT APPROVED FOR DISTRIBUTION.

@@ -7,101 +7,267 @@
   <meta name="color-scheme" content="dark">
   <title>Illustrative semiconductor earnings event | Mastermind partner preview</title>
   <meta name="description" content="Private, evidence-backed draft for editorial review. Not a published partnership.">
+  <!-- Canonical, unmodified :root tokens extracted at build time from theme.css. -->
+  <style>:root {
+  /* ── font stacks ─────────────────────────────────────────────────────────────
+     --font-ui   : primary UI stack. San Francisco leads via the system keywords
+                   — SF cannot be self-hosted (Apple's licence bars webfont
+                   redistribution), and naming no optical variant lets SF pick
+                   Text/Display itself. Inter follows as the carrier elsewhere,
+                   AHEAD of Segoe UI / Roboto so non-Apple gets the house face.
+     --font-mono : figures, tickers, code, axis ticks. ui-monospace resolves to
+                   SF Mono (macOS/iOS), Consolas (Windows) — no download. */
+  --font-ui: -apple-system, BlinkMacSystemFont, Inter, "Segoe UI", Roboto,
+    "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans CJK SC", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono",
+    Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  /* --num : numeric-face alias. Referenced ~30× on the macro dashboard for its
+     data numerals; body.page-macro overrides it to a mono terminal face on its
+     own scope. This :root default keeps the token valid everywhere else (a bare
+     `font-family:var(--num)` is otherwise an invalid decl on non-macro pages). */
+  --num: var(--font-ui);
+  /* ── type ramp — the SITE type scale (design-system packet PR-0(a)) ─────────
+     11 deliberate steps, promoted VERBATIM out of body.page-macro
+     (dashboard.html.j2) where it was born; body.estate (seo_base) carried a
+     byte-identical copy and leader_radar/intraday_flow carried near-copies.
+     Promotion only — no value was retuned; the pages that differ keep a
+     documented local override rather than being silently re-sized.
+
+     It must live at :root, NOT on a body class. body.page-stocks (the Prophet
+     board) never declared the ramp and inherits it ONLY through :root — a
+     body-class home would leave every Prophet surface off the scale. Same for
+     the calculators and the seo_* estate children, which use var(--fs-*)
+     without declaring it and today resolve it through their base template. */
+  --fs-display:46px;   /* hero verdict word          */
+  --fs-num-xl:38px;    /* the big board scores        */
+  --fs-h1:28px;        /* page / hero title           */
+  --fs-num-lg:22px;    /* secondary big numerals      */
+  --fs-h2:17px;        /* panel section titles        */
+  --fs-md:15px;        /* lead body / strong figures  */
+  --fs-body:14px;      /* base copy                   */
+  --fs-h3:14px;        /* subsection titles           */
+  --fs-sm:12.5px;      /* secondary copy / table body */
+  --fs-label:11px;     /* MONO eyebrows · caps        */
+  --fs-micro:10px;     /* dense ticks · table heads   */
+  --bg: #0f1115; --panel: #181b21; --panel2: #1e222a; --text: #d7dce3;
+  --muted: #8b93a1;
+  /* Estate contrast pass 2026-08-03: #2a2f3a measured 1.13–1.29:1 against the
+     dark panels — fainter than the LIGHT theme's raised 1.6 floor, inverted from
+     how the two themes should sit. #3a4150 lands containers at 1.56–1.85 across
+     the estate's dark surfaces, the same perceptual band as light. */
+  --line: #3a4150;
+  --q1: #2e9e4f; --q2: #d4a017; --q3: #d04545; --q4: #3f78d8;
+  --warn: #e0a030; --act: #e05555; --ok: #3da564;
+  /* Freshness/recency snapshot of --ok, computed HERE (unremapped). It inherits
+     RESOLVED, so a .fresh chip inside html[data-lang="zh"] .rrx / .igs keeps the
+     status green when those scopes remap --ok onto --up. Do not redeclare this
+     alias inside .rrx/.igs — that would re-resolve against the remapped --ok. */
+  --fresh-ok: var(--ok);
+  --up: #45b873; --down: #e06464; --orange: #e08b45;
+  --info: #5b9bf0; --link: #7aa7e0;
+  --g-cold: #4d8df0; --g-hot: #e0a23c; --g-mid: #3a4150;
+  /* ── prophet-card verb hues (_prophet_card.html.j2) ─────────────────────────
+     One hue per card state: buy/near/wait/hold/avoid. English uses the Western
+     green-up/red-down convention. Chinese mode rebinds only these Prophet tokens
+     onto the site's Asia-aware --up/--down pair below, so every Prophet board
+     becomes red-bullish/green-bearish without recolouring non-Prophet status UI.
+
+     STANCE IS NOT DIRECTION (DA-002 cure, C8-C — reference board.css:48/:83/:110).
+     --pv-buy used to be the literal #45b873, byte-identical to --up above: a Buy
+     chip and a +2.1% change printed the SAME ink, so one colour on one card meant
+     two different things and no reader could tell the call from the tape. Stance
+     now sits a deliberate tone off the direction ink it belongs to — same semantic
+     family, visibly not the same colour. Derived FROM --up rather than hand-picked
+     so the zh flip stays structural: 红涨绿跌 needs no second table below, and a
+     future --up nudge carries the stance with it instead of silently re-colliding.
+     Deepening toward --text also RAISES contrast for BUY on both planes, on all four
+     of its consumers, in all four quadrants. It does not do so uniformly: Near, which
+     is now mixed toward --muted rather than carrying its own hue, regresses on the
+     two DARK quadrants — 8 pairs, worst -0.94 (en/dark .pv-znl 8.12 -> 7.18) — and
+     every one of them still clears AA by a margin. Do not restate this as a blanket
+     improvement; the measured plane is what governs (measured by
+     tests/test_prophet_verb_ink_contrast.py, all 5 verbs x 4 consumers x 4
+     theme/lang quadrants; re-measure with mockups/refs/prophet_verb_ink/probe_pv_ink.py).
+     Separation, CIELAB dE, raw token / text ink, all eight readings 0.00 before:
+       en-light 30.5 / 5.6 · zh-light 35.1 / 23.3 · en-dark 10.1 / 10.1 · zh-dark 12.5 / 12.5
+     en/light's 5.6 is the thinnest and is INHERITED, not chosen: light's --ink-mix-up
+     is 62% and this mix is 54% — two points on one axis, so those two inks are close
+     by construction. It clears the ~2.3 just-noticeable threshold and the two never
+     take the same form (Buy is a solid pill, the change is small text), but it is the
+     quadrant to re-open first if the separation is ever judged too thin.
+
+     --pv-near follows --pv-buy rather than carrying its own literal, and that is
+     forced, not tidy: at the old literal #63c08d, Near landed within ~4/255 per
+     channel of the retuned Buy, i.e. curing DA-002 alone would have replaced a
+     stance/direction collision with a Buy/Near one. Mixing toward --muted keeps
+     Near reading as the softer call at every point on the ramp. */
+  --pv-buy: color-mix(in srgb, var(--up) 82%, var(--text));
+  --pv-near: color-mix(in srgb, var(--pv-buy) 70%, var(--muted));
+  --pv-wait: #e0a030;
+  --pv-hold: #8b93a1; --pv-avoid: #e06464;
+  /* Prophet setup-detail modal tokens: literal color decisions live in the palette, not component CSS. */
+  --pv-dialog-shadow: 0 18px 60px rgba(0,0,0,.2666667);
+  --pv-dialog-backdrop: rgba(0,0,0,.5333333);
+  --chart-bg: transparent;
+  --card-shadow: 0 1px 0 rgba(255,255,255,.02);
+  --popover-shadow: 0 6px 18px rgba(0,0,0,.5);
+  /* ── custom scrollbars ───────────────────────────────────────────────────────
+     Thumb tint derived from --muted so it adapts to dark / light / zh with no
+     per-theme override (--info gives the drag-state a branded accent). Consumed
+     by the global scrollbar rules further down and mirrored (with fallbacks) by
+     theme.js for the self-contained pages that don't link this file. */
+  --sb-thumb: color-mix(in srgb, var(--muted) 34%, transparent);
+  --sb-thumb-hover: color-mix(in srgb, var(--muted) 60%, transparent);
+  --sb-thumb-active: color-mix(in srgb, var(--info) 62%, var(--muted));
+  /* ── frosted-glass popover system ───────────────────────────────────────────
+     ONE token set shared by every floating menu surface — the top-nav dropdowns,
+     the Research mega-menu, the global-search suggestions, the gear settings
+     popover, the bell alert popover and the fired-alerts popup — so they all read
+     as a single design family. backdrop-filter blurs the aurora + page behind the
+     panel; the translucent fill lets that colour bleed through. Opacity + shadow
+     are re-tuned per theme in the light block below. The self-contained vector
+     family (no theme.css) mirrors these values inline in _vector_polish.html.j2
+     and theme.js, so keep the three in sync if you retune the glass. */
+  --glass-bg: color-mix(in srgb, var(--panel) 86%, transparent);
+  --glass-brd: color-mix(in srgb, var(--text) 14%, transparent);
+  --glass-blur: saturate(180%) blur(22px);
+  --glass-shadow: 0 24px 64px -22px rgba(3,7,18,.74), 0 10px 26px -12px rgba(3,7,18,.55),
+    inset 0 1px 0 color-mix(in srgb,#fff 10%,transparent);
+  /* ── gbtn: house glass-button token set (macro sweep 2026-07) ──────────────
+     The default button surface for the whole site — a frosted pill that reads as
+     one family with the glass popovers above. Fill/border derive from --panel2 /
+     --text via color-mix so dark, light and the zh swap all resolve at paint. */
+  --gbtn-bg:        color-mix(in srgb, var(--panel2) 52%, transparent);
+  --gbtn-bg-hover:  color-mix(in srgb, var(--panel2) 76%, transparent);
+  --gbtn-brd:       color-mix(in srgb, var(--text) 12%, transparent);
+  --gbtn-brd-hover: color-mix(in srgb, var(--text) 24%, transparent);
+  --gbtn-sheen:     rgba(255,255,255,.09);
+  /* ── Macro Command tints (templates/macro_command.css) ────────────────────
+     color-mix on an added surface line is enforce-added-illegal; the mixes
+     live here so the surface only names tokens. --text/--info/--ok track
+     the theme (and the zh swap) at paint. Halo fill is currentColor at
+     calc(var(--mc-halo) * 100%): rest 12% on dark, lit 22% when the
+     signature :has() raises --mc-halo, cancelled (0) on light. Stance
+     wash is 0 dark / 6% light. --mc-accent-line keeps the dest-hover
+     second stop on --mq-line (macro_suite.css), not a 12% --text stand-in. */
+  --mc-ink-02: color-mix(in srgb, var(--text) 2%, transparent);
+  --mc-ink-05: color-mix(in srgb, var(--text) 5%, transparent);
+  --mc-ink-07: color-mix(in srgb, var(--text) 7%, transparent);
+  --mc-ink-08: color-mix(in srgb, var(--text) 8%, transparent);
+  --mc-ink-09: color-mix(in srgb, var(--text) 9%, transparent);
+  --mc-ink-10: color-mix(in srgb, var(--text) 10%, transparent);
+  --mc-ink-12: color-mix(in srgb, var(--text) 12%, transparent);
+  --mc-ink-14: color-mix(in srgb, var(--text) 14%, transparent);
+  --mc-ink-18: color-mix(in srgb, var(--text) 18%, transparent);
+  --mc-text-06: color-mix(in srgb, var(--text) 6%, transparent);
+  --mc-text-10: color-mix(in srgb, var(--text) 10%, transparent);
+  --mc-text-22: color-mix(in srgb, var(--text) 22%, transparent);
+  --mc-accent-10: color-mix(in srgb, var(--info) 10%, transparent);
+  --mc-accent-12: color-mix(in srgb, var(--info) 12%, transparent);
+  --mc-accent-22: color-mix(in srgb, var(--info) 22%, transparent);
+  --mc-accent-34: color-mix(in srgb, var(--info) 34%, transparent);
+  --mc-accent-line: color-mix(in srgb, var(--info) 38%, var(--mq-line));
+  --mc-halo: 0;
+  --mc-halo-fill: color-mix(in srgb, currentColor calc(var(--mc-halo) * 100%), transparent);
+  --mc-stance-ok: transparent;
+  --mc-stance-warn: transparent;
+  --mc-stance-bad: transparent;
+  --mc-stance-neutral: transparent;
+  --mc-stance-fill: var(--mc-stance-neutral);
+}</style>
   <style>
-    :root {
-      color-scheme:dark;--base:#09111e;--panel:#101b2a;--panel2:#142236;
-      --line:rgba(156,187,216,.19);--ink:#f2f8ff;--muted:#aac0d3;
-      --teal:#6be8ce;--amber:#ffce80;--radius:22px;
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    }
+    /* All palette, type and surface decisions resolve from canonical theme.css.
+       No new colour/radius/font tokens are declared by this preview. */
+    :root { color-scheme:dark; font-family:var(--font-ui); }
     *{box-sizing:border-box}
-    body{background:radial-gradient(ellipse at 83% -13%,#17314b 0,transparent 42%),
-      radial-gradient(ellipse at -10% 45%,#10373b 0,transparent 42%),var(--base);
-      color:var(--ink);margin:0;line-height:1.56}
+    body{background:radial-gradient(ellipse at 83% -13%,var(--panel2) 0,transparent 42%),
+      radial-gradient(ellipse at -10% 45%,var(--panel) 0,transparent 42%),var(--bg);
+      color:var(--text);margin:0;line-height:1.56}
     a{color:inherit;text-underline-offset:4px}
-    a:focus-visible{outline:3px solid var(--teal);outline-offset:4px;border-radius:4px}
+    a:focus-visible{outline:3px solid var(--link);outline-offset:4px;border-radius:var(--r-ctl,8px)}
     .shell{width:min(1160px,calc(100% - 48px));margin:auto}
-    .review{background:#30261a;color:#ffe4b8;border-bottom:1px solid #695337;
+    .review{background:var(--panel2);color:var(--warn);border-bottom:1px solid var(--line);
       font-size:.79rem;font-weight:750;letter-spacing:.075em;padding:10px 0}
-    .review strong{color:#fff3de}
-    .demo{background:#44232c;color:#ffdce0;border-bottom:1px solid #b35c68;
+    .review strong{color:var(--text)}
+    .demo{background:var(--panel2);color:var(--act);border-bottom:1px solid var(--line);
       padding:11px 0;font-weight:700;text-transform:uppercase;font-size:.77rem}
     header{display:flex;align-items:center;justify-content:space-between;gap:18px;
       padding:28px 0;border-bottom:1px solid var(--line)}
     .identity{display:flex;align-items:center;gap:12px;font-size:1.02rem;font-weight:850;
       letter-spacing:.07em;text-decoration:none}
-    .mark{width:34px;height:34px;border-radius:11px;background:conic-gradient(from 130deg,
-      #9bd7ff,#35c6b6,#1956ac,#9bd7ff);display:grid;place-items:center;color:#081321;
+    .mark{width:34px;height:34px;border-radius:var(--r-card,12px);background:conic-gradient(from 130deg,
+      var(--link),var(--info),var(--panel2),var(--link));display:grid;place-items:center;color:var(--bg);
       font-weight:950;transform:rotate(-8deg)}
     .identity small{display:block;color:var(--muted);font-weight:560;font-size:.69rem;
       letter-spacing:.13em;text-transform:uppercase}
     .top-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-    .chip{border:1px solid var(--line);background:#122437;color:#c9e7f1;
-      border-radius:100px;padding:6px 12px;font-size:.72rem;letter-spacing:.06em;font-weight:740}
-    .chip.gold{color:var(--amber);border-color:#6a5436;background:#2b251d}
+    .chip{border:1px solid var(--line);background:var(--panel);color:var(--text);
+      border-radius:var(--r-pill,999px);padding:6px 12px;font-size:.72rem;letter-spacing:.06em;font-weight:740}
+    .chip.gold{color:var(--warn);border-color:var(--line);background:var(--panel2)}
     .eyebrow{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.2em;
-      color:var(--teal)}
+      color:var(--link)}
     .hero{padding:66px 0 45px;display:grid;grid-template-columns:minmax(0,1fr) 320px;
       gap:50px;align-items:end}
     h1{font-size:clamp(2.4rem,5vw,4.8rem);line-height:1.05;font-weight:770;
       letter-spacing:-.055em;margin:15px 0 22px;max-width:16ch}
     .dek{font-size:clamp(1rem,1.55vw,1.25rem);max-width:68ch;
       color:var(--muted);margin:0;line-height:1.65}
-    .capsule{border:1px solid var(--line);background:linear-gradient(155deg,#182a3d,#0e1c2b);
-      box-shadow:0 18px 50px rgba(0,0,0,.22);border-radius:var(--radius);padding:24px}
-    .capsule .caption{color:var(--teal);font-size:.72rem;font-weight:800;
+    .capsule{border:1px solid var(--line);background:linear-gradient(155deg,var(--panel2),var(--panel));
+      box-shadow:var(--card-shadow);border-radius:var(--r-card,12px);padding:24px}
+    .capsule .caption{color:var(--link);font-size:.72rem;font-weight:800;
       letter-spacing:.16em;text-transform:uppercase}
     .capsule h2{font-size:1.35rem;letter-spacing:-.03em;margin:10px 0 12px}
     .capsule p{font-size:.88rem;margin:8px 0;color:var(--muted)}
     .capsule .scope{border-top:1px solid var(--line);padding-top:14px;margin-top:18px}
     .meta-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;
       margin:0 0 30px}
-    .metric{border-radius:16px;border:1px solid var(--line);padding:16px 18px;
-      background:rgba(16,29,45,.75);min-width:0}
+    .metric{border-radius:var(--r-card,12px);border:1px solid var(--line);padding:16px 18px;
+      background:var(--panel2);min-width:0}
     .metric .k{display:block;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
       color:var(--muted);font-weight:800;margin-bottom:8px}
     .metric .v{font-size:.85rem;font-weight:700;overflow-wrap:anywhere}
     .feature{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(270px,.75fr);
       gap:24px;margin-bottom:48px;align-items:start}
-    .visual{background:#101a27;border-radius:var(--radius);padding:12px;
+    .visual{background:var(--panel);border-radius:var(--r-card,12px);padding:12px;
       border:1px solid var(--line);overflow:hidden}
     .visual img{width:100%;height:auto;display:block;aspect-ratio:1;object-fit:contain;
-      border-radius:12px;background:#0e1420}
+      border-radius:var(--r-card,12px);background:var(--bg)}
     .visual figcaption{padding:12px 8px 2px;font-size:.75rem;color:var(--muted)}
     .no-media{min-height:390px;display:grid;align-content:center;justify-items:center;
       padding:34px;text-align:center;color:var(--muted)}
-    .no-media span{font-size:2rem;color:var(--amber)}
+    .no-media span{font-size:2rem;color:var(--warn)}
     h2.section{font-size:1.65rem;letter-spacing:-.035em;margin:0 0 16px}
-    .read{padding:24px 26px;background:linear-gradient(180deg,#14263a,#0e1d2d);
-      border:1px solid var(--line);border-radius:var(--radius)}
+    .read{padding:24px 26px;background:linear-gradient(180deg,var(--panel2),var(--panel));
+      border:1px solid var(--line);border-radius:var(--r-card,12px)}
     .read .caption{font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;
-      color:var(--teal);font-weight:780}
+      color:var(--link);font-weight:780}
     .read ul{padding-left:19px;margin:14px 0 0}
     .read li{margin-bottom:19px;font-size:.94rem}
     .evidence-ref{font-size:.71rem;display:block;color:var(--muted);margin-top:5px;
       overflow-wrap:anywhere}
     .relation{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:22px 0}
-    .relation strong{color:#fff;letter-spacing:.02em}
-    .relation em{font-size:.69rem;font-style:normal;padding:5px 9px;border-radius:100px;
-      border:1px solid #496177;color:#bad0e0;letter-spacing:.08em}
+    .relation strong{color:var(--text);letter-spacing:.02em}
+    .relation em{font-size:.69rem;font-style:normal;padding:5px 9px;border-radius:var(--r-pill,999px);
+      border:1px solid var(--line);color:var(--muted);letter-spacing:.08em}
     .cta{display:inline-flex;align-items:center;justify-content:center;gap:12px;
-      color:#061a21;background:linear-gradient(120deg,#64dccb,#bbffdc);
+      color:var(--bg);background:linear-gradient(120deg,var(--link),var(--info));
       font-weight:820;letter-spacing:-.01em;text-decoration:none;
-      border-radius:13px;padding:14px 20px;min-height:48px;
-      box-shadow:0 8px 35px rgba(65,221,200,.13)}
+      border-radius:var(--r-card,12px);padding:14px 20px;min-height:48px;
+      box-shadow:var(--card-shadow)}
     .cta:hover{filter:brightness(1.08)}
-    .scan-disclaimer{color:var(--amber);font-size:.75rem;margin:11px 0 0}
+    .scan-disclaimer{color:var(--warn);font-size:.75rem;margin:11px 0 0}
     .below{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin:16px 0 74px}
     .below>section{border-top:1px solid var(--line);padding-top:28px}
     .below h2{margin:0 0 15px;font-size:1.45rem;letter-spacing:-.03em}
     .below p{font-size:.88rem;color:var(--muted)}
     .sources{padding:0;list-style:none;margin:18px 0}
     .sources li{border-bottom:1px solid var(--line);padding:14px 0}
-    .sources a{font-size:.88rem;font-weight:730;color:var(--ink);overflow-wrap:anywhere}
+    .sources a{font-size:.88rem;font-weight:730;color:var(--text);overflow-wrap:anywhere}
     .sources small{display:block;font-size:.72rem;color:var(--muted)}
     .foot{border-top:1px solid var(--line);padding:25px 0 50px;
       display:flex;justify-content:space-between;gap:28px;color:var(--muted);font-size:.77rem}
-    .foot strong{color:var(--ink)}
+    .foot strong{color:var(--text)}
     @media(max-width:850px){
       .hero{grid-template-columns:1fr;gap:25px;padding-top:44px}
       .feature{grid-template-columns:1fr}
@@ -176,8 +342,16 @@
             Evidence fixture-claim-exa · source
             source-synthetic-001</span></li>
           
+          <li>The illustrative EXA demand outlook remains unquantified.<span class="evidence-ref">
+            Evidence fixture-claim-exa-two · source
+            source-synthetic-001</span></li>
+          
           <li>In the synthetic scenario, EXB describes supplier lead times as an uncertainty.<span class="evidence-ref">
             Evidence fixture-claim-exb · source
+            source-synthetic-001</span></li>
+          
+          <li>The fictional EXB supplier capacity assumption has no measured backlog.<span class="evidence-ref">
+            Evidence fixture-claim-exb-two · source
             source-synthetic-001</span></li>
           </ul>
         <div class="relation" aria-label="Affected ticker relationships">
@@ -187,7 +361,7 @@
           <strong>EXB</strong><em>EVIDENCED INDIRECT</em>
           
         </div>
-        <a class="cta" href="https://preview.invalid/catalyst/scan/?utm_source=partner&amp;utm_medium=partner-demo-chip-community&amp;utm_campaign=catalyst_scan&amp;utm_content=cp_e94908295003cd78eb&amp;event_id=synthetic-semis-brief&amp;tickers=EXA%2CEXB" rel="nofollow sponsored noopener">Open the free event scan <span aria-hidden="true">↗</span></a>
+        <a class="cta" href="https://preview.invalid/catalyst/scan/?utm_source=partner&amp;utm_medium=partner-demo-chip-community&amp;utm_campaign=catalyst_scan&amp;utm_content=cp_f9f6d7bb13d917c741&amp;event_id=synthetic-semis-brief&amp;tickers=EXA%2CEXB" rel="nofollow sponsored noopener">Open the free event scan <span aria-hidden="true">↗</span></a>
         
         <p class="scan-disclaimer">Placeholder destination. Public scan route is not registered or confirmed.</p>
         
@@ -211,12 +385,12 @@
         <p>Known missing data:
           Every issuer, affected symbol and claim is synthetic.; The scan destination is an unregistered placeholder.</p>
         
-        <a class="cta" href="https://preview.invalid/catalyst/scan/?utm_source=partner&amp;utm_medium=partner-demo-chip-community&amp;utm_campaign=catalyst_scan&amp;utm_content=cp_e94908295003cd78eb&amp;event_id=synthetic-semis-brief&amp;tickers=EXA%2CEXB" rel="nofollow sponsored noopener">Inspect the same event scan <span aria-hidden="true">↗</span></a>
+        <a class="cta" href="https://preview.invalid/catalyst/scan/?utm_source=partner&amp;utm_medium=partner-demo-chip-community&amp;utm_campaign=catalyst_scan&amp;utm_content=cp_f9f6d7bb13d917c741&amp;event_id=synthetic-semis-brief&amp;tickers=EXA%2CEXB" rel="nofollow sponsored noopener">Inspect the same event scan <span aria-hidden="true">↗</span></a>
       </section>
     </div>
     <footer class="foot">
       <div><strong>MASTERMIND</strong> / event research with provenance<br>Not investment advice. Not a recommendation to trade.</div>
-      <div>Private reverse-demo asset · cp_e94908295003cd78eb<br>Noindex / no distribution authority / source rights apply.</div>
+      <div>Private reverse-demo asset · cp_f9f6d7bb13d917c741<br>Noindex / no distribution authority / source rights apply.</div>
     </footer>
   </div>
 </body>

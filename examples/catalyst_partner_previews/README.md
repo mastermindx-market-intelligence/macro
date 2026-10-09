@@ -17,7 +17,7 @@ python3 scripts/build_catalyst_partner_pack.py --demo --out /tmp/catalyst-partne
 python3 -m unittest -v tests/test_catalyst_partner_pack.py
 ```
 
-Three exact identities are stable for these fixture inputs: `cp_20835be661fe301d13`, `cp_e94908295003cd78eb`, and `cp_9bdc2e2f9f3e5ee27e`. Generated assets are deterministic. They do not constitute a verified public market packet or production/browser acceptance.
+Three exact identities are stable for these fixture inputs: `cp_df01f66b050ce320ca`, `cp_f9f6d7bb13d917c741`, and `cp_c09256aed277a51c68`. Generated assets are deterministic. They do not constitute a verified public market packet or production/browser acceptance.
 
 ## Replacing the fixture with actual approved evidence
 
@@ -40,3 +40,9 @@ Session 00 must supply and independently verify a registered public scan `--scan
 The five JSON descriptors under [session05_candidate_profiles/](session05_candidate_profiles/) are transcribed from the actual [Session 05 Draft/HOLD prospect refresh PR #8681](https://github.com/mastermindx-market-intelligence/macro/pull/8681). They preserve its five suggested ticker triplets and publisher-specific research angles. Profile check time is conservatively normalized to the **beginning** of the Oct 8 US Eastern research date: it is **not** a claimed clock-time visit or current endorsement. `status=candidate`, `publication_permission=NOT_GRANTED`, no brand permission, no logos, no subscriber contact data. The `profile_url` is public publisher material and a validation lead, not an authorized promotional route. A source's mention is not an approved co-brand.
 
 These profiles can be given to `--partner` (tickers default to `selected_tickers`) **only after** a fresh Session 01/00 public event packet supports every selected ticker with individual source-rights receipts. Without matching verified producer evidence the factory refuses output; it does not manufacture missing ticker scans. The optional research angle is advisory metadata, never a model license to invent event facts or future dates. No target-specific real-event pack exists yet, and no outreach is authorized.
+
+### CI hardening and proof (2026-10-09)
+
+The saved previews are built using the **existing Mastermind** `templates/theme.css` `:root` token definitions, extracted unchanged at generation time and embedded in each private HTML file. No page-local palette, radius or font authority was created. The chart uses the existing `render_breaking_card` renderer **and** the existing `card_earns_attachment` decision after rendering; it is withheld if it merely restates the selected social claim, with a distinct explanatory empty-state from rights refusal. Each synthetic demo fixture includes a separate verified-only-for-demo observation so its card adds useful information. The CLI pins the checkout root before importing house packages, avoiding sibling-checkout import hijacks.
+
+Focused offline suite: **31 tests passed**; new design-system scanner reported **0 added blocking findings**; compiler byte-check and README/example diff proof to be rerun at the current commit. Sampled offline Chrome viewport renderings at 1440×1080 and 320×980 showed the synthetic warning and editorial hold without horizontal clipping. This does **not** imply existing GitHub CI, production source rights, an approved partner or a live scan route.

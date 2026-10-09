@@ -9,6 +9,16 @@
       "tickers": [
         "EXA"
       ]
+    },
+    {
+      "claim_id": "fixture-claim-exa-two",
+      "source_ids": [
+        "source-synthetic-001"
+      ],
+      "text": "The illustrative EXA demand outlook remains unquantified.",
+      "tickers": [
+        "EXA"
+      ]
     }
   ],
   "disclosure": "Unsolicited concept prepared for Illustrative earnings-letter audience (demo only). No partnership, endorsement, or approval is implied.",
@@ -39,7 +49,7 @@
     "Independent rights, facts, freshness and copy review.",
     "Partner permission and editor signoff before any distribution."
   ],
-  "pack_id": "cp_20835be661fe301d13",
+  "pack_id": "cp_df01f66b050ce320ca",
   "partner": {
     "audience": "quarterly earnings coverage",
     "channel": "newsletter",
@@ -57,7 +67,7 @@
       "ticker": "EXA"
     }
   ],
-  "scan_link": "https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-earnings-letter&utm_campaign=catalyst_scan&utm_content=cp_20835be661fe301d13&event_id=synthetic-semis-brief&tickers=EXA",
+  "scan_link": "https://preview.invalid/catalyst/scan/?utm_source=partner&utm_medium=partner-demo-earnings-letter&utm_campaign=catalyst_scan&utm_content=cp_df01f66b050ce320ca&event_id=synthetic-semis-brief&tickers=EXA",
   "schema": "marketing.catalyst_partner_pack.v1",
   "selected_tickers": [
     "EXA"
