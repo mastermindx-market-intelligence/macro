@@ -1,0 +1,469 @@
+{
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "claim_limits": "Pinned source and committed artifacts only; no deployed process, browser, alpha or PnL proof.",
+  "board": {
+    "as_of": "2026-10-09",
+    "board_definition": "cn_prophet_v4",
+    "universe": 1601,
+    "lane_counts": {
+      "featured": 24,
+      "more_actionable": 124,
+      "late_or_unfillable": 16,
+      "forming": 16
+    },
+    "coverage": {
+      "as_of": "2026-10-09",
+      "data_through": "2026-10-09",
+      "panel_collected_utc": "2026-10-09T15:21:14.750587+00:00",
+      "panel_collected_hour_utc": 15,
+      "partial_session": false,
+      "session_note": "settled (collected after session close or a prior-session board)",
+      "lane": null
+    },
+    "staleness": {
+      "price_through": "2026-10-09",
+      "age_days": 0,
+      "delayed": false,
+      "inputs": {
+        "csi300_through": "2026-10-09",
+        "expected_session": "2026-10-09",
+        "sessions_behind": 0,
+        "backstop_days": 11
+      }
+    },
+    "ranking": {
+      "definition": "cn_prophet_v4",
+      "score_kind": "transparent priority heuristic; not a calibrated return forecast",
+      "formula_points": {
+        "signal": 30,
+        "entry": 20,
+        "runway": 15,
+        "bottom_quality": 10,
+        "reversal_member": 10,
+        "theme_timing": 15
+      },
+      "featured_requirements": {
+        "signal_tiers": [
+          "T1",
+          "T2",
+          "T3"
+        ],
+        "stage": "ENTRY",
+        "entry_status": [
+          "bounce_wait",
+          "buy_now",
+          "hold",
+          "partial",
+          "wait_pullback"
+        ],
+        "early_ticks_max_for_confirmed_statuses": 1,
+        "adv_floor_yi": 0.5,
+        "same_day_signal": true,
+        "same_day_microstructure": true,
+        "fillable": true,
+        "chase_veto": false,
+        "relay_position_late_with_chase": false,
+        "extended": false,
+        "sector_cap": 4,
+        "board_cap": 24
+      },
+      "zero_score_authority": [
+        "residual_alpha",
+        "setup",
+        "sector_turn",
+        "quality",
+        "low_vol",
+        "risk_sizing"
+      ],
+      "ordering": {
+        "key": "intel_interest_then_v3_score",
+        "requested_order_basis": "intel_interest_then_v3_score",
+        "effective_order_basis": "cn_prophet_v3_score",
+        "order_mode": "v3_coverage_fallback",
+        "fallback_reason": "incomplete_intel_interest_coverage",
+        "intel_order_active": false,
+        "intel_coverage_complete": false,
+        "primary": "intel_interest_score (engine/china_intel_interest.py)",
+        "secondary": "prophet_score (the v3 score above)",
+        "tiebreak": "ticker",
+        "fallback": "a bake uses one ordering basis globally. If every ranked name has valid measured Intelligence interest — including a measured 0.0 — the board orders by intel_interest_then_v3_score. If even one ranked name lacks valid Intelligence evidence, the entire board reverts to cn_prophet_v3_score order. Individual Intelligence observations stay on the row; mixed-scale ranking is forbidden.",
+        "authority": "engine/china_board_rank.py is the sole live ranking authority. China Intelligence supplies board-independent evidence only: no board direction, no board label edge, no board-absent bonus, no board term in the leading-vs-lagging gap, and no Prophet score or rank in any intelligence input. The raw china_intel_hub opportunity_score is never read.",
+        "excludes": [
+          "board_row_direction",
+          "board_label_edge",
+          "board_absent_bonus",
+          "board_lagging_desk_gap",
+          "prophet_score",
+          "prophet_rank",
+          "hub_opportunity_score"
+        ],
+        "shadow": "cn_prophet_v3_shadow"
+      },
+      "input_coverage": {
+        "reversal": {
+          "source_asof": "2026-10-09",
+          "board_asof": "2026-10-09",
+          "exact_date": true,
+          "available": true,
+          "scored_count": 1601,
+          "scored_covered_count": 1591,
+          "scored_coverage_rate_pct": 99.4,
+          "actionable_count": 164,
+          "actionable_covered_count": 164,
+          "actionable_coverage_rate_pct": 100,
+          "minimum_healthy_rate_pct": 80,
+          "degraded": false
+        },
+        "intel_interest": {
+          "definition": "cn_intel_interest_v1",
+          "n_rows": 1601,
+          "n_measured": 1597,
+          "n_fallback_v3": 4,
+          "measured_rate_pct": 99.8,
+          "fallback_reasons": {
+            "no_edge_evidence": 4
+          },
+          "score_min": 0,
+          "score_median": 0.8,
+          "score_max": 72.97,
+          "n_unavailable": 4,
+          "complete": false,
+          "intel_coverage_complete": false,
+          "source": "ranked_rows"
+        }
+      }
+    }
+  },
+  "source_datasets": {
+    "data/china_analyst/forecast.parquet": {
+      "rows": 2912,
+      "columns": [
+        "ticker",
+        "name",
+        "payload",
+        "asof"
+      ],
+      "clocks": {
+        "asof": {
+          "min": "2026-10-09",
+          "max": "2026-10-09",
+          "n_unique": 1
+        }
+      }
+    },
+    "data/china_valuation/percentiles.parquet": {
+      "rows": 1637,
+      "columns": [
+        "ticker",
+        "payload",
+        "asof"
+      ],
+      "clocks": {
+        "asof": {
+          "min": "2026-06-19",
+          "max": "2026-10-09",
+          "n_unique": 47
+        }
+      }
+    },
+    "data/china_margin_detail/detail.parquet": {
+      "rows": 155688,
+      "columns": [
+        "ticker",
+        "fin_balance",
+        "fin_balance_prior",
+        "date",
+        "prior_date",
+        "asof",
+        "short_balance",
+        "short_balance_yuan"
+      ],
+      "clocks": {
+        "date": {
+          "min": "2026-06-30",
+          "max": "2026-10-08",
+          "n_unique": 62
+        },
+        "prior_date": {
+          "min": "2026-06-01",
+          "max": "2026-09-02",
+          "n_unique": 62
+        },
+        "asof": {
+          "min": "2026-07-01",
+          "max": "2026-10-09",
+          "n_unique": 62
+        }
+      }
+    },
+    "data/china_comment/detail.parquet": {
+      "rows": 5200,
+      "columns": [
+        "ticker",
+        "name",
+        "attention",
+        "inst_participation",
+        "main_cost",
+        "score",
+        "rank",
+        "rank_delta",
+        "price",
+        "asof"
+      ],
+      "clocks": {
+        "asof": {
+          "min": "2026-10-09",
+          "max": "2026-10-09",
+          "n_unique": 1
+        }
+      }
+    },
+    "data/china_lhb/detail.parquet": {
+      "rows": 21340,
+      "columns": [
+        "ticker",
+        "name",
+        "net_buy_yi",
+        "n_appearances",
+        "inst_net_buy_yi",
+        "n_inst_buy",
+        "n_inst_sell",
+        "reasons",
+        "last_date",
+        "asof"
+      ],
+      "clocks": {
+        "last_date": {
+          "min": "2026-06-24",
+          "max": "2026-10-09",
+          "n_unique": 72
+        },
+        "asof": {
+          "min": "2026-07-01",
+          "max": "2026-10-09",
+          "n_unique": 93
+        }
+      }
+    },
+    "data/china_block_trades/detail.parquet": {
+      "rows": 285,
+      "columns": [
+        "ticker",
+        "name",
+        "avg_premium_pct",
+        "block_amt_yi",
+        "n_blocks",
+        "last_date",
+        "asof"
+      ],
+      "clocks": {
+        "last_date": {
+          "min": "2026-09-14",
+          "max": "2026-10-09",
+          "n_unique": 14
+        },
+        "asof": {
+          "min": "2026-10-09",
+          "max": "2026-10-09",
+          "n_unique": 1
+        }
+      }
+    },
+    "data/tushare/moneyflow.parquet": {
+      "rows": 6025,
+      "columns": [
+        "ticker",
+        "name",
+        "close",
+        "pct_change",
+        "net_amount",
+        "net_amount_rate",
+        "main_net",
+        "main_net_rate",
+        "trade_date",
+        "asof"
+      ],
+      "clocks": {
+        "trade_date": {
+          "min": "20261009",
+          "max": "20261009",
+          "n_unique": 1
+        },
+        "asof": {
+          "min": "2026-10-09",
+          "max": "2026-10-09",
+          "n_unique": 1
+        }
+      }
+    },
+    "data/china_search/members.parquet": {
+      "rows": 1716,
+      "columns": [
+        "name",
+        "name_zh",
+        "name_en",
+        "sector",
+        "mktcap_yi"
+      ],
+      "clocks": {},
+      "placeholder_mcap_30": 910,
+      "exchange_counts": {
+        "SS": 898,
+        "SZ": 818
+      }
+    },
+    "data/china_search/dropped.parquet": {
+      "rows": 107,
+      "columns": [
+        "ticker",
+        "dropped_date"
+      ],
+      "clocks": {
+        "dropped_date": {
+          "min": "2026-07-02",
+          "max": "2026-10-09",
+          "n_unique": 45
+        }
+      }
+    },
+    "data/china_search/index_cons.parquet": {
+      "rows": 1300,
+      "columns": [
+        "symbol",
+        "ticker",
+        "name_zh",
+        "fetched_date"
+      ],
+      "clocks": {
+        "fetched_date": {
+          "min": "2026-10-09",
+          "max": "2026-10-09",
+          "n_unique": 1
+        }
+      }
+    },
+    "data/cn_prophet_live/forward.parquet": {
+      "rows": 0,
+      "columns": [
+        "schema"
+      ],
+      "clocks": {}
+    }
+  },
+  "valuation_age_calendar_days": {
+    "all_valuation": {
+      "n_tickers": 1637,
+      "valuation_matched": 1637,
+      "max_age_days": 112,
+      "age_over_7": 1210,
+      "age_over_30": 793
+    },
+    "featured": {
+      "n_tickers": 24,
+      "valuation_matched": 23,
+      "max_age_days": 93,
+      "age_over_7": 15,
+      "age_over_30": 9,
+      "oldest_five": [
+        {
+          "ticker": "603279.SS",
+          "asof": "2026-07-08",
+          "age_days": 93
+        },
+        {
+          "ticker": "002847.SZ",
+          "asof": "2026-07-08",
+          "age_days": 93
+        },
+        {
+          "ticker": "301219.SZ",
+          "asof": "2026-07-10",
+          "age_days": 91
+        },
+        {
+          "ticker": "002405.SZ",
+          "asof": "2026-07-10",
+          "age_days": 91
+        },
+        {
+          "ticker": "688050.SS",
+          "asof": "2026-07-10",
+          "age_days": 91
+        }
+      ]
+    },
+    "eligible": {
+      "n_tickers": 180,
+      "valuation_matched": 167,
+      "max_age_days": 111,
+      "age_over_7": 111,
+      "age_over_30": 68
+    }
+  },
+  "publication_clocks": {
+    "site/chinaradar/radar.json": {
+      "asof": "2026-10-09",
+      "built": "2026-10-09T16:15:29.456554+00:00"
+    },
+    "site/chinaspecialdata/special.json": {
+      "generated_utc": "2026-10-09T16:17:12.678226+00:00",
+      "asof": "2026-10-09",
+      "data_asof": "2026-09-20"
+    },
+    "site/chinaaltdata/by_ticker.json": {
+      "asof": "2026-10-09",
+      "built": "2026-10-09T16:15:27.848869+00:00"
+    },
+    "site/china_intel/command.json": {
+      "as_of": "2026-10-09",
+      "generated_utc": "2026-10-09T16:17:14.657236+00:00"
+    }
+  },
+  "frozen_join_probe": {
+    "canonical_path_and_schema_loaded_rows": 0,
+    "alternate_path_with_canonical_schema_loaded_rows": 0,
+    "first_canonical_row_attach_result": {
+      "frozen": {
+        "lane": "featured",
+        "rev_z": 0.8545551890548774,
+        "reversal_member": false,
+        "relay": {
+          "count_3d": 0,
+          "position": "early"
+        },
+        "microstructure": {
+          "ticker": "002460.SZ",
+          "board": "main",
+          "limit_width": 10,
+          "limit_state": "open",
+          "fillable": true,
+          "t_plus_one_risk": "normal",
+          "chase_veto": {
+            "flag": false,
+            "reason": null
+          },
+          "as_of": "2026-10-09"
+        }
+      },
+      "repaint_disclosure": {
+        "frozen_as_of": [
+          "score",
+          "rank",
+          "lane",
+          "rev_z",
+          "reversal_member",
+          "theme_timing",
+          "relay",
+          "liquidity",
+          "microstructure"
+        ],
+        "live_derived": [
+          "state",
+          "market_status",
+          "price"
+        ]
+      }
+    }
+  },
+  "run_asia_pack_path_load_nodes": []
+}
