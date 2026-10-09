@@ -195,7 +195,10 @@ def _route(scan_url: str | None, route_receipt: str | None) -> tuple[str, bool]:
         return _DEMO_SCAN_URL, False
     _require(bool(scan_url) and bool(route_receipt), "SCAN_ROUTE_UNREGISTERED")
     _require(_ID.fullmatch(str(route_receipt)) is not None, "INVALID_ROUTE_RECEIPT")
-    u = _safe_https(scan_url, code="INVALID_SCAN_URL")
+    # Preserve the distinct placeholder denial; the host/path allowlist below
+    # still forbids an invented .invalid route from carrying approval status.
+    u = _safe_https(scan_url, code="INVALID_SCAN_URL",
+                    allow_fixture_hosts=True)
     parsed = urlsplit(u)
     _require(not parsed.query and not parsed.fragment and not u.endswith("//"),
              "DUPLICATE_OR_INVALID_UTM")
