@@ -193,6 +193,18 @@ class CatalystPartnerPackTests(unittest.TestCase):
         self.event["as_of_utc"] = "2026-10-03T04:00:00Z"
         self.refused("STALE_OR_FUTURE_EVENT")
 
+    def test_headline_has_distinct_public_source_evidence_receipt(self):
+        original = self.make()
+        self.assertEqual(original["event"]["headline_evidence_ids"],
+                         ["source-synthetic-001"])
+        del self.event["headline_evidence_ids"]
+        self.refused("HEADLINE_EVIDENCE_MISSING")
+        self.event["headline_evidence_ids"] = ["unknown-private-source"]
+        self.refused("HEADLINE_EVIDENCE_MISSING")
+        self.event["headline_evidence_ids"] = ["source-synthetic-001",
+                                                "source-synthetic-001"]
+        self.refused("HEADLINE_EVIDENCE_MISSING")
+
     def test_future_source_and_unknown_source_ids_blocked(self):
         self.event["sources"][0]["published_at_utc"] = "2026-10-09T04:00:00Z"
         self.refused("FUTURE_SOURCE")
