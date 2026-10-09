@@ -6565,6 +6565,30 @@ jobs:
   push-retry-policy:
     if: ${{ false }}
     gate: code
+    # Keep the measured suite closure and dynamic workflow, shell, and data inputs.
+    # Git subprocess inference otherwise claims unrelated template and code trees.
+    scope: exclusive
+    paths:
+      - ".github/workflows/**"
+      - "scripts/ci/*.sh"
+      - "data/**"
+      - "config/append_only_artifacts.json"
+      - "config/dag.yml"
+      - "engine/__init__.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
+      - "scripts/check_dag_conformance.py"
+      - "scripts/ci/append_only_base_fence.py"
+      - "scripts/ci/options_signal_nightly.sh"
+      - "scripts/ci/push_retry.sh"
+      - "scripts/ci/qledger_publication.py"
+      - "scripts/workflow_run_source.py"
+      - "tests/test_append_only_base_fence.py"
+      - "tests/test_push_retry.py"
+      - "tests/test_qledger_publication.py"
+      - "tests/test_qledger_publish_binding.py"
     # scripts/ci/push_retry.sh is the shared retry policy that EVERY lane's commit→push
     # step sources (render, engine-render, daily ×13, closing-bell, asia-close ×2,
     # weekly, earlyclose). It exists because render.yml run 30167139398 (2026-07-25)

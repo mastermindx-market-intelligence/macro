@@ -14,17 +14,21 @@ import os
 import re
 import selectors
 import subprocess
+import sys
 import tempfile
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
 
-from engine.qledger_store_protocol import (
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
+
+from engine.qledger_store_protocol import (  # noqa: E402
     BASE_PATH, BlobInfo, ProtocolLimits, RebasePlan, SnapshotIntegrityError,
     VerifiedSnapshot, rebase_verified_pending, validate_publication,
 )
-from engine.qledger_store_sources import GitTreeSource, verify_source_snapshot
+from engine.qledger_store_sources import GitTreeSource, verify_source_snapshot  # noqa: E402
 
 _OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
