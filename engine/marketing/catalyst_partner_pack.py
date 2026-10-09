@@ -203,8 +203,10 @@ def _route(scan_url: str | None, route_receipt: str | None) -> tuple[str, bool]:
     _require(not parsed.query and not parsed.fragment and not u.endswith("//"),
              "DUPLICATE_OR_INVALID_UTM")
     _require(parsed.hostname != "preview.invalid", "ROUTE_RECEIPT_FOR_PLACEHOLDER")
+    # Partner readers must land on the accessible HTML first-value experience,
+    # never the machine-readable JSON scan endpoint.
     _require(parsed.hostname in ("www.mastermind-x.com", "mastermind-x.com")
-             and parsed.path in ("/api/catalyst", "/api/catalyst/scan"),
+             and parsed.path == "/api/catalyst",
              "INVALID_SCAN_ROUTE")
     return u, True
 
