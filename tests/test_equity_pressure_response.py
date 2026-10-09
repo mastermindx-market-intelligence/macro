@@ -873,3 +873,178 @@ def test_tp1_mixed_source_quote_age_policies_refused():
                     decision_ns=end+10_000_000_000,
                     watermark_ns=end,
                     watermark_received_ns=end+2_000_000_000)
+
+from engine.market_microstructure.private_context_view import (
+    project_private_research_context, PrivateContextRefusal, SCHEMA as PRIVATE_CONTEXT_SCHEMA,
+)
+
+
+def private_context(value=None, *, manifest_sha="a"*64):
+    return project_private_research_context(
+        research_context=tp1_context() if value is None else value,
+        source_manifest_sha256=manifest_sha,
+    )
+
+
+def test_private_context_can_render_tp1_r0_measurements_without_raw_quote_ids():
+    import json
+    receipt=private_context()
+    assert receipt["state"]=="NOT_PUBLISHED"
+    assert receipt["authority"]=="PRIVATE_RESEARCH_HANDOFF_ONLY"
+    assert receipt["public_delivery_allowed"] is False
+    body=json.loads(receipt["bytes_private_only"])
+    assert body["schema"]==PRIVATE_CONTEXT_SCHEMA
+    assert body["distribution_class"]=="PRIVATE_SERVICE_HOLD_PENDING_LICENSE_REVIEW"
+    assert body["notional_usd"]["buy_proxy_notional_usd"]=="1000"
+    assert body["notional_usd"]["sell_proxy_notional_usd"]=="500"
+    assert body["rank_trade_alert_authority"] is False
+    assert body["absorption_signal"] is None
+    assert body["forward_label"] is None
+    assert b'quote_id' not in receipt["bytes_private_only"]
+    assert b'source_frame_sha256' not in receipt["bytes_private_only"]
+    assert b'raw_frame' not in receipt["bytes_private_only"]
+
+
+def test_private_context_decimal_quote_recovery_is_exact_text_not_json_float():
+    import json
+    body=json.loads(private_context()["bytes_private_only"])
+    recovered=body["ask_size_recovery_proxy"]
+    assert recovered["state"]=="MEASURED_NBBO_SIZE_PROXY_NOT_ORDER_REPLENISHMENT"
+    assert recovered["depletion_shares"]=="100"
+    assert recovered["recovered_shares"]=="90"
+    assert recovered["original_shares"]=="200"
+    assert recovered["final_shares"]=="190"
+    assert recovered["source_best_exchange"]=="12"
+    assert recovered["source_best_price"]=="101"
+    assert body["bid_size_recovery_proxy"]["state"]=="UNKNOWN"
+
+
+def test_private_context_source_manifest_and_receipt_literals_not_serialized():
+    obj=tp1_context()
+    obj["source_manifest"]="API_TOKEN_LIKE_SECRET_MANIFEST"
+    obj["source_watermark_receipt"]="RECEIPT_PRIVATE_HOLD"
+    raw=private_context(obj)["bytes_private_only"]
+    assert b"API_TOKEN_LIKE_SECRET_MANIFEST" not in raw
+    assert b"RECEIPT_PRIVATE_HOLD" not in raw
+    assert b"source_manifest_name_sha256" in raw
+    assert b"source_watermark_receipt_sha256" in raw
+
+
+def test_private_context_derived_bytes_and_hash_are_repeatable():
+    a=private_context()
+    b=private_context(deepcopy(tp1_context()))
+    assert a["sha256"]==b["sha256"]
+    assert a["bytes_private_only"]==b["bytes_private_only"]
+
+
+def test_private_context_source_vintage_hash_changes_content():
+    obj=tp1_context()
+    obj["source_quote_observations_sha256"]="f"*64
+    assert private_context(obj)["sha256"]!=private_context()["sha256"]
+
+
+def test_private_context_never_exports_live_alert_or_filled_trade():
+    for field,value in (
+        ("absorption_signal",.9),("rank_authority",True),
+        ("forward_outcome_label",".02"),("execution_adjusted_return","123"),
+        ("impact_relative_to_control",10),
+    ):
+        obj=tp1_context()
+        obj[field]=value
+        with pytest.raises(PrivateContextRefusal,match="authority"):
+            private_context(obj)
+
+
+def test_private_context_does_not_promote_original_feed_authenticity():
+    import json
+    view=json.loads(private_context()["bytes_private_only"])
+    assert view["source_authenticity"]=="ORIGINAL_TQ_RECEIPTS_REQUIRE_EXTERNAL_OWNER_PROOF"
+    assert view["market_capture_completeness"]=="NOT_PROVEN_BY_RESEARCH_MATH"
+    assert view["public_delivery_allowed"] is False
+
+
+def test_private_context_nonfinite_or_invalid_midpoint_bps_refused():
+    for bad in ("NaN","Infinity","not-a-number"):
+        obj=tp1_context()
+        obj["midpoint_response_bps"]=bad
+        with pytest.raises(PrivateContextRefusal):
+            private_context(obj)
+
+
+def test_private_context_pressure_balance_bounded_to_minus_one_one():
+    obj=tp1_context()
+    obj["pressure_balance"]="1.5"
+    with pytest.raises(PrivateContextRefusal,match="pressure outside"):
+        private_context(obj)
+
+
+def test_private_context_sum_of_trade_notional_is_validated():
+    obj=tp1_context()
+    obj["gross_sampled_notional_usd"]="9"
+    with pytest.raises(PrivateContextRefusal,match="conservation"):
+        private_context(obj)
+
+
+def test_private_context_source_criteria_not_stale_or_unqualified():
+    obj=tp1_context()
+    obj["state"]="PRICE_CONTEXT_UNOBSERVABLE"
+    with pytest.raises(PrivateContextRefusal,match="authority"):
+        private_context(obj)
+    obj=tp1_context()
+    obj["source_qualification"]="VERIFIED_PRODUCTION_SOURCE"
+    with pytest.raises(PrivateContextRefusal,match="authority"):
+        private_context(obj)
+
+
+def test_private_context_rejects_raw_data_extra_fields():
+    obj=tp1_context()
+    obj["raw_websocket_quotes"]=[{"sym":"SPY","p":1.0}]
+    with pytest.raises(PrivateContextRefusal,match="unexpected raw/new"):
+        private_context(obj)
+
+
+def test_private_context_invalid_source_digest_never_admitted():
+    with pytest.raises(PrivateContextRefusal,match="source_manifest_sha256"):
+        private_context(manifest_sha="not-a-source-digest")
+
+
+def test_private_context_missing_required_quote_evidence_rejected():
+    obj=tp1_context()
+    obj["source_quote_observations_sha256"]=None
+    with pytest.raises(PrivateContextRefusal,match="source_quote_observations"):
+        private_context(obj)
+
+
+def test_private_context_unknown_replenishment_keeps_explicit_reason():
+    import json
+    obj=tp1_context()
+    obj["ask_size_recovery"]={"state":"UNKNOWN","reason":"BEST_PRICE_OR_VENUE_CHANGED"}
+    body=json.loads(private_context(obj)["bytes_private_only"])
+    assert body["ask_size_recovery_proxy"]=={
+        "state":"UNKNOWN","reason":"BEST_PRICE_OR_VENUE_CHANGED"}
+
+
+def test_private_context_bad_recovery_decimal_refused():
+    obj=tp1_context()
+    obj["ask_size_recovery"]=dict(obj["ask_size_recovery"])
+    obj["ask_size_recovery"]["depletion_shares"]=Decimal("NaN")
+    with pytest.raises(PrivateContextRefusal):
+        private_context(obj)
+
+
+def test_private_context_impossible_recovery_trough_refused():
+    obj=tp1_context()
+    obj["ask_size_recovery"]=dict(obj["ask_size_recovery"])
+    obj["ask_size_recovery"]["depletion_shares"]=Decimal("201")
+    with pytest.raises(PrivateContextRefusal):
+        private_context(obj)
+
+
+def test_private_context_source_receipt_fingerprint_does_not_change_price():
+    import json
+    obj=tp1_context()
+    obj["source_watermark_receipt"]="a-different-private-receipt"
+    a=json.loads(private_context()["bytes_private_only"])
+    b=json.loads(private_context(obj)["bytes_private_only"])
+    assert a["completed_window_midpoint_response_bps"]==b["completed_window_midpoint_response_bps"]
+    assert a["source_watermark_receipt_sha256"]!=b["source_watermark_receipt_sha256"]
