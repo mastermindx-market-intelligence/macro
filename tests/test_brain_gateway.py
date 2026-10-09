@@ -2573,17 +2573,82 @@ def test_image_blocks_caps_at_four():
     assert len(gw._image_blocks([_TINY_PNG_DATA_URI] * 8)) == gw._VISION_MAX_IMAGES == 4
 
 
-class TestVisionRoutesToCodexFirstClaudeSecond:
-    """Operator directive 2026-07-31: chat vision is CODEX-routed, not Claude-routed.
+def test_local_vision_provider_is_built_only_from_the_vision_config(monkeypatch):
+    cfg = {
+        "vision": {
+            "local_fallback": {
+                "enabled": True,
+                "base_url_env": "OLLAMA_BASE_URL",
+                "model_env": "OLLAMA_VISION_MODEL",
+                "model": "qwen3.5:9b",
+                "timeout_s": 180,
+                "num_ctx": 32768,
+            }
+        }
+    }
+    monkeypatch.setenv("OLLAMA_BASE_URL", "http://ollama-test.ts.net:11434")
+    monkeypatch.setenv("OLLAMA_VISION_MODEL", "qwen3-coder:30b")
+    with patch.object(gw, "_load_brain_config", return_value=cfg):
+        with patch("engine.provider_health.record_waterfall") as waterfall_record:
+            providers = gw._build_local_vision_providers(None)
+    assert len(providers) == 1
+    assert providers[0]["name"] == "ollama"
+    assert providers[0]["model"] == "qwen3.5:9b"
+    assert providers[0]["vision_only"] is True
+    assert providers[0]["client"] is not None
+    # Candidate construction is pure: probing/building the image-only continuity rung
+    # must not append a tracked provider-health row.
+    waterfall_record.assert_not_called()
 
-    Codex is the attached FLAT-RATE subscription; Anthropic is metered per image.
-    These tests previously pinned "first claude-* provider wins" — that is now the
-    FALLBACK half of the rule, kept because a dead, unauthenticated or usage-capped
-    Codex account must not take vision down with it (every waterfall in this estate
-    fails over). DeepSeek is still never vision.
+
+def test_local_vision_provider_is_disabled_when_the_vision_block_is_absent():
+    with patch.object(gw, "_load_brain_config", return_value={"lanes": {}}):
+        assert gw._build_local_vision_providers(None) == []
+
+
+def test_local_vision_provider_is_absent_without_its_private_endpoint(monkeypatch):
+    monkeypatch.delenv("OLLAMA_BASE_URL", raising=False)
+    cfg = {"vision": {"local_fallback": {
+        "enabled": True, "base_url_env": "OLLAMA_BASE_URL", "model": "qwen3.5:9b",
+    }}}
+    with patch.object(gw, "_load_brain_config", return_value=cfg):
+        assert gw._build_local_vision_providers(None) == []
+
+
+def test_local_vision_provider_invalid_endpoint_fails_open(monkeypatch):
+    monkeypatch.setenv("OLLAMA_BASE_URL", "http://public.example.com:11434")
+    cfg = {"vision": {"local_fallback": {
+        "enabled": True, "base_url_env": "OLLAMA_BASE_URL", "model": "qwen3.5:9b",
+    }}}
+    with patch.object(gw, "_load_brain_config", return_value=cfg):
+        assert gw._build_local_vision_providers(None) == []
+
+
+def test_shipped_local_vision_endpoint_is_environment_owned():
+    import yaml
+
+    repo = pathlib.Path(__file__).resolve().parent.parent
+    local = yaml.safe_load((repo / "config" / "brain.yml").read_text())["vision"]["local_fallback"]
+    assert local["base_url_env"] == "OLLAMA_BASE_URL"
+    assert local["model_env"] == "OLLAMA_VISION_MODEL"
+    assert local["model"] == "qwen3.5:9b"
+    assert "base_url" not in local, "a private host address must not be frozen in tracked config"
+
+
+class TestVisionRoutesToCodexFirstClaudeSecond:
+    """Vision order is remote frontier first, private local model last.
+
+    Codex is the attached flat-rate subscription; Claude remains the frontier
+    fallback. A private Ollama vision model is the final continuity rung only — it
+    must never enter normal text routing, but a remote-account outage must not make
+    an uploaded screenshot fail outright. DeepSeek is still never vision.
     """
 
     CODEX = {"name": "codex", "model": "gpt-5.6-sol", "client": "CODEX"}
+    OLLAMA = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": "OLLAMA",
+        "vision_only": True,
+    }
 
     def test_codex_outranks_an_in_lane_claude(self):
         providers = [{"model": "claude-haiku-4-5", "client": "H"}, self.CODEX]
@@ -2598,6 +2663,37 @@ class TestVisionRoutesToCodexFirstClaudeSecond:
         providers = [{"model": "claude-opus-4-8", "client": "O"}, {"model": "claude-sonnet-4-6"}]
         assert gw._pick_vision_provider(providers)["model"] == "claude-opus-4-8"
 
+    def test_private_ollama_serves_when_remote_vision_is_unavailable(self):
+        assert gw._pick_vision_provider([self.OLLAMA]) is self.OLLAMA
+
+    def test_untagged_text_ollama_is_not_treated_as_vision(self):
+        text_ollama = {
+            "name": "ollama", "model": "qwen3-coder:30b", "client": "TEXT",
+        }
+        assert gw._pick_vision_provider([text_ollama]) is None
+        with patch.object(gw, "_build_lane_providers", return_value=[]):
+            with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+                chain = gw._vision_providers("fast", [text_ollama], None)
+        assert len(chain) == 1
+        assert chain[0]["model"] == "qwen3-coder:30b"
+        assert chain[0]["image_text_fallback"] is True
+
+    def test_private_ollama_is_last_after_codex_and_claude(self):
+        providers = [self.CODEX, {"model": "claude-haiku-4-5", "client": "H"}]
+        with patch.object(gw, "_build_local_vision_providers", return_value=[self.OLLAMA]):
+            chain = gw._vision_providers("pro", providers, None)
+        assert [p.get("name") or p["model"] for p in chain] == [
+            "codex", "claude-haiku-4-5", "ollama"]
+
+    def test_text_only_lane_keeps_private_vision_then_honest_text_fallback(self):
+        deepseek = {"name": "deepseek", "model": "deepseek-v4-pro", "client": "DS"}
+        with patch.object(gw, "_build_lane_providers", return_value=[]):
+            with patch.object(gw, "_build_local_vision_providers", return_value=[self.OLLAMA]):
+                chain = gw._vision_providers("fast", [deepseek], None)
+        assert [p["name"] for p in chain] == ["ollama", "deepseek"]
+        assert chain[-1]["image_text_fallback"] is True
+        assert deepseek.get("image_text_fallback") is None, "the lane descriptor must not be mutated"
+
     def test_none_when_text_only(self):
         assert gw._pick_vision_provider([{"model": "deepseek-chat"}]) is None
 
@@ -2607,8 +2703,12 @@ class TestVisionRoutesToCodexFirstClaudeSecond:
         providers = [{"model": "deepseek-chat", "client": "DS"},
                      {"model": "claude-haiku-4-5", "client": "H"},
                      self.CODEX]
-        chain = gw._vision_providers("fast", providers, None)
-        assert [p.get("name") or p["model"] for p in chain] == ["codex", "claude-haiku-4-5"]
+        with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+            chain = gw._vision_providers("fast", providers, None)
+        assert [p.get("name") or p["model"] for p in chain] == [
+            "codex", "claude-haiku-4-5", "deepseek-chat"
+        ]
+        assert chain[-1]["image_text_fallback"] is True
 
     def test_a_codex_only_lane_borrows_pro_claude_as_the_failover_tail(self):
         """Fast with codex but no Haiku key: codex serves, and Pro's Opus is borrowed
@@ -2616,31 +2716,47 @@ class TestVisionRoutesToCodexFirstClaudeSecond:
         providers = [{"model": "deepseek-chat", "client": "DS"}, self.CODEX]
         with patch.object(gw, "_build_lane_providers",
                           return_value=[{"model": "claude-opus-4-8", "client": "O"}]):
-            chain = gw._vision_providers("fast", providers, None)
-        assert [p.get("name") or p["model"] for p in chain] == ["codex", "claude-opus-4-8"]
+            with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+                chain = gw._vision_providers("fast", providers, None)
+        assert [p.get("name") or p["model"] for p in chain] == [
+            "codex", "claude-opus-4-8", "deepseek-chat"
+        ]
+        assert chain[-1]["image_text_fallback"] is True
 
     def test_a_text_only_lane_still_borrows_pro_vision(self):
         with patch.object(gw, "_build_lane_providers",
                           return_value=[{"model": "claude-opus-4-8", "client": "O"}]):
-            chain = gw._vision_providers("fast", [{"model": "deepseek-chat", "client": "DS"}], None)
-        assert [p["model"] for p in chain] == ["claude-opus-4-8"]
+            with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+                chain = gw._vision_providers(
+                    "fast", [{"model": "deepseek-chat", "client": "DS"}], None
+                )
+        assert [p["model"] for p in chain] == ["claude-opus-4-8", "deepseek-chat"]
+        assert chain[-1]["image_text_fallback"] is True
 
     def test_a_clientless_rung_is_not_a_vision_provider(self):
         """A descriptor whose client failed to build is a rung make_call would skip;
         heading the chain with it would read as 'vision available' and serve nothing."""
         providers = [{"name": "codex", "model": "gpt-5.6-sol", "client": None},
                      {"model": "claude-haiku-4-5", "client": "H"}]
-        assert [p["model"] for p in gw._vision_providers("pro", providers, None)] == ["claude-haiku-4-5"]
+        with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+            chain = gw._vision_providers("pro", providers, None)
+        assert [p["model"] for p in chain] == ["claude-haiku-4-5"]
 
-    def test_nothing_vision_capable_anywhere_is_an_empty_chain(self):
+    def test_no_vision_provider_keeps_an_honest_text_only_chain(self):
         with patch.object(gw, "_build_lane_providers", return_value=[]):
-            assert gw._vision_providers("fast", [{"model": "deepseek-chat", "client": "DS"}], None) == []
+            with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+                chain = gw._vision_providers(
+                    "fast", [{"model": "deepseek-chat", "client": "DS"}], None
+                )
+        assert [p["model"] for p in chain] == ["deepseek-chat"]
+        assert chain[0]["image_text_fallback"] is True
 
     def test_a_broken_pro_lane_does_not_break_the_codex_turn(self):
         """Borrowing the fallback tail is best-effort: if the Pro lane cannot be built,
         the turn still runs on codex rather than raising."""
         with patch.object(gw, "_build_lane_providers", side_effect=RuntimeError("no pool")):
-            chain = gw._vision_providers("fast", [self.CODEX], None)
+            with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+                chain = gw._vision_providers("fast", [self.CODEX], None)
         assert [p["name"] for p in chain] == ["codex"]
 
     def test_chat_with_an_image_routes_the_turn_to_codex(self, tmp_path):
@@ -2673,9 +2789,10 @@ class TestVisionRoutesToCodexFirstClaudeSecond:
         assert captured["client"] == "CODEX", "an image turn must run on the Codex subscription"
         assert captured["model"] == "gpt-5.6-sol"
         assert captured["image_blocks"] and captured["image_blocks"][0]["type"] == "image"
-        # Haiku stays available BELOW codex for in-turn failover
+        # Haiku stays below Codex; DeepSeek remains the honest text-only last resort.
         assert [p.get("name") or p["model"] for p in captured["providers"]] == [
-            "codex", "claude-haiku-4-5"]
+            "codex", "claude-haiku-4-5", "deepseek-chat"]
+        assert captured["providers"][-1]["image_text_fallback"] is True
 
 
 def test_chat_with_image_routes_fast_to_vision_provider(tmp_path):
@@ -2768,6 +2885,532 @@ def test_chat_fast_image_borrows_pro_vision_when_no_in_lane_claude(tmp_path):
     assert captured["image_blocks"]
 
 
+def test_chat_image_routes_to_private_ollama_when_remote_vision_is_unavailable(tmp_path):
+    """A Pro-eligible image turn stays available when every remote vision rung is absent."""
+    root = _make_temp_root()
+    captured = {}
+    local = {
+        "name": "ollama", "client": "OLLAMA", "model": "qwen3.5:9b",
+        "vision_only": True,
+    }
+
+    def _providers(lane, root_=None):
+        return {
+            "fast": [{"name": "deepseek", "client": "DS", "model": "deepseek-v4-pro"}],
+            "pro": [],
+        }[lane]
+
+    def _mock_loop(message, lane, history, context, root_, tdd, thu, client, model,
+                   max_t, tb, mode="chat", image_blocks=None, providers=None,
+                   user_id="", user_email="", effort=None, thinking_mode=None,
+                   deepseek_thinking=None):
+        captured["model"] = model
+        captured["client"] = client
+        captured["providers"] = providers
+        captured["image_blocks"] = image_blocks
+        return "The image is readable. is_context_only: true.", [], [], [], {}, [], []
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", side_effect=_providers):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month"
+                        }):
+                            with patch.object(gw, "_run_brain_loop", side_effect=_mock_loop):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    gw.chat(
+                                        "read this screenshot", "user_local_vision",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert captured["client"] == "OLLAMA"
+    assert captured["model"] == "qwen3.5:9b"
+    assert [p["name"] for p in captured["providers"]] == ["ollama", "deepseek"]
+    assert captured["providers"][-1]["image_text_fallback"] is True
+    assert captured["image_blocks"]
+
+
+def test_chat_image_uses_private_ollama_when_remote_lane_has_no_provider(tmp_path):
+    """A healthy private vision rung must work even when no remote/text descriptor builds."""
+    root = _make_temp_root()
+    local_client = _MockClient([_MockResponse([
+        _MockBlock("text", "The screenshot is readable.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": local_client,
+        "vision_only": True,
+    }
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", return_value=[]):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    result = gw.chat(
+                                        "read this screenshot", "user_local_only",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert result["degraded"] is False
+    assert result["model"] == "qwen3.5:9b"
+    assert local_client.calls and _request_contains_image(local_client.calls[0])
+
+
+def test_chat_stream_image_uses_private_ollama_when_remote_lane_has_no_provider(tmp_path):
+    """The streaming entry point must not return its early no-provider outage bubble."""
+    root = _make_temp_root()
+    local_client = _MockClient([_MockResponse([
+        _MockBlock("text", "The screenshot is readable.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": local_client,
+        "vision_only": True,
+    }
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", return_value=[]):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    raw = list(gw.chat_stream(
+                                        "read this screenshot", "user_local_only_stream",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    ))
+
+    events = [json.loads(line[6:]) for line in raw if line.startswith("data: ")]
+    body = "".join(e.get("text", "") for e in events if e.get("type") == "delta")
+    done = next(e for e in reversed(events) if e.get("type") == "done")
+    assert done["degraded"] is False
+    assert "screenshot is readable" in body.lower()
+    assert local_client.calls and _request_contains_image(local_client.calls[0])
+
+
+def test_research_image_never_delegates_to_private_local_model(tmp_path):
+    """The continuity rung is chat vision, not a substitute research authority."""
+    root = _make_temp_root()
+    local_client = _MockClient([_MockResponse([
+        _MockBlock("text", "local answer must not ship")
+    ], "end_turn")])
+    text_client = _MockClient([_MockResponse([
+        _MockBlock("text", "I could not read the image; here is the text-grounded research answer.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": local_client,
+        "vision_only": True,
+    }
+    lane = [{"name": "deepseek", "model": "deepseek-v4-pro", "client": text_client}]
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", return_value=lane):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    result = gw.chat(
+                                        "research the written thesis", "user_research_local_boundary",
+                                        mode="research", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert result["degraded"] is False
+    assert result["model"] == "deepseek-v4-pro"
+    assert local_client.calls == []
+    assert text_client.calls and not _request_contains_image(text_client.calls[0])
+    assert "could not be read" in _system_text(text_client.calls[0]).lower()
+
+
+def _request_contains_image(call: dict) -> bool:
+    for message in call.get("messages") or []:
+        content = message.get("content") if isinstance(message, dict) else None
+        if isinstance(content, list) and any(
+            isinstance(block, dict) and block.get("type") == "image" for block in content
+        ):
+            return True
+    return False
+
+
+def _system_text(call: dict) -> str:
+    system = call.get("system")
+    if isinstance(system, str):
+        return system
+    if isinstance(system, list):
+        return "\n".join(
+            str(block.get("text") or "") for block in system if isinstance(block, dict)
+        )
+    return ""
+
+
+def test_chat_image_falls_back_to_text_instead_of_generic_unavailable(tmp_path, caplog):
+    """A dead private vision host must not turn a previously answerable Fast turn into
+    the generic outage bubble. The lane answers from text/context and explicitly owns
+    that the screenshot itself could not be read."""
+    from engine.ollama_provider import OllamaProviderError
+
+    root = _make_temp_root()
+    answer = _MockResponse([_MockBlock(
+        "text", "I could not read the screenshot, but the text says risk is elevated."
+    )], "end_turn")
+    text_client = _MockClient([answer])
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "vision_only": True,
+        "client": _RaiseThenClient(exc=OllamaProviderError(
+            "Ollama endpoint unavailable: http://private-tailnet-host.ts.net:11434?token=do-not-log"
+        )),
+    }
+    caplog.set_level(logging.WARNING, logger=gw.__name__)
+
+    def _providers(lane, root_=None):
+        return {
+            "fast": [{"name": "deepseek", "client": text_client, "model": "deepseek-v4-pro"}],
+            "pro": [],
+        }[lane]
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", side_effect=_providers):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    result = gw.chat(
+                                        "compare these two risk readings", "user_text_recovery",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert result["degraded"] is False
+    assert "temporarily unavailable" not in result["reply"].lower()
+    assert "could not read" in result["reply"].lower()
+    assert result["model"] == "deepseek-v4-pro"
+    assert text_client.calls and not _request_contains_image(text_client.calls[0])
+    assert "could not be read" in _system_text(text_client.calls[0]).lower()
+    assert "private-tailnet-host" not in caplog.text
+    assert "do-not-log" not in caplog.text
+
+
+def test_chat_image_invalid_local_model_falls_back_to_honest_text(tmp_path):
+    """A stale/missing local model is provider config failure, not a fatal image request."""
+    from engine.ollama_provider import OllamaProviderError
+
+    root = _make_temp_root()
+    text_client = _MockClient([_MockResponse([
+        _MockBlock("text", "I could not read the screenshot, but the written question is answerable.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "missing-vision-model", "vision_only": True,
+        "client": _RaiseThenClient(exc=OllamaProviderError(
+            "Ollama HTTP 404: model 'missing-vision-model' not found"
+        )),
+    }
+
+    def _providers(lane, root_=None):
+        return {
+            "fast": [{"name": "deepseek", "client": text_client, "model": "deepseek-v4-pro"}],
+            "pro": [],
+        }[lane]
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", side_effect=_providers):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    result = gw.chat(
+                                        "read this screenshot", "user_missing_local_model",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert result["degraded"] is False
+    assert result["model"] == "deepseek-v4-pro"
+    assert text_client.calls and not _request_contains_image(text_client.calls[0])
+    assert "could not be read" in _system_text(text_client.calls[0]).lower()
+
+
+def test_chat_image_nonvision_local_model_falls_back_to_honest_text(tmp_path):
+    """An optional local model without vision capability must never black out the turn."""
+    from engine.ollama_provider import OllamaProviderError
+
+    root = _make_temp_root()
+    text_client = _MockClient([_MockResponse([
+        _MockBlock("text", "I could not read the screenshot, but I can answer from text.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "text-only-local", "vision_only": True,
+        "client": _RaiseThenClient(exc=OllamaProviderError(
+            "Ollama HTTP 400: this model does not support images"
+        )),
+    }
+
+    def _providers(lane, root_=None):
+        return {
+            "fast": [{"name": "deepseek", "client": text_client, "model": "deepseek-v4-pro"}],
+            "pro": [],
+        }[lane]
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", side_effect=_providers):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    result = gw.chat(
+                                        "read this screenshot", "user_nonvision_local_model",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert result["degraded"] is False
+    assert result["model"] == "deepseek-v4-pro"
+    assert text_client.calls and not _request_contains_image(text_client.calls[0])
+    assert "could not be read" in _system_text(text_client.calls[0]).lower()
+
+
+def test_chat_exhausted_vision_chain_redacts_private_exception_text(tmp_path, caplog):
+    """When no text fallback exists, both sync failure logs stay typed and secret-free."""
+    from engine.ollama_provider import OllamaProviderError
+
+    class RateLimited(Exception):
+        status_code = 429
+
+    root = _make_temp_root()
+    claude = {
+        "name": "anthropic", "model": "claude-opus-5",
+        "client": _RaiseThenClient(exc=RateLimited("remote account rate limited")),
+    }
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "vision_only": True,
+        "client": _RaiseThenClient(exc=OllamaProviderError(
+            "Ollama endpoint unavailable: http://private-tailnet-host.ts.net:11434?token=do-not-log"
+        )),
+    }
+    caplog.set_level(logging.WARNING, logger=gw.__name__)
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", return_value=[claude]):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                result = gw.chat(
+                                    "what is in this screenshot?", "user_exhausted_vision",
+                                    lane="pro", images=[_TINY_PNG_DATA_URI], root=root,
+                                )
+
+    assert result["degraded"] is True
+    assert "unavailable" in result["reply"].lower()
+    assert "private-tailnet-host" not in caplog.text
+    assert "do-not-log" not in caplog.text
+    assert "OllamaProviderError" in caplog.text
+
+
+def test_chat_stream_image_falls_back_to_text_without_degraded_bubble(tmp_path, caplog):
+    """The streaming surface obeys the same continuity contract as chat()."""
+    from engine.ollama_provider import OllamaProviderError
+
+    root = _make_temp_root()
+    answer = _MockResponse([_MockBlock(
+        "text", "I could not read the screenshot, but I can still answer the written question."
+    )], "end_turn")
+    text_client = _MockClient([answer])
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "vision_only": True,
+        "client": _RaiseThenClient(exc=OllamaProviderError(
+            "Ollama endpoint unavailable: http://private-tailnet-host.ts.net:11434?token=do-not-log"
+        )),
+    }
+    caplog.set_level(logging.WARNING, logger=gw.__name__)
+
+    def _providers(lane, root_=None):
+        return {
+            "fast": [{"name": "deepseek", "client": text_client, "model": "deepseek-v4-pro"}],
+            "pro": [],
+        }[lane]
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", side_effect=_providers):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    raw = list(gw.chat_stream(
+                                        "compare these two risk readings", "user_stream_recovery",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    ))
+
+    events = [json.loads(line[6:]) for line in raw if line.startswith("data: ")]
+    body = "".join(e.get("text", "") for e in events if e.get("type") == "delta")
+    done = next(e for e in reversed(events) if e.get("type") == "done")
+    assert "temporarily unavailable" not in body.lower()
+    assert "could not read" in body.lower()
+    assert done["degraded"] is False
+    assert text_client.calls and not _request_contains_image(text_client.calls[0])
+    assert "could not be read" in _system_text(text_client.calls[0]).lower()
+    assert "private-tailnet-host" not in caplog.text
+    assert "do-not-log" not in caplog.text
+
+
+def test_ollama_failures_are_provider_specific_and_failover_worthy():
+    from engine.ollama_provider import OllamaProviderError
+
+    assert gw._is_failover_error(OllamaProviderError(
+        "Ollama endpoint unavailable: name resolution failed"
+    ))
+    assert gw._is_failover_error(OllamaProviderError("Ollama HTTP 429: overloaded"))
+    assert gw._is_failover_error(OllamaProviderError(
+        "Ollama HTTP 404: model 'missing-vision-model' not found"
+    ))
+    # The public API accepts HTTPS image URLs, while the private Ollama adapter accepts
+    # inline base64 only. That incompatibility is provider-specific: the next marked
+    # text fallback removes the image and can still answer the written question.
+    assert gw._is_failover_error(OllamaProviderError(
+        "400 unsupported request feature: Ollama requires inline base64 images"
+    ))
+    assert gw._is_failover_error(OllamaProviderError(
+        "400 unsupported request feature: empty image"
+    ))
+    assert gw._is_failover_error(OllamaProviderError("Ollama HTTP 422: bad payload"))
+
+
+def test_chat_records_a_local_vision_answer_as_ollama_not_deepseek(tmp_path):
+    root = _make_temp_root()
+    local_client = _MockClient([_MockResponse([
+        _MockBlock("text", "The screenshot shows a red square.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": local_client,
+        "vision_only": True,
+    }
+
+    def _providers(lane, root_=None):
+        return {
+            "fast": [{"name": "deepseek", "client": "DS", "model": "deepseek-v4-pro"}],
+            "pro": [],
+        }[lane]
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", side_effect=_providers):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage") as record:
+                                    result = gw.chat(
+                                        "what is in this screenshot?", "user_local_cost",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert result["model"] == "qwen3.5:9b"
+    brain_row = next(
+        call.kwargs for call in record.call_args_list
+        if call.kwargs.get("stage") == "brain-chat"
+    )
+    assert brain_row["provider"] == "ollama"
+    assert brain_row["cost_basis"] == "local"
+    assert brain_row["est_cost_usd"] == 0.0
+
+
+def test_chat_stream_records_a_local_vision_answer_as_ollama(tmp_path):
+    root = _make_temp_root()
+    local_client = _MockClient([_MockResponse([
+        _MockBlock("text", "The screenshot shows a red square.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": local_client,
+        "vision_only": True,
+    }
+
+    def _providers(lane, root_=None):
+        return {
+            "fast": [{"name": "deepseek", "client": "DS", "model": "deepseek-v4-pro"}],
+            "pro": [],
+        }[lane]
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", side_effect=_providers):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage") as record:
+                                    raw = list(gw.chat_stream(
+                                        "what is in this screenshot?", "user_local_stream_cost",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    ))
+
+    events = [json.loads(line[6:]) for line in raw if line.startswith("data: ")]
+    done = next(e for e in reversed(events) if e.get("type") == "done")
+    assert "_served_model" not in done["usage"]
+    assert "_served_provider" not in done["usage"]
+    assert done["model"] == "qwen3.5:9b"
+    assert done["provider"] == "ollama"
+    brain_row = next(
+        call.kwargs for call in record.call_args_list
+        if call.kwargs.get("stage") == "brain-stream"
+    )
+    assert brain_row["provider"] == "ollama"
+    assert brain_row["cost_basis"] == "local"
+    assert brain_row["est_cost_usd"] == 0.0
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # W6c-harden: OAuth-token failover + vision Pro-gating
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2824,6 +3467,28 @@ def test_create_failover_reraises_non_retryable():
     ]
     with pytest.raises(Bad):
         gw._create_failover(cands, max_tokens=10, system="", tools=[], messages=[])
+
+
+def test_create_failover_logs_typed_exhaustion_without_exception_text(caplog):
+    class Rate(Exception):
+        status_code = 429
+
+    cands = [
+        {"name": "codex", "client": _RaiseThenClient(exc=Rate("private-primary-detail")),
+         "model": "gpt-5.6-sol"},
+        {"name": "ollama", "client": _RaiseThenClient(exc=Rate("private-final-detail")),
+         "model": "qwen3.5:9b"},
+    ]
+    with caplog.at_level(logging.ERROR, logger=gw.__name__):
+        with pytest.raises(Rate):
+            gw._create_failover(cands, max_tokens=10, system="", tools=[], messages=[])
+
+    line = next(r.getMessage() for r in caplog.records if "waterfall exhausted" in r.getMessage())
+    assert "codex:gpt-5.6-sol" in line
+    assert "ollama:qwen3.5:9b" in line
+    assert "final_error=Rate" in line
+    assert "private-primary-detail" not in line
+    assert "private-final-detail" not in line
 
 
 def test_run_brain_loop_fails_over_to_next_provider():
@@ -3079,6 +3744,8 @@ def test_chat_stream_fails_over_to_fallback_on_dead_primary(tmp_path):
         done = next((e for e in parsed if e.get("type") == "done"), None)
         assert delta is not None and "Fallback served this" in delta.get("text", "")
         assert done is not None and done.get("degraded") is False
+        assert done["model"] == "claude-haiku-4-5"
+        assert done["provider"] == "anthropic"
     finally:
         llm_auth.clear_dead()
 
