@@ -268,7 +268,7 @@ def _normalise(title: str, url: str, domain: str, seendate: str, source: str,
 # One bounded global crawl, not one request per ticker.  Off unless an owner-
 # backed source-specific receipt, activation flag and token are ALL present.
 # --------------------------------------------------------------------------- #
-def _tiingo_articles(now: datetime) -> tuple[list[dict], str, dict]:
+def _tiingo_articles(now: datetime, *, _received_at: datetime | None = None) -> tuple[list[dict], str, dict]:
     if config.secret("TIINGO_NEWS_ENABLED") != "1":
         return [], "disabled", {}
     rights_path = config.secret("TIINGO_NEWS_RIGHTS_FILE")
@@ -284,13 +284,19 @@ def _tiingo_articles(now: datetime) -> tuple[list[dict], str, dict]:
     raw, fetch_state = _tiingo_news_api.fetch_articles(token, limit=250)
     if fetch_state != "ok":
         return [], fetch_state, {}
-    audit = _tiingo_news_api.audit_sample(raw, received_at=now)
+    # Never stamp availability at build-start: the HTTP fetch itself may take
+    # seconds. Observation/rights are verified after the response arrives.
+    observed_at = _received_at or datetime.now(timezone.utc)
+    refreshed_rights = load_rights_receipt(rights_path, now=observed_at, source="tiingo")
+    if refreshed_rights is None or refreshed_rights.receipt_id != rights.receipt_id:
+        return [], "rights_changed", {}
+    audit = _tiingo_news_api.audit_sample(raw, received_at=observed_at)
     out: list[dict] = []
     qbus_batch: list[dict] = []
     filtered_source = filtered_validation = filtered_untagged = 0
     for item in raw:
         try:
-            article = _tiingo_news_api.normalize_article(item, received_at=now)
+            article = _tiingo_news_api.normalize_article(item, received_at=observed_at)
         except _tiingo_news_api.TiingoArticleError:
             filtered_validation += 1
             continue
