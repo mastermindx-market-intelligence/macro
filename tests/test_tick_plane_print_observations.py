@@ -374,7 +374,8 @@ class CapturedMinuteIntegrationTests(unittest.TestCase):
         self.assertEqual(minute["n_unknown_venue"],0)
         self.assertEqual(minute["n_unclassified"],2)
         self.assertEqual(minute["unknown_notional_usd"],"2010.0")
-        self.assertEqual(minute["sell_proxy_notional_usd"],"0")
+        from decimal import Decimal
+        self.assertEqual(Decimal(minute["sell_proxy_notional_usd"]),Decimal(0))
 
     def test_external_completeness_missing_yields_no_pseudo_zero_volume(self):
         args=captured_synthetic_window()
