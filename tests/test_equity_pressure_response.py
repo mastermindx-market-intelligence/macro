@@ -508,6 +508,7 @@ def tp1_source_q(name, stamp, *, bid="100", ask="101", bs=100, az=200,
         "bid_exchange":bx,"ask_exchange":ax,
         "source_frame_sha256":"e"*64,"source_receipt_id":"original-frame:"+name,
         "frame_event_index":0,"valid_firm_nbbo":valid,
+        "quote_condition":0,"quote_indicators":[604],
         "correction_status":"STREAM_PROVISIONAL_UNRECONCILED",
     }
 
@@ -520,13 +521,22 @@ def tp1_quotes():
     ]
 
 
-def tp1_proofs(quotes):
+def tp1_proofs(quotes, *, decision_ns):
+    # Typed TP-1 evaluator output shape, not a loose eligible=True claim.
     return {
         x["quote_id"]:{
+            "schema":"equity.tick_plane.quote_condition_admission/v0",
+            "authority":"ORIGINAL_QUOTE_POLICY_CONTEXT_ONLY",
             "quote_id":x["quote_id"],"source_frame_sha256":x["source_frame_sha256"],
             "original_frame_received_ns":x["original_frame_received_ns"],
+            "quote_condition":x["quote_condition"],
+            "quote_indicators":x["quote_indicators"],
             "policy_available_ns":x["original_frame_received_ns"]+1000000,
-            "rules_sha256":TP1_QUOTE_POLICY_SHA,"eligible":True,
+            "decision_ns":decision_ns,
+            "policy_rules_sha256":TP1_QUOTE_POLICY_SHA,
+            "source_reference_sha256":"f"*64,
+            "eligible":False if x["valid_firm_nbbo"] is False else True,
+            "reason":"SOURCE_CONDITION_ELIGIBLE_FOR_OBSERVATION_ONLY",
         } for x in quotes
     }
 
@@ -540,9 +550,11 @@ def tp1_args(quotes=None, minute=None, **other):
         watermark_receipt=TP1_WATERMARK,source_manifest="TP1:source:private",
         source_completeness_attested=True,max_quote_age_ns=25_000_000_000,
         minute_observations=[tp1_minute()] if minute is None else minute,
-        source_quotes=qs,quote_condition_receipts=tp1_proofs(qs),
+        source_quotes=qs,
     )
     args.update(other)
+    if "quote_condition_receipts" not in args:
+        args["quote_condition_receipts"]=tp1_proofs(qs,decision_ns=args["decision_ns"])
     return args
 
 
@@ -773,3 +785,46 @@ def test_tp1_rejects_claimed_measured_minute_without_observed_prints():
     bad["n_sampled_prints"]=0
     with pytest.raises(TP1ContextRefusal,match="contradictory print counts"):
         tp1_context(minute=[bad])
+
+
+def test_tp1_rejects_legacy_untyped_quote_policy_boolean_receipt():
+    data=tp1_args()
+    before=data["quote_condition_receipts"]["before"]
+    data["quote_condition_receipts"]["before"]={
+        "quote_id":before["quote_id"],
+        "source_frame_sha256":before["source_frame_sha256"],
+        "original_frame_received_ns":before["original_frame_received_ns"],
+        "eligible":True,
+        "rules_sha256":TP1_QUOTE_POLICY_SHA,
+        "policy_available_ns":before["policy_available_ns"],
+    }
+    result=project_tp1_pressure_context(**data)
+    assert result["state"]=="QUOTE_REFERENCE_UNQUALIFIED"
+
+
+def test_tp1_quote_native_condition_mismatch_rejected():
+    data=tp1_args()
+    data["quote_condition_receipts"]["ending"]["quote_condition"]=20
+    result=project_tp1_pressure_context(**data)
+    assert result["reason"]=="MISSING_OR_MISMATCHED_QUOTE_CONDITION_RECEIPT"
+
+
+def test_tp1_quote_indicator_mismatch_rejected():
+    data=tp1_args()
+    data["quote_condition_receipts"]["ending"]["quote_indicators"]=[603]
+    result=project_tp1_pressure_context(**data)
+    assert result["state"]=="QUOTE_REFERENCE_UNQUALIFIED"
+
+
+def test_tp1_quote_policy_decision_after_study_cutoff_rejected():
+    data=tp1_args()
+    data["quote_condition_receipts"]["ending"]["decision_ns"]=TP1_CUT+1
+    result=project_tp1_pressure_context(**data)
+    assert result["reason"]=="QUOTE_CONDITION_POLICY_NOT_AVAILABLE_AT_DECISION"
+
+
+def test_tp1_quote_policy_decision_before_source_receipt_rejected():
+    data=tp1_args()
+    data["quote_condition_receipts"]["ending"]["decision_ns"]=TP1_START
+    result=project_tp1_pressure_context(**data)
+    assert result["reason"]=="QUOTE_CONDITION_POLICY_NOT_AVAILABLE_AT_DECISION"
