@@ -117,9 +117,12 @@ def _recovery(value,side):
         raise PrivateContextRefusal(f"{side} recovery has unauthorized state or fields")
     quantities={key:_decimal(value[key],side+"."+key) for key in (
         "depletion_shares","recovered_shares","original_shares","final_shares")}
-    if (Decimal(quantities["depletion_shares"])<=0
-            or Decimal(quantities["recovered_shares"])>
-               Decimal(quantities["original_shares"])+Decimal(quantities["recovered_shares"])):
+    depleted=Decimal(quantities["depletion_shares"])
+    recovered=Decimal(quantities["recovered_shares"])
+    initial=Decimal(quantities["original_shares"])
+    final=Decimal(quantities["final_shares"])
+    if (depleted<=0 or initial<=0 or final<=0 or depleted>initial
+            or final!=initial-depleted+recovered):
         raise PrivateContextRefusal(f"{side} recovery impossible observed depletion")
     price=_decimal(value["price"],side+".price",positive=True)
     venue=_str(value["best_exchange"],side+".best_exchange")
@@ -158,8 +161,8 @@ def project_private_research_context(*, research_context, source_manifest_sha256
     if _SYMBOL.fullmatch(ticker) is None:
         raise PrivateContextRefusal("invalid source ticker")
     session=_str(m["session"],"session")
-    if not session.endswith(":RTH"):
-        raise PrivateContextRefusal("private R0 pilot currently only accepts RTH")
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}:RTH",session) is None:
+        raise PrivateContextRefusal("private R0 pilot requires exact day and RTH session")
     from datetime import date
     try:
         date.fromisoformat(session.split(":",1)[0])
