@@ -339,4 +339,3 @@ def test_research_navigation_exposes_the_premium_desk() -> None:
     nav = (TEMPLATES / "_navlinks.html.j2").read_text(encoding="utf-8")
     assert 'href="{{ NP }}capital_structure.html"' in nav
     assert "Capital Structure" in nav
-
