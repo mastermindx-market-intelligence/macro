@@ -338,6 +338,21 @@ class SameScopeRTHMinuteReferenceTests(unittest.TestCase):
         self.assertEqual(out["n_volume_within_2pct"],1)
         self.assertIsNone(out["production_source_acceptance"])
 
+
+    def test_rth_session_requires_exact_day_and_label(self):
+        for invalid in ("2026-10-08:EXT:RTH","not-a-date:RTH","2026-10-08:POST"):
+            with self.subTest(session=invalid),self.assertRaises(RTHReferenceError):
+                reference(session=invalid)
+
+    def test_original_adjusted_flag_must_be_unadjusted_boolean(self):
+        with self.assertRaisesRegex(RTHReferenceError,"adjusted aggregate volume"):
+            reference(original_response_bytes=mock_minute_original(adjusted=True))
+        with self.assertRaisesRegex(RTHReferenceError,"ambiguous native adjusted"):
+            reference(original_response_bytes=mock_minute_original(adjusted="false"))
+
+    def test_reference_cannot_synthesize_receive_time_from_event_timestamp(self):
+        with self.assertRaisesRegex(RTHReferenceError,"calendar disagree"):
+            reference(source_received_ns=RTH_START-1)
     def test_full_day_daily_volume_still_cannot_masquerade_as_rth(self):
         annual=symbol(reference_scope="FULL_DAY",
                       reference_volume_shares="30",
