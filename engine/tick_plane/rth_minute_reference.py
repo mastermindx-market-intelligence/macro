@@ -111,11 +111,11 @@ def normalize_rth_minute_volume_reference(
         raise FrameContractError("unqualified vendor aggregate envelope")
     if native.get("ticker") not in (None,ticker):
         raise FrameContractError("aggregate ticker differs from frozen source query")
-    if native.get("next_url"):
+    if "next_url" in native and native["next_url"] is not None:
         raise FrameContractError("source pagination incomplete")
-    if ("adjusted" in native and type(native["adjusted"]) is not bool):
-        raise FrameContractError("ambiguous native adjusted flag")
-    if native.get("adjusted") is True:
+    if type(native.get("adjusted")) is not bool:
+        raise FrameContractError("missing or ambiguous native adjusted flag")
+    if native["adjusted"] is True:
         raise FrameContractError("adjusted aggregate volume not admitted")
     native_count=native.get("resultsCount")
     if native_count is not None and _int(native_count,"resultsCount")!=len(native["results"]):
