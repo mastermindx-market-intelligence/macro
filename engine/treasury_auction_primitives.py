@@ -195,7 +195,9 @@ def settlement_cash(*, cohort_id: str, settlement_date: date, currency: str,
     """Private cash only. Missing/empty category needs a sourced explicit zero.
 
     completeness_certified asserts the supplying owner has enumerated every
-    necessary component for this scope/cohort; the math leaf cannot prove it.
+    necessary component exactly once for this scope/cohort, including that funded
+    buyback cash is not already included in private redemptions. Distinct IDs do
+    not prove economic non-overlap; the math leaf cannot certify these inputs.
     Optional gross face/SOMA are explanatory observations and never deducted.
     """
     _text(cohort_id, "cohort_id")

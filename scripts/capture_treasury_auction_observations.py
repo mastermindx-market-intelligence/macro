@@ -18,8 +18,8 @@ from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+# Promote this checkout even when its root already appears after ambient packages.
+sys.path.insert(0, str(ROOT))
 
 from engine import treasury_auction_lifecycle as lifecycle
 
