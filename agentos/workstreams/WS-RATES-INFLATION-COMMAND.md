@@ -80,6 +80,8 @@ do_not_redo:
   - "Do not create the July-style parallel rates-to-cohort engine; canonical Transmission owns pass-through and per-name sensitivity."
   - "Do not build a policy-timing predictor or calendar/OPEX directional signal."
 artifacts:
+  - research/sovereign_auction_pressure/NOTICE_ARCHIVE_V2_CONTRACT.md
+  - research/sovereign_auction_pressure/SETTLEMENT_LEDGER_INPUT_CONTRACT.md
   - research/RATES_INFLATION_COMMAND_RECOVERY_AND_COMPLETION_FREEZE_2026-08-27.md
   - research/RATES_INFLATION_COMMAND_MASTERPLAN_BY_FABLE.md
   - research/MACRO_RELEASE_INTEL_MASTERPLAN_BY_FABLE.md
@@ -89,6 +91,9 @@ next_action: >
   after PR #8030 (merged 2026-09-25), then execute W3 — the display-only yield_momentum consumer
   block in engine/credit_momentum.py beside interim_tlt (handoff RATES-INFLATION-COMMAND-2026-09-25).
   RIC-F1/F2 packets still go through canonical Executive admission as disjoint operations.
+  Sovereign auction continuation: independently review stacked Draft/HOLD #8668 source and
+  qualify its parent #8657 before main-targeted hosted CI; retain unknown private cash and
+  the incumbent Macro/Bonds and cross-repository writer gates.
 ---
 
 ## Why this workstream exists
@@ -106,3 +111,12 @@ integration waves and may not be treated as commissioned merely because this rec
 
 The complete capability ledger, exact first commission packets and production acceptance contract are
 in `research/RATES_INFLATION_COMMAND_RECOVERY_AND_COMPLETION_FREEZE_2026-08-27.md`.
+
+
+## Sovereign auction local Codex source continuation, 2026-10-08
+
+The Chairman directly assigned operation `sovereign-auction-funding-local-codex-20261008-001` to Codex root `01a11e6d-efdc-78a0-a489-9c1a7891df0a`. Its own SSD source carrier extends #8657 without changing that branch or the other held carriers. Source commit `f6a9bbd0b8e9` implements inspected v7 notices, cutoff-first bounded archive replay, compatible context-age evidence and the H3 private cash/released financing input gate. Stacked [#8668](https://github.com/mastermindx-market-intelligence/macro/pull/8668) remains Draft/HOLD.
+
+The source suite passes 124 tests and 79 subtests; the unchanged import/DAG suite passes 59 tests. Both exact held consumer readers pass the six-case compatibility matrix. Twelve original funding hashes still verify, with zero eligible at the October 5 cutoff, no qualified private cash inventory and H3 `INSUFFICIENT_PIT`. Three new XML captures and three original official cancellation/postponement PDFs have literal October 9 body/verification clocks. The PDFs establish source shapes; they are not an implemented special-notice transition or historical PIT eligibility.
+
+Independent source acceptance is pending: current Executive ingress reports read-only and review admission returned `NONE reason=no_pool_available`, before any child launch. The stacked-base CI authority rejected the source candidate as `unsupported_base_ref`; no guard was altered and no main-targeted native CI pass is claimed. Correct issue binding remains `UNKNOWN`: current #6819 identifies Market Ontology. The parent mission, Macro/Bonds journey, entitled consumers, dataset freeze and production acceptance remain incomplete. Existing RIC waves and unrelated ownership are unchanged.
