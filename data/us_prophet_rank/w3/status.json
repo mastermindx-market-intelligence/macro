@@ -50,38 +50,42 @@
     {
       "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
       "stamp_date": "2026-09-29"
+    },
+    {
+      "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
+      "stamp_date": "2026-10-07"
     }
   ],
   "first_eligible_paired_stamp": "2026-08-17",
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-10-06",
+    "board_as_of": "2026-10-08",
     "coverage": {
-      "identical": 8,
+      "identical": 0,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 0,
-      "written": 0
+      "stamps": 1,
+      "written": 8
     },
     "dry_run": false,
     "failures": [],
     "family": {
-      "identical": 8,
+      "identical": 0,
       "matured": 0,
-      "revisions_refused": 5,
-      "stamps": 0,
-      "written": 0
+      "revisions_refused": 0,
+      "stamps": 1,
+      "written": 8
     },
     "n_coverage_rows": 8,
     "n_family_rows": 8,
-    "n_paired_rows": 1721,
+    "n_paired_rows": 1826,
     "paired": {
-      "identical": 1625,
-      "matured": 53,
+      "identical": 1626,
+      "matured": 52,
       "revisions_refused": 0,
-      "stamps": 1,
-      "written": 53
+      "stamps": 2,
+      "written": 157
     },
     "reconstruction_refused": [
       "2026-07-31",
@@ -97,181 +101,25 @@
       "2026-09-28",
       "2026-09-29"
     ],
-    "require_stamp": "2026-10-06",
-    "same_stamp_revisions_refused": [
-      {
-        "changed_fields": [
-          {
-            "existing": 3.9325842697,
-            "field": "mean_abs_rank_delta",
-            "incoming": 3.8426966292
-          },
-          {
-            "existing": 14,
-            "field": "max_abs_rank_delta",
-            "incoming": 13
-          },
-          {
-            "existing": 64,
-            "field": "rows_moved",
-            "incoming": 66
-          }
-        ],
-        "existing_fingerprint": "06a9db6d35c0ab3e4f422bea4454337808c8f08983ae13aada375990877be4f4",
-        "grain": "family",
-        "incoming_fingerprint": "558fbd4ea0ec284fe33054f45f6e9cc7e4edc4d10c9123065a8248738af7dee7",
-        "key": [
-          "2026-10-06",
-          "F1_TECHNICAL_CONFLUENCE"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-10-06"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 5.5056179775,
-            "field": "mean_abs_rank_delta",
-            "incoming": 5.2359550562
-          },
-          {
-            "existing": 83,
-            "field": "rows_moved",
-            "incoming": 84
-          },
-          {
-            "existing": 12,
-            "field": "top30_churn",
-            "incoming": 10
-          }
-        ],
-        "existing_fingerprint": "0572c9eba958e441efcbc2356468d2bbe972e7867b872b4328ea9c3d2724ca96",
-        "grain": "family",
-        "incoming_fingerprint": "a3fdf2b75048cc5a9ac3b95effb64ef3746f077c8d57fe06203708ad5176657c",
-        "key": [
-          "2026-10-06",
-          "F2_MOMENTUM_EXTENSION"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-10-06"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 2.3820224719,
-            "field": "mean_abs_rank_delta",
-            "incoming": 2.3595505618
-          },
-          {
-            "existing": 47,
-            "field": "rows_moved",
-            "incoming": 45
-          }
-        ],
-        "existing_fingerprint": "d3347689ad68f19b0823f890dc30524d76000f06aac3e9059c709d9b15ad73e2",
-        "grain": "family",
-        "incoming_fingerprint": "b76a3131359fadc7e5a4b64ba9647f0cd64d1b93899e9194970b3c47610a79a3",
-        "key": [
-          "2026-10-06",
-          "F4_CATALYST_EVENT"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-10-06"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 1.3707865169,
-            "field": "mean_abs_rank_delta",
-            "incoming": 1.2134831461
-          },
-          {
-            "existing": 50,
-            "field": "rows_moved",
-            "incoming": 53
-          }
-        ],
-        "existing_fingerprint": "e8ca25035efdc95f0c623bac1dddc25d25e8f5e5f73cca6203a6bd6b7c523065",
-        "grain": "family",
-        "incoming_fingerprint": "4ecca879753da51fac32b9a04bb28f61f0b72c068859ddf71be370949c320c60",
-        "key": [
-          "2026-10-06",
-          "F5_FLOW_POSITIONING"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-10-06"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 0.4887640449,
-            "field": "modal_value",
-            "incoming": 0.4662921348
-          },
-          {
-            "existing": 0.9662921348,
-            "field": "modal_share",
-            "incoming": 0.9213483146
-          },
-          {
-            "existing": 0.0902380809,
-            "field": "dispersion",
-            "incoming": 0.1345971747
-          },
-          {
-            "existing": 0.6966292135,
-            "field": "mean_abs_rank_delta",
-            "incoming": 1.3258426966
-          },
-          {
-            "existing": 13,
-            "field": "max_abs_rank_delta",
-            "incoming": 15
-          },
-          {
-            "existing": 24,
-            "field": "rows_moved",
-            "incoming": 43
-          },
-          {
-            "existing": 0,
-            "field": "top30_churn",
-            "incoming": 2
-          }
-        ],
-        "existing_fingerprint": "875d25a432e35fe94508f1a8cae5f0bed30119bf33f2f2b3ebb72e22254e9409",
-        "grain": "family",
-        "incoming_fingerprint": "39c5d73a70fb6e8a98252efe788f5b8456c0ee93c10dc1ca4a460043041adb29",
-        "key": [
-          "2026-10-06",
-          "F8_ATTENTION_CROWDING"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-10-06"
-      }
-    ],
+    "require_stamp": "2026-10-08",
+    "same_stamp_revisions_refused": [],
     "sessions_written": {
       "identical": 28,
       "matured": 0,
       "refused": 0,
-      "written": 0
+      "written": 2
     }
   },
   "latest_session": {
     "liveness": "unmatured",
     "reason": "paired observation accrued; H=10 outcome pending (not zero)",
-    "stamp_date": "2026-10-06"
+    "stamp_date": "2026-10-08"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [],
-  "n_degraded_or_unpaired": 12,
+  "n_degraded_or_unpaired": 13,
   "n_missing": 0,
-  "paired_sessions_accrued": 28,
+  "paired_sessions_accrued": 29,
   "same_stamp_revisions_refused": [
     {
       "changed_fields": [
@@ -7277,10 +7125,10 @@
   ],
   "schema": "us.prophet_w3_status/v1",
   "structural": {
-    "n_coverage_rows": 224,
-    "n_family_rows": 224,
+    "n_coverage_rows": 232,
+    "n_family_rows": 232,
     "outcome_blind": true,
     "schema": "prophet_fusion.w3_structural.v1"
   },
-  "unmatured_sessions": 27
+  "unmatured_sessions": 28
 }
