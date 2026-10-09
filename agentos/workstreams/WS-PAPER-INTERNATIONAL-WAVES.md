@@ -99,8 +99,8 @@ waves:
   depends_on:
   - IM00
   - IM03
-  next_action: Typed history reader and manual numerical helper accepted. Bounded History API contract review is
-    active through Fabric; next implement pure projection, then shared draft/controller and presentation.
+  next_action: Typed reader, pure history projection and manual draft transitions independently accepted; parent/product
+    history95 and draft117/116 checks pass. Integrate the single-controller UI and ordinary publication next.
 - id: IM07
   title: Library and deterministic search
   status: in_progress

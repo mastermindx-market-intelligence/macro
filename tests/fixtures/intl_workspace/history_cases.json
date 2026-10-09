@@ -1,0 +1,5260 @@
+{
+  "schema": "paper.im06.history-projection.fixtures.v1",
+  "target": "lib.intl_workspace_history.build_history_section",
+  "error": {
+    "type": "ValueError",
+    "message": "invalid_history_section_input"
+  },
+  "notes": [
+    "Keyword args only. Implementer calls build_history_section(**case['args']) after applying inject.",
+    "inject.python is exactly one of: float('nan'), float('inf'), object(). Write the evaluated object at inject.path.",
+    "ok cases require Python dict equality including int vs float, then json.dumps(result).",
+    "forbidden_substrings must be absent from json.dumps(result, ensure_ascii=False).",
+    "These fixtures are not production disclosure grants.",
+    "Parent amendment: unsupported_source has no bound market; acquisition_at/kind null, retaining unsupported status. Original proposal preserved externally."
+  ],
+  "cases": [
+    {
+      "id": "positive_ready_recomputed",
+      "title": "Ready bound reconstruction with complete identity, same-market events, qualified track record, eligible compare",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "ready",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": "intl_regime.classifier",
+        "identity": {
+          "market_id": "JP",
+          "unit": "score",
+          "return_basis": "price",
+          "universe": "intl_regime.classifier_history",
+          "method_ref": "intl_regime.classifier"
+        },
+        "points": [
+          {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          },
+          {
+            "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+            "growth_score": 19,
+            "inflation_score": 23
+          }
+        ],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": true,
+          "reason": null,
+          "viewed_through": "current_reconstruction",
+          "available_dates": [
+            "2026-01-01T00:00:00+09:00",
+            "2026-01-02T00:00:00+09:00",
+            "2026-01-03T00:00:00.123456789+09:00"
+          ],
+          "left": {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          "right": {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          }
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      }
+    },
+    {
+      "id": "missing_source",
+      "title": "Bound missing artifact stays missing; empty points; distinct from failed and empty",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "missing",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": null,
+          "identity": null,
+          "points": []
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "missing",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": null,
+        "identity": null,
+        "points": [],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "source_missing",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [],
+          "left": null,
+          "right": null
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      }
+    },
+    {
+      "id": "failed_source",
+      "title": "Bound failed read stays failed; empty points; zero rows are not an empty reconstruction",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "failed",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": null,
+          "identity": null,
+          "points": []
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "failed",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": null,
+        "identity": null,
+        "points": [],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "source_failed",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [],
+          "left": null,
+          "right": null
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      }
+    },
+    {
+      "id": "empty_source",
+      "title": "Valid zero-row reconstruction is empty, with identity disclosed when metadata allowed",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "empty",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": []
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "empty",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": "intl_regime.classifier",
+        "identity": {
+          "market_id": "JP",
+          "unit": "score",
+          "return_basis": "price",
+          "universe": "intl_regime.classifier_history",
+          "method_ref": "intl_regime.classifier"
+        },
+        "points": [],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "source_empty",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [],
+          "left": null,
+          "right": null
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      }
+    },
+    {
+      "id": "denied_metadata",
+      "title": "History and track-record metadata denied: no date/identity/ref leakage; events grant remains independent",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "denied",
+            "value": "denied"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "denied",
+            "value": "denied"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "denied",
+        "source_reference": null,
+        "source_reference_kind": null,
+        "acquisition_at": null,
+        "acquisition_kind": null,
+        "method_ref": null,
+        "identity": null,
+        "points": [],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "metadata_denied",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [],
+          "left": null,
+          "right": null
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "denied",
+          "reason": "metadata_denied",
+          "destination": "/research/track-record",
+          "market_id": null,
+          "graded_count": null,
+          "alert_count": null,
+          "sample_dates": null,
+          "precision": null,
+          "hit_rate": null,
+          "lift": null,
+          "false_alarms": null,
+          "drawdowns": null,
+          "qualification_notes": null
+        }
+      },
+      "forbidden_substrings": [
+        "0.4375",
+        "-1.25",
+        "2026-01-01T00:00:00+09:00",
+        "2026-01-02T00:00:00+09:00",
+        "2026-01-03T00:00:00.123456789+09:00",
+        "intl_regime/JP_history.parquet",
+        "intl_regime.classifier",
+        "2026-10-08T12:00:00+00:00",
+        "intl_regime.classifier_history",
+        "2026-01-15",
+        "2026-02-15",
+        "forward_log independent read"
+      ]
+    },
+    {
+      "id": "denied_value",
+      "title": "History metadata allowed and value denied: dates and refs visible; scores null; source nulls not gap-leaked",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "denied"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "ready",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": "intl_regime.classifier",
+        "identity": {
+          "market_id": "JP",
+          "unit": "score",
+          "return_basis": "price",
+          "universe": "intl_regime.classifier_history",
+          "method_ref": "intl_regime.classifier"
+        },
+        "points": [
+          {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": null,
+            "inflation_score": null
+          },
+          {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": null,
+            "inflation_score": null
+          },
+          {
+            "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+            "growth_score": null,
+            "inflation_score": null
+          }
+        ],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "value_denied",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [
+            "2026-01-01T00:00:00+09:00",
+            "2026-01-02T00:00:00+09:00",
+            "2026-01-03T00:00:00.123456789+09:00"
+          ],
+          "left": {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": null,
+            "inflation_score": null
+          },
+          "right": {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": null,
+            "inflation_score": null
+          }
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      },
+      "forbidden_substrings": [
+        "0.4375",
+        "-1.25",
+        "0.1875"
+      ]
+    },
+    {
+      "id": "null_gap",
+      "title": "Supplied null score is a gap; sibling field remains; no forward-fill; compare withheld",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": null,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "ready",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": "intl_regime.classifier",
+        "identity": {
+          "market_id": "JP",
+          "unit": "score",
+          "return_basis": "price",
+          "universe": "intl_regime.classifier_history",
+          "method_ref": "intl_regime.classifier"
+        },
+        "points": [
+          {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": null,
+            "inflation_score": 0.1875
+          },
+          {
+            "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+            "growth_score": 19,
+            "inflation_score": 23
+          }
+        ],
+        "gaps": [
+          {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "field": "growth_score",
+            "reason": "null_observation"
+          }
+        ],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "gap_or_null_observation",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [
+            "2026-01-01T00:00:00+09:00",
+            "2026-01-02T00:00:00+09:00",
+            "2026-01-03T00:00:00.123456789+09:00"
+          ],
+          "left": {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          "right": {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": null,
+            "inflation_score": 0.1875
+          }
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      }
+    },
+    {
+      "id": "incompatible_comparison",
+      "title": "Both observations remain visible; comparison withheld when method identity is unsupplied",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": null,
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": null
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "ready",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": null,
+        "identity": {
+          "market_id": "JP",
+          "unit": "score",
+          "return_basis": "price",
+          "universe": "intl_regime.classifier_history",
+          "method_ref": null
+        },
+        "points": [
+          {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          },
+          {
+            "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+            "growth_score": 19,
+            "inflation_score": 23
+          }
+        ],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "comparability_not_established",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [
+            "2026-01-01T00:00:00+09:00",
+            "2026-01-02T00:00:00+09:00",
+            "2026-01-03T00:00:00.123456789+09:00"
+          ],
+          "left": {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          "right": {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          }
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      }
+    },
+    {
+      "id": "wrong_market",
+      "title": "Selected JP does not borrow a KR reconstruction; JP attached events still project",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "KR",
+          "artifact_ref": "intl_regime/KR_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "KR",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 9.75,
+              "inflation_score": 8.5
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "wrong_market",
+        "source_reference": null,
+        "source_reference_kind": null,
+        "acquisition_at": null,
+        "acquisition_kind": null,
+        "method_ref": null,
+        "identity": null,
+        "points": [],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "wrong_market",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [],
+          "left": null,
+          "right": null
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      },
+      "forbidden_substrings": [
+        "intl_regime/KR_history.parquet",
+        "9.75",
+        "8.5"
+      ]
+    },
+    {
+      "id": "events_unavailable",
+      "title": "Empty attached event list is unavailable selected-market-attached-only, not a complete history",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "ready",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": "intl_regime.classifier",
+        "identity": {
+          "market_id": "JP",
+          "unit": "score",
+          "return_basis": "price",
+          "universe": "intl_regime.classifier_history",
+          "method_ref": "intl_regime.classifier"
+        },
+        "points": [
+          {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          },
+          {
+            "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+            "growth_score": 19,
+            "inflation_score": 23
+          }
+        ],
+        "gaps": [],
+        "events": {
+          "status": "unavailable",
+          "completeness": "selected_market_attached_only",
+          "reason": "events_not_supplied",
+          "records": []
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": true,
+          "reason": null,
+          "viewed_through": "current_reconstruction",
+          "available_dates": [
+            "2026-01-01T00:00:00+09:00",
+            "2026-01-02T00:00:00+09:00",
+            "2026-01-03T00:00:00.123456789+09:00"
+          ],
+          "left": {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          "right": {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          }
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      }
+    },
+    {
+      "id": "events_wrong_market",
+      "title": "Only other-market events yield unavailable/wrong_market; no global top-ten inference",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "ready",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": "intl_regime.classifier",
+        "identity": {
+          "market_id": "JP",
+          "unit": "score",
+          "return_basis": "price",
+          "universe": "intl_regime.classifier_history",
+          "method_ref": "intl_regime.classifier"
+        },
+        "points": [
+          {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          },
+          {
+            "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+            "growth_score": 19,
+            "inflation_score": 23
+          }
+        ],
+        "gaps": [],
+        "events": {
+          "status": "unavailable",
+          "completeness": "selected_market_attached_only",
+          "reason": "wrong_market",
+          "records": []
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": true,
+          "reason": null,
+          "viewed_through": "current_reconstruction",
+          "available_dates": [
+            "2026-01-01T00:00:00+09:00",
+            "2026-01-02T00:00:00+09:00",
+            "2026-01-03T00:00:00.123456789+09:00"
+          ],
+          "left": {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          "right": {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          }
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      },
+      "forbidden_substrings": [
+        "MACD_TURN",
+        "Other market",
+        "global_top_ten",
+        "record.turn.events:9"
+      ]
+    },
+    {
+      "id": "track_record_unavailable",
+      "title": "Null track record is unavailable/not_supplied; helper does not invoke a scorecard",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": null,
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "ready",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": "intl_regime.classifier",
+        "identity": {
+          "market_id": "JP",
+          "unit": "score",
+          "return_basis": "price",
+          "universe": "intl_regime.classifier_history",
+          "method_ref": "intl_regime.classifier"
+        },
+        "points": [
+          {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          },
+          {
+            "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+            "growth_score": 19,
+            "inflation_score": 23
+          }
+        ],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": true,
+          "reason": null,
+          "viewed_through": "current_reconstruction",
+          "available_dates": [
+            "2026-01-01T00:00:00+09:00",
+            "2026-01-02T00:00:00+09:00",
+            "2026-01-03T00:00:00.123456789+09:00"
+          ],
+          "left": {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          "right": {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          }
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "unavailable",
+          "reason": "not_supplied",
+          "destination": "/research/track-record",
+          "market_id": null,
+          "graded_count": null,
+          "alert_count": null,
+          "sample_dates": null,
+          "precision": null,
+          "hit_rate": null,
+          "lift": null,
+          "false_alarms": null,
+          "drawdowns": null,
+          "qualification_notes": null
+        }
+      }
+    },
+    {
+      "id": "track_record_failed_not_empty",
+      "title": "Independently failed health with zero graded rows is read_health_failed, not a proven empty track record",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "failed",
+          "graded_count": 0,
+          "alert_count": 0,
+          "sample_dates": null,
+          "precision": null,
+          "hit_rate": null,
+          "lift": null,
+          "false_alarms": null,
+          "drawdowns": null,
+          "qualification_notes": "forward_log read failed"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "ready",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": "intl_regime.classifier",
+        "identity": {
+          "market_id": "JP",
+          "unit": "score",
+          "return_basis": "price",
+          "universe": "intl_regime.classifier_history",
+          "method_ref": "intl_regime.classifier"
+        },
+        "points": [
+          {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          },
+          {
+            "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+            "growth_score": 19,
+            "inflation_score": 23
+          }
+        ],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": true,
+          "reason": null,
+          "viewed_through": "current_reconstruction",
+          "available_dates": [
+            "2026-01-01T00:00:00+09:00",
+            "2026-01-02T00:00:00+09:00",
+            "2026-01-03T00:00:00.123456789+09:00"
+          ],
+          "left": {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          "right": {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          }
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "unavailable",
+          "reason": "read_health_failed",
+          "destination": "/research/track-record",
+          "market_id": null,
+          "graded_count": null,
+          "alert_count": null,
+          "sample_dates": null,
+          "precision": null,
+          "hit_rate": null,
+          "lift": null,
+          "false_alarms": null,
+          "drawdowns": null,
+          "qualification_notes": null
+        }
+      },
+      "forbidden_substrings": [
+        "forward_log read failed"
+      ]
+    },
+    {
+      "id": "compare_observation_not_present",
+      "title": "Requested missing date stays absent; no forward-fill; left observation remains visible",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-12-31T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "ready",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": "intl_regime.classifier",
+        "identity": {
+          "market_id": "JP",
+          "unit": "score",
+          "return_basis": "price",
+          "universe": "intl_regime.classifier_history",
+          "method_ref": "intl_regime.classifier"
+        },
+        "points": [
+          {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          },
+          {
+            "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+            "growth_score": 19,
+            "inflation_score": 23
+          }
+        ],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "observation_not_present",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [
+            "2026-01-01T00:00:00+09:00",
+            "2026-01-02T00:00:00+09:00",
+            "2026-01-03T00:00:00.123456789+09:00"
+          ],
+          "left": {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          "right": null
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      }
+    },
+    {
+      "id": "track_record_qualified_zero",
+      "title": "Independently qualified zero graded count is available with graded_count 0",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 0,
+          "alert_count": 0,
+          "sample_dates": [],
+          "precision": null,
+          "hit_rate": null,
+          "lift": null,
+          "false_alarms": null,
+          "drawdowns": null,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "ready",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": "intl_regime.classifier",
+        "identity": {
+          "market_id": "JP",
+          "unit": "score",
+          "return_basis": "price",
+          "universe": "intl_regime.classifier_history",
+          "method_ref": "intl_regime.classifier"
+        },
+        "points": [
+          {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          },
+          {
+            "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+            "growth_score": 19,
+            "inflation_score": 23
+          }
+        ],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": true,
+          "reason": null,
+          "viewed_through": "current_reconstruction",
+          "available_dates": [
+            "2026-01-01T00:00:00+09:00",
+            "2026-01-02T00:00:00+09:00",
+            "2026-01-03T00:00:00.123456789+09:00"
+          ],
+          "left": {
+            "observation_at": "2026-01-01T00:00:00+09:00",
+            "growth_score": 0.4375,
+            "inflation_score": -1.25
+          },
+          "right": {
+            "observation_at": "2026-01-02T00:00:00+09:00",
+            "growth_score": 17,
+            "inflation_score": 0.1875
+          }
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 0,
+          "alert_count": 0,
+          "sample_dates": [],
+          "precision": null,
+          "hit_rate": null,
+          "lift": null,
+          "false_alarms": null,
+          "drawdowns": null,
+          "qualification_notes": "forward_log independent read"
+        }
+      }
+    },
+    {
+      "id": "unsupported_source",
+      "title": "Unsupported country receipt binds no market identity and keeps unsupported distinct",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "unsupported",
+          "market_id": null,
+          "artifact_ref": null,
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": null,
+          "identity": null,
+          "points": []
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "unsupported",
+        "source_reference": null,
+        "source_reference_kind": null,
+        "acquisition_at": null,
+        "acquisition_kind": null,
+        "method_ref": null,
+        "identity": null,
+        "points": [],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "source_unsupported",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [],
+          "left": null,
+          "right": null
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      }
+    },
+    {
+      "id": "invalid_source",
+      "title": "Invalid geometry receipt stays invalid and carries no points",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "invalid",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": null,
+          "identity": null,
+          "points": []
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": "JP",
+        "source_read_status": "invalid",
+        "source_reference": "intl_regime/JP_history.parquet",
+        "source_reference_kind": "relative_reconstruction_artifact",
+        "acquisition_at": "2026-10-08T12:00:00+00:00",
+        "acquisition_kind": "read_clock",
+        "method_ref": null,
+        "identity": null,
+        "points": [],
+        "gaps": [],
+        "events": {
+          "status": "available",
+          "completeness": "selected_market_attached_only",
+          "reason": null,
+          "records": [
+            {
+              "event_date": "2026-01",
+              "code": "MA_TURN",
+              "text_en": "MA turn",
+              "text_zh": "均线转折",
+              "evidence_ref": "record.turn.events:0",
+              "market_id": "JP",
+              "history_kind": "recomputed"
+            }
+          ]
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "source_invalid",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [],
+          "left": null,
+          "right": null
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "available",
+          "reason": null,
+          "destination": "/research/track-record",
+          "market_id": "JP",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        }
+      }
+    },
+    {
+      "id": "market_not_selected",
+      "title": "Null selected market does not bind another record's reconstruction, events, or track record",
+      "expect": "ok",
+      "args": {
+        "context": {
+          "selected_market": null,
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "output": {
+        "mode": "recomputed",
+        "selected_market": null,
+        "source_read_status": "unbound",
+        "source_reference": null,
+        "source_reference_kind": null,
+        "acquisition_at": null,
+        "acquisition_kind": null,
+        "method_ref": null,
+        "identity": null,
+        "points": [],
+        "gaps": [],
+        "events": {
+          "status": "unavailable",
+          "completeness": "selected_market_attached_only",
+          "reason": "market_not_selected",
+          "records": []
+        },
+        "as_known": {
+          "available": false,
+          "reason": "immutable_vintages_not_supplied",
+          "destination": "/research/as-known"
+        },
+        "snapshot_compare": {
+          "eligible": false,
+          "reason": "market_not_selected",
+          "viewed_through": "current_reconstruction",
+          "available_dates": [],
+          "left": null,
+          "right": null
+        },
+        "revisions": {
+          "status": "unavailable",
+          "reason": "no_linked_prior_versions",
+          "records": [],
+          "destination": null
+        },
+        "track_record": {
+          "status": "unavailable",
+          "reason": "market_not_selected",
+          "destination": "/research/track-record",
+          "market_id": null,
+          "graded_count": null,
+          "alert_count": null,
+          "sample_dates": null,
+          "precision": null,
+          "hit_rate": null,
+          "lift": null,
+          "false_alarms": null,
+          "drawdowns": null,
+          "qualification_notes": null
+        }
+      },
+      "forbidden_substrings": [
+        "0.4375",
+        "-1.25",
+        "2026-01-01T00:00:00+09:00",
+        "2026-01-02T00:00:00+09:00",
+        "2026-01-03T00:00:00.123456789+09:00",
+        "intl_regime/JP_history.parquet",
+        "intl_regime.classifier",
+        "2026-10-08T12:00:00+00:00",
+        "intl_regime.classifier_history"
+      ]
+    },
+    {
+      "id": "invalid_ready_empty_points",
+      "title": "status=ready requires at least one point",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": []
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_missing_with_points",
+      "title": "status=missing cannot carry points",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "missing",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": null,
+          "identity": null,
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_bool_score",
+      "title": "bool is not a finite numeric score",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": true,
+              "inflation_score": -1.25
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_event_rank",
+      "title": "closed event shape rejects rank fabrication fields",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn",
+            "rank": 1
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_track_record_scorecard_fields",
+      "title": "closed track-record shape rejects success_rate and can_force",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read",
+          "success_rate": 0.9,
+          "can_force": false
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_value_without_metadata",
+      "title": "value allowed requires metadata allowed",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "denied",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_as_known_grant",
+      "title": "as-known grant key is outside this scope",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          },
+          "as_known": {
+            "available": true
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_non_local_destination",
+      "title": "destinations follow the accepted local destination contract",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "https://example.invalid/vintages"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_absolute_artifact_ref",
+      "title": "artifact_ref is a relative reconstruction name",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "/var/data/intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_partial_compare",
+      "title": "compare request requires both dates or neither",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": null
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_unsorted_points",
+      "title": "points must be strictly increasing as supplied",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_extra_context_key",
+      "title": "context is an exact four-key workspace selection",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price",
+          "quote_mode": "inverse"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      }
+    },
+    {
+      "id": "invalid_nonfinite_nan",
+      "title": "NaN is not a finite builtin numeric",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "inject": {
+        "path": [
+          "history_read",
+          "points",
+          0,
+          "growth_score"
+        ],
+        "python": "float('nan')"
+      }
+    },
+    {
+      "id": "invalid_nonfinite_inf",
+      "title": "Infinity is not a finite builtin numeric",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "inject": {
+        "path": [
+          "history_read",
+          "points",
+          0,
+          "inflation_score"
+        ],
+        "python": "float('inf')"
+      }
+    },
+    {
+      "id": "invalid_non_builtin_object",
+      "title": "Custom objects are not builtin JSON",
+      "expect": "error",
+      "args": {
+        "context": {
+          "selected_market": "JP",
+          "horizon": "1m",
+          "currency_basis": "usd_unhedged",
+          "return_basis": "price"
+        },
+        "history_read": {
+          "status": "ready",
+          "market_id": "JP",
+          "artifact_ref": "intl_regime/JP_history.parquet",
+          "read_at": "2026-10-08T12:00:00+00:00",
+          "method_ref": "intl_regime.classifier",
+          "identity": {
+            "market_id": "JP",
+            "unit": "score",
+            "return_basis": "price",
+            "universe": "intl_regime.classifier_history",
+            "method_ref": "intl_regime.classifier"
+          },
+          "points": [
+            {
+              "observation_at": "2026-01-01T00:00:00+09:00",
+              "growth_score": 0.4375,
+              "inflation_score": -1.25
+            },
+            {
+              "observation_at": "2026-01-02T00:00:00+09:00",
+              "growth_score": 17,
+              "inflation_score": 0.1875
+            },
+            {
+              "observation_at": "2026-01-03T00:00:00.123456789+09:00",
+              "growth_score": 19,
+              "inflation_score": 23
+            }
+          ]
+        },
+        "turn_events": [
+          {
+            "market_id": "JP",
+            "event_date": "2026-01",
+            "code": "MA_TURN",
+            "text_en": "MA turn",
+            "text_zh": "均线转折",
+            "evidence_ref": "record.turn.events:0",
+            "source_reference": "record.turn"
+          },
+          {
+            "market_id": "KR",
+            "event_date": "2026-02-01",
+            "code": "MACD_TURN",
+            "text_en": "Other market",
+            "text_zh": "其他市场",
+            "evidence_ref": "record.turn.events:9",
+            "source_reference": "global_top_ten"
+          }
+        ],
+        "track_record": {
+          "market_id": "JP",
+          "read_health": "qualified",
+          "graded_count": 4,
+          "alert_count": 1,
+          "sample_dates": [
+            "2026-01-15",
+            "2026-02-15"
+          ],
+          "precision": 0.5,
+          "hit_rate": 0.25,
+          "lift": 1.5,
+          "false_alarms": 1,
+          "drawdowns": -0.1,
+          "qualification_notes": "forward_log independent read"
+        },
+        "capabilities": {
+          "history_source": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "events": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "track_record": {
+            "metadata": "allowed",
+            "value": "allowed"
+          },
+          "snapshot_compare": {
+            "left_observation_at": "2026-01-01T00:00:00+09:00",
+            "right_observation_at": "2026-01-02T00:00:00+09:00"
+          }
+        },
+        "destinations": {
+          "as_known": {
+            "key": "as_known",
+            "title_en": "As-known vintages",
+            "title_zh": "当时已知",
+            "destination": "/research/as-known"
+          },
+          "track_record": {
+            "key": "track_record",
+            "title_en": "Track record",
+            "title_zh": "跟踪记录",
+            "destination": "/research/track-record"
+          },
+          "revisions": {
+            "key": "revisions",
+            "title_en": "Revisions",
+            "title_zh": "修订",
+            "destination": null
+          }
+        }
+      },
+      "inject": {
+        "path": [
+          "history_read",
+          "points"
+        ],
+        "python": "object()"
+      }
+    }
+  ]
+}
