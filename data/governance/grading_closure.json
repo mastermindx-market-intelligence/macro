@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-10-09T04:26:13.837002+00:00",
+  "generated_at": "2026-10-09T04:49:31.109053+00:00",
   "n_ledgers": 34,
   "n_closed": 27,
   "n_grader_starved": 7,
@@ -16,7 +16,7 @@
       ],
       "n_logged": 116799,
       "n_graded": 200195,
-      "last_graded_at": "2026-10-09T04:21:56.131207+00:00",
+      "last_graded_at": "2026-10-09T04:45:20.717297+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -30,7 +30,7 @@
       ],
       "n_logged": 200195,
       "n_graded": 200195,
-      "last_graded_at": "2026-10-09T04:21:56.131207+00:00",
+      "last_graded_at": "2026-10-09T04:45:20.717297+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },

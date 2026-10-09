@@ -1,6 +1,6 @@
 {
   "status": "stale",
-  "checked_at": "2026-10-09T04:15:41.806923+00:00",
+  "checked_at": "2026-10-09T04:40:31.371116+00:00",
   "threshold_sessions": 3,
   "store_max": "2026-10-08",
   "n_members": 702,
@@ -15,11 +15,11 @@
       "last": "2026-08-20",
       "sessions_behind": 34
     },
-    "GBTG": {
+    "DBRG": {
       "last": "2026-09-29",
       "sessions_behind": 7
     },
-    "DBRG": {
+    "GBTG": {
       "last": "2026-09-29",
       "sessions_behind": 7
     }

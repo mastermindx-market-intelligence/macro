@@ -434,9 +434,9 @@
   },
   "AD": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-10-07",
-   "refreshed": "2026-10-08",
-   "rows": 9679
+   "last_obs": "2026-10-08",
+   "refreshed": "2026-10-09",
+   "rows": 9680
   },
   "ADAM": {
    "backfilled": "2026-08-10",
@@ -1760,9 +1760,9 @@
   },
   "AMSF": {
    "backfilled": "2026-10-02",
-   "last_obs": "2026-10-07",
-   "refreshed": "2026-10-08",
-   "rows": 5252
+   "last_obs": "2026-10-08",
+   "refreshed": "2026-10-09",
+   "rows": 5253
   },
   "AMSS": {
    "backfilled": "2026-08-10",
@@ -1898,9 +1898,9 @@
   },
   "ANTA": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-10-07",
-   "refreshed": "2026-10-08",
-   "rows": 353
+   "last_obs": "2026-10-08",
+   "refreshed": "2026-10-09",
+   "rows": 354
   },
   "ANTW": {
    "backfilled": "2026-10-02",
@@ -1934,9 +1934,9 @@
   },
   "AON": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-10-07",
-   "refreshed": "2026-10-08",
-   "rows": 11682
+   "last_obs": "2026-10-08",
+   "refreshed": "2026-10-09",
+   "rows": 11683
   },
   "AORT": {
    "backfilled": "2026-08-10",
@@ -2018,9 +2018,9 @@
   },
   "APMCU": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-10-07",
-   "refreshed": "2026-10-08",
-   "rows": 88
+   "last_obs": "2026-10-08",
+   "refreshed": "2026-10-09",
+   "rows": 89
   },
   "APMD": {
    "backfilled": "2026-08-10",
@@ -3270,9 +3270,9 @@
   },
   "BB": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-10-07",
-   "refreshed": "2026-10-08",
-   "rows": 6961
+   "last_obs": "2026-10-08",
+   "refreshed": "2026-10-09",
+   "rows": 6962
   },
   "BBAI": {
    "backfilled": "2026-08-11",
@@ -4778,7 +4778,7 @@
    "backfilled": "2026-08-13",
    "last_obs": "2026-09-18",
    "refreshed": "2026-10-09",
-   "rows": 43
+   "rows": 45
   },
   "BRPSF": {
    "backfilled": "2026-08-13",
@@ -5125,7 +5125,7 @@
    "backfilled": "2026-08-13",
    "last_obs": "2026-10-08",
    "refreshed": "2026-10-09",
-   "rows": 1489
+   "rows": 1488
   },
   "BUUU": {
    "backfilled": "2026-08-13",
@@ -21037,7 +21037,7 @@
    "backfilled": "2026-08-21",
    "last_obs": "2026-10-07",
    "refreshed": "2026-10-09",
-   "rows": 8
+   "rows": 7
   },
   "NHS": {
    "backfilled": "2026-08-21",
@@ -25119,9 +25119,9 @@
   },
   "QRVO": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-10-05",
+   "last_obs": "2026-09-14",
    "refreshed": "2026-10-09",
-   "rows": 6
+   "rows": 5
   },
   "QS": {
    "backfilled": "2026-08-23",
@@ -34765,8 +34765,8 @@
    "unsupported_symbols": 886
   },
   "dry_run": false,
-  "elapsed_s": 358.3,
-  "no_data": 7,
+  "elapsed_s": 292.4,
+  "no_data": 1,
   "parked": 0,
   "period": "max",
   "planned": 5,
@@ -34800,7 +34800,7 @@
     "20.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "SATA": [
-    "37.4% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "38.3% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "SDTY": [
     "20.8% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
@@ -34821,7 +34821,7 @@
     "20.4% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "YMAG": [
-    "17.2% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "17.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "YMAX": [
     "17.3% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
@@ -34830,7 +34830,7 @@
   "refresh_attempted": 5550,
   "refresh_cadence_d": 1.0,
   "refresh_cap": 5550,
-  "refresh_current_returned": 5205,
+  "refresh_current_returned": 5211,
   "refresh_expected_session": "2026-10-08",
   "refresh_noncurrent_returned": 336,
   "refresh_planned": 5550,
@@ -34838,11 +34838,11 @@
   "refresh_scope": "all_unmaintained",
   "refresh_unattempted": 0,
   "refreshable": 5550,
-  "refreshed": 5541,
+  "refreshed": 5547,
   "remaining": 5,
   "schema_rejected": 7,
   "short_history": 41,
-  "started_utc": "2026-10-09T04:37:50+00:00",
+  "started_utc": "2026-10-09T05:00:27+00:00",
   "written": 0
  },
  "parked": {
@@ -47385,77 +47385,47 @@
   }
  },
  "pending": {
-  "AD": {
-   "attempts": 1,
-   "error": "[refresh] no data returned for vendor symbol 'AD'",
-   "last_attempt": "2026-10-09T04:38:25+00:00"
-  },
-  "AMSF": {
-   "attempts": 1,
-   "error": "[refresh] no data returned for vendor symbol 'AMSF'",
-   "last_attempt": "2026-10-09T04:38:40+00:00"
-  },
-  "ANTA": {
-   "attempts": 1,
-   "error": "[refresh] no data returned for vendor symbol 'ANTA'",
-   "last_attempt": "2026-10-09T04:38:40+00:00"
-  },
-  "AON": {
-   "attempts": 1,
-   "error": "[refresh] no data returned for vendor symbol 'AON'",
-   "last_attempt": "2026-10-09T04:38:40+00:00"
-  },
-  "APMCU": {
-   "attempts": 1,
-   "error": "[refresh] no data returned for vendor symbol 'APMCU'",
-   "last_attempt": "2026-10-09T04:38:52+00:00"
-  },
   "ARBEW": {
    "attempts": 2,
    "error": "[backfill] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-09T04:37:51+00:00"
-  },
-  "BB": {
-   "attempts": 1,
-   "error": "[refresh] no data returned for vendor symbol 'BB'",
-   "last_attempt": "2026-10-09T04:39:07+00:00"
+   "last_attempt": "2026-10-09T05:00:27+00:00"
   },
   "BENFW": {
    "attempts": 2,
    "error": "[backfill] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-09T04:37:51+00:00"
+   "last_attempt": "2026-10-09T05:00:27+00:00"
   },
   "BLFS": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-09T04:38:01+00:00"
+   "last_attempt": "2026-10-09T05:00:33+00:00"
   },
   "IBACR": {
    "attempts": 2,
    "error": "[backfill] no data returned for vendor symbol 'IBACR'",
-   "last_attempt": "2026-10-09T04:37:51+00:00"
+   "last_attempt": "2026-10-09T05:00:27+00:00"
   },
   "KOYNW": {
    "attempts": 2,
    "error": "[backfill] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-09T04:37:51+00:00"
+   "last_attempt": "2026-10-09T05:00:27+00:00"
   },
   "LCFYW": {
    "attempts": 2,
    "error": "[backfill] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-09T04:37:51+00:00"
+   "last_attempt": "2026-10-09T05:00:27+00:00"
   },
   "SLP": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-09T04:38:11+00:00"
+   "last_attempt": "2026-10-09T05:00:40+00:00"
   },
   "WBD": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-10-09T04:38:23+00:00"
+   "last_attempt": "2026-10-09T05:00:47+00:00"
   }
  },
  "schema": "yahoo_backfill_state/1",
- "updated_utc": "2026-10-09T04:43:47+00:00"
+ "updated_utc": "2026-10-09T05:05:18+00:00"
 }
