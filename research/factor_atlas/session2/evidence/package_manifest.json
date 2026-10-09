@@ -2,12 +2,12 @@
   "customer_publication_authorized": false,
   "files": {
     "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
-      "bytes": 82288,
-      "sha256": "9b6375d434612927a42b0c15b4f8ade89634a82cf32502428f822aa402c47fb5"
+      "bytes": 83080,
+      "sha256": "2bc63e49df3d956dc4e2bedfd29a840f3584ca5f3d1b45e4c2e5949ffcd88b48"
     },
     "session2/CONTINUATION.md": {
-      "bytes": 13632,
-      "sha256": "7bb47b317651171cc92cd3249c04e78c6b3143fe7bacb7c924c4e58b9cf4d70d"
+      "bytes": 14973,
+      "sha256": "60f3407c2f01a088b590cd923799df1c06b40c586642bb30ab863147b535de8d"
     },
     "session2/CUMULATIVE_WINDOW_CONTRACT.md": {
       "bytes": 2197,
@@ -22,12 +22,16 @@
       "sha256": "7f3e9a0e47acf39a20f34aa6a3020265e865aaa96441d6945c92db6b1516e874"
     },
     "session2/SOURCE_INTAKE_PREFLIGHT.md": {
-      "bytes": 8342,
-      "sha256": "3f45a73b508c3098a8b29ddc1b937a3b6d23b022bac12b7889d5fd7b6aba4096"
+      "bytes": 9998,
+      "sha256": "1f6354c6fb870c33eb10e905895216f0d02a854a2d6b6f22420f7d8199b5c1e6"
     },
     "session2/evidence/benchmark.json": {
       "bytes": 1341,
       "sha256": "196e3b469c399c114fbde8f9e092ca920252ddac60c50ad4182be8105d7c60ac"
+    },
+    "session2/evidence/local_terminal_default_path_census.json": {
+      "bytes": 2875,
+      "sha256": "4a24ef4ef3e56e79b20a66ac6d1efd00b402d945845955c9a09bf95480726ffa"
     },
     "session2/evidence/native_calibration_tests.json": {
       "bytes": 2295,
@@ -42,8 +46,8 @@
       "sha256": "ceeeeb1cba09a1b91d3cee46fc73e8640ff34e95f7790bab4757d5542161f1e2"
     },
     "session2/evidence/native_source_preflight_tests.json": {
-      "bytes": 2573,
-      "sha256": "97d2c6b1a92881e1cfe67c890c7ff6979e61752f4aa1e52dea46c9136c5c9fac"
+      "bytes": 2861,
+      "sha256": "a6962c99cac4de1e20183146f0e28d2a3c2dbcc8b0f9584b12cb57087f8d7c99"
     },
     "session2/evidence/native_window_tests.json": {
       "bytes": 2726,
@@ -136,8 +140,8 @@
   "native_quote_test_receipt": "session2/evidence/native_quote_tests.json",
   "native_scoped_tests_passed": 226,
   "native_test_receipt": "session2/evidence/native_window_tests.json",
-  "predecessor_commit": "8eaa58e018d015a2c8b96816723659a5c9c634da",
-  "prepared_at_utc": "2026-10-09T05:04:54.655633+00:00",
+  "predecessor_commit": "7ceb9225acb2e003be8c8bd1757314fd62ae8027",
+  "prepared_at_utc": "2026-10-09T05:09:02.175640+00:00",
   "report_structure_checks": {
     "external_source_records": 13,
     "implementation_packets": 7,

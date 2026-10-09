@@ -176,3 +176,26 @@ self-asserted fixture metadata. Only after authentic source-owner
 positive admission can the designated offline licensed S2-P2
 pilot execute; other capital pressure/quote consumer and scientific
 acceptance gates follow.
+
+## Follow-on bounded M2 Terminal default-output path census
+
+Exact original branch source head at census start `7ceb9225acb2e003be8c8bd1757314fd62ae8027`. A single
+bounded read-only local Terminal checkout inventory found M2 Studio
+`charting-app` checkout `81221cb15345118d0796fabaa7c47476350dc614`
+with default output `terminal/public/data` and no override in this
+*process*. The default intraday directory and all proposed cohort
+AAPL/MSFT/NVDA/SPY 1m/5m/1h candidate files there were absent.
+An older manifest `as_of=2026-06-26` listed all four ticker labels,
+but contained no proof of a retained minute capture, first-seen time
+or stable monetary source basis. Manifest SHA-256
+`b66f89a606ac5a374d993e2ced21f5332d9312ee069d40ed8ce4f55b73ecb6e3`;
+receipt `evidence/local_terminal_default_path_census.json`.
+
+Scope boundary: no assertion about deployed Terminal, runtime override,
+other Mac/fleet source stores or all mounted archives. No feed request,
+source-refresh, source repair, protected denial replay or owned producer/
+reader state change. S2-P1 remains NOT_ADMITTED. Source-preflight
+code/test output remains unchanged at 226 passing scoped tests.
+Next real unblock is the incumbent provider/source/basis/reader owner's
+actual qualified four-name capture and selected revision receipt;
+a chart-data manifest is not that receipt.

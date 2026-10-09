@@ -1,5 +1,11 @@
 {
   "all_five_research_authority_flags": false,
+  "bounded_local_source_census": {
+    "market_pilot_admitted": false,
+    "not_full_fleet_or_production": true,
+    "receipt_path": "session2/evidence/local_terminal_default_path_census.json",
+    "receipt_sha256": "4a24ef4ef3e56e79b20a66ac6d1efd00b402d945845955c9a09bf95480726ffa"
+  },
   "created_at_utc": "2026-10-09T05:04:54.644975+00:00",
   "deferred_to_existing_owners": [
     "Terminal minute source receipt and retention",
@@ -37,12 +43,12 @@
   "skillpack_version": "1.0.1",
   "source_files": {
     "02_CAPITAL_PRESSURE_AND_MICROSTRUCTURE.md": {
-      "bytes": 82288,
-      "sha256": "9b6375d434612927a42b0c15b4f8ade89634a82cf32502428f822aa402c47fb5"
+      "bytes": 83080,
+      "sha256": "2bc63e49df3d956dc4e2bedfd29a840f3584ca5f3d1b45e4c2e5949ffcd88b48"
     },
     "session2/SOURCE_INTAKE_PREFLIGHT.md": {
-      "bytes": 8342,
-      "sha256": "3f45a73b508c3098a8b29ddc1b937a3b6d23b022bac12b7889d5fd7b6aba4096"
+      "bytes": 9998,
+      "sha256": "1f6354c6fb870c33eb10e905895216f0d02a854a2d6b6f22420f7d8199b5c1e6"
     },
     "session2/evidence/source_intake_witness.json": {
       "bytes": 1099,

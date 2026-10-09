@@ -44,3 +44,12 @@ There is no positive-admission argument, flag, backdoor or sample-data loader in
 ## Reproducible fixture-only proof
 
 `test_source_preflight.py` covers empty and complete proposed cohorts, 4 × 3 minutes; explicit zero versus absent values; request-versus-response truth, missing source/reader/corporate-action/rights/identity metadata, after-cutoff receipts, contradictory clocks, duplicate selected revisions, invalid SHA shape, calendar/identity mismatch, early-close owner window, order independence, and version drift within a security. Complete claimed metadata still produces **NOT_ADMITTED**. This is a native *software falsifier suite*, not evidence that any of those four securities have usable 1-minute archives or that source/reader receipt bytes have been inspected.
+
+
+## Bounded local Terminal output census (read-only)
+
+The M2 Studio local `charting-app` checkout was observed at Git head `81221cb15345118d0796fabaa7c47476350dc614`. Its `ingest/backfill_intraday.py` declares the default output root `terminal/public/data` unless `TERMINAL_DATA_DIR` overrides it. In this Studio process, that environment override was not set. The default `terminal/public/data/manifest.json` existed and had SHA-256 `b66f89a606ac5a374d993e2ced21f5332d9312ee069d40ed8ce4f55b73ecb6e3`, 13,038 bytes and declared `as_of: 2026-06-26`. It listed all four proposed security symbols among 34 labels.
+
+**The default `terminal/public/data/intraday` directory was absent** in this checkout, so none of `AAPL/MSFT/NVDA/SPY.{1m,5m,1h}.json` were present at that specific location. The result is recorded without market price/volume values in `evidence/local_terminal_default_path_census.json`, with exact local checkout/source and manifest identity.
+
+**Scope restriction:** This is a single M2 local checkout/default-path observation. It is NOT a scan of production, the full fleet, any `TERMINAL_DATA_DIR` configured in a service process, the M1 host, all mounted offloaded archives, or alternative owner source stores. A manifest ticker is not a minute capture. This negative local result does not disprove permitted data elsewhere, but it does not unlock a licensed Factor Atlas pilot. The original Terminal/Macro capture and basis owners still need exact actual receipts and owner admission. No source refresh, provider request, file modification, denied-path read, fresh-main fetch or cross-carrier source action was performed for this census.
