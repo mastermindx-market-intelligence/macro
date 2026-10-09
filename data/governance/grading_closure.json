@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-10-08T15:16:34.215571+00:00",
+  "generated_at": "2026-10-09T04:26:13.837002+00:00",
   "n_ledgers": 34,
   "n_closed": 27,
   "n_grader_starved": 7,
@@ -14,9 +14,9 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 116715,
-      "n_graded": 199381,
-      "last_graded_at": "2026-10-08T15:12:36.201571+00:00",
+      "n_logged": 116799,
+      "n_graded": 200195,
+      "last_graded_at": "2026-10-09T04:21:56.131207+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -28,9 +28,9 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 199381,
-      "n_graded": 199381,
-      "last_graded_at": "2026-10-08T15:12:36.201571+00:00",
+      "n_logged": 200195,
+      "n_graded": 200195,
+      "last_graded_at": "2026-10-09T04:21:56.131207+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -42,8 +42,8 @@
       "graders": [
         "engine/board_ledger.py"
       ],
-      "n_logged": 1017,
-      "n_graded": 671,
+      "n_logged": 1036,
+      "n_graded": 685,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -98,8 +98,8 @@
       "graders": [
         "engine/china_standout_track.py"
       ],
-      "n_logged": 4816,
-      "n_graded": 2538,
+      "n_logged": 4961,
+      "n_graded": 2637,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -127,7 +127,7 @@
         "engine/china_sector_cycles_grader.py",
         "scripts/grade_promises.py"
       ],
-      "n_logged": 3127,
+      "n_logged": 3180,
       "n_graded": 5081,
       "last_graded_at": "2026-07-02T18:59:33.219372+00:00",
       "tune_step": "N",
@@ -155,7 +155,7 @@
       "graders": [
         "scripts/grade_breadth_divergence.py"
       ],
-      "n_logged": 643,
+      "n_logged": 645,
       "n_graded": 280,
       "last_graded_at": null,
       "tune_step": "N",
@@ -183,7 +183,7 @@
       "graders": [
         "engine/risk_radar_intl_audit.py"
       ],
-      "n_logged": 37,
+      "n_logged": 38,
       "n_graded": 20,
       "last_graded_at": null,
       "tune_step": "Y",
@@ -197,8 +197,8 @@
       "graders": [
         "engine/risk_radar_intl_audit.py"
       ],
-      "n_logged": 42,
-      "n_graded": 23,
+      "n_logged": 43,
+      "n_graded": 24,
       "last_graded_at": null,
       "tune_step": "Y",
       "verdict": "CLOSED"

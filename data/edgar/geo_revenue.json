@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-10-08T04:04:24.919759+00:00",
+"updated":"2026-10-09T04:09:55.686135+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -16036,11 +16036,11 @@
 ]
 },
 "NTNX":{
-"foreign_pct":44.5,
-"asof":"2025-07-31",
-"source":"10-K 2025-07-31",
-"fy":2025,
-"accession":"0001193125-25-213801",
+"foreign_pct":46.4,
+"asof":"2026-07-31",
+"source":"10-K 2026-07-31",
+"fy":2026,
+"accession":"0001193125-26-394793",
 "method":"us_member",
 "concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
 "by_region":[
@@ -16048,25 +16048,25 @@
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":55.5
+"pct":53.6
 },
 {
 "key":"EMEA",
 "label":"EMEA",
 "cls":"mixed",
-"pct":27.0
+"pct":29.1
 },
 {
 "key":"AsiaPacific",
 "label":"Asia Pacific",
 "cls":"mixed",
-"pct":15.5
+"pct":14.6
 },
 {
 "key":"OtherAmericas",
 "label":"Other Americas",
 "cls":"mixed",
-"pct":2.0
+"pct":2.6
 }
 ]
 },
