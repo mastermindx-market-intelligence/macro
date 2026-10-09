@@ -60,7 +60,7 @@ def normalize_article(raw: Mapping[str, object], *, received_at: datetime) -> di
     url = _bounded_text(raw.get("url"), "url", 8192, required=True)
     parts = urlsplit(url)
     if (parts.scheme not in ("http", "https") or not parts.hostname or parts.username or parts.password
-            or any(c in url for c in ("\\\"", "\x27", "<", ">", "\\x00", "\\n", "\\r", "\\t"))):
+            or any(ord(ch) in (0, 9, 10, 13, 34, 39, 60, 62) for ch in url)):
         raise TiingoArticleError("url_invalid")
     published = _utc(raw.get("publishedDate"), "published_at")
     crawled = _utc(raw.get("crawlDate"), "provider_crawled_at")
