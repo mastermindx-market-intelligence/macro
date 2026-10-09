@@ -1,0 +1,20 @@
+{
+  "status": "CAPACITY_RECOVERED_NEW_CHILD_LAUNCH_OBSERVED",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "blocker": "Only admitted full-GLM host below existing50GiB floor after completed worker expanded compact inputs into full non-Git scratch repo copy.",
+  "repair": "Verified100017 scratch files byte-for-byte against retained baseline; removed only four redundant input directories. Preserved worker outputs and all shared repositories/worktrees.",
+  "baseline": "36f996c2142a1bfb4b959c7c268611c95348842b",
+  "files_verified": 100017,
+  "freed_gib": 9.0245,
+  "free_after_gib": 51.6699,
+  "advisory_host_after_refresh": "mini2",
+  "next_child": "paper-01a1101f-im05-summary-build-r1",
+  "next_scope": "Pure reported-transmission summary qualification with closed supplied receipts; no full Risk page claim.",
+  "prevention": "Parent prepared3input files12930bytes; capsule-only cwd; no Git/full-repo operations or dependency copies.",
+  "source_evidence": {
+    "IM04_MINI2_ECB_COPY_HASH_PROOF.json": "15fc802961940af00ffd06d6ef29c2c5328f49338a6b6bc3fe9857d149b3b550",
+    "IM04_MINI2_RECLAIM_RECEIPT.json": "7c86598f79b5121a6a2bf554ecc399b819ddd221ce37453a5bc2271bade31414",
+    "IM04_GLM_PLACEMENT_RECOVERED.json": "0add0e010e04bc8792bf89ad773b802852bcc8c0ce6c122429d7017a6e8ef2ef"
+  },
+  "limits": "Launch trace is not completion or acceptance; no provider policy/holds/limits or GC changed."
+}

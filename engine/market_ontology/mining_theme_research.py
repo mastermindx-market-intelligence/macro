@@ -387,7 +387,12 @@ def _headline_for(
         return f"{domain_label}: the source is retained; no economic packet is admitted."
     if "missing_basis" in limitations:
         return f"{domain_label}: the source figure is held while its reporting basis is absent."
-    if "stream_threshold_unknown" in limitations:
+    # Gated on a non-degraded status: this sentence ASSERTS retention, and the W-R slice
+    # vocabulary mints ``stream_threshold_unknown`` on every payload, so ungated it claimed a
+    # retained contract explanation over a wholly empty economics panel. Measured: no shipped
+    # case is degraded and carries this headline, so the gate changes none of them -- it only
+    # stops the payload from reading "degraded" and "retained" in the same summary object.
+    if status != "degraded" and "stream_threshold_unknown" in limitations:
         return (
             f"{domain_label}: the contract explanation is retained; the stream threshold is "
             "unknown."
@@ -407,17 +412,31 @@ def _summarize_status(
     limitations: list[str],
     *,
     has_native_blocks: bool,
+    has_named_absence: bool,
 ) -> str:
     if "denied_source" in limitations:
         return "refused"
-    # The contract explanation is retained even with no native block (PLAN §6 verbatim test);
-    # MGD-18 / R-MIN-15: a missing threshold keeps the contract explanation -> ready.
-    if "stream_threshold_unknown" in limitations:
-        return "ready"
     if has_native_blocks:
         return "ready"
-    if not limitations:
-        return "degraded"
+    # The contract explanation is retained even with no native block (PLAN §6 verbatim test);
+    # MGD-18 / R-MIN-15: a missing threshold keeps the contract explanation -> ready.
+    #
+    # Scoped to a bundle that NAMED an absence (MGD-08 clause 2; R-MIN-34 as amended by
+    # R-MIN-35, 2026-09-27). ``stream_threshold_unknown`` has TWO minting sites -- the omission
+    # map, where it is a fact about THIS bundle, and the slice vocabulary below, where it is a
+    # per-slice CONSTANT -- and ``limitations`` is a flat list that cannot tell them apart. Read
+    # unscoped, this clause therefore answered for every W-R request before the native-block
+    # channel was consulted, so every rare-earth dossier reported ``ready`` over a wholly empty
+    # economics panel while copper degraded on identical input. ``bundle.omissions`` reads the
+    # CASE, which is what R-MIN-34's "named absence" bar actually requires: a payload with no
+    # block may claim readiness only when something was named to explain the gap.
+    #
+    # Deliberately not the stricter ``"stream_threshold" in omissions``: measured, that flips
+    # ``same_horizon_revision`` and ``page_generation_change`` to degraded, which is a behaviour
+    # change beyond this obligation.
+    if has_named_absence and "stream_threshold_unknown" in limitations:
+        return "ready"
+    # No block and nothing named to explain its absence: degrade. Never ready.
     return "degraded"
 
 
@@ -887,7 +906,11 @@ def compose_mining_research(
         limitations.append("omitted:expectations")
 
     domain_label = MINING_DEFINITIONS[query.slice_key]["anchor_theme_id"]
-    status = _summarize_status(limitations, has_native_blocks=bool(native_blocks))
+    status = _summarize_status(
+        limitations,
+        has_native_blocks=bool(native_blocks),
+        has_named_absence=bool(bundle.omissions),
+    )
     headline = _headline_for(status, limitations=limitations, domain_label=domain_label)
     # Belt-and-braces: a literal headline that contains badge vocabulary must never be
     # constructed by the closed _headline_for table. If a future refactor accidentally

@@ -1,0 +1,32 @@
+{
+  "schema": "mastermind.marketdesk_extractor.release.v1",
+  "release_id": "marketdesk-producer-auth-health-r2-20261005",
+  "capability": "typed MarketDesk producer authentication health on the incumbent runtime plane",
+  "base_import_commit": "31981dc426f2e7fbb2b333f0fd73789f21deb8cd",
+  "source_of_truth": "Git commit plus current release manifest",
+  "manifest": "SHA256SUMS",
+  "manifest_sha256": "a9832d62274a67704ffb6175c66f24763ca178f7bc0cf7a78ef43e24e1218161",
+  "payload_count": 58,
+  "recovery_manifest": "RECOVERY_SHA256SUMS",
+  "recovery_manifest_sha256": "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602",
+  "historical_import_receipt": "IMPORT_RECEIPT.json",
+  "creates_new_execution_plane": false,
+  "runtime_authority": {
+    "collector_label": "com.mastermindx.research-trickle",
+    "immediate_ingest_trigger": "com.mastermindx.research-feed",
+    "hourly_workflow_backstop": "research-ingest.yml",
+    "repository": "mastermindx-market-intelligence/macro"
+  },
+  "changes": [
+    "Preserve the original recovery manifest as immutable provenance.",
+    "Persist producer authentication health in the existing MarketDesk SQLite meta table.",
+    "Expose AUTHENTICATED, AUTH_REQUIRED, or UNKNOWN through marketdesk status and the existing read-only feed probe.",
+    "Make the existing research-feed watcher surface AUTH_REQUIRED without opening a second scheduler, health database, or automatic authentication path."
+  ],
+  "non_goals": [
+    "No MarketDesk re-authentication or browser-profile mutation.",
+    "No LaunchAgent activation, restart, retirement, or replacement.",
+    "No queue, database schema table, bucket, scheduler, workflow, or publication-authority change.",
+    "No automatic credential refresh; re-authentication remains an explicit human single-writer operation."
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "schema": "seo_work_orders.v1",
-  "as_of": "2026-09-20T17:59:16Z",
+  "as_of": "2026-10-04T18:31:50Z",
   "orders": [
     {
       "id": "missing_description",
@@ -13,14 +13,14 @@
         "canada_stock.html",
         "china_stocks_lab.html",
         "coming-soon.html",
+        "financial_lineage.html",
         "hk_lookup.html",
         "hk_stocks_lab.html",
         "intl_stock.html",
         "qa_bottom_sensors.html",
-        "status.html",
-        "stock.html"
+        "status.html"
       ],
-      "pages_count": 27,
+      "pages_count": 28,
       "suggested_fix": "Add meta description to all core pages",
       "falsifiable_check": "grep 'name=.description' in page source — should be present"
     },
@@ -34,15 +34,15 @@
         "canada_stock.html",
         "china_stocks_lab.html",
         "coming-soon.html",
+        "financial_lineage.html",
         "hk_lookup.html",
         "hk_stocks_lab.html",
         "intl_stock.html",
         "qa_bottom_sensors.html",
         "status.html",
-        "stock.html",
-        "tech_lab.html"
+        "stock.html"
       ],
-      "pages_count": 26,
+      "pages_count": 27,
       "suggested_fix": "Add rel=canonical to all public pages",
       "falsifiable_check": "Check page in browser: view-source should show rel=canonical in <head>"
     },
@@ -69,26 +69,8 @@
       "falsifiable_check": "Load page; canonical URL in <head> should match page URL"
     },
     {
-      "id": "broken_internal_link",
-      "priority": 4,
-      "title": "Fix broken internal .html links",
-      "class": "broken_internal_link",
-      "severity": "high",
-      "pages": [
-        "glossary.html",
-        "help.html",
-        "hk_stocks.html",
-        "plans.html",
-        "support.html",
-        "unsubscribe.html"
-      ],
-      "pages_count": 6,
-      "suggested_fix": "Fix broken internal .html links",
-      "falsifiable_check": "Crawl internal links: zero 404s expected"
-    },
-    {
       "id": "duplicate_title",
-      "priority": 5,
+      "priority": 4,
       "title": "Make titles unique across pages",
       "class": "duplicate_title",
       "severity": "high",
@@ -101,7 +83,7 @@
     },
     {
       "id": "missing_title",
-      "priority": 6,
+      "priority": 5,
       "title": "Add <title> element to pages",
       "class": "missing_title",
       "severity": "high",
@@ -114,7 +96,7 @@
     },
     {
       "id": "missing_og",
-      "priority": 7,
+      "priority": 6,
       "title": "Add og:title, og:description, og:image to all pages",
       "class": "missing_og",
       "severity": "medium",
@@ -123,20 +105,20 @@
         "canada_stock.html",
         "china_stocks_lab.html",
         "coming-soon.html",
+        "financial_lineage.html",
         "hk_lookup.html",
         "hk_stocks_lab.html",
         "intl_stock.html",
         "qa_bottom_sensors.html",
-        "status.html",
-        "stock.html"
+        "status.html"
       ],
-      "pages_count": 27,
+      "pages_count": 28,
       "suggested_fix": "Add og:title, og:description, og:image to all pages",
       "falsifiable_check": "Open Graph debugger or grep meta property=og: — all three present"
     },
     {
       "id": "desc_length",
-      "priority": 8,
+      "priority": 7,
       "title": "Adjust description length to 50-170 chars",
       "class": "desc_length",
       "severity": "medium",
@@ -153,7 +135,7 @@
     },
     {
       "id": "title_length",
-      "priority": 9,
+      "priority": 8,
       "title": "Adjust title length to 15-70 chars",
       "class": "title_length",
       "severity": "medium",
@@ -167,7 +149,7 @@
     },
     {
       "id": "duplicate_description",
-      "priority": 10,
+      "priority": 9,
       "title": "Make meta descriptions unique across pages",
       "class": "duplicate_description",
       "severity": "medium",
@@ -180,7 +162,7 @@
     },
     {
       "id": "missing_lang",
-      "priority": 11,
+      "priority": 10,
       "title": "Add lang attribute to <html> element",
       "class": "missing_lang",
       "severity": "medium",
@@ -190,19 +172,6 @@
       "pages_count": 1,
       "suggested_fix": "Add lang attribute to <html> element",
       "falsifiable_check": "grep '<html' in page — should include lang= attribute"
-    },
-    {
-      "id": "page_weight",
-      "priority": 12,
-      "title": "Reduce HTML page weight to <2.5 MB",
-      "class": "page_weight",
-      "severity": "low",
-      "pages": [
-        "winner_health.html"
-      ],
-      "pages_count": 1,
-      "suggested_fix": "Reduce HTML page weight to <2.5 MB",
-      "falsifiable_check": "wc -c site/<page>.html < 2621440 bytes"
     }
   ]
 }

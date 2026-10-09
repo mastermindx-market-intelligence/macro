@@ -1,14 +1,33 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-09-27T09:10:55+00:00",
-  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
-  "what_fired": [],
-  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
-  "decaying_families": [],
-  "deserves_operator": [],
+  "as_of": "2026-10-09T15:37:24+00:00",
+  "summary": "Context-only committee read: the US backdrop is mixed rather than decisively risk-off. The measured market state is MIXED at 51, leadership remains intact, volatility is calm/normalizing, and recession risk is low. Against that, breadth is exceptionally weak, credit is widening, liquidity is neutral-hollow with the RRP buffer exhausted, real yields and term premium are rising, and the dollar backdrop is safety-driven. The confirmed Q2/Reflation label has low confidence and is internally unsupported: current axes map to Q1, pending 3 of 7 sessions. No signal, trade, ranking, sizing action, or escalation is originated.",
+  "what_fired": [
+    "Credit stress is elevated, led by the confirmed credit-OAS rate-of-change leg; this remains advisory context because the overall radar state is not above its measured base rate.",
+    "Global breadth breakdown is elevated at Tier B, while only 48.3% of members are above 200-day averages and breadth sits near the 11th percentile of its two-year history.",
+    "Rates remain restrictive and rising: real 10-year yield is 2.92%, up 56 bp over 63 days, with rising term premium and a bear-steepening curve.",
+    "Raw regime axes indicate Q1 while the persisted label remains Q2; the pending Q1 transition count is 3/7.",
+    "Short-horizon defensive relative resilience has appeared, but every registered two-session rotation pair conflicts with its 20-session direction, so it is mixed rotation context rather than confirmation."
+  ],
+  "contradictions_review": "Five display-only contradictions were reviewed. The central macro contradiction is that bonds and FX show 0% agreement with the equity regime, with both FX-dollar and rates-credit readings opposing confirmed Q2. The intelligence briefing also contains 33 ticker-level demand-versus-supply divergences. One older options contradiction set is dated 2026-09-17 and is not treated as current evidence. Pair G factor contradictions are dormant because the panel has only 10 dates versus the required 60. Open Master Brain growth/semiconductor underweight theses conflict with current 20-day growth leadership and intact semiconductor trend, while the two long-Treasury overweight theses conflict with their own stated real-yield falsification condition. These conflicts were flagged for operator attention with pre-committed criteria.",
+  "decaying_families": [
+    "Factor intelligence is immature: only 10 panel dates, no surviving scorecard factors, composite not tradeable, and zero graded factor-attention firings.",
+    "Risk Radar has 46 graded observations but no alerts and zero recorded hits across calm/watch/caution states; its current caution state has a measured 21-day pullback rate below base, so it is an early watch rather than an edge.",
+    "Demand-chain evidence is still accruing at 9/12 effective events and its available 21-day Q2 sample is negative and thin.",
+    "Policy and narrative/desk families remain unarmed; several have negative signed excess and/or vacuous held-out comparisons.",
+    "The spine query was dominated by unsigned-MFE board rows, often repeated across horizons; these cannot be interpreted as directional excess-return validation.",
+    "The Master Brain ledger contains numerous open theses past their check-by dates, weakening their present evidentiary value until resolved."
+  ],
+  "deserves_operator": [
+    "US Q2 label versus raw Q1 axes and 0% bonds/FX agreement: retain attention if divergence persists or pending Q1 reaches 7/7; close if agreement exceeds 50% and Q2 is axis-supported for three sessions.",
+    "Overdue growth and semiconductor underweight theses: retain attention if IWF/IWD remains above +3% and SMH remains above its 200-day trend for five sessions; close if relative growth falls to 0% or below and SMH loses its 200-day trend.",
+    "Overdue long-Treasury overweight theses: retain attention if real 10-year yield remains above 2.75% with rising term premium or bear-steepening for five sessions; close if it falls below 2.70% and bear-steepening ends.",
+    "Data-quality gap: yield-momentum turn-watch fields for 2y through 30y became unavailable, so no technical-pause conclusion should be drawn until those owner fields return.",
+    "The next CPI release forecast is display-only and has zero scored maturity; keep released official history, the October 14 forecast, and the in-progress October proxy strictly separate."
+  ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-09-26",
+    "as_of": "2026-10-09",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,48 +39,75 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 91,
-      "total_rows": 99
+      "ungradeable": 113,
+      "total_rows": 121
     },
     "is_context_only": true
   },
-  "tool_call_census": {},
+  "tool_call_census": {
+    "read_world_state": 1,
+    "read_factor_state": 1,
+    "query_spine": 1,
+    "read_contradictions": 1,
+    "list_factor_contradictions": 1,
+    "read_kernel": 1,
+    "read_master_brain_theses": 1,
+    "flag_attention": 1,
+    "stake_hypothesis": 2,
+    "write_memo": 1
+  },
   "is_context_only": true,
   "run_status": {
-    "status": "degraded",
-    "degraded": true,
-    "degradation_reason": "model_unavailable",
-    "model_used": "claude-sonnet-4-6",
+    "status": "ok",
+    "degraded": false,
+    "degradation_reason": null,
+    "model_used": "claude-opus-4-8",
     "provider_attempts": [
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011CfTgfLiUp1fKp4sE8m1Uo'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': None}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011CfTgfQoJ65ZxXFUTG9xEh'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
+      },
+      {
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "attempted": true,
+        "ok": true,
+        "error_type": null,
+        "error_message": null
+      },
+      {
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "attempted": true,
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       }
     ],
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "tool_call_batches": 4,
+    "individual_tool_calls": 11,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-09-27T08:49:20Z"
+    "context_as_of": "2026-10-09T15:20:17Z"
   }
 }

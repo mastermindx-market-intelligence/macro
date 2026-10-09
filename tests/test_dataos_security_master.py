@@ -104,6 +104,7 @@ def table(aliases: pd.DataFrame) -> VendorAliasTable:
             "security_id": row["security_id"],
             "valid_from": BUILD._normalize_bound(row["valid_from"]),
             "valid_to": BUILD._normalize_bound(row["valid_to"]),
+            **{c: row.get(c) for c in BUILD.REFERENCE_ALIAS_COLUMNS},
         }
         for row in aliases.to_dict("records")
     ]
@@ -1107,18 +1108,47 @@ def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataF
     assert sec["era"] == "security_supersession_duplicate_mint_v1"
     assert sec["state_counts"]["ACTIVE"] == int((master["security_state"].isna()).sum())
     assert sec["state_counts"]["SUPERSEDED_DUPLICATE_MINT"] == 1
-    assert receipt["pending_transition_refusals"] == []
-    # AMENDMENT ruling 3 (M1): listing_continuity is no longer unconditionally empty
-    # post-repair — the fence-scoped (plain-string) half IS empty except for a WBS
-    # gap (VERIFIED pre-existing and unrelated to D2B2-US: an UNMODIFIED rebuild at
-    # this same pin already reports WBS unaccounted — a symbol-directory/committed-
-    # master staleness gap between the WBS row's own bake and the current
-    # snapshot, not a regression this contract introduced). The GOLD row (a
-    # registered DISCLOSED_IDENTITY_EXCEPTIONS entry, excluded from the fence
-    # itself) is a typed, EXPLAINED entry — never silently dropped.
-    assert receipt["listing_continuity"] == [
-        "WBS", {"code": "GOLD", "explained": "identity_exception"},
-    ]
+    # Refusal-producing intake is a valid owner result. Every retained fence
+    # decision must be typed, refer to real lost rows, and leave its key unminted.
+    by_id = master.set_index("security_id").to_dict("index")
+    active = master[master["security_state"].isna()]
+    pending = receipt["pending_transition_refusals"]
+    assert len({(r["symbol"], r["listing_key"]) for r in pending}) == len(pending)
+    continuity = receipt["listing_continuity"]
+    plain = [r for r in continuity if isinstance(r, str)]
+    explained = [r for r in continuity if isinstance(r, dict)]
+    assert len(plain) == len(set(plain))
+    assert len(explained) == len({r["code"] for r in explained})
+    assert len(plain) + len(explained) == len(continuity)
+    exceptions = BUILD._exception_by_inception_code()
+    for row in explained:
+        assert set(row) == {"code", "explained"}
+        assert row["explained"] == "identity_exception"
+        assert row["code"] in exceptions
+        assert row["code"] not in plain
+    for row in pending:
+        assert set(row) == {"symbol", "listing_key", "lost_rows", "reason", "snapshot_date"}
+        assert row["reason"].startswith("pending-transition fence:")
+        assert row["snapshot_date"] == receipt["cik_map_snapshot"]
+        assert row["listing_key"] not in set(active["listing_key"])
+        lost = row["lost_rows"]
+        assert lost and len(lost) == len(set(lost))
+        assert set(lost) <= set(by_id)
+        assert {by_id[sec]["inception_code"] for sec in lost} == set(plain)
+        assert all(pd.isna(by_id[sec]["security_state"]) for sec in lost)
+    for probe in receipt.get("prospective_reference", {}).get("probes", {}).values():
+        if probe.get("code") == "canonical_identity_refused":
+            assert probe["owner_refusals"]
+            # Original dated probe refusals remain evidence even when no new
+            # reference mint is attempted on an ordinary rerun.
+            for row in probe["owner_refusals"]:
+                assert row["listing_key"] not in set(active["listing_key"])
+                if "lost_rows" in row:
+                    assert row["reason"].startswith("pending-transition fence:")
+                    assert row["lost_rows"] and set(row["lost_rows"]) <= set(by_id)
+                    assert date.fromisoformat(row["snapshot_date"]) <= date.fromisoformat(receipt["cik_map_snapshot"])
+                else:
+                    assert row["security_state"] == "SUPERSEDED_DUPLICATE_MINT"
     assert receipt["resurrection_refusals"] == []
     # AMENDMENT ruling 4 (M3) / ruling 6 (M5) — the two new disclosure blocks are
     # present and empty in the healthy post-repair state (no unregistered rename
@@ -2045,10 +2075,17 @@ def test_every_produced_row_names_a_real_store_and_a_real_producer() -> None:
         if contract.status is not DatasetStatus.PRODUCED:
             continue
         storage = str(contract.storage)
+        if "<HEAD.generation_id>" in storage:
+            from engine.us_candidate_episode import load_candidate_episode_store_snapshot
+            prefix = "data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/"
+            assert storage.startswith(prefix), f"unrecognized HEAD owner: {storage}"
+            snapshot = load_candidate_episode_store_snapshot(ROOT / "data/us_prophet_rank/episodes")
+            storage = storage.replace("<HEAD.generation_id>", snapshot.generation_id)
+        assert "<" not in storage and ">" not in storage, f"unknown storage token: {storage}"
         literal = storage.split("{", 1)[0]
-        target = ROOT / (literal if literal.endswith("/") else literal)
-        if "{" in storage:
-            target = ROOT / Path(literal).parent
+        target = ROOT / literal
+        if "{" in storage and not literal.endswith("/"):
+            target = target.parent
         assert target.exists(), f"{contract.dataset_id}: storage {storage!r} does not exist"
 
         producer = str(contract.producer)
@@ -2209,6 +2246,7 @@ def test_the_committed_artifact_is_not_stale_against_the_current_seeds(
     """
     shutil.copy(MASTER_PATH, tmp_path / BUILD.MASTER_NAME)
     shutil.copy(ALIASES_PATH, tmp_path / BUILD.ALIASES_NAME)
+    shutil.copy(RECEIPT_PATH, tmp_path / BUILD.RECEIPT_NAME)
     BUILD.build(tmp_path)
 
     rebuilt_master = pd.read_parquet(tmp_path / BUILD.MASTER_NAME)
@@ -3107,8 +3145,8 @@ def test_receipt_carries_era_migrations_total_alongside_this_run(receipt: dict,
 def test_an_unresolved_name_mints_nothing() -> None:
     """A venue this repo cannot evidence produces a REPORT line, never a guessed id."""
     resolutions = [
-        BUILD.Resolution("CBOE", None, None, None, "fixture", None,
-                         "exchange code 'Z' has no MIC in KNOWN_MICS"),
+        BUILD.Resolution("FAKEZ", None, None, None, "fixture", None,
+                         "exchange code 'Q' has no MIC in KNOWN_MICS"),
     ]
     rows, ids, notes, refusals, pending, lost, exc_lost, gmi_refusals = BUILD.mint_master_rows(
         resolutions, [], "2026-08-13T00:00:00"
@@ -3446,14 +3484,23 @@ def test_gmi_us_preferred_refused_never_minted() -> None:
     assert [r["code"] for r in gmi_refusals] == ["not_common_equity_preferred"]
 
 
-# 4: unsupported venue — real committed data, single expected instance (CBOE/Z), and
-# the closed MIC list is asserted unchanged (widening it is out of scope, §4/§13).
-def test_gmi_us_unsupported_venue_real_data_cboe(receipt: dict) -> None:
-    assert BUILD.EXCHANGE_MIC == {"NASDAQ": "XNAS", "N": "XNYS", "A": "XASE"}
-    block = receipt["us_gmi_admission"]
-    cboe = [r for r in block["refusals_this_run"] if r["symbol"] == "CBOE"]
-    assert len(cboe) == 1
-    assert cboe[0]["code"] == "unsupported_venue"
+# 4: Cboe BZX (otherlisted exchange code Z) is a real US equities venue.  The
+# canonical identity seam maps it to ISO 10383 MIC BATS; CBOE must resolve rather
+# than remaining the one current S&P member with no security identity.
+def test_cboe_bzx_exchange_code_z_resolves_to_bats_mic() -> None:
+    assert BUILD.EXCHANGE_MIC["Z"] == "BATS"
+    rows = BUILD.resolve_universe(
+        {"CBOE": {}},
+        {},
+        {"CBOE": "Z"},
+        "2026-10-05",
+    )
+    assert len(rows) == 1
+    row = rows[0]
+    assert row.reason is None
+    assert row.venue_mapped is True
+    assert row.listing_key is not None
+    assert row.listing_key.render() == "US-BATS-CBOE"
 
 
 # 5: listing present, CIK absent -> no_registrant_cik (fixture — empirically zero
@@ -3471,18 +3518,52 @@ def test_gmi_us_no_registrant_cik_fixture() -> None:
     assert [r["code"] for r in gmi_refusals] == ["no_registrant_cik"]
 
 
-# 6: CIK present, listing absent -> not_listed_cik_present (real-data EA).
-def test_gmi_us_not_listed_cik_present_real_data_ea(receipt: dict) -> None:
-    # EA exemplified this refusal class until 2026-08, when it also left the CIK
-    # map (company_tickers drift) and moved to not_listed_no_cik — the class
-    # itself still has live exemplars (GGRP/NVVE as of the 2026-08-28 regen).
-    # Mirror the sibling no_cik test's shape: pin the class non-empty + a named
-    # current exemplar, not one drifting symbol's exact classification.
+# 6: CIK evidence changes the typed refusal, never manufactures a listing.
+@pytest.mark.parametrize("has_cik, expected", [
+    (True, "not_listed_cik_present"), (False, "not_listed_no_cik"),
+])
+def test_gmi_us_missing_listing_cik_refusal_build_fixture(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, has_cik: bool, expected: str,
+) -> None:
+    monkeypatch.setattr(BUILD, "load_universe", lambda: {})
+    monkeypatch.setattr(BUILD, "load_delisted", lambda: {})
+    monkeypatch.setattr(BUILD, "load_directory", lambda: ({}, {}, "2026-10-07", None))
+    cik = {"FAKECIK": ("0009999999", "Fixture Co")} if has_cik else {}
+    monkeypatch.setattr(BUILD, "load_cik_map", lambda: (cik, "2026-10-07", None, frozenset()))
+    monkeypatch.setattr(BUILD, "load_config_maps", lambda: ({}, {}))
+    monkeypatch.setattr(BUILD, "load_gmi_us_seeds", lambda: [
+        {"symbol": "FAKECIK", "node_id": "co:us:FAKECIK"}])
+    monkeypatch.setattr(BUILD, "load_cn_hk_seeds", lambda: [])
+    monkeypatch.setattr(BUILD, "load_cninfo_evidence", lambda: ({}, None))
+    monkeypatch.setattr(BUILD, "load_hk_shorts_evidence", lambda: ({}, None))
+    result = BUILD.build(tmp_path, allow_missing_evidence=True)
+    block = result["us_gmi_admission"]
+    assert block["target_n"] == block["refused_this_run"] == 1
+    assert block["resolved_total"] == block["resolved_this_run"] == 0
+    assert block["disclosed_exclusions"] == []
+    assert [(r["symbol"], r["code"]) for r in block["refusals_this_run"]] == [("FAKECIK", expected)]
+    assert pd.read_parquet(tmp_path / BUILD.MASTER_NAME).empty
+    assert pd.read_parquet(tmp_path / BUILD.ALIASES_NAME).empty
+
+
+def test_gmi_us_missing_listing_refusals_match_receipt_bound_evidence(receipt: dict) -> None:
+    directory, _, day, directory_path = BUILD.load_directory()
+    cik, cik_day, cik_path, ambiguous = BUILD.load_cik_map()
+    assert day == receipt["symbol_directory_snapshot"]
+    assert cik_day == receipt["cik_map_snapshot"]
+    assert BUILD._sha256(directory_path) == receipt["inputs"][BUILD._relpath(BUILD.SYMBOL_DIR_SNAPSHOTS)]
+    assert BUILD._sha256(cik_path) == receipt["inputs"][BUILD._relpath(BUILD.CIK_MAP_DIR)]
+    assert BUILD._sha256(BUILD.DELISTED_LEDGER) == receipt["inputs"][BUILD._relpath(BUILD.DELISTED_LEDGER)]
+    delisted = BUILD.load_delisted()
     block = receipt["us_gmi_admission"]
-    cik_present = [r for r in block["refusals_this_run"]
-                   if r["code"] == "not_listed_cik_present"]
-    assert len(cik_present) >= 1
-    assert "GGRP" in {r["symbol"] for r in cik_present}
+    rows = block["refusals_this_run"]
+    assert len({r["symbol"] for r in rows}) == len(rows) == block["refused_this_run"]
+    assert block["resolved_total"] + len(rows) + len(block["disclosed_exclusions"]) == block["target_n"]
+    for row in rows:
+        if row["code"] in {"not_listed_cik_present", "not_listed_no_cik"}:
+            symbol = row["symbol"]
+            assert symbol not in directory and symbol not in delisted and symbol not in ambiguous
+            assert (symbol in cik) == (row["code"] == "not_listed_cik_present")
 
 
 # 7: neither rail -> not_listed_no_cik (real-data exemplar from the 21).
@@ -3803,17 +3884,12 @@ def test_gmi_us_regression_bands_cn_hk_and_legacy_us(
     assert receipt["coverage"]["unresolved"] <= 10
 
 
-# 16: idempotency + run-2 stability — AMENDMENT R9 corrected law.  §8/§9.16's
-# original "fence fired zero times on run 2" was wrongly phrased: the pin's own
-# steady state carries `listing_continuity: [WBS, GOLD-identity-exception]` (WBS
-# is a pre-existing, unrelated symbol-directory staleness gap — VERIFIED present
-# on an unmodified rebuild at this pin, §9 item 4/6/7's own real-data fixtures).
-# The CORRECT law: run 2's `listing_continuity` is IDENTICAL to run 1's (the
-# expected steady set, not empty), zero pending-transition/resurrection
-# refusals, `resolved_this_run == 0`, byte-identical artifacts.
+# 16: ordinary reruns preserve artifacts and every evidenced refusal. A stable
+# pending transition is not permission to mint it or to erase its receipt.
 def test_gmi_us_idempotent_run_2_stability_real_data(tmp_path: Path) -> None:
     shutil.copy(MASTER_PATH, tmp_path / BUILD.MASTER_NAME)
     shutil.copy(ALIASES_PATH, tmp_path / BUILD.ALIASES_NAME)
+    shutil.copy(RECEIPT_PATH, tmp_path / BUILD.RECEIPT_NAME)
     issuer_master = ROOT / "data" / "reference" / BUILD.ISSUER_MASTER_NAME
     issuer_migrations = ROOT / "data" / "reference" / BUILD.ISSUER_MIGRATIONS_NAME
     security_migrations = ROOT / "data" / "reference" / BUILD.SECURITY_MIGRATIONS_NAME
@@ -3821,27 +3897,15 @@ def test_gmi_us_idempotent_run_2_stability_real_data(tmp_path: Path) -> None:
         if src.exists():
             shutil.copy(src, tmp_path / src.name)
 
+    artifact_names = (BUILD.MASTER_NAME, BUILD.ALIASES_NAME, BUILD.ISSUER_MASTER_NAME,
+                      BUILD.ISSUER_MIGRATIONS_NAME, BUILD.SECURITY_MIGRATIONS_NAME)
     run1 = BUILD.build(tmp_path)
-    before_master = (tmp_path / BUILD.MASTER_NAME).read_bytes()
-    before_aliases = (tmp_path / BUILD.ALIASES_NAME).read_bytes()
-
+    before = {name: (tmp_path / name).read_bytes() for name in artifact_names}
     run2 = BUILD.build(tmp_path)
-    after_master = (tmp_path / BUILD.MASTER_NAME).read_bytes()
-    after_aliases = (tmp_path / BUILD.ALIASES_NAME).read_bytes()
-
-    assert after_master == before_master
-    assert after_aliases == before_aliases
-    # R9: run 2's steady-state listing_continuity is IDENTICAL to run 1's own
-    # (self-consistent, R10 — never hardcode the exact WBS/GOLD shape here; the
-    # dedicated real-data fixtures elsewhere already pin that shape).
-    assert run2["listing_continuity"] == run1["listing_continuity"]
-    assert run1["listing_continuity"], (
-        "this pin is known to carry a non-empty steady-state listing_continuity "
-        "(WBS + the GOLD identity exception) — an empty list here means the "
-        "fixture assumption drifted, not that the law changed"
-    )
-    assert run2["pending_transition_refusals"] == []
-    assert run2["resurrection_refusals"] == []
+    assert {name: (tmp_path / name).read_bytes() for name in artifact_names} == before
+    for field in ("listing_continuity", "pending_transition_refusals", "resurrection_refusals",
+                  "unregistered_rename_duplicates", "vendor_alias_prunes", "prospective_reference"):
+        assert run2.get(field) == run1.get(field)
     gmi1, gmi2 = run1["us_gmi_admission"], run2["us_gmi_admission"]
     assert gmi2["resolved_this_run"] == 0
     assert gmi2["refusals_this_run"] == gmi1["refusals_this_run"]
@@ -4048,6 +4112,7 @@ def test_r4b_transition_from_pin_baseline_matches_r2_shape(
     out_dir.mkdir()
     baseline_master.to_parquet(out_dir / BUILD.MASTER_NAME, index=False)
     baseline_aliases.to_parquet(out_dir / BUILD.ALIASES_NAME, index=False)
+    shutil.copy(RECEIPT_PATH, out_dir / BUILD.RECEIPT_NAME)
 
     receipt = BUILD.build(out_dir)
     block = receipt["us_gmi_admission"]

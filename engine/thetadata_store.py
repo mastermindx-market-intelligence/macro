@@ -32,6 +32,7 @@ from __future__ import annotations
 import logging
 import os
 import re
+import threading
 from pathlib import Path
 from typing import Callable
 
@@ -96,17 +97,192 @@ _OPS_WT_STORE = Path("/Users/chriswong/theta-ops-wt/data/thetadata_eod")
 _STORE_TIERS = ("eod", "oi", "greeks")
 
 
+# Bounded store probe (AD-1T2b). Deciding "does this store hold any data" needs a
+# readdir, and on the ops host the three tier dirs are SYMLINKS onto an external
+# volume (scripts/publish_r2.py::_walk_files). Listing them is the operation that
+# hangs or is denied under launchd — scripts/build_options_hub_nightly.py::
+# preflight_store exists solely to bound it, with os._exit(4) on timeout. That
+# guard runs AFTER resolution, so an unbounded readdir in here would sit in front
+# of the only thing protecting against it, in the one function every consumer
+# calls. Hence: bounded, and three-valued so ambiguity is never mistaken for
+# emptiness.
+def _probe_budget() -> float:
+    """The probe budget, read defensively — a bad value must never break imports.
+
+    This is module scope in THE resolver every consumer imports, so a ValueError
+    here takes down the whole build. The realistic shape is a workflow `env:` key
+    declared with no value (""), not a typo. NaN gets its own branch because it
+    passes every `<= 0` comparison and then makes `Thread.join(nan)` raise.
+    """
+    raw = os.environ.get("THETADATA_STORE_PROBE_S", "10")
+    try:
+        v = float(raw)
+    except (TypeError, ValueError):
+        return 10.0
+    return 10.0 if v != v else v      # v != v is True only for NaN
+
+
+_STORE_PROBE_S: float = _probe_budget()
+
+_HAS_ROOT = "has_root"   # a tier provably holds at least one root directory
+_DRAINED = "drained"     # tier dirs exist and provably hold no roots
+_NO_TIERS = "no_tiers"   # empty stub: no eod/ oi/ greeks/ at all
+_UNKNOWN = "unknown"     # denied, blocked or errored — emptiness NOT established
+
+# THE fail-open rule, in exactly one place. Both the public predicate and the
+# resolver loop read it, so they cannot drift apart: only a PROVABLY empty
+# candidate (_DRAINED / _NO_TIERS) is refused.
+_RESOLVABLE = (_HAS_ROOT, _UNKNOWN)
+
+
+def _classify_store(p: Path) -> str:
+    """Classify a store candidate without ever mistaking "cannot read" for "empty".
+
+    Returns one of _HAS_ROOT / _DRAINED / _NO_TIERS / _UNKNOWN.
+
+    Only the `is_dir()` calls happen on the calling thread — those are stats, the
+    same syscalls the pre-AD-1T2b predicate made, and they are not the operation
+    that hangs. The readdir runs in a daemon thread under a join budget so a
+    blocked external volume cannot wedge the resolver; on timeout the thread is
+    abandoned (daemon, so it never holds up interpreter exit) and the answer is
+    _UNKNOWN.
+    """
+    try:
+        if not p.is_dir():
+            return _NO_TIERS
+        tiers = [p / t for t in _STORE_TIERS if (p / t).is_dir()]
+    except OSError:
+        return _UNKNOWN
+    if not tiers:
+        return _NO_TIERS
+
+    outcome: dict[str, object] = {}
+
+    def _probe() -> None:
+        try:
+            for t in tiers:
+                for child in t.iterdir():
+                    if child.is_dir():
+                        outcome["verdict"] = _HAS_ROOT
+                        return
+            outcome["verdict"] = _DRAINED
+        except OSError as e:
+            outcome["err"] = e
+
+    if _STORE_PROBE_S <= 0:      # probe disabled — never claim emptiness
+        return _UNKNOWN
+    th = threading.Thread(target=_probe, name="thetadata-store-probe", daemon=True)
+    try:
+        th.start()
+        th.join(_STORE_PROBE_S)
+    except (RuntimeError, ValueError) as e:
+        # Thread.start() raises RuntimeError when the process cannot create one
+        # more thread. Before this check existed the resolver could not raise at
+        # all, and callers document that (engine/options_skew.py load_chain).
+        # Refusing to resolve because we could not START the probe would be the
+        # same false-RED the probe exists to avoid.
+        log.warning(
+            "thetadata_store: could not run the bounded probe on %s (%s). "
+            "Emptiness is NOT established, so the store is treated as PRESENT.",
+            p, e)
+        return _UNKNOWN
+    if th.is_alive():
+        log.warning(
+            "thetadata_store: listing the tier dirs under %s did not return "
+            "within %.0fs — the read is blocked, not slow (TCC/removable-volume "
+            "shape: the tier dirs are symlinks onto an external volume). Treating "
+            "the store as PRESENT so behaviour is unchanged from before this "
+            "check existed; readability is enforced downstream by "
+            "build_options_hub_nightly.preflight_store.", p, _STORE_PROBE_S)
+        return _UNKNOWN
+    if "err" in outcome:
+        log.warning(
+            "thetadata_store: listing the tier dirs under %s failed (%s). "
+            "Emptiness is NOT established, so the store is treated as PRESENT — "
+            "an unreadable store must never be reported as a drained one.",
+            p, outcome["err"])
+        return _UNKNOWN
+    return str(outcome.get("verdict", _UNKNOWN))
+
+
 def _has_store_content(p: Path) -> bool:
-    """True when `p` exists and contains at least one of eod/, oi/, greeks/.
+    """True when `p` exists and is not provably empty.
 
     An empty stub directory (exists, no tier subdirs) does NOT count — resolving
     one silently yields empty frames everywhere downstream, which is the exact
     incident shape (options_witness published 0/18 themes from a stub store).
+
+    AD-1T2b (2026-09-29): a directory whose tier subdirs all EXIST but hold no
+    root is the same incident wearing a better disguise, so it does not count
+    either. Observed live on the store-bearing M1 (m1studio) that day: eod/, oi/
+    and greeks/ all present and all holding zero roots, beside a _manifest.json
+    still reading ``"status": "healthy", "complete_t1_roots": 372`` from
+    2026-09-25 — while a control directory on the same host and filesystem
+    (data/yahoo/) held 728 entries. The old directory-existence-only predicate
+    admitted that store, so the options-intel producer resolved it, took
+    build()'s ``anchor_str is None`` branch, and published a blank
+    DEGRADED/MIXED_VINTAGE brief OVER the last good one while exiting 0 — even
+    under ``--require-store``.
+
+    FAILS OPEN BY CONSTRUCTION. Only a PROVABLY drained store is refused; a
+    candidate whose tiers could not be listed (denied, blocked, errored, probe
+    disabled) resolves exactly as it did before this check existed. That
+    asymmetry is deliberate: the cost of a false "drained" is every nightly lane
+    losing a store that is actually intact, which is worse than the bug this
+    catches. See _classify_store.
+
+    SCOPE — one level deep, and no further. A root is a DIRECTORY, matching how
+    the store is actually walked (``universe()`` and ``iv_coverage()`` below both
+    count ``is_dir()`` children; ``_load_parquets()`` then globs inside a root).
+    So a stray ``.DS_Store`` or a leftover lock file cannot revive the false
+    positive — but a drain that deletes every ``*.parquet`` while LEAVING the
+    root directories is NOT caught here and still reaches the builders, which
+    must keep handling empty frames honestly. This predicate answers only "does
+    any tier hold a root directory", never "is there usable data".
+
+    NOT a health or freshness check — a store holding real but thin or stale data
+    still resolves, and publishing that honestly (NO_SIGNAL, INSUFFICIENT_COVERAGE,
+    STALE_SOURCE) remains the contract.
     """
+    return _classify_store(p) in _RESOLVABLE
+
+
+def _drained_store(p: Path) -> bool:
+    """True only for a PROVABLY drained store. Diagnostic; resolution is decided
+    by ``_has_store_content``. Prefer ``_classify_store`` when you also need the
+    resolution answer — this re-probes."""
+    return _classify_store(p) == _DRAINED
+
+
+def _store_candidates() -> list[tuple[str, Path]]:
+    """The canonical fallback chain, in order. One definition, two readers."""
+    out: list[tuple[str, Path]] = []
+    env = os.environ.get("THETADATA_STORE")
+    if env:
+        out.append(("env", Path(env)))
     try:
-        return p.is_dir() and any((p / t).is_dir() for t in _STORE_TIERS)
-    except OSError:
-        return False
+        from lib import config  # noqa: PLC0415
+        out.append(("data_dir", config.data_dir() / "thetadata_eod"))
+    except Exception:  # noqa: BLE001
+        out.append(("data_dir", Path("data") / "thetadata_eod"))
+    out.append(("ops-wt", _OPS_WT_STORE))
+    return out
+
+
+def drained_store_candidates() -> list[Path]:
+    """Every candidate in the canonical chain that is PROVABLY drained.
+
+    Exists because ``resolve_thetadata_store() is None`` is ambiguous after
+    AD-1T2b: it means "nothing resolved", which is a FRESH INSTALL when no store
+    exists anywhere, and a DRAINED CANONICAL STORE otherwise. A writer that
+    treats both as fresh-install will happily mint a second store beside the
+    drained one — see scripts/backfill_thetadata_eod.py, whose second-store
+    guard depends on telling these apart.
+
+    Never raises; an unreadable candidate is not drained (fail open, as always).
+    """
+    return [path for _src, path in _store_candidates()
+            if _classify_store(path) == _DRAINED]
 
 
 def resolve_thetadata_store(required: bool = False,
@@ -119,8 +295,10 @@ def resolve_thetadata_store(required: bool = False,
       2. lib.config data_dir()/thetadata_eod (the repo-local store / symlink).
       3. the ops-host worktree store (_OPS_WT_STORE).
 
-    A candidate resolves only if it EXISTS and contains at least one of
-    eod/, oi/, greeks/ (see _has_store_content).
+    A candidate resolves unless it is PROVABLY empty — either a stub (exists, no
+    eod/ oi/ greeks/ at all) or drained (tier dirs present, no root inside any of
+    them). A candidate whose tiers cannot be listed is treated as present, never
+    as drained: see _has_store_content, which fails open by construction.
 
     Args:
         required: when True and nothing resolves, raise RuntimeError naming
@@ -131,44 +309,79 @@ def resolve_thetadata_store(required: bool = False,
 
     Returns the resolved store root Path, or None (required=False only).
     """
-    candidates: list[tuple[str, Path]] = []
+    candidates = _store_candidates()
     env = os.environ.get("THETADATA_STORE")
-    if env:
-        candidates.append(("env", Path(env)))
-    try:
-        from lib import config  # noqa: PLC0415
-        candidates.append(("data_dir", config.data_dir() / "thetadata_eod"))
-    except Exception:  # noqa: BLE001
-        candidates.append(("data_dir", Path("data") / "thetadata_eod"))
-    candidates.append(("ops-wt", _OPS_WT_STORE))
 
     tried: list[str] = []
+    drained: list[str] = []
     for source, path in candidates:
-        if _has_store_content(path):
-            log.info("thetadata_store: resolved store=%s source=%s purpose=%s",
-                     path, source, purpose or "-")
+        verdict = _classify_store(path)
+        if verdict in _RESOLVABLE:
+            if verdict == _UNKNOWN:
+                # Fail-open is correct, but SILENT fail-open is exactly how the
+                # blank-board incident repeats: if the M1's tier dirs cannot be
+                # listed under launchd this is the branch that runs, the drained
+                # store resolves, and a blank brief publishes with exit 0. This
+                # annotation is the only thing that makes that visible. Bare
+                # print at line start + flush: a logger prefixes the line and
+                # GitHub silently drops the annotation (tests/test_gh_annotation_line_start.py).
+                print(f"::warning title=thetadata-store-unverified::"
+                      f"resolved {path} (source={source}, purpose={purpose or '-'}) "
+                      f"WITHOUT verifying its tier dirs are readable. If this store "
+                      f"is drained, the artifact built from it will be blank.",
+                      flush=True)
+            log.info("thetadata_store: resolved store=%s source=%s purpose=%s%s",
+                     path, source, purpose or "-",
+                     " (readability unverified — see the warning above)"
+                     if verdict == _UNKNOWN else "")
             return path
-        if source == "env":
+
+        if verdict == _DRAINED:
+            # AD-1T2b: two failures an operator must treat differently. "No store
+            # on this host" is a PLACEMENT fault — move the job. "The store is
+            # here but drained" is a DATA fault, and which remedy applies depends
+            # on WHICH candidate is drained, so state the observation and the
+            # candidate rather than prescribing a fix for all three.
+            drained.append(f"{source}:{path}")
+            log.error(
+                "thetadata_store: %s=%s EXISTS with tier directories but holds "
+                "ZERO roots — a DRAINED store, not a missing one (purpose=%s). "
+                "If this is the canonical store, moving the job to another host "
+                "cannot fix it: the bytes have to be rewritten, and after this "
+                "check the daily top-up can no longer bootstrap them, so "
+                "scripts/backfill_thetadata_eod.py is the writer that refills it.",
+                source, path, purpose or "-")
+        elif source == "env":
             if not path.exists():
                 log.warning(
                     "thetadata_store: THETADATA_STORE=%s is SET but the path does "
                     "not exist — ignoring the env override and falling through "
                     "(purpose=%s)", env, purpose or "-")
             else:
+                # Not drained and not resolvable: the true stub, no tier dirs.
                 log.warning(
                     "thetadata_store: THETADATA_STORE=%s exists but contains none "
                     "of eod/ oi/ greeks/ — empty stub, not a store; falling "
                     "through (purpose=%s)", env, purpose or "-")
         tried.append(f"{source}:{path}")
 
-    log.error("thetadata_store: resolved store=NONE purpose=%s — tried %s",
-              purpose or "-", ", ".join(tried))
+    # The drained fact has to ride on THIS line, not only on the per-candidate
+    # ERROR above: scripts/build_options_intel_brief.py captures these records and
+    # publishes splitlines()[-1] as its CI annotation, so a diagnostic emitted
+    # earlier in the loop never reaches the operator who needs it.
+    why = (f" — DRAINED (tier dirs present, zero roots): {', '.join(drained)}"
+           if drained else "")
+    log.error("thetadata_store: resolved store=NONE purpose=%s — tried %s%s",
+              purpose or "-", ", ".join(tried), why)
     if required:
         raise RuntimeError(
             f"ThetaData store required (purpose={purpose or '-'}) but no path "
-            f"resolves. Tried: {', '.join(tried)}. A path only resolves if it "
-            f"exists and contains at least one of eod/, oi/, greeks/. Set "
-            f"THETADATA_STORE or point the caller at a real store."
+            f"resolves. Tried: {', '.join(tried)}. A path resolves unless it is "
+            f"provably empty — a store whose tier directories are all present but "
+            f"hold no root is DRAINED, not resolvable"
+            + (f" (drained: {', '.join(drained)}; refill it with "
+               f"scripts/backfill_thetadata_eod.py)" if drained else "")
+            + ". Set THETADATA_STORE or point the caller at a real store."
         )
     return None
 

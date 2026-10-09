@@ -170,13 +170,27 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _load_jsonl(path: Path) -> list[dict]:
-    """Load a JSONL file safely; return [] if absent or unparseable."""
+def _load_jsonl(path: Path, *, qledger_claims: bool = False) -> list[dict]:
+    """Keep legacy failure policy; native claims integrity failures propagate."""
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
     try:
-        if not path.exists():
-            return []
-        lines = path.read_text(encoding="utf-8").splitlines()
+        if qledger_claims:
+            from engine.qledger_store import read_raw_lines, uses_native_claims
+
+            if not uses_native_claims(path) and not path.exists():
+                return []
+            lines = read_raw_lines(path, missing_ok=False)
+        else:
+            if not path.exists():
+                return []
+            lines = path.read_text(encoding="utf-8").splitlines()
         return [json.loads(line) for line in lines if line.strip()]
+    except SnapshotIntegrityError as exc:
+        if qledger_claims:
+            raise
+        log.warning("operator_grading: jsonl load failed %s: %s", path, exc)
+        return []
     except Exception as exc:  # noqa: BLE001
         log.warning("operator_grading: jsonl load failed %s: %s", path, exc)
         return []
@@ -223,7 +237,7 @@ def _register_fdr_budget(data_root: Path) -> bool:
 # ---------------------------------------------------------------------------
 def _load_claims(data_root: Path) -> dict[str, dict]:
     """Load claims.jsonl indexed by claim_id."""
-    rows = _load_jsonl(data_root / _CLAIMS_PATH)
+    rows = _load_jsonl(data_root / _CLAIMS_PATH, qledger_claims=True)
     return {r["claim_id"]: r for r in rows if r.get("claim_id")}
 
 

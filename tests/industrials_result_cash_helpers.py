@@ -34,6 +34,74 @@ from engine.company_intelligence.documents import ABSENCE_REASONS
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "industrials_result_cash"
 FIXTURE_NAMES = frozenset(path.stem for path in FIXTURE_DIR.glob("*.json"))
+
+# ---------------------------------------------------------------------------
+# The frozen plan's requirement-to-owning-test table, VENDORED into the repo.
+#
+# The plan lives on a research branch, so nothing on ``main`` ever resolved its
+# traceability rows: a task could merge CI-green while none of the exact test
+# ids the table named existed, because a suite run names FILES and a missing
+# test is not a failing test (``pytest path::absent`` reports ``ERROR: not
+# found`` and ``no tests ran``, a shape that never occurs in normal CI).
+# Measured 2026-09-27 on this program: 13 of the 15 anchors the table assigned
+# to T01 and T04 did not exist, and no ``IND-*`` id appeared anywhere in either
+# landed suite -- so there was no weaker traceability mechanism standing behind
+# the table either.  See ``DSC:A-PLANS-TRACEABILITY-TABLE-IS-NOT-COVERAGE``.
+#
+# Keeping the map HERE, next to the fixtures both suites already import, is what
+# makes it gradeable: ``test_every_plan_named_requirement_anchor_exists`` in the
+# dependency-binding suite resolves every row by AST, so deleting or renaming an
+# anchor reds the exclusive ``industrials-result-cash`` CI job instead of
+# silently reducing coverage.  All THREE files named below are in that job's
+# ``paths:`` and on its run line; ``test_industrials_financial_dossier.py`` was
+# added there in the same change that created it, because a suite a guard depends
+# on but CI never selects is a guard that cannot fail.
+#
+# ADDING A ROW IS A CLAIM.  A row asserts that the named test discriminates the
+# requirement's compliant case from its violating one -- not merely that some
+# test touches the same code.  Rows for requirements owned by tasks that have
+# not started yet do not belong here: their absence is the honest signal.
+_T01_SUITE = "tests/test_industrials_dependency_binding.py"
+_T04_SUITE = "tests/test_industrials_result_cash.py"
+_T06_SUITE = "tests/test_industrials_financial_dossier.py"
+
+PLAN_REQUIREMENT_ANCHORS: Mapping[str, tuple[str, str]] = {
+    # T01 — synthetic corpus, helper harness, delivery-input validator.
+    "IND-SF07": (_T01_SUITE, "test_ind_sf07"),
+    "IND-D02": (_T01_SUITE, "test_ind_d02"),
+    "IND-D06": (_T01_SUITE, "test_ind_d06"),
+    # T04 — signed exact-decimal result-to-cash derivation.
+    "IND-SF01": (_T04_SUITE, "test_ind_sf01"),
+    "IND-D07": (_T04_SUITE, "test_ind_d07"),
+    "IND-D08": (_T04_SUITE, "test_ind_d08"),
+    "IND-D09": (_T04_SUITE, "test_ind_d09"),
+    "IND-D10": (_T04_SUITE, "test_ind_d10"),
+    "IND-D11": (_T04_SUITE, "test_ind_d11"),
+    "IND-D12": (_T04_SUITE, "test_ind_d12"),
+    "IND-D13": (_T04_SUITE, "test_ind_d13"),
+    "IND-D14": (_T04_SUITE, "test_ind_d14"),
+    "IND-D15": (_T04_SUITE, "test_ind_d15"),
+    "IND-D16": (_T04_SUITE, "test_ind_d16"),
+    "IND-R208": (_T04_SUITE, "test_ind_r208"),
+    # T06 — financial dossier.  Six of the nine T06 obligations, each anchored on
+    # recovered ORIGINAL wording (r1 blob 40fd1e3783102c28fe748fe35b927484d4f3dddb,
+    # r2 blob 9c98e106b954d0a48610afad418de2a9eeb1e58b, W12 blob
+    # b343cbd7bc1f52cfc6fbb5e18ab8d9e9f9392f6c) rather than on a ruling or on landed
+    # code.  IND-D03, IND-D22 and IND-R213 stay absent on purpose: their seams are
+    # not merged.
+    #
+    # IND-D23 and IND-R215 anchor on the result-to-cash rows, where their
+    # compliant/violating pairs were first measured.  The dossier-level tests that
+    # also cover them carry their own names and claim no second anchor: a
+    # requirement has one anchor, and pointing it at the newer test would trade
+    # unit coverage for page coverage instead of adding it.
+    "IND-D23": (_T06_SUITE, "test_ind_d23"),
+    "IND-R201": (_T06_SUITE, "test_ind_r201"),
+    "IND-R214": (_T06_SUITE, "test_ind_r214"),
+    "IND-R215": (_T06_SUITE, "test_ind_r215"),
+    "IND-R218": (_T06_SUITE, "test_ind_r218"),
+    "IND-SF04": (_T06_SUITE, "test_ind_sf04"),
+}
 _COMPARISON_PURPOSES = frozenset(
     {"same_period", "year_over_year", "final_vs_preview", "segment_bridge", "rollforward"}
 )
@@ -396,6 +464,13 @@ def _build_minimal_staging_tree(stage_dir: Path) -> None:
 class _PublicationHarness:
     def __init__(self) -> None:
         self.store = _MemoryPublicationStore()
+        # Per-case enrollment state, keyed by the caller's case key. Written
+        # ONLY by ``run_refresh``; read by ``members`` and ``get``. A case
+        # exists here only because an acquisition for it actually succeeded --
+        # a refused case with no predecessor is never invented (T02's
+        # "source failure may mark a carried object stale, never restamp it as
+        # newly observed").
+        self._cases: dict[str, dict[str, Any]] = {}
 
     @property
     def read_count(self) -> int:
@@ -403,7 +478,7 @@ class _PublicationHarness:
 
     def run_refresh(
         self,
-        _changes: Mapping[str, str],
+        changes: Mapping[str, str],
         fail_sources: Iterable[str] = (),
     ) -> dict[str, Any]:
         """Inject ``acquire_results_filing`` with a fake ``http_get`` that
@@ -430,6 +505,12 @@ class _PublicationHarness:
         )
 
         failed = sorted(set(fail_sources))
+        failed_set = frozenset(failed)
+        # One-element cell so the closure below can be re-aimed per case
+        # without rebuilding the fake. With an empty ``changes`` mapping this
+        # keeps the landed behaviour exactly: any fail source refuses the one
+        # acquisition this call makes.
+        refusing = [bool(failed)]
         synthetic_cik = "0000987654"
         submissions_url = "https://data.sec.gov/submissions/CIK0000987654.json"
         exhibit_filename = "synthetic-exhibit.htm"
@@ -469,7 +550,7 @@ class _PublicationHarness:
 
         def fake_http_get(url: str) -> tuple[int, bytes]:
             if url == submissions_url:
-                if failed:
+                if refusing[0]:
                     return (503, b"")
                 return (200, submissions_body)
             if url.endswith("-index-headers.html"):
@@ -484,23 +565,74 @@ class _PublicationHarness:
                 return (200, exhibit_body)
             return (404, b"")
 
-        try:
-            prepared = acquire_results_filing(cik=synthetic_cik, http_get=fake_http_get)
-        except RefreshError as exc:
-            source = failed[0] if failed else ""
-            unavailable: dict[str, Any] = {
-                "status": "unavailable",
-                "reason": "refresh_source_failed",
-                "detail": str(exc),
-            }
-            if source:
-                unavailable["source"] = source
-            return unavailable
+        def acquire(refuse: bool, source: str) -> dict[str, Any]:
+            refusing[0] = refuse
+            try:
+                prepared = acquire_results_filing(
+                    cik=synthetic_cik, http_get=fake_http_get
+                )
+            except RefreshError as exc:
+                unavailable: dict[str, Any] = {
+                    "status": "unavailable",
+                    "reason": "refresh_source_failed",
+                    "detail": str(exc),
+                }
+                if source:
+                    unavailable["source"] = source
+                return unavailable
+            return {"status": "ok", **prepared}
 
-        return {"status": "ok", **prepared}
+        requested = dict(changes)
+        if not requested:
+            # Landed path, unchanged: one acquisition, refused iff any source
+            # was named. The three merged run_refresh tests take this branch.
+            return acquire(bool(failed), failed[0] if failed else "")
+
+        first_refusal: dict[str, Any] | None = None
+        last_ok: dict[str, Any] | None = None
+        for case_key, edition in requested.items():
+            outcome = acquire(case_key in failed_set, case_key)
+            if outcome["status"] == "ok":
+                self._cases[case_key] = {
+                    "edition": edition,
+                    "stale": False,
+                    # The observation stamp comes from the owner's own result,
+                    # never from the harness clock -- so a carry-forward can be
+                    # told apart from a fresh observation by inspection.
+                    "observed_acceptance": outcome.get("acceptance_datetime"),
+                }
+                last_ok = outcome
+                continue
+            carried = self._cases.get(case_key)
+            if carried is not None:
+                # Mark stale in place: edition and observation stamp are the
+                # predecessor's and MUST NOT move on a source failure.
+                carried["stale"] = True
+            if first_refusal is None:
+                first_refusal = outcome
+        if first_refusal is not None:
+            return first_refusal
+        assert last_ok is not None  # non-empty requested, no refusal
+        return last_ok
 
     def members(self) -> set[str]:
-        return set()
+        """Case keys this harness currently holds.
+
+        Was `return set()`, which made T02's mandated
+        ``assert before <= h.members()`` pass for free in both directions.
+        """
+        return set(self._cases)
+
+    def get(self, case_key: str) -> dict[str, Any]:
+        """The enrollment record for ``case_key``: ``edition``, ``stale`` and
+        ``observed_acceptance``.
+
+        Returns a DEEP COPY: a caller that mutates the answer must not be able
+        to rewrite harness state, or an assertion could pass by editing the
+        evidence. Raises ``KeyError`` for a case that was never enrolled --
+        typed absence, not an empty dict that reads as "present but blank".
+        """
+        return deepcopy(self._cases[case_key])
 
     def publish(self, changes: Mapping[str, Any], *, stage_dir: Path) -> dict[str, Any]:
         """Bind every owner entry point in the owner's real order.

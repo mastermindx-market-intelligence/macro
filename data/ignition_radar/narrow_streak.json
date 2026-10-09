@@ -55,9 +55,9 @@
     "score": 0.68
   },
   "SMH": {
-    "streak": 6,
-    "last_date": "2026-09-25",
-    "score": 0.8533
+    "streak": 12,
+    "last_date": "2026-10-06",
+    "score": 0.9471
   },
   "non_ai_tech": {
     "streak": 1,
@@ -68,5 +68,15 @@
     "streak": 2,
     "last_date": "2026-09-08",
     "score": 0.9906
+  },
+  "reshoring": {
+    "streak": 1,
+    "last_date": "2026-09-28",
+    "score": 0.8001
+  },
+  "retail": {
+    "streak": 1,
+    "last_date": "2026-10-08",
+    "score": 0.7574
   }
 }
