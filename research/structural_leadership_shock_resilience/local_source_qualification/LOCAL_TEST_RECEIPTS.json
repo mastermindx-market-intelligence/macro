@@ -107,5 +107,33 @@
       "sha256": "a37a3b6eeedf340c1271aaddef2c6afbf5ffc167970d98145dcc787f1a799733"
     }
   ],
-  "raw_logs_in_repository": false
+  "raw_logs_in_repository": false,
+  "ci_registration": {
+    "chairman_scope_extension": "EXPLICIT_SINGLE_MANIFEST_PATH",
+    "manifest": ".github/ci/legacy-jobs.yml",
+    "logical_job": "slr-local-source-qualification",
+    "validator_exit_code": 0,
+    "tests_exit_code": 0,
+    "tests_passed": 418,
+    "local_plan_advisory_only": true,
+    "hosted_execution_proven": false,
+    "artifacts": [
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-registration-tests.txt",
+        "sha256": "e4a88881bebbc0b0f7778d97e9b2298faebe752c00d1973c302ba27f4409e5e6"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-registration-validator.txt",
+        "sha256": "379f72e2ec31304956f8f8436f10729fcecc920e534327f31af84ce840bdc972"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-registration-plan.json",
+        "sha256": "8ea64c957a917139c3dc6d98b7b0399ab027d68372fd9e7900ba4fad8d4650d6"
+      },
+      {
+        "artifact": "/Volumes/Mastermind/evidence/slr-p0-source-qualification-01a11e3b/ci-registration-closure.json",
+        "sha256": "22b1f8d510d83c0a469de69a757477c42283e2b1dad89c0cf2a18f8dece5c10f"
+      }
+    ]
+  }
 }

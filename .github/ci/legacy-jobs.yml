@@ -21175,3 +21175,27 @@ jobs:
           pbd_python="$(python -c 'import sys; print(sys.executable)')"
           cd /tmp
           bash "$pbd_launcher" --python "$pbd_python"
+
+  slr-local-source-qualification:
+    # The semantic pack runner executes this declaration; suppress duplicate VMs.
+    if: ${{ false }}
+    gate: code
+    paths:
+      - research/structural_leadership_shock_resilience/local_source_qualification/**
+      - tests/test_slr_local_source_qualification.py
+      - tests/test_winner_autopsy.py
+      - tests/test_dataos_identity.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest numpy pandas pyyaml
+      - name: SLR source qualification and incumbent identity/detector tests
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_slr_local_source_qualification.py
+          tests/test_winner_autopsy.py tests/test_dataos_identity.py -q

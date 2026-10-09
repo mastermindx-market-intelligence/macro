@@ -35,10 +35,11 @@ No native child, Executive job, provider purchase or new control plane exists.
 
 Code-delivery frontier: code PR #8665, tested code commit
 `9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0`, 418 local passes.
-The prepared CI job validates, but registering it in `.github/ci/legacy-jobs.yml`
-requires an extension of the commission's two-path write fence. A single exact
-scope question is pending; no non-answer counts as approval. Preserve the path
-fence until answered. Do not waive or grandfather the collecting suite.
+The Chairman explicitly extended the write fence to `.github/ci/legacy-jobs.yml`
+solely for suite registration. The minimum job is applied and the full manifest
+validates. Fresh focused verification is 418 passes. Obtain actual current-head
+plan/fragment execution proof, concluded binding CI and independent review before
+merge; no waiver, baseline change or premature auto-merge is authorized.
 
 The initial retained Fabric review `slr-p0-review-01a11e3b` is TERMINAL,
 rc 0 / signal ok, and returned CHANGES_REQUIRED against the initial commit.
@@ -50,9 +51,9 @@ The repair code snapshot is `9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0`. A bounde
 original root `01a11e3b-bf7b-7752-856d-9e5af1c51b02`. No initial approval is
 carried forward; consume that exact follow-up result before further work.
 
-The one native heartbeat `slr-p0-8665-delivery-gates` owns CI/review return
-observation. It must stay quiet on unchanged state, act on material returns, and
-finish the permitted chain after the scope decision and actual checks/review.
+The one retained heartbeat `slr-p0-8665-delivery-gates` was stopped when CI settled
+at the previous scope boundary. Reuse it for the new exact candidate after push;
+it must stay quiet on unchanged state and act on material CI/review returns.
 No auto-merge is armed. Do not delete this locked carrier or cancel the admitted
 review through a manual kill/lease release.
 
@@ -63,3 +64,11 @@ id and packet, but do not retry unchanged capacity, bypass the pool, switch
 carriers or substitute parent self-review. A real capacity/admission change is
 required before a bounded request can resume. Rebind its exact candidate head
 and code digests before submission; receipt-only commits preserve repair bytes.
+
+Current continuation: protected Mastermind `732cf7be88e7159b4995a8885fbd381cd1484e3e`
+remains current; Macro main was freshly pinned to
+`59910d89c89fde0d6eac948d71d41100f387f70f`. The retained carrier was clean at
+`082ef4414e556e5d1e7006ab3d0c3b0b7881db05` and its repaired code is preserved.
+A fresh pool plan now reports one grant for the review class under the original
+root. This is a capacity observation, not admission; use the same retained
+follow-up id and rebind its packet to the actual newly committed candidate.

@@ -1,10 +1,8 @@
-# Prepared CI registration outside the commissioned write scope
+# CI registration authorized and applied
 
-This is a proposal only; no CI authority file was changed. The commission permits
-only the local_source_qualification subtree and synthetic test files. The existing
-contract-delta gate rejects a new collecting suite named by no workflow run step.
-If that gate confirms this condition, merging requires one additional authorized
-path: `.github/ci/legacy-jobs.yml`. Do not waive the suite or change the baseline.
+The Chairman directly authorized `.github/ci/legacy-jobs.yml` solely to register
+this suite in the continuation handoff. The entry below is now applied; no other
+job, baseline, workflow or waiver was changed.
 
 Proposed bounded code job (three focused suites, synthetic/current code only):
 
@@ -39,7 +37,21 @@ validate the manifest and its inferred import closure using the existing checker
 then obtain exact-head hosted CI and independent review. Preserve all existing
 jobs, dependencies, budgets and authority checks.
 
-The standalone proposal passed the incumbent `scripts/run_ci_pack.py --workflow
-<external ci-job-proposal.yml> --validate-only` validator, exit 0. The suite
-dependency analysis reports seven files and **no ambiguities**. This validates
-the prepared job shape; it does not execute hosted CI or authorize its installation.
+The full manifest passes `python3 scripts/run_ci_pack.py --workflow
+.github/ci/legacy-jobs.yml --validate-only` (exit 0). The pack loader requires
+`if: ${{ false }}` to prevent duplicate GitHub VMs; it still executes each
+selected logical job's semantic `run:` steps. `ci.yml` consumes the hashed plan
+with `--gate code --plan-json ... --execute`. No runner condition was removed.
+
+A local pre-commit planner observation selected this job into pack 6 and emitted
+the pytest proof step. The new suite's prior seven-file static import receipt
+is distinct from the complete three-suite job closure: the incumbent inference
+includes thirteen effective path entries and eight conservative fallback patterns.
+Scope remains non-exclusive, preserving dependency-trigger coverage. Actual hosted
+execution must be proven from the exact-head plan and semantic fragment, not from
+this declaration or the advisory local plan.
+
+Fresh local focused verification: 418 passed in 5.44s, exit 0. The adapter and
+synthetic-test digests remain identical to repair snapshot
+`9253bbbaf1f91a09ad0f86cae2db6b59ddd074a0`. Evidence digests are recorded in
+LOCAL_TEST_RECEIPTS.json. Source admission remains NOT_ADMITTED.
