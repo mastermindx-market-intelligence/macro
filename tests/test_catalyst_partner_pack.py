@@ -143,6 +143,10 @@ class CatalystPartnerPackTests(unittest.TestCase):
         self.refused("INVALID_SCAN_ROUTE",
                      scan_url="https://untrusted.example.com/api/catalyst",
                      route_receipt="approved-route-01")
+        # A human partner CTA must not send readers to machine-readable JSON.
+        self.refused("INVALID_SCAN_ROUTE",
+                     scan_url="https://www.mastermind-x.com/api/catalyst/scan",
+                     route_receipt="approved-route-01")
         self.assertEqual(p["publication_status"], "DRAFT_HOLD")
 
     def test_duplicate_utm_or_unregistered_placeholder_with_receipt_blocked(self):
