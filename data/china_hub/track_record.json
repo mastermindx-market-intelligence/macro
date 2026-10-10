@@ -1,7 +1,7 @@
 {
   "schema": "intel_hub.track_record.v1",
   "as_of": "2026-10-10",
-  "generated_at": "2026-10-10T14:18:07.091711+00:00",
+  "generated_at": "2026-10-10T15:57:17.013520+00:00",
   "is_context_only": true,
   "n_snapshots": 8185,
   "horizons": {
