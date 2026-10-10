@@ -1,0 +1,2 @@
+PREREG.md sha256=23494b5254d5ddf6ef91d6b5835b9ecac47adbcbeed145b0c7895c88dcccc556 frozen_utc=2026-10-09T09:42:07Z (date -u) by=claude-opus-5-5 note=frozen before any support/weight computation on real data and before any outcome column was read
+PREREG_AMENDMENT_2.md sha256=10b55ca013b341afb4e8fe11cde30114e56df095449d63da63b560a0cf7dcf90 CODE_PIN.json sha256=06b7bfb0e788780da0c2d0e5f5710af11832351fa72a4e1dcb221f1b4f73ee3a written_utc=2026-10-09T10:32:59Z (date -u) by=claude-opus-5-5 note=written before the custody reruns; PREREG.md unchanged

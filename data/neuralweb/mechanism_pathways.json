@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-10-07",
+  "as_of": "2026-10-09",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -28,7 +28,7 @@
       "family": "real_rate_shock",
       "driver": "real_rate_shock",
       "pathway_role": "primary",
-      "as_of": "2026-10-07",
+      "as_of": "2026-10-09",
       "direction_en": "Rates / inflation shock",
       "direction_zh": "利率/通胀冲击",
       "confidence_ceiling": "context_only",
@@ -38,7 +38,7 @@
       "nodes": [
         {
           "node_id": "driver_real_rate_shock",
-          "as_of": "2026-10-07",
+          "as_of": "2026-10-09",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "real_rate_shock",
@@ -47,7 +47,7 @@
             "zh": "利率/通胀冲击"
           },
           "direction": "",
-          "value": 84.8,
+          "value": 72.9,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -58,7 +58,7 @@
         },
         {
           "node_id": "transmission_real_rate_order1",
-          "as_of": "2026-10-07",
+          "as_of": "2026-10-09",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -78,7 +78,7 @@
         },
         {
           "node_id": "transmission_real_rate_order2",
-          "as_of": "2026-10-07",
+          "as_of": "2026-10-09",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -98,7 +98,7 @@
         },
         {
           "node_id": "transmission_real_rate_order3",
-          "as_of": "2026-10-07",
+          "as_of": "2026-10-09",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -163,8 +163,8 @@
       "family": "equity-leadership",
       "driver": "ai_semis",
       "pathway_role": "alternate",
-      "as_of": "2026-10-07",
-      "direction_en": "AI/semis leadership — narrow tech-led tape",
+      "as_of": "2026-10-09",
+      "direction_en": "AI/semis unwind — tech-led de-rating",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -173,16 +173,16 @@
       "nodes": [
         {
           "node_id": "driver_ai_semis",
-          "as_of": "2026-10-07",
+          "as_of": "2026-10-09",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "ai_semis",
           "observation": {
-            "en": "AI/semis leadership — narrow tech-led tape",
+            "en": "AI/semis unwind — tech-led de-rating",
             "zh": ""
           },
           "direction": "",
-          "value": 0.42,
+          "value": 0.7,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -196,11 +196,11 @@
       "coverage_basis": "scare_trigger"
     },
     {
-      "family": "crypto",
-      "driver": "crypto_liquidity",
+      "family": "liquidity",
+      "driver": "liquidity_impulse",
       "pathway_role": "alternate",
-      "as_of": "2026-10-07",
-      "direction_en": "crypto liquidity surging — BTC/ETH lead up",
+      "as_of": "2026-10-09",
+      "direction_en": "net liquidity draining — risk headwind",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -208,17 +208,17 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_crypto_liquidity",
-          "as_of": "2026-10-07",
+          "node_id": "driver_liquidity_impulse",
+          "as_of": "2026-10-09",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "crypto_liquidity",
+          "entity": "liquidity_impulse",
           "observation": {
-            "en": "crypto liquidity surging — BTC/ETH lead up",
+            "en": "net liquidity draining — risk headwind",
             "zh": ""
           },
           "direction": "",
-          "value": 0.36,
+          "value": 0.65,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",

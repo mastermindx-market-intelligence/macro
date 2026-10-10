@@ -73,5 +73,10 @@
     "streak": 1,
     "last_date": "2026-09-28",
     "score": 0.8001
+  },
+  "retail": {
+    "streak": 1,
+    "last_date": "2026-10-08",
+    "score": 0.7574
   }
 }

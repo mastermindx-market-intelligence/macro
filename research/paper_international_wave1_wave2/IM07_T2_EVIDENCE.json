@@ -1,0 +1,73 @@
+{
+  "unit": "IM07-T2",
+  "state": "SOURCE_REVIEW_ACCEPTED_NOT_MOUNTED",
+  "source_base": "39f4039c1a37ff5628e5c49ee4b64e45563a2f98",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "native_ceo": "01a11057-3134-76d2-bcd1-784d69cc17d3",
+  "requested_ceo_model": "gpt-6.1-sol",
+  "served_model": "UNKNOWN",
+  "source_sha256": {
+    "templates/intl_library_search.js": "019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f",
+    "tests/intl_library_search.test.cjs": "b20a3cc9fdbbeeef535aabdb92b5591c4d5f3c6271b0e37b6e9d47f2af67a203",
+    "tests/fixtures/intl_library_search_catalogue.json": "2b330ef50580192b9337f7c686b6bc185eb1dda60e8cdcfc3261ea55d748b314"
+  },
+  "worker": {
+    "run": "rs_20261006T092239Z_16794",
+    "requested_model": "grok-4.6",
+    "host": "ubuntu2",
+    "class": "execute",
+    "returncode": 0,
+    "cleanup_proven": true,
+    "residual_count": 0,
+    "lease_state": "released",
+    "original_review": "CHANGES_REQUIRED"
+  },
+  "repair": {
+    "author": "Astra",
+    "reason": "LOWER_OVERHEAD/CRITICAL_PATH_SHORTCUT: isolated reply-guard and whitespace repair plus empty qualified-catalogue clarification",
+    "independent_reviewer": "Sol",
+    "verdict": "APPROVE_SCOPED",
+    "independent_vectors": 100,
+    "additional_parent_vectors": 41
+  },
+  "validation": {
+    "committed_search_node_tests": 100,
+    "scenario_node_tests": 55,
+    "combined_passed": 155,
+    "failed": 0,
+    "skipped": 0,
+    "focused_ci_registration": {
+      "passed": 6
+    },
+    "ci_selection_controls": {
+      "own_paths_selected": 5,
+      "unrelated_paths_excluded": 3
+    },
+    "manifest_loader": "PASS",
+    "trigger_closure": {
+      "reachable_suites": 2136,
+      "gaps": 0
+    },
+    "broad_pack_suite": "Interrupted after exposing curated registration omission:127 passed/1 failed; omission repaired, focused6 pass. Full suite not rerun."
+  },
+  "not_proven": [
+    "DOM/controller navigation",
+    "page mount",
+    "real production rights-filtered catalogue",
+    "served asset compatibility",
+    "real browser interactions",
+    "publication",
+    "full programme completion"
+  ],
+  "predecessor_timeout": {
+    "run": "rs_20261006T091009Z_55274",
+    "source_delivered": false,
+    "stdout_bytes": 384,
+    "stdout_kind": "progress only; old empty-output summary corrected",
+    "cleanup_proven": true,
+    "lease_released": true,
+    "tactic_changed": "self-contained source-only capsule, no external document discovery"
+  },
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/im07-search-core",
+  "mission_complete": false
+}

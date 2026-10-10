@@ -200,20 +200,10 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "export_import_coverage_ratio:export_import_coverage_ratio:09fe5bdd84c648af",
-      "exports_level:exports_level:435433403c3aa4e0",
-      "exports_yoy:exports_yoy:86d6cd9032924cd7",
-      "imports_level:imports_level:5d8b9b6997c4a0b5",
-      "imports_yoy:imports_yoy:c636d2d7c824295d",
-      "trade_balance_avg_3m:trade_balance_avg_3m:4190e20de7dddaf6",
-      "trade_balance_level:trade_balance_level:bbd64c8c53612fb0",
-      "trade_balance_share_of_flows_pct:trade_balance_share_of_flows_pct:7db7a0f570521152",
-      "trade_balance_yoy_change:trade_balance_yoy_change:66497fff22e0626e"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "trade_flows-US-0694461c01324f5d"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "trade_flows-US-7f23558246ecf991"
   },
   "drivers": {
     "balance_sheet": [
@@ -348,11 +338,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-07T05:39:34Z",
+    "built_at": "2026-10-09T12:00:01Z",
     "calculation_as_of": "2026-08-01",
-    "code_version": "07db8e5931d93a08d5c92022373e7a3a60ab2c76",
-    "content_sha256": "53078f6c36ea6cbdf98619abf1af7d3887cc95296a4d57c7669cc4e0e0766870",
-    "generation_id": "trade_flows-US-53078f6c36ea6cbd",
+    "code_version": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+    "content_sha256": "99ba1e4a8745bc1cc6b0632ee428fb0af8bbd39af5e7222555ca85b7e6b21753",
+    "generation_id": "trade_flows-US-99ba1e4a8745bc1c",
     "producer": "engine.market_os.macro_workspaces.trade_flows",
     "rendered_at": null
   },

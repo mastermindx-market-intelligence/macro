@@ -1,0 +1,286 @@
+{
+ "buckets": {
+  "0_7": {
+   "attrition": {
+    "cohort_rows": 49564,
+    "eligible_rows": 1636,
+    "excluded_event_session_invalid": 0,
+    "step1_missing_grade_row": 0,
+    "step2_not_graded_ok": 18,
+    "step2_reason_codes": {
+     "no_price_data": 18
+    },
+    "step3_fill_missing": 0,
+    "step3_fill_not_session_or_invalid": 0,
+    "step4_end_missing_pending": 47910,
+    "step4_end_not_session_or_invalid": 0,
+    "step5_noncausal": 0,
+    "step6_unit_boundary_inconsistent": 0
+   },
+   "bucket": "0_7",
+   "decomposition_abs_error": 2.220446049250313e-16,
+   "eligible_rows": 1636,
+   "eras": {
+    "2023+": {
+     "meets_cell_floor_20": false,
+     "sum_unit_weight": 1.0000000000000002,
+     "units": 10
+    }
+   },
+   "estimability": {
+    "G_alt": "NOT_YET_ESTIMABLE",
+    "G_inc": "NOT_YET_ESTIMABLE",
+    "G_inc_bin_floor_check": "UNKNOWN_NO_SCORES (FS-4 predictions absent)",
+    "basis": "total retained support; an upper bound on any calibration_eval share"
+   },
+   "first_fill_session": "2026-09-28",
+   "g_alt_practically_infeasible_full": false,
+   "g_inc_practically_infeasible_full": false,
+   "gate_full": {
+    "ratio": 1.9999999999999993,
+    "t_alt": 100.0,
+    "t_inc": 199.99999999999994,
+    "years_alt": 0.3968253968253968,
+    "years_inc": 0.7936507936507934
+   },
+   "horizon": 5,
+   "interval_len": 6,
+   "k3": {
+    "computable": false,
+    "reason": "empty_train_or_test_window"
+   },
+   "kish_n_event_weights": 32.71507604072783,
+   "last_fill_session": "2026-09-28",
+   "lib_crosscheck": {
+    "f0_clear": true,
+    "max_abs_diff": 0.0,
+    "n": 1636,
+    "sum_lib": 1.0000000000000002,
+    "sum_module": 1.0000000000000002
+   },
+   "rho_cap": 1.0,
+   "rho_full": 1.0000000000000002,
+   "rho_over_cap": 1.0000000000000002,
+   "s_t_mean": 1.0,
+   "s_t_zero_sessions": 0,
+   "split": {
+    "computable": false,
+    "last_fill_session": "2026-09-28",
+    "t_all": 1,
+    "t_test": 1,
+    "t_train": 0,
+    "test_first_session": "2026-09-28",
+    "test_rows": 1636,
+    "train_first_session": "2026-09-28",
+    "train_rows": 0
+   },
+   "sum_unit_weight": 1.0000000000000002,
+   "support_summary": {
+    "anchor_blocks": 0,
+    "anchor_sessions": 1,
+    "block_len": 5,
+    "kish_n": 32.71507604072783,
+    "n_rows": 1636,
+    "native_effective_n": 1.0000000000000002,
+    "span_sessions": 1,
+    "state": "MEASURED"
+   },
+   "t_all_sessions": 1,
+   "units": 10,
+   "years_all": 0.003968253968253968
+  },
+  "8_90": {
+   "attrition": {
+    "cohort_rows": 40092,
+    "eligible_rows": 719,
+    "excluded_event_session_invalid": 0,
+    "step1_missing_grade_row": 0,
+    "step2_not_graded_ok": 8740,
+    "step2_reason_codes": {
+     "no_price_data": 40,
+     "not_yet_matured": 8700
+    },
+    "step3_fill_missing": 0,
+    "step3_fill_not_session_or_invalid": 0,
+    "step4_end_missing_pending": 30633,
+    "step4_end_not_session_or_invalid": 0,
+    "step5_noncausal": 0,
+    "step6_unit_boundary_inconsistent": 0
+   },
+   "bucket": "8_90",
+   "decomposition_abs_error": 6.661338147750939e-16,
+   "eligible_rows": 719,
+   "eras": {
+    "2023+": {
+     "meets_cell_floor_20": false,
+     "sum_unit_weight": 1.0454545454545454,
+     "units": 76
+    }
+   },
+   "estimability": {
+    "G_alt": "NOT_YET_ESTIMABLE",
+    "G_inc": "NOT_YET_ESTIMABLE",
+    "G_inc_bin_floor_check": "UNKNOWN_NO_SCORES (FS-4 predictions absent)",
+    "basis": "total retained support; an upper bound on any calibration_eval share"
+   },
+   "first_fill_session": "2026-09-03",
+   "g_alt_practically_infeasible_full": false,
+   "g_inc_practically_infeasible_full": false,
+   "gate_full": {
+    "ratio": 1.0,
+    "t_alt": 420.0,
+    "t_inc": 420.0,
+    "years_alt": 1.6666666666666667,
+    "years_inc": 1.6666666666666667
+   },
+   "horizon": 21,
+   "interval_len": 22,
+   "k3": {
+    "computable": true,
+    "projection_interval_intersects_0p5_2": true,
+    "q_full": 1.0,
+    "q_train": 1.0,
+    "q_train_p05_bL": 1.0,
+    "ratio_holds": false
+   },
+   "kish_n_event_weights": 189.12563952525625,
+   "last_fill_session": "2026-09-04",
+   "lib_crosscheck": {
+    "f0_clear": true,
+    "max_abs_diff": 0.0,
+    "n": 719,
+    "sum_lib": 1.0454545454545454,
+    "sum_module": 1.0454545454545454
+   },
+   "rho_cap": 0.5227272727272727,
+   "rho_full": 0.5227272727272727,
+   "rho_over_cap": 1.0,
+   "s_t_mean": 0.5227272727272725,
+   "s_t_zero_sessions": 0,
+   "split": {
+    "bootstrap": {
+     "b=22": {
+      "block_len": 22,
+      "honest_n_blocks": 0,
+      "q_p05": 1.0,
+      "q_p95": 1.0,
+      "replicates": 9999,
+      "rho_p05": 1.0,
+      "rho_p95": 1.0,
+      "years_inc_p05": 1.6666666666666667,
+      "years_inc_p95": 1.6666666666666667
+     },
+     "b=44": {
+      "block_len": 44,
+      "honest_n_blocks": 0,
+      "q_p05": 1.0,
+      "q_p95": 1.0,
+      "replicates": 9999,
+      "rho_p05": 1.0,
+      "rho_p95": 1.0,
+      "years_inc_p05": 1.6666666666666667,
+      "years_inc_p95": 1.6666666666666667
+     },
+     "b=88": {
+      "block_len": 88,
+      "honest_n_blocks": 0,
+      "q_p05": 1.0,
+      "q_p95": 1.0,
+      "replicates": 9999,
+      "rho_p05": 1.0,
+      "rho_p95": 1.0,
+      "years_inc_p05": 1.6666666666666667,
+      "years_inc_p95": 1.6666666666666667
+     }
+    },
+    "computable": true,
+    "gate_train": {
+     "ratio": 1.0,
+     "t_alt": 420.0,
+     "t_inc": 420.0,
+     "years_alt": 1.6666666666666667,
+     "years_inc": 1.6666666666666667
+    },
+    "last_fill_session": "2026-09-04",
+    "projection_ratio": 1.0000000000000002,
+    "projection_ratio_interval_90": [
+     1.0000000000000002,
+     1.0000000000000002
+    ],
+    "projection_valid_replicates": 9999,
+    "rho_test": 1.0000000000000002,
+    "rho_train": 1.0,
+    "sum_u_test_predicted": 1.0,
+    "sum_u_test_realized": 1.0000000000000002,
+    "sum_u_train": 1.0,
+    "t_all": 2,
+    "t_test": 1,
+    "t_train": 1,
+    "test_first_session": "2026-09-04",
+    "test_rows": 456,
+    "train_first_session": "2026-09-03",
+    "train_rows": 263
+   },
+   "sum_unit_weight": 1.0454545454545454,
+   "support_summary": {
+    "anchor_blocks": 0,
+    "anchor_sessions": 2,
+    "block_len": 21,
+    "kish_n": 189.12563952525625,
+    "n_rows": 719,
+    "native_effective_n": 1.0454545454545454,
+    "span_sessions": 2,
+    "state": "MEASURED"
+   },
+   "t_all_sessions": 2,
+   "units": 76,
+   "years_all": 0.007936507936507936
+  },
+  "90p": {
+   "bucket": "90p",
+   "cohort_rows": 0,
+   "horizon": 63,
+   "note": "zero rows expected (PREREG \u00a73)"
+  }
+ },
+ "buckets_with_rows": [
+  "0_7",
+  "8_90"
+ ],
+ "f0_crosscheck_clear": true,
+ "funnel": {
+  "excluded_bucket_unmapped": 0,
+  "excluded_detector_not_live_feed_v1": 0,
+  "excluded_root_missing": 0,
+  "excluded_root_spy": 2918,
+  "excluded_source_not_live_feed": 0,
+  "grade_rows": 92574,
+  "grades_duplicate_event_id": 0,
+  "ledger_duplicate_event_id": 0,
+  "ledger_rows": 92574
+ },
+ "grades_columns_read": [
+  "event_id",
+  "graded_ok",
+  "reason_code",
+  "fill_date",
+  "outcome_end_session_5",
+  "outcome_end_session_21",
+  "outcome_end_session_63",
+  "outcome_end_session_126"
+ ],
+ "k3": {
+  "reason": "E1 not computable for every bucket with rows",
+  "state": "INSUFFICIENT_DATA"
+ },
+ "ledger_columns_read": [
+  "event_id",
+  "session_date",
+  "root",
+  "source",
+  "detector_version",
+  "dte_bucket"
+ ],
+ "outcome_columns_read": false,
+ "stage": "e1"
+}
