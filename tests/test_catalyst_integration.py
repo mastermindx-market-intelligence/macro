@@ -742,3 +742,71 @@ main().catch((e)=>{console.error(e.stack);process.exitCode=1});
                           capture_output=True, text=True, timeout=10)
     assert done.returncode == 0, done.stdout + done.stderr
     assert "SYNTHETIC_UI_SCAN_OPTIN_VERIFY=PASS" in done.stdout
+
+
+def test_staged_session03_primary_ui_and_fallback(monkeypatch):
+    """Real Session03 template is stage-only, noindex and API-hosted; no live data."""
+    app = FastAPI()
+    app.include_router(ci.router)
+    client = TestClient(app)
+    assert client.get("/api/catalyst/assets/catalyst_scan.js").status_code == 503
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    assert client.get("/api/catalyst/assets/catalyst_scan.js").status_code == 503
+    monkeypatch.setenv("CATALYST_UX_ENABLED", "1")
+    page = client.get("/api/catalyst?tickers=NVDA&event_id=fixture-earnings-20261008")
+    assert page.status_code == 200
+    assert "Understand the event." in page.text
+    assert 'content="noindex,nofollow"' in page.text
+    assert "STAGED PREVIEW" in page.text
+    assert "href=\"/api/catalyst/assets/catalyst_scan.css\"" in page.text
+    assert "src=\"/api/catalyst/assets/catalyst_scan.js\"" in page.text
+    assert "Use the basic no-JavaScript scan" in page.text
+    assert "name='email'" not in page.text
+    assert page.headers["X-Robots-Tag"] == "noindex, nofollow"
+    assert page.headers["Referrer-Policy"] == "no-referrer"
+    csp = page.headers["Content-Security-Policy"]
+    assert "script-src 'self'" in csp and "style-src 'self'" in csp
+    assert "unsafe-inline" not in csp
+
+    for asset, expected in (
+        ("catalyst_scan.js", "text/javascript"),
+        ("catalyst_scan.css", "text/css"),
+        ("theme.css", "text/css"),
+    ):
+        reply = client.get("/api/catalyst/assets/" + asset)
+        assert reply.status_code == 200
+        assert reply.headers["content-type"].startswith(expected)
+        assert reply.headers["X-Content-Type-Options"] == "nosniff"
+        assert reply.headers["Cache-Control"] == "private, no-store"
+    assert client.get("/api/catalyst/assets/private.env").status_code == 404
+
+    # The server-first no-JS route remains useful when the polished JS
+    # experience fails, without opening a registration wall.
+    public = ci.sanitize_public_scan(packet(), ["NVDA", "ZZZZ"], now_utc=NOW)
+    monkeypatch.setattr(ci, "public_scan_with_receipt",
+                        lambda tickers, event_id=None: public)
+    fallback = client.get("/api/catalyst/nojs?tickers=NVDA,ZZZZ")
+    assert fallback.status_code == 200
+    assert "The fixture records a revised result." in fallback.text
+    assert "id='catalyst-results'" in fallback.text
+    assert "id='catalyst-optin' hidden" in fallback.text
+
+
+def test_staged_session03_event_share_scope_is_safe():
+    from pathlib import Path
+    import shutil
+    import subprocess
+    js = (Path(__file__).resolve().parents[1] / "templates" / "catalyst_scan.js")
+    data = js.read_text()
+    assert "sameNames && incomingEventId" in data
+    assert "incomingTickers[index] === ticker" in data
+    assert "event_id: incomingEventId" in data
+    assert "scan_receipt: scanReceipt" in data
+    assert "credentials: \"same-origin\"" in data
+    assert "localStorage.setItem" not in data
+    assert "sessionStorage." not in data
+    node = shutil.which("node")
+    if node:
+        result = subprocess.run([node, "--check", str(js)],
+                                capture_output=True, text=True, timeout=12)
+        assert result.returncode == 0, result.stderr
