@@ -9929,3 +9929,6 @@
 {"id":"ob-2026-10-09-26956447fe","from":"approved","to":"posting","at":"2026-10-10T01:39:33Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-09-26956447fe","from":"posting","to":"posted","at":"2026-10-10T01:39:34Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ac99756ed92ed8fa5b31e3c","external_url":null,"at":"2026-10-10T01:39:29Z","booked_at":"2026-10-10T01:55:29Z"}}
 {"id":"ob-2026-10-08-c519cfcfb1","from":"queued","to":"quarantined","at":"2026-10-10T06:03:42Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-10-e2cad91eab","from":"queued","to":"quarantined","at":"2026-10-10T06:25:10Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Saturday; 2026-10-10 is not a trading day","receipt":null}
+{"id":"ob-2026-10-10-8890fa695e","from":"queued","to":"quarantined","at":"2026-10-10T06:25:10Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Saturday; 2026-10-10 is not a trading day","receipt":null}
+{"id":"ob-2026-10-10-097f721415","from":"queued","to":"quarantined","at":"2026-10-10T06:25:10Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Saturday; 2026-10-10 is not a trading day","receipt":null}
