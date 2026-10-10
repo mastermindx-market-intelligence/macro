@@ -4900,5 +4900,43 @@
     "Terminal_781_839_current": "No PR/CIpoll/newapproval/PUT/dispatch/controller inthisnewproofphase. ExistingT0222 781c44/380157onceapproval and839a348/380135onceapproval retainedlastobservations; actualterminal/newhead/merge event throughsameMOG/nativeauto/soleheartbeat remainsready.",
     "unchanged_boundaries": "0030b840 separateoperatorapproval/0031/0032UNAPPLIED/API+SQL/rights7870/release5989604142/B5denied/862/OptionsG7G9/paid/cutoverREQUEST_REPAIR unchanged. No887allowlist/Proidentityanswer inferred. OriginalbroadT03kTERMINAL/unaccepted. A19 operationalreceipt/UTCclockauthority unproved/globalSUPPRESS/unknownsticky/all frozenrefusals andsourceholds unchanged.",
     "next_safe_phase": "Save this capabilitydelta then deliver exactparentbindings/firstcaseindreview/secondcasefindings once to existingIW2parent for sameowner nextnecessarybounded all-actionremove/restore/barriercase aftercurrentreturnconsumption. No newnativeworkflow orwriter/PG rerun ofacceptedcases. Consumeactual781/839source/terminalevents throughexistingowners for exactsource/threecontexts/canonicalrelease/live. Reassessafter save; checkpointnotcompletion."
+  },
+  "current_capability_frontier_20261010T0256": {
+    "observed_at": "2026-10-10T02:53:39.496834+00:00",
+    "supersedes": "current_capability_frontier_20261010T0248",
+    "whole_original_mission_accepted": false,
+    "prior_first_review_and_second_case_scoped_acceptance": "T0248 exactbindings/canonicalreviewacceptance and serialrecordedDB-first result settled; no repeatedsuites/nativePG/exports/acceptance.",
+    "IW2_specific_next_case": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/iw2-next-remove-restore-specific-handoff-parent-pickup-20261010.json",
+      "bytes": 993,
+      "sha256": "7686a55aa84bd6d6c80fc17876a18bb788b5c09a27266164bd0a5ce77f29a4da"
+    },
+    "IW2_next_case_current": "After qualifiedsave e8ee9b28, parentdelivered exactsecondcase and firstindependentreview findings once to existingIW2Codexparent. Compactpeer58 active newturn01a123b6-7c64-70a2-823c-f989db365b4e states acceptingsecondcase andmoving remove/restore throughincumbentowner. No exactnativeSTART/newcaseaccepted or sourcecustodytransfer inferred. No liveSendMessageactiveworker/Stop/duplicate/newworkflow. Existingcoordinator mustconsumeactualsecondreturn beforeoneboundedall-actiontransition; no speculativebarrieracceptance.",
+    "Terminal839_new_source": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/839-controller-current-head-source-qualification-20261010T0251.json",
+      "bytes": 2960,
+      "sha256": "86df2001021bdb977804eb6d028276dd4d64a9f9fea9e3d51cd180c46b4fa97c"
+    },
+    "Terminal839_CI_once": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-839-controller-refresh-20261010T0251.json",
+      "bytes": 533,
+      "sha256": "c1f53c0a5906919ce41ddc5cb8bfe98afeb3fd5d9e0a420749e9622d2ece1d05"
+    },
+    "Terminal839_current": "Sole nextphase metadata839 head1ad5ce12/base5ad OPEN/nativeauto/MOG. Objectonlyfetch preservedclean4dcd andall8acceptedblobs;18upstreampaths exactlymatchPRbase5ad, old/master ancestors. Qualificationrecord current_master means observedPRbase5ad, not subsequent liveprotectedmaster9a. Sameunchangedhelper3d965 freshlycheckedactualtrustedmaster9a/currenthead/workflow/actor and approved associated38016160336 ONCE02:50:07 POST_SUCCEEDED/queued. No usercommand/newcredential/reapproval/PUT/dispatch/controller/CIgreen/merge/install/live claim. Earlier839effects frozenhistorical.",
+    "Terminal781_current": "Single nextphase metadata OPEN/samec44/base5ad/nativeauto, mergeabilityUNKNOWN retainedwithoutrepeatedGET/checkpoll; originalonce380157approval remainsfrozen, no reapprove. Newmaster refreshwaitownedexistingMOG/nativeauto/soleheartbeat.",
+    "new_master897_source_qualification": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/new-master897-source-CI-interface-parent-qualification-20261010T0255.json",
+      "bytes": 2494,
+      "sha256": "101c268136a260c444b033a4d65ad4861ba7017910d251889964d907cd145986"
+    },
+    "new_master897_owner_build_observation": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/new-master897-owning-CI-and-existing-owner-active-build-20261010.json",
+      "bytes": 8111,
+      "sha256": "242679c4040513ca17e957648fd6b96e7cd76e170ae4e84db3c6d95592fc3085"
+    },
+    "new_master897_current": "PR897merged02:43:01/head a0750414/squash9a726b2b, headandsquashwholetreeequal;54paths, only3code/testpaths LevelsView.tsx/responsive.spec.ts/capture_levels_rung_anchor.cjs, other51doc/evidencepaths. Exactlatest3requiredowning38015371741 COMPLETEDSUCCESS/head a075. Actualreadonlysource9aclean/existingownerterminal-build --target9a andnextbuild process at.stage.GvkNSm. Runtime remains5ad, Terminal+QuoteHub+rsyslogACTIVE. Parentdidnotlaunch/wait/kill/reset/stop/restorebuilder. Returnedstage_entries0usedwrong .build-stage*pattern; explicit.stage.GvkNSm provesstagepresent, no falseabsenceclaim. Newrelease/install/publicmarker/live9aUNACCEPTED. Existingownerisrealactivepublisher; no competingrelease.",
+    "next_safe_phase": "ConsumeactualexistingIW2remove/restore proof/failure andincumbentoriginalroot/source bindings; no genericContinue/repeatednativeworkflowreads. At actualexisting897ownerterminal/returnqualifycanonicalsource/runtime/publicmarker/services beforeinstallacceptance; onlyaffectedliveproof, not rerunold5adstyle. Existing781/839controllerterminal/newhead/merge events useexactacceptedbytes/latest3contexts thencanonicalrelease/live. No expensivepolling/secondwatcher/controller/adminbypass.",
+    "unchanged_boundaries": "All0030b840separateoperatorapproval/0031/0032UNAPPLIED/API+SQL/rights/release/B5/862/OptionsG7G9/paid/cutoverREQUEST_REPAIR; no887ALLOWorProidentityanswer inferred. OriginalT03k broadworkflowTERMINAL. A19 authority/globalSUPPRESS/unknownsticky and allrefusals/security/sourceholds remainexact. Lastconfirmedhealthy5adscopedstyle remainssettledpriorruntimewhile9aexistingownerbuilds.",
+    "continuation": "Sole nativeheartbeat sameoriginalchatroot isactualwake. SpecificIW2parentpickup closesghosthandoffgap butnotnativeSTART/casereturn; actualowned897builder provesactivepublicationbutbarePIDnotfuturewake. Consumeexactreturns, no status-onlyContinue oracceptedworkreplay."
   }
 }
