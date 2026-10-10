@@ -41,7 +41,8 @@ _TOUCH_KEYS = ("utm_source", "utm_medium", "utm_campaign", "utm_content", "partn
 # Approved public source URLs must not embed identity, signing or subscriber secrets.
 _PRIVATE_URL_KEYS = frozenset({"email", "e_mail", "phone", "ip", "user_id", "token",
                                "access_token", "auth", "authorization", "apikey",
-                               "api_key", "secret", "session", "password", "signature"})
+                               "api_key", "secret", "session", "session_id", "password",
+                               "signature", "client_secret", "jwt", "bearer", "credential"})
 _EMAIL_IN_URL = re.compile(r"[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", re.I)
 _CONSENT_OWNER_UNAVAILABLE = object()  # private sentinel; never a grant or receipt
 
@@ -366,16 +367,26 @@ def _validate_revision(rev: PublicRevision) -> None:
             if nxt == decoded:
                 break
             decoded = nxt
+        # The fifth layer can still hide an address or private bearer secret;
+        # do not publish a URL we cannot fully assess within the fixed limit.
+        if unquote(decoded) != decoded:
+            raise FunnelGate("SOURCE_RIGHTS_UNPROVEN", 403)
         try:
             decoded_url = urlsplit(decoded)
         except ValueError:
             raise FunnelGate("SOURCE_RIGHTS_UNPROVEN", 403) from None
+        fields = (parse_qsl(decoded_url.query, keep_blank_values=True) +
+                  parse_qsl(decoded_url.fragment, keep_blank_values=True))
+        # A nested query can camouflage ?token=... in an otherwise innocuous
+        # ?ref=... value. Decode, then inspect both real keys and embedded keys.
+        private_text = re.compile(
+            r"(?i)(?:^|[?&#])(?:" +
+            "|".join(re.escape(k) for k in sorted(_PRIVATE_URL_KEYS)) + r")\s*=")
         if (decoded_url.scheme != parsed.scheme or
                 decoded_url.hostname != parsed.hostname or
                 _EMAIL_IN_URL.search(decoded) or
-                any(k.lower() in _PRIVATE_URL_KEYS for k, _ in
-                    (parse_qsl(decoded_url.query, keep_blank_values=True) +
-                     parse_qsl(decoded_url.fragment, keep_blank_values=True))) or
+                any(k.lower() in _PRIVATE_URL_KEYS or private_text.search(v)
+                    for k, v in fields) or
                 any(ord(ch) < 32 or ord(ch) == 127 for ch in decoded)):
             raise FunnelGate("SOURCE_RIGHTS_UNPROVEN", 403)
         # Public provider must have already checked rights; don't emit internal or local URLs.
