@@ -4291,6 +4291,7 @@ CURATED_EXCLUSIVE = {
     # Preserve its concrete imports and dynamic corpus/asset/data inputs.
     # All packing ceilings, commands, data gate and weights remain unchanged.
     "transmission-chains",
+    "quant-q01-arbfree-surface",  # Q01 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "nw-lobe-unfreeze",
     "quant-q06-sparse-cal",  # Q06 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "china-search-universe",
@@ -4417,8 +4418,10 @@ CURATED_EXCLUSIVE = {
     "unrun-government-revenue-grader",
     "biocatalyst-worker",
     "biocatalyst-serving",
+    "quant-q13-rn-tail-density",  # Q13 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "flow-surface",
     "biocatalyst-history",
+    "quant-q14-horizon-vrp",  # Q14 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "unrun-subsector-themes",
     "inline-js",
     "unrun-picks-boards",

@@ -1,6 +1,6 @@
 {
   "schema": "marketing.state/v1",
-  "as_of": "2026-10-09",
+  "as_of": "2026-10-10",
   "lobe": {
     "id": "marketing",
     "name": "Marketing",
@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 317,
+    "opportunity_queue_depth": 311,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,14 +1690,14 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 317,
-      "scored": 509,
+      "open": 311,
+      "scored": 497,
       "newest": [
         {
           "id": "radar-stage-ACA-2026-10-09",
           "problem_or_desire": "$ACA: stage 2D_extended_run, SATA 10, 52w in stage",
           "expected_value": 0.4,
-          "score": 0.374157,
+          "score": 0.353292,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-stage-ACU-2026-10-09",
           "problem_or_desire": "$ACU: stage 2D_extended_run, SATA 9, 26w in stage",
           "expected_value": 0.4,
-          "score": 0.374157,
+          "score": 0.353292,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-stage-CDNA-2026-10-09",
           "problem_or_desire": "$CDNA: stage 2D_extended_run, SATA 10, 34w in stage",
           "expected_value": 0.4,
-          "score": 0.374157,
+          "score": 0.353292,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1738,30 +1738,30 @@
       ]
     },
     "publications": {
-      "total": 1731,
-      "receipts": 1731,
+      "total": 1754,
+      "receipts": 1754,
       "corrections": 0,
       "newest": [
         {
-          "id": "pub-ob-2026-10-09-3dad121103",
+          "id": "pub-ob-2026-10-09-fae4b6e0c6",
+          "channel": "x",
+          "account": "meagan",
+          "status": "clean",
+          "published_at": "2026-10-10T01:39:29Z"
+        },
+        {
+          "id": "pub-ob-2026-10-09-26956447fe",
+          "channel": "x",
+          "account": "flagship",
+          "status": "clean",
+          "published_at": "2026-10-10T01:39:29Z"
+        },
+        {
+          "id": "pub-ob-2026-10-10-5fc4b99b4d",
           "channel": "x",
           "account": "mastermind_news",
           "status": "clean",
-          "published_at": "2026-10-09T09:18:38Z"
-        },
-        {
-          "id": "pub-ob-2026-10-08-4fc0aab441",
-          "channel": "x",
-          "account": "kelly",
-          "status": "clean",
-          "published_at": "2026-10-09T03:03:30Z"
-        },
-        {
-          "id": "pub-ob-2026-10-08-fcf3012ba0",
-          "channel": "x",
-          "account": "sophia",
-          "status": "clean",
-          "published_at": "2026-10-09T03:03:30Z"
+          "published_at": "2026-10-10T00:44:16Z"
         }
       ]
     },
@@ -1985,12 +1985,12 @@
     }
   ],
   "content": {
-    "total_posts": 30,
-    "signal_posts": 9,
-    "charts": 188,
+    "total_posts": 32,
+    "signal_posts": 2,
+    "charts": 185,
     "accounts": 13,
     "state": "present",
-    "as_of": "2026-10-09"
+    "as_of": "2026-10-10"
   },
   "notes": [
     "deterministic v1 substrate; agent actuation staged",
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-10-09T16:11:15Z",
-  "inputs_hash": "sha256:9839b21404e1e8df35d010205a107a1b6355e8c009d0650f5af709a11b3cc97f",
+  "produced_at": "2026-10-10T06:05:43Z",
+  "inputs_hash": "sha256:72801840e9a1e932d54d6ae0707d7efb0c440d1377f659872ea8d7a860cb969e",
   "tier": "display"
 }
