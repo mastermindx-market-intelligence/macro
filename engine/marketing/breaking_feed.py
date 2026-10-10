@@ -102,7 +102,11 @@ def _make_id(source_key: str, guid_or_url: str) -> str:
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()
 
 
-def _parse_pub_date(raw: str) -> str:
+class _OfficialSourceTimeRejected(ValueError):
+    """A first-party release lacks an attested unambiguous publication clock."""
+
+
+def _parse_pub_date(raw: str, *, require_attested: bool = False) -> str:
     """Parse RSS pubDate / Atom updated/published / dc:date → ISO8601 UTC str.
 
     RFC 2822 is tried first via email.utils — it handles NAMED zones
@@ -117,17 +121,33 @@ def _parse_pub_date(raw: str) -> str:
             from email.utils import parsedate_to_datetime  # noqa: PLC0415
             dt = parsedate_to_datetime(raw)
             if dt.tzinfo is None:
+                if require_attested:
+                    raise _OfficialSourceTimeRejected(
+                        "official publication timestamp missing timezone"
+                    )
                 dt = dt.replace(tzinfo=timezone.utc)
             return dt.astimezone(timezone.utc).isoformat()
+        except _OfficialSourceTimeRejected:
+            raise
         except (TypeError, ValueError):
             pass
         try:
             dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
             if dt.tzinfo is None:
+                if require_attested:
+                    raise _OfficialSourceTimeRejected(
+                        "official publication timestamp missing timezone"
+                    )
                 dt = dt.replace(tzinfo=timezone.utc)
             return dt.astimezone(timezone.utc).isoformat()
+        except _OfficialSourceTimeRejected:
+            raise
         except ValueError:
             pass
+    if require_attested:
+        raise _OfficialSourceTimeRejected(
+            "official publication timestamp absent or unparseable"
+        )
     return datetime.now(tz=timezone.utc).isoformat()
 
 
@@ -158,19 +178,30 @@ def parse_feed(xml_or_json_text: str, source_cfg: dict) -> list[FeedItem]:
     source_name = source_cfg.get("source_name", source_key)
     source_tier = source_cfg.get("tier", "aggregator")
     kind = source_cfg.get("kind", "rss")
+    strict_clock = source_cfg.get("_official_require_pit_pubdate") is True
 
     try:
         if kind == "json":
+            if strict_clock:
+                raise _OfficialSourceTimeRejected(
+                    "official publication timestamp requires RSS source"
+                )
             return _parse_json_feed(xml_or_json_text, source_key, source_name, source_tier)
         else:
-            return _parse_xml_feed(xml_or_json_text, source_key, source_name, source_tier)
+            return _parse_xml_feed(
+                xml_or_json_text, source_key, source_name, source_tier,
+                strict_date=strict_clock,
+            )
+    except _OfficialSourceTimeRejected:
+        raise
     except Exception as exc:  # noqa: BLE001
         print(f"[breaking_feed] parse_feed error ({source_key}): {exc}", file=sys.stderr)
         return []
 
 
 def _parse_xml_feed(
-    text: str, source_key: str, source_name: str, source_tier: str
+    text: str, source_key: str, source_name: str, source_tier: str,
+    *, strict_date: bool = False,
 ) -> list[FeedItem]:
     """Parse RSS 2.0 or Atom XML."""
     import xml.etree.ElementTree as ET  # noqa: PLC0415
@@ -180,11 +211,13 @@ def _parse_xml_feed(
     atom_ns = "{http://www.w3.org/2005/Atom}"
     # If root tag contains Atom namespace, treat as Atom
     if "w3.org/2005/Atom" in (root.tag + " " + (root.get("xmlns", ""))):
-        return _parse_atom(root, source_key, source_name, source_tier, atom_ns)
+        return _parse_atom(root, source_key, source_name, source_tier, atom_ns,
+                           strict_date=strict_date)
 
     # Check for atom:feed child or <feed> element
     if root.tag == f"{atom_ns}feed" or root.tag == "feed":
-        return _parse_atom(root, source_key, source_name, source_tier, atom_ns)
+        return _parse_atom(root, source_key, source_name, source_tier, atom_ns,
+                           strict_date=strict_date)
 
     # RSS 2.0: look for <channel><item>
     channel = root.find("channel")
@@ -219,7 +252,9 @@ def _parse_xml_feed(
             source_name=source_name,
             source_tier=source_tier,
             url=link or guid or "",
-            published_at=_parse_pub_date(pub_raw),
+            published_at=_parse_pub_date(
+                pub_raw, require_attested=strict_date
+            ),
             headline=_strip_html(title),
             body_snippet=_snippet(desc_raw),
         ))
@@ -227,7 +262,8 @@ def _parse_xml_feed(
 
 
 def _parse_atom(
-    root: Any, source_key: str, source_name: str, source_tier: str, ns: str
+    root: Any, source_key: str, source_name: str, source_tier: str, ns: str,
+    *, strict_date: bool = False,
 ) -> list[FeedItem]:
     """Parse Atom feed (root already an ElementTree Element)."""
     entries = root.findall(f"{ns}entry")
@@ -272,7 +308,9 @@ def _parse_atom(
             source_name=source_name,
             source_tier=source_tier,
             url=link or entry_id_raw or "",
-            published_at=_parse_pub_date(pub_raw),
+            published_at=_parse_pub_date(
+                pub_raw, require_attested=strict_date
+            ),
             headline=_strip_html(title),
             body_snippet=_snippet(desc_raw),
         ))
@@ -492,9 +530,9 @@ def poll_source(
 
         return parse_feed(text, source_cfg)
 
-    except _OfficialFeedRedirectRefused:
-        # An unqualified source must stop the ENTIRE preview before its
-        # proposed ETag/seen state can ever be acknowledged.
+    except (_OfficialFeedRedirectRefused, _OfficialSourceTimeRejected):
+        # An unqualified transport or publication clock stops the ENTIRE
+        # preview before proposed ETag/seen can ever be acknowledged.
         raise
     except HTTPError as exc:
         # urllib raises for every non-2xx, INCLUDING 304. A redirect to an
@@ -689,6 +727,9 @@ def preview_official_sources(
             # Verified by the incumbent poll_source transport; no separate
             # opener, fetcher, source registry or retry owner.
             "_official_expected_effective_url": expected_url,
+            # The legacy RSS fallback stamps invalid dates with ingest-now.
+            # Official WEB-P1 claims cannot treat this as a publication clock.
+            "_official_require_pit_pubdate": True,
         }
         fetched = poll_source(merged, root=root, session_state=proposed_state)
         for item in fetched:

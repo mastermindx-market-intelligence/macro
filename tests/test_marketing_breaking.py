@@ -1831,3 +1831,71 @@ def test_official_empty_poll_cannot_ack_unoffered_event_ids(tmp_path, monkeypatc
         tmp_path, preview, accepted_ids={"unoffered"}
     ) is False
     assert not (tmp_path / "data/marketing/breaking/state.json").exists()
+
+
+
+@pytest.mark.parametrize("pubdate", [
+    "", "not-an-agency-timestamp", "Fri, 09 Oct 2026 08:30:00",
+    "2026-10-09T08:30:00",
+])
+def test_official_preview_refuses_unproven_publication_clock(
+        tmp_path, monkeypatch, pubdate):
+    """Ingest time must never masquerade as an agency publication receipt."""
+    from engine.marketing import breaking_feed as feed
+    src = dict(BLS_SOURCE_CFG)
+    date = f"<pubDate>{pubdate}</pubDate>" if pubdate else ""
+    xml = (f"<rss><channel><item><title>CPI report released</title>"
+           f"<link>https://www.bls.gov/news.release/cpi.nr0.htm</link>"
+           f"<guid>cpi-release-2026-10-09</guid>{date}"
+           f"</item></channel></rss>")
+    class Response:
+        headers = {"ETag": "would-look-fresh"}
+        def __enter__(self): return self
+        def __exit__(self, exc_type, exc, tb): return False
+        def read(self, n): return xml.encode("utf-8")[:n]
+        def geturl(self): return "https://www.bls.gov/feed/bls_latest.rss"
+    monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
+    with pytest.raises(ValueError, match="official publication timestamp"):
+        feed.preview_official_sources(
+            tmp_path, {"sources": [src], "poll_interval_s": 0}
+        )
+    folder = tmp_path / "data" / "marketing" / "breaking"
+    assert not (folder / "state.json").exists()
+    assert not (folder / "seen.json").exists()
+
+
+def test_legacy_non_official_feed_still_has_documented_ingest_fallback():
+    """The strict date gate must never silently break legacy RSS clients."""
+    from engine.marketing import breaking_feed as feed
+    text = ("<rss><channel><item><title>Undated non-official wire</title>"
+            "<link>https://example.com/news/item</link>"
+            "</item></channel></rss>")
+    result = feed.parse_feed(text, {
+        "key": "ungraded-wire", "tier": "wire",
+        "source_name": "Example"
+    })
+    assert len(result) == 1
+    assert result[0]["published_at"]  # legacy behavior unchanged
+
+
+def test_official_atom_entry_without_source_timestamp_refused(
+        tmp_path, monkeypatch):
+    """An Atom entry's ingest clock must not impersonate its source date."""
+    from engine.marketing import breaking_feed as feed
+    src = dict(BLS_SOURCE_CFG)
+    atom = """<feed xmlns="http://www.w3.org/2005/Atom">
+      <entry><id>tag:bls.gov,2026:atom-example</id><title>Official update</title>
+      <link href="https://www.bls.gov/news.release/cpi.nr0.htm"/>
+      </entry></feed>"""
+    class Response:
+        headers = {}
+        def __enter__(self): return self
+        def __exit__(self, exc_type, exc, tb): return False
+        def read(self, n): return atom.encode("utf-8")[:n]
+        def geturl(self): return "https://www.bls.gov/feed/bls_latest.rss"
+    monkeypatch.setattr(feed, "urlopen", lambda req, timeout: Response())
+    with pytest.raises(ValueError, match="official publication timestamp"):
+        feed.preview_official_sources(
+            tmp_path, {"sources": [src], "poll_interval_s": 0}
+        )
+    assert not (tmp_path / "data/marketing/breaking/state.json").exists()
