@@ -18506,6 +18506,29 @@ jobs:
       - name: gex board state merge + IV-rank band color + session digest + flow desk
         run: python -m pytest tests/test_gex_board_state_merge.py tests/test_gex_js_iv_rank_color.py tests/test_session_digest.py tests/test_flow_desk.py tests/test_gex_board_session_date.py -q
 
+  quant-q19-first-passage-ambiguity:
+    if: ${{ false }}
+    gate: code
+    # Q19 first-passage ambiguity bounds, attrition classes, admissibility gate, AJ fail-to-bounds
+    # Curated scope: the suite's importlib import check otherwise
+    # widens inference to whole-tree fallback roots. The module imports only
+    # stdlib + numpy, so this is its exact closure.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/outcome_first_passage_ambiguity.py"
+      - "tests/test_outcome_first_passage_ambiguity.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q19 first-passage ambiguity tests
+        run: python -m pytest tests/test_outcome_first_passage_ambiguity.py -q
+
   unrun-publish-ops:
     # publish/transport, asset pipeline, ticker pages and the nightly ops tripwires.
     if: ${{ false }}

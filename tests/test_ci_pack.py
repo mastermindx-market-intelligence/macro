@@ -4481,6 +4481,7 @@ CURATED_EXCLUSIVE = {
     # test and enumeration would drop them silently.
     "cn-standout-audit",
     "coiled-mtf-anchor-era",
+    "quant-q19-first-passage-ambiguity",  # Q19 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-20 main-red-repair. serving-observability (#6115, Sentry arm for
     # the macro-api serving tier) shipped with no scope at all. Its own subject
     # (_release()'s `subprocess.run(["git", ...])` for the deployed SHA) is an
