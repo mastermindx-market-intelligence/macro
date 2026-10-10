@@ -1,6 +1,6 @@
 {
   "schema": "winner_autopsy_panel.v1",
-  "generated_at": "2026-10-10T05:30:57Z",
+  "generated_at": "2026-10-10T11:20:24Z",
   "display_only": true,
   "horizon_role": "hold_thesis",
   "census": {
@@ -2070,7 +2070,7 @@
   },
   "watch": {
     "available": true,
-    "as_of": "2026-10-09",
+    "as_of": "2026-10-10",
     "state_counts": {
       "breakaway": 113,
       "emerging": 1703,
@@ -5726,25 +5726,6 @@
         }
       },
       {
-        "ticker": "ABVEF",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 148.24,
-        "excess_42d_pp": -55.72,
-        "new_high_63d": false,
-        "dollar_vol_z21": 2.78,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [
-          "extended_after_vertical_move"
-        ],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
         "ticker": "ROYL",
         "sector": "",
         "benchmark": "SPY",
@@ -5758,6 +5739,25 @@
         "hazards": [
           "extended_after_vertical_move",
           "chase_risk_elevated"
+        ],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "ABVEF",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 148.24,
+        "excess_42d_pp": -55.72,
+        "new_high_63d": false,
+        "dollar_vol_z21": 2.78,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [
+          "extended_after_vertical_move"
         ],
         "context": {
           "context_only": true,
@@ -25827,7 +25827,7 @@
         }
       },
       {
-        "ticker": "PBR-A",
+        "ticker": "PBR.A",
         "sector": "",
         "benchmark": "SPY",
         "state": "breakaway",
@@ -25844,7 +25844,7 @@
         }
       },
       {
-        "ticker": "PBR.A",
+        "ticker": "PBR-A",
         "sector": "",
         "benchmark": "SPY",
         "state": "breakaway",
@@ -26286,7 +26286,7 @@
         }
       },
       {
-        "ticker": "DRK",
+        "ticker": "ANY",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -26303,7 +26303,7 @@
         }
       },
       {
-        "ticker": "ANY",
+        "ticker": "DRK",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -33953,14 +33953,14 @@
         }
       },
       {
-        "ticker": "BACK",
+        "ticker": "MDLK",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -1.72,
-        "excess_42d_pp": 49.24,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.26,
+        "excess_42d_pp": 34.37,
+        "new_high_63d": true,
+        "dollar_vol_z21": -0.48,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -33970,14 +33970,14 @@
         }
       },
       {
-        "ticker": "MOTS",
+        "ticker": "BACK",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -1.72,
-        "excess_42d_pp": 99.24,
-        "new_high_63d": true,
-        "dollar_vol_z21": -0.18,
+        "excess_42d_pp": 49.24,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.26,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -34004,14 +34004,14 @@
         }
       },
       {
-        "ticker": "MDLK",
+        "ticker": "SYANY",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -1.72,
-        "excess_42d_pp": 34.37,
-        "new_high_63d": true,
-        "dollar_vol_z21": -0.48,
+        "excess_42d_pp": 31.3,
+        "new_high_63d": false,
+        "dollar_vol_z21": null,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -34021,14 +34021,14 @@
         }
       },
       {
-        "ticker": "SYANY",
+        "ticker": "MOTS",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -1.72,
-        "excess_42d_pp": 31.3,
-        "new_high_63d": false,
-        "dollar_vol_z21": null,
+        "excess_42d_pp": 99.24,
+        "new_high_63d": true,
+        "dollar_vol_z21": -0.18,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -40430,7 +40430,7 @@
         }
       },
       {
-        "ticker": "FOXOD",
+        "ticker": "FOXO",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -40447,7 +40447,7 @@
         }
       },
       {
-        "ticker": "FOXO",
+        "ticker": "FOXOD",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",

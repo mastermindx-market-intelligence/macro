@@ -1135,7 +1135,7 @@
       "src": "species:T1-T4@1.0"
     }
   ],
-  "generated_utc": "2026-10-10T05:30:59.452536+00:00",
+  "generated_utc": "2026-10-10T11:20:26.591298+00:00",
   "is_context_only": true,
   "notes": "Crosswalk only; local systems remain authoritative. No invented links; unknowns stay null.",
   "possible_duplicates": [
@@ -1440,7 +1440,7 @@
   "rows": {
     "entity:US:APA": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-09",
+      "funnel_as_of": "2026-10-10",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:APA",
@@ -1453,7 +1453,7 @@
     },
     "entity:US:AVGO": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-09",
+      "funnel_as_of": "2026-10-10",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:AVGO",
@@ -1466,7 +1466,7 @@
     },
     "entity:US:DVN": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-09",
+      "funnel_as_of": "2026-10-10",
       "funnel_state": "watch_for_thesis",
       "market": "US",
       "registry_id": "entity:US:DVN",
@@ -1479,7 +1479,7 @@
     },
     "entity:US:NVDA": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-09",
+      "funnel_as_of": "2026-10-10",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:NVDA",
@@ -1492,7 +1492,7 @@
     },
     "entity:US:VRT": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-09",
+      "funnel_as_of": "2026-10-10",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:VRT",
@@ -1505,7 +1505,7 @@
     },
     "entity:US:XOM": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-09",
+      "funnel_as_of": "2026-10-10",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:XOM",
@@ -3430,7 +3430,7 @@
       "present": true
     },
     "data/neuralweb/governance.jsonl": {
-      "n": 268,
+      "n": 269,
       "present": true
     },
     "data/research/thesis_funnel_states.parquet": {
