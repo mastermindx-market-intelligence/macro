@@ -113,6 +113,7 @@ def test_roster_is_derived_not_ranked_and_preserves_unknown():
     assert [x["ticker"] for x in v["daily"]] == ["A", "Z"]
     assert [x["ticker"] for x in v["weekly"]] == ["A"]
     assert v["unknown"]["weekly"] == 1
+    assert v["clock_as_of"]["weekly"] == "2026-10-09"
     assert v["stale"] is False
 
 
@@ -223,6 +224,8 @@ def test_real_leader_radar_builder_publishes_rs_watch_and_html(tmp_path):
 
     assert artifact["rs_high_roster"]["authority"] == "display_only"
     assert artifact["rs_high_roster"]["population_rows"] == 2
+    assert artifact["rs_high_roster"]["clock_as_of"]["daily"] == artifact["as_of"]
+    assert artifact["rs_high_roster"]["clock_as_of"]["weekly"] is not None
     assert len(artifact["rows"]) == 2
     for row in artifact["rows"]:
         watch = row["display_chips"]["rs_high_watch"]
