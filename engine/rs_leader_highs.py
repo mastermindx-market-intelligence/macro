@@ -16,9 +16,11 @@ from lib.nyse_calendar import is_session, last_session_on_or_before, sessions_be
 SCHEMA = "leader_rs_highs.v1"
 DAILY_SESSIONS = 126
 WEEKLY_WEEKS = 26
+WATCH_SESSIONS = 21
+WATCH_WEEKS = 8
 
 
-def _dated_close(series: pd.Series) -> pd.Series:
+def _dated_close(series: pd.Series, *, as_of: date) -> pd.Series:
     """Map one daily bar per NY date without forward filling or deduping.
 
     Caller controls source adjustment basis. Ambiguous multiple bars per market
@@ -28,9 +30,16 @@ def _dated_close(series: pd.Series) -> pd.Series:
     if idx.tz is not None:
         idx = idx.tz_convert("America/New_York").tz_localize(None)
     days = [stamp.date() for stamp in idx]
-    if len(set(days)) != len(days):
+    # Ignore every future observation BEFORE rejecting duplicate dates: source
+    # revisions later than the requested decision cut must not change the past.
+    kept = [(day, float(value)) for day, value in zip(
+        days, series.to_numpy(dtype=float),
+    ) if day <= as_of]
+    valid_days = [day for day, _ in kept]
+    if len(set(valid_days)) != len(valid_days):
         raise ValueError("duplicate_market_session")
-    return pd.Series(series.to_numpy(dtype=float), index=pd.Index(days)).sort_index()
+    return pd.Series([value for _, value in kept], index=pd.Index(valid_days),
+                     dtype=float).sort_index()
 
 
 def _high(close: pd.Series, bench: pd.Series, sessions: list[date]) -> dict:
@@ -56,6 +65,45 @@ def _high(close: pd.Series, bench: pd.Series, sessions: list[date]) -> dict:
     return result
 
 
+def _recent_high_prints(
+    close: pd.Series,
+    bench: pd.Series,
+    sessions: list[date],
+    *,
+    lookback: int,
+    watch: int,
+) -> dict:
+    """Derived recent RS-high prints, with NO separately persisted watch state.
+
+    Every comparison excludes its candidate session, and needs `lookback`
+    complete earlier sessions. A partially known window is unknown, not a
+    quiet/zero print count. All reported ages count observations on this clock.
+    """
+    result = {"last_high_as_of": None, "since_last_high": None,
+              "high_prints_in_window": None, "reason": "insufficient_history"}
+    if len(sessions) < lookback + watch:
+        return result
+    anchors = sessions[-(lookback + watch):]
+    c = close.reindex(anchors).to_numpy(dtype=float)
+    b = bench.reindex(anchors).to_numpy(dtype=float)
+    if (not np.isfinite(c).all() or not np.isfinite(b).all()
+            or (c <= 0).any() or (b <= 0).any()):
+        result["reason"] = "source_gap_or_nonpositive_close"
+        return result
+    ratio = c / b
+    fired = [
+        j for j in range(lookback, len(anchors))
+        if ratio[j] > np.max(ratio[j - lookback:j])
+    ]
+    result["high_prints_in_window"] = len(fired)
+    result["reason"] = None
+    if fired:
+        last = fired[-1]
+        result["last_high_as_of"] = anchors[last].isoformat()
+        result["since_last_high"] = len(anchors) - 1 - last
+    return result
+
+
 def observe_rs_highs(
     close: pd.Series,
     benchmark_close: pd.Series,
@@ -67,6 +115,7 @@ def observe_rs_highs(
     Missing data are UNKNOWN, never FALSE. A completed weekly observation is
     anchored to the actual last NYSE session of that week, including short
     holiday weeks. Input values after ``as_of`` never affect either result.
+    Recent highs retain names after the breakout without a new state/ledger.
     """
     if not isinstance(as_of, date):
         raise ValueError("as_of_must_be_date")
@@ -75,18 +124,22 @@ def observe_rs_highs(
         "as_of": as_of.isoformat(),
         "daily": {"as_of": None, "lookback_sessions": DAILY_SESSIONS,
                   "new_high": None, "price_new_high": None,
-                  "rs_leads_price": None, "reason": "unavailable"},
+                  "rs_leads_price": None, "reason": "unavailable",
+                  "recent": {"last_high_as_of": None, "since_last_high": None,
+                             "high_prints_in_window": None, "reason": "unavailable"}},
         "weekly": {"as_of": None, "lookback_completed_weeks": WEEKLY_WEEKS,
                    "new_high": None, "price_new_high": None,
-                   "rs_leads_price": None, "reason": "unavailable"},
+                   "rs_leads_price": None, "reason": "unavailable",
+                   "recent": {"last_high_as_of": None, "since_last_high": None,
+                              "high_prints_in_window": None, "reason": "unavailable"}},
     }
     if not is_session(as_of):
         output["daily"]["reason"] = "not_nyse_session"
         output["weekly"]["reason"] = "not_nyse_session"
         return output
     try:
-        c = _dated_close(close)
-        b = _dated_close(benchmark_close)
+        c = _dated_close(close, as_of=as_of)
+        b = _dated_close(benchmark_close, as_of=as_of)
     except (TypeError, ValueError, OverflowError):
         output["daily"]["reason"] = "invalid_daily_source_index"
         output["weekly"]["reason"] = "invalid_daily_source_index"
@@ -98,13 +151,16 @@ def observe_rs_highs(
         output["daily"].update(d)
     else:
         output["daily"]["reason"] = "insufficient_history"
+    output["daily"]["recent"] = _recent_high_prints(
+        c, b, sessions, lookback=DAILY_SESSIONS, watch=WATCH_SESSIONS,
+    )
 
     # Select the last 27 completed Friday-anchored trading weeks. Do NOT use
     # resample('W-FRI').last() on partial/missing bars: that silently substitutes
     # Thursday for a missing Friday even when Friday was an open NYSE session.
     end_friday = as_of + timedelta(days=4 - as_of.weekday())
     candidate_fridays = [end_friday - timedelta(weeks=i)
-                         for i in range(WEEKLY_WEEKS + 2)]
+                         for i in range(WEEKLY_WEEKS + WATCH_WEEKS + 2)]
     week_last_sessions = []
     for friday in reversed(candidate_fridays):
         final = last_session_on_or_before(friday)
@@ -115,4 +171,7 @@ def observe_rs_highs(
         output["weekly"].update(w)
     else:
         output["weekly"]["reason"] = "insufficient_completed_weeks"
+    output["weekly"]["recent"] = _recent_high_prints(
+        c, b, week_last_sessions, lookback=WEEKLY_WEEKS, watch=WATCH_WEEKS,
+    )
     return output
