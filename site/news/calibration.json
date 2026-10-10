@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-10-09",
-  "n_events_logged": 1277,
+  "n_events_logged": 1328,
   "n_events_graded": 772,
   "classes": [
     {
@@ -39,7 +39,7 @@
       "hit_5d": 0.6153846153846154,
       "hit_21d": 0.0,
       "avg_rel_5d": 0.006779214285714286,
-      "avg_rel_21d": -0.045195416666666675,
+      "avg_rel_21d": -0.0513735625,
       "wilson_low_5d": 0.355225,
       "wilson_high_5d": 0.822906,
       "verdict": "insufficient"
@@ -47,7 +47,7 @@
     {
       "event_type": "contract_award",
       "direction": "bullish",
-      "n": 3,
+      "n": 4,
       "n_graded": 1,
       "hit_5d": 0.0,
       "hit_21d": null,
@@ -78,7 +78,7 @@
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": 0.00899745238095238,
-      "avg_rel_21d": -0.02440225,
+      "avg_rel_21d": -0.0029369375000000007,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "insufficient"
@@ -86,12 +86,12 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 504,
+      "n": 543,
       "n_graded": 303,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": 0.002216219304018314,
-      "avg_rel_21d": -0.000666948598516868,
+      "avg_rel_21d": -0.0011780425201155438,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -99,7 +99,7 @@
     {
       "event_type": "equity_offering",
       "direction": "bearish",
-      "n": 33,
+      "n": 34,
       "n_graded": 15,
       "hit_5d": 0.3333333333333333,
       "hit_21d": 0.5714285714285714,
@@ -115,9 +115,9 @@
       "n": 36,
       "n_graded": 22,
       "hit_5d": 0.4090909090909091,
-      "hit_21d": 0.4,
+      "hit_21d": 0.4375,
       "avg_rel_5d": -0.002891492424242424,
-      "avg_rel_21d": 0.0021507111111111117,
+      "avg_rel_21d": 0.001332791666666667,
       "wilson_low_5d": 0.232556,
       "wilson_high_5d": 0.612655,
       "verdict": "insufficient"
@@ -125,12 +125,12 @@
     {
       "event_type": "guidance_raise",
       "direction": "bullish",
-      "n": 46,
+      "n": 47,
       "n_graded": 27,
       "hit_5d": 0.7037037037037037,
-      "hit_21d": 0.36363636363636365,
+      "hit_21d": 0.391304347826087,
       "avg_rel_5d": 0.00995288888888889,
-      "avg_rel_21d": -0.008703553030303032,
+      "avg_rel_21d": -0.007723376811594204,
       "wilson_low_5d": 0.51519,
       "wilson_high_5d": 0.841471,
       "verdict": "insufficient"
@@ -138,7 +138,7 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 248,
+      "n": 252,
       "n_graded": 213,
       "hit_5d": 0.5164319248826291,
       "hit_21d": 0.4367816091954023,
@@ -156,7 +156,7 @@
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": -0.003125354700854701,
-      "avg_rel_21d": -0.02155984420289855,
+      "avg_rel_21d": -0.02070376736111111,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -177,7 +177,7 @@
     {
       "event_type": "mna_confirmed",
       "direction": "bullish",
-      "n": 32,
+      "n": 33,
       "n_graded": 16,
       "hit_5d": 0.3125,
       "hit_21d": 0.375,
@@ -203,7 +203,7 @@
     {
       "event_type": "policy_trade_control",
       "direction": "mixed",
-      "n": 92,
+      "n": 94,
       "n_graded": 38,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -242,7 +242,7 @@
     {
       "event_type": "product_launch",
       "direction": "bullish",
-      "n": 22,
+      "n": 23,
       "n_graded": 16,
       "hit_5d": 0.5,
       "hit_21d": 0.2,
@@ -255,12 +255,12 @@
     {
       "event_type": "rating_change",
       "direction": "mixed",
-      "n": 28,
+      "n": 29,
       "n_graded": 17,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": -0.007739294117647059,
-      "avg_rel_21d": 0.012433499999999998,
+      "avg_rel_21d": 0.008977666666666665,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "insufficient"
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1714,
+    "n_sampled": 1730,
     "n_graded": 0,
     "classes": []
   }

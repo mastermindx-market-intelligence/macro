@@ -4420,6 +4420,7 @@ CURATED_EXCLUSIVE = {
     "biocatalyst-serving",
     "flow-surface",
     "biocatalyst-history",
+    "quant-q14-horizon-vrp",  # Q14 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "unrun-subsector-themes",
     "inline-js",
     "unrun-picks-boards",
