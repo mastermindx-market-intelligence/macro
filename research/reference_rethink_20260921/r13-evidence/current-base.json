@@ -1,0 +1,15 @@
+{
+  "scope": "Read-only current-base compatibility receipt; no merge/rebase performed",
+  "source_subject": "4ca095c5eef1d790f42c5ed60445425c96d60281",
+  "origin_main": "6db3af31f12259acd0ea8d6286c0bbbcff6c99ef",
+  "merge_tree": "4cc08d65469b760d7083083ef662262b7a910b2b",
+  "merge_tree_created": true,
+  "material_paths_changed_since_last_examined_main": [],
+  "ci_prior_failure": {
+    "run_id": 35942938084,
+    "contract_delta_blocker": "options-payoff-lab-consumer scope omitted tests/test_options_skew_source_note.py",
+    "fixed_on_main_commit": "8db6896dab2199a4b7fc61a005c225380cac7cd6",
+    "guide_behavior_failure": false
+  },
+  "production_changed": false
+}

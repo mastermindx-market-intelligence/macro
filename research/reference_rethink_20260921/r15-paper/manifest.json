@@ -1,0 +1,37 @@
+{
+  "status": "R15_SEARCH_RECOVERY_DESIGN_CANDIDATE_NOT_PRODUCTION",
+  "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+  "paper_url": "https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-1-0",
+  "repo_subject_before_evidence": "474d714b217ba1220a761178871527cf1d8592bb",
+  "protected_authority_pin": "622d128d64a79c3e4dd45f748b8a8db7ec2e2741",
+  "artboards": [
+    {
+      "id": "244-1",
+      "name": "R14 · Search Answer · EN · Desktop",
+      "screenshot": "search-answer-desktop.png",
+      "screenshot_sha256": "e9eb3edf6046e2399f9871b0ae2927074335c593cdd26044642cccaad68a894e",
+      "jsx_sha256": "06118e084e50fac2fbe99db694cea4733d45fc8455b917074a2932cae1205cfe"
+    },
+    {
+      "id": "26W-1",
+      "name": "R14 · Search Answer · EN · Mobile",
+      "screenshot": "search-answer-mobile.png",
+      "screenshot_sha256": "718a5b43a8d31a74cb07089e5007f97a8b57092e7fe4fe4171c5761e3a3980c8",
+      "jsx_sha256": "85241ef3a3b5876bb9d99773a45985de0b0457372dfe895da4b10fe8ec48812a"
+    },
+    {
+      "id": "2AP-1",
+      "name": "R14 · No Match Recovery · EN · Mobile",
+      "screenshot": "no-match-mobile.png",
+      "screenshot_sha256": "9ef68536325d3f3482bc22b82c04c1d723b02b8533dc660bdf3708c8e02ac760",
+      "jsx_sha256": "0203cf25ec0b150ce6b7ed8cfc93f2912334389f31f1639d04930d8f1857da13"
+    }
+  ],
+  "design_delta": [
+    "Exact search match replaces the landing content with one primary answer rather than a catalog.",
+    "Mobile answer state makes Open explanation the dominant action and keeps related explanations secondary.",
+    "No-match state explains how to recover, proposes likely signal names, and retains browse-all fallback."
+  ],
+  "paper_working_indicators_released": true,
+  "production_claim": false
+}
