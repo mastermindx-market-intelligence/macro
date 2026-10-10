@@ -1235,6 +1235,29 @@ jobs:
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
         run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_catalyst_attach.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q tests/test_entry_radar_live_pack_script.py tests/test_entry_radar_pack_spool.py
 
+  quant-q02-american-exercise:
+    if: ${{ false }}
+    gate: code
+    # Q02 pins American/discrete-dividend FD reference tolerances, PIT dividend filter, refinement classification, unit converters, fail-closed selector, no silent activation
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, pytest, scipy.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/options_american_exercise.py"
+      - "tests/test_options_american_exercise.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q02 American-exercise reference suite
+        run: python -m pytest tests/test_options_american_exercise.py -q
+
   session-anchor-era:
     # Absolute session-calendar anchor, both eras. The confluence 2D/3D + fortnight
     # buckets (era abs-session-2026-08-06, ruling research/SESSION_ANCHOR_ABSOLUTE_
@@ -2509,6 +2532,21 @@ jobs:
         run: pip install pytest pyyaml
       - name: access boundary (Caddyfile public matchers <-> site_access.yml policy)
         run: python -m pytest tests/test_regwall_json_gate.py -q
+
+  quant-q03-share-basis:
+    if: ${{ false }}
+    gate: code
+    # Q03 share-basis adapter: split/reverse/multi-action conversion, conventions, vintage identity, unknown-factor refusal, denominator classes, nonsplit/PSS-AF1 invariance, no silent activation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q03 share-basis adapter tests
+        run: python -m pytest tests/test_offexchange_share_basis.py -q
 
   lens-tap-boundary:
     if: ${{ false }}
@@ -9362,6 +9400,21 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: hk context chips tests
         run: python -m pytest tests/test_hk_context_chips.py -q
+
+  quant-q10-offex-residual:
+    if: ${{ false }}
+    gate: code
+    # Q10 pins the condition-adjusted off-exchange participation residual contract (req1-req6 + no silent activation)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q10 offexchange conditional residual research reference
+        run: python -m pytest tests/test_offexchange_conditional_residual.py -q
 
   hk-robustness-w5:
     if: ${{ false }}
