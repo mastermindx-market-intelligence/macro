@@ -74,11 +74,17 @@ def read_qualified_event_context(
         if not isinstance(issuers, Mapping) or not 1 <= len(issuers) <= 10_000:
             return (), {}
         # Do not synthesize or upgrade an issuer identity on this seam.
-        if any(not isinstance(symbol, str) or not isinstance(row, Mapping)
-               or row.get("supported") is not True
-               or not isinstance(row.get("issuer_id"), str)
-               for symbol, row in issuers.items()):
-            return (), {}
+        # The incumbent issuer registry can also name known unsupported
+        # symbols. They must remain NOT_COVERED, not make every otherwise
+        # qualified direct issuer temporarily unavailable.
+        for symbol, row in issuers.items():
+            if (not isinstance(symbol, str) or not isinstance(row, Mapping)
+                    or type(row.get("supported")) is not bool):
+                return (), {}
+            if (row["supported"] is True and
+                    (not isinstance(row.get("issuer_id"), str)
+                     or not row["issuer_id"].strip())):
+                return (), {}
 
         events = owner.recent_events(now - _LOOKBACK, now, _MAX_EVENTS)
         if not isinstance(events, (list, tuple)) or len(events) > _MAX_EVENTS:
