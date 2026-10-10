@@ -4291,6 +4291,7 @@ CURATED_EXCLUSIVE = {
     # Preserve its concrete imports and dynamic corpus/asset/data inputs.
     # All packing ceilings, commands, data gate and weights remain unchanged.
     "transmission-chains",
+    "quant-q01-arbfree-surface",  # Q01 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "nw-lobe-unfreeze",
     "china-search-universe",
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
