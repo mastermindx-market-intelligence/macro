@@ -19268,6 +19268,29 @@ jobs:
       - name: guard selftest
         run: python scripts/check_ohlc_basis_coherence.py --selftest
 
+  quant-q20-spa-challenger:
+    if: ${{ false }}
+    gate: code
+    # Q20 pins dependence-aware SPA challenger comparison: generation-time trial mapping, common-index stationary bootstrap + block sensitivity, chronological holdout over PBO, monotone trial budget, reused-window disclosure, no promotion/no silent activation
+    # Curated scope: the suite's subprocess import guard otherwise
+    # widens inference to whole-tree fallback roots. The module imports only
+    # stdlib + numpy + scipy, so this is its exact closure.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/challenger_spa_comparison.py"
+      - "tests/test_challenger_spa_comparison.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q20 challenger SPA comparison hermetic suite
+        run: python -m pytest tests/test_challenger_spa_comparison.py -q
+
   unrun-government-revenue-grader:
     # Wave 9G prospective candidate grader — the instrument that is allowed to
     # tell us the Government Revenue lobe has no predictive value.  It ships as
