@@ -20096,8 +20096,8 @@
     "mae_p10_pct": -11.18,
     "n_logged": 440,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 19,
-    "n_skipped_total": 19,
+    "n_skipped_awaiting_t1": 20,
+    "n_skipped_total": 20,
     "board_definition": "cn_prophet_v2_shadow"
    },
    "rows": [
@@ -20120,8 +20120,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 6.37,
+     "erw": "re-derivation on today's bars gives 6.3700 (t1_open) against the published entry 6.3600 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002007.SZ",
@@ -20142,8 +20142,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 13.16,
+     "erw": "re-derivation on today's bars gives 13.1600 (t1_open) against the published entry 13.2450 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002233.SZ",
@@ -20164,8 +20164,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 7.09,
+     "erw": "re-derivation on today's bars gives 7.0900 (t1_open) against the published entry 7.2050 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002608.SZ",
@@ -20186,8 +20186,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 7.47,
+     "erw": "re-derivation on today's bars gives 7.4700 (t1_open) against the published entry 7.5800 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300294.SZ",
@@ -20208,8 +20208,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 14.69,
+     "erw": "re-derivation on today's bars gives 14.6900 (t1_open) against the published entry 14.6750 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300601.SZ",
@@ -20230,8 +20230,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 13.2,
+     "erw": "re-derivation on today's bars gives 13.2000 (t1_open) against the published entry 12.8600 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "600000.SS",
@@ -22616,8 +22616,8 @@
      "grp": null,
      "d": "2026-09-21",
      "e": 123.0,
-     "l": 104.38,
-     "p": -15.1,
+     "l": 70.05,
+     "p": -43.0,
      "x": null,
      "dy": 8,
      "st": "early",
@@ -29790,8 +29790,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 19,
-     "n_skipped_total": 19,
+     "n_skipped_awaiting_t1": 20,
+     "n_skipped_total": 20,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
@@ -31983,15 +31983,15 @@
     "n_skipped_no_price": 0,
     "n_board_days": 21,
     "win_pct": 46.0,
-    "expectancy_pct": -0.22,
+    "expectancy_pct": -0.33,
     "median_pct": -0.73,
     "avg_win_pct": 5.36,
-    "avg_loss_pct": -4.98,
-    "profit_factor": 0.92,
+    "avg_loss_pct": -5.17,
+    "profit_factor": 0.88,
     "ci_lo_pct": 36.3,
     "ci_hi_pct": 55.3,
-    "exp_lo_pct": -1.3,
-    "exp_hi_pct": 0.74,
+    "exp_lo_pct": -1.37,
+    "exp_hi_pct": 0.64,
     "median_hold": 10,
     "capture": -0.22,
     "n_capture": 211,
@@ -31999,11 +31999,11 @@
     "capture_undefined_pct": 27.0,
     "mfe_median_pct": 1.88,
     "mae_median_pct": -4.17,
-    "mae_p10_pct": -10.65,
+    "mae_p10_pct": -10.75,
     "n_logged": 413,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 18,
-    "n_skipped_total": 18,
+    "n_skipped_awaiting_t1": 20,
+    "n_skipped_total": 20,
     "board_definition": "cn_prophet_v3_shadow"
    },
    "rows": [
@@ -32026,8 +32026,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 41.28,
+     "erw": "re-derivation on today's bars gives 41.2800 (t1_open) against the published entry 41.2500 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002608.SZ",
@@ -32048,8 +32048,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 7.47,
+     "erw": "re-derivation on today's bars gives 7.4700 (t1_open) against the published entry 7.5800 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002709.SZ",
@@ -32070,8 +32070,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 32.69,
+     "erw": "re-derivation on today's bars gives 32.6900 (t1_open) against the published entry 34.0900 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300601.SZ",
@@ -32092,8 +32092,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 13.2,
+     "erw": "re-derivation on today's bars gives 13.2000 (t1_open) against the published entry 12.8600 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300896.SZ",
@@ -32114,8 +32114,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 95.18,
+     "erw": "re-derivation on today's bars gives 95.1800 (t1_open) against the published entry 94.5800 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "600000.SS",
@@ -35050,9 +35050,9 @@
      "grp": null,
      "d": "2026-09-16",
      "e": 115.53,
-     "l": 105.73,
-     "p": -8.5,
-     "x": -5.33,
+     "l": 70.96,
+     "p": -38.6,
+     "x": -35.42,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -41102,8 +41102,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 18,
-     "n_skipped_total": 18,
+     "n_skipped_awaiting_t1": 20,
+     "n_skipped_total": 20,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
@@ -41126,15 +41126,15 @@
     "n_skipped_no_price": 0,
     "n_board_days": 21,
     "win_pct": 46.0,
-    "expectancy_pct": -0.22,
+    "expectancy_pct": -0.33,
     "median_pct": -0.73,
     "avg_win_pct": 5.36,
-    "avg_loss_pct": -4.98,
-    "profit_factor": 0.92,
+    "avg_loss_pct": -5.17,
+    "profit_factor": 0.88,
     "ci_lo_pct": 36.3,
     "ci_hi_pct": 55.3,
-    "exp_lo_pct": -1.3,
-    "exp_hi_pct": 0.74,
+    "exp_lo_pct": -1.37,
+    "exp_hi_pct": 0.64,
     "median_hold": 10,
     "capture": -0.22,
     "n_capture": 211,
@@ -41142,11 +41142,11 @@
     "capture_undefined_pct": 27.0,
     "mfe_median_pct": 1.88,
     "mae_median_pct": -4.17,
-    "mae_p10_pct": -10.65,
+    "mae_p10_pct": -10.75,
     "n_logged": 413,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 18,
-    "n_skipped_total": 18,
+    "n_skipped_awaiting_t1": 20,
+    "n_skipped_total": 20,
     "board_definition": "cn_prophet_v4"
    },
    "rows": [
@@ -41169,8 +41169,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 41.28,
+     "erw": "re-derivation on today's bars gives 41.2800 (t1_open) against the published entry 41.2500 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002608.SZ",
@@ -41191,8 +41191,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 7.47,
+     "erw": "re-derivation on today's bars gives 7.4700 (t1_open) against the published entry 7.5800 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002709.SZ",
@@ -41213,8 +41213,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 32.69,
+     "erw": "re-derivation on today's bars gives 32.6900 (t1_open) against the published entry 34.0900 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300601.SZ",
@@ -41235,8 +41235,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 13.2,
+     "erw": "re-derivation on today's bars gives 13.2000 (t1_open) against the published entry 12.8600 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300896.SZ",
@@ -41257,8 +41257,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 95.18,
+     "erw": "re-derivation on today's bars gives 95.1800 (t1_open) against the published entry 94.5800 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "600000.SS",
@@ -44193,9 +44193,9 @@
      "grp": null,
      "d": "2026-09-16",
      "e": 115.53,
-     "l": 105.73,
-     "p": -8.5,
-     "x": -5.33,
+     "l": 70.96,
+     "p": -38.6,
+     "x": -35.42,
      "dy": 10,
      "st": "lag",
      "m": true,
@@ -50245,8 +50245,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 18,
-     "n_skipped_total": 18,
+     "n_skipped_awaiting_t1": 20,
+     "n_skipped_total": 20,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
@@ -50288,8 +50288,8 @@
     "mae_p10_pct": -10.54,
     "n_logged": 366,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 41,
-    "n_skipped_total": 41,
+    "n_skipped_awaiting_t1": 43,
+    "n_skipped_total": 43,
     "board_definition": "cn_prophet_v4_more_actionable"
    },
    "rows": [
@@ -50312,8 +50312,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 6.37,
+     "erw": "re-derivation on today's bars gives 6.3700 (t1_open) against the published entry 6.3600 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "000963.SZ",
@@ -50334,8 +50334,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_open",
-     "er": null,
-     "erw": null
+     "er": 26.8,
+     "erw": "re-derivation on today's bars gives 26.8000 (t1_open) against the published entry 26.7300 (t1_open); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002091.SZ",
@@ -50356,8 +50356,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 7.61,
+     "erw": "re-derivation on today's bars gives 7.6100 (t1_open) against the published entry 7.6850 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002226.SZ",
@@ -50378,8 +50378,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 5.27,
+     "erw": "re-derivation on today's bars gives 5.2700 (t1_open) against the published entry 5.2850 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "002233.SZ",
@@ -50400,8 +50400,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 7.09,
+     "erw": "re-derivation on today's bars gives 7.0900 (t1_open) against the published entry 7.2050 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "003816.SZ",
@@ -50422,8 +50422,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 4.4,
+     "erw": "re-derivation on today's bars gives 4.4000 (t1_open) against the published entry 4.4350 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "300919.SZ",
@@ -50444,8 +50444,8 @@
      "xr": null,
      "ed": "2026-10-09",
      "eb": "t1_hl2",
-     "er": null,
-     "erw": null
+     "er": 37.55,
+     "erw": "re-derivation on today's bars gives 37.5500 (t1_open) against the published entry 38.0300 (t1_hl2); the published entry is point-in-time and is not restated"
     },
     {
      "t": "600037.SS",
@@ -54634,8 +54634,8 @@
      "grp": null,
      "d": "2026-09-18",
      "e": 123.6,
-     "l": 104.38,
-     "p": -15.6,
+     "l": 70.05,
+     "p": -43.3,
      "x": null,
      "dy": 9,
      "st": "early",
@@ -58354,8 +58354,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 41,
-     "n_skipped_total": 41,
+     "n_skipped_awaiting_t1": 43,
+     "n_skipped_total": 43,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
