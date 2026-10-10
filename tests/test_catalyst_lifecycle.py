@@ -542,6 +542,139 @@ def test_rights_rechecked_for_each_recipient_and_remaining_batch_stops_on_withdr
     assert "second@example.com" not in json.dumps(receipts)
 
 
+def test_scoped_consent_revoked_during_live_rights_check_has_no_send():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    original = rights.read_public_rights
+
+    def revoke_during_source_check(revision, at_utc):
+        proof = original(revision, at_utc)
+        if len(rights.rights_calls) == 2:
+            assert store.revoke(UID, "event-123", at_utc.isoformat())
+        return proof
+
+    rights.read_public_rights = revoke_during_source_check
+    receipts = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [r["state"] for r in receipts] == ["SUPPRESSED"]
+    assert len(rights.rights_calls) == 2
+    assert store.current(UID, "event-123").revoked_at_utc
+    assert sender.calls == []
+
+
+def test_new_revision_during_live_rights_check_is_not_emitted_as_current():
+    service, _, _, _, rights, sender = make()
+    verified(service)
+    original = rights.read_public_rights
+
+    def revision_replaced_during_read(revision, at_utc):
+        proof = original(revision, at_utc)
+        if len(rights.rights_calls) == 2:
+            rights.generation = 3
+        return proof
+
+    rights.read_public_rights = revision_replaced_during_read
+    receipts = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [r["state"] for r in receipts] == ["OUTDATED_OR_UNVERIFIED_REVISION"]
+    assert sender.calls == []
+
+
+@pytest.mark.parametrize("wrong_field", ["user_id", "event_id", "email"])
+def test_consent_owner_identity_reply_mismatch_does_not_send(wrong_field):
+    service, _, store, _, _, sender = make()
+    verified(service)
+    original = store.current
+    calls = []
+    wrong = {
+        "user_id": "11223344-5566-4777-8888-123456789abc",
+        "event_id": "other-event",
+        "email": "somebody-else@example.com",
+    }
+
+    def swapped_after_rights(user_id, event_id):
+        row = original(user_id, event_id)
+        calls.append(1)
+        return replace(row, **{wrong_field: wrong[wrong_field]}) if len(calls) == 2 else row
+
+    store.current = swapped_after_rights
+    result = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert result[0]["state"] == "CONSENT_OWNER_PROTOCOL_MISMATCH"
+    assert len(calls) == 2 and sender.calls == []
+    assert wrong[wrong_field] not in json.dumps(result)
+
+
+def test_initial_consent_owner_failure_is_not_misreported_as_smtp_uncertainty():
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    store.current = lambda user_id, event_id: (_ for _ in ()).throw(
+        ConnectionError("db offline, private account details omitted"))
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in rows] == ["CONSENT_OWNER_UNAVAILABLE"]
+    assert len(rights.rights_calls) == 1
+    assert sender.calls == [] and EMAIL not in json.dumps(rows)
+
+
+@pytest.mark.parametrize("point", ["initial", "pre_send"])
+@pytest.mark.parametrize("bad_record", [{}, "invalid-current-record", None])
+def test_malformed_current_consent_port_reply_never_triggers_mail(point, bad_record):
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    original = store.current
+    calls = []
+
+    def malformed(user_id, event_id):
+        calls.append(1)
+        if ((point == "initial" and len(calls) == 1) or
+                (point == "pre_send" and len(calls) == 2)):
+            return bad_record
+        return original(user_id, event_id)
+
+    store.current = malformed
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    expected = "SUPPRESSED" if bad_record is None else "CONSENT_OWNER_PROTOCOL_MISMATCH"
+    assert [row["state"] for row in rows] == [expected]
+    assert sender.calls == []
+
+
+@pytest.mark.parametrize("point", ["initial", "pre_send"])
+def test_invalid_owner_email_does_not_become_effect_unknown(point):
+    service, _, store, _, rights, sender = make()
+    verified(service)
+    original = store.current
+    calls = []
+
+    def malformed(user_id, event_id):
+        row = original(user_id, event_id)
+        calls.append(1)
+        if ((point == "initial" and len(calls) == 1) or
+                (point == "pre_send" and len(calls) == 2)):
+            return replace(row, email="malformed-address")
+        return row
+
+    store.current = malformed
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in rows] == ["CONSENT_OWNER_PROTOCOL_MISMATCH"]
+    assert sender.calls == []
+
+
+def test_consent_owner_fails_after_rights_lookup_without_effect_unknown():
+    service, _, store, _, _, sender = make()
+    verified(service)
+    original = store.current
+    calls = []
+
+    def unavailable_after_rights(user_id, event_id):
+        calls.append(1)
+        if len(calls) == 2:
+            raise ConnectionError("owner down / private address leaked")
+        return original(user_id, event_id)
+
+    store.current = unavailable_after_rights
+    result = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert result[0]["state"] == "CONSENT_OWNER_UNAVAILABLE"
+    assert len(calls) == 2 and sender.calls == []
+    assert EMAIL not in json.dumps(result)
+
+
 def test_fresh_clock_per_recipient_rejects_rights_expiring_inside_batch():
     service, _, store, _, rights, sender = make()
     verified(service)
@@ -586,6 +719,38 @@ def test_send_receipt_idempotency_and_uncertainty_not_claimed_success():
         sender.status = state
         assert service.deliver(update(), now=NOW + timedelta(hours=2))[0]["state"] == label
     assert len(set(x[2] for x in sender.calls)) == 1  # same canonical sender ledger key
+
+
+def test_parked_catalyst_claim_consumes_ledger_key_and_stops_batch():
+    service, _, store, _, _, sender = make()
+    verified(service)
+    base = next(iter(store.records.values()))
+    other = "bb08470c-cc2e-4a3d-92da-65a787661cd5"
+    store.records[(other, "event-123")] = replace(
+        base, user_id=other, email="other@example.com")
+    sender.status = "queued"
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert len(rows) == len(sender.calls) == 1
+    assert rows[0]["state"] == "QUEUED_NOT_SENT"
+    assert sender.calls[0][2] == "catalyst:event-123:2:NVDA:" + UID
+    assert EMAIL not in json.dumps(rows)
+    # DO NOT "retry" the same consumed key. The generic parked drain only
+    # rebuilds welcome/campaign, not the source-revised Catalyst message.
+
+
+@pytest.mark.parametrize("raw_status", ["new_status_not_in_mailer_contract", None, False])
+def test_unknown_sender_result_freezes_for_possible_transport_effect(raw_status):
+    service, _, store, _, _, sender = make()
+    verified(service)
+    base = next(iter(store.records.values()))
+    other = "bb08470c-cc2e-4a3d-92da-65a787661cd5"
+    store.records[(other, "event-123")] = replace(
+        base, user_id=other, email="other@example.com")
+    sender.status = raw_status
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert len(rows) == len(sender.calls) == 1
+    assert rows[0]["state"] == "EFFECT_UNKNOWN"
+    assert sender.calls[0][2] == "catalyst:event-123:2:NVDA:" + UID
 
 
 def test_same_event_different_ticker_delivery_keys_do_not_collide():
