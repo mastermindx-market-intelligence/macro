@@ -1,6 +1,6 @@
 {
-  "ts": "2026-10-10T13:01:17+00:00",
-  "main_sha": "39aaa3a18821af0df663c5aeb529b741967c54a1",
+  "ts": "2026-10-10T18:55:31+00:00",
+  "main_sha": "3b7651313235b367c1d7451516fba1c8a7f58e9d",
   "red_required": [
     {
       "name": "free-content-estate",
@@ -31,12 +31,18 @@
       "conclusion": "failure",
       "status": "completed",
       "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38052553931/job/114214442208"
+    },
+    {
+      "name": "immune",
+      "conclusion": "cancelled",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38052323852/job/114213766050"
     }
   ],
   "green": false,
-  "consecutive_failures": 218,
+  "consecutive_failures": 219,
   "sensed_shas": [
-    "39aaa3a18821af0df663c5aeb529b741967c54a1",
+    "3b7651313235b367c1d7451516fba1c8a7f58e9d",
     "035a9c19ce66aeda59167bec5246d3a66d5a264c"
   ],
   "heartbeat_degraded": false
