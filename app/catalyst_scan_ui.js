@@ -178,6 +178,8 @@
     event.preventDefault();
     if (!scanReceipt) { setStatus("Get a supported scan first."); return; }
     const email = get("catalyst-email").value.trim();
+    const serial = requestSerial;
+    const receipt = scanReceipt;
     if (!get("catalyst-consent").checked || !email) {
       setStatus("Email and explicit update consent are required."); return;
     }
@@ -187,12 +189,14 @@
     try {
       const elapsed = (window.performance?.now?.() ?? Date.now()) - shownAt;
       if (elapsed < 3100) await new Promise((resolve) => setTimeout(resolve, 3100 - elapsed));
+      if (serial !== requestSerial || receipt !== scanReceipt) return;
       const pending = await post("/api/catalyst/optin/request", {
-        email, scan_receipt: scanReceipt, scope: SCOPE, consent_checked: true,
+        email, scan_receipt: receipt, scope: SCOPE, consent_checked: true,
         first_touch: touch,
         honeypot: get("catalyst-honeypot").value,
         form_elapsed_ms: Math.max(3100, Math.round((window.performance?.now?.() ?? Date.now()) - shownAt))
       });
+      if (serial !== requestSerial || receipt !== scanReceipt) return;
       if (pending.status !== "VERIFICATION_REQUIRED" ||
           typeof pending.public_ref !== "string") {
         throw new Error("Verification was not accepted");
