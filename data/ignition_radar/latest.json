@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-09",
+  "as_of": "2026-10-10",
   "data_session": "2026-10-09",
   "state": "off",
   "k_count": 0,
@@ -317,19 +317,19 @@
     "n_qualifying": 43,
     "null": false,
     "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-    "as_of": "2026-10-09"
+    "as_of": "2026-10-10"
   },
   "narrow_top": {
     "basket_id": "XLV",
     "name": "XLV",
     "name_zh": "XLV",
     "score": 0.7682,
-    "streak_sessions": 2
+    "streak_sessions": 1
   },
   "radar_xref": {
     "state": "caution",
     "phase": null
   },
   "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-  "_timing_s": 2.44
+  "_timing_s": 1.99
 }

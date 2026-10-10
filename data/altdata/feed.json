@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-10T03:49:32.591871+00:00",
+  "generated_utc": "2026-10-10T09:36:26.643294+00:00",
   "as_of": "2026-10-10",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -27010,7 +27010,7 @@
         "ticker": "CRWD",
         "net_up_30d": 38,
         "breadth": 0.83,
-        "est_chg_30d": 0.68,
+        "est_chg_30d": 0.09,
         "n_analysts": 46,
         "bull_ratio": 0.91,
         "rising": true,
@@ -27062,17 +27062,6 @@
         "hot": true
       },
       {
-        "ticker": "DDOG",
-        "net_up_30d": 33,
-        "breadth": 0.77,
-        "est_chg_30d": 0.2,
-        "n_analysts": 43,
-        "bull_ratio": 0.88,
-        "rising": true,
-        "revision_delta": 33,
-        "hot": true
-      },
-      {
         "ticker": "MA",
         "net_up_30d": 29,
         "breadth": 0.88,
@@ -27098,7 +27087,7 @@
         "ticker": "CAT",
         "net_up_30d": 26,
         "breadth": 1.0,
-        "est_chg_30d": 0.14,
+        "est_chg_30d": 0.17,
         "n_analysts": 26,
         "bull_ratio": 1.0,
         "rising": true,
@@ -27194,32 +27183,21 @@
         "hot": true
       },
       {
+        "ticker": "DG",
+        "net_up_30d": 23,
+        "breadth": 1.0,
+        "est_chg_30d": 0.41,
+        "n_analysts": 23,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 23,
+        "hot": true
+      },
+      {
         "ticker": "UNP",
         "net_up_30d": 22,
         "breadth": 1.0,
         "est_chg_30d": 0.24,
-        "n_analysts": 22,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 22,
-        "hot": true
-      },
-      {
-        "ticker": "CARR",
-        "net_up_30d": 22,
-        "breadth": 1.0,
-        "est_chg_30d": -0.33,
-        "n_analysts": 22,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 22,
-        "hot": true
-      },
-      {
-        "ticker": "DG",
-        "net_up_30d": 22,
-        "breadth": 1.0,
-        "est_chg_30d": 0.88,
         "n_analysts": 22,
         "bull_ratio": 1.0,
         "rising": true,
@@ -27266,6 +27244,28 @@
         "est_chg_30d": 0.11,
         "n_analysts": 20,
         "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 20,
+        "hot": true
+      },
+      {
+        "ticker": "SHW",
+        "net_up_30d": 20,
+        "breadth": 0.91,
+        "est_chg_30d": -0.29,
+        "n_analysts": 22,
+        "bull_ratio": 0.95,
+        "rising": true,
+        "revision_delta": 20,
+        "hot": true
+      },
+      {
+        "ticker": "TMO",
+        "net_up_30d": 20,
+        "breadth": 0.83,
+        "est_chg_30d": 0.14,
+        "n_analysts": 24,
+        "bull_ratio": 0.92,
         "rising": true,
         "revision_delta": 20,
         "hot": true
@@ -31876,6 +31876,13 @@
         "last_surprise_pct": 12.9
       },
       {
+        "ticker": "SHW",
+        "next_date": "2026-10-27",
+        "days_to": 17,
+        "eps_forecast": 3.66,
+        "last_surprise_pct": 3.9
+      },
+      {
         "ticker": "SOFI",
         "next_date": "2026-10-27",
         "days_to": 17,
@@ -32627,17 +32634,6 @@
         "why": "13f_add: Ascentis Wealth Management, LLC +$3,159,945,245 \u00b7 analyst_upgrade_cluster: net upgrades +38 revision delta \u00b7 congress_buy: 2 member(s) net +4"
       },
       {
-        "ticker": "DDOG",
-        "score": 3,
-        "weighted_score": 1.2,
-        "channel_list": [
-          "analyst_upgrade_cluster",
-          "github_momentum",
-          "insider_mspr"
-        ],
-        "why": "analyst_upgrade_cluster: net upgrades +33 revision delta \u00b7 github_momentum: +0.08% stars \u00b7 insider_mspr: MSPR 100.0"
-      },
-      {
         "ticker": "GPI",
         "score": 2,
         "weighted_score": 1.2,
@@ -32751,6 +32747,16 @@
           "trump"
         ],
         "why": "congress_buy: 2 member(s) net +8 \u00b7 trump: BROADCOM INC"
+      },
+      {
+        "ticker": "BMY",
+        "score": 2,
+        "weighted_score": 0.9,
+        "channel_list": [
+          "clinical_phase3_start",
+          "fda_label_expansion"
+        ],
+        "why": "clinical_phase3_start: 5 new Phase-3, 5 halt(s) \u00b7 fda_label_expansion: CAMZYOS"
       }
     ]
   }

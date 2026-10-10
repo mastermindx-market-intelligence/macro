@@ -1,8 +1,8 @@
 {
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
-  "asof": "2026-10-09",
-  "n_events_logged": 1328,
+  "asof": "2026-10-10",
+  "n_events_logged": 1331,
   "n_events_graded": 772,
   "classes": [
     {
@@ -86,7 +86,7 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 543,
+      "n": 545,
       "n_graded": 303,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -125,7 +125,7 @@
     {
       "event_type": "guidance_raise",
       "direction": "bullish",
-      "n": 47,
+      "n": 48,
       "n_graded": 27,
       "hit_5d": 0.7037037037037037,
       "hit_21d": 0.391304347826087,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1730,
+    "n_sampled": 1750,
     "n_graded": 0,
     "classes": []
   }
