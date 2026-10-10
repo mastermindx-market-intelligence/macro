@@ -589,3 +589,156 @@ def test_obsolete_unsafe_optin_path_not_mounted():
     app.include_router(ci.router)
     client = TestClient(app)
     assert client.post("/api/catalyst/optin", json={"email": "reader@example.com"}).status_code == 404
+
+
+def test_catalyst_ui_is_first_value_with_strict_same_origin_script(monkeypatch):
+    app = FastAPI()
+    app.include_router(ci.router)
+    client = TestClient(app)
+    assert client.get("/api/catalyst/scan-ui.js").status_code == 503
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    page = client.get("/api/catalyst")
+    assert page.status_code == 200
+    assert page.headers["Referrer-Policy"] == "no-referrer"
+    assert "script-src 'self'" in page.headers["Content-Security-Policy"]
+    assert "connect-src 'self'" in page.headers["Content-Security-Policy"]
+    assert "unsafe-inline" not in page.headers["Content-Security-Policy"].split("script-src ")[1].split(";")[0]
+    for marker in ("id='catalyst-results'", "id='catalyst-optin' hidden",
+                   "id='catalyst-verify' hidden", "id='catalyst-consent'",
+                   "id='catalyst-scan-proof'", "/api/catalyst/scan-ui.js",
+                   "<noscript>"):
+        assert marker in page.text
+    assert "name='email'" not in page.text.lower()
+    script = client.get("/api/catalyst/scan-ui.js")
+    assert script.status_code == 200
+    assert script.headers["Cache-Control"] == "private, no-store"
+    assert script.headers["X-Content-Type-Options"] == "nosniff"
+    assert script.headers["content-type"].startswith("text/javascript")
+    assert "catalyst_event_updates/v1" in script.text
+    assert '"/api/catalyst/optin/verify"' in script.text
+
+
+def test_catalyst_server_rendered_supported_proof_only_after_scan(monkeypatch):
+    app = FastAPI()
+    app.include_router(ci.router)
+    client = TestClient(app)
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    good = ci.sanitize_public_scan(packet(), ["NVDA", "ZZZZ"], now_utc=NOW)
+    proof = "unsigned_fixture_sig.fake_signature"
+    monkeypatch.setattr(ci, "public_scan_with_receipt",
+                        lambda tickers, event_id=None: {**good, "scan_receipt": proof})
+    response = client.get("/api/catalyst?tickers=NVDA,ZZZZ")
+    assert response.status_code == 200
+    assert "The fixture records a revised result." in response.text
+    assert "This ticker is not covered" in response.text
+    assert "id='catalyst-scan-proof' value='" + proof + "'" in response.text
+    assert response.text.index("The fixture records a revised result.") < response.text.index("id='catalyst-optin'")
+    assert "<script>" not in response.text
+    assert "reader@example.org" not in response.text
+    # A malformed/unsafe upstream proof is not inserted into an attribute.
+    response = ci.render_first_value({**good, "scan_receipt": "'><script>alert(1)</script>"})
+    assert "id='catalyst-scan-proof' value=''" in response
+    assert "<script>alert(1)</script>" not in response
+
+
+def test_catalyst_ui_node_interactive_flow():
+    """Execute first-party script in an isolated fake DOM: no network or users."""
+    import shutil
+    import subprocess
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node runtime not installed; static UI tests still run")
+    source = Path(__file__).resolve().parents[1] / "app" / "catalyst_scan_ui.js"
+    code = r"""
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const source = fs.readFileSync(process.argv[1], 'utf8');
+class Element {
+  constructor(id='') {
+    this.id=id; this.children=[]; this.listeners={}; this.value='';
+    this.hidden=true; this.checked=false; this.disabled=false; this.textContent='';
+  }
+  addEventListener(name, fn){this.listeners[name]=fn;}
+  replaceChildren(...children){this.children=children;}
+  append(...children){this.children.push(...children);}
+  setAttribute(key,value){this[key]=value;}
+  reset(){}
+  focus(){}
+}
+const names=['catalyst-scan-form','catalyst-results','catalyst-optin',
+'catalyst-verify','catalyst-optin-form','catalyst-verify-form','catalyst-status',
+'catalyst-scan-proof','catalyst-tickers','catalyst-scan-button',
+'catalyst-email','catalyst-consent','catalyst-optin-button',
+'catalyst-honeypot','catalyst-code','catalyst-verify-button'];
+const elements=Object.fromEntries(names.map(n=>[n,new Element(n)]));
+elements['catalyst-tickers'].value='NVDA';
+elements['catalyst-email'].value='person@example.invalid';
+elements['catalyst-consent'].checked=true;
+elements['catalyst-code'].value='123456';
+let tick=0, replaced='', calls=[];
+const window={
+  location:{origin:'https://www.mastermind-x.com',pathname:'/api/catalyst',
+    search:'?utm_source=partner&utm_medium=partner_editor&utm_campaign=catalyst_scan&utm_content=cp_synthetic&email=never%40url.test'},
+  history:{replaceState(a,b,url){replaced=url;}},
+  performance:{now(){tick+=4000;return tick;}}
+};
+const sample={schema:'catalyst.scan/v1',as_of_utc:'2026-10-09T15:00:00Z',
+  event_id:'synthetic-earnings',coverage_note:'Only fixture evidence',
+  scan_receipt:'example.valid_signature',
+  results:[{ticker:'NVDA',status:'SUPPORTED',headline:'Synthetic filing',
+    as_of_utc:'2026-10-09T15:00:00Z',relationship:'DIRECT',
+    correction_state:'CURRENT',what_changed:[{text:'Fixture fact'}],
+    scenarios:[],invalidators:[],
+    sources:[{title:'SEC search fixture',url:'https://www.sec.gov/edgar/search/',
+      published_at_utc:'2026-10-09T14:00:00Z'}],
+    dossier_path:'/stocks/NVDA.html'}]
+};
+async function fetch(path,opts){
+  calls.push({path,body:JSON.parse(opts.body)});
+  if(path==='/api/catalyst/scan')return {ok:true,status:200,json:async()=>sample};
+  if(path==='/api/catalyst/optin/request')return {ok:true,status:202,
+    json:async()=>({status:'VERIFICATION_REQUIRED',public_ref:'opaque_ref_fixture'})};
+  if(path==='/api/catalyst/optin/verify')return {ok:true,status:200,
+    json:async()=>({status:'verified',event_id:'synthetic-earnings'})};
+  throw new Error('unexpected request');
+}
+const document={getElementById:(id)=>elements[id],createElement:(tag)=>new Element(tag)};
+vm.runInNewContext(source,{document,window,fetch,URL,URLSearchParams,setTimeout,console});
+const event={preventDefault(){}};
+async function main(){
+  assert.equal(calls.length,0); // never opt in before first value
+  assert.equal(elements['catalyst-optin'].hidden,true);
+  await elements['catalyst-scan-form'].listeners.submit(event);
+  assert.equal(calls[0].path,'/api/catalyst/scan');
+  assert.deepEqual(calls[0].body.tickers,['NVDA']);
+  assert.equal(elements['catalyst-optin'].hidden,false);
+  assert.equal(elements['catalyst-results'].children.length>0,true);
+  assert.equal(replaced.includes('email'),false);
+  await elements['catalyst-optin-form'].listeners.submit(event);
+  assert.equal(calls[1].path,'/api/catalyst/optin/request');
+  assert.equal(calls[1].body.consent_checked,true);
+  assert.equal(calls[1].body.scope,'catalyst_event_updates/v1');
+  assert.equal(calls[1].body.scan_receipt,'example.valid_signature');
+  assert.equal(calls[1].body.first_touch.utm_source,'partner');
+  assert.equal(calls[1].body.first_touch.utm_medium,'partner_editor');
+  assert.equal(calls[1].body.first_touch.utm_content,'cp_synthetic');
+  assert.equal(JSON.stringify(calls[1].body).includes('never@url.test'),false);
+  assert.equal(elements['catalyst-verify'].hidden,false);
+  await elements['catalyst-verify-form'].listeners.submit(event);
+  assert.equal(calls[2].path,'/api/catalyst/optin/verify');
+  assert.equal(calls[2].body.otp,'123456');
+  assert.equal(calls[2].body.public_ref,'opaque_ref_fixture');
+  assert.equal(elements['catalyst-verify'].hidden,true);
+  assert.equal(elements['catalyst-status'].textContent.includes('verified'),true);
+  assert.equal(replaced.includes('person%40example'),false);
+  console.log('SYNTHETIC_UI_SCAN_OPTIN_VERIFY=PASS');
+}
+main().catch((e)=>{console.error(e.stack);process.exitCode=1});
+"""
+    syntax = subprocess.run([node, "--check", str(source)], capture_output=True, text=True)
+    assert syntax.returncode == 0, syntax.stderr
+    done = subprocess.run([node, "-e", code, str(source)],
+                          capture_output=True, text=True, timeout=10)
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert "SYNTHETIC_UI_SCAN_OPTIN_VERIFY=PASS" in done.stdout
