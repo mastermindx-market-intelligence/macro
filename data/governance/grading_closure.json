@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-10-10T13:34:22.780831+00:00",
+  "generated_at": "2026-10-10T15:19:28.106604+00:00",
   "n_ledgers": 34,
   "n_closed": 26,
   "n_grader_starved": 8,
@@ -14,7 +14,7 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 117958,
+      "n_logged": 117961,
       "n_graded": 202275,
       "last_graded_at": "2026-10-10T13:30:14.387893+00:00",
       "tune_step": "N",
@@ -42,7 +42,7 @@
       "graders": [
         "engine/board_ledger.py"
       ],
-      "n_logged": 1066,
+      "n_logged": 1067,
       "n_graded": 699,
       "last_graded_at": null,
       "tune_step": "N",
@@ -98,7 +98,7 @@
       "graders": [
         "engine/china_standout_track.py"
       ],
-      "n_logged": 5108,
+      "n_logged": 5116,
       "n_graded": 2739,
       "last_graded_at": null,
       "tune_step": "N",

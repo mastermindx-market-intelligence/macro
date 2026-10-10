@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T13:30:21.969369+00:00",
+  "generated_at": "2026-10-10T15:15:26.199852+00:00",
   "grade_horizons": [
     5,
     21,
@@ -3398,10 +3398,10 @@
     }
   },
   "counts": {
-    "n_claims": 117958,
+    "n_claims": 117961,
     "n_grades": 202275,
     "n_placebo": 1286,
-    "n_rejected": 22,
+    "n_rejected": 23,
     "grades_by_fill_convention": {
       "asof_legacy": 2780,
       "next_bar": 199495
@@ -3412,7 +3412,7 @@
       "explicit_unit_v1:calendar_days:US": 252,
       "explicit_unit_v1:trading_days:CN": 4488
     },
-    "n_claims_horizon_unit_declared": 71328,
+    "n_claims_horizon_unit_declared": 71331,
     "n_claims_unstamped_regime": 6673
   },
   "ladder_states": {
@@ -5025,7 +5025,7 @@
       }
     }
   },
-  "ladder_states_at": "2026-10-10T13:32:08.661205+00:00",
+  "ladder_states_at": "2026-10-10T15:17:12.805210+00:00",
   "promotion_readiness": {
     "altdata": {
       "5": {
@@ -7853,5 +7853,5 @@
       }
     }
   },
-  "promotion_readiness_at": "2026-10-10T13:34:20.053276+00:00"
+  "promotion_readiness_at": "2026-10-10T15:19:25.232311+00:00"
 }
