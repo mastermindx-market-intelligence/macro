@@ -1,7 +1,7 @@
 {
   "schema": "market_structure_context.v1",
   "asof": "2026-10-09",
-  "built_at": "2026-10-10T03:59:38.400234+00:00",
+  "built_at": "2026-10-10T09:44:29.048248+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
@@ -6569,16 +6569,16 @@
     ]
   },
   "week_map": {
-    "week_start": "2026-10-05",
-    "week_end": "2026-10-09",
-    "locked_close": 7722.72,
-    "locked_at": "2026-10-02T00:00:00",
-    "band_1sigma_lo": 7587.25,
-    "band_1sigma_hi": 7858.19,
-    "band_2sigma_lo": 7451.78,
-    "band_2sigma_hi": 7993.66,
+    "week_start": "2026-10-12",
+    "week_end": "2026-10-16",
+    "locked_close": 7811.54,
+    "locked_at": "2026-10-09T00:00:00",
+    "band_1sigma_lo": 7680.2,
+    "band_1sigma_hi": 7942.88,
+    "band_2sigma_lo": 7548.86,
+    "band_2sigma_hi": 8074.22,
     "gamma_flip": 7719.338378,
-    "implied_weekly_pct": 1.75,
+    "implied_weekly_pct": 1.68,
     "source": "spx_iv30_scaled_5d"
   },
   "state_changes": {

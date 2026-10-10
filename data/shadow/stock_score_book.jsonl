@@ -7321,3 +7321,5 @@
 {"date": "2026-10-08", "ticker": "TME", "score": 11.0, "percentile": 0.5529411764705883, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-08", "ticker": "GDS", "score": 14.0, "percentile": 0.6676470588235294, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-08", "ticker": "SE", "score": 0.0, "percentile": 0.08235294117647059, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-08", "ticker": "CARG", "score": 0.0, "percentile": 0.08529411764705883, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-08", "ticker": "TPR", "score": 13.0, "percentile": 0.6352941176470588, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}

@@ -1,7 +1,7 @@
 {
   "schema": "rates_command.v1",
   "asof": "2026-10-08",
-  "built": "2026-10-10T05:28:18.653430+00:00",
+  "built": "2026-10-10T11:17:55.023231+00:00",
   "display_only": true,
   "authority": false,
   "board": {
@@ -99,7 +99,7 @@
         "last_alert_summary": "Trump touts $15B steel plant, $200B Korea energy deal, defense shipyard surge — reshoring tailwinds",
         "last_alert_summary_zh": "特朗普力推150亿美元钢厂、2000亿美元韩资能源协议及防务船厂扩张——本土化浪潮"
       },
-      "lever_asof": "2026-10-08",
+      "lever_asof": "2026-10-09",
       "chair": "Kevin Warsh",
       "chair_profile_en": "Warsh's revealed agenda (CFR confirmation-hearing analysis + his June 17 debut): narrow the Fed's mandate, revert to a strict 2% target (abandoning 2020 flexible-average-inflation-targeting), cut reliance on unconventional tools (QE/balance sheet), and abandon forward guidance — potentially making the dot plot obsolete. He withheld his own dot, dropped guidance, issued a ~114-word statement, and c…",
       "chair_profile_zh": "",
@@ -702,8 +702,8 @@
   "regime_outlook": {
     "schema_version": "regime_outlook.v1",
     "scope": "US",
-    "analysis_cutoff": "2026-10-10T05:28:18.645460+00:00",
-    "built_at": "2026-10-10T05:28:18.646237+00:00",
+    "analysis_cutoff": "2026-10-10T11:17:55.015210+00:00",
+    "built_at": "2026-10-10T11:17:55.016070+00:00",
     "mapping_version": "VERDICT_MAPPING_V2",
     "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
     "inputs": {
@@ -714,17 +714,17 @@
       },
       "R": {
         "path": "data/regime/latest.json",
-        "sha256": "3a4199e311aa02f030a69a883fd2eda187b88965f9a927be716b5028ee46d130",
+        "sha256": "51a3528a59346d0d41d763e82de4c31aaf5707afa965a2cfa72a0d31033636e4",
         "read_status": "available"
       },
       "M": {
         "path": "data/market_state/latest.json",
-        "sha256": "73a5c9139f4238b802d68bcf6a612d143c2e015d6f91a175f2e95c41876fc45f",
+        "sha256": "7dccb016f0e6195ec13b3bff3e5510d7aebab803aa04b175f29b8baba712d1b2",
         "read_status": "available"
       },
       "D": {
         "path": "data/dispersion/regime.json",
-        "sha256": "82c2638f98d0fc4d8e7bc42b631c866dc4372b49bbb98a73e633bee226b7e854",
+        "sha256": "dc848c8be9a749c822a0192deef99c7b4f555e663e518eed2c41b5b87de7afde",
         "read_status": "available"
       },
       "L": {
@@ -1342,7 +1342,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/labor_nowcast/read",
-          "sha256": "3a4199e311aa02f030a69a883fd2eda187b88965f9a927be716b5028ee46d130",
+          "sha256": "51a3528a59346d0d41d763e82de4c31aaf5707afa965a2cfa72a0d31033636e4",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-09",
           "precision": "date",
@@ -1379,7 +1379,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/state",
-          "sha256": "3a4199e311aa02f030a69a883fd2eda187b88965f9a927be716b5028ee46d130",
+          "sha256": "51a3528a59346d0d41d763e82de4c31aaf5707afa965a2cfa72a0d31033636e4",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-02",
           "precision": "date",
@@ -1416,7 +1416,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/complacency/breadth_div",
-          "sha256": "3a4199e311aa02f030a69a883fd2eda187b88965f9a927be716b5028ee46d130",
+          "sha256": "51a3528a59346d0d41d763e82de4c31aaf5707afa965a2cfa72a0d31033636e4",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-08",
           "precision": "date",
@@ -1453,7 +1453,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/label",
-          "sha256": "3a4199e311aa02f030a69a883fd2eda187b88965f9a927be716b5028ee46d130",
+          "sha256": "51a3528a59346d0d41d763e82de4c31aaf5707afa965a2cfa72a0d31033636e4",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-09",
           "precision": "date",
@@ -1490,7 +1490,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-          "sha256": "3a4199e311aa02f030a69a883fd2eda187b88965f9a927be716b5028ee46d130",
+          "sha256": "51a3528a59346d0d41d763e82de4c31aaf5707afa965a2cfa72a0d31033636e4",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-09",
           "precision": "date",
@@ -1527,7 +1527,7 @@
         "source": {
           "artifact": "M",
           "pointer": "/components/[key=breadth]/tone",
-          "sha256": "73a5c9139f4238b802d68bcf6a612d143c2e015d6f91a175f2e95c41876fc45f",
+          "sha256": "7dccb016f0e6195ec13b3bff3e5510d7aebab803aa04b175f29b8baba712d1b2",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-08",
           "precision": "date",
@@ -1670,7 +1670,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-          "sha256": "3a4199e311aa02f030a69a883fd2eda187b88965f9a927be716b5028ee46d130",
+          "sha256": "51a3528a59346d0d41d763e82de4c31aaf5707afa965a2cfa72a0d31033636e4",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-09",
           "precision": "date",
@@ -1818,16 +1818,16 @@
         "source": {
           "artifact": "D",
           "pointer": "/state",
-          "sha256": "82c2638f98d0fc4d8e7bc42b631c866dc4372b49bbb98a73e633bee226b7e854",
+          "sha256": "dc848c8be9a749c822a0192deef99c7b4f555e663e518eed2c41b5b87de7afde",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-10-09",
+          "as_of": "2026-10-10",
           "precision": "date",
-          "age_calendar_days": 1,
+          "age_calendar_days": 0,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
           "expected_us_session": "2026-10-09",
-          "session_relation": "same_completed_session",
+          "session_relation": "after_completed_session",
           "reference_period": null
         }
       },
@@ -1855,16 +1855,16 @@
         "source": {
           "artifact": "D",
           "pointer": "/avg_corr",
-          "sha256": "82c2638f98d0fc4d8e7bc42b631c866dc4372b49bbb98a73e633bee226b7e854",
+          "sha256": "dc848c8be9a749c822a0192deef99c7b4f555e663e518eed2c41b5b87de7afde",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-10-09",
+          "as_of": "2026-10-10",
           "precision": "date",
-          "age_calendar_days": 1,
+          "age_calendar_days": 0,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
           "expected_us_session": "2026-10-09",
-          "session_relation": "same_completed_session",
+          "session_relation": "after_completed_session",
           "reference_period": null
         }
       },
@@ -1892,7 +1892,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/trend",
-          "sha256": "3a4199e311aa02f030a69a883fd2eda187b88965f9a927be716b5028ee46d130",
+          "sha256": "51a3528a59346d0d41d763e82de4c31aaf5707afa965a2cfa72a0d31033636e4",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-02",
           "precision": "date",
@@ -1929,7 +1929,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-          "sha256": "3a4199e311aa02f030a69a883fd2eda187b88965f9a927be716b5028ee46d130",
+          "sha256": "51a3528a59346d0d41d763e82de4c31aaf5707afa965a2cfa72a0d31033636e4",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-10-09",
           "precision": "date",
@@ -3107,6 +3107,46 @@
           "owner_verdict": null,
           "status": "partial",
           "as_of": "2026-10-09"
+        }
+      },
+      {
+        "evidence_id": "D.state",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "state": "lean_out"
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-10-09"
+        },
+        "to": {
+          "values": {
+            "state": "lean_out"
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-10-10"
+        }
+      },
+      {
+        "evidence_id": "D.avg_corr",
+        "change_kind": "clock_only",
+        "from": {
+          "values": {
+            "avg_corr": 0.07
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-10-09"
+        },
+        "to": {
+          "values": {
+            "avg_corr": 0.07
+          },
+          "owner_verdict": null,
+          "status": "partial",
+          "as_of": "2026-10-10"
         }
       },
       {

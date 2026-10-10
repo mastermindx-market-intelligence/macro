@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
   "as_of": "2026-10-10",
-  "generated_utc": "2026-10-10T05:31:53Z",
+  "generated_utc": "2026-10-10T11:21:17Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 325,
@@ -2929,7 +2929,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 175,
+        "n_open": 177,
         "n_past_check_by": 33
       },
       "allowed_actions": [
@@ -5051,8 +5051,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 117896,
-        "n_with_falsifier": 1187,
+        "n_claims": 117898,
+        "n_with_falsifier": 1189,
         "falsifier_coverage": "1.0%",
         "blocking_reason": "falsifier coverage 1.0%; not a promotion-grade substrate"
       },
