@@ -20402,6 +20402,12 @@ jobs:
       - "app/biocatalyst.py"
       - "app/catalyst_integration.py"
       - "app/catalyst_scan_ui.js"
+      - "templates/catalyst_scan.html.j2"
+      - "templates/catalyst_scan.js"
+      - "templates/catalyst_scan.css"
+      - "scripts/render_catalyst_scan.py"
+      - "tests/catalyst_scan_browser.js"
+      - "tests/test_catalyst_scan_frontend.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
       - "app/brain_runs.py"
@@ -21123,7 +21129,7 @@ jobs:
           python-version: "3.12"
       - name: install ticker-news test deps
         run: >-
-          pip install pytest pandas pyarrow pyyaml requests fastapi httpx
+          pip install pytest pandas pyarrow pyyaml requests fastapi httpx jinja2
           websockets jsonschema==4.26.0 referencing
       - name: ticker-news qbus kernel — collectors, store, API read plane, deploy contracts
         run: >-
@@ -21158,7 +21164,8 @@ jobs:
           tests/test_catalyst_packet_public.py
           tests/test_catalyst_scan.py
           tests/test_catalyst_lifecycle.py
-          tests/test_catalyst_optin.py -q -rs
+          tests/test_catalyst_optin.py
+          tests/test_catalyst_scan_frontend.py -q -rs
 
   no-client-supplied-identity:
     if: ${{ false }}
