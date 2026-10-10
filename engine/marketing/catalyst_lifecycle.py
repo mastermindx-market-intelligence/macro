@@ -442,6 +442,41 @@ class FunnelService:
         except FunnelGate:
             return False
 
+    @staticmethod
+    def _qualified_roster(rows: Any, event_id: str, limit: int) -> list[ConsentRecord]:
+        """Validate the full existing consent-owner response BEFORE first SMTP.
+
+        A broken service-role RPC must not deliver to some subscribers and then
+        discover its next row has a wrong event, identity or private first-touch.
+        This is a protocol check, never a new roster or contact database.
+        """
+        if not isinstance(rows, list) or len(rows) > limit:
+            raise FunnelGate("DELIVERY_ROSTER_PROTOCOL_MISMATCH")
+        seen: set[str] = set()
+        for row in rows:
+            if not isinstance(row, ConsentRecord):
+                raise FunnelGate("DELIVERY_ROSTER_PROTOCOL_MISMATCH")
+            try:
+                uid = _uuid(row.user_id)
+                normalize_email(row.email)
+                _timestamp(row.verified_at_utc)
+                allowed_touch = first_touch(row.first_touch)
+            except FunnelGate:
+                raise FunnelGate("DELIVERY_ROSTER_PROTOCOL_MISMATCH") from None
+            if (uid in seen or row.user_id != uid or
+                    row.event_id != event_id or row.scope != SCOPE or
+                    not isinstance(row.intent_id, str) or
+                    not 1 <= len(row.intent_id) <= 128 or
+                    not isinstance(row.tickers, tuple) or
+                    not 1 <= len(row.tickers) <= 10 or
+                    any(not isinstance(t, str) or not _TICKER.fullmatch(t)
+                        for t in row.tickers) or
+                    len(set(row.tickers)) != len(row.tickers) or
+                    allowed_touch != row.first_touch):
+                raise FunnelGate("DELIVERY_ROSTER_PROTOCOL_MISMATCH")
+            seen.add(uid)
+        return rows
+
     def _qualified_scan(self, receipt: str, *, now: datetime) -> ScanEvidence:
         """Recheck the current public source through the canonical ScanAuthority.
 
@@ -673,7 +708,9 @@ class FunnelService:
                 raise FunnelGate("OUTDATED_OR_UNVERIFIED_REVISION", 409)
             # Read authoritative public/email rights BEFORE roster retrieval.
             self._require_live_rights(revision, at_utc=self._rights_now(now))
-            subscribers = self.consent.interested(revision.event_id, limit)
+            subscribers = self._qualified_roster(
+                self.consent.interested(revision.event_id, limit),
+                revision.event_id, limit)
         except FunnelGate:
             raise
         except Exception as exc:
