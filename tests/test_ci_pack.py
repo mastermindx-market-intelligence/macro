@@ -4415,6 +4415,7 @@ CURATED_EXCLUSIVE = {
     "unrun-government-revenue-grader",
     "biocatalyst-worker",
     "biocatalyst-serving",
+    "quant-q13-rn-tail-density",  # Q13 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "flow-surface",
     "biocatalyst-history",
     "unrun-subsector-themes",
