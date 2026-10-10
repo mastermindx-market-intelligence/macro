@@ -9409,6 +9409,21 @@ jobs:
       - name: hk context chips tests
         run: python -m pytest tests/test_hk_context_chips.py -q
 
+  quant-q10-offex-residual:
+    if: ${{ false }}
+    gate: code
+    # Q10 pins the condition-adjusted off-exchange participation residual contract (req1-req6 + no silent activation)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q10 offexchange conditional residual research reference
+        run: python -m pytest tests/test_offexchange_conditional_residual.py -q
+
   hk-robustness-w5:
     if: ${{ false }}
     gate: code
