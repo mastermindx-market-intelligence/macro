@@ -738,18 +738,25 @@ class FunnelService:
                             state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
                                      "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
                                      "queued": "QUEUED_NOT_SENT", "failed": "SEND_FAILED",
-                                     "effect_unknown": "EFFECT_UNKNOWN"}.get(raw, "SEND_UNCONFIRMED")
+                                     "effect_unknown": "EFFECT_UNKNOWN"}.get(raw, "EFFECT_UNKNOWN")
+                            # An UNKNOWN sender return may already have crossed
+                            # SMTP. Do not call it a safe failure or retry it. A
+                            # QUEUED mailer claim is *not* automatically resumable
+                            # for Catalyst: the incumbent parked drain rebuilds
+                            # welcome/campaign only, not this event-specific copy.
             except Exception:  # transport could have fired; never call it a safe failure
                 state = "EFFECT_UNKNOWN"
             out.append({"user_ref": analytics_receipt(rec)["user_ref"], "state": state,
                         "event_id": revision.event_id, "generation": str(revision.generation),
                         **first_touch(rec.first_touch)})
-            if state in ("EFFECT_UNKNOWN", "SOURCE_RIGHTS_NOT_CURRENT",
-                         "SOURCE_RIGHTS_UNAVAILABLE", "CONSENT_OWNER_UNAVAILABLE",
-                         "CONSENT_OWNER_PROTOCOL_MISMATCH",
+            if state in ("EFFECT_UNKNOWN", "QUEUED_NOT_SENT",
+                         "SOURCE_RIGHTS_NOT_CURRENT", "SOURCE_RIGHTS_UNAVAILABLE",
+                         "CONSENT_OWNER_UNAVAILABLE", "CONSENT_OWNER_PROTOCOL_MISMATCH",
                          "OUTDATED_OR_UNVERIFIED_REVISION"):
-                # Stop on unknown transport effects; also stop when a shared
-                # consent, source or revision owner becomes untrustworthy.
+                # A queued Catalyst claim has consumed the unique email_log key,
+                # yet marketing_emails.drain_parked cannot rebuild this template.
+                # Do NOT enqueue more unresumable messages or claim delivery.
+                # A sender effect that cannot be proven also freezes the batch.
                 break
         return out
 
