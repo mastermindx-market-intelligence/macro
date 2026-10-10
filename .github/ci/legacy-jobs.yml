@@ -11916,6 +11916,29 @@ jobs:
       - name: identity capture unit tests
         run: python -m pytest tests/test_collect_identity.py -v
 
+  quant-q13-rn-tail-density:
+    if: ${{ false }}
+    gate: code
+    # Q13 pins RN tail-density accounting, reintegration, basis, truncation, perturbation and Q-not-P contracts
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, pytest, scipy.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/options_rn_tail_density.py"
+      - "tests/test_options_rn_tail_density.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: run Q13 RN tail-density contract tests
+        run: python -m pytest tests/test_options_rn_tail_density.py -q
+
   research-vault:
     if: ${{ false }}
     gate: data
