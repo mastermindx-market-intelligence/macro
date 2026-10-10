@@ -321,6 +321,8 @@ class TestSnapshotNeverRaises:
         assert "level" in snap
         assert "glance_en" in snap
         assert "glance_zh" in snap
+        assert "drivers_en" in snap
+        assert "drivers_zh" in snap
         assert "doctrine" in snap
         assert "dealer_sign_passport" in snap
         assert "post_opex_watch" in snap
@@ -351,6 +353,24 @@ class TestSnapshotNeverRaises:
             assert "validated" not in val.lower(), f"{field!r} contains 'validated'"
 
 
+def test_phase_free_driver_read_never_claims_current_cycle_phase():
+    en, zh = opex_risk._make_driver_read(
+        "elevated",
+        3,
+        3,
+        {
+            "pin_proximity": True,
+            "dealer_load_extreme": True,
+            "concentration_hot": True,
+        },
+    )
+    assert "Mid-cycle" not in en
+    assert "Expiration week" not in en
+    assert "dealer books stretched" in en
+    assert "3/3 signals active" in en
+    assert "3/3项信号激活" in zh
+
+
 # ── G. enrich_opex_events ─────────────────────────────────────────────────────
 
 class TestEnrichOpexEvents:
@@ -365,8 +385,10 @@ class TestEnrichOpexEvents:
         return {
             "level": level,
             "level_zh": {"quiet": "平静", "elevated": "偏高", "heavy": "重度"}[level],
-            "glance_en": "Expiration week. Watch, don't chase.",
-            "glance_zh": "到期周。观望，不追涨。",
+            "glance_en": "Mid-cycle. Watch, don't chase.",
+            "glance_zh": "周期中段。观望，不追涨。",
+            "drivers_en": "Dealer load rising — watch for sticky tape. Watch, don't chase. (2/3 signals active)",
+            "drivers_zh": "经销商负载上升 — 注意粘性价格行为。观望，不追涨。（2/3项信号激活）",
             "n_hot": 2,
             "n_applicable": 3,
         }
@@ -378,6 +400,17 @@ class TestEnrichOpexEvents:
         assert opex_ev["opex_risk_level"] == "elevated"
         assert opex_ev["opex_risk_level_zh"] == "偏高"
         assert opex_ev["opex_risk_n_hot"] == 2
+        assert opex_ev["opex_risk_glance_en"].startswith("Dealer load rising")
+        assert "Mid-cycle" not in opex_ev["opex_risk_glance_en"]
+
+    def test_event_glance_falls_back_for_legacy_snapshot_without_driver_fields(self):
+        snap = self._make_snap()
+        snap.pop("drivers_en")
+        snap.pop("drivers_zh")
+        enriched = enrich_opex_events(self._make_events(), snap)
+        opex_ev = next(e for e in enriched if e["type"] == "OPEX")
+        assert opex_ev["opex_risk_glance_en"] == snap["glance_en"]
+        assert opex_ev["opex_risk_glance_zh"] == snap["glance_zh"]
 
     def test_non_opex_rows_unchanged(self):
         events = self._make_events()
