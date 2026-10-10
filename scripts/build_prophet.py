@@ -96,6 +96,7 @@ from engine.prophet_bridge import (
 )
 from engine.prophet_management import compute_management_state
 from engine.prophet_integrity import (
+    temporal_lineage_projection,
     LEDGER_CORRECTIONS_FILENAME,
     PLAN_CORRECTIONS_FILENAME,
     apply_ledger_corrections,
@@ -1181,6 +1182,7 @@ def advance_ledger(
             "signal_date_basis": plan.get("signal_date_basis"),
             "signal_provisional": plan.get("signal_provisional"),
             "source_marker_date": plan.get("source_marker_date"),
+            **temporal_lineage_projection(plan),
             "price_basis_date": plan.get("price_basis_date"),
             # The date the horizon/outcome scan actually ran from — kept on the row so a
             # reader can tell a formation anchor from an entry without opening the plan.
@@ -1725,6 +1727,7 @@ def _degraded_index_entry(
         "signal_date_basis": plan.get("signal_date_basis"),
         "signal_provisional": plan.get("signal_provisional"),
         "source_marker_date": plan.get("source_marker_date"),
+        **temporal_lineage_projection(plan),
         "integrity_status": plan.get("integrity_status"),
         "integrity_reason": plan.get("integrity_reason"),
         # NOTE: `origination_mode` is deliberately NOT stamped here. The
@@ -2388,6 +2391,7 @@ def main() -> None:
             "signal_date_basis": plan.get("signal_date_basis"),
             "signal_provisional": plan.get("signal_provisional"),
             "source_marker_date": plan.get("source_marker_date"),
+            **temporal_lineage_projection(plan),
             "integrity_status": plan.get("integrity_status"),
             "integrity_reason": plan.get("integrity_reason"),
             # The compatibility clock every horizon/outcome/τ read resolves to.

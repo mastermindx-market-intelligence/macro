@@ -327,3 +327,100 @@ def test_legacy_quarantine_loader_rejects_whitespace_id(tmp_path):
 
     with pytest.raises(PlanCorrectionError, match="canonical id"):
         load_ledger_quarantined_ids(path)
+
+
+def _t2_lineage_record():
+    return {
+        "id": "EBAY-BULL-20260914", "asset": "EBAY", "formation_date": "2026-09-14",
+        "signal_date": "2026-09-11", "observed_date": "2026-09-16", "confirmed_date": None,
+        "signal_tier": "T2", "signal_date_basis": "tier_event_date", "signal_provisional": False,
+        "source_marker_date": "2026-09-14", "price_basis_date": "2026-09-16",
+        "entry_date": "2026-09-16", "recorded_at": "2026-09-17",
+        "temporal_lineage": {
+            "schema": "prophet.t2_section7_lineage/v1", "asset": "EBAY", "hold_anchor": "2026-09-14",
+            "hold_anchor_src": "take", "hold_provisional": False,
+            "marker_type": "buy", "marker_date": "2026-09-14", "marker_known_date": "2026-09-16",
+            "tier_event_date": "2026-09-11", "observed_date": "2026-09-16", "price_basis_date": "2026-09-16",
+        },
+    }
+
+
+def test_independent_clock_correction_keeps_historical_id_and_event():
+    from copy import deepcopy
+    row = _t2_lineage_record(); before = deepcopy(row)
+    change = _row(id="annotate", corrects_id=row["id"], field="integrity_reason", old_value=None,
+                  new_value="Fixture audit note", corrected_at="2026-09-17")
+    projection = apply_plan_corrections({row["id"]: row}, [change])
+    assert row == before
+    corrected = projection.plans[row["id"]]
+    assert corrected["signal_date"] == "2026-09-11"
+    assert corrected["formation_date"] == "2026-09-14"
+    assert corrected["temporal_lineage"] == before["temporal_lineage"]
+
+
+@pytest.mark.parametrize("case", [
+    "flag_only", "unknown_schema", "extra_field", "missing_marker", "wrong_hold", "provisional_hold",
+    "future_marker", "future_event", "observed_mismatch", "entry_mismatch", "recorded_before_price",
+    "wrong_family", "string_provisional", "event_corrected", "formation_corrected", "false_confirmation",
+])
+def test_independent_clock_invalid_lineage_rejected_even_without_correction(case):
+    row = _t2_lineage_record(); lineage = row["temporal_lineage"]
+    if case == "flag_only": row["temporal_lineage"] = True
+    elif case == "unknown_schema": lineage["schema"] = "not-recognized"
+    elif case == "extra_field": lineage["trusted"] = True
+    elif case == "missing_marker": lineage.pop("marker_known_date")
+    elif case == "wrong_hold": lineage["hold_anchor_src"] = "cross"
+    elif case == "provisional_hold": lineage["hold_provisional"] = True
+    elif case == "future_marker": lineage["marker_known_date"] = "2026-09-18"
+    elif case == "future_event": lineage["tier_event_date"] = "2026-09-18"
+    elif case == "observed_mismatch": row["observed_date"] = "2026-09-15"
+    elif case == "entry_mismatch": row["entry_date"] = "2026-09-15"
+    elif case == "recorded_before_price": row["recorded_at"] = "2026-09-15"
+    elif case == "wrong_family": row["signal_tier"] = "T1"
+    elif case == "string_provisional": row["signal_provisional"] = "false"
+    elif case == "event_corrected": row["signal_date"] = "2026-09-10"
+    elif case == "formation_corrected": row["formation_date"] = "2026-09-15"
+    else: row["confirmed_date"] = "2026-09-16"
+    with pytest.raises(PlanCorrectionError, match="lineage"):
+        apply_plan_corrections({row["id"]: row}, [])
+
+
+def test_independent_clock_cannot_be_added_by_correction_to_legacy_record():
+    row = _t2_lineage_record()
+    evidence = row.pop("temporal_lineage")
+    with pytest.raises(PlanCorrectionError, match="not correctable"):
+        apply_plan_corrections({row["id"]: row}, [_row(
+            corrects_id=row["id"], field="temporal_lineage", old_value=None, new_value=evidence)])
+    with pytest.raises(PlanCorrectionError, match="formation_date postdates signal_date"):
+        apply_plan_corrections({row["id"]: row}, [_row(
+            corrects_id=row["id"], field="integrity_reason", old_value=None, new_value="Legacy retains strict relation")])
+
+
+def test_independent_clock_correction_cannot_move_bound_event():
+    row = _t2_lineage_record()
+    with pytest.raises(PlanCorrectionError, match="lineage"):
+        apply_plan_corrections({row["id"]: row}, [_row(
+            corrects_id=row["id"], field="signal_date", old_value="2026-09-11", new_value="2026-09-10")])
+
+
+@pytest.mark.parametrize("mutation", ["flag", "asset", "weekend", "bool", "compact_date", "null"])
+def test_independent_clock_ledger_reader_enforces_same_raw_evidence(mutation):
+    from engine.prophet_integrity import apply_ledger_corrections
+    row = _t2_lineage_record()
+    if mutation == "flag": row["temporal_lineage"] = "independent"
+    elif mutation == "asset": row["asset"] = "PG"
+    elif mutation == "weekend": row["temporal_lineage"]["marker_known_date"] = "2026-09-13"
+    elif mutation == "bool": row["temporal_lineage"]["marker_known_date"] = True
+    elif mutation == "compact_date": row["temporal_lineage"]["marker_known_date"] = "20260916"
+    else: row["temporal_lineage"] = None
+    with pytest.raises(PlanCorrectionError, match="lineage"):
+        apply_ledger_corrections([row], [])
+
+
+def test_independent_clock_projection_preserves_optional_shape_without_aliasing():
+    from engine.prophet_integrity import temporal_lineage_projection
+    row = _t2_lineage_record()
+    projected = temporal_lineage_projection(row)
+    projected["temporal_lineage"]["asset"] = "CHANGED"
+    assert row["temporal_lineage"]["asset"] == "EBAY"
+    assert temporal_lineage_projection({"id": "legacy"}) == {}
