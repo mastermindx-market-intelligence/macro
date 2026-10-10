@@ -9928,3 +9928,4 @@
 {"id":"ob-2026-10-09-fae4b6e0c6","from":"posting","to":"posted","at":"2026-10-10T01:39:33Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ac99755bba9419ccbe841c4","external_url":null,"at":"2026-10-10T01:39:29Z","booked_at":"2026-10-10T01:45:29Z"}}
 {"id":"ob-2026-10-09-26956447fe","from":"approved","to":"posting","at":"2026-10-10T01:39:33Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-09-26956447fe","from":"posting","to":"posted","at":"2026-10-10T01:39:34Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ac99756ed92ed8fa5b31e3c","external_url":null,"at":"2026-10-10T01:39:29Z","booked_at":"2026-10-10T01:55:29Z"}}
+{"id":"ob-2026-10-08-c519cfcfb1","from":"queued","to":"quarantined","at":"2026-10-10T06:03:42Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
