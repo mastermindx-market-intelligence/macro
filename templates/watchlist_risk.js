@@ -2333,8 +2333,12 @@
   function loadData() {
     if (DATA) return Promise.resolve(DATA);
     if (DATA_LOADING) return DATA_LOADING;
-    DATA_LOADING = fetch('factor_betas.json').then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) { DATA = j; return j; }).catch(function () { return null; });
+    // A failed read is unavailable for this update, not for the whole session.
+    // Keep concurrent consumers coalesced and retry only on a later caller.
+    DATA_LOADING = Promise.resolve().then(function () { return fetch('factor_betas.json'); })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { DATA = j; return j; }).catch(function () { return null; })
+      .then(function (j) { DATA_LOADING = null; return j; });
     return DATA_LOADING;
   }
 

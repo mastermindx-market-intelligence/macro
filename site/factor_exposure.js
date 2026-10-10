@@ -89,10 +89,13 @@
   function load() {
     if (DATA) return Promise.resolve(DATA);
     if (LOADING) return LOADING;
-    LOADING = fetch('factor_betas.json')
+    // Keep only an in-flight request here; a settled outage must be retryable
+    // on the next normal update. DATA remains the successful session cache.
+    LOADING = Promise.resolve().then(function () { return fetch('factor_betas.json'); })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) { DATA = j; return j; })
-      .catch(function () { return null; });
+      .catch(function () { return null; })
+      .then(function (j) { LOADING = null; return j; });
     return LOADING;
   }
 
