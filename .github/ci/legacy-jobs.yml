@@ -400,6 +400,29 @@ jobs:
       - name: annotations must start the line (bare print, never a logger)
         run: python -m pytest tests/test_gh_annotation_line_start.py -q
 
+  quant-q01-arbfree-surface:
+    if: ${{ false }}
+    gate: code
+    # Q01 bid/ask-aware arbitrage-constrained surface reference: req1-req6 invariants + no-silent-activation contract
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, scipy.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/options_arbfree_surface.py"
+      - "tests/test_options_arbfree_surface.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q01 arbitrage-constrained surface hermetic suite
+        run: python -m pytest tests/test_options_arbfree_surface.py -q
+
   am-edition-producer:
     if: ${{ false }}
     gate: code
