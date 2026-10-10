@@ -3448,6 +3448,8 @@ jobs:
           tests/test_gd4a_cnhk_ledger_repair.py
           tests/test_risk_radar_dlg_country_wiring.py
           tests/test_risk_radar_dlg_partial.py
+          tests/test_pullback_depth_projection.py
+          tests/test_risk_radar_pullback_depth_template.py
           tests/test_risk_state_live_copy_sync.py
           tests/test_build_china_risk_state.py
           tests/test_china_connect_leaderboard_render.py

@@ -1,16 +1,11 @@
 """Synthetic arithmetic contracts; not evidence of forecasting skill."""
-import importlib
 from math import inf, nan
 
 import pytest
 
+from lib.pullback_depth_projection import project_total_drawdown as project
 
-def project(*args):
-    try:
-        module = importlib.import_module("lib.pullback_depth_projection")
-    except ModuleNotFoundError as exc:
-        pytest.fail(f"depth projection implementation is absent: {exc}")
-    return module.project_total_drawdown(*args)
+
 
 
 def test_paper_example_compounds_from_current_price():
