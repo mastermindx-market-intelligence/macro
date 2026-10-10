@@ -4419,6 +4419,7 @@ CURATED_EXCLUSIVE = {
     "biocatalyst-history",
     "unrun-subsector-themes",
     "inline-js",
+    "quant-q15-noise-robust-rv",  # Q15 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "unrun-picks-boards",
     "intelligence-registry",
     # 2026-08-14 wave 2: the manifest grew 180→193 jobs and the new fallback
