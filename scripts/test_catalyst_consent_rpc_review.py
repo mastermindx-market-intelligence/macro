@@ -16,6 +16,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import sys
@@ -216,6 +217,88 @@ def _verify(db: TestPostgres) -> None:
                               _quote(EVENT) + ",10)")) == []
 
 
+def _verify_concurrent_unsubscribe(db: TestPostgres) -> None:
+    """Exercise READ COMMITTED races against incumbent shared suppression writes.
+
+    The local socket-only fixture intentionally holds one transaction open
+    while the other tries to confirm. No production clients or transports.
+    """
+    def quote(value: str) -> str:
+        return _quote(value)
+
+    def pending(uid: str, nonce: str) -> str:
+        db.sql("insert into auth.users values (" + quote(uid) + "::uuid," +
+               quote(EMAIL) + ",pg_catalog.now()-interval '1 minute')")
+        now = datetime.now(timezone.utc)
+        signed, tag, expiry = _new_intent(now, nonce, ["NVDA"])
+        db.sql("select public.catalyst_consent_begin(" +
+               ",".join(map(quote, (signed, tag, expiry))) + ")")
+        return ("select public.catalyst_consent_confirm(" +
+                quote(uid) + "::uuid," + quote(EVENT) + "," + quote(SCOPE) +
+                ",ARRAY['NVDA']::text[]," + quote(nonce) + "," +
+                quote(datetime.now(timezone.utc).isoformat()) + ",'{}'::jsonb)")
+
+    def run_parallel(command: str, competing: str, *, expected_error: str | None) -> None:
+        primary = subprocess.Popen(
+            db.args + ["-c", command], env=db.env, text=True,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            # Both transactions use 2s sleep in the same command AFTER their
+            # first statement, allowing a conflicting lock attempt.
+            time.sleep(0.3)
+            secondary = subprocess.run(db.args + ["-c", competing], env=db.env,
+                                       text=True, capture_output=True, timeout=15)
+            stdout, stderr = primary.communicate(timeout=15)
+            assert primary.returncode == 0, ("primary failed", stderr[-1200:])
+            if expected_error:
+                assert secondary.returncode != 0 and expected_error in secondary.stderr, (
+                    "expected denial", secondary.stderr[-1200:])
+            else:
+                assert secondary.returncode == 0, ("secondary failed", secondary.stderr[-1200:])
+        finally:
+            if primary.poll() is None:
+                primary.kill()
+                primary.communicate(timeout=5)
+
+    # Suppression takes email lock first; confirm MUST NOT see an unsuppressed
+    # address and create a viable event grant while unsubscribe is pending.
+    user_one = "ee773b8c-0f34-4717-bc46-f515e8193370"
+    sql_one = pending(user_one, "synthetic_race_a_nonce_abcdefghijklmnop")
+    run_parallel(
+        "begin; insert into public.email_suppression values (" +
+        quote(EMAIL) + ",'unsubscribe'); select pg_sleep(2); commit;",
+        sql_one, expected_error="CONSENT_ADDRESS_SUPPRESSED")
+    assert db.sql("select count(*) from public.catalyst_consent_grants where user_id=" +
+                  quote(user_one) + "::uuid") == "0"
+    db.sql("delete from public.email_suppression")
+
+    # Confirm takes email/user locks first; the unsubscribe waits and must
+    # permanently revoke the newly created grant when it gets the lock.
+    user_two = "eb104742-96ea-4ad8-a2a1-ac6598510012"
+    sql_two = pending(user_two, "synthetic_race_b_nonce_abcdefghijklmnop")
+    run_parallel(
+        "begin; " + sql_two + "; select pg_sleep(2); commit;",
+        "insert into public.email_suppression values (" +
+        quote(EMAIL) + ",'unsubscribe')", expected_error=None)
+    assert db.sql("select count(*) from public.catalyst_consent_grants where user_id=" +
+                  quote(user_two) + "::uuid and revoked_at_utc is not null") == "1"
+    db.sql("delete from public.email_suppression")
+    assert db.sql("select count(*) from public.catalyst_consent_grants where user_id=" +
+                  quote(user_two) + "::uuid and revoked_at_utc is null") == "0"
+
+    # User preference takes user lock first; pending confirmation must wait
+    # and then refuse despite already having a signed pending intent.
+    user_three = "df268bb2-d13f-467b-a64b-6609db5ca17a"
+    sql_three = pending(user_three, "synthetic_race_c_nonce_abcdefghijklmnop")
+    run_parallel(
+        "begin; insert into public.email_prefs values (" + quote(user_three) +
+        "::uuid,true); select pg_sleep(2); commit;",
+        sql_three, expected_error="CONSENT_ADDRESS_SUPPRESSED")
+    assert db.sql("select count(*) from public.catalyst_consent_grants where user_id=" +
+                  quote(user_three) + "::uuid") == "0"
+    print("LOCAL_CONCURRENT_UNSUBSCRIBE_LOCK_ORDER=PASS")
+
+
 def main() -> None:
     required = ("initdb", "pg_ctl", "psql")
     if any(not shutil.which(exe) for exe in required):
@@ -228,6 +311,7 @@ def main() -> None:
         try:
             db.start()
             _verify(db)
+            _verify_concurrent_unsubscribe(db)
         finally:
             db.stop()
     print("LOCAL_POSTGRES_CONSENT_RPC_V2=PASS")
