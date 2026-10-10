@@ -1,0 +1,1057 @@
+{
+  "candidate_contract_sha256": "ea8c3d3da6b3d064563f64e3f78b6e4590530fc51bbe92535cf2cce7e1c2bdef",
+  "candidate_manifest_sha256": "2ec4ad61150efa1ad01b10137ed3d1a0070ba6412770edc2f4e79a098945eec5",
+  "check_count": 86,
+  "checks": [
+    {
+      "details": {
+        "families": {
+          "contract": 44,
+          "custody": 1,
+          "empirical_parity": 5,
+          "ledger": 22,
+          "retention": 32
+        },
+        "stdout": "china_prices: no data for 510300.SS\nchina_prices: no data for 510300.SS\n{\"status\": \"PASS\", \"tests\": 104, \"families\": {\"contract\": 44, \"retention\": 32, \"ledger\": 22, \"empirical_parity\": 5, \"custody\": 1}, \"present_witnesses_checked\": 1332}",
+        "test_count": 104
+      },
+      "family": "producer_reproduction",
+      "name": "sealed_producer_104_checks_reproduced",
+      "passed": true
+    },
+    {
+      "details": {
+        "sha256": "9cc6b3c39a93487314f49b8117003f9d06c185322fb8685c8d365d16e4a405ce"
+      },
+      "family": "producer_reproduction",
+      "name": "sealed_producer_result_byte_identity",
+      "passed": true
+    },
+    {
+      "details": {
+        "sha256": "1c53a249606c1c8b8854474c5e670c2ae0e5b457e00229b0822fa5ae59e6fea3"
+      },
+      "family": "producer_reproduction",
+      "name": "sealed_producer_fixture_byte_identity",
+      "passed": true
+    },
+    {
+      "details": {
+        "accounting": "Declared consistent price basis per instrument; total return, original decision knowability, costs and actual execution need separate evidence.",
+        "benchmark_return_pct": 10.000000000000009,
+        "calendar_id": "eb3f1c8023305c79f8214128df45d4020f54705093c975842a437086b023aec1",
+        "entry_anchor_at": "2026-09-16T01:30:00+00:00",
+        "excess_pp": 10.999999999999988,
+        "execution_status": "MARK_ONLY",
+        "exit_anchor_at": "2026-09-29T07:00:00+00:00",
+        "status": "ALIGNED_MARK_DIAGNOSTIC",
+        "stock_return_pct": 20.999999999999996
+      },
+      "family": "interface",
+      "name": "independent_distinct_row_field_positive_arithmetic",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "interface",
+      "name": "serialized_valid_marks_revalidate",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "interface",
+      "name": "at_entry_publication_and_at_source_grading_boundaries",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "SOURCE_PRECEDES_FINALIZED_BAR"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "SOURCE_PRECEDES_FINALIZED_BAR"
+      },
+      "family": "interface",
+      "finding": "V1.1",
+      "name": "V1.1 future finalized exit with earlier availability",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "ENTRY_CLOCK_BINDING_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "ENTRY_CLOCK_BINDING_MISMATCH"
+      },
+      "family": "interface",
+      "finding": "V1.2",
+      "name": "V1.2 unrelated later free entry clock",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "SESSION_INVALID"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "SESSION_INVALID"
+      },
+      "family": "interface",
+      "finding": "V1.3",
+      "name": "V1.3 impossible calendar date",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "FUTURE_ANCHOR_AT_GRADING"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "FUTURE_ANCHOR_AT_GRADING"
+      },
+      "family": "interface",
+      "name": "honestly late exit still cannot grade before exit anchor",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "PUBLICATION_AFTER_ENTRY_ANCHOR"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "PUBLICATION_AFTER_ENTRY_ANCHOR"
+      },
+      "family": "interface",
+      "name": "late publication cannot omit the clock binding",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "FUTURE_SOURCE_AT_GRADING"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "FUTURE_SOURCE_AT_GRADING"
+      },
+      "family": "interface",
+      "name": "grading just before source availability",
+      "passed": true
+    },
+    {
+      "details": "8ea60cd6bb70832f89002cd7f87e7bd0069eec7ff6a040b2d2a864e5fc359e1c",
+      "family": "interface",
+      "name": "early_interface_source_payload_identity",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "SOURCE_PRECEDES_FINALIZED_BAR"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "SOURCE_PRECEDES_FINALIZED_BAR"
+      },
+      "family": "interface",
+      "finding": "V-R1",
+      "name": "V-R1 unselected future finalized row in whole blob",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "SOURCE_PRECEDES_FINALIZED_BAR"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "SOURCE_PRECEDES_FINALIZED_BAR"
+      },
+      "family": "interface",
+      "name": "whole-blob availability is invariant to row order",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "interface",
+      "name": "source_available_at_final_close_is_admissible",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "SOURCE_PRECEDES_FINALIZED_BAR"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "SOURCE_PRECEDES_FINALIZED_BAR"
+      },
+      "family": "interface",
+      "name": "whole-blob availability one microsecond before finalized close",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "interface",
+      "name": "independently_sealed_original_and_price_basis_correction",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "EVENT_HASH_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "EVENT_HASH_MISMATCH"
+      },
+      "family": "interface",
+      "finding": "V2.1",
+      "name": "V2.1 damaged stored original before exact replay",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "EVENT_HASH_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "EVENT_HASH_MISMATCH"
+      },
+      "family": "interface",
+      "finding": "V2.2",
+      "name": "V2.2 damaged stored original before correction target lookup",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "ORIGINAL_ENTRY_IMMUTABLE"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "ORIGINAL_ENTRY_IMMUTABLE"
+      },
+      "family": "interface",
+      "finding": "V2.3",
+      "name": "V2.3 changed entry session does not create another original",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "CORRECTION_NOT_AFTER_ORIGINAL"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "CORRECTION_NOT_AFTER_ORIGINAL"
+      },
+      "family": "interface",
+      "finding": "V-R2",
+      "name": "V-R2 exact retained equal-time correction",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "CORRECTION_NOT_AFTER_ORIGINAL"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "CORRECTION_NOT_AFTER_ORIGINAL"
+      },
+      "family": "interface",
+      "name": "correction boundary equal time expressed in China timezone",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "CORRECTION_NOT_AFTER_ORIGINAL"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "CORRECTION_NOT_AFTER_ORIGINAL"
+      },
+      "family": "interface",
+      "name": "correction boundary earlier than original",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "CORRECTION_IDENTITY_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "CORRECTION_IDENTITY_MISMATCH"
+      },
+      "family": "interface",
+      "name": "correction boundary changed entry session",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "CORRECTION_REASON_UNAVAILABLE"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "CORRECTION_REASON_UNAVAILABLE"
+      },
+      "family": "interface",
+      "name": "correction boundary blank reason",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "CORRECTION_TARGET_UNAVAILABLE"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "CORRECTION_TARGET_UNAVAILABLE"
+      },
+      "family": "interface",
+      "name": "correction boundary correction target is another correction",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "interface",
+      "name": "strictly_later_one_microsecond_correction_accepted",
+      "passed": true
+    },
+    {
+      "details": {
+        "premise": "No current-view precedence or total event-time ordering is certified."
+      },
+      "family": "scope",
+      "name": "clock_rule_is_later_than_original_not_global_correction_order",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "EVENT_HASH_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "EVENT_HASH_MISMATCH"
+      },
+      "family": "interface",
+      "name": "all-existing-ledger validation before idempotence: later unrelated damaged row",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "EVENT_INVALID"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "EVENT_INVALID"
+      },
+      "family": "interface",
+      "name": "all-existing-ledger validation before idempotence: later nonobject",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "EVENT_KIND_UNSUPPORTED"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "EVENT_KIND_UNSUPPORTED"
+      },
+      "family": "interface",
+      "name": "all-existing-ledger validation before idempotence: later unknown event kind",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "ORIGINAL_ENTRY_IMMUTABLE"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "ORIGINAL_ENTRY_IMMUTABLE"
+      },
+      "family": "interface",
+      "name": "all-existing-ledger validation before idempotence: later second original with shifted session",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "LEDGER_DUPLICATE_EVENT_ID"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "LEDGER_DUPLICATE_EVENT_ID"
+      },
+      "family": "interface",
+      "name": "all-existing-ledger validation before idempotence: later duplicated authentic event",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "EVENT_HASH_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "EVENT_HASH_MISMATCH"
+      },
+      "family": "interface",
+      "name": "all-existing correction validation before unrelated append",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "interface",
+      "name": "caller_inputs_unmodified_after_refused_and_admitted_appends",
+      "passed": true
+    },
+    {
+      "details": {
+        "premise": "Rehashing an entirely replaced history cannot be detected without the incumbent store's trusted original identity/custody."
+      },
+      "family": "scope",
+      "name": "self_consistent_unanchored_ledger_requires_external_custody",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "OPEN_OUTSIDE_RANGE"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "OPEN_OUTSIDE_RANGE"
+      },
+      "family": "interface",
+      "finding": "V3.1",
+      "name": "V3.1 retained out-of-range observation cannot become opening mark",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "MARK_SOURCE_BINDING_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "interface",
+      "finding": "V3.2",
+      "name": "V3.2 altered mark price with unchanged row/source identity",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "MARK_SOURCE_BINDING_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "interface",
+      "name": "serialized mark binding: bar_row_sha256",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "MARK_SOURCE_BINDING_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "interface",
+      "name": "serialized mark binding: calendar_id",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "MARK_SOURCE_BINDING_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "interface",
+      "name": "serialized mark binding: basis_id",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "MARK_SOURCE_BINDING_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "interface",
+      "name": "serialized mark binding: price",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "MARK_SOURCE_BINDING_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "interface",
+      "name": "changing anchor label does not reuse an open as close",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "MARK_SOURCE_BINDING_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "interface",
+      "name": "changing session does not reuse another row's price",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "SUPPLIED_BAR_SOURCE_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "SUPPLIED_BAR_SOURCE_MISMATCH"
+      },
+      "family": "interface",
+      "name": "supplied bar cannot replace exact source row",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "SOURCE_BYTES_HASH_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "SOURCE_BYTES_HASH_MISMATCH"
+      },
+      "family": "interface",
+      "name": "source bytes substituted beneath valid hash",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "SOURCE_BYTES_UNAVAILABLE"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "SOURCE_BYTES_UNAVAILABLE"
+      },
+      "family": "interface",
+      "name": "valid-looking source digest without bytes",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "MARK_SOURCE_BINDING_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "interface",
+      "name": "adjustment metadata cannot float free of source",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "SOURCE_DUPLICATE_SESSION"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "SOURCE_DUPLICATE_SESSION"
+      },
+      "family": "interface",
+      "name": "duplicate source row cannot win by order",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "SOURCE_DUPLICATE_JSON_KEY"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "SOURCE_DUPLICATE_JSON_KEY"
+      },
+      "family": "interface",
+      "name": "duplicate JSON field cannot win by order",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "MARK_SOURCE_BINDING_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "MARK_SOURCE_BINDING_MISMATCH"
+      },
+      "family": "interface",
+      "name": "different calendar receipt invalidates old serialized mark",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "CALENDAR_SESSION_CLOCK_MISMATCH"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "CALENDAR_SESSION_CLOCK_MISMATCH"
+      },
+      "family": "interface",
+      "name": "calendar cannot bind an anchor to an unrelated date",
+      "passed": true
+    },
+    {
+      "details": {
+        "expected": [
+          "EXECUTION_RECEIPT_NOT_IMPLEMENTED"
+        ],
+        "input_note": null,
+        "outcome": "REFUSED",
+        "reason": "EXECUTION_RECEIPT_NOT_IMPLEMENTED"
+      },
+      "family": "interface",
+      "name": "custody event cannot bypass market-source admission",
+      "passed": true
+    },
+    {
+      "details": {
+        "close_diagnostic": 4.85,
+        "opening_admission": "OPEN_INVALID",
+        "optional_value_repr": "'4.8'",
+        "raw_value_preserved": true,
+        "required_projection_equal": true,
+        "shared_refusal": "OPEN_INVALID",
+        "value_type": "str"
+      },
+      "family": "retention",
+      "finding": "V4.1",
+      "name": "retention-to-admission compatibility: numeric string open",
+      "passed": true
+    },
+    {
+      "details": {
+        "close_diagnostic": 4.85,
+        "opening_admission": "OPEN_INVALID",
+        "optional_value_repr": "'vendor-missing'",
+        "raw_value_preserved": true,
+        "required_projection_equal": true,
+        "shared_refusal": "OPEN_INVALID",
+        "value_type": "str"
+      },
+      "family": "retention",
+      "finding": "V4.2",
+      "name": "retention-to-admission compatibility: vendor token open",
+      "passed": true
+    },
+    {
+      "details": {
+        "close_diagnostic": 4.85,
+        "opening_admission": "RANGE_INVALID",
+        "optional_value_repr": "'vendor-missing'",
+        "raw_value_preserved": true,
+        "required_projection_equal": true,
+        "shared_refusal": "RANGE_INVALID",
+        "value_type": "str"
+      },
+      "family": "retention",
+      "finding": "V4.3",
+      "name": "retention-to-admission compatibility: vendor token high",
+      "passed": true
+    },
+    {
+      "details": {
+        "close_diagnostic": 4.85,
+        "opening_admission": "OPEN_INVALID",
+        "optional_value_repr": "True",
+        "raw_value_preserved": true,
+        "required_projection_equal": true,
+        "shared_refusal": "OPEN_INVALID",
+        "value_type": "bool"
+      },
+      "family": "retention",
+      "name": "retention-to-admission compatibility: Boolean open",
+      "passed": true
+    },
+    {
+      "details": {
+        "close_diagnostic": 4.85,
+        "opening_admission": "OPEN_INVALID",
+        "optional_value_repr": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "raw_value_preserved": true,
+        "required_projection_equal": true,
+        "shared_refusal": "OPEN_INVALID",
+        "value_type": "int"
+      },
+      "family": "retention",
+      "name": "retention-to-admission compatibility: huge integer open",
+      "passed": true
+    },
+    {
+      "details": {
+        "close_diagnostic": 4.85,
+        "opening_admission": "OPEN_UNAVAILABLE",
+        "optional_value_repr": "None",
+        "raw_value_preserved": true,
+        "required_projection_equal": true,
+        "shared_refusal": "OPEN_UNAVAILABLE",
+        "value_type": "NoneType"
+      },
+      "family": "retention",
+      "name": "retention-to-admission compatibility: missing open",
+      "passed": true
+    },
+    {
+      "details": {
+        "close_diagnostic": 4.85,
+        "opening_admission": "OPEN_UNAVAILABLE",
+        "optional_value_repr": "nan",
+        "raw_value_preserved": true,
+        "required_projection_equal": true,
+        "shared_refusal": "OPEN_UNAVAILABLE",
+        "value_type": "float"
+      },
+      "family": "retention",
+      "name": "retention-to-admission compatibility: NaN open",
+      "passed": true
+    },
+    {
+      "details": {
+        "close_diagnostic": 4.85,
+        "opening_admission": "RANGE_INVALID",
+        "optional_value_repr": "4.6",
+        "raw_value_preserved": true,
+        "required_projection_equal": true,
+        "shared_refusal": "RANGE_INVALID",
+        "value_type": "float"
+      },
+      "family": "retention",
+      "name": "retention-to-admission compatibility: reversed range",
+      "passed": true
+    },
+    {
+      "details": {
+        "close_diagnostic": 4.85,
+        "opening_admission": "RANGE_INVALID",
+        "optional_value_repr": "{'value': 4.7}",
+        "raw_value_preserved": true,
+        "required_projection_equal": true,
+        "shared_refusal": "RANGE_INVALID",
+        "value_type": "dict"
+      },
+      "family": "retention",
+      "name": "retention-to-admission compatibility: invalid dictionary range",
+      "passed": true
+    },
+    {
+      "details": {
+        "close_diagnostic": 4.85,
+        "opening_admission": "OPEN_OUTSIDE_RANGE",
+        "optional_value_repr": "9",
+        "raw_value_preserved": true,
+        "required_projection_equal": true,
+        "shared_refusal": "OPEN_OUTSIDE_RANGE",
+        "value_type": "int"
+      },
+      "family": "retention",
+      "name": "retention-to-admission compatibility: outside range",
+      "passed": true
+    },
+    {
+      "details": {
+        "columns": [
+          "close",
+          "volume"
+        ],
+        "diagnostic": {
+          "opening_mark_refusals": [
+            {
+              "reason": "OPEN_UNAVAILABLE",
+              "session": "2026-09-16"
+            },
+            {
+              "reason": "OPEN_UNAVAILABLE",
+              "session": "2026-09-17"
+            }
+          ],
+          "qualified_open_rows": 0,
+          "status": "OBSERVATIONS_RETAINED"
+        }
+      },
+      "family": "retention",
+      "name": "close_only_legacy_observations_survive_without_open_fabrication",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "retention",
+      "name": "required_missing_volume_stays_native_unavailable",
+      "passed": true
+    },
+    {
+      "details": {
+        "classification": "invalid_ohlc",
+        "scale": 0
+      },
+      "family": "empirical",
+      "finding": "V5.1",
+      "name": "V5 nonpositive shape factor 0",
+      "passed": true
+    },
+    {
+      "details": {
+        "classification": "invalid_ohlc",
+        "scale": -0.8
+      },
+      "family": "empirical",
+      "finding": "V5.2",
+      "name": "V5 nonpositive shape factor -0.8",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "empirical",
+      "name": "positive_uniform_scale_control",
+      "passed": true
+    },
+    {
+      "details": {
+        "all_retained_rows": 1618,
+        "changed": [],
+        "classifications": {
+          "identical_ohlc": 418,
+          "mixed_field_revision": 52,
+          "open_only_rewrite": 636,
+          "uniform_ohlc_scale": 226
+        },
+        "present_n": 1332
+      },
+      "family": "empirical",
+      "name": "all_1332_present_witness_shapes_unchanged",
+      "passed": true
+    },
+    {
+      "details": {
+        "causal_attribution": "UNVERIFIED",
+        "factor_max": 0.9995434100811298,
+        "factor_min": 0.6896551660744541,
+        "invalid": [],
+        "uniform_scale_witness_n": 226
+      },
+      "family": "empirical",
+      "name": "actual_uniform_scale_positive_property_independently_rechecked",
+      "passed": true
+    },
+    {
+      "details": {
+        "n": 1948,
+        "scope": "Equality of retained old/current dates; not a new calendar derivation or a replacement-session migration."
+      },
+      "family": "empirical",
+      "name": "all_1948_retained_entry_sessions_unchanged",
+      "passed": true
+    },
+    {
+      "details": {
+        "premise": "The finite fixture validates date/anchor structure. Genuine exchange sessions must come from the incumbent calendar owner."
+      },
+      "family": "scope",
+      "name": "calendar_fixture_does_not_certify_exchange_session_truth",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "frozen_candidate_unchanged_DECISIONS.md",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "frozen_candidate_unchanged_DESIGN.md",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "frozen_candidate_unchanged_DEVELOPMENT_NOTES.md",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "frozen_candidate_unchanged_EXECUTION_RECEIPT.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "frozen_candidate_unchanged_contract.py",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "frozen_candidate_unchanged_execution.log",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "frozen_candidate_unchanged_fixtures.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "frozen_candidate_unchanged_results.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "frozen_candidate_unchanged_retention.py",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "frozen_candidate_unchanged_shape.py",
+      "passed": true
+    },
+    {
+      "details": null,
+      "family": "custody",
+      "name": "frozen_candidate_unchanged_verify.py",
+      "passed": true
+    },
+    {
+      "details": {
+        "candidate_files": 11,
+        "prior_input_files": 9
+      },
+      "family": "custody",
+      "name": "original_candidate_and_prior_empirical_review_inputs_unchanged",
+      "passed": true
+    },
+    {
+      "details": {
+        "V-R1": "CLOSED",
+        "V-R2": "CLOSED",
+        "V1.1": "CLOSED",
+        "V1.2": "CLOSED",
+        "V1.3": "CLOSED",
+        "V2.1": "CLOSED",
+        "V2.2": "CLOSED",
+        "V2.3": "CLOSED",
+        "V3.1": "CLOSED",
+        "V3.2": "CLOSED",
+        "V4.1": "CLOSED",
+        "V4.2": "CLOSED",
+        "V4.3": "CLOSED",
+        "V5.1": "CLOSED",
+        "V5.2": "CLOSED"
+      },
+      "family": "coverage",
+      "name": "all_13_original_variants_and_2_early_findings_exercised",
+      "passed": true
+    }
+  ],
+  "effects": {
+    "cache_writes": 0,
+    "collector_calls": 0,
+    "latch_writes": 0,
+    "production_edits": 0,
+    "publication_calls": 0,
+    "vendor_calls": 0
+  },
+  "failed_n": 0,
+  "families": {
+    "coverage": 1,
+    "custody": 12,
+    "empirical": 6,
+    "interface": 49,
+    "producer_reproduction": 3,
+    "retention": 12,
+    "scope": 3
+  },
+  "finding_closure": {
+    "V-R1": "CLOSED",
+    "V-R2": "CLOSED",
+    "V1.1": "CLOSED",
+    "V1.2": "CLOSED",
+    "V1.3": "CLOSED",
+    "V2.1": "CLOSED",
+    "V2.2": "CLOSED",
+    "V2.3": "CLOSED",
+    "V3.1": "CLOSED",
+    "V3.2": "CLOSED",
+    "V4.1": "CLOSED",
+    "V4.2": "CLOSED",
+    "V4.3": "CLOSED",
+    "V5.1": "CLOSED",
+    "V5.2": "CLOSED"
+  },
+  "passed_n": 86,
+  "producer_reproduction": {
+    "fixture_sha256": "1c53a249606c1c8b8854474c5e670c2ae0e5b457e00229b0822fa5ae59e6fea3",
+    "result_sha256": "9cc6b3c39a93487314f49b8117003f9d06c185322fb8685c8d365d16e4a405ce",
+    "tests": 104
+  },
+  "remaining_blockers": [],
+  "review_script_sha256": "78b558dd988c55d79349a136647aa59257b74f7872c79ae7c061a6761e00eefe",
+  "runtime": {
+    "pandas": "2.2.3",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  },
+  "schema": "independent_vintage_repair_acceptance_v1",
+  "scope_qualifications": [
+    "Authenticates declared record content against hashes, not the external producer or a wholly rewritten self-consistent history.",
+    "The synthetic calendar proves structure/binding, not actual exchange session truth; the JSON codec is not a production store.",
+    "Whole-blob availability is checked against every finalized row. Declared fixture times do not establish historical first-seen availability.",
+    "Strict correction chronology means later than the original, not a total ordering of independent corrections or a corrected-view fold.",
+    "Entry session is protected original identity; changing it is refused on originals and corrections. General replacement-session migration is not implemented.",
+    "Actual Parquet/source/basis/calendar adapters, canonical append custody and natural production lifecycle acceptance remain with existing owners.",
+    "Every comparison remains ALIGNED_MARK_DIAGNOSTIC / MARK_ONLY: no actual fill, total-return, cost or original-decision-knowability certification."
+  ],
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "status": "ACCEPTED_BOUNDED_RESEARCH_CONTRACT"
+}

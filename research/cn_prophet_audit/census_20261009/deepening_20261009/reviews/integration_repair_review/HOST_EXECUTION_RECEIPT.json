@@ -1,0 +1,20 @@
+{
+  "schema": "independent_integration_parquet_tool_receipt/v1",
+  "reviewed_candidate_manifest_sha256": "371fd67d4ea85307e460772f8aa353609d176ff779f07811a0a42f8ea36c0309",
+  "candidate_contract_sha256": "3518cc9f408534cccbe60419b8de8d7143ad42f406c7d9ee262068ef1c5fe2e0",
+  "host_temporary_directory": "/tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/precision_revision",
+  "process_id": 86249,
+  "command": "python3 /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/precision_revision/parquet_acceptance.py --subject /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/precision_revision/contract_prototype.py --adapter /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/precision_revision/pinned_quote_adapter.py --fixture /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/precision_revision/independent_fixture.json --bundle /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/precision_revision/native_source_bundle.json --out /tmp/mmx-cn-integration-repair-acceptance-20261010-2aio959u/precision_revision/results",
+  "terminal_tool_return": {
+    "content": [
+      {
+        "type": "text",
+        "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"status\": \"PASS\", \"native_writes\": 5, \"refused_files\": 4, \"receipt_sha256\": \"e998f198656dfde1a424d718efdd836973c5ce7a084fff78cf05a66dc45fed3f\"}\n\n✅ Process completed with exit code 0 (runtime: 1.45s)"
+      }
+    ],
+    "isError": false
+  },
+  "result_receipt_sha256": "e998f198656dfde1a424d718efdd836973c5ce7a084fff78cf05a66dc45fed3f",
+  "transfer_uncompressed_json_sha256": "7b0dcafb8b3805bd304efb355592a1e5de360a44657f64a055f3244d9537cbc6",
+  "review_scope": "Copied exact candidate, review fixture, pinned quote parser and native bundle in an isolated temporary directory only."
+}

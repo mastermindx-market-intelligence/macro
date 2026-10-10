@@ -1,0 +1,235 @@
+{
+  "files": [
+    {
+      "bytes": 16069,
+      "sha256": "b421f5b172296f563569f251a55857cec89931b62a53fe52091fc836fad16d97",
+      "snapshot_path": "accepted_evidence/repairs/integration_contract/REPAIR_DECISIONS.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/REPAIR_DECISIONS.md"
+    },
+    {
+      "bytes": 6406,
+      "sha256": "371fd67d4ea85307e460772f8aa353609d176ff779f07811a0a42f8ea36c0309",
+      "snapshot_path": "accepted_evidence/repairs/integration_contract/MANIFEST.json",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/MANIFEST.json"
+    },
+    {
+      "bytes": 42770,
+      "sha256": "3518cc9f408534cccbe60419b8de8d7143ad42f406c7d9ee262068ef1c5fe2e0",
+      "snapshot_path": "accepted_evidence/repairs/integration_contract/contract_prototype.py",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/integration_contract/contract_prototype.py"
+    },
+    {
+      "bytes": 10729,
+      "sha256": "770c43696b8426ac8f20801bf970d7eb1a4ae8e582a6c47d822af783cc82ce46",
+      "snapshot_path": "accepted_evidence/reviews/integration_repair_review/REVIEW.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/REVIEW.md"
+    },
+    {
+      "bytes": 10930,
+      "sha256": "6ab208f6c9a5e9506d053c66a4c67344ab35d5ccb387bc81d5598c9925a3a0ce",
+      "snapshot_path": "accepted_evidence/reviews/integration_repair_review/MANIFEST.json",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/MANIFEST.json"
+    },
+    {
+      "bytes": 3914,
+      "sha256": "43737a5bb58f9977603eeabb6a14658ad2fb21831b9b4a5a679b6f49eb241283",
+      "snapshot_path": "accepted_evidence/reviews/integration_repair_review/review_support.py",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/integration_repair_review/review_support.py"
+    },
+    {
+      "bytes": 4129,
+      "sha256": "e9ca4221c2daea2217f3448ea21e35222e95eb79b73040bb26912a608d798fd4",
+      "snapshot_path": "accepted_evidence/repairs/vintage_contract/DESIGN.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/DESIGN.md"
+    },
+    {
+      "bytes": 6487,
+      "sha256": "acbf9537ca282188495be3204b367ac83cc173a658ea344078ad2d002b056196",
+      "snapshot_path": "accepted_evidence/repairs/vintage_contract/DECISIONS.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/DECISIONS.md"
+    },
+    {
+      "bytes": 2317,
+      "sha256": "2ec4ad61150efa1ad01b10137ed3d1a0070ba6412770edc2f4e79a098945eec5",
+      "snapshot_path": "accepted_evidence/repairs/vintage_contract/MANIFEST.json",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/MANIFEST.json"
+    },
+    {
+      "bytes": 17419,
+      "sha256": "ea8c3d3da6b3d064563f64e3f78b6e4590530fc51bbe92535cf2cce7e1c2bdef",
+      "snapshot_path": "accepted_evidence/repairs/vintage_contract/contract.py",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/contract.py"
+    },
+    {
+      "bytes": 24563,
+      "sha256": "99c4f37a099a138d4887c403dea20cb20111810e135ed9f309bd540793258a72",
+      "snapshot_path": "accepted_evidence/repairs/vintage_contract/verify.py",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/vintage_contract/verify.py"
+    },
+    {
+      "bytes": 10882,
+      "sha256": "aa41300d26642ae1f045bc05de0da74d0ca697ccc87b1fb0fd9d90757ea85eed",
+      "snapshot_path": "accepted_evidence/reviews/vintage_repair_acceptance/ACCEPTANCE.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/ACCEPTANCE.md"
+    },
+    {
+      "bytes": 8177,
+      "sha256": "8fa6b5fdcc7cea12842d8513e07c05088df15f0f0c2c0b1bf014e98e9381256e",
+      "snapshot_path": "accepted_evidence/reviews/vintage_repair_acceptance/MANIFEST.json",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/MANIFEST.json"
+    },
+    {
+      "bytes": 32172,
+      "sha256": "78b558dd988c55d79349a136647aa59257b74f7872c79ae7c061a6761e00eefe",
+      "snapshot_path": "accepted_evidence/reviews/vintage_repair_acceptance/accept_vintage.py",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_repair_acceptance/accept_vintage.py"
+    },
+    {
+      "bytes": 19521,
+      "sha256": "5b0fd84b01371502ddfdd758a93083d6ce95d8e37e7d76d4281cc68477766f15",
+      "snapshot_path": "accepted_evidence/vintage_lab/VINTAGE_FINDINGS.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/vintage_lab/VINTAGE_FINDINGS.md"
+    },
+    {
+      "bytes": 12505,
+      "sha256": "cddde2c2207bb8417112e4632c478a4f7f0b2777a5749399b9cc6b52fb3f9f07",
+      "snapshot_path": "accepted_evidence/intelligence_lab/INTELLIGENCE_DECISIONS.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/INTELLIGENCE_DECISIONS.md"
+    },
+    {
+      "bytes": 1494,
+      "sha256": "f9c168b5baa3aacf262c0cf49ef69d5ce11a052f991627b79cacf82ab69d360c",
+      "snapshot_path": "accepted_evidence/intelligence_lab/WEIGHT_DESIGN.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/WEIGHT_DESIGN.md"
+    },
+    {
+      "bytes": 23128,
+      "sha256": "f2f5aeeb27b87809123148a642b9d6b848290a82033b7118614288432c8af014",
+      "snapshot_path": "accepted_evidence/intelligence_lab/contract_lab.py",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/contract_lab.py"
+    },
+    {
+      "bytes": 8573,
+      "sha256": "54ee1d1751e72726aa73bcbb94c1746e03ed0a4077632d8ada1a9ef72c87796c",
+      "snapshot_path": "accepted_evidence/reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE.md"
+    },
+    {
+      "bytes": 2892,
+      "sha256": "922d370c6dfa6fc98b79bfdca11c55f72dc7da90c47c570aab66631b5a346a36",
+      "snapshot_path": "accepted_evidence/reviews/intelligence_contract_review/acceptance_f2f5aeeb/MANIFEST.json",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/intelligence_contract_review/acceptance_f2f5aeeb/MANIFEST.json"
+    },
+    {
+      "bytes": 11398,
+      "sha256": "d8a40683dd0727d72df7d520a98ee587cf07ea28045901bbc109e0845b2052ef",
+      "snapshot_path": "accepted_evidence/matched_controls/DESIGN.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/DESIGN.md"
+    },
+    {
+      "bytes": 17184,
+      "sha256": "15786976c52307dd0b083a1b2549634c0730024f95b73faa4371c4706b65904d",
+      "snapshot_path": "accepted_evidence/matched_controls/DECISION_MEMO.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/matched_controls/DECISION_MEMO.md"
+    },
+    {
+      "bytes": 11625,
+      "sha256": "44c9137a52b295e0beae98463e0c2a99e7aa49221d0b49ea3c67bde95d3bad0f",
+      "snapshot_path": "accepted_evidence/reviews/matched_controls_review/REVIEW.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/matched_controls_review/REVIEW.md"
+    },
+    {
+      "bytes": 2733,
+      "sha256": "17536023379200b2965964693da5ea2d9f863a4218ec82888a69ff6ecd2052a1",
+      "snapshot_path": "accepted_evidence/reviews/matched_controls_review/MANIFEST.json",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/matched_controls_review/MANIFEST.json"
+    },
+    {
+      "bytes": 13234,
+      "sha256": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f",
+      "snapshot_path": "accepted_evidence/tradability_lab/DECISION_MEMO.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/DECISION_MEMO.md"
+    },
+    {
+      "bytes": 5202,
+      "sha256": "2cb1b5f7cfae2332ada90e1ea1abe1c05c3f055853b751002b3ac7ddaa70dff5",
+      "snapshot_path": "accepted_evidence/tradability_lab/MANIFEST.json",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/MANIFEST.json"
+    },
+    {
+      "bytes": 32037,
+      "sha256": "30099f3140e8bdaa9f727b75a61fa3ff46fb0c35983389472f60ea928417eca7",
+      "snapshot_path": "accepted_evidence/tradability_lab/run_tradability_lab.py",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/tradability_lab/run_tradability_lab.py"
+    },
+    {
+      "bytes": 3463,
+      "sha256": "16fdb0b4b541d30f31c3ec12e14b2528ba8ae43608e7f359b2cd3f38500a7a79",
+      "snapshot_path": "accepted_evidence/repairs/display_contract/REPAIR_DECISIONS.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/REPAIR_DECISIONS.md"
+    },
+    {
+      "bytes": 1684,
+      "sha256": "c7448f6c4a873a2d4f6cba2e21e153583800d249bc758587186b9416642b5fd7",
+      "snapshot_path": "accepted_evidence/repairs/display_contract/MANIFEST.json",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/MANIFEST.json"
+    },
+    {
+      "bytes": 3810,
+      "sha256": "32cba0154c45b0f582b888f6714e0fb25282f3eafad90157b2136a019740b1e9",
+      "snapshot_path": "accepted_evidence/repairs/display_contract/build_candidate.py",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/build_candidate.py"
+    },
+    {
+      "bytes": 8076,
+      "sha256": "89a9ca53f61db675128ffc31220d278e0f0b29cf7149c4f03888f829690eda49",
+      "snapshot_path": "accepted_evidence/repairs/display_contract/candidate_cn_prophet_live.js",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/repairs/display_contract/candidate_cn_prophet_live.js"
+    },
+    {
+      "bytes": 5105,
+      "sha256": "c0970efd6ac1fc1019a463831340b1fdd4213113c5e7158e01ebb5b86df2dca6",
+      "snapshot_path": "accepted_evidence/reviews/display_repair_review/ACCEPTANCE.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/ACCEPTANCE.md"
+    },
+    {
+      "bytes": 1789,
+      "sha256": "ba9bb36b7b40680da82a5be996b763a135746f48f43a5a4468586b626c2c0073",
+      "snapshot_path": "accepted_evidence/reviews/display_repair_review/MANIFEST.json",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/display_repair_review/MANIFEST.json"
+    },
+    {
+      "bytes": 6248,
+      "sha256": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e",
+      "snapshot_path": "accepted_evidence/intelligence_lab/MARGIN_HORIZON_TRACE.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/MARGIN_HORIZON_TRACE.md"
+    },
+    {
+      "bytes": 1622,
+      "sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada",
+      "snapshot_path": "accepted_evidence/intelligence_lab/MARGIN_HORIZON_MANIFEST.json",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/MARGIN_HORIZON_MANIFEST.json"
+    },
+    {
+      "bytes": 8000,
+      "sha256": "1ad0ed0e5bd71011fff7b0f7fe5c54a75d9276528798c2b3ee8df0b4cbeb9fc4",
+      "snapshot_path": "accepted_evidence/intelligence_lab/margin_horizon_probe.py",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/intelligence_lab/margin_horizon_probe.py"
+    },
+    {
+      "bytes": 8389,
+      "sha256": "cd6ef610fee232c492c1ca09087480e5b3d1dea42aa4c5dfe5260bcbbdc2e66d",
+      "snapshot_path": "accepted_evidence/reviews/margin_horizon_review/REVIEW.md",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/REVIEW.md"
+    },
+    {
+      "bytes": 4978,
+      "sha256": "649aa9045bcbf29e043acf39a815fead80fdb3cee2c3afda865f458ebfd7dccf",
+      "snapshot_path": "accepted_evidence/reviews/margin_horizon_review/MANIFEST.json",
+      "source_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/margin_horizon_review/MANIFEST.json"
+    }
+  ],
+  "schema": "handoff_accepted_evidence_documents/v1",
+  "scope": "Referenced accepted records and code/CLI declarations; no behavioral suite execution",
+  "source_root": "deliverable"
+}

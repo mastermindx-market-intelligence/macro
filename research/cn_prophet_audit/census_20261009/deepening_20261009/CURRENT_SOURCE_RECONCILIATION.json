@@ -1,40 +1,360 @@
 {
+  "schema": "research.cn_prophet_source_continuity.v2",
   "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
-  "previous_main": "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90",
-  "current_main": "60778ff68aea185c1769420c99d3ce878c911012",
-  "status": "ahead",
-  "ahead_by": 1,
-  "total_commits": 1,
-  "base_commit": "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90",
-  "merge_base_commit": "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90",
-  "commits": [
-    {
-      "sha": "60778ff68aea185c1769420c99d3ce878c911012",
-      "parents": [
-        "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90"
-      ],
-      "message": "research_vault: catalog 2026-10-09T23:47Z"
+  "protected_procedure_pin": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "recorded_at": "2026-10-10 01:05:51 UTC",
+  "previous_record": {
+    "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+    "previous_main": "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90",
+    "current_main": "60778ff68aea185c1769420c99d3ce878c911012",
+    "status": "ahead",
+    "ahead_by": 1,
+    "total_commits": 1,
+    "base_commit": "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90",
+    "merge_base_commit": "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90",
+    "commits": [
+      {
+        "sha": "60778ff68aea185c1769420c99d3ce878c911012",
+        "parents": [
+          "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90"
+        ],
+        "message": "research_vault: catalog 2026-10-09T23:47Z"
+      }
+    ],
+    "files": [
+      {
+        "filename": "data/research_vault/catalog.json",
+        "status": "modified",
+        "sha": "f985295ac151331ee63a34e2d40158e89c8347db",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2
+      },
+      {
+        "filename": "data/research_vault/excerpts.json",
+        "status": "modified",
+        "sha": "2d6ca944c15a10ee94d929e64f01508d4b2ff465",
+        "additions": 2152,
+        "deletions": 0,
+        "changes": 2152
+      }
+    ],
+    "file_list_capped": false,
+    "method": "GitHub immutable compare GET. One commit and two files; no truncated 300-file page. This follow-up extends the previous host source diff and does not replace study inputs.",
+    "recorded_at": "2026-10-10T00:22:06Z"
+  },
+  "latest_comparison": {
+    "base": "60778ff68aea185c1769420c99d3ce878c911012",
+    "current": "7bfc9d5cc860443972ae231335b070320bd61d73",
+    "status": "ahead",
+    "ahead_by": 6,
+    "total_commits": 6,
+    "base_commit": "60778ff68aea185c1769420c99d3ce878c911012",
+    "merge_base": "60778ff68aea185c1769420c99d3ce878c911012",
+    "files": [
+      {
+        "path": ".github/ci/legacy-jobs.yml",
+        "status": "modified",
+        "git_blob": "7680d95586075e0ab405be96dd6d7f50fa221601",
+        "additions": 23,
+        "deletions": 0
+      },
+      {
+        "path": "data/ai_costs/usage.d/whitehouse-sentinel-38010717301-1.jsonl",
+        "status": "added",
+        "git_blob": "60197be578c0138b06bb04283cab7ff80b42ceb1",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "path": "data/marketing/outbox/activity.jsonl",
+        "status": "modified",
+        "git_blob": "e2f79356e95bc0a46256a095de2088e37be2a6c9",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "path": "data/marketing/outbox/items.jsonl",
+        "status": "modified",
+        "git_blob": "5a7c51e7fbe317522b11a6f4931a0b9111a95227",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "path": "data/marketing/outbox/status_ledger.jsonl",
+        "status": "modified",
+        "git_blob": "ce755c1001148b8c170788c051f13660132d140d",
+        "additions": 4,
+        "deletions": 0
+      },
+      {
+        "path": "data/marketing/press_wire/cursors.json",
+        "status": "modified",
+        "git_blob": "5e61f75fc443a0f0e26286ddae04e269db021250",
+        "additions": 433,
+        "deletions": 504
+      },
+      {
+        "path": "data/marketing/press_wire/seen_ring.jsonl",
+        "status": "modified",
+        "git_blob": "1965a5dd01c51ce99fd65545668a027fe78d6107",
+        "additions": 31,
+        "deletions": 45
+      },
+      {
+        "path": "data/marketing/publications.jsonl",
+        "status": "modified",
+        "git_blob": "4e2cc0ca5f18003d22eeffd3addc5f54616bb694",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "path": "data/marketing/x_intel/state.json",
+        "status": "modified",
+        "git_blob": "4d2344cf92bf32c9fae963b748676a43219fc09a",
+        "additions": 9,
+        "deletions": 9
+      },
+      {
+        "path": "data/whitehouse/health.json",
+        "status": "modified",
+        "git_blob": "6de0a3c429b065794e6cea4bb0a708c2b1ad6e02",
+        "additions": 7,
+        "deletions": 19
+      },
+      {
+        "path": "data/whitehouse/processed.json",
+        "status": "modified",
+        "git_blob": "4f52643ac20cde330cbf0fe827850fac3c5e360b",
+        "additions": 6,
+        "deletions": 0
+      },
+      {
+        "path": "data/whitehouse/reply_cache/720094848d4add62f404de58bd9fc68129596087175170debfafc423e9742b8a.txt",
+        "status": "added",
+        "git_blob": "c3c242af300e27c1271c110ff06cb38242faafd3",
+        "additions": 4,
+        "deletions": 0
+      },
+      {
+        "path": "engine/calibration_sparse_weighted.py",
+        "status": "added",
+        "git_blob": "060479d25ee57e4ccd23c8e966585aa0f40db1ba",
+        "additions": 1035,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/CODE_PIN.json",
+        "status": "added",
+        "git_blob": "7b003545eb62f2040b20c17482ee1d6f6b9761e5",
+        "additions": 8,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/FREEZE.log",
+        "status": "added",
+        "git_blob": "e20fdfaa9576ef5895666a842dd0ecca2ae58233",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/PREREG.md",
+        "status": "added",
+        "git_blob": "ee5c2ff4eb429b3edb39de0fa5ee1aa71f575966",
+        "additions": 319,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/PREREG_AMENDMENT.md",
+        "status": "added",
+        "git_blob": "f85f6a58ae51c06ac96119fff63e2cc57ae71cb9",
+        "additions": 40,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/PREREG_AMENDMENT_2.md",
+        "status": "added",
+        "git_blob": "1d32e5871e097cc3e8c20e9c0e8ac1a6e2a0e953",
+        "additions": 63,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/PROPOSED_AMENDMENT.md",
+        "status": "added",
+        "git_blob": "9c8924128c793eac6199fc67047ca16f705bbb11",
+        "additions": 122,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/REQUIREMENTS.md",
+        "status": "added",
+        "git_blob": "cc83874b0b7e38a3c61c893417cb88b66edc2249",
+        "additions": 36,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/RUNS.log",
+        "status": "added",
+        "git_blob": "ef915dca5d4a8f76461f128afa02d83e5696bbde",
+        "additions": 8,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/VERDICT.md",
+        "status": "added",
+        "git_blob": "23ce630806bef746472309681168028ffad21e35",
+        "additions": 218,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/attrition.json",
+        "status": "added",
+        "git_blob": "26b4d8d2184a48bf1cf467c3d01ab5a95bedc29e",
+        "additions": 246,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/baseline.json",
+        "status": "added",
+        "git_blob": "7ad76ebe3d000d25bdd4e9a7286b49fed9440698",
+        "additions": 40,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/e1.json",
+        "status": "added",
+        "git_blob": "3f6ddc5b2ed07c2b10038058792d6b4ac7b55287",
+        "additions": 286,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/evaluate.py",
+        "status": "added",
+        "git_blob": "d6200015dc5927d7ab0f461bd305547437d0d0b3",
+        "additions": 809,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/s1.json",
+        "status": "added",
+        "git_blob": "fb83c8713b0e95a31deeaea948e791b528ed906a",
+        "additions": 5016,
+        "deletions": 0
+      },
+      {
+        "path": "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/verdict.json",
+        "status": "added",
+        "git_blob": "13ca375be3576463a18e52046b630f3fef33c45c",
+        "additions": 10,
+        "deletions": 0
+      },
+      {
+        "path": "site/stocks/earnings/route-catalog.json",
+        "status": "modified",
+        "git_blob": "b3ce851ce6cc7c1e57fbc2081f1ff77216440d81",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "path": "site/wh_banner.json",
+        "status": "modified",
+        "git_blob": "c4b5d49c8f67b7b61a342136f4891d68988a23d2",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "path": "site/whdata/treasury_watch.json",
+        "status": "modified",
+        "git_blob": "f0ed138d0eb0fda78007694f4387757e5fa906f1",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "path": "site/whitehouse.html",
+        "status": "modified",
+        "git_blob": "c6bf10e9541f855e2ebababd5806993df274bbae",
+        "additions": 4,
+        "deletions": 4
+      },
+      {
+        "path": "tests/test_calibration_sparse_weighted.py",
+        "status": "added",
+        "git_blob": "b0be95e5dfb673da301ab3dda3b2db71cb04f8cd",
+        "additions": 283,
+        "deletions": 0
+      },
+      {
+        "path": "tests/test_ci_pack.py",
+        "status": "modified",
+        "git_blob": "b75063ac27be5fbf04600c278d7296a7177f95b2",
+        "additions": 1,
+        "deletions": 0
+      }
+    ],
+    "commits": [
+      {
+        "sha": "e01cfb9e9706e0ffbbfa6f1b41383aca42aed4d1",
+        "parents": [
+          "60778ff68aea185c1769420c99d3ce878c911012"
+        ],
+        "subject": "earnings-wire: publish current verified records [skip ci]"
+      },
+      {
+        "sha": "c36c8e8164b9cd7ed7cd7901088b9e60ada38169",
+        "parents": [
+          "e01cfb9e9706e0ffbbfa6f1b41383aca42aed4d1"
+        ],
+        "subject": "press-wire: tick 2026-10-10T00:43Z [skip ci]"
+      },
+      {
+        "sha": "ca1770c47013c0a74400538b50022b546b2d1692",
+        "parents": [
+          "c36c8e8164b9cd7ed7cd7901088b9e60ada38169"
+        ],
+        "subject": "x-intel: daily light corpus 2026-10-10T00:44Z [skip ci]"
+      },
+      {
+        "sha": "f710aec2c1a8fae5df8c66aa3eb65325f73c244b",
+        "parents": [
+          "ca1770c47013c0a74400538b50022b546b2d1692"
+        ],
+        "subject": "quant(Q06): Feasible sparse-data calibration for the existing FS-3 study — REJECT (#8722)"
+      },
+      {
+        "sha": "7cae5609cf5dbf609255c97217916adee6bf5d16",
+        "parents": [
+          "f710aec2c1a8fae5df8c66aa3eb65325f73c244b"
+        ],
+        "subject": "marketing-publish: outbox run 2026-10-10T00:44Z [skip ci]"
+      },
+      {
+        "sha": "7bfc9d5cc860443972ae231335b070320bd61d73",
+        "parents": [
+          "7cae5609cf5dbf609255c97217916adee6bf5d16"
+        ],
+        "subject": "whitehouse: alert update 2026-10-10T00:51Z"
+      }
+    ],
+    "complete_file_list": true,
+    "assessment": {
+      "existing_CN_source_consumers_changed": false,
+      "new_source": "engine/calibration_sparse_weighted.py: separate research-only FS-3 reference; its first 90 lines and corresponding CI additions inspected.",
+      "ci_change": "Adds the exclusive quant-q06-sparse-cal scope and its curated registration; current implementation must satisfy the current required CI gate.",
+      "other_changes": "Research artifacts and marketing/Whitehouse/generated data; not substituted into fixed study inputs.",
+      "limits": "Source continuity of the frozen experiment is not integrated-candidate CI, installed release identity or natural production proof."
     }
-  ],
-  "files": [
-    {
-      "filename": "data/research_vault/catalog.json",
-      "status": "modified",
-      "sha": "f985295ac151331ee63a34e2d40158e89c8347db",
-      "additions": 1,
-      "deletions": 1,
-      "changes": 2
-    },
-    {
-      "filename": "data/research_vault/excerpts.json",
-      "status": "modified",
-      "sha": "2d6ca944c15a10ee94d929e64f01508d4b2ff465",
-      "additions": 2152,
-      "deletions": 0,
-      "changes": 2152
-    }
-  ],
-  "file_list_capped": false,
-  "method": "GitHub immutable compare GET. One commit and two files; no truncated 300-file page. This follow-up extends the previous host source diff and does not replace study inputs.",
-  "recorded_at": "2026-10-10T00:22:06Z"
+  },
+  "carrier_readback": {
+    "number": 8714,
+    "state": "open",
+    "draft": true,
+    "head": "bb3c6ac2a1bcaf909a6bab1829cc7a60ebdd3ff3",
+    "auto_merge": null
+  },
+  "r0_readback": {
+    "number": 6871,
+    "state": "open",
+    "draft": true,
+    "head": "51ddb898ff0c130910f9f3f4266727905826a92d"
+  }
 }

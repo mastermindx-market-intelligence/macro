@@ -1,0 +1,137 @@
+{
+  "schema": "cn_tradability_native_seam_manifest_v1",
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "status": "BOUNDED_RESEARCH_COMPLETE_CALLER_REPAIR_PENDING",
+  "check_count": 77,
+  "all_passed": true,
+  "files": [
+    {
+      "path": "DECISION_MEMO.md",
+      "bytes": 13234,
+      "sha256": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f",
+      "git_blob_sha1": "d74a2dd1b68367b4da4cde933d0e6057bcb51c42"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 3255,
+      "sha256": "a5515c891dd802a0e0a914ad02d254077496cd223e5a4818e5932832e186d213",
+      "git_blob_sha1": "5b168e032b0768afde15b200102a1f9b485cdf75"
+    },
+    {
+      "path": "HARNESS_AMENDMENT.md",
+      "bytes": 1215,
+      "sha256": "923409e38e6072bc1beb1a4b5943f0536b4f6cff5c2a55bef04b4fbe79a0f467",
+      "git_blob_sha1": "32d8484b13578876085604a858284c96cff30823"
+    },
+    {
+      "path": "TRADABILITY_INPUT.json",
+      "bytes": 1801752,
+      "sha256": "8106d35c0caccfdc000f50652cf5a673605cd2d6e11882ccb28741e85490f7a3",
+      "git_blob_sha1": "999198e45b68ea3a7f05b82a67735bf6773c2c0b"
+    },
+    {
+      "path": "VALIDATION.json",
+      "bytes": 1426,
+      "sha256": "9a82d50bee39f99556ef3c6ac0761a0419bc8265b1618f9c7dba63cb846100be",
+      "git_blob_sha1": "e9e771086361cd685f07056ba12e1c73cf63c35d"
+    },
+    {
+      "path": "WEIGHT_INPUT_FREEZE.json",
+      "bytes": 641,
+      "sha256": "6bddcc157b3b06c51a0f2a3a20723d42a55f6025a26e65d8cfb38b2776413ee2",
+      "git_blob_sha1": "8a18a3250f09f16292594ff856ce2cd5821da824"
+    },
+    {
+      "path": "extract_tradability_inputs.py",
+      "bytes": 19298,
+      "sha256": "9a186dc2905a0bf3a883dba2f2fb23193b251c9e98f9a3307a68549536f0e144",
+      "git_blob_sha1": "8a8a58bc134e5fc6699b2c4e7e539b5cb18fc5c4"
+    },
+    {
+      "path": "extraction_receipt.json",
+      "bytes": 1610,
+      "sha256": "669c588667799348b412b61efe9faad6155ad8f53f9c62444c68e604e37084b2",
+      "git_blob_sha1": "5ccd0681f0a56f436556ee7aec7ae1bbed5db737"
+    },
+    {
+      "path": "harness_attempt_missing_numbers/TRADABILITY_INPUT.json",
+      "bytes": 1363431,
+      "sha256": "6f361fcf8dd63731a7f65da6d64751b0d158f90372712b4999a7d1dbee61c560",
+      "git_blob_sha1": "83b803129652b006346d02ffc36f7b41b630ae64"
+    },
+    {
+      "path": "harness_attempt_missing_numbers/extract_tradability_inputs.py",
+      "bytes": 17755,
+      "sha256": "699389b668d2cd6e82df9459b482dc712874edcab03bc174fefba0928ba7b96f",
+      "git_blob_sha1": "ebace336e93fda2333c2dc637d201fc604917fef"
+    },
+    {
+      "path": "harness_attempt_missing_numbers/extraction_receipt.json",
+      "bytes": 723,
+      "sha256": "3acef7b60494d29cdd89f8fc17cd74494af7df92a48e503a60f81d072296479f",
+      "git_blob_sha1": "cb9560c882038071e3070f665c57d4483f4cc17e"
+    },
+    {
+      "path": "results.json",
+      "bytes": 31128,
+      "sha256": "44da98edcea79e6531df34719f934d42270e961a09ebe1925d677c1420978053",
+      "git_blob_sha1": "ce54a6c294655ecad096b05c99ecba2f5600ccd3"
+    },
+    {
+      "path": "run_tradability_lab.py",
+      "bytes": 32037,
+      "sha256": "30099f3140e8bdaa9f727b75a61fa3ff46fb0c35983389472f60ea928417eca7",
+      "git_blob_sha1": "7a66b61a410b325940bd47839613f10f0ade093b"
+    },
+    {
+      "path": "verify_manifest.py",
+      "bytes": 1289,
+      "sha256": "6d5911e14d5f3aa9ba6adfe4dd0d1d3e01e1d272ac3e8324464275d7a254c2be",
+      "git_blob_sha1": "d13eb64b68db10c37462bd348fc40368b05cd87b"
+    },
+    {
+      "path": "weight_replay/weight_contract_audit.py",
+      "bytes": 8090,
+      "sha256": "9741f0e9e449271fb60bb67f2db3b21d7cb6e2766a247247e942b8910c22fba8",
+      "git_blob_sha1": "e2f9acf816c2ef59fa77728ed1d6a6e6e128fb13"
+    },
+    {
+      "path": "weight_replay/weight_input.json",
+      "bytes": 63669,
+      "sha256": "30cb9996bf6a39ae1323f20e705ad6e0d685a5a074ea1571dd7304ae57bd85dd",
+      "git_blob_sha1": "ce06df72535227b45ef29c8ad6481b011594ec22"
+    },
+    {
+      "path": "weight_replay/weight_results.json",
+      "bytes": 8432,
+      "sha256": "82d56837591e19e3af9c1958084aec769ea319dd6c1ee8ded2b7ada1018bb884",
+      "git_blob_sha1": "ff2ca6b758323ca79d5761bd1a6cd7f301787243"
+    },
+    {
+      "path": "weight_reviewed_source/WEIGHT_DESIGN.md",
+      "bytes": 1494,
+      "sha256": "f9c168b5baa3aacf262c0cf49ef69d5ce11a052f991627b79cacf82ab69d360c",
+      "git_blob_sha1": "243eea69279eccd5bb0a306ece10f5abb99443a6"
+    },
+    {
+      "path": "weight_reviewed_source/weight_contract_audit.py",
+      "bytes": 8090,
+      "sha256": "9741f0e9e449271fb60bb67f2db3b21d7cb6e2766a247247e942b8910c22fba8",
+      "git_blob_sha1": "e2f9acf816c2ef59fa77728ed1d6a6e6e128fb13"
+    },
+    {
+      "path": "weight_reviewed_source/weight_input.json",
+      "bytes": 63669,
+      "sha256": "30cb9996bf6a39ae1323f20e705ad6e0d685a5a074ea1571dd7304ae57bd85dd",
+      "git_blob_sha1": "ce06df72535227b45ef29c8ad6481b011594ec22"
+    },
+    {
+      "path": "weight_reviewed_source/weight_results.json",
+      "bytes": 8432,
+      "sha256": "82d56837591e19e3af9c1958084aec769ea319dd6c1ee8ded2b7ada1018bb884",
+      "git_blob_sha1": "ff2ca6b758323ca79d5761bd1a6cd7f301787243"
+    }
+  ],
+  "total_payload_bytes": 3450670,
+  "self_excluded": true
+}

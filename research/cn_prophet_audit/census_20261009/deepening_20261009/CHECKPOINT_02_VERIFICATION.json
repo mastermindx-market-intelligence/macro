@@ -1,0 +1,39 @@
+{
+  "commit": "bb3c6ac2a1bcaf909a6bab1829cc7a60ebdd3ff3",
+  "tree": "bd797a18716454b649026d626bf720d6cb2d8d5e",
+  "parent": "54b96656b01fdc10fc505a43d2e9ac0dc085f064",
+  "deepening_tree": "022478483c4336b09c57e3e30c237bdcb7523696",
+  "verified_at": "2026-10-10 00:36:47 UTC",
+  "files_verified": 140,
+  "bytes_verified": 10326741,
+  "outside_deepening_changes": 0,
+  "scope_proof": [
+    {
+      "child": "research",
+      "old_tree": "8326c294d259ebf277be15ea3fa8d7d9b09bf9d1",
+      "new_tree": "bd797a18716454b649026d626bf720d6cb2d8d5e",
+      "outside_child_equal": true
+    },
+    {
+      "child": "cn_prophet_audit",
+      "old_tree": "bd851576ee4513d9eb1a817615e79a12a9aceb9e",
+      "new_tree": "1ea303a48e98dd65b1d5968ecad5f28591885280",
+      "outside_child_equal": true
+    },
+    {
+      "child": "census_20261009",
+      "old_tree": "9f5ec2048cf7ea3ab2d1d5d437e2acbc0526681e",
+      "new_tree": "09a95e0b1368a5137c956137b1d37489ee04ba8c",
+      "outside_child_equal": true
+    },
+    {
+      "child": "deepening_20261009",
+      "old_tree": "de021ddf1fec12d81397e9394c24bde61b351fd6",
+      "new_tree": "fc9d0a95ac154b0297d87641d8b61cccc9447e81",
+      "outside_child_equal": true
+    }
+  ],
+  "all_expected_blob_identities_and_sizes_match": true,
+  "manifest_sha256": "2864e61224ab48dd514c01c0539317c351f06ceada41b7410103ee7a13801f1a",
+  "note": "Version-specific checkpoint. Active integration/tradability work and later independent acceptance are excluded."
+}

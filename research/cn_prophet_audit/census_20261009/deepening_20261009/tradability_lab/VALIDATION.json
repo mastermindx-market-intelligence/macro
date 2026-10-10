@@ -1,0 +1,37 @@
+{
+  "schema": "cn_tradability_terminal_validation_v1",
+  "command": "python -B run_tradability_lab.py",
+  "exit_code": 0,
+  "check_count": 77,
+  "all_passed": true,
+  "tool_receipt_chunk": "5a24a3",
+  "weight_original_checks": 12,
+  "weight_replay_byte_identical": true,
+  "corrected_host_census_pid": 36328,
+  "corrected_host_census_exit_code": 0,
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "prior_packages_verified_unchanged": [
+    {
+      "manifest": "matched_controls/MANIFEST.json",
+      "sha256": "3d1330cdaf37342e7a185997640e97526c8decdb24c53d3f9650d450250725d5",
+      "payload_files_verified": 9
+    },
+    {
+      "manifest": "reviews/intelligence_contract_review/MANIFEST.json",
+      "sha256": "0105976d7a771f47cb824e311a2f9dc221ca14f9c0725cac4bc322ec35832939",
+      "payload_files_verified": 9
+    },
+    {
+      "manifest": "reviews/intelligence_contract_review/acceptance_83944fe1/MANIFEST.json",
+      "sha256": "5099588bb3a866eb2a311e9d34f29d1c459fb08df6d6d8578680998606c8bc51",
+      "payload_files_verified": 10
+    },
+    {
+      "manifest": "reviews/intelligence_contract_review/acceptance_f2f5aeeb/MANIFEST.json",
+      "sha256": "922d370c6dfa6fc98b79bfdca11c55f72dc7da90c47c570aab66631b5a346a36",
+      "payload_files_verified": 11
+    }
+  ],
+  "weight_frozen_files_verified": 4,
+  "harness_attempt_status": "Preserved and rejected as accepted census; see HARNESS_AMENDMENT.md."
+}

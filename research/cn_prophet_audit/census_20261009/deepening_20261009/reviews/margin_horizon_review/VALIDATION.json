@@ -1,0 +1,83 @@
+{
+  "aggregate_pairs_reconciled": 62,
+  "aggregate_rows": 155688,
+  "check_families": {
+    "aggregate": 6,
+    "consumer": 5,
+    "custody": 2,
+    "lookup": 12,
+    "receipt": 7,
+    "reproduction": 1,
+    "source": 6
+  },
+  "custody_exit_code": 0,
+  "custody_precheck_command": "python -B verify_manifest.py --prior-only",
+  "custody_terminal_tool_chunk": "f4d2fd",
+  "effects": {
+    "cache_writes": 0,
+    "collector_calls": 0,
+    "host_census_repeats": 0,
+    "latch_writes": 0,
+    "production_edits": 0,
+    "vendor_calls": 0
+  },
+  "exact_original_scenarios_reproduced": 8,
+  "exit_code": 0,
+  "failed": 0,
+  "harness_development_attempts": "HARNESS_NOTE.md",
+  "independent_native_sequence_cases": 8,
+  "passed": 39,
+  "raw_parquet_census_repeated": false,
+  "runtime": {
+    "pandas": "2.2.3",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  },
+  "schema": "margin_horizon_independent_terminal_validation_v1",
+  "sealed_packages_verified_unchanged": [
+    {
+      "manifest": "matched_controls/MANIFEST.json",
+      "manifest_sha256": "3d1330cdaf37342e7a185997640e97526c8decdb24c53d3f9650d450250725d5",
+      "payload_bytes": 2952534,
+      "payload_files": 9
+    },
+    {
+      "manifest": "reviews/intelligence_contract_review/MANIFEST.json",
+      "manifest_sha256": "0105976d7a771f47cb824e311a2f9dc221ca14f9c0725cac4bc322ec35832939",
+      "payload_bytes": 558010,
+      "payload_files": 9
+    },
+    {
+      "manifest": "reviews/intelligence_contract_review/acceptance_83944fe1/MANIFEST.json",
+      "manifest_sha256": "5099588bb3a866eb2a311e9d34f29d1c459fb08df6d6d8578680998606c8bc51",
+      "payload_bytes": 683214,
+      "payload_files": 10
+    },
+    {
+      "manifest": "reviews/intelligence_contract_review/acceptance_f2f5aeeb/MANIFEST.json",
+      "manifest_sha256": "922d370c6dfa6fc98b79bfdca11c55f72dc7da90c47c570aab66631b5a346a36",
+      "payload_bytes": 684766,
+      "payload_files": 11
+    },
+    {
+      "manifest": "tradability_lab/MANIFEST.json",
+      "manifest_sha256": "2cb1b5f7cfae2332ada90e1ea1abe1c05c3f055853b751002b3ac7ddaa70dff5",
+      "payload_bytes": 3450670,
+      "payload_files": 21
+    },
+    {
+      "manifest": "reviews/vintage_repair_acceptance/MANIFEST.json",
+      "manifest_sha256": "8fa6b5fdcc7cea12842d8513e07c05088df15f0f0c2c0b1bf014e98e9381256e",
+      "payload_bytes": 320378,
+      "payload_files": 33
+    },
+    {
+      "manifest": "intelligence_lab/MARGIN_HORIZON_MANIFEST.json",
+      "manifest_sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada",
+      "payload_bytes": 67814,
+      "payload_files": 8
+    }
+  ],
+  "sealed_payload_files_verified": 101,
+  "semantic_command": "python -B review_margin_horizon.py",
+  "semantic_terminal_tool_chunk": "0ceb86"
+}
