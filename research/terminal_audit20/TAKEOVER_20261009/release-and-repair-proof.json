@@ -3968,7 +3968,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-post643-heal-canonical-live-parent-acceptance-20261009.json",
       "sha256": "642001ab745582399923583ed9fdbbb669ce2edf8001ec85d7ed30d1db4042ef"
     },
-    "A11_current": "643sourceCIaccepted/merged5ef; mandatory886headonlyhealmerged19:17:01/438/all3required37976377076SUCCESS. Exactentire438tree173d+onlyf12delta/currentmaster qualified. Canonicalbuild19:24:48\u201319:39:35 rc0/clean source/runtime/publicassetdplmarker438/TerminalQuoteHubLoggingACTIVE/free11097116672. Actualsignedin FreeNVDA3D Replayprev2245->2244/next2245 changeshistoricalchartOHLC desktop1440/tablet820/nooverflow; actualphone390hub noReplayentry disclosed. Original4indicatorsReplayoff/default1520restored/protectedunsavedScriptsuntouched. Scopedsource/install/desktoptabletbehavior only, wholeA11false; railOracleDashP3/paid/phone gates remain.",
+    "A11_current": "643sourceCIaccepted/merged5ef; mandatory886headonlyhealmerged19:17:01/438/all3required37976377076SUCCESS. Exactentire438tree173d+onlyf12delta/currentmaster qualified. Canonicalbuild19:24:48–19:39:35 rc0/clean source/runtime/publicassetdplmarker438/TerminalQuoteHubLoggingACTIVE/free11097116672. Actualsignedin FreeNVDA3D Replayprev2245->2244/next2245 changeshistoricalchartOHLC desktop1440/tablet820/nooverflow; actualphone390hub noReplayentry disclosed. Original4indicatorsReplayoff/default1520restored/protectedunsavedScriptsuntouched. Scopedsource/install/desktoptabletbehavior only, wholeA11false; railOracleDashP3/paid/phone gates remain.",
     "A11_new_mounted_test": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-fallback-horizon-final-source-native-parent-qualification-20261009.json",
       "sha256": "253fcba0289507d5cc42d5e14790e0264e871df49e5e0764b9a543b92eb29f80"
@@ -4117,7 +4117,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-canonical-release-and-existing-controller-parent-acceptance-20261009.json",
       "sha256": "718ffba1f325d18dab385cdf1b864598590abd3d0a06bff1c9cae6af7046d0a7"
     },
-    "785_current": "SCOPED_DONE exactheadCI/squash4d/currentmaster/fulltree+7acceptedblobs. Single canonicalbuild20:23:11\u201320:39:35rc0/clean source-runtime-marker4d/TerminalQuoteHubLoggingACTIVE/free11074121728. PublicHTTP200/dpl4d actualsignedinNVDA3D/original4studies/Replayoff/default/nooverflow. Product4dtrees byteequal438 qualifies earlier643liveproof, no repeatbuild. No queue/security activation orall20claim.",
+    "785_current": "SCOPED_DONE exactheadCI/squash4d/currentmaster/fulltree+7acceptedblobs. Single canonicalbuild20:23:11–20:39:35rc0/clean source-runtime-marker4d/TerminalQuoteHubLoggingACTIVE/free11074121728. PublicHTTP200/dpl4d actualsignedinNVDA3D/original4studies/Replayoff/default/nooverflow. Product4dtrees byteequal438 qualifies earlier643liveproof, no repeatbuild. No queue/security activation orall20claim.",
     "785_automatic_existing_controller": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-existing-controller-actual-return-20261009T2035.json",
       "sha256": "93299fb83e693559f85bb7a93815b413196fb6069171864a5372fcd5bf66bd4d"
@@ -4271,7 +4271,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-typed-read-path-parent-proposal-20261009/qualification.json",
       "sha256": "de480b675a1f0fa3236ad208a3b7d69732c5258e07dea77b44836147b3402e84"
     },
-    "A19_current": "C2boundedbuild49716 returned75NONE/no_poolpreSTART/noeffect/sameIDNOT_FOUND/frozen/no retry. ParentNO_ELIGIBLE_PRE_EFFECT_WORKER detached2defectrepair module66d690468625200ce0be8cb375970fc4c75fa2ec47ae44fff2c9d3ac84ee0fae; typedGitLS observations proveABSENT onlysuccessfulvalidrefemptyquery, failuresUNAVAILABLE; exactstatepath/internalid/admission/computedidbind before recoverypersist, originalprior_effectheld. Parentnew26PASS0FAIL0SKIP=16supplied+same5causalold0/5\u2192new5/5+5positive-negativecontrols. Initialonecontrol usedwrong0600workspace vs0644Gitbeforefingerprint; legitimateguardfailure retained, fixturecorrected andonly5controls rerun, assertionsunchanged. Exactembeddedacceptedhelpersunchanged. No canonicalwriter/adoption/authoritywidening.",
+    "A19_current": "C2boundedbuild49716 returned75NONE/no_poolpreSTART/noeffect/sameIDNOT_FOUND/frozen/no retry. ParentNO_ELIGIBLE_PRE_EFFECT_WORKER detached2defectrepair module66d690468625200ce0be8cb375970fc4c75fa2ec47ae44fff2c9d3ac84ee0fae; typedGitLS observations proveABSENT onlysuccessfulvalidrefemptyquery, failuresUNAVAILABLE; exactstatepath/internalid/admission/computedidbind before recoverypersist, originalprior_effectheld. Parentnew26PASS0FAIL0SKIP=16supplied+same5causalold0/5→new5/5+5positive-negativecontrols. Initialonecontrol usedwrong0600workspace vs0644Gitbeforefingerprint; legitimateguardfailure retained, fixturecorrected andonly5controls rerun, assertionsunchanged. Exactembeddedacceptedhelpersunchanged. No canonicalwriter/adoption/authoritywidening.",
     "A19_independent_review_request": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-typed-read-path-independent-review-admission-20261009.json",
       "sha256": "d5d603b2edad81d56ef015fef502ea952b9f56af4073e9e1ce96e073a4334577"
@@ -4498,5 +4498,61 @@
     "next_safe_phase": "Consume existing839 initialreview36054 exactsameID via originalreader whenavailable; adjudicateagainst preserved unread0/0red, do notaccept oldcandidate ascorrected. Then ONE bounded independentreview of actualbd63/dd75/c85e+newregression/browser proofs; afteraccepted freshreadexactcarrier/source/head normalFFpushsamePR839, existingnativeauto/MOG3requiredcontexts then mergedsource/canonicalrelease/live. Consume actual804T03kreturn through existingowner. No unchangedCIpoll/alternate887approval/Proguess/frozenrelease retry.",
     "current_gates": "Corrected839 source finalindependentreview/remotepublication/CImerge/release/live;781/873 existingcontroller terminalevents; actual804T03k offlinecutover/review/SQLapprovalrightsrelease;A19canonicalproducerUTCclock/prior-effect/perplanowner;887specificadmission andexistingProidentity pending. Otheroriginalrefusals/sourceholds unchanged.",
     "continuation": "MORE_WORK_EXISTS at corrected839 review/publish dependency; no duplicate pendingoldreview. Soleheartbeat plus actual804T03kSTART is lawfuldurablecontinuation, bare36054handle notPID/wake/START. Save is notcompletion; all20wholeacceptancesfalse."
+  },
+  "current_capability_frontier_20261010T0028": {
+    "observed_at": "2026-10-10T00:28:58.022183+00:00",
+    "supersedes": "current_capability_frontier_20261009T2350",
+    "settled_references_retained_in": "current_capability_frontier_20261009T2350",
+    "whole_original_mission_accepted": false,
+    "A15_old_static_review_adjudication": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a15-839-initial-conflict-independent-review-parent-adjudication-20261009.json",
+      "bytes": 6479,
+      "sha256": "453087cfa7f3348b4fb20946739c9ea8b195eda37fd2507b9cec28df9278c3e4"
+    },
+    "A15_old_review_current": "Original5149B6e75236e return +15181Bbcd3daa3 review/24587B39a81d37 checker original-parent export once matched plus seven packet bindings. REJECT material unreadUSDcap0/0 agrees with parent actual red. Old704ec/ef5 not accepted; static two-block merge exact only, 19mutants attributed/no own mounted runtime; empty resolution.patch retained, real nonempty final17541B0e1e patch now delivered. No re-export/reaccept.",
+    "A15_guard_final_candidate": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a15-839-heatmap-conflict-repair-20261009/both-read-guards-final-candidate-qualification.json",
+      "bytes": 1724,
+      "sha256": "ce8219d43c217d3b661877930a7e7ba91a590ad85a9ca97b1f2c8df4dae5b653"
+    },
+    "A15_guard_review_refusal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a15-839-read-qualified-final-review-20261009/parent-refusal-adjudication.json",
+      "bytes": 1261,
+      "sha256": "72041870a7a1f84086b8e348f09592e0aa73df2a03671ba1ce2877abcc2c363d"
+    },
+    "A15_guard_current": "Both CAP_NOTE_BAR predicates now require heldmanifest; exact3cd93aca/tree d7cdb/local898cdb source47focused0FAIL0SKIP/TSC0; clean/NOTpublished. First guard c85e prior browser6 is historicalsource, guard alignment second prunenote behavior-equivalent under actual buildTiles(null)->prunedfalse. Final898review request68747 refused rc75 active_lane_limit_reached (2/2) before providerSTART,228B2ec4 result rootnull. Sameeffect frozen/no retry/duplicate/alternatehost/model/carrier; no acceptance. mmx storage LOW_SPACE applies new acquisition only; existing approved SSD retained, source operation registry status notregistered is not writer vacancy or fabricated custody.",
+    "A15_new_fallback_proposal": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a15-idb-classified-refresh-patch-proposal-20261010/parent-detached-qualification-with-real-browser.json",
+      "bytes": 3508,
+      "sha256": "c6ea634e1b3ed89f7c790190c5522d17900fdd8c38a9ce9645ba2a87c0c7603c"
+    },
+    "A15_new_fallback_review_admission": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a15-idb-classified-fallback-proposal-review-20261010/independent-review-admission.json",
+      "bytes": 832,
+      "sha256": "b47ae09bb4c86d642ddb69a3520c19d2980e99bb51c96635d6a12effc98b5df2"
+    },
+    "A15_fallback_current": "NEW actual browser-mode dependency from owner Macro8719 DSC IDB hides failed refresh. ShareddataCache held707 0b48ac7 untouched; no sharedcache/IDB/flow/schema/clock/entitlement edit. PATCH_ONLY C2 build refused75NONE/no_pool/preSTART/NOT_FOUND frozen; parent bounded detached2option caller proposal a7160bf5 uses existing ttl0/swrfalse on STATIC_MANIFEST fallback only. Same8 actual native assertions old5FAIL3PASS/new8PASS0FAIL0SKIP and TSC0, realcache/idb modules/fakeIDB/fetch/mockedTreemap geometry. First outsideReact import0collected retained; nativepath-only copies fixed, exacttemporaryfile cleanup. Candidate source remains E detached, original839898 restored/clean. Primary flowGetResult SWR and global cache staleness remain separate limits.",
+    "A15_real_browser": "Actual shared Discover route/real Chromium IndexedDB before one concrete counterexample retained rows and old disk asof after failed503 but no stale label; aftera716 six ENZH1440x900/820x1180/390x844 cases PASS0FAIL/12PNG/zerohorizontaloverflow/pageerrors. Actual last-read label, full2/4coverage/missingNVDA+MSFT retained, actual Retry re-reads new fixturebytes and updates disk asof only on success. Own local unlimitedE2Efixture/guest403+fallback503, not paid/production/actual financialauthority. First61s clockprobe saw no failedtransport, not productred; changed clock to two pollperiods121s with measured reads and unchanged assertions. Owned overlay restored exact3cd hash and prooflistener stopped safely, sourceclean/portfree; originalScripts protected.",
+    "A15_distinct_review_current": "ONE C2 independent review terminal-audit20-a15-idb-classified-fallback-proposal-review-20261010 normalrouter ubuntu2/request36480/packet88363B16e2a083. ACTIVE_OR_WAITING/rootnull/resultfalse, providerSTART/resultnotqualified. This reviews materially new fallback contract after actual5causalredcases, not retry/acceptance of refused unchanged898guard review. No routing override/freshroot/newwriter/hostpreselection. Consume exact same-ID sealed review.json with complete own checker body, bind/adjudicate; no duplicate/resubmit/kill/manuallease.",
+    "current_owner_generation": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-b7-owner-generation-parent-consumption-20261010T0015.json",
+      "bytes": 2369,
+      "sha256": "89fc0802ee9865d912cc5aa6b08850298c5562911e255000d8b31aae82ab685f"
+    },
+    "current_owner_generation_readback": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-current-source-runtime-owner-readback-20261010T0013.json",
+      "bytes": 744,
+      "sha256": "c4ff665e658d2e652722484fe820eecb70c2da387ffae31416ca4a062cf5490c"
+    },
+    "current_production": "Sourceowner891 actually deployed currentmasterb7; fresh parent read canonicalHEAD=runtime=publicmarkerb7, canonicalclean/all3ACTIVE/no stage/builder. Owning891a933 final37999796979 latest exact3required contexts SUCCESS; publicTerminal HTTP200/markerb7. New source/runtime discrepancy is reconciled through actualownerdeployment, no parent builder/restore/retryc968 or releasecontrolchange. Oldc968 firstpreflight refusal retained immutable. Three ownerbundle filenames not listed in Terminalroute, no guessedfetch/no paid UI claim.",
+    "IW2_existing_continuation": "ActualT03k START6e11e045 remains; lastnative23:59 sameQualify1running0stalled/150k advancing after transient0running1stalled display and readonly phase disclosure, no recovery effect. Peercompactcursor46 idle unchanged; notnativeworkerterminal. No exactnexthead/review/cutover accepted; originalO continuation only, never liveSendMessage/Stop/duplicate. Exact0030b840 separately unapproved/0030-32unapplied/Draft/SQL+rights+release+paid holds preserved.",
+    "IW2_native_liveness_binding": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/iw2-T03k-existing-native-phase-liveness-20261009T2359.json",
+      "bytes": 1586,
+      "sha256": "5618e05f263bca28d298a26d80e0ba1c5dfb55086d5de9acd57e35924449407e"
+    },
+    "unchanged_carrier_waits": "781/873 once-only new head/currentrun approvals23:36 retained; MOG/nativeauto/soleheartbeat owns terminalevents, no newCIpoll/controller/dispatch/PUT/reapprove. 887 exactallow question andexistingProidentity pending/no inference; originalA19authority/A12/A09/export/security/moneyholds unchanged.",
+    "next_safe_phase": "Consume new actual-IDB caller proposal review sameID whenready; independently qualify hashes/source/adversarial body, then exactsource integration/permanent8cases on same839 parent lane only if final source scope accepted; fresh exactcarrier/head/master normalFFpublication then existing3contextCI/MOG merge/canonicalrelease/live. Do not accept refused898review or route an unchanged denied effect differently. Consume actual804T03k next return/readonlyreview from originalowner.",
+    "continuation": "DURABLE_EXECUTION_RUNNING supported by actual804T03k START plus sole nativeheartbeat; newreview handle36480 notPID/wake/START. Browser/newnative phase complete, no parent mission complete. Save is not completion; ready returns remain owned here."
   }
 }
