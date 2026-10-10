@@ -729,20 +729,23 @@ def ack_official_preview(
     *,
     accepted_ids: set[str],
 ) -> bool:
-    """Commit the EXISTING seen then ETag state only after downstream acceptance.
+    """Commit existing source state after qualified downstream acceptance.
 
-    Fail closed on a changed on-disk ledger, wrong root or incomplete accepted
-    set. Caller-owned accepted_ids is not itself proof of a downstream write;
-    verify the incumbent store/snapshot first. A failure after _save_seen may
-    leave SEEN_APPLIED/STATE_PENDING: reread the original owners to reconcile,
-    never blindly retry or activate a new queue.
+    A nonempty event batch needs exactly matching accepted IDs and writes the
+    incumbent seen ledger before ETag state. A truly empty batch writes ONLY
+    polling state (ETag/last-attempt/backoff), protecting agency politeness;
+    this is not a source-event acceptance. Any changed on-disk ledger, wrong
+    root or mismatched IDs refuses mutation. Caller-supplied accepted IDs are
+    not durable-store proof; the incumbent consumer must verify that first.
+    A fault after seen write can leave SEEN_APPLIED/STATE_PENDING: reconcile
+    the same source files, never blindly retry or create another queue.
     """
     if (not isinstance(preview, OfficialFeedPreview)
             or preview.root_key != str(Path(root).resolve())
             or not isinstance(accepted_ids, set)):
         return False
     offered = {str(row["id"]) for row in preview.items}
-    if not offered or not offered.issubset(accepted_ids):
+    if accepted_ids != offered:
         return False
     if not offered.issubset(preview.updated_seen):
         return False
@@ -751,6 +754,16 @@ def ack_official_preview(
             or _official_checkpoint(root, "state.json")[1]
             != preview.baseline_state_digest):
         return False
+
+    if not offered:
+        # No events were offered for acceptance. Preserve only the existing
+        # poller's ETag/last-attempt/backoff state so official-feed politeness
+        # survives quiet or failing polls; never mint or rewrite a seen ledger
+        # for an empty batch. This is NOT event acceptance.
+        if not any(k in preview.updated_state for k in _OFFICIAL_PREVIEW_URLS):
+            return False
+        _save_state(root, preview.updated_state)
+        return True
 
     # State/ETag MUST NOT commit ahead of the seen ledger. If the process fails
     # after the first atomic write, a repeat GET may over-fetch but cannot

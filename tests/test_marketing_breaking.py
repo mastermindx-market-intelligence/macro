@@ -1776,3 +1776,58 @@ def test_official_preview_refuses_redirected_http_error_status(
     state = tmp_path / "data/marketing/breaking"
     assert not (state / "state.json").exists()
     assert not (state / "seen.json").exists()
+
+
+
+def test_official_empty_poll_records_existing_fetch_state_without_seen_consumption(
+        tmp_path, monkeypatch):
+    """No new event: preserve courtesy/backoff without inventing seen IDs."""
+    from engine.marketing import breaking_feed as feed
+    src = dict(BLS_SOURCE_CFG)
+    calls = []
+    def quiet_poll(source_cfg, *, root, session_state):
+        calls.append((source_cfg["key"], dict(session_state)))
+        session_state["bls_news"] = {
+            "etag": "observed-empty-etag", "last_poll_ts": 1791524100.0,
+            "fail_count": 0,
+        }
+        return []
+
+    monkeypatch.setattr(feed, "poll_source", quiet_poll)
+    first = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert first.items == ()
+    source_dir = tmp_path / "data/marketing/breaking"
+    assert not (source_dir / "state.json").exists()
+    assert feed.ack_official_preview(tmp_path, first, accepted_ids=set()) is True
+    assert not (source_dir / "seen.json").exists()
+    assert json.loads((source_dir / "state.json").read_text())[
+        "bls_news"]["etag"] == "observed-empty-etag"
+    again = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert again.items == ()
+    assert calls[-1][1]["bls_news"]["etag"] == "observed-empty-etag"
+
+
+def test_official_empty_poll_ack_rejects_concurrent_state_update(
+        tmp_path, monkeypatch):
+    from engine.marketing import breaking_feed as feed
+    src = dict(BLS_SOURCE_CFG)
+    def quiet_poll(source_cfg, *, root, session_state):
+        session_state["bls_news"] = {"etag": "proposed"}
+        return []
+    monkeypatch.setattr(feed, "poll_source", quiet_poll)
+    token = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    feed._save_state(tmp_path, {"bls_news": {"etag": "already-newer"}})
+    assert feed.ack_official_preview(tmp_path, token, accepted_ids=set()) is False
+    assert feed._load_state(tmp_path)["bls_news"]["etag"] == "already-newer"
+    assert not (tmp_path / "data/marketing/breaking/seen.json").exists()
+
+
+def test_official_empty_poll_cannot_ack_unoffered_event_ids(tmp_path, monkeypatch):
+    from engine.marketing import breaking_feed as feed
+    src = dict(BLS_SOURCE_CFG)
+    monkeypatch.setattr(feed, "poll_source", lambda *args, **kwargs: [])
+    preview = feed.preview_official_sources(tmp_path, {"sources": [src]})
+    assert feed.ack_official_preview(
+        tmp_path, preview, accepted_ids={"unoffered"}
+    ) is False
+    assert not (tmp_path / "data/marketing/breaking/state.json").exists()
