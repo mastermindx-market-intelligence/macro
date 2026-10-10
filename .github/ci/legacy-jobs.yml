@@ -8711,6 +8711,21 @@ jobs:
       - name: Forex context bus and movement evidence (synthetic inputs, temporary output)
         run: python -m pytest tests/test_forex_context_bus.py -q
 
+  quant-q09-venue-concentration:
+    if: ${{ false }}
+    gate: code
+    # Q09 venue-concentration reference: availability clock, tier coverage, share conservation, vintages, HHI limits, vocabulary guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q09 offexchange venue concentration tests
+        run: python -m pytest tests/test_offexchange_venue_concentration.py -q
+
   grader-manifest:
     if: ${{ false }}
     gate: code
