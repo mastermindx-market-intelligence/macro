@@ -11193,6 +11193,21 @@ jobs:
       - "templates/_curve_panel.html.j2"
       - "templates/_macro_suite_shell.html.j2"
 
+  quant-q12-parity-forward:
+    if: ${{ false }}
+    gate: code
+    # Q12 parity forward interval: identity, band interval, quote-quality refusal, incompatibility, American/carry limits, no relabel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q12 options parity forward interval suite
+        run: python -m pytest tests/test_options_parity_forward_interval.py -q
+
   ccw-w6-study-s1:
     if: ${{ false }}
     gate: code
