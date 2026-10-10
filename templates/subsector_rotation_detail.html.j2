@@ -29,6 +29,7 @@
   .sd-q.q-weak{color:var(--ink-warn, var(--warn));background:color-mix(in srgb,var(--warn) 15%,transparent);}
   .sd-q.q-impr{color:var(--ink-link, var(--link));background:color-mix(in srgb,var(--link) 15%,transparent);}
   .sd-q.q-lag{color:var(--ink-down, var(--down));background:color-mix(in srgb,var(--down) 15%,transparent);}
+  .sd-q.q-na,.sd-q.q-neutral{color:var(--muted);background:var(--panel2);}
   .sd-lede { font-size:13.5px; color:var(--muted); max-width:78ch; line-height:1.55; margin:8px 2px 18px; }
   .sd-lede b { color:var(--text); }
   .sd-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px; }
@@ -65,7 +66,7 @@
     <div>
       <h1>{{ t(sub.name, sub.name_zh) }}</h1>
       <div class="sd-theme">{{ t('Theme', '主题') }}: <b>{{ t(sub.theme, sub.theme_zh) }}</b> · {{ sub.n_members }} {{ t('stocks', '只成分股') }}
-        · {{ t('heat rank', '热度排名') }} #{{ sub.rank }}{{ ' / ' ~ n_total }}</div>
+        · {{ t('heat rank', '热度排名') }} {{ ('#' ~ sub.rank) if sub.rank is not none else '—' }}{{ ' / ' ~ n_total }}</div>
     </div>
     <span class="sd-q {{ q_cls }}">{{ t(q_en, q_zh) }} · {{ t(qx_en, qx_zh) }}</span>
   </div>
@@ -75,12 +76,12 @@
   <div class="sd-grid">
     <div class="sd-card">
       <div class="lab">{{ t('Strength vs. market', '相对大盘强度') }}</div>
-      <div class="val {{ 'up' if sub.rs_ratio > 0 else ('dn' if sub.rs_ratio < 0 else '') }}">{{ '%+.2f'|format(sub.rs_ratio) }}</div>
+      <div class="val {{ 'up' if (sub.rs_ratio or 0) > 0 else ('dn' if (sub.rs_ratio or 0) < 0 else '') }}">{{ ('%+.2f'|format(sub.rs_ratio)) if sub.rs_ratio is not none else '—' }}</div>
       <div class="sub">{{ t('positive = stronger than the median subsector', '正值 = 强于中位数子行业') }}</div>
     </div>
     <div class="sd-card">
       <div class="lab">{{ t('Trend (velocity)', '趋势（速度）') }}</div>
-      <div class="val {{ 'up' if sub.rs_mom > 0 else ('dn' if sub.rs_mom < 0 else '') }}">{{ '%+.2f'|format(sub.rs_mom) }}</div>
+      <div class="val {{ 'up' if (sub.rs_mom or 0) > 0 else ('dn' if (sub.rs_mom or 0) < 0 else '') }}">{{ ('%+.2f'|format(sub.rs_mom)) if sub.rs_mom is not none else '—' }}</div>
       <div class="sub">{{ t('rate of change of relative strength — heating (+) or cooling (−)', '相对强度的变化速度 — 升温 (+) 或降温 (−)') }}</div>
     </div>
     <div class="sd-card">
@@ -90,7 +91,7 @@
     </div>
     <div class="sd-card">
       <div class="lab">{{ t('Heat score', '热度评分') }}</div>
-      <div class="val {{ 'up' if sub.emerging_score > 0 else ('dn' if sub.emerging_score < 0 else '') }}">{{ '%+.2f'|format(sub.emerging_score) }}</div>
+      <div class="val {{ 'up' if (sub.emerging_score or 0) > 0 else ('dn' if (sub.emerging_score or 0) < 0 else '') }}">{{ ('%+.2f'|format(sub.emerging_score)) if sub.emerging_score is not none else '—' }}</div>
       <div class="sub">{{ t('velocity + acceleration + recent strength, blended', '速度 + 加速度 + 近期强度的综合') }}</div>
     </div>
   </div>
