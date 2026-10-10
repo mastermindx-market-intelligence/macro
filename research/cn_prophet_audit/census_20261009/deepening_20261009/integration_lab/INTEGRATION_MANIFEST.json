@@ -1,0 +1,50 @@
+{
+  "excluded": "Temporary pinned-source exports, disposable parquet/control files and __pycache__ are not delivered. Exact row values and parquet hash are in the retained fixture/receipt.",
+  "files": [
+    {
+      "bytes": 21087,
+      "git_blob": "4dafeae573e3f2be869394b1369d5b6678ec25ad",
+      "path": "INTEGRATION_DECISIONS.md",
+      "sha256": "4fd3eccc06dd6d85ffb69b37a15e6ff8c5a7c17cabdcb9e4f9877865a57bcdf0"
+    },
+    {
+      "bytes": 24665,
+      "git_blob": "ee6e52a93022dd75a5a42f2bc45709f07c5fcb75",
+      "path": "contract_prototype.py",
+      "sha256": "df11434734c550715df92596f70cd0a0da1b0e042865c5737c6aa5adc6ecebd0"
+    },
+    {
+      "bytes": 2207,
+      "git_blob": "54cc5ae63a6a6abb66629946c01fb9268a0242bf",
+      "path": "execution.log",
+      "sha256": "0659ce9eb91d9d2a41f1d08ca704e01c4953e5b62f482a44b75689c0921e7469"
+    },
+    {
+      "bytes": 3177,
+      "git_blob": "32e401f9e4224e4081652f74af4a3c30d8e2f57a",
+      "path": "execution_receipt.json",
+      "sha256": "98f31902f3fb9dbbab125ffa570c9bba57133d0e33f15140fc83da69f9f07ff8"
+    },
+    {
+      "bytes": 27278,
+      "git_blob": "5bfbf7ca76190ff46ccb11c7f7a5705f9850df52",
+      "path": "integration_fixture.json",
+      "sha256": "fe7e1123269eac895eb324cbe3510ec3de9cfbfce10c44518c593d550d34a545"
+    },
+    {
+      "bytes": 43009,
+      "git_blob": "7884921446cb7e1efba26035da6c6e0190bc028f",
+      "path": "integration_results.json",
+      "sha256": "58ab978836c10cc9f6cc6b508e7f93c8aaa68f448e56a39137acb0caace69128"
+    },
+    {
+      "bytes": 32343,
+      "git_blob": "3332c27a153a05bc762b77a747892eef3d857391",
+      "path": "run_lab.py",
+      "sha256": "534ec458f607c9c90bb312c629829d100892ae38bd2dc6973548e0cd70acc458"
+    }
+  ],
+  "schema": "cn-integration-delivery-manifest/v1",
+  "status": "PASS_OFFLINE_RESEARCH",
+  "study_source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139"
+}
