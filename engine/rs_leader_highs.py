@@ -14,8 +14,8 @@ import pandas as pd
 from lib.nyse_calendar import is_session, last_session_on_or_before, sessions_between
 
 SCHEMA = "leader_rs_highs.v1"
-DAILY_SESSIONS = 126
-WEEKLY_WEEKS = 26
+DAILY_SESSIONS = 252
+WEEKLY_WEEKS = 52
 WATCH_SESSIONS = 21
 WATCH_WEEKS = 8
 
@@ -110,7 +110,7 @@ def observe_rs_highs(
     *,
     as_of: date,
 ) -> dict:
-    """RS-line 126-session high and 26-*completed*-week high, both vs SPY.
+    """RS-line 252-session high and 52-*completed*-week high, both vs SPY.
 
     Missing data are UNKNOWN, never FALSE. A completed weekly observation is
     anchored to the actual last NYSE session of that week, including short
@@ -155,7 +155,8 @@ def observe_rs_highs(
         c, b, sessions, lookback=DAILY_SESSIONS, watch=WATCH_SESSIONS,
     )
 
-    # Select the last 27 completed Friday-anchored trading weeks. Do NOT use
+    # Select the last 52+8 completed Friday-anchored trading weeks for the
+    # 52-week high and the short post-high watch; never include a partial week. Do NOT use
     # resample('W-FRI').last() on partial/missing bars: that silently substitutes
     # Thursday for a missing Friday even when Friday was an open NYSE session.
     end_friday = as_of + timedelta(days=4 - as_of.weekday())
