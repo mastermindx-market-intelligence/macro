@@ -45,6 +45,8 @@
   let pendingRef = null;
   let pendingEmail = null;
   let formShownAt = 0;
+  let incomingTickers = [];
+  let incomingEventId = null;
   let activeRequest = null;
   let scanRunning = false;
 
@@ -308,7 +310,14 @@
     show(busy, true); show(results, false); resetSubscriberState();
     cards.replaceChildren();
     try {
-      const data = checkScan(await api(SCAN_PATH, { tickers }), tickers);
+      // Preserve a partner's source-backed event identity only for the
+      // unchanged initially shared ticker set. A fresh ticker search must
+      // not inherit a different event's identity from an old share URL.
+      const sameNames = incomingTickers.length === tickers.length &&
+        tickers.every((ticker, index) => incomingTickers[index] === ticker);
+      const payload = sameNames && incomingEventId
+        ? { tickers, event_id: incomingEventId } : { tickers };
+      const data = checkScan(await api(SCAN_PATH, payload), tickers);
       displayResults(data, tickers);
     } catch (e) {
       const message = e && typeof e.message === "string" ? e.message : "Evidence is unavailable.";
@@ -397,7 +406,13 @@
   show(el("cs-js-needed"), false);
 
   try {
-    const initial = new URLSearchParams(window.location.search).get("tickers");
-    if (initial) input.value = parseTickers(initial).join(", ");
+    const params = new URLSearchParams(window.location.search);
+    const initial = params.get("tickers");
+    if (initial) {
+      incomingTickers = parseTickers(initial);
+      input.value = incomingTickers.join(", ");
+    }
+    const event = params.get("event_id");
+    if (event && /^[A-Za-z0-9_.:-]{1,128}$/.test(event)) incomingEventId = event;
   } catch { /* Ignore unsafe/unqualified URL input. Never submit automatically. */ }
 })();
