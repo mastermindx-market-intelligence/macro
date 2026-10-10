@@ -556,6 +556,10 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
 .rs-highs-foot{color:var(--text-secondary);font-size:12px;margin-top:10px;}
 .rs-highs-recents{grid-column:1/-1;}
 .rs-highs-ticker-date{font:500 10px var(--num);color:var(--text-secondary);}
+.rs-highs-entry{font:600 10px var(--font-ui);color:var(--text-secondary);white-space:nowrap;}
+.rs-highs-entry.staged{color:var(--col-ignition);}
+.rs-highs-entry.caution{color:var(--col-crowded);}
+
 
 @media(max-width:680px){.rs-highs-panel{padding:14px}.rs-highs-columns{grid-template-columns:1fr}}
 </style>
@@ -886,6 +890,16 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
 </section>
 
 {# RS HIGH WATCH — additive read-only projection, no entry or rank authority. #}
+{% macro _rs_entry_stance(item) -%}
+  {%- set key = item.entry_read_key if item.entry_read_key is defined else none -%}
+  {%- if key == 'staged' -%}<span class="rs-highs-entry staged">{{ t('Staged','待启动') }}</span>
+  {%- elif key == 'building' -%}<span class="rs-highs-entry staged">{{ t('Building','蓄势') }}</span>
+  {%- elif key == 'extended' or key == 'protect' -%}<span class="rs-highs-entry caution">{{ t('Caution','谨慎') }}</span>
+  {%- elif key == 'in_motion' -%}<span class="rs-highs-entry">{{ t('Moving','行进中') }}</span>
+  {%- elif key == 'failed' -%}<span class="rs-highs-entry caution">{{ t('Failed','失效') }}</span>
+  {%- elif key == 'turnaround_watch' -%}<span class="rs-highs-entry">{{ t('Turnaround','反转观察') }}</span>
+  {%- endif -%}
+{%- endmacro %}
 {% set _rsw = lr.rs_high_roster if lr.rs_high_roster is defined and lr.rs_high_roster is not none else {} %}
 {% if _rsw.schema is defined and _rsw.schema == 'leader_rs_high_roster.v1' %}
 <section class="rs-highs-panel glass" aria-label="Relative strength highs">
@@ -909,7 +923,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       <div class="rs-highs-tickers">
       {% for item in _hs[:18] %}
         <a class="rs-highs-ticker" href="us_stocks.html#{{ item.ticker|e }}" aria-label="View {{ item.ticker|e }} on US stocks board">
-          {{ item.ticker|e }}{% if item.rs_leads_price %}<span class="rs-highs-leads">{{ t('RS first','强度领先') }}</span>{% endif %}
+          {{ item.ticker|e }}{% if item.rs_leads_price %}<span class="rs-highs-leads">{{ t('RS first','强度领先') }}</span>{% endif %}{{ _rs_entry_stance(item) }}
         </a>
       {% endfor %}
       {% if _hs|length > 18 %}<span class="rs-highs-ticker">+{{ _hs|length - 18 }}</span>{% endif %}
@@ -935,6 +949,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
         <a class="rs-highs-ticker" href="us_stocks.html#{{ item.ticker|e }}" title="Last RS high {{ item.last_high_as_of|e }} — review entry state, do not chase">
           {{ item.ticker|e }}
           <span class="rs-highs-ticker-date">{{ item.last_high_as_of|e }}</span>
+          {{ _rs_entry_stance(item) }}
         </a>
         {% endfor %}
         {% if _recent|length > 30 %}<span class="rs-highs-ticker">+{{ _recent|length - 30 }}</span>{% endif %}
