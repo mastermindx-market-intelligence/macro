@@ -1,0 +1,69 @@
+{% macro t(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
+{% macro num(value) -%}{{ '%.0f'|format(value) if value is not none else '—' }}{%- endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+{% include '_interfonts.html.j2' %}
+<title>COT Positioning | Mastermind</title>
+<meta name="description" content="Official futures positioning across 21 markets, with trader breakdowns, historical context and transparent source dates.">
+<link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="navigation-refresh.css"><link rel="stylesheet" href="cot_positioning.css">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'dark';document.documentElement.dataset.lang=localStorage.getItem('lang')||'en';}catch(e){}</script>
+<script src="theme.js" defer></script><script src="nav_market.js" defer></script><script src="cot_positioning.js" defer></script>
+</head>
+<body class="page-cot" data-cot-snapshot="{{ snapshot.content_sha256 }}">
+{% include '_site_nav.html.j2' %}
+<main class="cot-shell">
+<header class="cot-heading">
+  <div><p class="cot-eyebrow">{{ t('WEEKLY FUTURES · CFTC', '每周期货持仓 · CFTC') }}</p>
+  <h1>{{ t('Who’s positioned where', '资金如何布局') }}</h1>
+  <p class="cot-subtitle">{{ t('Spot crowded markets. Check the breakdown before drawing a conclusion.', '识别拥挤市场，先看分类，再下结论。') }}</p></div>
+  <div class="cot-coverage"><strong>{{ snapshot.coverage.current }} / 21</strong><span>{{ t('current when built', '生成时为最新') }}</span>
+  <small>{{ t('Built', '生成于') }} {{ snapshot.generated_at[:16]|replace('T',' ') }} UTC</small></div>
+</header>
+<div class="cot-toolbar">
+  <label>{{ t('Find a market', '查找市场') }}<input id="cot-search" type="search" autocomplete="off" placeholder="S&P, gold, bonds…" data-ph-zh="标普、黄金、美债…"></label>
+  <label>{{ t('Market group', '市场类别') }}<select id="cot-category"><option value="all">{{ 'All markets' }}</option>{% for key, labels in categories.items() %}<option value="{{ key }}" data-en="{{ labels[0] }}" data-zh="{{ labels[1] }}">{{ labels[0] }}</option>{% endfor %}</select></label>
+  <label class="cot-filter"><input type="checkbox" id="cot-extremes">{{ t('Unusual positioning only', '仅显示异常持仓') }}</label>
+  <a class="cot-method-link" href="#cot-method">{{ t('How to read this', '如何解读') }}</a>
+</div>
+<p id="cot-load-status" class="cot-status" role="status" aria-live="polite">{{ t('Weekly snapshot · not live order flow', '周度快照 · 非实时订单流') }}</p>
+<div class="cot-workspace">
+<section class="panel cot-board" aria-labelledby="cot-board-title">
+  <div class="cot-section-heading"><h2 id="cot-board-title">{{ t('Positioning overview', '持仓概览') }}</h2><span>{{ t('History scores · 0–100', '历史区间评分 · 0–100') }}</span></div>
+  <div class="cot-table-scroll"><table class="cot-table">
+    <thead><tr><th scope="col">{{ t('Market', '市场') }}</th><th scope="col">{{ t('Commercial', '商业交易者') }}</th><th scope="col">{{ t('Large specs', '大型投机者') }}</th><th scope="col">{{ t('Other small', '非报告持仓') }}</th><th scope="col">{{ t('Attention', '关注程度') }}</th></tr></thead>
+    {% for key, labels in categories.items() %}
+    <tbody data-category="{{ key }}"><tr class="cot-group"><th colspan="5" scope="rowgroup">{{ t(labels[0], labels[1]) }}</th></tr>
+      {% for market in snapshot.markets if market.category == key %}{% set f=market.families.legacy %}{% set large=f.cohorts.get('noncommercial',{}) %}{% set level=large.get('tier',{}).get('level','unavailable') %}
+      <tr data-market="{{ market.market_id }}" data-category="{{ key }}" data-level="{{ level }}" data-search="{{ market.name|lower }} {{ market.name_zh }} {{ market.market_id }}">
+        <th scope="row"><button class="cot-market-button" type="button" data-select="{{ market.market_id }}" aria-controls="cot-detail">{{ t(market.name, market.name_zh) }}</button><small>{{ f.get('report_asof_date') or '—' }}{% if f.state != 'current' %} · {{ t(states.get(f.state,states.unavailable)[0],states.get(f.state,states.unavailable)[1]) }}{% endif %}</small></th>
+        {% for c in ['commercial','noncommercial','nonreportable'] %}{% set score=f.cohorts.get(c,{}).get('percentile_156w') %}<td class="cot-score">{{ num(score) }}</td>{% endfor %}
+        <td><span class="cot-tier" data-tier="{{ level }}">{{ t(tiers[level][0],tiers[level][1]) }}</span></td>
+      </tr>{% endfor %}
+    </tbody>{% endfor %}
+  </table></div>
+  <p id="cot-empty" class="cot-empty" hidden>{{ t('No markets match these filters.', '没有符合筛选条件的市场。') }}</p>
+  <p class="cot-footnote">{{ t('High and low scores describe history, not buy or sell instructions.', '高低评分描述历史位置，并非买卖指令。') }}</p>
+</section>
+<section class="panel cot-detail" id="cot-detail" aria-labelledby="cot-detail-title" tabindex="-1">
+  <div class="cot-section-heading"><h2 id="cot-detail-title">{{ t('Select a market', '选择市场') }}</h2><span id="cot-detail-code"></span></div>
+  <p class="cot-detail-stance" id="cot-stance">{{ t('Compare the groups. Don’t trade on positioning alone.', '比较不同群体，不要仅凭持仓交易。') }}</p>
+  <div class="cot-controls"><label><span id="cot-family-label">{{ t('Trader breakdown', '交易者分类') }}</span><select id="cot-family" aria-labelledby="cot-family-label"></select></label><label><span id="cot-cohort-label">{{ t('History chart', '历史图表') }}</span><select id="cot-cohort" aria-labelledby="cot-cohort-label"></select></label></div>
+  <p id="cot-detail-meta" class="cot-meta"></p>
+  <div class="cot-chart" id="cot-chart" role="img" aria-label="Historical net positioning as a share of open interest"><p>{{ t('Loading source history…', '正在读取来源历史…') }}</p></div>
+  <p id="cot-chart-caption" class="cot-meta"></p>
+  <div class="cot-table-scroll"><table class="cot-breakdown"><thead><tr><th>{{ t('Trader group', '交易者群体') }}</th><th>{{ t('Net contracts', '净合约数') }}</th><th>{{ t('Change', '较上期变化') }}</th><th>{{ t('Score', '评分') }}</th></tr></thead><tbody id="cot-cohorts"></tbody></table></div>
+  <details class="cot-provenance"><summary>{{ t('Source & limitations', '来源与限制') }}</summary><div id="cot-provenance"></div></details>
+</section>
+</div>
+<details class="panel cot-method" id="cot-method"><summary>{{ t('How these scores work', '评分计算方法') }}</summary>
+<p>{{ t('Each score compares net contracts as a share of open interest with up to 156 weekly reports. A score of 100 is the highest reading in that window; zero is the lowest. At least 52 reports are required. Shorter histories are shown in the detail panel.', '每项评分将净合约占未平仓量的比例与最多156期周报比较。100表示区间最高值，0表示最低值。至少需要52期数据，较短历史会在详情中注明。') }}</p>
+<p>{{ t('Large-speculator tails: watch at 15/85, setup at 10/90, extreme at 5/95. These are descriptive attention bands, not forecast probabilities or trade recommendations. A low score can still represent a net-long position.', '大型投机者历史区间：15/85以内需留意，10/90以内更突出，5/95以内极端。这些是描述性关注区间，不是预测概率或交易建议。低评分也可能仍为净多头。') }}</p>
+<p>{{ t('Legacy, Financial Futures and Disaggregated reports classify the same market differently. Do not add their exposures together. Nonreportable positions are not a census of retail traders. Commercial hedges and fund shorts can offset other exposures.', '传统、金融期货及分类报告采用不同群体划分，不能叠加敞口。非报告持仓不等同于散户统计。商业套保和基金空头可能抵消其他敞口。') }}</p>
+<p>{{ t('Tuesday observation dates are not publication timestamps. Charts use latest-revised history; observed-version timestamps are retained, but original-vintage replay is not certified. No third-party price series or position sizing is included.', '周二观察日期并非发布时间。图表采用最新修订历史，保留版本观察时间，但不声称认证原始版本回放。本页不包含第三方价格序列或仓位建议。') }}</p>
+<a href="cotdata/latest.json">{{ t('Download the source-backed snapshot', '读取含来源的快照') }}</a>
+</details>
+<footer class="cot-footer">{{ t('Source: U.S. Commodity Futures Trading Commission. Calculations by Mastermind.', '来源：美国商品期货交易委员会（CFTC）。计算：Mastermind。') }}</footer>
+</main>
+</body></html>

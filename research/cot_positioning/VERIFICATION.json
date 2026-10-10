@@ -1,0 +1,36 @@
+{
+  "schema": "cot_source_verification.v1",
+  "scope": "local source fixture, source backfill and browser proof; not production",
+  "tests": {
+    "passed": 232,
+    "failed": 0,
+    "warnings": "2 existing NumPy correlation divide warnings",
+    "basis": "231 full focused-suite tests plus the added passing alias-schema regression"
+  },
+  "source": {
+    "families": 3,
+    "series": 42,
+    "historical_rows": 47714,
+    "latest_report_asof": "2026-10-06",
+    "observation_vintages": "observed fetch versions; not original release certification"
+  },
+  "fixture_sha256": "ef250dee3df7c660641365889477aa2d8b4999aba9037e3fe487b66bc177222f",
+  "browser": {
+    "manifest": "mockups/evidence/cot-positioning-v1/manifest.json",
+    "cells": 16,
+    "captured": 16,
+    "horizontal_overflow": false,
+    "console_errors": [],
+    "failed_responses": []
+  },
+  "unresolved": [
+    "independent audit operation effect_unknown",
+    "Terminal implementation not yet complete",
+    "release review and production/browser acceptance pending"
+  ],
+  "guards": {
+    "ui_visual_evidence": "passed",
+    "design_system_enforce_added": "0 blocking findings",
+    "agentos": "0 errors; 143 pre-existing warnings"
+  }
+}

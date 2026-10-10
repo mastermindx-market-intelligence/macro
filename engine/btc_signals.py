@@ -19,6 +19,7 @@ import numpy as np
 import pandas as pd
 
 from lib import config
+from lib.cot_publication import align_released
 
 
 # --------------------------------------------------------------------------- #
@@ -1067,7 +1068,7 @@ def positioning(inputs: dict, cfg: dict) -> pd.DataFrame:
     out = pd.DataFrame(index=idx)
     cot = inputs.get("cot_net_pct")
     if cot is not None:
-        c = cot.reindex(idx).ffill(limit=cfg["ffill_limit_d"])
+        c = align_released(cot, idx, max_age_days=cfg["ffill_limit_d"])
         out["cot_net_pct"] = c
         out["cot_z"] = _zscore(c, cfg["z_window_d"])
     return out

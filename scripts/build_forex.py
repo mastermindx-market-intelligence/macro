@@ -30,6 +30,8 @@ from jinja2 import Environment, FileSystemLoader
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config, store  # noqa: E402
+from lib.cot_data import read_legacy_frame
+from lib.cot_publication import legacy_series
 from lib.pages import write_page  # noqa: E402
 from lib.forex_kinematics_view import project_kinematics  # noqa: E402
 
@@ -521,11 +523,9 @@ def _group_timeline(events: list[dict]) -> list[dict]:
 def _extra_inputs() -> dict:
     """Multi-column / specially-named series the dollar desk needs (not in drivers)."""
     extra: dict = {}
-    cotd = store.read("cot", "cot_dollar")
+    cotd = read_legacy_frame("cot_dollar")
     if cotd is not None and "net_spec_pct_oi" in cotd.columns:
-        s = pd.to_numeric(cotd["net_spec_pct_oi"], errors="coerce")
-        s.index = pd.to_datetime(s.index)
-        extra["cot_dollar"] = s[~s.index.duplicated(keep="last")].sort_index().dropna()
+        extra["cot_dollar"] = legacy_series(cotd)
     extra["zq_path"] = store.read("rate_futures", "zq_path")
     return extra
 
