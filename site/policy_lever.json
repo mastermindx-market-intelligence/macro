@@ -1,6 +1,6 @@
 {
   "schema": "policy_lever.v1",
-  "as_of": "2026-10-08",
+  "as_of": "2026-10-09",
   "favored_complex": {
     "basket": [
       "SMH",
@@ -31,13 +31,13 @@
       "name_zh": "\u4f0a\u6717/\u77f3\u6cb9",
       "asset": "CL=F",
       "arming": {
-        "stoch_k": 14.16,
-        "stoch_d": 6.36,
+        "stoch_k": 34.7,
+        "stoch_d": 17.5,
         "stoch_curl": true,
         "macd_curl": false,
         "basing": false,
         "days_in_base": 0,
-        "flatness": 0.0183,
+        "flatness": 0.0255,
         "armed": false,
         "stoch_curl_recent": true,
         "stoch_traverse": false,
