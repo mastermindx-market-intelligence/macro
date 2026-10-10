@@ -4292,6 +4292,7 @@ CURATED_EXCLUSIVE = {
     # All packing ceilings, commands, data gate and weights remain unchanged.
     "transmission-chains",
     "nw-lobe-unfreeze",
+    "quant-q06-sparse-cal",  # Q06 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "china-search-universe",
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
     # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
