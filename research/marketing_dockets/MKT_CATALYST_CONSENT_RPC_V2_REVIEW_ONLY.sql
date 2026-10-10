@@ -347,7 +347,7 @@ $$;
 -- Trigger lock keys match catalyst_consent_confirm's fixed lock order.
 create or replace function public.catalyst_consent_on_global_address_suppression()
 returns trigger language plpgsql security definer set search_path = ''
-as $
+as $catalyst_address_revocation$
 declare v_email text;
 begin
   v_email := pg_catalog.lower(pg_catalog.btrim(new.email));
@@ -364,7 +364,7 @@ begin
      and g.revoked_at_utc is null;
   return new;
 end;
-$;
+$catalyst_address_revocation$;
 revoke all on function public.catalyst_consent_on_global_address_suppression()
   from public, anon, authenticated;
 drop trigger if exists catalyst_consent_global_address_revocation
@@ -375,7 +375,7 @@ create trigger catalyst_consent_global_address_revocation
 
 create or replace function public.catalyst_consent_on_global_user_optout()
 returns trigger language plpgsql security definer set search_path = ''
-as $
+as $catalyst_user_revocation$
 begin
   if new.marketing_opt_out is true then
     perform pg_catalog.pg_advisory_xact_lock(
@@ -387,7 +387,7 @@ begin
   end if;
   return new;
 end;
-$;
+$catalyst_user_revocation$;
 revoke all on function public.catalyst_consent_on_global_user_optout()
   from public, anon, authenticated;
 drop trigger if exists catalyst_consent_global_user_revocation
