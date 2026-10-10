@@ -4494,6 +4494,21 @@ jobs:
           tests/test_fundamental_forensics_attested_history_seed.py
           tests/test_fundamental_forensics_attested_occurrence_governance.py -q
 
+  quant-q04-sign-uncertainty:
+    if: ${{ false }}
+    gate: code
+    # Q04 pins trade-sign identification bounds, explicit print outcomes, refusal of quote-derived calibration, session-block honest N, and preserved delta-adjustment null
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q04 flow sign uncertainty reference tests
+        run: python -m pytest tests/test_flow_sign_uncertainty.py -q
+
   express-render-guards:
     if: ${{ false }}
     gate: data
