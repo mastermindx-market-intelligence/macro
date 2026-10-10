@@ -7479,6 +7479,178 @@
         "alpha"
       ],
       "stamp_date": "2026-10-08"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 4.9904761905,
+          "field": "mean_abs_rank_delta",
+          "incoming": 5.0095238095
+        },
+        {
+          "existing": 24,
+          "field": "max_abs_rank_delta",
+          "incoming": 22
+        },
+        {
+          "existing": 84,
+          "field": "rows_moved",
+          "incoming": 87
+        }
+      ],
+      "existing_fingerprint": "624ac777960d96e5ad72ffacfbaf72126233884dff4190ed9e4770f318c9e4bb",
+      "grain": "family",
+      "incoming_fingerprint": "81a73dceaba0b49e4317c439694f4a5e618132254a38dd4ee1951fed1c025e64",
+      "key": [
+        "2026-10-08",
+        "F1_TECHNICAL_CONFLUENCE"
+      ],
+      "stamp_date": "2026-10-08"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 93,
+          "field": "distinct_values",
+          "incoming": 88
+        },
+        {
+          "existing": 0.2476190476,
+          "field": "modal_value",
+          "incoming": 0.2523809524
+        },
+        {
+          "existing": 0.2483227399,
+          "field": "dispersion",
+          "incoming": 0.2482063939
+        },
+        {
+          "existing": 5.180952381,
+          "field": "mean_abs_rank_delta",
+          "incoming": 5.1619047619
+        },
+        {
+          "existing": 95,
+          "field": "rows_moved",
+          "incoming": 94
+        }
+      ],
+      "existing_fingerprint": "3cd0517262b6eb142dcac69128ded1a8f934ec1be1c31747badea2cf4db8c33e",
+      "grain": "family",
+      "incoming_fingerprint": "2dd963178a30b543e24eac9d16358b4acdca0f9fcf70452220bd294fbb378a16",
+      "key": [
+        "2026-10-08",
+        "F2_MOMENTUM_EXTENSION"
+      ],
+      "stamp_date": "2026-10-08"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 1.6952380952,
+          "field": "mean_abs_rank_delta",
+          "incoming": 1.6761904762
+        },
+        {
+          "existing": 74,
+          "field": "rows_moved",
+          "incoming": 72
+        }
+      ],
+      "existing_fingerprint": "d0a1de1926e6f9e24bdc99fc5dbf1ab0db52cc1ee2aceacfe809111c9a0cdcc6",
+      "grain": "family",
+      "incoming_fingerprint": "4855668c197c877cf75c0256ca7d869acfe389cde3d6aabe292cbd7c72f2fb3e",
+      "key": [
+        "2026-10-08",
+        "F4_CATALYST_EVENT"
+      ],
+      "stamp_date": "2026-10-08"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.4547619048,
+          "field": "modal_value",
+          "incoming": 0.4523809524
+        },
+        {
+          "existing": 0.8095238095,
+          "field": "modal_share",
+          "incoming": 0.8
+        },
+        {
+          "existing": 0.1057850471,
+          "field": "dispersion",
+          "incoming": 0.1074334683
+        },
+        {
+          "existing": 2,
+          "field": "mean_abs_rank_delta",
+          "incoming": 2.0952380952
+        },
+        {
+          "existing": 71,
+          "field": "rows_moved",
+          "incoming": 70
+        }
+      ],
+      "existing_fingerprint": "4f35c36e007e34e5fbc492b6630e7e9b63dc855e83c18470610700f9a6b0be40",
+      "grain": "family",
+      "incoming_fingerprint": "8f1787e8bcd624833fa6a7e121e3b6141d6ef19ff315b1e4da57f5cf5b4807d2",
+      "key": [
+        "2026-10-08",
+        "F5_FLOW_POSITIONING"
+      ],
+      "stamp_date": "2026-10-08"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.4476190476,
+          "field": "modal_value",
+          "incoming": 0.4428571429
+        },
+        {
+          "existing": 0.8857142857,
+          "field": "modal_share",
+          "incoming": 0.8761904762
+        },
+        {
+          "existing": 0.1590789818,
+          "field": "dispersion",
+          "incoming": 0.1646820616
+        },
+        {
+          "existing": 64,
+          "field": "rows_moved",
+          "incoming": 63
+        }
+      ],
+      "existing_fingerprint": "ed3d6eba22272b4a85ca700e6355c6cb2110d03119aa5bce578ef81e6e0d332c",
+      "grain": "family",
+      "incoming_fingerprint": "59b06010b350be23ce0cb6cf29b646ed8f617b794505e57f57585ffd6ec42a98",
+      "key": [
+        "2026-10-08",
+        "F8_ATTENTION_CROWDING"
+      ],
+      "stamp_date": "2026-10-08"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 92,
+          "field": "distinct_values",
+          "incoming": 93
+        }
+      ],
+      "existing_fingerprint": "dd5c2aad1c573e7e6dc19b5c6ac2788188dc31de23bc5956751b072a225e8a5d",
+      "grain": "coverage",
+      "incoming_fingerprint": "60c092c4c26fea65874c6bed9017a1ef60196d9128c8da4743d2e0bc1106c123",
+      "key": [
+        "2026-10-08",
+        "alpha"
+      ],
+      "stamp_date": "2026-10-08"
     }
   ],
   "schema": "us.prophet_w3_status/v1",
