@@ -9587,6 +9587,7 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - lib/intl_eod_publication.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -9870,6 +9871,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - lib/intl_eod_publication.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"

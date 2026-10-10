@@ -22,7 +22,12 @@
     "publisher_render": 339,
     "result": "PASS",
     "runtime": "Python 3.12, M2 Studio",
-    "scope": "local; no hosted-green or served acceptance"
+    "scope": "local; no hosted-green or served acceptance",
+    "ci_import_closure": {
+      "passed": 1,
+      "seconds": 128.83,
+      "scope": "All curated exclusive import closures at the current local candidate"
+    }
   },
   "reproduced_and_repaired": [
     "Jinja-dependent tests were placed in the numerical-only CI job",
@@ -56,5 +61,576 @@
     "Do not reopen the Chairman-confirmed redistribution gate"
   ],
   "effect_state": "NO_UNRESOLVED_WRITES",
-  "next_action": "Freeze this source for a bounded independent Fabric review while advancing browser and CI verification"
+  "next_action": "Push the scoped tested repair to the existing PR8715 head, consume the frozen independent review, and reconcile exact-head hosted checks; no merge or deployment until required gates pass.",
+  "real_source_validation": {
+    "candidate": "5370a6e3a0063fbfc3869ac28efae560c08e53f4",
+    "evaluated_at": "2026-10-09T23:53:14.372894+00:00",
+    "data_source_commit": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+    "series": 14,
+    "snapshot": {
+      "as_of": "2026-10-07",
+      "policy": "intl-conservative-observed-eod-tplus2-v1"
+    },
+    "html_sha256": "cad38f881af0f6c80dd17bfb1ff1200f30fbcff12cf1b2c6f5967cbd23ae6d67",
+    "html_bytes": 2669587,
+    "delayed_notices": 1,
+    "results": [
+      {
+        "horizon": "1m",
+        "basis": "usd_unhedged",
+        "qualified": 5,
+        "ranking_status": "unavailable",
+        "rows": [
+          {
+            "market": "JP",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "KR",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "TW",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "IN",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "AU",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "GB",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "EZ",
+            "quality": "qualified",
+            "reason": null
+          }
+        ]
+      },
+      {
+        "horizon": "1m",
+        "basis": "local",
+        "qualified": 5,
+        "ranking_status": "unavailable",
+        "rows": [
+          {
+            "market": "JP",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "KR",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "TW",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "IN",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "AU",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "GB",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "EZ",
+            "quality": "qualified",
+            "reason": null
+          }
+        ]
+      },
+      {
+        "horizon": "3m",
+        "basis": "usd_unhedged",
+        "qualified": 6,
+        "ranking_status": "unavailable",
+        "rows": [
+          {
+            "market": "JP",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "KR",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "TW",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "IN",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "AU",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "GB",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "EZ",
+            "quality": "qualified",
+            "reason": null
+          }
+        ]
+      },
+      {
+        "horizon": "3m",
+        "basis": "local",
+        "qualified": 6,
+        "ranking_status": "unavailable",
+        "rows": [
+          {
+            "market": "JP",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "KR",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "TW",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "IN",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "AU",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "GB",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "EZ",
+            "quality": "qualified",
+            "reason": null
+          }
+        ]
+      },
+      {
+        "horizon": "6m",
+        "basis": "usd_unhedged",
+        "qualified": 5,
+        "ranking_status": "unavailable",
+        "rows": [
+          {
+            "market": "JP",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "KR",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "TW",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "IN",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "AU",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "GB",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "EZ",
+            "quality": "qualified",
+            "reason": null
+          }
+        ]
+      },
+      {
+        "horizon": "6m",
+        "basis": "local",
+        "qualified": 5,
+        "ranking_status": "unavailable",
+        "rows": [
+          {
+            "market": "JP",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "KR",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "TW",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "IN",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "AU",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "GB",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "EZ",
+            "quality": "qualified",
+            "reason": null
+          }
+        ]
+      },
+      {
+        "horizon": "12m",
+        "basis": "usd_unhedged",
+        "qualified": 7,
+        "ranking_status": "unavailable",
+        "rows": [
+          {
+            "market": "JP",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "KR",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "TW",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "IN",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "AU",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "GB",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "EZ",
+            "quality": "qualified",
+            "reason": null
+          }
+        ]
+      },
+      {
+        "horizon": "12m",
+        "basis": "local",
+        "qualified": 7,
+        "ranking_status": "unavailable",
+        "rows": [
+          {
+            "market": "JP",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "KR",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "TW",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "IN",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "AU",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "GB",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "EZ",
+            "quality": "qualified",
+            "reason": null
+          }
+        ]
+      },
+      {
+        "horizon": "ytd",
+        "basis": "usd_unhedged",
+        "qualified": 4,
+        "ranking_status": "available",
+        "rows": [
+          {
+            "market": "JP",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "KR",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "TW",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "IN",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "AU",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "GB",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "EZ",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          }
+        ]
+      },
+      {
+        "horizon": "ytd",
+        "basis": "local",
+        "qualified": 4,
+        "ranking_status": "available",
+        "rows": [
+          {
+            "market": "JP",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "KR",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          },
+          {
+            "market": "TW",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "IN",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "AU",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "GB",
+            "quality": "qualified",
+            "reason": null
+          },
+          {
+            "market": "EZ",
+            "quality": "unsupported",
+            "reason": "quality_unsupported"
+          }
+        ]
+      }
+    ],
+    "limits": "Real committed index/FX series and current EOD publisher/template; synthetic legacy outer VM. Not authenticated or deployed evidence."
+  },
+  "browser_validation": {
+    "cases": 72,
+    "viewport_widths": [
+      1440,
+      390,
+      320
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "views": [
+      "overview",
+      "compare",
+      "macro",
+      "risk",
+      "history",
+      "library"
+    ],
+    "uncaught_javascript_errors": [],
+    "missing_resources": [],
+    "external_requests_deliberately_blocked": [
+      "cloud.umami.is/script.js"
+    ],
+    "keyboard": "horizon-to-basis focus visible",
+    "limits": "Isolated browser profile. Real EOD index/FX page with synthetic legacy outer VM; not authenticated production.",
+    "artifact_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/EOD_PROOF_5370",
+    "captures": {
+      "compare-1440-dark-en.png": {
+        "sha256": "de44f41288b8d5c7dd52f6ced1f69e422d3055ac386fd4f2724300651e5809bc",
+        "bytes": 355030
+      },
+      "compare-1440-dark-zh.png": {
+        "sha256": "7e0351c923e142ee659018bdba51e470007c7b52d93cbd4fc8de0034122f9ab2",
+        "bytes": 350367
+      },
+      "compare-1440-light-en.png": {
+        "sha256": "39dc82d0eb102e26fde74452a74662e268aa2e23e44102f797b1198dfda353be",
+        "bytes": 359031
+      },
+      "compare-1440-light-zh.png": {
+        "sha256": "8bc8739234fbf39f39304c73f4007e40f8ecc2fd8d15899c24bf9e9058de50cc",
+        "bytes": 353777
+      },
+      "compare-390-dark-en.png": {
+        "sha256": "372a63188aa7239717b2ff499275d4928db786532ba4798227bafc7076474e2b",
+        "bytes": 324621
+      },
+      "compare-390-dark-zh.png": {
+        "sha256": "f4bbc70d6637dcb7f0928a6eeca541210626edf4b59b6de6a77175afee1b5309",
+        "bytes": 304659
+      },
+      "compare-390-light-en.png": {
+        "sha256": "bd904a3f97e7d3869aaeb9645a84a7783e1f7ee3ade8315c00cbbda7dd60352b",
+        "bytes": 320750
+      },
+      "compare-390-light-zh.png": {
+        "sha256": "25d429c1a411b3b2064f976c7271a2869dece88c1142f601f5a5ea151197ecfe",
+        "bytes": 300774
+      },
+      "overview-1440-dark-en.png": {
+        "sha256": "7420733c938db5362da35d079fbb18f4c568afb714216bc236d763c86992cc94",
+        "bytes": 304482
+      },
+      "overview-1440-dark-zh.png": {
+        "sha256": "9efc36f0b8d407794be539f709e434ead74a0a6afdcea8f865665f91b5fc216e",
+        "bytes": 299691
+      },
+      "overview-1440-light-en.png": {
+        "sha256": "b5214967b84f5a191b83f6cea42436d7d98b75bb5b1bc85c65575de09f607961",
+        "bytes": 324635
+      },
+      "overview-1440-light-zh.png": {
+        "sha256": "28188d5cee43ee53b1174431e6e53c89669b905ab760c479d830a30a4c6e6f7a",
+        "bytes": 316862
+      },
+      "overview-390-dark-en.png": {
+        "sha256": "efe65c52cdc350f57cb0319d3f34097cf74bc683f9ecab7407da2165ff967eca",
+        "bytes": 179310
+      },
+      "overview-390-dark-zh.png": {
+        "sha256": "b7fc893b4aceadea600499d4e91958c08cf12ee7b2738e1e09d79c6d41178ae2",
+        "bytes": 171644
+      },
+      "overview-390-light-en.png": {
+        "sha256": "95fca68d9ddf89cea1de9d4ef49f2b717bfd77241209193073e6a6fc317b5a79",
+        "bytes": 186591
+      },
+      "overview-390-light-zh.png": {
+        "sha256": "d313cf1e16abb979c7298ef4a137cedd818418eee1c02825068a08d2dcb70e5e",
+        "bytes": 178762
+      }
+    }
+  },
+  "independent_review": {
+    "run_id": "intl-r10-eod-review-5370-r1",
+    "candidate": "5370a6e3a0063fbfc3869ac28efae560c08e53f4",
+    "task_complexity": "C2_COMPLEX_BOUNDED",
+    "admitted_pool": "grok",
+    "requested_model": "grok-4.6",
+    "served_model": "UNATTESTED",
+    "host": "ubuntu2",
+    "dispatch": "LEASE_OK + LAUNCH + native process observed",
+    "observed_native_pid": 2340910,
+    "terminal_result_consumed": false,
+    "return_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/EOD_INDEPENDENT_REVIEW_R1/REVIEW_RETURN.txt",
+    "limits": "Independent exact-source review in a frozen capsule; remote PyArrow dependency absent, so numerical countercases may require parent reproduction. No release approval claimed."
+  },
+  "initial_hosted_ci": {
+    "run_id": 37990755306,
+    "head": "1bb3ed402536538765089d19e7b64f401e29bc33",
+    "state": "FAILED",
+    "repaired_scoped_failures": [
+      "Numerical job imported Jinja-dependent publisher tests",
+      "History fixture did not accept production_inputs",
+      "New helper missing from consumer import-closure path lists"
+    ],
+    "other_failure_not_suppressed": [
+      "US stock-board live-quote display cap 320 vs 342 emitted symbols; two test_build_live_quotes failures. Producer/test and named committed page/payload inputs are byte-identical to base3d90; full required checks remain a release gate."
+    ]
+  }
 }
