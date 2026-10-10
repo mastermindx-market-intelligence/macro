@@ -166,7 +166,7 @@ def test_future_duplicate_session_cannot_alter_historical_highs():
 def test_recent_roster_retains_name_after_high_print_is_over():
     from scripts.build_leader_radar import _build_rs_high_roster
     rows = [
-        {"ticker": "STALK", "state": "QUIET_ACCUMULATION", "display_chips": {
+        {"ticker": "STALK", "state": "QUIET_ACCUMULATION", "entry_read": {"key": "building"}, "display_chips": {
             "rs_high_watch": {
                 "daily": {"new_high": False, "recent": {
                     "last_high_as_of": "2026-10-06", "since_last_high": 3,
@@ -176,7 +176,7 @@ def test_recent_roster_retains_name_after_high_print_is_over():
                     "reason": None}},
             }
         }},
-        {"ticker": "FRESH", "state": "BREAKAWAY", "display_chips": {
+        {"ticker": "FRESH", "state": "BREAKAWAY", "entry_read": {"key": "in_motion"}, "display_chips": {
             "rs_high_watch": {
                 "daily": {"new_high": True, "as_of": "2026-10-09"},
                 "weekly": {"new_high": None, "as_of": None},
@@ -192,7 +192,9 @@ def test_recent_roster_retains_name_after_high_print_is_over():
     r = _build_rs_high_roster(rows, as_of="2026-10-09", stale=False)
     assert [x["ticker"] for x in r["recent"]] == ["STALK"]
     assert r["recent"][0]["sessions_since_daily"] == 3
+    assert r["recent"][0]["entry_read_key"] == "building"
     assert [x["ticker"] for x in r["daily"]] == ["FRESH"]
+    assert r["daily"][0]["entry_read_key"] == "in_motion"
     assert r["unknown"]["recent"] == 1
     assert all(x["ticker"] != "FRESH" for x in r["recent"])
 
