@@ -121,3 +121,78 @@ def test_roster_not_promoted_when_payload_stale():
     v = _build_rs_high_roster([], as_of="2026-10-09", stale=True)
     assert v["daily"] == v["weekly"] == []
     assert v["stale"] is True
+
+
+def test_recent_daily_high_remains_visible_during_pullback():
+    stock, bench = _source()
+    ratio_before = float((stock / bench).iloc[-6])
+    stock.iloc[-5:] = bench.iloc[-5:].to_numpy() * (ratio_before * 0.98)
+    got = observe_rs_highs(stock, bench, as_of=date(2026, 10, 9))
+    assert got["daily"]["new_high"] is False
+    assert got["daily"]["recent"]["since_last_high"] == 5
+    assert got["daily"]["recent"]["last_high_as_of"] == stock.index[-6].date().isoformat()
+    assert got["daily"]["recent"]["high_prints_in_window"] > 0
+
+
+def test_weekly_high_remains_visible_one_week_after_nonconfirmation():
+    stock, bench = _source()
+    prior = pd.Timestamp(date(2026, 10, 2))
+    current = pd.Timestamp(date(2026, 10, 9))
+    last_week_ratio = float(stock.loc[prior] / bench.loc[prior])
+    stock.loc[current] = bench.loc[current] * last_week_ratio * 0.95
+    got = observe_rs_highs(stock, bench, as_of=date(2026, 10, 9))
+    assert got["weekly"]["new_high"] is False
+    assert got["weekly"]["recent"]["last_high_as_of"] == "2026-10-02"
+    assert got["weekly"]["recent"]["since_last_high"] == 1
+
+
+def test_recent_watch_missing_old_session_is_unknown_not_silently_empty():
+    stock, bench = _source()
+    stock = stock.drop(stock.index[-140])
+    got = observe_rs_highs(stock, bench, as_of=date(2026, 10, 9))
+    assert got["daily"]["new_high"] is True
+    assert got["daily"]["recent"]["high_prints_in_window"] is None
+    assert got["daily"]["recent"]["reason"] == "source_gap_or_nonpositive_close"
+
+
+def test_future_duplicate_session_cannot_alter_historical_highs():
+    stock, bench = _source()
+    cut = date(2026, 10, 7)
+    original = observe_rs_highs(stock, bench, as_of=cut)
+    future_duplicate = pd.concat([stock, stock.loc[["2026-10-09"]]])
+    assert observe_rs_highs(future_duplicate, bench, as_of=cut) == original
+
+
+def test_recent_roster_retains_name_after_high_print_is_over():
+    from scripts.build_leader_radar import _build_rs_high_roster
+    rows = [
+        {"ticker": "STALK", "state": "QUIET_ACCUMULATION", "display_chips": {
+            "rs_high_watch": {
+                "daily": {"new_high": False, "recent": {
+                    "last_high_as_of": "2026-10-06", "since_last_high": 3,
+                    "reason": None}},
+                "weekly": {"new_high": False, "recent": {
+                    "last_high_as_of": "2026-10-02", "since_last_high": 1,
+                    "reason": None}},
+            }
+        }},
+        {"ticker": "FRESH", "state": "BREAKAWAY", "display_chips": {
+            "rs_high_watch": {
+                "daily": {"new_high": True, "as_of": "2026-10-09"},
+                "weekly": {"new_high": None, "as_of": None},
+            }
+        }},
+        {"ticker": "GAP", "state": "NONE", "display_chips": {
+            "rs_high_watch": {
+                "daily": {"new_high": None, "recent": {"reason": "missing"}},
+                "weekly": {"new_high": None, "recent": {"reason": "missing"}},
+            }
+        }},
+    ]
+    r = _build_rs_high_roster(rows, as_of="2026-10-09", stale=False)
+    assert [x["ticker"] for x in r["recent"]] == ["STALK"]
+    assert r["recent"][0]["sessions_since_daily"] == 3
+    assert [x["ticker"] for x in r["daily"]] == ["FRESH"]
+    assert r["unknown"]["recent"] == 1
+    assert all(x["ticker"] != "FRESH" for x in r["recent"])
+
