@@ -1698,6 +1698,7 @@ def _build_rs_high_roster(rows: list[dict], *, as_of: str, stale: bool) -> dict:
         "as_of": as_of, "stale": bool(stale), "authority": "display_only",
         "benchmark": "SPY", "population_rows": len(rows),
         "daily": [], "weekly": [], "recent": [],
+        "clock_as_of": {"daily": None, "weekly": None},
         "unknown": {"daily": 0, "weekly": 0, "recent": 0},
     }
     for row in rows:
@@ -1708,6 +1709,8 @@ def _build_rs_high_roster(rows: list[dict], *, as_of: str, stale: bool) -> dict:
         for horizon in ("daily", "weekly"):
             evidence = watch.get(horizon) or {}
             evidence_by_horizon[horizon] = evidence
+            if evidence.get("as_of") and output["clock_as_of"][horizon] is None:
+                output["clock_as_of"][horizon] = evidence["as_of"]
             if evidence.get("new_high") is True:
                 output[horizon].append({
                     "ticker": row.get("ticker"),
