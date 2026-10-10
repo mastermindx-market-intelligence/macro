@@ -41,6 +41,11 @@ _HEADERS = {"Cache-Control": "private, no-store", "X-Content-Type-Options": "nos
 _HTML_HEADERS = {**_HEADERS, "Content-Security-Policy":
                  "default-src 'none'; script-src 'self'; connect-src 'self'; "
                  "style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"}
+_UX_HEADERS = {**_HEADERS, "X-Robots-Tag": "noindex, nofollow",
+               "Content-Security-Policy":
+               "default-src 'none'; script-src 'self'; style-src 'self'; "
+               "connect-src 'self'; form-action 'self'; base-uri 'none'; "
+               "frame-ancestors 'none'"}
 # Process-local guard only. The canonical edge/server remains responsible for
 # distributed anti-abuse; this protects worker resources before that gate.
 _RATE_LIMITS = {"scan": (30, 60.0)}
@@ -527,16 +532,73 @@ def scan_ui_javascript():
     return Response(content, media_type="text/javascript", headers=_HEADERS)
 
 
-@router.get("/api/catalyst", response_class=HTMLResponse)
-def first_value(request: Request, tickers: str = "", event_id: str | None = None):
+def _render_polished_scan() -> str:
+    """Render the returned Session 03 UI without granting publication rights.
+
+    A separate default-OFF UX flag is required. The native 00 no-JS route
+    remains reachable for browsers without script support.
+    """
+    try:
+        from jinja2 import Environment, FileSystemLoader, StrictUndefined
+        root = Path(__file__).resolve().parents[1]
+        env = Environment(loader=FileSystemLoader(root / "templates"),
+                          undefined=StrictUndefined, autoescape=True)
+        return env.get_template("catalyst_scan.html.j2").render(
+            asset_base="/api/catalyst/assets/",
+            preview_banner="STAGED PREVIEW · Public source rights and verified email delivery are not admitted.",
+            no_js_path="/api/catalyst/nojs",
+        )
+    except Exception:
+        # Never interpolate local path, template error or source content in a
+        # public error response. A broken staged frontend fails closed.
+        raise HTTPException(503, "Catalyst experience unavailable") from None
+
+
+@router.get("/api/catalyst/assets/{asset}")
+def catalyst_ux_asset(asset: str):
     _require_enabled("CATALYST_PUBLIC_ENABLED")
-    _rate_or_429(request, "scan")
+    _require_enabled("CATALYST_UX_ENABLED")
+    paths = {
+        "theme.css": ("site", "theme.css", "text/css"),
+        "catalyst_scan.css": ("templates", "catalyst_scan.css", "text/css"),
+        "catalyst_scan.js": ("templates", "catalyst_scan.js", "text/javascript"),
+    }
+    selected = paths.get(asset)
+    if selected is None:
+        raise HTTPException(404, "Unknown asset")
+    folder, filename, mime = selected
+    try:
+        path = Path(__file__).resolve().parents[1] / folder / filename
+        if not path.is_file() or path.stat().st_size > 500_000:
+            raise ValueError("asset unavailable")
+        data = path.read_bytes()
+    except Exception:
+        raise HTTPException(503, "Catalyst asset unavailable") from None
+    return Response(data, media_type=mime, headers=_HEADERS)
+
+
+def _server_first_value(tickers: str, event_id: str | None) -> HTMLResponse:
     if not tickers:
         return HTMLResponse(render_first_value(None), headers=_HTML_HEADERS)
     try:
         data = public_scan_with_receipt(tickers, event_id)
     except HTTPException as exc:
-        # Never echo private producer details or unsupported claims in the HTML fallback.
         return HTMLResponse(render_first_value(None, tickers[:119], str(exc.detail)),
                             status_code=exc.status_code, headers=_HTML_HEADERS)
     return HTMLResponse(render_first_value(data, tickers[:119]), headers=_HTML_HEADERS)
+
+
+@router.get("/api/catalyst/nojs", response_class=HTMLResponse)
+def first_value_nojs(request: Request, tickers: str = "", event_id: str | None = None):
+    _require_enabled("CATALYST_PUBLIC_ENABLED")
+    _rate_or_429(request, "scan")
+    return _server_first_value(tickers, event_id)
+
+
+@router.get("/api/catalyst", response_class=HTMLResponse)
+def first_value(request: Request, tickers: str = "", event_id: str | None = None):
+    _require_enabled("CATALYST_PUBLIC_ENABLED")
+    _rate_or_429(request, "scan")
+    if _enabled("CATALYST_UX_ENABLED"):
+        return HTMLResponse(_render_polished_scan(), headers=_UX_HEADERS)
+    return _server_first_value(tickers, event_id)
