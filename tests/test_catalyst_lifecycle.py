@@ -721,6 +721,38 @@ def test_send_receipt_idempotency_and_uncertainty_not_claimed_success():
     assert len(set(x[2] for x in sender.calls)) == 1  # same canonical sender ledger key
 
 
+def test_parked_catalyst_claim_consumes_ledger_key_and_stops_batch():
+    service, _, store, _, _, sender = make()
+    verified(service)
+    base = next(iter(store.records.values()))
+    other = "bb08470c-cc2e-4a3d-92da-65a787661cd5"
+    store.records[(other, "event-123")] = replace(
+        base, user_id=other, email="other@example.com")
+    sender.status = "queued"
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert len(rows) == len(sender.calls) == 1
+    assert rows[0]["state"] == "QUEUED_NOT_SENT"
+    assert sender.calls[0][2] == "catalyst:event-123:2:NVDA:" + UID
+    assert EMAIL not in json.dumps(rows)
+    # DO NOT "retry" the same consumed key. The generic parked drain only
+    # rebuilds welcome/campaign, not the source-revised Catalyst message.
+
+
+@pytest.mark.parametrize("raw_status", ["new_status_not_in_mailer_contract", None, False])
+def test_unknown_sender_result_freezes_for_possible_transport_effect(raw_status):
+    service, _, store, _, _, sender = make()
+    verified(service)
+    base = next(iter(store.records.values()))
+    other = "bb08470c-cc2e-4a3d-92da-65a787661cd5"
+    store.records[(other, "event-123")] = replace(
+        base, user_id=other, email="other@example.com")
+    sender.status = raw_status
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert len(rows) == len(sender.calls) == 1
+    assert rows[0]["state"] == "EFFECT_UNKNOWN"
+    assert sender.calls[0][2] == "catalyst:event-123:2:NVDA:" + UID
+
+
 def test_same_event_different_ticker_delivery_keys_do_not_collide():
     service, *_rest, sender = make()
     verified(service)
