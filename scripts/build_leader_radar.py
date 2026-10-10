@@ -1722,9 +1722,8 @@ def _build_rs_high_roster(rows: list[dict], *, as_of: str, stale: bool) -> dict:
         wr = w.get("recent") or {}
         last_daily = dr.get("last_high_as_of")
         last_weekly = wr.get("last_high_as_of")
-        if (last_daily or last_weekly) and not (
-            d.get("new_high") is True or w.get("new_high") is True
-        ):
+        current_high = d.get("new_high") is True or w.get("new_high") is True
+        if (last_daily or last_weekly) and not current_high:
             output["recent"].append({
                 "ticker": row.get("ticker"), "state": row.get("state"),
                 "last_high_as_of": max(x for x in (last_daily, last_weekly) if x),
@@ -1733,7 +1732,9 @@ def _build_rs_high_roster(rows: list[dict], *, as_of: str, stale: bool) -> dict:
                 "last_weekly_high_as_of": last_weekly,
                 "weeks_since_weekly": wr.get("since_last_high"),
             })
-        elif (dr.get("reason") is not None and wr.get("reason") is not None):
+        elif not current_high and (
+            dr.get("reason") is not None and wr.get("reason") is not None
+        ):
             output["unknown"]["recent"] += 1
 
     for horizon in ("daily", "weekly"):
