@@ -1684,6 +1684,39 @@ def _build_regime(
     return regime
 
 
+# ── Derived RS-high roster (display-only, no independent state/ledger) ──────
+
+def _build_rs_high_roster(rows: list[dict], *, as_of: str, stale: bool) -> dict:
+    """Alphabetical daily/weekly RS new-high watch from existing per-name rows.
+
+    Counts UNKNOWN separately; this is a descriptive radar projection, not a
+    scored/ranked candidate list, a durable event ledger, or an entry trigger.
+    """
+    output: dict = {
+        "schema": "leader_rs_high_roster.v1",
+        "as_of": as_of, "stale": bool(stale), "authority": "display_only",
+        "benchmark": "SPY", "population_rows": len(rows),
+        "daily": [], "weekly": [],
+        "unknown": {"daily": 0, "weekly": 0},
+    }
+    for row in rows:
+        watch = (row.get("display_chips") or {}).get("rs_high_watch") or {}
+        for horizon in ("daily", "weekly"):
+            evidence = watch.get(horizon) or {}
+            if evidence.get("new_high") is True:
+                output[horizon].append({
+                    "ticker": row.get("ticker"),
+                    "state": row.get("state"),
+                    "as_of": evidence.get("as_of"),
+                    "rs_leads_price": evidence.get("rs_leads_price"),
+                })
+            elif evidence.get("new_high") is None:
+                output["unknown"][horizon] += 1
+    for horizon in ("daily", "weekly"):
+        output[horizon].sort(key=lambda r: str(r["ticker"]))
+    return output
+
+
 # ── Freshness + degraded helpers (Items 2 & 4) ───────────────────────────────
 
 def _nyse_sessions_between(d1: date, d2: date) -> list[date]:
@@ -2586,6 +2619,12 @@ def build(
             # LRV-W1: display_chips sub-dict (LRV-R3; NEVER enter K-of-N or state gates)
             _display_chips = _extract_display_chips({}, revisions_df, ticker)
             _display_chips["rs_line_gap_pct"] = _rs_gap
+            # Completed-session/weekly RS highs are observation-only. The source
+            # ratio uses the incoming adjustment basis, not an IBD 1-99 score.
+            from engine.rs_leader_highs import observe_rs_highs
+            _display_chips["rs_high_watch"] = observe_rs_highs(
+                close_series, spy, as_of=today,
+            )
 
             # LRV-O9: entry-quality read (display-only fence — never a gate or sort key).
             # extension_vs_50dma re-computed here for the receipt number ("+X% vs 50d");
@@ -2908,6 +2947,7 @@ def build(
         },
         "regime": regime,
         "rows": rows,
+        "rs_high_roster": _build_rs_high_roster(rows, as_of=as_of, stale=stale),
         "handoff_pairs": handoff_pairs_list,
         "rerating_watch": rerating_watch,
         # LRV-W1 artifacts
