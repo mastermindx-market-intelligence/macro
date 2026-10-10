@@ -9959,3 +9959,4 @@
 {"id":"ob-2026-10-10-c893c41a63","from":"approved","to":"posting","at":"2026-10-10T06:26:11Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-10-c893c41a63","from":"posting","to":"posted","at":"2026-10-10T06:26:12Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ac9da84d9cab260a7b4fca7","external_url":null,"at":"2026-10-10T06:26:08Z","booked_at":"2026-10-10T06:26:08Z"}}
 {"id":"ob-2026-10-08-5fef1690e1","from":"queued","to":"quarantined","at":"2026-10-10T11:56:53Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-10-b397108636","from":"queued","to":"quarantined","at":"2026-10-10T12:52:12Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Saturday; 2026-10-10 is not a trading day","receipt":null}
