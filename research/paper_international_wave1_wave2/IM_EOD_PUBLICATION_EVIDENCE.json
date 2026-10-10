@@ -18,7 +18,7 @@
     "legacy_workspace_preserved": true
   },
   "validation": {
-    "source_foundation": 1290,
+    "source_foundation": 1304,
     "publisher_render": 339,
     "result": "PASS",
     "runtime": "Python 3.12, M2 Studio",
@@ -27,7 +27,14 @@
       "passed": 1,
       "seconds": 128.83,
       "scope": "All curated exclusive import closures at the current local candidate"
-    }
+    },
+    "existing_browser_suite": {
+      "passed": 178,
+      "failed": 0,
+      "skipped": 0,
+      "runtime": "Node 26 / Chrome; fixed existing tests, separate from 72 real-EOD view checks"
+    },
+    "focused_review_and_continuity": 49
   },
   "reproduced_and_repaired": [
     "Jinja-dependent tests were placed in the numerical-only CI job",
@@ -39,14 +46,15 @@
     "non-string collector clocks raised AttributeError"
   ],
   "source_sha256": {
-    "lib/intl_eod_publication.py": "d8f38369bb7249c40056c488bdc4b60876c8ed0aa6fb6577ad14a4fe6548be3e",
+    "lib/intl_eod_publication.py": "1c9a75ddc019e06577d48ad8cceb413f5e4cbc657acfd20fb4062a9ff781891c",
     "scripts/build_intl.py": "85ba198dc741a0986a8e2e1ff17bb5945f5821421bbbcbcdded211cb98043c8a",
     "templates/intl_workspace/shell.html.j2": "98e1765678aa16481f0bc630ecdc1884c2b52e26788f47c3e3b16c33641a1d93",
-    "tests/test_intl_eod_publication.py": "3e10f2ad7c75911d767a0cac4157f63db38eb5a9c89173cbf92f2265ac646e35",
+    "tests/test_intl_eod_publication.py": "7bc4940a6f32a3ebf7f02a53269469091b6a5c51fd377ecbdbcff89ba379327e",
     "tests/test_intl_eod_publisher_integration.py": "b84b1d65b54ce613b4b4680c733b6af8ed595a0526d588d6d269e30bd13fa59f",
     "tests/test_intl_history_publication_independent.py": "3c82c0548b5a418c39b5dc12f2d773f5f48c79c11b2fffd564cb7af61d1a4873",
     "config.yml": "02fd7d94a0cb553105a76de3dd34bccb244cb555ac0cca0baec774fa7cbfad62",
-    "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md": "8abe56f3705b30adb99b6dd99d0229edfa63d865f7629f7cc1bc602c582ec9a4"
+    "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md": "8bef8c7328695e9f6e62a4f5cc7ab99d74276537cedad1e1ce361c89b56e8566",
+    "tests/test_intl_eod_publication_review.py": "27a0030212c0674dec8988dc27b1f8fa1f140c885bc7a8c4cd9d33d394c2cb09"
   },
   "remaining": [
     "independent exact-source review",
@@ -61,7 +69,7 @@
     "Do not reopen the Chairman-confirmed redistribution gate"
   ],
   "effect_state": "NO_UNRESOLVED_WRITES",
-  "next_action": "Push the scoped tested repair to the existing PR8715 head, consume the frozen independent review, and reconcile exact-head hosted checks; no merge or deployment until required gates pass.",
+  "next_action": "Reconcile exact-head CI and independently review the final adapter error/receipt-clock repair; retain PR8715 Draft until release gates clear, then ordinary publication and authenticated user-path verification. Do not reopen confirmed redistribution.",
   "real_source_validation": {
     "candidate": "5370a6e3a0063fbfc3869ac28efae560c08e53f4",
     "evaluated_at": "2026-10-09T23:53:14.372894+00:00",
@@ -80,42 +88,9 @@
         "basis": "usd_unhedged",
         "qualified": 5,
         "ranking_status": "unavailable",
-        "rows": [
-          {
-            "market": "JP",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "KR",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "TW",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "IN",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "AU",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "GB",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "EZ",
-            "quality": "qualified",
-            "reason": null
-          }
+        "withheld_markets": [
+          "IN",
+          "AU"
         ]
       },
       {
@@ -123,42 +98,9 @@
         "basis": "local",
         "qualified": 5,
         "ranking_status": "unavailable",
-        "rows": [
-          {
-            "market": "JP",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "KR",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "TW",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "IN",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "AU",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "GB",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "EZ",
-            "quality": "qualified",
-            "reason": null
-          }
+        "withheld_markets": [
+          "IN",
+          "AU"
         ]
       },
       {
@@ -166,42 +108,8 @@
         "basis": "usd_unhedged",
         "qualified": 6,
         "ranking_status": "unavailable",
-        "rows": [
-          {
-            "market": "JP",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "KR",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "TW",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "IN",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "AU",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "GB",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "EZ",
-            "quality": "qualified",
-            "reason": null
-          }
+        "withheld_markets": [
+          "KR"
         ]
       },
       {
@@ -209,42 +117,8 @@
         "basis": "local",
         "qualified": 6,
         "ranking_status": "unavailable",
-        "rows": [
-          {
-            "market": "JP",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "KR",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "TW",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "IN",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "AU",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "GB",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "EZ",
-            "quality": "qualified",
-            "reason": null
-          }
+        "withheld_markets": [
+          "KR"
         ]
       },
       {
@@ -252,42 +126,9 @@
         "basis": "usd_unhedged",
         "qualified": 5,
         "ranking_status": "unavailable",
-        "rows": [
-          {
-            "market": "JP",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "KR",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "TW",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "IN",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "AU",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "GB",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "EZ",
-            "quality": "qualified",
-            "reason": null
-          }
+        "withheld_markets": [
+          "KR",
+          "GB"
         ]
       },
       {
@@ -295,42 +136,9 @@
         "basis": "local",
         "qualified": 5,
         "ranking_status": "unavailable",
-        "rows": [
-          {
-            "market": "JP",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "KR",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "TW",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "IN",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "AU",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "GB",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "EZ",
-            "quality": "qualified",
-            "reason": null
-          }
+        "withheld_markets": [
+          "KR",
+          "GB"
         ]
       },
       {
@@ -338,128 +146,24 @@
         "basis": "usd_unhedged",
         "qualified": 7,
         "ranking_status": "unavailable",
-        "rows": [
-          {
-            "market": "JP",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "KR",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "TW",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "IN",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "AU",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "GB",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "EZ",
-            "quality": "qualified",
-            "reason": null
-          }
-        ]
+        "withheld_markets": []
       },
       {
         "horizon": "12m",
         "basis": "local",
         "qualified": 7,
         "ranking_status": "unavailable",
-        "rows": [
-          {
-            "market": "JP",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "KR",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "TW",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "IN",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "AU",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "GB",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "EZ",
-            "quality": "qualified",
-            "reason": null
-          }
-        ]
+        "withheld_markets": []
       },
       {
         "horizon": "ytd",
         "basis": "usd_unhedged",
         "qualified": 4,
         "ranking_status": "available",
-        "rows": [
-          {
-            "market": "JP",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "KR",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "TW",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "IN",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "AU",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "GB",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "EZ",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          }
+        "withheld_markets": [
+          "JP",
+          "KR",
+          "EZ"
         ]
       },
       {
@@ -467,42 +171,10 @@
         "basis": "local",
         "qualified": 4,
         "ranking_status": "available",
-        "rows": [
-          {
-            "market": "JP",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "KR",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          },
-          {
-            "market": "TW",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "IN",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "AU",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "GB",
-            "quality": "qualified",
-            "reason": null
-          },
-          {
-            "market": "EZ",
-            "quality": "unsupported",
-            "reason": "quality_unsupported"
-          }
+        "withheld_markets": [
+          "JP",
+          "KR",
+          "EZ"
         ]
       }
     ],
@@ -614,9 +286,9 @@
     "requested_model": "grok-4.6",
     "served_model": "UNATTESTED",
     "host": "ubuntu2",
-    "dispatch": "LEASE_OK + LAUNCH + native process observed",
+    "dispatch": "Completed: RC=0, NATIVE_SETTLED, transport cleaned; STOP ruling delivered to original capsule.",
     "observed_native_pid": 2340910,
-    "terminal_result_consumed": false,
+    "terminal_result_consumed": true,
     "return_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/EOD_INDEPENDENT_REVIEW_R1/REVIEW_RETURN.txt",
     "limits": "Independent exact-source review in a frozen capsule; remote PyArrow dependency absent, so numerical countercases may require parent reproduction. No release approval claimed."
   },
@@ -631,6 +303,31 @@
     ],
     "other_failure_not_suppressed": [
       "US stock-board live-quote display cap 320 vs 342 emitted symbols; two test_build_live_quotes failures. Producer/test and named committed page/payload inputs are byte-identical to base3d90; full required checks remain a release gate."
-    ]
+    ],
+    "base_quote_failure_reproduced": true,
+    "quote_baseline_evidence": "Existing owner proof /Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/EOD_QUOTE_CAP_BASELINE/BASELINE_RESULT.json; both unchanged test functions fail against exact base3d90 site inputs.",
+    "inactive_pilot_context": "ci-authority/codex/merge-queue-pilot is explicitly inactive for base main; ci-authority/main allowed the source change. Do not treat the inactive context as a main authority denial."
+  },
+  "review_result": {
+    "run_id": "intl-r10-eod-review-5370-r1",
+    "verdict": "CHANGES_REQUIRED",
+    "result_consumed": true,
+    "worker_terminal": true,
+    "parent_ruling": "STOP; optional adapter finding repaired; strict-validator and ArrowInvalid claims corrected with runtime proof",
+    "original_return_sha256": "0c377491590580251ba0479e91f46daf37718828eb54e13445b0133cfe62c223",
+    "parent_ruling_sha256": "cc7369fe9411b4df63b74329646a184376e4dd9672fd39eb4461eac8d8a76054",
+    "frozen_reproduction": {
+      "owner_tests": 18,
+      "original_countercases_passed": 2,
+      "original_countercases_failed": 9
+    },
+    "corrected_retained_countercases": 11,
+    "unmodified_core": "engine/intl_workspace_overview.py",
+    "final_derivative_independent_approval": false
+  },
+  "midnight_continuity_repair": {
+    "policy": "Expected snapshot uses min(evaluated_at, verified collector checked_at) minus 48 hours, then preceding weekday. Per-series equality and collector age remain mandatory.",
+    "red": "UTC midnight removed a still-current bound snapshot before next collection.",
+    "green": "Same receipt retains its disclosed snapshot; a new receipt advances the obligation and missing data remains withheld."
   }
 }

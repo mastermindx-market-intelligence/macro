@@ -133,7 +133,10 @@ session. The frontend labels these as **delayed EOD** and shows the actual
 calculation windows. No claim of an exchange-certified holiday calendar is
 made: the conservative T+2 policy is its admitted observation-time evidence,
 not an exchange-issued schedule. The expected snapshot weekday is computed from
-the evaluation clock before any stored tail is examined. Each index and FX
+the earlier of the evaluation clock and the verified collector receipt clock,
+before any stored tail is examined. The receipt must still satisfy its 48-hour
+age bound. A wall-clock midnight cannot invent a newer observation obligation
+under an unchanged receipt; a newer collector receipt advances that obligation. Each index and FX
 series must independently contain that exact date. A recent aggregate collector
 status cannot qualify an older series. Weekend dates move to the preceding
 Friday; missing weekday observations remain unavailable, with no invented

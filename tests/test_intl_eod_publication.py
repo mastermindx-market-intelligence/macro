@@ -215,3 +215,39 @@ def test_weekend_snapshot_clock_uses_friday_without_inventing_weekend_bars(tmp_p
     assert delayed.index[-1] == pd.Timestamp('2026-10-09')
     assert {e['latest_completed_observation'] for e in inputs['source_evidence']} == {'2026-10-09T00:00:00'}
     assert _panel(_overview(delayed, inputs))['eligible_count'] == 7
+
+
+def test_midnight_roll_keeps_a_bound_snapshot_until_the_next_collector_receipt(tmp_path):
+    """A recent unchanged collector receipt must not invent a new data day."""
+    frame, _ = _setup(tmp_path)
+    before = build_eod_inputs(frame, data_root=tmp_path,
+        evaluated_at='2026-10-09T23:59:00+00:00', rights=GRANT)
+    after = build_eod_inputs(frame, data_root=tmp_path,
+        evaluated_at='2026-10-10T00:01:00+00:00', rights=GRANT)
+    assert before is not None
+    assert after is not None
+    assert after[0].index[-1] == before[0].index[-1] == pd.Timestamp('2026-10-07')
+    assert {row['latest_completed_observation'] for row in after[1]['source_evidence']} == {'2026-10-07T00:00:00'}
+
+
+def test_a_new_collector_receipt_advances_the_snapshot_obligation(tmp_path):
+    frame, _ = _setup(tmp_path)
+    path = tmp_path / 'run_status.json'
+    status = json.loads(path.read_text())
+    status['sources']['intl_prices']['checked_at'] = '2026-10-10T04:42:00+00:00'
+    status['sources']['intl_prices']['last_date'] = '2026-10-10'
+    path.write_text(json.dumps(status))
+    assert build_eod_inputs(frame, data_root=tmp_path,
+        evaluated_at='2026-10-10T05:00:00+00:00', rights=GRANT) is None
+
+
+def test_corrupt_parquet_is_withheld_independently_under_real_pyarrow(tmp_path):
+    frame, _ = _setup(tmp_path)
+    (tmp_path / 'intl' / '_N225.parquet').write_bytes(b'not-a-parquet-file')
+    delayed, inputs = build_eod_inputs(frame, data_root=tmp_path,
+        evaluated_at=EVALUATED, rights=GRANT)
+    assert len(inputs['source_evidence']) == 13
+    overview = _panel(_overview(delayed, inputs))
+    assert overview['eligible_count'] == 6
+    japan = next(row for row in overview['rows'] if row.get('market_id') == 'JP')
+    assert japan['metric']['value'] is None

@@ -140,7 +140,11 @@ def build_eod_inputs(
         return None
 
     # This is an intentionally delayed source, not a live/current-session read.
-    cutoff = pd.Timestamp((evaluated - _MIN_OBSERVATION_AGE).date())
+    # Both clocks are independent of the stored series. A UTC midnight does
+    # not advance a still-current collector receipt or certify another day.
+    # Its age is bounded above; a new receipt advances the obligation.
+    snapshot_clock = min(evaluated, collected)
+    cutoff = pd.Timestamp((snapshot_clock - _MIN_OBSERVATION_AGE).date())
     while cutoff.weekday() >= 5:
         cutoff -= pd.Timedelta(days=1)
     # This is a conservative weekday obligation, not an inferred foreign
@@ -152,15 +156,20 @@ def build_eod_inputs(
 
     ids = _source_ids()
     bases = {series_id: _BASIS for series_id in ids}
-    pending = intl_inputs.source_snapshot(
-        selected, source_reference="intl-supplied-close:pending",
-        adjustment_bases=bases)
-    source_reference = "intl-supplied-close:sha256:" + pending["content_sha256"]
-    snapshot = intl_inputs.source_snapshot(
-        selected, source_reference=source_reference, adjustment_bases=bases)
-    records = build_return_records(
-        selected, market_ids=list(intl_inputs.countries()),
-        source_reference=source_reference)
+    try:
+        pending = intl_inputs.source_snapshot(
+            selected, source_reference="intl-supplied-close:pending",
+            adjustment_bases=bases)
+        source_reference = "intl-supplied-close:sha256:" + pending["content_sha256"]
+        snapshot = intl_inputs.source_snapshot(
+            selected, source_reference=source_reference, adjustment_bases=bases)
+        records = build_return_records(
+            selected, market_ids=list(intl_inputs.countries()),
+            source_reference=source_reference)
+    except (ValueError, TypeError, OverflowError):
+        # This publication adapter is optional; malformed source frames are
+        # withheld. The strict numerical/snapshot APIs retain their errors.
+        return None
     evidence = []
     observed = {}
     for series_id in ids:
