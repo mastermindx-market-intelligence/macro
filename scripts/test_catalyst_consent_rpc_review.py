@@ -79,9 +79,11 @@ class TestPostgres:
         if role:
             assert role in ("anon", "authenticated", "service_role")
             statement = "set role " + role + "; " + statement
-        return self.run(self.args + ["-c", statement],
-                        ok=denied is None, contains=denied).splitlines()[-1:] [0] \
-            if denied is None else ""
+        output = self.run(self.args + ["-c", statement],
+                          ok=denied is None, contains=denied)
+        # -q suppresses DDL command tags; an empty successful reply is valid.
+        rows = output.splitlines()
+        return rows[-1] if rows and denied is None else ""
 
     def apply(self, *, denied: str | None = None) -> None:
         self.run(self.args + ["-f", str(SQL)],
