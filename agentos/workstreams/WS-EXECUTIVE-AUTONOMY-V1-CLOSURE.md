@@ -68,114 +68,135 @@ waves:
       reproducibility gaps and one unproven root git-archive/safe.directory finding are recorded in
       the program file for the host owner.
   - id: P3
-    title: Independent governed-worker identity/readiness preparation; final two-worker proof remains downstream
+    title: Two Personal-Pro realms qualified; governed multi-worker admission and execution remain downstream
     status: todo
     depends_on: [P1]
     wait:
       kind: external_action
-      review_after: 2026-10-09
+      review_after: 2026-10-10
       condition: >
-        Current installed release is 326c8469a21d7f50fc9ecb1848196bf1c6e66685.
-        ModernLuxe / ChatGPT1 / codex-pro-01 is ENROLLED_NOT_READY with the retained
-        failed readiness receipt; Kris Ke / pro02 and Y7 Elevate Retail / pro03 remain
-        unenrolled. The legacy company-worker identity refusal remains unresolved and
-        its prior readiness expired at 2026-10-09T09:35:11Z. AVAILABLE is not READY.
-        Independent lawful identity/readiness reconciliation may proceed through its
-        existing owner without waiting for P5; existing refusals and unknown effects
-        prohibit inference retries, reauthentication or account/carrier substitution.
+        Installed release is 326c8469a21d7f50fc9ecb1848196bf1c6e66685. KRIS KE /
+        chatgpt2 / codex-pro-02 and Y7 Elevate Retail / chatgpt3 / codex-pro-03 are
+        Personal-Pro READY after their first enrollment and first readiness tests.
+        Pro02 passed at 2026-10-09T23:58:40Z, sealed receipt SHA256
+        ccd7753afd6ebdd2940705061f5e1588507e9805fcebf1d700c95822d2cd59b5;
+        Pro03 passed at 2026-10-10T00:01:14Z, receipt SHA256
+        7c61909be339ab8d8cd9e6ff3239f96f7c0e482146aa8977f2aceeb6edd63ed9.
+        Both bindings expire at the Chairman-approved 2026-10-10T23:30:00Z.
+        ModernLuxe / ChatGPT1 / pro01 remains ENROLLED_NOT_READY with retained failure.
+        Legacy company-worker identity refusal remains unresolved; its prior readiness
+        expired at 2026-10-09T09:35:11Z. AVAILABLE is not company-worker READY.
+        The two Personal-Pro receipts do not establish company readiness, Capacity
+        admission or governed multi-worker execution, and do not clear prior failures.
     next_action: >
-      Existing Executive Capacity and credential/device owners reconcile the retained
-      legacy identity refusal and Pro01 failed readiness evidence on their original
-      carriers. Require permitted exact release/credential/worker identity, tested
-      availability and clock-valid readiness before a provider effect. Preserve accepted
-      #811 commission/effect fencing and historical JOB-002/003/013; no synthetic canary,
-      reenrollment, credential copying or readiness-expiry extension. This preparation
-      runs independently of P4 and P5; consume its qualified evidence before final
-      two-worker production acceptance. No second lawful READY worker is yet proven.
+      Existing Capacity owners consume the two independently read-back Personal-Pro
+      identity/canary/metadata/expiry receipts through their dedicated-worker policy;
+      preserve separate company-workspace, H0 preparation and CF2 admission gates.
+      Existing failure-disposition owners reconcile legacy and Pro01 evidence on their
+      original carriers before any permitted new effect. No enrollment/MFA/readiness
+      test replay, automatic expiry extension, credential copying, company-auth Pro
+      substitution or raw worker start. Qualified P3 preparation remains independent
+      of P4 and P5; consume lawful Capacity admission before final two-worker execution.
+      Governed multi-worker execution and company readiness remain unproven.
   - id: P4
     title: Prove lawful CEO ingress and full-autonomy coexistence at installed runtime
     status: todo
     depends_on: [P1]
     wait:
       kind: external_action
-      review_after: 2026-10-09
+      review_after: 2026-10-10
       condition: >
         Historical source mutual exclusion is superseded by accepted #1283. #1286 and
-        #1298 are merged; exact 326c8469a21d7f50fc9ecb1848196bf1c6e66685 is installed,
-        with Control, Codex Worker, C1, A2 and MCP restored RUNNING at the native
-        2026-10-09T17:29:47Z checkpoint. CEO-ingress app and privileged-readiness arms
-        are true; CEO-submit, COO autonomy/operator harness, worker operator harness,
-        dialogue and terminal-return execution arms remain false. Full 326c acceptance
-        is NOT_STARTED; last full accepted host is 7d82b9adb839d54e4ab25378ca333e498dd83fcc.
-        Installation, service restoration and source coexistence do not prove full arm.
+        #1298 are merged; exact 326c8469a21d7f50fc9ecb1848196bf1c6e66685 is installed.
+        Control, Codex Worker, C1, A2 and MCP were restored RUNNING at the retained
+        2026-10-09T17:29:47Z install checkpoint; current 2026-10-10T00:03:08Z readback
+        confirms no intentional outage. Canonical disarm/interlock recovery and core/
+        readside restoration completed once at 23:46Z; current status UNARMED/refusal
+        null/service_state DEGRADED is not full acceptance. CEO-ingress app and
+        privileged-readiness arms are true; CEO-submit, COO autonomy/operator harness,
+        worker operator harness, dialogue and terminal-return execution arms remain
+        false. Full 326c acceptance is NOT_STARTED; last full accepted host is
+        7d82b9adb839d54e4ab25378ca333e498dd83fcc. Acceptance-lane PICKUP is not START.
     next_action: >
-      Original native parent mastermind-os-frontier-company-convergence-20260925-sol-001
-      retains host/acceptance custody. After permitted readiness reconciliation, qualify
-      the existing 326c maintenance descriptor, predecessor carry, intact Runtime and
-      exact release-bound acceptance prerequisites through the installed owner. Perform
-      one admitted full maintenance acceptance only when its current gates permit it,
-      with same-phase service restoration and health readback. Then require fresh Gate B,
-      readiness and sealed acceptance before the canonical coupled COO/worker full-arm
-      transaction and CEO-submit coexistence arm. Do not replay completed installation,
-      C1/A2 rebind or MCP publication, hand-edit flags, retry denied root health or infer
-      admission from this knowledge record. P4 does not wait for final two-worker proof.
+      Only the unstarted 326c host-acceptance orchestration/recovery/execution lane was
+      released to and picked up by receiving chat 01a1230a-abcd-7ef3-bf23-d7bda2b564c0,
+      under original root 01a0e0c7-1ed2-7fa0-a4b4-890d30ea6311 (#1143/6091328703).
+      No active acceptance execution is observed. Receiver retains that lane pending
+      lawful authoritative company-worker failure disposition, exact permitted operation/
+      access, private baseline/carry/config and independent Gate B release; existing
+      protected-read/root-health denials remain final, with no alternate principal.
+      Then use the existing exact 326c descriptor for one admitted stop/acceptance/
+      restore phase with health readback. Original native parent retains broader
+      production/integration/final adjudication and the later coupled COO/worker full-arm
+      transaction and CEO-submit coexistence gate. No credential, source-writer, STARTed
+      operation, Runtime Job/Attempt or browser lane transferred. Do not replay completed
+      install, disarm/restore, C1/A2 rebind or MCP publication, hand-edit flags or infer
+      Runtime admission here. P4 does not wait for final two-worker proof.
   - id: P5
     title: Real original-parent Autonomy V1 production acceptance
     status: todo
     depends_on: [P4]
     wait:
       kind: external_action
-      review_after: 2026-10-09
+      review_after: 2026-10-10
       condition: >
         Original-parent useful production operation, correlated return/consumption,
-        heterogeneous two-worker proof and independent Packet-07 acceptance are NOT_PROVEN.
+        governed two-worker execution and independent Packet-07 acceptance are NOT_PROVEN.
         Installed 326c C1/A2 rebind and service start plus MCP 1.5.0 backend publication
         are complete; this does not prove a new live Slack verification or selected
-        Business exact-12-tool catalog. The original Business foreground/Ready response
+        Business exact-12-tool catalog. The existing Business foreground/Ready response
         remains pending; current selected app/account/target adoption is unproven.
         Full 326c maintenance acceptance is NOT_STARTED, execution arms remain false,
-        and legacy/Pro01 readiness holds remain unresolved. Historical host-proof Jobs
-        and an AVAILABLE Worker never substitute for useful original-parent consumption.
+        and legacy/Pro01 failures remain held. Two Personal-Pro READY receipts are
+        qualified preparation, not Capacity admission, company-worker readiness or a
+        useful original-parent operation. Historical host Jobs and AVAILABLE do not
+        substitute for production consumption.
     next_action: >
       Native parent root 01a0e0c7-1ed2-7fa0-a4b4-890d30ea6311 consumes the existing
       Business availability response or a genuinely qualified availability event, then
       requalifies the exact account/app/version/target and selected V3 1.5 exact-12-tool
       catalog through its existing authorized Business path. Do not repeat the pending
-      question, switch accounts or bypass login/approval/input refusals. After P4's
-      lawful full-acceptance/readiness/arm prerequisites, run one useful normal authorized
-      CEO-parent to governed-child to correlated RESULT to SAME original-parent
-      consumption journey with typed lost-response reconciliation and no duplicate effect.
-      JOB-002/003/013 remain historical; JOB-014/015/016/017 host proofs are not that
-      useful operation. P3 preparation may proceed in parallel and is not a gate on
-      the first one-child journey; qualified P3 identity/readiness is required before
-      final two-worker execution. Prove independent review/repair, browser/review/decision/
-      return, governed recovery/disarm/re-arm and capacity/fairness before declaring
-      AUTONOMY_V1_PROVEN_LIVE. Current native evidence: Mastermind #1143/6070565507,
-      updated 2026-10-09T17:40:52Z; observer returns #1143/6091157199 and #1143/6091166704
-      are supporting read-only evidence, not additional execution owners.
+      question, switch accounts or bypass login/approval/input refusals. Consume the
+      assigned P4 receiver's lawful acceptance return; after full-acceptance/company-
+      readiness/arm prerequisites, run one useful normal authorized CEO-parent to
+      governed-child to correlated RESULT to SAME original-parent consumption journey
+      with typed lost-response reconciliation and no duplicate effect. JOB-002/003/013
+      remain historical; JOB-014/015/016/017 host proofs are not that useful operation.
+      P3 preparation is not a gate on the first one-child journey; qualified P3 identity/
+      readiness and Capacity admission are required before final two-worker execution.
+      Prove independent review/repair, browser/review/decision/return, governed recovery/
+      disarm/re-arm and capacity/fairness before AUTONOMY_V1_PROVEN_LIVE. Current native
+      evidence: Mastermind #1143/6070565507, frontier 2026-10-10T00:13:09Z, updated
+      2026-10-10T00:13:11Z. Observer returns #1143/6091157199 and #1143/6091166704 are
+      supporting read-only evidence, not execution owners; their older readiness census
+      is superseded by the two sealed Personal-Pro receipts.
 next_action: >
-  CURRENT FRONTIER 2026-10-09 / installed 326c8469a21d7f50fc9ecb1848196bf1c6e66685:
-  #1286 and #1298 source/release work, accepted 326c installation, C1/A2 rebind and
-  five-service restoration plus MCP 1.5.0 backend publication are DONE; do not repeat.
-  P1/P2 remain unchanged historical source epochs, not instructions to reinstall.
+  CURRENT FRONTIER 2026-10-10 / installed 326c8469a21d7f50fc9ecb1848196bf1c6e66685:
+  #1286/#1298 release/install, C1/A2 rebind, five-service restoration and MCP 1.5.0
+  backend publication are DONE; canonical disarm/interlock recovery and restoration
+  also completed once. Do not repeat. P1/P2 remain unchanged historical source epochs.
+  Pro02/pro03 Personal-Pro READY receipts now qualify two dedicated realms until
+  2026-10-10T23:30:00Z; do not reenroll, repeat tests or extend expiry automatically.
+  Existing legacy identity refusal and Pro01 ENROLLED_NOT_READY remain held; AVAILABLE
+  is not company-worker READY. Company readiness, lawful Capacity admission and governed
+  multi-worker execution remain unproven. Qualified P3 preparation remains independent
+  of P4/P5; Personal-Pro preparation does not bypass company-policy or refused effects.
   Full 326c acceptance is NOT_STARTED; last full accepted host is 7d82. CEO-ingress
   app and privileged-readiness arms are true; CEO-submit/COO/worker-harness/dialogue/
-  terminal-return execution arms remain false. Existing legacy identity refusal and
-  Pro01 ENROLLED_NOT_READY must be reconciled by their legitimate owners before any
-  new provider effect; AVAILABLE is not READY and a second governed worker is unproven.
-  P3 lawful readiness reconciliation proceeds independently of P4/P5, preserving
-  current denials, uncertainty and original carriers. Original native parent
-  mastermind-os-frontier-company-convergence-20260925-sol-001
-  (root 01a0e0c7-1ed2-7fa0-a4b4-890d30ea6311, Mastermind #1143/6070565507,
-  current checkpoint 2026-10-09T17:40:52Z) retains host/production-acceptance custody.
-  Its next gates are permitted readiness, one exact 326c full maintenance acceptance,
-  lawful coupled full-arm/CEO-submit, selected Business exact-12-tool adoption and
-  one useful original-parent round trip, followed by final two-worker/recovery proof.
-  Business consumes its already-pending foreground/Ready reply or qualified availability;
-  no repeated question, new client, account switch or blind input is implied here.
+  terminal-return execution arms remain false. Only the unstarted full-326c acceptance
+  lane is released and PICKED_UP by chat 01a1230a-abcd-7ef3-bf23-d7bda2b564c0 under
+  original root 01a0e0c7-1ed2-7fa0-a4b4-890d30ea6311; no execution START is observed.
+  Receiver retains lawful failure-disposition/access/private-input/Gate B prerequisites
+  and existing denials. Original native parent
+  mastermind-os-frontier-company-convergence-20260925-sol-001 retains broader production/
+  integration/final adjudication, Business and the useful original-parent journey.
+  Current checkpoint #1143/6070565507 frontier 2026-10-10T00:13:09Z / updated
+  2026-10-10T00:13:11Z; receiver PICKUP #1143/6091328703. Business consumes its existing
+  pending foreground/Ready reply or qualified availability, then requalifies exact
+  selected V3 1.5/12-tool adoption; no repeated question, blind input or account switch.
   MISSION_COMPLETE:false; AUTONOMY_V1_PROVEN_LIVE=false. Original #633 Auth0 DCR remains
-  EFFECT_UNKNOWN; preserve #1275/#1145/#8672 source custody and all refused effects.
-  This is organizational projection only, never Runtime admission or source-writer transfer.
+  EFFECT_UNKNOWN; preserve #1275/#1145 source custody and all refused effects. This is
+  organizational projection only, never Runtime admission or source-writer transfer.
 landmines:
   - "MISSION_COMPLETE:false. Original Auth0 DCR f70314691a5d6549d6265509baee7d3b5a733bc6084e0018558cad80d40667d7 remains EFFECT_UNKNOWN on #633; no retry, alternate client or carrier is authorized by this records repair."
   - "AUTONOMY_V1_PROVEN_LIVE requires one useful original-parent/child/return/consumption journey plus multi-worker and recovery evidence; source merge, CI, installed host acceptance, Slack transport and JOB-014/015 are not final proof."
@@ -183,7 +204,7 @@ landmines:
   - "The existing shared Slack Executive Relay app A0BTCKA7GSY, bot U0BT71H4FQE, completed the exact three-scope ceremony. Installed 326c C1/A2 rebind and service start are complete; do not repeat reinstall, request a token, or infer a new live Slack verification from service proof."
   - "Mastermind #1286 and #1298 are merged and exact 326c is installed with five services restored. Preserve accepted reviews/releases/installs; full 326c acceptance is NOT_STARTED and installed-generation proof is not final Autonomy acceptance."
   - "Prior accepted host epochs are historical and must not be replayed. Installed network MCP now reports 1.5.0 on 326c; selected Business exact-12-tool adoption remains unproven. Last full accepted host is 7d82; the existing 326c descriptor is not a full acceptance receipt."
-  - "The 6b Codex01 readiness expired at 2026-10-09T01:23:23Z; the later legacy grant expired at 09:35:11Z and its identity refusal remains unresolved. Pro01 is ENROLLED_NOT_READY with retained failure evidence. Require legitimate reconciliation and fresh exact binding/expiry; AVAILABLE does not prove a second worker."
+  - "Legacy company readiness expired at 2026-10-09T09:35:11Z and identity refusal remains unresolved; Pro01 stays ENROLLED_NOT_READY. Pro02/pro03 have qualified Personal-Pro READY receipts ccd7753a/7c61909b until Chairman-approved 2026-10-10T23:30:00Z. Do not repeat enrollment/readiness/MFA or automatically extend expiry; these do not clear prior failures, convert company policy or prove Capacity admission/governed multi-worker execution. AVAILABLE is not company READY."
   - "JOB-002, JOB-003 and JOB-013 are historical acceptance/proof roots and must not be repurposed, retried or requeued as the normal-useful-parent canary."
   - "Original parent owns the active operation. A Slack watcher, branch, PR, Agent OS claim or fresh chat cannot transfer an active native writer or unknown effect. Existing Executive OS remains sole Job/Attempt/Worker/Event authority."
   - "Public Mastermind OS DNS/edge/Auth0 adoption is an additional product rollout gate; it cannot be implied by this separate Executive Autonomy V1 cutover or substitute for the original-parent canary."
