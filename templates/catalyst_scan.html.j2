@@ -13,9 +13,9 @@
   <meta property="og:title" content="Earnings Risk Scan | MastermindX">
   <meta property="og:description" content="Source-linked earnings evidence and candid coverage limits. No signup required to scan.">
   <title>Earnings Risk Scan — MastermindX</title>
-  <link rel="stylesheet" href="theme.css">
-  <link rel="stylesheet" href="catalyst_scan.css">
-  <script src="catalyst_scan.js" defer></script>
+  <link rel="stylesheet" href="{{ asset_base|default('') }}theme.css">
+  <link rel="stylesheet" href="{{ asset_base|default('') }}catalyst_scan.css">
+  <script src="{{ asset_base|default('') }}catalyst_scan.js" defer></script>
 </head>
 <body>
   <a class="cs-skip" href="#main">Skip to scan</a>
@@ -32,7 +32,7 @@
       <span class="cs-top-label"><span class="cs-live-dot" aria-hidden="true"></span> EVIDENCE DESK</span>
     </div>
   </header>
-  <div class="cs-preview-banner" role="note">OFFLINE UI PREVIEW · No live market-data or email service is connected to this page.</div>
+  <div class="cs-preview-banner" role="note">{{ preview_banner|default('OFFLINE UI PREVIEW · No live market-data or email service is connected to this page.') }}</div>
 
   <main id="main" class="cs-container">
     <section class="cs-hero" aria-labelledby="cs-title">
@@ -58,7 +58,7 @@
       </div>
     </section>
 
-    <div id="cs-js-needed" class="cs-nojs-banner" role="note"><strong>Interactive scan not loaded.</strong> Controls remain disabled until browser scripting is available; no information has been submitted. <a href="/us_stocks.html">Browse stock dossiers</a>.</div>
+    <div id="cs-js-needed" class="cs-nojs-banner" role="note"><strong>Interactive scan not loaded.</strong> Controls remain disabled until browser scripting is available; no information has been submitted. {% if no_js_path is defined %}<a href="{{ no_js_path }}">Use the basic no-JavaScript scan</a>{% else %}<a href="/us_stocks.html">Browse stock dossiers</a>{% endif %}.</div>
 
     <section class="cs-workspace" aria-labelledby="cs-panel-title">
       <div class="cs-panel-head">
@@ -123,7 +123,7 @@
       <a href="/us_stocks.html">Explore stock dossiers <span aria-hidden="true">↗</span></a>
     </section>
   </main>
-  <noscript><div class="cs-container cs-noscript" role="note"><strong>JavaScript is required for the interactive scan.</strong> Nothing has been submitted. You can still <a href="/us_stocks.html">browse stock dossiers</a> without signing up.</div></noscript>
+  <noscript><div class="cs-container cs-noscript" role="note"><strong>JavaScript is required for the interactive scan.</strong> Nothing has been submitted. You can still {% if no_js_path is defined %}<a href="{{ no_js_path }}">use the basic scan</a>{% else %}<a href="/us_stocks.html">browse stock dossiers</a>{% endif %} without signing up.</div></noscript>
   <footer class="cs-global-footer"><div class="cs-container"><span>© MastermindX · Research with receipts</span><span>Evidence, not a guarantee.</span></div></footer>
 </body>
 </html>
