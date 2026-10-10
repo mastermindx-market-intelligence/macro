@@ -53,8 +53,10 @@ create index if not exists catalyst_consent_grants_event
 alter table public.catalyst_consent_grants enable row level security;
 
 -- These are private owner data, never an unrestricted REST surface.
-revoke all on public.catalyst_consent_pending from public;
-revoke all on public.catalyst_consent_grants from public;
+revoke all on public.catalyst_consent_pending from public, anon, authenticated;
+revoke all on public.catalyst_consent_grants from public, anon, authenticated;
+revoke all on sequence public.catalyst_consent_grants_grant_id_seq
+  from public, anon, authenticated;
 -- Existing installation must keep RLS with zero client policies.
 -- No anonymous/authenticated policy is created or relaxed here.
 
@@ -346,5 +348,43 @@ grant execute on function public.catalyst_consent_confirm(uuid,text,text,text[],
 grant execute on function public.catalyst_consent_current(uuid,text) to service_role;
 grant execute on function public.catalyst_consent_interested(text,integer) to service_role;
 grant execute on function public.catalyst_consent_revoke(uuid,text,text) to service_role;
+
+-- Final install fence: existing policies or client grants are a STOP, never
+-- silently accepted by CREATE TABLE IF NOT EXISTS or the RPC grant phase.
+do $consent_install_fence$
+declare v_fn text;
+begin
+  if exists (
+    select 1 from pg_catalog.pg_policies p
+    where p.schemaname='public' and p.tablename in
+      ('catalyst_consent_pending','catalyst_consent_grants')
+  ) then
+    raise exception 'CATALYST_CONSENT_EXISTING_CLIENT_POLICY_BLOCK';
+  end if;
+  if pg_catalog.has_table_privilege('anon','public.catalyst_consent_pending','SELECT')
+     or pg_catalog.has_table_privilege('authenticated','public.catalyst_consent_pending','SELECT')
+     or pg_catalog.has_table_privilege('anon','public.catalyst_consent_grants','SELECT')
+     or pg_catalog.has_table_privilege('authenticated','public.catalyst_consent_grants','SELECT')
+  then
+    raise exception 'CATALYST_CONSENT_CLIENT_TABLE_GRANT_BLOCK';
+  end if;
+  foreach v_fn in array array[
+    'catalyst_consent_contract()',
+    'catalyst_consent_begin(text,text,text)',
+    'catalyst_consent_resolve(text,text)',
+    'catalyst_consent_confirm(uuid,text,text,text[],text,text,jsonb)',
+    'catalyst_consent_current(uuid,text)',
+    'catalyst_consent_interested(text,integer)',
+    'catalyst_consent_revoke(uuid,text,text)'
+  ] loop
+    if pg_catalog.has_function_privilege('anon', 'public.'||v_fn, 'EXECUTE')
+       or pg_catalog.has_function_privilege('authenticated','public.'||v_fn,'EXECUTE')
+       or not pg_catalog.has_function_privilege('service_role','public.'||v_fn,'EXECUTE')
+    then
+      raise exception 'CATALYST_CONSENT_RPC_PRIVILEGE_BLOCK: %',v_fn;
+    end if;
+  end loop;
+end;
+$consent_install_fence$;
 
 commit;
