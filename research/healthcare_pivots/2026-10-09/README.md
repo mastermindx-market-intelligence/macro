@@ -15,3 +15,8 @@ The separate conversation evidence ZIP `healthcare_deep_assessment_v2.zip` (SHA-
 **Source identities:** protected Mastermind procedures at `326c8469a21d7f50fc9ecb1848196bf1c6e66685`, signal-engine reference `macro@b29ba7102d35bebf6f322c1d6fadf8309726bf4e`. The research assessment is intentionally not a replacement for current native `engine/signal_quality.py` or the deployed signal system.
 
 **Next required proof:** establish indicator/Pine parity and source-calendar completion; reconstruct a causal research fill protocol, validate data, and perform precommitted historical and prospective tests on all eligible opportunities before selecting any strategy. Do not treat this research as production-admitted trading logic.
+
+
+### Additional archive-verified event identity finding
+
+[Personality W3 Shadow Identity Audit](SHADOW_EVENT_IDENTITY_AUDIT.md) and [witness](SHADOW_EVENT_WITNESS_2026-08-10.json) document **1,217 repeated source-event-side publications among 1,658 observations (73.4%)** in one archived 15-date shadow cohort. This is **not** an independently graded trading strategy; the incumbent engine and its forward ledger remain unchanged. See owner issue #8718 for the same scoped finding.
