@@ -23,8 +23,7 @@ import sys
 # Pin repo imports for direct execution from any working directory. This local-only
 # test does not install a package or modify a global search path for other jobs.
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT))
 
 from engine.marketing.catalyst_lifecycle import _email_tag, _sign
 SQL = ROOT / "research/marketing_dockets/MKT_CATALYST_CONSENT_RPC_V2_REVIEW_ONLY.sql"
