@@ -4499,6 +4499,7 @@ CURATED_EXCLUSIVE = {
     # source: its true subject is the frozen fixture plus the two template
     # files its own header comment already documents as the only reads.
     "govrev-company-bridge",
+    "quant-q20-spa-challenger",  # Q20 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # #6117 (records(dislocation): P0-A1 price-blind candidate harvest) shipped
     # its own `scope: exclusive` declaration pre-curated — registered here so
     # this file's pin does not drift from the manifest (no fix required, the
