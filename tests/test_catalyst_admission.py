@@ -155,3 +155,22 @@ def test_owner_errors_and_unbounded_events_refuse_without_leak(monkeypatch):
 def test_no_admission_can_be_created_from_untrusted_object():
     with pytest.raises(ValueError):
         catalyst_admission.configure({"source_url": "https://www.sec.gov"})
+
+
+def test_existing_registry_can_mark_other_names_unsupported_without_hiding_public_event(monkeypatch):
+    """Supported direct issuer survives unrelated unsupported issuer metadata."""
+    now = datetime.now(timezone.utc)
+    from engine.theme_graph import rights
+    monkeypatch.setattr(rights, "assert_public_emission_allowed",
+                        lambda family: None if family == "sec_edgar" else 1 / 0)
+    control = {"issuer_reads": 0, "event_reads": 0,
+               "rights_reads": 0, "granted": True}
+    provider = _source(now, control)
+    original_issuers = provider.issuer_universe
+    catalyst_admission.configure(catalyst_admission.AdmittedEdgarSource(
+        lambda clock: {**original_issuers(clock), "ZZZZ": {"supported": False}},
+        provider.recent_events, provider.public_grant))
+    result = scan_with_reader(["PFE", "ZZZZ"], now_utc=now)
+    assert result["results"][0]["status"] == "SUPPORTED"
+    assert result["results"][1]["status"] == "NOT_COVERED"
+    assert control["rights_reads"] > 0
