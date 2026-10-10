@@ -156,7 +156,7 @@ def test_default_missing_observer_dependency_yields_unavailable_not_fabricated_p
     assert out["schema"] == "pullback_observation.v1"
     assert out["market"] == "us"
     assert out["price_basis"] == "split_adjusted_dividend_unadjusted_close"
-    assert out["quality"] in {"observer_unavailable", "insufficient_history", "current"}
+    assert out["quality"] == "observer_unavailable"
 
 def test_us_view_has_country_correct_accessible_chart_without_reusing_china_labels():
     from lib.us_pullback_observation import present
@@ -180,3 +180,34 @@ def test_no_usable_price_cannot_generate_a_spurious_drawdown_chart():
     assert view["phase"] == "unavailable"
     assert view["detail_chart_html"] == ""
     assert view["observation"]["drawdown_pct"] is None
+
+def test_unmerged_observer_must_be_explicitly_injected_not_auto_imported(monkeypatch):
+    """A similarly named module is not a release/ownership or license receipt."""
+    import sys
+    from types import ModuleType
+    candidate = ModuleType("lib.pullback_observation")
+    invoked = []
+    def unauthorized_observe(*args, **kwargs):
+        invoked.append(True)
+        raise AssertionError("unmerged observer must not run")
+    candidate.observe = unauthorized_observe
+    monkeypatch.setitem(sys.modules, "lib.pullback_observation", candidate)
+
+    def unauthorized_read(*args):
+        raise AssertionError("source must not be read before observer admitted")
+    out = snapshot(now=FIXED_NOW, read=unauthorized_read)
+    assert out["available"] is False
+    assert out["quality"] == "observer_unavailable"
+    assert out["drawdown_pct"] is None
+    assert invoked == []
+
+def test_absent_source_reader_never_autoselects_vendor_store(monkeypatch):
+    """Vendor model/display rights are not established by a local SPY parquet."""
+    from lib import store
+    def forbidden(*args, **kwargs):
+        raise AssertionError("implicit Yahoo read bypasses source-rights admission")
+    monkeypatch.setattr(store, "read", forbidden)
+    out = snapshot(now=FIXED_NOW, observer=observer_receipt)
+    assert not out["available"]
+    assert out["quality"] == "source_unavailable"
+    assert out["drawdown_pct"] is None

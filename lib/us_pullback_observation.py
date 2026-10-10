@@ -78,39 +78,33 @@ def snapshot(*, now: datetime | None = None, read: Callable | None = None,
         successor, nyse_calendar._CLOSE_PLUS_SETTLE,
         tzinfo=nyse_calendar.ET,
     ).astimezone(timezone.utc)
-    if read is None:
-        from lib import store
-        read = store.read
+    # Dependency admission is explicit: the held #8188 observer is never
+    # auto-imported, and an unbound adapter never reads/publishes Yahoo prices.
     if observer is None:
-        try:
-            from lib.pullback_observation import observe as observer
-        except ModuleNotFoundError as exc:
-            if exc.name != "lib.pullback_observation":
-                raise
-            observer = None
-
-    try:
-        frame = read("yahoo", BENCHMARK)
-        if frame is None or "close_price" not in frame.columns or frame.empty:
-            result = _unavailable(expected, "source_unavailable")
-        elif observer is None:
-            result = _unavailable(expected, "observer_unavailable")
-        else:
-            result = observer(
-                _price_rows(frame),
-                expected_session=expected,
-                is_session=nyse_calendar.is_session,
-            )
-            if not isinstance(result, dict) or result.get("schema") != OBSERVATION_SCHEMA:
-                result = _unavailable(expected, "observation_inconsistent")
-            elif result.get("available") and (
-                result.get("quality") != "current"
-                or result.get("asof") != expected.isoformat()
-                or result.get("expected_session") != expected.isoformat()
-            ):
-                result = _unavailable(expected, "observation_inconsistent")
-    except (OSError, TypeError, ValueError, KeyError, ArithmeticError):
+        result = _unavailable(expected, "observer_unavailable")
+    elif read is None:
         result = _unavailable(expected, "source_unavailable")
+    else:
+        try:
+            frame = read("yahoo", BENCHMARK)
+            if frame is None or "close_price" not in frame.columns or frame.empty:
+                result = _unavailable(expected, "source_unavailable")
+            else:
+                result = observer(
+                    _price_rows(frame),
+                    expected_session=expected,
+                    is_session=nyse_calendar.is_session,
+                )
+                if not isinstance(result, dict) or result.get("schema") != OBSERVATION_SCHEMA:
+                    result = _unavailable(expected, "observation_inconsistent")
+                elif result.get("available") and (
+                    result.get("quality") != "current"
+                    or result.get("asof") != expected.isoformat()
+                    or result.get("expected_session") != expected.isoformat()
+                ):
+                    result = _unavailable(expected, "observation_inconsistent")
+        except (OSError, TypeError, ValueError, KeyError, ArithmeticError):
+            result = _unavailable(expected, "source_unavailable")
 
     return {
         **result,

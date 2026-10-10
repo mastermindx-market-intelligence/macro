@@ -5510,6 +5510,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - lib/illus.py
+      - lib/us_pullback_observation.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -9871,6 +9873,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - lib/us_pullback_observation.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
