@@ -1,28 +1,16 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-09T20:59:18.942576+00:00",
-  "posts_seen": 19,
-  "seen_total": 280,
-  "evaluated": 3,
-  "activated": 1,
+  "as_of": "2026-10-10T00:50:21.947626+00:00",
+  "posts_seen": 18,
+  "seen_total": 281,
+  "evaluated": 1,
+  "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-10-09-congressional-bills-s-195-signed-into-law",
-      "importance": 5,
+      "id": "wh-2026-10-09-presidential-message-on-leif-erikson-day",
+      "importance": 10,
       "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-09-remarks-by-director-michael-kratsios-at-the-science-a-new-golden-age-summit",
-      "importance": 35,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-08-establishment-of-a-committee-of-inquiry-to-investigate-allegations-of-false-stat",
-      "importance": 78,
-      "activated": true,
       "degraded_reason": "served_by:deepseek"
     }
   ]
