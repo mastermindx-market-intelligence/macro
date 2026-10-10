@@ -7926,6 +7926,29 @@ jobs:
       - name: append-only law mutation + negative controls
         run: python -m pytest tests/test_append_only_assertions.py -q
 
+  quant-q08-cov-shrinkage:
+    if: ${{ false }}
+    gate: code
+    # Q08 pins basis/support guards, PSD/zero-structure, PR bounds/intervals, shrinkage losses, no-authority contract
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, pytest.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/covariance_shrinkage_diagnostics.py"
+      - "tests/test_covariance_shrinkage_diagnostics.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q08 covariance shrinkage diagnostics suite
+        run: python -m pytest tests/test_covariance_shrinkage_diagnostics.py -q
+
   research-screener:
     if: ${{ false }}
     gate: code
@@ -9982,6 +10005,29 @@ jobs:
         run: pip install pytest pandas numpy pyyaml pyarrow
       - name: altdata-brain governance + de-escalation law tests
         run: python -m pytest tests/test_w7a_tenants.py tests/test_altdata_brain_reconcile.py -q
+
+  quant-q11-episode-duration:
+    if: ${{ false }}
+    gate: code
+    # Q11 pins the research-only explicit-duration off-exchange episode filter: req1-req6 + no silent activation
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, pytest, scipy.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/darkpool_episode_duration.py"
+      - "tests/test_darkpool_episode_duration.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q11 off-exchange episode duration filter (hermetic)
+        run: python -m pytest tests/test_darkpool_episode_duration.py -q
 
   nw-lobe-unfreeze:
     if: ${{ false }}
@@ -13149,6 +13195,29 @@ jobs:
         run: >
           python -m pytest
           tests/test_biocatalyst_drugs_at_fda.py -q
+
+  quant-q14-horizon-vrp:
+    if: ${{ false }}
+    gate: code
+    # Q14 pins horizon-matched variance-premium measurement contract
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, pytest.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/vol_horizon_variance_premium.py"
+      - "tests/test_vol_horizon_variance_premium.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q14 horizon variance premium tests
+        run: python -m pytest tests/test_vol_horizon_variance_premium.py -q
 
   marketing-social-publisher:
     if: ${{ false }}
