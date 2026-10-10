@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.health.v1",
-  "produced_at": "2026-10-10T05:31:48.861721+00:00",
+  "produced_at": "2026-10-10T05:50:01.231899+00:00",
   "as_of": "2026-10-09",
   "overall_status": "degraded",
   "lobes": [
@@ -3212,14 +3212,54 @@
     }
   ],
   "cortex": {
-    "cortex_source": "previous_run",
-    "memo_as_of": "2026-10-09T15:37:24+00:00",
+    "cortex_source": "current_run",
+    "memo_as_of": "2026-10-10T05:44:15+00:00",
     "run_status": {
       "status": "ok",
       "degraded": false,
       "degradation_reason": null,
       "model_used": "claude-opus-4-8",
       "provider_attempts": [
+        {
+          "provider": "oauth",
+          "model": "claude-opus-4-8",
+          "attempted": true,
+          "ok": false,
+          "error_type": "rate_limit",
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cft2RGFsbJFjuPJkGU3tK'}"
+        },
+        {
+          "provider": "oauth",
+          "model": "claude-opus-4-8",
+          "attempted": true,
+          "ok": false,
+          "error_type": "rate_limit",
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cft2SXCKuuVTFaCn9oD98'}"
+        },
+        {
+          "provider": "oauth",
+          "model": "claude-opus-4-8",
+          "attempted": true,
+          "ok": false,
+          "error_type": "rate_limit",
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cft2X6NUbZeoBwpgwRa1Q'}"
+        },
+        {
+          "provider": "oauth",
+          "model": "claude-opus-4-8",
+          "attempted": true,
+          "ok": false,
+          "error_type": "rate_limit",
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cft2kW8qWfEMf95XeGC7S'}"
+        },
+        {
+          "provider": "codex",
+          "model": "gpt-5.6-sol",
+          "attempted": true,
+          "ok": true,
+          "error_type": null,
+          "error_message": null
+        },
         {
           "provider": "codex",
           "model": "gpt-5.6-sol",
@@ -3261,11 +3301,11 @@
           "error_message": null
         }
       ],
-      "tool_call_batches": 4,
+      "tool_call_batches": 5,
       "individual_tool_calls": 11,
       "expected_min_tool_calls": 1,
       "context_stale": false,
-      "context_as_of": "2026-10-09T15:20:17Z"
+      "context_as_of": "2026-10-10T05:28:27Z"
     },
     "probation": {
       "granted": false,
