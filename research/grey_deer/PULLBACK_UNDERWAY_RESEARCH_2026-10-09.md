@@ -145,3 +145,61 @@ Do not change envelope V0's forbidden lifecycle fields or mint episode identitie
 [4] Isaac Gibbs and Emmanuel Candès, *Adaptive Conformal Inference Under Distribution Shift*, arXiv:2106.00170. https://arxiv.org/abs/2106.00170
 
 All external sources accessed 2026-10-09. Method adaptations, thresholds and release sequence above are proposals specific to this commission, not claimed results of those papers.
+
+## Research-only SPY historical-label pilot — October 9 continuation
+
+**Scope and status: empirical label feasibility, not predictive validation.** A
+separate pure helper, `research/grey_deer/pullback_forward_minimum_labels.py`,
+computes the exact future minimum over *h* market sessions, including the origin
+price, and emits **no** numeric label until all *h* subsequent calendar sessions
+are present. It rejects invalid closes and ambiguous/missing sessions; prices
+after the requested horizon cannot influence its label. It does not fit a
+forecast or promote a regime/entry decision.
+
+Source qualification used the previously inspected local read-only current
+snapshot `data/yahoo/SPY.parquet`, 8,481 price observations from
+1993-01-29 through 2026-10-08; SHA256
+`6c785d556c22e20f85f89f55597b10469f0fc4c40a577b8efb04bc11964a3152`.
+The field was explicitly `close_price` (split-adjusted,
+dividend-unadjusted), **not** the existing dividend-adjusted `close` field.
+
+To avoid treating every day of the same drawdown as a new crisis, this
+preliminary illustration sampled only one origin every 21 observed closes,
+beginning after the first 63. This is **not** a defensible claim of 400
+independent market crises. Across 400 sampled origins the exact calendar
+labeler found:
+
+| Future local sessions | Mature labels | Missing-session abstentions | Retrospective median additional loss | Outcomes reaching another 5% loss |
+|---|---:|---:|---:|---:|
+| 5 | 399 | 1 | 0.51% | 14 |
+| 10 | 398 | 2 | 0.96% | 34 |
+| 21 | 396 | 4 | 1.67% | 70 |
+
+For a **descriptive** 21-session phase cut, each historical origin was
+replayed using only price rows through that origin and the original held
+observer blob `54e7f0443d5b58d08a2a7327326e62766cc1ca0d`
+(#8188). Outcomes—not inputs to the phase detector—used future rows
+strictly within the label horizon. Sampled, mature origins by price
+phase: underway 108 (29 further losses >=5%, median 2.61%);
+stabilizing 89 (17, median 2.31%); recovering 51 (11, median
+1.28%); monitoring 129 (10, median 1.18%). Developing (n=10)
+and repaired (n=9) are small and not fit to estimate a tail.
+The distinct retained-peak proxies were 61/53/38 for the three
+active/repair states respectively; these are **not certified episode
+identities or independent crisis counts**.
+
+**Interpretation boundary:** these are retrospective outcomes measured on
+today's vendor-adjusted price vintage, sampled at one arbitrary 21-session
+stride. There is NO rolling-origin out-of-sample model test, episode-clustered
+uncertainty interval, feature-availability audit, source licensing release,
+conditional tail calibration, or market-by-market production acceptance.
+Using these fractions as live pullback odds would falsely imply
+calibration. The sample is sufficient to justify testing a conditional
+baseline against an unconditional one, *not* sufficient to publish the
+illustrative Paper range.
+
+Next experiment: preregistered, season/era-separated rolling OOS comparison
+with matured-only labels, overlap purging, episode-clustered uncertainty,
+training-only feature selection and country-specific release receipt.
+Keep invalid/censored labels visible and both US and China forecast
+states unavailable until exact statistical promotion.

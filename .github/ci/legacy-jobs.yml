@@ -3453,6 +3453,7 @@ jobs:
           tests/test_us_pullback_observation_adapter.py
           tests/test_us_pullback_modal_integration.py
           tests/test_us_pullback_builder_hook.py
+          tests/test_pullback_forward_minimum_labels.py
           tests/test_risk_state_live_copy_sync.py
           tests/test_build_china_risk_state.py
           tests/test_china_connect_leaderboard_render.py
