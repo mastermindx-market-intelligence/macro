@@ -11218,8 +11218,6 @@ jobs:
           python-version: "3.12"
       - name: install deps
         run: pip install pytest fastapi httpx pydantic jinja2 pandas numpy pyarrow pyyaml requests
-      - name: Catalyst anonymous scan + rights + verified opt-in integration (offline)
-        run: python -m pytest tests/test_catalyst_integration.py tests/test_catalyst_scan_authority.py tests/test_catalyst_packet_public.py tests/test_catalyst_scan.py tests/test_catalyst_lifecycle.py tests/test_catalyst_optin.py -q
       - name: mailer transport + ledger tests (app/mailer.py)
         run: python -m pytest tests/test_mailer.py -v
       - name: public support intake tests (app/support.py)
@@ -20403,6 +20401,7 @@ jobs:
       - "app/billing_emails.py"
       - "app/biocatalyst.py"
       - "app/catalyst_integration.py"
+      - "app/catalyst_scan_ui.js"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
       - "app/brain_runs.py"
@@ -21108,6 +21107,12 @@ jobs:
       - "tests/test_ticker_news_receipt_binding.py"
       - "tests/test_ticker_news_secret_delivery.py"
       - "tests/test_ticker_news_systemd.py"
+      - "tests/test_catalyst_integration.py"
+      - "tests/test_catalyst_scan_authority.py"
+      - "tests/test_catalyst_packet_public.py"
+      - "tests/test_catalyst_scan.py"
+      - "tests/test_catalyst_lifecycle.py"
+      - "tests/test_catalyst_optin.py"
       - "tests/test_verify_ticker_news.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
@@ -21145,6 +21150,15 @@ jobs:
           tests/test_ticker_news_secret_delivery.py
           tests/test_ticker_news_systemd.py
           tests/test_verify_ticker_news.py -q -rs
+      - name: Catalyst public scan, verified consent, and accessible UI (offline)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_catalyst_integration.py
+          tests/test_catalyst_scan_authority.py
+          tests/test_catalyst_packet_public.py
+          tests/test_catalyst_scan.py
+          tests/test_catalyst_lifecycle.py
+          tests/test_catalyst_optin.py -q -rs
 
   no-client-supplied-identity:
     if: ${{ false }}
