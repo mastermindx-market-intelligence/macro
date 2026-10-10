@@ -1,0 +1,40 @@
+{
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "previous_main": "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90",
+  "current_main": "60778ff68aea185c1769420c99d3ce878c911012",
+  "status": "ahead",
+  "ahead_by": 1,
+  "total_commits": 1,
+  "base_commit": "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90",
+  "merge_base_commit": "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90",
+  "commits": [
+    {
+      "sha": "60778ff68aea185c1769420c99d3ce878c911012",
+      "parents": [
+        "7bf322e8925b90e7986b0b2b0a4e14e6a43f8b90"
+      ],
+      "message": "research_vault: catalog 2026-10-09T23:47Z"
+    }
+  ],
+  "files": [
+    {
+      "filename": "data/research_vault/catalog.json",
+      "status": "modified",
+      "sha": "f985295ac151331ee63a34e2d40158e89c8347db",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2
+    },
+    {
+      "filename": "data/research_vault/excerpts.json",
+      "status": "modified",
+      "sha": "2d6ca944c15a10ee94d929e64f01508d4b2ff465",
+      "additions": 2152,
+      "deletions": 0,
+      "changes": 2152
+    }
+  ],
+  "file_list_capped": false,
+  "method": "GitHub immutable compare GET. One commit and two files; no truncated 300-file page. This follow-up extends the previous host source diff and does not replace study inputs.",
+  "recorded_at": "2026-10-10T00:22:06Z"
+}

@@ -104,12 +104,11 @@ def source_snapshot(records, cutoff, *, expected_sessions, periodic_families=())
     for family,value in expected_sessions.items():
         if not isinstance(family,str) or not family or family!=family.strip(): raise ContractError("source_family_invalid")
         session(value)
-    if not isinstance(periodic_families,(list,tuple,set,frozenset)) or any(not isinstance(f,str) or not f or f!=f.strip() for f in periodic_families):
-        raise ContractError("periodic_family_contract_invalid")
+    if isinstance(periodic_families,str): raise ContractError("periodic_family_contract_invalid")
     periodic_families=frozenset(periodic_families)
-    if periodic_families.intersection(expected_sessions): raise ContractError("periodic_family_contract_invalid")
+    if any(not isinstance(f,str) or not f or f!=f.strip() for f in periodic_families) or periodic_families.intersection(expected_sessions):
+        raise ContractError("periodic_family_contract_invalid")
     for record in records:
-        if not isinstance(record,dict): raise ContractError("source_record_not_object")
         r=deepcopy(record)
         keys=(r.get("ticker"),r.get("family"),r.get("observation_key"),r.get("source_record_id"))
         # Validly future availability is enough to exclude a record from this
@@ -284,10 +283,9 @@ def main():
     def normal(snapshot):
         if len({r["ticker"] for r in snapshot["selected"]})!=len(snapshot["selected"]):
             raise ContractError("normalization_requires_aggregated_unique_ticker_features")
-        raw_contracts=[(r.get("family"),r.get("unit"),r.get("feature_contract_id")) for r in snapshot["selected"]]
-        if any(not isinstance(x,str) or not x or x!=x.strip() for item in raw_contracts for x in item):
+        contracts={(r.get("family"),r.get("unit"),r.get("feature_contract_id")) for r in snapshot["selected"]}
+        if len(contracts)!=1 or any(not isinstance(x,str) or not x or x!=x.strip() for item in contracts for x in item):
             raise ContractError("normalization_requires_homogeneous_feature_contract")
-        if len(set(raw_contracts))!=1: raise ContractError("normalization_requires_homogeneous_feature_contract")
         return source["_rank_pct"]({r["ticker"]:r["value"] for r in snapshot["selected"]})
     n0=normal(base);nlate=normal(with_late)
     check("normalize_after_cutoff_blocks_future_reference_rows",nlate==n0)

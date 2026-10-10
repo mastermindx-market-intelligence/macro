@@ -3,7 +3,7 @@
   "policy": "research_qualified_atomic_v1",
   "source_mode": "system_observed_replay",
   "source_input_sha256": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334",
-  "script_sha256": "f2f5aeeb27b87809123148a642b9d6b848290a82033b7118614288432c8af014",
+  "script_sha256": "83944fe1d2090012203701cbd6f79acfa77555b3d7457cae351080eaddc38fb2",
   "checks": [
     {
       "name": "current_v3_exact_24_and_order",

@@ -1,0 +1,56 @@
+{
+  "files": {
+    "DESIGN.md": {
+      "bytes": 2571,
+      "git_blob": "53a2d05be51f8d756838f709da2b4395da31e991",
+      "sha256": "92ad9624c3a990258b63c5ab9306730da0aa5d886d9764c5b9fde3a03f294426"
+    },
+    "DISPLAY_DECISIONS.md": {
+      "bytes": 4652,
+      "git_blob": "a67802950b5410385cfaf9ed68830d61d782a12d",
+      "sha256": "8377fadad11ff6f0c8faa1b49abb0cbf970d60663d58c199207481e6a7fb67b3"
+    },
+    "EXECUTION_RECEIPT.json": {
+      "bytes": 406,
+      "git_blob": "4db2c25ce355338a13a7e2fdb003244e27c6dfe3",
+      "sha256": "3ef02ade28e3067b78e94b93f1efc860c2b4c3c45918f6380a4b9ea9cf898a5f"
+    },
+    "build_candidate.py": {
+      "bytes": 3619,
+      "git_blob": "43d421e1388c729a0eec833055ca69a1c0f1d043",
+      "sha256": "a514012312f32a7d5ba68464d496065273dcba2fe2e1a82c292bd47f4ddd0a82"
+    },
+    "candidate.diff": {
+      "bytes": 3799,
+      "git_blob": "11f89909120b78573bb76310889358e9c01263e5",
+      "sha256": "22a76de688ef68583ce2e1bc2127fcf1c3c1b8543d5a32022122855b8c70ac6f"
+    },
+    "candidate_cn_prophet_live.js": {
+      "bytes": 7885,
+      "git_blob": "ac0206f55310a351794dd2d2496975c1bfe90114",
+      "sha256": "595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc"
+    },
+    "execution.log": {
+      "bytes": 141,
+      "git_blob": "578d427d2cd73b677a9d89502ff8df9fd51a6b40",
+      "sha256": "026c1d8041d27b9a14cc6af9124017e8524f61d0071a23208d60a306541ed03f"
+    },
+    "pinned_cn_prophet_live.js": {
+      "bytes": 6651,
+      "git_blob": "5a4d08eab3ee4eebb587d19cbbd085322fb47a73",
+      "sha256": "e4bfdad0781eda00f8c940047e637a6f4ac691b057b703f9eba25d9930665147"
+    },
+    "results.json": {
+      "bytes": 7108,
+      "git_blob": "328c69b0cb53c714c30d184ae1471d34a12e76c7",
+      "sha256": "bf41dee7453600d9b6008f8653a74852c453a669bafaa975e6e49a33d63c4dfa"
+    },
+    "verify.mjs": {
+      "bytes": 13161,
+      "git_blob": "c51c6ad7d28ab40fb3006f8b26cc44bcb4438881",
+      "sha256": "150787696c210036e164d88953288757d78c8274dec96cf899cc026427cc34fa"
+    }
+  },
+  "source_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "status": "PRODUCER_PASS_AWAITING_INDEPENDENT_REVIEW"
+}

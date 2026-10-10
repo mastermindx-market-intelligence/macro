@@ -1,0 +1,14 @@
+{
+  "operation": "Independent stable vintage-laboratory review",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "command": "python -B deliverable/research/cn_prophet_audit/census_20261009/deepening_20261009/reviews/vintage_review/review_vintage.py",
+  "exit_code": 0,
+  "wall_time_seconds": 0.323530249,
+  "tool_chunk_id": "3624ae",
+  "source_runtime": "local scratch Python 3.12.14; no production modules imported or vendor calls",
+  "writes": "Only deepening_20261009/reviews/vintage_review",
+  "reproduced_producer_checks": 27,
+  "independent_reconciliation_and_compatibility_checks": 9,
+  "additional_synthetic_counterexamples": 13,
+  "result": "REVIEW_COMPLETE_WITH_CONTRACT_BLOCKERS"
+}

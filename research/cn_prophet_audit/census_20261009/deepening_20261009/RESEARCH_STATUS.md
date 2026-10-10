@@ -32,3 +32,17 @@ The native integration laboratory has an initial offline 63-check pass, and the 
 The intelligence contract's initial 56-check version reproduced exactly under independent review, which found thirteen synthetic failures across six gaps. The original failure evidence is retained. The repaired 56-check version is under a separate hash-bound acceptance pass. The actual analyst duplication hypothesis was falsified: all 475 duplicate groups are identical, with zero native row-reversal effect. A further 12-check native calibration audit finds current weights retain their priors; future-card, wrong-target, weak-evidence and malformed-payload effects occur only in explicitly synthetic counterfactuals.
 
 This checkpoint preserves finished evidence while problem solving continues. It is not the final implementation handoff and does not authorize a ranking change or production installation.
+
+## Second material checkpoint — accepted intelligence, repaired contracts
+
+The sole carrier was verified open Draft/HOLD at `54b96656b01fdc10fc505a43d2e9ac0dc085f064` before this checkpoint. The first checkpoint's 64 file identities and absence of changes outside the research prefix were verified remotely. Its readback is retained as `CHECKPOINT_01_VERIFICATION.json`.
+
+The final intelligence contract is independently accepted at source SHA-256 `f2f5aeeb27b87809123148a642b9d6b848290a82033b7118614288432c8af014`, with all 79 acceptance cases and all 56 principal controls passing. Both the original challenge and the intermediate repair's seven failures remain preserved. `intelligence_lab/INTELLIGENCE_DECISIONS.md` consolidates the current-data negative results, tested rules and existing-owner generation premises.
+
+Independent review accepts the vintage empirical findings but found four contract blockers and a minor positive-scale omission. The root's separate `repairs/vintage_contract` now passes 104 producer controls and preserves all 1,332 present witness classifications. Two additional early-review findings about whole-blob availability and correction chronology were repaired and preserved as historical challenge evidence. The sealed candidate is awaiting independent acceptance; the original laboratory is unchanged.
+
+The integration review records seven original gaps, including whole-spool history loss, readable duplicate-ledger data loss, equal-time close ambiguity and unsupported quote-basis stamping. A separate repair is active, with additional per-event availability and equal-time first-observation challenges. Those actively changing repair files are excluded from this checkpoint.
+
+`display_lab` executes the exact paired native live-chip script in a Node DOM/fetch/timer harness. The candidate passes 28 controls; twelve comparative native cases expose stale/error/race/timeout/future-clock behavior. Its 30-second request deadline and 60-second skew allowance are explicit research choices awaiting owner ratification. This is an offline script result, not deployed-browser proof; independent review is pending.
+
+The full tradability/source census and independent calibration assessment are still active and are excluded from this checkpoint until sealed. They will be incorporated before a final end-to-end handoff. Latest assessed main `60778ff68aea185c1769420c99d3ce878c911012` adds only two research-vault data files over the prior source readback; the scientific pin is unchanged.

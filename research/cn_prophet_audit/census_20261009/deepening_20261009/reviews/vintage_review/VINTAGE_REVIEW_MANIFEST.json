@@ -1,0 +1,52 @@
+{
+  "files": {
+    "VINTAGE_INDEPENDENT_REVIEW.md": {
+      "bytes": 12489,
+      "git_blob": "b2c23ad80b72496d628f2488954e20f20517a837",
+      "sha256": "e7ad8ac0a3aeec15183c542ce8d7f7ba691b19404730e552e28df99f7bc8160b"
+    },
+    "pinned_china_prices.py": {
+      "bytes": 6386,
+      "git_blob": "4324c7299af32abd22380488e86d97abdc552f72",
+      "sha256": "fddb468e6cb2c6a1bf86235c337d6ad3b52cb34b0702510f3352c91b3e9a3b5a"
+    },
+    "producer_benchmark_replay.json": {
+      "bytes": 3877,
+      "git_blob": "46536cf7e7b98cfbfe44dfe8e3d9ef2b5bb1d11a",
+      "sha256": "d8520a68e6fded2c3d1c87a10cecd782cb08bf078a4147867a6eade9946dc7d4"
+    },
+    "producer_contract_replay.json": {
+      "bytes": 5629,
+      "git_blob": "b99d9c946933316b67f2e5ebd5ac44111e6a8957",
+      "sha256": "6d1c2e671527006b4bb243525f40676d8de0d99196ea2f7867f405475d1d67f0"
+    },
+    "review_execution.log": {
+      "bytes": 339,
+      "git_blob": "1bb6f5cd9f359eb8d174175fdbd7c083b6d73781",
+      "sha256": "03f0be068165ca1c4f1f6e999b7af5064d364f54884ff0f6b53f9924751c31f7"
+    },
+    "review_execution_receipt.json": {
+      "bytes": 706,
+      "git_blob": "739272dcc7d2b36d435cda965b847ff2d15e851e",
+      "sha256": "34f8b750d6fad5b52082a802e6474a087021d970afced1f0a13ebf7c85d35178"
+    },
+    "review_vintage.py": {
+      "bytes": 27314,
+      "git_blob": "6b9aa84e481efffa3d09b983619d1abb7d49cf3c",
+      "sha256": "2b7031b6d0b454eadf304c0173e8b72aa54219d9962b9524f92d668cd58834f2"
+    },
+    "reviewed_input_identities.json": {
+      "bytes": 3916,
+      "git_blob": "c4741d54e0e23750ba08661d81fce74bf452f75c",
+      "sha256": "094791f7e82086b8fe8319cf81ef680e052d6a982223cb4d0912098865f7ca63"
+    },
+    "vintage_review_results.json": {
+      "bytes": 19970,
+      "git_blob": "36a58897dc276bd261d8e791f8b3312a8780cd56",
+      "sha256": "a9d9a47f2e7524237e1a1b6a42717ea7705c57f6597c44cd11f3d11a2efa5c01"
+    }
+  },
+  "reviewed_vintage_manifest_sha256": "7ffe548de43b85e2d1f4fc3ab8b06710ffd09c902bbe251ac6a5f517869ba9b3",
+  "scope": "Independent review; accepted empirical evidence with four prototype-contract blockers and one minor guard gap. All writes confined to this review package.",
+  "source_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139"
+}
