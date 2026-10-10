@@ -15142,6 +15142,21 @@ jobs:
         proof_id: sbir-sttr-progression-evidence-post-amount-semantics
         run: python -m pytest tests/test_sbir_awards.py -q
 
+  quant-q16-delayed-aci:
+    if: ${{ false }}
+    gate: code
+    # Q16 delayed-feedback interval calibration: maturity clock, honest blocks, interval score, shift controls, regime support, no activation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q16 delayed interval calibration research suite
+        run: python -m pytest tests/test_interval_delayed_calibration.py -q
+
   govrev-company-bridge:
     if: ${{ false }}
     gate: code
