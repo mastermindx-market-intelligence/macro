@@ -1,0 +1,103 @@
+{
+  "status": "EXPLORATORY_REAUDIT_NO_PRODUCTION_AUTHORITY",
+  "source_commit": "2f2feec4851b45636f63a48ec61e6f0b02b8118a",
+  "source_path": "data/us_board_ledger/retro_grades.parquet",
+  "verified_git_blob": "b0ee089e86269854b699f4667b47dd10a469374c",
+  "source_rows": 13563,
+  "source_columns": 87,
+  "duplicate_asof_lane_ticker_horizon_keys": 0,
+  "primary_slice": "rank_by=us_prophet_v3; lane=buy; tier_cascade=T2; news_burst=True",
+  "h5_all_observations": {
+    "n": 11, "issuers": 7, "decision_dates": 7,
+    "positive_absolute_return": 8,
+    "positive_excess_spy": 10,
+    "positive_excess_sector": 9,
+    "mean_absolute_return": 0.030820,
+    "mean_excess_spy": 0.035813,
+    "mean_excess_sector": 0.042467
+  },
+  "h5_first_observation_per_issuer": {
+    "n": 7, "decision_dates": 5,
+    "positive_absolute_return": 4,
+    "positive_excess_spy": 6,
+    "positive_excess_sector": 5,
+    "mean_absolute_return": 0.032921,
+    "mean_excess_spy": 0.038188,
+    "warning": "One row per issuer in this short window is sensitivity analysis, not a validated general episode definition. Issuers can share market shocks."
+  },
+  "h5_action_open_buy_now_or_partial": {
+    "n": 2, "decision_dates": 1, "positive_absolute_return": 1,
+    "positive_excess_spy": 1, "mean_absolute_return": -0.005372,
+    "mean_excess_spy": 0.005817
+  },
+  "h10_all_observations": {
+    "n": 10, "issuers": 6, "decision_dates": 6,
+    "positive_absolute_return": 5, "positive_excess_spy": 5,
+    "mean_absolute_return": 0.017481, "mean_excess_spy": 0.008440
+  },
+  "h10_without_INTC": {
+    "n": 9, "issuers": 5, "positive_absolute_return": 4,
+    "positive_excess_spy": 4,
+    "mean_absolute_return": -0.003427, "mean_excess_spy": -0.012776
+  },
+  "paired_same_observations_h5_h10": {
+    "n": 10,
+    "h5_positive_excess_spy": 9, "h10_positive_excess_spy": 5,
+    "mean_excess_spy_h5": 0.02632460948536348,
+    "mean_excess_spy_h10": 0.008439510042809972,
+    "terminal_absolute_return_worsened": 6
+  },
+  "h5_main_effect_cells": {
+    "T2_news": {"n": 11, "positive_excess_spy": 10, "mean_excess_spy": 0.035813},
+    "T2_no_news": {"n": 316, "positive_excess_spy": 114, "mean_excess_spy": -0.007166},
+    "not_T2_news": {"n": 7, "positive_excess_spy": 2, "mean_excess_spy": -0.072352},
+    "not_T2_no_news": {"n": 764, "positive_excess_spy": 250, "mean_excess_spy": -0.012374},
+    "warning": "The non-T2 category is heterogeneous and the cells are selected, dependent and sparse; these are not causal interaction estimates."
+  },
+  "h5_matching_against_T2_no_news": {
+    "same_date": {"matched_signal_rows": 11, "mean_difference": 0.04535078718731831, "positive_differences": 10},
+    "same_date_sector": {"matched_signal_rows": 8, "mean_difference": 0.041812691688809675, "positive_differences": 6},
+    "same_date_sector_entry_status": {"matched_signal_rows": 2, "mean_difference": 0.06423467977858266, "positive_differences": 2},
+    "warning": "Common support collapses under richer matching. Do not interpret two matched rows as identified incremental alpha."
+  },
+  "era_feature_presence_buy_h5": {
+    "conviction": {"rows": 437, "news_nonnull": 0, "smartmoney_nonnull": 0, "sue_nonnull": 0},
+    "bottoming-alignment": {"rows": 401, "news_nonnull": 227, "news_true": 0, "smartmoney_nonnull": 227, "smartmoney_true": 19, "sue_nonnull": 227, "sue_true": 22},
+    "confluence": {"rows": 523, "news_nonnull": 523, "news_true": 9, "smartmoney_nonnull": 523, "smartmoney_true": 98, "sue_nonnull": 523, "sue_true": 34},
+    "us_prophet_v1": {"rows": 78, "news_nonnull": 78, "news_true": 3, "smartmoney_true": 19, "sue_true": 8},
+    "us_prophet_v2": {"rows": 211, "news_nonnull": 211, "news_true": 1, "smartmoney_true": 41, "sue_true": 5},
+    "us_prophet_v3": {"rows": 1098, "news_nonnull": 1098, "news_true": 18, "smartmoney_true": 143, "sue_true": 72},
+    "warning": "Non-null booleans do not establish producer coverage: constructors can turn missing input into False."
+  },
+  "july_signature": {
+    "rows": 5, "issuers": ["AMZN", "MSFT", "PFE", "WMT"],
+    "semiconductor_issuers": 0,
+    "positive_absolute_return": 3, "positive_excess_spy": 1,
+    "positive_excess_sector": 3,
+    "mean_absolute_return": 0.001722, "mean_excess_spy": -0.010841,
+    "mean_excess_sector": 0.005390,
+    "price_basis_adjusted_rows": 3, "price_basis_unverified_rows": 2,
+    "warning": "Sector crash is not a sufficient direct explanation for this non-semiconductor sample. Some forward windows cross into August. Preserve failed observations rather than discarding July post hoc."
+  },
+  "uncertainty": {
+    "original_fisher_p": "A descriptive IID calculation after many inspected rules; not selection-adjusted, dependence-adjusted or preregistered confirmation.",
+    "conditional_block_bootstrap": {
+      "seed": 2601006, "resamples_attempted": 10000, "usable_resamples": 9999,
+      "block_size_observed_dates": 5,
+      "excess_difference_interval95": [0.026520344285938663, 0.09732133823468339],
+      "warning": "Twenty observed dates and rare selected events; interval conditions on the discovered rule and cannot quantify probability of future replication."
+    },
+    "seven_issuer_beta_prior_sensitivity": {
+      "uniform_Beta_1_1": {"posterior_mean": 0.7777777777777778, "interval95": [0.47349032912479344, 0.9681459737500557]},
+      "skeptical_Beta_10_10": {"posterior_mean": 0.5925925925925926, "interval95": [0.40570753529859144, 0.7664780168725565]},
+      "base_Beta_7p2_12p8": {"posterior_mean": 0.4888888888888889, "interval95": [0.30607679881874533, 0.6732615942950804]},
+      "warning": "Illustrative sensitivity only, using a simplifying exchangeable-trials assumption that does not remove selection bias or cross-issuer dependence. None is a calibrated live forecast."
+    }
+  },
+  "checkpoint": {
+    "completed": "Verified source bytes; reproduced headline; differentiated profit from benchmark outperformance; issuer/horizon/common-support/era stress tests.",
+    "next": "Audit raw event and publication clocks, trace existing persistence results and current owners, then finalize mechanism recommendation and bounded validation protocol.",
+    "production_changes": false,
+    "workers_dispatched": false
+  }
+}
