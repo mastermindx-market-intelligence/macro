@@ -15,11 +15,12 @@ from collections import deque
 from threading import Lock
 from datetime import datetime, timedelta, timezone
 from importlib import import_module
+from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import parse_qsl, unquote, urlsplit
 
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from app import edge_client
 
 router = APIRouter()
@@ -35,8 +36,11 @@ _PUBLIC_COVERAGE = {
 }
 _LIMIT = 10
 _FRESHNESS = timedelta(days=7)
-_HEADERS = {"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"}
-_HTML_HEADERS = {**_HEADERS, "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"}
+_HEADERS = {"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff",
+            "Referrer-Policy": "no-referrer"}
+_HTML_HEADERS = {**_HEADERS, "Content-Security-Policy":
+                 "default-src 'none'; script-src 'self'; connect-src 'self'; "
+                 "style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"}
 # Process-local guard only. The canonical edge/server remains responsible for
 # distributed anti-abuse; this protects worker resources before that gate.
 _RATE_LIMITS = {"scan": (30, 60.0)}
@@ -471,18 +475,56 @@ def render_first_value(data: dict | None, value: str = "", error: str = "") -> s
             else:
                 content += f'<p>{e(item["coverage_note"])}</p>'
             content += '</section>'
+    proof = (data or {}).get("scan_receipt", "")
+    if not isinstance(proof, str) or not re.fullmatch(r"[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+", proof):
+        proof = ""
     return ("<!doctype html><html lang='en'><meta charset='utf-8'>"
             "<meta name='viewport' content='width=device-width,initial-scale=1'>"
             "<title>Earnings Risk Scan — Mastermind</title>"
             "<style>body{font:16px/1.6 system-ui;color:#edf2fd;background:#101928;max-width:760px;"
             "margin:auto;padding:24px}a{color:#a2d9ff}input,button{font:inherit;padding:10px;"
             "max-width:100%;box-sizing:border-box}section{border-top:1px solid #536277;padding:12px 0}"
+            "[hidden]{display:none!important}.visually-hidden{position:absolute;left:-9999px;opacity:0}"
+            "button:focus-visible,input:focus-visible{outline:3px solid #7be9d9;outline-offset:3px}"
+            "#catalyst-status{display:block;min-height:1.5em;padding:8px 0}"
+            "@media(max-width:420px){body{padding:16px}input,button{min-height:44px}}"
             "</style><main><h1>Earnings Risk Scan</h1>"
-            "<form action='/api/catalyst' method='get'><label for='t'>Tickers (comma-separated)</label>"
-            f"<p><input id='t' name='tickers' required maxlength='119' value='{e(value, quote=True)}' "
-            "placeholder='NVDA, AMD' autocomplete='off'> <button type='submit'>Scan</button></p></form>"
-            + content + "<footer><p>Limited coverage, delayed source times. Information only; not investment advice.</p>"
-            "</footer></main></html>")
+            "<form id='catalyst-scan-form' action='/api/catalyst' method='get'>"
+            "<label for='catalyst-tickers'>Tickers (comma-separated, up to 10)</label>"
+            f"<p><input id='catalyst-tickers' name='tickers' required maxlength='119' value='{e(value, quote=True)}' "
+            "placeholder='NVDA, AMD' autocomplete='off'> "
+            "<button id='catalyst-scan-button' type='submit'>Scan evidence</button></p></form>"
+            + "<output id='catalyst-status' role='status' aria-live='polite'></output>"
+            + f"<input type='hidden' id='catalyst-scan-proof' value='{e(proof, quote=True)}'>"
+            + "<div id='catalyst-results' aria-live='polite'>" + content + "</div>"
+            + "<section id='catalyst-optin' hidden><h2>Optional material event updates</h2>"
+            + "<p>The scan is free. Get follow-ups only when supported evidence changes. "
+              "Email verification is required; unsubscribe is available.</p>"
+            + "<form id='catalyst-optin-form'><label for='catalyst-email'>Email address</label>"
+              "<p><input id='catalyst-email' type='email' required maxlength='254' autocomplete='email'></p>"
+              "<label for='catalyst-consent'><input id='catalyst-consent' type='checkbox' required>"
+              " I agree to receive material updates for this event by email.</label>"
+              "<div class='visually-hidden' aria-hidden='true'><label for='catalyst-honeypot'>Leave blank</label>"
+              "<input id='catalyst-honeypot' type='text' tabindex='-1' autocomplete='off'></div>"
+              "<p><button id='catalyst-optin-button' type='submit'>Request verification</button></p></form></section>"
+            + "<section id='catalyst-verify' hidden><h2>Verify email</h2>"
+              "<p>Enter the one-time code if it arrives. Request acceptance does not prove inbox delivery.</p>"
+              "<form id='catalyst-verify-form'><label for='catalyst-code'>One-time code</label>"
+              "<p><input id='catalyst-code' inputmode='numeric' pattern='[0-9]{6,8}' "
+              "autocomplete='one-time-code' required maxlength='8'></p>"
+              "<button id='catalyst-verify-button' type='submit'>Confirm email</button></form></section>"
+            + "<noscript><p>The scan works without JavaScript. "
+              "Optional email verification requires the interactive form.</p></noscript>"
+            + "<footer><p>Limited coverage, delayed source times. Information only; not investment advice.</p>"
+            "</footer><script defer src='/api/catalyst/scan-ui.js'></script></main></html>")
+
+
+@router.get("/api/catalyst/scan-ui.js")
+def scan_ui_javascript():
+    """Serve one fixed, first-party enhancement; no user-controlled paths."""
+    _require_enabled("CATALYST_PUBLIC_ENABLED")
+    content = Path(__file__).with_name("catalyst_scan_ui.js").read_text(encoding="utf-8")
+    return Response(content, media_type="text/javascript", headers=_HEADERS)
 
 
 @router.get("/api/catalyst", response_class=HTMLResponse)
