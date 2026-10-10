@@ -21192,6 +21192,8 @@ jobs:
       - "site/factordata/tech_confluence.json"
       - "site/marketdata/sp500_heatmap.json"
       - "site/theme.css"
+      - "engine/marketing/catalyst_admission.py"
+      - "tests/test_catalyst_admission.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -21237,6 +21239,7 @@ jobs:
           tests/test_catalyst_scan.py
           tests/test_catalyst_lifecycle.py
           tests/test_catalyst_optin.py
+          tests/test_catalyst_admission.py
           tests/test_catalyst_scan_frontend.py -q -rs
 
   no-client-supplied-identity:
