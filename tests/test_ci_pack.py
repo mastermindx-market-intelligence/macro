@@ -4343,6 +4343,7 @@ CURATED_EXCLUSIVE = {
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
     "mining-economic-dossier",
+    "quant-q08-cov-shrinkage",  # Q08 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-09-24 Healthcare D1 T02: gate:code home for the qualified FDA
     # observation and frozen supply probes; T01 probes remain intentionally red.
     "healthcare-fda-supply",
@@ -4418,6 +4419,7 @@ CURATED_EXCLUSIVE = {
     "biocatalyst-serving",
     "flow-surface",
     "biocatalyst-history",
+    "quant-q14-horizon-vrp",  # Q14 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "unrun-subsector-themes",
     "inline-js",
     "unrun-picks-boards",

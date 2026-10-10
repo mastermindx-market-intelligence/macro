@@ -2764,3 +2764,5 @@
 {"ts":"2026-10-09T16:10:23Z","event":"attempt","lane":"marketing-auditor","context":"marketing_auditor","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-terra","ok":true,"error_class":"","latency_ms":17550}
 {"ts":"2026-10-09T16:10:32Z","event":"attempt","lane":"marketing-auditor","context":"marketing_auditor","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-terra","ok":true,"error_class":"","latency_ms":8803}
 {"ts":"2026-10-09T16:10:41Z","event":"attempt","lane":"marketing-auditor","context":"marketing_auditor","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-terra","ok":true,"error_class":"","latency_ms":8558}
+{"ts":"2026-10-10T03:47:55Z","event":"waterfall","lane":"unknown","context":"","n_rungs":2,"rungs":[{"rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol"},{"rung":"deepseek","cap_id":"deepseek_api_key","model":"deepseek-v4-pro"}]}
+{"ts":"2026-10-10T03:48:16Z","event":"attempt","lane":"unknown","context":"altdata_brain","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol","ok":true,"error_class":"","latency_ms":20761}
