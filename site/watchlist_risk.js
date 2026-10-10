@@ -2335,7 +2335,10 @@
     if (DATA_LOADING) return DATA_LOADING;
     // A failed read is unavailable for this update, not for the whole session.
     // Keep concurrent consumers coalesced and retry only on a later caller.
-    DATA_LOADING = Promise.resolve().then(function () { return fetch('factor_betas.json'); })
+    var request;
+    try { request = fetch('factor_betas.json'); }
+    catch (error) { request = Promise.reject(error); }
+    DATA_LOADING = Promise.resolve(request)
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) { DATA = j; return j; }).catch(function () { return null; })
       .then(function (j) { DATA_LOADING = null; return j; });

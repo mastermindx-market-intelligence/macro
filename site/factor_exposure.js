@@ -91,7 +91,10 @@
     if (LOADING) return LOADING;
     // Keep only an in-flight request here; a settled outage must be retryable
     // on the next normal update. DATA remains the successful session cache.
-    LOADING = Promise.resolve().then(function () { return fetch('factor_betas.json'); })
+    var request;
+    try { request = fetch('factor_betas.json'); }
+    catch (error) { request = Promise.reject(error); }
+    LOADING = Promise.resolve(request)
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) { DATA = j; return j; })
       .catch(function () { return null; })
