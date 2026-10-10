@@ -40,7 +40,9 @@ create table if not exists public.catalyst_consent_grants (
   event_id text not null check (event_id ~ '^[A-Za-z0-9_.:-]{1,128}$'),
   scope text not null check (scope = 'catalyst_event_updates/v1'),
   tickers text[] not null check (cardinality(tickers) between 1 and 10),
-  intent_id text not null unique references public.catalyst_consent_pending(intent_id),
+  -- Immutable nonce kept independently so expired signed pending-body rows
+  -- can be deleted without losing a confirmed grant's replay ledger.
+  intent_id text not null unique,
   verified_at_utc timestamptz not null,
   first_touch jsonb not null check (jsonb_typeof(first_touch) = 'object'),
   created_at timestamptz not null default pg_catalog.now(),
@@ -228,6 +230,13 @@ begin
      or v_confirmed > v_verified + interval '30 seconds' then
     raise exception 'CONSENT_GOTRUE_UNVERIFIED';
   end if;
+  -- Acquire the SAME fixed-order transaction locks as incumbent global
+  -- unsubscribe and preference-update triggers BEFORE inspecting suppression
+  -- and before INSERT. Prevent READ COMMITTED check-then-insert write skew.
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('mmx-catalyst-email:' || v_email, 24001));
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('mmx-catalyst-user:' || p_user_id::text, 24001));
   -- Mandatory additional current suppression veto, not an opt-in inference.
   if exists (select 1 from public.email_suppression s
               where pg_catalog.lower(s.email) = v_email)
@@ -332,15 +341,70 @@ begin
 end;
 $$;
 
+-- Incumbent email-estate mutations are the only global unsubscribe owner.
+-- Revocation is permanent for old Catalyst positive scopes: removing a general
+-- email suppression or clearing email_prefs does NOT resurrect an event grant.
+-- Trigger lock keys match catalyst_consent_confirm's fixed lock order.
+create or replace function public.catalyst_consent_on_global_address_suppression()
+returns trigger language plpgsql security definer set search_path = ''
+as $
+declare v_email text;
+begin
+  v_email := pg_catalog.lower(pg_catalog.btrim(new.email));
+  if v_email is null or v_email = '' then
+    raise exception 'CATALYST_SUPPRESSION_ADDRESS_INVALID';
+  end if;
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('mmx-catalyst-email:' || v_email, 24001));
+  update public.catalyst_consent_grants g
+     set revoked_at_utc = pg_catalog.now()
+    from auth.users u
+   where g.user_id = u.id
+     and pg_catalog.lower(pg_catalog.btrim(u.email)) = v_email
+     and g.revoked_at_utc is null;
+  return new;
+end;
+$;
+revoke all on function public.catalyst_consent_on_global_address_suppression()
+  from public, anon, authenticated;
+drop trigger if exists catalyst_consent_global_address_revocation
+  on public.email_suppression;
+create trigger catalyst_consent_global_address_revocation
+  before insert or update of email, reason on public.email_suppression
+  for each row execute function public.catalyst_consent_on_global_address_suppression();
+
+create or replace function public.catalyst_consent_on_global_user_optout()
+returns trigger language plpgsql security definer set search_path = ''
+as $
+begin
+  if new.marketing_opt_out is true then
+    perform pg_catalog.pg_advisory_xact_lock(
+      pg_catalog.hashtextextended('mmx-catalyst-user:' || new.user_id::text, 24001));
+    update public.catalyst_consent_grants g
+       set revoked_at_utc = pg_catalog.now()
+     where g.user_id = new.user_id
+       and g.revoked_at_utc is null;
+  end if;
+  return new;
+end;
+$;
+revoke all on function public.catalyst_consent_on_global_user_optout()
+  from public, anon, authenticated;
+drop trigger if exists catalyst_consent_global_user_revocation
+  on public.email_prefs;
+create trigger catalyst_consent_global_user_revocation
+  before insert or update of marketing_opt_out on public.email_prefs
+  for each row execute function public.catalyst_consent_on_global_user_optout();
+
 -- All seven entrypoints accept only private service-role PostgREST callers.
 -- SECURITY DEFINER does not make them public RPCs. No browser role can EXECUTE.
-revoke all on function public.catalyst_consent_contract() from public;
-revoke all on function public.catalyst_consent_begin(text,text,text) from public;
-revoke all on function public.catalyst_consent_resolve(text,text) from public;
-revoke all on function public.catalyst_consent_confirm(uuid,text,text,text[],text,text,jsonb) from public;
-revoke all on function public.catalyst_consent_current(uuid,text) from public;
-revoke all on function public.catalyst_consent_interested(text,integer) from public;
-revoke all on function public.catalyst_consent_revoke(uuid,text,text) from public;
+revoke all on function public.catalyst_consent_contract() from public, anon, authenticated;
+revoke all on function public.catalyst_consent_begin(text,text,text) from public, anon, authenticated;
+revoke all on function public.catalyst_consent_resolve(text,text) from public, anon, authenticated;
+revoke all on function public.catalyst_consent_confirm(uuid,text,text,text[],text,text,jsonb) from public, anon, authenticated;
+revoke all on function public.catalyst_consent_current(uuid,text) from public, anon, authenticated;
+revoke all on function public.catalyst_consent_interested(text,integer) from public, anon, authenticated;
+revoke all on function public.catalyst_consent_revoke(uuid,text,text) from public, anon, authenticated;
 grant execute on function public.catalyst_consent_contract() to service_role;
 grant execute on function public.catalyst_consent_begin(text,text,text) to service_role;
 grant execute on function public.catalyst_consent_resolve(text,text) to service_role;
