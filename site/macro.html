@@ -6141,7 +6141,7 @@
 
 
 <section class="riskdlg-context" id="risk-envelope-band" aria-labelledby="gde-title"
-         data-bundle-id="bd89d57126f2a839" data-settled-session="2026-10-08" data-coherence="MIXED">
+         data-bundle-id="9ab1a3358973c602" data-settled-session="2026-10-08" data-coherence="MIXED">
   <div class="gde-head">
     <h3 id="gde-title"><span class="l-en">Market internals</span><span class="l-zh">市场内部</span></h3>
     <span class="gde-coherence">
@@ -6149,12 +6149,10 @@
     </span>
   </div>
   <div class="gde-reads">
-    <div class="gde-read" style="--gde-c: var(--ink-2)">
+    <div class="gde-read" style="--gde-c: var(--ink-3)">
       <span class="gde-q"><span class="l-en">Trend</span><span class="l-zh">趋势</span></span>
       <strong class="gde-a">
-        
-        <span class="l-en">Mixed</span><span class="l-zh">混合</span><span class="gde-arr" aria-hidden="true">▶</span>
-        
+        <span class="l-en">Unavailable</span><span class="l-zh">暂无读数</span>
       </strong>
     </div>
     <div class="gde-read" style="--gde-c: var(--ink-warn)">
@@ -6162,6 +6160,8 @@
       <strong class="gde-a"><span class="l-en">Fragile</span><span class="l-zh">脆弱</span></strong>
     </div>
   </div>
+  
+  <p class="gde-context-line"><span class="l-en">Some inputs are unavailable; this is not an all-clear.</span><span class="l-zh">部分数据缺失，不代表风险已解除。</span></p>
   
   
   
@@ -6172,7 +6172,7 @@
     
   
   <p class="gde-causes"><span class="l-en">Rates / inflation shock: building</span><span class="l-zh">利率/通胀冲击：积聚中</span></p>
-  
+  <p class="gde-input-caveat"><span class="l-en">Trend includes older inputs.</span><span class="l-zh">趋势读数含较早数据。</span></p>
   <script type="application/json" id="gde-context-copy">{"copy": {"ai_leaders": ["AI-hardware leaders", "AI\u786c\u4ef6\u9f99\u5934"], "checking": ["Checking stress", "\u538b\u529b\u5f85\u786e\u8ba4"], "coverage": {"FRESH": ["current session", "\u672c\u4ea4\u6613\u65e5"], "MISSING": ["not available", "\u6682\u65e0\u6570\u636e"], "STALE": ["older read", "\u8f83\u65e9\u8bfb\u6570"]}, "hazard": {"BREAKDOWN": ["Breakdown", "\u5df2\u7834\u4f4d"], "FRAGILE": ["Fragile", "\u8106\u5f31"], "NONE": ["No stress flagged", "\u672a\u89c1\u538b\u529b"], "TRANSMITTING": ["Stress spreading", "\u538b\u529b\u6269\u6563"]}, "hint": {"BREAKDOWN": ["Internal breakdown", "\u5185\u90e8\u7834\u4f4d"], "FRAGILE": ["Fragile internals", "\u5185\u90e8\u8106\u5f31"], "NONE": ["", ""], "TRANSMITTING": ["Stress spreading", "\u538b\u529b\u6269\u6563"]}, "live": ["Live stress", "\u5b9e\u65f6\u538b\u529b"], "live_missing": ["Live update unavailable; settled read shown.", "\u5b9e\u65f6\u66f4\u65b0\u4e0d\u53ef\u7528\uff0c\u663e\u793a\u6536\u76d8\u8bfb\u6570\u3002"], "live_pending": ["Live candidate", "\u5b9e\u65f6\u5f85\u786e\u8ba4"], "older_trend": ["Trend includes older inputs.", "\u8d8b\u52bf\u8bfb\u6570\u542b\u8f83\u65e9\u6570\u636e\u3002"], "partial_hint": ["Partial read", "\u8bfb\u6570\u4e0d\u5168"], "source": ["Tracked source", "\u8ffd\u8e2a\u6765\u6e90"], "source_missing": ["read unavailable", "\u6682\u65e0\u8bfb\u6570"], "source_states": {"BROKEN": ["damaged", "\u53d7\u635f"], "CRACKING": ["weakening", "\u8f6c\u5f31"], "HEALTHY": ["holding up", "\u7ef4\u6301\u7a33\u5b9a"], "WATCH": ["under watch", "\u9700\u5173\u6ce8"], "calm": ["quiet", "\u5e73\u7a33"], "caution": ["building", "\u79ef\u805a\u4e2d"], "elevated": ["elevated", "\u504f\u9ad8"], "risk-off": ["stressed", "\u627f\u538b"], "watch": ["under watch", "\u9700\u5173\u6ce8"]}, "unknown": ["Incomplete read", "\u6570\u636e\u4e0d\u5168"]}, "settled_stage": "FRAGILE"}</script>
   <div class="gde-meta">
     <span class="gde-stamp"><span class="l-en">Settled</span><span class="l-zh">收盘</span> 2026-10-08</span>
@@ -6231,7 +6231,7 @@
                   <td class="tnum">MIXED · 51</td>
                   <td class="tnum">2026-10-08</td>
                   <td>
-                    <span class="l-en">This session</span><span class="l-zh">本交易日</span>
+                    <span class="gde-warn"><span class="l-en">Older than this session</span><span class="l-zh">早于本交易日</span></span>
                      <span class="gde-req"><span class="l-en">required</span><span class="l-zh">必需</span></span>
                   </td>
                 </tr>
@@ -6283,8 +6283,8 @@
           
 
           <p class="gde-receipt tnum">
-            grey-deer-v1-2026-08-19 · bundle bd89d57126f2a839 ·
-            coverage FRESH ·
+            grey-deer-v1-2026-08-19 · bundle 9ab1a3358973c602 ·
+            coverage DEGRADED ·
             coherence MIXED (scope market_reads) ·
             stage FRAGILE (observed_settled_evidence) ·
             stage_since null (no_episode_lifecycle_in_v0) ·
@@ -8436,7 +8436,7 @@
             </div>
           </div>
           <div class="plx-jaw-count-box">
-            <div class="plx-jaw-count-num">19</div>
+            <div class="plx-jaw-count-num">20</div>
             <div class="plx-jaw-count-lbl">
               <span class="l-en">speeches 30d</span><span class="l-zh">30日发声</span>
             </div>
@@ -8446,7 +8446,7 @@
         
         
         
-        <div class="plx-jaw-bar-track"><div class="plx-jaw-bar-fill" style="width:53%"></div></div>
+        <div class="plx-jaw-bar-track"><div class="plx-jaw-bar-fill" style="width:50%"></div></div>
         
         <div class="plx-jaw-ts">
           <span class="l-en">Last event: 2026-10-08</span>
@@ -8957,15 +8957,15 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
           
           
           
-          <a class="nbx-item" href="https://www.marketwatch.com/story/why-one-wall-street-firm-sees-parallels-to-the-late-1970s-and-recommends-shorting-u-s-stocks-bbd0ebd2?mod=mw_rss_topstories" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.npr.org/2026/10/06/nx-s1-5988283/paramount-warner-bros-skydance-merger-david-ellison" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Macro</span><span class="l-zh">宏观</span></span>
-              <span class="nbx-title"><span class="l-en">Why one Wall Street firm sees parallels to the late 1970s and recommends shorting U.S. stocks</span><span class="l-zh">为什么一家华尔街公司看到了与20世纪70年代末的相似之处，并建议做空美国股票</span></span>
+              <span class="nbx-theme"><span class="l-en">Deals</span><span class="l-zh">并购/IPO</span></span>
+              <span class="nbx-title"><span class="l-en">New Hollywood era begins with an epic mega merger between Paramount and Warner Bros.</span><span class="l-zh">新好莱坞时代随着派拉蒙与华纳兄弟的史诗级超级合并拉开帷幕。</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 9</span>
+              <span class="nbx-date">Oct 6</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -12564,9 +12564,9 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
       
     </table>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-10-09 17:22 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-10-09 22:16 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-10-09 17:22 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-10-09 22:16 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
   </details>
   
