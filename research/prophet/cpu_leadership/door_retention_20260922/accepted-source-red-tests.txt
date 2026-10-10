@@ -1,0 +1,266 @@
+FFFFFFFFFF                                                               [100%]
+=================================== FAILURES ===================================
+________ test_retention_rehearsal_requires_exact_accepted_source_bytes _________
+tests/test_us_candidate_episode_reconciler.py:1610: in test_retention_rehearsal_requires_exact_accepted_source_bytes
+    helper = _retention_proof_module().verify_fixture_inputs
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_episode_reconciler.py:1605: in _retention_proof_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:759: in exec_module
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+research/prophet/cpu_leadership/door_retention_20260922/prove.py:19: in <module>
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2012: in parse_args
+    self.error(msg)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2785: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2772: in exit
+    _sys.exit(status)
+E   SystemExit: 2
+----------------------------- Captured stderr call -----------------------------
+usage: python3.14 -m pytest [-h] [--source-ref SOURCE_REF] [--full-writer] out
+python3.14 -m pytest: error: unrecognized arguments: -q -k retention_rehearsal --tb=short --basetemp=/Volumes/Mastermind/tmp/prophet-next-frontier-20260922/pytest-rehearsal-red
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — research not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+______ test_retention_rehearsal_rejects_escaping_source_paths[../outside] ______
+tests/test_us_candidate_episode_reconciler.py:1629: in test_retention_rehearsal_rejects_escaping_source_paths
+    _retention_proof_module().verify_fixture_inputs(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_episode_reconciler.py:1605: in _retention_proof_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:759: in exec_module
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+research/prophet/cpu_leadership/door_retention_20260922/prove.py:19: in <module>
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2012: in parse_args
+    self.error(msg)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2785: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2772: in exit
+    _sys.exit(status)
+E   SystemExit: 2
+----------------------------- Captured stderr call -----------------------------
+usage: python3.14 -m pytest [-h] [--source-ref SOURCE_REF] [--full-writer] out
+python3.14 -m pytest: error: unrecognized arguments: -q -k retention_rehearsal --tb=short --basetemp=/Volumes/Mastermind/tmp/prophet-next-frontier-20260922/pytest-rehearsal-red
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — research not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+___ test_retention_rehearsal_rejects_escaping_source_paths[data/../outside] ____
+tests/test_us_candidate_episode_reconciler.py:1629: in test_retention_rehearsal_rejects_escaping_source_paths
+    _retention_proof_module().verify_fixture_inputs(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_episode_reconciler.py:1605: in _retention_proof_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:759: in exec_module
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+research/prophet/cpu_leadership/door_retention_20260922/prove.py:19: in <module>
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2012: in parse_args
+    self.error(msg)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2785: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2772: in exit
+    _sys.exit(status)
+E   SystemExit: 2
+----------------------------- Captured stderr call -----------------------------
+usage: python3.14 -m pytest [-h] [--source-ref SOURCE_REF] [--full-writer] out
+python3.14 -m pytest: error: unrecognized arguments: -q -k retention_rehearsal --tb=short --basetemp=/Volumes/Mastermind/tmp/prophet-next-frontier-20260922/pytest-rehearsal-red
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — research not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+____ test_retention_rehearsal_rejects_escaping_source_paths[/data/absolute] ____
+tests/test_us_candidate_episode_reconciler.py:1629: in test_retention_rehearsal_rejects_escaping_source_paths
+    _retention_proof_module().verify_fixture_inputs(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_episode_reconciler.py:1605: in _retention_proof_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:759: in exec_module
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+research/prophet/cpu_leadership/door_retention_20260922/prove.py:19: in <module>
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2012: in parse_args
+    self.error(msg)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2785: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2772: in exit
+    _sys.exit(status)
+E   SystemExit: 2
+----------------------------- Captured stderr call -----------------------------
+usage: python3.14 -m pytest [-h] [--source-ref SOURCE_REF] [--full-writer] out
+python3.14 -m pytest: error: unrecognized arguments: -q -k retention_rehearsal --tb=short --basetemp=/Volumes/Mastermind/tmp/prophet-next-frontier-20260922/pytest-rehearsal-red
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — research not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+____ test_retention_rehearsal_rejects_escaping_source_paths[scripts/run.py] ____
+tests/test_us_candidate_episode_reconciler.py:1629: in test_retention_rehearsal_rejects_escaping_source_paths
+    _retention_proof_module().verify_fixture_inputs(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_episode_reconciler.py:1605: in _retention_proof_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:759: in exec_module
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+research/prophet/cpu_leadership/door_retention_20260922/prove.py:19: in <module>
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2012: in parse_args
+    self.error(msg)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2785: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2772: in exit
+    _sys.exit(status)
+E   SystemExit: 2
+----------------------------- Captured stderr call -----------------------------
+usage: python3.14 -m pytest [-h] [--source-ref SOURCE_REF] [--full-writer] out
+python3.14 -m pytest: error: unrecognized arguments: -q -k retention_rehearsal --tb=short --basetemp=/Volumes/Mastermind/tmp/prophet-next-frontier-20260922/pytest-rehearsal-red
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — research not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+________ test_retention_rehearsal_resource_limits_never_truncate_inputs ________
+tests/test_us_candidate_episode_reconciler.py:1634: in test_retention_rehearsal_resource_limits_never_truncate_inputs
+    helper = _retention_proof_module().verify_fixture_inputs
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_episode_reconciler.py:1605: in _retention_proof_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:759: in exec_module
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+research/prophet/cpu_leadership/door_retention_20260922/prove.py:19: in <module>
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2012: in parse_args
+    self.error(msg)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2785: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2772: in exit
+    _sys.exit(status)
+E   SystemExit: 2
+----------------------------- Captured stderr call -----------------------------
+usage: python3.14 -m pytest [-h] [--source-ref SOURCE_REF] [--full-writer] out
+python3.14 -m pytest: error: unrecognized arguments: -q -k retention_rehearsal --tb=short --basetemp=/Volumes/Mastermind/tmp/prophet-next-frontier-20260922/pytest-rehearsal-red
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — research not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_____ test_retention_rehearsal_refusal_is_nonzero_not_acceptance[passed-0] _____
+tests/test_us_candidate_episode_reconciler.py:1645: in test_retention_rehearsal_refusal_is_nonzero_not_acceptance
+    assert _retention_proof_module().proof_exit_code({"status": state}) == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_episode_reconciler.py:1605: in _retention_proof_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:759: in exec_module
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+research/prophet/cpu_leadership/door_retention_20260922/prove.py:19: in <module>
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2012: in parse_args
+    self.error(msg)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2785: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2772: in exit
+    _sys.exit(status)
+E   SystemExit: 2
+----------------------------- Captured stderr call -----------------------------
+usage: python3.14 -m pytest [-h] [--source-ref SOURCE_REF] [--full-writer] out
+python3.14 -m pytest: error: unrecognized arguments: -q -k retention_rehearsal --tb=short --basetemp=/Volumes/Mastermind/tmp/prophet-next-frontier-20260922/pytest-rehearsal-red
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — research not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_retention_rehearsal_refusal_is_nonzero_not_acceptance[not_requested-0] __
+tests/test_us_candidate_episode_reconciler.py:1645: in test_retention_rehearsal_refusal_is_nonzero_not_acceptance
+    assert _retention_proof_module().proof_exit_code({"status": state}) == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_episode_reconciler.py:1605: in _retention_proof_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:759: in exec_module
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+research/prophet/cpu_leadership/door_retention_20260922/prove.py:19: in <module>
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2012: in parse_args
+    self.error(msg)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2785: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2772: in exit
+    _sys.exit(status)
+E   SystemExit: 2
+----------------------------- Captured stderr call -----------------------------
+usage: python3.14 -m pytest [-h] [--source-ref SOURCE_REF] [--full-writer] out
+python3.14 -m pytest: error: unrecognized arguments: -q -k retention_rehearsal --tb=short --basetemp=/Volumes/Mastermind/tmp/prophet-next-frontier-20260922/pytest-rehearsal-red
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — research not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+____ test_retention_rehearsal_refusal_is_nonzero_not_acceptance[refused-1] _____
+tests/test_us_candidate_episode_reconciler.py:1645: in test_retention_rehearsal_refusal_is_nonzero_not_acceptance
+    assert _retention_proof_module().proof_exit_code({"status": state}) == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_episode_reconciler.py:1605: in _retention_proof_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:759: in exec_module
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+research/prophet/cpu_leadership/door_retention_20260922/prove.py:19: in <module>
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2012: in parse_args
+    self.error(msg)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2785: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2772: in exit
+    _sys.exit(status)
+E   SystemExit: 2
+----------------------------- Captured stderr call -----------------------------
+usage: python3.14 -m pytest [-h] [--source-ref SOURCE_REF] [--full-writer] out
+python3.14 -m pytest: error: unrecognized arguments: -q -k retention_rehearsal --tb=short --basetemp=/Volumes/Mastermind/tmp/prophet-next-frontier-20260922/pytest-rehearsal-red
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — research not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+____ test_retention_rehearsal_refusal_is_nonzero_not_acceptance[unknown-1] _____
+tests/test_us_candidate_episode_reconciler.py:1645: in test_retention_rehearsal_refusal_is_nonzero_not_acceptance
+    assert _retention_proof_module().proof_exit_code({"status": state}) == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_candidate_episode_reconciler.py:1605: in _retention_proof_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:759: in exec_module
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+research/prophet/cpu_leadership/door_retention_20260922/prove.py:19: in <module>
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2012: in parse_args
+    self.error(msg)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2785: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py:2772: in exit
+    _sys.exit(status)
+E   SystemExit: 2
+----------------------------- Captured stderr call -----------------------------
+usage: python3.14 -m pytest [-h] [--source-ref SOURCE_REF] [--full-writer] out
+python3.14 -m pytest: error: unrecognized arguments: -q -k retention_rehearsal --tb=short --basetemp=/Volumes/Mastermind/tmp/prophet-next-frontier-20260922/pytest-rehearsal-red
+------------------------------- Sparse worktree --------------------------------
+This checkout omits .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker. If this failure is an artifact of that, sparse worktree — research not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_us_candidate_episode_reconciler.py::test_retention_rehearsal_requires_exact_accepted_source_bytes
+FAILED tests/test_us_candidate_episode_reconciler.py::test_retention_rehearsal_rejects_escaping_source_paths[../outside]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_retention_rehearsal_rejects_escaping_source_paths[data/../outside]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_retention_rehearsal_rejects_escaping_source_paths[/data/absolute]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_retention_rehearsal_rejects_escaping_source_paths[scripts/run.py]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_retention_rehearsal_resource_limits_never_truncate_inputs
+FAILED tests/test_us_candidate_episode_reconciler.py::test_retention_rehearsal_refusal_is_nonzero_not_acceptance[passed-0]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_retention_rehearsal_refusal_is_nonzero_not_acceptance[not_requested-0]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_retention_rehearsal_refusal_is_nonzero_not_acceptance[refused-1]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_retention_rehearsal_refusal_is_nonzero_not_acceptance[unknown-1]
+10 failed, 87 deselected in 8.16s

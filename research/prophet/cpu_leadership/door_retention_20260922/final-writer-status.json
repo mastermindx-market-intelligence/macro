@@ -1,0 +1,19 @@
+{
+  "operation": "prophet-door-intake-retention-20260922-sol-001",
+  "semantic_head": "d2ec700e98b584e25db695711db8f1655f2e9c6f",
+  "data_source_ref": "1e767a2f5b43f302b0e1068c9a7e60b12aeb98ee",
+  "proof_process": 37454,
+  "proof_command": "python3 research/prophet/cpu_leadership/door_retention_20260922/prove.py REPORT --source-ref 1e767a2f5b43f302b0e1068c9a7e60b12aeb98ee --full-writer",
+  "harness_exit_code": 0,
+  "full_writer_status": "refused",
+  "observed_error": "ordinary source key reused with different committed bytes",
+  "reported_source_receipt_conflicts": 2312,
+  "local_detail_report": "/Volumes/Mastermind/tmp/prophet-retention-final-20260922/exact-full-writer.json",
+  "detailed_report_review": "The subsequent diagnostic extraction was platform-blocked. It was not rerouted or retried; no per-source conflict attribution or new retention counts are asserted from that blocked read.",
+  "meaning": "The nonwriting harness completed and recorded a genuine full-writer refusal. Exit zero is not writer acceptance, release clearance or production proof.",
+  "input_and_original_history_preservation": "The harness assertions passed; no canonical data or site write was invoked.",
+  "scope": "Nonwriting current-pinned-input qualification; unchanged original source and existing immutable conflict guard.",
+  "production_proven": false,
+  "entry_rank_size_changed": false,
+  "mission_complete": false
+}

@@ -193,7 +193,7 @@ def test_durable_gate_refuses_before_any_source_or_ledger_read(tmp_path: Path, m
         "load_identity_spine",
         "turn_watch_observations",
         "candidate_observations",
-        "door_observations",
+        "_door_backlog_intake",
         "radar_observations",
         "_load_existing_ledgers",
     ):
@@ -1397,3 +1397,351 @@ def test_downstream_fixture_consumes_only_the_canonical_reader(tmp_path: Path, m
         "security_id": "SEC:US-XNAS-ALFA",
         "episode_state": "ACTIVE",
     }]
+
+
+# Lossless Door intake: the canonical writer must account for missed older rows.
+def _door_flag(day="2026-11-25", *, ticker="ALFA", door="T", **extras):
+    return {"schema": "prophet_doors/v1", "date": day, "ticker": ticker,
+            "door": door, "features": {"theme": "Test theme"}, **extras}
+
+
+def _write_doors(root, rows):
+    path = root / "data" / "prophet_doors" / "flags.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(canonical_json(row) for row in rows) + "\n")
+    return path
+
+
+def _door_owned(root):
+    return [r for r in _event_rows(root) + _suppression_rows(root)
+            if r["source_system"] == "doors"]
+
+
+def test_door_backlog_older_sighting_survives_newer_ledger_date(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    flags = [_door_flag(), _door_flag("2026-11-27")]
+    source = _write_doors(tmp_path, flags)
+    original = source.read_bytes()
+    receipt = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert {r["source_event_id"] for r in _door_owned(tmp_path)} == {
+        "doors:2026-11-25:T:ALFA", "doors:2026-11-27:T:ALFA"}
+    assert receipt["source_counts"]["doors"]["input"] == 2
+    assert source.read_bytes() == original
+    for row in _door_owned(tmp_path):
+        assert row["known_at"] == "2026-11-30T21:05:00Z"
+        assert row["event_type"] == "OBSERVED", "unanchored Doors never originate an episode"
+        flag = next(f for f in flags if f["date"] in row["source_event_id"])
+        assert row["source_receipt"] == "sha256:" + sha256(canonical_json(flag).encode()).hexdigest()
+    assert len(load_candidate_episode_store(_episode_root(tmp_path))) == 1
+
+
+def test_door_backlog_retry_preserves_first_knowledge_and_generation(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    original_head, original_store = _head(tmp_path), _snapshot(_episode_root(tmp_path))
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-12-01T21:05:00Z")
+    assert _head(tmp_path) == original_head
+    assert _snapshot(_episode_root(tmp_path)) == original_store
+    assert len(_door_owned(tmp_path)) == 2
+
+
+def test_door_backlog_same_key_changed_old_bytes_refuse_before_write(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    flags = [_door_flag(), _door_flag("2026-11-27")]
+    _write_doors(tmp_path, flags)
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    old = _snapshot(_episode_root(tmp_path))
+    flags[0]["features"]["theme"] = "Changed evidence"
+    _write_doors(tmp_path, flags)
+    with pytest.raises(EpisodeContractError, match="[Ss]ource|receipt|committed"):
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-12-01T21:05:00Z")
+    assert _snapshot(_episode_root(tmp_path)) == old
+
+
+def test_door_backlog_preclose_and_future_rows_wait_without_loss(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _turn_path(tmp_path).unlink()  # Isolate Door clocks, not a future TURN WATCH fixture.
+    _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27"),
+                            _door_flag("2026-11-30")])
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-27T17:59:59Z")
+    assert {r["source_event_id"] for r in _door_owned(tmp_path)} == {"doors:2026-11-25:T:ALFA"}
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-27T18:05:00Z")
+    assert {r["source_event_id"] for r in _door_owned(tmp_path)} == {
+        "doors:2026-11-25:T:ALFA", "doors:2026-11-27:T:ALFA"}
+    later = next(r for r in _door_owned(tmp_path) if "2026-11-27" in r["source_event_id"])
+    assert later["observation_session"] == "2026-11-27"
+    assert later["reason"] == "MISSING_STRUCTURAL_ANCHOR"
+    # It is already consumed at 18:05 UTC, proving the early close was not treated as 21:00.
+
+
+@pytest.mark.parametrize("field", ["signal_ts", "signal_known_ts", "observed_at"])
+def test_door_backlog_explicit_future_clock_cannot_be_repainted_as_now(tmp_path, monkeypatch, field):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag("2026-11-27", **{field: "2026-11-30T22:00:00Z"})])
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert _door_owned(tmp_path) == []
+
+
+@pytest.mark.parametrize("day", ["2026-11-26", "2026-11-28", "2026-11-29", "not-a-date"])
+def test_door_backlog_non_session_is_not_a_canonical_observation(tmp_path, monkeypatch, day):
+    _seed_sources(tmp_path)
+    _run_nightly(tmp_path, monkeypatch)
+    old = _snapshot(_episode_root(tmp_path))
+    _write_doors(tmp_path, [_door_flag(day)])
+    with pytest.raises(EpisodeContractError, match="session"):
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert _snapshot(_episode_root(tmp_path)) == old
+
+
+def test_door_backlog_missing_anchor_remains_explicit_and_never_rearms(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    turn_path = _turn_path(tmp_path)
+    turn = json.loads(turn_path.read_text())
+    turn["rows"] = []
+    turn_path.write_text(canonical_json(_rehash_turn_watch(turn)) + "\n")
+    _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    owned = _door_owned(tmp_path)
+    assert len(owned) == 2 and {r["reason"] for r in owned} == {"MISSING_STRUCTURAL_ANCHOR"}
+    assert load_candidate_episode_store(_episode_root(tmp_path)) == []
+    before = _snapshot(_episode_root(tmp_path))
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-12-01T21:05:00Z")
+    assert _snapshot(_episode_root(tmp_path)) == before
+
+
+def test_door_backlog_duplicate_rows_do_not_multiply_events(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag(), _door_flag(), _door_flag("2026-11-27")])
+    receipt = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert len(_door_owned(tmp_path)) == 2
+    assert receipt["source_counts"]["doors"]["input"] == 2
+
+
+def test_door_backlog_duplicate_identity_with_changed_payload_refuses(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag(), _door_flag(features={"different": True})])
+    with pytest.raises(EpisodeContractError, match="conflict|changed|receipt|committed"):
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert not (_episode_root(tmp_path) / "HEAD.json").exists()
+
+
+def test_door_backlog_report_never_publishes_or_edits_source(tmp_path):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    old = _snapshot(tmp_path)
+    receipt = writer.reconcile(repo_root=tmp_path, nightly=False, replay=False,
+                               recorded_at="2026-11-30T21:05:00Z", correction_path=None)
+    assert receipt["source_counts"]["doors"]["input"] == 2
+    assert receipt["durable_write"] is False
+    assert _snapshot(tmp_path) == old
+
+
+@pytest.mark.parametrize("bound", ["_DOOR_LEDGER_MAX_BYTES", "_DOOR_LEDGER_MAX_ROWS"])
+def test_door_backlog_resource_limit_is_explicit_and_nonmutating(tmp_path, monkeypatch, bound):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    monkeypatch.setattr(writer, bound, 1)
+    with pytest.raises(EpisodeContractError, match="limit"):
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert not (_episode_root(tmp_path) / "HEAD.json").exists()
+
+
+def test_door_backlog_preserves_legacy_recorded_knowledge(tmp_path, monkeypatch):
+    from engine.us_candidate_episode_intake import door_observations
+    _seed_sources(tmp_path)
+    _run_nightly(tmp_path, monkeypatch)
+    _write_doors(tmp_path, [_door_flag("2026-11-27")])
+    with monkeypatch.context() as legacy:
+        legacy.setattr(writer, "_door_backlog_intake", lambda path, spine, **kw: door_observations(path, spine))
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-27T18:10:00Z")
+    prior = _door_owned(tmp_path)
+    assert len(prior) == 1 and prior[0]["known_at"] == "2026-11-27T18:00:00Z"
+    old_events = _event_rows(tmp_path)
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert _event_rows(tmp_path) == old_events
+    assert _door_owned(tmp_path) == prior
+
+
+def test_door_backlog_reads_one_file_snapshot(tmp_path, monkeypatch):
+    from engine.us_candidate_episode_intake import load_identity_spine
+    _seed_sources(tmp_path)
+    source = _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    original = source.read_bytes()
+    open_method = Path.open
+    reads = []
+    def once(path, *args, **kwargs):
+        if path == source:
+            reads.append(args)
+            assert len(reads) == 1, "the source receipt must bind the one consumed read"
+        return open_method(path, *args, **kwargs)
+    monkeypatch.setattr(Path, "open", once)
+    batch = writer._door_backlog_intake(
+        source, load_identity_spine(tmp_path / "data"), recorded_at="2026-11-30T21:05:00Z",
+        existing_events=[], existing_suppressions=[])
+    assert len(reads) == 1
+    assert batch.source_receipts[0]["files"][0]["sha256"] == "sha256:" + sha256(original).hexdigest()
+    assert len(batch.observations) + len(batch.suppressions) == 2
+
+
+def test_door_backlog_future_identity_failure_stays_pending_not_suppressed(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag("2026-11-27", ticker="UNRESOLVED",
+        observed_at="2026-11-30T22:00:00Z")])
+    receipt = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert _door_owned(tmp_path) == []
+    assert receipt["source_counts"]["doors"]["input"] == 0
+
+
+@pytest.mark.parametrize("value", [True, 123, "bad-clock", "2026-11-27T18:00:00"])
+def test_door_backlog_invalid_explicit_clock_cannot_gain_default_close(tmp_path, monkeypatch, value):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag("2026-11-27", observed_at=value)])
+    with pytest.raises(EpisodeContractError, match="clock"):
+        _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert not (_episode_root(tmp_path) / "HEAD.json").exists()
+
+
+@pytest.mark.parametrize("field", ["signal_ts", "signal_known_ts", "observed_at"])
+@pytest.mark.parametrize("stamp", ["2026-11-30T21:05:00.100000Z", "2026-11-30T16:05:00.100000-05:00"])
+def test_door_backlog_fractional_future_clock_waits(tmp_path, monkeypatch, field, stamp):
+    """Normalization to whole seconds must not admit a not-yet-known source."""
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag("2026-11-27", **{field: stamp})])
+    first = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert first["source_counts"]["doors"]["input"] == 0
+    assert _door_owned(tmp_path) == []
+    second = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00.100000Z")
+    assert second["source_counts"]["doors"]["input"] == 1
+    observed = _door_owned(tmp_path)
+    assert len(observed) == 1
+    assert observed[0]["known_at"] == "2026-11-30T21:05:00.100000Z"
+
+
+def test_door_backlog_fractional_future_identity_stays_unconsumed(tmp_path, monkeypatch):
+    _seed_sources(tmp_path)
+    _write_doors(tmp_path, [_door_flag("2026-11-27", ticker="UNKNOWN",
+        observed_at="2026-11-30T21:05:00.000001Z")])
+    first = _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+    assert first["source_counts"]["doors"]["input"] == 0
+    assert _door_owned(tmp_path) == []
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00.000001Z")
+    assert _door_owned(tmp_path)[0]["reason"] == "IDENTITY_UNRESOLVED"
+
+
+# The release rehearsal must never accept a convenient same-date substitute.
+def _retention_proof_module():
+    path = Path(__file__).resolve().parents[1] / "research/prophet/cpu_leadership/door_retention_20260922/prove.py"
+    spec = importlib.util.spec_from_file_location("retention_rehearsal", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_retention_rehearsal_requires_exact_accepted_source_bytes():
+    helper = _retention_proof_module().verify_fixture_inputs
+    path = "data/prophet_doors/flags.jsonl"
+    raw = b"recorded evidence\n"
+    expected = {path: "sha256:" + sha256(raw).hexdigest()}
+    bodies = {path: raw}
+    assert helper(expected, bodies)[path] == expected[path]
+    assert bodies == {path: raw}
+    with pytest.raises(ValueError, match="hash"):
+        helper(expected, {path: b"same date, different values\n"})
+    with pytest.raises(ValueError, match="exact"):
+        helper(expected, {})
+    with pytest.raises(ValueError, match="exact"):
+        helper(expected, {**bodies, "data/extra.json": b"extra"})
+
+
+@pytest.mark.parametrize("path", ["../outside", "data/../outside", "/data/absolute", "scripts/run.py"])
+def test_retention_rehearsal_rejects_escaping_source_paths(path):
+    raw = b"evidence"
+    with pytest.raises(ValueError, match="path"):
+        _retention_proof_module().verify_fixture_inputs(
+            {path: "sha256:" + sha256(raw).hexdigest()}, {path: raw})
+
+
+def test_retention_rehearsal_resource_limits_never_truncate_inputs():
+    helper = _retention_proof_module().verify_fixture_inputs
+    bodies = {f"data/input-{i}.json": b"x" for i in range(61)}
+    expected = {p: "sha256:" + sha256(b).hexdigest() for p, b in bodies.items()}
+    with pytest.raises(ValueError, match="bound"):
+        helper(expected, bodies)
+    with pytest.raises(ValueError, match="bytes"):
+        helper({"data/x": "sha256:" + "0" * 64}, {"data/x": "not bytes"})
+
+
+@pytest.mark.parametrize("state,expected", [("passed", 0), ("not_requested", 0), ("refused", 1), ("unknown", 1)])
+def test_retention_rehearsal_refusal_is_nonzero_not_acceptance(state, expected):
+    assert _retention_proof_module().proof_exit_code({"status": state}) == expected
+
+
+# Full-writer proof must inspect its actual output, not borrow isolated-core success.
+def _lineage_row(ticker="INTC", *, source="doors", receipt="a", **extra):
+    return {"source_system": source, "source_schema": "prophet_doors/v1",
+            "source_event_id": f"doors:2026-09-10:T:{ticker}",
+            "source_receipt": "sha256:" + receipt * 64, **extra}
+
+
+def test_retention_full_lineage_joins_actual_event_and_suppression_outputs():
+    helper = _retention_proof_module().verify_full_lineage
+    event = _lineage_row(event_type="OBSERVED", episode_id="real-output")
+    suppressed = _lineage_row("MU", reason="MISSING_STRUCTURAL_ANCHOR")
+    result = helper([_lineage_row(), _lineage_row("MU")], [event], [suppressed])
+    assert result["submitted"] == 2 and result["all_accounted"] is True
+    assert result["new_events"] == 1 and result["new_suppressions"] == 1
+    assert result["entry_authority_changed"] is False
+    assert {r["source_event_id"] for r in result["motivating_cases"]} == {
+        event["source_event_id"], suppressed["source_event_id"]}
+
+
+def test_retention_full_lineage_missing_output_refuses_even_if_receipt_is_green():
+    with pytest.raises(ValueError, match="missing"):
+        _retention_proof_module().verify_full_lineage([_lineage_row()], [], [])
+
+
+def test_retention_full_lineage_changed_receipt_is_not_a_match():
+    with pytest.raises(ValueError, match="receipt"):
+        _retention_proof_module().verify_full_lineage(
+            [_lineage_row()], [_lineage_row(receipt="b")], [])
+
+
+def test_retention_full_lineage_different_source_same_id_is_not_a_match():
+    with pytest.raises(ValueError, match="missing"):
+        _retention_proof_module().verify_full_lineage(
+            [_lineage_row()], [_lineage_row(source="candidate")], [])
+
+
+def test_retention_full_lineage_duplicate_ownership_refuses():
+    row = _lineage_row()
+    with pytest.raises(ValueError, match="duplicate"):
+        _retention_proof_module().verify_full_lineage([row], [row], [row])
+
+
+def test_retention_full_lineage_requires_old_records_unchanged():
+    row = _lineage_row(event_type="OBSERVED", known_at="2026-09-10T20:00:00Z")
+    changed = {**row, "known_at": "2026-09-23T12:00:00Z"}
+    with pytest.raises(ValueError, match="prior"):
+        _retention_proof_module().verify_full_lineage(
+            [row], [changed], [], previous_events=[row])
+    result = _retention_proof_module().verify_full_lineage(
+        [row], [row], [], previous_events=[row])
+    assert result["new_events"] == 0 and result["prior_records_preserved"] is True
+
+
+def test_retention_full_lineage_observes_one_real_nonwriting_call(tmp_path):
+    helper = _retention_proof_module()
+    from engine.us_candidate_episode_intake import load_identity_spine
+    _seed_sources(tmp_path)
+    source = _write_doors(tmp_path, [_door_flag(), _door_flag("2026-11-27")])
+    clock = "2026-11-30T21:05:00Z"
+    batch = writer._door_backlog_intake(source, load_identity_spine(tmp_path / "data"),
+        recorded_at=clock, existing_events=[], existing_suppressions=[])
+    before = _snapshot(tmp_path)
+    receipt, lineage = helper.observe_full_writer(tmp_path, clock,
+        [*batch.observations, *batch.suppressions], (), ())
+    assert receipt["mode"] == "report" and receipt["durable_write"] is False
+    assert lineage["submitted"] == 2 and lineage["all_accounted"] is True
+    assert lineage["new_events"] == 2
+    assert _snapshot(tmp_path) == before
