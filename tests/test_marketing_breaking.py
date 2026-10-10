@@ -1679,3 +1679,100 @@ def test_official_preview_identical_same_guid_repeat_is_one_first_print(
     preview = feed.preview_official_sources(tmp_path, {"sources": [src]})
     assert [row["id"] for row in preview.items] == [item["id"]]
     assert calls == ["bls_news"]
+
+
+
+def test_official_preview_rejects_redirected_feed_even_with_agency_looking_items(
+        tmp_path, monkeypatch):
+    """An HTTPS off-host redirect is not authenticated agency transport."""
+    from engine.marketing import breaking_feed as feed
+    src = dict(BLS_SOURCE_CFG)
+    item = parse_feed(_load_fixture("rss_mixed.xml"), src)[0]
+    assert str(item["url"]).startswith("https://www.bls.gov/")
+    original_endpoint = "https://www.bls.gov/feed/bls_latest.rss"
+    agency_xml = f"""<rss><channel><item><title>Official release</title>
+    <link>{item["url"]}</link><guid>feed-redirect-case</guid>
+    <pubDate>Fri, 09 Oct 2026 08:30:00 EDT</pubDate></item></channel></rss>"""
+
+    class RedirectedResponse:
+        headers = {"ETag": "attacker-etag"}
+        def __enter__(self):
+            return self
+        def __exit__(self, exc_type, exc, tb):
+            return False
+        def read(self, length):
+            return agency_xml.encode("utf-8")[:length]
+        def geturl(self):
+            return "https://unapproved-collector.example/agency-mirror"
+
+    calls = []
+    def fake_urlopen(req, timeout):
+        calls.append(req.full_url)
+        return RedirectedResponse()
+
+    monkeypatch.setattr(feed, "urlopen", fake_urlopen)
+    with pytest.raises(ValueError, match="official source redirect"):
+        feed.preview_official_sources(
+            tmp_path, {"sources": [src], "poll_interval_s": 0}
+        )
+    assert calls == [original_endpoint]
+    state = tmp_path / "data/marketing/breaking"
+    assert not (state / "seen.json").exists()
+    assert not (state / "state.json").exists()
+
+
+def test_official_preview_accepts_exact_effective_feed_endpoint(
+        tmp_path, monkeypatch):
+    """The positive transport control keeps the incumbent RSS decoder."""
+    from engine.marketing import breaking_feed as feed
+    src = dict(BLS_SOURCE_CFG)
+    agency_xml = """<rss><channel><item><title>CPI official release</title>
+    <link>https://www.bls.gov/news.release/cpi.nr0.htm</link>
+    <guid>feed-effective-control</guid>
+    <pubDate>Fri, 09 Oct 2026 08:30:00 EDT</pubDate></item></channel></rss>"""
+
+    class AgencyResponse:
+        headers = {"ETag": "agency-etag"}
+        def __enter__(self):
+            return self
+        def __exit__(self, exc_type, exc, tb):
+            return False
+        def read(self, length):
+            return agency_xml.encode("utf-8")[:length]
+        def geturl(self):
+            return "https://www.bls.gov/feed/bls_latest.rss"
+
+    monkeypatch.setattr(feed, "urlopen",
+                        lambda req, timeout: AgencyResponse())
+    result = feed.preview_official_sources(
+        tmp_path, {"sources": [src], "poll_interval_s": 0}
+    )
+    assert len(result.items) == 1
+    assert result.items[0]["source"] == "bls_news"
+    assert result.updated_state["bls_news"]["etag"] == "agency-etag"
+    state = tmp_path / "data/marketing/breaking"
+    assert not (state / "seen.json").exists()
+    assert not (state / "state.json").exists()
+
+
+
+@pytest.mark.parametrize("status", [304, 429])
+def test_official_preview_refuses_redirected_http_error_status(
+        tmp_path, monkeypatch, status):
+    """A redirected 304/429 cannot masquerade as official-source proof."""
+    from engine.marketing import breaking_feed as feed
+    from urllib.error import HTTPError
+    src = dict(BLS_SOURCE_CFG)
+    def redirect_error(req, timeout):
+        raise HTTPError(
+            "https://external-cdn-not-approved.example/feed",
+            status, "upstream redirected", {}, None,
+        )
+    monkeypatch.setattr(feed, "urlopen", redirect_error)
+    with pytest.raises(ValueError, match="official source redirect"):
+        feed.preview_official_sources(
+            tmp_path, {"sources": [src], "poll_interval_s": 0}
+        )
+    state = tmp_path / "data/marketing/breaking"
+    assert not (state / "state.json").exists()
+    assert not (state / "seen.json").exists()

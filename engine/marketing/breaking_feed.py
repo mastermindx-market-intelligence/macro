@@ -392,8 +392,12 @@ def filter_new_items(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Network poller (never called in tests)
+# Network poller (fixture-mocked for transport verification)
 # ─────────────────────────────────────────────────────────────────────────────
+
+class _OfficialFeedRedirectRefused(ValueError):
+    """Fail closed when an exact-agency preview fetched a different origin."""
+
 
 def poll_source(
     source_cfg: dict,
@@ -454,6 +458,19 @@ def poll_source(
             req.add_header("If-Modified-Since", last_mod)
 
         with urlopen(req, timeout=_FEED_TIMEOUT) as resp:  # noqa: S310
+            # The official first-print preview already fixes the registered
+            # BLS/BEA feed URLs. urllib can follow redirects across hosts,
+            # so item URLs alone cannot prove which server supplied the feed.
+            # This optional constraint is dormant on incumbent poll_all().
+            required = source_cfg.get("_official_expected_effective_url")
+            if required is not None:
+                effective = str(resp.geturl()) if callable(
+                    getattr(resp, "geturl", None)
+                ) else ""
+                if effective != required:
+                    raise _OfficialFeedRedirectRefused(
+                        "official source redirect not admitted"
+                    )
             raw = resp.read(_MAX_FEED_BYTES + 1)
             if len(raw) > _MAX_FEED_BYTES:
                 print(
@@ -475,7 +492,19 @@ def poll_source(
 
         return parse_feed(text, source_cfg)
 
+    except _OfficialFeedRedirectRefused:
+        # An unqualified source must stop the ENTIRE preview before its
+        # proposed ETag/seen state can ever be acknowledged.
+        raise
     except HTTPError as exc:
+        # urllib raises for every non-2xx, INCLUDING 304. A redirect to an
+        # unregistered server may ALSO raise here; it must not be misread as
+        # an official conditional-GET receipt or an ordinary source outage.
+        required = source_cfg.get("_official_expected_effective_url")
+        if required is not None and str(exc.geturl()) != required:
+            raise _OfficialFeedRedirectRefused(
+                "official source redirect not admitted"
+            ) from None
         # urllib raises for every non-2xx, INCLUDING 304 — a Not-Modified
         # response is the conditional GET working, not an error.
         if exc.code == 304:
@@ -657,6 +686,9 @@ def preview_official_sources(
             "poll_interval_s": int(breaking_cfg.get("poll_interval_s", _DEFAULT_INTERVAL)),
             "user_agent": breaking_cfg.get("user_agent", _DEFAULT_UA),
             **source,
+            # Verified by the incumbent poll_source transport; no separate
+            # opener, fetcher, source registry or retry owner.
+            "_official_expected_effective_url": expected_url,
         }
         fetched = poll_source(merged, root=root, session_state=proposed_state)
         for item in fetched:
