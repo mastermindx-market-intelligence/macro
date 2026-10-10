@@ -898,7 +898,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
     {{ t('Strict new SPY-relative closing highs — not necessarily price highs. Leaders can stay on watch while an entry resets; this is not a buy list.', '相对SPY收盘强度创新高，不一定是股价新高。龙头可持续观察，等待回踩形态；这不是买入清单。') }}
   </p>
   <div class="rs-highs-columns">
-    {% for horizon, title_en, title_zh in [('daily','Daily · 126 sessions','日线 · 126交易日'),('weekly','Weekly · 26 completed weeks','周线 · 26个完整周')] %}
+    {% for horizon, title_en, title_zh in [('daily','Daily · 252 sessions','日线 · 252交易日'),('weekly','Weekly · 52 completed weeks','周线 · 52个完整周')] %}
     {% set _hs = _rsw[horizon] if _rsw[horizon] is defined and _rsw[horizon] is not none else [] %}
     <div class="rs-highs-col">
       <div class="rs-highs-col-top">
