@@ -1687,22 +1687,25 @@ def _build_regime(
 # ── Derived RS-high roster (display-only, no independent state/ledger) ──────
 
 def _build_rs_high_roster(rows: list[dict], *, as_of: str, stale: bool) -> dict:
-    """Alphabetical daily/weekly RS new-high watch from existing per-name rows.
+    """Deterministic RS-high snapshots and recent watch, never a ranked signal.
 
-    Counts UNKNOWN separately; this is a descriptive radar projection, not a
-    scored/ranked candidate list, a durable event ledger, or an entry trigger.
+    A name whose high is no longer printing stays in `recent` for up to 21
+    sessions / 8 completed weeks. All history is derived from incumbent daily
+    close sources, with source-clock unknowns explicit. No second event ledger.
     """
     output: dict = {
         "schema": "leader_rs_high_roster.v1",
         "as_of": as_of, "stale": bool(stale), "authority": "display_only",
         "benchmark": "SPY", "population_rows": len(rows),
-        "daily": [], "weekly": [],
-        "unknown": {"daily": 0, "weekly": 0},
+        "daily": [], "weekly": [], "recent": [],
+        "unknown": {"daily": 0, "weekly": 0, "recent": 0},
     }
     for row in rows:
         watch = (row.get("display_chips") or {}).get("rs_high_watch") or {}
+        evidence_by_horizon: dict[str, dict] = {}
         for horizon in ("daily", "weekly"):
             evidence = watch.get(horizon) or {}
+            evidence_by_horizon[horizon] = evidence
             if evidence.get("new_high") is True:
                 output[horizon].append({
                     "ticker": row.get("ticker"),
@@ -1712,8 +1715,32 @@ def _build_rs_high_roster(rows: list[dict], *, as_of: str, stale: bool) -> dict:
                 })
             elif evidence.get("new_high") is None:
                 output["unknown"][horizon] += 1
+
+        d = evidence_by_horizon["daily"]
+        w = evidence_by_horizon["weekly"]
+        dr = d.get("recent") or {}
+        wr = w.get("recent") or {}
+        last_daily = dr.get("last_high_as_of")
+        last_weekly = wr.get("last_high_as_of")
+        if (last_daily or last_weekly) and not (
+            d.get("new_high") is True or w.get("new_high") is True
+        ):
+            output["recent"].append({
+                "ticker": row.get("ticker"), "state": row.get("state"),
+                "last_high_as_of": max(x for x in (last_daily, last_weekly) if x),
+                "last_daily_high_as_of": last_daily,
+                "sessions_since_daily": dr.get("since_last_high"),
+                "last_weekly_high_as_of": last_weekly,
+                "weeks_since_weekly": wr.get("since_last_high"),
+            })
+        elif (dr.get("reason") is not None and wr.get("reason") is not None):
+            output["unknown"]["recent"] += 1
+
     for horizon in ("daily", "weekly"):
         output[horizon].sort(key=lambda r: str(r["ticker"]))
+    output["recent"].sort(
+        key=lambda r: (str(r["last_high_as_of"]), str(r["ticker"])), reverse=True,
+    )
     return output
 
 
