@@ -196,3 +196,47 @@ def test_recent_roster_retains_name_after_high_print_is_over():
     assert r["unknown"]["recent"] == 1
     assert all(x["ticker"] != "FRESH" for x in r["recent"])
 
+
+
+def test_real_leader_radar_builder_publishes_rs_watch_and_html(tmp_path):
+    """Owner pipeline: existing roster artifact and page consume this lens."""
+    import json
+    import os
+    from pathlib import Path
+    from unittest.mock import patch
+
+    from jinja2 import Environment, FileSystemLoader
+
+    from test_build_leader_radar import _build_fixture_root
+    from scripts.build_leader_radar import build
+
+    root = _build_fixture_root(tmp_path, ["AAPL", "MSFT"])
+    with patch("lib.config.ROOT", root), \
+         patch("lib.config.data_dir", lambda: root / "data"), \
+         patch("lib.config.load", lambda: {
+             "storage": {"data_dir": "data", "site_dir": "site"},
+             "leader_radar": {"enabled": True, "basket_keys": ["mag7"], "dow30": []},
+         }), patch.dict(os.environ, {"COLLECT_LANE": "express"}):
+        artifact = build(data_root=root / "data", site_root=root / "site")
+
+    assert artifact["rs_high_roster"]["authority"] == "display_only"
+    assert artifact["rs_high_roster"]["population_rows"] == 2
+    assert len(artifact["rows"]) == 2
+    for row in artifact["rows"]:
+        watch = row["display_chips"]["rs_high_watch"]
+        assert watch["schema"] == "leader_rs_highs.v1"
+        assert watch["daily"]["lookback_sessions"] == 252
+        assert watch["weekly"]["lookback_completed_weeks"] == 52
+        assert watch["daily"]["new_high"] is not None
+        assert "recent" in watch["weekly"]
+
+    disk = json.loads((root / "site/leaderradar/radar.json").read_text())
+    assert disk["rs_high_roster"] == artifact["rs_high_roster"]
+    repo_root = Path(__file__).resolve().parents[1]
+    template = Environment(
+        loader=FileSystemLoader(str(repo_root / "templates")), autoescape=False,
+    ).get_template("leader_radar.html.j2")
+    html = template.render(leader_radar=disk)
+    assert "RS highs to watch" in html
+    assert "Recent leaders" in html
+    assert "Daily" in html and "Weekly" in html
