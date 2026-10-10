@@ -467,8 +467,20 @@ def deliver_update(event_id: str, generation: int) -> dict:
     # acceptance is deliberately NOT called inbox delivery.
     states = {x["state"] for x in receipts}
     rights_held = bool(states & {"SOURCE_RIGHTS_NOT_CURRENT", "SOURCE_RIGHTS_UNAVAILABLE"})
+    consent_held = bool(states & {"CONSENT_OWNER_UNAVAILABLE",
+                                  "CONSENT_OWNER_PROTOCOL_MISMATCH"})
+    revision_held = "OUTDATED_OR_UNVERIFIED_REVISION" in states
+    delivery_held = bool(states & {"QUEUED_NOT_SENT", "SEND_FAILED", "SEND_BLOCKED",
+                                   "SEND_UNCONFIRMED"})
+    # A parked Catalyst row is not rebuilt by the current generic parked drain.
+    # If a sender's durable ledger claim is queued, the original mailer owner
+    # must reconcile that very row; resubmitting this idempotency key cannot
+    # turn it into an email. Report even partial delivery as a HOLD.
     return {"event_id": event_id, "generation": generation, "receipts": receipts,
             "status": "EFFECT_UNKNOWN" if "EFFECT_UNKNOWN" in states else
                       "SOURCE_RIGHTS_HELD" if rights_held else
+                      "CONSENT_HELD" if consent_held else
+                      "REVISION_HELD" if revision_held else
+                      "DELIVERY_HELD" if delivery_held else
                       "PROVIDER_ACCEPTED" if "PROVIDER_ACCEPTED" in states else
                       "NO_CONFIRMED_DELIVERY"}
