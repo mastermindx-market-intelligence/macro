@@ -4757,8 +4757,33 @@
       openOverlay(wrap, list, btn);
     }, true);
 
+    function listMutationNeedsUpgrade(records) {
+      for (var i = 0; i < records.length; i++) {
+        var rec = records[i];
+        var target = rec && rec.target;
+        // A row/count changed inside an existing list. Removals matter too, so the
+        // mutation target is the reliable signal rather than only addedNodes.
+        if (target && target.nodeType === 1 && target.closest && target.closest('.lst-wrap')) {
+          return true;
+        }
+        // A whole list (or an ancestor containing one) was injected after boot.
+        // Keep this path: renderActNow and other client renders can create lists lazily.
+        var added = rec && rec.addedNodes;
+        for (var j = 0; added && j < added.length; j++) {
+          var node = added[j];
+          if (!node || node.nodeType !== 1) continue;
+          if (node.matches && node.matches('.lst-wrap')) return true;
+          if (node.querySelector && node.querySelector('.lst-wrap')) return true;
+        }
+      }
+      return false;
+    }
+
     upgrade();
-    var mo = new MutationObserver(function () {
+    var mo = new MutationObserver(function (records) {
+      // theme.js runs on the whole estate, while only a tiny minority of pages own
+      // .lst-wrap. Ignore unrelated body churn before scheduling the document-wide scan.
+      if (!listMutationNeedsUpgrade(records)) return;
       if (mo.__raf) return;
       mo.__raf = requestAnimationFrame(function () { mo.__raf = 0; upgrade(); });
     });
