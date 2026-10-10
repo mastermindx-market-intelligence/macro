@@ -73,6 +73,8 @@ log = logging.getLogger(__name__)
 
 LEDGER_SCHEMA = "personality_gate_shadow.ledger/v1"
 STATE_SCHEMA = "personality_gate_shadow.v1"
+FORWARD_BASIS = "first_seen_next_session_close/v1"  # New rows only; historic v1 stays frozen
+FILL_CAPTURE_MAX_CALENDAR_DAYS = 7  # after the first eligible T+1 session; otherwise abstain
 
 # The incumbent uniform gate fires on the 2W Stoch-RSI bar (mag7_washout /
 # index_momentum). Pinned — a change is a construction change, not a config knob.
@@ -172,6 +174,7 @@ def _scan(root: Path | None, as_of: str) -> tuple[list[dict], dict]:
         "rung_distribution": {}, "classes": {
             "both": 0, "fired_uniform_only": 0, "fired_tailored_only": 0, "neither": 0},
         "disagreements": 0, "agree_by_construction": 0,
+        "future_codex": 0,
     }
     fires: list[dict] = []
     if codex is None:
@@ -182,6 +185,14 @@ def _scan(root: Path | None, as_of: str) -> tuple[list[dict], dict]:
         sym = str(r["sym"])
         rung = str(r["rung_derived"])
         codex_asof = str(r["as_of"])
+        # A future-date structure profile is not valid point-in-time context.
+        try:
+            if pd.Timestamp(codex_asof).date() > pd.Timestamp(as_of).date():
+                census["future_codex"] += 1
+                continue
+        except (ValueError, TypeError):
+            census["future_codex"] += 1
+            continue
         if rung not in VALID_RUNGS:
             census["bad_rung"] += 1
             continue
@@ -261,81 +272,126 @@ def _entry_row(close: pd.Series, e: int | None) -> dict | None:
 # --------------------------------------------------------------------------- #
 # Deferred DUAL-ruler grading (nightly-gated; frozen-until-matured).          #
 # --------------------------------------------------------------------------- #
-def _grade_entry(close: pd.Series, entry: dict) -> dict | None:
-    """Grade one frozen entry under BOTH rulers, once 63td of forward tape exists.
+def _grade_entry(close: pd.Series, execution: dict) -> dict | None:
+    """Score an already-frozen, first-seen T+1 CLOSE mark (research, not a fill).
 
-    legacy ruler — fwd63 = forward 63td close return (%).
-    timing ruler — mae63 (shallowest adverse excursion after entry, ≤0),
-                   prox (entry premium over the ±31td local trough, ≥0),
-                   td_to_trough (signed offset of the trough from entry; negative =
-                   trough already in = a CONFIRMED RESET), timing_label.
-    Returns None while unmatured (nulls printed, not fabricated). Reuses the same
-    arithmetic as mag7_washout_shadow._timing_scorecard (closes only; first-hit
-    argmin; PROX=31).
-
-    The entry is re-resolved from the stable `entry_date` on the CURRENT close (not
-    the raw frozen positional index) so a store back-fill or re-base cannot silently
-    shift the entry; entry_idx is only the fallback if the date is absent."""
-    try:
-        pos = int(close.index.searchsorted(pd.Timestamp(entry["entry_date"])))
-    except Exception:  # noqa: BLE001
-        pos = None
-    if pos is not None and pos < len(close) and \
-            str(close.index[pos].date()) == entry["entry_date"]:
-        e = pos
-    else:
-        e = int(entry["entry_idx"])  # fallback: append-only store keeps positions
-    if e >= len(close):
+    The marker's earlier chart label is deliberately never the performance basis.
+    A frozen observed price avoids retroactive repricing at horizon maturity.
+    """
+    if execution.get("basis") != FORWARD_BASIS:
         return None
-    entry_px = float(entry["entry_px"])
-    if e + HORIZON >= len(close):
-        return None  # not yet matured — re-checked on a later nightly
-    fwd63 = round((float(close.iloc[e + HORIZON]) / entry_px - 1) * 100, 2)
+    try:
+        date = pd.Timestamp(execution["entry_date"])
+        e = int(close.index.searchsorted(date))
+        if e >= len(close) or pd.Timestamp(close.index[e]) != date:
+            return None  # refuse positional fallbacks after data corrections
+        entry_px = float(execution["entry_px"])
+    except (KeyError, ValueError, TypeError, IndexError):
+        return None
+    if e + HORIZON >= len(close) or not np.isfinite(entry_px) or entry_px <= 0:
+        return None
     win = close.iloc[e: e + HORIZON + 1]
-    mae63 = round((float(win.min()) / entry_px - 1) * 100, 2)  # ≤0
-    out = {"fwd63": fwd63, "mae63": mae63,
-           "prox": None, "td_to_trough": None, "timing_label": None}
+    out = {
+        "fwd63": round((float(close.iloc[e + HORIZON]) / entry_px - 1) * 100, 2),
+        "mae63": round((float(win.min()) / entry_px - 1) * 100, 2),
+        "prox": None, "td_to_trough": None, "timing_label": None,
+        "grade_basis": FORWARD_BASIS,
+        "first_seen_asof": execution["first_seen_asof"],
+        "execution_date": execution["entry_date"],
+        "execution_price": entry_px,
+    }
     if e >= PROX:
         w = close.iloc[e - PROX: e + PROX + 1].to_numpy(dtype=float)
         lo = float(w.min())
-        out["prox"] = round((entry_px / lo - 1) * 100, 2)  # ≥0 (window includes e)
-        tdt = int(np.argmin(w)) - PROX  # negative = trough BEFORE entry
+        if not np.isfinite(lo) or lo <= 0:
+            return None
+        out["prox"] = round((entry_px / lo - 1) * 100, 2)
+        tdt = int(np.argmin(w)) - PROX
         out["td_to_trough"] = tdt
-        if -2 <= tdt <= 5:
-            out["timing_label"] = "called_low"
-        elif tdt < -2:
-            out["timing_label"] = "confirmed_reset"
-        else:
-            out["timing_label"] = "early"
+        out["timing_label"] = ("called_low" if -2 <= tdt <= 5
+                               else "confirmed_reset" if tdt < -2 else "early")
     return out
 
 
-def _grade_one(root: Path | None, row: dict) -> bool:
-    """Advance grades for one fire row in place. Only writes a grade once its
-    horizon has elapsed AND forward prices exist. Returns True if anything changed."""
-    if row.get("graded"):
+def _capture_next_close(close: pd.Series, row: dict, side: str,
+                        as_of: str) -> dict | str | None:
+    """Freeze first observed T+1 close, or disclose a missed capture.
+
+    A late nightly replay cannot pretend a historical price was first observed
+    on the next session. This is research-price marking, NOT broker fill proof.
+    """
+    source = row.get(f"{side}_entry")
+    if not isinstance(source, dict) or not source.get("entry_date"):
+        return None
+    try:
+        known = max(pd.Timestamp(row["first_seen_asof"]).normalize(),
+                    pd.Timestamp(source["entry_date"]).normalize())
+        if side == "tailored":
+            known = max(known, pd.Timestamp(row["codex_asof"]).normalize())
+        now = pd.Timestamp(as_of).normalize()
+    except (KeyError, ValueError, TypeError):
+        return "invalid_known_at"
+    if now < known:
+        return None
+    e = int(close.index.searchsorted(known, side="right"))
+    if e >= len(close):
+        return None
+    date = pd.Timestamp(close.index[e]).normalize()
+    if date > now:
+        return None
+    if (now - date).days > FILL_CAPTURE_MAX_CALENDAR_DAYS:
+        return "missed_first_close_observation"
+    price = float(close.iloc[e])
+    if not np.isfinite(price) or price <= 0:
+        return "unusable_close"
+    return {
+        "basis": FORWARD_BASIS, "first_seen_asof": row["first_seen_asof"],
+        "source_entry_date": source["entry_date"],
+        "entry_date": str(date.date()), "entry_idx": int(e),
+        "entry_px": round(price, 4), "captured_asof": as_of,
+    }
+
+
+def _grade_one(root: Path | None, row: dict, *, as_of: str) -> bool:
+    """Two-stage first-seen grading; legacy rows remain IMMUTABLE.
+
+    1. Capture the next closed-session mark within seven calendar days.
+    2. Wait 63 more completed daily sessions before recording a grade.
+    """
+    if row.get("grade_basis") != FORWARD_BASIS or row.get("graded"):
         return False
     close = _closes(root, str(row.get("sym")))
     if close is None:
         return False
+    try:
+        close = close.loc[close.index <= pd.Timestamp(as_of).normalize()]
+    except (ValueError, TypeError):
+        return False
+    if close.empty:
+        return False
     changed = False
     for side in ("uniform", "tailored"):
-        if row.get(f"{side}_grade") is not None:
+        if row.get(f"{side}_entry") is None:
             continue
-        entry = row.get(f"{side}_entry")
-        if not entry:
-            continue
-        g = _grade_entry(close, entry)
-        if g is not None:
-            row[f"{side}_grade"] = g
+        if row.get(f"{side}_execution") is None and not row.get(f"{side}_execution_skip"):
+            candidate = _capture_next_close(close, row, side, as_of)
+            if isinstance(candidate, dict):
+                row[f"{side}_execution"] = candidate
+                changed = True
+            elif isinstance(candidate, str):
+                row[f"{side}_execution_skip"] = candidate
+                changed = True
+        execution = row.get(f"{side}_execution")
+        if execution is not None and row.get(f"{side}_grade") is None:
+            grade = _grade_entry(close, execution)
+            if grade is not None:
+                row[f"{side}_grade"] = grade
+                changed = True
+    sides = [s for s in ("uniform", "tailored") if row.get(f"{s}_entry")]
+    if sides and all(row.get(f"{s}_grade") is not None for s in sides):
+        if not row.get("graded"):
+            row["graded"] = True
             changed = True
-    if changed:
-        # a fire is "graded" once every FIRED side that can grade has graded
-        pending = [
-            side for side in ("uniform", "tailored")
-            if row.get(f"{side}_entry") and row.get(f"{side}_grade") is None
-        ]
-        row["graded"] = not pending
     return changed
 
 
@@ -360,6 +416,53 @@ def _load_ledger(root: Path | None) -> list[dict]:
 
 def _ledger_keys(rows: list[dict]) -> set[tuple]:
     return {(r.get("as_of"), r.get("sym")) for r in rows}
+
+
+def _source_event_key(row: dict, side: str) -> tuple | None:
+    """The source event, not its (possibly repeated) publication wall date."""
+    if not row.get(f"fired_{side}"):
+        return None
+    entry = row.get(f"{side}_entry")
+    rung = row.get(f"{side}_rung")
+    if not isinstance(entry, dict) or not entry.get("entry_date") or not rung:
+        return None
+    return row.get("sym"), side, rung, entry["entry_date"]
+
+
+def _unique_new_fires(fires: list[dict], existing: list[dict]) -> list[dict]:
+    """Deduplicate by source event SIDE against v1 and v2, preserving all v1 rows.
+
+    When a name's second comparator has a new event while the first merely
+    repeats an older bar, retain only the new leg on the new publication.
+    """
+    known = {k for old in existing for side in ("uniform", "tailored")
+             if (k := _source_event_key(old, side)) is not None}
+    occupied = _ledger_keys(existing)  # preserve one-row/name/publication-date
+    fresh: list[dict] = []
+    for row in fires:
+        wall_key = row.get("as_of"), row.get("sym")
+        if wall_key in occupied:
+            continue
+        new = dict(row)
+        for side in ("uniform", "tailored"):
+            k = _source_event_key(new, side)
+            if k is None or k in known:
+                new[f"fired_{side}"] = False
+                new[f"{side}_entry"] = None
+            else:
+                known.add(k)
+        if not (new["fired_uniform"] or new["fired_tailored"]):
+            continue
+        new["disagreement_class"] = _classify(
+            bool(new["fired_uniform"]), bool(new["fired_tailored"]))
+        new["agree_by_construction"] = bool(
+            new["tailored_rung"] == UNIFORM_RUNG and
+            new["fired_uniform"] and new["fired_tailored"])
+        new["grade_basis"] = FORWARD_BASIS
+        new["first_seen_asof"] = row["as_of"]
+        fresh.append(new)
+        occupied.add(wall_key)
+    return fresh
 
 
 def _rewrite_ledger(root: Path | None, rows: list[dict]) -> None:
@@ -405,7 +508,9 @@ def _timing_shares(rows: list[dict]) -> dict:
     """Display tally of graded timing labels per gate side (nulls printed)."""
     out: dict = {}
     for side in ("uniform", "tailored"):
-        graded = [r.get(f"{side}_grade") for r in rows if r.get(f"{side}_grade")]
+        graded = [r.get(f"{side}_grade") for r in rows
+                  if r.get("grade_basis") == FORWARD_BASIS
+                  and r.get(f"{side}_grade")]
         labels = [g.get("timing_label") for g in graded if g and g.get("timing_label")]
         n = len(labels)
         out[side] = {
@@ -439,27 +544,33 @@ def update(root: Path | None = None, *, as_of: str | None = None) -> dict | None
         appended = 0
         existing = _load_ledger(root)
         if gate_open and fires:
-            seen = _ledger_keys(existing)
-            fresh = [r for r in fires if (r["as_of"], r["sym"]) not in seen]
+            fresh = _unique_new_fires(fires, existing)
             if fresh:
                 _append_fires(root, fresh)
                 existing.extend(fresh)
                 appended = len(fresh)
 
         advanced = 0
+        rows_changed = 0
         if gate_open and existing:
             for r in existing:
                 try:
-                    if _grade_one(root, r):
-                        r["graded_asof"] = as_of
-                        advanced += 1
+                    old_grade = bool(r.get("graded"))
+                    if _grade_one(root, r, as_of=as_of):
+                        rows_changed += 1
+                        if r.get("graded") and not old_grade:
+                            r["graded_asof"] = as_of
+                            advanced += 1
                 except Exception as e:  # noqa: BLE001 — per-row fail-open
                     log.debug("personality_gate_shadow: grade %s failed (%s)",
                               r.get("sym"), e)
-            if advanced:
+            if rows_changed:
                 _rewrite_ledger(root, existing)
 
-        n_graded = sum(1 for r in existing if r.get("graded"))
+        n_graded = sum(1 for r in existing
+                       if r.get("grade_basis") == FORWARD_BASIS and r.get("graded"))
+        legacy_graded = sum(1 for r in existing
+                            if r.get("grade_basis") != FORWARD_BASIS and r.get("graded"))
         state = {
             "schema": STATE_SCHEMA,
             "is_context_only": True,
@@ -475,6 +586,12 @@ def update(root: Path | None = None, *, as_of: str | None = None) -> dict | None
                 "fire_rows": len(existing),
                 "appended_today": appended,
                 "graded": n_graded,
+                "graded_prospective": n_graded,
+                "legacy_graded_excluded": legacy_graded,
+                "legacy_rows": sum(1 for r in existing
+                                   if r.get("grade_basis") != FORWARD_BASIS),
+                "prospective_rows": sum(1 for r in existing
+                                        if r.get("grade_basis") == FORWARD_BASIS),
                 "grades_advanced_today": advanced,
             },
             "timing": _timing_shares(existing),
@@ -485,7 +602,10 @@ def update(root: Path | None = None, *, as_of: str | None = None) -> dict | None
                 "later under dual rulers (fwd63 + timing). Display/shadow tier only: "
                 "it NEVER gates, ranks, sizes, or alters any Prophet, washout, or board "
                 "decision. Promotion of any gate change needs its own prereg + ruling. "
-                "First quarterly miss-rate readout ≈ 3 months post-ship."
+                "Legacy chart-date grades are PIT-preserved but EXCLUDED from "
+                "prospective timing. Only first-seen, promptly captured T+1 close "
+                "and 63 subsequent sessions can grade newly published events. "
+                "Neither arm creates trading, rank, or gate authority."
             ),
         }
         base = _base(root)
