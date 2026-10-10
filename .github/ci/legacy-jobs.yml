@@ -2533,6 +2533,21 @@ jobs:
       - name: access boundary (Caddyfile public matchers <-> site_access.yml policy)
         run: python -m pytest tests/test_regwall_json_gate.py -q
 
+  quant-q03-share-basis:
+    if: ${{ false }}
+    gate: code
+    # Q03 share-basis adapter: split/reverse/multi-action conversion, conventions, vintage identity, unknown-factor refusal, denominator classes, nonsplit/PSS-AF1 invariance, no silent activation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q03 share-basis adapter tests
+        run: python -m pytest tests/test_offexchange_share_basis.py -q
+
   lens-tap-boundary:
     if: ${{ false }}
     gate: code
