@@ -1703,6 +1703,8 @@ def _build_rs_high_roster(rows: list[dict], *, as_of: str, stale: bool) -> dict:
     for row in rows:
         watch = (row.get("display_chips") or {}).get("rs_high_watch") or {}
         evidence_by_horizon: dict[str, dict] = {}
+        entry = row.get("entry_read") or {}
+        entry_key = entry.get("key") if isinstance(entry, dict) else None
         for horizon in ("daily", "weekly"):
             evidence = watch.get(horizon) or {}
             evidence_by_horizon[horizon] = evidence
@@ -1712,6 +1714,7 @@ def _build_rs_high_roster(rows: list[dict], *, as_of: str, stale: bool) -> dict:
                     "state": row.get("state"),
                     "as_of": evidence.get("as_of"),
                     "rs_leads_price": evidence.get("rs_leads_price"),
+                    "entry_read_key": entry_key,
                 })
             elif evidence.get("new_high") is None:
                 output["unknown"][horizon] += 1
@@ -1731,6 +1734,7 @@ def _build_rs_high_roster(rows: list[dict], *, as_of: str, stale: bool) -> dict:
                 "sessions_since_daily": dr.get("since_last_high"),
                 "last_weekly_high_as_of": last_weekly,
                 "weeks_since_weekly": wr.get("since_last_high"),
+                "entry_read_key": entry_key,
             })
         elif not current_high and (
             dr.get("reason") is not None and wr.get("reason") is not None
