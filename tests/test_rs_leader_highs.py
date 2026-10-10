@@ -59,12 +59,12 @@ def test_missing_benchmark_last_session_is_unknown_not_false():
     assert got["daily"]["reason"] == "source_gap_or_nonpositive_close"
 
 
-def test_missing_week_last_session_refuses_weekly_but_not_daily():
+def test_missing_week_last_session_refuses_both_horizons():
     stock, bench = _source()
     missing = last_session_on_or_before(date(2026, 4, 10))
     stock = stock.drop(pd.Timestamp(missing))
     got = observe_rs_highs(stock, bench, as_of=date(2026, 10, 9))
-    assert got["daily"]["new_high"] is True
+    assert got["daily"]["new_high"] is None
     assert got["weekly"]["new_high"] is None
 
 
