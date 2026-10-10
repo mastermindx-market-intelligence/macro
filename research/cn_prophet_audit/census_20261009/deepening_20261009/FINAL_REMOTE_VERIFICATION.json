@@ -1,0 +1,161 @@
+{
+  "schema": "research.cn_prophet_final_remote_verification.v1",
+  "operation": "MMX-CN-PROPHET-CENSUS-20261009",
+  "recorded_at": "2026-10-10T01:19:44Z",
+  "classification": "PROVEN_OUTCOME_FOR_BOUNDED_RESEARCH",
+  "repository": "mastermindx-market-intelligence/macro",
+  "carrier": {
+    "pr": 8714,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8714",
+    "branch": "claude/cn-prophet-census-20261009",
+    "state": "open",
+    "draft": true,
+    "auto_merge": null,
+    "readback_head": "71b3872207861b344706ba42363b151c21b5afd6"
+  },
+  "base": {
+    "commit": "bb3c6ac2a1bcaf909a6bab1829cc7a60ebdd3ff3",
+    "tree": "bd797a18716454b649026d626bf720d6cb2d8d5e"
+  },
+  "payload": {
+    "commit": "71b3872207861b344706ba42363b151c21b5afd6",
+    "tree": "379ec288abb287f3624ab9e8f75049006fd6c1ba",
+    "parent_verified": true,
+    "manifest_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/FINAL_MANIFEST.json",
+    "manifest_git_blob": "2de76e98a0e30ef3d490ce07a55c462a477b3001",
+    "manifest_sha256": "84bf88052441f623bce309b9a047917bd8939f40839f2473d1e6d6c2ddc01eb3",
+    "manifest_bytes": 140414,
+    "payload_files": 438,
+    "payload_bytes": 18238055,
+    "files_including_manifest": 439,
+    "bytes_including_manifest": 18378469
+  },
+  "source_pins": {
+    "frozen_scientific_study": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+    "latest_assessed_main": "7bfc9d5cc860443972ae231335b070320bd61d73",
+    "protected_procedure": "326c8469a21d7f50fc9ecb1848196bf1c6e66685"
+  },
+  "local_verification": {
+    "command": "python -B research/cn_prophet_audit/census_20261009/deepening_20261009/verify_delivery.py",
+    "exit_code": 0,
+    "results": {
+      "status": "PASS",
+      "final_payload_files": 438,
+      "final_payload_bytes": 18238055,
+      "original_files_unchanged": 36,
+      "accepted_package_manifests": 15,
+      "package_payload_checks_including_repeats": 341,
+      "scope": "File identities only; no experiment, collector, vendor, runtime or deployment execution."
+    }
+  },
+  "remote_verification": {
+    "deep_tree_sha": "805981ec688fe3ab4d191fabfeb8dc296b7418bf",
+    "deep_blob_count": 438,
+    "total_files_with_discovery": 439,
+    "total_bytes_with_discovery": 18378469,
+    "sha_size_mode_matches": true,
+    "no_missing_or_extra_files": true,
+    "truncated": false,
+    "discovery_is_new": true,
+    "unexpected_changed_paths": [],
+    "unchanged_original_files": 36,
+    "scope_proofs": [
+      {
+        "path": "/",
+        "old_tree": "bd797a18716454b649026d626bf720d6cb2d8d5e",
+        "new_tree": "379ec288abb287f3624ab9e8f75049006fd6c1ba",
+        "allowed_changed_children": [
+          "research",
+          "agentos"
+        ],
+        "observed_changed_children": [
+          "agentos",
+          "research"
+        ]
+      },
+      {
+        "path": "/agentos",
+        "old_tree": "d2bf81df945156e492c9e228878695d014cd4cb2",
+        "new_tree": "5d4ef8de1e9d7941a7c98b7602138261a6d93dd8",
+        "allowed_changed_children": [
+          "discoveries"
+        ],
+        "observed_changed_children": [
+          "discoveries"
+        ]
+      },
+      {
+        "path": "/research",
+        "old_tree": "1ea303a48e98dd65b1d5968ecad5f28591885280",
+        "new_tree": "ea671b80910adf540e6f14c00a752e917b4f1551",
+        "allowed_changed_children": [
+          "cn_prophet_audit"
+        ],
+        "observed_changed_children": [
+          "cn_prophet_audit"
+        ]
+      },
+      {
+        "path": "/agentos/discoveries",
+        "old_tree": "e59d4f21d5dcb12ed2ad78027d4d628376fdf6f3",
+        "new_tree": "235e8d2ef02f5bddf0ac0813e1249d045c1d1c28",
+        "allowed_changed_children": [
+          "DSC-CN-PROPHET-CONTRACT-EXPERIMENTS-20261010.md"
+        ],
+        "observed_changed_children": [
+          "DSC-CN-PROPHET-CONTRACT-EXPERIMENTS-20261010.md"
+        ]
+      },
+      {
+        "path": "/research/cn_prophet_audit",
+        "old_tree": "09a95e0b1368a5137c956137b1d37489ee04ba8c",
+        "new_tree": "f62e89effc83fd7171be4da5a195fcc14d345055",
+        "allowed_changed_children": [
+          "census_20261009"
+        ],
+        "observed_changed_children": [
+          "census_20261009"
+        ]
+      },
+      {
+        "path": "/research/cn_prophet_audit/census_20261009",
+        "old_tree": "fc9d0a95ac154b0297d87641d8b61cccc9447e81",
+        "new_tree": "fbcf2e278d821d528747c10a7eacacce01953233",
+        "allowed_changed_children": [
+          "deepening_20261009"
+        ],
+        "observed_changed_children": [
+          "deepening_20261009"
+        ]
+      }
+    ]
+  },
+  "original_investigation": {
+    "files": 36,
+    "unchanged": true,
+    "delivery_manifest_sha256": "b954977d51173faa801cc5e34180e317dd0390d2194a507d2ac3c7fda3deeb02",
+    "proof": "Local original manifest and file identities revalidated; unchanged remote sibling trees preserve the original investigation and its discovery from the previously verified checkpoint."
+  },
+  "mutation_scope": [
+    "research/cn_prophet_audit/census_20261009/deepening_20261009/**",
+    "agentos/discoveries/DSC-CN-PROPHET-CONTRACT-EXPERIMENTS-20261010.md (new file only)"
+  ],
+  "acceptance": {
+    "package_manifests_verified": 15,
+    "independent_final_handoff_review": "reviews/handoff_review/MANIFEST.json",
+    "independent_final_handoff_review_manifest_sha256": "a4c1c2e03c9084c60676d1db51aa9c6eb6537f50747a7d8f2ac6f53713cf2f96",
+    "research_handoff_complete": true,
+    "production_ready": false,
+    "ranking_improvement_proven": false,
+    "active_research_workers": 0
+  },
+  "receipt_seal": {
+    "method": "This receipt is excluded from FINAL_MANIFEST.json and is added in a separate, single-file evidence commit whose parent is the payload commit recorded above. The final carrier head can be obtained from PR #8714; this file deliberately does not claim its own future commit hash.",
+    "expected_added_path": "research/cn_prophet_audit/census_20261009/deepening_20261009/FINAL_REMOTE_VERIFICATION.json"
+  },
+  "limits": [
+    "Content identity and bounded research acceptance; no production source, data, latch, rank, runtime or deployment change.",
+    "No claim of natural quote provenance, original historical fills, original publication timing, actual R2 schedule execution or deployed-browser verification.",
+    "Implementation owners must complete the explicit P0–P5 gates in IMPLEMENTATION_HANDOFF.md."
+  ]
+}
