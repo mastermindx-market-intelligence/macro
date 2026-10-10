@@ -1,0 +1,123 @@
+"""Point-in-time and missingness tests for Leader Radar RS-high read-only lens."""
+from __future__ import annotations
+
+from datetime import date, timedelta
+
+import numpy as np
+import pandas as pd
+
+from engine.rs_leader_highs import observe_rs_highs
+from lib.nyse_calendar import sessions_between, last_session_on_or_before
+
+
+def _source(end=date(2026, 10, 9), n=390):
+    sessions = sessions_between(end - timedelta(days=700), end)[-n:]
+    idx = pd.to_datetime(sessions)
+    bench = pd.Series(np.linspace(100.0, 120.0, len(idx)), index=idx)
+    ratio = pd.Series(np.linspace(0.9, 1.1, len(idx)), index=idx)
+    stock = bench * ratio
+    return stock, bench
+
+
+def test_daily_and_completed_weekly_rs_highs_true_but_price_not_required():
+    stock, bench = _source()
+    bench = pd.Series(np.linspace(160, 100, len(bench)), index=bench.index)
+    stock = bench * np.linspace(0.9, 1.1, len(bench))
+    got = observe_rs_highs(stock, bench, as_of=date(2026, 10, 9))
+    assert got["daily"]["new_high"] is True
+    assert got["weekly"]["new_high"] is True
+    assert got["daily"]["price_new_high"] is False
+    assert got["daily"]["rs_leads_price"] is True
+    assert got["weekly"]["rs_leads_price"] is True
+
+
+def test_no_lookahead_future_price_or_benchmark():
+    stock, bench = _source()
+    cut = date(2026, 10, 7)
+    first = observe_rs_highs(stock, bench, as_of=cut)
+    assert first["weekly"]["as_of"] == "2026-10-02"
+    altered = stock.copy()
+    altered.loc["2026-10-08":] = altered.loc["2026-10-08":] * 50
+    second = observe_rs_highs(altered, bench, as_of=cut)
+    assert first == second
+
+
+def test_strict_high_equality_is_not_a_new_high():
+    stock, bench = _source()
+    ratio = stock / bench
+    stock.iloc[-1] = float(ratio.iloc[-2]) * bench.iloc[-1]
+    daily = observe_rs_highs(stock, bench, as_of=date(2026, 10, 9))["daily"]
+    assert daily["new_high"] is False
+
+
+def test_missing_benchmark_last_session_is_unknown_not_false():
+    stock, bench = _source()
+    bench.iloc[-1] = np.nan
+    got = observe_rs_highs(stock, bench, as_of=date(2026, 10, 9))
+    assert got["daily"]["new_high"] is None
+    assert got["weekly"]["new_high"] is None
+    assert got["daily"]["reason"] == "source_gap_or_nonpositive_close"
+
+
+def test_missing_week_last_session_refuses_weekly_but_not_daily():
+    stock, bench = _source()
+    missing = last_session_on_or_before(date(2026, 4, 10))
+    stock = stock.drop(pd.Timestamp(missing))
+    got = observe_rs_highs(stock, bench, as_of=date(2026, 10, 9))
+    assert got["daily"]["new_high"] is True
+    assert got["weekly"]["new_high"] is None
+
+
+def test_short_holiday_week_is_completed_on_thursday():
+    stock, bench = _source(end=date(2026, 4, 2), n=330)
+    got = observe_rs_highs(stock, bench, as_of=date(2026, 4, 2))
+    assert got["weekly"]["as_of"] == "2026-04-02"
+    assert got["weekly"]["new_high"] is True
+
+
+def test_midweek_source_does_not_fake_weekly_completion():
+    stock, bench = _source()
+    got = observe_rs_highs(stock, bench, as_of=date(2026, 10, 7))
+    assert got["daily"]["as_of"] == "2026-10-07"
+    assert got["weekly"]["as_of"] == "2026-10-02"
+
+
+def test_source_invalid_duplicate_day_fails_closed():
+    stock, bench = _source()
+    duplicate = pd.concat([stock, stock.iloc[[-1]]])
+    got = observe_rs_highs(duplicate, bench, as_of=date(2026, 10, 9))
+    assert got["daily"]["new_high"] is None
+    assert got["weekly"]["new_high"] is None
+    assert got["daily"]["reason"] == "invalid_daily_source_index"
+
+
+def test_unavailable_when_short_history_or_non_session():
+    stock, bench = _source(n=80)
+    x = observe_rs_highs(stock, bench, as_of=date(2026, 10, 9))
+    assert x["daily"]["new_high"] is None
+    assert x["weekly"]["new_high"] is None
+    assert observe_rs_highs(stock, bench, as_of=date(2026, 10, 10))["daily"]["reason"] == "not_nyse_session"
+
+
+def test_roster_is_derived_not_ranked_and_preserves_unknown():
+    from scripts.build_leader_radar import _build_rs_high_roster
+    rows = [
+        {"ticker": "Z", "state": "LEADERSHIP", "display_chips": {
+            "rs_high_watch": {"daily": {"new_high": True, "rs_leads_price": True, "as_of": "2026-10-09"},
+                              "weekly": {"new_high": None, "as_of": None}}}},
+        {"ticker": "A", "state": "BREAKAWAY", "display_chips": {
+            "rs_high_watch": {"daily": {"new_high": True, "rs_leads_price": False, "as_of": "2026-10-09"},
+                              "weekly": {"new_high": True, "as_of": "2026-10-09"}}}},
+    ]
+    v = _build_rs_high_roster(rows, as_of="2026-10-09", stale=False)
+    assert [x["ticker"] for x in v["daily"]] == ["A", "Z"]
+    assert [x["ticker"] for x in v["weekly"]] == ["A"]
+    assert v["unknown"]["weekly"] == 1
+    assert v["stale"] is False
+
+
+def test_roster_not_promoted_when_payload_stale():
+    from scripts.build_leader_radar import _build_rs_high_roster
+    v = _build_rs_high_roster([], as_of="2026-10-09", stale=True)
+    assert v["daily"] == v["weekly"] == []
+    assert v["stale"] is True
