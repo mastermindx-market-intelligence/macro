@@ -247,14 +247,15 @@ def compose_scan(tickers: Sequence[str], *, packets: Sequence[Mapping],
 
 
 def read_qualified_event_context(now_utc: datetime) -> tuple[Sequence[Mapping], Mapping[str, Mapping]]:
-    """Source-owner seam. No compatible anonymous-rights reader is connected yet.
+    """Read through the default-deny, incumbent-owner-only SEC admission seam.
 
-    Session 00 must bind an existing admitted source/issuer/rights adapter here,
-    not a browser-supplied filename, a second ledger, or private qbus site-full.
-    Test doubles may monkeypatch this pure hook; without a qualified reader the
-    public route must yield HTTP 503, not invented fixture content.
+    No source or rights owner is configured automatically. The GMI rights
+    registry still must explicitly admit sec_edgar, and each source must carry
+    its own current public-anonymous grant. With either missing, this returns
+    no data and the public consumer returns 503, not a sample filing.
     """
-    return (), {}
+    from engine.marketing.catalyst_admission import read_qualified_event_context as admitted_read
+    return admitted_read(now_utc)
 
 
 def scan_tickers(tickers: list[str], *, event_id: str | None = None,
