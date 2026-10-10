@@ -933,7 +933,8 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       {% endif %}
       <div class="rs-highs-foot">
         {{ t('Missing:', '缺失：') }} {{ _rsw.unknown[horizon] if _rsw.unknown is defined and horizon in _rsw.unknown else '—' }}
-        · {{ t('Data through', '数据截至') }} {{ _rsw.as_of|e }}
+        {% set _h_asof = _rsw.clock_as_of[horizon] if _rsw.clock_as_of is defined and horizon in _rsw.clock_as_of and _rsw.clock_as_of[horizon] else _rsw.as_of %}
+        · {{ t('Comparison close', '对比收盘') }} {{ _h_asof|e }}
       </div>
     </div>
     {% endfor %}
