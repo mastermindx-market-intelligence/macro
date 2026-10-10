@@ -407,6 +407,7 @@
   .topline { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
 
 {% include "_risk_radar_card.css.j2" %}
+{% include "_risk_radar_pullback_depth.css.j2" %}{# Measured-only Risk Radar underway state #}
 {% include "_aibrief_css.j2" %}{# ABX v2 — shared AI-brief body stylesheet (.aib2-*) #}
 {# _mag7_panel.css.j2 removed (MLC-W2a): .m7p-stale moved to ldb <style>; no .m7p elements rendered #}
 
@@ -12852,6 +12853,26 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
+        {# Measured price damage leads only when the canonical settled-close
+           observation confirms an active decline; risk odds remain evidence. #}
+        {% set _us_pbv = us_pullback_view if (us_pullback_view is defined and us_pullback_view is mapping) else none %}
+        {% set _us_pbo = _us_pbv.get('observation') if (_us_pbv and _us_pbv.get('observation') is mapping) else none %}
+        {% set _us_pb_active = _us_pbo and _us_pbo.get('market') == 'us'
+             and _us_pbo.get('schema') == 'pullback_observation.v1'
+             and _us_pbo.get('clock') == 'settled_close'
+             and _us_pbo.get('asof') is string and _us_pbo.get('asof')
+             and _us_pbo.get('valid_until') is string and _us_pbo.get('valid_until')
+             and _us_pbo.get('available') is sameas true
+             and _us_pbo.get('quality') == 'current'
+             and _us_pbo.get('phase') in ('underway','stabilizing','recovering')
+             and _us_pbv.get('phase') == _us_pbo.get('phase')
+             and _us_pbo.get('active') is sameas true %}
+        {% if _us_pb_active %}
+          {% import "_risk_radar_pullback_depth.html.j2" as pb_depth %}
+          {{ pb_depth.detail('us', _us_pbv) }}
+          <details class="riskdlg-legacy-details">
+            <summary>{{ t('Forward risk and drivers','前瞻风险与驱动因素') }}</summary>
+        {% endif %}
 
         {# — Risk Brief: one hero, not two — #}
         {% set _dlgr_rdr = market_state.radar if market_state.radar is defined else {} %}
@@ -13822,6 +13843,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <p class="riskdlg-method-note">{{ t(_rd.authority.note_en, _rd.authority.note_zh) }}</p>
           {% endif %}
         </details>
+        {% if _us_pb_active %}</details>{% endif %}
 
 
 
