@@ -86,6 +86,122 @@ def _head(ticker, session, start_ns, end_ns, decision_ns, source_manifest,
     }
 
 
+class _QuoteQualificationRefusal(TP1ContextRefusal):
+    """Typed source admission abstention shared by feature and label adapters."""
+
+
+def _normalize_tp1_quotes(*, ticker, session, decision_ns, source_quotes,
+                          quote_condition_receipts, allow_empty=False):
+    """Preserve every knowable Q update, including nonfirm/invalid state.
+
+    This is the single TP-1-to-R0 quote admission boundary. It does not sign
+    trades, select endpoints, or promote receipt assertions into source proof.
+    """
+    if (not isinstance(source_quotes, (tuple, list))
+            or len(source_quotes) > MAX_QUOTES):
+        raise TP1ContextRefusal("bounded TP-1 quote event sample required")
+    if not isinstance(quote_condition_receipts, dict):
+        raise TP1ContextRefusal("original quote-condition receipt map required")
+    if allow_empty and not source_quotes:
+        return [], set(), 0
+    normalized = []
+    quote_refs = set()
+    unqualified_quote_events = 0
+    for q in source_quotes:
+        if (not isinstance(q, dict) or q.get("schema") != TP1_QUOTE_SCHEMA
+                or q.get("event_type") != "Q"
+                or q.get("ticker") != ticker or q.get("session") != session):
+            raise TP1ContextRefusal("source Q update has wrong original identity")
+        if q.get("source") != "MASSIVE_STOCKS_SIP_WS":
+            raise TP1ContextRefusal("quote is not a canonical TP-1 stream record")
+        stamp = _int(q.get("sip_timestamp_ns"), "quote.sip_timestamp_ns")
+        available = _int(q.get("original_frame_received_ns"),
+                         "quote.original_frame_received_ns")
+        if available < stamp:
+            raise TP1ContextRefusal("quote original receipt precedes SIP event")
+        if available > decision_ns:
+            continue  # A later assertion cannot poison an earlier decision.
+        key = _id(q.get("quote_id"), "quote_id")
+        frame = _sha(q.get("source_frame_sha256"), "source_frame_sha256")
+        _id(q.get("source_receipt_id"), "source_receipt_id")
+        slot = _int(q.get("frame_event_index"), "frame_event_index")
+        policy = quote_condition_receipts.get(key)
+        # Consume the exact typed TP-1 quote verdict. Its quote/indicator
+        # content, original frame identity, policy vintage and decision cutoff
+        # must agree with the source quote; an old generic eligible=True is
+        # never a valid research receipt.
+        if (not isinstance(policy, dict)
+                or set(policy) != _QUOTE_VERDICT_KEYS
+                or policy.get("schema") != "equity.tick_plane.quote_condition_admission/v0"
+                or policy.get("authority") != "ORIGINAL_QUOTE_POLICY_CONTEXT_ONLY"
+                or policy.get("quote_id") != key
+                or policy.get("source_frame_sha256") != frame
+                or policy.get("original_frame_received_ns") != available
+                or policy.get("quote_condition") != q.get("quote_condition")
+                or policy.get("quote_indicators") != q.get("quote_indicators")):
+            raise _QuoteQualificationRefusal("MISSING_OR_MISMATCHED_QUOTE_CONDITION_RECEIPT")
+        policy_available = _int(policy.get("policy_available_ns"),
+                                "policy_available_ns")
+        policy_cutoff = _int(policy.get("decision_ns"), "policy.decision_ns")
+        if (policy_available > policy_cutoff or policy_cutoff < available
+                or policy_cutoff > decision_ns):
+            raise _QuoteQualificationRefusal("QUOTE_CONDITION_POLICY_NOT_AVAILABLE_AT_DECISION")
+        quote_refs.add(_sha(policy.get("policy_rules_sha256"), "quote condition policy"))
+        _sha(policy.get("source_reference_sha256"), "native quote condition reference")
+        if type(policy.get("eligible")) is not bool:
+            raise _QuoteQualificationRefusal("QUOTE_CONDITION_ELIGIBILITY_UNKNOWN")
+        # Preserve invalid or unknown quote updates as *invalid* at their
+        # time; never drop them and silently revive a preceding valid quote.
+        firm = q.get("valid_firm_nbbo") is True and policy["eligible"]
+        if not firm:
+            unqualified_quote_events += 1
+        bx, ax = q.get("bid_exchange"), q.get("ask_exchange")
+        if bx is not None and (type(bx) is not int or bx < 0):
+            raise TP1ContextRefusal("invalid native bid exchange ID")
+        if ax is not None and (type(ax) is not int or ax < 0):
+            raise TP1ContextRefusal("invalid native ask exchange ID")
+        native_bid, native_ask = q.get("bid"), q.get("ask")
+        if native_bid is None or native_ask is None:
+            # The source had an absent quote side. Encoding an invalid zero
+            # solely for the legacy R0 arithmetic does NOT invent firm size.
+            native_bid, native_ask = "0", "0"
+            firm = False
+        record = {
+            "id": key, "ticker": ticker, "session": session,
+            "sip_ns": stamp, "available_ns": available,
+            "bid": str(native_bid), "ask": str(native_ask),
+            "bid_size": q.get("bid_size") if firm else 0,
+            "ask_size": q.get("ask_size") if firm else 0,
+            "bid_exchange": str(bx) if bx is not None else None,
+            "ask_exchange": str(ax) if ax is not None else None,
+            "source_receipt": f"{frame}:{slot}",
+        }
+        normalized.append(_quote(record, ticker, session))
+    if len(quote_refs) != 1:
+        raise _QuoteQualificationRefusal("MIXED_OR_MISSING_QUOTE_CONDITION_POLICY")
+    if not normalized:
+        raise _QuoteQualificationRefusal("NO_ELIGIBLE_SOURCE_QUOTE_UPDATES")
+    normalized.sort(key=lambda x: (x["sip_ns"], x["id"]))
+    ids = set()
+    for q in normalized:
+        if q["id"] in ids:
+            raise TP1ContextRefusal("duplicate source quote identity")
+        ids.add(q["id"])
+    return normalized, quote_refs, unqualified_quote_events
+
+
+def _tp1_quote_digest(normalized):
+    """Fingerprint the same normalized original evidence for features/labels."""
+    quoted_source = [
+        (q["id"], q["sip_ns"], q["available_ns"], q["source_receipt"],
+         _fmt(q["bid"]), _fmt(q["ask"]), q["bid_size"], q["ask_size"],
+         q.get("bid_exchange"), q.get("ask_exchange"))
+        for q in normalized
+    ]
+    return sha256(json.dumps(quoted_source, sort_keys=True,
+                           separators=(",", ":"), ensure_ascii=True).encode()).hexdigest()
+
+
 def project_tp1_pressure_context(
     *, ticker, session, start_ns, end_ns, decision_ns, watermark_ns,
     watermark_received_ns, watermark_receipt, source_manifest,
@@ -223,97 +339,17 @@ def project_tp1_pressure_context(
     )) != amounts["gross"]:
         raise TP1ContextRefusal("TP-1 minute notional denominators inconsistent")
 
-    normalized = []
-    quote_refs = set()
-    unqualified_quote_events = 0
-    for q in source_quotes:
-        if (not isinstance(q, dict) or q.get("schema") != TP1_QUOTE_SCHEMA
-                or q.get("event_type") != "Q"
-                or q.get("ticker") != ticker or q.get("session") != session):
-            raise TP1ContextRefusal("source Q update has wrong original identity")
-        if q.get("source") != "MASSIVE_STOCKS_SIP_WS":
-            raise TP1ContextRefusal("quote is not a canonical TP-1 stream record")
-        stamp = _int(q.get("sip_timestamp_ns"), "quote.sip_timestamp_ns")
-        available = _int(q.get("original_frame_received_ns"),
-                         "quote.original_frame_received_ns")
-        if available < stamp:
-            raise TP1ContextRefusal("quote original receipt precedes SIP event")
-        if available > decision_ns:
-            continue  # A later assertion cannot poison an earlier decision.
-        key = _id(q.get("quote_id"), "quote_id")
-        frame = _sha(q.get("source_frame_sha256"), "source_frame_sha256")
-        _id(q.get("source_receipt_id"), "source_receipt_id")
-        slot = _int(q.get("frame_event_index"), "frame_event_index")
-        policy = quote_condition_receipts.get(key)
-        # Consume the exact typed TP-1 quote verdict. Its quote/indicator
-        # content, original frame identity, policy vintage and decision cutoff
-        # must agree with the source quote; an old generic eligible=True is
-        # never a valid research receipt.
-        if (not isinstance(policy, dict)
-                or set(policy) != _QUOTE_VERDICT_KEYS
-                or policy.get("schema") != "equity.tick_plane.quote_condition_admission/v0"
-                or policy.get("authority") != "ORIGINAL_QUOTE_POLICY_CONTEXT_ONLY"
-                or policy.get("quote_id") != key
-                or policy.get("source_frame_sha256") != frame
-                or policy.get("original_frame_received_ns") != available
-                or policy.get("quote_condition") != q.get("quote_condition")
-                or policy.get("quote_indicators") != q.get("quote_indicators")):
-            return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
-                    "reason": "MISSING_OR_MISMATCHED_QUOTE_CONDITION_RECEIPT"}
-        policy_available = _int(policy.get("policy_available_ns"),
-                                "policy_available_ns")
-        policy_cutoff = _int(policy.get("decision_ns"), "policy.decision_ns")
-        if (policy_available > policy_cutoff or policy_cutoff < available
-                or policy_cutoff > decision_ns):
-            return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
-                    "reason": "QUOTE_CONDITION_POLICY_NOT_AVAILABLE_AT_DECISION"}
-        quote_refs.add(_sha(policy.get("policy_rules_sha256"), "quote condition policy"))
-        _sha(policy.get("source_reference_sha256"), "native quote condition reference")
-        if type(policy.get("eligible")) is not bool:
-            return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
-                    "reason": "QUOTE_CONDITION_ELIGIBILITY_UNKNOWN"}
-        # Preserve invalid or unknown quote updates as *invalid* at their
-        # time; never drop them and silently revive a preceding valid quote.
-        firm = q.get("valid_firm_nbbo") is True and policy["eligible"]
-        if not firm:
-            unqualified_quote_events += 1
-        bx, ax = q.get("bid_exchange"), q.get("ask_exchange")
-        if bx is not None and (type(bx) is not int or bx < 0):
-            raise TP1ContextRefusal("invalid native bid exchange ID")
-        if ax is not None and (type(ax) is not int or ax < 0):
-            raise TP1ContextRefusal("invalid native ask exchange ID")
-        native_bid, native_ask = q.get("bid"), q.get("ask")
-        if native_bid is None or native_ask is None:
-            # The source had an absent quote side. Encoding an invalid zero
-            # solely for the legacy R0 arithmetic does NOT invent firm size.
-            native_bid, native_ask = "0", "0"
-            firm = False
-        record = {
-            "id": key, "ticker": ticker, "session": session,
-            "sip_ns": stamp, "available_ns": available,
-            "bid": str(native_bid), "ask": str(native_ask),
-            "bid_size": q.get("bid_size") if firm else 0,
-            "ask_size": q.get("ask_size") if firm else 0,
-            "bid_exchange": str(bx) if bx is not None else None,
-            "ask_exchange": str(ax) if ax is not None else None,
-            "source_receipt": f"{frame}:{slot}",
-        }
-        normalized.append(_quote(record, ticker, session))
-    if len(quote_refs) != 1:
-        return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
-                "reason": "MIXED_OR_MISSING_QUOTE_CONDITION_POLICY"}
+    try:
+        normalized, quote_refs, unqualified_quote_events = _normalize_tp1_quotes(
+            ticker=ticker, session=session, decision_ns=decision_ns,
+            source_quotes=source_quotes,
+            quote_condition_receipts=quote_condition_receipts,
+        )
+    except _QuoteQualificationRefusal as exc:
+        return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED", "reason": str(exc)}
     if quote_refs != minute_quote_refs:
         return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
                 "reason": "MINUTE_AND_QUOTE_POLICY_GENERATION_DISAGREEMENT"}
-    if not normalized:
-        return {**head, "state": "QUOTE_REFERENCE_UNQUALIFIED",
-                "reason": "NO_ELIGIBLE_SOURCE_QUOTE_UPDATES"}
-    normalized.sort(key=lambda x: (x["sip_ns"], x["id"]))
-    ids = set()
-    for q in normalized:
-        if q["id"] in ids:
-            raise TP1ContextRefusal("duplicate source quote identity")
-        ids.add(q["id"])
     timestamps = [q["sip_ns"] for q in normalized]
     start_quote, start_reason = _prior_quote(
         normalized, timestamps, start_ns, max_age_ns=max_quote_age_ns,
@@ -337,14 +373,7 @@ def project_tp1_pressure_context(
                           separators=(",", ":"), ensure_ascii=True).encode()).hexdigest()
     # The quote context has a DIFFERENT source dependency from the signed minute
     # totals. Preserve its digest separately to prevent opaque output changes.
-    quoted_source = [
-        (q["id"], q["sip_ns"], q["available_ns"], q["source_receipt"],
-         _fmt(q["bid"]), _fmt(q["ask"]), q["bid_size"], q["ask_size"],
-         q.get("bid_exchange"), q.get("ask_exchange"))
-        for q in normalized
-    ]
-    quote_digest = sha256(json.dumps(quoted_source, sort_keys=True,
-                           separators=(",", ":"), ensure_ascii=True).encode()).hexdigest()
+    quote_digest = _tp1_quote_digest(normalized)
     return {
         **head, "state": "PROVISIONAL_RESEARCH_CONTEXT", "reason": None,
         "source_minutes_receipt_sha256": receipt_digest,

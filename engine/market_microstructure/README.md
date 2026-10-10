@@ -138,3 +138,51 @@ These commands are **not** production-deployment instructions. No supplied licen
 **Independent cross-PR source test:** TP-1 head `0c65ff24820eade42e09265dbe627c027480bda5` was paired with R0 head `5c9ea3e78349315ad8fe56202d10e12fe086e017`. Combined that TP-1 head's actual `captured_minute` and `private_minute_artifact` code with R0 `5c9ea3e7...`, calling the real source decoder, reference policies, NBBO, minute projection, R0 bridge and both private projection/readback functions. The offline **synthetic** run passed with 2,404 bytes of private TP-1 minute output and 2,247 bytes of private R0 context, source/quote-policy/watermark hash agreement, `1009.0` buy-location proxy and `1001.0` sell-location proxy, and null absorption signal. Both were flagged `public_delivery_allowed=false`; no raw vendor data was acquired. This is a compatibility proof and **not** proof of 99% RTH connectivity, qualified native condition table, private R2 delivery, original source completeness or alpha.
 
 **Still required:** TP-1 #8660's separately owned original-source/host and denied CI-manifest clearance, independent exact-head review, genuine one-owner T/Q data and correction lineage, licensed private store and authenticated Terminal consumer/browser proof. Do not merge R0 into ranking/entry/Prophet until the source owner and prospective statistics have qualified it.
+
+
+## TP-1 source-qualified matured label protocol — 2026-10-10
+
+`tp1_matured_response.project_tp1_matured_response` joins one byte-verified
+private R0 feature to a separate 30-second, 2-minute or 5-minute NBBO response
+label. The feature SHA-256, length and original `decision_ns=T` stay fixed;
+the anchor remains T. Horizon, evaluation cutoff E and quote-age policy have
+a separate specification fingerprint. This records the supplied specification,
+not preregistration or actual platform emission.
+
+The adapter shares `tp1_context` quote normalization/admission and calls the
+existing `measure_matured_response` selector/arithmetic. It does not sign
+trades. Original and later native Q/verdict generations together are bounded
+by the existing 20,000-quote limit. Source policy/venue vintages must agree
+with the original feature. Latest nonfirm, crossed, zero-size or ambiguous
+updates invalidate their endpoint; they cannot resurrect an older firm quote.
+
+| Evidence boundary | Required meaning |
+| --- | --- |
+| Frozen original feature | Exact private bytes/hash/length; original normalized-Q digest and count must reproduce the feature. Original full typed-verdict digest has its own supplied frozen receipt, available by T and no earlier than its verdicts. |
+| Original source clock | Original event watermark covers `feature.end_ns` and its receipt is known by T. Separately, owner-attested `ORIGINAL_FRAME_RECEIPT` snapshot continuity covers T. Positive event/watermark lag is permitted; event completeness through T is not claimed. |
+| Original health | Required basis `LATEST_STATUS_AS_SEEN_AT_SNAPSHOT`: latest status actually available by T. Output exposes its receipt time and age at T. This does not claim event-time health completeness through T or introduce a maximum health-age policy. |
+| Later source clock | Canonical TP-1 endpoint minute and watermark are mature by E. The later interval health/continuity evidence covers the anchor-age interval through the horizon and can censor a label without modifying the feature. |
+| Evidence serialization | Original evidence wrapper may arrive after T; its availability is separate from the original snapshot and frozen verdict-fingerprint receipt. Later wrapper binds normalized Q and endpoint minute and must follow their raw receipts; full later verdict metadata has a separate digest/clock. |
+| First knowability | Maximum of all material supplied feature, quote, verdict, fingerprint, reference, minute/watermark, health and wrapper availability clocks. It means earliest knowable from supplied evidence, never asserted actual emission. |
+
+A mature `NO_SAMPLED_PRINTS` source minute can support a quote-only endpoint.
+No trade volume, pressure, zero activity or alpha is inferred from that state.
+An unavailable clock, changed original digest, missing custody/continuity
+assertion, gap, halt, stale quote or unresolved source qualification yields a
+typed refusal/abstention and no numerical label. Original quotes received after
+T cannot repair the anchor; later archive entries unavailable by E are excluded.
+
+The separate label preserves `STREAM_PROVISIONAL_UNRECONCILED` and private
+distribution limits. Signal, absorption, alpha and execution return remain
+null; rank/trade/alert/publication/promotion authority remains false.
+Owner receipts and their fingerprints are supplied frozen evidence requiring
+external provenance. Caller assertions, hashes and synthetic compatibility
+tests do not authenticate capture, prove market completeness or open a service.
+
+The existing `tests/test_equity_pressure_response.py` contains the adapter
+falsifiers; no new CI enrollment is needed. A bounded synthetic integration
+also exercises the actual TP-1 captured-frame composer, native policy/reference
+parsers, provisional print/minute pipeline, R0 feature/private projection and
+this label adapter. A condition-ineligible latest quote with positive prices
+and sizes must produce `UNOBSERVABLE / INVALID_NBBO`, not the naive
+199.0049751243781094527363200 bp return. Status remains **BUILT_NOT_PROVEN**.

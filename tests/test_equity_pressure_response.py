@@ -1208,3 +1208,624 @@ def test_private_readback_rejects_nonfinite_recomputed_source():
     with pytest.raises(PrivateContextRefusal,match="JSON nonfinite"):
         verify_private_research_context_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
                                               expected_byte_length=len(raw),blob=raw)
+
+
+# The label adapter consumes the same source-owned TP-1 records; no second signer.
+from engine.market_microstructure.tp1_matured_response import (
+    project_tp1_matured_response, SOURCE_EVIDENCE_SCHEMA, ORIGINAL_EVIDENCE_SCHEMA,
+)
+
+
+def label_source_q(sequence, stamp, **kwargs):
+    name=f"2026-10-08:RTH:SPY:Q:{sequence}:{stamp}"
+    q=tp1_source_q(name, stamp, **kwargs)
+    return {**q, "native_sequence":sequence,
+            "source_timestamp_precision":"MILLISECONDS",
+            "source_status":"RECEIPT_UNQUALIFIED_UNTIL_OWNER_ATTESTS"}
+
+
+def label_digest(value):
+    import hashlib, json
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",",":"),
+                                     ensure_ascii=True, allow_nan=False).encode()).hexdigest()
+
+
+def rebind_label_source(data):
+    # Stand-in receipt assembly for synthetic tests, not source capture proof.
+    from engine.market_microstructure.tp1_context import _normalize_tp1_quotes, _tp1_quote_digest
+    original, _, _ = _normalize_tp1_quotes(
+        ticker="SPY", session="2026-10-08:RTH", decision_ns=TP1_CUT,
+        source_quotes=data["original_source_quotes"],
+        quote_condition_receipts=data["original_quote_condition_receipts"])
+    later, _, _ = _normalize_tp1_quotes(
+        ticker="SPY", session="2026-10-08:RTH", decision_ns=data["evaluation_cutoff_ns"],
+        source_quotes=data["later_source_quotes"],
+        quote_condition_receipts=data["later_quote_condition_receipts"], allow_empty=True)
+    combined=sorted(original+later, key=lambda q:(q["sip_ns"],q["id"]))
+    data["source_evidence"]["quote_observations_sha256"]=_tp1_quote_digest(combined)
+    data["source_evidence"]["endpoint_minute_sha256"]=label_digest(data["endpoint_minute"])
+    return data
+
+
+def tp1_label_args(*, horizon_ns=30_000_000_000, include_anchor=True, anchor_valid=True):
+    import json
+    policy_seen=TP1_START-60_000_000_000
+    original=[
+        label_source_q(1,TP1_START-10_000_000_000),
+        label_source_q(2,TP1_START+15_000_000_000,bs=90,az=100),
+        label_source_q(3,TP1_END-5_000_000_000,bs=110,az=190),
+    ]
+    if include_anchor:
+        original.append(label_source_q(4,TP1_CUT-100_000_000,
+                                       available=TP1_CUT-50_000_000,valid=anchor_valid))
+    original_proofs=tp1_proofs(original,decision_ns=TP1_CUT-2_000_000)
+    for p in original_proofs.values():
+        p["policy_available_ns"]=policy_seen
+    context=project_tp1_pressure_context(**tp1_args(
+        quotes=original,quote_condition_receipts=original_proofs,
+        watermark_ns=TP1_END,watermark_received_ns=TP1_END+2_000_000_000))
+    private=private_context(context)
+    feature=json.loads(private["bytes_private_only"])
+    end=TP1_CUT+horizon_ns
+    minute_start=((end-1)//TP1_MINUTE_NS)*TP1_MINUTE_NS
+    minute=tp1_minute(minute_start)
+    cutoff=minute["end_ns"]+10_000_000_000
+    later=[label_source_q(5,end-100_000_000,bid="102",ask="103",
+                          available=end-50_000_000)]
+    later_proofs=tp1_proofs(later,decision_ns=end+100_000_000)
+    for p in later_proofs.values():
+        p["policy_available_ns"]=policy_seen
+    original_evidence={
+        "schema":ORIGINAL_EVIDENCE_SCHEMA,
+        "authority":"SOURCE_OWNER_ASSERTION_REQUIRES_EXTERNAL_PROOF",
+        "ticker":"SPY","session":"2026-10-08:RTH","feature_sha256":private["sha256"],
+        "source_manifest_sha256":feature["source_manifest_sha256"],
+        "quote_observations_sha256":feature["quote_observations_sha256"],
+        "quote_condition_receipts_sha256":label_digest(original_proofs),
+        "quote_condition_receipts_frozen_ns":TP1_CUT-1_000_000,
+        "quote_condition_receipts_receipt":"frozen-original-verdicts-1",
+        "coverage_clock":"ORIGINAL_FRAME_RECEIPT","snapshot_cutoff_ns":TP1_CUT,
+        "health_available_ns":TP1_CUT-1_000_000_000,
+        "health_basis":"LATEST_STATUS_AS_SEEN_AT_SNAPSHOT",
+        "source_watermark_receipt":TP1_WATERMARK,
+        "source_complete_through_ns":TP1_END,"watermark_available_ns":TP1_END+2_000_000_000,
+        "coverage_start_ns":TP1_START-25_000_000_000,"coverage_end_ns":TP1_CUT,
+        "available_ns":TP1_CUT+2_000_000,"receipt_id":"original-source-health-1",
+        "market_health":"NORMAL","gap_state":"CONTIGUOUS",
+        "source_completeness_attested":True,"original_reference_custody_attested":True,
+    }
+    source_evidence={
+        "schema":SOURCE_EVIDENCE_SCHEMA,
+        "authority":"SOURCE_OWNER_ASSERTION_REQUIRES_EXTERNAL_PROOF",
+        "ticker":"SPY","session":"2026-10-08:RTH","feature_sha256":private["sha256"],
+        "source_manifest_sha256":"9"*64,"quote_observations_sha256":"0"*64,
+        "endpoint_minute_sha256":label_digest(minute),
+        "source_watermark_receipt":minute["source_watermark_receipt"],
+        "coverage_start_ns":TP1_CUT-25_000_000_000,
+        "coverage_end_ns":minute["end_ns"],
+        "available_ns":minute["decision_ns"]+1_000_000_000,
+        "health_available_ns":minute["decision_ns"],
+        "receipt_id":"later-source-health-1","market_health":"NORMAL",
+        "gap_state":"CONTIGUOUS","source_completeness_attested":True,
+        "original_reference_custody_attested":True,
+    }
+    data=dict(
+        feature_blob=private["bytes_private_only"],feature_sha256=private["sha256"],
+        feature_byte_length=private["content_length"],
+        feature_available_ns=TP1_CUT+1_000_000,feature_availability_receipt="feature-readback-1",
+        horizon_ns=horizon_ns,evaluation_cutoff_ns=cutoff,max_quote_age_ns=1_000_000_000,
+        original_source_quotes=original,original_quote_condition_receipts=original_proofs,
+        later_source_quotes=later,later_quote_condition_receipts=later_proofs,
+        exchange_reference={
+            "schema":"equity.tick_plane.exchange_reference/v0",
+            "authority":"SOURCE_REFERENCE_ONLY","source_vintage":"AS_RECEIVED_NOT_RETROACTIVE",
+            "reference_available_ns":policy_seen,"original_reference_receipt":"original-exchange-1",
+            "source_request_id":"exchange-request-1","reference_sha256":TP1_EXCHANGE_SHA,
+            "source_types":{11:"exchange",12:"exchange",4:"TRF",0:"SIP"},
+        },
+        quote_policy={
+            "schema":"equity.tick_plane.quote_condition_policy/v0",
+            "authority":"SOURCE_POLICY_CANDIDATE_REQUIRES_CUSTODY",
+            "policy_sha256":TP1_QUOTE_POLICY_SHA,"policy_received_ns":policy_seen,
+            "policy_receipt_id":"original-quote-policy-1","source_reference_sha256":"f"*64,
+            "reviewer_receipt":"source-review-1","allowed_quote_conditions":(0,1),
+            "allowed_nbbo_indicators":(602,604,605),"unknown_action":"ABSTAIN",
+        },
+        endpoint_minute=minute,original_source_evidence=original_evidence,
+        source_evidence=source_evidence,
+    )
+    return rebind_label_source(data)
+
+
+def test_tp1_label_keeps_verified_feature_and_all_source_inputs_immutable():
+    import hashlib, json
+    data=tp1_label_args()
+    before=deepcopy(data)
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="MATURED_EVALUATION_LABEL"
+    assert out["midpoint_response_bps"]=="199.0049751243781094527363200"
+    assert out["anchor_ns"]==TP1_CUT
+    assert out["label_end_ns"]==TP1_CUT+30_000_000_000
+    assert data==before
+    assert out["feature_sha256"]==hashlib.sha256(data["feature_blob"]).hexdigest()
+    assert out["feature_byte_length"]==len(data["feature_blob"])
+    assert json.loads(data["feature_blob"])["forward_label"] is None
+    assert out["label_first_knowable_ns"]==data["source_evidence"]["available_ns"]
+    assert out["label_first_knowable_ns"]!=out["label_end_ns"]
+    assert out["label_first_knowable_ns"]!=out["evaluation_cutoff_ns"]
+
+
+def test_tp1_label_regression_ineligible_native_condition_cannot_create_199bp_response():
+    data=tp1_label_args()
+    q=data["later_source_quotes"][0]
+    q["quote_condition"]=7
+    verdict=data["later_quote_condition_receipts"][q["quote_id"]]
+    verdict.update(quote_condition=7,eligible=False,reason="NONFIRM_SOURCE_CONDITION")
+    rebind_label_source(data)
+    # Generic arithmetic assumes caller-normalized, already-qualified quotes.
+    naive=[
+        dict(id=q["quote_id"],ticker=q["ticker"],session=q["session"],
+             sip_ns=q["sip_timestamp_ns"],available_ns=q["original_frame_received_ns"],
+             bid=q["bid"],ask=q["ask"],bid_size=q["bid_size"],ask_size=q["ask_size"],
+             source_receipt=q["source_frame_sha256"]+":"+str(q["frame_event_index"]))
+        for q in data["original_source_quotes"]+data["later_source_quotes"]
+    ]
+    raw=measure_matured_response(
+        ticker="SPY",session="2026-10-08:RTH",original_decision_ns=TP1_CUT,
+        anchor_ns=TP1_CUT,label_end_ns=TP1_CUT+30_000_000_000,
+        evaluation_cutoff_ns=data["evaluation_cutoff_ns"],
+        source_watermark_ns=data["endpoint_minute"]["source_complete_through_ns"],
+        watermark_received_ns=data["endpoint_minute"]["watermark_available_ns"],
+        watermark_receipt="synthetic-watermark",source_manifest="synthetic-label-only",
+        source_mode="ACTUAL_AS_SEEN",max_quote_age_ns=1_000_000_000,
+        market_health="NORMAL",market_health_receipt="synthetic-health",quotes=naive)
+    assert raw["midpoint_response_bps"]=="199.0049751243781094527363200"
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="UNOBSERVABLE"
+    assert out["reason"]["forward"]=="INVALID_NBBO"
+    assert out["midpoint_response_bps"] is None
+
+
+@pytest.mark.parametrize("horizon",[30_000_000_000,120_000_000_000,300_000_000_000])
+def test_tp1_label_predeclared_horizons_are_separate_observations(horizon):
+    out=project_tp1_matured_response(**tp1_label_args(horizon_ns=horizon))
+    assert out["state"]=="MATURED_EVALUATION_LABEL"
+    assert out["label_end_ns"]==TP1_CUT+horizon
+    assert out["signal"] is None and out["absorption_signal"] is None
+    assert out["alpha_signal"] is None and out["promotion_authority"] is False
+    assert out["rank_trade_alert_authority"] is False
+    assert out["public_delivery_allowed"] is False
+    assert out["correction_status"]=="STREAM_PROVISIONAL_UNRECONCILED"
+    assert out["sampled_trade_volume_inferred"] is None
+    assert out["market_capture_completeness"] is None
+    assert out["label_knowability_basis"]=="EARLIEST_FROM_SUPPLIED_EVIDENCE_NOT_ACTUAL_EMISSION"
+    assert "source_quotes" not in out and "quote_receipts_private_only" not in out
+
+
+def test_tp1_label_delayed_verdict_receipt_controls_earliest_knowability():
+    data=tp1_label_args()
+    q=data["later_source_quotes"][0]
+    delayed=data["evaluation_cutoff_ns"]-100_000_000
+    data["later_quote_condition_receipts"][q["quote_id"]]["decision_ns"]=delayed
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="MATURED_EVALUATION_LABEL"
+    assert out["label_first_knowable_ns"]==delayed
+    assert out["first_knowable_components_ns"]["later_quotes_and_verdicts"]==delayed
+    assert out["first_knowable_components_ns"]["source_health"]<delayed
+
+
+def test_tp1_label_delayed_feature_readback_controls_earliest_knowability():
+    data=tp1_label_args()
+    data["feature_available_ns"]=data["evaluation_cutoff_ns"]-1
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="MATURED_EVALUATION_LABEL"
+    assert out["label_first_knowable_ns"]==data["feature_available_ns"]
+
+
+@pytest.mark.parametrize("field",["feature_available_ns","available_ns","watermark_available_ns","decision_ns"])
+def test_tp1_label_missing_material_availability_is_typed_abstention(field):
+    data=tp1_label_args()
+    target=(data if field=="feature_available_ns" else data["source_evidence"]
+            if field=="available_ns" else data["endpoint_minute"])
+    target[field]=None
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+    assert "MISSING_OR_INVALID" in out["reason"]
+    assert out["label_first_knowable_ns"] is None
+    assert out["midpoint_response_bps"] is None
+
+
+@pytest.mark.parametrize("field",["feature_available_ns","available_ns","watermark_available_ns","decision_ns"])
+def test_tp1_label_future_material_availability_is_typed_abstention(field):
+    data=tp1_label_args()
+    target=(data if field=="feature_available_ns" else data["source_evidence"]
+            if field=="available_ns" else data["endpoint_minute"])
+    target[field]=data["evaluation_cutoff_ns"]+1
+    if target is data["endpoint_minute"]:
+        data["source_evidence"]["endpoint_minute_sha256"]=label_digest(target)
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+    assert "NOT_AVAILABLE_AT_CUTOFF" in out["reason"]
+    assert out["midpoint_response_bps"] is None
+
+
+def test_tp1_label_future_quote_archive_entry_cannot_poison_cutoff():
+    data=tp1_label_args()
+    old=project_tp1_matured_response(**data)
+    data["later_source_quotes"].append({
+        "original_frame_received_ns":data["evaluation_cutoff_ns"]+1,
+        "bid":"MALFORMED_FUTURE_VALUE",
+    })
+    assert project_tp1_matured_response(**data)==old
+
+
+def test_tp1_label_later_quote_cannot_repair_stale_original_anchor():
+    data=tp1_label_args(include_anchor=False)
+    q=label_source_q(6,TP1_CUT-100_000_000,available=TP1_CUT+1_000_000)
+    data["later_source_quotes"].append(q)
+    proof=tp1_proofs([q],decision_ns=TP1_CUT+2_000_000)
+    proof[q["quote_id"]]["policy_available_ns"]=data["quote_policy"]["policy_received_ns"]
+    data["later_quote_condition_receipts"].update(proof)
+    rebind_label_source(data)
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="UNOBSERVABLE"
+    assert out["reason"]["anchor"]=="STALE_NBBO"
+
+
+def test_tp1_label_nonfirm_original_anchor_cannot_be_repaired_by_later_valid_quote():
+    out=project_tp1_matured_response(**tp1_label_args(anchor_valid=False))
+    assert out["state"]=="UNOBSERVABLE"
+    assert out["reason"]["anchor"]=="INVALID_NBBO"
+
+
+@pytest.mark.parametrize("mutation",["price","availability","frame","subset"])
+def test_tp1_label_original_quote_digest_binds_exact_frozen_generation(mutation):
+    data=tp1_label_args()
+    q=data["original_source_quotes"][-1]
+    verdict=data["original_quote_condition_receipts"][q["quote_id"]]
+    if mutation=="price":
+        q["bid"]="99"
+    elif mutation=="availability":
+        q["original_frame_received_ns"]+=1
+        verdict["original_frame_received_ns"]+=1
+    elif mutation=="frame":
+        q["source_frame_sha256"]="8"*64
+        verdict["source_frame_sha256"]="8"*64
+    else:
+        data["original_source_quotes"].pop()
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+    assert out["reason"]=="ORIGINAL_FEATURE_QUOTE_GENERATION_MISMATCH"
+
+
+def test_tp1_label_does_not_admit_original_quote_in_later_generation():
+    data=tp1_label_args()
+    q=deepcopy(data["original_source_quotes"][-1])
+    data["later_source_quotes"].append(q)
+    out=project_tp1_matured_response(**data)
+    assert out["reason"]=="LATER_GENERATION_WOULD_REWRITE_ORIGINAL_SNAPSHOT"
+
+
+@pytest.mark.parametrize("area",["original_verdict","exchange","policy"])
+def test_tp1_label_future_source_policy_cannot_retroactively_qualify_feature(area):
+    data=tp1_label_args()
+    if area=="original_verdict":
+        q=data["original_source_quotes"][-1]
+        data["original_quote_condition_receipts"][q["quote_id"]]["decision_ns"]=TP1_CUT+1
+    elif area=="exchange":
+        data["exchange_reference"]["reference_available_ns"]=TP1_CUT+1
+    else:
+        data["quote_policy"]["policy_received_ns"]=TP1_CUT+1
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+    assert "NOT_AVAILABLE_AT_CUTOFF" in out["reason"]
+
+
+@pytest.mark.parametrize("area",["quote_policy","exchange","minute","health_quotes","health_minute"])
+def test_tp1_label_mixed_source_generations_never_measure(area):
+    data=tp1_label_args()
+    if area=="quote_policy":
+        q=data["later_source_quotes"][0]
+        data["later_quote_condition_receipts"][q["quote_id"]]["policy_rules_sha256"]="8"*64
+    elif area=="exchange":
+        data["exchange_reference"]["reference_sha256"]="8"*64
+    elif area=="minute":
+        data["endpoint_minute"]["exchange_reference_sha256"]="8"*64
+    elif area=="health_quotes":
+        data["source_evidence"]["quote_observations_sha256"]="8"*64
+    else:
+        data["source_evidence"]["endpoint_minute_sha256"]="8"*64
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+    assert out["midpoint_response_bps"] is None
+
+
+def test_tp1_label_quote_only_mature_minute_does_not_infer_zero_printed_volume():
+    data=tp1_label_args()
+    old=data["endpoint_minute"]
+    common=("schema","authority","ticker","session","start_ns","end_ns","decision_ns",
+            "source_watermark_receipt","source_complete_through_ns","watermark_available_ns",
+            "correction_status","source_mode","rank_or_trade_authority")
+    minute={k:old[k] for k in common}
+    minute.update(state="NO_SAMPLED_PRINTS",n_sampled_prints=0,
+                  reason="NO_OBSERVED_ROWS_IS_NOT_PROOF_OF_ZERO_MARKET_VOLUME")
+    data["endpoint_minute"]=minute
+    rebind_label_source(data)
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="MATURED_EVALUATION_LABEL"
+    assert out["endpoint_minute_state"]=="NO_SAMPLED_PRINTS"
+    assert out["midpoint_response_bps"]=="199.0049751243781094527363200"
+    assert out["sampled_trade_volume_inferred"] is None
+    assert "buy_proxy_notional_usd" not in out
+
+
+def test_tp1_label_unripe_horizon_never_becomes_available():
+    data=tp1_label_args()
+    data["evaluation_cutoff_ns"]=TP1_CUT+data["horizon_ns"]-1
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="NOT_MATURE"
+    assert out["label_first_knowable_ns"] is None
+
+
+def test_tp1_label_incomplete_endpoint_minute_never_becomes_available():
+    data=tp1_label_args()
+    data["endpoint_minute"]["source_complete_through_ns"]=data["endpoint_minute"]["end_ns"]-1
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="NOT_MATURE"
+    assert out["reason"]=="ENDPOINT_MINUTE_WATERMARK_NOT_MATURE"
+
+
+@pytest.mark.parametrize("field,value,reason",[
+    ("market_health","HALTED","HALT_OR_UNKNOWN_MARKET_STATUS"),
+    ("market_health","UNKNOWN","HALT_OR_UNKNOWN_MARKET_STATUS"),
+    ("gap_state","GAP","SOURCE_GAP_OR_UNKNOWN_CONTINUITY"),
+    ("gap_state","UNKNOWN","SOURCE_GAP_OR_UNKNOWN_CONTINUITY"),
+])
+def test_tp1_label_source_halt_and_gap_are_censored(field,value,reason):
+    data=tp1_label_args()
+    data["source_evidence"][field]=value
+    frozen=data["feature_blob"]
+    out=project_tp1_matured_response(**data)
+    assert data["feature_blob"]==frozen
+    assert out["state"]=="CENSORED"
+    assert out["reason"]==reason
+    assert out["midpoint_response_bps"] is None
+
+
+@pytest.mark.parametrize("field",["source_completeness_attested","original_reference_custody_attested"])
+def test_tp1_label_source_flags_do_not_default_to_proven(field):
+    data=tp1_label_args()
+    data["source_evidence"][field]=None
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+
+
+@pytest.mark.parametrize("case",["window_end_only","later_original_receipt","original_gap","wrong_original_receipt"])
+def test_tp1_label_later_health_cannot_upgrade_unqualified_original_anchor(case):
+    data=tp1_label_args()
+    old=data["original_source_evidence"]
+    if case=="window_end_only":
+        old["source_complete_through_ns"]=TP1_END
+        old["coverage_end_ns"]=TP1_END
+    elif case=="later_original_receipt":
+        old["health_available_ns"]=TP1_CUT+1
+    elif case=="original_gap":
+        old["gap_state"]="GAP"
+    else:
+        old["source_watermark_receipt"]="wrong-original-watermark"
+    out=project_tp1_matured_response(**data)
+    assert out["state"] in {"SOURCE_NOT_QUALIFIED","CENSORED"}
+    assert out["midpoint_response_bps"] is None
+    if case=="window_end_only":
+        assert out["reason"]=="ORIGINAL_SOURCE_DOES_NOT_QUALIFY_DECISION_ANCHOR"
+
+
+@pytest.mark.parametrize("case",["crossed","zero_size","nonfirm","stale","exact_tie","same_sip"])
+def test_tp1_label_preserves_canonical_endpoint_abstentions(case):
+    data=tp1_label_args()
+    q=data["later_source_quotes"][0]
+    expected="INVALID_NBBO"
+    if case=="crossed":
+        q["bid"],q["ask"]="104","103"
+    elif case=="zero_size":
+        q["bid_size"]=0
+    elif case=="nonfirm":
+        q["valid_firm_nbbo"]=False
+        data["later_quote_condition_receipts"][q["quote_id"]]["eligible"]=False
+    else:
+        old=q["quote_id"]
+        if case=="stale":
+            stamp=TP1_CUT+data["horizon_ns"]-1_001_000_000
+            expected="STALE_NBBO"
+        elif case=="exact_tie":
+            stamp=TP1_CUT+data["horizon_ns"]
+            expected="CLOCK_TIE"
+        else:
+            stamp=q["sip_timestamp_ns"]
+            expected="AMBIGUOUS_QUOTE_ORDER"
+        new=label_source_q(6,stamp,bid="102",ask="103")
+        p=tp1_proofs([new],decision_ns=TP1_CUT+data["horizon_ns"]+100_000_000)
+        p[new["quote_id"]]["policy_available_ns"]=data["quote_policy"]["policy_received_ns"]
+        if case=="same_sip":
+            data["later_source_quotes"].append(new)
+        else:
+            data["later_source_quotes"]=[new]
+            del data["later_quote_condition_receipts"][old]
+        data["later_quote_condition_receipts"].update(p)
+    rebind_label_source(data)
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="UNOBSERVABLE"
+    assert out["reason"]["forward"]==expected
+
+
+@pytest.mark.parametrize("case",["trf_venue","unknown_venue","wrong_session","final_vintage","missing_clock_precision"])
+def test_tp1_label_requires_source_venue_session_and_provisional_clock_identity(case):
+    data=tp1_label_args()
+    q=data["later_source_quotes"][0]
+    if case=="trf_venue":
+        q["bid_exchange"]=4
+    elif case=="unknown_venue":
+        q["ask_exchange"]=999
+    elif case=="wrong_session":
+        q["session"]="2026-10-09:RTH"
+    elif case=="final_vintage":
+        q["correction_status"]="FINAL_VINTAGE"
+    else:
+        q.pop("source_timestamp_precision")
+    if case=="wrong_session":
+        with pytest.raises(TP1ContextRefusal,match="original identity"):
+            project_tp1_matured_response(**data)
+    else:
+        out=project_tp1_matured_response(**data)
+        assert out["state"]=="SOURCE_NOT_QUALIFIED"
+        assert out["midpoint_response_bps"] is None
+
+
+def test_tp1_label_exact_feature_bytes_checked_before_any_label_math():
+    data=tp1_label_args()
+    data["feature_blob"]+=b" "
+    with pytest.raises(PrivateContextRefusal,match="byte length"):
+        project_tp1_matured_response(**data)
+
+
+def test_tp1_label_bounds_combined_quotes_without_source_capture():
+    data=tp1_label_args()
+    data["later_source_quotes"]=[data["later_source_quotes"][0]]*20000
+    out=project_tp1_matured_response(**data)
+    assert out["reason"]=="UNBOUNDED_COMBINED_QUOTE_GENERATION"
+
+
+def test_tp1_label_rejects_unbounded_verdict_generation():
+    data=tp1_label_args()
+    data["later_quote_condition_receipts"]={str(i):{} for i in range(20001)}
+    out=project_tp1_matured_response(**data)
+    assert out["reason"]=="UNBOUNDED_QUOTE_VERDICT_GENERATION"
+
+
+def test_tp1_label_positive_original_event_and_wrapper_lag_are_not_zero_delay():
+    data=tp1_label_args()
+    source=data["original_source_evidence"]
+    assert source["source_complete_through_ns"]==TP1_END<TP1_CUT
+    assert source["watermark_available_ns"]==TP1_END+2_000_000_000<TP1_CUT
+    assert source["available_ns"]>source["snapshot_cutoff_ns"]
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="MATURED_EVALUATION_LABEL"
+    assert out["anchor_ns"]==out["original_snapshot_cutoff_ns"]==TP1_CUT
+    assert out["original_snapshot_clock"]=="ORIGINAL_FRAME_RECEIPT"
+    assert out["original_event_watermark_lag_ns"]==10_000_000_000
+    assert out["original_watermark_receipt_lag_ns"]==2_000_000_000
+    assert out["original_source_evidence_sha256"]==label_digest(source)
+
+
+def test_tp1_label_original_typed_verdict_is_frozen_even_when_normalized_quote_is_identical():
+    data=tp1_label_args()
+    old=project_tp1_matured_response(**data)
+    q=data["original_source_quotes"][-1]
+    data["original_quote_condition_receipts"][q["quote_id"]]["decision_ns"]-=1_000_000
+    out=project_tp1_matured_response(**data)
+    assert old["state"]=="MATURED_EVALUATION_LABEL"
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+    assert out["feature_sha256"]==old["feature_sha256"]
+    assert out["reason"]=="FROZEN_ORIGINAL_QUOTE_VERDICT_GENERATION_MISMATCH"
+
+
+@pytest.mark.parametrize("field",["snapshot_cutoff_ns","coverage_clock","coverage_end_ns"])
+def test_tp1_label_original_snapshot_boundary_cannot_be_relabeled(field):
+    data=tp1_label_args()
+    source=data["original_source_evidence"]
+    source[field]=("SIP_EVENT_TIME" if field=="coverage_clock" else TP1_CUT-1)
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+    assert out["midpoint_response_bps"] is None
+
+
+def test_tp1_label_generation_receipt_cannot_fingerprint_future_raw_quote():
+    data=tp1_label_args()
+    q=data["later_source_quotes"][0]
+    seen=data["source_evidence"]["available_ns"]+1_000_000
+    q["original_frame_received_ns"]=seen
+    v=data["later_quote_condition_receipts"][q["quote_id"]]
+    v["original_frame_received_ns"]=seen
+    v["decision_ns"]=seen+1_000_000
+    rebind_label_source(data)
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+    assert out["reason"]=="SOURCE_EVIDENCE_WRAPPER_PRECEDES_BOUND_GENERATION"
+
+
+def test_tp1_label_later_verdict_metadata_is_a_separate_digest_from_earlier_quote_receipt():
+    data=tp1_label_args()
+    old=project_tp1_matured_response(**data)
+    q=data["later_source_quotes"][0]
+    delayed=data["source_evidence"]["available_ns"]+1_000_000
+    data["later_quote_condition_receipts"][q["quote_id"]]["decision_ns"]=delayed
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="MATURED_EVALUATION_LABEL"
+    assert out["label_first_knowable_ns"]==delayed
+    assert out["source_health_evidence_sha256"]==old["source_health_evidence_sha256"]
+    assert out["combined_quote_observations_sha256"]==old["combined_quote_observations_sha256"]
+    assert out["later_quote_verdicts_sha256"]!=old["later_quote_verdicts_sha256"]
+
+
+@pytest.mark.parametrize("field",["health_available_ns","watermark_available_ns"])
+def test_tp1_label_original_underlying_receipt_missing_or_future_is_not_repaired_by_wrapper(field):
+    for invalid in (None,TP1_CUT+1):
+        data=tp1_label_args()
+        data["original_source_evidence"][field]=invalid
+        out=project_tp1_matured_response(**data)
+        assert out["state"]=="SOURCE_NOT_QUALIFIED"
+        assert out["label_first_knowable_ns"] is None
+
+
+def test_tp1_label_delayed_original_wrapper_is_a_material_label_clock():
+    data=tp1_label_args()
+    data["original_source_evidence"]["available_ns"]=data["evaluation_cutoff_ns"]-1
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="MATURED_EVALUATION_LABEL"
+    assert out["label_first_knowable_ns"]==data["evaluation_cutoff_ns"]-1
+    assert out["first_knowable_components_ns"]["original_source_health_and_watermark"]==out["label_first_knowable_ns"]
+
+
+def test_tp1_label_original_wrapper_cannot_precede_its_original_generation():
+    data=tp1_label_args()
+    data["original_source_evidence"]["available_ns"]=TP1_CUT-1
+    out=project_tp1_matured_response(**data)
+    assert out["reason"]=="ORIGINAL_EVIDENCE_WRAPPER_PRECEDES_BOUND_RECEIPTS"
+
+
+def test_tp1_label_original_verdict_fingerprint_cannot_predate_its_frozen_generation():
+    data=tp1_label_args()
+    data["original_source_evidence"]["quote_condition_receipts_frozen_ns"]=TP1_CUT-3_000_000
+    out=project_tp1_matured_response(**data)
+    assert out["reason"]=="ORIGINAL_VERDICT_FINGERPRINT_PRECEDES_GENERATION"
+
+
+@pytest.mark.parametrize("clock",[None,TP1_CUT+1])
+def test_tp1_label_original_verdict_fingerprint_must_have_an_original_receipt_clock(clock):
+    data=tp1_label_args()
+    data["original_source_evidence"]["quote_condition_receipts_frozen_ns"]=clock
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+    assert out["label_first_knowable_ns"] is None
+
+
+def test_tp1_label_original_health_is_a_known_status_point_with_explicit_age():
+    data=tp1_label_args()
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="MATURED_EVALUATION_LABEL"
+    assert out["original_health_basis"]=="LATEST_STATUS_AS_SEEN_AT_SNAPSHOT"
+    assert out["original_health_available_ns"]==TP1_CUT-1_000_000_000
+    assert out["original_health_age_at_snapshot_ns"]==1_000_000_000
+    assert out["original_snapshot_cutoff_ns"]==TP1_CUT
+
+
+@pytest.mark.parametrize("basis",[None,"EVENT_TIME_HEALTH_COMPLETE_THROUGH_T"])
+def test_tp1_label_missing_or_wrong_original_health_basis_cannot_be_assumed(basis):
+    data=tp1_label_args()
+    if basis is None:
+        data["original_source_evidence"].pop("health_basis")
+    else:
+        data["original_source_evidence"]["health_basis"]=basis
+    out=project_tp1_matured_response(**data)
+    assert out["state"]=="SOURCE_NOT_QUALIFIED"
+    assert out["midpoint_response_bps"] is None
