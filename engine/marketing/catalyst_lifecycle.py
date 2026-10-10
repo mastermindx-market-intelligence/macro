@@ -43,6 +43,8 @@ _PRIVATE_URL_KEYS = frozenset({"email", "e_mail", "phone", "ip", "user_id", "tok
                                "access_token", "auth", "authorization", "apikey",
                                "api_key", "secret", "session", "password", "signature"})
 _EMAIL_IN_URL = re.compile(r"[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", re.I)
+_CONSENT_OWNER_UNAVAILABLE = object()  # private sentinel; never a grant or receipt
+
 
 
 class FunnelGate(Exception):
@@ -425,6 +427,56 @@ class FunnelService:
         except Exception:
             raise FunnelGate("SOURCE_RIGHTS_CLOCK_UNAVAILABLE") from None
 
+    def _current_consent(self, user_id: str, event_id: str) -> ConsentRecord | None | object:
+        # Fail closed on service-role RPC transport errors before any SMTP
+        # attempt; a down consent owner is not an ambiguous email send.
+        try:
+            return self.consent.current(user_id, event_id)
+        except Exception:
+            return _CONSENT_OWNER_UNAVAILABLE
+
+    @staticmethod
+    def _same_email(first: str, second: str) -> bool:
+        try:
+            return normalize_email(first) == normalize_email(second)
+        except FunnelGate:
+            return False
+
+    @staticmethod
+    def _qualified_roster(rows: Any, event_id: str, limit: int) -> list[ConsentRecord]:
+        """Validate the full existing consent-owner response BEFORE first SMTP.
+
+        A broken service-role RPC must not deliver to some subscribers and then
+        discover its next row has a wrong event, identity or private first-touch.
+        This is a protocol check, never a new roster or contact database.
+        """
+        if not isinstance(rows, list) or len(rows) > limit:
+            raise FunnelGate("DELIVERY_ROSTER_PROTOCOL_MISMATCH")
+        seen: set[str] = set()
+        for row in rows:
+            if not isinstance(row, ConsentRecord):
+                raise FunnelGate("DELIVERY_ROSTER_PROTOCOL_MISMATCH")
+            try:
+                uid = _uuid(row.user_id)
+                normalize_email(row.email)
+                _timestamp(row.verified_at_utc)
+                allowed_touch = first_touch(row.first_touch)
+            except FunnelGate:
+                raise FunnelGate("DELIVERY_ROSTER_PROTOCOL_MISMATCH") from None
+            if (uid in seen or row.user_id != uid or
+                    row.event_id != event_id or row.scope != SCOPE or
+                    not isinstance(row.intent_id, str) or
+                    not 1 <= len(row.intent_id) <= 128 or
+                    not isinstance(row.tickers, tuple) or
+                    not 1 <= len(row.tickers) <= 10 or
+                    any(not isinstance(t, str) or not _TICKER.fullmatch(t)
+                        for t in row.tickers) or
+                    len(set(row.tickers)) != len(row.tickers) or
+                    allowed_touch != row.first_touch):
+                raise FunnelGate("DELIVERY_ROSTER_PROTOCOL_MISMATCH")
+            seen.add(uid)
+        return rows
+
     def _qualified_scan(self, receipt: str, *, now: datetime) -> ScanEvidence:
         """Recheck the current public source through the canonical ScanAuthority.
 
@@ -656,7 +708,9 @@ class FunnelService:
                 raise FunnelGate("OUTDATED_OR_UNVERIFIED_REVISION", 409)
             # Read authoritative public/email rights BEFORE roster retrieval.
             self._require_live_rights(revision, at_utc=self._rights_now(now))
-            subscribers = self.consent.interested(revision.event_id, limit)
+            subscribers = self._qualified_roster(
+                self.consent.interested(revision.event_id, limit),
+                revision.event_id, limit)
         except FunnelGate:
             raise
         except Exception as exc:
@@ -664,10 +718,19 @@ class FunnelService:
         out: list[dict[str, str]] = []
         for rec in subscribers[:limit]:
             try:
-                current = self.consent.current(rec.user_id, revision.event_id)
-                if (current is None or current.revoked_at_utc or current.scope != SCOPE or
-                        current.intent_id != rec.intent_id or revision.ticker not in current.tickers):
+                current = self._current_consent(rec.user_id, revision.event_id)
+                if current is _CONSENT_OWNER_UNAVAILABLE:
+                    state = "CONSENT_OWNER_UNAVAILABLE"
+                elif current is None:
                     state = "SUPPRESSED"
+                elif not isinstance(current, ConsentRecord):
+                    state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
+                elif (current.revoked_at_utc or current.scope != SCOPE or
+                      current.intent_id != rec.intent_id or revision.ticker not in current.tickers):
+                    state = "SUPPRESSED"
+                elif (current.user_id != rec.user_id or current.event_id != revision.event_id or
+                      not self._same_email(current.email, rec.email)):
+                    state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
                 elif _timestamp(current.verified_at_utc) >= _timestamp(revision.as_of_utc):
                     state = "NOT_SECOND_VALUE"
                 elif self.suppression.is_suppressed(normalize_email(current.email), _uuid(current.user_id)):
@@ -683,21 +746,54 @@ class FunnelService:
                         state = ("SOURCE_RIGHTS_NOT_CURRENT" if exc.status == 403
                                  else "SOURCE_RIGHTS_UNAVAILABLE")
                     else:
-                        idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{current.user_id}"
-                        raw = self.sender.deliver(current, revision, idem)
-                        state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
-                                 "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
-                                 "queued": "QUEUED_NOT_SENT", "failed": "SEND_FAILED",
-                                 "effect_unknown": "EFFECT_UNKNOWN"}.get(raw, "SEND_UNCONFIRMED")
+                        # The rights lookup can take time. Re-check the canonical
+                        # scoped consent owner AFTER it, before transport effects:
+                        # a person may unsubscribe while their source is examined.
+                        # Never trust an unrelated/mismatched current() reply.
+                        latest = self._current_consent(rec.user_id, revision.event_id)
+                        if latest is _CONSENT_OWNER_UNAVAILABLE:
+                            state = "CONSENT_OWNER_UNAVAILABLE"
+                        elif latest is None:
+                            state = "SUPPRESSED"
+                        elif not isinstance(latest, ConsentRecord):
+                            state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
+                        elif (latest.revoked_at_utc or latest.scope != SCOPE or
+                              revision.ticker not in latest.tickers or
+                              latest.intent_id != rec.intent_id):
+                            state = "SUPPRESSED"
+                        elif (latest.user_id != rec.user_id or
+                              latest.event_id != revision.event_id or
+                              not self._same_email(latest.email, rec.email)):
+                            state = "CONSENT_OWNER_PROTOCOL_MISMATCH"
+                        elif _timestamp(latest.verified_at_utc) >= revision_as_of:
+                            state = "NOT_SECOND_VALUE"
+                        elif self.revisions.is_current(revision.event_id, revision.generation) is not True:
+                            state = "OUTDATED_OR_UNVERIFIED_REVISION"
+                        else:
+                            idem = f"catalyst:{revision.event_id}:{revision.generation}:{revision.ticker}:{latest.user_id}"
+                            raw = self.sender.deliver(latest, revision, idem)
+                            state = {"sent": "PROVIDER_ACCEPTED", "duplicate": "ALREADY_CLAIMED",
+                                     "suppressed": "SUPPRESSED", "skipped_no_smtp": "SEND_BLOCKED",
+                                     "queued": "QUEUED_NOT_SENT", "failed": "SEND_FAILED",
+                                     "effect_unknown": "EFFECT_UNKNOWN"}.get(raw, "EFFECT_UNKNOWN")
+                            # An UNKNOWN sender return may already have crossed
+                            # SMTP. Do not call it a safe failure or retry it. A
+                            # QUEUED mailer claim is *not* automatically resumable
+                            # for Catalyst: the incumbent parked drain rebuilds
+                            # welcome/campaign only, not this event-specific copy.
             except Exception:  # transport could have fired; never call it a safe failure
                 state = "EFFECT_UNKNOWN"
             out.append({"user_ref": analytics_receipt(rec)["user_ref"], "state": state,
                         "event_id": revision.event_id, "generation": str(revision.generation),
                         **first_touch(rec.first_touch)})
-            if state in ("EFFECT_UNKNOWN", "SOURCE_RIGHTS_NOT_CURRENT",
-                         "SOURCE_RIGHTS_UNAVAILABLE"):
-                # Unknown transport effects freeze replay; changed or unproven
-                # public rights freeze the remaining batch before any new send.
+            if state in ("EFFECT_UNKNOWN", "QUEUED_NOT_SENT",
+                         "SOURCE_RIGHTS_NOT_CURRENT", "SOURCE_RIGHTS_UNAVAILABLE",
+                         "CONSENT_OWNER_UNAVAILABLE", "CONSENT_OWNER_PROTOCOL_MISMATCH",
+                         "OUTDATED_OR_UNVERIFIED_REVISION"):
+                # A queued Catalyst claim has consumed the unique email_log key,
+                # yet marketing_emails.drain_parked cannot rebuild this template.
+                # Do NOT enqueue more unresumable messages or claim delivery.
+                # A sender effect that cannot be proven also freezes the batch.
                 break
         return out
 
