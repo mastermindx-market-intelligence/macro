@@ -119,7 +119,7 @@ begin
      or v_issued > pg_catalog.now() + interval '30 seconds'
      or v_issued < pg_catalog.now() - interval '20 minutes'
      or v_expires <= pg_catalog.now()
-     or pg_catalog.abs(pg_catalog.extract(epoch from
+     or pg_catalog.abs(extract(epoch from
                (v_expires - (v_issued + interval '20 minutes')))) > 5
   then
     raise exception 'INVALID_PENDING_INTENT';
@@ -142,7 +142,7 @@ begin
             or k.value #>> '{}' !~ '^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$')
     into v_bad
   from pg_catalog.jsonb_each(v_touch) as k;
-  if pg_catalog.coalesce(v_bad,false) then
+  if coalesce(v_bad,false) then
     raise exception 'INVALID_PENDING_ATTRIBUTION';
   end if;
 
@@ -287,7 +287,7 @@ begin
      or p_limit not between 1 and 100 then
     raise exception 'CONSENT_INTEREST_QUERY_INVALID';
   end if;
-  select pg_catalog.coalesce(pg_catalog.jsonb_agg(e.record), '[]'::jsonb)
+  select coalesce(pg_catalog.jsonb_agg(e.record), '[]'::jsonb)
    into v_out from (
      select pg_catalog.jsonb_build_object(
        'user_id',g.user_id,'email',pg_catalog.lower(pg_catalog.btrim(u.email)),
