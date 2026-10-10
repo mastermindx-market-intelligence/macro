@@ -476,7 +476,7 @@ def render_first_value(data: dict | None, value: str = "", error: str = "") -> s
                 content += f'<p>{e(item["coverage_note"])}</p>'
             content += '</section>'
     proof = (data or {}).get("scan_receipt", "")
-    if not isinstance(proof, str) or not re.fullmatch(r"[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+", proof):
+    if not isinstance(proof, str) or not re.fullmatch(r"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+", proof):
         proof = ""
     return ("<!doctype html><html lang='en'><meta charset='utf-8'>"
             "<meta name='viewport' content='width=device-width,initial-scale=1'>"
