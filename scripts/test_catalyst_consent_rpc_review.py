@@ -113,6 +113,9 @@ def _verify(db: TestPostgres) -> None:
     db.sql("create role authenticated nologin")
     db.sql("create role service_role nologin")
     db.sql("grant usage on schema public to anon, authenticated, service_role")
+    # Real Supabase publicly scoped function defaults include DIRECT client
+    # EXECUTE grants, not merely PUBLIC. The seven explicit REVOKEs must hold.
+    db.sql("alter default privileges in schema public grant execute on functions to anon, authenticated, service_role")
     db.sql("create schema auth")
     db.sql("create table auth.users(id uuid primary key, email text, email_confirmed_at timestamptz)")
     db.sql("create table public.email_suppression(email text primary key, reason text)")
@@ -171,12 +174,23 @@ def _verify(db: TestPostgres) -> None:
     assert len(json.loads(db.sql("select public.catalyst_consent_interested(" +
                                  _quote(EVENT) + ",10)"))) == 1
 
-    # An address suppression and an account opt-out independently hide a
-    # positive grant from the recipient selection; neither creates consent.
+    # Cleanup of the expired private signed body must not delete or unlink the
+    # confirmed grant's immutable intent/nonce audit reference.
+    db.sql("delete from public.catalyst_consent_pending where intent_id=" + _quote(nonce))
+    assert db.sql("select count(*) from public.catalyst_consent_pending where intent_id=" +
+                  _quote(nonce)) == "0"
+    assert db.sql("select count(*) from public.catalyst_consent_grants where intent_id=" +
+                  _quote(nonce)) == "1"
+
+    # An address suppression permanently revokes the event grant, so clearing
+    # a global suppression or general preference cannot reactivate it.
     db.sql("insert into public.email_suppression values (" + _quote(EMAIL) + ",'bounce')")
     assert json.loads(db.sql("select public.catalyst_consent_interested(" +
                               _quote(EVENT) + ",10)")) == []
     db.sql("delete from public.email_suppression")
+    assert json.loads(db.sql("select public.catalyst_consent_interested(" +
+                              _quote(EVENT) + ",10)")) == []
+    assert db.sql("select count(*) from public.catalyst_consent_grants where revoked_at_utc is not null") == "1"
     db.sql("insert into public.email_prefs values (" + _quote(USER) + "::uuid,true)")
     assert json.loads(db.sql("select public.catalyst_consent_interested(" +
                               _quote(EVENT) + ",10)")) == []
@@ -184,13 +198,13 @@ def _verify(db: TestPostgres) -> None:
     revoked = json.loads(db.sql("select public.catalyst_consent_revoke(" +
                                 _quote(USER) + "::uuid," + _quote(EVENT) + "," +
                                 _quote(datetime.now(timezone.utc).isoformat()) + ")"))
-    assert revoked == {"changed": True}
+    assert revoked == {"changed": False}  # global suppression already revoked permanently
     assert json.loads(db.sql("select public.catalyst_consent_interested(" +
                               _quote(EVENT) + ",10)")) == []
     assert json.loads(db.sql("select public.catalyst_consent_revoke(" +
                               _quote(USER) + "::uuid," + _quote(EVENT) + "," +
                               _quote(datetime.now(timezone.utc).isoformat()) + ")")) == {"changed": False}
-    db.sql(confirm(), denied="CONSENT_ALREADY_REVOKED_OR_MISMATCHED")
+    db.sql(confirm(), denied="CONSENT_PENDING_NOT_CURRENT")  # expired body cannot be replayed
 
     # A later, existing RLS policy is an install BLOCK, not tacit acceptance.
     db.sql("create policy fixture_unsafe on public.catalyst_consent_pending for select to anon using (true)")
