@@ -14378,6 +14378,29 @@ jobs:
             tests/test_control_room_caddy.py \
             tests/test_publish_control_room_active_builds.py -q
 
+  quant-q15-noise-robust-rv:
+    if: ${{ false }}
+    gate: code
+    # Q15 pins noise-aware realized variance: noise-free IV recovery, bid/ask bounce flagged not counted, declared gap/overnight treatment, bias/variance vs simple controls, as-of label immutability, no silent activation
+    # Curated scope: the suite's importlib import check otherwise widens inference
+    # to whole-tree fallback roots. The closure below is AST-derived; outside
+    # the repo it imports only stdlib + numpy, pytest.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/vol_noise_robust_realized.py"
+      - "tests/test_vol_noise_robust_realized.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q15 noise-robust realized variance requirement suite
+        run: python -m pytest tests/test_vol_noise_robust_realized.py -q
+
   free-content-estate:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: data
