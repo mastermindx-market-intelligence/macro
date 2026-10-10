@@ -148,7 +148,7 @@ def test_weekly_high_remains_visible_one_week_after_nonconfirmation():
 
 def test_recent_watch_missing_old_session_is_unknown_not_silently_empty():
     stock, bench = _source()
-    stock = stock.drop(stock.index[-140])
+    stock = stock.drop(stock.index[-264])
     got = observe_rs_highs(stock, bench, as_of=date(2026, 10, 9))
     assert got["daily"]["new_high"] is True
     assert got["daily"]["recent"]["high_prints_in_window"] is None
