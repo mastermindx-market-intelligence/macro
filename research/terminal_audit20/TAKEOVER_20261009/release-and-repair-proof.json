@@ -3968,7 +3968,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-post643-heal-canonical-live-parent-acceptance-20261009.json",
       "sha256": "642001ab745582399923583ed9fdbbb669ce2edf8001ec85d7ed30d1db4042ef"
     },
-    "A11_current": "643sourceCIaccepted/merged5ef; mandatory886headonlyhealmerged19:17:01/438/all3required37976377076SUCCESS. Exactentire438tree173d+onlyf12delta/currentmaster qualified. Canonicalbuild19:24:48–19:39:35 rc0/clean source/runtime/publicassetdplmarker438/TerminalQuoteHubLoggingACTIVE/free11097116672. Actualsignedin FreeNVDA3D Replayprev2245->2244/next2245 changeshistoricalchartOHLC desktop1440/tablet820/nooverflow; actualphone390hub noReplayentry disclosed. Original4indicatorsReplayoff/default1520restored/protectedunsavedScriptsuntouched. Scopedsource/install/desktoptabletbehavior only, wholeA11false; railOracleDashP3/paid/phone gates remain.",
+    "A11_current": "643sourceCIaccepted/merged5ef; mandatory886headonlyhealmerged19:17:01/438/all3required37976377076SUCCESS. Exactentire438tree173d+onlyf12delta/currentmaster qualified. Canonicalbuild19:24:48\u201319:39:35 rc0/clean source/runtime/publicassetdplmarker438/TerminalQuoteHubLoggingACTIVE/free11097116672. Actualsignedin FreeNVDA3D Replayprev2245->2244/next2245 changeshistoricalchartOHLC desktop1440/tablet820/nooverflow; actualphone390hub noReplayentry disclosed. Original4indicatorsReplayoff/default1520restored/protectedunsavedScriptsuntouched. Scopedsource/install/desktoptabletbehavior only, wholeA11false; railOracleDashP3/paid/phone gates remain.",
     "A11_new_mounted_test": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a11-fallback-horizon-final-source-native-parent-qualification-20261009.json",
       "sha256": "253fcba0289507d5cc42d5e14790e0264e871df49e5e0764b9a543b92eb29f80"
@@ -4117,7 +4117,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-canonical-release-and-existing-controller-parent-acceptance-20261009.json",
       "sha256": "718ffba1f325d18dab385cdf1b864598590abd3d0a06bff1c9cae6af7046d0a7"
     },
-    "785_current": "SCOPED_DONE exactheadCI/squash4d/currentmaster/fulltree+7acceptedblobs. Single canonicalbuild20:23:11–20:39:35rc0/clean source-runtime-marker4d/TerminalQuoteHubLoggingACTIVE/free11074121728. PublicHTTP200/dpl4d actualsignedinNVDA3D/original4studies/Replayoff/default/nooverflow. Product4dtrees byteequal438 qualifies earlier643liveproof, no repeatbuild. No queue/security activation orall20claim.",
+    "785_current": "SCOPED_DONE exactheadCI/squash4d/currentmaster/fulltree+7acceptedblobs. Single canonicalbuild20:23:11\u201320:39:35rc0/clean source-runtime-marker4d/TerminalQuoteHubLoggingACTIVE/free11074121728. PublicHTTP200/dpl4d actualsignedinNVDA3D/original4studies/Replayoff/default/nooverflow. Product4dtrees byteequal438 qualifies earlier643liveproof, no repeatbuild. No queue/security activation orall20claim.",
     "785_automatic_existing_controller": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/mog785-existing-controller-actual-return-20261009T2035.json",
       "sha256": "93299fb83e693559f85bb7a93815b413196fb6069171864a5372fcd5bf66bd4d"
@@ -4271,7 +4271,7 @@
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-typed-read-path-parent-proposal-20261009/qualification.json",
       "sha256": "de480b675a1f0fa3236ad208a3b7d69732c5258e07dea77b44836147b3402e84"
     },
-    "A19_current": "C2boundedbuild49716 returned75NONE/no_poolpreSTART/noeffect/sameIDNOT_FOUND/frozen/no retry. ParentNO_ELIGIBLE_PRE_EFFECT_WORKER detached2defectrepair module66d690468625200ce0be8cb375970fc4c75fa2ec47ae44fff2c9d3ac84ee0fae; typedGitLS observations proveABSENT onlysuccessfulvalidrefemptyquery, failuresUNAVAILABLE; exactstatepath/internalid/admission/computedidbind before recoverypersist, originalprior_effectheld. Parentnew26PASS0FAIL0SKIP=16supplied+same5causalold0/5→new5/5+5positive-negativecontrols. Initialonecontrol usedwrong0600workspace vs0644Gitbeforefingerprint; legitimateguardfailure retained, fixturecorrected andonly5controls rerun, assertionsunchanged. Exactembeddedacceptedhelpersunchanged. No canonicalwriter/adoption/authoritywidening.",
+    "A19_current": "C2boundedbuild49716 returned75NONE/no_poolpreSTART/noeffect/sameIDNOT_FOUND/frozen/no retry. ParentNO_ELIGIBLE_PRE_EFFECT_WORKER detached2defectrepair module66d690468625200ce0be8cb375970fc4c75fa2ec47ae44fff2c9d3ac84ee0fae; typedGitLS observations proveABSENT onlysuccessfulvalidrefemptyquery, failuresUNAVAILABLE; exactstatepath/internalid/admission/computedidbind before recoverypersist, originalprior_effectheld. Parentnew26PASS0FAIL0SKIP=16supplied+same5causalold0/5\u2192new5/5+5positive-negativecontrols. Initialonecontrol usedwrong0600workspace vs0644Gitbeforefingerprint; legitimateguardfailure retained, fixturecorrected andonly5controls rerun, assertionsunchanged. Exactembeddedacceptedhelpersunchanged. No canonicalwriter/adoption/authoritywidening.",
     "A19_independent_review_request": {
       "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/a19-checkpoint-typed-read-path-independent-review-admission-20261009.json",
       "sha256": "d5d603b2edad81d56ef015fef502ea952b9f56af4073e9e1ce96e073a4334577"
@@ -4627,5 +4627,63 @@
     "unchanged_boundaries": "781 existing observer/MOG waits exact known2648925f; no CIpoll/secondcontroller. Specific887 allowlist and existingProidentity unanswered; no inference. A19 three scopedhelperreviews+actualcanonical shell rehearsal/review settled detached, producer operational firstintake/prior_effect authority absent. A12/A09/export/security/money refusal holds retained. All20 whole false.",
     "next_safe_phase": "Consume owned current40 canonical release actual terminal receipt and same-phase service/runtime/publicmarker/script-hash proof, restoration if needed; continue exact839 existingCI/MOG terminal events/merge/currentmaster/canonicalrelease/live. Consume original804T03k final/readonlyreview whenready. No re-export/reaccept/unchanged reruns/alternative refused carriers.",
     "continuation": "DURABLE_EXECUTION_RUNNING: actualnative804T03k plus owned live canonical40 staging attempt plus sole native same-chat heartbeat. Active build healthy priorruntime observed, not completed delivery. Save never ends assignment."
+  },
+  "current_capability_frontier_20261010T0110": {
+    "observed_at": "2026-10-10T01:10:14.312261+00:00",
+    "supersedes": "current_capability_frontier_20261010T0053",
+    "settled_references_retained_in": [
+      "current_capability_frontier_20261010T0053",
+      "current_capability_frontier_20261010T0028",
+      "current_capability_frontier_20261009T2350"
+    ],
+    "whole_original_mission_accepted": false,
+    "Terminal_873_scoped_release_acceptance": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/873-canonical-source-install-health-parent-acceptance-20261010.json",
+      "bytes": 3812,
+      "sha256": "46c220356a2dc70a95272c8b98e203a60c6bf5aabaf07f13b8892ba3881d5c9d"
+    },
+    "Terminal_873_release_status": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/873-canonical-release-40e28-status-20261010.json",
+      "bytes": 548,
+      "sha256": "0f2795953a53075bb2ecfd97a72c6d3266f7cdee74c9c16c8088259abe550347"
+    },
+    "Terminal_873_installed_public_readback": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/873-canonical-release-installed-public-readback-20261010.json",
+      "bytes": 1623,
+      "sha256": "c7b5858b727f7b347137da927cc5acbb34bed0a7da19d51daa50f8cc7a08ba72"
+    },
+    "Terminal_873_existing_producer_topology": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/873-existing-canonical-producer-topology-readback-20261010.json",
+      "bytes": 910,
+      "sha256": "01c5639541de935b367fd972d087310c8f12e69c5e76906e7bdfa8125abf4629"
+    },
+    "Terminal_873_existing_scheduled_path_binding": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/873-existing-terminal-data-schedule-binding-20261010.json",
+      "bytes": 1120,
+      "sha256": "cfb18c8e282596c7af6d6e3d5cab48473632052a7e4149d2f33beee6da6ac5f4"
+    },
+    "Terminal_873_current": "Canonical attempt ONCE00:44 completed01:00:37 rc0 at40e28feee85e1b85481365ba29caf6c4460c1162. Actual01:05 canonical source/currentmaster/runtime/publicHTTP200 marker40, clean source/stage0/Terminal+QuoteHub+rsyslogACTIVE/free10787463168. Installed producerc7408689, imported atomichelpere0bfcd0e and builder6cd5088 exactly match merged40. Entire terminal Git treeeddcbf2a unchanged vsb7, prior scoped front-end evidence reused without browser rerun or paid claim. Source/import/bootstrap sites plus3write_atomic calls bound. ACCEPTED_SCOPED_CANONICAL_SOURCE_INSTALL_HEALTH; not whole original mission or production failure injection. Firstc968 refusal preserved; no rawbuilder/retry/reset/worker signal. Coverage prebuild write1791593088 remains a real effect of this successful attempt.",
+    "Terminal_873_adoption_limit": "Existing root cron line10 schedule[30,21,*,*,*] invokes/usr/local/bin/terminal-data; installedterminal-datae76a821c matches exact40 source and line57 calls existing module. Raw commands/secrets omitted. Configured future path bound only: no post40 scheduled-run or actual atomic publication inferred; no manual generator/newjob/scheduler. Existing canonical producer owner/sole heartbeat must consume a real later run if relevant.",
+    "next_source_event": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/873-release-completion-next-owned-source-events-20261010.json",
+      "bytes": 1111,
+      "sha256": "cf98d9864d206eb031c2be73b55a0d4f0a8ffd157b0d16e8e590744e3bb594d3"
+    },
+    "Terminal_781_new_controller_head_source": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/781-controller-current-head-source-qualification-20261010T0109.json",
+      "bytes": 6131,
+      "sha256": "1371e2c2f34be39b7c1dc8bc345f748f1f3cd92a7bad5909ce60b255c11e5314"
+    },
+    "Terminal_781_new_CI_approval": {
+      "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/ordinary-github-ci-approval-781-controller-refresh-20261010T0109.json",
+      "bytes": 533,
+      "sha256": "4f0207f2a3667212cd47fac28091aafc4595b4465098ff07aff29cf28f871f20"
+    },
+    "Terminal_781_current": "New actual controller headf37ff8eb677052588928c055d37f4d67fbfd583d/base40 discovered once at873 release completion; all20 accepted code/evidence hashes match711; object-only fetch preserves clean same source checkout711. Same unchangedhelper3d965 currenthead/workflow/actor recheck approved associated38008630888 ONCE01:08:51 POST_SUCCEEDED/queued, exclusive receipt. No operatorcommand/newcredential/reapproval/PUT/dispatch/secondwatcher/CIgreen or merge inferred. ExistingMOG/nativeauto/soleheartbeat owns next event.",
+    "A15_current": "Accepted exacta716 caller repair and typed permanenta9a6 regression published same8394dcd/sourceclean. All review/native/browser/source bindings inT0053 remain accepted within their scopes. Actual next-source metadata01:07 PR839 stillOPEN/same4dcd/base40/nativeauto armed; no terminalCI observation or repeatapprove/test/browser/review. CI38010673785 initially inprogress/noapproval required.",
+    "IW2_current": "OriginalT03k wf_a3621b32-73f/whvi18de7/solewritera8cdd3dd31a349a86 source41d85 has no consumable return: bounded canonical journal remains2launched/started entries and declared qualification directoryempty. This is not vacancy/failure/terminal or fresh provider activity. Prior native00:37 actualQualify1running/ReviewPending receipt remains liveness evidence; no genericContinue/liveSendMessage/Stop/duplicate/custodytransfer. Exact returned head plus independentreadonlyreview and full SQL/barrier/restore proof owed;0030b840 separately unapproved and0030-32unapplied/Draft/cutoverREQUEST_REPAIR/rights/API+SQL/release/paid holds remain.",
+    "unchanged_boundaries": "Specific887allowlist and existingProidentity unanswered; no repeatquestion/inference. A19 scopedhelperreviews/actualshellrehearsal accepted only detached; producer operationalUTCfirstintake/prior_effect authority absent/globalSUPPRESS. A12/A09/export/security/money/effect holds immutable. All20 whole mission acceptancesfalse.",
+    "next_safe_phase": "Consume actual existing781f37/8394dcd terminalCI or merged-source event, qualify exactaccepted source/currentmaster/latest3contexts then canonicalrelease/live. Consume exact original804T03k return/readonlyreview whenready. Existingscheduled producer post40 adoption remains observable gate; no newobserver/manualgenerator or unchangedpolling. No ready permitted local implementation remains after this phase; preserve external waits through existing owners.",
+    "continuation": "Existing native same-chat heartbeat ACTIVE is actual future wake. ExistingMOG/nativeauto owns two pending source carriers; originalnative804T03k remains unsettled with retained START/liveness, not presumed finished. Canonical873 release now COMPLETE_SCOPED, not counted as active process. Programme incomplete; no all20done claim."
   }
 }
