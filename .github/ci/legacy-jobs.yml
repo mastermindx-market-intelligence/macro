@@ -16073,6 +16073,21 @@ jobs:
       - name: scripts/build_site.py's help page call shape (B-F13-3 BLOCKER-1 regression guard)
         run: python -m pytest tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model -q
 
+  quant-q17-stable-whitening:
+    if: ${{ false }}
+    gate: code
+    # Q17 stable factor whitening: bounded amplification, missing-leg labelling, permutation symmetry, resampling instability, sparse fallback, no silent activation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: Q17 stable factor whitening tests
+        run: python -m pytest tests/test_factor_stable_whitening.py -q
+
   unrun-release-forecast:
     # the macro-release forecast producer — projections, benchmarks and the graded forward ledger.
     if: ${{ false }}
