@@ -4343,6 +4343,7 @@ CURATED_EXCLUSIVE = {
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
     "mining-economic-dossier",
+    "quant-q08-cov-shrinkage",  # Q08 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-09-24 Healthcare D1 T02: gate:code home for the qualified FDA
     # observation and frozen supply probes; T01 probes remain intentionally red.
     "healthcare-fda-supply",
@@ -4401,6 +4402,7 @@ CURATED_EXCLUSIVE = {
     # public documents test_public_pages_fetch_nothing_under_paid_prefixes
     # actually reads; the other two probes are unmoved.
     "regwall-boundary",
+    "quant-q11-episode-duration",  # Q11 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they
