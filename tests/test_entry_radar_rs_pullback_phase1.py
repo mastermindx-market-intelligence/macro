@@ -662,5 +662,58 @@ class Phase1SourceCensusTests(unittest.TestCase):
             assess_source_census(value)
 
 
+class Phase1LeaderPivotConsumerSuiteTests(unittest.TestCase):
+    """Execute the previously unowned pivot cases under the existing Phase-1 CI owner.
+
+    Research-price-panel already selects this Phase-1 source suite. This
+    integrity assertion runs the original test classes by normal module import,
+    instead of adding another CI job, changing selection manifests or masking a
+    failure. Its result is still synthetic conformance, never market admission.
+    """
+
+    def test_pivot_consumer_65_case_conformance(self):
+        from tests.test_entry_radar_leader_pivot_descriptor import LeaderPivotDescriptorTests
+        from tests.test_entry_radar_leader_pivot_progress import LeaderPivotProgressTests
+        from tests.test_entry_radar_leader_pivot_progress_edges import LeaderPivotProgressEdgeTests
+
+        classes = (
+            LeaderPivotDescriptorTests,
+            LeaderPivotProgressTests,
+            LeaderPivotProgressEdgeTests,
+        )
+        suite = unittest.TestSuite(
+            unittest.defaultTestLoader.loadTestsFromTestCase(cls) for cls in classes
+        )
+        result = unittest.TestResult()
+        suite.run(result)
+
+        failures = [(case.id(), traceback) for case, traceback in result.failures]
+        errors = [(case.id(), traceback) for case, traceback in result.errors]
+        self.assertEqual(result.testsRun, 65, "pivot consumer test count drift")
+        self.assertEqual(result.skipped, [], "pivot consumer tests cannot silently skip")
+        self.assertEqual(failures, [], "pivot consumer failures: " + repr(failures[:2]))
+        self.assertEqual(errors, [], "pivot consumer errors: " + repr(errors[:2]))
+
+
+    def test_first_green_comparator_21_case_conformance(self):
+        """Run the separate first-green research comparator under the existing CI owner."""
+        from tests.test_entry_radar_first_green_descriptor import (
+            FirstGreenFormationTests, FirstGreenProgressTests,
+        )
+        suite = unittest.TestSuite(
+            unittest.defaultTestLoader.loadTestsFromTestCase(cls)
+            for cls in (FirstGreenFormationTests, FirstGreenProgressTests)
+        )
+        result = unittest.TestResult()
+        suite.run(result)
+        failures = [(case.id(), tb) for case, tb in result.failures]
+        errors = [(case.id(), tb) for case, tb in result.errors]
+        self.assertEqual(result.testsRun, 21, "first-green comparator case count drift")
+        self.assertEqual(result.skipped, [], "first-green comparator cases cannot skip")
+        self.assertEqual(failures, [], "first-green comparator failures: " + repr(failures[:2]))
+        self.assertEqual(errors, [], "first-green comparator errors: " + repr(errors[:2]))
+
+
+
 if __name__ == "__main__":
     unittest.main()
