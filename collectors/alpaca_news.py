@@ -20,7 +20,6 @@ from typing import Callable, Mapping
 
 import requests
 
-from collectors.base import redact_secrets
 from collectors.benzinga_news import DeltaBatch
 from engine.qbus_news_contract import (
     NewsContractError,
@@ -196,8 +195,9 @@ class AlpacaNewsClient:
         except AlpacaTransportError:
             raise
         except Exception as exc:  # noqa: BLE001
-            # Render and discard sanitized text so header secrets never escape.
-            redact_secrets(str(exc))
+            # No exception text escapes: the raised error carries only the
+            # exception class name, and `from None` drops the chained
+            # original (whose message could hold a header secret).
             raise AlpacaTransportError(
                 f"transport_{type(exc).__name__.lower()}"
             ) from None

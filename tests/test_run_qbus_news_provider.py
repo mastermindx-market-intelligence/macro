@@ -216,6 +216,189 @@ def test_benzinga_report_with_token_still_works(monkeypatch, capsys, tmp_path):
     assert BENZINGA_TOKEN not in out
 
 
+# ── rights receipt provider binding ──────────────────────────────────────────
+
+
+def _rights_for_now(now, **overrides):
+    receipt = {
+        "schema": "qbus.news_rights_receipt.v1",
+        "receipt_id": "provider-binding-test",
+        "owner_ref": "test/source-rights",
+        "status": "approved",
+        "source": "benzinga",
+        "product_id": "synthetic-commercial",
+        "audiences": ["site_full"],
+        "effective_at": (now - timedelta(hours=1)).isoformat(),
+        "expires_at": (now + timedelta(hours=1)).isoformat(),
+        "capabilities": {
+            "internal_ingestion": True,
+            "historical_retention": True,
+            "headline_display": True,
+            "source_link_display": True,
+            "teaser_display": False,
+            "body_display": False,
+            "image_display": False,
+            "derivative_processing": False,
+        },
+    }
+    receipt.update(overrides)
+    return receipt
+
+
+def _activation_universe_for_now(now):
+    return {
+        "owner": "test.security_reference.sp500",
+        "revision": "provider-binding-r1",
+        "complete": True,
+        "truncated": False,
+        "effective_at": (now - timedelta(days=1)).isoformat(),
+        "known_at": (now - timedelta(minutes=1)).isoformat(),
+        "fresh_until": (now + timedelta(hours=2)).isoformat(),
+        "securities": [
+            {
+                "security_id": "SEC:US-XNAS-NVDA",
+                "ticker": "NVDA",
+                "aliases": ["NVDA"],
+                "valid_from": (now - timedelta(days=100)).isoformat(),
+                "valid_to": None,
+                "known_at": (now - timedelta(minutes=1)).isoformat(),
+            }
+        ],
+    }
+
+
+def _activation_files(tmp_path, now, **receipt_overrides):
+    universe = tmp_path / "universe.json"
+    rights = tmp_path / "rights.json"
+    universe.write_text(
+        json.dumps(_activation_universe_for_now(now)), encoding="utf-8"
+    )
+    rights.write_text(
+        json.dumps(_rights_for_now(now, **receipt_overrides)), encoding="utf-8"
+    )
+    return universe, rights
+
+
+def _check_activation(provider, tmp_path, universe, rights):
+    return run_qbus_news.main(
+        [
+            "--provider",
+            provider,
+            "--check-activation",
+            "--database",
+            str(tmp_path / "q.sqlite3"),
+            "--universe-snapshot",
+            str(universe),
+            "--rights-receipt",
+            str(rights),
+            "--health-path",
+            str(tmp_path / "health.json"),
+        ]
+    )
+
+
+def test_check_activation_alpaca_refuses_receipt_without_provider(
+    monkeypatch, capsys, tmp_path
+):
+    _clear_provider_env(monkeypatch)
+    monkeypatch.setenv("ALPACA_API_KEY_ID", KEY_ID)
+    monkeypatch.setenv("ALPACA_API_SECRET_KEY", SECRET_KEY)
+    now = datetime.now(UTC)
+    universe, rights = _activation_files(tmp_path, now)
+
+    rc = _check_activation("alpaca", tmp_path, universe, rights)
+
+    out = capsys.readouterr().out
+    payload = json.loads(out)
+    assert rc == 2
+    assert payload["error"] == "activation_rights_provider_mismatch"
+    assert payload["activation_qualified"] is False
+    assert payload["provider"] == "alpaca"
+    assert KEY_ID not in out
+    assert SECRET_KEY not in out
+
+
+def test_check_activation_alpaca_accepts_receipt_with_provider_alpaca(
+    monkeypatch, capsys, tmp_path
+):
+    _clear_provider_env(monkeypatch)
+    monkeypatch.setenv("ALPACA_API_KEY_ID", KEY_ID)
+    monkeypatch.setenv("ALPACA_API_SECRET_KEY", SECRET_KEY)
+    now = datetime.now(UTC)
+    universe, rights = _activation_files(tmp_path, now, provider="alpaca")
+
+    rc = _check_activation("alpaca", tmp_path, universe, rights)
+
+    payload = json.loads(capsys.readouterr().out)
+    assert rc == 0
+    assert payload["activation_qualified"] is True
+    assert payload["universe_count"] == 1
+    assert not (tmp_path / "q.sqlite3").exists()
+
+
+def test_check_activation_benzinga_with_providerless_receipt_is_unchanged(
+    monkeypatch, capsys, tmp_path
+):
+    _clear_provider_env(monkeypatch)
+    monkeypatch.setenv("BENZINGA_API_KEY", BENZINGA_TOKEN)
+    now = datetime.now(UTC)
+    universe, rights = _activation_files(tmp_path, now)
+
+    rc = _check_activation("benzinga", tmp_path, universe, rights)
+
+    payload = json.loads(capsys.readouterr().out)
+    # Pins today's default-path result: a receipt without a provider field
+    # still qualifies for benzinga, with the same exit code.
+    assert rc == 0
+    assert payload["activation_qualified"] is True
+    assert payload["universe_count"] == 1
+    assert "error" not in payload
+
+
+def test_run_rights_admission_refuses_mismatched_alpaca_receipt(
+    monkeypatch, capsys, tmp_path
+):
+    _clear_provider_env(monkeypatch)
+    monkeypatch.setenv("ALPACA_API_KEY_ID", KEY_ID)
+    monkeypatch.setenv("ALPACA_API_SECRET_KEY", SECRET_KEY)
+    now = datetime.now(UTC)
+    universe, rights = _activation_files(tmp_path, now, provider="alpaca")
+    captured = {}
+
+    class GuardCapturingRunner:
+        def __init__(self, *, admission_guard, **kwargs):
+            captured["admission_guard"] = admission_guard
+
+        def run(self, **kwargs):
+            return run_qbus_news.RunnerStats()
+
+    monkeypatch.setattr(run_qbus_news, "NewsIngestRunner", GuardCapturingRunner)
+
+    rc = run_qbus_news.main(
+        [
+            "--provider",
+            "alpaca",
+            "--run",
+            "--database",
+            str(tmp_path / "q.sqlite3"),
+            "--universe-snapshot",
+            str(universe),
+            "--rights-receipt",
+            str(rights),
+            "--health-path",
+            str(tmp_path / "health.json"),
+        ]
+    )
+
+    assert rc == 0
+    guard = captured["admission_guard"]
+    assert guard() is True  # the alpaca-issued receipt still admits --run
+    rights.write_text(
+        json.dumps(_rights_for_now(now)), encoding="utf-8"
+    )
+    assert guard() is False  # a swapped-in providerless receipt must refuse
+
+
 # ── runner: stream_target + handshake + frame_normalizer ─────────────────────
 
 
