@@ -15860,10 +15860,39 @@ jobs:
       - name: candidate projection contract fixtures
         run: python -m pytest -n 2 --dist load --max-worker-restart=0 tests/test_government_revenue_candidate_projection.py tests/test_government_revenue_candidate_fixture.py -q
 
-  unrun-factor-research:
-    # factor registry + measurement disclosure + the study lanes behind them.
-    if: ${{ false }}
+  information-to-price-eval-receipts:
+    # Information-to-Price receipt and admission suites: SRC-A1, synthetic PIT
+    # sample conformance, R4 V2 admission, EVAL-1 partition clock and EVAL-1
+    # challenger identity. Moved out of unrun-factor-research on 2026-10-11
+    # (#8805): that job's opaque fallback smears engine/** and collectors/**
+    # onto every ordinary code change, so each new receipt suite grew the
+    # templates/index.html packing probe past its 5,800 ceiling (5,802 on main,
+    # 5,805 on the A9 head). scope: exclusive with the measured closure below
+    # drops only that opaque fallback; the family still runs for every path it
+    # actually reads, and the EVAL1_PARTITION_CLOCK_*.json glob keeps a new
+    # receipt selecting the job.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
     gate: code
+    scope: exclusive
+    paths:
+      - collectors/equity_revisions.py
+      - engine/k3e_expectation_surface.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/dataos/identity.py
+      - lib/nyse_calendar.py
+      - research/alpha_intelligence/expectation_market_dynamics/EVAL1_PARTITION_CLOCK_*.json
+      - research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py
+      - research/alpha_intelligence/expectation_market_dynamics/eval1_challenger_trial_identity.v1.json
+      - research/alpha_intelligence/expectation_market_dynamics/eval1_partition_clock_check.py
+      - research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py
+      - research/alpha_intelligence/expectation_market_dynamics/pit_sample_conformance.py
+      - research/alpha_intelligence/expectation_market_dynamics/r4_v2_receipt_check.py
+      - research/alpha_intelligence/expectation_market_dynamics/test_information_to_price_audit.py
+      - research/alpha_intelligence/expectation_market_dynamics/test_pit_sample_conformance.py
+      - tests/test_eval1_challenger_identity.py
+      - tests/test_eval1_partition_clock.py
+      - tests/test_r4_v2_receipt.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -15893,12 +15922,32 @@ jobs:
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/r4_v2_receipt_check.py --help
           python -m pytest tests/test_r4_v2_receipt.py -q
+      # EVAL-1 partition clock receipt (ITP A9). Name the validator
+      # CLI as well as its suite; the suite loads the validator by file path.
+      - name: information-to-price EVAL-1 partition clock receipt
+        run: |
+          python research/alpha_intelligence/expectation_market_dynamics/eval1_partition_clock_check.py --help
+          python -m pytest tests/test_eval1_partition_clock.py -q
       # EVAL-1 challenger trial identity (ITP B6). Name the checker CLI as
       # well as its suite; the suite loads the checker by file path.
       - name: information-to-price EVAL-1 challenger trial identity
         run: |
           python research/alpha_intelligence/expectation_market_dynamics/check_eval1_challenger_identity.py --help
           python -m pytest tests/test_eval1_challenger_identity.py -q
+
+  unrun-factor-research:
+    # factor registry + measurement disclosure + the study lanes behind them.
+    if: ${{ false }}
+    gate: code
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn pillow
       # F10-X1 implication-card contract and rendered Measurement projection
       # stay in the existing factor/measurement owner lane. Register both new
       # suites on arrival so their artifact-identity, zero-authority, bilingual,
