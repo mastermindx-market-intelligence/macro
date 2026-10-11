@@ -96,7 +96,7 @@ unresolved:
   - "Production-records capture stays fail-closed at MAX_SOURCE_ROWS=25_000 until an accepted preregistration v2 (DEC:PRODUCTION-RECORDS-ROW-BOUND-STAYS-FAIL-CLOSED-UNTIL-PREREG-V2)"
 next_actions:
   - "Tell ORCH-N the #8823 merge sha d39672a34aaa; then judge the SKYD-identity PR by artifact"
-  - "On ORCH-OPS returns: #8818 on DOPTR PASS + concluded checks (merge-queue-pilot excluded) → ready + merge at d319fde9b192; #8819 at a95921b01a93 after CI green → judge vs DEC:MM-IDENTITY-INGEST-IDEMPOTENT-OVER-CAPTURED-DATES T1–T3 → ready + merge; blob-verify each"
+  - "On ORCH-OPS returns: #8818 on DOPTR PASS + concluded checks (merge-queue-pilot excluded) → ready + merge at d319fde9b192, blob-verify; #8819 is MERGED b8a839236ddd — accept its PRODUCTION_PROOF from the first identity-timer run after the VPS pull (15:29:25Z fire; journald receipt with divergence_count and no KeyError)"
   - "On ORCH-N's SKYD PR: judge by artifact (one security id across the boundary, row-diff limited to PSKY/SKYD + receipt bookkeeping, universe builder main rc 2 → head rc 0, new test red on main) → merge → SendMessage ORCH-N 'MERGED <sha>' → P2 --check/--install/--arm + canary after the VPS pull → P3 drop-in only after the canary reads live and rows grow across two reads ≥10 min apart"
   - "Proof reads after the 10-12 nightly (~02:0xZ) + first :53 technicals tick: B (#8807) replay passes; D-experience (#8816) W2C activation by update.sh; then the scheduled identity/options runs for #8819/#8818"
   - "Main proof 38147853042: act on the watcher's exit only — SUCCESS clears the scripts/** authority freeze; FAILURE → identify the red by job name and pack, claim the lane first, never re-dispatch over an in-flight baseline"
@@ -117,7 +117,7 @@ danger_areas:
   - "Credential files and shim logs listed in the seat's security rule: presence/length checks only, never values"
   - "A PR body is edited at most ONCE per PR (a second edit inside one ci-authority run cancels it); #8818's single edit is spent"
   - "The in-flight main proof 38147853042 shares one cancel-in-progress concurrency group: a re-dispatch kills it"
-prs: [8809, 8811, 8807, 8812, 7711, 8816, 8820, 8805, 8823, 8818, 8819, 8824, 8817]
+prs: [8809, 8811, 8807, 8812, 7711, 8816, 8820, 8805, 8823, 8818, 8819, 8824, 8817, 8826]
 decisions:
   - DEC:TICKER-NEWS-ALPACA-BENZINGA-RIGHTS-BASIS
   - DEC:MM-IDENTITY-INGEST-IDEMPOTENT-OVER-CAPTURED-DATES
