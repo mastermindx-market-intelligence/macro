@@ -330,3 +330,27 @@ def test_absent_source_reader_never_autoselects_a_store(monkeypatch):
     assert not out["available"]
     assert out["quality"] == "source_unavailable"
     assert out["drawdown_pct"] is None
+
+
+def _qualified(price_path, **over):
+    obs = observer_receipt([("2026-09-22", 96.0)], expected_session=date(2026, 9, 22),
+                           is_session=nyse_calendar.is_session)
+    obs.update(market="us", clock="settled_close", price_path=price_path, **over)
+    return obs
+
+
+@pytest.mark.parametrize("peak, shown", [
+    ("2026-09-18", ["2026-09-18", "2026-09-21", "2026-09-22"]),
+    (None, ["2026-09-16", "2026-09-17", "2026-09-18", "2026-09-21", "2026-09-22"]),
+])
+def test_chart_window_starts_at_the_retained_peak_not_before_it(monkeypatch, peak, shown):
+    """Pre-peak closes measured against a later high would draw a rally as damage."""
+    from lib import illus
+    seen = []
+    monkeypatch.setattr(illus, "illus", lambda series, **kw: seen.append(series) or "<figure></figure>")
+    path = {"dates": ["2026-09-16", "2026-09-17", "2026-09-18", "2026-09-21", "2026-09-22"],
+            "vals": [-3.0, -1.0, 0.0, -2.5, -4.0]}
+    obs = _qualified(dict(path), peak_session=peak)
+    pb.present(obs)
+    assert seen == [{"dates": shown, "vals": path["vals"][-len(shown):]}]
+    assert obs["price_path"] == path  # the owner's observation is not rewritten

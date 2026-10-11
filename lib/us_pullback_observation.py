@@ -233,6 +233,21 @@ def snapshot(*, now: datetime | None = None, read: Callable | None = None,
     }
 
 
+def _since_peak(path: dict, peak_session) -> dict:
+    """Display window only: the episode starts at the retained peak.
+
+    The owner's path also carries closes from before that peak, measured against
+    a high that did not exist yet; drawn as drawdown, a rally reads as damage.
+    The observation itself is not modified.
+    """
+    dates = list(path.get("dates") or [])
+    vals = list(path.get("vals") or [])
+    if not isinstance(peak_session, str):
+        return {"dates": dates, "vals": vals}
+    start = next((i for i, d in enumerate(dates) if str(d) >= peak_session), len(dates))
+    return {"dates": dates[start:], "vals": vals[start:]}
+
+
 def present(observation: dict, radar: dict | None = None) -> dict:
     """Minimal shared-modal read model; risk odds are intentionally not ingested.
 
@@ -256,7 +271,7 @@ def present(observation: dict, radar: dict | None = None) -> dict:
     if phase != "unavailable" and obs.get("price_path"):
         from lib import illus
         chart = illus.illus(
-            obs["price_path"],
+            _since_peak(obs["price_path"], obs.get("peak_session")),
             kind="drawdown",
             height=188,
             accent="var(--down)",
