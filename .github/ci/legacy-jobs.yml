@@ -2967,6 +2967,9 @@ jobs:
       - "engine/us_board_rank.py"
       - "engine/us_candidate_lanes.py"
       - "engine/us_context_vector.py"
+      # Packet3 R21: Context Vector's prospective identity capture reuses the
+      # canonical B1 intake projection; every exclusive importer must own it.
+      - "engine/us_candidate_episode_intake.py"
       - "engine/us_prophet_fusion.py"
       - "engine/valuation.py"
       - "engine/velocity.py"
@@ -12491,6 +12494,11 @@ jobs:
       - "engine/us_board_rank.py"
       - "engine/us_candidate_lanes.py"
       - "engine/us_context_vector.py"
+      # Packet3 R21: Context Vector's prospective identity capture reuses the
+      # canonical B1 intake projection; every exclusive importer must own it,
+      # together with the market-session clock imported by that seam.
+      - "engine/session_digest.py"
+      - "engine/us_candidate_episode_intake.py"
       - "engine/us_early_turn.py"
       - "engine/us_prophet_fusion.py"
       - "engine/validation.py"
@@ -13064,6 +13072,11 @@ jobs:
       - "engine/us_board_rank.py"
       - "engine/us_candidate_lanes.py"
       - "engine/us_context_vector.py"
+      # Packet3 R21: Context Vector's prospective identity capture reuses the
+      # canonical B1 intake projection; every exclusive importer must own it,
+      # together with the market-session clock imported by that seam.
+      - "engine/session_digest.py"
+      - "engine/us_candidate_episode_intake.py"
       - "engine/us_early_turn.py"
       - "engine/us_prophet_fusion.py"
       - "engine/valuation.py"
@@ -15683,6 +15696,11 @@ jobs:
       - "engine/us_board_rank.py"
       - "engine/us_candidate_lanes.py"
       - "engine/us_context_vector.py"
+      # Packet3 R21: Context Vector's prospective identity capture reuses the
+      # canonical B1 intake projection; every exclusive importer must own it,
+      # together with the market-session clock imported by that seam.
+      - "engine/session_digest.py"
+      - "engine/us_candidate_episode_intake.py"
       - "engine/us_early_turn.py"
       - "engine/us_prophet_fusion.py"
       - "engine/valuation.py"
@@ -17243,6 +17261,9 @@ jobs:
       - "engine/ownership_event_wire.py"
       - "engine/passport.py"
       - "engine/path_personality.py"
+      # Packet3 R21: the canonical B1 intake projection imports this existing
+      # path-risk helper through the Stock Identity dependency closure.
+      - "engine/path_risk_signals.py"
       - "engine/pit.py"
       - "engine/pit_lag_recorder.py"
       - "engine/playbook.py"
@@ -17330,6 +17351,12 @@ jobs:
       - "engine/stage_flows.py"
       - "engine/stage_industry.py"
       - "engine/stage_research.py"
+      # Packet3 R21: exact Stock Identity closure used by the shared B1 intake
+      # projection; no wildcard or alternate identity implementation is added.
+      - "engine/stock_identity/__init__.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/fingerprint.py"
+      - "engine/stock_identity/plane.py"
       - "engine/stock_desk.py"
       - "engine/stock_dossier.py"
       - "engine/stock_events.py"
@@ -17380,6 +17407,13 @@ jobs:
       - "engine/us_board_rank.py"
       - "engine/us_candidate_lanes.py"
       - "engine/us_context_vector.py"
+      # Packet3 R21: Context Vector's prospective identity capture reuses the
+      # canonical B1 intake projection; every exclusive importer must own it,
+      # together with the market-session clock imported by that seam.
+      - "engine/session_digest.py"
+      # The intake projection preserves the existing B1 event/store contract.
+      - "engine/us_candidate_episode.py"
+      - "engine/us_candidate_episode_intake.py"
       - "engine/us_early_turn.py"
       - "engine/us_prophet_fusion.py"
       - "engine/us_prophet_grades.py"
@@ -17505,6 +17539,7 @@ jobs:
       - "scripts/build_themes_heatmap.py"
       - "scripts/build_vector.py"
       - "scripts/check_board_contradictions.py"
+      - "scripts/check_prophet_h1_prospective_accrual.py"
       - "scripts/check_signal_gate_coherence.py"
       # Import-closure entry: scripts/build_stock_library.py lazy-imports
       # scripts/check_stretch_oracle_contract.py, so exclusive scope must name
@@ -18084,8 +18119,14 @@ jobs:
     # tier-P1 unwired (scripts/audit_unrun_tests.py census), so the stores' PIT discipline,
     # nightly-lane gates and scorecard null-disclosure had no CI eye on them at all.
     # A gate hung on a suite nothing runs is a gate that is already open.
+    #
+    # R23 (2026-09-27): this is source-contract code, not a post-merge data-only observer.
+    # R22's exact hosted semantic plan omitted this owner job even though the PR changed
+    # engine/us_context_vector.py, engine/us_prophet_grades.py and the B1 intake seam.
+    # Keep the existing job/runner/commands and let CI's normal static import-closure
+    # inference decide when it runs; only its gate classification changes.
     if: ${{ false }}
-    gate: data
+    gate: code
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -18127,7 +18168,7 @@ jobs:
       # see the install-line comment above for why it had to join and why that is not a
       # canary-lane widening.
       - name: US context vector + full-population grades + miss-audit scorecards
-        run: python -m pytest tests/test_us_prophet_grades.py tests/test_us_prophet_w3.py tests/test_us_context_vector.py tests/test_prophet_miss_audit.py tests/test_heal_candidates_archetype.py tests/test_us_scan_tier.py -q
+        run: python -m pytest tests/test_us_prophet_grades.py tests/test_us_prophet_w3.py tests/test_us_context_vector.py tests/test_prophet_miss_audit.py tests/test_heal_candidates_archetype.py tests/test_us_scan_tier.py tests/test_prophet_h1_prospective_accrual.py -q
       - name: US entry-status full-population remeasurement
         run: python -m pytest tests/test_us_entry_status_remeasure.py -q
       # The candidate-pool lanes ride this job because they ride this STORE: the nine
@@ -19658,6 +19699,11 @@ jobs:
       - "engine/us_board_rank.py"
       - "engine/us_candidate_lanes.py"
       - "engine/us_context_vector.py"
+      # Packet3 R21: Context Vector's prospective identity capture reuses the
+      # canonical B1 intake projection; every exclusive importer must own it,
+      # together with the market-session clock imported by that seam.
+      - "engine/session_digest.py"
+      - "engine/us_candidate_episode_intake.py"
       - "engine/us_early_turn.py"
       - "engine/us_prophet_fusion.py"
       - "engine/valuation.py"
@@ -22167,6 +22213,12 @@ jobs:
       - "engine/research_vault/**"
       - "engine/seasonality/**"
       - "engine/signal_foundry/**"
+      # Packet3 R21: dashboard render closure reaches Context Vector's canonical
+      # B1 identity projection through these exact Stock Identity dependencies.
+      - "engine/stock_identity/__init__.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/fingerprint.py"
+      - "engine/stock_identity/plane.py"
       - "engine/theme_graph/**"
       # collectors/, lib/ and config/ as the same closure layers defense-rail-laws declares.
       - "collectors/**"
