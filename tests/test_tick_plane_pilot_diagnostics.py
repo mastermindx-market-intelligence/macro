@@ -245,6 +245,22 @@ def reference(rows=None, **changes):
 
 
 class SameScopeRTHMinuteReferenceTests(unittest.TestCase):
+    def test_rest_minute_json_numeric_parser_failure_is_typed(self):
+        raw = mock_minute_original()
+        for packet in [
+            raw.replace(b"12.375", b"1e999999999999999999999999999"),
+            raw.replace(b'"n":4', b'"n":' + b"9" * 5000),
+        ]:
+            with self.subTest(raw_size=len(packet)):
+                with self.assertRaisesRegex(RTHReferenceError, "malformed original REST minute response"):
+                    reference(original_response_bytes=packet)
+
+    def test_extreme_source_volume_exponent_never_expands(self):
+        for exponent in ("1e+999999999", "1e-999999999"):
+            with self.subTest(exponent=exponent):
+                with self.assertRaisesRegex(RTHReferenceError, "fixed decimal exceeds"):
+                    reference(rows=[{"t": RTH_START // 1_000_000, "v": exponent}])
+
     def test_exact_native_decimals_sum_over_reviewed_rth_only(self):
         r=reference()
         self.assertEqual(r["reference_scope"],"RTH")

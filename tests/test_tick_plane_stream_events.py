@@ -37,6 +37,42 @@ def captured(event, *, index=0, frame=None, **kw):
 
 
 class StreamEventContractTests(unittest.TestCase):
+    def test_invalid_json_numeric_exponent_or_integer_has_typed_source_failure(self):
+        from engine.tick_plane.stream_events import normalize_ws_event
+        original = json.dumps([TRADE]).encode()
+        inputs = [
+            original.replace(b"573.125", b"1e999999999999999999999999999"),
+            original.replace(b'"q": 77', b'"q": ' + b"9" * 5000),
+        ]
+        for raw in inputs:
+            with self.subTest(raw_size=len(raw)):
+                with self.assertRaisesRegex(FrameContractError, "invalid original UTF-8 JSON frame"):
+                    normalize_ws_event(raw, event_index=0, frame_received_ns=RECEIVED_NS,
+                                       source_receipt_id="original-probe", session="2026-10-08:RTH",
+                                       allowed_symbols={"SPY"})
+
+    def test_scientific_exponents_do_not_expand_into_unbounded_fixed_strings(self):
+        from engine.tick_plane.stream_events import normalize_ws_event, _decimal
+        for exponent in ("1e+999999999", "1e-999999999"):
+            # Native JSON floats use parse_float=Decimal and need the same bound.
+            raw = json.dumps([TRADE]).encode().replace(b"573.125", exponent.encode())
+            with self.subTest(transport="native", exponent=exponent):
+                with self.assertRaisesRegex(FrameContractError, "fixed decimal exceeds"):
+                    normalize_ws_event(raw, event_index=0, frame_received_ns=RECEIVED_NS,
+                                       source_receipt_id="original-probe", session="2026-10-08:RTH",
+                                       allowed_symbols={"SPY"})
+            for field in ("p", "ds"):
+                trade = dict(TRADE, **{field: exponent})
+                with self.subTest(transport="string", field=field, exponent=exponent):
+                    with self.assertRaisesRegex(FrameContractError, "fixed decimal exceeds"):
+                        captured(trade)
+            quote = dict(QUOTE, bp=exponent)
+            with self.subTest(transport="quote", exponent=exponent):
+                with self.assertRaisesRegex(FrameContractError, "fixed decimal exceeds"):
+                    captured(quote)
+        self.assertEqual(_decimal("0.125", "shares"), "0.125")
+        self.assertEqual(len(_decimal("1e+125", "price")), 126)
+
     def test_trade_keeps_original_ms_precision_and_provisional_state(self):
         row = captured(TRADE)
         self.assertEqual(row["schema"], SCHEMA)

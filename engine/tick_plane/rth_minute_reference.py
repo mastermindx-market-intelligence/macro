@@ -26,7 +26,7 @@ from decimal import Decimal, InvalidOperation
 from datetime import date
 
 from engine.tick_plane.minute_projection import MINUTE_NS
-from engine.tick_plane.stream_events import FrameContractError
+from engine.tick_plane.stream_events import FrameContractError, _bounded_fixed_decimal
 
 SCHEMA = "equity.tick_plane.rth_aggregate_volume_reference/v0"
 MAX_RESPONSE_BYTES = 2 * 1024 * 1024
@@ -56,7 +56,7 @@ def _vol(value):
         raise FrameContractError("REST minute volume is invalid decimal") from exc
     if not result.is_finite() or result < 0:
         raise FrameContractError("REST minute volume must be nonnegative and finite")
-    return result
+    return _bounded_fixed_decimal(result, "REST minute volume")
 
 
 def normalize_rth_minute_volume_reference(
@@ -103,7 +103,7 @@ def normalize_rth_minute_volume_reference(
     try:
         native=json.loads(original_response_bytes.decode("utf-8"),
                           parse_float=Decimal,parse_int=int)
-    except (ValueError,UnicodeDecodeError) as exc:
+    except (ValueError,UnicodeDecodeError,InvalidOperation) as exc:
         raise FrameContractError("malformed original REST minute response") from exc
     if (not isinstance(native,dict) or native.get("status")!="OK"
             or type(native.get("results")) is not list

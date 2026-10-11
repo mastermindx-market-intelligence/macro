@@ -40,6 +40,7 @@ def _coarse_venue_class(exchange, trf_id):
 MAX_FRAME_BYTES = 2 * 1024 * 1024
 MAX_FRAME_EVENTS = 2000  # bound records within one delivered WS frame
 MAX_UNIVERSE = 600
+MAX_FIXED_DECIMAL_CHARS = 128  # cap the output width BEFORE fixed-point formatting
 _SYMBOL = re.compile(r"^[A-Z][A-Z0-9.\-]{0,19}$")
 _SESSION = re.compile(r"^(\d{4}-\d{2}-\d{2}):(RTH|PRE|POST)$")
 _NS_PER_MS = 1_000_000
@@ -57,6 +58,31 @@ def _integer(value, field, *, minimum=0, optional=False):
     return value
 
 
+def _bounded_fixed_decimal(number: Decimal, field: str) -> Decimal:
+    """Refuse unbounded exponent expansion before using format(value, "f").
+
+    Tiny original JSON tokens such as 1e+999999999 or 1e-999999999
+    otherwise expand into enormous fixed-decimal strings. This is a source
+    input resource ceiling, not a stock-price or volume eligibility rule.
+    """
+    if not number.is_finite():
+        raise FrameContractError(f"{field} invalid nonfinite decimal")
+    descriptor = number.as_tuple()
+    digit_count = len(descriptor.digits)
+    exponent = descriptor.exponent
+    left_digits = digit_count + exponent
+    if exponent >= 0:
+        rendered_chars = digit_count + exponent
+    elif left_digits > 0:
+        rendered_chars = digit_count + 1
+    else:
+        rendered_chars = 2 - left_digits + digit_count
+    rendered_chars += descriptor.sign
+    if rendered_chars > MAX_FIXED_DECIMAL_CHARS:
+        raise FrameContractError(f"{field} fixed decimal exceeds bounded source field")
+    return number
+
+
 def _decimal(value, field, *, allow_zero=False):
     if isinstance(value, bool) or not isinstance(value, (Decimal, str, int, float)):
         raise FrameContractError(f"{field} requires a decimal")
@@ -66,7 +92,7 @@ def _decimal(value, field, *, allow_zero=False):
         raise FrameContractError(f"{field} invalid decimal") from exc
     if not number.is_finite() or (number < 0 if allow_zero else number <= 0):
         raise FrameContractError(f"{field} invalid nonpositive price/size")
-    return format(number, "f")
+    return format(_bounded_fixed_decimal(number, field), "f")
 
 
 def _text(value, field):
@@ -129,7 +155,7 @@ def _decode_source_frame(raw_frame_bytes: bytes, *, frame_received_ns,
     try:
         frame = json.loads(raw_frame_bytes.decode("utf-8"),
                            parse_float=Decimal, parse_int=int)
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+    except (UnicodeDecodeError, ValueError, InvalidOperation) as exc:
         raise FrameContractError("invalid original UTF-8 JSON frame") from exc
     if type(frame) is not list or not frame:
         raise FrameContractError("expected a nonempty vendor event array")

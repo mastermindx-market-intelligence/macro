@@ -160,6 +160,26 @@ def historical(kind, rows, **changes):
 
 
 class HistoricalRestPageTests(unittest.TestCase):
+    def test_native_rest_json_number_parser_failure_is_typed(self):
+        body = json.dumps({"status": "OK", "request_id": "historical-r1",
+                           "results": [self.trade()]}).encode()
+        for raw in [
+            body.replace(b"171.55", b"1e999999999999999999999999999"),
+            body.replace(b'"sequence_number": 65', b'"sequence_number": ' + b"9" * 5000),
+        ]:
+            with self.subTest(raw_size=len(raw)):
+                with self.assertRaisesRegex(FrameContractError, "malformed source REST JSON"):
+                    historical("trades", [], raw_bytes=raw)
+
+    def test_rest_decimal_fields_reject_exponent_amplification(self):
+        for exponent in ("1e+999999999", "1e-999999999"):
+            with self.subTest(kind="trade", exponent=exponent):
+                with self.assertRaisesRegex(FrameContractError, "fixed decimal exceeds"):
+                    historical("trades", [self.trade(price=exponent)])
+            with self.subTest(kind="quote", exponent=exponent):
+                with self.assertRaisesRegex(FrameContractError, "fixed decimal exceeds"):
+                    historical("quotes", [self.quote(bid_price=exponent)])
+
     def quote(self, **changes):
         row = {"sip_timestamp": REST_START + 123, "sequence_number": 77,
                "bid_exchange": 11, "bid_price": 102.7, "bid_size": 60,

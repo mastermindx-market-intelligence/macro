@@ -19,6 +19,7 @@ from decimal import Decimal, InvalidOperation
 
 from engine.tick_plane.stream_events import (
     FrameContractError, _SESSION, _SYMBOL, _integer, _text, _coarse_venue_class,
+    _bounded_fixed_decimal,
 )
 
 SCHEMA = "equity.tick_plane.historical_rest_page/v0"
@@ -35,7 +36,7 @@ def _dec(value, field, zero_ok=False):
         raise FrameContractError(field + " invalid decimal") from exc
     if not d.is_finite() or (d < 0 if zero_ok else d <= 0):
         raise FrameContractError(field + " invalid decimal")
-    return d
+    return _bounded_fixed_decimal(d, field)
 
 
 def _opt_int(row, field):
@@ -127,7 +128,7 @@ def normalize_rest_page(*, raw_bytes, endpoint_kind, ticker, session,
         raise FrameContractError("missing or oversized raw REST page")
     try:
         body = json.loads(raw_bytes.decode("utf-8"), parse_float=Decimal, parse_int=int)
-    except (UnicodeDecodeError, ValueError) as exc:
+    except (UnicodeDecodeError, ValueError, InvalidOperation) as exc:
         raise FrameContractError("malformed source REST JSON") from exc
     if (not isinstance(body, dict) or body.get("status") != "OK"
             or not isinstance(body.get("request_id"), str)
