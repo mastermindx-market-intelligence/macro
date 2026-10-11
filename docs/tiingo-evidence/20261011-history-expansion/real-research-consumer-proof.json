@@ -1,0 +1,93 @@
+{
+  "aapl_daily": {
+    "authority": "RESEARCH_ONLY_RETROSPECTIVE",
+    "availability_clock": "SOURCE_CAPTURE_ONLY_NO_PIT",
+    "end_market_date": "2026-10-09",
+    "historical_identity_admitted": false,
+    "identical_overlap_dates": 0,
+    "market_session_completeness_proven": false,
+    "observed_before_utc": "2026-10-11T18:37:39.653713+00:00",
+    "observed_market_dates": 762,
+    "pit_backtest_eligible": false,
+    "redistribution_admitted": false,
+    "rows": 3810,
+    "source": "fund-daily",
+    "source_partitions": 1,
+    "start_market_date": "2023-10-12",
+    "vendor_symbol": "AAPL"
+  },
+  "aapl_statements_as_reported_false": {
+    "as_reported_dimension": "LATEST_RESTATED_RETROSPECTIVE",
+    "authority": "RESEARCH_ONLY_STATEMENT_RELEASE_CLAIMS",
+    "availability_clock": "SOURCE_CAPTURE_ONLY_NO_PIT",
+    "distinct_fiscal_periods": 13,
+    "distinct_vendor_release_labels": 11,
+    "end_release_date": "2026-10-09",
+    "historical_identity_admitted": false,
+    "historical_known_at_proven": false,
+    "identical_report_overlaps": 0,
+    "observed_before_utc": "2026-10-11T18:37:39.653713+00:00",
+    "pit_backtest_eligible": false,
+    "redistribution_admitted": false,
+    "report_history_completeness_proven": false,
+    "rows": 962,
+    "source": "fund-statements",
+    "source_partitions": 1,
+    "source_release_is_vendor_claim": true,
+    "start_release_date": "2023-10-12",
+    "vendor_symbol": "AAPL"
+  },
+  "aapl_statements_as_reported_true": {
+    "as_reported_dimension": "AS_REPORTED_CURRENT_PERIOD",
+    "authority": "RESEARCH_ONLY_STATEMENT_RELEASE_CLAIMS",
+    "availability_clock": "SOURCE_CAPTURE_ONLY_NO_PIT",
+    "distinct_fiscal_periods": 15,
+    "distinct_vendor_release_labels": 12,
+    "end_release_date": "2026-10-09",
+    "historical_identity_admitted": false,
+    "historical_known_at_proven": false,
+    "identical_report_overlaps": 0,
+    "observed_before_utc": "2026-10-11T18:37:39.653713+00:00",
+    "pit_backtest_eligible": false,
+    "redistribution_admitted": false,
+    "report_history_completeness_proven": false,
+    "rows": 1101,
+    "source": "fund-statements",
+    "source_partitions": 1,
+    "source_release_is_vendor_claim": true,
+    "start_release_date": "2023-10-12",
+    "vendor_symbol": "AAPL"
+  },
+  "capture_before_original_observation": {
+    "evidence": "real source captures, existing consumer contract",
+    "refused": true
+  },
+  "eod_amd": {
+    "authority": "RESEARCH_ONLY_RETROSPECTIVE",
+    "availability_clock": "SOURCE_CAPTURE_ONLY_NO_PIT",
+    "end_market_date": "2026-10-09",
+    "historical_identity_admitted": false,
+    "identical_overlap_dates": 252,
+    "market_session_completeness_proven": false,
+    "observed_before_utc": "2026-10-11T18:37:39.653713+00:00",
+    "observed_market_dates": 10976,
+    "pit_backtest_eligible": false,
+    "redistribution_admitted": false,
+    "rows": 10976,
+    "source": "eod-bars",
+    "source_partitions": 2,
+    "start_market_date": "1983-03-21",
+    "vendor_symbol": "AMD"
+  },
+  "licensed_rows_included": false,
+  "mixed_statement_dimensions": {
+    "evidence": "real source captures, existing consumer contract",
+    "refused": true
+  },
+  "observed_at_utc": "2026-10-11T18:37:39.653713+00:00",
+  "pit_admission": {
+    "evidence": "real source captures, existing consumer contract",
+    "refused": true
+  },
+  "schema": "tiingo_actual_research_consumer_qualification.v1"
+}
