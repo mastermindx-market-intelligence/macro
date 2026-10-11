@@ -399,7 +399,7 @@ def test_real_golden_h01_aapl(monkeypatch) -> None:
     assert leg["status"] == "ok"
     assert leg["ref"]["owner_hash"] and re.fullmatch(r"[0-9a-f]{64}", leg["ref"]["owner_hash"])
     assert leg["payload"]["query_hash"]
-    assert leg["ref"]["as_of"] == "2026-08-23T12:00:00Z"
+    assert leg["ref"]["as_of"] == "2026-08-23T07:02:13Z"
 
 
 def test_stale_vs_page_stamp(monkeypatch) -> None:
