@@ -269,6 +269,57 @@ from the return (refresh vs origin/main, four keys cited, docs-only merge if it 
   in the sibling worktree `pr-8828`. The "8 modified files" ORCH-OPS saw were that lane's
   pre-commit state, not a foreign writer.
 
+### 4d. FACTS added 18:0x–19:34Z
+
+- #8848 MERGED 19:05:13Z by hand on concluded checks; squash `1f45d70041e60faaae9593ad8ba2b53879a8ba57`;
+  4/4 paths blob-verified after a bare `git fetch origin`; watcher b1gggc89s exited 19:02:17Z.
+- /opt/macro pulled 1f45d700 at 19:06:30Z; that run restarted macro-api (MainPID 3100680, update.sh
+  L1304). terminal.service MainPID 3099200 since 19:05:03Z = ORCH-N's P3 rail flip under the updater
+  lock; live `.deployment-id` bc28e47ee54f; drop-in `/etc/systemd/system/terminal.service.d/
+  ticker-news-rail.conf` `TICKER_NEWS_RAIL=1`.
+- **update.sh L1528-1529 `exit 1` on the W2C owner-replay refusal aborts every later deploy block**
+  (DSC:UPDATE-SH-W2C-REFUSAL-EXITS-BEFORE-LATER-DEPLOY-BLOCKS): ticker-news L2312-2344, press-feeds
+  L2292-2310, BioCatalyst L2348+, unit reconcile L2392+, daemon modules L2464+, plus production-records
+  L1551+, option-OI canary L1610+, W1B5 timer finalization L1758-1847, live-plane L1849+. The EXIT trap
+  `options_fail_closed_on_exit` (L436-447, cleared only at L1846) fires on that exit -> `disarm_options_timer`
+  (L196) every 3 min. `CHANGED` (L264-271) is per-run, so a skipped restart is never retried. The log has
+  no run delimiters: the manifest / "publication deferred" (L398) lines after a refusal belong to the NEXT
+  run, and "control-room-source" is emitted by a child process, not update.sh. Blame 69268b06502c
+  (metabolism-immune[bot], 2026-08-23). Tests pin the refusal (tests/test_market_memory_experience_deploy.py
+  L1124-1125: returncode 1 + the stderr phrase); siblings tests/test_deploy_update_self_heal.py,
+  tests/test_market_memory_context_deploy.py. agentos owners of update.sh: this WS, WS-MARKET-MEMORY-W2C
+  (coo-fable; its do_not_redo is scoped to #5804's repair), WS-LIVE-ENTRY-RADAR. Open PRs touching it:
+  #7992 Sol non-draft (never touch; rebase the fix on fresh main), drafts/holds #7728 #8245 #6651 #8678
+  #8682 #8701 #7100.
+- Updater lock: update.sh L16-17 `exec 9>/var/lock/macro-update.lock; flock -n 9 || exit 0`. Seat
+  pattern for a manual unit restart: `flock -w 40 9` + a critical section of seconds; a `flock -n` at
+  the 19:24:03Z cron tick found it BUSY.
+- Writer restart 19:24:36-43Z: PRE MainPID 3071073 -> POST 3111697 (active since 19:24:41Z, ready in
+  2 s, NRestarts=0, universe snapshot 503, state live, anon 401, revisions=2 intact); deployed
+  `scripts/run_qbus_news.py` sha256 95375cdbba3f982f… and `engine/qbus_news_receipts.py` 67a1d79778250166…
+  == origin/main 102ac7ee5bb1; pre-restart health saved to
+  `/var/lib/macro-ticker-news/health.pre-restart-1924Z.json`; old process exit line `catchups_ok: 127,
+  disconnects: 0, catchups_failed: 0` over 18:20:58->19:24:37Z.
+- #8848 adds NO new health keys (set: catchups_failed, connect_attempts, disconnects, gap_unresolved,
+  last_catchup_error, last_stream_error, last_stream_event_at, last_successful_catchup, observed_at,
+  provider, schema, source, state); `_error_code` (run_qbus_news.py L106) only changes the stored VALUES
+  at L238/L362. Sqlite tables are news_deliveries(transport, received_at), news_revisions(source),
+  news_cursors — there is no `revisions` table.
+- W2C technicals failure detail: `MarketMemoryTechnicalObservationError: store ticker count does not match
+  the publish manifest` raised at `engine/neuralweb/market_memory_technical_observation.py:1233
+  _validate_manifest` <- `fetch_current_spy_daily_inputs` L781 <- `build_current_spy_raw_close_ratio`
+  L1789 <- `scripts/capture_market_memory_technicals.py` L68/L136/L153; unit Result=exit-code status 1,
+  re-attempted every ~3 min by the updater's W2C block; `macro-market-memory-experience.timer`
+  inactive/enabled, its service failed. By design until the 10-12 nightly; no manual start.
+- Lane matrix delta: ORCH-D = Opus orchestrator `ad812dc60c846701f` (background, spawned 19:34Z),
+  one GLM-5.3 fabric build lane, branch `claude/mi-update-sh-w2c-lane-freeze-20261011`, worktree on the
+  SSD helper, owned files app/deploy/update.sh + tests/test_market_memory_experience_deploy.py; return
+  packet STATUS/RESULT/EVIDENCE/GAPS/DEVIATIONS; ~90 min budget. ORCH-N `ad8bb35435bc5fe52` and ORCH-OPS
+  `a5ccb27d864b1f6cb` ENDED PROVEN_OUTCOME (resumable only by SendMessage; never re-spawn). No watcher armed.
+- origin/main at W9-4 cut: ccfae015a326 (research_vault catalog 19:28Z); it moves every few minutes —
+  ff before every commit. Desktop-host PreToolUse hook timeouts for Write / ccd_pr persisted all
+  window; Bash heredocs remain the writer.
+
 ## 5. Lane recipes (B-kit)
 
 ```
@@ -299,32 +350,36 @@ read credential files or shim logs.
 
 ## 7. NEXT (critical path first)
 
-1. Package N production proof under ORCH-N (`ad8bb35435bc5fe52`, resumed 18:06Z): the VPS Alpaca pair
-   is refreshed (#8838 MERGED 0a47364446e6; dispatch run 38162037064 SUCCESS 18:03Z; HTTP 200 probe) and
-   `macro-ticker-news.service` is loaded/active/running since 16:55:34Z (NRestarts=0) — the W9-2
-   "ticker-news.service not-found" read used the wrong unit name and is retracted. Canary x2 >=10 min
-   apart with growing benzinga-only rows -> P3 drop-in + ONE terminal restart; proof `newsRailEnabled":true`
-   at the LIVE `.deployment-id` (bc28e47ee54f since another seat's Terminal deploy restarted
-   terminal.service 18:18:44Z; 707648d52014 is its ancestor, so the rail code is in the live build). Seat judges READY_FOR_SEAT_PROOF by artifact (the two canary reads +
-   the rail line) and records PRODUCTION_PROOF for Package N (#8828 c50af4eb0421 proves through it).
-   marketing-press-feeds stays un-restarted: Chairman/marketing-owner act,
-   `gh workflow run deploy-alpaca-secrets.yml --ref main -f restart_press_feeds=true`.
-2. #8841 identity-unit budget (TimeoutStartSec=600 / CPUQuota=100%) MERGED 18:11:43Z as f20602fdf5e6
-   (blob-verified) and INSTALLED on the VPS 18:27:36Z (`cmp` IDENTICAL, `TimeoutStartUSec=10min`,
-   `CPUQuotaPerSecUSec=1s`, NeedDaemonReload=no) — the 3-min pull had skipped 18:12-18:24Z while
-   `/run/lock/macro-update.lock` was held by another seat's Terminal build (`terminal-build.sh --target-sha …`
-   -> `npm run build`): designed serialization, never kill. Remaining run proof = the 18:30:03Z trigger
-   (first run under the new budget) ending `Result=success` with wall << 600 s; one bounded read >= 18:34Z.
-3. Covering main proof ci.yml run 38162040929 (a same-second sibling dispatch 38162041313 is still in flight —
-   left alone, never cancelled) on f1ae1e0365fc (descendant of #8830 + #8838; dispatched
-   18:01:07Z over a clear field; watcher `blq7tnv8m`): concluded SUCCESS 18:28:59Z (watcher line `MAINPROOF-CONCLUDED 38162040929 success f1ae1e0365fc`) — both authority freezes (#8830 scripts/, #8838 .github/workflows/) CLEAR. Nothing further is owed on the freezes; the sibling
-   run concludes on its own. The
-   structural identity runway (memoize `_project_snapshot` / load store metadata once) stays a later lane
-   with a before/after CPU-second gate — #8841 bought headroom (165 s of 600), not the fix.
-4. Post-nightly proofs (B, D-experience) on 10-12 after the ~02:0xZ nightly + first :53 tick;
-   data-health.yml's next main run after c50af4eb0421 should green on the regenerated artifacts.
-5. This records PR -> merge -> blob-verify; ONE #1202 checkpoint at the W8/W9 boundary once P2 or
-   the DIDC proof lands; memory refresh; Chairman blocker list LAST; `SESSION END: <STATE>`.
+1. ORCH-D update.sh lane-freeze fix (critical path: every later deploy restart depends on it):
+   judge its RETURN by artifact — full diff, the three deploy test files in full on the branch
+   head, the new test failing on origin/main and passing on the branch, `bash -n`, the overlap
+   check against Sol's #7992 — then merge by hand on concluded checks and prove it live: the
+   first /opt/macro run after the pull prints the two new `macro-update:` lane-freeze lines AND
+   post-L1549 block messages while the W2C refusal still prints; then confirm
+   `macro-market-memory-options.timer` is no longer disarmed every 3 min. Until it lands, any
+   merged PR that touches a source service needs a seat restart under the updater lock (recipe
+   in DSC:UPDATE-SH-W2C-REFUSAL-EXITS-BEFORE-LATER-DEPLOY-BLOCKS).
+2. Package N: PRODUCTION_PROOF, ACCEPTED (ORCH-N RETURN `READY_FOR_SEAT_PROOF` judged by
+   artifact; ORCH-N and ORCH-OPS ENDED PROVEN_OUTCOME, nothing to resume). ACCEPTANCE-grade
+   extras only: a bounded signed-in Terminal rail browser check; one later VPS read (>=10 min
+   after the 19:24:41Z writer restart) confirming `last_stream_event_at` /
+   `last_successful_catchup` populate on MainPID 3111697 and `news_deliveries` grew. No
+   polling. marketing-press-feeds stays un-restarted (Chairman/marketing-owner act,
+   `gh workflow run deploy-alpaca-secrets.yml --ref main -f restart_press_feeds=true`).
+   G3 #8848: MERGED + PRODUCTION_PROOF (seat restart); behavioral proof of the error-code path
+   needs a real stream / catch-up failure — read `last_stream_error` / `last_catchup_error`
+   only if `catchups_failed` / `disconnects` move. Nothing owed.
+3. Post-nightly proofs on 10-12 after the ~02:0xZ nightly: B (#8807) at the first :53 technicals
+   tick; D-experience (#8816) W2C activation by update.sh once the regenerated manifest matches
+   the store; #8828 roster resolution; data-health.yml's next main run should green on the
+   regenerated artifacts. One bounded read each, no polling.
+4. Structural identity runway lane (memoize `_project_snapshot` / load store metadata once, with a
+   before/after CPU-second gate): later work — #8841 bought headroom (97 s of 600), not the fix.
+   Do not raise the budget again (WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2 do_not_redo is unit-scoped
+   to the options-context auditor; this is the identity unit, already lifted once under
+   DEC:MARKET-MEMORY-IDENTITY-UNIT-BUDGET-IS-A-DEPLOY-CONTRACT-NOT-A-RUNTIME-DEFAULT).
+5. Records: this PR -> `--admin` merge (docs-only) -> blob-verify; memory refresh; Chairman
+   blocker list LAST (already posted in issuecomment-6112439924); `SESSION END: <STATE>`.
 
 ## 8. Blocker list for the Chairman (deliver LAST, verbatim-safe)
 
