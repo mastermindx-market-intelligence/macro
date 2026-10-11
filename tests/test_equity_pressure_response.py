@@ -625,6 +625,55 @@ def test_tp1_bridge_reuses_existing_minute_signs_without_reclassifying_prints():
     assert "trade_id" not in out and "source_quotes" not in out
 
 
+def test_tp1_bridge_rejects_large_small_notional_conservation_forgery():
+    # With Decimal's default precision, +1 disappears beside 1E+30 and a
+    # forged gross can look conserved. Fail closed before the private feature.
+    packet=tp1_minute(buy="1e30", sell="0", mid="0",
+                      unknown="1", ineligible="0", trf="0")
+    packet["gross_sampled_notional_usd"]="1e30"
+    with pytest.raises(TP1ContextRefusal, match="denominators"):
+        tp1_context(minute=[packet])
+
+
+def test_tp1_bridge_multi_minute_totals_preserve_small_second_minute():
+    big="1000000000000000000000000000000"
+    first=tp1_minute(TP1_START,buy=big,sell="0",mid="0",
+                     unknown="0",ineligible="0",trf="0")
+    second=tp1_minute(TP1_END)
+    window_end=TP1_END+TP1_MINUTE_NS
+    second["decision_ns"]=window_end+1_000_000_000
+    second["watermark_available_ns"]=window_end+500_000_000
+    second["original_latest_available_ns"]=window_end-500_000_000
+    quotes=tp1_quotes()+[tp1_source_q("later",window_end-5_000_000_000,
+                                      available=window_end-4_000_000_000)]
+    out=tp1_context(minute=[first,second],quotes=quotes,
+                    end_ns=window_end,decision_ns=window_end+10_000_000_000,
+                    watermark_ns=window_end,
+                    watermark_received_ns=window_end+2_000_000_000,
+                    max_quote_age_ns=70_000_000_000)
+    assert out["state"]=="PROVISIONAL_RESEARCH_CONTEXT"
+    assert out["gross_sampled_notional_usd"]==str(int(big)+1900)
+    assert out["buy_proxy_notional_usd"]==str(int(big)+1000)
+
+
+def test_tp1_bridge_no_source_decimal_exponent_amplification():
+    packet=tp1_minute()
+    packet["gross_sampled_notional_usd"]="1e+999999999"
+    with pytest.raises(TP1ContextRefusal, match="bounded"):
+        tp1_context(minute=[packet])
+
+
+def test_tp1_bridge_high_precision_nbbo_markout_is_not_rounded_to_zero():
+    quotes=tp1_quotes()
+    quotes[0]["bid"]="1.00000000000000000000000000000"
+    quotes[0]["ask"]="1.00000000000000000000000000006"
+    quotes[-1]["bid"]="1.00000000000000000000000000004"
+    quotes[-1]["ask"]="1.00000000000000000000000000010"
+    r=tp1_context(quotes=quotes)
+    assert r["state"]=="PROVISIONAL_RESEARCH_CONTEXT"
+    assert Decimal(r["midpoint_response_bps"]) > 0
+
+
 def test_tp1_quote_exchange_numbers_project_to_research_string_format():
     out=tp1_context()
     assert out["state"]=="PROVISIONAL_RESEARCH_CONTEXT"
@@ -1033,6 +1082,38 @@ def test_private_context_sum_of_trade_notional_is_validated():
     obj["gross_sampled_notional_usd"]="9"
     with pytest.raises(PrivateContextRefusal,match="conservation"):
         private_context(obj)
+
+
+def test_private_context_exact_conservation_rejects_a_hidden_small_leg():
+    context=tp1_context()
+    context.update(gross_sampled_notional_usd="1e30",
+                   buy_proxy_notional_usd="1e30",
+                   sell_proxy_notional_usd="0",
+                   midpoint_notional_usd="0",
+                   unknown_notional_usd="1",
+                   ineligible_notional_usd="0",
+                   trf_gross_notional_usd="0")
+    with pytest.raises(PrivateContextRefusal, match="conservation"):
+        private_context(context)
+
+
+def test_private_context_readback_rejects_rehashed_hidden_small_leg():
+    import hashlib,json
+    original=private_context()
+    body=json.loads(original["bytes_private_only"])
+    body["notional_usd"].update(
+        gross_sampled_notional_usd="1e30",
+        buy_proxy_notional_usd="1e30",
+        sell_proxy_notional_usd="0",
+        midpoint_notional_usd="0",
+        unknown_notional_usd="1",
+        ineligible_notional_usd="0",
+        trf_gross_notional_usd="0")
+    raw=(json.dumps(body,sort_keys=True,separators=(",",":"))+"\n").encode()
+    with pytest.raises(PrivateContextRefusal, match="conservation"):
+        verify_private_research_context_bytes(
+            expected_sha256=hashlib.sha256(raw).hexdigest(),
+            expected_byte_length=len(raw),blob=raw)
 
 
 def test_private_context_source_criteria_not_stale_or_unqualified():

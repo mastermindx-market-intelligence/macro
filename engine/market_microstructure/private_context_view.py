@@ -14,9 +14,12 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, Context, localcontext
 
 from engine.market_microstructure.tp1_context import SCHEMA as SOURCE_SCHEMA, MINUTE_NS
+from engine.market_microstructure.pressure_response import _bounded_decimal, _EXACT_PRECISION
+
+_MAX_DERIVED_DECIMAL_CHARS = 2 * _EXACT_PRECISION
 
 SCHEMA = "equity.pressure_response.private_context_view/v0"
 MAX_BYTES = 24 * 1024
@@ -81,7 +84,10 @@ def _decimal(x,name,*,positive=False):
         raise PrivateContextRefusal(f"{name} malformed decimal") from exc
     if not d.is_finite() or d<0 or (positive and d==0):
         raise PrivateContextRefusal(f"{name} invalid value")
-    return format(d,"f")
+    try:
+        return format(_bounded_decimal(d,name),"f")
+    except ValueError as exc:
+        raise PrivateContextRefusal(f"{name} exceeds bounded source decimal width") from exc
 
 
 def _signed(x,name):
@@ -93,7 +99,10 @@ def _signed(x,name):
         raise PrivateContextRefusal(f"{name} malformed signed decimal") from exc
     if not d.is_finite():
         raise PrivateContextRefusal(f"{name} nonfinite response")
-    return format(d,"f")
+    try:
+        return format(_bounded_decimal(d,name,max_width=_MAX_DERIVED_DECIMAL_CHARS),"f")
+    except ValueError as exc:
+        raise PrivateContextRefusal(f"{name} exceeds bounded derived decimal width") from exc
 
 
 def _sha(x,name):
@@ -121,8 +130,10 @@ def _recovery(value,side):
     recovered=Decimal(quantities["recovered_shares"])
     initial=Decimal(quantities["original_shares"])
     final=Decimal(quantities["final_shares"])
+    exact=Context(prec=_EXACT_PRECISION)
+    reconstructed=exact.add(exact.subtract(initial,depleted),recovered)
     if (depleted<=0 or initial<=0 or final<=0 or depleted>initial
-            or final!=initial-depleted+recovered):
+            or final!=reconstructed):
         raise PrivateContextRefusal(f"{side} recovery impossible observed depletion")
     price=_decimal(value["price"],side+".price",positive=True)
     venue=_str(value["best_exchange"],side+".best_exchange")
@@ -185,10 +196,15 @@ def project_private_research_context(*, research_context, source_manifest_sha256
             or counts["n_quote_condition_unqualified"]>counts["n_quote_updates"]):
         raise PrivateContextRefusal("R0 sampled/quote denominators conflict")
     notional={key:_decimal(m[key],key) for key in _MONEY_FIELDS}
-    if sum((Decimal(notional[key]) for key in (
-        "buy_proxy_notional_usd","sell_proxy_notional_usd",
-        "midpoint_notional_usd","unknown_notional_usd",
-        "ineligible_notional_usd")),Decimal(0)) != Decimal(notional["gross_sampled_notional_usd"]):
+    # The private writer must independently reject a forged sum; do not
+    # discard a small component when compared against a large gross value.
+    with localcontext() as exact:
+        exact.prec=_EXACT_PRECISION
+        total=sum((Decimal(notional[key]) for key in (
+            "buy_proxy_notional_usd","sell_proxy_notional_usd",
+            "midpoint_notional_usd","unknown_notional_usd",
+            "ineligible_notional_usd")),Decimal(0))
+    if total != Decimal(notional["gross_sampled_notional_usd"]):
         raise PrivateContextRefusal("R0 source notional conservation failure")
     pressure=m["pressure_balance"]
     if pressure is not None:
@@ -355,9 +371,13 @@ def verify_private_research_context_bytes(*, expected_sha256, expected_byte_leng
             or counts["n_quote_condition_unqualified"]>counts["n_quote_updates"]):
         raise PrivateContextRefusal("private research count denominators inconsistent")
     money={key:Decimal(_decimal(notional[key],key)) for key in _MONEY_FIELDS}
-    if (money["buy_proxy_notional_usd"]+money["sell_proxy_notional_usd"]
-            +money["midpoint_notional_usd"]+money["unknown_notional_usd"]
-            +money["ineligible_notional_usd"]!=money["gross_sampled_notional_usd"]):
+    with localcontext() as exact:
+        exact.prec=_EXACT_PRECISION
+        total=sum((money[key] for key in (
+            "buy_proxy_notional_usd","sell_proxy_notional_usd",
+            "midpoint_notional_usd","unknown_notional_usd",
+            "ineligible_notional_usd")),Decimal(0))
+    if total != money["gross_sampled_notional_usd"]:
         raise PrivateContextRefusal("private research notional conservation invalid")
     for key in ("classified_notional_coverage","pressure_balance"):
         val=record.get(key)
@@ -387,7 +407,9 @@ def verify_private_research_context_bytes(*, expected_sha256, expected_byte_leng
             if (not isinstance(venue,str)
                     or re.fullmatch(r"[0-9]{1,5}",venue) is None):
                 raise PrivateContextRefusal("private source recovery venue not an exchange code")
-            if depleted>initial or final!=initial-depleted+recovered:
+            exact=Context(prec=_EXACT_PRECISION)
+            reconstructed=exact.add(exact.subtract(initial,depleted),recovered)
+            if depleted>initial or final!=reconstructed:
                 raise PrivateContextRefusal("private source recovery amount inconsistent")
         else:
             raise PrivateContextRefusal("private source recovery label unknown")

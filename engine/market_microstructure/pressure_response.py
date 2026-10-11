@@ -24,7 +24,7 @@ MAX_FIXED_DECIMAL_CHARS = 128  # native input width, BEFORE fixed-point renderin
 _EXACT_PRECISION = 2 * MAX_FIXED_DECIMAL_CHARS + 16
 
 
-def _bounded_decimal(value: Decimal, name: str) -> Decimal:
+def _bounded_decimal(value: Decimal, name: str, *, max_width=MAX_FIXED_DECIMAL_CHARS) -> Decimal:
     """Reject exponent-amplified fixed-point values before formatting.
 
     R0 is deliberately source-independent from draft TP1; this is its private
@@ -42,7 +42,9 @@ def _bounded_decimal(value: Decimal, name: str) -> Decimal:
         width = count + 1
     else:
         width = 2 - left + count
-    if width + digits.sign > MAX_FIXED_DECIMAL_CHARS:
+    if type(max_width) is not int or not 1 <= max_width <= 2 * _EXACT_PRECISION:
+        raise ValueError("invalid fixed-decimal width budget")
+    if width + digits.sign > max_width:
         raise ValueError(f"{name} exceeds bounded decimal width")
     return value
 

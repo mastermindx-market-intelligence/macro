@@ -12,13 +12,14 @@ independent incumbent-owner proof; booleans here are necessary, not sufficient.
 
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, Context, localcontext
 from hashlib import sha256
 import json
 import re
 
 from engine.market_microstructure.pressure_response import (
-    _prior_quote, _quote, _recovery, _fmt,
+    _prior_quote, _quote, _recovery, _fmt, _midpoint,
+    _bounded_decimal, _EXACT_PRECISION,
 )
 
 SCHEMA = "equity.pressure_response.tp1_context/v0"
@@ -67,7 +68,10 @@ def _money(x, field):
         raise TP1ContextRefusal(f"{field} malformed decimal") from exc
     if not n.is_finite() or n < 0:
         raise TP1ContextRefusal(f"{field} invalid notional")
-    return n
+    try:
+        return _bounded_decimal(n, field)
+    except ValueError as exc:
+        raise TP1ContextRefusal(f"{field} exceeds bounded original amount") from exc
 
 
 def _head(ticker, session, start_ns, end_ns, decision_ns, source_manifest,
@@ -253,6 +257,9 @@ def project_tp1_pressure_context(
     amounts = {name: Decimal(0) for name in (
         "gross", "buy", "sell", "mid", "unknown", "ineligible", "trf"
     )}
+    # Every input scalar is bounded before accumulation. The ordinary
+    # 28-digit Decimal context can discard small prints beside large ones.
+    exact = Context(prec=_EXACT_PRECISION)
     minute_refs, condition_refs, exchange_refs, minute_quote_refs = [], set(), set(), set()
     minute_age_limits = set()
     count_prints = count_unknown = 0
@@ -311,7 +318,7 @@ def project_tp1_pressure_context(
             ("ineligible", "ineligible_notional_usd"),
             ("trf", "trf_gross_notional_usd"),
         ):
-            amounts[target] += _money(minute.get(key), key)
+            amounts[target] = exact.add(amounts[target], _money(minute.get(key), key))
         _int(minute.get("n_sampled_prints"), "minute.n_sampled_prints")
         _int(minute.get("n_unclassified"), "minute.n_unclassified")
         if minute["n_sampled_prints"] == 0 or minute["n_unclassified"] > minute["n_sampled_prints"]:
@@ -334,9 +341,11 @@ def project_tp1_pressure_context(
     if (len(condition_refs) != 1 or len(exchange_refs) != 1
             or len(minute_quote_refs) != 1):
         raise TP1ContextRefusal("mixed condition or exchange source vintages")
-    if amounts["trf"] > amounts["unknown"] or sum(amounts[k] for k in (
-        "buy", "sell", "mid", "unknown", "ineligible"
-    )) != amounts["gross"]:
+    with localcontext(exact):
+        admitted_total = sum((amounts[k] for k in (
+            "buy", "sell", "mid", "unknown", "ineligible"
+        )), Decimal(0))
+    if amounts["trf"] > amounts["unknown"] or admitted_total != amounts["gross"]:
         raise TP1ContextRefusal("TP-1 minute notional denominators inconsistent")
 
     try:
@@ -364,10 +373,16 @@ def project_tp1_pressure_context(
                 "reason": {"start": start_reason, "end": end_reason},
                 "n_source_minute_packets": n_minutes,
                 "n_quote_updates": len(normalized)}
-    start_mid = (start_quote["bid"] + start_quote["ask"])/2
-    end_mid = (end_quote["bid"] + end_quote["ask"])/2
-    price_response_bps = (end_mid/start_mid-1)*Decimal(10000)
-    classified = amounts["buy"] + amounts["sell"]
+    start_mid = _midpoint(start_quote)
+    end_mid = _midpoint(end_quote)
+    # Calculate the tiny price change before rounding the percentage. The
+    # regular Decimal context can turn both precise midpoints into "1" and
+    # falsely report zero response.
+    price_response_bps = exact.multiply(
+        exact.divide(exact.subtract(end_mid, start_mid), start_mid),
+        Decimal(10000),
+    )
+    classified = exact.add(amounts["buy"], amounts["sell"])
     gross = amounts["gross"]
     receipt_digest = sha256(json.dumps(sorted(minute_refs),
                           separators=(",", ":"), ensure_ascii=True).encode()).hexdigest()
