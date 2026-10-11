@@ -23,6 +23,10 @@ _SNAPSHOT_KEY = re.compile(
 _LISTING_RECEIPT_KEY = re.compile(
     r"data/symbol_directory/receipts/snapshots/(\d{4}-\d{2}-\d{2})\.json\Z"
 )
+_IDENTITY_INPUT_PATHS = (
+    "data/symbol_directory/snapshots",
+    "data/symbol_directory/receipts/snapshots",
+)
 
 
 class IdentityIngestError(RuntimeError):
@@ -52,6 +56,61 @@ def _repository_commit(root: Path) -> str:
     if not _COMMIT.fullmatch(value):
         raise IdentityIngestError("deployed checkout commit is malformed")
     return value
+
+
+def _loaded_checkout_modules(root: Path) -> tuple[str, ...]:
+    """Repo-relative paths of every imported module living in the checkout."""
+
+    resolved_root = root.resolve()
+    paths: set[str] = set()
+    for module in list(sys.modules.values()):
+        module_file = getattr(module, "__file__", None)
+        if not isinstance(module_file, str) or not module_file:
+            continue
+        try:
+            relative = Path(module_file).resolve().relative_to(resolved_root)
+        except ValueError:
+            continue
+        paths.add(relative.as_posix())
+    return tuple(sorted(paths))
+
+
+def _completion_commit(root: Path, deployed_commit: str) -> str:
+    """Accept a moved HEAD only when no identity input or module changed."""
+
+    current = _repository_commit(root)
+    if current == deployed_commit:
+        return current
+    paths = (*_IDENTITY_INPUT_PATHS, *_loaded_checkout_modules(root))
+    try:
+        changed = [
+            line
+            for line in str(
+                _git(
+                    root,
+                    "diff",
+                    "--name-only",
+                    "--no-renames",
+                    deployed_commit,
+                    current,
+                    "--",
+                    *paths,
+                    text=True,
+                )
+            ).splitlines()
+            if line
+        ]
+    except IdentityIngestError as exc:
+        raise IdentityIngestError(
+            "deployed checkout changed during identity intake"
+        ) from exc
+    if changed:
+        raise IdentityIngestError(
+            "deployed checkout changed during identity intake: "
+            f"{len(changed)} identity path(s) differ between "
+            f"{deployed_commit[:12]} and {current[:12]}"
+        )
+    return current
 
 
 def _tracked_snapshot_keys(root: Path, commit: str) -> list[str]:
@@ -233,12 +292,12 @@ def ingest_identity_observations(
         else:
             raise IdentityIngestError("captured observation has an unknown PIT basis")
 
-    if _repository_commit(root) != deployed_commit:
-        raise IdentityIngestError("deployed checkout changed during identity intake")
+    completion_commit = _completion_commit(root, deployed_commit)
     head = last_result.head if last_result is not None else snapshot.head
     return {
         "schema": "market_memory.identity_ingest_result.v1",
         "deployed_commit": deployed_commit,
+        "completion_commit": completion_commit,
         "tracked_snapshot_count": len(keys),
         "published_count": published,
         "idempotent_count": idempotent,

@@ -5,6 +5,8 @@ import json
 import re
 import shutil
 import subprocess
+import sys
+import types
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -289,6 +291,147 @@ def test_ingest_fails_closed_when_checkout_head_changes_during_capture(
             repository,
             store_root=tmp_path / "identity-store",
         )
+
+
+def _capture_with_mid_run_commit(commit_action):
+    """Wrap the store capture so the first call moves the checkout first."""
+
+    real_capture = STORE.capture_spy_listing_observation
+    calls = 0
+
+    def capture(store, bundle, *, repository_root):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            commit_action()
+        return real_capture(store, bundle, repository_root=repository_root)
+
+    return capture
+
+
+def test_ingest_completes_when_the_checkout_moves_only_unrelated_paths(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = _temporary_repository(tmp_path)
+    before = INGEST._repository_commit(repository)
+
+    def commit_unrelated_tracked_file() -> None:
+        (repository / "unrelated.txt").write_text("unrelated\n", encoding="utf-8")
+        _git(repository, "add", "unrelated.txt")
+        _git(repository, "commit", "-qm", "unrelated tracked file")
+
+    monkeypatch.setattr(
+        STORE,
+        "capture_spy_listing_observation",
+        _capture_with_mid_run_commit(commit_unrelated_tracked_file),
+    )
+
+    moved = INGEST.ingest_identity_observations(
+        repository,
+        store_root=tmp_path / "moved-store",
+    )
+
+    after = INGEST._repository_commit(repository)
+    assert moved["deployed_commit"] == before
+    assert moved["completion_commit"] == after
+    assert moved["completion_commit"] != moved["deployed_commit"]
+
+    reference = INGEST.ingest_identity_observations(
+        _temporary_repository(tmp_path / "reference"),
+        store_root=tmp_path / "reference-store",
+    )
+    for count in ("published_count", "idempotent_count", "divergence_count"):
+        assert moved[count] == reference[count]
+
+
+def test_ingest_fails_closed_when_the_checkout_moves_an_identity_input(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = _temporary_repository(tmp_path)
+    snapshots = repository / "data" / "symbol_directory" / "snapshots"
+
+    def commit_extra_identity_snapshot() -> None:
+        shutil.copyfile(
+            min(snapshots.glob("*.parquet")),
+            snapshots / "2030-01-01.parquet",
+        )
+        _git(
+            repository,
+            "add",
+            "data/symbol_directory/snapshots/2030-01-01.parquet",
+        )
+        _git(repository, "commit", "-qm", "track an extra identity snapshot")
+
+    monkeypatch.setattr(
+        STORE,
+        "capture_spy_listing_observation",
+        _capture_with_mid_run_commit(commit_extra_identity_snapshot),
+    )
+
+    with pytest.raises(
+        INGEST.IdentityIngestError,
+        match="changed during.*identity path",
+    ):
+        INGEST.ingest_identity_observations(
+            repository,
+            store_root=tmp_path / "identity-store",
+        )
+
+
+def test_ingest_fails_closed_when_the_checkout_moves_a_loaded_module(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = _temporary_repository(tmp_path)
+    dependency = repository / "fake_identity_dependency.py"
+    dependency.write_text("VALUE = 1\n", encoding="utf-8")
+    _git(repository, "add", "fake_identity_dependency.py")
+    _git(repository, "commit", "-qm", "track the fake identity dependency")
+    module = types.ModuleType("fake_identity_dependency")
+    module.__file__ = str(dependency)
+    monkeypatch.setitem(sys.modules, "fake_identity_dependency", module)
+
+    def commit_loaded_module_edit() -> None:
+        dependency.write_text("VALUE = 2\n", encoding="utf-8")
+        _git(repository, "add", "fake_identity_dependency.py")
+        _git(repository, "commit", "-qm", "edit the loaded module")
+
+    monkeypatch.setattr(
+        STORE,
+        "capture_spy_listing_observation",
+        _capture_with_mid_run_commit(commit_loaded_module_edit),
+    )
+
+    with pytest.raises(INGEST.IdentityIngestError, match="changed during"):
+        INGEST.ingest_identity_observations(
+            repository,
+            store_root=tmp_path / "identity-store",
+        )
+
+
+def test_loaded_checkout_modules_lists_only_files_inside_the_root(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "repository"
+    inside = root / "engine" / "inside.py"
+    inside.parent.mkdir(parents=True)
+    inside.write_text("pass\n", encoding="utf-8")
+    inside_module = types.ModuleType("inside_module")
+    inside_module.__file__ = str(inside)
+    outside_module = types.ModuleType("outside_module")
+    outside_module.__file__ = str(tmp_path / "outside.py")
+    monkeypatch.setitem(sys.modules, "inside_module", inside_module)
+    monkeypatch.setitem(sys.modules, "outside_module", outside_module)
+    monkeypatch.setitem(
+        sys.modules,
+        "bare_module",
+        types.ModuleType("bare_module"),
+    )
+
+    assert INGEST._loaded_checkout_modules(root) == ("engine/inside.py",)
 
 
 def test_entry_script_pins_the_repository_before_importing_engine_modules() -> None:
