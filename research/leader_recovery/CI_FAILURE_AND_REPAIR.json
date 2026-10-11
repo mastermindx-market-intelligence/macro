@@ -15,5 +15,38 @@
   "legacy_suites_passed": {
     "lifecycle": 141,
     "builder": 138
-  }
+  },
+  "subsequent": [
+    {
+      "subject_head": "a71eea31afb631bbf6cfd9c228720c3eb8427903",
+      "run_id": 38105080477,
+      "job_id": 114369407950,
+      "job": "ci-pack-9",
+      "failed_jobs": [
+        "design-governance",
+        "unrun-import-hygiene"
+      ],
+      "failures": [
+        {
+          "check": "tests/test_check_script_import_pinning.py::test_unpinned_entry_scripts_only_shrink",
+          "message": "unpinned and not in the baseline: scripts/research/leader_recovery_census.py, scripts/research/leader_recovery_policy_study.py",
+          "repair": "Top-level unconditional repo-root pin (_ROOT = Path(__file__).resolve().parents[2]; sys.path.insert(0, str(_ROOT))) ahead of the first engine/lib/scripts import in both research scripts; baseline not extended; no tests-directory sys.path insertion"
+        },
+        {
+          "check": "scripts/check_design_system.py --mode enforce-added (R0 radius-literal)",
+          "message": "templates/leader_radar.html.j2:548 border-radius: 12px; :553 border-radius: 7px",
+          "repair": ".rs-highs-col -> var(--r-card,12px); .rs-highs-ticker -> var(--r-ctl,8px) (nearest documented scale; 1px visual change on the chip)"
+        }
+      ],
+      "repair_author": "RS LEADER Meta-CEO session 5ec0472d (Claude Fable 5.1), 2026-10-11, lane tree claude/ssd-rs-leader-wp1-1d927f831ec5f94e pushed by refspec onto the PR branch",
+      "local_checks": {
+        "import_pinning": "python3 -m pytest tests/test_check_script_import_pinning.py -q -> 11 passed",
+        "design_governance": "python3 scripts/check_design_system.py --mode enforce-added --diff-file <templates diff vs origin/main fcc82790> -> 0 blocking",
+        "focused_suite": "398 passed",
+        "agentos": "python3 scripts/agentos.py validate --root agentos --quiet -> 0 errors",
+        "diff_check": "git diff --check clean"
+      },
+      "hosted_fix_verified": false
+    }
+  ]
 }

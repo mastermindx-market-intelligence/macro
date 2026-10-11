@@ -8,8 +8,12 @@ from __future__ import annotations
 import argparse
 from collections import Counter,defaultdict
 from datetime import date
-import hashlib,json,statistics,time
+import hashlib,json,statistics,sys,time
 from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
+
 from engine.leader_recovery import RecoverySpec,replay_recovery,_source
 from engine.leader_recovery_policy_research import compare_at_landmark,POLICIES
 from lib import config

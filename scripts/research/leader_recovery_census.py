@@ -11,7 +11,11 @@ import hashlib
 import json
 from pathlib import Path
 import statistics
+import sys
 import time
+
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
 
 from engine.leader_recovery import RecoverySpec, describe_recovery, replay_recovery
 from engine.leader_recovery_outcomes import label_recovery_outcome
