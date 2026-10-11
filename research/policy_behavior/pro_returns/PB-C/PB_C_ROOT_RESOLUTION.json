@@ -1,0 +1,1031 @@
+{
+  "source_input_sha256": {
+    "pbc_tech/events.json": "8ae222914bf79bae368f1c6795098a958e445a90ef90e28a3b5e3e96a7bf0d6a",
+    "pbc_tech/supplementary_events.json": "62d6cdb13ca0685b76598657f29f972a959a8676ee8f58336222caf25d27c541",
+    "pbc_controls/events.json": "119789b3c2e26265b6b9f07f1bb239c476f2b03f20d65ed290755b7bb3be77ce",
+    "pbc_controls/supplementary_events.json": "a8e5bef9f8c591166154ddcf32812416867a6694ab017de2db3b05667ba724ef"
+  },
+  "input_rows": 92,
+  "cross_lane_duplicate_roots_removed": 1,
+  "deduplication": [
+    {
+      "retained": "PBC-TECH-AAPL-MP-20250715",
+      "merged": "PBC-D-MP-20250715-APPLE-SUPPLY",
+      "basis": "Same July15 Apple-MP supply agreement, counterparty original manifestations."
+    }
+  ],
+  "audit_items_added": 3,
+  "economic_release_roots_after_dedup": 91,
+  "panel_roots_including_audit": 94,
+  "program_policy": "Specific programs only; broad themes omitted. Multiple memberships are retained without transitive closure. For descriptive disjoint coarsening assign Apple-MP to MP magnets and January Microsoft/OpenAI to Stargate. OpenAI common-customer network is stored separately.",
+  "program_partitions": [
+    {
+      "partition_id": "APPLE_US_MANUFACTURING_2025",
+      "root_ids": [
+        "PBC-TECH-AAPL-US-INVESTMENT-20250224",
+        "PBC-TECH-AAPL-US-EXPANSION-20250806"
+      ]
+    },
+    {
+      "partition_id": "MP_US_MAGNETS_2025",
+      "root_ids": [
+        "PBC-TECH-AAPL-MP-20250715",
+        "PBC-D-MP-20250710-DOD-PACKAGE",
+        "PBC-D-MP-20250716-COMMON-OFFERING"
+      ]
+    },
+    {
+      "partition_id": "STARGATE_2025",
+      "root_ids": [
+        "PBC-TECH-MSFT-OPENAI-20250121",
+        "PBC-TECH-ORCL-STARGATE-20250121",
+        "PBC-TECH-ORCL-STARGATE-EXPANSION-20250722"
+      ]
+    },
+    {
+      "partition_id": "MSFT_OPENAI_PARTNERSHIP",
+      "root_ids": [
+        "PBC-TECH-MSFT-OPENAI-20251028",
+        "PBC-TECH-MSFT-OPENAI-20250911"
+      ]
+    },
+    {
+      "partition_id": "SAUDI_HUMAIN_2025_05_13",
+      "root_ids": [
+        "PBC-TECH-AMZN-HUMAIN-20250513",
+        "PBC-TECH-NVDA-HUMAIN-20250513",
+        "PBC-TECH-AMD-HUMAIN-20250513",
+        "PBC-D-CSCO-20250513-HUMAIN"
+      ]
+    },
+    {
+      "partition_id": "US_GPU_EXPORT_APRIL_2025",
+      "root_ids": [
+        "PBC-TECH-NVDA-H20-EXPORT-20250415",
+        "PBC-TECH-AMD-MI308-EXPORT-20250416"
+      ]
+    },
+    {
+      "partition_id": "LITE_FY2025_Q2",
+      "root_ids": [
+        "PBC-C-LITE-20250206-EARNINGS",
+        "PBC-C-LITE-20250203-PRELIMINARY"
+      ]
+    },
+    {
+      "partition_id": "HPE_JUNIPER_TRANSACTION",
+      "root_ids": [
+        "PBC-D-HPE-20250130-DOJ-CHALLENGE",
+        "PBC-D-HPE-20250627-DOJ-SETTLEMENT"
+      ]
+    },
+    {
+      "partition_id": "COHR_EARNINGS_2025_08_13",
+      "root_ids": [
+        "PBC-D-COHR-20250813-ADVENT-DIVESTITURE"
+      ]
+    },
+    {
+      "partition_id": "ADOBE_SUMMIT_2025_03_18",
+      "root_ids": [
+        "PBC-D-ADBE-20250318-PUBLICIS"
+      ]
+    },
+    {
+      "partition_id": "US_SAUDI_FORUM_2025_11_19",
+      "root_ids": [
+        "PBC-D-ADBE-20251119-HUMAIN-QCOM"
+      ]
+    }
+  ],
+  "program_memberships": [
+    {
+      "program_id": "ADOBE_SUMMIT_2025_03_18",
+      "root_ids": [
+        "PBC-D-ADBE-20250318-PUBLICIS"
+      ]
+    },
+    {
+      "program_id": "APPLE_US_MANUFACTURING_2025",
+      "root_ids": [
+        "PBC-TECH-AAPL-US-INVESTMENT-20250224",
+        "PBC-TECH-AAPL-MP-20250715",
+        "PBC-TECH-AAPL-US-EXPANSION-20250806"
+      ]
+    },
+    {
+      "program_id": "COHR_EARNINGS_2025_08_13",
+      "root_ids": [
+        "PBC-D-COHR-20250813-ADVENT-DIVESTITURE"
+      ]
+    },
+    {
+      "program_id": "HPE_JUNIPER_TRANSACTION",
+      "root_ids": [
+        "PBC-D-HPE-20250130-DOJ-CHALLENGE",
+        "PBC-D-HPE-20250627-DOJ-SETTLEMENT"
+      ]
+    },
+    {
+      "program_id": "LITE_FY2025_Q2",
+      "root_ids": [
+        "PBC-C-LITE-20250203-PRELIMINARY",
+        "PBC-C-LITE-20250206-EARNINGS"
+      ]
+    },
+    {
+      "program_id": "MP_US_MAGNETS_2025",
+      "root_ids": [
+        "PBC-D-MP-20250710-DOD-PACKAGE",
+        "PBC-TECH-AAPL-MP-20250715",
+        "PBC-D-MP-20250716-COMMON-OFFERING"
+      ]
+    },
+    {
+      "program_id": "MSFT_OPENAI_PARTNERSHIP",
+      "root_ids": [
+        "PBC-TECH-MSFT-OPENAI-20250121",
+        "PBC-TECH-MSFT-OPENAI-20250911",
+        "PBC-TECH-MSFT-OPENAI-20251028"
+      ]
+    },
+    {
+      "program_id": "SAUDI_HUMAIN_2025_05_13",
+      "root_ids": [
+        "PBC-D-CSCO-20250513-HUMAIN",
+        "PBC-TECH-AMD-HUMAIN-20250513",
+        "PBC-TECH-AMZN-HUMAIN-20250513",
+        "PBC-TECH-NVDA-HUMAIN-20250513"
+      ]
+    },
+    {
+      "program_id": "STARGATE_2025",
+      "root_ids": [
+        "PBC-TECH-MSFT-OPENAI-20250121",
+        "PBC-TECH-ORCL-STARGATE-20250121",
+        "PBC-TECH-ORCL-STARGATE-EXPANSION-20250722"
+      ]
+    },
+    {
+      "program_id": "US_GPU_EXPORT_APRIL_2025",
+      "root_ids": [
+        "PBC-TECH-NVDA-H20-EXPORT-20250415",
+        "PBC-TECH-AMD-MI308-EXPORT-20250416"
+      ]
+    },
+    {
+      "program_id": "US_SAUDI_FORUM_2025_11_19",
+      "root_ids": [
+        "PBC-D-ADBE-20251119-HUMAIN-QCOM"
+      ]
+    }
+  ],
+  "all_root_membership": [
+    {
+      "root_event_id": "PBC-TECH-MSFT-AI-CAPEX-20250103",
+      "extraction_ids": [
+        "PBC-TECH-MSFT-AI-CAPEX-20250103"
+      ],
+      "issuer_tickers": [
+        "MSFT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-MU-SINGAPORE-HBM-20250108",
+      "extraction_ids": [
+        "PBC-TECH-MU-SINGAPORE-HBM-20250108"
+      ],
+      "issuer_tickers": [
+        "MU"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-TSM-2025-01-16",
+      "extraction_ids": [
+        "PBC-TECH-CAL-TSM-2025-01-16"
+      ],
+      "issuer_tickers": [
+        "TSM"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-MSFT-OPENAI-20250121",
+      "extraction_ids": [
+        "PBC-TECH-MSFT-OPENAI-20250121"
+      ],
+      "issuer_tickers": [
+        "MSFT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-ORCL-STARGATE-20250121",
+      "extraction_ids": [
+        "PBC-TECH-ORCL-STARGATE-20250121"
+      ],
+      "issuer_tickers": [
+        "MSFT",
+        "NVDA",
+        "ORCL"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-PG-20250122-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-PG-20250122-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "PG"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-TXN-20250123-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-TXN-20250123-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "TXN"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-LMT-20250128-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-LMT-20250128-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "LMT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-RTX-20250128-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-RTX-20250128-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "RTX"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-IBM-20250129-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-IBM-20250129-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "IBM"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-META-2025-01-29",
+      "extraction_ids": [
+        "PBC-TECH-CAL-META-2025-01-29"
+      ],
+      "issuer_tickers": [
+        "META"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-MSFT-2025-01-29",
+      "extraction_ids": [
+        "PBC-TECH-CAL-MSFT-2025-01-29"
+      ],
+      "issuer_tickers": [
+        "MSFT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-TSLA-2025-01-29",
+      "extraction_ids": [
+        "PBC-TECH-CAL-TSLA-2025-01-29"
+      ],
+      "issuer_tickers": [
+        "TSLA"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-CAT-20250130-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-CAT-20250130-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "CAT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-NOC-20250130-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-NOC-20250130-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "NOC"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-HPE-20250130-DOJ-CHALLENGE",
+      "extraction_ids": [
+        "PBC-D-HPE-20250130-DOJ-CHALLENGE"
+      ],
+      "issuer_tickers": [
+        "HPE"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-AAPL-2025-01-30",
+      "extraction_ids": [
+        "PBC-TECH-CAL-AAPL-2025-01-30"
+      ],
+      "issuer_tickers": [
+        "AAPL"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-INTC-2025-01-30",
+      "extraction_ids": [
+        "PBC-TECH-CAL-INTC-2025-01-30"
+      ],
+      "issuer_tickers": [
+        "INTC"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-ETN-20250131-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-ETN-20250131-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "ETN"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-LITE-20250203-PRELIMINARY",
+      "extraction_ids": [
+        "PBC-C-LITE-20250203-PRELIMINARY"
+      ],
+      "issuer_tickers": [
+        "LITE"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-PEP-20250204-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-PEP-20250204-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "PEP"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-AMD-2025-02-04",
+      "extraction_ids": [
+        "PBC-TECH-CAL-AMD-2025-02-04"
+      ],
+      "issuer_tickers": [
+        "AMD"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-GOOG-2025-02-04",
+      "extraction_ids": [
+        "PBC-TECH-CAL-GOOG-2025-02-04"
+      ],
+      "issuer_tickers": [
+        "GOOG"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-COHR-20250205-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-COHR-20250205-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "COHR"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-QCOM-2025-02-05",
+      "extraction_ids": [
+        "PBC-TECH-CAL-QCOM-2025-02-05"
+      ],
+      "issuer_tickers": [
+        "QCOM"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-HON-20250206-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-HON-20250206-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "HON"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-LITE-20250206-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-LITE-20250206-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "LITE"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-AMZN-2025-02-06",
+      "extraction_ids": [
+        "PBC-TECH-CAL-AMZN-2025-02-06"
+      ],
+      "issuer_tickers": [
+        "AMZN"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-KO-20250211-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-KO-20250211-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "KO"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-ALB-20250212-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-ALB-20250212-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "ALB"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-CSCO-20250212-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-CSCO-20250212-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "CSCO"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-VRT-20250212-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-VRT-20250212-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "VRT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-DE-20250213-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-DE-20250213-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "DE"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-ANET-20250218-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-ANET-20250218-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "ANET"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-MP-20250220-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-MP-20250220-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "MP"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AAPL-US-INVESTMENT-20250224",
+      "extraction_ids": [
+        "PBC-TECH-AAPL-US-INVESTMENT-20250224"
+      ],
+      "issuer_tickers": [
+        "AAPL"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-NVDA-2025-02-26",
+      "extraction_ids": [
+        "PBC-TECH-CAL-NVDA-2025-02-26"
+      ],
+      "issuer_tickers": [
+        "NVDA"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-DELL-20250227-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-DELL-20250227-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "DELL"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-VRT-20250303-TECOGEN",
+      "extraction_ids": [
+        "PBC-D-VRT-20250303-TECOGEN"
+      ],
+      "issuer_tickers": [
+        "VRT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-TSM-US-EXPANSION-20250303",
+      "extraction_ids": [
+        "PBC-TECH-TSM-US-EXPANSION-20250303"
+      ],
+      "issuer_tickers": [
+        "TSM"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-HPE-20250306-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-HPE-20250306-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "HPE"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-AVGO-2025-03-06",
+      "extraction_ids": [
+        "PBC-TECH-CAL-AVGO-2025-03-06"
+      ],
+      "issuer_tickers": [
+        "AVGO"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-ORCL-2025-03-10",
+      "extraction_ids": [
+        "PBC-TECH-CAL-ORCL-2025-03-10"
+      ],
+      "issuer_tickers": [
+        "ORCL"
+      ]
+    },
+    {
+      "root_event_id": "PBC-C-ADBE-20250312-EARNINGS",
+      "extraction_ids": [
+        "PBC-C-ADBE-20250312-EARNINGS"
+      ],
+      "issuer_tickers": [
+        "ADBE"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-ADBE-20250318-PUBLICIS",
+      "extraction_ids": [
+        "PBC-D-ADBE-20250318-PUBLICIS"
+      ],
+      "issuer_tickers": [
+        "ADBE"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-GOOG-WIZ-20250318",
+      "extraction_ids": [
+        "PBC-TECH-GOOG-WIZ-20250318"
+      ],
+      "issuer_tickers": [
+        "GOOG"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-TSLA-CYBERTRUCK-RECALL-20250319",
+      "extraction_ids": [
+        "PBC-TECH-TSLA-CYBERTRUCK-RECALL-20250319"
+      ],
+      "issuer_tickers": [
+        "TSLA"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-CAL-MU-2025-03-20",
+      "extraction_ids": [
+        "PBC-TECH-CAL-MU-2025-03-20"
+      ],
+      "issuer_tickers": [
+        "MU"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-LMT-20250321-AIR-FORCE-LOSS",
+      "extraction_ids": [
+        "PBC-D-LMT-20250321-AIR-FORCE-LOSS"
+      ],
+      "issuer_tickers": [
+        "LMT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AVGO-BUYBACK-20250407",
+      "extraction_ids": [
+        "PBC-TECH-AVGO-BUYBACK-20250407"
+      ],
+      "issuer_tickers": [
+        "AVGO"
+      ]
+    },
+    {
+      "root_event_id": "PBC-N-AAPL-20250414-WATCH",
+      "extraction_ids": [],
+      "issuer_tickers": [
+        "AAPL"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-INTC-ALTERA-20250414",
+      "extraction_ids": [
+        "PBC-TECH-INTC-ALTERA-20250414"
+      ],
+      "issuer_tickers": [
+        "INTC"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-NVDA-US-MANUFACTURING-20250414",
+      "extraction_ids": [
+        "PBC-TECH-NVDA-US-MANUFACTURING-20250414"
+      ],
+      "issuer_tickers": [
+        "NVDA"
+      ]
+    },
+    {
+      "root_event_id": "PBC-N-AAPL-20250415-FILMMAKERS",
+      "extraction_ids": [],
+      "issuer_tickers": [
+        "AAPL"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-NVDA-H20-EXPORT-20250415",
+      "extraction_ids": [
+        "PBC-TECH-NVDA-H20-EXPORT-20250415"
+      ],
+      "issuer_tickers": [
+        "NVDA"
+      ]
+    },
+    {
+      "root_event_id": "PBC-N-AAPL-20250416-ENVIRONMENT",
+      "extraction_ids": [],
+      "issuer_tickers": [
+        "AAPL"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AMD-MI308-EXPORT-20250416",
+      "extraction_ids": [
+        "PBC-TECH-AMD-MI308-EXPORT-20250416"
+      ],
+      "issuer_tickers": [
+        "AMD"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-GOOG-ADTECH-RULING-20250417",
+      "extraction_ids": [
+        "PBC-TECH-GOOG-ADTECH-RULING-20250417"
+      ],
+      "issuer_tickers": [
+        "GOOG"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-IBM-20250428-US-INVESTMENT-PLAN",
+      "extraction_ids": [
+        "PBC-D-IBM-20250428-US-INVESTMENT-PLAN"
+      ],
+      "issuer_tickers": [
+        "IBM"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-CSCO-20250513-HUMAIN",
+      "extraction_ids": [
+        "PBC-D-CSCO-20250513-HUMAIN"
+      ],
+      "issuer_tickers": [
+        "CSCO"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AMD-HUMAIN-20250513",
+      "extraction_ids": [
+        "PBC-TECH-AMD-HUMAIN-20250513"
+      ],
+      "issuer_tickers": [
+        "AMD"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AMZN-HUMAIN-20250513",
+      "extraction_ids": [
+        "PBC-TECH-AMZN-HUMAIN-20250513"
+      ],
+      "issuer_tickers": [
+        "AMZN"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-NVDA-HUMAIN-20250513",
+      "extraction_ids": [
+        "PBC-TECH-NVDA-HUMAIN-20250513"
+      ],
+      "issuer_tickers": [
+        "NVDA"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AMD-BUYBACK-20250514",
+      "extraction_ids": [
+        "PBC-TECH-AMD-BUYBACK-20250514"
+      ],
+      "issuer_tickers": [
+        "AMD"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AMD-SANMINA-20250519",
+      "extraction_ids": [
+        "PBC-TECH-AMD-SANMINA-20250519"
+      ],
+      "issuer_tickers": [
+        "AMD"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-ETN-20250603-SIEMENS-ENERGY",
+      "extraction_ids": [
+        "PBC-D-ETN-20250603-SIEMENS-ENERGY"
+      ],
+      "issuer_tickers": [
+        "ETN"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-META-CONSTELLATION-20250603",
+      "extraction_ids": [
+        "PBC-TECH-META-CONSTELLATION-20250603"
+      ],
+      "issuer_tickers": [
+        "META"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-QCOM-ALPHAWAVE-20250609",
+      "extraction_ids": [
+        "PBC-TECH-QCOM-ALPHAWAVE-20250609"
+      ],
+      "issuer_tickers": [
+        "QCOM"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-MU-US-EXPANSION-20250612",
+      "extraction_ids": [
+        "PBC-TECH-MU-US-EXPANSION-20250612"
+      ],
+      "issuer_tickers": [
+        "MU"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-TXN-20250618-US-FABS",
+      "extraction_ids": [
+        "PBC-D-TXN-20250618-US-FABS"
+      ],
+      "issuer_tickers": [
+        "TXN"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-HPE-20250627-DOJ-SETTLEMENT",
+      "extraction_ids": [
+        "PBC-D-HPE-20250627-DOJ-SETTLEMENT"
+      ],
+      "issuer_tickers": [
+        "HPE"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-MP-20250710-DOD-PACKAGE",
+      "extraction_ids": [
+        "PBC-D-MP-20250710-DOD-PACKAGE"
+      ],
+      "issuer_tickers": [
+        "MP"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AAPL-MP-20250715",
+      "extraction_ids": [
+        "PBC-TECH-AAPL-MP-20250715",
+        "PBC-D-MP-20250715-APPLE-SUPPLY"
+      ],
+      "issuer_tickers": [
+        "AAPL",
+        "MP"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-MP-20250716-COMMON-OFFERING",
+      "extraction_ids": [
+        "PBC-D-MP-20250716-COMMON-OFFERING"
+      ],
+      "issuer_tickers": [
+        "MP"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-VRT-20250722-OKLO",
+      "extraction_ids": [
+        "PBC-D-VRT-20250722-OKLO"
+      ],
+      "issuer_tickers": [
+        "VRT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-ORCL-STARGATE-EXPANSION-20250722",
+      "extraction_ids": [
+        "PBC-TECH-ORCL-STARGATE-EXPANSION-20250722"
+      ],
+      "issuer_tickers": [
+        "ORCL"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-ANET-20250730-INDIA-PLAN",
+      "extraction_ids": [
+        "PBC-D-ANET-20250730-INDIA-PLAN"
+      ],
+      "issuer_tickers": [
+        "ANET"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AAPL-US-EXPANSION-20250806",
+      "extraction_ids": [
+        "PBC-TECH-AAPL-US-EXPANSION-20250806"
+      ],
+      "issuer_tickers": [
+        "AAPL"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-LITE-20250807-US-CAPACITY",
+      "extraction_ids": [
+        "PBC-D-LITE-20250807-US-CAPACITY"
+      ],
+      "issuer_tickers": [
+        "LITE"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-COHR-20250813-ADVENT-DIVESTITURE",
+      "extraction_ids": [
+        "PBC-D-COHR-20250813-ADVENT-DIVESTITURE"
+      ],
+      "issuer_tickers": [
+        "COHR"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-INTC-SOFTBANK-20250818",
+      "extraction_ids": [
+        "PBC-TECH-INTC-SOFTBANK-20250818"
+      ],
+      "issuer_tickers": [
+        "INTC"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-CAT-20250821-HUNT-POWER",
+      "extraction_ids": [
+        "PBC-D-CAT-20250821-HUNT-POWER"
+      ],
+      "issuer_tickers": [
+        "CAT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-INTC-USG-20250822",
+      "extraction_ids": [
+        "PBC-TECH-INTC-USG-20250822"
+      ],
+      "issuer_tickers": [
+        "INTC"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-MSFT-OPENAI-20250911",
+      "extraction_ids": [
+        "PBC-TECH-MSFT-OPENAI-20250911"
+      ],
+      "issuer_tickers": [
+        "MSFT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-NVDA-INTC-20250918",
+      "extraction_ids": [
+        "PBC-TECH-NVDA-INTC-20250918"
+      ],
+      "issuer_tickers": [
+        "INTC",
+        "NVDA"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-NVDA-OPENAI-20250922",
+      "extraction_ids": [
+        "PBC-TECH-NVDA-OPENAI-20250922"
+      ],
+      "issuer_tickers": [
+        "NVDA"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-RTX-20250923-LTAMDS",
+      "extraction_ids": [
+        "PBC-D-RTX-20250923-LTAMDS"
+      ],
+      "issuer_tickers": [
+        "RTX"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AMD-OPENAI-20251006",
+      "extraction_ids": [
+        "PBC-TECH-AMD-OPENAI-20251006"
+      ],
+      "issuer_tickers": [
+        "AMD"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AVGO-OPENAI-20251013",
+      "extraction_ids": [
+        "PBC-TECH-AVGO-OPENAI-20251013"
+      ],
+      "issuer_tickers": [
+        "AVGO"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-META-HYPERION-JV-20251021",
+      "extraction_ids": [
+        "PBC-TECH-META-HYPERION-JV-20251021"
+      ],
+      "issuer_tickers": [
+        "META"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-MSFT-OPENAI-20251028",
+      "extraction_ids": [
+        "PBC-TECH-MSFT-OPENAI-20251028"
+      ],
+      "issuer_tickers": [
+        "MSFT"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-AMZN-OPENAI-20251103",
+      "extraction_ids": [
+        "PBC-TECH-AMZN-OPENAI-20251103"
+      ],
+      "issuer_tickers": [
+        "AMZN"
+      ]
+    },
+    {
+      "root_event_id": "PBC-D-ADBE-20251119-HUMAIN-QCOM",
+      "extraction_ids": [
+        "PBC-D-ADBE-20251119-HUMAIN-QCOM"
+      ],
+      "issuer_tickers": [
+        "ADBE",
+        "QCOM"
+      ]
+    },
+    {
+      "root_event_id": "PBC-TECH-MU-CRUCIAL-EXIT-20251203",
+      "extraction_ids": [
+        "PBC-TECH-MU-CRUCIAL-EXIT-20251203"
+      ],
+      "issuer_tickers": [
+        "MU"
+      ]
+    }
+  ]
+}

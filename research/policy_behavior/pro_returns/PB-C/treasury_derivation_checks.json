@@ -1,0 +1,49 @@
+{
+  "checks": "passed",
+  "independent_selected_xml_arithmetic": [
+    {
+      "instrument": "nominal2y",
+      "end": "2025-04-10",
+      "five_nyse_sessions_before": "2025-04-03",
+      "change_bp": "13.00",
+      "is_shock": false
+    },
+    {
+      "instrument": "nominal2y",
+      "end": "2025-04-11",
+      "five_nyse_sessions_before": "2025-04-04",
+      "change_bp": "28.00",
+      "is_shock": true
+    },
+    {
+      "instrument": "nominal2y",
+      "end": "2025-05-14",
+      "five_nyse_sessions_before": "2025-05-07",
+      "change_bp": "27.00",
+      "is_shock": true
+    },
+    {
+      "instrument": "real10y",
+      "end": "2025-04-10",
+      "five_nyse_sessions_before": "2025-04-03",
+      "change_bp": "43.00",
+      "is_shock": true
+    },
+    {
+      "instrument": "real10y",
+      "end": "2025-04-11",
+      "five_nyse_sessions_before": "2025-04-04",
+      "change_bp": "45.00",
+      "is_shock": true
+    },
+    {
+      "instrument": "real10y",
+      "end": "2025-05-14",
+      "five_nyse_sessions_before": "2025-05-07",
+      "change_bp": "15.00",
+      "is_shock": false
+    }
+  ],
+  "lagged_calendar_invariants": "365 days; 250 NYSE sessions; Jan9 closure; strictly prior source dates; 5-horizon subset of10",
+  "no_event_outcomes_used": true
+}
