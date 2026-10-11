@@ -1,0 +1,33 @@
+{
+ "a1_candidates": 3,
+ "authority": {
+  "may_alert": false,
+  "may_deploy": false,
+  "may_display": false,
+  "may_rank": false,
+  "may_score": false
+ },
+ "baseline_state": "NOT_FULLY_REPRODUCED",
+ "baseline_totals": {
+  "extra_in_recompute": 5349,
+  "match": 661,
+  "mismatch": 3502,
+  "missing_in_recompute": 8,
+  "rows": 4171
+ },
+ "brief": "Q01",
+ "comparison_run": false,
+ "contract_complete_sources": [],
+ "effect_size_reported": false,
+ "eligible_sessions": 0,
+ "exact_leg_byte_identical": true,
+ "exact_missing_input": "a same-session European cash-settled index-option quote chain (roots SPX/SPXW/XSP/NDX/RUT) with per-contract bid, ask, quote timestamp and quote condition, exact expiry timestamp and AM/PM settlement convention, plus an owner-supplied per-expiry forward and discount (Q12 / trusted forward owner), under retained rights, for >= 100 chronologically ordered sessions",
+ "falsifier_state": "NOT_EVALUATED (comparison not run; challenger not described as reliable)",
+ "gate": {
+  "min_holdout_sessions": 40,
+  "min_sessions": 100,
+  "pass": false
+ },
+ "schema": "options_arbfree_surface.research.v1",
+ "verdict": "INSUFFICIENT_DATA"
+}

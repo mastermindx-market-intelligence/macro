@@ -264,6 +264,7 @@ MUST_RESTART = [
     "contracts/options/options.issue_desk_decision.v1.schema.json",
     "contracts/options/options.issue_receipt.v1.schema.json",
     "lib/nyse_calendar.py",
+    "lib/us_cash_calendar.py",  # Request-time US settle-window import in live_quotes.
     # research vault serving layer — imported at MODULE level by app/research.py.
     # These were the 2026-07-26 gap: download caps / anti-scrape limits / watermark
     # policy deployed to the VPS and stayed dead until an unrelated app/ change.
@@ -314,6 +315,7 @@ MUST_RESTART = [
     "engine/neuralweb/ask_brain.py",
     "engine/neuralweb/chat_plain_words.py",
     "engine/neuralweb/brain_gateway.py",
+    "engine/risk_envelope.py",
     "engine/neuralweb/brain_native_inputs.py",
     "engine/neuralweb/native_facts.py",
     # W1-B imports this typed-fact package on the first native request.  From

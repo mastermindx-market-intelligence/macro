@@ -1,0 +1,57 @@
+<section class="intl-workspace" data-im-workspace{% if intl_workspace.binding_version is defined %} data-im-binding-version="{{ intl_workspace.binding_version|e }}"{% endif %} data-im-mode="macro" aria-labelledby="intl-workspace-title">
+  <header>
+    <h1 id="intl-workspace-title" data-im-heading>{{ t('International markets', '国际市场') }}</h1>
+    <p>{{ t('Compare covered markets, understand currency effects and inspect the evidence.', '比较覆盖市场，了解汇率影响，并查看相关依据。') }}</p>
+  </header>
+  <fieldset class="intl-workspace__toolbar" data-im-controls disabled>
+    <legend id="intl-context-label">{{ t('Research context', '研究范围') }}</legend>
+    <nav class="intl-workspace__view-nav" aria-labelledby="intl-context-label">
+      {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
+      <button type="button" data-im-action="set_view" data-im-view="{{ key|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) and not (key == 'risk' and intl_workspace.risks|default(none)) and not (key == 'history' and intl_workspace.histories|default(none)) %} disabled{% endif %}>{{ t(en, zh) }}</button>
+      {% endfor %}
+    </nav>
+    <label class="intl-workspace__view-select">{{ t('Views', '视图') }}
+      <select data-im-action="set_view">
+        {% for key, en, zh in [('overview','Overview','总览'),('compare','Compare','比较'),('macro','Macro','宏观'),('risk','Risk','风险'),('history','History','历史'),('library','Library','工具库')] %}
+        <option value="{{ key|e }}" data-im-label-en="{{ en|e }}" data-im-label-zh="{{ zh|e }}"{% if key != 'overview' and not (key == 'library' and intl_workspace.library|default(none)) and not (key == 'compare' and intl_workspace.compares|default(none)) and not (key == 'macro' and intl_workspace.macros|default(none)) and not (key == 'risk' and intl_workspace.risks|default(none)) and not (key == 'history' and intl_workspace.histories|default(none)) %} disabled{% endif %}>{{ en|e }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>{{ t('Return horizon', '回报区间') }}
+      <select data-im-action="set_horizon">
+        {% for horizon in intl_workspace.config.horizons %}<option value="{{ horizon|e }}">{{ horizon|e }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>{{ t('Currency basis', '计价币种') }}
+      <select data-im-action="set_basis">
+        <option value="usd_unhedged" data-im-label-en="USD · Unhedged" data-im-label-zh="美元 · 未对冲">USD · Unhedged</option>
+        <option value="local" data-im-label-en="Local currency" data-im-label-zh="本币">Local currency</option>
+      </select>
+    </label>
+  </fieldset>
+  <p data-im-issues role="status" aria-live="polite"></p>
+  <p data-im-unavailable hidden>{{ t('Data unavailable for this selection. Try another horizon or use the detailed research below.', '此选择暂无可用数据。请尝试其他区间，或查看下方的详细研究。') }}</p>
+  {% for panel in intl_workspace.panels %}
+    {% with overview=panel.overview, context_id=panel.context_id, generation=panel.generation|default('') %}{% include 'intl_workspace/overview.html.j2' %}{% endwith %}
+  {% endfor %}
+  {% for panel in intl_workspace.compares|default([]) %}
+    {% with compare_catalogue=panel.compare_catalogue, context_id=panel.context_id, generation=panel.generation|default('') %}{% include 'intl_workspace/compare.html.j2' %}{% endwith %}
+  {% endfor %}
+  {% for panel in intl_workspace.macros|default([]) %}
+    {% with macro_section=panel.macro_section, registry=intl_workspace.macro_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none), source_notice=panel.source_notice|default(none) %}{% include 'intl_workspace/macro.html.j2' %}{% endwith %}
+  {% endfor %}
+  {% for panel in intl_workspace.risks|default([]) %}
+    {% with risk_section=panel.risk_section, registry=intl_workspace.risk_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none) %}{% include 'intl_workspace/risk.html.j2' %}{% endwith %}
+  {% endfor %}
+  {% if intl_workspace.library|default(none) %}
+    {% with payload=intl_workspace.library, context_id='im-catalogue', generation=intl_workspace.library_generation|default('') %}{% include 'intl_workspace/library.html.j2' %}{% endwith %}
+  {% endif %}
+  {% for panel in intl_workspace.histories|default([]) %}
+    {% with history_panel=panel, history_registry=intl_workspace.history_registry %}{% include 'intl_workspace/history.html.j2' %}{% endwith %}
+  {% endfor %}
+  {% if intl_workspace.inspectors|default(none) %}
+    {% with inspector_panels=intl_workspace.inspectors, root_context_id='im-workspace', inspector_copy=intl_workspace.inspector_copy %}{% include 'intl_workspace/inspector.html.j2' %}{% endwith %}
+  {% endif %}
+  <p><a href="#intl-legacy-research">{{ t('Detailed research and existing tools', '详细研究与现有工具') }}</a> · <a href="intl_stocks.html">{{ t('International stocks', '国际股票') }}</a></p>
+  <script type="application/json" data-im-config>{{ intl_workspace.config|tojson }}</script>
+</section>

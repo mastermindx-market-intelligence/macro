@@ -4063,6 +4063,11 @@ def _dispatch_brain_tool(
 
     # Delegate to ask_brain dispatcher for the inherited read tools
     from engine.neuralweb.ask_brain import _dispatch_read_tool  # noqa: PLC0415
+    if tool_name in {"read_world_state", "read_artifact"}:
+        return _dispatch_read_tool(
+            tool_name, tool_params, root,
+            include_risk_context=_ontology_evidence_allowed(user_id, root),
+        )
     return _dispatch_read_tool(tool_name, tool_params, root)
 
 
@@ -4756,6 +4761,25 @@ def _seed_tool_plan(message: str) -> str:
             return ""
         return _SEED_PLAN_LINE.format(tools=", ".join(ordered[:3]))
     except Exception:  # noqa: BLE001
+        return ""
+
+
+def _rotation_risk_grounding_digest(
+    root: Path, *, user_id: str, now: datetime, lang: str = "en",
+) -> str:
+    """Reuse the existing site-full gate before selecting the canonical joint view.
+
+    This additive context has no cache or risk arithmetic. Both actual chat loops
+    call this same boundary; free/guest turns perform zero envelope reads. Source
+    clocks and shared-evidence limits remain part of the model's context.
+    """
+    if not _ontology_evidence_allowed(user_id, root):
+        return ""
+    try:
+        from engine.neuralweb.rotation_risk_context import read_preferred_context, render_context
+        return render_context(read_preferred_context(root, now=now), lang=lang)
+    except Exception as exc:  # noqa: BLE001 — one context failure cannot abort chat
+        log.warning("brain_gateway: rotation/risk context unavailable (%s)", type(exc).__name__)
         return ""
 
 
@@ -6637,6 +6661,21 @@ def _delta_sse(text: str, timing: dict | None = None, t0: float | None = None) -
 # Core chat loop (non-streaming)
 # ---------------------------------------------------------------------------
 
+def _thinking_only_token_limit(response: Any) -> bool:
+    """A completed call spent its budget on reasoning without text or tool blocks.
+
+    Refusals, partial answers, and unfinished tool calls do not qualify. The
+    incomplete reasoning/signature must not be replayed into the answer pass.
+    """
+    blocks = getattr(response, "content", None) or []
+    return (
+        getattr(response, "stop_reason", None) == "max_tokens"
+        and bool(blocks)
+        and all(getattr(block, "type", "") in {"thinking", "redacted_thinking"}
+                for block in blocks)
+    )
+
+
 def _run_brain_loop(
     message: str,
     lane: str,
@@ -6776,6 +6815,7 @@ def _run_brain_loop(
     _digests = [
         digest for digest in (
             _grounding_digest(root, lang=turn_lang),
+            _rotation_risk_grounding_digest(root, user_id=user_id, now=turn_as_of, lang=turn_lang),
             _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
             ontology_digest,
         ) if digest
@@ -6945,7 +6985,14 @@ def _run_brain_loop(
     # out with the model still mid-investigation (stop_reason == tool_use), the last
     # text block is narration ("Let me also check…"), not an answer. Nudge ONE final
     # no-more-tools synthesis turn so chat() returns a real answer.
-    if last_resp is not None and getattr(last_resp, "stop_reason", None) == "tool_use":
+    thinking_limited = _thinking_only_token_limit(last_resp)
+    recovery_usage = getattr(last_resp, "usage", None) if thinking_limited else None
+    if thinking_limited:
+        messages.pop()  # Keep completed reads, discard unfinished reasoning.
+        answer_text = ""  # Earlier tool-round narration is not a final answer.
+    if last_resp is not None and (
+        getattr(last_resp, "stop_reason", None) == "tool_use" or thinking_limited
+    ):
         _synth_t0 = time.monotonic()
         receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
         messages.append({
@@ -6956,9 +7003,9 @@ def _run_brain_loop(
             resp, model = _create_failover(
                 _cands,
                 per_model_kwargs=_pmk,
-                max_tokens=max_tokens,
+                max_tokens=max_tokens * 2 if thinking_limited else max_tokens,
                 system=system_param,
-                tools=tools_param,
+                tools=[] if thinking_limited else tools_param,
                 messages=messages,
             )
             last_resp = resp
@@ -6992,6 +7039,10 @@ def _run_brain_loop(
                 val = getattr(u, field, None)
                 if val is not None:
                     usage_dict[field] = val
+
+    if recovery_usage is not None and getattr(last_resp, "usage", None) is not recovery_usage:
+        for field in ("input_tokens", "output_tokens"):
+            usage_dict[field] = usage_dict.get(field, 0) + getattr(recovery_usage, field, 0)
 
     # W5 Contract M: the turn's latency record rides the usage dict (see the docstring).
     _timing_stamp(timing, "total_ms", _lt0)
@@ -7704,6 +7755,7 @@ def _run_brain_loop_stream(
     _digests = [
         digest for digest in (
             _grounding_digest(root, lang=turn_lang),
+            _rotation_risk_grounding_digest(root, user_id=user_id, now=turn_as_of, lang=turn_lang),
             _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
             ontology_digest,
         ) if digest
@@ -8038,7 +8090,15 @@ def _run_brain_loop_stream(
     usage_dict: dict = {}
     _synth_stop: str | None = None   # synthesis stop_reason, for the degraded-stub log
 
-    need_synthesis = last_stop == "tool_use"
+    thinking_limited = not _leak_tripped and _thinking_only_token_limit(resp)
+    recovery_usage = getattr(resp, "usage", None) if thinking_limited else None
+    if thinking_limited:
+        # ONE no-tool answer pass with bounded headroom, using the existing
+        # candidates, thinking policy, evidence receipt, and final screens.
+        messages.pop()
+        last_resp_content = []
+    need_synthesis = last_stop == "tool_use" or thinking_limited
+    synthesis_max_tokens = max_tokens * 2 if thinking_limited else max_tokens
     if need_synthesis:
         _synth_t0 = time.monotonic()
         receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
@@ -8066,7 +8126,7 @@ def _run_brain_loop_stream(
             try:
                 with _cl.messages.stream(
                     model=_p.get("model"),
-                    max_tokens=max_tokens,
+                    max_tokens=synthesis_max_tokens,
                     system=system_param,
                     # NO tools: synthesis must produce PROSE. With tools attached the model
                     # answers a tool-budget-exhausted turn with yet another tool_use, the
@@ -8185,6 +8245,12 @@ def _run_brain_loop_stream(
         except Exception:  # noqa: BLE001
             pass
 
+    if recovery_usage is not None:
+        # The additional pass must count its spent reasoning against the same
+        # existing token backstop, even when the recovery is empty too.
+        for field in ("input_tokens", "output_tokens"):
+            usage_dict[field] = usage_dict.get(field, 0) + getattr(recovery_usage, field, 0)
+
     if need_synthesis and not full_answer.strip():
         # Every candidate came back empty — salvage any text the last tool round wrote
         # rather than degrading a turn whose tool work all succeeded.
@@ -8239,7 +8305,8 @@ def _run_brain_loop_stream(
             "phase=%s stop=%s input_tokens=%s output_tokens=%s max_tokens=%s)",
             lane, model, "synthesis" if need_synthesis else "tool-round",
             _synth_stop or last_stop,
-            usage_dict.get("input_tokens"), usage_dict.get("output_tokens"), max_tokens)
+            usage_dict.get("input_tokens"), usage_dict.get("output_tokens"),
+            synthesis_max_tokens if need_synthesis else max_tokens)
 
     # ── Contract S reconciliation ────────────────────────────────────────────────────
     # `_emitted` is exactly what the client holds. It is EMPTY on every non-streaming

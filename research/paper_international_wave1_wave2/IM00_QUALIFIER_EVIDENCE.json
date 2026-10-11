@@ -1,0 +1,19 @@
+{
+  "decision": "ACCEPT_SCOPED_DERIVED_QUALIFIER_SOURCE",
+  "source_sha256": "03d70bbabd5943b60dd3b49023ba176b6acd151fb1c069b6be4b2b239151649b",
+  "test_sha256": "bb8eed2ac49ec0314cf5d86492023a811c23474a80202bfc9f1a1bf1bf9490a1",
+  "reviews": {
+    "r3_sha256": "67c9830aef01876b5f0e45638595e0f4eafee7960208c3e762a956f6e7393405",
+    "r4_sha256": "9c16c246500d21a802c6daad53868ae40e237a7931cb26d30863ae0f0cb81d34"
+  },
+  "tests": {
+    "final_qualifier": 61,
+    "actual_carrier_cross_dependency": 133,
+    "r3_independent_counterchecks": 52
+  },
+  "production_qualification": false,
+  "limits": "Pure derived evaluator only; cannot substitute for actual authenticated source/calendar/disclosure inputs; no positive production wiring",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/qualification-extension",
+  "scope": "Pure qualifier in existing engine.intl_inputs owner; source/calendar/disclosure production evidence remains separate"
+}

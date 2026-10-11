@@ -1,0 +1,262 @@
+"""B03 must find observations beyond the public deck without granting episode/entry authority."""
+from __future__ import annotations
+
+import importlib
+import importlib.util
+import json
+from copy import deepcopy
+from datetime import date
+from hashlib import sha256
+
+import pandas as pd
+import pytest
+
+from engine.us_candidate_episode_intake import load_identity_spine
+from scripts.build_turn_watch import write_candidate_episode_input
+from scripts import reconcile_us_candidate_episodes as b1_writer
+
+
+@pytest.fixture
+def api():
+    assert importlib.util.find_spec("engine.prophet_early_observations"), "B03 read model is absent"
+    return importlib.import_module("engine.prophet_early_observations")
+
+
+def seed(tmp_path, tickers=("AMZN",), *, session="2026-10-08"):
+    data = tmp_path / "data"
+    ref = data / "reference"
+    ref.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{"security_id": f"SEC:US-XNAS-{t}", "issuer_id": f"ISS:US-XNAS-{t}",
+                   "issuer_state": "ACTIVE", "listing_key": f"US-XNAS-{t}"}
+                  for t in tickers]).to_parquet(ref / "security_master.parquet", index=False)
+    pd.DataFrame([{"vendor": "membership", "vendor_symbol": t,
+                   "security_id": f"SEC:US-XNAS-{t}", "valid_from": date(2020, 1, 1),
+                   "valid_to": None} for t in tickers]).to_parquet(ref / "vendor_aliases.parquet", index=False)
+    rows = [{"ticker": t, "asof": session, "triggers_fired": ["pre_confluence_2d"],
+             "triggers": {"pre_confluence_2d": {"fired": True, "evaluated": True, "last_date": session}},
+             "slow_tier": {"evaluated": True, "eligible": False,
+                           "blocking": ["macd_below_signal"], "null_legs": {}},
+             "reset": {"reset_low": 245.96, "reset_low_date": "2026-09-16"}}
+            for t in tickers]
+    artifact = {"schema": "us_turn_watch.v1", "data_session": session,
+                "selection_era": "anticipation-v1", "anchor_era": "anchor-v1",
+                "triggers": {"pre_confluence_2d": {"en": "Pre-confluence 2D"}},
+                "deck": rows[:40], "beyond_cap": [{"ticker": r["ticker"]} for r in rows[40:]],
+                "coverage": {"triggered": len(rows), "deck": min(40, len(rows)),
+                             "beyond_cap": max(0, len(rows) - 40)}}
+    path = write_candidate_episode_input(artifact, rows, data)
+    from engine.us_turn_watch import write_artifact
+    write_artifact(artifact, tmp_path / "site")
+    return path, load_identity_spine(data), rows, artifact
+
+
+def test_featured_counts_require_the_exact_source_artifact_partition(api, tmp_path):
+    source, spine, _, _ = seed(tmp_path, tuple(f"N{i:03}" for i in range(60)) + ("AMZN",))
+    public = tmp_path / "site/turn_watch/turn_watch.json"
+    p = view(api, source, spine, public_artifact_path=public)
+    assert p["coverage"]["state"] == "VERIFIED_SOURCE_PARTITION"
+    assert [p["coverage"][k] for k in ("total", "featured", "beyond_cap")] == [61, 40, 21]
+    assert p["rows"][-1]["source_visibility"] == "BEYOND_CAP"
+    public.write_text('{}')
+    changed = view(api, source, spine, public_artifact_path=public)
+    assert changed["coverage"]["featured"] is None
+    assert changed["coverage"]["reason"] == "SOURCE_ARTIFACT_RECEIPT_MISMATCH"
+    assert len(changed["rows"]) == 61
+    assert changed["snapshot_id"] != p["snapshot_id"]
+
+
+@pytest.mark.parametrize("malformation", ["overlap", "wrong_count", "wrong_session"])
+def test_matching_receipt_does_not_certify_a_broken_partition(api, tmp_path, malformation):
+    from engine.us_turn_watch import write_artifact
+    source, spine, rows, artifact = seed(tmp_path, ("AMZN", "MSFT"))
+    if malformation == "overlap":
+        artifact["beyond_cap"] = [{"ticker": "AMZN"}]
+    elif malformation == "wrong_count":
+        artifact["coverage"]["deck"] = 40
+    else:
+        artifact["data_session"] = "2026-10-07"
+    write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    write_artifact(artifact, tmp_path / "site")
+    if malformation == "wrong_session":
+        # The dated private source has its original session; bind only its
+        # artifact receipt to the mismatched-session public artifact.
+        doc = json.loads(source.read_text())
+        raw = (tmp_path / "site/turn_watch/turn_watch.json").read_bytes()
+        doc["source_artifact_sha256"] = "sha256:" + sha256(raw).hexdigest()
+        doc.pop("content_sha256")
+        from engine.us_candidate_episode import canonical_json
+        doc["content_sha256"] = sha256(canonical_json(doc).encode()).hexdigest()
+        source.write_text(json.dumps(doc))
+    p = view(api, source, spine, public_artifact_path=tmp_path / "site/turn_watch/turn_watch.json")
+    assert p["coverage"]["state"] == "UNAVAILABLE"
+    assert p["coverage"]["reason"] == "SOURCE_ARTIFACT_PARTITION_UNAVAILABLE"
+    assert p["coverage"]["featured"] is None
+    assert len(p["rows"]) == 2
+
+
+def test_counterevidence_and_correction_limits_preserve_source_meaning(api, tmp_path):
+    source, spine, _, _ = seed(tmp_path)
+    row = view(api, source, spine)["rows"][0]
+    assert row["source_evidence"]["counterevidence"] == ["macd_below_signal"]
+    assert row["source_evidence"]["triggers"]["pre_confluence_2d"]["fired"] is True
+    assert row["lineage"]["state"] == "CURRENT_RECEIPT_ONLY"
+    assert row["lineage"]["prior_receipt"] is None
+    assert row["lineage"]["current_receipt"] == row["source_receipt"]
+    assert view(api, source, spine)["clocks"]["first_available_at"] is None
+
+
+def test_missing_counterevidence_is_not_an_all_clear(api, tmp_path):
+    source, spine, rows, artifact = seed(tmp_path)
+    rows[0].pop("slow_tier")
+    write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    row = view(api, source, spine)["rows"][0]
+    assert row["source_evidence"]["counterevidence"] is None
+    assert row["source_evidence"]["counterevidence_state"] == "UNAVAILABLE_FIELD"
+
+
+def view(api, source, spine, **kwargs):
+    return api.load_observations(source, spine=spine, reference_session="2026-10-08", **kwargs)
+
+
+def test_exact_security_search_precedes_pagination_and_never_takes_public_top40(tmp_path):
+    assert importlib.util.find_spec("engine.prophet_early_observations"), "B03 read model is absent"
+    api = importlib.import_module("engine.prophet_early_observations")
+    source, spine, _, _ = seed(tmp_path, tuple(f"N{i:03}" for i in range(60)) + ("AMZN",))
+    projection = view(api, source, spine)
+    page = api.query_observations(projection, security_id="SEC:US-XNAS-AMZN", limit=10)
+    assert page["counts"] == {"source": 61, "matched": 1, "returned": 1}
+    assert [r["ticker"] for r in page["rows"]] == ["AMZN"]
+    assert api.query_observations(projection, offset=50, limit=10)["counts"]["returned"] == 10
+    assert len(projection["rows"]) == 61
+
+
+def test_no_b1_receipt_is_unavailable_relation_not_unanchored_or_new_episode(api, tmp_path):
+    source, spine, _, _ = seed(tmp_path)
+    before = source.read_bytes()
+    result = view(api, source, spine)
+    row = result["rows"][0]
+    assert row["episode_relation"]["state"] == "EPISODE_JOIN_UNAVAILABLE"
+    assert row["episode_relation"]["episode_id"] is None
+    assert all(value is False for value in row["authority"].values())
+    assert row["identity_basis"] == "CURRENT_REFERENCE_ONLY"
+    assert source.read_bytes() == before
+
+
+def test_logical_close_is_not_actual_availability_observation_or_publication(api, tmp_path):
+    source, spine, _, _ = seed(tmp_path)
+    clocks = view(api, source, spine)["clocks"]
+    assert clocks["source_session"] == "2026-10-08"
+    assert clocks["logical_known_at"] == "2026-10-08T20:00:00Z"
+    assert clocks["source_available_at"] is None
+    assert clocks["observed_at"] is None
+    assert clocks["published_at"] is None
+    assert clocks["actual_clock_state"] == "NOT_RECORDED"
+
+
+def test_valid_quiet_source_differs_from_outage_and_tampered_receipt(api, tmp_path):
+    source, spine, _, artifact = seed(tmp_path)
+    write_candidate_episode_input(artifact, [], tmp_path / "data")
+    quiet = view(api, source, spine)
+    assert quiet["status"] == "CURRENT_SESSION"
+    assert api.query_observations(quiet)["counts"]["source"] == 0
+    source.unlink()
+    absent = view(api, source, spine)
+    assert absent["status"] == "UNAVAILABLE"
+    assert api.query_observations(absent)["counts"]["source"] is None
+    write_candidate_episode_input(artifact, [], tmp_path / "data")
+    doc = json.loads(source.read_text())
+    doc["rows"] = [{"ticker": "FORGED"}]
+    source.write_text(json.dumps(doc))
+    corrupt = view(api, source, spine)
+    assert corrupt["status"] == "UNAVAILABLE"
+    assert corrupt["reason"] == "SOURCE_RECEIPT_INVALID"
+    assert corrupt["rows"] == []
+
+
+def test_prior_session_is_retained_and_not_promoted_to_current(api, tmp_path):
+    source, spine, _, _ = seed(tmp_path, session="2026-10-06")
+    result = view(api, source, spine)
+    assert result["status"] == "RETAINED_PREVIOUS_SESSION"
+    assert result["clocks"]["source_session"] == "2026-10-06"
+    assert result["rows"][0]["ticker"] == "AMZN"
+
+
+def test_unresolved_identity_keeps_observation_searchable_but_cannot_match_security(api, tmp_path):
+    source, spine, rows, artifact = seed(tmp_path)
+    rows.append({**deepcopy(rows[0]), "ticker": "UNKNOWN"})
+    write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    result = view(api, source, spine)
+    row = api.query_observations(result, ticker="UNKNOWN")["rows"][0]
+    assert row["security_id"] is None
+    assert row["episode_relation"]["state"] == "IDENTITY_UNRESOLVED"
+    assert api.query_observations(result, security_id="SEC:US-XNAS-UNKNOWN")["rows"] == []
+
+
+def test_changed_source_cannot_continue_old_pagination_generation(api, tmp_path):
+    source, spine, rows, artifact = seed(tmp_path)
+    first = view(api, source, spine)
+    old = first["snapshot_id"]
+    rows[0]["reset"]["reset_low"] = 246.0
+    write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    changed = view(api, source, spine)
+    assert changed["snapshot_id"] != old
+    with pytest.raises(api.ObservationQueryError, match="SNAPSHOT_CHANGED"):
+        api.query_observations(changed, expected_snapshot=old)
+
+
+def test_real_b1_join_uses_exact_receipt_and_keeps_old_active_anchor_immutable(api, tmp_path):
+    source, spine, rows, artifact = seed(tmp_path)
+    b1_writer.reconcile(repo_root=tmp_path, nightly=True, replay=False, correction_path=None,
+                        recorded_at="2026-10-08T21:00:00Z")
+    root = tmp_path / "data/us_prophet_rank/episodes"
+    before = {str(p.relative_to(root)): sha256(p.read_bytes()).hexdigest() for p in root.rglob("*") if p.is_file()}
+    exact = view(api, source, spine, episode_root=root)["rows"][0]
+    assert exact["episode_relation"]["state"] == "EXACT_EPISODE"
+    original_id = exact["episode_relation"]["episode_id"]
+    rows[0]["reset"] = {"reset_low": 250.0, "reset_low_date": "2026-10-07"}
+    write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    missing = view(api, source, spine, episode_root=root)["rows"][0]
+    assert missing["episode_relation"]["state"] == "EPISODE_JOIN_UNAVAILABLE"
+    assert missing["episode_relation"]["episode_id"] is None
+    assert before == {str(p.relative_to(root)): sha256(p.read_bytes()).hexdigest() for p in root.rglob("*") if p.is_file()}
+    b1_writer.reconcile(repo_root=tmp_path, nightly=True, replay=False, correction_path=None,
+                        recorded_at="2026-10-08T22:00:00Z")
+    blocked = view(api, source, spine, episode_root=root)["rows"][0]
+    assert blocked["episode_relation"]["state"] == "BLOCKED_BY_ACTIVE_EPISODE"
+    assert blocked["episode_relation"]["reason"] == "ACTIVE_EPISODE_DIFFERENT_ANCHOR"
+    assert blocked["episode_relation"]["episode_id"] is None
+    from engine.us_candidate_episode import load_candidate_episode_store
+    assert [r["episode_id"] for r in load_candidate_episode_store(root)] == [original_id]
+
+
+@pytest.mark.parametrize("query", [{"limit": 0}, {"limit": 101}, {"offset": -1}, {"offset": True},
+                                  {"security_id": "../AMZN"}, {"ticker": "AMZN*"}])
+def test_query_rejects_unbounded_or_nonexact_requests(api, tmp_path, query):
+    source, spine, _, _ = seed(tmp_path)
+    with pytest.raises(api.ObservationQueryError):
+        api.query_observations(view(api, source, spine), **query)
+
+
+def test_missing_anchor_keeps_the_real_b1_suppression_without_inventing_episode(api, tmp_path):
+    source, spine, rows, artifact = seed(tmp_path)
+    rows[0]["reset"] = {}
+    write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    assert view(api, source, spine)["rows"][0]["episode_relation"]["state"] == "EPISODE_JOIN_UNAVAILABLE"
+    b1_writer.reconcile(repo_root=tmp_path, nightly=True, replay=False, correction_path=None,
+                        recorded_at="2026-10-08T21:00:00Z")
+    result = view(api, source, spine, episode_root=tmp_path / "data/us_prophet_rank/episodes")
+    # The current B1 writer normalizes missing reset-low to INVALID_STRUCTURAL_ANCHOR,
+    # before canonical identity binding. Preserve that exact source refusal; do
+    # not relabel it as the different MISSING_STRUCTURAL_ANCHOR state.
+    assert result["rows"][0]["episode_relation"]["state"] == "SOURCE_SUPPRESSED"
+    assert result["rows"][0]["episode_relation"]["reason"] == "INVALID_STRUCTURAL_ANCHOR"
+    assert result["rows"][0]["episode_relation"]["episode_id"] is None
+
+
+def test_bad_trigger_flags_fail_as_unavailable_instead_of_quiet_data(api, tmp_path):
+    source, spine, rows, artifact = seed(tmp_path)
+    rows[0]["triggers"]["pre_confluence_2d"]["fired"] = "true"
+    write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    result = view(api, source, spine)
+    assert result["status"] == "UNAVAILABLE"
+    assert result["reason"] == "SOURCE_MALFORMED"
