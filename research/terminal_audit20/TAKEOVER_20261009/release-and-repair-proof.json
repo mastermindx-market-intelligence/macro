@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T2305",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T2352",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -8787,5 +8787,101 @@
     "retained_completed_work": "946 reviewed/merged/SQLinstalled/AAccept/BReject once, both archived; storage707abf292bc28 and earlier scoped935939Replay source/CI/UI/captures/controllers closed. No cleanup owed. GMI defer ended. FuturePL6 remains coordination only.",
     "next_ready_phase": "Actual original-owner review/platform/rights/reconciliation or same-nightly producer terminal publication event; independently useful newly admitted work. No routine polling, completed-effect replay, new test-data question, notice-only delegation or refusal/unknown retry.",
     "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261011T2352": {
+    "observed_at": "2026-10-11T23:52:05.038566+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "inherits_product_and_independent_gate_state": "current_capability_frontier_20261011T2305",
+    "material": "Actual A final-source edge admitted NEW affected PL6batch1 evidence-only recapture. All24 actual captures on exact d9acb670 tree qualified, existing gate green, own fixture cleanup complete, disjoint committed patch sent once to A existing carrier. A accepted and published the packet as ca44f2c2 on the same existing source branch; parent consumes hash-bound owner receipt and independently matches the full evidence tree/9layout/24PNG/manifest blobs. Release/deploy not claimed.",
+    "source_custody": {
+      "owner_thread": "01a128b5-e26b-7b12-94b5-231bfe0b8036",
+      "branch": "claude/ssd-f04-private-host-01a128b5-4d8e8564f494c928",
+      "head": "d9acb6709751f5964c2cb2b9a9ca6e0dd01b3d3a",
+      "tree": "05ab077824595f7914ebb17528fd2b5e22a443d2",
+      "remote_head_verified_at_admission": true,
+      "AnalysisWorkspace_sha256": "d60ae4c6536ab37f8e365636a0e4300f0731cac2c1603a52de3551c35e8a8254",
+      "TerminalShell_sha256": "a9d6e179a7c5b83691d66c086c3c9bb843df13fc4ae2f066d0e2eae4a77ca307",
+      "MegaPane_sha256": "4aea1bd5ed03906d3ade9227b9b4329e0d8fd2a669f0cdbfa4b7c3fa65b8b8c8"
+    },
+    "capture": {
+      "workspace": "/Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/audit20-pl6-final-d9acb670-20261011-d4bad50a0510bb07",
+      "source": "unchanged capture_pl6_batch1.cjs/SHAee50260c87f579091f022929472a56c079da3f1004c7418617472f4041db7004",
+      "attempt1": "Own external dependency symlink rejected by Turbopack; 180s server timeout/rc1 preserved, no screenshot success inferred.",
+      "repair": "Only own temporary dependency symlink replaced with independent APFS clone of same package-lock-matched dependencies; no A source/environment edits.",
+      "attempt2": "23:45:54.923691Z–23:47:39.145378Z/rc0;24successful actualfresh captures, no FAIL artifacts.",
+      "matrix": "6surfaces×ENZH×1440x900/390x844,dark fixture only",
+      "gate": "existing b_pl_6Batch1Evidence.test.ts4/4PASS; parent independently verified all24 because gate lists20 and omits DiscoverLeaders quartet.",
+      "parent_inspection": "All24actualPNG crops inspected through four labeled contact sheets: Analysiscontextbar, ChartChrome dayrange/phone OHLC statusline, deterministic staleDiscoverLeaders warning, fixtureOptionspremium table, META Cut/减持 searchchip, StockAnalysis Standaside/回避 entry header. No spinner/blank/failurePNG accepted.",
+      "limitations": "MobileENOptions table extends beyond its visible crop; standard producer depicts the visible table portion. Desktop ChartChrome is dayrange; phone is statusline/charttop. No whole responsive/fullOptions/native/rights/math/freshness/production claim.",
+      "layout_sources": "All9SHA unchanged through capture and manifest exactly binds final source, including new AnalysisWorkspace d60ae4c6.",
+      "PNG_bindings": "All24 decoded/fresh after successful attempt2 start and SHA256bound in parentqualification.21byte-identical to baseline but actually recaptured.",
+      "cleanup": "3536noLISTENER; both attempts settled, no user-profile/VPS/record/SQL/deploy effect or restore owed."
+    },
+    "delivered_patch": {
+      "evidence_commit": "38c463d1b9d67e94bda32f4921686552d4a95204",
+      "source_head": "d9acb6709751f5964c2cb2b9a9ca6e0dd01b3d3a",
+      "source_tree": "05ab077824595f7914ebb17528fd2b5e22a443d2",
+      "patch": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/pl6-final-d9acb670-20261011/b-pl-6-batch-1-d9acb670-evidence.patch",
+        "bytes": 102434,
+        "sha256": "b1373be0adeb7debc21b1c43553d357c654f815a0f04c6cd8bce4c864b3d06d4"
+      },
+      "qualification": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/pl6-final-d9acb670-20261011/final-parent-qualification.json",
+        "bytes": 9004,
+        "sha256": "8feff662ac98350b154e3a98c941beb05b957f8e19c062101501381fff5e2fce"
+      },
+      "remote_publication_by_root": false,
+      "source_branch_owner": "01a128b5-e26b-7b12-94b5-231bfe0b8036"
+    },
+    "delivery": "One authorized first-party send to A accepted/noerror, then actual first-party A owning acceptance/integration/push return consumed. Parent independently verifies full ca44/tree equals own38c evidence tree and every9layout/24PNG/manifest blob; exact514B/078366bd owner receipt binds4gatePASS/push0. No duplicate gate or remote query; no release/production inference.",
+    "Fabric_verifier": {
+      "run_id": "terminal-audit20-pl6-d9acb670-contract-review-20261011",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "class": "verify/C1_ROUTINE_BOUNDED",
+      "return": "7363B/c4a49c306e0ce21fdc5833be40bb4ba4ce11333bdd83e1285e69268b90f22ce3/rc0",
+      "adjudication": "Parent accepted useful textual audit once by reviewer, same-ID statusACCEPTED/VALIDATED_OUTCOME. Incorrect separateGitHEAD claim and unsupported destructive/schema/recency redesigns not adopted. No child capture/tests/production/nativeWake claim.",
+      "usage": "UNKNOWN"
+    },
+    "instruction_delta": "Latest direct human AGENTS replaces earlier guidance: ordinary new paid work uses installed M2 shell Fabric directly; no optional Executive/Mission/RuntimeBinding/Wake prerequisite. Required mastermind-fabric-delegate skill freshly read. Actual installed globalAGENTS SHAfac0ee0f3589f669caab0003f85f59e0b13450d6e412c4d25717424d57644803, not older owner-reported3a6d. Existing operations retain original carrier/binding and refused/UNKNOWN effects stay frozen. No new dispatch solely for this instruction notice.",
+    "retained_holds": "A F04source/GMI8810/isolated944572d hold; B F11 and E20ticker-news/deploy separate. All independent781numeric/IW2cyberHUMAN/SQLaccessrightsrelease/887ALLOW/MoneySCP+OAuthUNKNOWN/A19operationalfirstintake/same873publication/other original outcome holds unchanged.",
+    "completed_never_replay": "This finald9PL6capture/verifier and all prior946SQL/AAccept/BReject/two archived records/storage/releases/CI/tests/captures/controllers. Closed940 not used.",
+    "next_ready_phase": "This finald9 PL6 capture/integration/publication obligation is complete and closed. Actual A source/release hold resolution or other original-owner review/platform/rights/reconciliation/producer completion event; no unchanged recapture/ACK/status/CI/runtime/browser/providerpoll or notice-only worker.",
+    "whole_audit20_complete": false,
+    "A_integration": {
+      "observed_at": "2026-10-11T23:54:32.792056+00:00",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "source_head": "d9acb6709751f5964c2cb2b9a9ca6e0dd01b3d3a",
+      "root_evidence_commit": "38c463d1b9d67e94bda32f4921686552d4a95204",
+      "A_integrated_commit": "ca44f2c2ab6ef69673f7fa1a4b2f5d628cd994b3",
+      "full_evidence_trees_equal": "0edbfa9dfbdc4b6a1251949b0016e11dc62835c8",
+      "all9layout_and24PNG_blob_hashes_independently_match": true,
+      "manifest_hash_match": "2d24b79a0363db19d25f0fc92207e54f4bce9262d923b834cf4bb145d8a35b34",
+      "owner_receipt": {
+        "path": "/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b5/f04-private-adoption/consumer-host/pl6-integrated-accepted-published.json",
+        "bytes": 514,
+        "sha256": "078366bd9eb8642347749426063849615a989db7c7bc6a1075b43cd2ab64beac"
+      },
+      "owner_gated_publication": {
+        "at": "2026-10-11T23:52:04.749701+00:00",
+        "integrated_head": "ca44f2c2ab6ef69673f7fa1a4b2f5d628cd994b3",
+        "source_head": "d9acb6709751f5964c2cb2b9a9ca6e0dd01b3d3a",
+        "gate_rc": 0,
+        "gate_tests": 4,
+        "gate_log_sha256": "146ea854ebea24668ec666b7297ab6fc0253a3d7a14c3826d957ace4b41eeac4",
+        "all24_owner_capture_hashes_consumed": true,
+        "push_rc": 0,
+        "remote_branch": "claude/ssd-f04-private-host-01a128b5-4d8e8564f494c928",
+        "source_hashes_unchanged": true,
+        "release": false,
+        "pr_created": false
+      },
+      "accepted_scope": "Bounded actual final-source PL6batch1 recapture integrated and published through A same carrier. Owner gate/push consumed, not parent rerun/remote query.",
+      "release": false,
+      "whole_Audit20": false
+    }
   }
 }
