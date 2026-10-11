@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-09",
+  "as_of": "2026-10-11",
   "bottleneck": {
     "accounts": [
       {
@@ -13,18 +13,6 @@
         "replies_enqueued": 0,
         "replies_sent": 0,
         "unmeasured": 0
-      },
-      {
-        "account": "mastermind_news",
-        "author_replies": 0,
-        "contributions": 3,
-        "engagements": 0,
-        "impressions": 5,
-        "measured": 2,
-        "replies_abstained": 0,
-        "replies_enqueued": 0,
-        "replies_sent": 0,
-        "unmeasured": 1
       }
     ],
     "basis": "raw_counts",
@@ -34,28 +22,12 @@
   "cells": [
     {
       "dims": {
-        "account": "mastermind_news",
-        "format": "breaking",
-        "hook_family": "press_lane",
-        "register": "unknown"
-      },
-      "med_adjusted": -0.016293,
-      "med_impressions": 2.5,
-      "med_label": 0.0,
-      "n": 3,
-      "n_labelled": 2,
-      "n_null": 1,
-      "verdict": "seeding",
-      "verdict_note": "2 labelled rows against an n-floor of 20 — no ranking claim is made from this cell"
-    },
-    {
-      "dims": {
         "account": "flagship",
         "format": "unknown",
         "hook_family": "unattributed",
         "register": "unknown"
       },
-      "med_adjusted": -0.016293,
+      "med_adjusted": -0.001827,
       "med_impressions": 12.0,
       "med_label": 0.0,
       "n": 1,
@@ -83,7 +55,7 @@
       "thread_saturation"
     ],
     "max_supported": 1,
-    "n_labelled": 3,
+    "n_labelled": 1,
     "requested": [
       "parent_size",
       "post_age",
@@ -98,8 +70,8 @@
     "hook_family"
   ],
   "n_floor": 20,
-  "n_rows": 4,
-  "n_rows_all_time": 272,
+  "n_rows": 1,
+  "n_rows_all_time": 280,
   "north_star": {
     "active": false,
     "follower_floor": 250,
@@ -116,41 +88,41 @@
     "angle": [
       {
         "angle": "unknown",
-        "med_adjusted": -0.016293,
-        "med_impressions": 3.0,
+        "med_adjusted": -0.001827,
+        "med_impressions": 12.0,
         "med_label": 0.0,
-        "n": 4,
-        "n_labelled": 3,
-        "n_null": 1,
+        "n": 1,
+        "n_labelled": 1,
+        "n_null": 0,
         "verdict": "seeding",
-        "verdict_note": "3 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
+        "verdict_note": "1 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
       }
     ],
     "note": "Marginal tables, one dimension at a time — NOT extra joint-cell dimensions. See labels.PROVENANCE_DIMS for the cardinality arithmetic. 'unknown' is a real bucket: an item that carried no shape/angle/trigger is counted, never dropped.",
     "shape": [
       {
-        "med_adjusted": -0.016293,
-        "med_impressions": 3.0,
+        "med_adjusted": -0.001827,
+        "med_impressions": 12.0,
         "med_label": 0.0,
-        "n": 4,
-        "n_labelled": 3,
-        "n_null": 1,
+        "n": 1,
+        "n_labelled": 1,
+        "n_null": 0,
         "shape": "unknown",
         "verdict": "seeding",
-        "verdict_note": "3 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
+        "verdict_note": "1 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
       }
     ],
     "trigger": [
       {
-        "med_adjusted": -0.016293,
-        "med_impressions": 3.0,
+        "med_adjusted": -0.001827,
+        "med_impressions": 12.0,
         "med_label": 0.0,
-        "n": 4,
-        "n_labelled": 3,
-        "n_null": 1,
+        "n": 1,
+        "n_labelled": 1,
+        "n_null": 0,
         "trigger": "unknown",
         "verdict": "seeding",
-        "verdict_note": "3 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
+        "verdict_note": "1 labelled rows against an n-floor of 20 — this row may not be cited for a quota or weight move"
       }
     ]
   },

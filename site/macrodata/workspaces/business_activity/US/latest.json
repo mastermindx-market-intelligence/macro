@@ -131,8 +131,8 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 0.7477795924522894,
-        "delta": -0.1895,
+        "current_value": 0.7547507202355774,
+        "delta": -0.1825,
         "metric_id": "leading_tier_momentum_6m",
         "note": "same method version; numeric comparison permitted when both values are present",
         "prior_value": 0.9372992907410378
@@ -166,25 +166,21 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "business_cycle:leading_tier_diffusion:970c6edeb7474997",
-      "business_cycle:leading_tier_index:8be32b710335dca3",
-      "business_cycle:leading_tier_momentum_6m:db2695d097386ad2"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native tier fields changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "business_activity-US-3fce0c891a751f75"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked tier field changed value (no-change republication).",
+    "predecessor_generation_id": "business_activity-US-884829ebf715518f"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-10-09T06:01:29Z",
+    "built_at": "2026-10-11T03:40:41Z",
     "calculation_as_of": "2026-10-31",
-    "code_version": "fea3a49e9b0e2114ff3f30fb7a58f46da00cf116",
-    "content_sha256": "a762ed0f48cd9c6a176d9dea7c5832891f5c76c055649181ae89e96fa1e03ef8",
-    "generation_id": "business_activity-US-a762ed0f48cd9c6a",
+    "code_version": "49319de9aafa51427b9c50cbb653d73d35d5288b",
+    "content_sha256": "60b2378af9f966e2a7fc263753ce983743731b78baa766053dbcc1fd7ea87bce",
+    "generation_id": "business_activity-US-60b2378af9f966e2",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -280,8 +276,8 @@
         "horizon": "current",
         "implication_id": "leading_tier_read",
         "text": {
-          "en": "Leading tier: 6-month momentum 0.7477795924522894, direction rising, breadth 75.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "领先层：6个月动量 0.7477795924522894，方向 rising，广度 75.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Leading tier: 6-month momentum 0.7547507202355774, direction rising, breadth 75.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 0.7547507202355774，方向 rising，广度 75.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
       },
@@ -451,7 +447,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 95.35822235151721,
+        "value": 95.3651934793005,
         "value_type": "index"
       },
       {
@@ -487,7 +483,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.7477795924522894,
+        "value": 0.7547507202355774,
         "value_type": "number"
       },
       {
@@ -523,7 +519,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.8277948832754347,
+        "value": 0.8297866340706598,
         "value_type": "number"
       },
       {

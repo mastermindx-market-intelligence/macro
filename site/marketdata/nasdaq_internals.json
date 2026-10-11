@@ -1,6 +1,6 @@
 {
   "schema": "nasdaq_internals.v1",
-  "asof": "2026-10-09T08:22:05.240351+00:00",
+  "asof": "2026-10-09T14:18:37.491408+00:00",
   "benchmark": "QQQ",
   "watermark_en": "Current Nasdaq-100 membership (as of 2026-10-09); historical composition approximated. Descriptive, display-only.",
   "watermark_zh": "当前纳斯达克100成分股（截至 2026-10-09）；历史成分经近似处理。描述性展示，仅供参考。",
@@ -23,7 +23,7 @@
       "dispersion_20d": 7.1001,
       "state": "leading",
       "state_candidate": "leading",
-      "state_days": 1
+      "state_days": 2
     },
     {
       "id": "ai_capex_spenders",
@@ -35,9 +35,9 @@
       "accel": -2.1884,
       "breadth_above_50dma": 75.0,
       "dispersion_20d": 4.6036,
-      "state": "leading",
+      "state": "weakening",
       "state_candidate": "weakening",
-      "state_days": 13
+      "state_days": 1
     },
     {
       "id": "edge_device",
@@ -51,7 +51,7 @@
       "dispersion_20d": 3.3467,
       "state": "lagging",
       "state_candidate": "lagging",
-      "state_days": 8
+      "state_days": 9
     },
     {
       "id": "software_enterprise",
@@ -65,7 +65,7 @@
       "dispersion_20d": 13.3971,
       "state": "leading",
       "state_candidate": "leading",
-      "state_days": 1
+      "state_days": 2
     },
     {
       "id": "cyber",
@@ -79,7 +79,7 @@
       "dispersion_20d": 6.8758,
       "state": "leading",
       "state_candidate": "leading",
-      "state_days": 9
+      "state_days": 10
     },
     {
       "id": "digital_services_media",
@@ -93,7 +93,7 @@
       "dispersion_20d": 11.2327,
       "state": "lagging",
       "state_candidate": "lagging",
-      "state_days": 22
+      "state_days": 23
     },
     {
       "id": "megacap_quality",
@@ -105,9 +105,9 @@
       "accel": -3.6962,
       "breadth_above_50dma": 75.0,
       "dispersion_20d": 3.682,
-      "state": "leading",
+      "state": "weakening",
       "state_candidate": "weakening",
-      "state_days": 2
+      "state_days": 1
     }
   ],
   "divergences": [

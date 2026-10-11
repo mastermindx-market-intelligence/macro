@@ -520,6 +520,50 @@ exactly as conditional merge authority granted for one pull request never transf
 another (`DEC:SOL-HOLD-IS-A-MERGE-BARRIER`). This law promotes no worker to principal, widens no
 credential, and changes no provider permission.
 
+### Administrative blockers are self-remedied, never handed to the Chairman (2026-10-10)
+
+`DEC:ADMIN-BLOCKERS-ARE-SELF-REMEDIED-NEVER-HANDED-TO-THE-OPERATOR`. The RS LEADER
+Meta-CEO seat (5ec0472d) ended on `EXACT_HUMAN_GATE` handing the Chairman the SSD
+worktree-mint command — a command the session could run itself. The Chairman rejected
+the stop and ordered the defect fixed at the root.
+
+A **quarantined session root, an SSD worktree mint, a stale hook copy in a host
+checkout, a stale ref, a helper lock, a missing directory, or a permission prompt** is
+an ADMINISTRATIVE blocker: the session clears it in the same conversation. **A hook
+denial names its remedy — read the text and perform it.** `defaultMode=bypassPermissions`
+is already set for Claude sessions, so a permission prompt is never the blocker.
+
+The quarantine recipe is three steps, printed filled-in by `ship_loop_guard.py` itself:
+
+1. Mint an admissible tree:
+   `printf '%s' '{"cwd":"<root>","name":"<name>","session_id":"<session_id>"}' | python3 ~/.local/lib/mastermind/worktree-storage/worktree_storage.py create`
+   (external SSD under the host policy; `.claude/hooks/worktree_create_sparse.py` is the
+   same mint where no host policy is installed). It prints the new path and is
+   idempotent. A refusal names its cause (mount, free space, policy, receipt): fix that
+   cause and rerun — never fall back to internal disk.
+2. `ExitWorktree` keeping the tree when the conversation sits in a native
+   `.claude/worktrees` tree (Codex/Cursor: reopen the workspace at the printed path).
+3. `EnterWorktree(<printed path>)` and continue the ship loop there
+   (`DSC:QUARANTINE-REMEDY-IS-AN-IN-SESSION-ACT`).
+
+The guard admits exactly that mint shape plus read-only inspection and
+`git worktree/fetch/branch/rev-parse/status` while quarantined
+(`_ROOT_QUARANTINE_REMEDY_BASH`); the project hook delegates every mint to the host
+storage helper whenever `~/.config/mastermind/worktree-storage.json` exists, so sessions
+launched from a macro checkout plant on the SSD, and a helper refusal is FINAL. A host
+checkout whose `.claude/hooks/` bytes predate this still mints the old way — keep them
+current by file overwrite only, never by git operations on the primary.
+
+**`EXACT_HUMAN_GATE` requires three proofs:** tool/permission evidence that the act is
+unavailable to the session, two no-delta attempts with a CHANGED tactic, and the named
+exact human action. Real gates are MFA / Touch ID / passkey / CAPTCHA, a provider
+refusal, a physical device, money or security-setting changes, and Sol/Chairman rulings
+the seat does not hold. "I could not find a path" is not a gate: troubleshoot (read the
+hook or helper source, run its check command, inspect the mount/policy/receipt) before
+classifying. This law widens no credential, security setting, purchase, money-movement,
+production-deployment or safety boundary, and an explicit safety/permission refusal
+still ends that effect's retry.
+
 ### The six execution invariants
 
 `BLOCKER -> freeze the affected lane -> check independent useful lanes -> continue`.

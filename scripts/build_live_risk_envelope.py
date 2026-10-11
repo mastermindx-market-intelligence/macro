@@ -128,7 +128,10 @@ from typing import Any
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO_ROOT))
 
-from engine.risk_envelope import compose_envelope, canonical_json  # noqa: E402
+from engine.risk_envelope import (
+    compose_envelope, canonical_json, live_market_freshness,
+    LIVE_MARKET_FUTURE_TOLERANCE_S as _FUTURE_TOLERANCE_S,
+)  # noqa: E402
 from lib import config  # noqa: E402
 from lib import nyse_calendar  # noqa: E402
 from scripts.build_risk_envelope import (  # noqa: E402
@@ -144,7 +147,6 @@ from scripts.build_risk_envelope import (  # noqa: E402
 log = logging.getLogger(__name__)
 
 MARKET = "US"
-_FUTURE_TOLERANCE_S = 120.0
 
 _DEBOUNCE_TICKS_DEFAULT = 3
 _STALE_AFTER_MIN_DEFAULT = 5.0
@@ -281,16 +283,11 @@ def market_freshness(
     never drift apart. `usable` folds live_active, the stale_after_min horizon, and
     a wall-clock skew guard on the carrying artifact's own `built` clock (>120s
     ahead of wall-clock is refused, same as the general clock law)."""
-    live_active = bool((risk_state_doc or {}).get("live_active"))
-    built_dt = _parse_built((risk_state_doc or {}).get("built"))
-    fresh_enough = bool(built_dt) and (now - built_dt).total_seconds() <= stale_after_min * 60.0
-    future_artifact = bool(built_dt) and (built_dt - now).total_seconds() > _FUTURE_TOLERANCE_S
-    usable = live_active and fresh_enough and not future_artifact
-    return {
-        "live_active": live_active, "built_dt": built_dt,
-        "fresh_enough": fresh_enough, "future_artifact": future_artifact,
-        "usable": usable,
-    }
+    return live_market_freshness(
+        live_active=bool((risk_state_doc or {}).get("live_active")),
+        built_dt=_parse_built((risk_state_doc or {}).get("built")),
+        stale_after_min=stale_after_min, now=now,
+    )
 
 
 def _is_future(as_of: str | None, ceiling: str | None, wall_now: datetime) -> bool:

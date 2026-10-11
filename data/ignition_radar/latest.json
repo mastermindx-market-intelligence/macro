@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-10-08",
-  "data_session": "2026-10-08",
+  "as_of": "2026-10-10",
+  "data_session": "2026-10-09",
   "state": "off",
   "k_count": 0,
   "chips": [
@@ -77,8 +77,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "20d log-RS slope=-0.0259 (negative)",
-      "detail_zh": "20\u65e5\u5bf9\u6570RS\u659c\u7387=-0.0259\uff08\u8d1f\u5411\uff09",
+      "detail_en": "20d log-RS slope=-0.0258 (negative)",
+      "detail_zh": "20\u65e5\u5bf9\u6570RS\u659c\u7387=-0.0258\uff08\u8d1f\u5411\uff09",
       "source": "yahoo/RSP,SPY"
     },
     {
@@ -94,14 +94,37 @@
     }
   ],
   "regime": {
-    "label_en": "Narrow ignition \u2014 Retail; fragile until participation broadens",
-    "label_zh": "\u5c40\u90e8\u70b9\u706b \u2014 Retail\uff1b\u9700\u53c2\u4e0e\u5ea6\u6269\u6563\u65b9\u53ef\u786e\u8ba4",
+    "label_en": "Narrow ignition \u2014 XLV; fragile until participation broadens",
+    "label_zh": "\u5c40\u90e8\u70b9\u706b \u2014 XLV\uff1b\u9700\u53c2\u4e0e\u5ea6\u6269\u6563\u65b9\u53ef\u786e\u8ba4",
     "fragile": true,
     "do_en": "Theme-level evidence only. Fragile until RSP or sector breadth confirms. Evidence read, not a buy call.",
     "do_zh": "\u4ec5\u4e3b\u9898\u7ea7\u8bc1\u636e\uff0cRSP\u6216\u677f\u5757\u5e7f\u5ea6\u672a\u786e\u8ba4\u524d\u5b58\u5728\u8106\u5f31\u6027\u3002\u8bc1\u636e\u8bfb\u53d6\uff0c\u975e\u4e70\u5165\u4fe1\u53f7\u3002"
   },
   "narrow": {
     "items": [
+      {
+        "id": "XLV",
+        "ignition_score": 0.7682,
+        "state": "igniting",
+        "components": {
+          "breadth_thrust": null,
+          "breadth_n": [
+            0,
+            0
+          ],
+          "rs_slope_change": 0.6523,
+          "rs_slope_raw": 0.01573,
+          "mtf_confirm": 1.0,
+          "mtf_ok": true,
+          "commodity_flip": false
+        },
+        "name": "XLV",
+        "name_zh": "XLV",
+        "category": "Sector ETF",
+        "type": "etf",
+        "rs_new_high": false,
+        "above_200d_rising": true
+      },
       {
         "id": "retail",
         "ignition_score": 0.7574,
@@ -127,7 +150,7 @@
       },
       {
         "id": "XLY",
-        "ignition_score": 0.7255,
+        "ignition_score": 0.7329,
         "state": "igniting",
         "components": {
           "breadth_thrust": null,
@@ -135,8 +158,8 @@
             0,
             0
           ],
-          "rs_slope_change": 0.5882,
-          "rs_slope_raw": 0.00891,
+          "rs_slope_change": 0.5993,
+          "rs_slope_raw": 0.01007,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
@@ -172,23 +195,23 @@
         "above_200d_rising": false
       },
       {
-        "id": "SMH",
-        "ignition_score": 0.6413,
-        "state": "igniting",
+        "id": "XLP",
+        "ignition_score": 0.6632,
+        "state": "running",
         "components": {
           "breadth_thrust": null,
           "breadth_n": [
             0,
             0
           ],
-          "rs_slope_change": 0.962,
-          "rs_slope_raw": 0.08076,
-          "mtf_confirm": 0.0,
-          "mtf_ok": false,
+          "rs_slope_change": 0.4948,
+          "rs_slope_raw": -0.00052,
+          "mtf_confirm": 1.0,
+          "mtf_ok": true,
           "commodity_flip": false
         },
-        "name": "SMH",
-        "name_zh": "SMH",
+        "name": "XLP",
+        "name_zh": "XLP",
         "category": "Sector ETF",
         "type": "etf",
         "rs_new_high": false,
@@ -237,29 +260,6 @@
         "name_zh": "AI \u8f6f\u4ef6\u4e0e\u5e73\u53f0",
         "category": "AI & Technology",
         "type": "basket",
-        "rs_new_high": false,
-        "above_200d_rising": true
-      },
-      {
-        "id": "XLV",
-        "ignition_score": 0.6189,
-        "state": "running",
-        "components": {
-          "breadth_thrust": null,
-          "breadth_n": [
-            0,
-            0
-          ],
-          "rs_slope_change": 0.4283,
-          "rs_slope_raw": -0.00722,
-          "mtf_confirm": 1.0,
-          "mtf_ok": true,
-          "commodity_flip": false
-        },
-        "name": "XLV",
-        "name_zh": "XLV",
-        "category": "Sector ETF",
-        "type": "etf",
         "rs_new_high": false,
         "above_200d_rising": true
       },
@@ -317,13 +317,13 @@
     "n_qualifying": 43,
     "null": false,
     "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-    "as_of": "2026-10-08"
+    "as_of": "2026-10-10"
   },
   "narrow_top": {
-    "basket_id": "retail",
-    "name": "Retail",
-    "name_zh": "\u96f6\u552e",
-    "score": 0.7574,
+    "basket_id": "XLV",
+    "name": "XLV",
+    "name_zh": "XLV",
+    "score": 0.7682,
     "streak_sessions": 1
   },
   "radar_xref": {
@@ -331,5 +331,5 @@
     "phase": null
   },
   "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-  "_timing_s": 3.0
+  "_timing_s": 2.71
 }

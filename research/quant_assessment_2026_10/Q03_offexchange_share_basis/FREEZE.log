@@ -1,0 +1,1 @@
+FREEZE prereg=PREREG.md sha256=ca5e84bd6dc3fe074bcfc777707b55889e3dcb7f90da64d862c7ac6a8f1443f9 utc="Fri Oct  9 09:38:13 UTC 2026" source="date -u" note="frozen before any evaluation outcome; module sha256 at freeze 193c006ceba46274a20cab03d74a831801af96189300e6f6865a3e7a0d52d6ca"

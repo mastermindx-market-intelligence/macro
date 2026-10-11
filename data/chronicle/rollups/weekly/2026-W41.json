@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-10-08",
+  "as_of": "2026-10-11",
   "coverage": {
-    "end": "2026-10-08",
-    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W41; 14 week(s) have events so far; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-07-09"
+    "end": "2026-10-11",
+    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W41; 13 week(s) have events so far; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-07-12"
   },
   "iso_week": "2026-W41",
   "schema": "chronicle.rollup.weekly/v1",
@@ -11,9 +11,15 @@
     {
       "clusters": [
         {
-          "n_events": 33,
+          "n_events": 50,
           "source": "prophet_ledger",
           "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "macro_release",
+          "theme": "claims",
           "top_events": []
         }
       ],
@@ -587,6 +593,16 @@
           "theme": null,
           "top_events": [
             {
+              "date": "2026-07-24",
+              "id": "cev-research_vault-16f61baeb104",
+              "kind": "report",
+              "source": "research_vault",
+              "source_ref": "marketdesk-srwcvprptla-0a320e",
+              "tickers": [],
+              "title": "Goldman Sachs: Global Rates Trader Priced For Surprise",
+              "weight_hint": 3
+            },
+            {
               "date": "2026-07-26",
               "id": "cev-research_vault-1b1a30ca03e5",
               "kind": "report",
@@ -697,29 +713,6 @@
         }
       ],
       "iso_week": "2026-W29"
-    },
-    {
-      "clusters": [
-        {
-          "n_events": 5,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "macro_release",
-          "theme": "claims",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "risk_band",
-          "theme": "risk",
-          "top_events": []
-        }
-      ],
-      "iso_week": "2026-W28"
     }
   ]
 }

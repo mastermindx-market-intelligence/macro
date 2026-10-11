@@ -509,7 +509,129 @@ _ROOT_QUARANTINE_READ_ONLY_TOOLS = frozenset({
 # simply stays quarantined.
 _ROOT_QUARANTINE_REPAIR_TOOLS = frozenset({
     "EnterWorktree",
+    # A conversation already sitting in a native `.claude/worktrees/<name>` tree
+    # must leave it before it can enter the admissible one; keeping the tree is
+    # non-destructive, so the exit is part of the same repair (2026-10-10).
+    "ExitWorktree",
 })
+
+# The remedy the quarantine demands is a Bash act the quarantine used to deny
+# (Chairman ruling 2026-10-10: a Meta-CEO seat ended on EXACT_HUMAN_GATE handing
+# the Chairman the mint command the session could run itself --
+# DEC:ADMIN-BLOCKERS-ARE-SELF-REMEDIED-NEVER-HANDED-TO-THE-OPERATOR). These
+# anchored shapes admit exactly the host storage-helper mint, the project hook
+# mint, non-destructive git inspection/worktree administration, and read-only
+# host inspection. Tokens exclude shell metacharacters, so pipes other than the
+# one feeding the mint, redirects, substitutions, chaining and newlines all stay
+# denied; a quoted token may not carry `$` or a backtick. The guard still
+# recomputes admission on the next effectful call, so a mint that produced an
+# inadmissible tree changes nothing.
+_Q_TOKEN = r"(?:[^ \t\r\n'\"|;&<>`$()]+|'[^'\r\n]*'|\"[^\"$`\r\n]*\")"
+_Q_ARGS = r"(?:[ \t]+" + _Q_TOKEN + r")*"
+_Q_WS = r"[ \t]*"
+
+
+def _q_script(basename: str) -> str:
+    bare = r"[^ \t\r\n'\"|;&<>`$()]*" + basename
+    return (
+        r"(?:" + bare + r"|'[^'\r\n]*" + basename + r"'|\"[^\"$`\r\n]*" + basename + r"\")"
+    )
+
+
+_Q_FEED = r"(?:(?:echo|printf)" + _Q_ARGS + _Q_WS + r"\|" + _Q_WS + r")?"
+_ROOT_QUARANTINE_REMEDY_BASH = tuple(
+    re.compile(pattern)
+    for pattern in (
+        r"\A" + _Q_WS + _Q_FEED + r"python3?[ \t]+" + _q_script(r"worktree_storage\.py")
+        + r"(?:[ \t]+--config[ \t]+" + _Q_TOKEN + r")?"
+        + r"[ \t]+(?:create|check|check-path|session-start)" + _Q_ARGS + _Q_WS + r"\Z",
+        r"\A" + _Q_WS + _Q_FEED + r"python3?[ \t]+" + _q_script(r"worktree_create_sparse\.py")
+        + _Q_ARGS + _Q_WS + r"\Z",
+        r"\A" + _Q_WS + r"git[ \t]+(?:worktree[ \t]+(?:list|add|lock|unlock)|fetch"
+        r"|branch[ \t]+--(?:show-current|list)|rev-parse|status|remote[ \t]+-v"
+        r"|ls-remote|config[ \t]+--get)" + _Q_ARGS + _Q_WS + r"\Z",
+        r"\A" + _Q_WS + r"(?:pwd|ls|df|du|cat|head|tail|wc|stat|echo|printf|which|test"
+        r"|id|whoami|date|hostname|mount|diskutil|grep)" + _Q_ARGS + _Q_WS + r"\Z",
+    )
+)
+_QUARANTINE_STORAGE_HELPER = (
+    Path.home() / ".local" / "lib" / "mastermind" / "worktree-storage" / "worktree_storage.py"
+)
+_QUARANTINE_STORAGE_POLICY = Path.home() / ".config" / "mastermind" / "worktree-storage.json"
+_QUARANTINE_PROJECT_HOOK = Path(__file__).resolve().parent / "worktree_create_sparse.py"
+
+
+def _tool_command(payload: dict[str, Any]) -> str:
+    tool_input = payload.get("tool_input")
+    if isinstance(tool_input, dict):
+        command = tool_input.get("command")
+        if isinstance(command, str):
+            return command
+    return ""
+
+
+def _is_quarantine_remedy_command(command: str) -> bool:
+    if not command or "\n" in command or "\r" in command:
+        return False
+    return any(pattern.match(command) for pattern in _ROOT_QUARANTINE_REMEDY_BASH)
+
+
+def _quarantine_suggested_name(root: Path) -> str:
+    name = re.sub(r"[^A-Za-z0-9._-]+", "-", root.name)
+    name = re.sub(r"^worktree-", "", name).strip("-._")
+    if not name:
+        return "seat"
+    if not name[0].isalnum():
+        name = "s" + name
+    return name[:80]
+
+
+def _root_is_native_session_tree(root: Path) -> bool:
+    parent = root.parent
+    return parent.name == "worktrees" and parent.parent.name == ".claude"
+
+
+def _quarantine_remedy_text(root: Path, payload: dict[str, Any]) -> str:
+    """The in-session repair, spelled out with this session's own values.
+
+    The text is the whole point: a denial that only says "start a fresh session"
+    reads as an order to stop, and that is how a live Meta-CEO seat ended on an
+    administrative blocker it could clear in seconds (2026-10-10). Every value a
+    session needs -- root, name, session id, helper path -- is filled in, and the
+    shape printed is one `_is_quarantine_remedy_command` admits.
+    """
+    session_id = str(payload.get("session_id") or "") or "<session_id>"
+    request = json.dumps(
+        {"cwd": str(root), "name": _quarantine_suggested_name(root), "session_id": session_id}
+    )
+    quoted = "'" + request.replace("'", "'\\''") + "'"
+    if _QUARANTINE_STORAGE_HELPER.is_file() and _QUARANTINE_STORAGE_POLICY.is_file():
+        mint = "printf '%s' " + quoted + " | python3 " + str(_QUARANTINE_STORAGE_HELPER) + " create"
+        where = "on the external SSD under the host storage policy"
+    else:
+        mint = "printf '%s' " + quoted + " | python3 " + str(_QUARANTINE_PROJECT_HOOK)
+        where = "under this checkout's .claude/worktrees/ (no host storage policy is installed)"
+    exit_step = (
+        "this conversation sits in a native session worktree, so first call ExitWorktree "
+        "keeping the tree, then "
+        if _root_is_native_session_tree(root)
+        else ""
+    )
+    return (
+        "REMEDY -- perform it yourself in this session; never hand it to the operator "
+        "and never end the session on this blocker: (1) mint an admissible tree "
+        + where + " with `" + mint + "` -- it prints the new path; the mint is "
+        "idempotent, and a refusal names its cause (mount, free space, policy, "
+        "receipt): fix that cause and rerun, never fall back to internal disk. (2) "
+        + exit_step + "call EnterWorktree with the printed path. (3) continue the "
+        "normal ship loop there. While quarantined this guard allows exactly that "
+        "mint shape, read-only inspection, and git worktree/fetch/branch/rev-parse/"
+        "status; shell cd, change_directory, a hand branch rename, or repointing the "
+        "shared checkout are not repairs (an unpublished native .claude/worktrees/"
+        "<name> tree on worktree-<name> is already adopted automatically). A fresh "
+        "worktree-backed Claude session (`claude --worktree <name>` or the Desktop "
+        "worktree flow) is the fallback only when EnterWorktree is unavailable."
+    )
 
 
 def _resolved_git_path(root: Path, raw: str) -> Path:
@@ -548,6 +670,86 @@ def _delivery_root_admission(root: Path) -> tuple[bool, str]:
     if reasons:
         return False, "; ".join(reasons)
     return True, ""
+
+
+# Claude Code's native worktree flow -- and every copy of the WorktreeCreate hook
+# older than its 2026-10-09 BRANCH NAME switch -- mints `.claude/worktrees/<name>`
+# on `worktree-<name>`. Hooks launch from $CLAUDE_PROJECT_DIR, so a host checkout
+# that has not fast-forwarded keeps minting the legacy name long after origin/main
+# moved to `claude/<name>`, while this guard (delegated to the fresh tree) demands
+# claude/*. The result was a session quarantined from its very first tool call in
+# a tree it had just been handed (measured 2026-10-10: two consecutive Desktop /
+# EnterWorktree mints in one seat, both read-only before any work). A tree in
+# exactly that shape is the session's own unpublished carrier, not a shared
+# checkout, so the guard adopts it under the name the current mint hook would
+# have chosen. Everything else -- the primary, the designated local root, a pushed
+# branch, a tree outside `.claude/worktrees/`, a branch that does not match its
+# directory -- stays quarantined, and a hand rename is still not a repair.
+_NATIVE_SESSION_BRANCH_PREFIX = "worktree-"
+
+
+def _adopt_native_session_branch(root: Path) -> str:
+    """Rename an unpublished native ``worktree-<name>`` branch to ``claude/<name>``.
+
+    Returns the adopted branch, or "" when ``root`` is not exactly a native session
+    tree. Every condition must hold: ``root`` is a linked worktree whose directory
+    sits directly in a ``.claude/worktrees/`` folder, its branch is
+    ``worktree-<directory name>``, that branch has no upstream and no
+    remote-tracking copy (so no PR or sibling can know it by that name), and
+    ``claude/<directory name>`` is a valid, unused branch. ``git branch -m``
+    without ``-M`` refuses to clobber a branch created in the meantime.
+
+    Never raises. Admission is recomputed by the caller afterwards and still fails
+    closed, so a failed or skipped adoption leaves the session exactly as
+    quarantined as it was.
+    """
+    try:
+        root = root.resolve()
+        name = root.name
+        if root.parent.name != "worktrees" or root.parent.parent.name != ".claude":
+            return ""
+        legacy = _NATIVE_SESSION_BRANCH_PREFIX + name
+        if _run(root, "git", "branch", "--show-current") != legacy:
+            return ""
+        if Path(_run(root, "git", "rev-parse", "--show-toplevel")).resolve() != root:
+            return ""
+        git_dir = _resolved_git_path(root, _run(root, "git", "rev-parse", "--git-dir"))
+        common_dir = _resolved_git_path(
+            root, _run(root, "git", "rev-parse", "--git-common-dir")
+        )
+        if git_dir == common_dir:
+            return ""
+        if _capture(
+            root, ("git", "config", "--get", f"branch.{legacy}.remote"), 45
+        ).stdout.strip():
+            return ""
+        if _run(
+            root,
+            "git",
+            "for-each-ref",
+            "--format=%(refname)",
+            f"refs/remotes/*/{legacy}",
+        ):
+            return ""
+        adopted = f"claude/{name}"
+        if _capture(root, ("git", "check-ref-format", "--branch", adopted), 45).returncode:
+            return ""
+        # Compare case-insensitively across every local branch. On a
+        # case-insensitive volume (default APFS) an exact-name probe misses a
+        # PACKED `claude/<Name>`, and the rename would then write a loose ref whose
+        # file shadows it -- two branch names resolving to one file.
+        wanted = f"refs/heads/{adopted}".casefold()
+        if any(
+            ref.casefold() == wanted
+            for ref in _run(
+                root, "git", "for-each-ref", "--format=%(refname)", "refs/heads/"
+            ).splitlines()
+        ):
+            return ""
+        _run(root, "git", "branch", "-m", legacy, adopted)
+        return adopted
+    except Exception:
+        return ""
 
 
 def _state_path(root: Path, payload: dict[str, Any]) -> Path:
@@ -4408,6 +4610,10 @@ def _initial_state(root: Path, admitted: bool) -> dict[str, Any]:
         # A quarantined root is read-only, so paying for a full fingerprint of
         # the shared checkout is both needless and capable of adding fleet noise.
         "baseline": _fingerprint(root) if admitted else {},
+        # False only for a record BORN quarantined: its start_head/baseline are
+        # deferred to the moment the root is first admitted. A record that was ever
+        # admitted keeps its pre-work snapshot through any later quarantine flip.
+        "baseline_captured": admitted,
         "last_blocker": "",
         "blocker_count": 0,
         "total_blocks": 0,
@@ -4415,12 +4621,33 @@ def _initial_state(root: Path, admitted: bool) -> dict[str, Any]:
     }
 
 
+def _capture_deferred_baseline(root: Path, state: dict[str, Any]) -> None:
+    """Take the pre-work snapshot a quarantined birth deliberately skipped.
+
+    Only a record whose ``baseline_captured`` is exactly False is refreshed: it was
+    born quarantined, so nothing between its birth and this first admission could
+    have been the session's own work. A record that was admitted at any point --
+    including one later flipped to quarantined by a resume/compact on a detached
+    HEAD or a transient git-identity failure -- keeps its start_head, baseline and
+    block counters. Re-capturing those would absorb the session's own commits into
+    start_head and its dirt into the baseline, and Stop would release unshipped work.
+    Legacy records without the field keep everything too, which fails closed.
+    """
+    if state.get("baseline_captured") is False:
+        state["start_head"] = _run(root, "git", "rev-parse", "HEAD")
+        state["baseline"] = _fingerprint(root)
+        state["baseline_captured"] = True
+
+
 def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
     source = str(payload.get("source") or "")
+    adopted = _adopt_native_session_branch(root)
     admitted, admission_reason = _delivery_root_admission(root)
     state = _load(path)
     if state is None or source in {"startup", "clear"}:
         state = _initial_state(root, admitted)
+    elif admitted:
+        _capture_deferred_baseline(root, state)
     # Refresh on every startup/resume/compact. A Desktop conversation can retain
     # its session identity while its durable cwd changes underneath it.
     state["root_admission_v"] = _ROOT_ADMISSION_VERSION
@@ -4462,18 +4689,20 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
             "SESSION ROOT QUARANTINE: This conversation is attached to a repository "
             "root that is not an admissible linked claude/* worktree ("
             + admission_reason
-            + "). Treat this session as READ-ONLY. Do not use shell cd, "
-            "change_directory, or a branch rename as a repair: those do not make the "
-            "durable session root a safe carrier. Start a fresh worktree-backed Claude "
-            "session (for example `claude --worktree <name>` or the Desktop worktree "
-            "flow), or move this conversation with EnterWorktree onto a linked claude/* "
-            "worktree, before any modifying work. Otherwise use this conversation only for read-only "
-            "diagnosis or a continuation packet. The normal ship loop belongs to the "
-            "fresh worktree-backed carrier.\n"
+            + "). Treat this session as READ-ONLY until you have moved it. "
+            + _quarantine_remedy_text(root, payload)
+            + "\n"
             + ship_loop_context
         )
     else:
         context = ship_loop_context
+    if adopted:
+        context = (
+            "SESSION BRANCH ADOPTED: this unpublished native session worktree was "
+            "minted on " + _NATIVE_SESSION_BRANCH_PREFIX + root.name + "; the guard "
+            "renamed it to " + adopted + ", the name the current WorktreeCreate hook "
+            "mints, so the session is admitted for delivery work.\n" + context
+        )
     _emit(
         {
             "hookSpecificOutput": {
@@ -4493,11 +4722,19 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
     much later by the Stop hook.
     """
     admitted, reason = _delivery_root_admission(root)
+    if not admitted:
+        # Recompute even when this call adopted nothing: a concurrent hook process
+        # may have won the rename between the two probes, and its loser must not
+        # deny a tree that is already admissible.
+        _adopt_native_session_branch(root)
+        admitted, reason = _delivery_root_admission(root)
     if admitted:
         _seed_relocated_state(root, path)
         return
     tool = str(payload.get("tool_name") or "")
     if tool in _ROOT_QUARANTINE_READ_ONLY_TOOLS or tool in _ROOT_QUARANTINE_REPAIR_TOOLS:
+        return
+    if tool == "Bash" and _is_quarantine_remedy_command(_tool_command(payload)):
         return
     _emit(
         {
@@ -4508,10 +4745,8 @@ def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
                     "SESSION ROOT QUARANTINE: refusing tool "
                     + (tool or "<unknown>")
                     + " because this conversation is not attached to a linked "
-                    "claude/* worktree (" + reason + "). Do not repair this with "
-                    "cd/change_directory or by repointing the shared checkout. Start "
-                    "a fresh worktree-backed Claude session and continue there, or "
-                    "move this one with EnterWorktree onto a linked claude/* worktree."
+                    "claude/* worktree (" + reason + "). "
+                    + _quarantine_remedy_text(root, payload)
                 ),
             }
         }
@@ -4529,15 +4764,35 @@ def _seed_relocated_state(root: Path, path: Path) -> None:
     admitted effectful call: start_head and the dirty baseline are captured before
     that call's side effect, which is the same moment SessionStart would have used.
     Admission never depends on this write; a failure here leaves the tool allowed.
+
+    A record that says this same root is QUARANTINED is re-admitted too. Stop skips
+    enforcement entirely for ``root_admitted: False``, so a root that became
+    admissible in place -- native branch adoption, or a git-identity probe that
+    failed transiently at SessionStart -- would otherwise mutate with no ship loop
+    behind it. Re-admission is a flag flip, never a fresh record: only a record
+    born quarantined has its snapshot taken now (``_capture_deferred_baseline``),
+    while one that was admitted before a resume/compact quarantined it keeps the
+    start_head and baseline that already hold the session's own work.
     """
     try:
-        if _load(path) is not None:
+        existing = _load(path)
+        quarantined = (
+            existing is not None
+            and existing.get("root_admission_v") == _ROOT_ADMISSION_VERSION
+            and existing.get("root_admitted") is False
+        )
+        if existing is not None and not quarantined:
             return
-        state = _initial_state(root, True)
+        if existing is None:
+            state = _initial_state(root, True)
+            state["seeded_by"] = "pre_tool_use_relocation"
+        else:
+            state = existing
+            _capture_deferred_baseline(root, state)
+            state["seeded_by"] = "pre_tool_use_admission"
         state["root_admission_v"] = _ROOT_ADMISSION_VERSION
         state["root_admitted"] = True
         state["root_admission_reason"] = ""
-        state["seeded_by"] = "pre_tool_use_relocation"
         _save(path, state)
     except Exception:
         return

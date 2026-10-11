@@ -18,7 +18,7 @@
       "symbol": "VMRK"
     }
   ],
-  "computed_at": "2026-10-09T08:12:18Z",
+  "computed_at": "2026-10-09T14:11:34Z",
   "counts": {
     "capability": 644,
     "edges": 25194,
@@ -138,10 +138,10 @@
   },
   "rows_appended": {
     "capability": 643,
-    "edges": 93,
-    "evidence": 1,
+    "edges": 0,
+    "evidence": 0,
     "identity_resolution": 2804,
-    "nodes": 78
+    "nodes": 0
   },
   "skipped_suites": {},
   "ths_unmapped_concept_count": 314,

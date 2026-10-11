@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
   "asof": "2026-10-08",
-  "built": "2026-10-09 07:58 UTC",
+  "built": "2026-10-09 13:58 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -2455,7 +2455,7 @@
               "path": "vol_regime.vol_target_scalar",
               "op": "lt",
               "threshold": 0.85,
-              "value": 0.8,
+              "value": 0.78,
               "passed": true
             }
           ],
@@ -2516,7 +2516,7 @@
               "path": "vol_regime.vix",
               "op": "gte",
               "threshold": 25,
-              "value": 15.08,
+              "value": 15.41,
               "passed": false
             }
           ]
@@ -2530,7 +2530,7 @@
               "path": "vol_regime.vol_target_scalar",
               "op": "lt",
               "threshold": 0.85,
-              "value": 0.8,
+              "value": 0.78,
               "passed": true
             }
           ]

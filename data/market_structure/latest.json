@@ -1,18 +1,18 @@
 {
   "schema": "market_structure_context.v1",
-  "asof": "2026-10-08",
-  "built_at": "2026-10-09T06:01:21.343982+00:00",
+  "asof": "2026-10-09",
+  "built_at": "2026-10-11T03:40:34.924072+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
     "regime": "long",
-    "net_gex_bn": 51.679244,
-    "net_gex_pctile": 73.8,
-    "gamma_flip": 7715.054046,
-    "spot": 7765.3599,
-    "dist_to_flip_pct": 0.647824,
-    "days_in_regime": 6,
-    "days_in_regime_observed": 6,
+    "net_gex_bn": 99.882296,
+    "net_gex_pctile": 93.9,
+    "gamma_flip": 7719.338378,
+    "spot": 7811.54,
+    "dist_to_flip_pct": 1.180326,
+    "days_in_regime": 7,
+    "days_in_regime_observed": 7,
     "series_start": "2026-06-15",
     "history": [
       {
@@ -469,11 +469,18 @@
         "regime": "long",
         "flip": 7715.054046,
         "spot": 7765.3599
+      },
+      {
+        "date": "2026-10-09",
+        "net_gex_bn": 99.882296,
+        "regime": "long",
+        "flip": 7719.338378,
+        "spot": 7811.54
       }
     ],
     "coverage": {
-      "last_obs": "2026-10-08",
-      "expected_last_session": "2026-10-08",
+      "last_obs": "2026-10-09",
+      "expected_last_session": "2026-10-09",
       "sessions_behind": 0,
       "window_sessions": 20,
       "missing_recent": [
@@ -485,36 +492,28 @@
   },
   "systematic": {
     "vc": {
-      "alloc_bn": 273.852811,
-      "alloc_frac": 0.912843,
-      "flow_1d_bn": -0.582294,
-      "flow_5d_bn": 0.308339,
-      "state": "pausing",
+      "alloc_bn": 275.794548,
+      "alloc_frac": 0.919315,
+      "flow_1d_bn": 1.941737,
+      "flow_5d_bn": 2.311576,
+      "state": "adding",
       "flow_window_n": 5,
       "aum_bn": 300.0,
       "target_vol_pct": 10.0,
       "series_start": "1927-12-30"
     },
     "cta": {
-      "score": 1.125818,
-      "z": 0.402563,
-      "flow_1d": 0.064078,
-      "flow_5d": 0.530747,
+      "score": 1.081837,
+      "z": 0.339931,
+      "flow_1d": -0.043981,
+      "flow_5d": 0.368205,
       "state": "adding",
       "flow_window_n": 5,
       "cta_near_flat": false
     },
-    "agreement": "split",
+    "agreement": "aligned_adding",
     "flow_window_n": 5,
     "history": [
-      {
-        "date": "2024-10-10",
-        "vc_alloc_bn": 186.364225,
-        "vc_flow_bn": 0.251081,
-        "cta_score": 1.57273,
-        "cta_flow": -0.169509,
-        "spx_close": 5780.049805
-      },
       {
         "date": "2024-10-11",
         "vc_alloc_bn": 186.003113,
@@ -4506,12 +4505,20 @@
         "cta_score": 1.125818,
         "cta_flow": 0.064078,
         "spx_close": 7765.359863
+      },
+      {
+        "date": "2026-10-09",
+        "vc_alloc_bn": 275.794548,
+        "vc_flow_bn": 1.941737,
+        "cta_score": 1.081837,
+        "cta_flow": -0.043981,
+        "spx_close": 7811.540039
       }
     ]
   },
   "vol": {
-    "rv21": 0.09957,
-    "rv63": 0.109548,
+    "rv21": 0.098067,
+    "rv63": 0.108777,
     "rv_cross_state": "calm",
     "vix_curve": [
       {
@@ -6562,36 +6569,44 @@
     ]
   },
   "week_map": {
-    "week_start": "2026-10-05",
-    "week_end": "2026-10-09",
-    "locked_close": 7722.72,
-    "locked_at": "2026-10-02T00:00:00",
-    "band_1sigma_lo": 7587.25,
-    "band_1sigma_hi": 7858.19,
-    "band_2sigma_lo": 7451.78,
-    "band_2sigma_hi": 7993.66,
-    "gamma_flip": 7715.054046,
-    "implied_weekly_pct": 1.75,
+    "week_start": "2026-10-12",
+    "week_end": "2026-10-16",
+    "locked_close": 7811.54,
+    "locked_at": "2026-10-09T00:00:00",
+    "band_1sigma_lo": 7680.2,
+    "band_1sigma_hi": 7942.88,
+    "band_2sigma_lo": 7548.86,
+    "band_2sigma_hi": 8074.22,
+    "gamma_flip": 7719.338378,
+    "implied_weekly_pct": 1.68,
     "source": "spx_iv30_scaled_5d"
   },
   "state_changes": {
-    "vs_asof": "2026-10-06",
+    "vs_asof": "2026-10-08",
     "items": [
       {
         "key": "vc_state",
-        "from": "cutting",
-        "to": "pausing",
-        "note_en": "Vol-control funds: cutting → pausing",
-        "note_zh": "波动率控制基金：减仓 → 暂停",
+        "from": "pausing",
+        "to": "adding",
+        "note_en": "Vol-control funds: pausing → adding",
+        "note_zh": "波动率控制基金：暂停 → 加仓",
+        "display_only": true
+      },
+      {
+        "key": "agreement",
+        "from": "split",
+        "to": "aligned_adding",
+        "note_en": "Systematic agreement: Split → Aligned adding",
+        "note_zh": "系统化机构一致性：分歧 → 一致加仓",
         "display_only": true
       }
     ]
   },
   "prev_state": {
-    "as_of": "2026-10-06",
+    "as_of": "2026-10-08",
     "state": {
       "gamma_regime": "long",
-      "vc_state": "cutting",
+      "vc_state": "pausing",
       "cta_state": "adding",
       "agreement": "split",
       "rv_cross_state": "calm",
