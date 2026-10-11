@@ -1,48 +1,69 @@
-# Factor Atlas Session 3 — Native continuation
+# Factor Atlas Session 3 — cumulative native frontier
 
 Date: 2026-10-11. **MISSION_COMPLETE: false. Capability: BUILT_NOT_PROVEN.**
 
-## Material delta
+## Outcome and material delta
 
-The prior delivery was a conversation-only research/reference package. This candidate supplies two native Macro leaves: qualified constituent-IV aggregation with separate modeled expected move, and an exact-byte legacy Options Hub inspection adapter that never upgrades missing source metadata into certified risk. It also supplies the requested native research/implementation report. No existing options producer, MSC sign, portfolio persistence, customer route, or Prophet path is changed.
+The earlier delivery was a conversation-only research/reference package. This operation now has a native Macro candidate, a published draft PR, two calculation/intake leaves, explicit CI enrollment and a real original-store data-intake receipt. It does not have a qualified positive portfolio expected-move observation or production acceptance.
 
-## Exact identity and source custody
+`engine/options_basket_aggregation.py` separates covered constituent-IV statistics from a full-basket IV-scaled correlation model. Original weights, count/weight coverage, known-at/freshness, method/year basis, input identity and sign-free authority are explicit. Full modeled risk requires every positive-weight member. Unadmitted observations cannot leak through diagnostics or premium concentration. Actual coverage policy parameters travel with the result.
+
+`engine/options_basket_inputs.py` binds exact legacy bytes to digests/root identities and refuses invented certification. Current-registry membership is not a PIT backtest. It never upgrades legacy summaries into qualified IV30 or risk. No existing producer, MSC sign, portfolio database, customer route or Prophet path is modified.
+
+The requested report is `research/factor_atlas/03_OPTIONS_POSITIONING_AND_FACTOR_RISK.md`, a native execution edition with all five tracks, census/parity limitations, mathematics, data/rights gates, contracts, portfolio architecture and implementation waves. The expanded prior attachment remains separately identified by digest, not claimed as a byte-for-byte native import.
+
+## Exact custody and canonical save
 
 - Operation: `factor-atlas-s3-native-20261011-c1`.
 - Repository: `mastermindx-market-intelligence/macro`.
-- Allocator-derived branch: `sol/web-factor-atlas-s3-native-20261011-c1`.
-- Base: `773d6cc2f18fdbce5441e484abc16eb30d8ba3db`.
-- Protected Mastermind procedure: `8e38a4ce8365fb3f0591d5729f228394b35d125d`, Skillpack 1.0.1.
-- Source carrier: one successfully acquired managed Macro workspace, Studio Direct/native Git. Acquisition APPLIED, not reused; all acknowledged file effects remain on this carrier. No active child, job, watcher or uncertain modification.
-- Independent source work is permitted under the current Chairman commission. Executive's inspected surface was readonly and Workbench's tunnel was offline. No job/admission/worker execution or automatic return is claimed. Direct execution rationale: no eligible pre-effect worker admitted on the inspected surface; narrow source work remains useful and authorized independently.
+- Managed branch: `sol/web-factor-atlas-s3-native-20261011-c1`.
+- Source base: `773d6cc2f18fdbce5441e484abc16eb30d8ba3db`.
+- Protected procedure: Mastermind `8e38a4ce8365fb3f0591d5729f228394b35d125d`, Skillpack 1.0.1.
+- Draft/HOLD PR: **#8791**. Initial commit `5a6fc791ad9a6f59a2dcad7e3718bb62ce64277b` was pushed and exact remote head verified. This checkpoint's containing commit carries the subsequent CI and native-data evidence; use the PR's exact current head/readback for that revision, not the initial head as a permanent latest pointer.
+- One acquired managed Macro workspace; Studio Direct/native Git source carrier. Acquisition and every subsequent write were acknowledged. No active child, watcher, worker, deployment, raw-chain copy or uncertain modifying effect.
+- Executive's inspected surface was readonly; Workbench's tunnel was offline. No admission/dispatch is claimed. Direct native source work remained independently authorized under the current Chairman commission; no worker's active operation was displaced.
 
-## Verification
+## Verification and actual data discovery
 
-`tests/test_options_basket_aggregation.py` plus `tests/test_options_basket_inputs.py` pass **85 tests on Python 3.12.13**. `evidence/native-tests-py312.xml` binds that run. Earlier `native-tests.xml` records the 83-case pre-policy-hardening Python 3.14 run; it is historical evidence, not the final-head test count.
+The two native suites plus `tests/test_options_basket_ci.py` contain **86 tests**. See the final `evidence/native-tests-ci-enrolled.xml` and cumulative `evidence/native-verification.json`. Older XML files retain earlier 83- and 85-case runs and are not final-head proof.
 
-The initial native-module absence and initial adapter absence failed before implementation. Seven adversarial tests subsequently exposed excluded-IV diagnostic leakage, unadmitted premium contamination and unsafe refusal/scalar serialization; all were repaired without weakening their assertions. Two final tests exposed malformed correlation metadata and missing explicit policy parameters; those were repaired too.
+Test-first failures were observed before both initial implementations. Seven adversarial tests exposed excluded-IV diagnostic leakage, unadmitted premium and JSON serialization defects; two final math-contract tests exposed malformed correlation metadata and missing explicit policy parameters. All were repaired without weakening assertions. CI enrollment and its manifest dependency were also tested before wiring.
 
-Native synthetic scenario replay with PYTHONHASHSEED 1 and 777 produced byte-identical output, SHA-256 `147f59969647ab5888cdf74f6bbf0fb1422e587f998349dc80630e93a788890c`. This is **synthetic**, not current market data. Mean member IV is 0.3971428571, RMS IV 0.4231852009, and the assumed-correlation 30-calendar-day model move is 0.0802935626 versus 0.1138573184 from using mean member IV as portfolio IV. 30%, 40% and 50% missing-name cases all return null full-risk output. The exact synthetic inputs/methods travel in the reproduction source and output.
+The synthetic native replay is byte-identical for hash seeds 1 and 777, SHA-256 `147f59969647ab5888cdf74f6bbf0fb1422e587f998349dc80630e93a788890c`. Inputs are synthetic: mean member IV 0.3971428571; RMS IV 0.4231852009; modeled 30-calendar-day move at assumed correlation 0.4 is 0.0802935626, versus 0.1138573184 from incorrectly treating mean IV as portfolio IV. Missing 30/40/50% cases withhold full risk. This proves calculation/refusal, not market calibration.
 
-A native definition-only witness read the existing `data/baskets/membership.json` at the acquired base, SHA-256 `b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a`. The seven actual registry Mag7 identities were preserved. No market payload was obtained: 0/7 observed payloads, 0/7 qualified values, expected move null. The known-at is this current byte observation, **not historical membership knowledge**. The derived receipt is `evidence/native-definition-preflight.json`; it proves the native membership/withholding seam only.
+The actual registry definition at the base has SHA-256 `b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a`. Its seven Mag7 identities were retained in a native current-definition witness, even with zero option payloads supplied. That witness has current-observation known-at only, not historic PIT membership knowledge.
 
-The existing canonical `engine.thetadata_store.resolve_thetadata_store()` returned NONE on this source host. No provider request, new store or alternative mirror was used. This source result does not prove the feed absent on another approved owner host, but this workspace has no admitted positive data source.
+The M2 canonical store resolver returned NONE, but this was not the end of source recovery. `ops/THETADATA_R2_SYNC_RUNBOOK.md` identifies the original store's migration to M1. The documented `ssh m1` binding reached the existing host, original symlink/store and installed Python/Arrow environment. Nothing was installed, copied, downloaded or published.
 
-## Do not redo / preserved gates
+**Real M1 intake:** all seven Greek-year files exist; latest observation date is 2026-10-08. The October 8 anchor contains **31,000 contract rows**, of which **29,837** pass a basic finite-positive-IV/spot and noncrossed bid/ask diagnostic. All seven roots have exact/bracketing 30-day listed tenors. This diagnostic is **not** ATM, quote/surface quality or price certification. Each original file was hashed, with stable size/mtime across the read. The receipt is `evidence/m1-source-intake.json`, SHA-256 `bfd185ce5fe36457a91b94f485edb4367ef9d3011ab3714fc97522341952fcae`.
 
-- Do not rerun or reconstruct the earlier 67-test offline package as new native proof. Its original report is identified in the native report; that report is a new native execution edition, not an asserted byte-for-byte import of the expanded attachment.
-- Preserve S1 #8680, S2 #8677, S4 #8703 and S6 #8696. Inspected file surfaces were disjoint; no sibling custody or release was assumed. No other source cleanup/refactor is in scope.
-- A host-side protected-procedure diff read and a combined AGENTS/CLAUDE/optional-build-registry read were blocked before execution. They were not retried or rerouted. These refusals are action-scoped; current protected procedure loaded through the separate accepted source path supplies normal independent source/test authority.
-- A separate attempted producer-integration test append was explicitly blocked before execution. It remains **NOT_APPLIED**, and no equivalent test was moved, replayed, manually executed or delegated. Preserve this exact proof boundary until legitimate clearance; unit/fixture tests are not that integration proof.
-- The earlier public R2 AAPL request returned HTTP 403. No retry or mirror substitution was made.
-- No current feed entitlement, quote-quality, external redistribution scope, live/native producer integration, production consumer, risk calibration, independent review, required CI, merge or deployment is claimed by local tests.
-- No changes to MSC signs, chain/history stores, portfolio database, provider credentials, subscriptions, runtime allocation or Prophet/sizing authority.
+Only the `date` field was available as a source clock. Precise quote/publication/known-at clocks, owner freshness and a matching covariance receipt are not supplied. No historical availability was invented. No raw market values were exported; no native producer was invoked; no public R2 refusal was retried or mirrored. A qualified expected move remains null.
 
-## Exact remaining frontier
 
-1. Publish this scoped candidate and this evidence on its own draft/HOLD PR; verify the exact remote head. No force push or merge-on-green. Local/source persistence and hosted CI/review remain separate.
-2. Consume the existing options owner's source-host/data-contract receipt for one already-held common historical Mag7 anchor. Required: original definition/weights, exact quote/IV methodology, source quality, publication/known-at/valid-until clocks, corporate-action identity, covariance sample and data-use decision. Do not create another store or turn the R2 refusal into mirror permission.
-3. Run the existing native leaf with those qualified inputs and save only a permitted derived real-data receipt. A correctly withheld run is negative-data proof, not complete portfolio risk. The unavailable producer-integration proof remains separately held.
-4. Finish independent exact-head review, required CI and native authenticated consumer/deployment proof through the existing release owners before any live claim. Add no autonomous position sizing or options-to-Prophet promotion.
 
-The requested first positive native measurement is **unfinished**. The source capability and native definition/refusal seam now exist; the missing dependencies are an admitted qualified options/covariance source, the separately blocked integration proof, and normal review/publication/product gates. Checkpoints are recoverable saves, not project acceptance or automatic execution.
+Collector metadata was checked separately from Parquet fields. The original `_manifest.json` has a healthy `daily_refresh` with processing D=2026-10-09, source S=2026-10-08 and completion `2026-10-10T01:04:25.406377+00:00`; its older top-level `updated_at` must not be mistaken for the current batch status. This is genuine batch-level clock evidence, not a digest-bound per-quote/per-root historical publication ledger or a surface-quality certificate. Preserve both clock granularities. The exact selected receipt is `evidence/m1-batch-receipt.json`.
+
+## CI, review and release boundaries
+
+The follow-on change adds the new source/tests and synthetic reproduction to the **existing** `options-skew-engine` code-pack group. No workflow or scheduler is created. The manifest itself is included as an exclusive-scope dependency. `scripts/run_ci_pack.py --validate-only` validates the current catalog; the new structural test verifies actual suite execution and paths. The scoped canonical closure receipt reports only this existing group, not a full contract-delta or hosted-CI success.
+
+On initial head `5a6fc791ad9a...`, `ci-plan`, `ci-authority`, `fence-pack`, the broker and several control-plane checks passed; `contract-delta` and `ci-authority/codex/merge-queue-pilot` failed, with most code packs still running at inspection. Run `38130820966`, contract-delta job `114444595592`. No failing status was overridden. The missing native test enrollment was independently identified and repaired, but the old failure's complete log was not obtained and is not falsely attributed solely to that defect. Fresh exact-head hosted checks and independent review remain required.
+
+## Do not redo / exact fences
+
+- Do not reconstruct the earlier 67-test offline reference as new native proof. Preserve source hashes and previously accepted calculations unless relevant behavior changed.
+- Preserve S1 #8680, S2 #8677, S4 #8703 and S6 #8696. Their inspected implementation surfaces remain intact; the CI addition is narrowly inside the existing options group, not another worker's logic.
+- A protected-procedure host diff read and a combined AGENTS/CLAUDE/optional-registry read were blocked before execution and never replayed or rerouted. Ordinary independent source work proceeded under the current protected procedure and current assignment.
+- A specific attempted producer-integration test append was explicitly refused before execution. It is **NOT_APPLIED**. No equivalent append/test was moved, manually executed or delegated. This proof boundary is still open.
+- The earlier public AAPL R2 request returned 403 and remains frozen. The later original M1 parquet intake is separate native-source diagnosis, not a mirror of that denied artifact.
+- No current redistribution/license scope, calibrated probability, observed synthetic-basket IV, full dealer inventory, historical PIT quote availability, production user path, independent review, merge or deployment is established by these tests.
+- No MSC sign change, chain store, new portfolio persistence, credentials, feed purchase, production publisher, autonomous position sizing or Prophet promotion.
+
+## Next actions and actual remaining gates
+
+1. Consume exact-head hosted checks and independent review on #8791; preserve initial-head failures and distinguish fresh candidate results. Never merge a draft or bypass failing controls.
+2. Use the **already located M1 source**, not a new store. The options owner must supply a truthful root-method/quote-quality and observation/publication/known-at/valid-until receipt for a permitted common anchor, plus matching covariance and data-use decisions. Existing retrospective file dates do not prove missing historical clocks.
+3. Consume those qualified inputs with the native leaf and retain only a permitted derived measurement receipt. Source inspection and a correct null result are not a positive full-risk pilot. The separately refused producer-integration proof remains independently held.
+4. Only after accepted source/publication contracts, complete the existing authenticated consumer path and governed product/deployment proof. No runtime worker or future automatic wake is claimed by this checkpoint.
+
+Physical data location and native write access are no longer the blockers. The remaining positive-risk/product gates are truthful source qualification, covariance/rights, the unperformed producer-integration proof and ordinary exact-head CI/review/release acceptance. The current native work is recoverable, and the broader commission is still unfinished.

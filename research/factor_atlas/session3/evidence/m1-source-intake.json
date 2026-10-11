@@ -1,0 +1,128 @@
+{
+  "anchor": "2026-10-08",
+  "gates": [
+    "precise observation/publication/known-at and owner freshness receipts absent",
+    "basic numeric filter is not qualified ATM or delta-surface methodology",
+    "matching covariance owner receipt absent",
+    "data-use/publication gate not changed"
+  ],
+  "historical_known_at_proven": false,
+  "native_producer_called": false,
+  "new_chain_stores": 0,
+  "observed_at": "2026-10-11T10:17:39.814729+00:00",
+  "original_store_read_only": true,
+  "provider_requests": 0,
+  "qualified_expected_move": null,
+  "raw_market_values_exported": false,
+  "retrospective_current_store_observation": true,
+  "roots": [
+    {
+      "anchor_rows": 3550,
+      "annual_rows": 634164,
+      "artifact": "greeks/AAPL/2026.parquet",
+      "available_clock_fields": [
+        "date"
+      ],
+      "basic_filter_is_not_source_qualification": true,
+      "basic_numeric_quote_iv_rows": 3249,
+      "bytes": 45613869,
+      "has_exact_or_bracketing_30d_tenor": true,
+      "root": "AAPL",
+      "sha256": "62b2510fa89f42e5d0e0585492f138b83c894065c330c42de3ea493eff0b5a96",
+      "stat_stable": true
+    },
+    {
+      "anchor_rows": 2484,
+      "annual_rows": 473856,
+      "artifact": "greeks/AMZN/2026.parquet",
+      "available_clock_fields": [
+        "date"
+      ],
+      "basic_filter_is_not_source_qualification": true,
+      "basic_numeric_quote_iv_rows": 2433,
+      "bytes": 35177661,
+      "has_exact_or_bracketing_30d_tenor": true,
+      "root": "AMZN",
+      "sha256": "b62fd2dc270cc3d623b7270d89d6d05958f031d7ba5992908737adb216a8db22",
+      "stat_stable": true
+    },
+    {
+      "anchor_rows": 4748,
+      "annual_rows": 882454,
+      "artifact": "greeks/GOOGL/2026.parquet",
+      "available_clock_fields": [
+        "date"
+      ],
+      "basic_filter_is_not_source_qualification": true,
+      "basic_numeric_quote_iv_rows": 4604,
+      "bytes": 63542971,
+      "has_exact_or_bracketing_30d_tenor": true,
+      "root": "GOOGL",
+      "sha256": "606e384844b83deba5ddd5aeda01975b25b4da58002a775f48a7276a1effcc72",
+      "stat_stable": true
+    },
+    {
+      "anchor_rows": 7240,
+      "annual_rows": 1364332,
+      "artifact": "greeks/META/2026.parquet",
+      "available_clock_fields": [
+        "date"
+      ],
+      "basic_filter_is_not_source_qualification": true,
+      "basic_numeric_quote_iv_rows": 7044,
+      "bytes": 100026050,
+      "has_exact_or_bracketing_30d_tenor": true,
+      "root": "META",
+      "sha256": "b51373155dc4b615ae680d1d51921cd7bf99bc2249fb04e72390e07dec41a110",
+      "stat_stable": true
+    },
+    {
+      "anchor_rows": 3786,
+      "annual_rows": 707960,
+      "artifact": "greeks/MSFT/2026.parquet",
+      "available_clock_fields": [
+        "date"
+      ],
+      "basic_filter_is_not_source_qualification": true,
+      "basic_numeric_quote_iv_rows": 3658,
+      "bytes": 51898853,
+      "has_exact_or_bracketing_30d_tenor": true,
+      "root": "MSFT",
+      "sha256": "2998638536bbc8a098e6491e6941345da8a3586a362774dee31171c4514f9175",
+      "stat_stable": true
+    },
+    {
+      "anchor_rows": 4322,
+      "annual_rows": 730886,
+      "artifact": "greeks/NVDA/2026.parquet",
+      "available_clock_fields": [
+        "date"
+      ],
+      "basic_filter_is_not_source_qualification": true,
+      "basic_numeric_quote_iv_rows": 4151,
+      "bytes": 51746017,
+      "has_exact_or_bracketing_30d_tenor": true,
+      "root": "NVDA",
+      "sha256": "bfc73864da5679ddf1b41a128217cc45c19bf89d1686b614adfe2f534437d858",
+      "stat_stable": true
+    },
+    {
+      "anchor_rows": 4870,
+      "annual_rows": 1089338,
+      "artifact": "greeks/TSLA/2026.parquet",
+      "available_clock_fields": [
+        "date"
+      ],
+      "basic_filter_is_not_source_qualification": true,
+      "basic_numeric_quote_iv_rows": 4698,
+      "bytes": 79789795,
+      "has_exact_or_bracketing_30d_tenor": true,
+      "root": "TSLA",
+      "sha256": "576e8ce8e4bc5777836dd987653df11615c0dd436b6e328f6da85f81a5dfaa9d",
+      "stat_stable": true
+    }
+  ],
+  "schema": "factor_atlas.s3.native_source_intake/v1",
+  "source_host": "documented M1 options owner",
+  "source_quality_certified": false
+}

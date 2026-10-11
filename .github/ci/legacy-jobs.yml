@@ -22326,6 +22326,15 @@ jobs:
       - "scripts/ci/daily_engine_regional_desk_builders.sh"
       - "scripts/validate_options_skew.py"
       - "tests/test_options_skew.py"
+      # Factor Atlas S3: pure aggregation and byte-bound legacy inspection.
+      # Existing code-pack owner; no second workflow or production integration.
+      - ".github/ci/legacy-jobs.yml"
+      - "engine/options_basket_aggregation.py"
+      - "engine/options_basket_inputs.py"
+      - "tests/test_options_basket_aggregation.py"
+      - "tests/test_options_basket_inputs.py"
+      - "tests/test_options_basket_ci.py"
+      - "research/factor_atlas/session3/reproduce_native_scenarios.py"
       # MKT-1 hosted execution (Sol 5987749403). scope: exclusive skips
       # inference, so the suite's measured import closure is listed here.
       # A non-exclusive owner fallback-selects ordinary packing probes.
@@ -22376,6 +22385,10 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: options skew engine
         run: python -m pytest tests/test_options_skew.py -q
+      - name: Factor Atlas basket options qualification and sparse-data guards
+        run: |
+          python -m pytest tests/test_options_basket_aggregation.py tests/test_options_basket_inputs.py tests/test_options_basket_ci.py -q
+          python -m research.factor_atlas.session3.reproduce_native_scenarios > /dev/null
       - name: price-pressure response export + MKT-1 regressions (K3E MKT-1 hosted execution; Sol 5987749403)
         run: python -m pytest tests/test_price_pressure.py -q -rs
 

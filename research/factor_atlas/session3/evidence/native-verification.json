@@ -1,33 +1,65 @@
 {
   "base_sha": "773d6cc2f18fdbce5441e484abc16eb30d8ba3db",
   "blocked_integration_test_append": "NOT_APPLIED; no replay",
+  "ci_enrollment": {
+    "existing_job": "options-skew-engine",
+    "hosted_checks_passed": false,
+    "manifest_validated": true,
+    "new_workflows": 0,
+    "scoped_canonical_closure_findings": 0
+  },
   "existing_store_preflight": {
     "provider_requests": 0,
     "reader": "engine.thetadata_store.resolve_thetadata_store",
     "resolved": false
   },
+  "initial_published_head": "5a6fc791ad9a6f59a2dcad7e3718bb62ce64277b",
   "mission_complete": false,
   "native_definition": {
     "current_observation_not_pit": true,
     "qualified_option_values": 0,
     "roots": 7
   },
-  "observed_at": "2026-10-11T10:05:11.362259+00:00",
+  "native_source_intake": {
+    "all_stat_stable": true,
+    "anchor": "2026-10-08",
+    "anchor_rows": 31000,
+    "basic_numeric_rows": 29837,
+    "batch_D": "2026-10-09",
+    "batch_S": "2026-10-08",
+    "batch_clock_metadata_present": true,
+    "batch_finished_at": "2026-10-10T01:04:25.406377+00:00",
+    "historical_known_at_proven": false,
+    "original_host": "documented M1 owner",
+    "raw_market_values_exported": false,
+    "roots": 7,
+    "source_quality_certified": false
+  },
+  "observed_at": "2026-10-11T10:29:11.989350+00:00",
   "operation_id": "factor-atlas-s3-native-20261011-c1",
+  "pr_number": 8791,
   "procedure_sha": "8e38a4ce8365fb3f0591d5729f228394b35d125d",
   "production_proven": false,
   "python": "3.12.13",
   "schema": "factor_atlas.s3.native_verification/v1",
   "source_hashes": {
+    ".github/ci/legacy-jobs.yml": "fafdf78a742b21f58828195075337939458898858cbdc289c96b88642ef5ab6a",
     "engine/options_basket_aggregation.py": "7558b7953535fe479baa7833db5a6ea3ffa3d94273de693aec73c2495d449a32",
     "engine/options_basket_inputs.py": "a2adf675c927dec8873d5cab9e7886b40c09bf389b0e8e58d35e164006bb67da",
-    "research/factor_atlas/03_OPTIONS_POSITIONING_AND_FACTOR_RISK.md": "ee3fb750996e915fc80283b5d6fde77a7348b7fbe26548edf651b0ba4a030cb9",
-    "research/factor_atlas/session3/NATIVE_CONTINUATION.md": "70524bc10559a8877e364efce986546d64a7cfdb07d9e815b0b2306676905f79",
+    "research/factor_atlas/03_OPTIONS_POSITIONING_AND_FACTOR_RISK.md": "776596777b4aa837a4b0abb96c774d1478fad6b3baa51a7d0677fa66dc06e79c",
+    "research/factor_atlas/session3/NATIVE_CONTINUATION.md": "660320de921c187a0b9990ffa3a0e6c1ca18168fd116e996e3b89590bbfb98fd",
+    "research/factor_atlas/session3/evidence/ci-manifest-preflight.json": "8115f86feeededa684f28c63dda73902df1af9ae4a64c3d0a11fd70c91cb7805",
+    "research/factor_atlas/session3/evidence/m1-batch-receipt.json": "b50d29d33e8560123c7d9267a5519327859d665ba68f99c59adf5d557ebcd393",
+    "research/factor_atlas/session3/evidence/m1-source-intake.json": "bfd185ce5fe36457a91b94f485edb4367ef9d3011ab3714fc97522341952fcae",
     "research/factor_atlas/session3/evidence/native-definition-preflight.json": "bf00ce1c98ca2128210c43964552e745375ee417c10f52a62005eafa5e889a56",
+    "research/factor_atlas/session3/evidence/native-tests-ci-enrolled.xml": "4e57d7ae5b849cded908a31ba79114f71a17306cc5b2c922e04434dc04aa9dd9",
     "research/factor_atlas/session3/evidence/native-tests-py312.xml": "be2d52ffb72fb7395866a5047d62648e4cc6b739cbd79b4175a98c6e9addea6f",
+    "research/factor_atlas/session3/evidence/native-tests.xml": "1de2f729db1ac2785052e46cc8cb305bfff270f1ed55679c431af2a5f1441786",
+    "research/factor_atlas/session3/evidence/scoped-ci-closure.json": "e3d870c0a51f3a69ba750825b42079a49ee893e17b684f2120b1ca4b370f2038",
     "research/factor_atlas/session3/evidence/synthetic-scenarios.json": "147f59969647ab5888cdf74f6bbf0fb1422e587f998349dc80630e93a788890c",
     "research/factor_atlas/session3/reproduce_native_scenarios.py": "202d4af1f7477059654f22caaabab229ebb820ca8cffe8e04a5cf23d2c5fce0c",
     "tests/test_options_basket_aggregation.py": "9c9d020bd227fd190801be5d09dcb96b2c2d646b078abf814cfaad9a7a3f4cc4",
+    "tests/test_options_basket_ci.py": "b072bf3201ba06f83b8c3a866ba880db9183dd9342d9fb49e0bb5039c4ba53f4",
     "tests/test_options_basket_inputs.py": "bfaf87080116f8b4524efc4be56c46d9d67ff69ae083182961c32a9b00fcf0bf"
   },
   "synthetic_replay": {
@@ -38,11 +70,11 @@
       777
     ]
   },
-  "test_command": "python3.12 -B -m pytest -q tests/test_options_basket_aggregation.py tests/test_options_basket_inputs.py --basetemp=<unique native temporary directory> --junitxml=research/factor_atlas/session3/evidence/native-tests-py312.xml",
+  "test_command": "python3.12 -B -m pytest -q tests/test_options_basket_aggregation.py tests/test_options_basket_inputs.py tests/test_options_basket_ci.py --basetemp=<unique native directory> --junitxml=research/factor_atlas/session3/evidence/native-tests-ci-enrolled.xml",
   "tests": {
     "errors": 0,
     "failures": 0,
     "skipped": 0,
-    "tests": 85
+    "tests": 86
   }
 }
