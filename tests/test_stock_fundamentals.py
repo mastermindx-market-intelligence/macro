@@ -7,6 +7,8 @@ import math
 import sys
 from pathlib import Path
 
+import pandas as pd
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import stock_fundamentals as SF  # noqa: E402
@@ -1454,3 +1456,44 @@ def _run():
 
 if __name__ == "__main__":
     sys.exit(_run())
+
+
+def test_valuation_context_for_tickers_reuses_stock_fundamentals_owner(monkeypatch):
+    """Arbitrary rosters reuse the stock-page valuation math; coverage stays explicit."""
+    fund = pd.DataFrame(
+        {
+            "ni": [100_000_000.0, 50_000_000.0],
+            "equity": [500_000_000.0, 250_000_000.0],
+            "revenue": [1_000_000_000.0, 500_000_000.0],
+            "cfo": [150_000_000.0, 80_000_000.0],
+            "dividends": [10_000_000.0, 0.0],
+            "repurchases": [20_000_000.0, 5_000_000.0],
+        },
+        index=["A", "B"],
+    )
+    table = {
+        "A": {"ticker": "A", "sector": "Technology", "mktcap_bn": 1.0, "value": -1.0},
+        "B": {"ticker": "B", "sector": "Industrials", "mktcap_bn": 0.5, "value": 0.3},
+    }
+    monkeypatch.setattr(SF, "_load_fundamentals", lambda: fund)
+    monkeypatch.setattr(
+        SF,
+        "_load_factors",
+        lambda: {"table": table, "labels": {}, "n": 2, "insider": {}},
+    )
+    monkeypatch.setattr(SF, "_load_statements", lambda: {})
+    monkeypatch.setattr(SF, "_load_deep", lambda: {"A": {"fwd_pe": 42.0}})
+
+    out = SF.valuation_context_for_tickers(["B", "A", "MISSING", "A"])
+
+    assert set(out) == {"A", "B"}
+    assert out["A"]["forward_pe"] == 42.0
+    assert out["A"]["forward_tier"] == "deep"
+    assert out["B"]["forward_pe"] is None
+    assert out["B"]["forward_tier"] == "lite"
+    assert out["B"]["trailing_pe"]["v"] == 10.0
+
+
+def test_valuation_context_for_tickers_missing_owner_store_is_honest_empty(monkeypatch):
+    monkeypatch.setattr(SF, "_load_fundamentals", lambda: None)
+    assert SF.valuation_context_for_tickers(["A", "B"]) == {}
