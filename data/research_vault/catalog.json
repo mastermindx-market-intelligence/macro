@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T22:06:51.539958+00:00",
-  "count": 2834,
+  "generated_at": "2026-10-11T22:36:56.039794+00:00",
+  "count": 2835,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -822,6 +822,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-stzblc3lgcn-40b123",
+      "title": "BofA Global Rates Weekly License to steepen 2026 10 09",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T00:07:19Z",
+      "summary_points": [
+        "US CPI/FOMC Policy Risk: Firm CPI/growth may force Fed to hike (vs. tolerate bond selloff); Treasury survey (Nov 16) key for long-end supply cuts (35-40% odds of 20-30Y cuts, $4-6B total), supporting 30Y spreads/20Y fly.",
+        "EU Curve Volatility & France Budget: EU vol surged on ECB/fiscal/duration risks; France’s budget stabilizes OAT spreads (100-150bp), while ME energy spikes threaten EUR front-end unwinding.",
+        "UK Fiscal Shock: £10bn higher Gross Financing Requirement (GFR) for 2026-27 driven by CGNCR overshoot, discretionary loosening (£5bn), and paused Gilt sales; financed via T-bill sales (shorter WAM).",
+        "UKTi Linker Liability Risk: Linker indexation charge projected to rise £20bn→£37bn (2026/27) due to Jan 2027 RPI, straining fiscal position vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
       "language": "en",
       "needs_metadata": false
     },
