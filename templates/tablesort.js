@@ -108,26 +108,43 @@
 
     Array.prototype.forEach.call(header.cells, function (th, i) {
       th.classList.add('th-sort');
+      if (!th.hasAttribute('tabindex')) th.setAttribute('tabindex', '0'); // keyboard-reachable, keep a preset value
+      if (th.tagName === 'TD' && !th.hasAttribute('role')) th.setAttribute('role', 'columnheader'); // legacy TD headers
       var arrow = document.createElement('span');
       arrow.className = 'sarrow';
       arrow.textContent = '↕';
+      arrow.setAttribute('aria-hidden', 'true'); // the arrow is decoration; the aria-sort on the cell is the truth
       var help = th.querySelector('.help');
       if (help) th.insertBefore(arrow, help); else th.appendChild(arrow);
 
-      th.addEventListener('click', function (e) {
-        if (e.target.closest('.help')) return; // let tooltips be tooltips
+      // one activation body shared by mouse and keyboard (site20 S2-02)
+      function activate() {
         var cur = th.getAttribute('data-dir');
         var dir = cur ? (cur === 'desc' ? 1 : -1)
                       : (isNumericCol(dataRows(table), i) ? -1 : 1); // numeric → high-first (live rows)
         Array.prototype.forEach.call(header.cells, function (o) {
           o.removeAttribute('data-dir'); o.classList.remove('sorted');
+          o.removeAttribute('aria-sort'); // exactly one announced sort column, never "none"
           var a = o.querySelector('.sarrow'); if (a) a.textContent = '↕';
         });
         th.setAttribute('data-dir', dir === -1 ? 'desc' : 'asc');
+        th.setAttribute('aria-sort', dir === -1 ? 'descending' : 'ascending');
         th.classList.add('sorted');
         arrow.textContent = dir === -1 ? '↓' : '↑';
         sortBy(table, i, dir);
         if (sortObserver) sortObserver.takeRecords(); // our own re-order is not a population change
+      }
+
+      th.addEventListener('click', function (e) {
+        if (e.target.closest('.help')) return; // let tooltips be tooltips
+        activate();
+      });
+      th.addEventListener('keydown', function (e) {
+        if (e.target !== th) return; // focus on the header itself, never on a child (.help, link, input)
+        if (e.altKey || e.ctrlKey || e.metaKey) return;
+        if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+        e.preventDefault(); // Space must not scroll the page
+        activate();
       });
     });
 

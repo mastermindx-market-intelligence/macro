@@ -1,6 +1,7 @@
 'use strict';
 /* Browser tests for templates/tablesort.js (site20 S2-01 numeric grammar,
-   S2-03 live-row population). Fixtures are inline HTML + the script source
+   S2-03 live-row population, S2-02 keyboard sort + aria-sort, S2-04 filter
+   status + no-results reset). Fixtures are inline HTML + the script source
    injected via addScriptTag: no network, no site/ dependency, so the suite
    works in sparse CI checkouts. Set TABLESORT_SOURCE to point at another
    copy of the source (e.g. origin/main bytes for red runs). */
@@ -376,3 +377,108 @@ test('S2-03: composed #7502 filter copy localizes on langchange', async (t) => {
     assert.equal(await page.locator('.tbl-filter input').getAttribute('placeholder'), '筛选…');
   });
 });
+
+/* ---------------- S2-02: keyboard-operable, announced sorting ---------------- */
+
+test('S2-02: sort headers are keyboard-reachable; sarrow hidden; TD headers get role', async () => {
+  await withPage(doc(
+    '<table><thead><tr><th tabindex="-1">A</th><th>B</th></tr></thead><tbody>' +
+    '<tr><td>x</td><td>1</td></tr><tr><td>y</td><td>2</td></tr></tbody></table>' +
+    '<table><tbody><tr><td>H1</td><td>H2</td></tr>' +
+    '<tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></tbody></table>'), async page => {
+    const state = await page.evaluate(() => {
+      const thA = document.querySelectorAll('table')[0].tHead.rows[0].cells[0];
+      const thB = document.querySelectorAll('table')[0].tHead.rows[0].cells[1];
+      const tdH = document.querySelectorAll('table')[1].tBodies[0].rows[0];
+      return {
+        preset: thA.tabIndex,
+        fresh: thB.tabIndex,
+        arrows: Array.prototype.map.call(document.querySelectorAll('.sarrow'),
+          a => a.getAttribute('aria-hidden')),
+        tdRole: [tdH.cells[0].getAttribute('role'), tdH.cells[1].getAttribute('role')],
+        tdTab: [tdH.cells[0].tabIndex, tdH.cells[1].tabIndex],
+      };
+    });
+    assert.equal(state.preset, -1);            // a pre-set tabindex survives untouched
+    assert.equal(state.fresh, 0);              // new headers enter the tab order
+    assert.deepEqual(state.arrows, ['true', 'true', 'true', 'true']); // decorative arrows hidden
+    assert.deepEqual(state.tdRole, ['columnheader', 'columnheader']); // legacy TD header row
+    assert.deepEqual(state.tdTab, [0, 0]);
+  });
+});
+
+test('S2-02: Enter sorts a focused numeric header desc, Space toggles asc, focus stays, page does not scroll', async () => {
+  await withPage(doc(bigTable(14)), async page => {
+    await page.setViewportSize({width: 400, height: 250}); // 15 rows + filter > viewport
+    assert.equal(await page.evaluate(() => document.documentElement.scrollHeight >
+      window.innerHeight), true, 'page is taller than the viewport');
+    const focused = await page.evaluate(() => {
+      const th = document.querySelector('table thead th:nth-child(2)');
+      th.focus();
+      return document.activeElement === th;
+    });
+    assert.equal(focused, true, 'the header itself took focus');
+    await page.keyboard.press('Enter');
+    assert.equal(await dirOf(page, 0, 1), 'desc');
+    assert.equal(await page.evaluate(() =>
+      document.querySelector('table thead th:nth-child(2)').getAttribute('aria-sort')), 'descending');
+    assert.deepEqual(await colKeys(page, 0, 1),
+      ['140', '130', '120', '110', '100', '90', '80', '70', '60', '50', '40', '30', '20', '10']);
+    assert.equal(await page.evaluate(() =>
+      document.activeElement === document.querySelector('table thead th:nth-child(2)')), true,
+      'focus stays on the activated header');
+    const before = await page.evaluate(() => window.scrollY);
+    await page.keyboard.press(' ');
+    assert.equal(await dirOf(page, 0, 1), 'asc');
+    assert.equal(await page.evaluate(() =>
+      document.querySelector('table thead th:nth-child(2)').getAttribute('aria-sort')), 'ascending');
+    assert.deepEqual(await colKeys(page, 0, 1),
+      ['10', '20', '30', '40', '50', '60', '70', '80', '90', '100', '110', '120', '130', '140']);
+    assert.equal(await page.evaluate(() =>
+      document.activeElement === document.querySelector('table thead th:nth-child(2)')), true,
+      'focus still on the header after Space');
+    assert.equal(await page.evaluate(() => window.scrollY), before, 'Space never scrolled the page');
+  });
+});
+
+test('S2-02: exactly one aria-sort survives a column switch; mouse click sets it too', async () => {
+  await withPage(doc(table(['A', 'B'], [['b', '2'], ['a', '1'], ['c', '3']])), async page => {
+    await page.evaluate(() => document.querySelector('table thead th').focus());
+    await page.keyboard.press('Enter'); // text col: first activation asc
+    assert.deepEqual(await page.evaluate(() => Array.prototype.map.call(
+      document.querySelector('table thead').rows[0].cells,
+      c => c.getAttribute('aria-sort'))), ['ascending', null]);
+    await clickHeader(page, 0, 1); // mouse on the other (numeric) column
+    assert.deepEqual(await page.evaluate(() => Array.prototype.map.call(
+      document.querySelector('table thead').rows[0].cells,
+      c => c.getAttribute('aria-sort'))), [null, 'descending']);
+    assert.equal(await page.evaluate(() => Array.prototype.filter.call(
+      document.querySelector('table thead').rows[0].cells,
+      c => c.getAttribute('aria-sort') !== null).length), 1,
+      'exactly one header carries aria-sort, never aria-sort="none"');
+  });
+});
+
+test('S2-02: Enter on a focused .help inside a header does not sort', async () => {
+  await withPage(doc(
+    '<table><thead><tr><th>Name <span class="help" tabindex="0">?</span></th><th>Val</th></tr></thead>' +
+    '<tbody><tr><td>b</td><td>2</td></tr><tr><td>a</td><td>1</td></tr></tbody></table>'), async page => {
+    // positive control in the same fixture: the header ITSELF is keyboard-operable
+    await page.evaluate(() => document.querySelector('table thead th').focus());
+    await page.keyboard.press('Enter');
+    assert.equal(await dirOf(page, 0, 0), 'asc', 'header Enter sorts (text col, first activation)');
+    // now the negative: focus lands on the .help child — Enter must be inert there
+    await page.evaluate(() => document.querySelector('table .help').focus());
+    assert.equal(await page.evaluate(() =>
+      document.activeElement.classList.contains('help')), true, '.help took focus');
+    await page.keyboard.press('Enter');
+    assert.equal(await dirOf(page, 0, 0), 'asc');             // no NEW sort happened
+    assert.deepEqual(await colKeys(page, 0, 0), ['a', 'b']);  // order untouched by the .help Enter
+    assert.deepEqual(await page.evaluate(() => Array.prototype.map.call(
+      document.querySelector('table thead').rows[0].cells,
+      c => c.getAttribute('aria-sort'))), ['ascending', null]);
+  });
+});
+
+
+
