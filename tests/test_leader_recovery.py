@@ -71,7 +71,8 @@ def test_dead_cat_bounce_does_not_restore_leadership():
 def test_short_history_never_claims_former_leadership():
     c,b = source()
     d=run(c.iloc[-20:],b.iloc[-20:])
-    assert d['state']=='NO_PRIOR_LEADER'
+    assert d['state']=='UNAVAILABLE'
+    assert d['reason']=='insufficient_leadership_history'
     assert d['episode'] is None
 
 
@@ -234,3 +235,47 @@ def test_tiny_ratio_does_not_round_frozen_reference_to_zero():
 def test_all_flat_source_never_qualifies():
     c,b=source(); c[:]=100
     assert run(c,b)['state']=='NO_PRIOR_LEADER'
+
+
+def test_price_high_inside_unresolved_rs_episode_remains_visible():
+    c,b=source(np.r_[np.linspace(99,55,30),np.linspace(56,125,35),np.linspace(124,108,15)])
+    b.iloc[-50:]=np.linspace(100,160,50)
+    d=run(c,b)
+    assert d['episode']['peak_price']==100
+    assert d['episode']['price_high_water']==125
+    assert d['episode']['original_price_target_recovered'] is True
+    assert d['episode']['price_recovered'] is False
+    assert d['state']!='PRICE_RECOVERED_RS_LAGGING'
+
+
+def test_past_deep_drawdown_is_not_current_damage_if_trend_is_repaired():
+    c,b=source(np.r_[np.linspace(99,55,30),np.linspace(56,95,60),np.full(7,94.)])
+    d=run(c,b)
+    assert d['episode']['max_drawdown']==pytest.approx(-.45)
+    assert d['state']=='REPAIR_PAUSED'
+    assert d['episode']['failed_repairs']==0
+
+
+def test_source_revision_is_fingerprinted_and_future_values_are_not():
+    c,b=source(np.linspace(99,60,20));cut=c.index[-6].date()
+    one=run(c,b,as_of=cut);future=c.copy();future.iloc[-1]*=2
+    assert one['source_fingerprint_sha256']==run(future,b,as_of=cut)['source_fingerprint_sha256']
+    changed=c.copy();changed.iloc[-10]*=.99
+    assert one['source_fingerprint_sha256']!=run(changed,b,as_of=cut)['source_fingerprint_sha256']
+
+
+def test_duplicate_roster_identities_are_refused():
+    with pytest.raises(ValueError,match='duplicate_roster_identity'):
+        recovery_roster([{'ticker':'A'},{'ticker':'A'}],as_of='2026-10-09',stale=False)
+
+
+def test_max_drawdown_dates_remain_paired_after_a_later_higher_high():
+    c,b=source(np.r_[np.linspace(99,55,30),np.linspace(56,125,35),np.linspace(124,108,15)])
+    b.iloc[-50:]=np.linspace(100,160,50)
+    d=run(c,b);ep=d['episode']
+    assert ep['price_high_water']==125
+    assert ep['max_drawdown_peak_price']==100
+    assert ep['max_drawdown_trough_price']==55
+    assert ep['max_drawdown_peak_on'] < ep['max_drawdown_trough_on']
+    assert ep['max_drawdown_trough_on'] < ep['price_high_water_on']
+    assert ep['max_drawdown_from_high_water']==pytest.approx(ep['max_drawdown_trough_price']/ep['max_drawdown_peak_price']-1)

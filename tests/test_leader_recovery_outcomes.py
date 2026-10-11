@@ -48,8 +48,36 @@ def test_floor_equality_not_breach():
 
 
 def test_already_recovered_requires_another_risk_set():
-    assert case([111,112,120,125])['reason']=='decision_outside_unresolved_price_interval'
+    result=case([111,112,120,125])
+    assert result['event_reason']=='decision_outside_unresolved_price_interval'
+    assert result['status']=='COMPLETE'
+    assert result['return']==pytest.approx(125/111-1)
+    assert result['first_event'] is None
 
 
 def test_invalid_horizon():
     with pytest.raises(ValueError):case([80,85],horizon=True)
+
+
+def test_failed_at_decision_is_retained_in_forward_return_sample():
+    result=case([54,50,48,40])
+    assert result['event_status']=='NOT_AT_RISK'
+    assert result['status']=='COMPLETE'
+    assert result['return']==pytest.approx(40/54-1)
+    assert result['mae_close']==pytest.approx(40/54-1)
+
+
+def test_known_first_event_survives_later_gap_but_full_horizon_is_unavailable():
+    result=case([80,115,float('nan'),120])
+    assert result['first_event']=='PRICE_RECOVERED_FIRST'
+    assert result['event_status']=='OBSERVED'
+    assert result['status']=='DATA_GAP'
+    assert result['return'] is None
+
+
+def test_known_event_and_incomplete_horizon_are_separate():
+    result=case([80,115],horizon=3)
+    assert result['event_status']=='OBSERVED'
+    assert result['first_event']=='PRICE_RECOVERED_FIRST'
+    assert result['status']=='RIGHT_CENSORED'
+    assert result['return'] is None

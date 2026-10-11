@@ -1,0 +1,24 @@
+{
+  "exit_code": 0,
+  "counts": {
+    "passed": 333
+  },
+  "base_checkout": "cdab62686e79c76b6d431b02dec49c41a290f4c2",
+  "mode": "branch_source_overlay_on_readonly_host_dependency_checkout",
+  "source_sha256": {
+    "engine/leader_recovery.py": "dfcf917dbc73390f91d3b62a90c81d1fa5c77fc1a3b78be270d495f86e29e578",
+    "engine/leader_recovery_outcomes.py": "d9f29c7ce35e89dccd293e71c16644ee10ee1a3abd72223eb94a7f27881e7e7e",
+    "scripts/build_leader_radar.py": "00338ef7d8788c6114c5f27875d286dc738d2e644e994a90448296c5dfac44cd"
+  },
+  "command_args": [
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--disable-warnings",
+    "/tmp/mmx-rs-recovery-20261010-c1/tests/test_leader_recovery.py",
+    "/tmp/mmx-rs-recovery-20261010-c1/tests/test_leader_recovery_outcomes.py",
+    "/tmp/mmx-rs-recovery-20261010-c1/tests/test_leader_recovery_integration.py",
+    "tests/test_leader_lifecycle.py",
+    "tests/test_build_leader_radar.py"
+  ]
+}

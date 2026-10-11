@@ -2948,6 +2948,30 @@ def build(
     near_trigger = _build_near_trigger(rows)
     fire_history = _build_fire_history(fire_log_df, data_root)
 
+    # Recovery is an additive projection, after incumbent states/fires are fixed.
+    # It never changes admission, hysteresis, ordering, or any data/ writer.
+    from engine.leader_recovery import describe_recovery, recovery_roster
+    from lib.nyse_calendar import sessions_between as _recovery_sessions
+    _recovery_calendar = (
+        _recovery_sessions(pd.Timestamp(spy.index.min()).date(), today)
+        if not spy.empty else []
+    )
+    for _row in rows:
+        _t = _row["ticker"]
+        _bars = ohlcv_map.get(_t)
+        try:
+            _recovery = describe_recovery(
+                _bars["close"] if _bars is not None else pd.Series(dtype=float),
+                spy, as_of=today, sessions=_recovery_calendar,
+                source_ref=f"data/baskets/ohlcv/{_t}.parquet + data/yahoo/SPY.parquet",
+            )
+        except Exception as _exc:  # preserve incumbent ticker visibility on optional-lens failure
+            log.warning("leader recovery unavailable for %s: %s", _t, _exc)
+            _recovery = {"schema": "leader_recovery.v1", "as_of": as_of,
+                         "state": "UNAVAILABLE", "reason": "projection_error",
+                         "thesis_state": "UNKNOWN", "episode": None}
+        _row.setdefault("display_chips", {})["leader_recovery"] = _recovery
+
     # ── Payload ───────────────────────────────────────────────────────────────
     elapsed = time.monotonic() - t0
     payload: dict[str, Any] = {
@@ -2983,6 +3007,7 @@ def build(
         "regime": regime,
         "rows": rows,
         "rs_high_roster": _build_rs_high_roster(rows, as_of=as_of, stale=stale),
+        "recovery_roster": recovery_roster(rows, as_of=as_of, stale=stale),
         "handoff_pairs": handoff_pairs_list,
         "rerating_watch": rerating_watch,
         # LRV-W1 artifacts

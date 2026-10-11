@@ -8037,6 +8037,8 @@ jobs:
         run: python -m pytest tests/test_leader_lifecycle.py -q
       - name: leader radar builder tests
         run: python -m pytest tests/test_build_leader_radar.py -q
+      - name: RS leader highs and deep recovery regression
+        run: python -m pytest tests/test_rs_leader_highs.py tests/test_leader_recovery.py tests/test_leader_recovery_outcomes.py tests/test_leader_recovery_integration.py -q
 
   evidence-clock:
     if: ${{ false }}

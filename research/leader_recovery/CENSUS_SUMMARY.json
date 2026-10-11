@@ -1,0 +1,1298 @@
+{
+  "cases": [
+    {
+      "entry_context": "EXTENDED",
+      "episode": {
+        "below_200_sessions": 781,
+        "drawdown_from_high_water": -0.76961779,
+        "failed_repairs": 2,
+        "history_complete": true,
+        "last_failure_on": "2023-10-25",
+        "max_drawdown": -0.87572972,
+        "max_drawdown_from_high_water": -0.87572972,
+        "max_drawdown_peak_on": "2021-09-03",
+        "max_drawdown_peak_price": 310.04998779296875,
+        "max_drawdown_trough_on": "2023-10-27",
+        "max_drawdown_trough_price": 38.529998779296875,
+        "opened_on": "2021-09-10",
+        "original_price_target_recovered": false,
+        "peak_on": "2021-09-03",
+        "peak_price": 310.04998779296875,
+        "price_high_water": 310.04998779296875,
+        "price_high_water_on": "2021-09-03",
+        "price_recovered": false,
+        "prior_leader_on": "2020-09-01",
+        "rebound_from_low": 0.85388016,
+        "recovered_on": null,
+        "reference_rs": 0.7586466359270478,
+        "repair_floor": 38.529998779296875,
+        "repair_started_on": "2023-12-01",
+        "rs_recovered": false,
+        "status": "open",
+        "trough_on": "2023-10-27",
+        "trough_price": 38.529998779296875,
+        "underwater_sessions": 1275
+      },
+      "state": "REPAIR_PAUSED",
+      "ticker": "DOCU",
+      "transitions": [
+        {
+          "as_of": "2025-09-30",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2025-12-22",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2025-12-23",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-04-06",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-04-07",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-05-27",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-06-05",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-07-13",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-07-23",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-07-28",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-08-04",
+          "from": "REBUILDING",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-10-06",
+          "from": "REIGNITING",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        }
+      ]
+    },
+    {
+      "entry_context": "WAIT",
+      "episode": {
+        "below_200_sessions": 1035,
+        "drawdown_from_high_water": -0.24024408,
+        "failed_repairs": 3,
+        "history_complete": true,
+        "last_failure_on": "2025-04-08",
+        "max_drawdown": -0.62635466,
+        "max_drawdown_from_high_water": -0.70797318,
+        "max_drawdown_peak_on": "2021-04-09",
+        "max_drawdown_peak_price": 62.083335876464844,
+        "max_drawdown_trough_on": "2025-04-08",
+        "max_drawdown_trough_price": 18.1299991607666,
+        "opened_on": "2018-06-25",
+        "original_price_target_recovered": true,
+        "peak_on": "2018-06-01",
+        "peak_price": 48.52194595336914,
+        "price_high_water": 140.94000244140625,
+        "price_high_water_on": "2026-06-22",
+        "price_recovered": false,
+        "prior_leader_on": "2018-06-01",
+        "rebound_from_low": 4.90623314,
+        "recovered_on": null,
+        "reference_rs": 0.2017048375592322,
+        "repair_floor": 18.1299991607666,
+        "repair_started_on": "2025-06-26",
+        "rs_recovered": false,
+        "status": "open",
+        "trough_on": "2025-04-08",
+        "trough_price": 18.1299991607666,
+        "underwater_sessions": 2084
+      },
+      "state": "REPAIR_PAUSED",
+      "ticker": "INTC",
+      "transitions": [
+        {
+          "as_of": "2026-05-07",
+          "from": "PRICE_RECOVERED_RS_LAGGING",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-05-08",
+          "from": "REIGNITING",
+          "reason": "price_target_reclaimed_but_rs_below_frozen_target",
+          "to": "PRICE_RECOVERED_RS_LAGGING"
+        },
+        {
+          "as_of": "2026-05-12",
+          "from": "PRICE_RECOVERED_RS_LAGGING",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-06-04",
+          "from": "REIGNITING",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        },
+        {
+          "as_of": "2026-06-16",
+          "from": "REPAIR_PAUSED",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-06-18",
+          "from": "REIGNITING",
+          "reason": "price_target_reclaimed_but_rs_below_frozen_target",
+          "to": "PRICE_RECOVERED_RS_LAGGING"
+        },
+        {
+          "as_of": "2026-06-23",
+          "from": "PRICE_RECOVERED_RS_LAGGING",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-07-07",
+          "from": "REIGNITING",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        },
+        {
+          "as_of": "2026-09-10",
+          "from": "REPAIR_PAUSED",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-09-14",
+          "from": "REIGNITING",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        },
+        {
+          "as_of": "2026-09-18",
+          "from": "REPAIR_PAUSED",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-10-08",
+          "from": "REIGNITING",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        }
+      ]
+    },
+    {
+      "entry_context": "EXTENDED",
+      "episode": {
+        "below_200_sessions": 219,
+        "drawdown_from_high_water": -0.08376768,
+        "failed_repairs": 0,
+        "history_complete": true,
+        "last_failure_on": null,
+        "max_drawdown": -0.34150802,
+        "max_drawdown_from_high_water": -0.34150802,
+        "max_drawdown_peak_on": "2025-02-14",
+        "max_drawdown_peak_price": 732.4685668945312,
+        "max_drawdown_trough_on": "2025-04-21",
+        "max_drawdown_trough_price": 482.3246765136719,
+        "opened_on": "2025-02-25",
+        "original_price_target_recovered": false,
+        "peak_on": "2025-02-14",
+        "peak_price": 732.4685668945312,
+        "price_high_water": 786.7982788085938,
+        "price_high_water_on": "2025-08-12",
+        "price_recovered": false,
+        "prior_leader_on": "2025-02-14",
+        "rebound_from_low": 0.49461566,
+        "recovered_on": null,
+        "reference_rs": 1.224960344436891,
+        "repair_floor": 482.3246765136719,
+        "repair_started_on": "2025-05-06",
+        "rs_recovered": false,
+        "status": "open",
+        "trough_on": "2025-04-21",
+        "trough_price": 482.3246765136719,
+        "underwater_sessions": 408
+      },
+      "state": "REIGNITING",
+      "ticker": "META",
+      "transitions": [
+        {
+          "as_of": "2026-01-28",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-02-02",
+          "from": "REBUILDING",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-02-04",
+          "from": "REIGNITING",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-02-12",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-04-16",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-04-30",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-07-10",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-07-14",
+          "from": "REBUILDING",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-07-22",
+          "from": "REIGNITING",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-07-24",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-09-08",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-09-11",
+          "from": "REBUILDING",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        }
+      ]
+    },
+    {
+      "entry_context": "REPAIR_OBSERVATION",
+      "episode": {
+        "below_200_sessions": 13,
+        "drawdown_from_high_water": -0.03661599,
+        "failed_repairs": 0,
+        "history_complete": true,
+        "last_failure_on": null,
+        "max_drawdown": -0.2021439,
+        "max_drawdown_from_high_water": -0.2021439,
+        "max_drawdown_peak_on": "2025-10-29",
+        "max_drawdown_peak_price": 206.545166015625,
+        "max_drawdown_trough_on": "2026-03-30",
+        "max_drawdown_trough_price": 164.79331970214844,
+        "opened_on": "2025-11-18",
+        "original_price_target_recovered": true,
+        "peak_on": "2025-10-29",
+        "peak_price": 206.545166015625,
+        "price_high_water": 239.24000549316406,
+        "price_high_water_on": "2026-10-06",
+        "price_recovered": false,
+        "prior_leader_on": "2025-11-03",
+        "rebound_from_low": 0.39860036,
+        "recovered_on": null,
+        "reference_rs": 0.30528308799365567,
+        "repair_floor": 164.79331970214844,
+        "repair_started_on": "2026-04-14",
+        "rs_recovered": false,
+        "status": "open",
+        "trough_on": "2026-03-30",
+        "trough_price": 164.79331970214844,
+        "underwater_sessions": 223
+      },
+      "state": "REIGNITING",
+      "ticker": "NVDA",
+      "transitions": [
+        {
+          "as_of": "2026-05-11",
+          "from": "REIGNITING",
+          "reason": "price_target_reclaimed_but_rs_below_frozen_target",
+          "to": "PRICE_RECOVERED_RS_LAGGING"
+        },
+        {
+          "as_of": "2026-05-14",
+          "from": "PRICE_RECOVERED_RS_LAGGING",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-05-26",
+          "from": "REIGNITING",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        },
+        {
+          "as_of": "2026-06-03",
+          "from": "REPAIR_PAUSED",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-06-05",
+          "from": "REIGNITING",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        },
+        {
+          "as_of": "2026-07-29",
+          "from": "REPAIR_PAUSED",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-07-30",
+          "from": "DAMAGED",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        },
+        {
+          "as_of": "2026-08-05",
+          "from": "REPAIR_PAUSED",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-08-21",
+          "from": "REIGNITING",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        },
+        {
+          "as_of": "2026-08-27",
+          "from": "REPAIR_PAUSED",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-09-11",
+          "from": "REIGNITING",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        },
+        {
+          "as_of": "2026-09-21",
+          "from": "REPAIR_PAUSED",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        }
+      ]
+    },
+    {
+      "entry_context": "EXTENDED",
+      "episode": {
+        "below_200_sessions": 129,
+        "drawdown_from_high_water": -0.04054443,
+        "failed_repairs": 3,
+        "history_complete": true,
+        "last_failure_on": "2026-06-12",
+        "max_drawdown": -0.42627162,
+        "max_drawdown_from_high_water": -0.48223767,
+        "max_drawdown_peak_on": "2025-11-03",
+        "max_drawdown_peak_price": 207.17999267578125,
+        "max_drawdown_trough_on": "2026-06-25",
+        "max_drawdown_trough_price": 107.2699966430664,
+        "opened_on": "2025-08-19",
+        "original_price_target_recovered": true,
+        "peak_on": "2025-08-12",
+        "peak_price": 186.97000122070312,
+        "price_high_water": 207.17999267578125,
+        "price_high_water_on": "2025-11-03",
+        "price_recovered": false,
+        "prior_leader_on": "2025-08-08",
+        "rebound_from_low": 0.85308106,
+        "recovered_on": null,
+        "reference_rs": 0.2974057135944237,
+        "repair_floor": 107.2699966430664,
+        "repair_started_on": "2026-08-06",
+        "rs_recovered": false,
+        "status": "open",
+        "trough_on": "2026-06-25",
+        "trough_price": 107.2699966430664,
+        "underwater_sessions": 287
+      },
+      "state": "REIGNITING",
+      "ticker": "PLTR",
+      "transitions": [
+        {
+          "as_of": "2026-03-20",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-03-25",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-03-26",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-04-10",
+          "from": "DAMAGED",
+          "reason": "close_breached_frozen_repair_floor",
+          "to": "FAILED_REPAIR"
+        },
+        {
+          "as_of": "2026-04-13",
+          "from": "FAILED_REPAIR",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-06-02",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-06-03",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-06-12",
+          "from": "DAMAGED",
+          "reason": "close_breached_frozen_repair_floor",
+          "to": "FAILED_REPAIR"
+        },
+        {
+          "as_of": "2026-06-15",
+          "from": "FAILED_REPAIR",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-08-06",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-09-08",
+          "from": "REIGNITING",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        },
+        {
+          "as_of": "2026-09-17",
+          "from": "REPAIR_PAUSED",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        }
+      ]
+    },
+    {
+      "entry_context": "WAIT",
+      "episode": {
+        "below_200_sessions": 1067,
+        "drawdown_from_high_water": -0.97061283,
+        "failed_repairs": 9,
+        "history_complete": true,
+        "last_failure_on": "2024-08-07",
+        "max_drawdown": -0.97889027,
+        "max_drawdown_from_high_water": -0.98279775,
+        "max_drawdown_peak_on": "2021-01-13",
+        "max_drawdown_peak_price": 167.4199981689453,
+        "max_drawdown_trough_on": "2024-08-14",
+        "max_drawdown_trough_price": 2.880000114440918,
+        "opened_on": "2020-10-22",
+        "original_price_target_recovered": false,
+        "peak_on": "2020-10-15",
+        "peak_price": 136.42999267578125,
+        "price_high_water": 167.4199981689453,
+        "price_high_water_on": "2021-01-13",
+        "price_recovered": false,
+        "prior_leader_on": "2020-10-15",
+        "rebound_from_low": 0.70833329,
+        "recovered_on": null,
+        "reference_rs": 0.42567475373584623,
+        "repair_floor": 2.880000114440918,
+        "repair_started_on": "2024-08-26",
+        "rs_recovered": false,
+        "status": "open",
+        "trough_on": "2024-08-14",
+        "trough_price": 2.880000114440918,
+        "underwater_sessions": 1497
+      },
+      "state": "DAMAGED",
+      "ticker": "PTON",
+      "transitions": [
+        {
+          "as_of": "2026-05-14",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-05-27",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-06-02",
+          "from": "REBUILDING",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-06-03",
+          "from": "REIGNITING",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-06-08",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-06-12",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-06-22",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-07-09",
+          "from": "DAMAGED",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        },
+        {
+          "as_of": "2026-07-10",
+          "from": "REPAIR_PAUSED",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-07-13",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-07-15",
+          "from": "REBUILDING",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-08-06",
+          "from": "REIGNITING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        }
+      ]
+    },
+    {
+      "entry_context": "WAIT",
+      "episode": {
+        "below_200_sessions": 969,
+        "drawdown_from_high_water": -0.81968179,
+        "failed_repairs": 5,
+        "history_complete": true,
+        "last_failure_on": "2026-02-03",
+        "max_drawdown": -0.87148418,
+        "max_drawdown_from_high_water": -0.87304203,
+        "max_drawdown_peak_on": "2021-07-23",
+        "max_drawdown_peak_price": 305.12725830078125,
+        "max_drawdown_trough_on": "2026-02-12",
+        "max_drawdown_trough_price": 38.738338470458984,
+        "opened_on": "2021-02-22",
+        "original_price_target_recovered": false,
+        "peak_on": "2021-02-16",
+        "peak_price": 301.4285583496094,
+        "price_high_water": 305.12725830078125,
+        "price_high_water_on": "2021-07-23",
+        "price_recovered": false,
+        "prior_leader_on": "2021-02-16",
+        "rebound_from_low": 0.42029841,
+        "recovered_on": null,
+        "reference_rs": 0.8295483043460953,
+        "repair_floor": 38.738338470458984,
+        "repair_started_on": "2026-04-15",
+        "rs_recovered": false,
+        "status": "open",
+        "trough_on": "2026-02-12",
+        "trough_price": 38.738338470458984,
+        "underwater_sessions": 1415
+      },
+      "state": "REPAIR_PAUSED",
+      "ticker": "PYPL",
+      "transitions": [
+        {
+          "as_of": "2025-10-30",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-02-03",
+          "from": "DAMAGED",
+          "reason": "close_breached_frozen_repair_floor",
+          "to": "FAILED_REPAIR"
+        },
+        {
+          "as_of": "2026-02-04",
+          "from": "FAILED_REPAIR",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-04-15",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-04-27",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-04-30",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-05-05",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-07-07",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-07-08",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-07-09",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-07-17",
+          "from": "REBUILDING",
+          "reason": "multi_session_fast_slow_and_relative_repair",
+          "to": "REIGNITING"
+        },
+        {
+          "as_of": "2026-08-27",
+          "from": "REIGNITING",
+          "reason": "prior_repair_above_long_trend_but_confirmation_missing",
+          "to": "REPAIR_PAUSED"
+        }
+      ]
+    },
+    {
+      "entry_context": "WAIT",
+      "episode": {
+        "below_200_sessions": 472,
+        "drawdown_from_high_water": -0.72749801,
+        "failed_repairs": 1,
+        "history_complete": true,
+        "last_failure_on": "2023-11-08",
+        "max_drawdown": -0.71050074,
+        "max_drawdown_from_high_water": -0.74304382,
+        "max_drawdown_peak_on": "2025-02-12",
+        "max_drawdown_peak_price": 88.7699966430664,
+        "max_drawdown_trough_on": "2026-10-02",
+        "max_drawdown_trough_price": 22.809999465942383,
+        "opened_on": "2023-08-04",
+        "original_price_target_recovered": false,
+        "peak_on": "2023-08-01",
+        "peak_price": 72.08999633789062,
+        "price_high_water": 88.7699966430664,
+        "price_high_water_on": "2025-02-12",
+        "price_recovered": false,
+        "prior_leader_on": "2023-08-01",
+        "rebound_from_low": 0.15908,
+        "recovered_on": null,
+        "reference_rs": 0.16433284203234294,
+        "repair_floor": 20.8700008392334,
+        "repair_started_on": "2023-11-30",
+        "rs_recovered": false,
+        "status": "open",
+        "trough_on": "2023-11-10",
+        "trough_price": 20.8700008392334,
+        "underwater_sessions": 798
+      },
+      "state": "DAMAGED",
+      "ticker": "UPST",
+      "transitions": [
+        {
+          "as_of": "2025-12-08",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2025-12-17",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2025-12-22",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2025-12-30",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-01-06",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-01-12",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-04-16",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-05-06",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-06-10",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-06-12",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        },
+        {
+          "as_of": "2026-06-23",
+          "from": "DAMAGED",
+          "reason": "multi_session_fast_and_relative_repair",
+          "to": "REBUILDING"
+        },
+        {
+          "as_of": "2026-07-14",
+          "from": "REBUILDING",
+          "reason": "deep_drawdown_or_below_long_trend",
+          "to": "DAMAGED"
+        }
+      ]
+    }
+  ],
+  "code_sha256": "dfcf917dbc73390f91d3b62a90c81d1fa5c77fc1a3b78be270d495f86e29e578",
+  "complete_census_sha256": "0a2e63576bb2757f2ec70f30d0d064bfa0d8101f45f8a4b287ae1c64d09058e3",
+  "definition_sha256": "ca0b72ba626018d6431e3299ca4d522014b4e6d969253809ae7ec36697f2bfdc",
+  "elapsed_seconds": 99.119,
+  "event_count": 1756,
+  "extras": [
+    "PYPL",
+    "DOCU",
+    "PTON",
+    "UPST",
+    "INTC"
+  ],
+  "limits": [
+    "not historical first-seen",
+    "not delisting-complete",
+    "overlapping correlated events",
+    "not a causal timing comparison",
+    "no transaction costs",
+    "no predictive qualification",
+    "current source corrections may revise reconstructed history",
+    "close-only outcomes"
+  ],
+  "membership_basis": "CURRENT_SURVIVOR_UNIVERSE_NOT_PIT",
+  "missing": [],
+  "n_current": 176,
+  "n_incumbent_universe": 173,
+  "outcome_code_sha256": "d9f29c7ce35e89dccd293e71c16644ee10ee1a3abd72223eb94a7f27881e7e7e",
+  "schema": "leader_recovery_census.v1",
+  "source_cut": "2026-10-08",
+  "source_hashes": {
+    "AAOI": "7f0a431ab55b088d3dcafa08922223f066784afe6bed6b6a4b4e65f3d755dd68",
+    "AAPL": "89cafe39f31d362bec32d38e711530f0969f26c85e2d62b73a779440d0e4950d",
+    "ABNB": "f440d1a55022c5c727622fbe4a342d21162f5b64bde442cada914dc2ca215819",
+    "ACLS": "7bb20166d74a086ee9c34d4eba49fec87e0560a9b5f475ebc3cc0aaaf014a00c",
+    "ADBE": "d779ff93cad978b8cdecdb37fcc565024e658e7e5561bc6d5bd0f4913d57693b",
+    "ADI": "8e2372b13a901df7da0049904ee436da585e5d4fd09a2fa29b43c34588d7b762",
+    "ADP": "2bde13ac15198462030efdc5fa2cf3c8d9f27144667c3c27307de3aff9e40e4d",
+    "ADSK": "f831b86f994f4066a2231e3c2c5b04e12eaa312a9ad164282131842d09ae3cae",
+    "AEIS": "9714d9a94f60677c9fc16b8ab65d0f879472b1c9400e4f3a56f5b9e3d16887b0",
+    "AEP": "35241c7bfe5eceb8e68074eeb51939d97efc25ea5da88c1b19f1a9c16ea5e139",
+    "ALAB": "34d50b1a5a929dcc3f64e5420b2343453025751c454f306d6c575a3884ecc9d7",
+    "ALNY": "64b561d8437fb07e092b895bbcb769df209a30780e04cbec583961dbbf3ec2c9",
+    "AMAT": "ffb583c63b499d06d795a7ce357707752e97221dd0df601e7181f9b0241bbf0e",
+    "AMD": "f00f6ba332996da9867014c969e58cc5fc568799b2bfb4805ec5263eedd82a0e",
+    "AMGN": "980663f3fef93cc7f6c8e9222526723fa7837f9dffdf32eb099897d4dbeb8f03",
+    "AMZN": "bc414d0e9d85f736747c29e1d236f83f24c539d5ee0470d9bcb31cba0ced4eb9",
+    "ANET": "8c38693fa8c536847e6d68e3b0be458f3e750b6b99ed74cd06bd9d562a27a3c0",
+    "APH": "6f75bfa91074c8ccc9501760a4ae113f4772f47fe64a0b00009beb961caf81a2",
+    "APLD": "b332d840494305daad683cbc7e33cc838a308a7af06626a29bdb17bdf9d865d5",
+    "APP": "76c414e083ef8f5d6166373fc8cafce3e059659b3826a9461f23b05dfbc0b50a",
+    "ARM": "56fb8d0d85bc2d5266aef188aa3c359e6bbf6c00086153ca9e59f61e7407cd77",
+    "ASML": "6ee6120e6c0f3c2218958deefe564c9dfef9013e7ebece999fcbef6d1e28143b",
+    "ASTS": "504889666f64a2b08b9a497008180bdf4f596b844f332288702978d5c38029e1",
+    "AVGO": "f68f017d704e7cfd232c7e79684b6d1d92c2e9a6dfb0a551dfd31ea73479ecdf",
+    "AXON": "50c3ecff3a73770ba0d543bd56509ec02e4030f5dba647bbd1a390a9a3bc5925",
+    "AXP": "9b8bd95d65034cf771d18f920149ee3ebffed770f58cd7b4d1c790ee7fc954ea",
+    "BA": "62415710e0a32242e7bdf7b1607feb797f81888caa371ae561daa66766648099",
+    "BKNG": "981edfd6aa193b1f592db1dea4ada37fa0fca34b9609ac4ed66543525f5f9c0a",
+    "BTDR": "54c56ac90456053320339c69678ffc09a5c61d88e3436e664bc077521a386af5",
+    "CAMT": "a9cee3315eb3e5849509f10bfc5651e3457583279c94bd8c872e1ab2278c24c0",
+    "CAT": "a2db8da67656bc8b5a5a9e4d556a83f14baebc689158a06354f702e3cccb04ed",
+    "CBRS": "38a705732f2f9f0311e2b2ac7319a0778234d6bf11b6df7630690b00029159f1",
+    "CCEP": "32c007d5ab16cec0d9d828dd507c7160a92bc9f703c629f7fde57bd90091d5de",
+    "CDNS": "68cc17143ac8f95dc307f41269dd8580880be6e48f841c877fa93decc3bd555f",
+    "CEG": "55322b9ec9b9ae56a54dfa7d261d6704c5245cd20d0ba28e68714b3c77281104",
+    "CHTR": "7c762d9bb6e02753a3fef7888ac672a115bb65ac4b113ee9ab3802b0ce99e021",
+    "CIEN": "aee913cd4051fc0d3726e533711abe9a386a4b60c42c9835a1c8a84c5010effb",
+    "CIFR": "7101d2755a212b71178ea623e8bdafd3a2b133d344faa6967c9f710f4ba0421d",
+    "CMCSA": "49514713fb84c185a7fe7d419c375a3cfefd57b20055a6a2b300edadd1a1aca3",
+    "COHR": "bb16f773c9a201c182ddb245f0e9f94ab1f2f70e872f347bfa7d26daf471153a",
+    "COHU": "bf8e3f5a4a5879a1dd446c161b6fca8f1f2ebfa0283b75f6182de6a79566ee57",
+    "CORZ": "deff197b743972ef5b7bfe51957399f2179c6466b95bbd80741e14691b00b806",
+    "COST": "d86ddf902c5887cd90bdcc105813430090fda7d9d610beb26fcc66a63cccfed5",
+    "CPRT": "07d6db0d788ebb247b985e60cd8283a1aeca17d76e8987b1e9bd49df4a43ff66",
+    "CRDO": "26bda9a36c9ddb7a6449523705d5a10fbaadf102a2e4411f440706fe19cba89d",
+    "CRM": "78f0df4a4ea64a9f392dff1cb3d7203a3eafa4814ffcca6c62a70658a4c8adf4",
+    "CRWD": "97f6cd692cf6e5396165a77344404d46ad8f9736c7b9e528962217a7c2dfd560",
+    "CRWV": "fd0ed895f397dfe759e85c15cb2c5189d734feb7f3e1d0767101ef38ba9fbeb1",
+    "CSCO": "bec250db02816481b4b33957d9c399c31ee9c22e510cc7e91fe4741c70b7a259",
+    "CSX": "31936a16cc16467ff1a5ce04ba2be66a47f3ad2ad8fccbfa194dec246143774e",
+    "CTAS": "4aecafb8b7bc1c399c75cdee6087134f845bf3a4dc67cb7c9440a9450e0f1055",
+    "CTSH": "be73b37c255da01218e9e77ba93cc0e185387801599949e6c79acbaa5ba75a0c",
+    "CVX": "6090069ed171b167a6afc488729530877d284c8fe5fc1bec4202216a8744ceec",
+    "DASH": "05b161cf8ff66e6262b2a38a55a710f5976c232ece9afffa3e4e9346b92a3443",
+    "DDOG": "07cec2ff89f3f130e8f96b63b0d9b45810c24b599260b3afa6d126a100c196f1",
+    "DELL": "a30f7cb0fe21d25cc1ecb8f18c5b3e175f6c7cca5714cb7f42c7a7e53f4306ad",
+    "DIS": "97cfaf0ec92aff8db9e03b085bdc4cb30b3083d57876c5543f51d778ab891db6",
+    "DOCU": "b3b6bbcfa7ff9f241e76985184fa3bb5c76809b761e75145a7fae92db346b80f",
+    "DXCM": "991239cf69067cccf386a28c5b44b923ea63ce06b88b468c2dfcce86b820c1aa",
+    "EA": "25134e55c89a0f10416df88bd7294852f2df4bacaeafc748b82c4fa576a381c8",
+    "ENTG": "d5885e77534edfdc70eaede5c1f13a6dfb08716299f53ce10184253135f3c630",
+    "ETN": "bbb65d910a5232560ad29584029f94044352c96cf66a7d6b1daa95c3b0736484",
+    "EXC": "77383d2b4db2e70b84b02a9433a314e4c11ba8a0e3c25e78fd114dcd7b8fce0b",
+    "FANG": "86015167513b153a08c4ba4be8cb03cd4fde582d63462ae7d737e08d46c8c6b9",
+    "FAST": "bed3ec9a0fafd1f935ab58e240c959c25bde98ce6671f733133987d1ba77e535",
+    "FORM": "282f0c1b9481b9521be25ef3eec8034597e705f618e50692e3450cd50ebc6719",
+    "FTNT": "0b42cf0ff21068758a123ce4041b06f95b391af4f4ff0807019f174aea3712d5",
+    "GEHC": "bcac86f059064ecb2d44fc21ceac485749383334ca5ff9379dba381405c96cbb",
+    "GEV": "55a68449153adddb6d68841dec485042555ffa8e109d9bd7c8b87e27cc15b607",
+    "GILD": "332246b433905eeba593b851535765e6b4cb6c1037180a08174e1c7043e3863a",
+    "GLW": "513581bdf6775fc6e5f9df1e84234307e9674cdd18f82de53801863aef92a78f",
+    "GOOG": "43001d4c3975f15476a33674515125f14b29acdb786a47e493ff19c11290117d",
+    "GOOGL": "9abbc3e9fff1fa59ff0974bad22b630e78c942ef4fa710ad38b46916f59c7d05",
+    "GS": "b811a61da50b5abb03b4a26308d029c32f4f62bad9b51dc7dbc21dcf30782336",
+    "HD": "8fc05214481b1fc3c122fd7251dbd9b0842c5d0ea3023f1052d5afb5f13561cd",
+    "HON": "2abae8cb924f378c2dfb9fa5159752cc625fdfe275877a4078d0deb6634ac364",
+    "HUBB": "465b525029fe0e5795b2e91d3ba2386bfc8b9801b2cdb2ef4f1ace67331ec375",
+    "HUT": "1d917f6fb4f1e35137cd88a39fe83918ddabfcf918d852cb66c8c73983356375",
+    "IBM": "abfd9ef44083e32f69e28a1ef7b0330f4163000bda0c9fe858bb650825dbc654",
+    "ICHR": "a5b9eca8260b17c21f59f1bd14eefafcdc4ef21f322ed03cc677bd2c268a4688",
+    "IDXX": "4821cda80e3a36d5269398eef6bb1f6597947a624e4b056fb9e023ab85d43bdd",
+    "INSM": "6e077c78ff6c1ad989efbebe9627c19d68623bf7e7b40e1f6bce6f6610299b93",
+    "INTC": "ea42dee0c866952a3f9c2799b8bf1c32db560755898194b322352410f484853d",
+    "INTU": "a7766559c39b6715119a20b7b0e6dec7d76e19b7dfd0931ed6669f5a9545a59c",
+    "IREN": "fe8af65fb59c59a498efd7d510c894e81bbc2b0d457c12101bd477ad0f40516a",
+    "ISRG": "e7e18a56df6491ea3b0241b7cc9525f8fc3f211bb99cb8b5088d427017f5831d",
+    "JNJ": "c5de3dddbea773cfefb556f9454831a10248a37aa7f3d19da08f06bdd12091c9",
+    "JPM": "203e380b3d922f9db5dd96e6fac895291a24b87f059926a76f16b709333132f6",
+    "KDP": "4d7967c6ab1cd66b94e8090d9c013cb0974d6c674f63cb8022d7ea5b7cdc7fa1",
+    "KHC": "892e641b03a347144b463d61cdda4fab2be3bb35d3db21a771ee4ab3f59ee7f8",
+    "KLAC": "3c59cecf4291e2b1a3217a29dcfd9b3a6afe96646c72cdb0f64363c408eb7de8",
+    "KLIC": "91c5a9e8e5e5bd8b47225ee1dc81980184a47899f0f09b07596d5d01afa3ea90",
+    "KO": "7ae455dd331fbbf3b097a3cad26ac34e3f2283b2fb3fc2ea33e010a7a7dab3c4",
+    "KTOS": "da1f4ed7492a5a472ab82f0991a3924eb621d53bca1fe8550b8fc5f3fcd96104",
+    "LCID": "2a694f10b8dd6d7d1d8b39fd615925c5370719ce8505d17c88a89bcf5e355603",
+    "LIN": "e0a69a2facb737053fbf6b37aa51a12d51c6a8c32d598cb3ecf530aac76bdecd",
+    "LITE": "a8c39d59bb09d78614f7da008f2e0729cd8d2d7ff4c0f1da82cd9999c385ab3a",
+    "LRCX": "5762cd0bcd96c8a68002869b11f43c9667d22d5b93812b1288c60c3cd261ff52",
+    "LUNR": "a261999661eb49f3c07a0bb9acfbff058d4d56f1def4f7d46c3649a372558272",
+    "MAR": "9337f7a9188a29d86e711855630a2d67d7c8a8dd4a9dc874db286ab1660844cf",
+    "MCD": "443541f6cc6f8cdb6ff3d005cd2c0b34d02e4fe9bcedea77d0d6878b4869cc2f",
+    "MCHP": "232076ff01ddf41e77eb21d01a489fd68fd2b5121d11947304292498ec1ec43d",
+    "MDLZ": "c1b61027e05d8a564643ec7c1d722de348fa13c6091257b422efcb58683adeea",
+    "MELI": "09eb6a890ee750e24c8a01f54f0c0d62aa0c38fde205f13f8e40b2aebded9afe",
+    "META": "6feda869769d8667e407372171917417fbf99ebaf96bd55e8b5e8e63cd6f6e35",
+    "MKSI": "b09cf713636bbfeb2c13153f4156f130b7291200f5708799b159b085e044bfd0",
+    "MMM": "6ea9562cfc5fa94aee92c5d115f66ca2b949ec0ca049ac08802acbb4fb5d984f",
+    "MNST": "1c6b23ba9cc4c9ecca282e2e48f72ccf414a3d51e1acfde6102ee8803c629592",
+    "MPWR": "882cd17de37e622ee96d18ebc90b2e052e5c1f578ddf320b29e58f233568d7ad",
+    "MRK": "59bb432437fdcd28dd3156c8239d9ac08e5445c73c421f68e893b4e5c87a1006",
+    "MRVL": "814c7095d03844578d7244f7f665685ce34b14b995223c4f4476f8e232d6d388",
+    "MSFT": "e868b81954c0b4bd79246818376db379d81de784bba5638464795d937433c70a",
+    "MSTR": "6ed7bc34e29c4a5e3a8ecc019c08ffca151a59408b3030b7306748bdea083c5e",
+    "MU": "075eed732e2d8b078b638fe07b13320750de08e436a81d5e9ee317bf29c06cd6",
+    "NBIS": "60d3de4dd8d2f1cd2ce34f93179faa29e3bc80e1d92c610c7c0fc3bdfb4dbe9f",
+    "NET": "58736a7c3355f5bfdbc5c7538fc9480197575e455330511dba40b7b42b84829e",
+    "NFLX": "60a645cdf04608dbcbe9238a9b02dbb92451646650c362ad465580caafa2ff4a",
+    "NKE": "2126bf6db60409cad73db2c0efa9dac30f4d5d02ac5e641f287d86ec7206e6d9",
+    "NOW": "87cea398da636a52d374b42377a87b6e0eaa2687e6f3838cb86bfde216658dd8",
+    "NVDA": "aebd90d6534bf7fe4e327d867ea0d99392fd3dfc665dd2a5403ab6b75e043e24",
+    "NVMI": "6b81e226111e7dcaf82c8e64226c144a8a165c4de82bc87086e4610a5b62362b",
+    "NVT": "abb425894055af8162e15bca7f76aa5ff685060c22c0cc635f5d33b35d43b4ad",
+    "NXPI": "d2622f9324fc995c590b0758499926f00cc2c95697513c92702f26ba2b7b41e4",
+    "NXT": "e7318434f45804237c2912e837b4ddef5e0b57c7412bbbca2da83ae2a051e664",
+    "ODFL": "a18a8924cb4b833692494c27b741c745bdd277f0077b5bbbe5f5c358821e5e73",
+    "ONTO": "0b66a94c4015967e540e04f7e26e2e67e0e2ccdb4e3a7f6544ecdba3bc23fbea",
+    "ORCL": "9343a992040a4705beb03fefcf63b76c72ecf2d09450a01d0ec93644d4c20d85",
+    "ORLY": "6fe8409ca4ac51c744f5576967bc39a7be27424ecc448be87e30d1a8c2512165",
+    "PANW": "9fcf16af2d9f697b0f9ebaec4f1b79defe4b6ee3d780850c6870e44a12854696",
+    "PAYX": "2c4eebe03eeb41e609f41dac815b071384148fefa1ea86d820967ec8f2f1fb18",
+    "PCAR": "3a4e0370acd407bfbea96082799aa32ceaccdebde5c844d9fa0db14a1f2583c8",
+    "PDD": "17cb49173e6e870f05c502d6ddd2516677341f7afc9bdefe2b1db9d28a366f93",
+    "PEP": "98e8fa94e778af13c3eec7ccd5aec3c2b002a21ebf5d6039a256b4aa4b625dd9",
+    "PG": "dae926e03675f50ba04bc385c7217fcf2c7ab56c02be3ca2c0f3a2e490fdc243",
+    "PLTR": "b55fb74792a425c4ed687b4b6cb77f77478fd73e48c36a6d847b3a0751287df2",
+    "POWL": "f5a12b0b46a75ef96511367e4b21ffe68b93363ba7900ba2a44acd4a26364ec5",
+    "PTON": "4b615172e000af7cd644269a9c83369f11019eec9f64bf29fcf53f7b8933a9e6",
+    "PYPL": "853a591485303041af0afe5620fe94a1918eb1bf6adef865e8abe371aa62db59",
+    "QCOM": "5b523c62ae390e1baa9109a3c2045ce46f519dc2104286f292dc572ecc5b5d36",
+    "RDW": "595e81868b9d0f12933245f8b70a8cbd5284597db1672e7b716f7373072e20c0",
+    "REGN": "590a75852d06b673e5eb5ee5262c2a8e0f2eae51242f1b3bcc25e9b353528dbe",
+    "RIOT": "a6bdb876142bbc74ac96e43b38119fc204d36902ec0538621ba006c43b11a0de",
+    "RIVN": "e24cac0ec534517e43004e6167a6feaa46abc50fdef8701d4283f5ffb1f4bf21",
+    "RKLB": "297a1aee46a636cb9744607db1cb40b15277349013bb6c1d0f02054a55809dd7",
+    "ROP": "e98e16c5f5c91aca3edc093ed9660002a188f15f6d8129ee7e6a4e2d1603bb49",
+    "ROST": "7959c8fbbf4c2b9e3f976f7607d59ad21e086d84221b6bc0682c953787b889cc",
+    "SBUX": "5716cf5fd3010889211d021ed71e86b303b4537a1166e87da40b05c79fdd487d",
+    "SHOP": "7e1f6b464fa68491dcc04aa13319e49ff6c6bf8ecd3ecf0f01f45dc000977260",
+    "SHW": "ce553667a62a0f96370a6a9ab1a94a4e74cee6c5c58da253623848af8737153d",
+    "SMCI": "c86c035a1d9d293bff1285daf96f2f81618d84f7c9713e4a1020b52460865910",
+    "SNDK": "ec9d220b2bb61f66351d8c7d0251589948fa9324ad087404c15e1f9e35948aff",
+    "SNOW": "367cb53d746b1c55f26d94a198970a3c6cd3c2b3feafe0ffdd773c58efef6996",
+    "SNPS": "dc1aa51f2ff95971d003a5cfc674b172bf3c5790024da6f583838a1bad08b80e",
+    "STX": "bb3ff6b0f57d9b1313dca24f00ae445c0b115c270c7b3561c1243e378abe936b",
+    "TER": "7f9a62d403dcd761ff19796783725582f0ad71a3887fb6f28720b771b109197b",
+    "TMUS": "a35348397bae8cbb3199cc31763526636ec24a514978cca6020ceea9d28b2a8e",
+    "TRI": "bb3d288ad086d997b8c916f90cffb678fd8b804c6577962169bf60d838557801",
+    "TRV": "82d231f2507ed5e3166ffd616f1b62b5b51eb06f28bd6837a7c469458825e708",
+    "TSLA": "9527cc9dcb77e544b7c4c647fe894bf84d078a4a5a3864e3821f2ee17cf7ed4c",
+    "TTWO": "372d66059a6046700db179ac903f5ef3f9699a32df8085d7bc5054c12e9eb7b8",
+    "TXN": "b722f615ba9b708d4853a7ecd0cd7bd317cf1a101b82b8cf8a0603e01ab12669",
+    "UCTT": "b4b632198409a3cec8412eb524f1fda90f2954170985d23b5cef7886b646f1a9",
+    "UNH": "b258922314ad192cc7236e9377ac11038605b30891a6f1c809290fa766f32d93",
+    "UPST": "fd9d385483bdcc4c3bd7bf2363031fe5ad47de7671a8540a028e1ad3d3e37691",
+    "V": "4e5f4652aa0ae50af4bbd4ae7f4a6a4ba6cfe04514829615669fb5ad927d4e5c",
+    "VECO": "1b6c6b2571a4ed07608d708464b81aaf251164bb9a589a4626b18dada5465b55",
+    "VRSK": "07981e5b21a69b6916ed97bb8704896c409c53bafc426f61aa394ef1ab576798",
+    "VRT": "66faa59e568e58df93904aa87f06f181edb0ca6f565b42126aa46ab663e47768",
+    "VRTX": "e03daeb7e1e7f947f0873dc942450eab52db4da6ce7238dd75d7f4cdc2560f7d",
+    "VZ": "072126788792a69eb3bb898d4516869a239ed4d789ff716f6e8e445636bdbd66",
+    "WBD": "d5ee2334756b8cd549bf43e1ed08296432320a579541311c40ab1ddd8aa9d17d",
+    "WDAY": "614ae565a31cffe22a4fe33aa6b12bc22ea00e151853187fe5f7646cfd121a4e",
+    "WDC": "b5c352b13b58e4c87ad1ead83acf5aa5ac2d7b9435f9eb938e340832f64ed852",
+    "WULF": "13863e841421641f8e0f6f5d37fd0e77bbdc6eb81dbd57b29fcc21b4c8565ab3",
+    "XEL": "7f2b956715b364f88e62b95ece4813011996688af79bd9ee3a2c284e9392ff9d",
+    "ZS": "84d1e5d9be6c3ff386d6e6d762c18b44ef646ae54c6dc94b2203bf5ffa2b5fa9"
+  },
+  "state_counts": {
+    "ACTIVE_LEADER": 5,
+    "CORRECTING": 2,
+    "DAMAGED": 69,
+    "NO_PRIOR_LEADER": 3,
+    "REBUILDING": 5,
+    "REIGNITING": 39,
+    "REPAIR_PAUSED": 50,
+    "UNAVAILABLE": 3
+  },
+  "study_start": "2024-01-01",
+  "summary": [
+    {
+      "event_status_counts": {
+        "NOT_AT_RISK": 126,
+        "OBSERVED": 133,
+        "RIGHT_CENSORED": 1
+      },
+      "first_event_counts": {
+        "FLOOR_BROKEN_FIRST": 17,
+        "NO_RESOLUTION_BY_HORIZON": 106,
+        "PRICE_RECOVERED_FIRST": 10
+      },
+      "horizon_sessions": 21,
+      "legacy_episode_count": 117,
+      "median_excess_return": -0.00948139,
+      "median_mae_close": -0.05078241,
+      "median_mfe_close": 0.087410145,
+      "n_complete": 258,
+      "n_event_observed": 133,
+      "n_tickers": 172,
+      "n_total": 260,
+      "state": "DAMAGED",
+      "status_counts": {
+        "COMPLETE": 258,
+        "RIGHT_CENSORED": 2
+      }
+    },
+    {
+      "event_status_counts": {
+        "NOT_AT_RISK": 126,
+        "OBSERVED": 133,
+        "RIGHT_CENSORED": 1
+      },
+      "first_event_counts": {
+        "FLOOR_BROKEN_FIRST": 25,
+        "NO_RESOLUTION_BY_HORIZON": 79,
+        "PRICE_RECOVERED_FIRST": 27
+      },
+      "horizon_sessions": 63,
+      "legacy_episode_count": 117,
+      "median_excess_return": -0.02033621,
+      "median_mae_close": -0.09488851,
+      "median_mfe_close": 0.16131239,
+      "n_complete": 249,
+      "n_event_observed": 131,
+      "n_tickers": 172,
+      "n_total": 260,
+      "state": "DAMAGED",
+      "status_counts": {
+        "COMPLETE": 249,
+        "RIGHT_CENSORED": 11
+      }
+    },
+    {
+      "event_status_counts": {
+        "NOT_AT_RISK": 109
+      },
+      "first_event_counts": {},
+      "horizon_sessions": 21,
+      "legacy_episode_count": 29,
+      "median_excess_return": -0.010156934999999999,
+      "median_mae_close": -0.07286276,
+      "median_mfe_close": 0.080354835,
+      "n_complete": 108,
+      "n_event_observed": 0,
+      "n_tickers": 86,
+      "n_total": 109,
+      "state": "FAILED_REPAIR",
+      "status_counts": {
+        "COMPLETE": 108,
+        "RIGHT_CENSORED": 1
+      }
+    },
+    {
+      "event_status_counts": {
+        "NOT_AT_RISK": 109
+      },
+      "first_event_counts": {},
+      "horizon_sessions": 63,
+      "legacy_episode_count": 29,
+      "median_excess_return": 0.046435685,
+      "median_mae_close": -0.125862695,
+      "median_mfe_close": 0.16134623999999997,
+      "n_complete": 102,
+      "n_event_observed": 0,
+      "n_tickers": 86,
+      "n_total": 109,
+      "state": "FAILED_REPAIR",
+      "status_counts": {
+        "COMPLETE": 102,
+        "RIGHT_CENSORED": 7
+      }
+    },
+    {
+      "event_status_counts": {
+        "OBSERVED": 161,
+        "RIGHT_CENSORED": 6
+      },
+      "first_event_counts": {
+        "FLOOR_BROKEN_FIRST": 11,
+        "NO_RESOLUTION_BY_HORIZON": 137,
+        "PRICE_RECOVERED_FIRST": 13
+      },
+      "horizon_sessions": 21,
+      "legacy_episode_count": 104,
+      "median_excess_return": 0.00111266,
+      "median_mae_close": -0.04338481,
+      "median_mfe_close": 0.06121764,
+      "n_complete": 161,
+      "n_event_observed": 161,
+      "n_tickers": 155,
+      "n_total": 167,
+      "state": "REBUILDING",
+      "status_counts": {
+        "COMPLETE": 161,
+        "RIGHT_CENSORED": 6
+      }
+    },
+    {
+      "event_status_counts": {
+        "OBSERVED": 160,
+        "RIGHT_CENSORED": 7
+      },
+      "first_event_counts": {
+        "FLOOR_BROKEN_FIRST": 25,
+        "NO_RESOLUTION_BY_HORIZON": 101,
+        "PRICE_RECOVERED_FIRST": 32
+      },
+      "horizon_sessions": 63,
+      "legacy_episode_count": 104,
+      "median_excess_return": -0.020258695,
+      "median_mae_close": -0.076686325,
+      "median_mfe_close": 0.124087435,
+      "n_complete": 158,
+      "n_event_observed": 158,
+      "n_tickers": 155,
+      "n_total": 167,
+      "state": "REBUILDING",
+      "status_counts": {
+        "COMPLETE": 158,
+        "RIGHT_CENSORED": 9
+      }
+    },
+    {
+      "event_status_counts": {
+        "NOT_AT_RISK": 51,
+        "OBSERVED": 287,
+        "RIGHT_CENSORED": 4
+      },
+      "first_event_counts": {
+        "FLOOR_BROKEN_FIRST": 16,
+        "NO_RESOLUTION_BY_HORIZON": 132,
+        "PRICE_RECOVERED_FIRST": 138
+      },
+      "horizon_sessions": 21,
+      "legacy_episode_count": 145,
+      "median_excess_return": -0.00151841,
+      "median_mae_close": -0.04666411,
+      "median_mfe_close": 0.08611915,
+      "n_complete": 337,
+      "n_event_observed": 286,
+      "n_tickers": 171,
+      "n_total": 342,
+      "state": "REIGNITING",
+      "status_counts": {
+        "COMPLETE": 337,
+        "RIGHT_CENSORED": 5
+      }
+    },
+    {
+      "event_status_counts": {
+        "NOT_AT_RISK": 51,
+        "OBSERVED": 283,
+        "RIGHT_CENSORED": 8
+      },
+      "first_event_counts": {
+        "FLOOR_BROKEN_FIRST": 29,
+        "NO_RESOLUTION_BY_HORIZON": 84,
+        "PRICE_RECOVERED_FIRST": 167
+      },
+      "horizon_sessions": 63,
+      "legacy_episode_count": 145,
+      "median_excess_return": -0.0249635,
+      "median_mae_close": -0.09067145,
+      "median_mfe_close": 0.15622803,
+      "n_complete": 331,
+      "n_event_observed": 280,
+      "n_tickers": 171,
+      "n_total": 342,
+      "state": "REIGNITING",
+      "status_counts": {
+        "COMPLETE": 331,
+        "RIGHT_CENSORED": 11
+      }
+    }
+  ]
+}

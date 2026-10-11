@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "n_names": 3,
+  "incumbent_all_payload_fields_equal": true,
+  "excluded_additive_fields": [
+    "leader_recovery",
+    "recovery_roster"
+  ],
+  "excluded_nondeterministic_fields": [
+    "built_at",
+    "elapsed_s"
+  ],
+  "baseline_builder_sha256": "e514c39fa28c9d8317cb36bb00a8bcdd40df49ea075de912a0685d15381289df",
+  "candidate_builder_sha256": "00338ef7d8788c6114c5f27875d286dc738d2e644e994a90448296c5dfac44cd"
+}

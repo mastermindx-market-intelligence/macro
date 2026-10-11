@@ -27,6 +27,7 @@ LABELS = {
     "DAMAGED": "Leadership damaged",
     "REBUILDING": "Recovery attempt",
     "REIGNITING": "Trend and relative strength repairing",
+    "REPAIR_PAUSED": "Repair paused; leadership unconfirmed",
     "PRICE_RECOVERED_RS_LAGGING": "Price recovered; relative leadership not restored",
     "LEADERSHIP_REESTABLISHED": "Price and relative leadership restored",
     "FAILED_REPAIR": "Recovery attempt failed",
@@ -185,6 +186,10 @@ def replay_recovery(
                 "peak_on": peak_day, "peak_price": peak,
                 "reference_rs": peak_ratio, "prior_leader_on": lineage, "opened_on": day.isoformat(),
                 "trough_on": day.isoformat(), "trough_price": c,
+                "price_high_water": peak, "price_high_water_on": peak_day,
+                "max_drawdown_from_high_water": _number(c / peak - 1),
+                "max_drawdown_peak_price": peak, "max_drawdown_peak_on": peak_day,
+                "max_drawdown_trough_price": c, "max_drawdown_trough_on": day.isoformat(),
                 "max_drawdown": _number(c / peak - 1),
                 "underwater_sessions": 1, "below_200_sessions": 0,
                 "failed_repairs": 0, "repair_floor": None, "repair_started_on": None,
@@ -212,8 +217,18 @@ def replay_recovery(
             if c < ep["trough_price"]:
                 ep["trough_price"], ep["trough_on"] = c, day.isoformat()
             ep["max_drawdown"] = _number(min(ep["max_drawdown"], c / ep["peak_price"] - 1))
+            if c > ep["price_high_water"]:
+                ep["price_high_water"], ep["price_high_water_on"] = c, day.isoformat()
+            ep["drawdown_from_high_water"] = _number(c / ep["price_high_water"] - 1)
+            if ep["drawdown_from_high_water"] < ep["max_drawdown_from_high_water"]:
+                ep["max_drawdown_from_high_water"] = ep["drawdown_from_high_water"]
+                ep["max_drawdown_peak_price"] = ep["price_high_water"]
+                ep["max_drawdown_peak_on"] = ep["price_high_water_on"]
+                ep["max_drawdown_trough_price"] = c
+                ep["max_drawdown_trough_on"] = day.isoformat()
+            ep["original_price_target_recovered"] = c >= ep["peak_price"]
             rebound = c / ep["trough_price"] - 1
-            price_restored = c >= ep["peak_price"]
+            price_restored = c >= ep["price_high_water"]
             rs_restored = r >= ep["reference_rs"]
             restored_streak = restored_streak + 1 if price_restored and rs_restored and slow_ok else 0
             # A repair needs a material rebound AND multiple completed closes.
@@ -228,7 +243,9 @@ def replay_recovery(
                 state, state_reason = "REIGNITING", "multi_session_fast_slow_and_relative_repair"
             elif repair:
                 state, state_reason = "REBUILDING", "multi_session_fast_and_relative_repair"
-            elif ep["max_drawdown"] <= -spec.deep_fraction or (ma_slow is not None and c < ma_slow):
+            elif ep["repair_started_on"] and ma_slow is not None and c > ma_slow:
+                state, state_reason = "REPAIR_PAUSED", "prior_repair_above_long_trend_but_confirmation_missing"
+            elif ep["drawdown_from_high_water"] <= -spec.deep_fraction or (ma_slow is not None and c < ma_slow):
                 state, state_reason = "DAMAGED", "deep_drawdown_or_below_long_trend"
             else:
                 state, state_reason = "CORRECTING", "open_correction"
@@ -245,6 +262,8 @@ def replay_recovery(
             ep["rebound_from_low"] = _number(rebound)
         if ma_slow is None and lineage:
             state, state_reason = "UNAVAILABLE", "trend_history_incomplete_after_gap"
+        elif not lineage and n <= spec.high_window:
+            state, state_reason = "UNAVAILABLE", "insufficient_leadership_history"
         extension = c / ma_fast - 1 if ma_fast else None
         entry = ("EXTENDED" if extension is not None and extension > spec.extension_fraction
                  else "REPAIR_OBSERVATION" if state in ("REBUILDING", "REIGNITING")
@@ -287,7 +306,16 @@ def describe_recovery(close: pd.Series, benchmark: pd.Series, *, as_of: date,
             transitions.append({"as_of": row["as_of"], "from": previous,
                                 "to": row["state"], "reason": row["reason"]})
             previous = row["state"]
+    try:
+        cut = _date(as_of)
+        fingerprint_inputs = [_source(close, cut), _source(benchmark, cut)]
+        canonical = [[(d.isoformat(), v if math.isfinite(v) else None)
+                      for d, v in sorted(part.items())] for part in fingerprint_inputs]
+        fingerprint = hashlib.sha256(json.dumps(canonical, separators=(",", ":")).encode()).hexdigest()
+    except (TypeError, ValueError, OverflowError):
+        fingerprint = None
     current.update(schema=SCHEMA, era=ERA, label=LABELS[current["state"]],
+                   source_fingerprint_sha256=fingerprint, sampling_basis="completed_daily_close",
                    authority=deepcopy(AUTHORITY), definition=asdict(spec), definition_sha256=spec.digest,
                    source_ref=source_ref, evidence_mode="RECONSTRUCTED_CURRENT_VINTAGE",
                    first_seen_qualified=False, historical_membership_qualified=False,
@@ -300,6 +328,8 @@ def recovery_roster(rows: list[dict], *, as_of: str, stale: bool) -> dict:
     """One read-only view over incumbent row descriptors; no independent store."""
     counts = {s: 0 for s in LABELS}
     roster = []
+    if len({r["ticker"] for r in rows}) != len(rows):
+        raise ValueError("duplicate_roster_identity")
     for row in rows:
         d = (row.get("display_chips") or {}).get("leader_recovery") or {}
         state = d.get("state", "UNAVAILABLE")
