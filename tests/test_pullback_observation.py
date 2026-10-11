@@ -9,7 +9,7 @@ import random
 
 import pytest
 
-from lib.pullback_observation import RULES, observe
+from lib.pullback_observation import PATH_MAX_CLOSES, RULES, observe
 
 
 def session(day):
@@ -348,3 +348,43 @@ def test_reference_window_is_exactly_63_closes_not_64():
     assert read["peak_session"] == rows[-2][0]
     assert read["peak_session"] != rows[0][0]
     assert read["onset_session"] is None
+
+
+def _long_decline(closes):
+    """A high of 101 after the flat baseline, then `closes` steadily lower closes."""
+    return rows_for([101.0] + [96.0 - 0.01 * i for i in range(closes)])
+
+
+def test_a_long_episode_path_reaches_back_to_the_retained_high():
+    from lib.pullback_depth import episode_window
+
+    rows = _long_decline(120)
+    read = result(rows)
+    assert read["phase"] == "underway" and read["observed_closes_since_onset"] > RULES.reference_closes
+    path = read["price_path"]
+    # The high is 121 closes back, beyond the reference window, and still drawn.
+    assert path["dates"][0] == read["peak_session"] == rows[64][0]
+    assert path["dates"][-1] == rows[-1][0] and path["vals"][0] == 0.0
+    assert len(path["dates"]) == 121 > RULES.reference_closes
+    window = episode_window(read)
+    assert window is not None and window["dates"][0] == read["peak_session"]
+    assert window["dates"][-1] == read["asof"]
+
+
+def test_a_short_episode_path_keeps_the_reference_window():
+    rows = _long_decline(10)
+    path = result(rows)["price_path"]
+    assert len(path["dates"]) == RULES.reference_closes
+    assert path["dates"][0] < rows[64][0]  # closes before the high, as before
+
+
+def test_an_episode_older_than_the_cap_is_not_drawn_partially():
+    from lib.pullback_depth import episode_window
+
+    rows = _long_decline(PATH_MAX_CLOSES + 20)
+    read = result(rows)
+    assert read["phase"] == "underway"
+    path = read["price_path"]
+    assert len(path["dates"]) == PATH_MAX_CLOSES
+    assert read["peak_session"] not in path["dates"]
+    assert episode_window(read) is None

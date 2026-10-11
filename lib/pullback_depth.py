@@ -166,8 +166,9 @@ def episode_window(obs: dict) -> dict | None:
     dates, vals = list(path.get("dates") or []), list(path.get("vals") or [])
     if len(dates) != len(vals) or not all(isinstance(d, str) for d in dates):
         return None
-    # The owner keeps at most 63 closes, so a long episode's peak can predate
-    # the path; starting mid-decline would draw a partial episode.
+    # The owner's path reaches back to the retained high only within its cap,
+    # so a very long episode's peak can predate it; starting mid-decline
+    # would draw a partial episode.
     if peak_session not in dates:
         return None
     start = dates.index(peak_session)

@@ -33,6 +33,10 @@ class Rules:
 
 RULES = Rules()
 SCHEMA = "pullback_observation.v1"
+# Display only, not a phase rule: the drawn path reaches back to the retained
+# high so an episode older than the reference window is drawn whole, capped
+# at about one trading year of closes.
+PATH_MAX_CLOSES = 252
 
 
 def _next_observation(previous: date, current: date,
@@ -242,7 +246,9 @@ def _finish(records: list[tuple[date, float]], view: dict, contiguous: int,
     low_date, low = records[low_i]
     start_i = event["start_index"] if event else None
     recovered = max(0.0, min(100.0, 100.0 * (price - low) / (peak - low))) if peak > low else None
-    chart_start = max(view["reference_floor_index"], last - 62)
+    chart_start = max(view["reference_floor_index"],
+                      min(peak_i, last - (RULES.reference_closes - 1)),
+                      last - (PATH_MAX_CLOSES - 1))
     price_path = {"dates": [d.isoformat() for d, _ in records[chart_start:]],
                   "vals": [round(min(0.0, 100.0 * (p / peak - 1.0)), 4)
                            for _, p in records[chart_start:]]}

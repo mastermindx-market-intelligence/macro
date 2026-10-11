@@ -15309,8 +15309,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           if(_dlgActive === dlg) dlg.classList.add('mx5-dlg-in');
         }); });
       }
-      _focusFirst(dlg);
+      /* Settle expiry before focus lands, so focus never starts on figures the
+         check is about to withdraw. */
       if(id === 'dlg-risk' && window.mmPbExpire) window.mmPbExpire();
+      _focusFirst(dlg);
       dlg._trapHandler = function(e){ _trapTab(dlg, e); };
       dlg.addEventListener('keydown', dlg._trapHandler);
       /* backdrop click */

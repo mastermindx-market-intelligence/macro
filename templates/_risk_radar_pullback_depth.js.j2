@@ -27,8 +27,9 @@
         next = Math.min(next, end);
       }
     });
-    // One-shot at the producer-owned deadline; visibility restores delayed tabs.
-    if (Number.isFinite(next)) timer = window.setTimeout(expire, Math.min(2147483647, Math.max(1, next - now + 10)));
+    /* Re-arm at the nearest deadline, but at least once a minute: a timer that
+       spans a sleep resumes late, and no wake event is guaranteed to follow. */
+    if (Number.isFinite(next)) timer = window.setTimeout(expire, Math.min(60000, Math.max(1, next - now + 10)));
   }
   function start() {
     expire();

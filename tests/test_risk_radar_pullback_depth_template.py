@@ -292,9 +292,28 @@ for (const k of ['naive', 'past', 'empty']) {
   assert.equal(sections[k].zh.textContent, '价格数据待更新');
 }
 assert.equal(sections.zoned.en.textContent, 'Pullback underway');
-// One timer, aimed just past the nearest live deadline.
+// One timer: a deadline more than a minute away is re-checked within a minute.
 assert.equal(timers.length, 1);
-assert.equal(timers[0].ms, Date.parse('2026-10-12T09:00:00Z') - now + 10);
+assert.equal(timers[0].ms, 60000);
+// With no wake event at all, the clock passing the deadline expires the section
+// within one re-check interval.
+now = Date.parse('2026-10-12T08:59:59.950Z');
+timers.at(-1).fn();
+assert.equal(expired('zoned'), false);
+assert.equal(timers.at(-1).ms, 60, 'a near deadline is aimed just past itself');
+now = Date.parse('2026-10-12T09:00:00.010Z');
+timers.at(-1).fn();
+assert.equal(expired('zoned'), true); assert.equal(expired('utc'), true);
+assert.equal(timers.length, 2, 'the passive path stops re-arming once every section has expired');
+// Reset the sections so the wake paths are proven on their own.
+for (const k of ['zoned', 'utc']) {
+  sections[k].classes.delete('pb-expired');
+  sections[k].attrs['data-pb-phase'] = 'underway';
+  sections[k].en.textContent = 'Pullback underway';
+}
+now = Date.parse('2026-10-11T00:00:00Z');
+timers.length = 0; window.mmPbExpire();
+assert.equal(expired('zoned'), false); assert.equal(timers.length, 1);
 // A slept timer never fires: every wake path re-checks against the clock.
 assert.equal(typeof window.mmPbExpire, 'function');
 for (const [owner, type] of [['document', 'visibilitychange'], ['window', 'pageshow'], ['window', 'focus']]) {
@@ -320,7 +339,12 @@ def test_both_risk_dialogs_recheck_expiry_as_they_open():
     us = (ROOT / "templates/dashboard.html.j2").read_text()
     opener = us[us.index("window.mx5OpenDlg = function(id){"):]
     opener = opener[:opener.index("\n    };")]
-    assert "if(id === 'dlg-risk' && window.mmPbExpire) window.mmPbExpire();" in opener
+    check = "if(id === 'dlg-risk' && window.mmPbExpire) window.mmPbExpire();"
+    assert check in opener
+    # Expiry settles before focus lands, as China's opener does.
+    assert opener.index(check) < opener.index("_focusFirst(dlg);")
     cn = (ROOT / "templates/china.html.j2").read_text()
     cn_open = cn[cn.index("function cnxOpenDlg(id){"):cn.index("function cnxCloseDlg(){")]
-    assert "if(id==='cnx-dlg-risk'&&window.mmPbExpire)window.mmPbExpire();" in cn_open
+    cn_check = "if(id==='cnx-dlg-risk'&&window.mmPbExpire)window.mmPbExpire();"
+    assert cn_check in cn_open
+    assert cn_open.index(cn_check) < cn_open.index("first.focus({preventScroll:true})")
