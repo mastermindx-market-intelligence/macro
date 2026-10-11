@@ -1,0 +1,84 @@
+{
+  "schema": "economic_network.archived_test_source_relocation/v1",
+  "operation_id": "gmi-economic-observations-20261009-pro-003",
+  "created_at_utc": "2026-10-09 12:09:58 UTC",
+  "reason": "Two preserved historical source copies were classified as runnable suites by the unchanged exact Python test filename law. Preserve their exact bytes as text archives and keep the canonical runtime suite separately enrolled.",
+  "observed_failed_candidate": "9df735bbeaa8d0f4d4967296270bfb2246a5212f",
+  "original_checkpoint_commit": "6b58f15adae3b1d402d9993c52609d00083f1453",
+  "original_repository": "mastermindx-market-intelligence/macro",
+  "records": [
+    {
+      "version": 1,
+      "original_logical_repo_path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v1/test_company_relationship_observations.py",
+      "original_checkpoint_commit": "6b58f15adae3b1d402d9993c52609d00083f1453",
+      "last_original_path_checkpoint": "9df735bbeaa8d0f4d4967296270bfb2246a5212f",
+      "archive_repo_path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v1/test_company_relationship_observations.py.txt",
+      "byte_length": 43659,
+      "sha256": "80acae7aadcecec3214fe86d77c99da841d2544629d35380ec11b5d9cc94d67e",
+      "representation": "EXACT_UTF8_SOURCE_BYTES_TEXT_ARCHIVE",
+      "relocation_only": true,
+      "current_executable_suite": false
+    },
+    {
+      "version": 2,
+      "original_logical_repo_path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v2/test_company_relationship_observations.py",
+      "original_checkpoint_commit": "6b58f15adae3b1d402d9993c52609d00083f1453",
+      "last_original_path_checkpoint": "9df735bbeaa8d0f4d4967296270bfb2246a5212f",
+      "archive_repo_path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v2/test_company_relationship_observations.py.txt",
+      "byte_length": 49406,
+      "sha256": "a73700e639c8e97a4ff84951b48358abe63b1f5048560d03b0e40f2310ac44da",
+      "representation": "EXACT_UTF8_SOURCE_BYTES_TEXT_ARCHIVE",
+      "relocation_only": true,
+      "current_executable_suite": false
+    }
+  ],
+  "canonical_runtime_suite": {
+    "path": "tests/test_company_relationship_observations.py",
+    "byte_length": 49406,
+    "sha256": "a73700e639c8e97a4ff84951b48358abe63b1f5048560d03b0e40f2310ac44da",
+    "role": "Current independently reviewed v2 application test suite; still enrolled in company-relationship-candidates"
+  },
+  "failed_gate": {
+    "run_id": 37925499382,
+    "attempt": 1,
+    "job_id": 113803335510,
+    "tested_merge": "c852221c2bc4d8275c11c686094ccbf472f82ad9",
+    "base": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+    "introduced_count": 2,
+    "inherited_count": 0,
+    "raw_log_byte_length": 30995,
+    "raw_log_sha256": "85fe520d6cb4f29cafe4f990a792bb7c28218742ac72a54e17710f0858666334",
+    "finding": "New pytest suites named by no workflow run step",
+    "prior_failure_reclassified_as_success": false,
+    "retained_full_log_path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/pr8711-original-contract-delta-001.log",
+    "retention_representation": "Decoded GitHub connector content re-encoded as UTF-8, matching the independently recorded raw-log byte length and SHA-256; original transport/redirect bytes not separately observed by principal.",
+    "independent_packet_retention": "Bounded excerpts and raw-log hashes, not the complete log body"
+  },
+  "discovery_contract": {
+    "path": "scripts/audit_unrun_tests.py",
+    "sha256": "e50ba44cb678761d55f1c5bb9828390bd7c21c1672760d6f52781ca194dd7d47",
+    "filename_pattern": "^(?:test_.+|.+_test)\\.py$",
+    "policy_modified": false
+  },
+  "historical_manifests": {
+    "resolution": "Original frozen manifest logical names and byte hashes remain unchanged. Resolve the two exact original repo paths through this explicit map for current-tree reads, or read their original checkpoint commit. All other members resolve without remapping.",
+    "checkpoint_manifest": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/CHECKPOINT_ARTIFACT_MANIFEST_001.json",
+    "checkpoint_manifest_sha256": "7ef34c888916994e8b27a38751c4849736494e830af8a59f2aa2f05cf1e2e43a",
+    "builder_manifests": [
+      "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v1/artifact_manifest.json",
+      "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/observation_implementation/v2/artifact_manifest.json"
+    ]
+  },
+  "source_changes": {
+    "application": false,
+    "canonical_tests": false,
+    "CI_inventory": false,
+    "CI_policy": false,
+    "waivers": false,
+    "baseline": false
+  },
+  "native_test_repeat_needed_for_relocation": false,
+  "new_exact_head_hosted_gate_required": true,
+  "admission": "NOT_ADMITTED",
+  "production_or_predictive_promotion": false
+}
