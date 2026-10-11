@@ -756,3 +756,16 @@ New attended canonical-terminal-volume-release-20261011.py compiled/reviewed SHA
 Consume only actual existing921 observer material return. After exact qualified merged source/required CI, run guarded canonical new generation including914+917+921, then owning paid phone/Settings proof. Storage operation complete: never retry purchase/snapshot/migration/root reclamation/controller; no unchanged34d/source/paid replay. Independent781/IW2/SQL/rights/887/security/EFFECT_UNKNOWN/A19 holds remain.
 
 Detailed actual receipts remain in research/terminal_audit20/TAKEOVER_20261009/release-and-repair-proof.json / current_capability_frontier_20261011T0928. Historical JSON objects retained. The stale frontier pointer0810 is corrected to this actual event; wholeAudit20 remains incomplete.
+
+
+## 2026-10-11 10:08 UTC — merged guards qualified; same canonical release stages after source-input reconciliation
+
+PR921 actually merged09:35:50Z at707648d5201494ec42a2429ffb64cc39fb24314e from reviewed55dd1b1ca20edae209fdc66a58732c3453ff136e; fullhead/squash tree0294a290ecdb609269e5ee6327b7ac7e412c6ecc equal. Exact38126521144 allthree requiredjobs SUCCESS on55. Existing soleobserver settled; sourcebranch closed. No source/CI rerun, secondobserver or completedbranch reuse.
+
+Parent first sameoperation canonical-volume-release-707648d-20261011-v1 stoppedrc64 beforefetch/build/servicepause. Actual sourceaudit soleTRACKED_MODIFIED was the known migration temporaryguard in /usr/local/bin/terminal-data, while clean sourceHEAD andlive marker still34d. The validator correctly rejected this runtimebyte mismatch; no sourceaudit relaxation or canonical-head recovery was invented.
+
+After bounded diagnosis and one review, parent prepared a handoff that holds the existing nativeproducerflock andexisting updaterlock, pauses exacteight existingcronlaunches, restores exactaccepted34d wrapperbytes at0755, and uses the unchanged canonicalbuilder. Nativeproducerflock prevents directmanual data effects until Git installs accepted921guardedwrapper; failure restores prior temporaryguard beforeadmission resumes. Nine isolated local recovery/lock tests passed; Linuxxattrs are stubbed andhardSIGKILL/hostfailure untested. No manualproducer, alternatebuilder, namespace/inputspoofing, newjob or lowered10GiB invariant.
+
+Actual corrected release controller2784289/builder2784333 is running in execPTY97850, sameoperation/target707. Current-generation sourcepreflight is CLEAN at10:07:29Z and exact-target staging Nextbuild is active at /opt/terminal/.stage.4EhPCq/terminal. Parent owns eightpaused scheduledlaunches until guardedwrapper/admission restoration. Resume SAMEPTY/private /root/terminal-canonical-volume-release-707648d-20261011/state.json; neverrestartcontroller/build. Storageoperation is complete andunreplayed; currentserving34d is not newinstallation acceptance. NewowningpaidphoneReplay/Settings proof follows onlyactual qualified707installation.
+
+Latest detailed frontier current_capability_frontier_20261011T1008 supersedes T0928 onlyonactual921source/merge/requiredCI, proven localinputcause, andrunningcorrectedrelease. Immutable receipts linkedthere retain exactscope. All independent781numericreview/IW2cyber/SQL/rights/security/887/EFFECT_UNKNOWN/A19/873producer-event holds retained; wholeAudit20 remains incomplete.

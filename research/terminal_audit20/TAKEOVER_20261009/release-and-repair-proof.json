@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T0928",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1008",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -6611,5 +6611,105 @@
       }
     ],
     "next_action": "Consume only actual existing921 observer material return. After exact qualified merged source/required CI, run guarded canonical new generation including914+917+921, then owning paid phone/Settings proof. Storage operation complete: never retry purchase/snapshot/migration/root reclamation/controller; no unchanged34d/source/paid replay. Independent781/IW2/SQL/rights/887/security/EFFECT_UNKNOWN/A19 holds remain."
+  },
+  "current_capability_frontier_20261011T1008": {
+    "observed_at": "2026-10-11T10:09:00.670243+00:00",
+    "supersedes": "current_capability_frontier_20261011T0928",
+    "supersession_scope": "Actual921 merged/source/requiredCI; parent guarded release first pre-source failure correctly diagnosed and exact current-generation input repaired under existing native producer/updater locks. Corrected SAMEoperation now source-preflight CLEAN and exact-target staging build active. Storage completed scopes and independent holds retained.",
+    "whole_original_mission_accepted": false,
+    "merged_guard_921": {
+      "observed_at": "2026-10-11T09:41:15.905760+00:00",
+      "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "pr": 921,
+      "merge_at": "2026-10-11T09:35:50Z",
+      "head": "55dd1b1ca20edae209fdc66a58732c3453ff136e",
+      "squash": "707648d5201494ec42a2429ffb64cc39fb24314e",
+      "parent_commit": "fc76cf495781e5f53254aa3c457411de0cb64654",
+      "equal_head_and_merge_tree": "0294a290ecdb609269e5ee6327b7ac7e412c6ecc",
+      "native_actual_return": "storage_guard_source SAMEobserver45269 completed0/no actions/errors; current_expected_head55dd; metadata/merge-tree/requiredchecks andremote deletion verified bychild after actualsettled event. Parent consumes without duplicateCI/API/log/test/review.",
+      "ci": {
+        "run": 38126521144,
+        "required": {
+          "Terminal": {
+            "job": 114438877627,
+            "conclusion": "SUCCESS",
+            "completed_at": "2026-10-11T09:35:22Z"
+          },
+          "QuoteHub": {
+            "job": 114431907502,
+            "conclusion": "SUCCESS",
+            "completed_at": "2026-10-11T08:55:44Z"
+          },
+          "Ingest": {
+            "job": 114431907495,
+            "conclusion": "SUCCESS",
+            "completed_at": "2026-10-11T08:56:36Z"
+          }
+        },
+        "head_bound": true
+      },
+      "source_expected_runtime": {
+        "ops/terminal-build.sh": {
+          "bytes": 58544,
+          "sha256": "7870780dd471076e26e4b9840980414a6ebc59c942f4ac1957c2ad7b770c9ea9"
+        },
+        "ops/terminal-data": {
+          "bytes": 16616,
+          "sha256": "ab21083a49ed824e1622d13a9ca8680b2232b4f3201154187ae89238a90dc417"
+        }
+      },
+      "parent_judgment": "Scoped reviewed source/fullhead-equal squash/exact3requiredCI accepted. No additional source changes; remotebranchdeleted/localclean reported. Allcompleted921branch workclosed; futureonly installation/live proofs. Duplicate manualCI read remains closed; no retry/waiver from merge.",
+      "installation": "Not yet performed byparent; resource/mount/writer admission before canonical effects.",
+      "whole_original_mission_accepted": false
+    },
+    "first_release_attempt": {
+      "session": 92189,
+      "builder_rc": 64,
+      "post_guard_rc": 0,
+      "effect": "Before source fetch/build/service pause; clean34d/source marker34d andallobservedservicesactive. No restore owed.",
+      "actual_finding": "TRACKED_MODIFIED terminal-data-wrapper from parent migration temporaryfixedguard; sourceHEAD equalsaccepted34d, not CANONICAL_HEAD_MISMATCH. Immutablegenerated8259B receipt86763ac0537d337e60bbde0d9e3a486919e1200c237330e09f13423d9b680ced retained privately."
+    },
+    "input_reconciliation": {
+      "operation": "canonical-volume-release-707648d-20261011-v1",
+      "helper_sha256": "f1b640f409eef53b6a699daa618f095b9419b1ac333a130ae1bd6ef64128042d",
+      "source_validator_preserved": true,
+      "runtime_guard_transition": "Exactaccepted34d wrapper0755 restored ONLY while existingnativeproducerflock andexistingupdaterflock hold, exact8existingcronlaunchespaused, fixedUUIDguard/root10GiB/volume10GiB remain. Directmanualproducer cannotgetnativeflock beforedatawrites. Canonicalbuilder installsaccepted921guardedwrapper; failure restorestemporaryguard beforeadmissionresumes. No manualproducer/namespace/inputspoofing/validatorrelaxation/newjob/alternatebuilder.",
+      "bounded_review_tests": "One independent review,9localisolatedcasesPASS actualflock/stubbedfilesystem+subprocess; fixedownlockcleanup/ordinarysignals/recoveryexceptions/settlementbeforeadmissionrestore beforeeffects. Linuxxattrs stubbedempty onMac; hardSIGKILL/hostfailure untested, no crashproofclaim.",
+      "transient_process_precheck": "Firstcorrectiveexec23655 stopped beforehandoff on broadbuildermention; actualPID2781675bash had no builderpathargument orfulltarget andsubsequentlysettled. Handoffprivatecontrolnotcreated. Normalfreshinternalpreflightthenpassed; no actual sourcewriterdisplaced or gate weakened."
+    },
+    "actual_running_release": {
+      "operation": "canonical-volume-release-707648d-20261011-v1",
+      "exec_session": 97850,
+      "controller_pid": 2784289,
+      "builder_pid": 2784333,
+      "target": "707648d5201494ec42a2429ffb64cc39fb24314e",
+      "at": "2026-10-11T10:07:28.669745+00:00",
+      "phase": "canonical_builder_started_staging_build",
+      "source_preflight": "CLEAN accepted34d /var/lib/mastermind-terminal/release-preflight/20261011T100729Z-34d52545ac04692ab642942972b29b1379a44a08-7497f893d66c32804fe7cbb8476bfd6521f145fe0ed5f83fd33da711e6744029.json policy1f2e1bdcc9b72561afe15a5cd79ed6550162498a43f3b2427da5e0e64d6123d5",
+      "stage": "/opt/terminal/.stage.4EhPCq/terminal",
+      "latest_actual_log": "Creating an optimized production build",
+      "producer_lock_created_here": true,
+      "producer_lock_inode": 5488,
+      "scheduled_launches_paused": 8,
+      "private_state": "/root/terminal-canonical-volume-release-707648d-20261011/state.json",
+      "private_log": "/root/terminal-canonical-volume-release-707648d-20261011/canonical-builder.log",
+      "ownership": "Parent owes builder settlement/guardedwrapper/admissionrestoration then actualinstalledgeneration/health andnewowningpaidphone/Settingsproof. SamePTY/stateonly; neverrelaunchcontroller/build/initialcopy/purchase/snapshot/rootreclaim.",
+      "accepted_install_or_paid_proof": false
+    },
+    "retained_independent_holds": "781reservednumericreview/IW2explicitcyber/SQL/rights/security/887/EFFECT_UNKNOWN/A19/actual873producerpublication remain unchanged; no math/fullpaid/native/fullAudit20 acceptance.",
+    "material_artifacts": [
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/storage-guard-921-merged-source-required-CI-parent-qualification-20261011.json",
+        "bytes": 2007,
+        "sha256": "2f94e7c3b0ec0141e6e9abd98fa10ba12597d5f1033cf63df450eff8b643977d"
+      },
+      {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-release-input-mismatch-reconciliation-parent-qualification-20261011.json",
+        "bytes": 2361,
+        "sha256": "a5822813a1b453c1e5c0216543a8baa8659b1ccf79af684b6574aa49dadd5702"
+      }
+    ],
+    "next_action": "Resume exact97850/SAMEprivatecontrol actualbuilder result; no secondobserver/manualCI/provider/credential polling. Restore ownpausedlaunches/guardedwrapper iffailed; qualify exact707runtime andexistingservices thenowningpaidReplayphone andSettingsnormalUI. No unchanged34d/browser/source/test/CI replay."
   }
 }
