@@ -1,8 +1,8 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-10-11",
-  "generated_utc": "2026-10-11T13:59:34.196038+00:00",
-  "n_tickers": 2884,
+  "generated_utc": "2026-10-11T19:07:29.216119+00:00",
+  "n_tickers": 2882,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
   "note": "Per-ticker weighted alt-data rollup. convergence_score = distinct independent channels (count); weighted_score ranks by channel quality. Donors / position-size recorded as context, never a voting channel.",
@@ -1417,12 +1417,11 @@
     "PSKY": {
       "ticker": "PSKY",
       "channels": [
-        "material_8k",
-        "special_situation"
+        "material_8k"
       ],
-      "weighted_score": 0.75,
+      "weighted_score": 0.55,
       "material_8k_30d": 7,
-      "convergence_score": 2,
+      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
@@ -23193,16 +23192,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "IPEXR": {
-      "ticker": "IPEXR",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "JENA-RI": {
       "ticker": "JENA-RI",
       "channels": [
@@ -23973,8 +23962,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "LGNZZ": {
-      "ticker": "LGNZZ",
+    "LGNYZ": {
+      "ticker": "LGNYZ",
       "channels": [
         "special_situation"
       ],
@@ -24223,8 +24212,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "FHN-PF": {
-      "ticker": "FHN-PF",
+    "FHN-PH": {
+      "ticker": "FHN-PH",
       "channels": [
         "special_situation"
       ],
@@ -28343,8 +28332,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "AQNB": {
-      "ticker": "AQNB",
+    "AGQPF": {
+      "ticker": "AGQPF",
       "channels": [
         "special_situation"
       ],
@@ -28653,8 +28642,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "RWTQ": {
-      "ticker": "RWTQ",
+    "RWTN": {
+      "ticker": "RWTN",
       "channels": [
         "special_situation"
       ],
@@ -28883,8 +28872,8 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "TCBIO": {
-      "ticker": "TCBIO",
+    "TCBI-PB": {
+      "ticker": "TCBI-PB",
       "channels": [
         "special_situation"
       ],
@@ -29265,16 +29254,6 @@
     },
     "LXEO": {
       "ticker": "LXEO",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "MSSAF": {
-      "ticker": "MSSAF",
       "channels": [
         "special_situation"
       ],

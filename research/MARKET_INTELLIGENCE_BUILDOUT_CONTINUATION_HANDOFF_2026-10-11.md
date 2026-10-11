@@ -29,7 +29,7 @@ A cold stranger resumes from this file alone: read §2 (what is running and unde
 | wave | content | exit gate | state |
 |---|---|---|---|
 | W1–W7 | foundation, contracts, writers, flags, receipts (10-06 file) | merged dark | DONE (merged) |
-| W8-N | Package N live: Alpaca-sourced Benzinga headlines (#8809) → P2 VPS enable + canary → P1b minors → P3 Terminal rail | canary `live` with growing rows; anon `/terminal` `newsRailEnabled":true` at the same deployment id | #8809 MERGED `9b1da2b55e6e`; P2/P1b launching |
+| W8-N | Package N live: Alpaca-sourced Benzinga headlines (#8809) → P2 VPS enable + canary → P1b minors → P3 Terminal rail | canary `live` with growing rows; anon `/terminal` `newsRailEnabled":true` at the same deployment id | #8809/#8823/#8828 MERGED; P2 BLOCKED on 401 (pre-rotation VPS Alpaca pair) → #8838 secret-sync armed; P3 after the canary |
 | W8-I | Package I flag on (#8811) | `/api/integrated-answer/v1/AAPL` 404 → 401 after the VPS pull + restart | CI GREEN; AER review RUNNING |
 | W8-MM | market-memory unit recovery: #8807 massive manifest refresh, #8812 sentinel served cap, DX2 torn-pending discard, D-identity idempotent ingest, D-options pit EACCES tolerance + stage token | next SCHEDULED run of each unit logs success (or, for options, a stage token) | #8807 CI GREEN + review PASS; #8812 CI pending; DX2 + DID lanes RUNNING |
 | W8-F | #7711 options-audit V2 charter judgment | charter satisfies WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2 and the seat's ten gaps; docs-only merge or REQUEST_REPAIR once | F docs lane RUNNING |
@@ -43,11 +43,11 @@ orchestrator outputs `$S/../tasks/<id>.output`; fabric kit
 
 | lane | host / branch | PR · head | verdict · seat acts |
 |---|---|---|---|
-| ORCH-N (Opus `ad8bb35435bc5fe52`) | ledger `$S/orch_n_alpaca_ledger.md`, packet `$S/orch_n_alpaca_return.md` | — | P1 DELIVERED; seat MERGED #8809; "MERGED 9b1da2b55e6e" sent 14:0xZ → P2 + P1b |
+| ORCH-N (Opus `ad8bb35435bc5fe52`) | ledger `$S/orch_n_alpaca_ledger.md`, packet `$S/orch_n_alpaca_return.md` | — | P1 DELIVERED; seat MERGED #8809; "MERGED 9b1da2b55e6e" sent 14:0xZ → P2 + P1b; P2 BLOCKED 17:04Z on HTTP 401 (`SESSION END: EXACT_HUMAN_GATE`, resumable) → seat remedy #8838; CONTINUE after the dispatch succeeds |
 | N build r2 / repair r3 | ubuntu1, `claude/mi-n-alpaca-provider-20261011` | #8809 · `1d8a481ce9f4` | MERGED `9b1da2b55e6e` (ready + `--match-head-commit` in one act; 10 paths blob-verified on origin/main) |
 | N review r1 | ubuntu3 (independent host) | #8809 | `N-ALPACA-REVIEW: PASS 1d8a481c`, R1–R11, 0 blocker, 4 MINOR (M1–M4 → P1b) |
 | N ci-pack0 heal r1 | ubuntu2, `claude/mi-ci-pack0-weight-heal-20261011` | (draft to open) · watcher `blwk9he3d` 150 s | curates the #8630 EVAL-1 step into its own `scope: exclusive` job; ceiling unchanged; seat readies + merges on its own green |
-| N P2 (VPS enable + canary) | VPS `146.190.142.17` | — | launching; proof = unit active, canary `live`, rows growing across two reads ≥10 min apart |
+| N P2 (VPS enable + canary) | VPS `146.190.142.17` | #8838 · `dbdf75a58f00` (deploy-alpaca-secrets.yml) | BLOCKED on HTTP 401 — pre-rotation Alpaca pair on the VPS (DSC:VPS-ALPACA-CREDENTIALS-SILENTLY-REJECTED-SINCE-2026-08-04); #8838 armed merge-on-green, watcher `bbyqxi0ml` 150 s; dispatch from main after merge (a branch dispatch 404s) → ORCH-N `--disarm`/`--arm` → proof = unit active, canary `live`, rows growing across two reads ≥10 min apart |
 | N P1b (M1–M4 minors) | fabric glm-5.3 build, own branch off fresh origin/main | — | launching (cap 2 with the heal lane) |
 | N P3 (Terminal rail) | Terminal host drop-in `ticker-news-rail.conf` | — | after P2 canary; proof `newsRailEnabled":true` at `.deployment-id 707648d52014` |
 | ORCH-OPS (Opus `a5ccb27d864b1f6cb`) | ledger `$S/orch_ops_ledger.md` | — | RUNNING; rulings 1–4 delivered (§3) |
@@ -66,14 +66,16 @@ orchestrator outputs `$S/../tasks/<id>.output`; fabric kit
 |---|---|---|---|
 | N adapter #8809 | `9b1da2b55e6e` | MERGED | — |
 | N P1b #8823 | `d39672a34aaa` (squash of `af1b3e102267`) | MERGED 14:48:18Z, blob-verified 6/6 | — |
-| N SKYD-IDENTITY | DRAFT #8828 head `bf5b534c300e` (unarmed; `data/reference/` regen withheld) | DELIVERED; seat ruling = conditional FOLD C1–C4 (C4 PASS); C2 lane + review RUNNING; fold held | ORCH-N, watchers `bq1h4qpvu` (review, ubuntu3) + `bvbicvq2i` (C2, ubuntu2) |
-| N P2 / P3 | VPS writer + Terminal drop-in | QUEUED behind SKYD | ORCH-N |
+| N SKYD-IDENTITY | #8828 MERGED `c50af4eb0421` (squash of fold head `005c81ed737e`; 8/8 blobs verified; VPS `/opt/macro` at c50af4eb0421 16:5xZ) | MERGED 16:5xZ; production proof = the P2 canary (after #8838) | — (DSC:A-VENUE-MOVING-RENAME-MISSES-THE-COMMITTED-LISTING-KEY) |
+| N P2 / P3 | VPS writer + Terminal drop-in | P2 BLOCKED on 401 (pre-rotation VPS Alpaca pair) → #8838 `dbdf75a58f00` OPEN, armed merge-on-green (DEC:VPS-ALPACA-PAIR-REFRESHED-FROM-REPO-SECRETS-BY-DISPATCH-WORKFLOW); P3 queued behind the canary | seat (#8838) → ORCH-N |
+| DIDC #8830 | `8a75b657d821` (squash of `3418a0e579bf`) | MERGED 17:26:55Z, blob-verified 2/2; PRODUCTION_PROOF 17:33Z (moved-HEAD run exit 0) | seat; next = identity-unit budget lift PR (165/180 s) |
 | N heal #8824 | — | CLOSED (superseded by #8805 `413e253ada36`) | — |
 | I #8811 | `70f42ccba7ca` | PRODUCTION_PROOF (401) | — |
 | MM-B #8807 | `616b1b8703fa` | MERGED, VPS pulled; proof after 10-12 nightly | ORCH-OPS `a5ccb27d864b1f6cb` |
 | MM-E #8812 | `c782664b6361` | PRODUCTION_PROOF (14:42:07Z tick: 2 MB-cap error gone; remaining red = #8748 intake breach) | — |
 | MM-DX #8816 | `3657d0ebc075` | MERGED; activation waits on MM-B proof | ORCH-OPS |
 | MM-DID #8819 | `b8a839236ddd` (squash of `a95921b01a93`) | MERGED 14:50:31Z, 2/2 blobs verified; proof = first identity-timer run after 15:30:50Z (journald: typed counts + divergence_count, no KeyError) | ORCH-OPS reads once, watcher `biyqfcy0u` |
+| MM-DIDC #8830 | head `3418a0e579bf` → squash `8a75b657d821` | MERGED 17:26:55Z (blob-verified 2/2); PRODUCTION_PROOF 17:33:10Z — timer run saw HEAD move 8a75b657→b79cd122 mid-run, exit 0, completion_commit ≠ deployed_commit | ORCH-OPS read 17:34:37Z (`vps_identity_read_1729.out`), seat-judged; OPEN: unit ran 165 s of TimeoutStartSec=180 under CPUQuota=50% |
 | MM-DO #8818 | `56e269cf2e3f` (squash of `d319fde9b192`) | MERGED 14:59:22Z, 6/6 blobs; FAILURE LINE PRODUCTION_PROOF (15:00:23Z stage token); CAPTURE = EXACT_HUMAN_GATE (403 options-snapshot entitlement) | — (Chairman: plan entitlement) |
 | F #7711 | `d1b93722ec41` | MERGED | — |
 | W8 records #8820 | `4a27bedaabe9` | MERGED | — |
@@ -267,6 +269,76 @@ from the return (refresh vs origin/main, four keys cited, docs-only merge if it 
   in the sibling worktree `pr-8828`. The "8 modified files" ORCH-OPS saw were that lane's
   pre-commit state, not a foreign writer.
 
+### 4d. FACTS added 18:0x–19:34Z
+
+- #8848 MERGED 19:05:13Z by hand on concluded checks; squash `1f45d70041e60faaae9593ad8ba2b53879a8ba57`;
+  4/4 paths blob-verified after a bare `git fetch origin`; watcher b1gggc89s exited 19:02:17Z.
+- /opt/macro pulled 1f45d700 at 19:06:30Z; that run restarted macro-api (MainPID 3100680, update.sh
+  L1304). terminal.service MainPID 3099200 since 19:05:03Z = ORCH-N's P3 rail flip under the updater
+  lock; live `.deployment-id` bc28e47ee54f; drop-in `/etc/systemd/system/terminal.service.d/
+  ticker-news-rail.conf` `TICKER_NEWS_RAIL=1`.
+- **update.sh L1528-1529 `exit 1` on the W2C owner-replay refusal aborts every later deploy block**
+  (DSC:UPDATE-SH-W2C-REFUSAL-EXITS-BEFORE-LATER-DEPLOY-BLOCKS): ticker-news L2312-2344, press-feeds
+  L2292-2310, BioCatalyst L2348+, unit reconcile L2392+, daemon modules L2464+, plus production-records
+  L1551+, option-OI canary L1610+, W1B5 timer finalization L1758-1847, live-plane L1849+. The EXIT trap
+  `options_fail_closed_on_exit` (L436-447, cleared only at L1846) fires on that exit -> `disarm_options_timer`
+  (L196) every 3 min. `CHANGED` (L264-271) is per-run, so a skipped restart is never retried. The log has
+  no run delimiters: the manifest / "publication deferred" (L398) lines after a refusal belong to the NEXT
+  run, and "control-room-source" is emitted by a child process, not update.sh. Blame 69268b06502c
+  (metabolism-immune[bot], 2026-08-23). Tests pin the refusal (tests/test_market_memory_experience_deploy.py
+  L1124-1125: returncode 1 + the stderr phrase); siblings tests/test_deploy_update_self_heal.py,
+  tests/test_market_memory_context_deploy.py. agentos owners of update.sh: this WS, WS-MARKET-MEMORY-W2C
+  (coo-fable; its do_not_redo is scoped to #5804's repair), WS-LIVE-ENTRY-RADAR. Open PRs touching it:
+  #7992 Sol non-draft (never touch; rebase the fix on fresh main), drafts/holds #7728 #8245 #6651 #8678
+  #8682 #8701 #7100.
+- Updater lock: update.sh L16-17 `exec 9>/var/lock/macro-update.lock; flock -n 9 || exit 0`. Seat
+  pattern for a manual unit restart: `flock -w 40 9` + a critical section of seconds; a `flock -n` at
+  the 19:24:03Z cron tick found it BUSY.
+- Writer restart 19:24:36-43Z: PRE MainPID 3071073 -> POST 3111697 (active since 19:24:41Z, ready in
+  2 s, NRestarts=0, universe snapshot 503, state live, anon 401, revisions=2 intact); deployed
+  `scripts/run_qbus_news.py` sha256 95375cdbba3f982f… and `engine/qbus_news_receipts.py` 67a1d79778250166…
+  == origin/main 102ac7ee5bb1; pre-restart health saved to
+  `/var/lib/macro-ticker-news/health.pre-restart-1924Z.json`; old process exit line `catchups_ok: 127,
+  disconnects: 0, catchups_failed: 0` over 18:20:58->19:24:37Z.
+- #8848 adds NO new health keys (set: catchups_failed, connect_attempts, disconnects, gap_unresolved,
+  last_catchup_error, last_stream_error, last_stream_event_at, last_successful_catchup, observed_at,
+  provider, schema, source, state); `_error_code` (run_qbus_news.py L106) only changes the stored VALUES
+  at L238/L362. Sqlite tables are news_deliveries(transport, received_at), news_revisions(source),
+  news_cursors — there is no `revisions` table.
+- W2C technicals failure detail: `MarketMemoryTechnicalObservationError: store ticker count does not match
+  the publish manifest` raised at `engine/neuralweb/market_memory_technical_observation.py:1233
+  _validate_manifest` <- `fetch_current_spy_daily_inputs` L781 <- `build_current_spy_raw_close_ratio`
+  L1789 <- `scripts/capture_market_memory_technicals.py` L68/L136/L153; unit Result=exit-code status 1,
+  re-attempted every ~3 min by the updater's W2C block; `macro-market-memory-experience.timer`
+  inactive/enabled, its service failed. By design until the 10-12 nightly; no manual start.
+- Lane matrix delta: ORCH-D = Opus orchestrator `ad812dc60c846701f` (background, spawned 19:34Z),
+  one GLM-5.3 fabric build lane, branch `claude/mi-update-sh-w2c-lane-freeze-20261011`, worktree on the
+  SSD helper, owned files app/deploy/update.sh + tests/test_market_memory_experience_deploy.py; return
+  packet STATUS/RESULT/EVIDENCE/GAPS/DEVIATIONS; ~90 min budget. ORCH-N `ad8bb35435bc5fe52` and ORCH-OPS
+  `a5ccb27d864b1f6cb` ENDED PROVEN_OUTCOME (resumable only by SendMessage; never re-spawn). No watcher armed.
+- origin/main at W9-4 cut: ccfae015a326 (research_vault catalog 19:28Z); it moves every few minutes —
+  ff before every commit. Desktop-host PreToolUse hook timeouts for Write / ccd_pr persisted all
+  window; Bash heredocs remain the writer.
+
+### 4e. FACTS added 19:34–20:0xZ
+
+- Records W9-4 = #8861 MERGED (squash `1761e5bd5d8b`); #1202 W9-4 checkpoint = issuecomment-6112954849
+  (19:41:25Z). Carrier read 19:58Z: no counterpart edge after it.
+- Identity unit measurement 19:45Z (timer `*:29` UTC; TimeoutStartSec=600, CPUQuota=100%, MemoryMax=512M):
+  run 19:29:44→19:31:23Z = 99 s wall / 82.7 CPU-s / 146 MB peak / Result=success; 69 tracked snapshots
+  (68 idempotent, 44 operational, 24 reconstruction, 0 published, 1 divergence `upstream_rewrite_after_capture`
+  2026-08-19 = identity owner's matter). The W9-4 "97 s of 600 headroom" figure was the run duration.
+- marketing-press-feeds.service reads /etc/macro-live.env at start only; the old MainPID 3789179 ran since
+  10-03 08:15:39Z (pre-refresh), hence the 401s continued after the 18:01Z pair refresh. Restarted 19:56:24Z
+  under the updater lock with `providers.alpaca.since` popped (backup `state.json.bak-alpaca-prime-20261011T195624Z`,
+  6,261,571 B); MainPID 3129081; cold start primed to 2026-10-11T19:45:06Z from 50 history items, none
+  ingested; 401=0 since; `[NO-OP]` ticks (MARKETING_PUBLISH_ENABLED unset, 0 lines in the env file).
+  DSC:PRESS-FEEDS-RESTART-AFTER-AN-AUTH-GAP-NEEDS-THE-ALPACA-CURSOR-REPRIMED. The W9-3 belief "catch-up
+  is bounded to one newest-first page" was true only of the cold start (press_providers.py L896-923).
+- `press_stream` twitterapi.io websocket 403: first surviving journal line 2026-10-08T23:16:40Z; 288 lines in
+  the 24 h before the restart, 5 after — a separate billed lane, persists, not this program's.
+- ORCH-D `ad812dc60c846701f` RUNNING at 20:0xZ (spawned 19:3xZ, ~90 min budget); no notification yet.
+
 ## 5. Lane recipes (B-kit)
 
 ```
@@ -283,31 +355,56 @@ read credential files or shim logs.
 
 | package | gate | owner | this seat's move |
 |---|---|---|---|
-| N | #8828 fold on C1/C2/C3 (C4 PASS) → READY_FOR_SEAT_MERGE; P2 canary live + growing rows; P3 rail flip | ORCH-N → seat | judge the fold by artifact (six-row delta, additions-only counts, rc 0, two code-gate jobs green, G4a/b/c in body) → hold scan → ready + merge → blob-verify → tell ORCH-N the sha; verify P2/P3 proofs by artifact |
+| N | #8828 MERGED c50af4eb0421; P2 BLOCKED on 401 → #8838 secret-sync merge + dispatch; then canary live + growing rows; P3 rail flip | seat (#8838) then ORCH-N -> seat | merge #8838 on concluded green, dispatch from main (restart_press_feeds=false), SendMessage ORCH-N CONTINUE; then judge READY_FOR_SEAT_PROOF by artifact: `systemctl is-active macro-ticker-news.service`, two health reads >=10 min apart with rows growing, `newsRailEnabled":true` at `.deployment-id 707648d52014` |
 | I | — | — | PRODUCTION_PROOF reached (401 at the route) |
 | MM-B | technicals replay after the 10-12 nightly | ORCH-OPS | read the first :53 tick after ~02:0xZ; no hand-start |
 | MM-E | first sentinel tick after the pull | ORCH-OPS (`bjaodhbad`) | accept the tick receipt |
 | MM-DX | W2C activation by update.sh after MM-B proof | ORCH-OPS | read the experience tick receipt |
-| MM-DID | first identity run after the VPS pulled b8a8392 (timer 15:30:50Z) | ORCH-OPS (`biyqfcy0u`) | accept the journald receipt: typed counts + divergence_count, no KeyError |
+| MM-DID | #8819 PRODUCTION_PROOF (15:30Z run: typed counts + divergence_count, no KeyError; it then died on the checkout race the DIDC fixes) | — | accepted |
+| MM-DIDC | #8830 concluded green -> seat merge -> first moved-HEAD identity run | ORCH-OPS (`bb4o086m3`) -> seat | hold scan -> ready + merge `--match-head-commit 3418a0e579bf…` -> bare fetch + 2-path blob compare; proof = exit 0 with completion_commit != deployed_commit (one journald read) |
 | MM-DO | capture entitlement | Chairman (money) | failure line PROVEN at 15:00:23Z; capture = EXACT_HUMAN_GATE; nothing to poll — an entitled key at the LoadCredential path + one scheduled run is the release |
 | main proof | — | — | SUCCESS 15:12:02Z; a later red on a post-186dbdce scripts/** head needs a LATER descendant proof (never re-dispatch over an in-flight one) |
-| W8-records-3 | this PR | seat | PR → concluded checks → merge → blob-verify |
+| W8-records-3 | #8829 | — | MERGED `0a9f41f35fc8`, 4/4 blobs verified |
+| W9-records | this PR | seat | PR -> concluded checks -> merge -> blob-verify |
 
 ## 7. NEXT (critical path first)
 
-1. #8828 fold: ORCH-N proves C1/C2/C3 (C4 PASS), launches ONE fold commit (fresh-main merge +
-   head-builder regeneration), reads `dataos-identity-seams` + `ticker-news-qbus` on the fold head,
-   makes the single PR-body edit (G4a/b/c, C2 counts, before/after for C3), returns
-   READY_FOR_SEAT_MERGE with the exact sha + the DSC falsifier/so_what.
-2. Seat: judge by artifact → hold scan → `gh pr ready 8828 && gh pr merge 8828 --squash
-   --match-head-commit <sha>` → bare `git fetch origin` + per-path blob-verify → SendMessage ORCH-N.
-3. ORCH-N P2 (`--check/--install/--arm` + canary after the VPS pull) → P3 drop-in only on a live
-   canary with growing rows across two reads ≥10 min apart; proof `newsRailEnabled":true` at
-   `.deployment-id 707648d52014`.
-4. #8819 proof: ORCH-OPS's one read of the 15:30Z identity run. Records wave after the SKYD merge
-   (venue-moving-rename DSC; P2/P3 proofs). This records PR → merge → blob-verify.
-5. Post-nightly proofs (B, D-experience) on 10-12; ONE #1202 checkpoint at the W8/W9 boundary;
-   memory refresh; Chairman blocker list LAST; `SESSION END: <STATE>`.
+1. ORCH-D update.sh lane-freeze fix: DONE — PR #8864 MERGED 2026-10-11T20:50:48Z (squash eb3df04e64fd8f4d74cf3f2f3bb1045c5c84ef35), judged by
+   artifact (289 passed on the branch; the 2 new tests fail on main's update.sh; `bash -n`; no #7992
+   overlap), blob-verified on origin/main, PRODUCTION_PROOF 2026-10-11T21:13:16Z from /var/log/macro-update.log:
+   PRODUCTION_PROOF — VPS read 2026-10-11T21:13:16Z (/opt/macro head c1f29a2feb0a): /usr/local/bin/macro-update carries W2C_LANE_FROZEN_CONTINUE (count 2, cmp equal to app/deploy/update.sh); last 200 updater log lines: 29 'refusing W2C activation before owner replay completion' lines, 7 'W2C lane frozen — … continuing lane-independent deploy steps' lines, 7 terminal 'deploy finished with status 1 (frozen lanes: w2c)' lines (one per */3 tick since the merge), and the biocatalyst-runtime step is logged AFTER the frozen line on every run (lane-independent region now executes); macro-api was restarted by the deploy at 20:51:13Z (MainPID 3160877) — the daemon-restart block the old early exit used to skip; macro-ticker-news MainPID 3111697 (19:24:41Z) and marketing-press-feeds MainPID 3129081 (19:56:24Z) untouched; macro-market-memory-options.timer inactive after each frozen run BY DESIGN — the W9-5 expectation 'options timer no longer disarmed every 3 min' is RETRACTED by name; the W2C technicals owner replay still fails by design until the 10-12 nightly.
+   RETRACTED by name: "confirm `macro-market-memory-options.timer` is no longer disarmed every 3 min" — the
+   design disarms once per frozen run on purpose (eager disarm in W2C_LANE_FROZEN_CONTINUE + latched EXIT
+   trap); the timer re-arms only when the owner replay completes (10-12 nightly). The seat-restart-under-lock
+   rule for merged source-service PRs is RETIRED. Nothing owed.
+2. Package N: PRODUCTION_PROOF, ACCEPTED (ORCH-N RETURN `READY_FOR_SEAT_PROOF` judged by
+   artifact; ORCH-N and ORCH-OPS ENDED PROVEN_OUTCOME, nothing to resume). ACCEPTANCE-grade
+   extras: (2) DONE 20:22Z — health.json state=live, last_stream_event_at 19:45:06Z,
+   last_successful_catchup 20:22:14Z advancing, disconnects 0, catchups_failed 0; 4 real Benzinga items
+   (FDS/BLK/GS/UNH, stream path, 0.2–1.3 s) in qbus.sqlite3; GAP narrowed: a REST-catch-up-SOURCED item
+   needs a stream gap to exercise. (1) signed-in Terminal rail browser check BLOCKED on this seat (browser
+   hook timeout x2); server-side: anon API 401 fails closed, zero signed-in production reads yet; recipe =
+   sign in at app.mastermind-x.com/terminal -> UNH -> News rail tab -> `ticker-news-panel` with >=1
+   headline + live dot (any browser-capable seat/operator). No polling. marketing-press-feeds: RESOLVED 19:56Z by the seat — restart under the updater lock
+   with the Alpaca cursor re-primed (DSC:PRESS-FEEDS-RESTART-AFTER-AN-AUTH-GAP-NEEDS-THE-ALPACA-CURSOR-REPRIMED);
+   PRODUCTION_PROOF = alpaca-cold-start notice 19:56:27Z, 401 lines since 0, MainPID 3129081. The
+   `restart_press_feeds=true` workflow input is a BARE restart and would have replayed — never use
+   it after a gap without re-priming. Nothing owed.
+   G3 #8848: MERGED + PRODUCTION_PROOF (seat restart); behavioral proof of the error-code path
+   needs a real stream / catch-up failure — read `last_stream_error` / `last_catchup_error`
+   only if `catchups_failed` / `disconnects` move. Nothing owed.
+3. Post-nightly proofs on 10-12 after the ~02:0xZ nightly: B (#8807) at the first :53 technicals
+   tick; D-experience (#8816) W2C activation by update.sh once the regenerated manifest matches
+   the store; #8828 roster resolution; data-health.yml's next main run should green on the
+   regenerated artifacts. One bounded read each, no polling.
+4. Identity runway lane: DROPPED 19:45Z on measurement (§4.7). The 19:29:44Z run under 600 s /
+   100% took 99 s wall / 82.7 CPU-s / 146 MB peak for 69 tracked snapshots (~1.2 s per snapshot,
+   ~+1 snapshot/day): headroom is ~500 s of 600. RETRACTED by name: "#8841 bought headroom (97 s
+   of 600)" — 97 s was the run DURATION. No memoization lane. Do not raise the budget again
+   (already lifted once under DEC:MARKET-MEMORY-IDENTITY-UNIT-BUDGET-IS-A-DEPLOY-CONTRACT-NOT-A-RUNTIME-DEFAULT;
+   WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2 do_not_redo is unit-scoped to the options-context auditor).
+5. Records: this PR -> `--admin` merge (docs-only) -> blob-verify; memory refresh; Chairman
+   blocker list LAST (already posted in issuecomment-6112439924); `SESSION END: <STATE>`.
 
 ## 8. Blocker list for the Chairman (deliver LAST, verbatim-safe)
 
@@ -333,3 +430,9 @@ Human-only, unchanged by any orchestration:
 - Identity replay ceiling (~150–180 dates under TimeoutStartSec=180 / CPUQuota=50%) is DNR; raising it
   is not this program's call.
 - Org audit log read for the 10-10 nightly canceller (org-admin only).
+- Signed-in Terminal rail browser check (Package N ACCEPTANCE extra #1): this seat's browser tool is
+  dead (PreToolUse hook timeout x2); any browser-capable seat or the operator can close it in minutes with
+  the recipe in §7 item 2. Server side is proven (401 fails closed; writer live).
+- twitterapi.io `press_stream` websocket HTTP 403 (billed X push lane, key env `TWITTERAPI_IO_KEY`;
+  since 2026-10-08T23:16Z; 288 journal lines/24 h) — marketing-lane owner / billing; observed by this
+  program, not worked, and not cured by the 19:56Z press-feeds restart (which cleared the Alpaca 401).
