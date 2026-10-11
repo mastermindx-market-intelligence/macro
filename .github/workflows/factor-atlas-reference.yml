@@ -8,6 +8,10 @@ on:
       - "engine/flow_signing.py" # quote-reference parity dependency
       - "engine/entry_radar/replay/terminal_minute_observations.py" # S2-P1 retained-minute reader contract
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md" # S2-P1 rights-reference dependency
+      - "lib/dataos/tiingo_reader.py" # existing Tiingo L1 research reader schema
+      - "lib/dataos/tiingo_views.py" # source/volume/venue qualification
+      - "collectors/tiingo_archive.py" # original archive context/receipt shape
+      - "config/dataset_registry.yml" # Tiingo source family / rights contract
       - ".github/workflows/factor-atlas-reference.yml"
 
 permissions:
@@ -31,7 +35,7 @@ jobs:
         run: |
           python -m pip install -r research/factor_atlas/session2/requirements-research.txt
           python -m pip install "pandas>=2.3,<4"
-      - name: Run all fourteen Factor Atlas research and scientific falsifier suites
+      - name: Run all fifteen Factor Atlas research and scientific falsifier suites
         run: |
           PYTHONDONTWRITEBYTECODE=1 python -m pytest -c /dev/null -p no:cacheprovider -q \
             research/factor_atlas/session2/prototype/test_pressure.py \
@@ -47,4 +51,5 @@ jobs:
             research/factor_atlas/session2/prototype/test_intake_bridge.py \
             research/factor_atlas/session2/prototype/test_owner_reader_abi.py \
             research/factor_atlas/session2/prototype/test_cross_session_contract.py \
+            research/factor_atlas/session2/prototype/test_tiingo_source_fitness.py \
             research/factor_atlas/session2/prototype/test_read_contract_schema.py

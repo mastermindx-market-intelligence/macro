@@ -953,3 +953,117 @@ market-data, production or trading effects.
 14-suite cross-session contract + exact source evidence;
 remote readback and exact head hosted CI; original
 owner PIT/price-source admission remains critical.
+
+## Tiingo L1 owner-read conformance and S2 consolidated-intraday source gate
+
+**This continuation responds to Chairman's direct Tiingo/source push
+request.** Original Macro Factor Atlas Session2 PR #8677 source
+head `a2bd1dc91ec3585eed4948c22ad5c3b6f97f2683` (original branch, Draft/HOLD/unmerged).
+Protected Mastermind at
+`cbc7503536b6853ec7c35c2192abdfaccb87b561` and
+same-SHA compatible Sol Skillpack 1.0.1/bootstrap1.
+No new source admission/identity/queue/collector was created.
+
+**Actual new source available:** incumbent original Tiingo Data OS
+[Macro PR #8698](https://github.com/mastermindx-market-intelligence/macro/pull/8698)
+has authentic historical EOD and BOATS sources, retained source
+response/reader receipts and mounted external archive. Current
+observed documentary head
+`6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde`.
+Official latest owner report: 1,552 nonempty EOD histories,
+3,151,249 distinct EOD bars and existing 1,407 BOATS
+single-ATS historical 1m bars for AAPL/AMD. Original
+`tiingo_reader.py` blob
+`73c100cc9ab91f443210a1063c28f7390416f020`
+and `tiingo_views.py` blob
+`22d6058648bc111313dd0de5e4a679897b7c25e7`
+were unchanged between successful read and latest head.
+
+**Direct safe source action confirmed:** earlier in this same
+turn, original Tiingo read-only `read_research_view`, explicit
+`RETROSPECTIVE_EXPLORATORY` with hindsight consent and
+bounded row counts, verified source raw/L1 identities on
+AAPL+AMD BOATS archives. The same source snapshots
+were classified by new native `assess_tiingo_view`.
+EOD is daily, BOATS is only 20-04 ET single ATS, IEX
+is single exchange; only vendor consolidated
+`equity-intraday-bars` is a reasonable 04-20 ET
+1m candidate, and Tiingo L1 currently marks its
+volume unit/vendor basis UNQUALIFIED. Original
+physically mounted M2 archive had no IEX-bars or
+equity-intraday-bars source family directory at the
+specific examined root. Neither this observation
+nor the Chairman's Business Advanced/BOATS license
+attestation is independent Data OS source-use release.
+
+**Platform refusal:** a subsequent attempt to package the
+successful direct real-source read into a reusable
+retrospective observation artifact via original Studio
+carrier was explicitly BLOCKED BEFORE DISPATCH. Readback
+confirmed the intended output file ABSENT. Exact
+ignored script:
+`.session2-proof/tiingo_existing_dataos_retrospective_fitness.py`,
+SHA256 `0439cd7b442111c733b5bca9d832304175e607caaf854b05168f9fe702c19de0`, status
+DO_NOT_REDO. No rephrasing, other tool/account, source
+fetch or worker retry allowed for that denied action.
+The current accepted source tree includes only
+SYNTHETIC controlled examples; no licensed rows or
+denied live-derived artifact copied.
+
+**New independent native S2 capability:** source-only
+`prototype/tiingo_source_fitness.py` can consume
+the exact existing Tiingo Data OS `TiingoView`
+value object *without* importing the held source
+code or calling vendor/reader. It checks source
+family/request/1min resample/volume/no-fill, source
+receipt context, original market timestamp vs later
+capture, venue/time geometry, content fingerprint,
+duplicate vendor minute and impossible OHLC/volume,
+and request-bound overnight expected-minute slots.
+Explicitly segregates and fails closed EOD daily,
+BOATS overnight single ATS, IEX single venue and
+vendor consolidated beta with unqualified volume.
+Even all four synthetic tickers do not admit a
+market pilot or publication. One raw source SHA
+across multiple symbol contexts refuses.
+
+**Verification:** 33/33 new Tiingo conformance tests
+PASSED locally, native 15-suite existing GitHub
+Actions command **482/482 PASSED locally** with actual
+repository unrun auditor 0 dark suites. Fail-first
+unimplemented module, incorrect source-SHA test
+fixture and malformed duplicate request/EOD
+population spoof probes recorded. Synthetic data-free
+witness `evidence/tiingo_source_fitness_synthetic.json`
+and full source/test/log hash receipt
+`evidence/native_tiingo_source_fitness_tests.json`.
+Existing hosted GitHub Actions workflow additionally
+triggers on Tiingo Data OS reader/projector/collector/
+registry changed paths, not a duplicate CI owner.
+
+**Product remainder:** EOD may help separately accepted
+S1 descriptive PIT history, BOATS may qualify a distinct
+overnight single-venue study but cannot become S2
+04-20 ET U.S. consolidated dollars. The needed
+AAPL/MSFT/NVDA+SPY true 1m consolidated
+`equity-intraday-bars` source must be qualified
+through the incumbent Tiingo collector and original
+Data OS source/reader/basis/rights/PIT owners.
+No source admitted for Session2 BVC/quote accuracy,
+no empirical launch, S6 scientific freeze, Terminal
+customer publication, sizing or trading permission.
+The previously denied four source reads, benchmark,
+fresh-main source comparison, S2-P4 and S2-P6
+calculation patches and effect-unknown reviewer
+operation remain DO_NOT_REDO, no substitute carrier.
+Tiingo PR #8698 source custody remains with its
+original owner; no merging or deploying #8677.
+
+**Next:** publish only scoped native S2 Tiingo source
+fitness, protocol/synthetic witness and 15-suite
+CI in the original #8677 branch; read back immutable
+head and current-head CI. Continue on-source
+consolidated 1m selection only when a genuine
+existing Tiingo/Data OS owner receipt allows
+it, without retrying the blocked real read
+packaging operation.

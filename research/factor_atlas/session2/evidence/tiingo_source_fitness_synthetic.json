@@ -1,0 +1,565 @@
+{
+  "EOD_not_one_minute_example": {
+    "audited_rows": 0,
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "customer_publishable": false,
+    "evidence_digest": "55007bf6a3918f9474c3817d8a859ea959911ecb5e69ce4305b1d5cb46099fdf",
+    "expected_pilot_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "knowledge_class": "RETROSPECTIVE_VENDOR_BAR_COVERAGE_NOT_CAPITAL_PRESSURE",
+    "may_compute_daytime_pressure": false,
+    "observed_in_pilot": [],
+    "observed_vendor_symbols": [],
+    "overnight_sessions": [],
+    "pit_backtest_eligible": false,
+    "read_purpose": "RETROSPECTIVE_EXPLORATORY",
+    "redistribution_admitted": false,
+    "refusals": [
+      "CORPORATE_ACTION_PRICE_VOLUME_BASIS_UNVERIFIED",
+      "DATASET_LICENSE_OWNER_BINDING_REQUIRED",
+      "EOD_NOT_TRUE_ONE_MINUTE",
+      "ORIGINAL_SOURCE_AVAILABILITY_NOT_BAR_CLOCK",
+      "PIT_LISTING_READER_NOT_ATTESTED",
+      "RESEARCH_L1_NOT_CANONICAL_PIT"
+    ],
+    "schema": "factor_atlas.tiingo_source_fitness.v1",
+    "source": "eod-bars",
+    "source_admitted": false,
+    "source_dataos_identity_verified": false,
+    "source_kind": "RESEARCH_L1_NOT_CANONICAL",
+    "source_observed_at_utc": "2026-10-11T17:51:08.299672+00:00",
+    "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "EOD_NOT_INTRADAY",
+    "unobserved_in_pilot_partition": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "vendor": "tiingo",
+    "vendor_volume_present": 0,
+    "vendor_zero_volume_rows": 0,
+    "venue": null,
+    "venue_scope": "daily_composite"
+  },
+  "EOD_two_daily_rows_dont_fill_1m_population": {
+    "audit": {
+      "audited_rows": 2,
+      "authority": [
+        [
+          "may_rank",
+          false
+        ],
+        [
+          "may_alert",
+          false
+        ],
+        [
+          "may_size",
+          false
+        ],
+        [
+          "may_trade",
+          false
+        ],
+        [
+          "may_publish",
+          false
+        ]
+      ],
+      "customer_publishable": false,
+      "evidence_digest": "5f8be6d123085565b3032566f649695848e656f2d9db8c2fb690a2a88933989b",
+      "expected_pilot_symbols": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "SPY"
+      ],
+      "knowledge_class": "RETROSPECTIVE_VENDOR_BAR_COVERAGE_NOT_CAPITAL_PRESSURE",
+      "may_compute_daytime_pressure": false,
+      "observed_in_pilot": [],
+      "observed_vendor_symbols": [
+        "AAPL"
+      ],
+      "overnight_sessions": [],
+      "pit_backtest_eligible": false,
+      "read_purpose": "RETROSPECTIVE_EXPLORATORY",
+      "redistribution_admitted": false,
+      "refusals": [
+        "CORPORATE_ACTION_PRICE_VOLUME_BASIS_UNVERIFIED",
+        "DATASET_LICENSE_OWNER_BINDING_REQUIRED",
+        "EOD_NOT_TRUE_ONE_MINUTE",
+        "ORIGINAL_SOURCE_AVAILABILITY_NOT_BAR_CLOCK",
+        "PIT_LISTING_READER_NOT_ATTESTED",
+        "RESEARCH_L1_NOT_CANONICAL_PIT"
+      ],
+      "schema": "factor_atlas.tiingo_source_fitness.v1",
+      "source": "eod-bars",
+      "source_admitted": false,
+      "source_dataos_identity_verified": false,
+      "source_kind": "RESEARCH_L1_NOT_CANONICAL",
+      "source_observed_at_utc": "2026-10-11T17:51:08.299672+00:00",
+      "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": "EOD_NOT_INTRADAY",
+      "unobserved_in_pilot_partition": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "SPY"
+      ],
+      "vendor": "tiingo",
+      "vendor_volume_present": 0,
+      "vendor_zero_volume_rows": 0,
+      "venue": null,
+      "venue_scope": "daily_composite"
+    },
+    "cohort": {
+      "all_dataos_rights_admitted": false,
+      "authority": [
+        [
+          "may_rank",
+          false
+        ],
+        [
+          "may_alert",
+          false
+        ],
+        [
+          "may_size",
+          false
+        ],
+        [
+          "may_trade",
+          false
+        ],
+        [
+          "may_publish",
+          false
+        ]
+      ],
+      "customer_publishable": false,
+      "evidence_digest": "67f6c8582284a0790359c33526159cfa81353fc68aecf5a1e9f60d8f40be4e61",
+      "may_trade": false,
+      "outside_pilot_sampled_symbols": [],
+      "pilot_symbols_not_in_examined_partitions": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "SPY"
+      ],
+      "pilot_symbols_with_retained_rows": [],
+      "qualified_four_stock_daytime_source": false,
+      "requested_pilot_symbols": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "SPY"
+      ],
+      "sampled_sources": 1,
+      "sampled_symbols": [
+        "AAPL"
+      ],
+      "schema": "factor_atlas.tiingo_cohort_fitness.v1",
+      "unexamined_archives_are_unknown": true
+    }
+  },
+  "actual_source_market_data_admitted": false,
+  "boats_two_minute_example": {
+    "audited_rows": 2,
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "customer_publishable": false,
+    "evidence_digest": "5a231a843a9734faa27b301ec59fcc0e5159fd01cb5ad7a894966b94cbb53de5",
+    "expected_pilot_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "knowledge_class": "RETROSPECTIVE_VENDOR_BAR_COVERAGE_NOT_CAPITAL_PRESSURE",
+    "may_compute_daytime_pressure": false,
+    "observed_in_pilot": [
+      "AAPL"
+    ],
+    "observed_vendor_symbols": [
+      "AAPL"
+    ],
+    "overnight_sessions": [
+      {
+        "date_end_et": "2026-10-09",
+        "missing_volume_rows": 0,
+        "observed_unique_minutes": 2,
+        "request_left_clipped": false,
+        "request_right_clipped": false,
+        "requested_minute_slots": 480,
+        "unreported_minutes": 478,
+        "zero_vendor_volume_rows": 1
+      }
+    ],
+    "pit_backtest_eligible": false,
+    "read_purpose": "RETROSPECTIVE_EXPLORATORY",
+    "redistribution_admitted": false,
+    "refusals": [
+      "BOATS_NOT_DAYTIME_CONSOLIDATED",
+      "BOATS_SINGLE_ATS_NOT_NBBO",
+      "CORPORATE_ACTION_PRICE_VOLUME_BASIS_UNVERIFIED",
+      "DATASET_LICENSE_OWNER_BINDING_REQUIRED",
+      "ORIGINAL_SOURCE_AVAILABILITY_NOT_BAR_CLOCK",
+      "PIT_LISTING_READER_NOT_ATTESTED",
+      "RESEARCH_L1_NOT_CANONICAL_PIT",
+      "ZERO_VENDOR_VOLUME_NOT_TRADE_PROOF"
+    ],
+    "schema": "factor_atlas.tiingo_source_fitness.v1",
+    "source": "boats-bars",
+    "source_admitted": false,
+    "source_dataos_identity_verified": false,
+    "source_kind": "RESEARCH_L1_NOT_CANONICAL",
+    "source_observed_at_utc": "2026-10-11T17:51:08.299672+00:00",
+    "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "BOATS_OVERNIGHT_SINGLE_ATS_RESEARCH_ONLY",
+    "unobserved_in_pilot_partition": [
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "vendor": "tiingo",
+    "vendor_volume_present": 2,
+    "vendor_zero_volume_rows": 1,
+    "venue": "BOATS",
+    "venue_scope": "single_ats"
+  },
+  "cohort_examined": {
+    "all_dataos_rights_admitted": false,
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "customer_publishable": false,
+    "evidence_digest": "15a2da0d6871529bcd38915800235d2420b8e41d152661efeb37174c099a881d",
+    "may_trade": false,
+    "outside_pilot_sampled_symbols": [
+      "AMD"
+    ],
+    "pilot_symbols_not_in_examined_partitions": [
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "pilot_symbols_with_retained_rows": [
+      "AAPL"
+    ],
+    "qualified_four_stock_daytime_source": false,
+    "requested_pilot_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "sampled_sources": 2,
+    "sampled_symbols": [
+      "AAPL",
+      "AMD"
+    ],
+    "schema": "factor_atlas.tiingo_cohort_fitness.v1",
+    "unexamined_archives_are_unknown": true
+  },
+  "consolidated_beta_unqualified_example": {
+    "audited_rows": 1,
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "customer_publishable": false,
+    "evidence_digest": "1d943e10736b9aedd466ad7ab54a41116bb9f701f0d2a94e669669df73a59409",
+    "expected_pilot_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "knowledge_class": "RETROSPECTIVE_VENDOR_BAR_COVERAGE_NOT_CAPITAL_PRESSURE",
+    "may_compute_daytime_pressure": false,
+    "observed_in_pilot": [
+      "AAPL"
+    ],
+    "observed_vendor_symbols": [
+      "AAPL"
+    ],
+    "overnight_sessions": [],
+    "pit_backtest_eligible": false,
+    "read_purpose": "RETROSPECTIVE_EXPLORATORY",
+    "redistribution_admitted": false,
+    "refusals": [
+      "BETA_INTRADAY_SOURCE_NOT_INSTALLED_OR_ADMITTED",
+      "CONSOLIDATED_VOLUME_UNIT_UNQUALIFIED",
+      "CORPORATE_ACTION_PRICE_VOLUME_BASIS_UNVERIFIED",
+      "DATASET_LICENSE_OWNER_BINDING_REQUIRED",
+      "ORIGINAL_SOURCE_AVAILABILITY_NOT_BAR_CLOCK",
+      "PIT_LISTING_READER_NOT_ATTESTED",
+      "RESEARCH_L1_NOT_CANONICAL_PIT",
+      "SOURCE_CANNOT_ASSERT_CONSOLIDATED_EXECUTION_TRUTH"
+    ],
+    "schema": "factor_atlas.tiingo_source_fitness.v1",
+    "source": "equity-intraday-bars",
+    "source_admitted": false,
+    "source_dataos_identity_verified": false,
+    "source_kind": "RESEARCH_L1_NOT_CANONICAL",
+    "source_observed_at_utc": "2026-10-11T17:51:08.299672+00:00",
+    "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "CONSOLIDATED_BETA_CANDIDATE_NOT_ADMITTED",
+    "unobserved_in_pilot_partition": [
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "vendor": "tiingo",
+    "vendor_volume_present": 1,
+    "vendor_zero_volume_rows": 0,
+    "venue": null,
+    "venue_scope": "vendor_equity_reference"
+  },
+  "customer_publishable": false,
+  "iex_single_exchange_example": {
+    "audited_rows": 1,
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "customer_publishable": false,
+    "evidence_digest": "6c7b8932ca078a1740216d372549b1dc7c435da76c7872395fdc54d129b03969",
+    "expected_pilot_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "knowledge_class": "RETROSPECTIVE_VENDOR_BAR_COVERAGE_NOT_CAPITAL_PRESSURE",
+    "may_compute_daytime_pressure": false,
+    "observed_in_pilot": [
+      "AAPL"
+    ],
+    "observed_vendor_symbols": [
+      "AAPL"
+    ],
+    "overnight_sessions": [],
+    "pit_backtest_eligible": false,
+    "read_purpose": "RETROSPECTIVE_EXPLORATORY",
+    "redistribution_admitted": false,
+    "refusals": [
+      "CORPORATE_ACTION_PRICE_VOLUME_BASIS_UNVERIFIED",
+      "DATASET_LICENSE_OWNER_BINDING_REQUIRED",
+      "ORIGINAL_SOURCE_AVAILABILITY_NOT_BAR_CLOCK",
+      "PIT_LISTING_READER_NOT_ATTESTED",
+      "RESEARCH_L1_NOT_CANONICAL_PIT",
+      "SINGLE_EXCHANGE_NOT_CONSOLIDATED",
+      "SOURCE_CANNOT_ASSERT_CONSOLIDATED_EXECUTION_TRUTH"
+    ],
+    "schema": "factor_atlas.tiingo_source_fitness.v1",
+    "source": "iex-bars",
+    "source_admitted": false,
+    "source_dataos_identity_verified": false,
+    "source_kind": "RESEARCH_L1_NOT_CANONICAL",
+    "source_observed_at_utc": "2026-10-11T17:51:08.299672+00:00",
+    "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "IEX_SINGLE_EXCHANGE_RESEARCH_ONLY",
+    "unobserved_in_pilot_partition": [
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "vendor": "tiingo",
+    "vendor_volume_present": 1,
+    "vendor_zero_volume_rows": 0,
+    "venue": "IEX",
+    "venue_scope": "single_exchange"
+  },
+  "licensed_market_pilot_executed": false,
+  "models_or_real_prices_included": false,
+  "no_live_vendor_requests": true,
+  "original_tiingo_L1_reader_executed": false,
+  "partial_request_midnight_example": {
+    "audited_rows": 2,
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "customer_publishable": false,
+    "evidence_digest": "b5c83ccb8ef8195ea6128594049c4a5ed716c3c74c9142a11ed7def3e5a27ad1",
+    "expected_pilot_symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "knowledge_class": "RETROSPECTIVE_VENDOR_BAR_COVERAGE_NOT_CAPITAL_PRESSURE",
+    "may_compute_daytime_pressure": false,
+    "observed_in_pilot": [
+      "AAPL"
+    ],
+    "observed_vendor_symbols": [
+      "AAPL"
+    ],
+    "overnight_sessions": [
+      {
+        "date_end_et": "2026-10-08",
+        "missing_volume_rows": 0,
+        "observed_unique_minutes": 2,
+        "request_left_clipped": true,
+        "request_right_clipped": false,
+        "requested_minute_slots": 240,
+        "unreported_minutes": 238,
+        "zero_vendor_volume_rows": 0
+      }
+    ],
+    "pit_backtest_eligible": false,
+    "read_purpose": "RETROSPECTIVE_EXPLORATORY",
+    "redistribution_admitted": false,
+    "refusals": [
+      "BOATS_NOT_DAYTIME_CONSOLIDATED",
+      "BOATS_SINGLE_ATS_NOT_NBBO",
+      "CORPORATE_ACTION_PRICE_VOLUME_BASIS_UNVERIFIED",
+      "DATASET_LICENSE_OWNER_BINDING_REQUIRED",
+      "ORIGINAL_SOURCE_AVAILABILITY_NOT_BAR_CLOCK",
+      "PIT_LISTING_READER_NOT_ATTESTED",
+      "RESEARCH_L1_NOT_CANONICAL_PIT",
+      "ZERO_VENDOR_VOLUME_NOT_TRADE_PROOF"
+    ],
+    "schema": "factor_atlas.tiingo_source_fitness.v1",
+    "source": "boats-bars",
+    "source_admitted": false,
+    "source_dataos_identity_verified": false,
+    "source_kind": "RESEARCH_L1_NOT_CANONICAL",
+    "source_observed_at_utc": "2026-10-11T17:51:08.299672+00:00",
+    "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "BOATS_OVERNIGHT_SINGLE_ATS_RESEARCH_ONLY",
+    "unobserved_in_pilot_partition": [
+      "MSFT",
+      "NVDA",
+      "SPY"
+    ],
+    "vendor": "tiingo",
+    "vendor_volume_present": 2,
+    "vendor_zero_volume_rows": 0,
+    "venue": "BOATS",
+    "venue_scope": "single_ats"
+  },
+  "schema": "factor_atlas.tiingo_source_fitness_synthetic_witness.v1",
+  "source": "FABRICATED_TiingoView_CONTRACT_ONLY"
+}

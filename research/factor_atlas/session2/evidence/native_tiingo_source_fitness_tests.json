@@ -1,0 +1,110 @@
+{
+  "PIT_source_eligibility_proven": false,
+  "all_fifteen_suite_local_passed": 482,
+  "all_input_data_S2_business_admitted": false,
+  "boats_may_prove_US_consolidated_daytime_volume": false,
+  "customer_publication": false,
+  "equity_intraday_beta_source_installed_at_examined_archive": false,
+  "focus_new_tests_passed": 33,
+  "iex_may_prove_US_consolidated_daytime_volume": false,
+  "independent_summon_effect": "UNKNOWN_NO_RETRY",
+  "new_source_and_test_files": {
+    "session2/TIINGO_SOURCE_FIT_CONTRACT.md": {
+      "bytes": 11713,
+      "sha256": "7d8bf2f708c5c33c40a814afeebe9ec9ab005ad973daec632e687fa44634093c"
+    },
+    "session2/evidence/tiingo_source_fitness_synthetic.json": {
+      "bytes": 14976,
+      "sha256": "7f3446c27d7f892b654320b7e178b7a18a400ddd0cddfff35256b8df20a299e9"
+    },
+    "session2/prototype/test_tiingo_source_fitness.py": {
+      "bytes": 15995,
+      "sha256": "36978defeb22beca2c9e2ec874e87e05526964259f86ea4b8e5be823b9b6e117"
+    },
+    "session2/prototype/tiingo_source_fitness.py": {
+      "bytes": 17182,
+      "sha256": "66f53e856367d2050dca51370fdaadfe37d417c021513ff7a685d73fc2c22887"
+    }
+  },
+  "original_factor_atlas_head": "a2bd1dc91ec3585eed4948c22ad5c3b6f97f2683",
+  "original_factor_atlas_pr": 8677,
+  "original_tiingo_dataos_ownership": {
+    "DO_NOT_RETRY_denied_script": true,
+    "L1_projector_blob": "22d6058648bc111313dd0de5e4a679897b7c25e7",
+    "actual_original_reader_retrospective_read_once_succeeded": true,
+    "denied_artifact_output_does_not_exist": true,
+    "denied_artifact_script_sha256": "0439cd7b442111c733b5bca9d832304175e607caaf854b05168f9fe702c19de0",
+    "owner_sanitized_BOATS_proof_blob": "a85fc4071ac02c9b036ef9323063673579e26162",
+    "reader_blob": "73c100cc9ab91f443210a1063c28f7390416f020",
+    "real_data_artifact_creation_platform_refused_before_dispatch": true,
+    "retained_real_data_not_copied_into_this_PR": true,
+    "tiingo_pr_current_read_only_head": "6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde",
+    "tiingo_pr_initial_successful_reader_head": "fa2580e1615db9cf5bade13ca8c8667f08d3ff6b"
+  },
+  "prepared_at_utc": "2026-10-11T19:42:18.914917+00:00",
+  "previous_platform_denied_actions_unchanged": true,
+  "protected_mastermind": "cbc7503536b6853ec7c35c2192abdfaccb87b561",
+  "python": "3.12",
+  "query_identity_and_EOD_test_first_negative_confirmed": true,
+  "real_market_pilot_executed": false,
+  "runtime_packages": {
+    "numpy": "2.5.1",
+    "pytest": "9.1.1",
+    "scipy": "1.18.0"
+  },
+  "schema": "factor_atlas.native_tiingo_source_fitness_receipt.v1",
+  "skillpack": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
+  "source_class": "TIINGO_L1_SOURCE_FIT_RESEARCH_NOT_ADMISSION",
+  "test_first_original_missing_implementation_failed": true,
+  "test_logs": {
+    "EOD_not_one_minute_red": {
+      "bytes": 1551,
+      "sha256": "5d389e3f5edf719cc5691a1ff6a49f5e1907fe8523eafe89a9858bb66832ef6f"
+    },
+    "all_15_suite_482_green": {
+      "bytes": 580,
+      "sha256": "c8d537bd680fa026a2b8750519ef9cba225bb53923ef42deed07bb05d7a62eab"
+    },
+    "cross_context_identity_probe": {
+      "bytes": 2464,
+      "sha256": "7a47aa86e8d110405c3f75ecd9172342ac6a5c4235b6aaeb09e27b6c6a628804"
+    },
+    "duplicate_query_red": {
+      "bytes": 1041,
+      "sha256": "383501e2f7523cc0f7b3e77be5d37fa9d585756bd485729fa92e482aa1b2c933"
+    },
+    "focused_33_green": {
+      "bytes": 99,
+      "sha256": "e75d5527c2fe5a35b692c68a8d3ae50411c52ade4bbea2c804e26130ef004eda"
+    },
+    "missing_implementation": {
+      "bytes": 1701,
+      "sha256": "7f202d77f8f586c6bb379eecbb6169ea19fc277cf82d1aa8d28983b3cf7a7b00"
+    }
+  },
+  "tiingo_eod_may_fill_intraday_minutes": false,
+  "trading_authority": false,
+  "uncommitted_denied_read_models_excluded": true,
+  "workflow": {
+    "path": ".github/workflows/factor-atlas-reference.yml",
+    "registered_suite_count": 15,
+    "sha256": "3e2213d59a03bf0d275bb1d5c7f57c396610a0f3f4e9eacabba01f025dd97c69",
+    "suite_paths": [
+      "research/factor_atlas/session2/prototype/test_cross_session_contract.py",
+      "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
+      "research/factor_atlas/session2/prototype/test_intake_bridge.py",
+      "research/factor_atlas/session2/prototype/test_owner_reader_abi.py",
+      "research/factor_atlas/session2/prototype/test_pressure.py",
+      "research/factor_atlas/session2/prototype/test_pressure_oos.py",
+      "research/factor_atlas/session2/prototype/test_quote_calibration.py",
+      "research/factor_atlas/session2/prototype/test_quote_reference.py",
+      "research/factor_atlas/session2/prototype/test_quote_study.py",
+      "research/factor_atlas/session2/prototype/test_read_contract_schema.py",
+      "research/factor_atlas/session2/prototype/test_source_preflight.py",
+      "research/factor_atlas/session2/prototype/test_tiingo_source_fitness.py",
+      "research/factor_atlas/session2/prototype/test_window_pipeline.py",
+      "research/factor_atlas/session2/prototype/test_window_pressure.py",
+      "research/factor_atlas/session2/prototype/test_witnesses.py"
+    ]
+  }
+}
