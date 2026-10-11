@@ -248,6 +248,34 @@ datasets:
       which is the whole thesis. fetch_vintages() REWRITES this parquet wholesale, so
       the append-only revision chain lives in ALFRED, not here.
 
+  - dataset_id: macro.fred.cycle_vintages
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: scripts/collect_cycle_vintages.py
+    storage: data/fred_vintage/cycle_vintages/{series}_all_vintages.parquet
+    format: parquet
+    grain: [series, period, realtime_start]
+    identity:
+      id_column: series
+      id_type: fred_series_id
+    temporal_profile: REVISABLE_RELEASE
+    timezone: UTC
+    vendor: fred
+    endpoint: https://api.stlouisfed.org/fred/series/observations (ALFRED realtime)
+    version: "1.0.0"
+    licensing: public_domain
+    schema:
+      series: {dtype: string, nullable: false}
+      period: {dtype: "datetime64[ns]", nullable: false}
+      value: {dtype: float64, nullable: true}
+      realtime_start: {dtype: "datetime64[ns]", nullable: false}
+      realtime_end: {dtype: "datetime64[ns]", nullable: true}
+      source_output_type: {dtype: int64, nullable: false}
+    notes: >
+      ALL vintages (output_type=2); the same-vintage reader for the Cycle (a)
+      pre-registration; sibling of macro.fred.vintages, never its consumer.
+
   # ── Reference / identity spine (§D2) — PRODUCED (DOS-1.1, 2026-08-13) ───────
   - dataset_id: reference.security_master
     layer: L2
