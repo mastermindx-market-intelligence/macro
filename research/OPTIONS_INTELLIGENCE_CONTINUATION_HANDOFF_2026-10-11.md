@@ -160,16 +160,23 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
   b83a9b85); #846 head `claude/ssd-options-3d-research-lab-20261007-fd4fcda98840d206`, last 2026-10-09T06:52:29Z;
   both same-repo, both CONFLICTING; no claim since.
 - m2 load1 09:12Z = 59.0 (27–96 this hour); the <15 admission gate has not opened this session.
+- (09:22Z) #8385 ruling comment POSTED (issuecomment-6107542191); O.17 search before posting found none.
+- (09:25Z) Load watcher timed out: m2 load1 never < 15 during 08:40–09:25Z (range 27–96). G01 A02 DEFERRED.
+- (09:23Z) O8 auditor launched (`mastermind-opus-auditor`, model opus, READ_ONLY) with pre-materialized heads
+  pr723=b83a9b852 pr846=eb57a6830 pr804=feabd4447 master=fc76cf495 under `leads/O8/inputs/`; ort conflict sets:
+  #723 vs master rc=1 (77 lines), #846 vs master rc=1 (12 lines), #804 vs master rc=0, #723×#846 rc=0;
+  `investigationOptionsReference.ts` byte-identical pr846==pr804 (cmp).
 
 ## OPEN
 
-- O-1 G01 canary: A01/A03/A04 PASS; A02 (operator START+return consumed by the same Opus) WAITING_EXTERNAL
-  on the m2 load gate (watcher to ~09:25Z). On timeout A02 is DEFERRED and reported as a fabric-admission
-  refusal (delegation surface down, L.7) — not routed around.
+- O-1 G01 canary CLOSED PARTIAL 09:25Z: A01/A03/A04 PASS; A02 (operator START+return consumed by the same
+  Opus) DEFERRED — m2 lane admission refused all session (load1 27–155 vs <15 gate; 45-min watcher timed
+  out). Reported as a delegation surface down (L.7); not routed around. Re-attempt only when `pool plan`
+  shows grant_now ≥ 1.
 - O-2 D01 measurement CLOSED (D15). Open falsifier: observe the 2026-10-12T23:00Z natural run read-only
   after the fact. Root fix (m1 TCC grant) is user-only.
 - O-3 Q01 CLOSED by D13 (O-A). Residual: OC design commission (statistics owner, when capacity admits);
-  DR-6 bookkeeping owed to the #8385 author; one ruling comment on #8385 owed (searched: none exists).
+  DR-6 bookkeeping owed to the #8385 author. Ruling comment POSTED 09:22:14Z (issuecomment-6107542191).
 - O-4 Which macro checks gate #7861 (`merge-queue-pilot` 0s FAIL unexplained) — part of the D14 gate.
 - O-5 U02 existing SQL operator approval — not reachable from this seat; name the exact approver when U02 opens.
 - O-6 Executive connector OAuth (user action in an interactive `claude` terminal via `/mcp`).
@@ -181,9 +188,9 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## NEXT
 
-1. Launch O8 (pre-materialized inputs) → consume by artifact → record dispositions.
-2. Post the single D13 ruling comment on #8385 (O.17 searched: none exists).
-3. Consume the load watcher → G01 A02 final attempt (gate open) or DEFERRED (timeout).
+1. Consume the O8 auditor return by artifact → record dispositions → ACCEPT/REQUEST_REPAIR on O7's candidate.
+2. While O8 runs: O-4 `merge-queue-pilot` classification (read-only gh); D17 A05 read-only checks on m1 (botocore IfNoneMatch; 403-vs-404), credentials never printed; then ONE #7861 review carrying R1 + R4 findings (D18).
+3. (done) #8385 ruling posted; G01 A02 deferred.
 4. When capacity admits: U01 refresh operator (fenced claim on #723 at launch, D20); D01-A01/R6 lane (D16);
    A05 read-only checks (D17); OC design commission (D13); #7861 R1 review (D18).
 5. 2026-10-12 after 23:00Z: observe the natural matrix run read-only (D15 falsifier).
@@ -194,11 +201,11 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | lane | owner / tier | surface | carrier | watcher | state | budget |
 |---|---|---|---|---|---|---|
 | G00 ownership + interface map | Fable seat | this file + `leads/O7/U01_overlap_map.md` | #599 | — | DELIVERED (custody ruled D20) | — |
-| G01 canary (Q01 source-contract) | native Opus (general-purpose/opus) → `pool run grok` operator | scratchpad `g01_canary/` | this file | load watcher (bounded, to ~09:25Z) | WAITING_EXTERNAL — A01/A03/A04 PASS, A02 on load gate | — |
+| G01 canary (Q01 source-contract) | native Opus (general-purpose/opus) → `pool run grok` operator | scratchpad `g01_canary/` | this file | — (watcher timed out 09:25Z) | CLOSED PARTIAL — A01/A03/A04 PASS; A02 DEFERRED (fabric admission refused on m2 load all session) | — |
 | O1 D01→D02→D03 | native Opus lead (lead-performed; 0 operators admitted) | scratchpad `leads/O1/` | #7861 / #599 | — | JUDGED: ACCEPT (census CUR, crosswalk, plan); rulings D14–D19 | 1 lead |
 | O5 Q01 | native Opus lead (lead-performed) | scratchpad `leads/O5/` | #8385 | — | JUDGED: ACCEPT as independent methods review; D13 | 1 lead |
 | O7 U01 + integration | native Opus lead (lead-performed; 1 operator refused exit 75) | scratchpad `leads/O7/` | #599 | — | ACCEPTED as PLAN 08:53Z; D7–D12 | 1 lead |
-| O8 independent acceptance review | native `mastermind-opus-auditor` (model opus, READ_ONLY) | scratchpad `leads/O8/` | this file | agent completion notification | LAUNCHING 09:1xZ | 1 auditor |
+| O8 independent acceptance review | native `mastermind-opus-auditor` (model opus, READ_ONLY) | scratchpad `leads/O8/` | this file | agent completion notification | RUNNING since 09:23Z (eight frozen checks) | 1 auditor |
 | U01 refresh (#723→#846) | fabric operator (PENDING_CAPACITY) | new terminal worktree per lane | #723 / #846 | — | NOT_STARTED (fenced claim at launch) | — |
 
 ## DO_NOT_REDO (this programme)
@@ -227,7 +234,7 @@ MISSION_COMPLETE: false
 FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS
 LAST_DURABLE_REF: this file (WIP commit "O1/O5 judged; D13–D21" on claude/options-intelligence-e2e-program-20261011)
 UNRESOLVED_EFFECTS: DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003 (not this seat's; preserved)
-EXACT_NEXT_ACTION: consume O8 auditor return; post D13 ruling on #8385; consume load watcher for G01 A02
+EXACT_NEXT_ACTION: consume O8 auditor return (RUNNING since 09:23Z); meanwhile O-4 classification + D17 read-only A05 checks
 INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #599 from last consumed edge
 ```
 
@@ -315,4 +322,8 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - Lane matrix corrected: O1/O5/O7 rows had stayed NOT_STARTED while the delta log recorded O7's acceptance.
 - O-7 closed (D20): custody VACANT, fenced claim only at launch. O8 auditor launching (D21).
 - Cost this cycle: ~25 tool calls, 0 paid labor, 0 operators admitted (m2 load 27–96).
+### 2026-10-11 09:26Z — #8385 ruling posted; G01 A02 deferred; O8 launched
+- One compact D13 ruling comment on #8385 (searched first; none existed). #8385 stays DRAFT/REVISE.
+- G01 canary closed PARTIAL: A02 deferred on sustained m2 load (delegation surface down, L.7). No route-around.
+- O8 launched with eight frozen checks; inputs materialized by the seat via `git show` (the auditor has no git).
 
