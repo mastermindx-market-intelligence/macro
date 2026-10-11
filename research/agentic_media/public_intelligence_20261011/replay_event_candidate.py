@@ -34,7 +34,7 @@ def bound_file(path: str, expected: str) -> bytes:
     return b
 
 
-def replay(peer_root: Path | None = None, *, formatted: bool = False) -> dict:
+def replay(peer_root: Path | None = None, *, formatted: bool = False, external_plan: bool = False) -> dict:
     receipt_bytes = (HERE / "whitehouse_event_source_receipt.json").read_bytes()
     receipt = json.loads(receipt_bytes)
     retained = receipt["retained_public_source"]
@@ -93,6 +93,17 @@ def replay(peer_root: Path | None = None, *, formatted: bool = False) -> dict:
                "facts": facts, "raw_documents": [{"ref": source_ref, "text": source["body"]}],
                "primary_source": {"kind": "external", "name": "The White House", "url": source["url"]},
                "allowed_links": [url]}
+    planning = None
+    if external_plan:
+        planning = desk_planner.plan_external_candidate(
+            document_path=HERE / "sources/whitehouse_science_retained_document.json",
+            document_sha256=receipt["external_planning"]["document_sha256"],
+            qualification_path=HERE / "whitehouse_event_source_receipt.json",
+            qualification_sha256=hashlib.sha256(receipt_bytes).hexdigest(),
+            policy_path=HERE / "sources/whitehouse_copyright_20261011.txt",
+            as_of=receipt["observed_at"], root=peer_root or ROOT, cfg=cfg,
+        )
+        context = planning["validation_context"]
     if formatted:
         # Deterministic document preparation, not a planner slot or stage. Keep
         # the reviewed prose and third-party fact tiers exactly as they are.
@@ -119,9 +130,12 @@ def replay(peer_root: Path | None = None, *, formatted: bool = False) -> dict:
         peer_inputs[str(ledger.relative_to(peer_root))] = hashlib.sha256(ledger.read_bytes()).hexdigest()
     report = validators.validate(draft, context, cfg, root=peer_root)
     return {"kind": "unadmitted_editorial_candidate_replay",
+            "external_plan": {k: v for k, v in planning.items() if k != "validation_context"} if planning else None,
             "tested_revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "receipt_sha256": hashlib.sha256(receipt_bytes).hexdigest(),
             "replay_script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            "planner_sha256": hashlib.sha256((ROOT / "engine/press/desk_planner.py").read_bytes()).hexdigest(),
+            "external_candidate_sha256": hashlib.sha256((ROOT / "engine/press/external_candidate.py").read_bytes()).hexdigest() if external_plan else None,
             "formatted": formatted,
             "prepared_document": draft if formatted else None,
             "prepared_document_sha256": hashlib.sha256(json.dumps(draft, sort_keys=True, ensure_ascii=False).encode()).hexdigest(),
@@ -139,5 +153,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--peer-root", type=Path, help="Read-only existing stage/ledger corpus for overlap checks")
     parser.add_argument("--formatted", action="store_true", help="Add existing desk furniture and document metadata; never stage or publish")
+    parser.add_argument("--external-plan", action="store_true", help="Use the opt-in retained-source planner context; no writer admission")
     args = parser.parse_args()
-    print(json.dumps(replay(args.peer_root, formatted=args.formatted), ensure_ascii=False, indent=2))
+    print(json.dumps(replay(args.peer_root, formatted=args.formatted, external_plan=args.external_plan), ensure_ascii=False, indent=2))

@@ -1398,3 +1398,14 @@ def plan(desks=None, *, as_of=None, root=None, cfg: dict | None = None,
         except Exception as exc:  # noqa: BLE001
             log.warning("press.desk_planner: desk %s planning failed: %s", name, exc)
     return slots
+
+
+def plan_external_candidate(**inputs) -> dict:
+    """Opt-in retained-source planning only; never included in ordinary slots.
+
+    The envelope is a validation context, not writer/provider admission. The
+    ordinary Brief cadence and publication gates remain with run_press.
+    """
+    from engine.press.external_candidate import plan_whitehouse_candidate
+
+    return plan_whitehouse_candidate(**inputs)

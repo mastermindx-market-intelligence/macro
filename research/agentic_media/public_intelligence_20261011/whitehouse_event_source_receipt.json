@@ -61,7 +61,7 @@
   },
   "dossier_browser": {
     "url": "https://www.mastermind-x.com/stocks/NVDA.html",
-    "title": "NVDA — Nvidia: signals, options & factor profile | MastermindX",
+    "title": "NVDA \u2014 Nvidia: signals, options & factor profile | MastermindX",
     "verified_in_chrome": true,
     "terminal_continuation": "https://app.mastermind-x.com/terminal?sym=NVDA&from=macro",
     "signup_verified": false,
@@ -116,5 +116,65 @@
       "D14 our-value share and first-party receipt floor remain unproven",
       "No Press source-intake adapter exists yet"
     ]
+  },
+  "external_planning": {
+    "document_sha256": "b8b7f02bbbbfd153c9c9f9a2de53de38cd76a39d6d3ff728513e72faf868c6cd",
+    "feed_url": "https://www.whitehouse.gov/fact-sheets/feed/",
+    "normalization": "whitehouse-feed-text/v1",
+    "body_origin": "content_encoded",
+    "body_truncated": false,
+    "reviewed_claims": [
+      {
+        "id": "nvidia",
+        "literal": "NVIDIA ($1B)",
+        "quantity_literal": "$1B"
+      },
+      {
+        "id": "consortium",
+        "literal": "$2.4B in SI for science tools and compute credits",
+        "quantity_literal": "$2.4B"
+      },
+      {
+        "id": "partners",
+        "literal": "eleven industry partners",
+        "quantity_literal": "eleven"
+      },
+      {
+        "id": "agencies",
+        "literal": "over 15 Federal agencies",
+        "quantity_literal": "15"
+      },
+      {
+        "id": "amd",
+        "literal": "AMD ($500M)",
+        "quantity_literal": "$500M"
+      },
+      {
+        "id": "openai",
+        "literal": "OpenAI ($200M)",
+        "quantity_literal": "$200M"
+      },
+      {
+        "id": "anthropic_google",
+        "literal": "$150M each from Anthropic and Google",
+        "quantity_literal": "$150M"
+      },
+      {
+        "id": "initiative",
+        "literal": "over $6 billion",
+        "quantity_literal": "$6 billion"
+      }
+    ],
+    "reviewed_tickers": {
+      "NVDA": "NVIDIA"
+    },
+    "derived_share": {
+      "numerators": [
+        "nvidia",
+        "amd"
+      ],
+      "denominator": "consortium",
+      "percent": "62.5"
+    }
   }
 }
