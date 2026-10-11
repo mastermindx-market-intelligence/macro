@@ -354,8 +354,11 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
    ACCEPT the seat opens the Macro PR, adds `merge-on-green`, and reads CI once.
 6. Judge the OC return by artifact when bocvhjvo5 exits: positive controls reproduced; rerun `oc_sim.py --quick`
    and one full cell myself; no sentence selects a parameter. On ACCEPT persist as a Macro research PR.
-7. Later waves per D16b/D18: D16b (after #7861); #7861 R1 successor PR; O-13 successor;
-   expand to O2/O3/O4/O6 only when their inputs clear. Optional: re-attempt G01 A02 while capacity admits.
+7. Judge each O2/O3/O4 lead return (D32) on its completion notification: spot-check two SATISFIED claims per
+   lead by opening the cited test assertion; reject any plan that writes under #8660/#8684/#7861/D16a/#723
+   scope; freeze the accepted operator commission and launch it on the fabric when capacity admits (V01 first).
+8. Later waves per D16b/D18: D16b (after #7861); #7861 R1 successor PR; O-13 successor; O6/N01 after V01.
+   R05 GATED(Sol), Q05 GATED(#8555/#7328 holders) per D33. Optional: re-attempt G01 A02 while capacity admits.
 
 ## Lane matrix
 
@@ -399,9 +402,9 @@ amendment request remain owed to their PR authors; the storage-guard EFFECT_UNKN
 ```text
 MISSION_COMPLETE: false
 FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS
-LAST_DURABLE_REF: this file (WIP commit "step 1A accepted; 1B commissioned; D30-D31" on claude/options-intelligence-e2e-program-20261011)
+LAST_DURABLE_REF: this file (WIP commit "O2/O3/O4 verify leads launched; R05/Q05 gated; D32-D33" on claude/options-intelligence-e2e-program-20261011)
 UNRESOLVED_EFFECTS: DSC:M1-STORAGE-GUARD-HELP-MUTATES-20261003 (not this seat's; preserved)
-EXACT_NEXT_ACTION: on step-1B task exit judge 1B (NEXT 2); on bdofouo42 exit judge D16a (NEXT 5); on bocvhjvo5 exit judge OC (NEXT 6)
+EXACT_NEXT_ACTION: on step-1B task exit judge 1B (NEXT 2); on bdofouo42 exit judge D16a (NEXT 5); on bocvhjvo5 exit judge OC (NEXT 6); on O2/O3/O4 lead completion judge (NEXT 7)
 INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #599 from last consumed edge
 ```
 
