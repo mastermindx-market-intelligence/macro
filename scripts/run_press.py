@@ -649,8 +649,9 @@ def run_staging(root: Path, cfg: dict, *, desks=None, as_of=None,
                 max_slots: int | None = None, single_attempt: bool = False) -> dict:
     """Plan, reconcile, then stage the ordinary multi-slot Press run.
 
-    Qualification runs may opt into one provider attempt per slot, disabling
-    SDK retries, provider fallback and draft regeneration. This does not change
+    Qualification runs may opt into one provider-adapter invocation per slot,
+    disabling Anthropic SDK retries, Press fallback and draft regeneration.
+    Codex CLI internal requests are outside this bound. This does not change
     source admission, token accounting, validation or publication authority.
     """
     paths = _paths(cfg, root)
@@ -1216,8 +1217,9 @@ def main(argv=None) -> int:
     ap.add_argument("--max-slots", type=int, default=None,
                     help="cap the number of slots this run attempts")
     ap.add_argument("--single-attempt", action="store_true",
-                    help="stage with at most one provider attempt per slot; "
-                         "disable SDK retries, provider fallback and regeneration")
+                    help="stage with one provider-adapter invocation per slot; "
+                         "disable Anthropic SDK retries, Press fallback and "
+                         "regeneration (Codex CLI internal requests are not bounded)")
     args = ap.parse_args(argv)
     if args.emit and args.single_attempt:
         ap.error("--single-attempt applies only to staging, not --emit")

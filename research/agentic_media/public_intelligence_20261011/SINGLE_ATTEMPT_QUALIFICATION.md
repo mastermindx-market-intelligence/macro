@@ -5,16 +5,19 @@ Implementation: `2343aaec13bb13acff087fbd5fd61e72173c5634`.
 
 The next ordinary qualification run can explicitly request `--single-attempt`.
 The runner sets regeneration to zero and reuses the existing writer control that
-sets SDK retries to zero and supplies only the first usable provider to the
-waterfall. A handled provider or validator failure is quarantined after that
-one attempt. Default scheduled behavior, planner/revision reconciliation,
+sets Anthropic SDK retries to zero and supplies only the first usable provider
+adapter to the waterfall. A handled provider or validator failure is quarantined
+after that one adapter invocation. Default scheduled behavior, planner/revision reconciliation,
 validation, accounting, rights and emit authority are unchanged. The option
 applies per planned slot; `--max-slots 1` bounds the run to one slot.
 
 This is source prepared for later integration. It is not yet in PR #8786, main,
 the installed service or a real generated draft. The earlier lost provider
 response remains unsettled; the new option does not authorize its replay or
-claim globally exactly-once execution.
+claim globally exactly-once execution. The Codex adapter launches one CLI turn,
+but does not forward this SDK retry setting or explicitly bound the CLI's
+internal request/stream retries. Therefore the option is not a guarantee of one
+actual upstream request for every provider, nor a hard total-spend cap.
 
 ## Verification
 
@@ -45,6 +48,30 @@ immutable-ingress token-admission flag. All provider clients are controlled
 fixtures; no real generation, publication or ledger append occurred.
 
 ## Recoverable source and next action
+
+The independent bounded acceptance reviewer inspected the orchestrator,
+provider construction, Codex adapter/runner, planner and emitter at implementation
+2343aaec13bb. No new reservation, rights, validation or emit defect was found.
+The supported claim is one provider-adapter invocation per slot, no Press
+fallback/regeneration, and Anthropic SDK retries disabled. The CLI help and
+documentation now state the Codex limitation explicitly; no provider/runtime
+owner was changed to extend the claim.
+
+The corrected CLI help was inspected with `python3 -m scripts.run_press --help`;
+`python3 -m pytest tests/test_press_run.py -q -k cli --tb=short
+--basetemp=../mmx-single-attempt-help-fixtures` passed **5 tests in 1.90s**.
+Only help/docstrings changed after the accepted behavioral suites.
+
+Independent live-path evidence is retained in `public_pathway_browser_20261011.json`:
+the existing TTWO dossier rendered in Chrome and its Earnings-record link reached
+the expected record; the record's Terminal link preserves TTWO, quarter and
+acquisition parameters. The public record exposes only a shortened source hash
+and its own bounded evidence policy, not a new article-rights or immutable-packet
+admission receipt. No Terminal denial was retried and no signup/follow was mutated.
+`updater_preflight_20261011.json` retains the read-only installation preflight:
+the updater is current and cron exists, source advances, and later W2C runtime
+diagnostics are present. Press installation still needs its own source/served
+proof after protected landing. No manual updater or service restart ran.
 
 Owned worktree:
 `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-press-single-attempt-20261011-565fd14116bdcee2`.
