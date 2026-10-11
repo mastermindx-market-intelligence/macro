@@ -423,20 +423,107 @@ def _finite_float(v: Any) -> float | None:
     return value if math.isfinite(value) else None
 
 
+_LEGACY_CATEGORICAL_KEYS = frozenset({
+    "ask_share",
+    "bid_share",
+    "category_proxy_share",
+    "category_proxy",
+    "side",
+    "soft_side",
+    "lean",
+})
+_LOCATION_SHARE_KEYS = (
+    "at_ask_share",
+    "at_bid_share",
+    "inside_share",
+    "outside_share",
+)
+_LOCATION_IDENTITY_TOL = 6e-6
+
+
+def _block_number(value: Any) -> float | None:
+    """Finite float from a block field, or None when the value is not one."""
+    import math
+
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float)):
+        number = float(value)
+        if math.isfinite(number):
+            return number
+    return None
+
+
+def measured_block_rejection_reason(block: dict | None) -> str | None:
+    """Return why ``block`` must not be read as a trade-vs-NBBO measurement.
+
+    ``None`` means the block is admissible: exact v1 schema, no legacy category
+    key, location shares all present or all absent, the four shares sum to 1
+    within 6e-6, aggression equals at_ask + at_bid within 6e-6, covered premium
+    does not exceed source premium, and each coverage ratio is inside [0, 1].
+    """
+    if not isinstance(block, dict) or block.get("schema") != MICROSTRUCTURE_SCHEMA:
+        return "SCHEMA_MISMATCH"
+    if any(key in block for key in _LEGACY_CATEGORICAL_KEYS):
+        return "LEGACY_CATEGORICAL_KEY"
+
+    states: list[str] = []
+    numbers: list[float] = []
+    for key in _LOCATION_SHARE_KEYS:
+        if key not in block or block[key] is None:
+            states.append("absent")
+            continue
+        number = _block_number(block[key])
+        if number is None:
+            states.append("bad")
+        else:
+            states.append("number")
+            numbers.append(number)
+    if "bad" in states or ("absent" in states and "number" in states):
+        return "LOCATION_IDENTITY"
+    if states and all(state == "number" for state in states):
+        if abs(sum(numbers) - 1.0) > _LOCATION_IDENTITY_TOL:
+            return "LOCATION_IDENTITY"
+        aggression = _block_number(block.get("aggression_share"))
+        edge = numbers[0] + numbers[1]
+        if aggression is None or abs(aggression - edge) > _LOCATION_IDENTITY_TOL:
+            return "LOCATION_IDENTITY"
+
+    for key in ("source_premium_usd", "nbbo_covered_premium_usd"):
+        if key in block and block[key] is not None and _block_number(block[key]) is None:
+            return "COVERAGE_BOUNDS"
+    source = _block_number(block.get("source_premium_usd"))
+    covered = _block_number(block.get("nbbo_covered_premium_usd"))
+    if (
+        source is not None
+        and covered is not None
+        and covered > source + _LOCATION_IDENTITY_TOL
+    ):
+        return "COVERAGE_BOUNDS"
+    for key in ("nbbo_premium_coverage", "nbbo_print_coverage"):
+        if key not in block or block[key] is None:
+            continue
+        coverage = _block_number(block[key])
+        if (
+            coverage is None
+            or coverage < -_LOCATION_IDENTITY_TOL
+            or coverage > 1.0 + _LOCATION_IDENTITY_TOL
+        ):
+            return "COVERAGE_BOUNDS"
+    return None
+
+
 def _measured_microstructure_cols(ev: dict) -> dict[str, Any]:
     """Flatten the event's additive measured block into ledger columns.
 
-    The nested object is trusted only under its exact reviewed schema string.
-    Anything else — absent, malformed, or a future/foreign version — yields nulls
-    rather than values parsed under a contract nobody has read.  Missing never
-    becomes 0: a zero share and an unmeasured share are different facts.
+    The nested object is admitted only when ``measured_block_rejection_reason``
+    is None.  A matching schema string is not enough: a legacy category key, a
+    broken location identity, or a coverage break yields nulls on every measured
+    column.  Missing never becomes 0: a zero share and an unmeasured share are
+    different facts.  ``vol_gt_oi_ratio`` stays the event's own field.
     """
     micro = ev.get("microstructure")
-    trusted: dict = (
-        micro
-        if isinstance(micro, dict) and micro.get("schema") == MICROSTRUCTURE_SCHEMA
-        else {}
-    )
+    trusted: dict = micro if measured_block_rejection_reason(micro) is None else {}
     return {
         # Top level on the event, not inside the block, so it stands on its own.
         "vol_gt_oi_ratio": _finite_float(ev.get("vol_gt_oi_ratio")),

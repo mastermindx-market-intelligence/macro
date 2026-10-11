@@ -175,12 +175,19 @@ def build_envelope(
     Each campaign must carry:
         option_symbol, ticker, type ("CALL"|"PUT"), strike, expiry, dte,
         total_premium_mn, alert_count, span_minutes, first_seen,
-        ask_share, lean, direction_reliability, authority_tier, note (nullable)
+        ask_share (nullable), lean, direction_reliability, authority_tier,
+        note (nullable)
+
+    ``ask_share`` is the legacy side-category fraction.  Unknown stays null.
+    It is never rewritten to 0.5.  The envelope declares that reading with
+    top-level ``ask_share_basis`` = ``side_category_legacy``.  ``lean`` is
+    already decided by the aggregator and is not recomputed here.
 
     A nested ``category_proxy`` object (when present on the aggregated campaign)
     is preserved through the envelope unchanged — it is additive and never
-    rewritten into the legacy ``ask_share`` field.  Legacy campaigns that omit
-    it stay legacy (old consumers keep their exact fields/numbers).
+    rewritten into the legacy ``ask_share`` field.  A nested ``measured_location``
+    object is preserved the same way.  Legacy campaigns that omit either stay
+    legacy (old consumers keep their exact fields/numbers).
 
     aggregate_chain_heat returns 'right' ("CALL"|"PUT"); we rename it to 'type'
     to match the UI interface (ChainHeatCampaign.type in FlowDeskView.tsx).
@@ -204,14 +211,11 @@ def build_envelope(
         # Ensure 'note' key is present (nullable)
         if "note" not in campaign:
             campaign["note"] = None
-        # UI types dte/ask_share as non-nullable numbers; the aggregator emits
-        # None for dte (missing session_date) and ask_share (zero mapped
-        # premium). Coerce to the contract's safe values: dte 0, ask_share 0.5
-        # (the "contested/no signal" anchor — same meaning as side=mixed).
+        # dte is still coerced: a missing session_date leaves the aggregator
+        # at None, and this envelope publishes 0 for that gap.  ask_share is
+        # not coerced — None is unknown, not the mixed-side 0.5 anchor.
         if campaign.get("dte") is None:
             campaign["dte"] = 0
-        if campaign.get("ask_share") is None:
-            campaign["ask_share"] = 0.5
         campaigns.append(campaign)
 
     return {
@@ -225,6 +229,7 @@ def build_envelope(
         "threshold_mn":  3,
         "note_en":       "DISPLAY-ONLY — intraday chain-heat snapshot. Not investment advice.",
         "note_zh":       "仅供展示 — 盘中链热快照，不构成投资建议。",
+        "ask_share_basis": "side_category_legacy",
         "campaigns":     campaigns,
     }
 

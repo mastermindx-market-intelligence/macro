@@ -1075,8 +1075,9 @@ class TestMeasuredMicrostructureLedgerColumns:
         assert row["at_ask_share"] is None
         assert row["spread_median_pct"] is None
         assert row["vol_gt_oi_ratio"] is None
-        # Finite siblings in the same block are unaffected.
-        assert row["at_bid_share"] == pytest.approx(0.2)
+        # A non-finite location share breaks the location identity, so the
+        # block is rejected and sibling measured columns are null too.
+        assert row["at_bid_share"] is None
 
 
 # ── 13. SPY label-window contract ────────────────────────────────────────────
@@ -1753,6 +1754,10 @@ class TestCurrentMainSourceClockNamespace:
                 "nbbo_valid_print_count": 6,
                 "nbbo_premium_coverage": 0.8,
                 "at_ask_share": 0.55,
+                "at_bid_share": 0.15,
+                "inside_share": 0.20,
+                "outside_share": 0.10,
+                "aggression_share": 0.70,
             },
         )
         assert clock_owner._append_rows(
@@ -1950,4 +1955,3 @@ def test_genuine_coalesced_block_passes_rejection_predicate():
         assert flat["at_ask_share"] == block["at_ask_share"]
         assert flat["inside_share"] == block["inside_share"]
         assert flat["at_ask_share"] is not None
-
