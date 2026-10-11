@@ -14264,6 +14264,8 @@ jobs:
       - "lib/dataos/price.py"
       - "scripts/__init__.py"
       - "scripts/build_flow_leaders.py"
+      - "scripts/flow_leaders_theta_tape.py"
+      - "tests/test_flow_leaders_theta_cutover.py"
       - "scripts/build_market_structure.py"
       - "scripts/build_market_structure_page.py"
       - "scripts/build_options_command.py"
@@ -14331,7 +14333,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4
       - name: flow-leaders engine + builder suites (washout-flip pins, pick-lab flow books)
-        run: python -m pytest tests/test_flow_leaders.py tests/test_build_flow_leaders.py -q
+        run: python -m pytest tests/test_flow_leaders.py tests/test_build_flow_leaders.py tests/test_flow_leaders_theta_cutover.py -q
       - name: market-structure engine + nw-context + page suites (week_map emission pins)
         run: python -m pytest tests/test_market_structure.py tests/test_market_structure_nw.py tests/test_build_market_structure_page.py tests/test_market_structure_glance_copy.py -q
       # P1 unrun backfill 2026-08-14: tests/test_options_gap_discipline.py joins the
