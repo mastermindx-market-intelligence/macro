@@ -51,7 +51,7 @@ affects:
   - "WS:ALPHA-INTELLIGENCE-INTEGRATION"
   - "Company Intelligence native relationship observation / F04 product interfaces"
 confidence: high
-reversibility: medium
+reversibility: easy
 decided_by: "Chairman-delegated commissioning Sol CEO (session 2026-10-11)"
 decided_at: 2026-10-11
 ---
