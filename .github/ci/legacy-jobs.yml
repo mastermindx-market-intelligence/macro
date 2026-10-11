@@ -2641,6 +2641,11 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
+      # Auth app imports reach the B03 observation projection and B1 intake.
+      - "engine/prophet_early_observations.py"
+      - "engine/us_candidate_episode_intake.py"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
@@ -4431,6 +4436,13 @@ jobs:
       # (first red main run 32480845137, introduced by #6184).
       - "tests/test_caddy_hub_boundary.py"
       - "scripts/check_caddy_hub_boundary.py"
+      - "app/prophet_observations.py"
+      - "engine/prophet_early_observations.py"
+      - "templates/_us_early_observations.html.j2"
+      - "templates/_us_early_observations_client.js"
+      - "tests/test_prophet_early_observations.py"
+      - "tests/test_prophet_observations_api.py"
+      - "tests/test_prophet_observations_browser.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4447,7 +4459,7 @@ jobs:
         # `_r2_client()`, and every R2 path this suite exercises either deletes
         # the R2 credential env vars or injects a fake client object directly —
         # the real boto3 import is never reached.
-        run: pip install pytest pandas pyarrow fastapi httpx pyyaml requests
+        run: pip install pytest pandas numpy pyarrow fastapi httpx pyyaml requests jinja2 playwright
       - name: Prophet Operator Lab — projection, real-reader chain, transport, timeparse, commissioning-prep
         run: >
           python -m pytest
@@ -4457,6 +4469,15 @@ jobs:
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
+
+      # B03 shares the existing authenticated Prophet read projection owner.
+      # Keep conservative transitive inference, with no duplicate broad job.
+      - name: Prophet lossless observations — source integrity, exact identity and private delivery
+        run: python -m pytest tests/test_prophet_early_observations.py tests/test_prophet_observations_api.py -q
+      - name: install observation browser
+        run: python -m playwright install --with-deps chromium
+      - name: Prophet observation discovery — full-population search, access failure and theme geometry
+        run: python -m pytest tests/test_prophet_observations_browser.py -q
 
   attested-history-guards:
     if: ${{ false }}
@@ -12088,6 +12109,12 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
+      # Auth app imports reach the B03 observation projection and B1 intake.
+      - "engine/prophet_early_observations.py"
+      - "engine/session_digest.py"
+      - "engine/us_candidate_episode_intake.py"
       - engine/cb_desk.py
       - engine/contagion.py
       - engine/contagion_links.py
@@ -12776,6 +12803,12 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
+      # Auth app imports reach the B03 observation projection and B1 intake.
+      - "engine/prophet_early_observations.py"
+      - "engine/session_digest.py"
+      - "engine/us_candidate_episode_intake.py"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
@@ -15011,6 +15044,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
@@ -15415,6 +15450,12 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
+      # Auth app imports reach the B03 observation projection and B1 intake.
+      - "engine/prophet_early_observations.py"
+      - "engine/session_digest.py"
+      - "engine/us_candidate_episode_intake.py"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
@@ -19396,6 +19437,12 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
+      # Auth app imports reach the B03 observation projection and B1 intake.
+      - "engine/prophet_early_observations.py"
+      - "engine/session_digest.py"
+      - "engine/us_candidate_episode_intake.py"
       - "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md"
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       - "engine/narrative_crossmarket.py"
@@ -20857,6 +20904,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # B03 coverage reads the exact producer preview partition.
+      - "site/turn_watch/turn_watch.json"
+      # Auth app imports reach the B03 observation projection and B1 intake.
+      - "app/prophet_observations.py"
+      - "engine/prophet_early_observations.py"
+      - "engine/session_digest.py"
+      - "engine/us_candidate_episode_intake.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "lib/us_cash_calendar.py"
