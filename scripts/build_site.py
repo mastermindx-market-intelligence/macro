@@ -5678,7 +5678,8 @@ def _us_tape_locked_count(theme_tape: "dict | None") -> int:
     return n
 
 
-def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
+def _split_us_panels(vm: dict, preview: int, *, gated: bool = True,
+                     board_locked_rows: "list[dict] | None" = None):
     """Tier-preview split for the four panels adjacent to the US board.
 
     Pure in `vm`: returns the overrides the stocks-mode render call should be
@@ -5686,18 +5687,19 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
     and `theme_tape` are all read again by other page renders).
 
     Returns (overrides, pgate, locked):
-      overrides — {} today. The three sliced row lists are derived INSIDE the
-                  template from `pgate`, because the shell's own empty-state
-                  branches and heading counts read the FULL lists and must keep
-                  reading them (docs/TIER_PREVIEW_PATTERN.md: "Empty-state
-                  branches read the sliced list"). Kept in the signature so a
-                  future panel that must be sliced builder-side has a home.
+      overrides — sliced candidate/observation projections. Other panel slices
+                  are derived inside the template from `pgate`; their heading
+                  counts still read the full lists.
       pgate     — the `pgate` dict the template reads, or None when nothing is
                   withheld anywhere.
       locked    — {"setups": [...], "leaders": [...], "ran": [...],
                    "actnow": [{lane, rows, wrap}], "tape": bool} for the payload.
     """
-    if not gated:
+    board_locked_tickers = {
+        row["ticker"].strip().upper() for row in (board_locked_rows or [])
+        if isinstance(row.get("ticker"), str) and row["ticker"].strip()
+    }
+    if not gated and not board_locked_tickers:
         return {}, None, {}
     preview = max(0, preview)
     su = vm.get("us_standouts") or {}
@@ -5711,13 +5713,26 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
 
     # The complete eligible pool uses the SAME protected row split and payload.
     # No withheld ticker is copied into the anonymous shell, search index or JS.
+    # Its ordering differs from the board, so its independent preview must stop
+    # before the first board-withheld name, even with panel gating disabled.
+    # Keep a PREFIX: hydration appends the tail and must reconstruct source order.
+    pool_rows = (vm.get("us_candidate_visibility") or {}).get("rows") or []
+    pool_preview = preview if gated else len(pool_rows)
+    for index, row in enumerate(pool_rows[:pool_preview]):
+        ticker = row.get("ticker")
+        if isinstance(ticker, str) and ticker.strip().upper() in board_locked_tickers:
+            pool_preview = index
+            break
     pool_shell, pool_gate, pool_locked = _split_us_leader_observations(
-        vm.get("us_candidate_visibility"), preview, gated=True
+        vm.get("us_candidate_visibility"), pool_preview, gated=True
     )
     if pool_gate:
         overrides["us_candidate_visibility"] = pool_shell
         pgate["candidate_pool"] = {key: pool_gate[key] for key in ("preview", "locked", "total")}
         locked["candidate_pool"] = pool_locked
+
+    if not gated:
+        return (overrides, pgate, locked) if pool_gate else ({}, None, {})
 
     # ── Leader observations — a separate display population, never Candidates/Plans.
     leader_shell, leader_gate, leader_locked = _split_us_leader_observations(
@@ -7385,7 +7400,8 @@ def main() -> int:
     # board's split never reached them — they ride the same payload as extra
     # *_html blocks. Same rule: NEVER mutate the shared vm.
     _us_pov, _us_pgate, _us_plocked = _split_us_panels(
-        vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
+        vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"],
+        board_locked_rows=_us_locked)
     _us_plan_state, _us_plan_by_ticker = _plan_relations_for(
         vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
     vm["plan_rel_by_ticker"] = _us_plan_by_ticker
@@ -7813,7 +7829,8 @@ def main() -> int:
                 # top_setups and theme_tape above, so re-split from THIS generation
                 # or the re-render bakes their full row sets back into the shell.
                 _us_pov2, _us_pgate2, _us_plocked2 = _split_us_panels(
-                    vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
+                    vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"],
+                    board_locked_rows=_us_locked2)
                 _us_plan_state2, _us_plan_by_ticker2 = _plan_relations_for(
                     vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
                 vm["plan_rel_by_ticker"] = _us_plan_by_ticker2

@@ -1,6 +1,7 @@
 {# Shared Prophet coverage presentation. All values are owner-computed inputs.
    This macro performs no candidate selection, entitlement math, freshness arithmetic,
    de-duplication, or missing-value inference. #}
+{% from '_prophet_card.html.j2' import t %}
 {% macro _value(value) -%}
 {%- if value is number and value is not boolean -%}{{ value }}{%- else -%}{{ t('Unavailable','暂缺') }}{%- endif -%}
 {%- endmacro %}
