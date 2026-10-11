@@ -148,15 +148,16 @@ def ingest_identity_observations(
         raise IdentityIngestError(
             "tracked listing completion receipt has no matching snapshot"
         )
-    state = market_memory_identity_store.initialize_identity_observation_store(
+    market_memory_identity_store.initialize_identity_observation_store(
         store,
         repository_root=root,
     )
+    snapshot = market_memory_identity_store.load_identity_observation_store(
+        store, repository_root=root
+    )
     stored_by_date = {
         capture.observation["date_partition"]: capture
-        for capture in market_memory_identity_store.load_identity_observation_store(
-            store, repository_root=root
-        ).captures
+        for capture in snapshot.captures
     }
     divergences: list[dict[str, str]] = []
     published = 0
@@ -234,7 +235,7 @@ def ingest_identity_observations(
 
     if _repository_commit(root) != deployed_commit:
         raise IdentityIngestError("deployed checkout changed during identity intake")
-    head = last_result.head if last_result is not None else state["head"]
+    head = last_result.head if last_result is not None else snapshot.head
     return {
         "schema": "market_memory.identity_ingest_result.v1",
         "deployed_commit": deployed_commit,

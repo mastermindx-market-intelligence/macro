@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import shutil
@@ -429,6 +430,62 @@ def test_ingest_records_an_upstream_rewrite_after_capture_and_keeps_accruing(
     assert third["published_count"] == 0
     assert third["idempotent_count"] == 1
     assert third["generation_id"] == second["generation_id"]
+
+
+def test_ingest_completes_when_every_tracked_date_diverges(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repository = _temporary_repository(tmp_path)
+    store = tmp_path / "identity-store"
+
+    first = INGEST.ingest_identity_observations(repository, store_root=store)
+    assert first["published_count"] == 1
+    captured = STORE.load_identity_observation_store(store, repository_root=repository)
+    recorded_generation_id = captured.head["generation_id"]
+
+    def store_digests() -> dict[str, str]:
+        return {
+            path.relative_to(store).as_posix(): hashlib.sha256(
+                path.read_bytes()
+            ).hexdigest()
+            for path in sorted(store.rglob("*"))
+            if path.is_file()
+        }
+
+    recorded_digests = store_digests()
+
+    tracked_key = _git(
+        repository,
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "HEAD",
+        "--",
+        "data/symbol_directory/snapshots",
+    )
+    tracked_name = Path(tracked_key).name
+    snapshot_dir = repository / "data" / "symbol_directory" / "snapshots"
+    _rewrite_snapshot(snapshot_dir / tracked_name)
+    _git(repository, "add", f"data/symbol_directory/snapshots/{tracked_name}")
+    _git(repository, "commit", "-qm", "rewrite the only tracked date")
+    capsys.readouterr()
+
+    second = INGEST.ingest_identity_observations(repository, store_root=store)
+
+    assert second["tracked_snapshot_count"] == 1
+    assert second["published_count"] == 0
+    assert second["idempotent_count"] == 0
+    assert second["divergence_count"] == 1
+    assert second["generation_id"] == recorded_generation_id
+    assert store_digests() == recorded_digests
+    warning_prefix = "::warning title=upstream_rewrite_after_capture::"
+    warning_lines = [
+        line
+        for line in capsys.readouterr().out.splitlines()
+        if line.startswith(warning_prefix)
+    ]
+    assert len(warning_lines) == 1
 
 
 def test_ingest_of_uncaptured_dates_is_unchanged_by_the_divergence_path(
