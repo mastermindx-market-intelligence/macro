@@ -127,6 +127,59 @@ def test_positive_private_native_contract_and_repeat_zero_writes(sample):
     assert body.decode() not in encoded and "text_sha256" not in encoded and "review_revision" not in encoded
 
 
+def test_private_projection_preserves_dated_plan_without_fabricated_instant(sample):
+    publish(sample)
+    result = d.read_disclosure(sample[-1], sample[-2], sample[3])
+    assert result["schema"] == "company_intelligence.private_product_integration/v2"
+    assert set(result) == {"schema", "fact", "reference", "edition", "generation", "authority", "source_timing"}
+    assert result["source_timing"] == {
+        "published_date": "2026-01-02", "published_at": None,
+        "publication_precision": "date", "known_at": "2026-01-03T10:00:00Z",
+    }
+    assert result["source_timing"]["known_at"] != sample[2]["known_at"]
+
+
+def test_private_projection_preserves_offset_and_microsecond_source_instant(sample):
+    _, edition, fact, request, authority, store = sample
+    edition.update(published_at="2026-01-02T23:30:00.123456-05:00", publication_precision="instant")
+    reference = d.validate_edition(edition)
+    fact["edition"] = reference.payload()
+    authority.admission = replace(authority.admission, edition=reference,
+        reference=d.validate_fact(fact), publication_precision="instant")
+    publish(sample)
+    timing = d.read_disclosure(store, authority, request)["source_timing"]
+    assert timing["published_date"] == "2026-01-02"
+    assert timing["published_at"] == "2026-01-02T23:30:00.123456-05:00"
+    assert timing["publication_precision"] == "instant"
+
+
+def test_new_owner_generation_cannot_redate_the_source(sample):
+    publish(sample)
+    _, _, _, request, authority, store = sample
+    authority.admission = replace(authority.admission, generation="new-current-generation-2026-10-11")
+    result = d.read_disclosure(store, authority, request)
+    assert result["generation"] == "new-current-generation-2026-10-11"
+    assert result["source_timing"]["published_date"] == "2026-01-02"
+
+
+def test_corrected_source_timing_follows_verified_edition_not_previous_generation(sample):
+    publish(sample)
+    body, edition, fact, request, authority, store = sample
+    previous_edition, previous_fact = d.validate_edition(edition), d.validate_fact(fact)
+    edition.update(revision=2, previous=previous_edition.payload(), published_date="2026-01-03",
+                   known_at="2026-01-03T11:00:00Z")
+    reference = d.validate_edition(edition)
+    fact.update(revision=2, previous=previous_fact.payload(), edition=reference.payload(),
+                known_at="2026-01-03T11:01:00Z")
+    authority.admission = replace(authority.admission, reference=d.validate_fact(fact), edition=reference,
+                                   known_at=fact["known_at"], generation="corrected-generation")
+    publish(sample)
+    result = d.read_disclosure(store, authority, request)
+    assert result["edition"] == reference.payload()
+    assert result["source_timing"] == {"published_date": "2026-01-03", "published_at": None,
+        "publication_precision": "date", "known_at": "2026-01-03T11:00:00Z"}
+
+
 @pytest.mark.parametrize("change",["deny","dict","purpose","audience","reference","edition","future","identity","date_history","fields","missing_digest"])
 def test_metadata_refusal_before_any_private_io(sample,change):
     body,edition,fact,req,authority,store=sample

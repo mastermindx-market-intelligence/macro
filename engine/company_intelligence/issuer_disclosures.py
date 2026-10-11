@@ -520,7 +520,9 @@ def read_disclosure(store: object, authority: DisclosureAuthority, request: Requ
     _binding(store, fact); _binding(store, edition)
     _chain(store, fact); _chain(store, edition)
     _require(preflight(authority, request) == admission, "ADMISSION_CHANGED")
-    return {"schema": "company_intelligence.private_product_integration/v1",
+    return {"schema": "company_intelligence.private_product_integration/v2",
             "fact": {k: fact[k] for k in sorted(admission.allowed_fields)},
             "reference": admission.reference.payload(), "edition": admission.edition.payload(),
+            "source_timing": {k: edition[k] for k in
+                              ("published_date", "published_at", "publication_precision", "known_at")},
             "generation": admission.generation, "authority": "context_only"}

@@ -1,4 +1,4 @@
-# Native issuer disclosures: private consumer contract v1
+# Native issuer disclosures: private consumer contract v2
 
 The source owner is Company Intelligence. The implementation is
 `engine/company_intelligence/issuer_disclosures.py`. It represents a standalone
@@ -7,8 +7,12 @@ inventing an earnings period, SEC accession or corporate-action identity.
 `SourceDocument.v1`, the accepted relationship-observation implementation, and
 the economic kernel remain unchanged.
 
-This is an implemented source contract and mounted HTTP source boundary, not an
-installed production resolver, entitlement or source-purpose grant. C01 remains NOT_ADMITTED.
+This is an implemented source contract and mounted HTTP source boundary. The
+Chairman confirmed C01's bounded fact-only paid display and retention in
+`C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json`; that rights-evidence task is complete.
+F04 separately verified the actual account's feature grant. Neither result by
+itself installs the source resolver, current private artifact or production route.
+C01 source adoption and production acceptance remain open.
 The source changes permit the incumbent F04 owner to implement its private
 boundary against a concrete versioned interface while real source qualification
 continues. A synthetic authority in tests is never a production authority.
@@ -35,10 +39,10 @@ continues. A synthetic authority in tests is never a production authority.
    references and generation. Actual authenticated serving remains a separate
    production acceptance obligation.
 
-The returned schema is `company_intelligence.private_product_integration/v1`:
+The returned schema is `company_intelligence.private_product_integration/v2`:
 
 ```text
-schema, fact, reference, edition, generation, authority="context_only"
+schema, fact, reference, edition, source_timing, generation, authority="context_only"
 ```
 
 `fact` contains only the source-owner field grant, selected from `fact_id`,
@@ -47,6 +51,24 @@ schema, fact, reference, edition, generation, authority="context_only"
 `kind=product_integration`, `lifecycle=planned`, and both magnitude fields are
 null. The result contains no evidence quotation, reviewer narrative or arbitrary
 metadata. Each reference is the exact schema, SHA256 and byte length.
+
+`source_timing` is mandatory and closed: `published_date`, `published_at`,
+`publication_precision`, `known_at`. All four values come from the verified
+referenced source edition, after the final admission recheck. For a date-only
+announcement, `published_at` is null and `publication_precision` is `date`;
+consumers must not invent midnight or another publication instant. `known_at`
+is the edition's observed/knowledge instant, not its publication date or an
+indication that the plan remains current. Offset and microsecond precision in
+an actual publication instant are preserved. Current generation selection does
+not redate the source. A source correction returns the corrected edition's
+timing with that exact edition reference.
+
+C01 must display the planned integration as disclosed February 26, 2024, with
+equivalent explicit dated wording in each supported language. It must not appear
+as an undated current supplier edge or a plan newly announced in 2026. The strict
+consumer must require v2 and its complete timing object before displaying the
+fact. Native edition/fact schemas and immutable content references remain v1;
+issuer-selection v1 is unchanged and does not itself display fact content.
 
 `DisclosureError.code` is safe bounded machine output. All such errors prohibit
 automatic retry. `effect_unknown=true` on a write means reconciliation of the

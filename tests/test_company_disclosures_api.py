@@ -75,6 +75,11 @@ def test_positive_uses_canonical_auth_fresh_feature_and_same_native_result(bound
     assert events == ['authenticate', 'entitlement', 'private_store']
     assert authority.calls >= 3
     assert response.json() == native.read_disclosure(store, authority, authority.admission.request)
+    assert response.json()['schema'] == 'company_intelligence.private_product_integration/v2'
+    assert response.json()['source_timing'] == {
+        'published_date': '2026-01-02', 'published_at': None,
+        'publication_precision': 'date', 'known_at': '2026-01-03T10:00:00Z',
+    }
     assert before == {p.relative_to(store.root): p.read_bytes() for p in store.root.rglob('*') if p.is_file()}
     assert 'synthetic-token' not in response.text and 'text_sha256' not in response.text
 
