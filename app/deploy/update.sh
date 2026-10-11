@@ -477,6 +477,14 @@ if [ -L /var/lib/macro-ticker-news ]; then
 fi
 install -d -m 0700 /var/lib/macro-ticker-news
 
+# BEGIN COMPANY_INTELLIGENCE_PRIVATE_ROOTS
+# Empty directories only: GMI owns publication and current-generation admission.
+if ! /opt/macro-api/.venv/bin/python "$APP_DIR/app/deploy/company-intelligence-private-roots.py"; then
+  echo "update.sh: private Company Intelligence provisioning failed; refusing API readiness" >&2
+  exit 1
+fi
+# END COMPANY_INTELLIGENCE_PRIVATE_ROOTS
+
 if ! mm_reviewed_unit_file_ready \
 	"$APP_DIR/app/deploy/macro-api.service" \
 	/etc/systemd/system/macro-api.service; then
