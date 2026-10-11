@@ -44,6 +44,7 @@ class QualifiedNewsRights:
     effective_at: datetime
     expires_at: datetime
     rights: NewsReadRights
+    provider: str | None = None
 
 
 def _mapping(value: object, code: str) -> Mapping[str, object]:
@@ -129,6 +130,7 @@ def parse_rights_receipt(
     receipt_id = _text(obj.get("receipt_id"), "rights_receipt_id", maximum=256)
     owner_ref = _text(obj.get("owner_ref"), "rights_owner_ref", maximum=1024)
     product_id = _text(obj.get("product_id"), "rights_product_id", maximum=256)
+    provider = None if obj.get("provider") is None else _text(obj.get("provider"), "rights_provider", maximum=64)
     requested_audience = _text(audience, "rights_audience_requested", maximum=128)
 
     audiences_raw = obj.get("audiences")
@@ -185,6 +187,7 @@ def parse_rights_receipt(
             allow_url=allow_url,
             allow_teaser=allow_teaser,
         ),
+        provider=provider,
     )
 
 

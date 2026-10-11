@@ -15,7 +15,13 @@ import json
 from typing import Mapping
 
 SCHEMA = "qbus.news_revision.v1"
-SUPPORTED_TRANSPORTS = ("benzinga_ws", "benzinga_rest", "massive_benzinga_v2")
+SUPPORTED_TRANSPORTS = (
+    "benzinga_ws",
+    "benzinga_rest",
+    "massive_benzinga_v2",
+    "alpaca_rest",
+    "alpaca_ws",
+)
 MAX_TITLE_CHARS = 4096
 MAX_URL_CHARS = 8192
 MAX_TEASER_CHARS = 16384
@@ -365,6 +371,40 @@ def normalize_news(payload: Mapping[str, object], *, transport: str,
             version_at=version_at,
             version_clock_domain=domain,
             content=payload,
+        )
+
+    if transport in ("alpaca_rest", "alpaca_ws"):
+        # Alpaca re-distributes Benzinga news: the content source stays
+        # "benzinga"; only the transport/provider differs. No body field is
+        # mapped so REST (include_content=false) and WS items of the same
+        # article hash to the identical content_hash and revision_id.
+        if "source" in payload and str(payload.get("source")).strip().lower() != "benzinga":
+            raise NewsContractError("unsupported_source")
+        source_item_id = _source_id(payload.get("id"))
+        published = _parse_clock(
+            payload.get("created_at"), "published_at", required=True
+        )
+        updated = _parse_clock(
+            payload.get("updated_at"), "updated_at", required=True
+        )
+        return _build(
+            source_item_id=source_item_id,
+            transport=transport,
+            message_id=None,
+            action="updated",
+            action_explicit=False,
+            published_at=published,
+            updated_at=updated,
+            source_event_at=updated,
+            received_at=received,
+            version_at=updated,
+            version_clock_domain="benzinga_article_updated",
+            content={
+                "title": payload.get("headline"),
+                "teaser": payload.get("summary"),
+                "url": payload.get("url") or None,
+                "stocks": payload.get("symbols"),
+            },
         )
 
     source_item_id = _source_id(payload.get("benzinga_id"))
