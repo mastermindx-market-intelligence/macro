@@ -840,7 +840,7 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
       <span>{{ t('Top story','头条') }}</span>
       {{ themechip(LEAD) }}
     </div>
-    <a class="nx-lead-title" href="{{ LEAD.url }}" target="_blank" rel="noopener">{{ t(LEAD.title|e, (LEAD.title_zh or LEAD.title)|e) }}</a>
+    {% if LEAD.url %}<a class="nx-lead-title" href="{{ LEAD.url|e }}" target="_blank" rel="noopener">{{ t(LEAD.title|e, (LEAD.title_zh or LEAD.title)|e) }}</a>{% else %}<span class="nx-lead-title">{{ t(LEAD.title|e, (LEAD.title_zh or LEAD.title)|e) }}</span>{% endif %}
     <div class="nx-lead-meta">
       <span class="src">{{ LEAD.source_name or LEAD.source or LEAD.domain }}</span>
       <span class="sep">·</span><span class="rel-time" data-ts="{{ LEAD.seendate }}"></span>
@@ -851,13 +851,13 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
   <aside class="nx-movers" id="nxPriorityQueue" aria-label="Priority queue" data-label-en="Priority queue" data-label-zh="优先队列">
     <div class="nx-movers-hd">{{ t('Priority queue','优先队列') }}</div>
     {% for m in MOVERS %}
-    <a class="nx-mover" href="{{ m.url }}" target="_blank" rel="noopener">
+    {% if m.url %}<a class="nx-mover" href="{{ m.url|e }}" target="_blank" rel="noopener">{% else %}<div class="nx-mover">{% endif %}
       <span class="nx-rank-num num">0{{ loop.index }}</span>
       <span class="nx-mover-copy">
         <span class="nx-mover-title">{{ t(m.title|e, (m.title_zh or m.title)|e) }}</span>
         <span class="nx-mover-meta">{{ themechip(m) }}<span class="sep">·</span><span>{{ m.source_name or m.source or m.domain }}</span><span class="sep">·</span><span class="rel-time" data-ts="{{ m.seendate }}"></span></span>
       </span>
-    </a>
+    {% if m.url %}</a>{% else %}</div>{% endif %}
     {% endfor %}
   </aside>
 </section>
@@ -997,7 +997,7 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
            data-search="{{ ((h.title or '') ~ ' ' ~ (h.title_zh or '') ~ ' ' ~ (h.tickers|join(' ') if h.tickers else '') ~ ' ' ~ (h.source_name or h.source or h.domain or ''))|lower|e }}"
            style="--acc:{{ acc }};">
     <div class="nx-story-main">
-      <a class="nx-story-title" href="{{ h.url }}" target="_blank" rel="noopener">{{ t(h.title|e, (h.title_zh or h.title)|e) }}</a>
+      {% if h.url %}<a class="nx-story-title" href="{{ h.url|e }}" target="_blank" rel="noopener">{{ t(h.title|e, (h.title_zh or h.title)|e) }}</a>{% else %}<span class="nx-story-title">{{ t(h.title|e, (h.title_zh or h.title)|e) }}</span>{% endif %}
       {#- ONE label per story. The event chip, the direction chip and the "✦ AI"
           badge are demoted (hidden by .nx-chip.evt/.ai/.tier): five to nine
           coloured objects around a headline is what made this list unreadable. -#}
@@ -1223,6 +1223,10 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
 {% endif %}
 
 {% if macro_news_disclaimer %}<p class="nx-disc">{{ t(macro_news_disclaimer, macro_news_disclaimer_zh or macro_news_disclaimer) }}</p>{% endif %}
+{# Provider-specific lineage stays visible even when source links are not licensed. #}
+{% if FEED|selectattr("provider", "equalto", "tiingo")|list %}
+<p class="nx-disc"><span class="l-en">Data sourced by <a href="https://www.tiingo.com" target="_blank" rel="noopener">Tiingo</a>. Original publisher shown on each article.</span><span class="l-zh">新闻数据来源：<a href="https://www.tiingo.com" target="_blank" rel="noopener">Tiingo</a>。每条报道均标明原始发布方。</span></p>
+{% endif %}
 </div>
 <div class="nxi-backdrop" id="nxIntelBackdrop" hidden></div>
 <aside class="nxi-drawer" id="nxIntelDrawer" role="dialog" aria-modal="true" aria-labelledby="nxIntelDrawerTitle" hidden>

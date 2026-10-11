@@ -38,6 +38,7 @@ from lib.massive_ticker import vendor_join_key
 from engine import news_common as nc
 from engine import qbus as _qbus          # W2: unified item/event store
 from engine import news_events as _ne     # W2: event-identity layer (display-only)
+from engine import tiingo_news as _tiingo_news_api  # gated ticker-news supplement
 from engine import ticker_shape           # shared ticker gate (emitter-strict half)
 
 # Per-call reject collector — set to a fresh list by feed() before any
@@ -146,6 +147,7 @@ _PROVIDER_TQ: dict[str, str] = {
     "finnhub": "PUBLISHER_STATED",
     "rss": "PUBLISHER_STATED",
     "quiver": "PUBLISHER_STATED",
+    "tiingo": "PUBLISHER_STATED",
 }
 _BACKDATE_LIMIT_H = 48.0   # pubDate > 48h behind crawl time → suspect_backdated
 
@@ -258,6 +260,112 @@ def _normalise(title: str, url: str, domain: str, seendate: str, source: str,
     # novelty_z and echo are attached in feed() after one qbus load (not per-headline).
 
     return out
+
+
+
+# --------------------------------------------------------------------------- #
+# Tiingo — rights-gated ticker-tagged news, additive to the incumbent feed.
+# One bounded global crawl, not one request per ticker.  Off unless an owner-
+# backed source-specific receipt, activation flag and token are ALL present.
+# --------------------------------------------------------------------------- #
+def _tiingo_articles(now: datetime, *, _received_at: datetime | None = None) -> tuple[list[dict], str, dict]:
+    if config.secret("TIINGO_NEWS_ENABLED") != "1":
+        return [], "disabled", {}
+    rights_path = config.secret("TIINGO_NEWS_RIGHTS_FILE")
+    if not rights_path:
+        return [], "rights_missing", {}
+    from engine.qbus_news_receipts import load_rights_receipt
+    rights = load_rights_receipt(rights_path, now=now, source="tiingo")
+    if rights is None:
+        return [], "rights_denied", {}
+    token = config.secret("TIINGO_API_KEY")
+    if not token:
+        return [], "no_key", {}
+    raw, fetch_state = _tiingo_news_api.fetch_articles(token, limit=250)
+    if fetch_state != "ok":
+        return [], fetch_state, {}
+    # Never stamp availability at build-start: the HTTP fetch itself may take
+    # seconds. Observation/rights are verified after the response arrives.
+    observed_at = _received_at or datetime.now(timezone.utc)
+    refreshed_rights = load_rights_receipt(rights_path, now=observed_at, source="tiingo")
+    if refreshed_rights is None or refreshed_rights.receipt_id != rights.receipt_id:
+        return [], "rights_changed", {}
+    audit = _tiingo_news_api.audit_sample(raw, received_at=observed_at)
+    out: list[dict] = []
+    qbus_batch: list[dict] = []
+    filtered_source = filtered_validation = filtered_untagged = 0
+    for item in raw:
+        try:
+            article = _tiingo_news_api.normalize_article(item, received_at=observed_at)
+        except _tiingo_news_api.TiingoArticleError:
+            filtered_validation += 1
+            continue
+        # Provider tickers are unverified candidates. Never promote an
+        # unallowlisted publisher to the tier-3 floor purely because Tiingo
+        # tagged it: the broad REST feed includes general/SEO sources.
+        # qkernel.source_tier uses substring tokens for legacy compatibility.
+        # A newly admitted Tiingo publisher must match an actual dotted domain
+        # boundary, not a lookalike such as fakebloomberg.com.
+        host = article["source"]
+        trusted = any(
+            "." in token and (host == token or host.endswith("." + token))
+            for token in (nc.TIER1_SOURCES + nc.TIER2_SOURCES + nc.TIER3_SOURCES)
+        )
+        if not trusted or nc.is_blocked(host):
+            filtered_source += 1
+            continue
+        tickers = [vendor_join_key(t) for t in article["tickers"] if vendor_join_key(t)]
+        if not tickers:
+            filtered_untagged += 1
+            continue
+        h = _normalise(
+            article["title"], article["url"], article["source"],
+            article["published_at"], article["source"], tickers,
+            article["description"] if rights.rights.allow_teaser else "",
+            None, "tiingo", 1.0, now,
+            _crawled_at=article["received_at"], _emit_qbus=False,
+        )
+        if h is None:
+            continue
+        # Build one qbus v1 keep-FIRST batch; writing once avoids O(n²)
+        # Parquet rewrites.  v1 first receipt does NOT establish vendor-crawl
+        # history; v2 revisions/rights migration remains separately gated.
+        qbus_batch.append({
+            "desk": "financial_news", "source": article["source"],
+            "url": article["url"], "title": article["title"],
+            "seendate": article["published_at"],
+            "_crawled_at": article["received_at"],
+            "timestamp_quality": "PUBLISHER_STATED",
+            "entities": tickers, "themes": [],
+            "importance_raw": 1.0, "lang": "en",
+        })
+        h.update({
+            "provider": "tiingo",
+            "provider_id": article["provider_id"],
+            "provider_crawled_at": article["provider_crawled_at"],
+            "first_available_at": article["first_available_at"],
+            "availability_basis": "first_local_receipt",
+            "historical_backfill": article["is_historical_backfill"],
+            "data_attribution": "Data sourced by Tiingo",
+            "data_attribution_url": "https://www.tiingo.com",
+        })
+        if not rights.rights.allow_url:
+            h["url"] = ""
+        out.append(h)
+    if qbus_batch:
+        try:
+            _qbus.append_items(qbus_batch)
+        except Exception:  # qbus is a separate existing best-effort owner
+            pass
+    audit.update({
+        "eligible_articles": len(out),
+        "filtered_source": filtered_source,
+        "filtered_validation": filtered_validation,
+        "filtered_untagged": filtered_untagged,
+        "display_links_licensed": rights.rights.allow_url,
+        "display_teasers_licensed": rights.rights.allow_teaser,
+    })
+    return out, ("ok" if out else "filtered"), audit
 
 
 # --------------------------------------------------------------------------- #
@@ -701,11 +809,12 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
     # POLY-003 / GDELT-002: unpack new (items, detail) / (mkt, co, detail) signatures.
     poly, _poly_detail = _polygon_news(cfg, now)
     fh_market, fh_company, _fh_detail = _finnhub_news(cfg, now)
+    tiingo, _tiingo_detail, _tiingo_audit = _tiingo_articles(now)
     quiver = _quiver_news(cfg, emap, now)            # folded Quiver press-release tail
     gd = _gdelt_thematic(cfg, emap, now)
     rss = _rss_news(cfg, emap, now)                  # PRIMARY: top-tier wires & press
 
-    tagged = poly + fh_company + quiver + rss["company"]   # ticker-tagged corpus
+    tagged = poly + fh_company + tiingo + quiver + rss["company"]   # ticker-tagged corpus
     all_items = (tagged + fh_market + rss["market"] + gd["market"]
                  + [h for v in gd["sectors"].values() for h in v]
                  + [h for v in rss["sectors"].values() for h in v])
@@ -821,6 +930,7 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
         "polygon": _poly_detail,
         "finnhub": _fh_detail,
         "quiver": ("ok" if quiver else "no_rows"),
+        "tiingo": _tiingo_detail,
         "gdelt": gd.get("detail", "ok" if _gdelt_ok else "no_rows"),
     }
     # Compose a degraded_reason when any configured (keyed) provider is dark.
@@ -833,6 +943,8 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
         _dark_reasons.append("finnhub_no_key")
     elif _fh_detail not in ("ok", "no_rows"):
         _dark_reasons.append(f"finnhub_{_fh_detail}")
+    if _tiingo_detail not in ("ok", "no_rows", "disabled"):
+        _dark_reasons.append(f"tiingo_{_tiingo_detail}")
     # ADDITIVE, not exclusive.  The old form was
     #     if not all_items: "no_sources"  elif _dark_reasons: "; ".join(...)
     # which suppressed the provider names in exactly the case that needs them most:
@@ -857,6 +969,7 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
                       "gdelt": _gdelt_ok},
         # providers_detail: POLY-003 / GDELT-002 tri-state additive field.
         "providers_detail": _providers_detail,
+        "tiingo_quality_sample": _tiingo_audit,
         # counts is additive-safe; tickers_excluded is the hygiene receipt for the key gate.
         "counts": {"raw": len(all_items), "tagged": len(tagged),
                    "tickers_covered": len(by_ticker),
@@ -864,7 +977,9 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
         "market": market, "sectors": sectors, "mag7": mag7, "baskets": baskets,
         "by_ticker": by_ticker,
         "rejected": _collected_rejected,
-        "disclaimer": DISCLAIMER_TEXT, "disclaimer_zh": DISCLAIMER_TEXT_ZH,
+        "disclaimer": (DISCLAIMER_TEXT + " Data sourced by Tiingo (https://www.tiingo.com)."
+                       if tiingo else DISCLAIMER_TEXT),
+        "disclaimer_zh": DISCLAIMER_TEXT_ZH,
         "degraded_reason": _degraded_reason,
     }
     try:
