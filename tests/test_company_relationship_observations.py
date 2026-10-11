@@ -916,3 +916,128 @@ print(json.dumps({"current": current, "historical": historical,
     assert inventory(root) == before
     assert_boundaries(observed["current"])
     assert_boundaries(observed["historical"])
+
+
+# A timed-out component write remains unresolved until exact readback succeeds.
+
+
+class DelayedChunkResponse(TracedStore):
+    """A pending chunk put records its payload and raises TimeoutError before
+    the underlying store commits. The subsequent readback confirms an absent
+    chunk, same-length conflicting bytes, or an unreadable read failure.
+    The /commits/ (manifest) path is unchanged so final-manifest behavior is
+    preserved."""
+
+    pending = None
+
+    def __init__(self, inner, *, readback="absent"):
+        super().__init__(inner)
+        self.readback = readback
+
+    def put_bytes_strict_conditional(self, key, data, **options):
+        if "/commits/" in key:
+            return super().put_bytes_strict_conditional(key, data, **options)
+        self.puts.append((key, len(data), options["expected_version"]))
+        self.pending = (key, data, options.copy())
+        if self.readback == "conflicting":
+            corrupt = bytes([data[0] ^ 1]) + data[1:]
+            assert self.inner.put_bytes_strict_conditional(key, corrupt, **options) is True
+        # The real payload is never committed; the attempt is unresolved.
+        raise TimeoutError("private-host-path must never escape")
+
+    def get_bytes_strict_bounded(self, key, **options):
+        if (self.readback == "unreadable" and self.pending is not None
+                and key == self.pending[0]):
+            raise RuntimeError("private-host-path must never escape")
+        return super().get_bytes_strict_bounded(key, **options)
+
+
+def _complete_pending(store, pending):
+    """Simulate completion of the original pending write in this test store."""
+    key, data, options = pending
+    return store.inner.put_bytes_strict_conditional(key, data, **options)
+
+
+def test_delayed_chunk_timeout_with_absent_readback_is_component_write_effect_unknown(tmp_path):
+    normal, root = local_store(tmp_path)
+    store = DelayedChunkResponse(normal.inner, readback="absent")
+    supplied = bundle()
+    result = subject.append_relationship_observation(store, **supplied)
+    assert result["status"] == "EFFECT_UNKNOWN"
+    assert result["refusal"]["code"] == "COMPONENT_EFFECT_UNKNOWN"
+    assert result["reference"] is None and result["expected_reference"] is None
+    assert result["inspection"] is None and result["review_provenance"] is None
+    assert result["effect_state"] == "COMPONENT_WRITE_EFFECT_UNKNOWN"
+    assert "private-host-path" not in json.dumps(result)
+    assert not list((root / subject.PREFIX / "commits").rglob("*.json"))
+    # Pending chunk was recorded; the readback is truly missing.
+    assert store.pending is not None
+    key, data, options = store.pending
+    assert "/commits/" not in key
+    assert normal.inner.get_bytes_strict_bounded(
+        key, expected_byte_length=len(data), max_byte_length=16384,
+    ) is None
+    # Settle the original pending write in the synthetic store before another
+    # append. Exact retained bytes allow that later append to finish committing.
+    assert _complete_pending(store, store.pending) is True
+    committed = subject.append_relationship_observation(normal, **supplied)
+    assert committed["status"] == "COMMITTED"
+    assert subject.read_relationship_observation(normal, committed["reference"])["status"] == "VERIFIED"
+    assert_boundaries(result)
+
+
+@pytest.mark.parametrize("readback", ["conflicting", "unreadable"])
+def test_delayed_chunk_timeout_with_conflicting_or_unreadable_readback_is_component_write_effect_unknown(tmp_path, readback):
+    normal, root = local_store(tmp_path)
+    store = DelayedChunkResponse(normal.inner, readback=readback)
+    supplied = bundle()
+    result = subject.append_relationship_observation(store, **supplied)
+    assert result["status"] == "EFFECT_UNKNOWN"
+    assert result["refusal"]["code"] == "COMPONENT_EFFECT_UNKNOWN"
+    assert result["reference"] is None and result["expected_reference"] is None
+    assert result["inspection"] is None and result["review_provenance"] is None
+    assert result["effect_state"] == "COMPONENT_WRITE_EFFECT_UNKNOWN"
+    assert "private-host-path" not in json.dumps(result)
+    assert not list((root / subject.PREFIX / "commits").rglob("*.json"))
+    assert store.pending is not None
+    # Conflicting readback writes same-length different bytes; unreadable would
+    # surface as STORE_READ_FAILED on a subsequent read attempt.
+    pending_key, pending_data, _ = store.pending
+    if readback == "conflicting":
+        observed = normal.inner.get_bytes_strict_bounded(
+            pending_key, expected_byte_length=len(pending_data), max_byte_length=16384,
+        )
+        assert observed is not None and len(observed) == len(pending_data) and observed != pending_data
+    assert_boundaries(result)
+
+
+def test_delayed_chunk_matching_lost_ack_still_commits(tmp_path):
+    """A chunk put that raises TimeoutError after committing the bytes is
+    reconciled by the matching readback; the append must succeed."""
+    normal, _ = local_store(tmp_path)
+
+    class LostAckChunk(TracedStore):
+        def put_bytes_strict_conditional(self, key, data, **options):
+            if "/commits/" in key:
+                return super().put_bytes_strict_conditional(key, data, **options)
+            assert super().put_bytes_strict_conditional(key, data, **options) is True
+            raise TimeoutError("private-host-path must never escape")
+
+    result = subject.append_relationship_observation(LostAckChunk(normal.inner), **bundle())
+    assert result["status"] == "COMMITTED"
+    assert subject.read_relationship_observation(normal, result["reference"])["status"] == "VERIFIED"
+
+
+def test_chunk_put_returning_false_without_exception_remains_refused(tmp_path):
+    """A chunk put returning False (no exception) must remain REFUSED; the
+    chunk-phase effect_unknown generalization must not reframe a definitive
+    no-object return as EFFECT_UNKNOWN. Final-manifest tests must remain
+    unchanged in their refusal semantics."""
+    normal, root = local_store(tmp_path)
+    store = FaultStore(normal.inner, "chunk_not_written")
+    supplied = bundle()
+    failed = subject.append_relationship_observation(store, **supplied)
+    assert failed["status"] == "REFUSED"
+    assert failed["reference"] is None and failed["expected_reference"] is None
+    assert failed["refusal"]["code"] != "COMPONENT_EFFECT_UNKNOWN"
+    assert not list((root / subject.PREFIX / "commits").rglob("*.json"))

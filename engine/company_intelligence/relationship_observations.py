@@ -673,11 +673,12 @@ def _create_only(store: Any, key: str, raw: bytes, *, final: bool = False) -> No
         observed = _exact_read(store, key, len(raw))
     except _Refusal:
         raise _Refusal("MANIFEST_EFFECT_UNKNOWN" if final else "COMPONENT_EFFECT_UNKNOWN",
-                       effect_unknown=final) from None
-    if final and write_raised and observed != raw:
+                       effect_unknown=True) from None
+    if write_raised and observed != raw:
         # An early absence/conflict observation cannot settle an in-flight write.
         # Only the complete expected bytes reconcile a lost modifying response.
-        raise _Refusal("MANIFEST_EFFECT_UNKNOWN", effect_unknown=True)
+        raise _Refusal("MANIFEST_EFFECT_UNKNOWN" if final else "COMPONENT_EFFECT_UNKNOWN",
+                       effect_unknown=True)
     _require(observed is not None, "MANIFEST_NOT_AVAILABLE_AT_READBACK" if final else "COMPONENT_NOT_AVAILABLE_AT_READBACK")
     _require(observed == raw, "EXISTING_OBJECT_CORRUPT")
 
@@ -693,8 +694,10 @@ def append_relationship_observation(
 
     COMMITTED means the complete manifest/closure was verified after publication;
     REPEATED means an existing exact commit and its entire closure were verified
-    without writes. REFUSED never licenses repair. EFFECT_UNKNOWN exposes only
-    an expected reference after an uncertain final write/readback, not a commit.
+    without writes. REFUSED never licenses repair. EFFECT_UNKNOWN preserves
+    unresolved component or final write/readback effects.
+    An expected reference is exposed only after a final manifest attempt, never
+    as a verified commit or permission to retry.
     Reviewer bytes and binding matches never authenticate their authorship/truth.
     """
     ref = None
@@ -749,8 +752,12 @@ def append_relationship_observation(
         return success
     except _Refusal as error:
         if error.effect_unknown:
-            return _result("append", "EFFECT_UNKNOWN", expected_reference=ref, code=error.code,
-                           effect="FINAL_MANIFEST_EFFECT_UNKNOWN")
+            return _result("append", "EFFECT_UNKNOWN",
+                           expected_reference=ref if manifest_attempted else None,
+                           code=error.code,
+                           effect=("COMPONENT_WRITE_EFFECT_UNKNOWN"
+                                   if error.code == "COMPONENT_EFFECT_UNKNOWN"
+                                   else "FINAL_MANIFEST_EFFECT_UNKNOWN"))
         return _result("append", "REFUSED", inspection=error.inspection or inspection,
                        expected_reference=ref if manifest_attempted else None,
                        code=error.code, effect=("MANIFEST_ATTEMPTED_COMMIT_NOT_PROVEN" if manifest_attempted
