@@ -5,6 +5,7 @@ Unlike a guard-string assertion, this fails if either handler double-opens after
 a sibling calls stopPropagation (which does not stop same-node listeners).
 """
 
+import hashlib
 import json
 import shutil
 import subprocess
@@ -138,3 +139,11 @@ def test_onboard_template_and_site_copies_stay_in_sync() -> None:
     assert (ROOT / ONBOARD_COPIES[0]).read_bytes() == (
         ROOT / ONBOARD_COPIES[1]
     ).read_bytes()
+
+
+def test_pricing_and_landing_load_the_new_onboard_bytes() -> None:
+    """Immutable CDN caching must not strand buyers on the old two-dialog script."""
+    version = hashlib.sha256((ROOT / "site/onboard.js").read_bytes()).hexdigest()[:8]
+    for rel in ("templates/index.html", "site/index.html", "site/plans.html"):
+        html = (ROOT / rel).read_text(encoding="utf-8")
+        assert f'onboard.js?v={version}' in html, f"stale onboard cache key: {rel}"
