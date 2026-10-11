@@ -525,3 +525,74 @@ class TestDeclarations:
         assert art["tier"] == "scored", (
             "the artifact now gates an ADMISSION decision — a display-tier declaration "
             "would be an untrue entry in the registry")
+
+# --------------------------------------------------------------------------- #
+# PIT regression: future artifact after the END of a truncated price tape
+# --------------------------------------------------------------------------- #
+# Keep these tests in the registered reclaim-waiver suite, not a new unowned
+# pytest file. The original session distance helper used searchsorted on both
+# dates without checking actual chronology, so a future artifact and the final
+# known close could BOTH receive insertion position len(sessions), admitting
+# a false same-day waiver from a snapshot not available at that close.
+
+def _truncated_future_qualifier(as_of: str) -> dict:
+    return {
+        "group_id": "test-sector",
+        "basis": "sector",
+        "peer_dd": -0.25,
+        "as_of": as_of,
+    }
+
+
+def test_truncated_future_artifact_after_last_loaded_session_is_refused():
+    sessions = pd.bdate_range("2026-10-01", periods=6)
+    known = str(sessions[-1].date())
+    future_as_of = "2026-10-19"
+    assert pd.Timestamp(future_as_of) > pd.Timestamp(known)
+    assert sq._sessions_since(sessions, future_as_of, known) is None
+    assert sq.reclaim_waiver_for(
+        _truncated_future_qualifier(future_as_of), known, sessions,
+    ) is None
+
+
+def test_truncated_future_artifact_cannot_convert_countertrend_refusal():
+    sessions = pd.bdate_range("2007-01-01", periods=30)
+    known = str(sessions[-1].date())
+    waiver = sq.reclaim_waiver_for(
+        _truncated_future_qualifier("2026-10-19"), known, sessions,
+    )
+    assert waiver is None
+    frame = pd.DataFrame({
+        "close": [10.0, 11.0, 11.0],
+        "above200": [False, False, False],
+        "w_bull": [False, False, False],
+    })
+    passed, reason = sq._confirm_legs(
+        0, frame, len(frame), waiver=waiver,
+    )
+    assert passed is False
+    assert reason == sq.CT_RECLAIM_FAIL
+
+
+def test_truncated_tape_legitimate_recent_state_remains_valid():
+    sessions = pd.bdate_range("2026-09-01", periods=30)
+    known = str(sessions[-1].date())
+    same = sq.reclaim_waiver_for(
+        _truncated_future_qualifier(known), known, sessions,
+    )
+    assert same is not None and same.stale_sessions == 0
+    five_prior = str(sessions[-6].date())
+    recent = sq.reclaim_waiver_for(
+        _truncated_future_qualifier(five_prior), known, sessions,
+    )
+    assert recent is not None
+    assert recent.stale_sessions == sq.WASHOUT_MAX_STALE_SESSIONS
+
+
+def test_truncated_tape_existing_stale_refusal_still_holds():
+    sessions = pd.bdate_range("2026-09-01", periods=30)
+    known = str(sessions[-1].date())
+    six_prior = str(sessions[-7].date())
+    assert sq.reclaim_waiver_for(
+        _truncated_future_qualifier(six_prior), known, sessions,
+    ) is None

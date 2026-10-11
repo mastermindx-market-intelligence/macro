@@ -485,6 +485,16 @@ def _sessions_since(session_index, as_of: str, known: str) -> int | None:
         return None
     if len(idx) == 0 or pd.isna(a) or pd.isna(k):
         return None
+    # In a truncated tape, both a future artifact and the last known close
+    # can map to insertion position len(idx). The position difference then
+    # looks like same-session freshness even though the artifact is from the
+    # future. Enforce chronological order before counting observed sessions.
+    try:
+        if a > k:
+            return None
+    except TypeError:
+        # Mixed timezone-aware/naive timestamps cannot establish PIT order.
+        return None
     return int(idx.searchsorted(k, side="right") - idx.searchsorted(a, side="right"))
 
 
