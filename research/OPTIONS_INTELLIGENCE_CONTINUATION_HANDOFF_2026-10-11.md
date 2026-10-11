@@ -479,7 +479,7 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(19:15Z snapshot.) Rows superseding older rows below:
+(19:25Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
@@ -487,7 +487,8 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 | D16a | CI — Macro PR #8856 at `c93aa900` (review REQUEST_REPAIR F1/F2 → seat repair, D42); gate 145; consumer suite no regression (7 pre-existing); `merge-on-green`; app bound; production proof = next natural m1 resolver call logs a resolved store |
 | V01 | CI — Macro PR #8851 at `479b16df2a7a` (audit REQUEST_REPAIR → seat repair `f51bda96804f` + `479b16df2a7a`, D39); gate 351 passed; `merge-on-green`; app PR monitor bound; pilot red = O-4 by design; production proof = first natural flow-surface cycle on m1 after merge |
 | OC | RUNNING — admitted 18:48:21Z (ATTEMPT 1, load1 14.16) via bnwojs7jx (build-bounded, alarm 12600); `oc_sim.py` last modified 19:11:50Z; artifacts dir named in `leads/OC/pool.log` |
-| F01, M01 | QUEUED — commissions frozen |
+| F01 | ARMED — `launch_when_admitted` blrzzl887 (fix_build, alarm 7200, wait budget 14400); launches when a slot frees and load1 < 15; log `leads/F01/pool.log` |
+| M01 | ARMED — `launch_when_admitted` bj2hwmddd (fix_build, alarm 7200, wait budget 18000); same admission rule; log `leads/M01/pool.log` |
 
 | lane | owner / tier | surface | carrier | watcher | state | budget |
 |---|---|---|---|---|---|---|
@@ -685,3 +686,11 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - Macro PR #8856 is labelled `merge-on-green`. V01 #8851 was still OPEN at 19:12Z (mergeStateStatus UNKNOWN), merge-on-green.
 - RETRACTION: the 19:00Z entry said OC was waiting for load1 < 15. In fact OC was admitted at 18:48:21Z (`leads/OC/pool.log.attempts`).
   1B and OC now fill both slots (max_active 2), so F01/M01 wait for one of them to exit. load1 was 55.6 at 19:13Z.
+
+### 2026-10-11 19:25Z — F01 and M01 armed; CI reads
+- F01 (blrzzl887) and M01 (bj2hwmddd) are armed behind the two running lanes (1B, OC). Owned files were checked for overlap against every live
+  lane: F01 owns chain-heat/flow-signals files, M01 owns market_gamma/options_hub files, V01 #8851 owns `engine/intraday_greeks.py` and its test, and
+  D16a #8856 owns the thetadata store files. No file is shared. Both worktrees are clean at `f1ae1e0365fc`.
+- Host load1 was 71.8 at 19:22Z, so admission may wait. A launch is a QUEUED fact until `LAUNCH_EXIT` or a run id appears.
+- #8856 at `c93aa900`: ci-plan, ci-authority, fence-pack, capability-broker, grader-manifest and self-mod-fence are SUCCESS. contract-delta
+  and ci-pack-0..11 are pending. The pilot red is by design (O-4). #8851 is still OPEN at `479b16df2a7a`.
