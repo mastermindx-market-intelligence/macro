@@ -35,7 +35,11 @@ from engine.earnings_narrative.contracts import (  # noqa: E402
     canonical_json_sha256,
 )
 from engine.press import desk_planner  # noqa: E402
-from engine.press.earnings_adapter import story_to_press_slot  # noqa: E402
+from engine.press.earnings_adapter import assert_dossier_link_current  # noqa: E402
+from engine.earnings_narrative.story_packets import (  # noqa: E402
+    LINKED_STORY_PACKET_SCHEMA,
+    replay_story_packet_slot,
+)
 from scripts import publish_earnings_story_packets_r2 as story_r2  # noqa: E402
 from scripts.run_press import run_admitted_earnings_staging  # noqa: E402
 
@@ -52,13 +56,7 @@ class EarningsStoryIngressError(RuntimeError):
 
 
 def _derive_slot(packet: Mapping[str, Any]) -> dict[str, Any]:
-    prior = packet.get("prior")
-    prior_story = prior.get("story") if isinstance(prior, Mapping) else None
-    slot = story_to_press_slot(
-        packet["story"],
-        packet["digest"],
-        prior_story=prior_story,
-    )
+    slot = replay_story_packet_slot(packet)
     if canonical_json_bytes(slot) != canonical_json_bytes(packet.get("press_slot")):
         raise EarningsStoryIngressError("current packet Press slot differs from canonical adapter replay")
     return slot
@@ -73,8 +71,12 @@ def _validate_requested_ids(generation_id: str, packet_id: str, story_revision_i
         raise EarningsStoryIngressError("story_revision_id is invalid")
 
 
-def _record_root_status(staging_dir: Path, *, current: bool, reason: str = "") -> None:
-    """Keep the uploaded artifact honest if the root moves during the model call."""
+def _record_root_status(
+    staging_dir: Path, *, current: bool, reason: str = "",
+    dossier_current: bool | None = None,
+) -> None:
+    """Keep root and dossier availability distinct in quarantined evidence."""
+    quarantine = not current or dossier_current is False
     for path in sorted(staging_dir.glob("*.json")):
         if path.name.startswith("_"):
             continue
@@ -85,7 +87,9 @@ def _record_root_status(staging_dir: Path, *, current: bool, reason: str = "") -
         if not isinstance(row, dict):
             continue
         row["story_root_current_after_stage"] = current
-        if not current:
+        if dossier_current is not None:
+            row["dossier_link_current_after_stage"] = dossier_current
+        if quarantine:
             row["status"] = "quarantined"
             row["quarantine_reason"] = reason
         path.write_text(json.dumps(row, ensure_ascii=False, indent=2, default=str) + "\n", encoding="utf-8")
@@ -100,10 +104,12 @@ def _record_root_status(staging_dir: Path, *, current: bool, reason: str = "") -
     if not isinstance(summary, dict):
         raise EarningsStoryIngressError("admitted staging summary is not an object")
     summary["story_root_current_after_stage"] = current
-    if not current:
+    if dossier_current is not None:
+        summary["dossier_link_current_after_stage"] = dossier_current
+    if quarantine:
         summary["passed"] = 0
         summary["quarantined"] = max(1, int(summary.get("quarantined") or 0))
-        summary["root_race_reason"] = reason
+        summary["root_race_reason" if not current else "dossier_race_reason"] = reason
         for item in summary.get("items") or []:
             if isinstance(item, dict):
                 item["status"] = "quarantined"
@@ -159,6 +165,10 @@ def stage_exact_current_story(
     # Last zero-token boundary.  A stale ID, object, admission, or root race has
     # made no model request when execution reaches any failure above this line.
     story_r2.assert_story_root_binding_current(audit, s3=client, bucket=target_bucket)
+    if packet["schema"] == LINKED_STORY_PACKET_SCHEMA:
+        assert_dossier_link_current(
+            packet["dossier_link"], ticker=packet["story"]["event"]["ticker"], root=root,
+        )
     summary = run_admitted_earnings_staging(
         root,
         cfg,
@@ -175,7 +185,17 @@ def stage_exact_current_story(
         reason = "earnings story root moved during the bounded staging call"
         _record_root_status(destination, current=False, reason=reason)
         raise EarningsStoryIngressError(reason) from exc
-    _record_root_status(destination, current=True)
+    linked = packet["schema"] == LINKED_STORY_PACKET_SCHEMA
+    if linked:
+        try:
+            assert_dossier_link_current(
+                packet["dossier_link"], ticker=packet["story"]["event"]["ticker"], root=root,
+            )
+        except Exception as exc:
+            reason = "earnings dossier route unavailable after the bounded staging call"
+            _record_root_status(destination, current=True, dossier_current=False, reason=reason)
+            raise EarningsStoryIngressError(reason) from exc
+    _record_root_status(destination, current=True, dossier_current=True if linked else None)
     summary = json.loads((destination / "_run_summary.json").read_text(encoding="utf-8"))
 
     result = {

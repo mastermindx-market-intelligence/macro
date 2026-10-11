@@ -1,0 +1,101 @@
+{
+  "schema": "mmx.ordinary_brief_dependency/v1",
+  "operation_id": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "source_commit": "f60d77e228b2c8e8352e4bb70041c497271240b9",
+  "mode": "read_only_existing_artifacts",
+  "usable": false,
+  "qualified_candidate": null,
+  "permitted_staging_invocation": null,
+  "chronicle": {
+    "path": "data/chronicle/events.jsonl",
+    "rows": 16771,
+    "latest_date": "2026-10-08",
+    "window": "2026-10-08..2026-10-11",
+    "current_sources": {
+      "macro_release": 1,
+      "prophet_ledger": 17
+    },
+    "non_prophet": [
+      {
+        "date": "2026-10-08",
+        "facts": [
+          "actual +197",
+          "2s10s -4.0bp",
+          "SPY day-0 -0.42%"
+        ],
+        "horizon_hint": "short",
+        "id": "cev-macro_release-ca1e7aba3ccb",
+        "kind": "print",
+        "links": {
+          "receipt": null,
+          "site": null,
+          "source": null
+        },
+        "source": "macro_release",
+        "source_ref": "claims#2026-10-08",
+        "themes": [
+          "claims"
+        ],
+        "tickers": [],
+        "title": "Macro print: claims = +197 (2026-10-08)",
+        "ts": "2026-10-08T00:00:00Z",
+        "weight_hint": 1
+      }
+    ]
+  },
+  "press_feeds": {
+    "retained_path": "data/marketing/outbox/items.jsonl",
+    "current_press_rows": 31,
+    "current_sources": {
+      "forexlive_news": 7,
+      "cnbc_top": 3,
+      "cnn_truth_backfill": 2,
+      "alpaca_benzinga": 14,
+      "zerohedge_feed": 4,
+      "marketwatch_top": 1
+    },
+    "local_press_dir_exists": false,
+    "latest_official_retained_created_at": "2026-09-30T15:01:11Z",
+    "latest_official_retained_feed_ids": [
+      "f929f82ffe328711249f48d150d121abf6fca1db",
+      "dcfebca27e9fd9a132c493108955ec366defd98e"
+    ],
+    "near_candidate": {
+      "outbox_id": "ob-2026-10-11-c1608d3976",
+      "feed_item_id": "alpaca:62004798",
+      "created_at": "2026-10-11T09:03:42Z",
+      "source": "alpaca_benzinga",
+      "source_url": "https://www.benzinga.com/analyst-stock-ratings/analyst-color/26/09/62004798/memory-inflation-is-hitting-costcos-electronics-business-and-it-triggered-a-152-million-charge",
+      "rights_id": null,
+      "reason_unqualified": "Secondary wire commentary, no primary issuer source receipt, no recorded source publication date or rights identifier, not an input consumed by the current Brief planner."
+    }
+  },
+  "blockers": [
+    "Brief planner reads data/chronicle/events.jsonl only; no PRESS-FEEDS artifact input or external-primary slot CLI is implemented.",
+    "Current Chronicle non-Prophet window is claims#2026-10-08 only, without ticker/source URL/receipt.",
+    "No retained current public-primary stock-event/rights tuple found; current wire outputs are secondary publishers or political Truth mirrors.",
+    "PRESS-FEEDS Intelligence Desk/wire artifacts are host-local; local data/marketing/press is absent; Actions discards Intelligence Desk packets."
+  ],
+  "source_lines": [
+    "engine/press/desk_planner.py:748",
+    "engine/press/desk_planner.py:855",
+    "engine/press/desk_planner.py:912",
+    "config/press.yml:139",
+    "config/press.yml:217",
+    "scripts/marketing_fastlane_daemon.py:651",
+    "scripts/marketing_fastlane_daemon.py:668",
+    "scripts/run_press.py:1150"
+  ],
+  "effects": [
+    "No source edits",
+    "No network ingestion",
+    "No provider calls",
+    "No credential actions",
+    "No R2 retry"
+  ],
+  "artifact_hashes": {
+    "data/chronicle/events.jsonl": "8abd01528dee8cff904ac26d293c88b7c3d21896806f7c6e431d795fd59ae0e7",
+    "data/marketing/outbox/items.jsonl": "109dd09da3d87a1ceb3e93d0a26e27bf31aadc1044b0162d3a96a4768b92183e",
+    "data/marketing/press_wire/cursors.json": "b333569290e28926c89a306a67ab4a7daa7965950238b69aada491666ac507d7"
+  }
+}
