@@ -45,27 +45,51 @@ waves:
       Head acc72f3fb3efb1ad092359ce2ba4190de66d75e1 is pushed with the H1-B audit repairs.
       A session-local CI watcher was bound to that exact head on 2026-10-11; a successor
       verifies it is live (control_plane owns liveness) and otherwise binds exactly one.
+      LANDING ORDER (binding, from #7870 comment 6105402719 line 18): Industrials #8250
+      (head 20e7e9ac, adjudicated 6105257496, repaired 6105272573) lands on main FIRST;
+      #7870 then merges main and resolves its collision set with #8250, which the fully
+      paginated remote file census of 2026-10-11 fixes at exactly two paths
+      (engine/company_intelligence/issuer_profiles.py, three conflicting hunks in the
+      2026-10-11 merge-tree dry run of the two heads, and .github/ci/legacy-jobs.yml).
+      Green and the delta review at acc72f3f are evidence for the pre-merge tree only.
       Gate set per DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL, stated completely: (1) semantic pass:
       the H1 ruling B (#7870 comment 6105015260) plus the consumed independent Opus audit of
       b76551be (DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE); (2) fresh non-author
       exact-head review: IN HAND for b76551be..acc72f3f as #7870 comment 6105402719 (independent
       READ_ONLY Opus, VERDICT ACCEPT_DELTA, 2026-10-11; two LOW and three INFO findings, none
       blocking; the LOW on a literal test path inside an engine comment is closed by hosted
-      contract-delta and fence-pack success at acc72f3f); (3) hosted checks: ALL_CONCLUDED green at
-      the exact release head, still owed; (4) the canonical Source Continuity receipt
-      (CHECKPOINT_VERIFIED / REMOTE_COMPLETE_VERIFIED) is named by the protocol for a STARTed
-      source-modifying fabric child; acc72f3f was built and pushed by this seat directly with the
-      fabric unavailable, so no STARTed child exists to carry one, and the release DECISION's
-      exact-head assertions (worktree rev-parse equals the gh head, clean tree, merge-tree against
-      the pinned base sha) are the source-identity evidence instead. The review in (2) is pinned to
-      acc72f3f: if the release head moves (a red repair, or the rebase onto main after Industrials
-      #8250 lands first on the shared issuer_profiles.py seam, per comment 6105402719), extend the
-      non-author review to acc72f3f..<new head> before release and re-bind the hosted gate to the
-      new head. With (1)-(4) in hand: fresh carrier read, then ONE release DECISION in
-      DEC:FABLE-SEAT order (quote the Chairman ruling, cite the consumed audit and the delta
-      review, ACCEPTED/STOP, BRANCH_WRITER_RELEASED, review state, body, Ready, merge queue), each
-      act asserting the exact head. On red: repair in scope, new head, re-bind the watcher, extend
-      the review. On HEAD_CHANGED: re-read before anything.
+      contract-delta and fence-pack success at acc72f3f), PLUS one further non-author READ_ONLY
+      read of the merge resolution at the post-#8250 head (the merge commit diffed against each
+      parent, not the base-inclusive range acc72f3f..<new head>), still owed; (3) hosted checks:
+      ALL_CONCLUDED green from exactly one watcher bound to the exact post-merge release head,
+      still owed (the merge-queue pilot is not a gate); (4) Source Continuity: the official
+      read-only verifier was run on 2026-10-11 at acc72f3f (Mastermind
+      scripts/source_continuity.py verify --kind remote-complete, operation
+      gmi-semiconductors-fable-ceo-e2e-20260923-chairman-001, PR 7870, base main pinned at
+      363b4e6296b7598ad8980b6a1b8b9444e14cfd6b, the 102 changed paths as owned paths, external
+      effect NONE / dependency NONE) and returned the typed refusal REMOTE_CENSUS_INCOMPLETE:
+      its collision census is capped at 490 open PRs (_MAX_COLLISION_PRS) and the repository had
+      632 open PRs, so no REMOTE_COMPLETE_VERIFIED receipt is obtainable from that adapter for
+      this carrier. The protocol names the receipt for a STARTed source-modifying fabric child
+      (COMMISSION_WAVE.md:303-306, REVIEW_RETURN.md:205-211); acc72f3f was built and pushed by
+      this seat directly with the fabric unavailable, and whether any STARTed child or writer
+      lease exists on #7870 is unverified from this seat (Executive OS unreachable). Substitute
+      source-identity evidence recorded with commands on 2026-10-11: git ls-remote origin
+      refs/heads/<branch> == git rev-parse HEAD == acc72f3f; the GitHub commit tree
+      cd76b979136ccd77bc4bfd50b14c9f5fa19d4a93 == git rev-parse HEAD^{tree}; gh api
+      pulls/7870/files fully paginated (102 paths) == git diff --name-only
+      363b4e62..acc72f3f; collision set with #8250 = the two paths above. Seat ruling (the
+      seat's own, surfaced to the Chairman in the 2026-10-11 report): the substitute is accepted
+      for this seat-built head under the literal protocol text; falsifier: a Chairman or Sol
+      line requiring the adapter receipt blocks release until the adapter can census this
+      carrier. The verifier is re-run at the post-merge release head and its output is quoted
+      verbatim in the DECISION either way. With (1)-(4) in hand at the post-merge head: a fresh
+      carrier read before EVERY post and act (DEC:FABLE-SEAT line 60), then ONE release
+      DECISION in DEC:FABLE-SEAT order (quote the Chairman ruling, cite the consumed audit, the
+      delta review and the merge-resolution read, ACCEPTED/STOP, BRANCH_WRITER_RELEASED, review
+      state, body, Ready, merge queue), each act asserting the exact head. On red: repair in
+      scope, new head, re-bind the watcher, extend the non-author review to the repair delta.
+      On HEAD_CHANGED: re-read before anything.
   - id: SB-W2
     title: "Option A registry follow-on: entry_kind admitting sector_profile/company_profile, optional anchor"
     status: todo
@@ -85,7 +109,9 @@ next_action: >
   2026-10-11: the seat consolidated under DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11.
   SB-W1 is the critical path for every vertical below it. Consume the verdict of the one
   live CI watcher at acc72f3f (bind exactly one if none is verifiably live); do not poll it.
-  Obtain the owed non-author delta review before any release act. After release, open SB-W2 (Option A) first because
+  The b76551be..acc72f3f delta review is in hand (#7870 comment 6105402719); #8250 lands
+  first, then the non-author read of the merge resolution and green at the post-merge head
+  are owed before any release act. After release, open SB-W2 (Option A) first because
   three verticals block on it, then re-land Robotics (WS:GMI-ROBOTICS) and reconcile
   Energy #8002 (WS:GMI-ENERGY-NUCLEAR) onto the accepted base.
 ---
