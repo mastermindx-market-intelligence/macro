@@ -848,3 +848,75 @@ vendor session capture, latency, completeness, price/quote joins, quote-age,
 special-sale-condition interpretation, and any applied intelligence consumer
 remain UNPROVEN. Tiingo News PR #8697 has its own owner. All 24 Tiingo Data
 OS contracts stay PROPOSED; keep Macro PR #8698 DRAFT/HOLD, not released.
+
+
+### October 11 UTC — BOATS research-only quote-age diagnostic
+
+The existing pure, read-only BOATS tape audit now includes an optional
+explicit quote_max_age_ms control (strict integer 1–60,000; default 1,000).
+The existing read-only research CLI accepts --quote-max-age-ms for
+boats-firehose only, rejecting it for all other vendor source families.
+No new producer, materializer, model, signal, scheduler, admission owner or
+canonical quote/NBBO source was introduced.
+
+For each selected T message, the diagnostic checks whether an already
+received Q message for that SAME vendor symbol is an eligible precursor
+inside the SAME fully verified BOATS source segment. There is no
+cross-segment bridging: receipt presence does not prove uninterrupted
+transport between captures. The quote must have a positive, non-crossed,
+two-sided single-ATS price and positive quoted sizes; its vendor
+event clock must agree with the epoch-nanosecond field, and it may not be
+received over a second BEFORE its own event. The later T frame must
+also pass event-clock agreement and source-arrival timing. The T event
+must be at or after the prior Q event, its local receipt at or after Q
+receipt, and the event-time delta must satisfy the selected age threshold.
+A later invalid or crossed Q supersedes the older candidate, rather than
+allowing a stale good quote to mask it.
+
+Outputs distinguish observed_T_messages, no_prior_quote,
+stale_prior_venue_quote, quote_newer_than_trade,
+trade_temporal_clock_unqualified and fresh_prior_venue_quote.
+The fresh-matched age p95 and bounded event examples preserve receipt
+order, original quote/trade event clocks, evidence digests and the
+selected age threshold. Trade B break/cancel events are EXCLUDED from
+T age-matching counts. Nonempty raw sale conditions are counted as
+UNQUALIFIED: no execution-validity decision, aggressor inference,
+netted turnover or quality-vetted trading signal is produced.
+Repeated raw frames are counted as observed duplicate evidence,
+not silently deduplicated into an executable consolidated tape.
+Flags including quote_age_is_only_diagnostic, not_an_executable_trade_join,
+quote_venue_is_nbbo=false, transport_continuity_proven=false,
+trade_initiator_side_proven=false and
+order_level_liquidity_replenishment_proven=false remain explicit.
+
+Additional targeted tests verify prior-arrival matching, staleness,
+missing quotes, same-venue-only grouping, no cross-segment hindsight,
+event/quote timestamp disagreement, trade-break exclusion, invalid
+quotes, correct sale-condition uncertainty, and bounded user-supplied
+CLI thresholds. Synthetic focused suites: 61 passed (M2 process 64077).
+Full tests/test_tiingo_*.py plus Data OS registry: 394 passed,
+the EXACT SAME 11 core source producer-integrity tests failed
+(M2 process 64852, pytest exit 1). No skip/xfail/waiver.
+Source evidence log:
+  /Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-boats-quote-age-20261011.log
+SHA-256 05b85010e430fd3dc695209698b8ca837a4f0384faba590294dd27dd63fed846
+
+Original core collector, live ingestion, materializer and failing
+producer regression suite remain byte-identical, with hashes:
+  collectors/tiingo_archive.py:
+    1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d
+  scripts/tiingo_ingest.py:
+    1364af1c3ce08c2c91b57a6415e0a099064918306dfbf4fc2729e55b72e11797
+  scripts/tiingo_materialize.py:
+    0b54f919a2a57e1014ff10ea001acbdb4cfa9937be5b97bcecb7919848b41969
+  tests/test_tiingo_ingestion_integrity.py:
+    c1a1e6c3e312ce84179f25e47f9dc493d8440f25efb33e8f96cf931279dbec12
+
+No actual archival BOATS data exists at the intended M2 target.
+Consequently quote-age correctness/quality/latency has been
+demonstrated with synthetic receipts ONLY; measured live feed quality,
+original venue sale-condition policy, quote-age NBBO benchmark and
+price-response/outcome maturity remain NOT PROVEN. No authenticated
+Tiingo probe or denied writer effect was reattempted, reframed,
+delegated or rerouted. Macro PR #8698 remains DRAFT/HOLD,
+all 24 Tiingo registry contracts remain PROPOSED.

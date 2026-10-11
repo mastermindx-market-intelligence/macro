@@ -162,6 +162,7 @@ def audit_boats_tape(
     max_events_per_capture: int = MAX_EVENTS_PER_CAPTURE,
     max_observations: int = MAX_OBSERVATIONS,
     max_examples: int = 10,
+    quote_max_age_ms: int = 1000,
     check_mount: bool = True,
 ) -> dict[str, Any]:
     """Summarize venue-native BOATS events from explicitly selected local L0/L1.
@@ -177,7 +178,8 @@ def audit_boats_tape(
             or not 1 <= max_events_per_capture <= MAX_EVENTS_PER_CAPTURE
             or type(max_observations) is not int
             or not 1 <= max_observations <= MAX_OBSERVATIONS
-            or type(max_examples) is not int or not 0 <= max_examples <= MAX_EXAMPLES):
+            or type(max_examples) is not int or not 0 <= max_examples <= MAX_EXAMPLES
+            or type(quote_max_age_ms) is not int or not 1 <= quote_max_age_ms <= 60000):
         raise TiingoViewRefusal("invalid bounded BOATS analysis budgets")
     if not isinstance(refs, (tuple, list)) or not 1 <= len(refs) <= max_captures:
         raise TiingoViewRefusal("invalid bounded BOATS capture list")
@@ -224,7 +226,13 @@ def audit_boats_tape(
     latency_nonnegative_ns: list[int] = []
     matched = 0
     symbols_in_source = set()
+    quote_matches = Counter()
+    matched_quote_ages_ns: list[int] = []
     for first, last, digest, rows, receipt in segments:
+        # No cross-segment temporal bridging: receipts do not prove that the
+        # interval between two BOATS captures was continuously observed.
+        latest_prior_venue_quote: tuple[int, int] | None = None
+        prior_arrival_ns: int | None = None
         for row in rows:
             symbol = row.get("ticker")
             if not isinstance(symbol, str) or not symbol:
@@ -240,6 +248,13 @@ def audit_boats_tape(
                 raise TiingoViewRefusal("BOATS selected messages exceed bounded audit budget")
             kind = row["kind"]
             types[kind] += 1
+            receive_ns = _ns(received)
+            if prior_arrival_ns is not None and receive_ns < prior_arrival_ns:
+                quality["source_arrival_timestamp_regression"] += 1
+                latest_prior_venue_quote = None
+            prior_arrival_ns = receive_ns
+            example_quote_age_ms = None
+            example_quote_status = None
             fingerprint = row.get("raw_message_sha256")
             if not isinstance(fingerprint, str) or not SHA.fullmatch(fingerprint):
                 raise TiingoViewRefusal("BOATS raw frame digest absent")
@@ -273,8 +288,50 @@ def audit_boats_tape(
                 if current_quote == last_quotes:
                     quality["same_venue_quote_repetition"] += 1
                 last_quotes = current_quote
+                # A single-ATS quote is a research-age proxy, not NBBO,
+                # consolidated depth, or executable bid/ask evidence.
+                if (bid is not None and ask is not None
+                        and bid > 0 and ask > bid
+                        and row.get("bid_size") is not None
+                        and row.get("ask_size") is not None
+                        and row["bid_size"] > 0 and row["ask_size"] > 0
+                        and abs(_ns(clock) - epoch) <= CLOCK_DIFFERENCE_NS
+                        and lag_ns >= -EARLY_RECEIPT_THRESHOLD_NS):
+                    latest_prior_venue_quote = (epoch, receive_ns)
+                else:
+                    # A newer unqualified quote supersedes the earlier quote.
+                    # Do not mask it by retaining a stale "good" quote.
+                    latest_prior_venue_quote = None
+                    quality["venue_quote_not_qualifiable_for_age_proxy"] += 1
             elif kind == "T":
                 total_traded_shares += _share_count(row["last_size"], "last_size")
+                quote_matches["observed_T_messages"] += 1
+                if any(conditions):
+                    # Special sale conditions remain unqualified; quote age
+                    # cannot establish an eligible trade or aggressor side.
+                    quote_matches["unqualified_sale_conditions_present"] += 1
+                if (abs(_ns(clock) - epoch) > CLOCK_DIFFERENCE_NS
+                        or lag_ns < -EARLY_RECEIPT_THRESHOLD_NS):
+                    example_quote_status = "EVENT_OR_CAPTURE_CLOCK_UNQUALIFIED"
+                    quote_matches["trade_temporal_clock_unqualified"] += 1
+                elif latest_prior_venue_quote is None:
+                    example_quote_status = "NO_PRIOR_SAME_SEGMENT_VENUE_QUOTE"
+                    quote_matches["no_prior_quote"] += 1
+                else:
+                    quote_epoch_ns, quote_received_ns = latest_prior_venue_quote
+                    if receive_ns < quote_received_ns or epoch < quote_epoch_ns:
+                        example_quote_status = "PRIOR_QUOTE_NEWER_THAN_TRADE_EVENT"
+                        quote_matches["quote_newer_than_trade"] += 1
+                    else:
+                        age_ns = epoch - quote_epoch_ns
+                        if age_ns > quote_max_age_ms * 1_000_000:
+                            example_quote_status = "STALE_PRIOR_SAME_SEGMENT_VENUE_QUOTE"
+                            quote_matches["stale_prior_venue_quote"] += 1
+                        else:
+                            example_quote_status = "FRESH_SINGLE_ATS_QUOTE_NOT_NBBO"
+                            example_quote_age_ms = round(age_ns / 1_000_000, 3)
+                            quote_matches["fresh_prior_venue_quote"] += 1
+                            matched_quote_ages_ns.append(age_ns)
             else:
                 total_break_shares += _share_count(row["last_size"], "last_size")
             if len(examples) < max_examples:
@@ -291,7 +348,13 @@ def audit_boats_tape(
                     "trade_price": row.get("last_raw") if kind != "Q" else None,
                     "trade_or_break_shares": row.get("last_size") if kind != "Q" else None,
                     "raw_sale_conditions": conditions if kind != "Q" else None,
+                    "prior_venue_quote_age_ms": example_quote_age_ms,
+                    "prior_venue_quote_status": example_quote_status,
                 })
+    fresh_quote_age_p95_ms = None
+    if matched_quote_ages_ns:
+        fresh_quote_age_p95_ms = round(sorted(matched_quote_ages_ns)[
+            math.ceil(0.95 * len(matched_quote_ages_ns)) - 1] / 1_000_000, 3)
     lag_p95_ms = None
     if latency_nonnegative_ns:
         lag_p95_ms = round(sorted(latency_nonnegative_ns)[
@@ -319,6 +382,23 @@ def audit_boats_tape(
         "observed_unfiltered_T_message_shares": total_traded_shares,
         "observed_B_trade_break_message_shares_NOT_NETTED": total_break_shares,
         "event_to_local_capture_lag_p95_nonnegative_ms": lag_p95_ms,
+        "trade_quote_age_diagnostics": {
+            "max_age_ms": quote_max_age_ms,
+            "scope": "BOATS_SINGLE_ATS_SAME_SEGMENT_PRIOR_RECEIPT_ONLY",
+            "observed_T_messages": quote_matches["observed_T_messages"],
+            "fresh_prior_venue_quote": quote_matches["fresh_prior_venue_quote"],
+            "stale_prior_venue_quote": quote_matches["stale_prior_venue_quote"],
+            "no_prior_quote": quote_matches["no_prior_quote"],
+            "quote_newer_than_trade": quote_matches["quote_newer_than_trade"],
+            "trade_temporal_clock_unqualified": quote_matches["trade_temporal_clock_unqualified"],
+            "unqualified_sale_conditions_present": quote_matches["unqualified_sale_conditions_present"],
+            "fresh_quote_age_p95_ms": fresh_quote_age_p95_ms,
+            "not_an_executable_trade_join": True,
+            "quote_venue_is_nbbo": False,
+            "transport_continuity_proven": False,
+            "trade_breaks_excluded_from_T_count": True,
+            "quote_age_is_only_diagnostic": True,
+        },
         "quality_flags": dict(sorted(quality.items())),
         "examples": examples,
         "raw_source_bytes_reverified": True,

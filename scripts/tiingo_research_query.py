@@ -184,6 +184,7 @@ def query(
     acknowledge_hindsight: bool,
     max_rows: int = 20_000,
     max_partitions: int = 100,
+    quote_max_age_ms: int | None = None,
     check_mount: bool = True,
 ) -> dict[str, Any]:
     """Explicit studies from real receipt-bound partitions; no implicit latest."""
@@ -210,6 +211,7 @@ def query(
             max_captures=min(max_partitions, MAX_CAPTURES),
             max_events_per_capture=min(max_rows, MAX_EVENTS_PER_CAPTURE),
             max_observations=max_rows,
+            quote_max_age_ms=1000 if quote_max_age_ms is None else quote_max_age_ms,
         )
         return {
             "schema": "mastermind.tiingo.research_query.v1",
@@ -222,6 +224,8 @@ def query(
             "complete_history_proven": False,
             "boats_single_venue_tape_diagnostics": tape,
         }
+    if quote_max_age_ms is not None:
+        raise ValueError("quote age control only applies to BOATS firehose")
     if source == "fund-statements":
         if as_reported not in ("true", "false"):
             raise ValueError("statement query must select asReported=true or false")
@@ -286,6 +290,8 @@ def main(
                              help="required for fund-statements; forbidden for other products")
             sub.add_argument("--acknowledge-hindsight", action="store_true", required=True)
             sub.add_argument("--max-partitions", type=int, default=100)
+            sub.add_argument("--quote-max-age-ms", type=int,
+                             help="BOATS-only single-ATS prior-receipt age diagnostic; never NBBO")
     parser.add_argument("--max-output-bytes", type=int, default=2_000_000)
     args = parser.parse_args(argv)
     try:
@@ -305,7 +311,7 @@ def main(
                 observed_before=args.observed_before, as_reported=args.as_reported,
                 acknowledge_hindsight=args.acknowledge_hindsight,
                 max_rows=args.max_rows, max_partitions=args.max_partitions,
-                check_mount=check_mount,
+                quote_max_age_ms=args.quote_max_age_ms, check_mount=check_mount,
             )
         print(bounded_json(result, max_bytes=args.max_output_bytes))
         return 0

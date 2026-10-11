@@ -270,3 +270,142 @@ def test_local_tape_read_has_no_provider_or_secret_access(lake, monkeypatch):
     }
     assert out["network"] is False and out["writes"] is False
     assert before == after
+
+
+
+def test_same_segment_fresh_quote_age_is_observational_only(lake):
+    ref = saved(lake, [
+        ("2026-10-09T01:00:00.100Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z")),
+        ("2026-10-09T01:00:00.400Z",
+         frame("T", event_at="2026-10-09T01:00:00.300Z",
+               conditions=("@", "F", "", "X"))),
+    ])
+    out = audit(lake, [ref])
+    quality = out["trade_quote_age_diagnostics"]
+    assert quality["max_age_ms"] == 1000
+    assert quality["observed_T_messages"] == 1
+    assert quality["fresh_prior_venue_quote"] == 1
+    assert quality["fresh_quote_age_p95_ms"] == 300
+    assert quality["unqualified_sale_conditions_present"] == 1
+    trade = next(e for e in out["examples"] if e["kind"] == "T")
+    assert trade["prior_venue_quote_age_ms"] == 300
+    assert trade["prior_venue_quote_status"] == "FRESH_SINGLE_ATS_QUOTE_NOT_NBBO"
+    assert out["trade_initiator_side_proven"] is False
+    assert out["order_level_liquidity_replenishment_proven"] is False
+    assert out["net_executed_volume_proven"] is False
+
+
+def test_quote_stale_and_no_prior_quotes_are_separate_not_hidden(lake):
+    ref = saved(lake, [
+        ("2026-10-09T01:00:00.100Z", frame("T", event_at="2026-10-09T01:00:00Z")),
+        ("2026-10-09T01:00:01.100Z", frame("Q", event_at="2026-10-09T01:00:01Z")),
+        ("2026-10-09T01:00:05.100Z", frame("T", event_at="2026-10-09T01:00:05Z")),
+    ])
+    out = audit(lake, [ref])
+    x = out["trade_quote_age_diagnostics"]
+    assert x["observed_T_messages"] == 2
+    assert x["no_prior_quote"] == 1
+    assert x["stale_prior_venue_quote"] == 1
+    assert x["fresh_prior_venue_quote"] == 0
+
+
+def test_prior_quotes_do_not_leak_across_unproven_segment_boundary(lake):
+    a1 = saved(lake, [("2026-10-09T01:00:00.100Z",
+                       frame("Q", event_at="2026-10-09T01:00:00Z"))])
+    a2 = saved(lake, [("2026-10-09T01:00:00.200Z",
+                       frame("T", event_at="2026-10-09T01:00:00.150Z"))])
+    x = audit(lake, [a1, a2])["trade_quote_age_diagnostics"]
+    assert x["no_prior_quote"] == 1
+    assert x["fresh_prior_venue_quote"] == 0
+
+
+def test_quote_arriving_after_trade_cannot_be_used_as_hindsight(lake):
+    ref = saved(lake, [
+        ("2026-10-09T01:00:01.000Z",
+         frame("T", event_at="2026-10-09T01:00:00.500Z")),
+        ("2026-10-09T01:00:01.100Z",
+         frame("Q", event_at="2026-10-09T01:00:00.200Z")),
+    ])
+    q = audit(lake, [ref])["trade_quote_age_diagnostics"]
+    assert q["no_prior_quote"] == 1
+    assert q["fresh_prior_venue_quote"] == 0
+
+
+def test_out_of_order_trade_epoch_cannot_join_future_event_quote(lake):
+    ref = saved(lake, [
+        ("2026-10-09T01:00:00.100Z", frame("Q", event_at="2026-10-09T01:00:00Z")),
+        ("2026-10-09T01:00:00.200Z", frame("T", event_at="2026-10-09T00:59:59.900Z")),
+    ])
+    q = audit(lake, [ref])
+    assert q["trade_quote_age_diagnostics"]["quote_newer_than_trade"] == 1
+    assert q["trade_quote_age_diagnostics"]["fresh_prior_venue_quote"] == 0
+
+
+def test_trade_break_is_not_a_new_quote_matched_execution(lake):
+    ref = saved(lake, [
+        ("2026-10-09T01:00:00.100Z", frame("Q", event_at="2026-10-09T01:00:00Z")),
+        ("2026-10-09T01:00:00.200Z", frame("B", event_at="2026-10-09T01:00:00.100Z")),
+    ])
+    out = audit(lake, [ref])
+    assert out["trade_quote_age_diagnostics"]["observed_T_messages"] == 0
+    assert out["trade_quote_age_diagnostics"]["fresh_prior_venue_quote"] == 0
+    assert out["selected_kind_counts"]["B"] == 1
+
+
+def test_invalid_venue_quote_cannot_count_as_qualified_quote(lake):
+    ref = saved(lake, [
+        ("2026-10-09T01:00:00.100Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z", bid=101, ask=100)),
+        ("2026-10-09T01:00:00.200Z",
+         frame("T", event_at="2026-10-09T01:00:00.100Z")),
+    ])
+    x = audit(lake, [ref])["trade_quote_age_diagnostics"]
+    assert x["no_prior_quote"] == 1
+    assert x["fresh_prior_venue_quote"] == 0
+
+
+def test_quote_age_limit_is_explicit_bounded_research_control(lake):
+    ref = saved(lake, [
+        ("2026-10-09T01:00:00.100Z", frame("Q", event_at="2026-10-09T01:00:00Z")),
+        ("2026-10-09T01:00:00.500Z",
+         frame("T", event_at="2026-10-09T01:00:00.400Z")),
+    ])
+    q = audit(lake, [ref], quote_max_age_ms=250)
+    assert q["trade_quote_age_diagnostics"]["stale_prior_venue_quote"] == 1
+    assert q["trade_quote_age_diagnostics"]["max_age_ms"] == 250
+    with pytest.raises(TiingoViewRefusal):
+        audit(lake, [ref], quote_max_age_ms=True)
+    with pytest.raises(TiingoViewRefusal):
+        audit(lake, [ref], quote_max_age_ms=0)
+    with pytest.raises(TiingoViewRefusal):
+        audit(lake, [ref], quote_max_age_ms=60001)
+
+
+
+def test_quote_event_epoch_mismatch_cannot_be_a_fresh_precursor(lake):
+    ref = saved(lake, [
+        ("2026-10-09T01:00:00.100Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z",
+               epoch_shift_ns=3_000_000_000)),
+        ("2026-10-09T01:00:00.400Z",
+         frame("T", event_at="2026-10-09T01:00:00.300Z")),
+    ])
+    x = audit(lake, [ref])
+    assert x["trade_quote_age_diagnostics"]["fresh_prior_venue_quote"] == 0
+    assert x["trade_quote_age_diagnostics"]["no_prior_quote"] == 1
+    assert x["status"] == "UNQUALIFIED_CLOCKS"
+
+
+def test_quote_from_another_vendor_symbol_never_counts_as_prior_venue_quote(lake):
+    ref = saved(lake, [
+        ("2026-10-09T01:00:00.100Z",
+         frame("Q", event_at="2026-10-09T01:00:00Z", ticker="NVDA")),
+        ("2026-10-09T01:00:00.400Z",
+         frame("T", event_at="2026-10-09T01:00:00.300Z", ticker="AMD")),
+    ])
+    x = audit(lake, [ref])
+    assert x["trade_quote_age_diagnostics"]["fresh_prior_venue_quote"] == 0
+    assert x["trade_quote_age_diagnostics"]["no_prior_quote"] == 1
+    assert x["distinct_symbols_in_selected_segments"] == 2
+    assert x["trade_initiator_side_proven"] is False

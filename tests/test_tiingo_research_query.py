@@ -358,3 +358,36 @@ def test_boats_query_without_capture_clock_or_hindsight_refuses(lake, capsys):
         query(**common, acknowledge_hindsight=True, as_reported="false")
     with pytest.raises(ValueError, match="UTC-offset"):
         query(**{**common, "end": "2026-10-09T03:00:00"}, acknowledge_hindsight=True)
+
+
+
+def test_boats_cli_quote_age_control_is_explicit_and_never_executable(lake, capsys):
+    day, digest = boats_partition(lake)
+    base = [
+        "query", "--source", "boats-firehose", "--symbol", "AMD",
+        "--capture", day + ":" + digest,
+        "--start", "2026-10-09T01:00:00Z",
+        "--end", "2026-10-09T03:00:00Z",
+        "--observed-before", "2026-10-10T00:00:00Z",
+        "--acknowledge-hindsight", "--quote-max-age-ms", "350",
+    ]
+    assert main(base, root=lake.root, check_mount=False) == 0
+    output = json.loads(capsys.readouterr().out)
+    q = output["boats_single_venue_tape_diagnostics"]["trade_quote_age_diagnostics"]
+    assert q["max_age_ms"] == 350
+    assert q["quote_venue_is_nbbo"] is False
+    assert q["not_an_executable_trade_join"] is True
+    assert output["pit_backtest_eligible"] is False
+    base[-1] = "0"
+    assert main(base, root=lake.root, check_mount=False) == 2
+    assert json.loads(capsys.readouterr().out)["status"] == "REFUSED"
+
+
+def test_non_boats_query_refuses_quote_age_control(lake):
+    day, digest = partition(lake)
+    with pytest.raises(ValueError, match="only applies to BOATS"):
+        query(lake.root, source="eod-bars", vendor_symbol="AMD",
+              captures=[day + ":" + digest], start="2019-01-01",
+              end="2019-12-31", observed_before=CUTOFF,
+              acknowledge_hindsight=True, quote_max_age_ms=350,
+              check_mount=False)
