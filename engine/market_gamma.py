@@ -40,6 +40,10 @@ _HISTORY_GROUP = "index_gex_history"
 # Deliberately CALM language (§0.7): a window statement, never a red alarm.
 _STALE_SESSIONS = 7
 
+# view() reads cboe/gex_SPX itself when the caller omits gex_spx. A passed None
+# is "no engine row", not "please read the store". Tests always pass a frame or None.
+_READ_STORE = object()
+
 
 def _history_context(current_net_gex_bn: "float | None",
                      current_regime: "str | None",
@@ -119,10 +123,52 @@ def _history_context(current_net_gex_bn: "float | None",
     return ctx
 
 
-def view(gex: "pd.DataFrame | None") -> dict | None:
+def _engine_direct_sign(gex: pd.DataFrame, gex_spx) -> tuple[str | None, str]:
+    """Regime from the same-session cboe/gex_SPX ``gamma_regime``, or unavailable.
+
+    The value counts only when it is exactly ``"long"`` or ``"short"`` and that
+    row's session date equals the gex row's asof date. Never derived from
+    ``spot_vs_flip_pct``, and never defaulted to ``"long"``.
+    """
+    if gex_spx is _READ_STORE:
+        gex_spx = store.read("cboe", "gex_SPX")
+    if gex_spx is None or not len(gex_spx) or "gamma_regime" not in gex_spx.columns:
+        return None, "unavailable"
+    gex_spx = nyse_calendar.session_rows(gex_spx, label="cboe/gex_SPX")
+    if gex_spx is None or not len(gex_spx) or "gamma_regime" not in gex_spx.columns:
+        return None, "unavailable"
+    try:
+        gex_day = pd.Timestamp(gex.index.max()).date()
+        spx_day = pd.Timestamp(gex_spx.index.max()).date()
+    except (TypeError, ValueError, OverflowError):
+        return None, "unavailable"
+    if gex_day != spx_day:
+        return None, "unavailable"
+    latest = gex_spx.loc[gex_spx.index == gex_spx.index.max()]
+    val = latest.iloc[-1].get("gamma_regime")
+    try:
+        matched = val in ("long", "short")
+    except TypeError:
+        matched = False
+    if matched:
+        return str(val), "engine_direct_sign"
+    return None, "unavailable"
+
+
+def view(gex: "pd.DataFrame | None", gex_spx=_READ_STORE) -> dict | None:
     """Pure deriver over the cboe/gex frame -> structured dealer-gamma verdict.
-    Uses the flip side (spot vs flip), the engine's authoritative regime, NOT the
-    coarse net-$ sign the ETF-flows board flags — they answer different questions."""
+
+    ``regime`` is the engine's direct-sign ``gamma_regime`` on the same-session
+    ``cboe/gex_SPX`` row, not ``spot_vs_flip_pct`` and not the coarse net-$ sign
+    the ETF-flows board flags. Those answer different questions. When the
+    same-session engine value is missing or not exactly ``"long"`` / ``"short"``,
+    ``regime`` is None (never defaulted to ``"long"``) and ``regime_basis`` is
+    ``"unavailable"``. A matched value sets ``regime_basis`` to
+    ``"engine_direct_sign"``.
+
+    Omitting ``gex_spx`` reads ``store.read("cboe", "gex_SPX")`` so the existing
+    one-argument callers stay on that source. Pass a frame or None in tests.
+    """
     if gex is None or not len(gex):
         return None
     # SESSION GUARD (#3721 class, OIP E8 2026-07-29). data/cboe/gex.parquet accrues rows
@@ -146,8 +192,9 @@ def view(gex: "pd.DataFrame | None") -> dict | None:
               "banner and latest['market_gamma'] will be null", flush=True)
         return None
     flip = int(round(float(g.get("flip_strike") or 0)))
+    regime, regime_basis = _engine_direct_sign(gex, gex_spx)
     return {
-        "regime": "short" if float(svf) < 0 else "long",  # spot<flip -> dealers amplify
+        "regime": regime,
         "spot_vs_flip_pct": round(float(svf), 1),
         "net_gex_bn": round(float(g.get("net_gex_bn") or 0), 0),
         "flip": flip,            # FE banner key (market_gamma.flip in dashboard.html.j2)
@@ -155,6 +202,7 @@ def view(gex: "pd.DataFrame | None") -> dict | None:
         "flip_strike": flip,     # contract alias (cboe/gex store column naming)
         "spot": int(round(float(g.get("spot") or 0))),
         "asof": str(gex.index.max().date()),
+        "regime_basis": regime_basis,
     }
 
 

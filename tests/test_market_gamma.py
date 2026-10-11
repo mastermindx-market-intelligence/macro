@@ -1,6 +1,7 @@
 """Tests for scripts.build_site.market_gamma_view — the market dealer-gamma vol-regime
-note derived from the validated index GEX store. Pure/deterministic; the regime side
-must match engine.gex_engine._gamma_flip (spot >= flip -> long, else short)."""
+note derived from the validated index GEX store. Pure/deterministic; the regime is
+the engine direct-sign gamma_regime on the same-session cboe/gex_SPX row, not
+spot vs flip."""
 import numpy as np
 import pandas as pd
 
@@ -14,9 +15,19 @@ def _gex(net_gex_bn, flip, spot, spot_vs_flip_pct):
         index=pd.to_datetime(["2026-06-13"]))
 
 
+def _engine(gamma_regime, asof="2026-06-13"):
+    """Same-session engine row. These fixtures keep the regime they always
+    asserted; the value now has to be supplied, because view() no longer
+    derives it from the flip side."""
+    return pd.DataFrame(
+        {"gamma_regime": [gamma_regime]},
+        index=pd.to_datetime([asof]),
+    )
+
+
 def test_short_gamma_below_flip():
-    v = market_gamma_view(_gex(17.7, 8100, 7394.3, -8.71))
-    assert v["regime"] == "short"                  # spot below flip -> dealers amplify
+    v = market_gamma_view(_gex(17.7, 8100, 7394.3, -8.71), gex_spx=_engine("short"))
+    assert v["regime"] == "short"                  # engine direct sign, spot below flip
     assert v["spot_vs_flip_pct"] == -8.7
     assert v["flip"] == 8100 and v["spot"] == 7394
     assert v["net_gex_bn"] == 18                    # rounded
@@ -27,25 +38,25 @@ def test_short_gamma_below_flip():
 
 
 def test_long_gamma_above_flip():
-    v = market_gamma_view(_gex(25.0, 5000, 5150.0, 3.0))
-    assert v["regime"] == "long"                    # spot above flip -> dealers dampen
+    v = market_gamma_view(_gex(25.0, 5000, 5150.0, 3.0), gex_spx=_engine("long"))
+    assert v["regime"] == "long"                    # engine direct sign, spot above flip
 
 
 def test_at_flip_is_long():
-    # spot exactly at flip (0%) -> long (engine uses S >= flip)
-    assert market_gamma_view(_gex(1.0, 5000, 5000.0, 0.0))["regime"] == "long"
+    # spot exactly at flip (0%). The engine row says long; view does not invent it.
+    assert market_gamma_view(_gex(1.0, 5000, 5000.0, 0.0), gex_spx=_engine("long"))["regime"] == "long"
 
 
 def test_uses_flip_side_not_net_sign():
-    # net_gex POSITIVE but spot BELOW flip -> regime is SHORT (flip side wins, the
-    # engine's authoritative regime) — not "long" off the net-$ sign
-    assert market_gamma_view(_gex(50.0, 8100, 7400.0, -8.6))["regime"] == "short"
+    # net_gex POSITIVE. Regime is SHORT because the engine row says short
+    # (this book's flip side), not "long" off the net-$ sign.
+    assert market_gamma_view(_gex(50.0, 8100, 7400.0, -8.6), gex_spx=_engine("short"))["regime"] == "short"
 
 
 def test_none_and_empty_and_nan_are_graceful():
-    assert market_gamma_view(None) is None
-    assert market_gamma_view(pd.DataFrame()) is None
-    assert market_gamma_view(_gex(10.0, 5000, 5000.0, np.nan)) is None
+    assert market_gamma_view(None, gex_spx=None) is None
+    assert market_gamma_view(pd.DataFrame(), gex_spx=None) is None
+    assert market_gamma_view(_gex(10.0, 5000, 5000.0, np.nan), gex_spx=None) is None
 
 
 # 2026-06-11 and 2026-06-12 are NYSE sessions (Thursday, Friday). The session
