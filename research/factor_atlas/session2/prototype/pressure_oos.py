@@ -122,6 +122,7 @@ class EvaluationResult:
     outcome_coverage: float
     scheduled_day_clusters: int
     day_clusters: int
+    low_coverage_sessions: tuple[str,...]
     per_day: tuple[OutcomeLoss,...]
     control_mse_bps2: float | None
     pressure_mse_bps2: float | None
@@ -265,10 +266,18 @@ def evaluate_oos(plan: EvaluationPlan,
     matured=len(mature_rows); total=len(expected)
     cov=matured/total
     nday=len(usable_day_losses)
+    # The global mature-label share alone can hide a severely undersampled
+    # day whose single matched label would receive a full day-equal weight.
+    # Withhold the aggregate until every preregistered session independently
+    # meets the same prospective outcome-coverage threshold.
+    low_days=tuple(sorted(day for day,n in scheduled.items()
+                          if len(by_day.get(day,()))/n < plan.minimum_outcome_coverage))
     if nday<plan.minimum_days:
         status="INSUFFICIENT_HOLDOUT_SESSIONS"
     elif cov<plan.minimum_outcome_coverage:
         status="INSUFFICIENT_OUTCOME_COVERAGE"
+    elif low_days:
+        status="INSUFFICIENT_DAY_OUTCOME_COVERAGE"
     else:
         status="DESCRIPTIVE_OOS_COMPARISON"
     b=p=delta=ratio=loo_low=loo_high=None
@@ -287,7 +296,7 @@ def evaluate_oos(plan: EvaluationPlan,
     matched={(r.slot.factor_ref,r.slot.decision_utc_s):r for r in mature_rows}
     return EvaluationResult(
         status,total,len(seen),matured,total-matured,cov,
-        len(scheduled),nday,tuple(day_detail),b,p,delta,ratio,
+        len(scheduled),nday,low_days,tuple(day_detail),b,p,delta,ratio,
         loo_low,loo_high,False,False,False,False,False,
         "FORECAST_PAIR_DIAGNOSTIC_NOT_TRADING_ALPHA",
         plan.population_ref,plan.target_ref,

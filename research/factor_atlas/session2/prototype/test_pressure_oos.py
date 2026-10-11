@@ -360,3 +360,69 @@ def test_forecast_labels_must_be_owner_verifiable_and_not_inferentially_promoted
     assert v.source_rights_proven is False
     assert v.is_statistical_accuracy_study is False
     assert v.knowledge_class=="FORECAST_PAIR_DIAGNOSTIC_NOT_TRADING_ALPHA"
+
+
+def test_one_thin_day_with_fifteen_percent_missing_aggregate_returns_no_oos_loss():
+    """Global 95.5% label coverage cannot hide one 10%-observed session."""
+    expected=tuple(slot(day,minute=i) for day in DAYS for i in range(10))
+    observed=tuple(row(s) for s in expected if
+       s.session_id!=DAYS[-1].isoformat() or s.decision_utc_s==slot(DAYS[-1]).decision_utc_s)
+    result=study(slots=expected,rows=observed)
+    assert result.expected_slots==200 and result.matured_matched_slots==191
+    assert result.outcome_coverage==pytest.approx(.955)
+    assert result.day_clusters==20
+    assert result.low_coverage_sessions==(DAYS[-1].isoformat(),)
+    assert result.status=="INSUFFICIENT_DAY_OUTCOME_COVERAGE"
+    assert result.control_mse_bps2 is None
+    assert result.pressure_mse_bps2 is None
+    assert result.day_equal_loss_improvement_bps2 is None
+    assert not any(flag for _,flag in result.authority)
+
+
+def test_ninety_percent_labels_in_every_day_retains_descriptive_oos():
+    expected=tuple(slot(day,minute=i) for day in DAYS for i in range(10))
+    observed=tuple(row(s) for s in expected if
+       (s.decision_utc_s-slot(s.session_id and date.fromisoformat(s.session_id)).decision_utc_s)//60<9)
+    result=study(slots=expected,rows=observed)
+    assert result.matured_matched_slots==180
+    assert result.low_coverage_sessions==()
+    assert result.status=="DESCRIPTIVE_OOS_COMPARISON"
+    assert result.day_equal_loss_improvement_bps2==pytest.approx(1.)
+
+
+def test_exactly_eighty_percent_per_day_is_eligible_but_not_confident():
+    expected=tuple(slot(day,minute=i) for day in DAYS for i in range(10))
+    observed=tuple(row(s) for s in expected if
+       (s.decision_utc_s-slot(date.fromisoformat(s.session_id)).decision_utc_s)//60<8)
+    result=study(slots=expected,rows=observed)
+    assert result.outcome_coverage==pytest.approx(.8)
+    assert result.low_coverage_sessions==()
+    assert result.status=="DESCRIPTIVE_OOS_COMPARISON"
+    assert result.is_confidence_interval is False
+    assert result.is_statistical_accuracy_study is False
+
+
+def test_sparse_ninety_nine_percent_global_but_one_undercovered_day_refuses():
+    expected=tuple(slot(day,minute=i) for day in DAYS for i in range(10))
+    observed=tuple(row(s) for s in expected if
+      s.session_id!=DAYS[-1].isoformat() or
+      (s.decision_utc_s-slot(DAYS[-1]).decision_utc_s)//60<7)
+    r=study(slots=expected,rows=observed)
+    assert r.outcome_coverage==pytest.approx(.985)
+    assert r.day_clusters==20
+    assert r.low_coverage_sessions==(DAYS[-1].isoformat(),)
+    assert r.status=="INSUFFICIENT_DAY_OUTCOME_COVERAGE"
+    assert r.leave_one_day_out_high is None
+
+
+def test_insufficient_day_label_fractions_not_equivalent_to_no_day_labels():
+    expected=tuple(slot(day,minute=i) for day in DAYS for i in range(10))
+    observed=tuple(row(s) for s in expected if
+      s.session_id!=DAYS[-1].isoformat() or
+      s.decision_utc_s==slot(DAYS[-1]).decision_utc_s)
+    result=study(slots=expected,rows=observed)
+    assert result.day_clusters==20
+    assert result.low_coverage_sessions!=(DAYS[:1][0].isoformat(),)
+    assert result.per_day[-1].expected_slots==10
+    assert result.per_day[-1].matured_slots==1
+    assert result.input_digest

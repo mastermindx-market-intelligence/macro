@@ -1,5 +1,6 @@
 {
   "actual_labels_authenticated": false,
+  "adversarial_day_coverage_red_test_cases": 5,
   "ci_suite_paths": [
     "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
     "research/factor_atlas/session2/prototype/test_pressure.py",
@@ -28,6 +29,11 @@
     }
   },
   "full_eleven_suite_local_tests_passed": 325,
+  "full_thirteen_suite_local_passed": 408,
+  "historical_initial_milestone": {
+    "eleven_suite_passed": 325,
+    "new_oos_tests_passed": 41
+  },
   "libraries": {
     "numpy": "2.5.1",
     "pytest": "9.1.1",
@@ -38,9 +44,23 @@
   "method": "external_pre_frozen_forecast_pair_next30m_residual_return_bps",
   "model_freeze_authenticated": false,
   "native_host": "M2 Studio",
-  "new_scoped_native_tests_passed": 41,
-  "prepared_at_utc": "2026-10-09T20:37:32.182239+00:00",
+  "new_scoped_native_tests_passed": 46,
+  "new_withheld_status": "INSUFFICIENT_DAY_OUTCOME_COVERAGE",
+  "phase_predecessor_commit": "ad1053958287589a4ecd78c2aba06933ffa57c6e",
+  "prepared_at_utc": "2026-10-11T09:48:43.894583+00:00",
   "proof_logs": {
+    "oos-daily-coverage-green.txt": {
+      "bytes": 99,
+      "sha256": "264491562c47a733cf56c2ccd826f0eec02321ca1704a9e7b0256674b0fcfe2c"
+    },
+    "oos-daily-coverage-red.txt": {
+      "bytes": 4911,
+      "sha256": "f00d1cf2218b6c3da904d13a2717239f7715938a55fbe49fda7cd49aed2857a7"
+    },
+    "oos-day-full-green.txt": {
+      "bytes": 501,
+      "sha256": "4e8feab2d19c12d2af0a7f2bd4dac7fefa48648521d0729f52ecde379214ae61"
+    },
     "oos-eleven-suite-green.txt": {
       "bytes": 420,
       "sha256": "1bfe2afbf74ebd2389bd2a695af3235953296586d74f27bf86d0ee07dd555fef"
@@ -58,26 +78,31 @@
       "sha256": "6dcb5a40ce7bc1e65c883bcbdb207444cc371f91c1d92aa3781a2c261d1cc325"
     }
   },
-  "protected_mastermind": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "protected_mastermind": "f381af6758533906865361373addbb0514f86d7d",
   "real_equity_source_admitted": false,
+  "registered_outcome_coverage_per_day_required": true,
   "schema": "factor_atlas.native_pressure_oos_receipt.v1",
   "skillpack": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
   "source_files": {
     "session2/OOS_PRESSURE_INCREMENTAL_TEST_PROTOCOL.md": {
-      "bytes": 5362,
-      "sha256": "60325238c026ab7060bd1919f95f9c4f665fd55539da4ef8607098ff4bb18985"
+      "bytes": 7458,
+      "sha256": "0617acc8ba3fa75db7990e49cf2662f0c8e160918d2c90033023b3a06ef61595"
+    },
+    "session2/evidence/oos_daily_outcome_coverage_witness.json": {
+      "bytes": 23165,
+      "sha256": "9866019c6f1f4f357d58e846160d2de5f13d4516c4a20ddd736d146e00e43c19"
     },
     "session2/evidence/pressure_oos_synthetic_trial.json": {
-      "bytes": 22783,
-      "sha256": "a4d2aa0eb4d605e22c065645f5c0627dc781d2004ba066fb907f74fe3e58d4ef"
+      "bytes": 23023,
+      "sha256": "bd3152fb9d53bb4b316f048905a4e3dc9fa1602f287655f13a3e1d6ea2c18130"
     },
     "session2/prototype/pressure_oos.py": {
-      "bytes": 12012,
-      "sha256": "eb013368978605bc461f59d26d66fc6ae06c6083df0a5fc8048b645411bee02c"
+      "bytes": 12572,
+      "sha256": "4132f8911dd02a363bb265552b39632b15c4f334d2168bdc5c975c5aedea7082"
     },
     "session2/prototype/test_pressure_oos.py": {
-      "bytes": 13949,
-      "sha256": "597a1fd405025708c4077ebab3b3e21d8566c15a74f70b0695828a9f3d821151"
+      "bytes": 17184,
+      "sha256": "ba0851a7abd41d7021d8c157693ca10c105e2898a02e98a981f460dee6157d4a"
     }
   },
   "source_population": "FABRICATED_FORECASTS_LABELS_AND_WEEKDAYS",

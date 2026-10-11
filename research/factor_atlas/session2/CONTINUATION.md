@@ -680,3 +680,65 @@ AAPL/MSFT/NVDA+SPY minute/trade/NBBO/PIT adjustment-basis,
 true source/reader receipt and dataset-rights. Owner PRs
 Terminal #844 and Macro #8623 still held. Real S2-P1/S2-P2 pilot
 NOT_ADMITTED, no rank/alert/size/trade/consumer publication.
+
+## S2-P6 day-equivalent mature-label OOS coverage R2
+
+**Original branch publication at phase start:** `ad1053958287589a4ecd78c2aba06933ffa57c6e` on
+Macro PR #8677, DRAFT/HOLD. Prior S2-P3 strict quote minute-coverage
+guard persisted via same Studio Direct push with verified remote
+source/evidence readback. Latest protected Mastermind
+`f381af6758533906865361373addbb0514f86d7d` compatible
+Skillpack v1.0.1/bootstrap1.
+
+**Second independently validated scientific defect:** native
+`pressure_oos.py` accepted 20 distinct held-out sessions and
+95.5% aggregate outcome coverage when 19 dates were 10/10
+and the last date only 1/10, but still reported day-equal
+loss improvement. The single-date unrepresentative label received
+the same session weight as full days.
+
+**Safe code owner correction:** reuses the same pre-registered
+`minimum_outcome_coverage` both over ALL expected outcomes and
+within EACH preregistered session. Exposes sorted
+`low_coverage_sessions`; if the global threshold and min 20 days
+are met but any day fails its threshold, returns the new explicit
+`INSUFFICIENT_DAY_OUTCOME_COVERAGE` and suppresses both
+MSEs, improvement and LOO. A exactly 80% mature session
+remains eligible, with no statistical confidence or trade proof.
+
+**Proof:** five fail-first adversarial tests; 46/46 current OOS
+tests and 408/408 complete selected 13-suite local M2 Python3.12
+tests PASS. A new fabricated witness
+`evidence/oos_daily_outcome_coverage_witness.json` captures
+95.5%-globally-but-10%-on-one-day withholding, 98.5%-globally
+with a thin 70%-day, plus 90% and exactly-80% all-days
+eligible descriptive controls. Historical 20-day synthetic
+OOS fixture and receipt refreshed to new ABI; all data are
+invented. No model training, real source, alpha, output rights,
+live experiment or trade.
+
+**Independent reviewer request uncertainty remains:** Executive
+`session_summon` key
+`factor-atlas-s2-independent-science-audit-20261011-sol-001`
+returned EFFECT_UNKNOWN; do not retry or substitute
+carrier/worker until native exact effect reconciliation.
+A read-only Fabric enumeration and empty session_targets
+did not confirm any start or conclusively prove no effect.
+This did not change the original source writer.
+
+**Holds:** four named platform-denied source reads, denied
+benchmark repair, denied current-main comparison and
+separately denied S2-P4 downstream read-model integrity
+patch remain DO_NOT_REDO. Two WIP files remain uncommitted,
+4 red integrity checks and excluded from manifest/hosted CI.
+Real AAPL/MSFT/NVDA+SPY corporate-action-basis/rights/
+PIT listing/calendar/first-seen 1m+quote+trade population
+remain NOT_ADMITTED on Terminal #844 / Macro #8623 owner PRs.
+No financial alerts, rankings, sizing, trading, customer
+publication, merger or deployment allowed.
+
+**Next action:** same original PR branch commit for independently
+accepted OOS coverage source/fixtures and GitHub exact-head
+readback. Current-head hosted tests and current full CI
+remain separate evidence to consume; owner-issued real data
+admission is needed before empirical forecasting trials.
