@@ -206,6 +206,19 @@ def test_raw_owner_path_alone_is_not_tabulated():
     assert BeautifulSoup(render(v), 'html.parser').select_one('.rrp-history') is None
 
 
+def test_withheld_chart_on_a_current_view_says_why_not_that_prices_are_unusable():
+    # The figures are current; only the chart was withheld (for example, an
+    # episode older than the owner's retained closes).
+    v = native_view()
+    v['detail_chart_html'] = ''
+    evidence = BeautifulSoup(render(v), 'html.parser').select_one('.rrp-evidence')
+    assert 'Chart withheld' in evidence.get_text()
+    assert 'needs current, usable price evidence' not in evidence.get_text()
+    v['observation']['quality'] = 'delayed'
+    evidence = BeautifulSoup(render(v), 'html.parser').select_one('.rrp-evidence')
+    assert 'needs current, usable price evidence' in evidence.get_text()
+
+
 def test_close_above_the_retained_high_is_rejected_not_shown_as_zero_damage():
     v = native_view()
     v['observation']['close'] = 101.0

@@ -104,6 +104,7 @@
         <tr><td>{{ day|e }}</td><td>{% if (value is float or value is integer) and value-value == 0 and -100 <= value <= 0 %}{% set value_s = '%.2f'|format(0 - value) %}{{ '−' if value_s != '0.00' else '' }}{{ value_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</td></tr>
         {% endfor %}</tbody></table>
       </details>{% endif %}
+      {% elif current %}<p>{{ t('Chart withheld: the retained closing history does not fully cover these figures.', '图表暂不显示：保留的收盘历史未能完整覆盖上述数据。') }}</p>
       {% else %}<p>{{ t('The chart needs current, usable price evidence.', '图表需要当前且可用的价格证据。') }}</p>{% endif %}
       <p class="rrp-note">{{ t('The chart is price history, not a forecast path.', '图表呈现历史价格，并非预测路径。') }}</p>
     </div>

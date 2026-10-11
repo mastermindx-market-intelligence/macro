@@ -407,6 +407,10 @@ def _bump(index, value):
     (PATH, {"low_session": "2026-09-14"}),
     (PATH, {"low_session": None}),
     (PATH, {"low_close": None}),
+    (PATH, {"low_session": None, "low_close": None}),
+    # Only a pre-episode phase may omit the low, and only both fields together.
+    (PATH, {"phase": "monitoring", "active": False, "low_close": None}),
+    (PATH, {"phase": "developing", "active": False, "low_session": None}),
     # Low inside the window, but the path never reaches the reported worst.
     (PATH, {"low_close": 87.0}),
     # The path must end on the receipt's session at the metric's own value.
@@ -459,3 +463,20 @@ def test_chart_end_tag_reads_the_same_figure_as_the_metric(close):
     soup = BeautifulSoup(render(pb.present(obs), "us"), "html.parser")
     tag = soup.select_one(".ilx-tag").get_text(strip=True).replace("-", "\u2212")
     assert tag == soup.select_one('[data-metric="current"]').get_text(strip=True)
+
+
+@pytest.mark.parametrize("phase", ["monitoring", "developing"])
+def test_pre_episode_observation_still_draws_from_the_reference_high(monkeypatch, phase):
+    """The owner retains no low before an episode; the worst figure prints
+    Unavailable, so there is nothing for the chart to contradict."""
+    from bs4 import BeautifulSoup
+    from tests.test_risk_radar_pullback_depth_template import render
+    obs = _qualified({k: list(v) for k, v in PATH.items()}, peak_session="2026-09-16",
+                     phase=phase, active=False, low_close=None, low_session=None,
+                     valid_until="2026-09-23T21:00:00+00:00")
+    view = pb.present(obs)
+    assert view["detail_path"]["dates"] == PATH["dates"][2:]
+    soup = BeautifulSoup(render(view, "us"), "html.parser")
+    assert soup.select_one("section.rrp").get("data-pb-phase") == phase
+    assert soup.select_one(".rrp-chart .ilx") is not None
+    assert "Unavailable" in soup.select_one('[data-metric="worst"]').get_text()
