@@ -1,0 +1,111 @@
+{
+  "method": "Exact public-document URL equality after scheme/host/www/fragment/trailing-slash normalization. Lower bound on dependence; not a complete economic-root, person, actor or syndicated-source identity join. PB-D lacks comparable historical root identities and is excluded from this URL census.",
+  "shared_public_document_urls": 4,
+  "shared": [
+    {
+      "normalized_url": "https://openai.com/index/announcing-the-stargate-project",
+      "lanes": [
+        "PB-C",
+        "PB-E"
+      ],
+      "uses": [
+        {
+          "lane": "PB-C",
+          "id": "PBC-TECH-ORCL-STARGATE-20250121",
+          "title": "Announcing The Stargate Project",
+          "url": "https://openai.com/index/announcing-the-stargate-project/",
+          "normalized": "https://openai.com/index/announcing-the-stargate-project"
+        },
+        {
+          "lane": "PB-E",
+          "id": "AI_S01",
+          "title": "Announcing the Stargate Project",
+          "url": "https://openai.com/index/announcing-the-stargate-project/",
+          "normalized": "https://openai.com/index/announcing-the-stargate-project"
+        }
+      ]
+    },
+    {
+      "normalized_url": "https://ir.amd.com/news-events/press-releases/detail/1260/amd-and-openai-announce-strategic-partnership-to-deploy-6-gigawatts-of-amd-gpus",
+      "lanes": [
+        "PB-C",
+        "PB-E"
+      ],
+      "uses": [
+        {
+          "lane": "PB-C",
+          "id": "PBC-TECH-AMD-OPENAI-20251006",
+          "title": "AMD and OpenAI Announce Strategic Partnership to Deploy 6 Gigawatts of AMD GPUs",
+          "url": "https://ir.amd.com/news-events/press-releases/detail/1260/amd-and-openai-announce-strategic-partnership-to-deploy-6-gigawatts-of-amd-gpus",
+          "normalized": "https://ir.amd.com/news-events/press-releases/detail/1260/amd-and-openai-announce-strategic-partnership-to-deploy-6-gigawatts-of-amd-gpus"
+        },
+        {
+          "lane": "PB-E",
+          "id": "R-S12",
+          "title": "AMD–OpenAI 6GW announcement",
+          "url": "https://ir.amd.com/news-events/press-releases/detail/1260/amd-and-openai-announce-strategic-partnership-to-deploy-6-gigawatts-of-amd-gpus",
+          "normalized": "https://ir.amd.com/news-events/press-releases/detail/1260/amd-and-openai-announce-strategic-partnership-to-deploy-6-gigawatts-of-amd-gpus"
+        }
+      ]
+    },
+    {
+      "normalized_url": "https://about.fb.com/news/2025/10/meta-blue-owl-capital-develop-hyperion-data-center",
+      "lanes": [
+        "PB-C",
+        "PB-E"
+      ],
+      "uses": [
+        {
+          "lane": "PB-C",
+          "id": "PBC-TECH-META-HYPERION-JV-20251021",
+          "title": "Meta Announces Joint Venture With Funds Managed by Blue Owl Capital to Develop Hyperion Data Center",
+          "url": "https://about.fb.com/news/2025/10/meta-blue-owl-capital-develop-hyperion-data-center/",
+          "normalized": "https://about.fb.com/news/2025/10/meta-blue-owl-capital-develop-hyperion-data-center"
+        },
+        {
+          "lane": "PB-E",
+          "id": "AI_M01",
+          "title": "Meta and Blue Owl develop Hyperion",
+          "url": "https://about.fb.com/news/2025/10/meta-blue-owl-capital-develop-hyperion-data-center/",
+          "normalized": "https://about.fb.com/news/2025/10/meta-blue-owl-capital-develop-hyperion-data-center"
+        }
+      ]
+    },
+    {
+      "normalized_url": "https://blogs.microsoft.com/blog/2025/10/28/the-next-chapter-of-the-microsoft-openai-partnership",
+      "lanes": [
+        "PB-C",
+        "PB-E"
+      ],
+      "uses": [
+        {
+          "lane": "PB-C",
+          "id": "PBC-TECH-MSFT-OPENAI-20251028",
+          "title": "The next chapter of the Microsoft–OpenAI partnership",
+          "url": "https://blogs.microsoft.com/blog/2025/10/28/the-next-chapter-of-the-microsoft-openai-partnership/",
+          "normalized": "https://blogs.microsoft.com/blog/2025/10/28/the-next-chapter-of-the-microsoft-openai-partnership"
+        },
+        {
+          "lane": "PB-E",
+          "id": "R-S01",
+          "title": "Microsoft–OpenAI partnership amendment",
+          "url": "https://blogs.microsoft.com/blog/2025/10/28/the-next-chapter-of-the-microsoft-openai-partnership/",
+          "normalized": "https://blogs.microsoft.com/blog/2025/10/28/the-next-chapter-of-the-microsoft-openai-partnership"
+        }
+      ]
+    }
+  ],
+  "pair_counts": {
+    "PB-A__PB-B": 0,
+    "PB-A__PB-C": 0,
+    "PB-A__PB-E": 0,
+    "PB-B__PB-C": 0,
+    "PB-B__PB-E": 0,
+    "PB-C__PB-E": 4
+  },
+  "time_scope": {
+    "PB-C": "2025-01-01 through 2025-12-31",
+    "PB-D_H5": "2026-08-17 through 2026-09-17",
+    "direct_C_D_same_date_outcome_overlap": "No overlap of reported analysis dates; do not claim literal common C/D returns. Shared actors/mechanisms can still create a transportability problem."
+  }
+}
