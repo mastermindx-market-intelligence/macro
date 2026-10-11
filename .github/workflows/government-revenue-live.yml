@@ -139,6 +139,8 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: fingerprint committed SAM evidence
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         id: baseline
         if: ${{ github.event_name != 'push' && inputs.projection_only != true }}
         # The collector refreshes last_seen_at and its dated heartbeat on every
@@ -250,6 +252,8 @@ jobs:
           python -m scripts.collect --only sam_gov_opportunities --skip-quality --skip-shadow-importance
 
       - name: gate publication on complete health or material evidence
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         id: gate
         if: ${{ always() }}
         env:
@@ -384,6 +388,8 @@ jobs:
       # RUNNER_TEMP persists across steps in this job; the helper is sourced by
       # the commit/retry shell below and never becomes a repository artifact.
       - name: stage reviewed source guards
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         if: ${{ steps.gate.outputs.publish == 'yes' }}
         run: |
           set -euo pipefail
@@ -629,6 +635,8 @@ jobs:
       # staged. The retry loop rebuilds after each rebase so a concurrent daily
       # evidence commit cannot be overwritten by a mixed generation.
       - name: commit complete evidence projection
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         if: ${{ steps.gate.outputs.publish == 'yes' }}
         run: |
           set -euo pipefail

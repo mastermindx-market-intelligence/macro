@@ -222,6 +222,8 @@ jobs:
       # positive reading — the published board's `as_of` equals today's ET
       # session, or today is not a session at all.
       - name: backstop fast-exit (has the host-native primary already landed?)
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         id: standdown
         continue-on-error: true
         run: |

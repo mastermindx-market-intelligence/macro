@@ -39,6 +39,8 @@ jobs:
           DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
         run: python -m scripts.healthcheck
       - name: live-plane dead-man handoff
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         # The live lanes (intraday-fastpath / intraday-bars / the three sentinels) are
         # pinned to the single dedicated `macstudio-light` runner so they never queue
         # behind the heavy 3-slot macstudio pool. Single-runner label = if that runner
