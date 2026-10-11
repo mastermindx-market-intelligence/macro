@@ -103,6 +103,22 @@ def test_source_not_yet_knowable_does_not_emit_future_observation():
     assert out["historical_ruler"] is None
 
 
+def test_future_source_never_exposes_not_yet_knowable_provenance():
+    observation, golden = originals()
+    result = build_private_tp2_view(
+        observation=observation, calibration=golden,
+        view_asof_ns=observation["asof_ns"]-1)
+    assert result["state"] == "SOURCE_NOT_YET_KNOWABLE"
+    for field in (
+        "observation_asof_ns_decimal", "ticker", "session",
+        "source_manifest_sha256", "source_snapshot_sha256",
+        "source_generation_sha256", "observed_source", "historical_ruler",
+        "intraday_minute_baseline",
+    ):
+        assert result[field] is None, field
+    assert result["view_asof_ns_decimal"] == str(observation["asof_ns"]-1)
+
+
 def test_historical_calibration_not_yet_knowable_stays_pending():
     observation, golden = originals()
     result = build_private_tp2_view(
@@ -240,6 +256,35 @@ def test_private_reader_rejects_print_or_cluster_greater_than_source_total():
             build_private_tp2_view(observation=bad, view_asof_ns=golden["evaluation_ns"]+1)
 
 
+def test_calibration_minute_share_must_equal_source_point_and_prefix_state():
+    observation, golden = originals()
+    altered = copy.deepcopy(golden)
+    altered["minute_conditioned_baseline"]["share"] = "0.75"
+    with pytest.raises(TP2PrivateViewRefusal, match="source minute"):
+        build_private_tp2_view(
+            observation=observation, calibration=altered,
+            view_asof_ns=golden["evaluation_ns"]+1)
+    absent = copy.deepcopy(observation)
+    absent["minute_points_private_only"] = []
+    with pytest.raises(TP2PrivateViewRefusal, match="source minute"):
+        build_private_tp2_view(
+            observation=absent, calibration=golden,
+            view_asof_ns=golden["evaluation_ns"]+1)
+    unqualified = copy.deepcopy(observation)
+    unqualified["minute_points_private_only"][0]["qualified_prefix"] = False
+    with pytest.raises(TP2PrivateViewRefusal, match="source minute"):
+        build_private_tp2_view(
+            observation=unqualified, calibration=golden,
+            view_asof_ns=golden["evaluation_ns"]+1)
+    future = copy.deepcopy(observation)
+    future["minute_points_private_only"][0]["source_available_ns"] = (
+        observation["asof_ns"]+1)
+    with pytest.raises(TP2PrivateViewRefusal, match="source minute"):
+        build_private_tp2_view(
+            observation=future, calibration=golden,
+            view_asof_ns=golden["evaluation_ns"]+1)
+
+
 def test_unsafe_source_exponent_and_oversized_ranks_are_not_promoted():
     observation, golden = originals()
     forged = dict(observation, largest_individual_print_usd="1e99999999")
@@ -265,6 +310,41 @@ def test_tampered_minute_after_rth_end_or_out_of_range_fraction_refused():
     with pytest.raises(TP2PrivateViewRefusal, match="minute.*share"):
         build_private_tp2_view(observation=observation, calibration=forged_share,
                                view_asof_ns=golden["evaluation_ns"]+1)
+
+
+def test_invalid_calibration_distributions_never_reach_private_view():
+    observation, golden = originals()
+    for field, value in (
+        ("midrank_percentile", "1.2"),
+        ("midrank_percentile", "-0.1"),
+        ("median", "1.5"),
+        ("mad", "-0.1"),
+        ("robust_z", "not-a-number"),
+    ):
+        altered = copy.deepcopy(golden)
+        altered["minute_conditioned_baseline"][field] = value
+        with pytest.raises(TP2PrivateViewRefusal, match="calibration.*minute"):
+            build_private_tp2_view(
+                observation=observation, calibration=altered,
+                view_asof_ns=golden["evaluation_ns"] + 1)
+    no_history = copy.deepcopy(golden)
+    no_history["minute_conditioned_baseline"]["state"] = (
+        "INSUFFICIENT_MINUTE_MATCHED_HISTORY")
+    with pytest.raises(TP2PrivateViewRefusal, match="calibration.*minute"):
+        build_private_tp2_view(
+            observation=observation, calibration=no_history,
+            view_asof_ns=golden["evaluation_ns"] + 1)
+
+
+def test_daily_rank_metric_cannot_be_relabelled_to_another_object():
+    observation, golden = originals()
+    changed = copy.deepcopy(golden)
+    changed["daily_object_ranks"]["DAILY_TOTAL"]["source_metric"] = (
+        "largest_individual_print_usd")
+    with pytest.raises(TP2PrivateViewRefusal, match="daily rank.*metric"):
+        build_private_tp2_view(
+            observation=observation, calibration=changed,
+            view_asof_ns=golden["evaluation_ns"] + 1)
 
 
 def test_unknown_daily_rank_state_or_invalid_minute_conditioning_refused():

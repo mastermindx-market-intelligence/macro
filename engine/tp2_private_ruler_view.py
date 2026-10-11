@@ -25,6 +25,12 @@ _SYMBOL = re.compile(r"^[A-Z][A-Z0-9.\-]{0,19}$")
 _SESSION = re.compile(r"^\d{4}-\d{2}-\d{2}:RTH$")
 _DECIMAL_TEXT = re.compile(r"^(?:0|[1-9]\d*)(?:\.\d+)?$")
 _KINDS = ("SINGLE_PRINT", "SAME_LEVEL_CLUSTER", "DAILY_TOTAL")
+_RANK_SOURCE_METRICS = {
+    "SINGLE_PRINT": "largest_individual_print_usd",
+    "SAME_LEVEL_CLUSTER": "largest_cluster_usd",
+    "DAILY_TOTAL": "oe_source_notional_usd",
+}
+_SIGNED_DECIMAL_TEXT = re.compile(r"^-?(?:0|[1-9]\d*)(?:\.\d+)?$")
 _BLOCKS = ("100000", "500000", "1000000")
 _DAILY_STATES = frozenset({
     "OBSERVED_COVERAGE_ONLY", "NOT_FULL_RTH", "NO_OBSERVED_OBJECT",
@@ -83,6 +89,20 @@ def _bounded_decimal(value, field, *, allow_zero=False):
     if not d.is_finite() or d < 0 or (not allow_zero and d == 0):
         raise TP2PrivateViewRefusal(f"{field}: invalid nonnegative amount")
     return value
+
+
+def _bounded_signed_decimal(value, field):
+    """Accept signed, finite, fixed-point research z with finite text width."""
+    if (type(value) is not str or not 0 < len(value) <= 1024
+            or _SIGNED_DECIMAL_TEXT.fullmatch(value) is None):
+        raise TP2PrivateViewRefusal(f"{field}: invalid signed minute statistic")
+    try:
+        d = Decimal(value)
+    except InvalidOperation as exc:
+        raise TP2PrivateViewRefusal(f"{field}: malformed minute statistic") from exc
+    if not d.is_finite():
+        raise TP2PrivateViewRefusal(f"{field}: nonfinite minute statistic")
+    return d
 
 
 def _identity(obj, *, schema, role):
@@ -170,8 +190,11 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns):
     if end <= start or end-start > 390*60_000_000_000 or asof < start:
         raise TP2PrivateViewRefusal("source: impossible RTH window")
     if asof > now:
-        return _hold(state="SOURCE_NOT_YET_KNOWABLE", observed_at_ns=now,
-                     observation=observation)
+        # The caller may hold a future source record in memory, but none of
+        # its fields (including source generation/hash and receipt time)
+        # existed at this requested decision cutoff. Do not leak them into
+        # an as-seen projection, even on a private research interface.
+        return _hold(state="SOURCE_NOT_YET_KNOWABLE", observed_at_ns=now)
     state = observation.get("state")
     if state != _SOURCE:
         if state not in ("NO_SAMPLED_PRINTS",
@@ -250,6 +273,8 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns):
         entry = ranks[kind]
         if not isinstance(entry, dict) or entry.get("state") not in _DAILY_STATES:
             raise TP2PrivateViewRefusal("calibration: invalid daily rank state")
+        if entry.get("source_metric") != _RANK_SOURCE_METRICS[kind]:
+            raise TP2PrivateViewRefusal("calibration: daily rank source metric mismatch")
         status = entry["state"]
         rank = entry.get("rank_desc")
         n_prior = entry.get("n_prior")
@@ -283,6 +308,64 @@ def build_private_tp2_view(*, observation, calibration=None, view_asof_ns):
     if share is not None and Decimal(_bounded_decimal(
             share, "calibration.minute.share", allow_zero=True)) > 1:
         raise TP2PrivateViewRefusal("calibration: invalid minute share")
+    # The historical candidate is not a substitute for this snapshot's
+    # observed cumulative participation. Its source minute, original receipt
+    # and qualification status must agree with what this source generation
+    # actually supplied. A matching caller-provided snapshot digest alone
+    # cannot guarantee internal coherence of mutable Python dictionaries.
+    points = observation.get("minute_points_private_only")
+    if not isinstance(points, list) or len(points) > 390:
+        raise TP2PrivateViewRefusal("calibration: source minute missing/invalid")
+    current = [point for point in points if isinstance(point, dict)
+               and point.get("minute_index") == minute["minute_index"]]
+    if len(current) > 1:
+        raise TP2PrivateViewRefusal("calibration: duplicate source minute")
+    source_minute = current[0] if current else None
+    source_share = source_minute.get("share") if source_minute else None
+    if source_share != share:
+        raise TP2PrivateViewRefusal("calibration: source minute share disagrees")
+    qualified = False
+    if source_minute is not None:
+        available = source_minute.get("source_available_ns")
+        if (type(available) is not int or available < 1
+                or available > asof or available > now):
+            raise TP2PrivateViewRefusal("calibration: source minute received after cutoff")
+        if type(source_minute.get("qualified_prefix")) is not bool:
+            raise TP2PrivateViewRefusal("calibration: source minute qualification invalid")
+        qualified = source_minute["qualified_prefix"] and source_share is not None
+    if minute["state"] == "TARGET_MINUTE_SOURCE_UNQUALIFIED":
+        if qualified:
+            raise TP2PrivateViewRefusal("calibration: qualified source minute falsely missing")
+    elif not qualified:
+        raise TP2PrivateViewRefusal("calibration: source minute not qualified")
+    # Typed nulls and bounded fractions are part of the upstream estimator's
+    # contract. A malformed 120% percentile, negative MAD, or made-up z on
+    # thin/missing history must not be forwarded as a research measurement.
+    values = {}
+    for field in ("median", "mad", "midrank_percentile"):
+        raw = minute.get(field)
+        values[field] = (
+            Decimal(_bounded_decimal(raw, "calibration.minute."+field,
+                                     allow_zero=True))
+            if raw is not None else None
+        )
+        if values[field] is not None and values[field] > 1:
+            raise TP2PrivateViewRefusal("calibration: minute fraction out of range")
+    z_raw = minute.get("robust_z")
+    z = (_bounded_signed_decimal(z_raw, "calibration.minute.robust_z")
+         if z_raw is not None else None)
+    mstate = minute["state"]
+    if mstate in ("OBSERVED_COVERAGE_ONLY", "NO_ROBUST_DISPERSION"):
+        if (minute["n_prior"] < 2
+                or any(values[k] is None for k in values)):
+            raise TP2PrivateViewRefusal("calibration: minute distribution incomplete")
+        if mstate == "NO_ROBUST_DISPERSION":
+            if values["mad"] != 0 or z is not None:
+                raise TP2PrivateViewRefusal("calibration: minute dispersion inconsistent")
+        elif values["mad"] <= 0 or z is None:
+            raise TP2PrivateViewRefusal("calibration: minute robust z incomplete")
+    elif any(v is not None for v in values.values()) or z is not None:
+        raise TP2PrivateViewRefusal("calibration: minute statistics without history")
     output["state"] = "PRIVATE_TPB_RESEARCH_CONTEXT_ONLY"
     output["historical_ruler"] = named
     output["intraday_minute_baseline"] = {
