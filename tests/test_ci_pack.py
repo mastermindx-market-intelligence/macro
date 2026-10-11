@@ -4678,6 +4678,10 @@ CURATED_EXCLUSIVE = {
     "leader-radar-unit",
     # The private runtime boundary has a closed helper/unit/updater/test scope.
     "company-intelligence-private-runtime",
+    # 2026-10-11 SNI E0/M0 (#8837): the Alibaba/Tencent coverage-profile suite
+    # reads only its own config/contracts trees; its 3-path owner is the whole
+    # closure (closure findings 0, gated-unrun 0), so no inference fallback.
+    "single-name-coverage-profiles",
 }
 
 
