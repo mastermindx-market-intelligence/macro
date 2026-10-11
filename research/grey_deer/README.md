@@ -16,6 +16,7 @@ index only — it duplicates no architecture.
 | `GD1_GROK_SCIENTIFIC_REPLAY_HANDOFF_2026-08-19.md` | GD-1A/GD-1B research protocol for the Grok operator (prereg-first PIT replay). Outputs land under `research/grey_deer/gd1/`. |
 | `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` | Fable seat resumption file for the pullback operation: wave plan + exit gates, lane matrix, DECIDED / FACTS / OPEN / NEXT, denial register. Updated at wave boundaries. |
 | `GREY_DEER_FABLE_HANDOFF_2026-10-11.md` | Sol's end-to-end handoff packet — PR #8772 (DRAFT, not on main as of 2026-10-11; the seat consumed the same packet from the Chairman-delivered zip): frontier table, collision pairs, pinned revisions. |
+| `PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md` | O1/T02 versioned eligible-input manifest v1.0.0: per-input producer, rights, vintage, basis and disposition; evidence classes; frozen qualified sample; open determinations G1–G6 routed to owners. An owner projection, not a source store. |
 
 AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 `agentos/decisions/DEC-RISK-*.md` / `DEC-PROPHET-RANK-*` / `DEC-REPAIR-*` / `DEC-PORTFOLIO-*` /
@@ -35,12 +36,13 @@ AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 
 The wave matrix is a mechanical index under 3. The GD-1 packet governs GD-1 research conduct under 2–3.
 
-## Current next action (updated 2026-10-11, Fable seat W0)
+## Current next action (updated 2026-10-11, Fable seat O1/T02)
 
 - Read `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` §0 and §3 NEXT, then the latest
-  `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-11-FABLE-W0.md`. Order: W0 records PR →
-  O1/T02 source-clock-basis-rights qualification → O7/T03 publication-health note → O8/T22
-  preregistration → observed-move primitives → consumer qualification (PR #8721 read-only).
+  `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-11-FABLE-W0.md`. Done: W0 records (PR #8785)
+  and O1/T02 qualification (`PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md`, manifest v1.0.0).
+  Order from here: O7/T03 publication-health note → O8/T22 preregistration (freezes the §5 qualified
+  sample with sha256) → observed-move primitives → consumer qualification (PR #8721 read-only).
 - Incumbents are never written by a new seat: PR #8721 (live writer) and PR #8188 (HOLD-FOR-SOL).
 - Everything in the 2026-08-27 block below is DONE and DO_NOT_REDO.
 
