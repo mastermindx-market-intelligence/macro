@@ -446,6 +446,23 @@ options_fail_closed_on_exit() {
 }
 trap options_fail_closed_on_exit EXIT
 # END W1B5_TIMER_EXIT_GUARD
+# A W2C owner-replay or attestation refusal freezes ONLY the W2C lane.  Each
+# refusal keeps its exact stderr line and still fails the run with status 1,
+# but the lane-independent steps after W1B5_TIMER_FINALIZATION (live-plane
+# timers, press feeds, ticker news, BioCatalyst, unit reconcile, daemon
+# restarts) still run: CHANGED is per-run, so a step skipped here is lost.
+# BEGIN W2C_LANE_FREEZE
+W2C_LANE_FROZEN=0
+W2C_LANE_FROZEN_REASON=
+DEPLOY_EXIT_STATUS=0
+freeze_w2c_lane() {
+	W2C_LANE_FROZEN=1
+	DEPLOY_EXIT_STATUS=1
+	if [ -z "$W2C_LANE_FROZEN_REASON" ]; then
+		W2C_LANE_FROZEN_REASON=$1
+	fi
+}
+# END W2C_LANE_FREEZE
 
 # W1A has no scheduled context writer, so directory provisioning alone cannot
 # create its manifest/genesis/HEAD. Reconcile and authenticate that metadata on
@@ -1493,32 +1510,38 @@ w2c_terminal_ledger_state || MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE=$?
 if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 0 ]; then
 	if ! w2c_verify_installation; then
 		echo "macro-update: terminal W2C ledger has no authentic installation receipt" >&2
-		exit 1
+		freeze_w2c_lane "terminal W2C ledger has no authentic installation receipt"
 	fi
-	MARKET_MEMORY_EXPERIENCE_RUN_NEEDED=0
-	if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ] && ! w2c_reconcile_timer; then
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		MARKET_MEMORY_EXPERIENCE_RUN_NEEDED=0
+	fi
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+	   [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ] && ! w2c_reconcile_timer; then
 		echo "macro-update: authenticated terminal W2C timer disarm failed" >&2
-		exit 1
+		freeze_w2c_lane "authenticated terminal W2C timer disarm failed"
 	fi
-	if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ]; then
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+	   [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ]; then
 		MARKET_MEMORY_EXPERIENCE_ATTESTED=1
 	fi
 elif [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -ne 3 ]; then
 	echo "macro-update: W2C terminal ledger is invalid" >&2
-	exit 1
+	freeze_w2c_lane "W2C terminal ledger is invalid"
 fi
-if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ] && \
+if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+   [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ] && \
    [ "$MARKET_MEMORY_EXPERIENCE_INSTALLATION_REQUIRED" -eq 0 ] && \
    ! w2c_verify_installation; then
 	echo "macro-update: existing W2C installation receipt failed authentication" >&2
-	exit 1
+	freeze_w2c_lane "existing W2C installation receipt failed authentication"
 fi
-if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
+if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+   [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
 	if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 1 ]; then
 		echo "macro-update: deferring W2C replay and attestation until reciprocal boundary closure" >&2
 	elif [ "$API_DEPS_OK" -ne 1 ]; then
 		echo "macro-update: W2C attestation unavailable — shared runtime dependencies are not current" >&2
-		exit 1
+		freeze_w2c_lane "W2C attestation unavailable — shared runtime dependencies are not current"
 	else
 		W2C_OWNER_REPLAY_READY=0
 		if [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] || \
@@ -1526,27 +1549,35 @@ if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
 		   ! systemctl is-active macro-market-memory-experience.timer >/dev/null 2>&1; then
 			if ! w2c_start_owner_chain; then
 				echo "macro-update: refusing W2C activation before owner replay completion" >&2
-				exit 1
+				freeze_w2c_lane "refusing W2C activation before owner replay completion"
+			else
+				W2C_OWNER_REPLAY_READY=1
 			fi
-			W2C_OWNER_REPLAY_READY=1
 		fi
-		if [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+		   [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
 		   ! systemctl start macro-market-memory-experience.service; then
 			echo "macro-update: W2C accrual failed before deployment attestation" >&2
-			exit 1
+			freeze_w2c_lane "W2C accrual failed before deployment attestation"
 		fi
-		if ! w2c_verify_installation; then
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_verify_installation; then
 			echo "macro-update: W2C installation attestation failed after replay" >&2
-			exit 1
+			freeze_w2c_lane "W2C installation attestation failed after replay"
 		fi
-		if ! w2c_reconcile_timer; then
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_reconcile_timer; then
 			echo "macro-update: W2C timer reconciliation failed" >&2
-			exit 1
+			freeze_w2c_lane "W2C timer reconciliation failed"
 		fi
-		MARKET_MEMORY_EXPERIENCE_ATTESTED=1
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+			MARKET_MEMORY_EXPERIENCE_ATTESTED=1
+		fi
 	fi
 fi
 # END W2C_RUNTIME_ATTESTATION
+# Everything from here through W1B5_TIMER_FINALIZATION depends on an
+# authenticated W2C state (the API-fence note below: a W2C refusal must not
+# reach it), so a frozen W2C lane skips it exactly as the old `exit 1` did.
+if [ "$W2C_LANE_FROZEN" -eq 0 ]; then
 
 # First admitted production-record writer: network-dark, credential-free, and
 # confined to one private store. It can read only the committed owner ledger;
@@ -1795,56 +1826,83 @@ if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 1 ] && \
 	if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
 		if [ "$API_DEPS_OK" -ne 1 ]; then
 			echo "macro-update: refusing deferred W2C attestation with stale dependencies" >&2
-			exit 1
+			freeze_w2c_lane "refusing deferred W2C attestation with stale dependencies"
 		fi
-		if ! w2c_start_owner_chain; then
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_start_owner_chain; then
 			echo "macro-update: refusing deferred W2C activation before owner replay completion" >&2
-			exit 1
+			freeze_w2c_lane "refusing deferred W2C activation before owner replay completion"
 		fi
-		W2C_OWNER_REPLAY_READY=1
-		if [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+			W2C_OWNER_REPLAY_READY=1
+		fi
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+		   [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
 		   ! systemctl start macro-market-memory-experience.service; then
 			echo "macro-update: deferred W2C accrual failed before attestation" >&2
-			exit 1
+			freeze_w2c_lane "deferred W2C accrual failed before attestation"
 		fi
 	fi
-	if ! w2c_verify_installation; then
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_verify_installation; then
 		echo "macro-update: deferred W2C installation attestation failed" >&2
-		exit 1
+		freeze_w2c_lane "deferred W2C installation attestation failed"
 	fi
 	# END W2C_DEFERRED_REPLAY
-	for RECIPROCAL_PROFILE in source source-spy-rest context identity breadth technicals technicals-v2 experience-v2 production-records options-context-audit; do
-		if [ -e "/etc/systemd/system/macro-market-memory-$RECIPROCAL_PROFILE.timer" ]; then
-			if [ "$RECIPROCAL_PROFILE" = production-records ] || [ "$RECIPROCAL_PROFILE" = options-context-audit ]; then
-				systemctl enable --now "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
-			else
-				systemctl start "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		for RECIPROCAL_PROFILE in source source-spy-rest context identity breadth technicals technicals-v2 experience-v2 production-records options-context-audit; do
+			if [ -e "/etc/systemd/system/macro-market-memory-$RECIPROCAL_PROFILE.timer" ]; then
+				if [ "$RECIPROCAL_PROFILE" = production-records ] || [ "$RECIPROCAL_PROFILE" = options-context-audit ]; then
+					systemctl enable --now "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
+				else
+					systemctl start "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
+				fi
 			fi
+		done
+		if ! w2c_reconcile_timer; then
+			echo "macro-update: W2C timer reconciliation failed" >&2
+			freeze_w2c_lane "W2C timer reconciliation failed"
 		fi
-	done
-	if ! w2c_reconcile_timer; then
-		echo "macro-update: W2C timer reconciliation failed" >&2
-		exit 1
 	fi
-	MARKET_MEMORY_EXPERIENCE_ATTESTED=1
-	# The production-record first run was intentionally deferred while the
-	# reciprocal namespace was stopped. Capture immediately after the reviewed
-	# units are re-armed; do not wait for the next nightly calendar edge.
-	if [ "$MARKET_MEMORY_PRODUCTION_RECORDS_RUN_NEEDED" -eq 1 ]; then
-		if [ "$API_DEPS_OK" -ne 1 ]; then
-			echo "macro-update: deferring Market Memory production-record capture — shared runtime dependencies are not current" >&2
-		elif ! systemctl start macro-market-memory-production-records.service; then
-			echo "macro-update: Market Memory production-record capture failed closed; nightly timer will retry" >&2
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		MARKET_MEMORY_EXPERIENCE_ATTESTED=1
+		# The production-record first run was intentionally deferred while the
+		# reciprocal namespace was stopped. Capture immediately after the reviewed
+		# units are re-armed; do not wait for the next nightly calendar edge.
+		if [ "$MARKET_MEMORY_PRODUCTION_RECORDS_RUN_NEEDED" -eq 1 ]; then
+			if [ "$API_DEPS_OK" -ne 1 ]; then
+				echo "macro-update: deferring Market Memory production-record capture — shared runtime dependencies are not current" >&2
+			elif ! systemctl start macro-market-memory-production-records.service; then
+				echo "macro-update: Market Memory production-record capture failed closed; nightly timer will retry" >&2
+			fi
 		fi
 	fi
 fi
 if [ "${MARKET_MEMORY_EXPERIENCE_ATTESTED:-1}" -ne 1 ]; then
-	echo "macro-update: W2C installation and terminal state were not authenticated" >&2
-	exit 1
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		echo "macro-update: W2C installation and terminal state were not authenticated" >&2
+		freeze_w2c_lane "W2C installation and terminal state were not authenticated"
+	fi
 fi
-OPTIONS_RECONCILIATION_COMPLETE=1
-trap - EXIT
+# A frozen W2C lane leaves OPTIONS_RECONCILIATION_COMPLETE=0, so the EXIT trap
+# stays armed: any later failure still fails closed with the option-OI timer
+# disarmed, and the final exit re-runs a latched (no-op) disarm.
+if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+	OPTIONS_RECONCILIATION_COMPLETE=1
+	trap - EXIT
+fi
 # END W1B5_TIMER_FINALIZATION
+fi
+# BEGIN W2C_LANE_FROZEN_CONTINUE
+# The old `exit 1` disarmed the option-OI timer through the EXIT trap at the
+# moment W2C refused.  Do the same disarm now, before any lane-independent step
+# runs; if it fails, keep the old abort (the trap retries the disarm).
+if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
+	if ! disarm_options_timer; then
+		echo "macro-update: W2C lane frozen but option-OI disarm failed; aborting deploy" >&2
+		exit 1
+	fi
+	echo "macro-update: W2C lane frozen — $W2C_LANE_FROZEN_REASON; continuing lane-independent deploy steps" >&2
+fi
+# END W2C_LANE_FROZEN_CONTINUE
 
 # Live-plane systemd definitions are installed by live-setup.sh. Once that setup
 # has happened, keep unit/resource/timer changes tracking main automatically.
@@ -2476,3 +2534,9 @@ fi
 if [ "$REPO_UPDATED" -eq 1 ] || [ "$RECONCILED" -eq 1 ]; then
 	echo "macro-update $(date -u +%FT%TZ) ${OLD:0:8}..$(git -C "$APP_DIR" rev-parse --short HEAD)"
 fi
+# BEGIN DEPLOY_EXIT_STATUS
+if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
+	echo "macro-update: deploy finished with status ${DEPLOY_EXIT_STATUS:-1} (frozen lanes: w2c)" >&2
+fi
+exit "${DEPLOY_EXIT_STATUS:-0}"
+# END DEPLOY_EXIT_STATUS
