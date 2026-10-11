@@ -1300,6 +1300,8 @@ def build_alias_rows(resolutions: list[Resolution], ids: dict[str, str]) -> list
             )
             or store_key_migrations.get(res.inception_code) == res.key
         )
+        dated_rename_member = any(res.key in (event.old, event.new) for event in RENAME_EVENTS)
+        unratified_rename_member = dated_rename_member and not is_root and not chain_member_ratified
 
         for vendor, symbol in historical.items():
             event = dated.get((vendor, symbol))
@@ -1314,7 +1316,19 @@ def build_alias_rows(resolutions: list[Resolution], ids: dict[str, str]) -> list
         for vendor, symbol in current.items():
             key = (vendor, sec)
             prior = current_by_sec.get(key)
-            if is_root or (chain_member_ratified and prior is None):
+            # The gate covers exactly ONE shape: a NON-ROOT key that a DATED
+            # RenameEvent names, whose store key no RenameEvent-with-store and no
+            # `ticker_key_migration` ratifies (today: SKYD — the comment above). A
+            # notation variant that no rename mentions (MOG-A/MOG.A, BRK-B, BF-B —
+            # `_inception_code` falls back to the directory's DOT spelling for any
+            # key no rename mentions, so `res.key != res.inception_code` alone
+            # cannot tell a chain member from a dot/dash notation variant) and an
+            # UNDATED_RENAMES key (FI) keep origin/main's
+            # `prior is None or is_root` behaviour: their fresh open store/
+            # yahoo_fetch rows are TRUE rows, and suppressing them (#8828 review F1)
+            # drops live current-catalog rows nothing reports and leaves committed
+            # carry-over as the only survivor.
+            if is_root or (prior is None and not unratified_rename_member):
                 current_by_sec[key] = (symbol, is_root)
 
     for (vendor, sec), (symbol, _is_root) in current_by_sec.items():

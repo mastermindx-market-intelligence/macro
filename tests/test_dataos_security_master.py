@@ -3489,9 +3489,11 @@ def test_us_coverage_scope_holds_through_lawful_admissions(receipt: dict) -> Non
     # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
     # security row, and QRVO, under the pre-existing KHC pending-transition fence that
     # the unpatched rebuild also shows).  Unresolved widened 13 -> 16 (2026-10-11,
-    # PSKY->SKYD regen): BLFS and TCBI joined the unresolved set through 2026-10-09
-    # symbol-directory drift (both "listed on exchange code 'F'", which has no MIC in
-    # lib/dataos/identity.KNOWN_MICS) on top of the A8-expected CWEN-A/HLX/QRVO.
+    # PSKY->SKYD regen): TCBI joined the unresolved set through 2026-10-09
+    # symbol-directory drift (the snapshot lists it on exchange code 'F', which is
+    # not in lib/dataos/identity.KNOWN_MICS) and BLFS because it is ABSENT from the
+    # 2026-10-08 and 2026-10-09 snapshots entirely (listed on Nasdaq through
+    # 2026-10-07), on top of the A8-expected CWEN-A/HLX/QRVO.
     assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
     assert receipt["coverage"]["resolved"] >= 703
     assert receipt["coverage"]["unresolved"] <= 16
@@ -3963,9 +3965,11 @@ def test_gmi_us_regression_bands_cn_hk_and_legacy_us(
     # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
     # security row, and QRVO, under the pre-existing KHC pending-transition fence that
     # the unpatched rebuild also shows).  Unresolved widened 13 -> 16 (2026-10-11,
-    # PSKY->SKYD regen): BLFS and TCBI joined the unresolved set through 2026-10-09
-    # symbol-directory drift (both "listed on exchange code 'F'", which has no MIC in
-    # lib/dataos/identity.KNOWN_MICS) on top of the A8-expected CWEN-A/HLX/QRVO.
+    # PSKY->SKYD regen): TCBI joined the unresolved set through 2026-10-09
+    # symbol-directory drift (the snapshot lists it on exchange code 'F', which is
+    # not in lib/dataos/identity.KNOWN_MICS) and BLFS because it is ABSENT from the
+    # 2026-10-08 and 2026-10-09 snapshots entirely (listed on Nasdaq through
+    # 2026-10-07), on top of the A8-expected CWEN-A/HLX/QRVO.
     assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
     assert receipt["coverage"]["resolved"] >= 703
     assert receipt["coverage"]["unresolved"] <= 16
@@ -4249,3 +4253,40 @@ def test_dated_store_pair_emits_only_for_the_renamed_security() -> None:
     stranger = [r for r in store if r.security_id == "SEC:US-XNAS-EQR2"]
     assert [(r.vendor_symbol, r.valid_from, r.valid_to) for r in stranger] == [
         ("EQR", None, None)]
+
+
+def test_a_notation_variant_key_no_rename_mentions_keeps_its_open_current_catalog_rows() -> None:
+    """F1 (skyd-review-20261011-r1, BLOCKER): the current-catalog chain-member gate
+    must not eat a NOTATION VARIANT.  ``_inception_code`` returns the directory's DOT
+    spelling for any key no rename mentions, so ``MOG-A`` (directory symbol ``MOG.A``)
+    measured ``res.key != res.inception_code`` — a "chain member" by that test alone —
+    and the #8828 gate suppressed its fresh open ``store``/``yahoo_fetch`` rows with
+    nothing in the log reporting it.  MOG-A had no committed rows to carry it (admitted
+    by #8626), so both TRUE rows were dropped from the artifact.  The gate now
+    suppresses only a non-root key a DATED RenameEvent names that no record ratifies
+    (SKYD); a notation variant no rename mentions keeps origin/main's behaviour."""
+    from lib import ticker_aliases
+    from lib.dataos.identity import ListingKey
+
+    resolutions = [
+        # modelled on the real MOG-A row (snapshot 2026-10-09: Moog Inc. Class A,
+        # NYSE, symbol MOG.A): the universe's dash key, the directory's dot code.
+        BUILD.Resolution("MOG-A", ListingKey("US", "XNYS", "MOG.A"), "MOG.A", "MOG.A",
+                         "fixture", date(2026, 10, 9)),
+    ]
+    ids = {"MOG-A": "SEC:US-XNYS-MOG.A"}
+    rows = BUILD.build_alias_rows(resolutions, ids)
+    current = {
+        (r.vendor, r.vendor_symbol): (r.security_id, r.valid_from, r.valid_to)
+        for r in rows
+        if r.vendor in (BUILD.VENDOR_STORE, BUILD.VENDOR_YAHOO_FETCH)
+    }
+    # MOG-A is this security's ONLY resolution — no prior current-catalog row exists —
+    # so both rows must be emitted fresh and OPEN, exactly as origin/main's
+    # `prior is None or is_root` gate emitted them.
+    assert current == {
+        ("store", "MOG-A"): ("SEC:US-XNYS-MOG.A", None, None),
+        ("yahoo_fetch", ticker_aliases.fetch_symbol("MOG-A")): (
+            "SEC:US-XNYS-MOG.A", None, None),
+    }
+    VendorAliasTable(rows)  # and the fixture table is unambiguous
