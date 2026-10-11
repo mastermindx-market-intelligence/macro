@@ -624,8 +624,11 @@ www.mastermind-x.com {
 		Strict-Transport-Security "max-age=31536000"
 	}
 
-	# Self-signed origin cert; pair with the CDN's non-strict HTTPS origin pull.
-	tls internal
+	# Keep the origin browser-trusted too. EdgeOne normally terminates public TLS,
+	# but stale/bypassed DNS can reach the origin directly; a Caddy-local certificate
+	# then surfaces as NET::ERR_CERT_AUTHORITY_INVALID. Automatic ACME certificate
+	# management remains enabled even with `auto_https disable_redirects`, and
+	# EdgeOne's non-strict HTTPS origin pull accepts the public certificate.
 
 	# Access logs go to journald (`journalctl -u caddy`). We deliberately do NOT
 	# write a file log: the stock caddy.service systemd sandbox only permits writes
@@ -659,8 +662,9 @@ www.mastermind-x.com {
 #   mastermind-x.com) in `journalctl -u caddy`. NB no renewal has been exercised
 #   since the apex moved behind the edge — the cert is still the original
 #   2026-06-30 issuance and ARI selects 2026-08-29 05:42 UTC for the first one.
-#   Watch that run. If it ever fails, the fix is `tls internal` here (origin-pull
-#   is non-strict, exactly like www above), NOT a DNS revert.
+#   Watch that run. If renewal ever fails, repair ACME/edge reachability; do not
+#   regress apex or www to `tls internal`, because a direct-origin/stale-DNS client
+#   would then receive an untrusted Caddy-local certificate.
 # * The MX hazard #3040 feared has NOT materialised. The apex still carries
 #   `10 m.northlighttrade.com` and it resolves alongside the apex CNAME (28/28
 #   across Google/Cloudflare/Quad9/OpenDNS/114DNS/AliDNS) because DNSPod answers
