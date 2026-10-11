@@ -23163,6 +23163,43 @@ jobs:
       - name: same suites against the shipped site/ copies
         run: CHARTS_JS=site/charts.js STOCKBRIEF_JS=site/stockbrief.js node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
 
+  sni-s2-event-response:
+    if: ${{ false }}
+    gate: code
+    # SNI S2 conditional event response P04-P06: historical-descriptive study
+    # with hermetic synthetic tests (tmp_path only, never data/). Seal
+    # integrity is verified through git cat-file at the pinned BASE blobs.
+    # Non-exclusive job: no scope line, so the pack splitter is untouched.
+    timeout-minutes: 10
+    paths:
+      - research/single_name_intelligence/event_response/**
+      - research/single_name_intelligence/runs/s2_event_response/**
+      - engine/qledger.py
+      - engine/grading_stats.py
+      - engine/trial_ledger.py
+      - tests/test_sni_s2_ledger_order.py
+      - tests/test_sni_s2_mirror.py
+      - tests/test_sni_s2_clock.py
+      - tests/test_sni_s2_selection.py
+      - tests/test_sni_s2_collapse.py
+      - tests/test_sni_s2_abstain.py
+      - tests/test_sni_s2_stats.py
+      - tests/test_sni_s2_info_leak.py
+      - tests/test_sni_s2_report_order.py
+      - tests/test_sni_s2_cli.py
+      - tests/test_sni_s2_seal_integrity.py
+      - tests/test_sni_s2_language.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal S2 dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: S2 event response contracts (P04-P06, historical-descriptive)
+        run: python -m pytest tests/test_sni_s2_ledger_order.py tests/test_sni_s2_mirror.py tests/test_sni_s2_clock.py tests/test_sni_s2_selection.py tests/test_sni_s2_collapse.py tests/test_sni_s2_abstain.py tests/test_sni_s2_stats.py tests/test_sni_s2_info_leak.py tests/test_sni_s2_report_order.py tests/test_sni_s2_cli.py tests/test_sni_s2_seal_integrity.py tests/test_sni_s2_language.py -q -p no:cacheprovider
+
   single-name-coverage-profiles:
     if: ${{ false }}
     gate: code

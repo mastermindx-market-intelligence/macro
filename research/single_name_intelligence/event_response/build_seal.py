@@ -21,7 +21,7 @@ from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from s2_loaders import GitBlobLoader, verify_pinned_blobs  # noqa: E402
 from s2_selection import coverage_census_rows  # noqa: E402
@@ -63,11 +63,8 @@ def main() -> int:
         membership_rows.extend(mem["table_rows"])
 
     # -- prereg spec + digest ----------------------------------------------- #
-    spec = build_prereg_spec(state["class_summary"]["count_per_category"],
-                             state["vocab"], state["prereg_membership_table"])
-    spec["programmes_frozen"] = state["programmes"]
-    spec["event_exclusions_frozen"] = state["event_exclusions"]
-    digest = prereg_digest(spec)
+    from run_s2 import full_spec_digest  # single spec construction, no drift
+    spec, digest = full_spec_digest(state)
 
     # -- seal artifacts ------------------------------------------------------ #
     seal = {

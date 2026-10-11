@@ -163,8 +163,9 @@ def step2_dedup(rows: list[dict],
 
 
 def step3_bundle(events: list[EventRecord]) -> list[EventRecord]:
-    """Step 3: a bundle is a connected component of events sharing the same s
-    on either clock. The event of record takes the highest-precedence family
+    """Step 3 (per issuer group — step 5 keeps groups separate): a bundle is a
+    connected component of events of ONE issuer group sharing the same s on
+    either clock. The event of record takes the highest-precedence family
     present and the earliest t_avail; more than one family present flags it
     confounded. Returns the events of record (bundle members folded in)."""
     if not events:
@@ -184,8 +185,8 @@ def step3_bundle(events: list[EventRecord]) -> list[EventRecord]:
 
     keys: dict[str, list[int]] = {}
     for i, e in enumerate(events):
-        keys.setdefault(f"US:{e.s_us}", []).append(i)
-        keys.setdefault(f"HK:{e.s_hk}", []).append(i)
+        keys.setdefault(f"{e.issuer_key}|US:{e.s_us}", []).append(i)
+        keys.setdefault(f"{e.issuer_key}|HK:{e.s_hk}", []).append(i)
     for idxs in keys.values():
         for j in idxs[1:]:
             union(idxs[0], j)
