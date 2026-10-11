@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1646",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1705",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -8059,6 +8059,205 @@
     "retained_product_frontier": "current_capability_frontier_20261011T1547",
     "retained_fabric_frontier": "current_capability_frontier_20261011T1600",
     "next_ready_phase": "Same actual restoration/capability or suitable released-source/platform/producer event gates. No outgoing peer send without human authorization; no duplicate host writer or global vacancy assertion.",
+    "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261011T1705": {
+    "observed_at": "2026-10-11T17:07:30.976131+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "supersedes_only": "935 future-release state and941 pending merge/install; previous request for human browser cleanup superseded by direct do-it-yourself instruction and owning bounded bridge diagnosis. Historical accepted evidence and independent holds retain original scopes.",
+    "material": "Actual941 merged/source/exact required CI qualified; ONE canonical935+939+941 generation installed and postqualified. Chrome bridge unavailable; owning connection diagnosis awaiting actual panel/reconnection event.",
+    "941": {
+      "pr": 941,
+      "head": "19665ac566ca818a89db5a5e66491df44f39231a",
+      "merge": "292357daa86525d6c488fb2042340f782cf91e60",
+      "merge_parent": "a16fa983c893fcc7f0e5c555e15541d161f03920",
+      "merged_at": "2026-10-11T16:43:22Z",
+      "full_tree_equal": true,
+      "tree": "9e85a0d63a7af566408092291df263131156019d",
+      "changed_path_count": 16,
+      "runtime_blobs": {
+        "terminal/components/workspaces/ThesisWorkspace.tsx": {
+          "git_blob": "d1e7af245f014ec266683406ecb6877d8507de58",
+          "bytes": 149516,
+          "sha256": "3d52b675f5784dac1f2868cd4c3c7bed5127cd18262ce5256727a4c0127be167"
+        },
+        "terminal/components/workspaces/ThesisWorkspace.module.css": {
+          "git_blob": "517133e5b048de44a881504928757945a73e4fb0",
+          "bytes": 21943,
+          "sha256": "c7fcd07d13cf3d7453bb51cd47ffb13c80af05e327bf9662368e97988023320c"
+        },
+        "terminal/components/settings/SectionPortfolioTargets.tsx": {
+          "git_blob": "1216ecfbbedc89a90fc28971dc1551e26a33b8ae",
+          "bytes": 11141,
+          "sha256": "c15e26b2bb23842b057d44926c062d713b2ca2507934e33e39694465535f302c"
+        },
+        "terminal/lib/portfolioTargets.ts": {
+          "git_blob": "51f411e06e3e65f290fd4c4bbbcff31d94cd85cf",
+          "bytes": 20432,
+          "sha256": "9b498033cc66f4c71e277a331a5cc0a95c9f841e138416a70d3d7c4c06a144a5"
+        }
+      },
+      "source_scope": "Selection-generation fences for proposalPOST/PATCH/refresh; late Accept prefill preserves newer owner statement. Issued server effect is not cancelled by client fencing. Existing B25mounted/153neighbors/40captures/14guards are retained source-scoped evidence, not parent rerun or live proof.",
+      "workflow": {
+        "id": 38152720081,
+        "head_sha": "19665ac566ca818a89db5a5e66491df44f39231a",
+        "check_suite_id": 103368137003,
+        "run_attempt": 1,
+        "event": "pull_request",
+        "path": ".github/workflows/ci.yml",
+        "status": "completed",
+        "conclusion": "success",
+        "pull_requests": [],
+        "qualification": "Empty run pull_requests is disclosed; no direct PR-number binding invented"
+      },
+      "required_checks": [
+        {
+          "id": 114509301542,
+          "name": "Quote Hub tests",
+          "head_sha": "19665ac566ca818a89db5a5e66491df44f39231a",
+          "status": "completed",
+          "conclusion": "success",
+          "check_suite_id": 103368137003,
+          "app_id": 15368,
+          "job_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38152720081/job/114509301542"
+        },
+        {
+          "id": 114509301712,
+          "name": "Ingest + signal-layer tests",
+          "head_sha": "19665ac566ca818a89db5a5e66491df44f39231a",
+          "status": "completed",
+          "conclusion": "success",
+          "check_suite_id": 103368137003,
+          "app_id": 15368,
+          "job_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38152720081/job/114509301712"
+        },
+        {
+          "id": 114520803682,
+          "name": "Terminal typecheck + tests",
+          "head_sha": "19665ac566ca818a89db5a5e66491df44f39231a",
+          "status": "completed",
+          "conclusion": "success",
+          "check_suite_id": 103368137003,
+          "app_id": 15368,
+          "job_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38152720081/job/114520803682"
+        }
+      ],
+      "all_ten_jobs_and_five_browser_shards_success": true,
+      "evidence": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-release-consumers-20261011/941-merged-source-required-ci-parent-qualification.json",
+        "bytes": 9630,
+        "sha256": "1b4d865a172bd3a8cf4e73d021af0a56e55ae08dc8fb170cf73431fdc26f9d85"
+      }
+    },
+    "release": {
+      "operation": "canonical-volume-release-292357-20261011-v1",
+      "exec": 5784,
+      "controller": 63176,
+      "child": 63178,
+      "started_at": "2026-10-11T16:56:35.301268+00:00",
+      "settled_at": "2026-10-11T17:03:21.979258+00:00",
+      "exit_code": 0,
+      "builder_rc": 0,
+      "post_guard_rc": 0,
+      "unchanged_reviewed_wrapper": "bd22d2fed7e558d02a4252c0abfa00beb59a37f0bf96e1a33187229c7e673a84",
+      "installed_head": "292357daa86525d6c488fb2042340f782cf91e60",
+      "marker": "292357daa86525d6c488fb2042340f782cf91e60",
+      "tree": "9e85a0d63a7af566408092291df263131156019d",
+      "clean_source": true,
+      "qualified_selected_runtime_files": 10,
+      "source_bytes_match_qualified_head": true,
+      "base_mount": {
+        "uuid": "71dc6155-3f93-4370-a971-b89a6d87a203",
+        "fstype": "ext4",
+        "fsroot": "/"
+      },
+      "live_bind": {
+        "uuid": "71dc6155-3f93-4370-a971-b89a6d87a203",
+        "fstype": "ext4",
+        "fsroot": "/live-terminal"
+      },
+      "root_available_bytes": 15881437184,
+      "volume_available_bytes": 33841848320,
+      "services": {
+        "terminal.service": [
+          "3027133",
+          "active",
+          "running"
+        ],
+        "quote-hub.service": [
+          "2756258",
+          "active",
+          "running"
+        ],
+        "macro-api.service": [
+          "2957075",
+          "active",
+          "running"
+        ],
+        "rsyslog.service": [
+          "491178",
+          "active",
+          "running"
+        ]
+      },
+      "public_html": {
+        "http": 200,
+        "bytes": 96291,
+        "sha256": "18b640573ce8024984d7e95a78a078451e44342810d505b5fdf81196fd3a14ab",
+        "asset_generation": "292357daa86525d6c488fb2042340f782cf91e60",
+        "generation_in_response": true
+      },
+      "preflight_evidence": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-release-consumers-20261011/292357-canonical-release-preflight.json",
+        "bytes": 1118,
+        "sha256": "614410463fe71fdd6541b320e0a6b5f72769ee6670c38b524b657444bf85d44d"
+      },
+      "installed_evidence": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/marketontology-release-consumers-20261011/292357-installed-source-guards-health-parent-qualification.json",
+        "bytes": 4722,
+        "sha256": "df39146693ddc40aaa4dd790e99413a1a81098e9df9f4b05a5e1b9306bf8584c"
+      },
+      "limitations": "Installed source/service/public health only. No replay of abf/707/storage/input handoff/producer/schedules. No owned VPS pause or restore due. Initial post-read helper path mapping corrected to existing canonical /usr/local/bin/terminal-data; no validator weakened."
+    },
+    "browser": {
+      "human_instruction": "Direct reply to parent restoration card: do it yourself",
+      "native_attempt": "Chrome getApp timeout, no input",
+      "existing_browser_attempt": "Chrome3 unavailable, no input",
+      "official_inventory": "Chrome running but extension browser absent; MCP Apps4/IAB5 do not establish existing Chris-profile access",
+      "last_actual_ui": "T1502 ReplayOFF/fullscreen exited/MU3D4studies, SettingsTerminalsection and responsive DevTools1440x900 open; current UI state unobserved",
+      "cleanup_owner": "Parent retains final cleanup/live acceptance; B01a128b7 owns bounded supported connection diagnosis, parent input idle",
+      "owner_return": "No Chrome extension host; native getApp timeouts including official CUA reset. Owner reports Computer Use own-ChatGPT-settings refusal and preserves it. No private path, alternate profile/browser, credential export or UI input.",
+      "one_existing_human_connection_request": "Owning B asked once to open ChatGPT extension in existing Chris profile using Cmd+Shift+. and report panel result. Actual response/reconnection pending; no duplicate root question. This supersedes the old close-DevTools-alone diagnostic.",
+      "affected_live_UI_accepted": false,
+      "fault_races": "Not triggered on real portfolio/thesis/alert data. Consequential941 POST/PATCH and939 mutation/readback proofs need an admitted disposable identity. Existing state absent must be untriggered.",
+      "evidence": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/browser-self-restoration-capability-20261011.json",
+        "bytes": 3198,
+        "sha256": "26bbb61209392373398b0e707723edde66f0b1dd08a086482cf7ee88281ca44f"
+      }
+    },
+    "coordination": {
+      "authorization_evidence": "Actual B userMessage01a12bdb-58bf-7b91-8e0b-c753c603aa55 instructs work with release owner for live checks, plus current direct do-it-yourself response. Incoming peer alone is not authorization.",
+      "delivery": "Two necessary first-party messages to owning B succeeded: no-outstanding-UI/custody return and settled release/source result. No routine ACK/status ping.",
+      "931": "Original retained review recovery is B/Fabric-owner scope; no released/installed/live931 acceptance. No duplicate review, source writer or deployment.",
+      "shared_hosts": "T1646 bounded Audit20 no-reservation remains; independent E20/other writer ownership unverified and not released."
+    },
+    "remaining_live_acceptance": [
+      "Actual existing-Chris Chrome connection/tab/control return, then self-restoration",
+      "939 normal portfolio-targets GET/UI at390x844/820x1180/1440x900 without editing/autosave/POST/fault",
+      "935 existing Active thesis/history/inspector EN/ZH and legitimate West/East preferences atthree sizes with restoration; absent states untriggered",
+      "941 existing thesis/proposal selection normal reads; no real mutation or manufactured race",
+      "931 original-review/release prerequisite before later live acceptance"
+    ],
+    "retained_frontiers": {
+      "shared_host_custody": "current_capability_frontier_20261011T1646",
+      "fabric": "current_capability_frontier_20261011T1600",
+      "prior_935_source_CI": "current_capability_frontier_20261011T1547",
+      "prior_paid_Replay": "current_capability_frontier_20261011T1502"
+    },
+    "independent_holds": "781reserved numeric review, IW2explicit cyber HUMAN, SQL/rights/security,887exactALLOW,MoneySCP/OAuthEFFECT_UNKNOWN,A19 and873actual publication unchanged. Prior refused/uncertain Fabric effects remain same-id/carrier unreplayed.",
+    "next_ready_phase": "Actual owner browser reconnection/capability event enables parent read-only paid acceptance and cleanup. Consume actual931/platform/producer returns. No routine browser/provider/runtime/CI/credential polling, duplicate question/observer/builder or idle principal.",
     "whole_audit20_complete": false
   }
 }
