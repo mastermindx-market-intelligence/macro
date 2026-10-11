@@ -1024,6 +1024,16 @@ FINANCE_REGISTRATION_FACTS = FinanceRegistrationFacts(
 # table above carries additional §8 columns (entry_kind, profile_id,
 # sector_ref, anchor_theme_id, slice_keys, views); the share with the shell
 # is exactly this tuple.
+#: Typed HOLD code (H1 ruling, option B, #7870 2026-10-11). The shared shell
+#: keys every registration on a canonical ``anchor_theme_id`` plus a non-empty
+#: ``slice_keys`` tuple; Finance's §8 facts are a ``sector_profile`` with no
+#: theme anchor and no slices, so Finance is NOT registered on the shell. The
+#: hold is raised BEFORE the shell constructor is reached, so it names the
+#: real cause (entry_kind semantics still pending) rather than whatever
+#: structural gap the constructor would report. Retired only by the §8
+#: sector_profile migration that supplies accepted anchor/slice semantics.
+VERTICAL_REGISTRATION_HELD_SECTOR_PROFILE: str = "vertical_registration_held:sector_profile"
+
 _VERTICAL_REGISTRATION_FIELDS: tuple[str, ...] = (
     "anchor_theme_id",
     "slice_keys",
@@ -1052,38 +1062,55 @@ def _resolve_vertical_registration_class() -> Any:
     return cls
 
 
-def registration_entry_or_refusal() -> Any:
+def _facts_are_theme_registrable(facts: FinanceRegistrationFacts) -> bool:
+    """True only when the facts carry what the theme-keyed shell requires:
+    a string ``anchor_theme_id`` and a non-empty ``slice_keys`` tuple. The
+    shell's own grammar guards still run on construction; this only decides
+    whether construction is attempted at all."""
+    return isinstance(facts.anchor_theme_id, str) and bool(facts.slice_keys)
+
+
+def registration_entry_or_refusal(
+    facts: FinanceRegistrationFacts = FINANCE_REGISTRATION_FACTS,
+) -> Any:
     """Return the entry the shared shell expects. Refusals (all adapter
     codes — neither the shell's refusal nor a bare ``ValueError`` leak
-    through):
+    through), in precedence order:
 
     * ``shared_shell_unavailable`` — the shell is not on the carrier. This
-      is the EXPECTED state on this worktree (§8 is pending adjudication).
-    * ``vertical_registration_refused:<ExcType>`` — the shell is present but
-      construction raised a non-``TypeError`` exception.
+      is the state on origin/main until #7870 merges.
+    * ``vertical_registration_held:sector_profile`` — the shell is present
+      but ``facts`` carry no theme anchor / slices (the §8 ``sector_profile``
+      entry_kind is pending). Raised before any construction, so the hold
+      is independent of the shell's field count.
+    * ``vertical_registration_refused:<ExcType>`` — the shell is present,
+      the facts are theme-registrable, and construction raised a
+      non-``TypeError`` exception.
     * ``TypeError`` — propagate the shell's structural error so the carrier
       diagnoses the signature gap, exactly as the shell's design
       requires. The adapter never silently coerces.
 
-    The structural construction is performed BEFORE any IO so a TypeError
-    surfaces immediately and the carrier classifies it.
+    ``facts`` defaults to :data:`FINANCE_REGISTRATION_FACTS`; tests inject
+    a theme-registrable double to exercise the construction branches.
     """
     cls = _resolve_vertical_registration_class()
     if cls is None:
         raise FinanceRegistrationRefusal("shared_shell_unavailable")
+    if not _facts_are_theme_registrable(facts):
+        raise FinanceRegistrationRefusal("vertical_registration_held:sector_profile")
     kwargs = {
-        "anchor_theme_id": FINANCE_REGISTRATION_FACTS.anchor_theme_id,
-        "slice_keys": FINANCE_REGISTRATION_FACTS.slice_keys,
-        "schema_id": FINANCE_REGISTRATION_FACTS.schema_id,
-        "evidence_schema_id": FINANCE_REGISTRATION_FACTS.evidence_schema_id,
-        "definition_version": FINANCE_REGISTRATION_FACTS.definition_version,
-        "compose": FINANCE_REGISTRATION_FACTS.compose,
-        "select_evidence": FINANCE_REGISTRATION_FACTS.select_evidence,
-        "load_bundle": FINANCE_REGISTRATION_FACTS.load_bundle,
-        "title_en": FINANCE_REGISTRATION_FACTS.title_en,
-        "title_zh": FINANCE_REGISTRATION_FACTS.title_zh,
-        "note_en": FINANCE_REGISTRATION_FACTS.note_en,
-        "note_zh": FINANCE_REGISTRATION_FACTS.note_zh,
+        "anchor_theme_id": facts.anchor_theme_id,
+        "slice_keys": facts.slice_keys,
+        "schema_id": facts.schema_id,
+        "evidence_schema_id": facts.evidence_schema_id,
+        "definition_version": facts.definition_version,
+        "compose": facts.compose,
+        "select_evidence": facts.select_evidence,
+        "load_bundle": facts.load_bundle,
+        "title_en": facts.title_en,
+        "title_zh": facts.title_zh,
+        "note_en": facts.note_en,
+        "note_zh": facts.note_zh,
     }
     try:
         return cls(**kwargs)
@@ -1117,6 +1144,7 @@ __all__ = (
     "FinanceRegistrationFacts",
     "FINANCE_REGISTRATION_FACTS",
     "_VERTICAL_REGISTRATION_FIELDS",
+    "VERTICAL_REGISTRATION_HELD_SECTOR_PROFILE",
     "compose",
     "select_evidence",
     "load_bundle",
