@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-11T19:51:56.203743+00:00",
-  "count": 2827,
+  "generated_at": "2026-10-11T20:51:42.191246+00:00",
+  "count": 2830,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -266,6 +266,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-kfjyotw4egb-a35dda",
+      "title": "Global Economics Wrap Up October 9, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:45:24Z",
+      "summary_points": [
+        "Global PMI Strength: Global composite PMI at 53.4 (+0.9pt) signals robust economic momentum across manufacturing (53.0) and services (54.5), with rising employment and prices—key fundamental indicator for risk assets and USD.",
+        "Fed Policy Outlook: FOMC minutes confirm no October hike but December rate increase to 4.425% expected; internal splits (Wallace vs.",
+        "Jefferson/Williams) create policy uncertainty critical for fixed income and USD positioning.",
+        "US Rate Impact on Growth: Higher rates to drag 2027 GDP by 0.2pp (rising to 0.5pp if sustained), with specific impacts: residential investment (-2pp), consumer spending (-0.2pp), capex (-0.3pp)—quantifiable risk for equity and credit portfolios.",
+        "European Sovereign Stress: French 10-yr bond spreads at 2012 highs due to fiscal contraction and borrowing costs, triggering sovereign risk spillovers and ECB policy concerns—direct threat to European bond markets and equity valuations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-j6osxrfz8e9-44f8e7",
       "title": "End of Week Market Intelligence set up",
       "institution": "Goldman Sachs",
@@ -302,6 +323,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-5djprswngqv-9cbb43",
+      "title": "India Weekly Kickstart NIFTY settled flat w w",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:45:03Z",
+      "summary_points": [
+        "RBI's calibrated tightening & commodity margin pressure: Repo rate hiked to 5.50% amid supply-side shock concerns; commodity inflation (US-Iran war, oil prices) pressures margins in autos, metals, mining, and FMCG sectors.",
+        "FII outflow & India's valuation premium: $31bn FII net outflow YTD 2025; MSCI India trades at 94% premium to MAXAPJ, signaling significant overvaluation vs Asia-Pacific.",
+        "Non-commodity earnings growth vs margin pressure: Consensus expects 15% yoy profit growth for MSCI India ex-commodities (Q2 FY27/Q3 CY26), but net profit margin expected to cut to 9.8%.",
+        "Tech sector disconnect: MXINOT (Tech) shows -29% YTD price performance vs consensus 30% ROE and 10% EPS growth, indicating potential mispricing or sector-specific risks.",
+        "Domestic inflows surge vs FII outflows: Active domestic equity fund inflows rose 19% to $3.1bn in August (SIP-driven), offsetting $31bn FII outflow YTD."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 19,
       "language": "en",
       "needs_metadata": false
     },
@@ -382,6 +424,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ayiijj63mgv-f053ed",
+      "title": "US Weekly Kickstart The outlook for corporate equity supply and demand in 2027",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-10T03:44:06Z",
+      "summary_points": [
+        "Net Equity Supply Balance: $600B 2027 equity issuance offset by $1.7T S&P 500 buybacks (15% YoY growth), creating neutral net supply despite AI-driven follow-ons ($65B) and M&A.",
+        "AI Infrastructure Dominance: 45% of 2026 YTD follow-on issuance AI-related ($65B), reflecting capital allocation to AI infrastructure as a core tech sector driver.",
+        "Rate Sensitivity Threshold: 10-yr TIPS yield rises >1.5 std dev historically correlate with slowed IPOs/follow-ons; current yield spike (125bp YoY) pressures issuance.",
+        "Hyperscaler Structural Shift: $1.2T capex, $1.1T cash flow, and debt-fueled growth (35% debt-funded capex) imply cash flow exceeding capex in 2027-2028, limiting equity issuance incentive.",
+        "Debt vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 25,
       "language": "en",
       "needs_metadata": false
     },
