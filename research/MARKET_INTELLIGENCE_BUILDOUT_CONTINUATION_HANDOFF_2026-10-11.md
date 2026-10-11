@@ -29,7 +29,7 @@ A cold stranger resumes from this file alone: read §2 (what is running and unde
 | wave | content | exit gate | state |
 |---|---|---|---|
 | W1–W7 | foundation, contracts, writers, flags, receipts (10-06 file) | merged dark | DONE (merged) |
-| W8-N | Package N live: Alpaca-sourced Benzinga headlines (#8809) → P2 VPS enable + canary → P1b minors → P3 Terminal rail | canary `live` with growing rows; anon `/terminal` `newsRailEnabled":true` at the same deployment id | #8809 MERGED `9b1da2b55e6e`; P2/P1b launching |
+| W8-N | Package N live: Alpaca-sourced Benzinga headlines (#8809) → P2 VPS enable + canary → P1b minors → P3 Terminal rail | canary `live` with growing rows; anon `/terminal` `newsRailEnabled":true` at the same deployment id | #8809/#8823/#8828 MERGED; P2 BLOCKED on 401 (pre-rotation VPS Alpaca pair) → #8838 secret-sync armed; P3 after the canary |
 | W8-I | Package I flag on (#8811) | `/api/integrated-answer/v1/AAPL` 404 → 401 after the VPS pull + restart | CI GREEN; AER review RUNNING |
 | W8-MM | market-memory unit recovery: #8807 massive manifest refresh, #8812 sentinel served cap, DX2 torn-pending discard, D-identity idempotent ingest, D-options pit EACCES tolerance + stage token | next SCHEDULED run of each unit logs success (or, for options, a stage token) | #8807 CI GREEN + review PASS; #8812 CI pending; DX2 + DID lanes RUNNING |
 | W8-F | #7711 options-audit V2 charter judgment | charter satisfies WS:OPTIONS-CONTEXT-AUDIT-PREREG-V2 and the seat's ten gaps; docs-only merge or REQUEST_REPAIR once | F docs lane RUNNING |
@@ -43,11 +43,11 @@ orchestrator outputs `$S/../tasks/<id>.output`; fabric kit
 
 | lane | host / branch | PR · head | verdict · seat acts |
 |---|---|---|---|
-| ORCH-N (Opus `ad8bb35435bc5fe52`) | ledger `$S/orch_n_alpaca_ledger.md`, packet `$S/orch_n_alpaca_return.md` | — | P1 DELIVERED; seat MERGED #8809; "MERGED 9b1da2b55e6e" sent 14:0xZ → P2 + P1b |
+| ORCH-N (Opus `ad8bb35435bc5fe52`) | ledger `$S/orch_n_alpaca_ledger.md`, packet `$S/orch_n_alpaca_return.md` | — | P1 DELIVERED; seat MERGED #8809; "MERGED 9b1da2b55e6e" sent 14:0xZ → P2 + P1b; P2 BLOCKED 17:04Z on HTTP 401 (`SESSION END: EXACT_HUMAN_GATE`, resumable) → seat remedy #8838; CONTINUE after the dispatch succeeds |
 | N build r2 / repair r3 | ubuntu1, `claude/mi-n-alpaca-provider-20261011` | #8809 · `1d8a481ce9f4` | MERGED `9b1da2b55e6e` (ready + `--match-head-commit` in one act; 10 paths blob-verified on origin/main) |
 | N review r1 | ubuntu3 (independent host) | #8809 | `N-ALPACA-REVIEW: PASS 1d8a481c`, R1–R11, 0 blocker, 4 MINOR (M1–M4 → P1b) |
 | N ci-pack0 heal r1 | ubuntu2, `claude/mi-ci-pack0-weight-heal-20261011` | (draft to open) · watcher `blwk9he3d` 150 s | curates the #8630 EVAL-1 step into its own `scope: exclusive` job; ceiling unchanged; seat readies + merges on its own green |
-| N P2 (VPS enable + canary) | VPS `146.190.142.17` | — | launching; proof = unit active, canary `live`, rows growing across two reads ≥10 min apart |
+| N P2 (VPS enable + canary) | VPS `146.190.142.17` | #8838 · `dbdf75a58f00` (deploy-alpaca-secrets.yml) | BLOCKED on HTTP 401 — pre-rotation Alpaca pair on the VPS (DSC:VPS-ALPACA-CREDENTIALS-SILENTLY-REJECTED-SINCE-2026-08-04); #8838 armed merge-on-green, watcher `bbyqxi0ml` 150 s; dispatch from main after merge (a branch dispatch 404s) → ORCH-N `--disarm`/`--arm` → proof = unit active, canary `live`, rows growing across two reads ≥10 min apart |
 | N P1b (M1–M4 minors) | fabric glm-5.3 build, own branch off fresh origin/main | — | launching (cap 2 with the heal lane) |
 | N P3 (Terminal rail) | Terminal host drop-in `ticker-news-rail.conf` | — | after P2 canary; proof `newsRailEnabled":true` at `.deployment-id 707648d52014` |
 | ORCH-OPS (Opus `a5ccb27d864b1f6cb`) | ledger `$S/orch_ops_ledger.md` | — | RUNNING; rulings 1–4 delivered (§3) |
@@ -66,14 +66,16 @@ orchestrator outputs `$S/../tasks/<id>.output`; fabric kit
 |---|---|---|---|
 | N adapter #8809 | `9b1da2b55e6e` | MERGED | — |
 | N P1b #8823 | `d39672a34aaa` (squash of `af1b3e102267`) | MERGED 14:48:18Z, blob-verified 6/6 | — |
-| N SKYD-IDENTITY | DRAFT #8828 head `bf5b534c300e` (unarmed; `data/reference/` regen withheld) | DELIVERED; seat ruling = conditional FOLD C1–C4 (C4 PASS); C2 lane + review RUNNING; fold held | ORCH-N, watchers `bq1h4qpvu` (review, ubuntu3) + `bvbicvq2i` (C2, ubuntu2) |
-| N P2 / P3 | VPS writer + Terminal drop-in | QUEUED behind SKYD | ORCH-N |
+| N SKYD-IDENTITY | #8828 MERGED `c50af4eb0421` (squash of fold head `005c81ed737e`; 8/8 blobs verified; VPS `/opt/macro` at c50af4eb0421 16:5xZ) | MERGED 16:5xZ; production proof = the P2 canary (after #8838) | — (DSC:A-VENUE-MOVING-RENAME-MISSES-THE-COMMITTED-LISTING-KEY) |
+| N P2 / P3 | VPS writer + Terminal drop-in | P2 BLOCKED on 401 (pre-rotation VPS Alpaca pair) → #8838 `dbdf75a58f00` OPEN, armed merge-on-green (DEC:VPS-ALPACA-PAIR-REFRESHED-FROM-REPO-SECRETS-BY-DISPATCH-WORKFLOW); P3 queued behind the canary | seat (#8838) → ORCH-N |
+| DIDC #8830 | `8a75b657d821` (squash of `3418a0e579bf`) | MERGED 17:26:55Z, blob-verified 2/2; PRODUCTION_PROOF 17:33Z (moved-HEAD run exit 0) | seat; next = identity-unit budget lift PR (165/180 s) |
 | N heal #8824 | — | CLOSED (superseded by #8805 `413e253ada36`) | — |
 | I #8811 | `70f42ccba7ca` | PRODUCTION_PROOF (401) | — |
 | MM-B #8807 | `616b1b8703fa` | MERGED, VPS pulled; proof after 10-12 nightly | ORCH-OPS `a5ccb27d864b1f6cb` |
 | MM-E #8812 | `c782664b6361` | PRODUCTION_PROOF (14:42:07Z tick: 2 MB-cap error gone; remaining red = #8748 intake breach) | — |
 | MM-DX #8816 | `3657d0ebc075` | MERGED; activation waits on MM-B proof | ORCH-OPS |
 | MM-DID #8819 | `b8a839236ddd` (squash of `a95921b01a93`) | MERGED 14:50:31Z, 2/2 blobs verified; proof = first identity-timer run after 15:30:50Z (journald: typed counts + divergence_count, no KeyError) | ORCH-OPS reads once, watcher `biyqfcy0u` |
+| MM-DIDC #8830 | head `3418a0e579bf` → squash `8a75b657d821` | MERGED 17:26:55Z (blob-verified 2/2); PRODUCTION_PROOF 17:33:10Z — timer run saw HEAD move 8a75b657→b79cd122 mid-run, exit 0, completion_commit ≠ deployed_commit | ORCH-OPS read 17:34:37Z (`vps_identity_read_1729.out`), seat-judged; OPEN: unit ran 165 s of TimeoutStartSec=180 under CPUQuota=50% |
 | MM-DO #8818 | `56e269cf2e3f` (squash of `d319fde9b192`) | MERGED 14:59:22Z, 6/6 blobs; FAILURE LINE PRODUCTION_PROOF (15:00:23Z stage token); CAPTURE = EXACT_HUMAN_GATE (403 options-snapshot entitlement) | — (Chairman: plan entitlement) |
 | F #7711 | `d1b93722ec41` | MERGED | — |
 | W8 records #8820 | `4a27bedaabe9` | MERGED | — |
@@ -283,31 +285,42 @@ read credential files or shim logs.
 
 | package | gate | owner | this seat's move |
 |---|---|---|---|
-| N | #8828 fold on C1/C2/C3 (C4 PASS) → READY_FOR_SEAT_MERGE; P2 canary live + growing rows; P3 rail flip | ORCH-N → seat | judge the fold by artifact (six-row delta, additions-only counts, rc 0, two code-gate jobs green, G4a/b/c in body) → hold scan → ready + merge → blob-verify → tell ORCH-N the sha; verify P2/P3 proofs by artifact |
+| N | #8828 MERGED c50af4eb0421; P2 BLOCKED on 401 → #8838 secret-sync merge + dispatch; then canary live + growing rows; P3 rail flip | seat (#8838) then ORCH-N -> seat | merge #8838 on concluded green, dispatch from main (restart_press_feeds=false), SendMessage ORCH-N CONTINUE; then judge READY_FOR_SEAT_PROOF by artifact: `systemctl is-active macro-ticker-news.service`, two health reads >=10 min apart with rows growing, `newsRailEnabled":true` at `.deployment-id 707648d52014` |
 | I | — | — | PRODUCTION_PROOF reached (401 at the route) |
 | MM-B | technicals replay after the 10-12 nightly | ORCH-OPS | read the first :53 tick after ~02:0xZ; no hand-start |
 | MM-E | first sentinel tick after the pull | ORCH-OPS (`bjaodhbad`) | accept the tick receipt |
 | MM-DX | W2C activation by update.sh after MM-B proof | ORCH-OPS | read the experience tick receipt |
-| MM-DID | first identity run after the VPS pulled b8a8392 (timer 15:30:50Z) | ORCH-OPS (`biyqfcy0u`) | accept the journald receipt: typed counts + divergence_count, no KeyError |
+| MM-DID | #8819 PRODUCTION_PROOF (15:30Z run: typed counts + divergence_count, no KeyError; it then died on the checkout race the DIDC fixes) | — | accepted |
+| MM-DIDC | #8830 concluded green -> seat merge -> first moved-HEAD identity run | ORCH-OPS (`bb4o086m3`) -> seat | hold scan -> ready + merge `--match-head-commit 3418a0e579bf…` -> bare fetch + 2-path blob compare; proof = exit 0 with completion_commit != deployed_commit (one journald read) |
 | MM-DO | capture entitlement | Chairman (money) | failure line PROVEN at 15:00:23Z; capture = EXACT_HUMAN_GATE; nothing to poll — an entitled key at the LoadCredential path + one scheduled run is the release |
 | main proof | — | — | SUCCESS 15:12:02Z; a later red on a post-186dbdce scripts/** head needs a LATER descendant proof (never re-dispatch over an in-flight one) |
-| W8-records-3 | this PR | seat | PR → concluded checks → merge → blob-verify |
+| W8-records-3 | #8829 | — | MERGED `0a9f41f35fc8`, 4/4 blobs verified |
+| W9-records | this PR | seat | PR -> concluded checks -> merge -> blob-verify |
 
 ## 7. NEXT (critical path first)
 
-1. #8828 fold: ORCH-N proves C1/C2/C3 (C4 PASS), launches ONE fold commit (fresh-main merge +
-   head-builder regeneration), reads `dataos-identity-seams` + `ticker-news-qbus` on the fold head,
-   makes the single PR-body edit (G4a/b/c, C2 counts, before/after for C3), returns
-   READY_FOR_SEAT_MERGE with the exact sha + the DSC falsifier/so_what.
-2. Seat: judge by artifact → hold scan → `gh pr ready 8828 && gh pr merge 8828 --squash
-   --match-head-commit <sha>` → bare `git fetch origin` + per-path blob-verify → SendMessage ORCH-N.
-3. ORCH-N P2 (`--check/--install/--arm` + canary after the VPS pull) → P3 drop-in only on a live
-   canary with growing rows across two reads ≥10 min apart; proof `newsRailEnabled":true` at
-   `.deployment-id 707648d52014`.
-4. #8819 proof: ORCH-OPS's one read of the 15:30Z identity run. Records wave after the SKYD merge
-   (venue-moving-rename DSC; P2/P3 proofs). This records PR → merge → blob-verify.
-5. Post-nightly proofs (B, D-experience) on 10-12; ONE #1202 checkpoint at the W8/W9 boundary;
-   memory refresh; Chairman blocker list LAST; `SESSION END: <STATE>`.
+1. #8838 deploy-alpaca-secrets.yml: merge on concluded green (armed; watcher `bbyqxi0ml`) ->
+   `gh workflow run deploy-alpaca-secrets.yml --ref main -f restart_press_feeds=false` (a branch
+   dispatch answered 404: workflow_dispatch resolves against the default branch) -> on success
+   SendMessage ORCH-N CONTINUE (`ticker-news-setup.sh --disarm` then `--arm`; canary after the VPS
+   pull) -> P3 drop-in only on a live canary with growing rows across two reads >=10 min apart; proof
+   `newsRailEnabled":true` at `.deployment-id 707648d52014`. Seat judges READY_FOR_SEAT_PROOF by
+   artifact and records PRODUCTION_PROOF for Package N (#8828 is MERGED c50af4eb0421; its proof is
+   this canary). marketing-press-feeds stays un-restarted until its cursor/dedupe semantics are read.
+2. DIDC #8830 MERGED 17:26:55Z as 8a75b657d821 and PRODUCTION_PROOF at 17:33:10Z (the 17:30Z
+   timer run saw HEAD move 8a75b657->b79cd122 mid-run, exit 0, completion_commit != deployed_commit;
+   ORCH-OPS read, seat-judged; ORCH-OPS ended 0/2 lanes). Then the covering main proof: `gh workflow
+   run ci.yml --ref main` only after run 38158841888 concludes and #8838 merges (the authority freeze
+   on #8830 and #8838 clears on one main-descendant SUCCESS; never dispatch over an in-flight run).
+   NEW: identity-unit budget lift — both runs used ~165 s of TimeoutStartSec=180 at CPUQuota=50%
+   (`app/deploy/macro-market-memory-identity.service`); small unit-file PR before it times out.
+3. Seat decision after the DIDC proof: identity timeout runway (5-20 days at 69 keys, 78-93% of
+   180 s) — memoize `_project_snapshot` / load store metadata once; never a TimeoutStartSec or
+   CPUQuota raise. Commission as its own lane with a before/after CPU-second measurement gate.
+4. Post-nightly proofs (B, D-experience) on 10-12 after the ~02:0xZ nightly + first :53 tick;
+   data-health.yml's next main run after c50af4eb0421 should green on the regenerated artifacts.
+5. This records PR -> merge -> blob-verify; ONE #1202 checkpoint at the W8/W9 boundary once P2 or
+   the DIDC proof lands; memory refresh; Chairman blocker list LAST; `SESSION END: <STATE>`.
 
 ## 8. Blocker list for the Chairman (deliver LAST, verbatim-safe)
 

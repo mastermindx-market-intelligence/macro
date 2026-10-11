@@ -4662,6 +4662,20 @@ CURATED_EXCLUSIVE = {
     # that probe to 5,802 (main) / 5,805 (this head) against its 5,800 ceiling.
     # Register the reviewed 18-path owner; closure audits and ceilings stay fixed.
     "information-to-price-eval-receipts",
+    # 2026-10-11 lineage wave (#8802): leader-radar-unit gained the lineage
+    # descriptor step (+3 weight) while still an opaque always-on selector:
+    # inference smeared the builder's jinja loader (templates/**), the
+    # integration suite's data/site roots and the lineage suite's AST import
+    # scan (engine/**, scripts/**) onto it, so two packing probes breached on
+    # the PR's merge ref (templates/index.html 5,806 > 5,800, where main was
+    # already over at 5,802; scripts/build_free_content.py 5,603 > 5,600).
+    # paths: = the measured 43-path import/read closure + the rendered
+    # template and its include chain. Measured on the merged FULL checkout:
+    # index.html 5,806 -> 5,781, build_free_content 5,603 -> 5,578, plan_book
+    # 5,563 -> 5,538; the fallback tier drops to (); ceilings unchanged. Derive
+    # the closure against a FULL checkout: the two site/ JSON literals are
+    # invisible on a sparse tree, exactly as the options-estate-guards note warns.
+    "leader-radar-unit",
 }
 
 

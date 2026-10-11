@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-11T13:59:23.701721+00:00",
+  "generated_utc": "2026-10-11T15:51:04.832575+00:00",
   "as_of": "2026-10-11",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -6785,14 +6785,6 @@
       },
       {
         "ticker": "NVNI",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "PSKY",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -21288,14 +21280,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "IPEXR",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "JENA-RI",
         "category": "Delistings",
         "confidence": "high",
@@ -21928,7 +21912,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "LGNZZ",
+        "ticker": "LGNYZ",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -22144,7 +22128,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "FHN-PF",
+        "ticker": "FHN-PH",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -25552,7 +25536,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "AQNB",
+        "ticker": "AGQPF",
         "category": "Divestitures",
         "confidence": "high",
         "activist": false,
@@ -25816,7 +25800,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "RWTQ",
+        "ticker": "RWTN",
         "category": "Divestitures",
         "confidence": "medium",
         "activist": false,
@@ -26008,7 +25992,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "TCBIO",
+        "ticker": "TCBI-PB",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -26334,14 +26318,6 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
-      },
-      {
-        "ticker": "MSSAF",
-        "category": "Liquidations",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Liquidations"
       },
       {
         "ticker": "PRGS",
