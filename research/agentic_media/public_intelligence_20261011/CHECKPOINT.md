@@ -298,3 +298,9 @@ No autonomous continuation after a chat reply is claimed. GitHub and this Agent 
 record carry the frontier; native workers are bounded source labor, not durable
 background operators. Do not replay the completed provider generation merely to
 reconstruct this evidence.
+
+## Continued source delivery and staging cohort repair
+
+PR #8786 was normally fast-forwarded while disarmed to `b76706cfb9ccdd713d66ef29dca2d00c430c04e6` and re-armed after exact-head verification. CI 38137036954 is the new proof. The earlier parent-imposed source-push hold was based on an overbroad reading of the controller capacity cap: that cap limits automatic update-branch refreshes, not ordinary authored implementation delivery. No manual proof-only refresh bypass was made.
+
+The next build phase is saved as `0978a42121cf853d2542d7e3ff730afca9b1faf4` on the helper-created cohort recovery branch. It prevents a new long paragraph from passing while causing a shorter existing staged paragraph to fail the novelty gate. Both original provider drafts remain unchanged and are still rejected as an overlapping cohort. Following local integration of #8786 source and committed site materialization, the bounded combined suite passed **209 tests, no skips**. Exact command and limits are in `STAGED_COHORT_REPAIR.md`. Protected landing, installation, public rights and customer acceptance remain separate; current release observations belong to the existing cumulative PR comment.

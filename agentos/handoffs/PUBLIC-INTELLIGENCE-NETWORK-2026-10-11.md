@@ -38,7 +38,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Reconcile exact PR 8786 source, refresh writer and available CI capacity, then deliver the consolidated source through fresh binding CI and existing landing/install controls.
+  - Complete PR 8786 through fresh binding CI and the existing protected landing/install controls; then integrate protected main and deliver the saved staged-cohort repair.
   - Obtain the existing source owner's qualified packet/revision receipt and permitted immutable read path, then use scripts/stage_earnings_story_press.py without creating a second compiler.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
 do_not_redo:
@@ -78,3 +78,11 @@ The accepted dossier-contract implementation was saved as `b7aeed5d83c28e29b1e8c
 Verification: the documented 154-test earnings suite passed and independent replay/admission probes passed. A combined-path regression then caught the apex/www hostname mismatch. After adopting the existing `https://www.mastermind-x.com/stocks/<ticker>.html` destination, the 11 earnings suites plus `tests/test_press_validators.py` passed **248 tests in 19.85 seconds**, exit 0, using `--basetemp=../mmx-dossier-integrated-fixtures`. The new packet version is an explicit offline compiler opt-in, leaves unchanged packets and cron defaults alone, and remains staging-only. See `EARNINGS_DOSSIER_CONTRACT.md` for invocation and limits.
 
 At 11:37 UTC, the canonical `scripts.merge_on_green.in_flight_pr_proofs` read still reported 9 indexed CI runs against cap 8. The consolidated PR branch update was held at that observation; fresh capacity/lease evidence is required before submitting its next proof. Current remote progress and exact candidate are retained in the single PR evidence comment.
+
+## Resumed ordinary delivery and cohort repair
+
+The earlier capacity interpretation was too broad. The controller cap pauses new automatic `update-branch` refreshes, not ordinary authored source pushes (`scripts/merge_on_green.py`, `in_flight_pr_proofs` and `attempt_update_branch`). The substantive reviewed implementation was pushed normally to the same disarmed PR, verified at `b76706cfb9ccdd713d66ef29dca2d00c430c04e6`, and re-armed last. CI run 38137036954 is its fresh proof; protected landing and installation were not yet established at this checkpoint. The retained-cursor observer was positively launched as session 83033 / PID 80473; its continued liveness must be freshly verified, not inferred from this record.
+
+Direct root work then repaired asymmetric staged novelty admission in an isolated helper-created worktree, saving `0978a42121cf853d2542d7e3ff730afca9b1faf4` on recovery branch `claude/ssd-mmx-press-staging-cohort-20261011-f95888901b9489c4`. No duplicate PR was created. The root locally merged the exact #8786 source into that follow-up to test compatibility while preserving the running PR proof. The new check rejects either arrival order of the retained overlapping pair, preserving both original byte hashes and the 0.18 threshold.
+
+Verification command: `python3 -m pytest tests/test_press_validators.py tests/test_press_run.py tests/test_press_writer.py tests/test_press_staging_inspection.py tests/test_earnings_dossier_link_contract.py tests/test_earnings_story_press_ingress.py -q --tb=short --basetemp=../mmx-cohort-integrated-fixtures`. Result: **209 passed in 16.55s**, no skips after materializing committed `site/`. The original regression failed before the repair. No new provider call or staging mutation occurred. See `STAGED_COHORT_REPAIR.md`; neither this checkpoint nor the tests grant publication, rights, or ten-draft acceptance.

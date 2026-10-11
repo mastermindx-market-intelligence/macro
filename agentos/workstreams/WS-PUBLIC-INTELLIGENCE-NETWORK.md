@@ -21,12 +21,13 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: todo
     depends_on: [qualified-story]
-next_action: Deliver the consolidated same-carrier PR 8786 after fresh capacity and writer admission, current binding CI, protected landing and installed/live checks. The linked earnings contract is implemented and tested without changing publisher defaults; live staging still requires the Earnings owner packet/revision, article rights and permitted read-only path.
+next_action: Complete PR 8786 through its fresh binding CI, existing protected controller and installed/live checks; then deliver the staged-cohort repair from the same operation after integrating protected main. Live story staging still requires the Earnings owner packet/revision, public-article rights and permitted read-only path.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md
   - research/agentic_media/public_intelligence_20261011/CHECKPOINT.md
   - research/agentic_media/public_intelligence_20261011/EARNINGS_DOSSIER_CONTRACT.md
+  - research/agentic_media/public_intelligence_20261011/STAGED_COHORT_REPAIR.md
 do_not_redo:
   - Do not duplicate Commission 19 or claim its Fable-owned source.
   - Do not duplicate Catalyst Loop integration PR 8678 or its acquisition stores.

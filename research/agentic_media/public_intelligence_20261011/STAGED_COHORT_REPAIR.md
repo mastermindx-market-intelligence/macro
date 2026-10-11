@@ -51,3 +51,13 @@ No new provider call, staged rewrite, emit, ledger entry or public article was
 performed. This source repair does not grant the ten-draft acceptance gate,
 editorial or rights approval. Continue with current-date bounded staging only
 after source integration; retain each run's bytes and replay the full cohort.
+
+## Combined-source verification
+
+After materializing committed `site/`, the root merged exact PR #8786 source `b76706cfb9ccdd713d66ef29dca2d00c430c04e6` locally into this follow-up. There were no conflicts. This is local source integration, not protected landing.
+
+```sh
+python3 -m pytest tests/test_press_validators.py tests/test_press_run.py tests/test_press_writer.py tests/test_press_staging_inspection.py tests/test_earnings_dossier_link_contract.py tests/test_earnings_story_press_ingress.py -q --tb=short --basetemp=../mmx-cohort-integrated-fixtures
+```
+
+Result: **209 passed in 16.55s**, no skips. This includes the previously skipped estate replay, immutable dossier-link contract, read-only staging inspector and earnings ingress, against both implementation slices together. The earlier 146-test result is an overlapping subset, not additive.
