@@ -3614,7 +3614,7 @@
       "sha256": "5d013401a26896beab215b9ad87668a030d25d2819c9086205bb5b51346c59e4"
     }
   },
-  "current_capability_frontier_key": "current_capability_frontier_20261011T1339",
+  "current_capability_frontier_key": "current_capability_frontier_20261011T1502",
   "current_capability_frontier_20261009T1720": {
     "observed_at": "2026-10-09T17:20:49.988227+00:00",
     "supersedes": "current_capability_frontier_20261009T1616",
@@ -7481,6 +7481,243 @@
     "source_939": "Actual merged9bc/head2f6 required38134612457 retained qualified; integrated source but newgeneration normalGET/UI not yet accepted. 931/935 existing B merge receipts still unqualified. No outgoing peer send.",
     "independent_holds": "781 reserved numeric reviewer, IW2 explicit cyber HUMAN platform resolution, SQL/rights/security/887 exactALLOW, MoneySCP/OAuth EFFECT_UNKNOWN, A19/873 actual producer publication and all prior exact holds unchanged. No incoming peer message is outgoing send authorization.",
     "next_ready_phase": "Actual SAME fresh62e CI settled result, exact required checks and mergedsource qualification; then parent fresh source/writer/exactUUID/mount/root+volume10GiB/resource gates, new guarded canonical generation through bd22d2f wrapper, owning paid phonebadge/fullscreen/three sizes plus939 normalGET/UI. No real-data mutation/fault manufacturing.",
+    "whole_audit20_complete": false
+  },
+  "current_capability_frontier_20261011T1502": {
+    "observed_at": "2026-10-11T15:02:38.395767+00:00",
+    "original_root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+    "parent": "terminal-audit20-01a10f92",
+    "supersedes_only": "T1339 pending940 CI/merge/install and affected paid Replay proof. All historical exact objects and independent holds preserved. New939 Settings normalGET/UI still pending.",
+    "material": "940 actual exact-head requiredCI and merge qualified; guarded abf97e canonical generation completed; exact source/guards/service/public health qualified; actual paid Replay badge scoped accepted three sizes/fullscreen. Native browser control unavailable before Settings acceptance and temporary view restoration.",
+    "source_940": {
+      "pr": 940,
+      "head": "62e24eadd18f5b0312a8b0f139bcebfee77716a8",
+      "merged": "abf97eaa42d7f4e6f0062b43ba0c8a3a82ce56e3",
+      "merged_at": "2026-10-11T14:28:11Z",
+      "tree_equal": "cbe4f95f1da5d7671cae7af3dfba4d1a6cbfdbae",
+      "required_run": 38143802083,
+      "suite": 103344422857,
+      "required_checks": [
+        {
+          "id": 114493164862,
+          "name": "Terminal typecheck + tests",
+          "head_sha": "62e24eadd18f5b0312a8b0f139bcebfee77716a8",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-11T14:27:51Z",
+          "completed_at": "2026-10-11T14:27:55Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38143802083/job/114493164862",
+          "check_suite": {
+            "id": 103344422857
+          },
+          "app_id": 15368
+        },
+        {
+          "id": 114482863889,
+          "name": "Quote Hub tests",
+          "head_sha": "62e24eadd18f5b0312a8b0f139bcebfee77716a8",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-11T13:35:46Z",
+          "completed_at": "2026-10-11T13:36:07Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38143802083/job/114482863889",
+          "check_suite": {
+            "id": 103344422857
+          },
+          "app_id": 15368
+        },
+        {
+          "id": 114482864125,
+          "name": "Ingest + signal-layer tests",
+          "head_sha": "62e24eadd18f5b0312a8b0f139bcebfee77716a8",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-11T13:35:46Z",
+          "completed_at": "2026-10-11T13:36:44Z",
+          "details_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38143802083/job/114482864125",
+          "check_suite": {
+            "id": 103344422857
+          },
+          "app_id": 15368
+        }
+      ],
+      "all_ten_owning_jobs": "SUCCESS",
+      "run_pull_requests_empty": true,
+      "qualifier": "The owning run supplies no direct PR-number binding through pull_requests[]; exact PR head and check/run/suite bindings were observed.",
+      "receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/drawing-readiness-20261011/coordinate-map-940-merged-source-required-ci-parent-qualification.json",
+        "bytes": 3120,
+        "sha256": "59d3ba90b64f29cb3ab4156c543dba2b769f88958b32d3f93b021870e67c1856"
+      },
+      "completed_branch": "Closed; do not reuse branch or replay accepted source/tests/captures/CI."
+    },
+    "observer_settled": {
+      "exec": 36254,
+      "exit": 0,
+      "settled_at": "2026-10-11T14:28:06.294448+00:00",
+      "status": "CLOSED; same actual return consumed. No current CI observer required; no manual polling or old21927/94513/36254 restart."
+    },
+    "canonical_release": {
+      "operation": "canonical-volume-release-abf97e-20261011-v1",
+      "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+      "parent": "terminal-audit20-01a10f92",
+      "target": "abf97eaa42d7f4e6f0062b43ba0c8a3a82ce56e3",
+      "phase": "guarded_canonical_release_settled",
+      "started_at": "2026-10-11T14:35:16.927425+00:00",
+      "controller_pid": 99431,
+      "wrapper_sha256": "bd22d2fed7e558d02a4252c0abfa00beb59a37f0bf96e1a33187229c7e673a84",
+      "log": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-volume-release-abf97e-20261011-v1.log",
+      "whole_Audit20_accepted": false,
+      "child_pid": 99434,
+      "exit_code": 0,
+      "settled_at": "2026-10-11T14:41:32.554228+00:00",
+      "execution_receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/canonical-volume-release-abf97e-20261011-v1-execution.json",
+        "bytes": 669,
+        "sha256": "237400a0ac745a89cfd209ffcb8eb2fb04adeaba06e0b614be011ce9f5aa86c0"
+      },
+      "preflight_receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/drawing-readiness-20261011/abf97e-canonical-release-preflight.json",
+        "bytes": 1008,
+        "sha256": "14f50e670c726169ccb03db64b62d4f760fed46903e8f8e25b7d85925fc02966"
+      },
+      "installed_receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/drawing-readiness-20261011/abf97e-installed-source-guards-health-parent-qualification.json",
+        "bytes": 2738,
+        "sha256": "e3390aa6b5bad8138630a3ec5a4457c624902802f6c377365636c9cbf04ff03e"
+      },
+      "installed_at": "2026-10-11T14:42:14.859143+00:00",
+      "head_marker": "abf97eaa42d7f4e6f0062b43ba0c8a3a82ce56e3",
+      "clean": true,
+      "guard_rc": 0,
+      "root_available_bytes": 16214061056,
+      "volume_available_bytes": 33844531200,
+      "services": {
+        "terminal.service": [
+          "2945651",
+          "active",
+          "running"
+        ],
+        "quote-hub.service": [
+          "2756258",
+          "active",
+          "running"
+        ],
+        "macro-api.service": [
+          "2935889",
+          "active",
+          "running"
+        ],
+        "rsyslog.service": [
+          "491178",
+          "active",
+          "running"
+        ]
+      },
+      "public_html": {
+        "http": "200 successful final response",
+        "bytes": 96302,
+        "sha256": "466bee6567988b299d45647ad8554fd8b10f5fdac71724294f15bdf3555b09c8",
+        "asset_generation": "abf97eaa42d7f4e6f0062b43ba0c8a3a82ce56e3"
+      },
+      "scope": "Exact selected eight production/runtime files equal qualified62e source; merged fulltree identity equal. No new provider/storage/snapshot/copy/reclaim/producer/job/scheduler or old input handoff effects. All completed release/storage operations unreplayed; no own VPS pause/restoration owed."
+    },
+    "paid": {
+      "receipt": {
+        "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-abf97e-Replay-browser-capability-parent-qualification-20261011.json",
+        "bytes": 5119,
+        "sha256": "348e5f5242ff8a2c50a0982043adb388d1ead11fb7584c7937b480b292f7f14a"
+      },
+      "source_generation": "abf97eaa42d7f4e6f0062b43ba0c8a3a82ce56e3",
+      "accepted_scope": {
+        "symbol": "MU",
+        "timeframe": "3D",
+        "studies": 4,
+        "bar_counter": "3479 / 3558",
+        "phone_css": [
+          390,
+          844
+        ],
+        "tablet_css": [
+          820,
+          1180
+        ],
+        "desktop_css": [
+          1440,
+          900
+        ],
+        "capture_dpr": 2,
+        "result": "Parent visually inspected saved actual public captures. REPLAY badge fully inside chart, public symbol identity/OHLC four values/price label/legend and rail/counter visible at all three sizes. Phone normal and fullscreen both inspected; tablet and desktop fullscreen captured; normal tablet/desktop public statusline present through native AX. No DOM bounding-box measurement is claimed.",
+        "phone_values": "O224.59 H232.17 L215.53 C226.41 +7.60 (+3.47%)",
+        "fresh_tablet": "Entered correct820x1180 then ordinary reload/re-enabled Replay/fullscreen. Indicator pane visible normally in fresh capture.",
+        "initial_tablet_qualifier": "An owned dimension-input error briefly clamped emulation to9999x9999. Corrected initial tablet capture has compressed indicator pane; preserved separately and not accepted as whole pane/layout proof. Fresh correct-size entry resolves this observed capture artifact; no blanket production diagnosis.",
+        "scope_exclusions": "No financial truth/freshness/math/native/rights/scientific acceptance, no live legacy drawing creation/migration/fault injection, no full A11 or whole Audit20 acceptance."
+      },
+      "settings_939": {
+        "installed_bytes_qualified": true,
+        "normal_get_ui_accepted": false,
+        "actual": "Settings opened at desktop1440x900. Portfolio targets tab exposed, but attempted native selection did not change selected Terminal section. No loaded portfolio_targets result or new normalGET/UI qualification.",
+        "privacy": "No private holdings/weights/screenshots exported; no target/thesis/alert edit, POST, retry/fault manufacturing."
+      },
+      "images": [
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-abf97e-phone-replay-native-20261011.png",
+          "bytes": 369444,
+          "sha256": "4d8afed109189ed627868aec3d7256fd4d1d7281d05795b28faea9b5c1536fb0",
+          "pixels": [
+            780,
+            1688
+          ]
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-abf97e-phone-fullscreen-replay-native-20261011.png",
+          "bytes": 328814,
+          "sha256": "3cfe66080e4297284a42d8b2ee8a39706ec4c04cad323b8c5bf3718b8d4aa5c0",
+          "pixels": [
+            780,
+            1688
+          ]
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-abf97e-tablet-fullscreen-replay-native-20261011.png",
+          "bytes": 358427,
+          "sha256": "bda4409cf2d9a81afc7aa64b260fdcaf3b912841cf32481ee0256412a3f78d4e",
+          "pixels": [
+            1640,
+            2360
+          ]
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-abf97e-tablet-fullscreen-replay-fresh-entry-native-20261011.png",
+          "bytes": 676249,
+          "sha256": "e55609ffc9ba9fe2e604b0133b656bc295123efe80bc9377bc92a95976e7aaba",
+          "pixels": [
+            1640,
+            2360
+          ]
+        },
+        {
+          "path": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92/paid-abf97e-desktop-fullscreen-replay-native-20261011.png",
+          "bytes": 934072,
+          "sha256": "89d1d2b7cfc15d2bcfe3ae7b62cebc6e04b3564005ddc1dd46956ff0d16cac8a",
+          "pixels": [
+            2880,
+            1800
+          ]
+        }
+      ],
+      "temporary_browser_restoration": {
+        "state": "PENDING_NATIVE_CONTROL_CAPABILITY",
+        "last_actual": "Replay OFF, fullscreen exited; Settings Terminal section still open; DevTools responsive1440x900 still open. Intended closure shortcut failed before dispatch because native binding was no longer active. Rebinding timed out.",
+        "needed_once": "Turn off responsive device toolbar, close Settings and DevTools in existing Chris-profile Terminal tab; preserve MU3D four studies. No VPS services/jobs paused or restoration owed.",
+        "no_repeated_retry": "No alternate account/tool/private-control path; next continuation only actual human restoration or relevant native capability event."
+      },
+      "browser_transport": "Extension CDP binding/read deadlines before dispatch; ordinary native CUA route then worked. Later native getAXState/getScreenshot/getApp timed out; app inventory reports Chrome running, no inventory errors. No browser/extension restart or private hooks."
+    },
+    "independent_holds": "781 reserved numeric reviewer, IW2 explicit cyber HUMAN platform resolution, SQL/rights/security/887 exactALLOW, MoneySCP/OAuth EFFECT_UNKNOWN, A19/873 actual producer publication and all prior exact holds unchanged. No incoming peer message is outgoing send authorization.",
+    "fabric": "Accepted coordinate-map supplied-text verifier unchanged; prior drawing-readiness stable operation remains unverified on original carrier, no resubmit/respawn/cancel/manual lease. No new labor operation.",
+    "source_939": "Qualified merge9bc and exact38134612457 retained; production bytes included in abf. New normalGET/three-size Settings UI NOT accepted. No real-data writes/faults. B931/935 actual owning merge returns remain unqualified; no duplicate source/CI/review lane or outgoing peer send.",
+    "next_ready_phase": "Exact one-time human restoration of temporary Chrome device toolbar/Settings/DevTools, or actual restored native-control capability. Then affected939 normalGET/UI at three sizes without edits/faults; restore all temporary UI. Do not redeploy abf, replay accepted badge captures/CI/storage, poll unchanged controls or repeat pending human request. Consume actual B/platform/producer return only.",
     "whole_audit20_complete": false
   }
 }
