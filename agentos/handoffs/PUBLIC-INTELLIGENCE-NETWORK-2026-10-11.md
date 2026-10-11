@@ -118,7 +118,7 @@ Consolidated local verification at integration `28bc4468a090775630b24473a0176746
 ## Direct root qualification of a real public event
 
 The Chairman directed root to proceed directly. Candidate/source proof was saved
-and pushed on the private recovery branch as `6beaa5ec2110`; it is not part of
+and pushed on the separate recovery branch as `6beaa5ec2110`; it is not part of
 the armed PR head `a85aeb97144e469719b1c4ef4a77da55fa27c103`. Current CI is
 `38169345491`. No extra PR or writer was created.
 
@@ -158,3 +158,12 @@ Current GitHub repository visibility is PUBLIC, freshly checked with
 `gh repo view mastermindx-market-intelligence/macro --json visibility,isPrivate`.
 The recovery branch is separate from the armed PR, not a private repository.
 Only qualified public government material and nonsecret proof are committed.
+
+
+## Protected refresh and verified next-slice integration — 21:55 UTC
+
+CI38173142860 completed SUCCESS at21:21:13UTC on90b5fe5, with21 binding checks green. Controller38177039149 then refreshed #8786 to b8a4805af5233872705d7ba8012294eeb98d1e37 from protected main9b86baae61ccaa858d99b53ee1023cbe866e9a4f: substantive app, engine, research and test changes intersected its declared surface. Exact controller lines are retained in protected_refresh_38177039149.txt. A bounded read-only release review confirmed no existing exception permits reuse of the old proof. CI38177181702 is the new proof; landing and installation remain unverified.
+
+Recovery integration969b3028dfb135df290466e43536c53aeddc1c9d includes b8 without modifying the armed carrier. Verified command: `python3 -m pytest tests/test_whitehouse_feed.py tests/test_whitehouse_build.py tests/test_whitehouse_brain.py tests/test_whitehouse_w5.py tests/test_fix43_analyst_and_whitehouse.py -q --tb=short --basetemp=../mmx-next-phase-b8`; result70 passed in3.66s. All13 prepared Press installation source hashes and three acceptance-page hashes remain unchanged across the protected refresh. The incumbent updater lane-freeze repair is preserved; root did not author or install it.
+
+Real Chrome proof at21:31UTC exercised the existing NVIDIA dossier → public earnings record → expanded source-receipt disclosure → dossier return. The tool-produced screenshot and bounded navigation receipt are committed as existing_live_nvda_source_receipts.jpg and existing_live_nvda_journey.json. This is existing live functionality, not installation proof for #8786, independent receipt replay, article rights, or authenticated follow. Terminal access remained blocked by the client; no alternate browser/carrier retried it.
