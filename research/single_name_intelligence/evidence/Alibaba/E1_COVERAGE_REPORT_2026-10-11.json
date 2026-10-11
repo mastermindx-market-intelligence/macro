@@ -1,0 +1,636 @@
+{
+ "schema": "sni_evidence_coverage.v0",
+ "task": "E1",
+ "company": "Alibaba",
+ "profile_ref": "43251ca845b2:config/single_name_intelligence/coverage_profiles/alibaba.yml",
+ "as_of": "2026-10-11",
+ "repo_ref": "b79cd12239e5 (origin/main, fetched 2026-10-11 ~17:40Z)",
+ "authority": {
+  "rank_authority": false,
+  "gate_authority": false,
+  "size_authority": false,
+  "signal_authority": false,
+  "escalation_authority": false,
+  "trade_authority": false
+ },
+ "metrics": {
+  "adr_h_basis.adr_baba": {
+   "status": "ABSENT",
+   "owner": [
+    "engine/hk_adr_bridge.py"
+   ],
+   "owner_call": "same bridge as hkd_9988; basis value absent from owner output (PACK CALL C19)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "adr_h_basis.hkd_9988": {
+   "status": "ABSENT",
+   "owner": [
+    "engine/hk_adr_bridge.py"
+   ],
+   "owner_call": "engine.hk_adr_bridge.snapshot(hk_session_date=date(2026,10,9)) returns implied-open context only; no basis/ratio field; ADS:ordinary ratio carried by no owner (PACK CALL C19)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "adr_h_basis.rmb_89988": {
+   "status": "NO_OWNER",
+   "owner": [],
+   "owner_call": "no RMB-counter prices and no spot-CNH owner (CNH=F is a futures proxy)",
+   "missing_descriptors": [],
+   "refusal_code": "NO_COUNTER_SERIES",
+   "evidence_rows": 0
+  },
+  "behavioral_pilot.adr_baba": {
+   "status": "PARTIAL",
+   "owner": [
+    "engine/stock_identity/pilot.py",
+    "engine/stock_identity/fingerprint.py",
+    "engine/stock_identity/plane.py"
+   ],
+   "owner_call": "pilot_fingerprint_v0.parquet row symbol=='BABA' + ohlcv/manifest.json (PACK CALL C21)",
+   "missing_descriptors": [
+    "unit_currency"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 2993
+  },
+  "behavioral_pilot.hkd_9988": {
+   "status": "ABSENT",
+   "owner": [
+    "engine/stock_identity/pilot.py",
+    "engine/stock_identity/fingerprint.py"
+   ],
+   "owner_call": "data/stock_identity/fingerprints/pilot_fingerprint_v0.parquet symbols = 21 US names; 9988 not present (PACK CALL C21)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "behavioral_pilot.rmb_89988": {
+   "status": "ABSENT",
+   "owner": [
+    "engine/stock_identity/pilot.py",
+    "engine/stock_identity/fingerprint.py"
+   ],
+   "owner_call": "same pilot store; 89988 not present (PACK CALL C21)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "company_events_earnings_calendar.adr_baba": {
+   "status": "PARTIAL",
+   "owner": [
+    "collectors/equity_earnings.py"
+   ],
+   "owner_call": "pd.read_parquet('data/earnings/earnings.parquet').loc['BABA'] (PACK CALL C6)",
+   "missing_descriptors": [
+    "definition_version"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 1
+  },
+  "company_events_earnings_calendar.hkd_9988": {
+   "status": "OWNER_NATIVE",
+   "owner": [
+    "collectors/hk_hkexnews.py",
+    "engine/hk_filing_bus.py"
+   ],
+   "owner_call": "engine.hk_filing_bus._load_filings() category=='final_results', ticker=='9988.HK' (PACK CALL C4c)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 1
+  },
+  "company_events_earnings_calendar.rmb_89988": {
+   "status": "OWNER_NATIVE",
+   "owner": [
+    "collectors/hk_hkexnews.py",
+    "engine/hk_filing_bus.py"
+   ],
+   "owner_call": "same final_results row; stock_code field names both 09988 and 89988 (PACK CALL C4c)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 1
+  },
+  "corporate_actions_adjustment.adr_baba": {
+   "status": "PARTIAL",
+   "owner": [
+    "collectors/yahoo.py"
+   ],
+   "owner_call": "close/close_price from data/yahoo/BABA.parquet (both owner columns; derivation documented collectors/yahoo.py W1.3) (PACK CALL C7c)",
+   "missing_descriptors": [
+    "known_at_evidence",
+    "definition_version"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 3032
+  },
+  "corporate_actions_adjustment.hkd_9988": {
+   "status": "ABSENT",
+   "owner": [
+    "collectors/hk_stock_prices.py",
+    "collectors/hk_placements.py"
+   ],
+   "owner_call": "pd.read_parquet('data/hk_placements/events.parquet') filter 9988|89988 -> 0 of 811 rows; no explicit dividend/split rows exist in any HK owner store (PACK CALL C10)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "corporate_actions_adjustment.rmb_89988": {
+   "status": "NO_OWNER",
+   "owner": [],
+   "owner_call": "no corporate-action or adjustment ledger for the RMB counter (no prices to adjust)",
+   "missing_descriptors": [],
+   "refusal_code": "NO_COUNTER_SERIES",
+   "evidence_rows": 0
+  },
+  "evaluation_qledger.adr_baba": {
+   "status": "OWNER_NATIVE",
+   "owner": [
+    "engine/qledger.py",
+    "engine/qledger_store.py"
+   ],
+   "owner_call": "scan data/qledger/claims.jsonl for scope.key=='BABA' -> 163 claims; metadata only, claim text not copied (PACK CALL C15)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 163
+  },
+  "evaluation_qledger.hkd_9988": {
+   "status": "ABSENT",
+   "owner": [
+    "engine/qledger.py",
+    "engine/qledger_store.py"
+   ],
+   "owner_call": "scan data/qledger/claims.jsonl (118,022 claims) for '9988' in scope -> 0 claims (PACK CALL C15)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "evaluation_qledger.rmb_89988": {
+   "status": "ABSENT",
+   "owner": [
+    "engine/qledger.py",
+    "engine/qledger_store.py"
+   ],
+   "owner_call": "scan data/qledger/claims.jsonl for '89988' in scope -> 0 claims (PACK CALL C15)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "filings_announcements.adr_baba": {
+   "status": "ABSENT",
+   "owner": [
+    "engine/fundamental_forensics/broad_sec_store.py",
+    "engine/capital_structure/source_identity.py"
+   ],
+   "owner_call": "pd.read_parquet('data/capital_structure/discovery.parquet') / event_versions.parquet filter cik/ticker 1577552|BABA -> 0; data/fundamental_forensics/public_summary.json has no BABA company key (PACK CALL C13)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "filings_announcements.hkd_9988": {
+   "status": "OWNER_NATIVE",
+   "owner": [
+    "collectors/hk_hkexnews.py",
+    "engine/hk_filing_bus.py"
+   ],
+   "owner_call": "engine.hk_filing_bus._load_filings() + classify_row, filter ticker=='9988.HK' (PACK CALL C4)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 4
+  },
+  "filings_announcements.rmb_89988": {
+   "status": "OWNER_NATIVE",
+   "owner": [
+    "collectors/hk_hkexnews.py",
+    "engine/hk_filing_bus.py"
+   ],
+   "owner_call": "engine.hk_filing_bus._load_filings(), rows whose stock_code names 89988 ('09988<br/>89988') (PACK CALL C4b)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 4
+  },
+  "financials.adr_baba": {
+   "status": "ABSENT",
+   "owner": [
+    "engine/fundamental_forensics/sec_companyfacts.py",
+    "engine/fundamental_forensics/broad_sec_store.py"
+   ],
+   "owner_call": "same query as filings_announcements.adr_baba: 0 BABA rows in all FIF / capital_structure artifacts (PACK CALL C13)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "financials.hkd_9988": {
+   "status": "PARTIAL",
+   "owner": [
+    "collectors/hk_fundamentals.py"
+   ],
+   "owner_call": "pd.read_parquet('data/hk_fundamentals/fundamentals.parquet') row ticker=='9988.HK', json.loads(payload) (PACK CALL C5)",
+   "missing_descriptors": [
+    "known_at_evidence",
+    "accounting_basis",
+    "definition_version"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 7
+  },
+  "financials.rmb_89988": {
+   "status": "NO_OWNER",
+   "owner": [
+    "collectors/hk_fundamentals.py"
+   ],
+   "owner_call": "issuer-level snapshot exists only under ticker=='9988.HK'; no counter join key exists (PACK CALL C5b)",
+   "missing_descriptors": [],
+   "refusal_code": "NO_COUNTER_JOIN",
+   "evidence_rows": 0
+  },
+  "fx.adr_baba": {
+   "status": "PARTIAL",
+   "owner": [
+    "collectors/hk_prices.py"
+   ],
+   "owner_call": "USD-native counter; USD/HKD diagnostic leg = data/hk/HKD_X.parquet (PACK CALL C16)",
+   "missing_descriptors": [
+    "known_at_evidence",
+    "definition_version"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 6419
+  },
+  "fx.hkd_9988": {
+   "status": "PARTIAL",
+   "owner": [
+    "collectors/hk_prices.py",
+    "collectors/fred.py",
+    "collectors/hkma.py"
+   ],
+   "owner_call": "pd.read_parquet('data/hk/HKD_X.parquet') (PACK CALL C16)",
+   "missing_descriptors": [
+    "known_at_evidence",
+    "definition_version"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 6419
+  },
+  "fx.rmb_89988": {
+   "status": "PARTIAL",
+   "owner": [
+    "scripts/build_forex.py",
+    "collectors/china_prices.py"
+   ],
+   "owner_call": "json.load(open('data/forex/latest.json'))['pairs']['USDCNH'] + pd.read_parquet('data/china/CNH_F.parquet') (PACK CALL C16)",
+   "missing_descriptors": [
+    "known_at_evidence",
+    "definition_version"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 3369
+  },
+  "identity_listing.adr_baba": {
+   "status": "OWNER_NATIVE",
+   "owner": [
+    "lib/dataos/identity.py",
+    "scripts/build_security_master.py",
+    "config/identity_seams.yml"
+   ],
+   "owner_call": "pd.read_parquet('data/reference/security_master.parquet') + issuer_master.parquet + vendor_aliases.parquet rows for SEC:US-XNYS-BABA / ISS:US-XNYS-BABA (PACK CALL C2)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 7
+  },
+  "identity_listing.hkd_9988": {
+   "status": "OWNER_NATIVE",
+   "owner": [
+    "lib/dataos/identity.py",
+    "scripts/build_security_master.py",
+    "config/identity_seams.yml"
+   ],
+   "owner_call": "pd.read_parquet('data/reference/security_master.parquet') row security_id=='SEC:HK-XHKG-09988' (PACK CALL C1); receipt data/reference/_receipt.json",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 1
+  },
+  "identity_listing.rmb_89988": {
+   "status": "NO_OWNER",
+   "owner": [
+    "lib/dataos/identity.py",
+    "scripts/build_security_master.py",
+    "config/identity_seams.yml"
+   ],
+   "owner_call": "pd.read_parquet('data/reference/security_master.parquet') filter listing_key contains '89988' -> 0 rows (PACK CALL C1b)",
+   "missing_descriptors": [],
+   "refusal_code": "NO_COUNTER_ADMISSION",
+   "evidence_rows": 0
+  },
+  "market_data_daily.adr_baba": {
+   "status": "PARTIAL",
+   "owner": [
+    "collectors/yahoo.py",
+    "collectors/massive_stock_day.py"
+   ],
+   "owner_call": "pd.read_parquet('data/yahoo/BABA.parquet') (PACK CALL C7c); data/massive_stock_day has no BABA file (verified by ls)",
+   "missing_descriptors": [
+    "known_at_evidence",
+    "unit_currency",
+    "definition_version"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 3032
+  },
+  "market_data_daily.hkd_9988": {
+   "status": "PARTIAL",
+   "owner": [
+    "collectors/hk_stock_prices.py",
+    "collectors/hk_closes_deep.py"
+   ],
+   "owner_call": "pd.read_parquet('data/hk_stocks/9988.HK.parquet') (PACK CALL C7)",
+   "missing_descriptors": [
+    "known_at_evidence",
+    "unit_currency",
+    "definition_version"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 1681
+  },
+  "market_data_daily.rmb_89988": {
+   "status": "NO_OWNER",
+   "owner": [],
+   "owner_call": "no 89988 series in any owner store: data/hk_stocks has no 89988 file (PACK CALL C7b)",
+   "missing_descriptors": [],
+   "refusal_code": "NO_COUNTER_SERIES",
+   "evidence_rows": 0
+  },
+  "market_data_intraday.adr_baba": {
+   "status": "ABSENT",
+   "owner": [
+    "engine/intraday_flow.py"
+   ],
+   "owner_call": "pd.read_parquet('data/intraday_flow/ledger.parquet') filter ticker=='BABA' -> 0 of 7,424 rows (PACK CALL C11)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "market_data_intraday.hkd_9988": {
+   "status": "NO_OWNER",
+   "owner": [],
+   "owner_call": "no HK intraday owner exists; data/intraday_flow/ledger.parquet is US-only (PACK CALL C11)",
+   "missing_descriptors": [],
+   "refusal_code": "NO_OWNER_LICENSE_BLOCKED",
+   "evidence_rows": 0
+  },
+  "market_data_intraday.rmb_89988": {
+   "status": "NO_OWNER",
+   "owner": [],
+   "owner_call": "same as hkd_9988; additionally no counter id (PACK CALL C11)",
+   "missing_descriptors": [],
+   "refusal_code": "NO_OWNER_LICENSE_BLOCKED",
+   "evidence_rows": 0
+  },
+  "news.adr_baba": {
+   "status": "ABSENT",
+   "owner": [
+    "collectors/hk_gdelt.py"
+   ],
+   "owner_call": "no BABA-keyed rows in data/hk_gdelt/alibaba.parquet (entity_query 'Alibaba', ticker 9988.HK); BABA reachable only through the issuer whose HK link is UNRESOLVED (PACK CALL C20)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "news.hkd_9988": {
+   "status": "PARTIAL",
+   "owner": [
+    "collectors/hk_gdelt.py"
+   ],
+   "owner_call": "pd.read_parquet('data/hk_gdelt/alibaba.parquet') (PACK CALL C20)",
+   "missing_descriptors": [
+    "known_at_evidence",
+    "definition_version"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 77
+  },
+  "news.rmb_89988": {
+   "status": "NO_OWNER",
+   "owner": [
+    "collectors/hk_gdelt.py"
+   ],
+   "owner_call": "GDELT topic keyed 9988.HK only; no counter key",
+   "missing_descriptors": [],
+   "refusal_code": "NO_COUNTER_KEY",
+   "evidence_rows": 0
+  },
+  "options.adr_baba": {
+   "status": "PARTIAL",
+   "owner": [
+    "engine/options_skew.py",
+    "collectors/thetadata.py"
+   ],
+   "owner_call": "pd.read_parquet('data/options_skew/snapshots.parquet') filter underlying=='BABA' + data/options_skew/validation_gate.json (PACK CALL C17)",
+   "missing_descriptors": [
+    "known_at_evidence"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 44
+  },
+  "options.hkd_9988": {
+   "status": "NO_OWNER",
+   "owner": [],
+   "owner_call": "no stock-options owner for 9988.HK (HKEX SOM is a paid product)",
+   "missing_descriptors": [],
+   "refusal_code": "NO_OWNER_LICENSE_BLOCKED",
+   "evidence_rows": 0
+  },
+  "options.rmb_89988": {
+   "status": "NO_OWNER",
+   "owner": [],
+   "owner_call": "no options owner references the RMB counter",
+   "missing_descriptors": [],
+   "refusal_code": "NO_OWNER_LICENSE_BLOCKED",
+   "evidence_rows": 0
+  },
+  "research_vault.adr_baba": {
+   "status": "PARTIAL",
+   "owner": [
+    "engine/research_vault/catalog.py",
+    "engine/research_vault/subjects.py"
+   ],
+   "owner_call": "same catalog scan as hkd_9988 (PACK CALL C14)",
+   "missing_descriptors": [
+    "issuer_subject",
+    "definition_version"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 24
+  },
+  "research_vault.hkd_9988": {
+   "status": "PARTIAL",
+   "owner": [
+    "engine/research_vault/catalog.py",
+    "engine/research_vault/subjects.py"
+   ],
+   "owner_call": "json.load(open('data/research_vault/catalog.json')) items scan, name-pattern 'alibaba' case-insensitive (PACK CALL C14)",
+   "missing_descriptors": [
+    "issuer_subject",
+    "definition_version"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 24
+  },
+  "research_vault.rmb_89988": {
+   "status": "NO_OWNER",
+   "owner": [
+    "engine/research_vault/catalog.py"
+   ],
+   "owner_call": "issuer-level items only; no counter join key",
+   "missing_descriptors": [],
+   "refusal_code": "NO_COUNTER_JOIN",
+   "evidence_rows": 0
+  },
+  "sessions_calendar.adr_baba": {
+   "status": "PARTIAL",
+   "owner": [
+    "lib/nyse_calendar.py"
+   ],
+   "owner_call": "lib.nyse_calendar.is_session(date(2026,10,9)) -> True; is_session(date(2026,10,10)) -> False; len(sessions_between(date(2026,9,1), date(2026,10,9))) -> 28 (PACK CALL C18)",
+   "missing_descriptors": [
+    "known_at_evidence"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 3
+  },
+  "sessions_calendar.hkd_9988": {
+   "status": "PARTIAL",
+   "owner": [
+    "lib/hk_calendar.py"
+   ],
+   "owner_call": "lib.hk_calendar.is_session(date(2026,10,9)) -> True; is_session(date(2026,10,1)) -> False; sessions_between(date(2026,9,1), date(2026,10,9)) -> 27 (PACK CALL C18)",
+   "missing_descriptors": [
+    "known_at_evidence"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 3
+  },
+  "sessions_calendar.rmb_89988": {
+   "status": "PARTIAL",
+   "owner": [
+    "lib/hk_calendar.py"
+   ],
+   "owner_call": "same HKEX calendar calls as hkd_9988 (one session calendar for both counters) (PACK CALL C18)",
+   "missing_descriptors": [
+    "known_at_evidence"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 3
+  },
+  "short_positions.adr_baba": {
+   "status": "ABSENT",
+   "owner": [
+    "collectors/finra.py",
+    "collectors/finra_short_volume.py"
+   ],
+   "owner_call": "data/finra/short_interest_history.parquet and data/finra_short_volume/panel.parquet filter ticker=='BABA' -> 0 and 0 (PACK CALL C12)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 0
+  },
+  "short_positions.hkd_9988": {
+   "status": "PARTIAL",
+   "owner": [
+    "collectors/hk_shorts.py"
+   ],
+   "owner_call": "pd.read_parquet('data/hk_shorts/positions.parquet') filter stock_code==9988 (PACK CALL C9)",
+   "missing_descriptors": [
+    "known_at_evidence"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 357
+  },
+  "short_positions.rmb_89988": {
+   "status": "PARTIAL",
+   "owner": [
+    "collectors/hk_shorts.py"
+   ],
+   "owner_call": "pd.read_parquet('data/hk_shorts/positions.parquet') filter stock_code==89988 (PACK CALL C9)",
+   "missing_descriptors": [
+    "known_at_evidence"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 172
+  },
+  "southbound_holdings.adr_baba": {
+   "status": "REFUSED",
+   "owner": [],
+   "owner_call": "profile cell applicable:false - a US ADS is not a Southbound security",
+   "missing_descriptors": [],
+   "refusal_code": "NOT_APPLICABLE_PER_PROFILE",
+   "evidence_rows": 0
+  },
+  "southbound_holdings.hkd_9988": {
+   "status": "PARTIAL",
+   "owner": [
+    "collectors/hk_southbound_holdings.py",
+    "engine/hk_southbound_stocks.py"
+   ],
+   "owner_call": "pd.read_parquet('data/hk_southbound/holdings.parquet') index level ticker=='9988.HK' (PACK CALL C8)",
+   "missing_descriptors": [
+    "known_at_evidence",
+    "unit_currency"
+   ],
+   "refusal_code": null,
+   "evidence_rows": 290
+  },
+  "southbound_holdings.rmb_89988": {
+   "status": "NO_OWNER",
+   "owner": [
+    "collectors/hk_southbound_holdings.py"
+   ],
+   "owner_call": "index level ticker=='89988.HK' -> 0 rows; store keys (date, ticker) and cannot key the RMB counter (PACK CALL C8b)",
+   "missing_descriptors": [],
+   "refusal_code": "NO_COUNTER_KEY",
+   "evidence_rows": 0
+  },
+  "themes.adr_baba": {
+   "status": "OWNER_NATIVE",
+   "owner": [
+    "engine/theme_graph/identity_resolution.py",
+    "engine/theme_graph/store.py",
+    "engine/theme_graph/rights.py"
+   ],
+   "owner_call": "engine.theme_graph.identity_resolution.resolve_graph_node_identity('co:us:BABA') (PACK CALL C3)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 61
+  },
+  "themes.hkd_9988": {
+   "status": "OWNER_NATIVE",
+   "owner": [
+    "engine/theme_graph/identity_resolution.py",
+    "engine/theme_graph/store.py",
+    "engine/theme_graph/rights.py"
+   ],
+   "owner_call": "engine.theme_graph.identity_resolution.read_identity_resolution() + resolve_graph_node_identity('co:hk:9988.HK') (PACK CALL C3)",
+   "missing_descriptors": [],
+   "refusal_code": null,
+   "evidence_rows": 61
+  },
+  "themes.rmb_89988": {
+   "status": "NO_OWNER",
+   "owner": [
+    "engine/theme_graph/identity_resolution.py"
+   ],
+   "owner_call": "no company node for the RMB counter in data/theme_graph/nodes.parquet; resolve_graph_node_identity has no node to resolve",
+   "missing_descriptors": [],
+   "refusal_code": "NO_GRAPH_NODE",
+   "evidence_rows": 0
+  }
+ },
+ "counts": {
+  "owner_native": 9,
+  "partial": 19,
+  "refused": 1,
+  "absent": 12,
+  "no_owner": 13,
+  "total": 54
+ }
+}
