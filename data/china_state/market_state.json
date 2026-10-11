@@ -1,7 +1,7 @@
 {
   "schema": "china_market_state.v1",
-  "as_of": "2026-10-10",
-  "generated_utc": "2026-10-10T15:57:15Z",
+  "as_of": "2026-10-11",
+  "generated_utc": "2026-10-11T13:40:11Z",
   "authority": {
     "tier": "context_only",
     "why": [
@@ -88,7 +88,7 @@
     "names_ref": "site/chinastatedata/microstructure.json#name_packets"
   },
   "policy": {
-    "as_of": "2026-10-10",
+    "as_of": "2026-10-11",
     "policy_impulse": "market_rescue",
     "transmission_channel": [
       "liquidity",
@@ -130,15 +130,15 @@
     ],
     "staleness": {
       "per_source_days": {
-        "lpr": 20,
-        "rrr": 521,
-        "fr007": 0,
-        "communiques": 165
+        "lpr": 21,
+        "rrr": 522,
+        "fr007": 1,
+        "communiques": 166
       }
     }
   },
   "rotation": {
-    "as_of": "2026-10-10",
+    "as_of": "2026-10-11",
     "sector_phase_distribution": {
       "Bottoming": 39,
       "Topping": 7,
@@ -162,7 +162,7 @@
       "LAGGARD: Agriculture ranked #29/31 (-26.3%) — among the weakest this leg"
     ],
     "ths_heat": {
-      "as_of": "2026-10-10",
+      "as_of": "2026-10-11",
       "basket_count": 237,
       "above_200d_pct": 7.6,
       "hot_baskets": [
@@ -227,8 +227,8 @@
     "contradicting": [],
     "conditions": {
       "roro": {
-        "roro": -0.038,
-        "roro_raw": -0.038,
+        "roro": -0.04,
+        "roro_raw": -0.04,
         "roro_state": "neutral",
         "china_roro_copper_gold": 1.709,
         "china_roro_breadth": -0.314,
@@ -236,7 +236,7 @@
         "china_roro_m1_m2": 0.307,
         "china_roro_turnover": -0.851,
         "china_roro_qvix": 1.065,
-        "china_roro_usdcnh": 0.372,
+        "china_roro_usdcnh": 0.353,
         "china_roro_margin": -0.433,
         "china_roro_ah_premium": -1.93,
         "legs": [
@@ -286,7 +286,7 @@
             "key": "usdcnh",
             "name_en": "Offshore yuan (20d)",
             "name_zh": "离岸人民币（20日）",
-            "value": 0.372,
+            "value": 0.353,
             "lean": "risk-on"
           },
           {
@@ -393,7 +393,7 @@
   },
   "external": {
     "yield_curve": {
-      "as_of": "2026-10-10",
+      "as_of": "2026-10-11",
       "staleness_days": 0,
       "cn_10y": 1.6849,
       "cn_2y": 1.2676,
@@ -402,7 +402,7 @@
     },
     "cgb_curve": {
       "as_of": "2026-10-10",
-      "staleness_days": 0,
+      "staleness_days": 1,
       "m3": 1.168,
       "y1": 1.2147,
       "y5": 1.4069,
