@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: todo
     depends_on: [qualified-story]
-next_action: Deliver the tested single-attempt and audit-discovery implementation on the same disarmed PR 8786, obtain fresh exact-head checks and protected landing, then verify installed source and browser behavior. Root owns input qualification without a historical-owner pickup gate. Preserve the unsettled provider attempt, actual access refusals, missing stage-only credentials and story rights/release obligations.
+next_action: Complete original PR8786 after consuming incumbent PR8870 calendar-scope fix with authorship preserved, then verify merged installation and public browser routes and run the prepared nonpromoting earnings audit. Terminal956 is now2fd1b1a9 with integrated104unit/typecheck/18browser local proof and accepted Fabric review, pending hostedCI38185449454 and protected installation. Separate Press baseline qualification source01097050608b is pushed and tested but has no live fetch, staging or publication admission. Integrate the retained-source follow-on from fresh main after8786 lands.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md

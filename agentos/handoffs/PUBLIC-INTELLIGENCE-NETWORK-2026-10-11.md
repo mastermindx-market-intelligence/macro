@@ -113,3 +113,31 @@ The first candidate `3b8a642735378309e73107690bbc4682ffbd3108` concluded all 21 
 A fresh preflight found PR #8786 OPEN at 3b8a, with no attached open refresh lease. The root visibly disarmed it and integrated the substantive recovery source on the same carrier, superseding the earlier separate-follow-on intention. The retained observer was stopped deliberately (PID 73730, exit 130). Protected main merged conflict-free as `28bc4468a090775630b24473a0176746fce4197d`; no application implementation/test file changed in that main merge. This requires fresh candidate proof and does not authorize a manual merge, deployment, provider replay or publication. The one repeated controller-status read refused by the CI wait guard was not retried through another carrier.
 
 Consolidated local verification at integration `28bc4468a090775630b24473a0176746fce4197d`: six affected suites (Press validators/run/writer/staging inspection and earnings dossier-link/ingress) passed **214 tests in 20.82s**, no skips; curated import-closure regression passed **1 test in 183.31s**; Agent OS validated **1,649 records, zero errors, 141 warnings**. The main merge changed none of the accepted public builder/template/three acceptance-page paths, so the existing 69-file byte-identical estate proof remains applicable. `git diff --check` is clean. No further real provider call or emit occurred.
+
+
+## Consumed main CI repair and refreshed Terminal proof — 23:55 UTC
+
+The sole observer reported ci-pack-0 red on f4. The first completed-job log read
+(`gh run view --job114601457342 --log`) identifies only
+ci-control-plane-contracts: dataos-prospective-reference omitted lib/nyse_calendar.py.
+Root reproduced the same failure locally, verified a one-path repair green, then
+found the incumbent main-red-repair PR8870. Its exact source1cea273c72487f1fae77dc579b3e628ec435a55c
+was consumed with `git cherry-pick -x` as40875489f82b, preserving authorship,
+producer source and its existing proof. No duplicate heal PR was created.
+Original8786 was disarmed before authoring; fresh main308cc1578147d85a64e4aa7d9328355917e9f4c4
+was integrated first. All13 prepared installation-source SHA256 expectations are
+unchanged. The hosted red excerpt is retained inprotected_ci_f4_calendar_failure.txt.
+
+The separate Press baseline qualifier is pushed at01097050608bb9966a572eb8b106e998613e41ea,
+with43focused tests,28workflow tests,source binding andbounded review accepted.
+It has not run a live authenticated fetch or been admitted for publication.
+The local independent calendar fix was superseded for original8786 by consuming
+PR8870; preserve the incumbent source rather than opening another heal carrier.
+
+Terminal956 refresh2fd1b1a9 includes existing annotation-sync source. Integrated
+local proof:104unit tests, typecheck and18responsive sign-in/recovery cases pass.
+The installed M2 Fabric adapter admitted and completed an independent MiniMax
+integration review; root consumed and accepted the same retained result.
+Exact scope and commands are inTERMINAL_REFRESH_ACCEPTANCE.md. Hosted current-head
+CI38185449454, protected landing, installation and pristine browser acceptance
+remain outstanding. No fresh account, new follow, migration or deployment occurred.
